@@ -98,7 +98,7 @@ CEXPORT int indigoLayout(int object)
         else if (IndigoBaseReaction::is(obj))
         {
             BaseReaction& rxn = obj.getBaseReaction();
-            bool no_layout = rxn.catalystCount() || rxn.intermediateCount() || rxn.specialConditionsCount() || rxn.meta().getNonChemicalMetaCount();
+            bool no_layout = rxn.intermediateCount() || rxn.specialConditionsCount() || rxn.meta().getNonChemicalMetaCount();
             if (!no_layout)
             {
                 rxn.meta().resetMetaData();
@@ -107,7 +107,6 @@ CEXPORT int indigoLayout(int object)
                 rl.layout_orientation = (layout_orientation_value)self.layout_orientation;
                 rl.bond_length = 1.6f;
                 rl.horizontal_interval_factor = self.layout_horintervalfactor;
-
                 rl.make();
                 try
                 {

@@ -35,20 +35,7 @@ IMPL_ERROR(ReactionJsonSaver, "reaction KET saver");
 
 void ReactionJsonSaver::_getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max_vec, float scale)
 {
-    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-    {
-        Vec3f& p = mol.getAtomXyz(i);
-        Vec2f p2(p.x, p.y);
-
-        if (i == mol.vertexBegin())
-            min_vec = max_vec = p2;
-        else
-        {
-            min_vec.min(p2);
-            max_vec.max(p2);
-        }
-    }
-
+    mol.getBoundingBox(min_vec, max_vec);
     min_vec.scale(scale);
     max_vec.scale(scale);
 }
@@ -77,8 +64,9 @@ void ReactionJsonSaver::saveReactionWithMetaData(BaseReaction& rxn, BaseMolecule
 void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
 {
     std::vector<Vec2f> pluses;
-
     Vec2f rmin(0, 0), rmax(0, 0), pmin(0, 0), pmax(0, 0), cmin(0, 0), cmax(0, 0);
+    bool last_single_reactant = false;
+    bool first_single_product = false;
 
     if (rxn.reactantsCount() > 0)
     {
@@ -107,6 +95,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
                 pluses.emplace_back((max1.x + min2.x) / 2, (min1.y + max1.y) / 2);
                 rcount++;
             }
+            last_single_reactant = rxn.getBaseMolecule(i).vertexCount() == 1;
         }
     }
 
@@ -125,6 +114,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
             {
                 pmin = min1;
                 pmax = max1;
+                first_single_product = rxn.getBaseMolecule(i).vertexCount() == 1;
             }
             else
             {
@@ -188,54 +178,41 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
     }
 
     // calculate arrow
-    Vec2f p1(0, 0);
-    Vec2f p2(0, 0);
+    Vec2f arrow_head(0, 0);
+    Vec2f arrow_tail(0, 0);
     if (rxn.reactantsCount() || rxn.productsCount())
     {
         if (rxn.productsCount() == 0)
         {
-            p2.x = rmax.x + 1.0f;
-            p2.y = (rmin.y + rmax.y) / 2;
-            p1.x = p2.x + 1.0f;
-            p1.y = p2.y;
+            arrow_tail.x = rmax.x + 1.0f;
+            arrow_tail.y = (rmin.y + rmax.y) / 2;
+            arrow_head.x = arrow_tail.x + 1.0f;
+            arrow_head.y = arrow_tail.y;
         }
         else if (rxn.reactantsCount() == 0)
         {
-            p1.x = pmin.x - 1.0f;
-            p1.y = (pmin.y + pmax.y) / 2;
-            p2.x = p1.x - 1.0f;
-            p2.y = p1.y;
+            arrow_head.x = pmin.x - 1.0f;
+            arrow_head.y = (pmin.y + pmax.y) / 2;
+            arrow_tail.x = arrow_head.x - 1.0f;
+            arrow_tail.y = arrow_head.y;
         }
         else
         {
-            if ((pmin.x - rmax.x) > 0)
+            double ptab = first_single_product ? 2.0f : 1.0;
+            double rtab = last_single_reactant ? 2.0f : 1.0;
+
+            arrow_head.y = (pmin.y + pmax.y) / 2;
+            arrow_tail.y = (rmin.y + rmax.y) / 2;
+
+            if (pmin.x > rmax.x)
             {
-                p2.x = (rmax.x + pmin.x) / 2 - (pmin.x - rmax.x) / 8;
-                p2.y = (rmin.y + rmax.y) / 2;
+                arrow_head.x = pmin.x - ptab;
+                arrow_tail.x = rmax.x + rtab;
             }
             else
             {
-                p2.x = (rmax.x + pmin.x) / 2 - 1.0f;
-                p2.y = (rmin.y + rmax.y) / 2;
-            }
-
-            if ((pmin.x - rmax.x) > 0)
-            {
-                p1.x = (rmax.x + pmin.x) / 2.f + (pmin.x - rmax.x) / 8.f;
-                p1.y = (pmin.y + pmax.y) / 2.f;
-            }
-            else
-            {
-                p1.x = (rmax.x + pmin.x) / 2 + 1.0f;
-                p1.y = (pmin.y + pmax.y) / 2;
-            }
-            if (rxn.catalystCount() && cmin.x != cmax.x)
-            {
-                if (cmin.x < p2.x)
-                    p2.x = cmin.x;
-
-                if (cmax.x > p1.x)
-                    p1.x = cmax.x;
+                arrow_head.x = rmax.x + rtab;
+                arrow_tail.x = pmin.x - ptab;
             }
         }
 
@@ -245,11 +222,11 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
         Value pos_array(kArrayType);
         Value pos1(kObjectType);
         Value pos2(kObjectType);
-        pos1.AddMember("x", Value().SetDouble(p1.x), ket.GetAllocator());
-        pos1.AddMember("y", Value().SetDouble(p1.y), ket.GetAllocator());
+        pos1.AddMember("x", Value().SetDouble(arrow_head.x), ket.GetAllocator());
+        pos1.AddMember("y", Value().SetDouble(arrow_head.y), ket.GetAllocator());
         pos1.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
-        pos2.AddMember("x", Value().SetDouble(p2.x), ket.GetAllocator());
-        pos2.AddMember("y", Value().SetDouble(p2.y), ket.GetAllocator());
+        pos2.AddMember("x", Value().SetDouble(arrow_tail.x), ket.GetAllocator());
+        pos2.AddMember("y", Value().SetDouble(arrow_tail.y), ket.GetAllocator());
         pos2.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
         pos_array.PushBack(pos2, ket.GetAllocator());
         pos_array.PushBack(pos1, ket.GetAllocator());

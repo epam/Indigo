@@ -4329,26 +4329,25 @@ void BaseMolecule::setBondCIP(int bond_idx, CIPDesc cip)
     have_cip = true;
 }
 
+void BaseMolecule::getBoundingBox(Vec2f& a, Vec2f& b) const
+{
+    for (int atom_idx = 0; atom_idx < vertexCount(); ++atom_idx)
+    {
+        const auto& vec3d = _xyz[atom_idx];
+        Vec2f vec(vec3d.x, vec3d.y);
+        if (!atom_idx)
+            a = b = vec;
+        else
+        {
+            a.min(vec);
+            b.max(vec);
+        }
+    }
+}
+
 void BaseMolecule::getBoundingBox(Rect2f& bbox) const
 {
     Vec2f a, b;
-    for (int atom_idx = 0; atom_idx < vertexCount(); ++atom_idx)
-    {
-        auto& vec = _xyz[atom_idx];
-        if (!atom_idx)
-        {
-            a.x = vec.x;
-            a.y = vec.y;
-            b = a;
-        }
-        else
-        {
-            // calculate bounding box
-            a.x = std::min(a.x, vec.x);
-            a.y = std::min(a.y, vec.y);
-            b.x = std::max(b.x, vec.x);
-            b.y = std::max(b.y, vec.y);
-        }
-    }
+    getBoundingBox(a, b);
     bbox = Rect2f(a, b);
 }
