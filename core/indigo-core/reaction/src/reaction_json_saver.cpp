@@ -178,41 +178,41 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
     }
 
     // calculate arrow
-    Vec2f p1(0, 0);
-    Vec2f p2(0, 0);
+    Vec2f arrow_head(0, 0);
+    Vec2f arrow_tail(0, 0);
     if (rxn.reactantsCount() || rxn.productsCount())
     {
         if (rxn.productsCount() == 0)
         {
-            p2.x = rmax.x + 1.0f;
-            p2.y = (rmin.y + rmax.y) / 2;
-            p1.x = p2.x + 1.0f;
-            p1.y = p2.y;
+            arrow_tail.x = rmax.x + 1.0f;
+            arrow_tail.y = (rmin.y + rmax.y) / 2;
+            arrow_head.x = arrow_tail.x + 1.0f;
+            arrow_head.y = arrow_tail.y;
         }
         else if (rxn.reactantsCount() == 0)
         {
-            p1.x = pmin.x - 1.0f;
-            p1.y = (pmin.y + pmax.y) / 2;
-            p2.x = p1.x - 1.0f;
-            p2.y = p1.y;
+            arrow_head.x = pmin.x - 1.0f;
+            arrow_head.y = (pmin.y + pmax.y) / 2;
+            arrow_tail.x = arrow_head.x - 1.0f;
+            arrow_tail.y = arrow_head.y;
         }
         else
         {
             double ptab = first_single_product ? 2.0f : 1.0;
             double rtab = last_single_reactant ? 2.0f : 1.0;
 
-            p1.y = (pmin.y + pmax.y) / 2;
-            p2.y = (rmin.y + rmax.y) / 2;
+            arrow_head.y = (pmin.y + pmax.y) / 2;
+            arrow_tail.y = (rmin.y + rmax.y) / 2;
 
             if (pmin.x > rmax.x)
             {
-                p1.x = pmin.x - ptab;
-                p2.x = rmax.x + rtab;
+                arrow_head.x = pmin.x - ptab;
+                arrow_tail.x = rmax.x + rtab;
             }
             else
             {
-                p1.x = rmax.x + rtab;
-                p2.x = pmin.x - ptab;
+                arrow_head.x = rmax.x + rtab;
+                arrow_tail.x = pmin.x - ptab;
             }
         }
 
@@ -222,11 +222,11 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
         Value pos_array(kArrayType);
         Value pos1(kObjectType);
         Value pos2(kObjectType);
-        pos1.AddMember("x", Value().SetDouble(p1.x), ket.GetAllocator());
-        pos1.AddMember("y", Value().SetDouble(p1.y), ket.GetAllocator());
+        pos1.AddMember("x", Value().SetDouble(arrow_head.x), ket.GetAllocator());
+        pos1.AddMember("y", Value().SetDouble(arrow_head.y), ket.GetAllocator());
         pos1.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
-        pos2.AddMember("x", Value().SetDouble(p2.x), ket.GetAllocator());
-        pos2.AddMember("y", Value().SetDouble(p2.y), ket.GetAllocator());
+        pos2.AddMember("x", Value().SetDouble(arrow_tail.x), ket.GetAllocator());
+        pos2.AddMember("y", Value().SetDouble(arrow_tail.y), ket.GetAllocator());
         pos2.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
         pos_array.PushBack(pos2, ket.GetAllocator());
         pos_array.PushBack(pos1, ket.GetAllocator());

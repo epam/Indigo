@@ -4333,14 +4333,14 @@ void BaseMolecule::getBoundingBox(Vec2f& a, Vec2f& b) const
 {
     for (int atom_idx = 0; atom_idx < vertexCount(); ++atom_idx)
     {
-        auto& p = _xyz[atom_idx];
-        Vec2f p2(p.x, p.y);
+        const auto& vec3d = _xyz[atom_idx];
+        Vec2f vec(vec3d.x, vec3d.y);
         if (!atom_idx)
-            a = b = p2;
+            a = b = vec;
         else
         {
-            a.min(p2);
-            b.max(p2);
+            a.min(vec);
+            b.max(vec);
         }
     }
 }

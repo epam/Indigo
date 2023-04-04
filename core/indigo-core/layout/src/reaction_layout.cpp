@@ -95,6 +95,8 @@ void ReactionLayout::make()
 
 Metalayout::LayoutItem& ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_agent)
 {
+    const int kMaxSymbols = 3;
+    const auto kMinHeight = bond_length / 8;
     Metalayout::LayoutItem& item = line.items.push();
     item.type = 0;
     item.fragment = true;
@@ -110,10 +112,9 @@ Metalayout::LayoutItem& ReactionLayout::_pushMol(Metalayout::LayoutLine& line, i
     {
         int max_h = mol.getAtomMaxH(0);
         int mult = max_h + 1;
-        if (mult > 3)
-            mult = 3;
-        auto hl = bond_length / 2;
-        item.minScaledSize.set(0, hl / 4);
+        if (mult > kMaxSymbols)
+            mult = kMaxSymbols;
+        item.minScaledSize.set(0, kMinHeight);
     }
     else
         item.minScaledSize.set(bond_length, bond_length);
