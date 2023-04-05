@@ -281,7 +281,7 @@ jobs:
         run: python3 api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -327,7 +327,7 @@ jobs:
             python3 api/tests/integration/test.py -p basic/basic.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -372,7 +372,7 @@ jobs:
         run: python api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -413,7 +413,7 @@ jobs:
           java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -459,7 +459,7 @@ jobs:
             java -Xss4m -jar jython.jar api/tests/integration/test.py -p basic/basic.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -505,7 +505,7 @@ jobs:
           java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -579,7 +579,7 @@ jobs:
         run: ./IronPython/net462/ipy.exe api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -631,7 +631,7 @@ jobs:
         run: ./IronPython/net462/ipy32.exe api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -764,7 +764,7 @@ jobs:
 #          python api/tests/integration/test.py -t 1 -j junit_report.xml -platform mingw
 #      - name: Publish Test Report
 #        if: always()
-#        uses: mikepenz/action-junit-report@v1
+#        uses: mikepenz/action-junit-report@v3
 #        with:
 #          report_paths: 'junit_report.xml'
 #          github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -1043,7 +1043,7 @@ jobs:
         run: docker push epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'bingo/tests/junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
