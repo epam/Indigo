@@ -827,8 +827,7 @@ class IndigoObject:
         )
 
     def copyRGroups(self, other: "IndigoObject") -> None:
-        """Molecule method, copies RGroups from other molecule
-        """
+        """Molecule method, copies RGroups from other molecule"""
         IndigoLib.checkResult(self._lib().indigoCopyRGroups(self.id, other.id))
 
     def countRGroups(self):
