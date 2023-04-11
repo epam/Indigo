@@ -293,3 +293,8 @@ TEST_F(IndigoApiBasicTest, submolecule_test_general)
         ASSERT_STREQ("", e.message());
     }
 }
+
+TEST_F(IndigoApiBasicTest, memory_leak)
+{
+    int m = indigoLoadMoleculeFromString("C1CCCCC1");
+}
