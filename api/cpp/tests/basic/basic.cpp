@@ -93,3 +93,13 @@ TEST(Basic, LoadMoleculeFromFile)
     auto session = IndigoSession::create();
     ASSERT_NO_THROW(const auto& m = session->loadMoleculeFromFile(dataPath("molecules/affine/2-bromobenzenethiol-rot.mol")));
 }
+
+TEST(Basic, CppMemoryLeak)
+{
+    for (auto i{0}; i < 2; ++i)
+    {
+        const auto& session = IndigoSession::create();
+        const auto& m = session->loadMolecule("C1CCCCC1");
+    }
+    ASSERT_TRUE(true);
+}
