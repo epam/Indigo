@@ -25,6 +25,34 @@
 #include "indigo-renderer.h"
 #include "indigo.h"
 
+
+typedef struct {
+    unsigned long size,resident,share,text,lib,data,dt;
+} statm_t;
+
+//void read_off_memory_status(statm_t& result);
+
+void read_off_memory_status(statm_t* result)
+{
+  unsigned long dummy;
+  const char* statm_path = "/proc/self/statm";
+
+  FILE *f = fopen(statm_path,"r");
+  if(!f){
+    perror(statm_path);
+    abort();
+  }
+  if(7 != fscanf(f,"%ld %ld %ld %ld %ld %ld %ld",
+      &(*result).size,&(*result).resident,&(*result).share,&(*result).text,
+      &(*result).lib,&(*result).data,&(*result).dt))
+  {
+    perror(statm_path);
+    abort();
+  }
+  fclose(f);
+};
+
+
 void usage(void)
 {
     fprintf(stderr,
@@ -844,323 +872,329 @@ int main(int argc, char* argv[])
 
     if (argc <= 2)
         USAGE();
+    for(int i = 0; i<100000; ++i){
+        const qword session = indigoAllocSessionId();
+        indigoRendererInit(session);
 
-    const qword session = indigoAllocSessionId();
-    indigoRendererInit(session);
+        indigoSetErrorHandler(onError, 0);
 
-    indigoSetErrorHandler(onError, 0);
+        indigoSetOption("ignore-stereochemistry-errors", "on");
+        indigoSetOption("molfile-saving-mode", "3000");
+        indigoSetOptionBool("json-saving-pretty", "on");
 
-    indigoSetOption("ignore-stereochemistry-errors", "on");
-    indigoSetOption("molfile-saving-mode", "3000");
-    indigoSetOptionBool("json-saving-pretty", "on");
-
-    if (parseParams(&p, argc, argv) < 0)
-        return -1;
-
-    p.out_ext = OEXT_OTHER;
-    if (strcmp(p.outfile_ext, "mol") == 0)
-        p.out_ext = OEXT_MOL;
-    else if (strcmp(p.outfile_ext, "sdf") == 0)
-        p.out_ext = OEXT_SDF;
-    else if (strcmp(p.outfile_ext, "rxn") == 0)
-        p.out_ext = OEXT_RXN;
-    else if (strcmp(p.outfile_ext, "rdf") == 0)
-        p.out_ext = OEXT_RDF;
-    else if (strcmp(p.outfile_ext, "cml") == 0)
-        p.out_ext = OEXT_CML;
-    else if (strcmp(p.outfile_ext, "ket") == 0)
-        p.out_ext = OEXT_KET;
-    else if (strcmp(p.outfile_ext, "ker") == 0)
-        p.out_ext = OEXT_KER;
-    else if (strcmp(p.outfile_ext, "smi") == 0)
-        p.out_ext = OEXT_SMI;
-    else if (strcmp(p.outfile_ext, "cdxml") == 0)
-        p.out_ext = OEXT_CDXML;
-    else if (strcmp(p.outfile_ext, "cdxmr") == 0)
-        p.out_ext = OEXT_CDXMLR;
-    else if (strcmp(p.outfile_ext, "cdx") == 0)
-        p.out_ext = OEXT_CDX;
-    else if (strcmp(p.outfile_ext, "b64") == 0)
-        p.out_ext = OEXT_CDX64;
-    else if (strcmp(p.outfile_ext, "cdr") == 0)
-        p.out_ext = OEXT_CDR;
-
-    // guess whether to layout or render by extension
-    p.action = ACTION_LAYOUT;
-    if (p.out_ext == OEXT_OTHER)
-    {
-        indigoSetOption("render-output-format", p.outfile_ext);
-        p.action = ACTION_RENDER;
-    }
-
-    // read in the input
-    reader = (p.file_to_load != NULL) ? indigoReadFile(p.file_to_load) : indigoReadString(p.string_to_load);
-
-    if (p.mode == MODE_SINGLE_MOLECULE)
-    {
-
-        if (p.id != NULL)
-            ERROR("on single input, setting '-id' is not allowed\n");
-
-        if (p.out_ext == OEXT_RXN)
-            ERROR("reaction output specified for molecule input\n");
-
-        if (p.smarts_set)
-            obj = indigoLoadSmarts(reader);
-        else if (p.query_set)
-            obj = indigoLoadQueryMolecule(reader);
-        else
-            obj = indigoLoadMolecule(reader);
-
-        _prepare(obj, p.aromatization);
-        if (p.action == ACTION_LAYOUT)
-        {
-            indigoLayout(obj);
-            if (p.out_ext == OEXT_MOL)
-                indigoSaveMolfileToFile(obj, p.outfile);
-            else if (p.out_ext == OEXT_KET)
-                indigoSaveJsonToFile(obj, p.outfile);
-            else if (p.out_ext == OEXT_SMI)
-            {
-                char* pMol;
-                if (p.query_set)
-                    pMol = indigoSmarts(obj);
-                else
-                    pMol = indigoSmiles(obj);
-                FILE* fp = fopen(p.outfile, "w+");
-                if (fp)
-                {
-                    fputs(pMol, fp);
-                    fclose(fp);
-                }
-                else
-                {
-                    fprintf(stderr, "can not write: %s\n", p.outfile);
-                    return -1;
-                }
-            }
-            else if (p.out_ext == OEXT_CDXML)
-            {
-                indigoSaveCdxmlToFile(obj, p.outfile);
-            }
-            else if (p.out_ext == OEXT_CDX)
-            {
-                indigoSaveCdxToFile(obj, p.outfile);
-            }
-            else if (p.out_ext == OEXT_CDX64)
-            {
-                char* pMol = indigoCdxBase64(obj);
-                FILE* fp = fopen(p.outfile, "w+");
-                if (fp)
-                {
-                    fputs(pMol, fp);
-                    fclose(fp);
-                }
-                else
-                {
-                    fprintf(stderr, "can not write: %s\n", p.outfile);
-                    return -1;
-                }
-            }
-            else
-                indigoSaveCmlToFile(obj, p.outfile);
-        }
-        else
-        {
-            _setComment(obj, &p);
-            renderToFile(obj, p.outfile);
-        }
-    }
-    else if (p.mode == MODE_SINGLE_REACTION)
-    {
-        if (p.id != NULL)
-            ERROR("on single input, setting '-id' is not allowed\n");
-
-        if (p.out_ext == OEXT_MOL)
-            ERROR("molecule output specified for reaction input\n");
-
-        if (p.smarts_set)
-            obj = indigoLoadReactionSmarts(reader);
-        else if (p.query_set)
-            obj = indigoLoadQueryReaction(reader);
-        else
-            obj = indigoLoadReaction(reader);
-        _prepare(obj, p.aromatization);
-        if (p.action == ACTION_LAYOUT)
-        {
-            indigoLayout(obj);
-            if (p.out_ext == OEXT_CML)
-                indigoSaveCmlToFile(obj, p.outfile);
-            else if (p.out_ext == OEXT_RXN)
-                indigoSaveRxnfileToFile(obj, p.outfile);
-            else if (p.out_ext == OEXT_CDXML || p.out_ext == OEXT_CDXMLR)
-                indigoSaveCdxmlToFile(obj, p.outfile);
-            else if (p.out_ext == OEXT_CDX || p.out_ext == OEXT_CDR)
-            {
-                indigoSaveCdxToFile(obj, p.outfile);
-            }
-            else if (p.out_ext == OEXT_SMI)
-            {
-                char* pReaction;
-                if (p.query_set)
-                    pReaction = indigoSmarts(obj);
-                else
-                    pReaction = indigoSmiles(obj);
-                FILE* fp = fopen(p.outfile, "w+");
-                if (fp)
-                {
-                    fputs(pReaction, fp);
-                    fclose(fp);
-                }
-                else
-                {
-                    fprintf(stderr, "can not write: %s\n", p.outfile);
-                    return -1;
-                }
-            }
-            else
-            {
-                indigoSaveJsonToFile(obj, p.outfile);
-            }
-        }
-        else
-        {
-            _setComment(obj, &p);
-            renderToFile(obj, p.outfile);
-        }
-    }
-    else
-    {
-        int item;
-        int have_percent_s = (strstr(p.outfile, "%s") != NULL);
-
-        if (p.mode == MODE_MULTILINE_SMILES)
-            obj = indigoIterateSmiles(reader);
-        else if (p.mode == MODE_SDF)
-            obj = indigoIterateSDF(reader);
-        else if (p.mode == MODE_MULTIPLE_CML)
-            obj = indigoIterateCML(reader);
-        else if (p.mode == MODE_RDF)
-            obj = indigoIterateRDF(reader);
-        else
-        {
-            fprintf(stderr, "internal error: wrong branch\n");
+        if (parseParams(&p, argc, argv) < 0)
             return -1;
+
+        p.out_ext = OEXT_OTHER;
+        if (strcmp(p.outfile_ext, "mol") == 0)
+            p.out_ext = OEXT_MOL;
+        else if (strcmp(p.outfile_ext, "sdf") == 0)
+            p.out_ext = OEXT_SDF;
+        else if (strcmp(p.outfile_ext, "rxn") == 0)
+            p.out_ext = OEXT_RXN;
+        else if (strcmp(p.outfile_ext, "rdf") == 0)
+            p.out_ext = OEXT_RDF;
+        else if (strcmp(p.outfile_ext, "cml") == 0)
+            p.out_ext = OEXT_CML;
+        else if (strcmp(p.outfile_ext, "ket") == 0)
+            p.out_ext = OEXT_KET;
+        else if (strcmp(p.outfile_ext, "ker") == 0)
+            p.out_ext = OEXT_KER;
+        else if (strcmp(p.outfile_ext, "smi") == 0)
+            p.out_ext = OEXT_SMI;
+        else if (strcmp(p.outfile_ext, "cdxml") == 0)
+            p.out_ext = OEXT_CDXML;
+        else if (strcmp(p.outfile_ext, "cdxmr") == 0)
+            p.out_ext = OEXT_CDXMLR;
+        else if (strcmp(p.outfile_ext, "cdx") == 0)
+            p.out_ext = OEXT_CDX;
+        else if (strcmp(p.outfile_ext, "b64") == 0)
+            p.out_ext = OEXT_CDX64;
+        else if (strcmp(p.outfile_ext, "cdr") == 0)
+            p.out_ext = OEXT_CDR;
+
+        // guess whether to layout or render by extension
+        p.action = ACTION_LAYOUT;
+        if (p.out_ext == OEXT_OTHER)
+        {
+            indigoSetOption("render-output-format", p.outfile_ext);
+            p.action = ACTION_RENDER;
         }
 
-        if ((p.out_ext == OEXT_MOL || p.out_ext == OEXT_RXN || p.out_ext == OEXT_OTHER) && !have_percent_s)
-            ERROR("on multiple output, output file name must have '%%s'\n");
+        // read in the input
+        reader = (p.file_to_load != NULL) ? indigoReadFile(p.file_to_load) : indigoReadString(p.string_to_load);
 
-        if (p.out_ext == OEXT_SDF || p.out_ext == OEXT_RDF || (p.out_ext == OEXT_CML && !have_percent_s))
+        if (p.mode == MODE_SINGLE_MOLECULE)
         {
-            writer = indigoWriteFile(p.outfile);
-            if (p.out_ext == OEXT_RDF)
-                indigoRdfHeader(writer);
-            if (p.out_ext == OEXT_CML)
-                indigoCmlHeader(writer);
-        }
 
-        i = -1;
+            if (p.id != NULL)
+                ERROR("on single input, setting '-id' is not allowed\n");
 
-        while ((item = indigoNext(obj)))
-        {
-            int rc;
-            ++i;
+            if (p.out_ext == OEXT_RXN)
+                ERROR("reaction output specified for molecule input\n");
 
-            if (writer > 0)
-                printf("saving item #%d... ", i);
+            if (p.smarts_set)
+                obj = indigoLoadSmarts(reader);
+            else if (p.query_set)
+                obj = indigoLoadQueryMolecule(reader);
             else
-            {
-                if (p.id)
-                {
-                    if (!indigoHasProperty(item, p.id))
-                    {
-                        fprintf(stderr, "item #%d does not have %s, skipping\n", i, p.id);
-                        continue;
-                    }
-                    id = indigoGetProperty(item, p.id);
+                obj = indigoLoadMolecule(reader);
 
-                    snprintf(outfilename, sizeof(outfilename), p.outfile, id);
-                }
-                else
-                {
-                    snprintf(number, sizeof(number), "%d", i);
-                    snprintf(outfilename, sizeof(outfilename), p.outfile, number);
-                }
-                printf("saving %s... ", outfilename);
-            }
-
-            indigoSetErrorHandler(0, 0);
-
-            if (_prepare(item, p.aromatization) < 0)
-            {
-                printf("%s\n", indigoGetLastError());
-                indigoSetErrorHandler(onError, 0);
-                continue;
-            }
-
+            _prepare(obj, p.aromatization);
             if (p.action == ACTION_LAYOUT)
             {
-                if (indigoLayout(item) < 0)
+                indigoLayout(obj);
+                if (p.out_ext == OEXT_MOL)
+                    indigoSaveMolfileToFile(obj, p.outfile);
+                else if (p.out_ext == OEXT_KET)
+                    indigoSaveJsonToFile(obj, p.outfile);
+                else if (p.out_ext == OEXT_SMI)
+                {
+                    char* pMol;
+                    if (p.query_set)
+                        pMol = indigoSmarts(obj);
+                    else
+                        pMol = indigoSmiles(obj);
+                    FILE* fp = fopen(p.outfile, "w+");
+                    if (fp)
+                    {
+                        fputs(pMol, fp);
+                        fclose(fp);
+                    }
+                    else
+                    {
+                        fprintf(stderr, "can not write: %s\n", p.outfile);
+                        return -1;
+                    }
+                }
+                else if (p.out_ext == OEXT_CDXML)
+                {
+                    indigoSaveCdxmlToFile(obj, p.outfile);
+                }
+                else if (p.out_ext == OEXT_CDX)
+                {
+                    indigoSaveCdxToFile(obj, p.outfile);
+                }
+                else if (p.out_ext == OEXT_CDX64)
+                {
+                    char* pMol = indigoCdxBase64(obj);
+                    FILE* fp = fopen(p.outfile, "w+");
+                    if (fp)
+                    {
+                        fputs(pMol, fp);
+                        fclose(fp);
+                    }
+                    else
+                    {
+                        fprintf(stderr, "can not write: %s\n", p.outfile);
+                        return -1;
+                    }
+                }
+                else
+                    indigoSaveCmlToFile(obj, p.outfile);
+            }
+            else
+            {
+                _setComment(obj, &p);
+                renderToFile(obj, p.outfile);
+            }
+        }
+        else if (p.mode == MODE_SINGLE_REACTION)
+        {
+            if (p.id != NULL)
+                ERROR("on single input, setting '-id' is not allowed\n");
+
+            if (p.out_ext == OEXT_MOL)
+                ERROR("molecule output specified for reaction input\n");
+
+            if (p.smarts_set)
+                obj = indigoLoadReactionSmarts(reader);
+            else if (p.query_set)
+                obj = indigoLoadQueryReaction(reader);
+            else
+                obj = indigoLoadReaction(reader);
+            _prepare(obj, p.aromatization);
+            if (p.action == ACTION_LAYOUT)
+            {
+                indigoLayout(obj);
+                if (p.out_ext == OEXT_CML)
+                    indigoSaveCmlToFile(obj, p.outfile);
+                else if (p.out_ext == OEXT_RXN)
+                    indigoSaveRxnfileToFile(obj, p.outfile);
+                else if (p.out_ext == OEXT_CDXML || p.out_ext == OEXT_CDXMLR)
+                    indigoSaveCdxmlToFile(obj, p.outfile);
+                else if (p.out_ext == OEXT_CDX || p.out_ext == OEXT_CDR)
+                {
+                    indigoSaveCdxToFile(obj, p.outfile);
+                }
+                else if (p.out_ext == OEXT_SMI)
+                {
+                    char* pReaction;
+                    if (p.query_set)
+                        pReaction = indigoSmarts(obj);
+                    else
+                        pReaction = indigoSmiles(obj);
+                    FILE* fp = fopen(p.outfile, "w+");
+                    if (fp)
+                    {
+                        fputs(pReaction, fp);
+                        fclose(fp);
+                    }
+                    else
+                    {
+                        fprintf(stderr, "can not write: %s\n", p.outfile);
+                        return -1;
+                    }
+                }
+                else
+                {
+                    indigoSaveJsonToFile(obj, p.outfile);
+                }
+            }
+            else
+            {
+                _setComment(obj, &p);
+                renderToFile(obj, p.outfile);
+            }
+        }
+        else
+        {
+            int item;
+            int have_percent_s = (strstr(p.outfile, "%s") != NULL);
+
+            if (p.mode == MODE_MULTILINE_SMILES)
+                obj = indigoIterateSmiles(reader);
+            else if (p.mode == MODE_SDF)
+                obj = indigoIterateSDF(reader);
+            else if (p.mode == MODE_MULTIPLE_CML)
+                obj = indigoIterateCML(reader);
+            else if (p.mode == MODE_RDF)
+                obj = indigoIterateRDF(reader);
+            else
+            {
+                fprintf(stderr, "internal error: wrong branch\n");
+                return -1;
+            }
+
+            if ((p.out_ext == OEXT_MOL || p.out_ext == OEXT_RXN || p.out_ext == OEXT_OTHER) && !have_percent_s)
+                ERROR("on multiple output, output file name must have '%%s'\n");
+
+            if (p.out_ext == OEXT_SDF || p.out_ext == OEXT_RDF || (p.out_ext == OEXT_CML && !have_percent_s))
+            {
+                writer = indigoWriteFile(p.outfile);
+                if (p.out_ext == OEXT_RDF)
+                    indigoRdfHeader(writer);
+                if (p.out_ext == OEXT_CML)
+                    indigoCmlHeader(writer);
+            }
+
+            i = -1;
+
+            while ((item = indigoNext(obj)))
+            {
+                int rc;
+                ++i;
+
+                if (writer > 0)
+                    printf("saving item #%d... ", i);
+                else
+                {
+                    if (p.id)
+                    {
+                        if (!indigoHasProperty(item, p.id))
+                        {
+                            fprintf(stderr, "item #%d does not have %s, skipping\n", i, p.id);
+                            continue;
+                        }
+                        id = indigoGetProperty(item, p.id);
+
+                        snprintf(outfilename, sizeof(outfilename), p.outfile, id);
+                    }
+                    else
+                    {
+                        snprintf(number, sizeof(number), "%d", i);
+                        snprintf(outfilename, sizeof(outfilename), p.outfile, number);
+                    }
+                    printf("saving %s... ", outfilename);
+                }
+
+                indigoSetErrorHandler(0, 0);
+
+                if (_prepare(item, p.aromatization) < 0)
                 {
                     printf("%s\n", indigoGetLastError());
                     indigoSetErrorHandler(onError, 0);
                     continue;
                 }
+
+                if (p.action == ACTION_LAYOUT)
+                {
+                    if (indigoLayout(item) < 0)
+                    {
+                        printf("%s\n", indigoGetLastError());
+                        indigoSetErrorHandler(onError, 0);
+                        continue;
+                    }
+                }
+
+                if (writer > 0)
+                {
+                    if (p.out_ext == OEXT_SDF)
+                        rc = indigoSdfAppend(writer, item);
+                    else if (p.out_ext == OEXT_RDF)
+                        rc = indigoRdfAppend(writer, item);
+                    else
+                        rc = indigoCmlAppend(writer, item);
+                }
+                else
+                {
+                    if (p.action == ACTION_LAYOUT)
+                    {
+                        if (p.out_ext == OEXT_MOL)
+                            rc = indigoSaveMolfileToFile(item, outfilename);
+                        else if (p.out_ext == OEXT_RXN)
+                            rc = indigoSaveRxnfileToFile(item, outfilename);
+                        else
+                            ERROR("extension unexpected");
+                    }
+                    else
+                    {
+                        _setComment(item, &p);
+                        rc = indigoRenderToFile(item, outfilename);
+                    }
+                }
+
+                if (rc < 0)
+                {
+                    printf("%s\n", indigoGetLastError());
+                    indigoSetErrorHandler(onError, 0);
+                    continue;
+                }
+
+                indigoFree(item);
+                indigoSetErrorHandler(onError, 0);
+                printf("\n");
             }
 
             if (writer > 0)
             {
-                if (p.out_ext == OEXT_SDF)
-                    rc = indigoSdfAppend(writer, item);
-                else if (p.out_ext == OEXT_RDF)
-                    rc = indigoRdfAppend(writer, item);
-                else
-                    rc = indigoCmlAppend(writer, item);
+                if (p.out_ext == OEXT_CML)
+                    indigoCmlFooter(writer);
+                indigoFree(writer);
             }
-            else
-            {
-                if (p.action == ACTION_LAYOUT)
-                {
-                    if (p.out_ext == OEXT_MOL)
-                        rc = indigoSaveMolfileToFile(item, outfilename);
-                    else if (p.out_ext == OEXT_RXN)
-                        rc = indigoSaveRxnfileToFile(item, outfilename);
-                    else
-                        ERROR("extension unexpected");
-                }
-                else
-                {
-                    _setComment(item, &p);
-                    rc = indigoRenderToFile(item, outfilename);
-                }
-            }
-
-            if (rc < 0)
-            {
-                printf("%s\n", indigoGetLastError());
-                indigoSetErrorHandler(onError, 0);
-                continue;
-            }
-
-            indigoFree(item);
-            indigoSetErrorHandler(onError, 0);
-            printf("\n");
         }
 
-        if (writer > 0)
-        {
-            if (p.out_ext == OEXT_CML)
-                indigoCmlFooter(writer);
-            indigoFree(writer);
+        indigoFree(reader);
+        indigoFree(obj);
+
+        indigoRendererDispose(session);
+        indigoReleaseSessionId(session);
+        if(i%10000 == 0){
+            statm_t res;
+            read_off_memory_status(&res);
+            printf("total program memory size %lu \n", res.size);
         }
     }
-
-    indigoFree(reader);
-    indigoFree(obj);
-
-    indigoRendererDispose(session);
-    indigoReleaseSessionId(session);
 
     return 0;
 }

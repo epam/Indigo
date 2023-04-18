@@ -43,6 +43,9 @@ qword _SIDManager::allocSessionId()
 
 void _SIDManager::releaseSessionId([[maybe_unused]] qword id)
 {
+    removeLocalCopy(id);
+    // void removeLocalCopy(const qword id = TL_GET_SESSION_ID())
+    // objects_holder->objects.erase(id);
 }
 
 qword& _SIDManager::_sessionId()
