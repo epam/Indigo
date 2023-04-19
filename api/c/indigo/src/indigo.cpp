@@ -266,7 +266,7 @@ CEXPORT qword indigoAllocSessionId()
     sf::xlock_safe_ptr(IndigoLocaleHandler::handler())->setLocale(LC_NUMERIC, "C");
     IndigoOptionManager::getIndigoOptionManager().createOrGetLocalCopy(id);
     IndigoOptionHandlerSetter::setBasicOptionHandlers(id);
-    abbreviations::indigoCreateAbbreviationsInstance();
+    // abbreviations::indigoCreateAbbreviationsInstance();
 #ifdef INDIGO_DEBUG
     std::stringstream ss;
     ss << "IndigoSession(" << id << ")";

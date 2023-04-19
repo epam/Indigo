@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include "base_cpp/tlscont.h"
+// #include "tlscont.h"
 
 using namespace indigo;
 
@@ -43,7 +44,8 @@ qword _SIDManager::allocSessionId()
 
 void _SIDManager::releaseSessionId([[maybe_unused]] qword id)
 {
-    removeLocalCopy(id);
+    // TODO
+    // removeLocalCopy(id);
     // void removeLocalCopy(const qword id = TL_GET_SESSION_ID())
     // objects_holder->objects.erase(id);
 }

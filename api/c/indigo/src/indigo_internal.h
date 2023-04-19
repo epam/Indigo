@@ -19,6 +19,8 @@
 #ifndef __indigo_internal__
 #define __indigo_internal__
 
+#include "indigo_abbreviations.h"
+
 #ifdef _WIN32
 #pragma warning(push)
 #pragma warning(disable : 4251)
@@ -360,6 +362,13 @@ public:
     static void setErrorMessage(const char* message);
     static void handleError(const char* message);
     static void setErrorHandler(INDIGO_ERROR_HANDLER handler, void* context);
+    auto getAbbreviations()
+    {
+        std::lock_guard<std::mutex> lk(m);
+        if (_abbreviations == nullptr)
+            _abbreviations = std::make_unique<abbreviations::IndigoAbbreviations>();
+        return std::move(_abbreviations);
+    };
 
 private:
     static Array<char>& error_message();
@@ -373,6 +382,8 @@ private:
     };
     sf::safe_shared_hide_obj<ObjectsHolder> _objects_holder;
     int _indigo_id;
+    std::mutex m;
+    std::unique_ptr<abbreviations::IndigoAbbreviations> _abbreviations = nullptr;
 };
 
 class DLLEXPORT IndigoPluginContext

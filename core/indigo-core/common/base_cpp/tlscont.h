@@ -109,7 +109,7 @@ namespace indigo
             const auto map = sf::slock_safe_ptr(_map);
             return map->count(id) > 0;
         }
-
+        
     private:
         sf::safe_shared_hide_obj<std::unordered_map<qword, std::unique_ptr<T>>> _map;
     };
