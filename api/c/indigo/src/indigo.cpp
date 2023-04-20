@@ -266,7 +266,6 @@ CEXPORT qword indigoAllocSessionId()
     sf::xlock_safe_ptr(IndigoLocaleHandler::handler())->setLocale(LC_NUMERIC, "C");
     IndigoOptionManager::getIndigoOptionManager().createOrGetLocalCopy(id);
     IndigoOptionHandlerSetter::setBasicOptionHandlers(id);
-    abbreviations::indigoCreateAbbreviationsInstance();
 #ifdef INDIGO_DEBUG
     std::stringstream ss;
     ss << "IndigoSession(" << id << ")";
@@ -576,3 +575,12 @@ CEXPORT qword indigoDbgProfilingGetCounter(const char* name, int whole_session)
     }
     INDIGO_END(-1);
 }
+
+auto Indigo::getAbbreviations() -> const abbreviations::IndigoAbbreviations&
+{
+    if (_abbreviations == nullptr)
+    {
+        _abbreviations = std::make_unique<abbreviations::IndigoAbbreviations>();
+    }
+    return *_abbreviations;
+};
