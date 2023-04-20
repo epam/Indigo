@@ -101,12 +101,12 @@ namespace indigo
         // Session IndigoName instance
         //
         static _SessionLocalContainer<IndigoAbbreviations> indigo_abbreviations_self;
-        
+
         IndigoAbbreviations& indigoGetAbbreviationsInstance()
         {
             return indigo_abbreviations_self.getLocalCopy();
         }
-        
+
         IndigoAbbreviations& indigoCreateAbbreviationsInstance()
         {
             return indigo_abbreviations_self.createOrGetLocalCopy();
