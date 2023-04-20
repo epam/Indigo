@@ -21,8 +21,6 @@
 
 #include <string>
 #include <vector>
-#include <memory>
-#include <mutex>
 
 #include "base_cpp/ptr_array.h"
 
@@ -48,18 +46,9 @@ namespace indigo
             void clear();
 
             PtrArray<Abbreviation> abbreviations;
-            // auto getAbbreviations()
-            // {
-            //     std::lock_guard<std::mutex> lk(m);
-            //     if (_abbreviations == nullptr)
-            //         _abbreviations = std::make_unique<abbreviations::IndigoAbbreviations>();
-            //     return std::move(_abbreviations);
-            // };
 
         private:
             void loadDefault();
-            // std::mutex m;
-            // std::unique_ptr<abbreviations::IndigoAbbreviations> _abbreviations = nullptr;
         };
         IndigoAbbreviations& indigoGetAbbreviationsInstance();
         IndigoAbbreviations& indigoCreateAbbreviationsInstance();
