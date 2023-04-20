@@ -38,7 +38,7 @@ qword _SIDManager::getSessionId() const
 
 qword _SIDManager::allocSessionId()
 {
-    return ++lastNewSID;
+    return lastNewSID;
 }
 
 void _SIDManager::releaseSessionId([[maybe_unused]] qword id)
