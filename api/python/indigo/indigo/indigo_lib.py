@@ -352,6 +352,8 @@ class IndigoLib:
         IndigoLib.lib.indigoIterateRGroups.argtypes = [c_int]
         IndigoLib.lib.indigoCountRGroups.restype = c_int
         IndigoLib.lib.indigoCountRGroups.argtypes = [c_int]
+        IndigoLib.lib.indigoCopyRGroups.restype = c_int
+        IndigoLib.lib.indigoCopyRGroups.argtypes = [c_int, c_int]
         IndigoLib.lib.indigoIsPseudoatom.restype = c_int
         IndigoLib.lib.indigoIsPseudoatom.argtypes = [c_int]
         IndigoLib.lib.indigoIsRSite.restype = c_int
