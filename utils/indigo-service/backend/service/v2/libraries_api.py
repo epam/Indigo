@@ -32,15 +32,14 @@ library_singletone = dict()
 library_singletone["indigo"] = Indigo()
 library_singletone["indigo_inchi"] = IndigoInchi(library_singletone["indigo"])
 library_singletone["config"] = config.__dict__
-
-libraries_api.adapter = BingoPostgresAdapter(  # type: ignore
+library_singletone["adapter"] = BingoPostgresAdapter(  # type: ignore
     library_singletone["config"],
     library_singletone["indigo"],
-    library_singletone["indigo_inchi"],  # type: ignore
+    library_singletone["indigo_inchi"]
 )
-libraries_api.redis = redis.StrictRedis(
+library_singletone["redis"] = redis.StrictRedis(
     host="localhost", port=6379, db=0
-)  # type: ignore
+)
 libraries_api_logger = logging.getLogger("libraries")
 # libraries_api_logger.addHandler(logging.FileHandler('/srv/api/app.log'))
 auth = HTTPBasicAuth()
@@ -74,7 +73,7 @@ def _prepare_row(row):
 def search_total(self, params):
     try:
         params.update({"total": True})
-        result = libraries_api.adapter.do_search(params)
+        result = library_singletone["adapter"].do_search(params)
         total = 0
         search_result = []
         for item in result:
@@ -87,7 +86,7 @@ def search_total(self, params):
         params.pop("limit", None)
         params.pop("offset", None)
         # print(params, search_result)
-        libraries_api.redis.hmset(
+        library_singletone["redis"].hmset(
             ":".join(["search", self.request.id]),
             {
                 "parameters": json.dumps(params),
@@ -129,7 +128,7 @@ def search_post():
             ).first():
                 return {"error": "Library does not exist"}, 404
         task = search_total.apply_async((search_params,))
-        cursor = libraries_api.adapter.do_search(search_params)
+        cursor = library_singletone["adapter"].do_search(search_params)
         results = []
         for row in cursor:
             item = _prepare_row(row)
@@ -172,7 +171,7 @@ def search_get(search_id):
         spec = search_id.split(".")
         search_id = spec[0]
         if len(spec) > 1 and spec[1] == "sdf":
-            params = libraries_api.redis.hmget(
+            params = library_singletone["redis"].hmget(
                 ":".join(["search", search_id]), "parameters"
             )
             if not params[0]:
@@ -180,7 +179,7 @@ def search_get(search_id):
             libraries_api_logger.info(
                 "retrieved search params: {}".format(params)
             )
-            cursor = libraries_api.adapter.do_search(json.loads(params[0]))
+            cursor = library_singletone["adapter"].do_search(json.loads(params[0]))
 
             def generate():
                 for row in cursor:
@@ -238,7 +237,7 @@ def libraries_post():
         return {"error": "Invalid input JSON: {0}".format(request.data)}, 400
     try:
         data = LibrarySchema().load(input_dict)
-        library_id = libraries_api.adapter.library_create(
+        library_id = library_singletone["adapter"].library_create(
             data["name"], data["user_data"]
         )
         libraries_api_logger.info("library_id: {0}".format(library_id))
@@ -280,7 +279,7 @@ def library_id_get(library_id=None):
     ).first():
         return {"error": "Library does not exist"}, 404
     try:
-        return libraries_api.adapter.library_get_info(library_id)
+        return library_singletone["adapter"].library_get_info(library_id)
     except Exception as e:
         libraries_api_logger.error(
             "[RESPONSE-500] internal error: {}\n{}".format(
@@ -307,7 +306,7 @@ def library_id_put(library_id):
         return {"error": {"name": "Library name cannot be empty."}}, 400
     try:
         return {
-            "status": libraries_api.adapter.library_update(library_id, data)
+            "status": library_singletone["adapter"].library_update(library_id, data)
         }
     except Exception as e:
         libraries_api_logger.error(
@@ -331,7 +330,7 @@ def delete(library_id):
     ).first():
         return {"error": "Library does not exist"}, 404
     try:
-        return {"status": libraries_api.adapter.library_delete(library_id)}
+        return {"status": library_singletone["adapter"].library_delete(library_id)}
     except Exception as e:
         libraries_api_logger.error(
             "[RESPONSE-500] internal error: {}\n{}".format(
@@ -401,7 +400,7 @@ def external_insert(library_id, path):
             props.append(prop)
         data.append((molecule.rawData(), Json(props)))
         struct_count += 1
-    libraries_api.adapter.insert_sdf(library_id, data)
+    library_singletone["adapter"].insert_sdf(library_id, data)
     total_time = time() - start
     return {
         "insert_time": total_time,
@@ -411,28 +410,28 @@ def external_insert(library_id, path):
 
 
 def drop_indices(library_id):
-    libraries_api.adapter.drop_indices(
-        libraries_api.adapter.get_table_name_for_id(library_id)
+    library_singletone["adapter"].drop_indices(
+        library_singletone["adapter"].get_table_name_for_id(library_id)
     )
 
 
 def index_table(library_id):
     start_time = time()
-    libraries_api.adapter.create_indices(
-        libraries_api.adapter.get_table_name_for_id(library_id)
+    library_singletone["adapter"].create_indices(
+        library_singletone["adapter"].get_table_name_for_id(library_id)
     )
     return time() - start_time
 
 
 def update_library_structures_count(library_id, structures_count):
-    data = libraries_api.adapter.library_get_info(library_id)
+    data = library_singletone["adapter"].library_get_info(library_id)
     service_data = data["service_data"]
     service_data["structures_count"] += structures_count
     service_data["updated_timestamp"] = int(time() * 1000)
     index_data = {
-        "properties": libraries_api.adapter.library_get_properties(library_id)
+        "properties": library_singletone["adapter"].library_get_properties(library_id)
     }
-    return libraries_api.adapter.library_update(
+    return library_singletone["adapter"].library_update(
         library_id, service_data, index_data
     )
 
@@ -521,7 +520,7 @@ def libraries_uploads_get(library_id, upload_id):
 def users_get():
     libraries_api_logger.info("[REQUEST] GET /users")
     try:
-        return libraries_api.adapter.user_all()
+        return library_singletone["adapter"].user_all()
     except Exception as e:
         libraries_api_logger.error(
             "[RESPONSE-500] internal error: {}\n{}".format(
