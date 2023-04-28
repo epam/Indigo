@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - master
-      - indigo-1.5
     tags:
       - 'indigo-*'
   workflow_dispatch:
@@ -20,7 +19,7 @@ jobs:
     container: epmlsop/indigo-tester:20230320-125107
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -39,9 +38,10 @@ jobs:
       matrix:
         os: [ macos, ubuntu, windows ]
     runs-on: ${{ matrix.os }}-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -78,7 +78,7 @@ jobs:
           cmake --build . --config Release --target ALL_BUILD
           ctest --verbose -C Release
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-libs-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-x86_64
           path: dist
@@ -89,9 +89,10 @@ jobs:
       matrix:
         os: [ windows ]
     runs-on: ${{ matrix.os }}-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -108,7 +109,7 @@ jobs:
           cmake --build . --config Release --target ALL_BUILD
           ctest --verbose -C Release
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-libs-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-i386
           path: dist
@@ -119,9 +120,10 @@ jobs:
       matrix:
         os: [ macos, ubuntu ]
     runs-on: ${{ matrix.os }}-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -150,7 +152,7 @@ jobs:
           cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
           # ctest --verbose  # NOTE: We can't run tests until we have native ARM64 node
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-libs-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-aarch64
           path: dist
@@ -165,7 +167,7 @@ jobs:
     container: epmlsop/indigo-tester:20230320-125107
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -176,32 +178,32 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download Linux native libs x86_64
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-linux-x86_64
           path: dist/
       - name: Download Linux native libs aarch64
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-linux-aarch64
           path: dist/
       - name: Download Windows native libs x86_64
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-windows-x86_64
           path: dist/
       - name: Download Windows native libs i386
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-windows-i386
           path: dist/
       - name: Download macOS native libs x86_64
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-macos-x86_64
           path: dist/
       - name: Download macOS native libs aarch64
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-macos-aarch64
           path: dist/
@@ -214,27 +216,27 @@ jobs:
           cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target indigo-${{ matrix.wrapper }}
       - name: Upload native shared libs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-native-shared-libs
           path: |
             dist/lib
       - name: Upload Python wrappers
         if: ${{ matrix.wrapper == 'python' }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-python
           path: |
             dist/*.whl
       - name: Upload Java wrappers
         if: ${{ matrix.wrapper == 'java' }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-java
           path: dist/*.jar
       - name: Upload .NET wrappers
         if: ${{ matrix.wrapper == 'dotnet' }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-dotnet
           path: dist/*.nupkg
@@ -249,7 +251,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -260,7 +262,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: dist/
@@ -279,7 +281,7 @@ jobs:
         run: python3 api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -295,7 +297,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -306,7 +308,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: dist/
@@ -325,7 +327,7 @@ jobs:
             python3 api/tests/integration/test.py -p basic/basic.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -341,7 +343,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -352,7 +354,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: dist/
@@ -370,7 +372,7 @@ jobs:
         run: python api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -386,7 +388,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -397,7 +399,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-java
           path: dist/
@@ -411,7 +413,7 @@ jobs:
           java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -427,7 +429,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -438,7 +440,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-java
           path: dist/
@@ -457,7 +459,7 @@ jobs:
             java -Xss4m -jar jython.jar api/tests/integration/test.py -p basic/basic.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -473,7 +475,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -484,7 +486,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-java
           path: dist/
@@ -503,7 +505,7 @@ jobs:
           java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -519,7 +521,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -530,7 +532,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-dotnet
           path: dist/
@@ -577,7 +579,7 @@ jobs:
         run: ./IronPython/net462/ipy.exe api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -593,7 +595,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -604,7 +606,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-dotnet
           path: dist/
@@ -629,7 +631,7 @@ jobs:
         run: ./IronPython/net462/ipy32.exe api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -643,7 +645,7 @@ jobs:
         python-version: [ '3.7', '3.10' ]
     needs: build_indigo_wrappers
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
@@ -653,7 +655,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: dist/
@@ -680,7 +682,7 @@ jobs:
         run: pytest tests
         working-directory: bingo/bingo-elastic/python
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bingo-elastic-python
           path: dist
@@ -694,7 +696,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -709,7 +711,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-java
           path: dist/
@@ -722,12 +724,13 @@ jobs:
   build_indigo_windows_mingw_x86_64:
     timeout-minutes: 60
     runs-on: windows-latest
+    needs: static_analysis
     defaults:
       run:
         shell: msys2 {0}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -761,22 +764,23 @@ jobs:
 #          python api/tests/integration/test.py -t 1 -j junit_report.xml -platform mingw
 #      - name: Publish Test Report
 #        if: always()
-#        uses: mikepenz/action-junit-report@v1
+#        uses: mikepenz/action-junit-report@v3
 #        with:
 #          report_paths: 'junit_report.xml'
 #          github_token: ${{ secrets.GITHUB_TOKEN }}
 #          check_name: "windows-mingw_python_test_report"
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-libs-windows-mingw-x86_64
           path: dist
 
   build_indigo_ketcher:
     runs-on: ubuntu-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -799,16 +803,17 @@ jobs:
           emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
           cmake --build . --config Release --target indigo-ketcher-package -- -j $(nproc)
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-ketcher
           path: dist/indigo-ketcher*.tgz
 
   build_indigo_ketcher_cjk:
     runs-on: ubuntu-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -831,7 +836,7 @@ jobs:
           emcmake cmake .. -DCMAKE_BUILD_TYPE=Release -DRENDER_ENABLE_CJK=ON
           cmake --build . --config Release --target indigo-ketcher-package -- -j $(nproc)
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-ketcher-cjk
           path: dist/indigo-ketcher*.tgz
@@ -842,9 +847,10 @@ jobs:
       matrix:
         os: [ macos, ubuntu, windows ]
     runs-on: ${{ matrix.os }}-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -881,17 +887,18 @@ jobs:
           cmake --build . --config Release --target ALL_BUILD
           ctest --verbose -C Release
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-utils-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-x86_64
           path: dist/utils
 
   build_bingo_oracle_linux_x86_64:
     runs-on: ubuntu-latest
+    needs: build_indigo_wrappers
     container: epmlsop/buildpack-centos7:20230320-125107
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -906,19 +913,20 @@ jobs:
           cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bingo-oracle-linux-x86_64
           path: dist/bingo-oracle*.tgz
 
   build_bingo_oracle_windows_mingw_x86_64:
     runs-on: windows-latest
+    needs: build_indigo_wrappers
     defaults:
       run:
         shell: msys2 {0}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -937,16 +945,17 @@ jobs:
           cmake .. -G "MinGW Makefiles" -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bingo-oracle-windows-mingw-x86_64
           path: dist/bingo-oracle*.zip
 
   build_bingo_oracle_windows_msvc_x86_64:
     runs-on: windows-latest
+    needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -961,7 +970,7 @@ jobs:
           cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-oracle
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bingo-oracle-windows-msvc-x86_64
           path: dist/bingo-oracle*.zip
@@ -972,9 +981,10 @@ jobs:
       matrix:
         postgres_major_version: [ 11, 12, 13, 14, 15 ]
     runs-on: ubuntu-latest
+    needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1004,7 +1014,7 @@ jobs:
             cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
             "
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-linux-x86_64
           path: dist/bingo-postgres*.tgz
@@ -1023,16 +1033,17 @@ jobs:
           pytest --tb=no --db postgres --junit-xml=junit_report.xml
         working-directory: bingo/tests
       - name: Login to DockerHub
+        if: startsWith(github.ref, 'refs/tags/indigo-')
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Publish Docker images
-        if: github.ref == 'refs/heads/master'
+        if: startsWith(github.ref, 'refs/tags/indigo-')
         run: docker push epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'bingo/tests/junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -1044,9 +1055,10 @@ jobs:
       matrix:
         postgres_major_version: [ "11", "12", "13", "14", "15" ]
     runs-on: windows-latest
+    needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1068,7 +1080,7 @@ jobs:
           cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF -DPostgreSQL_ROOT="$(resolve-path $pwd/../pgsql)"
           cmake --build . --config Release --target package-bingo-postgres
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-windows-x86_64
           path: dist/bingo-postgres*.zip
@@ -1079,9 +1091,10 @@ jobs:
       matrix:
         postgres_major_version: [ 11, 12, 13, 14, 15 ]
     runs-on: macos-latest
+    needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1102,7 +1115,7 @@ jobs:
           cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF -DPostgreSQL_ROOT="$(dirname $PWD)/pgsql" -DPostgreSQL_ADDITIONAL_VERSIONS=${{ matrix.postgres_major_version }}
           cmake --build . --config Release --target package-bingo-postgres
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-macos-x86_64
           path: dist/bingo-postgres*.tgz
@@ -1113,9 +1126,10 @@ jobs:
       matrix:
         os: [ windows ]
     runs-on: ${{ matrix.os }}-latest
+    needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1130,7 +1144,7 @@ jobs:
           cmake .. -DBUILD_BINGO_SQLSERVER=ON -DBUILD_BINGO_POSTGRES=OFF -DBUILD_BINGO_ORACLE=OFF  -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-sqlserver
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bingo-sqlserver-${{ matrix.os }}-x86_64
           path: dist/bingo-sqlserver*.zip
@@ -1142,7 +1156,7 @@ jobs:
     container: epmlsop/indigo-tester:20230320-125107
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1153,17 +1167,17 @@ jobs:
       - name: Create folder for native libs
         run: mkdir -p dist/lib
       - name: Download native shared libraries
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-native-shared-libs
           path: dist/lib
       - name: Download Python wheels
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: dist/
       - name: Download bingo-elastic-python
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bingo-elastic-python
           path: dist/
@@ -1180,7 +1194,7 @@ jobs:
     container: epmlsop/indigo-tester:20230320-125107
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1191,12 +1205,12 @@ jobs:
       - name: Create folder for native libs
         run: mkdir -p dist/lib
       - name: Download native shared libraries
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-native-shared-libs
           path: dist/lib
       - name: Download .NET nupkg
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-dotnet
           path: dist/
@@ -1212,7 +1226,7 @@ jobs:
     container: epmlsop/indigo-tester:20230320-125107
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1223,12 +1237,12 @@ jobs:
       - name: Create folder for native libs
         run: mkdir -p dist/lib
       - name: Download native shared libraries
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-native-shared-libs
           path: dist/lib
       - name: Download indigo-ketcher NPM package
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-ketcher
           path: dist/
@@ -1249,7 +1263,7 @@ jobs:
     container: epmlsop/indigo-tester:20230320-125107
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1260,7 +1274,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir -p dist/lib
       - name: Download native shared libraries
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-native-shared-libs
           path: dist/lib
@@ -1291,7 +1305,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1300,7 +1314,7 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: utils/indigo-service/backend/lib/
@@ -1327,6 +1341,7 @@ jobs:
 #          docker logs ${container_id}
 #          docker stop ${container_id}
       - name: Login to DockerHub
+        if: startsWith(github.ref, 'refs/tags/indigo-')
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -1339,9 +1354,6 @@ jobs:
           docker tag epmlsop/indigo-service:latest epmlsop/indigo-service:${clean_tag}
           docker push epmlsop/indigo-service:${clean_tag}
           docker push epmlsop/indigo-service:latest
-      - name: Publish master
-        if: github.ref == 'refs/heads/master'
-        run: docker push epmlsop/indigo-service:latest
 
   build_test_publish_indigo_service_new:
     timeout-minutes: 60
@@ -1349,7 +1361,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -1358,13 +1370,14 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: api/http/
       - name: Build
         run: docker build -f ./api/http/Dockerfile -t epmlsop/indigo-service:enhanced-latest ./api/http
       - name: Login to DockerHub
+        if: startsWith(github.ref, 'refs/tags/indigo-')
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -1377,6 +1390,3 @@ jobs:
           docker tag epmlsop/indigo-service:enhanced-latest epmlsop/indigo-service:enhanced-${clean_tag}
           docker push epmlsop/indigo-service:enhanced-${clean_tag}
           docker push epmlsop/indigo-service:enhanced-latest
-      - name: Publish master
-        if: github.ref == 'refs/heads/master'
-        run: docker push epmlsop/indigo-service:enhanced-latest
