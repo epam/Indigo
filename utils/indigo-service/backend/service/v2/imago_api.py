@@ -385,9 +385,7 @@ def upload_status_get(upload_id):
                 $ref: "#/definitions/imago_imagoupload_post_Error"
 
     """
-    imago_api_logger.info(
-        "[REQUEST] GET /imago/uploads/{0}".format(upload_id)
-    )
+    imago_api_logger.info("[REQUEST] GET /imago/uploads/{0}".format(upload_id))
     try:
         # retrieve recognized molecule in mol_format
         task = recognize_image.AsyncResult(upload_id)
@@ -489,9 +487,7 @@ def upload_status_post(upload_id):
                     "[RESPONSE-410] Image are not available because of time limit."
                 )
                 return (
-                    {
-                        "error": "Image are not available because of time limit"
-                    },
+                    {"error": "Image are not available because of time limit"},
                     410,
                 )
         else:
