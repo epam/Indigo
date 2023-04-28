@@ -34,9 +34,13 @@ libraries_api.renderer = IndigoRenderer(libraries_api.indigo)  # type: ignore
 libraries_api.indigo_inchi = IndigoInchi(libraries_api.indigo)  # type: ignore
 libraries_api.config = config.__dict__  # type: ignore
 libraries_api.adapter = BingoPostgresAdapter(  # type: ignore
-    libraries_api.config, libraries_api.indigo, libraries_api.indigo_inchi  # type: ignore
+    libraries_api.config,
+    libraries_api.indigo,
+    libraries_api.indigo_inchi,  # type: ignore
 )
-libraries_api.redis = redis.StrictRedis(host="localhost", port=6379, db=0)  # type: ignore
+libraries_api.redis = redis.StrictRedis(
+    host="localhost", port=6379, db=0
+)  # type: ignore
 libraries_api_logger = logging.getLogger("libraries")
 # libraries_api_logger.addHandler(logging.FileHandler('/srv/api/app.log'))
 auth = HTTPBasicAuth()
@@ -97,7 +101,7 @@ def search_total(self, params):
         return {"error": "Internal server error"}, 500
 
 
-@libraries_api.route("/search", methods=['POST'])
+@libraries_api.route("/search", methods=["POST"])
 def search_post():
     """
     Search in library
@@ -114,9 +118,7 @@ def search_post():
     try:
         input_dict = json.loads(request.data.decode("utf-8"))
     except ValueError:
-        return {
-            "error": "Invalid input JSON: {0}".format(request.data)
-        }, 400
+        return {"error": "Invalid input JSON: {0}".format(request.data)}, 400
     try:
         print(input_dict)
         search_params = SearcherSchema().load(input_dict)
@@ -163,7 +165,7 @@ def search_post():
         return {"error": "Internal server error."}, 500
 
 
-@libraries_api.route("/search/<search_id>", methods=['GET'])
+@libraries_api.route("/search/<search_id>", methods=["GET"])
 def search_get(search_id):
     libraries_api_logger.info("[REQUEST] GET /search/{}".format(search_id))
     try:
@@ -202,7 +204,7 @@ def search_get(search_id):
         return {"error": "Internal server error."}, 500
 
 
-@libraries_api.route("/libraries", methods=['GET'])
+@libraries_api.route("/libraries", methods=["GET"])
 def libraries_get():
     """
     Get list of existing libraries
@@ -211,9 +213,7 @@ def libraries_get():
     try:
         res = []
         for lib in LibraryMeta.query.all():
-            res.append(
-                merge_dicts({"id": lib.library_id}, lib.service_data)
-            )
+            res.append(merge_dicts({"id": lib.library_id}, lib.service_data))
         return res
     except Exception as e:
         libraries_api_logger.error(
@@ -224,7 +224,7 @@ def libraries_get():
         return {"error": "Internal server error."}, 500
 
 
-@libraries_api.route("/libraries", methods=['POST'])
+@libraries_api.route("/libraries", methods=["POST"])
 def libraries_post():
     """
     Create new library
@@ -235,9 +235,7 @@ def libraries_post():
     try:
         input_dict = json.loads(request.data.decode("utf-8"))
     except ValueError:
-        return {
-            "error": "Invalid input JSON: {0}".format(request.data)
-        }, 400
+        return {"error": "Invalid input JSON: {0}".format(request.data)}, 400
     try:
         data = LibrarySchema().load(input_dict)
         library_id = libraries_api.adapter.library_create(
@@ -249,7 +247,7 @@ def libraries_post():
             201,
             {
                 "Location": url_for(
-                    'libraries', library_id=library_id, _external=True
+                    "libraries", library_id=library_id, _external=True
                 )
             },
         )
@@ -267,7 +265,7 @@ def libraries_post():
         return {"error": "Internal server error."}, 500
 
 
-@libraries_api.route("/libraries/<library_id>", methods=['GET'])
+@libraries_api.route("/libraries/<library_id>", methods=["GET"])
 def library_id_get(library_id=None):
     """
     Get information about existing library for current library_id
@@ -292,7 +290,7 @@ def library_id_get(library_id=None):
         return {"error": "Internal server error."}, 500
 
 
-@libraries_api.route("/libraries/<library_id>", methods=['PUT'])
+@libraries_api.route("/libraries/<library_id>", methods=["PUT"])
 def library_id_put(library_id):
     libraries_api_logger.info(
         "[REQUEST] PUT /libraries/{} {}".format(library_id, request.data)
@@ -304,16 +302,12 @@ def library_id_put(library_id):
     try:
         data = json.loads(request.data.decode("utf-8"))
     except ValueError:
-        return {
-            "error": "Invalid input JSON: {0}".format(request.data)
-        }, 400
+        return {"error": "Invalid input JSON: {0}".format(request.data)}, 400
     if "name" in data and not data["name"]:
         return {"error": {"name": "Library name cannot be empty."}}, 400
     try:
         return {
-            "status": libraries_api.adapter.library_update(
-                library_id, data
-            )
+            "status": libraries_api.adapter.library_update(library_id, data)
         }
     except Exception as e:
         libraries_api_logger.error(
@@ -324,7 +318,7 @@ def library_id_put(library_id):
         return {"error": "Internal server error."}, 500
 
 
-@libraries_api.route("/libraries/<library_id>", methods=['DELETE'])
+@libraries_api.route("/libraries/<library_id>", methods=["DELETE"])
 def delete(library_id):
     """
     Delete existing library
@@ -441,16 +435,14 @@ def update_library_structures_count(library_id, structures_count):
     service_data["structures_count"] += structures_count
     service_data["updated_timestamp"] = int(time() * 1000)
     index_data = {
-        "properties": libraries_api.adapter.library_get_properties(
-            library_id
-        )
+        "properties": libraries_api.adapter.library_get_properties(library_id)
     }
     return libraries_api.adapter.library_update(
         library_id, service_data, index_data
     )
 
 
-@libraries_api.route("/libraries/<library_id>/uploads", methods=['POST'])
+@libraries_api.route("/libraries/<library_id>/uploads", methods=["POST"])
 def libraries_uploads_post(library_id):
     """
     Upload and index file to the selected library_id
@@ -469,11 +461,14 @@ def libraries_uploads_post(library_id):
         "application/gzip",
     )
     if mime_type not in allowed_types:
-        return {
-            "error": "Incorrect Content-Type '{0}', should be one of [{1}]".format(
-                mime_type, ", ".join(allowed_types)
-            )
-        }, 415
+        return (
+            {
+                "error": "Incorrect Content-Type '{0}', should be one of [{1}]".format(
+                    mime_type, ", ".join(allowed_types)
+                )
+            },
+            415,
+        )
     if not LibraryMeta.query.filter(
         LibraryMeta.library_id == library_id
     ).first():
@@ -491,7 +486,9 @@ def libraries_uploads_post(library_id):
         return {"error": "Internal server error."}, 500
 
 
-@libraries_api.route("/libraries/<library_id>/uploads/<upload_id>", methods=['GET'])
+@libraries_api.route(
+    "/libraries/<library_id>/uploads/<upload_id>", methods=["GET"]
+)
 def libraries_uploads_get(library_id, upload_id):
     """
     Check upload status for selected library_id and upload_id
@@ -524,7 +521,7 @@ def libraries_uploads_get(library_id, upload_id):
         return {"error": "Internal server error."}, 500
 
 
-@libraries_api.route("/users", methods=['GET'])
+@libraries_api.route("/users", methods=["GET"])
 @auth.login_required
 def users_get():
     libraries_api_logger.info("[REQUEST] GET /users")
@@ -547,43 +544,36 @@ def user_create(params):
     return u
 
 
-@libraries_api.route("/users", methods=['POST'])
+@libraries_api.route("/users", methods=["POST"])
 def users_post():
-    libraries_api_logger.info(
-        "[REQUEST] POST /users {0}".format(request.data)
-    )
+    libraries_api_logger.info("[REQUEST] POST /users {0}".format(request.data))
     try:
         input_dict = json.loads(request.data.decode("utf-8"))
     except ValueError:
-        return {
-            "error": "Invalid input JSON: {0}".format(request.data)
-        }, 400
+        return {"error": "Invalid input JSON: {0}".format(request.data)}, 400
     try:
         input_dict = UserSchema().load(input_dict)
         if Usermodel.query.filter(
             Usermodel.email == input_dict["email"]
         ).first():
-            return {
-                "error": {
-                    "email": [
-                        'Email "{}" is already used.'.format(
-                            input_dict["email"]
-                        )
-                    ]
-                }
-            }, 409
+            return (
+                {
+                    "error": {
+                        "email": [
+                            'Email "{}" is already used.'.format(
+                                input_dict["email"]
+                            )
+                        ]
+                    }
+                },
+                409,
+            )
         u = user_create(input_dict)
-        libraries_api_logger.info(
-            "New user created, id={}".format(u.user_id)
-        )
+        libraries_api_logger.info("New user created, id={}".format(u.user_id))
         return (
             {"id": u.user_id},
             201,
-            {
-                "Location": url_for(
-                    'users', user_id=u.user_id, _external=True
-                )
-            },
+            {"Location": url_for("users", user_id=u.user_id, _external=True)},
         )
     except ValidationError as e:
         libraries_api_logger.error(
@@ -599,6 +589,6 @@ def users_post():
         return {"error": "Internal server error."}, 500
 
 
-@libraries_api.route("/users/<user_id>", methods=['GET'])
+@libraries_api.route("/users/<user_id>", methods=["GET"])
 def user_id_get(user_id):
     pass  # need to have this method for url_for(User, ...) to work
