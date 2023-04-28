@@ -35,7 +35,7 @@ library_singletone["config"] = config.__dict__
 library_singletone["adapter"] = BingoPostgresAdapter(  # type: ignore
     library_singletone["config"],
     library_singletone["indigo"],
-    library_singletone["indigo_inchi"]
+    library_singletone["indigo_inchi"],
 )
 library_singletone["redis"] = redis.StrictRedis(
     host="localhost", port=6379, db=0
@@ -179,7 +179,9 @@ def search_get(search_id):
             libraries_api_logger.info(
                 "retrieved search params: {}".format(params)
             )
-            cursor = library_singletone["adapter"].do_search(json.loads(params[0]))
+            cursor = library_singletone["adapter"].do_search(
+                json.loads(params[0])
+            )
 
             def generate():
                 for row in cursor:
@@ -306,7 +308,9 @@ def library_id_put(library_id):
         return {"error": {"name": "Library name cannot be empty."}}, 400
     try:
         return {
-            "status": library_singletone["adapter"].library_update(library_id, data)
+            "status": library_singletone["adapter"].library_update(
+                library_id, data
+            )
         }
     except Exception as e:
         libraries_api_logger.error(
@@ -330,7 +334,9 @@ def delete(library_id):
     ).first():
         return {"error": "Library does not exist"}, 404
     try:
-        return {"status": library_singletone["adapter"].library_delete(library_id)}
+        return {
+            "status": library_singletone["adapter"].library_delete(library_id)
+        }
     except Exception as e:
         libraries_api_logger.error(
             "[RESPONSE-500] internal error: {}\n{}".format(
@@ -429,7 +435,9 @@ def update_library_structures_count(library_id, structures_count):
     service_data["structures_count"] += structures_count
     service_data["updated_timestamp"] = int(time() * 1000)
     index_data = {
-        "properties": library_singletone["adapter"].library_get_properties(library_id)
+        "properties": library_singletone["adapter"].library_get_properties(
+            library_id
+        )
     }
     return library_singletone["adapter"].library_update(
         library_id, service_data, index_data
