@@ -29,14 +29,15 @@ from .validation import LibrarySchema, SearcherSchema, UserSchema
 libraries_api = Blueprint("libraries_api", __name__)
 
 os.makedirs(config.__dict__["UPLOAD_FOLDER"], exist_ok=True)
-libraries_api.indigo = Indigo()  # type: ignore
-libraries_api.renderer = IndigoRenderer(libraries_api.indigo)  # type: ignore
-libraries_api.indigo_inchi = IndigoInchi(libraries_api.indigo)  # type: ignore
-libraries_api.config = config.__dict__  # type: ignore
+library_singletone = dict()
+library_singletone["indigo"] = Indigo()
+library_singletone["indigo_inchi"] = IndigoInchi(library_singletone["indigo"])
+library_singletone["config"] = config.__dict__
+
 libraries_api.adapter = BingoPostgresAdapter(  # type: ignore
-    libraries_api.config,
-    libraries_api.indigo,
-    libraries_api.indigo_inchi,  # type: ignore
+    library_singletone["config"],
+    library_singletone["indigo"],
+    library_singletone["indigo_inchi"],  # type: ignore
 )
 libraries_api.redis = redis.StrictRedis(
     host="localhost", port=6379, db=0
@@ -366,10 +367,9 @@ def import_file(self, library_id, path):
         return {"error": str(e)}, 500
 
 
-@staticmethod
 def save_file(library_id, stream, mime_type):
     path = os.path.join(
-        libraries_api.config["UPLOAD_FOLDER"],
+        library_singletone["config"]["UPLOAD_FOLDER"],
         "{0}_{1}.{2}".format(library_id, int(time() * 1000), "sdf.gz"),
     )
     if mime_type == "chemical/x-mdl-sdfile":
@@ -381,13 +381,12 @@ def save_file(library_id, stream, mime_type):
     return path
 
 
-@staticmethod
 def external_insert(library_id, path):
     struct_count = 0
     start = time()
     data = []
     molecule: indigo.IndigoObject
-    for molecule in libraries_api.indigo.iterateSDFile(path):
+    for molecule in library_singletone["indigo"].iterateSDFile(path):
         props = []
         for prop in molecule.iterateProperties():
             prop_name = prop.name()
@@ -412,14 +411,12 @@ def external_insert(library_id, path):
     }
 
 
-@staticmethod
 def drop_indices(library_id):
     libraries_api.adapter.drop_indices(
         libraries_api.adapter.get_table_name_for_id(library_id)
     )
 
 
-@staticmethod
 def index_table(library_id):
     start_time = time()
     libraries_api.adapter.create_indices(
@@ -428,7 +425,6 @@ def index_table(library_id):
     return time() - start_time
 
 
-@staticmethod
 def update_library_structures_count(library_id, structures_count):
     data = libraries_api.adapter.library_get_info(library_id)
     service_data = data["service_data"]
@@ -536,7 +532,6 @@ def users_get():
         return {"error": "Internal server error."}, 500
 
 
-@staticmethod
 def user_create(params):
     u = Usermodel(params)
     db_session.add(u)

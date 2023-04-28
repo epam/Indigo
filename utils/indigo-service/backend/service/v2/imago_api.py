@@ -102,7 +102,6 @@ def pass_args(self, args):
         return {"error": "Internal server error: {}".format(str(e))}, 500
 
 
-@staticmethod
 def save_file(stream, f_type):
     """
     Saves byte stream of image into selected type.
@@ -121,7 +120,6 @@ def save_file(stream, f_type):
     return path
 
 
-@staticmethod
 def save_config(settings):
     """
     Gets settings in JSON format to be passed in text file for imago console
@@ -140,7 +138,6 @@ def save_config(settings):
     return path
 
 
-@staticmethod
 def imago_recognize(args):
     """
     Recognize image by Imago and returns mol file of molecule in string format
