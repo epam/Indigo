@@ -2850,6 +2850,8 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             else
             {
                 element = scanner.readUnsigned();
+                if (qatom.get() == 0)
+                    throw Error("'#%d' atom representation allowed only for query molecules", element);
             }
         }
         // Now we check that we have here an element from the periodic table.
