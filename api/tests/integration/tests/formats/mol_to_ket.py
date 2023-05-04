@@ -22,7 +22,7 @@ print("*** MOL to KET ***")
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
-files = ["1032-quadra", "1046-imp_hydrogen", "SgroupDifferent"]
+files = ["1032-quadra", "1046-imp_hydrogen", "SgroupDifferent", "suplabel"]
 
 files.sort()
 for filename in files:

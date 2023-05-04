@@ -3485,10 +3485,19 @@ void MolfileLoader::_readSGroup3000(const char* str)
         }
         else if (strcmp(entity.ptr(), "LABEL") == 0)
         {
+            bool has_quote = false;
             while (!scanner.isEOF())
             {
                 char c = scanner.readChar();
-                if (c == ' ')
+                if (c == '"')
+                {
+                    if (has_quote)
+                        break;
+                    else
+                        has_quote = true;
+                    continue;
+                }
+                if (c == ' ' && !has_quote)
                     break;
                 if (sup != 0)
                     sup->subscript.push(c);

@@ -1,0 +1,43 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "Cl",
+                "location": [
+                    10.449999809265137,
+                    -7.099999904632568,
+                    0.0
+                ],
+                "charge": -1
+            },
+            {
+                "label": "Na",
+                "location": [
+                    9.4610595703125,
+                    -7.248340129852295,
+                    0.0
+                ],
+                "charge": -1
+            }
+        ],
+        "bonds": [],
+        "sgroups": [
+            {
+                "type": "SUP",
+                "atoms": [
+                    0,
+                    1
+                ],
+                "name": "\"sodium"
+            }
+        ]
+    }
+}
