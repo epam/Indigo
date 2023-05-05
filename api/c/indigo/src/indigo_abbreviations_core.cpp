@@ -96,21 +96,5 @@ namespace indigo
                     abbr.connections = 1;
             }
         }
-
-        //
-        // Session IndigoName instance
-        //
-        static _SessionLocalContainer<IndigoAbbreviations> indigo_abbreviations_self;
-
-        IndigoAbbreviations& indigoGetAbbreviationsInstance()
-        {
-            return indigo_abbreviations_self.getLocalCopy();
-        }
-
-        IndigoAbbreviations& indigoCreateAbbreviationsInstance()
-        {
-            return indigo_abbreviations_self.createOrGetLocalCopy();
-        }
-
     } // namespace abbreviations
 } // namespace indigo

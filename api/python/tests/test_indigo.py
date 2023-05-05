@@ -225,3 +225,13 @@ class TestIndigo(TestIndigoBase):
         self.assertEqual(m_strip.smiles(), "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1")
         self.assertEqual(m.smiles(), "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1")
         self.assertNotEqual(m.smiles(), "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1.[Cl-]")
+
+    def test_copy_rgroups(self) -> None:
+        m_with_rg = self.indigo.loadMolecule(
+            "C%91C.[*:1]%91 |$;;_R1$,RG:_R1={F%91.Cl%92.Br%93.[*:1]%91.[*:1]%92.[*:1]%93 |$;;;_AP1;_AP1;_AP1$|}|"
+        )
+        self.assertEqual(m_with_rg.countRGroups(), 1)
+        m_no_rg = self.indigo.loadMolecule("C%91C.[*:1]%91 |$;;_R1$|")
+        self.assertEqual(m_no_rg.countRGroups(), 0)
+        m_no_rg.copyRGroups(m_with_rg)
+        self.assertEqual(m_no_rg.countRGroups(), 1)
