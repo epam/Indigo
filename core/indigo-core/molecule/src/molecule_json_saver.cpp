@@ -848,7 +848,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         if (mol.isTemplateAtom(i))
         {
             auto pclass = mol.getTemplateAtomClass(i);
-            if ( pclass && strlen(pclass) )
+            if (pclass && strlen(pclass))
             {
                 writer.Key("class");
                 writer.String(pclass);
