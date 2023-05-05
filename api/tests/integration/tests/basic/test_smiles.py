@@ -10,7 +10,6 @@ from env_indigo import *
 
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
-indigo.setOption("ignore-stereochemistry-errors", "1")
 
 m = indigo.loadMolecule("Nc1[nH]cnc-2ncnc1-2")
 print(m.smiles())
@@ -28,6 +27,7 @@ m = indigo.loadMolecule("c1ccc-2c(c1)-c1ccccc-21")
 print(m.smiles())
 print(m.molfile())
 
+indigo.setOption("ignore-stereochemistry-errors", True)
 m = indigo.loadMolecule("F[Po@SP2](Br)(Cl)I")
 print(m.smiles())
 print(m.molfile())
