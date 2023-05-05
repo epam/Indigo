@@ -2940,9 +2940,10 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                 {
                     atom.chirality = std::stoi(match[2]);
                     scanner.skip(3);
-                } else if (std::regex_search(current, match, std::regex("^SP[1-3]")))
+                }
+                else if (std::regex_search(current, match, std::regex("^SP[1-3]")))
                 {
-                    //this type of chirality not supported. just skip it.
+                    // this type of chirality not supported. just skip it.
                     scanner.skip(3);
                 }
                 else if (std::regex_search(current, match, std::regex(R"((TB([1-9]|1[0-9]|20)|OH([1-9]|1\d|2\d|30))(?!\d))")))
