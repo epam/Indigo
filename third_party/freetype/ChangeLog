@@ -495,15 +495,24 @@
 
 2022-02-09  Alexei Podtelezhnikov  <apodtele@gmail.com>
 
+<<<<<<< HEAD
 	[pshinter] Clear reused mask.
 	
 	In PS hinter, memory allocations persist until the module is done.
 	Therefore, we have to clear reused masks.
 	
+=======
+	[pshinter] Clear reused mask.
+	
+	In PS hinter, memory allocations persist until the module is done.
+	Therefore, we have to clear reused masks.
+	
+>>>>>>> 9cbb88a0a7c63ccf8914fef37ba8ad0f9732bc52
 	* src/pshinter/pshrec.c (ps_mask_table_alloc): Clear reused mask.
 
 2022-02-09  Alexei Podtelezhnikov  <apodtele@gmail.com>
 
+<<<<<<< HEAD
 	[pshinter] Use unsigned indices.
 	
 	This reduces casting and eliminates some checks.
@@ -511,6 +520,15 @@
 	* src/pshinter/pshrec.c (ps_mask_test_bit, ps_mask_table_merge,
 	ps_dimension_add_t1stem, ps_hints_t1stem3): Updated.
 	(ps_dimension_add_counter): Updated, unnecessary checks removed.
+=======
+	[pshinter] Use unsigned indices.
+	
+	This reduces casting and eliminates some checks.
+	
+	* src/pshinter/pshrec.c (ps_mask_test_bit, ps_mask_table_merge,
+	ps_dimension_add_t1stem, ps_hints_t1stem3): Updated.
+	(ps_dimension_add_counter): Updated, unnecessary checks removed.
+>>>>>>> 9cbb88a0a7c63ccf8914fef37ba8ad0f9732bc52
 
 2022-02-08  Alexei Podtelezhnikov  <apodtele@gmail.com>
 
@@ -527,12 +545,21 @@
 
 2022-02-08  Alexei Podtelezhnikov  <apodtele@gmail.com>
 
+<<<<<<< HEAD
 	[pshinter] Revise the hint table handling.
 	
 	* src/pshinter/pshrec.c (ps_hint_table_ensure): Remove redundant size
 	check; avoid array zeroing because it is fully initialized when used.
 	(ps_hint_table_alloc): Fix off-by-one comparison and remove another
 	zeroing of the array elements.
+=======
+	[pshinter] Revise the hint table handling.
+	
+	* src/pshinter/pshrec.c (ps_hint_table_ensure): Remove redundant size
+	check; avoid array zeroing because it is fully initialized when used.
+	(ps_hint_table_alloc): Fix off-by-one comparison and remove another
+	zeroing of the array elements.
+>>>>>>> 9cbb88a0a7c63ccf8914fef37ba8ad0f9732bc52
 
 2022-02-06  Werner Lemberg  <wl@gnu.org>
 
@@ -582,10 +609,17 @@
 
 2022-01-31  Alexei Podtelezhnikov  <apodtele@gmail.com>
 
+<<<<<<< HEAD
 	[cache] Partially revert 9870b6c07e2c.
 	
 	Fix crashes reported by Werner.
 	
+=======
+	[cache] Partially revert 9870b6c07e2c.
+	
+	Fix crashes reported by Werner.
+	
+>>>>>>> 9cbb88a0a7c63ccf8914fef37ba8ad0f9732bc52
 	* src/cache/ftcmru.c (FTC_MruList_New): Use `FT_ALLOC` again.
 
 2022-01-31  Werner Lemberg  <wl@gnu.org>

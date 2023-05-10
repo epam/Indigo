@@ -30,7 +30,7 @@ using namespace tinyxml2;
 
 IMPL_ERROR(ReactionCdxmlLoader, "reaction CDXML loader");
 
-ReactionCdxmlLoader::ReactionCdxmlLoader(Scanner& scanner) : _scanner(scanner)
+ReactionCdxmlLoader::ReactionCdxmlLoader(Scanner& scanner, bool is_binary) : _scanner(scanner), _is_binary(is_binary)
 {
     ignore_bad_valence = false;
 }
@@ -65,7 +65,7 @@ void ReactionCdxmlLoader::_initReaction(BaseReaction& rxn)
         throw Error("unknown reaction type: %s", typeid(rxn).name());
 }
 
-void ReactionCdxmlLoader::_parseStep(const XMLAttribute* pAttr)
+void ReactionCdxmlLoader::_parseStep(CDXProperty prop)
 {
     auto reactants_lambda = [this](const std::string& data) {
         std::vector<std::string> frag_ids = split(data, ' ');
@@ -115,41 +115,35 @@ void ReactionCdxmlLoader::_parseStep(const XMLAttribute* pAttr)
                                                                                                  {"ReactionStepArrows", arrows_lambda},
                                                                                                  {"ReactionStepObjectsAboveArrow", agents_lambda},
                                                                                                  {"ReactionStepObjectsBelowArrow", agents_lambda}};
-    MoleculeCdxmlLoader::applyDispatcher(pAttr, cdxml_dispatcher);
+    MoleculeCdxmlLoader::applyDispatcher(prop, cdxml_dispatcher);
 }
 
 void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
 {
     _initReaction(rxn);
-    QS_DEF(Array<char>, buf);
-    _scanner.readAll(buf);
-    buf.push(0);
-    XMLDocument xml;
-    xml.Parse(buf.ptr());
+    std::unique_ptr<CDXReader> cdx_reader = _is_binary ? std::make_unique<CDXReader>(_scanner) : std::make_unique<CDXMLReader>(_scanner);
+    cdx_reader->process();
+    MoleculeCdxmlLoader loader(_scanner, _is_binary);
+    loader.parseCDXMLAttributes(cdx_reader->rootElement().firstProperty());
 
-    if (xml.Error())
-        throw Error("XML parsing error: %s", xml.ErrorStr());
-
-    MoleculeCdxmlLoader loader(_scanner);
-    loader.parseCDXMLAttributes(xml.RootElement()->FirstAttribute());
-
-    for (auto pPageElem = xml.RootElement()->FirstChildElement(); pPageElem; pPageElem = pPageElem->NextSiblingElement())
+    for (auto page_elem = cdx_reader->rootElement().firstChildElement(); page_elem.hasContent(); page_elem = page_elem.nextSiblingElement())
     {
-        if (std::string(pPageElem->Value()).compare("page") == 0)
+        if (page_elem.value() == "page")
         {
-            for (auto pCdxmlElem = pPageElem->FirstChildElement(); pCdxmlElem; pCdxmlElem = pCdxmlElem->NextSiblingElement())
+            for (auto cdxml_elem = page_elem.firstChildElement(); cdxml_elem.hasContent(); cdxml_elem = cdxml_elem.nextSiblingElement())
             {
-                if (std::string(pCdxmlElem->Value()).compare("scheme") == 0)
+                if (cdxml_elem.value() == "scheme")
                 {
-                    for (auto pSchemeElement = pCdxmlElem->FirstChildElement(); pSchemeElement; pSchemeElement = pSchemeElement->NextSiblingElement())
-                        if (std::string(pSchemeElement->Value()).compare("step") == 0)
-                            _parseStep(pSchemeElement->FirstAttribute());
+                    for (auto scheme_element = cdxml_elem.firstChildElement(); scheme_element.hasContent();
+                         scheme_element = scheme_element.nextSiblingElement())
+                        if (scheme_element.value() == "step")
+                            _parseStep(scheme_element.firstProperty());
                 }
                 else
                 {
-                    auto pid = pCdxmlElem->FindAttribute("id");
-                    if (pid)
-                        _cdxml_elements.emplace(atoi(pid->Value()), pCdxmlElem);
+                    auto id = cdxml_elem.findProperty("id");
+                    if (id.hasContent())
+                        _cdxml_elements.emplace(std::stoi(id.value()), cdxml_elem);
                 }
             }
         }
@@ -183,6 +177,20 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         }
     }
 
+    for (auto id : intermediates_ids)
+    {
+        auto elem_it = _cdxml_elements.find(id);
+        if (elem_it != _cdxml_elements.end())
+        {
+            loader.loadMoleculeFromFragment(*_pmol, elem_it->second);
+            if (_pmol->vertexCount())
+                rxn.addIntermediateCopy(*_pmol, 0, 0);
+            else
+                throw Error("Empty product: %d", id);
+            _cdxml_elements.erase(elem_it);
+        }
+    }
+
     for (auto id : agents_ids)
     {
         auto elem_it = _cdxml_elements.find(id);
@@ -199,7 +207,6 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                     int idx = rxn.meta().addMetaObject(text.clone());
                     rxn.addSpecialCondition(idx, Rect2f(Vec2f(text._pos.x, text._pos.y), Vec2f(text._pos.x, text._pos.y)));
                 }
-                _pmol->meta().resetMetaData();
             }
             _cdxml_elements.erase(elem_it);
         }
@@ -212,6 +219,8 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         {
             loader.loadMoleculeFromFragment(*_pmol, elem_it->second);
             rxn.meta().append(_pmol->meta());
+            if (_pmol->vertexCount())
+                rxn.addUndefinedCopy(*_pmol, 0, 0);
             _cdxml_elements.erase(elem_it);
         }
     }
@@ -219,6 +228,8 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
     for (const auto& kvp : _cdxml_elements)
     {
         loader.loadMoleculeFromFragment(*_pmol, kvp.second);
+        if (_pmol->vertexCount())
+            rxn.addUndefinedCopy(*_pmol, 0, 0);
         rxn.meta().append(_pmol->meta());
     }
 }

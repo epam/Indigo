@@ -35,9 +35,10 @@ def indigo_fixture() -> Indigo:
 
 @pytest.fixture
 def elastic_repository_molecule() -> ElasticRepository:
-    return ElasticRepository(
+    x = ElasticRepository(
         IndexName.BINGO_MOLECULE, host="127.0.0.1", port=9200
     )
+    return x
 
 
 @pytest.fixture

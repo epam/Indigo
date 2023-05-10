@@ -865,6 +865,18 @@ bool MoleculeStereocenters::haveAllAndAny()
     return true;
 }
 
+bool MoleculeStereocenters::haveEnhancedStereocenter()
+{
+    for (auto i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
+    {
+        if (_stereocenters.value(i).type == ATOM_OR || _stereocenters.value(i).type == ATOM_AND)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool MoleculeStereocenters::checkSub(BaseMolecule& query, BaseMolecule& target, const int* mapping, bool reset_h_isotopes, Filter* stereocenters_vertex_filter)
 {
     QS_DEF(Array<int>, flags);

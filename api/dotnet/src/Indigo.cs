@@ -301,13 +301,13 @@ namespace com.epam.indigo
         public void setOption(string name, float valuer, float valueg, float valueb)
         {
             setSessionID();
-            checkResult(IndigoLib.indigoSetOptionColor(name, valuer / 255.0f, valueg / 255.0f, valueb / 255.0f));
+            checkResult(IndigoLib.indigoSetOptionColor(name, valuer, valueg, valueb));
         }
 
         public void setOption(string name, double valuer, double valueg, double valueb)
         {
             setSessionID();
-            checkResult(IndigoLib.indigoSetOptionColor(name, (float) valuer / 255.0f, (float) valueg / 255.0f, (float) valueb / 255.0f));
+            checkResult(IndigoLib.indigoSetOptionColor(name, (float) valuer, (float) valueg, (float) valueb));
         }
 
         public void setOption(string name, Color value)

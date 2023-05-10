@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.epam.indigo</groupId>
     <artifactId>bingo-elastic</artifactId>
-    <version>1.8.0-rc.1</version>
+    <version>1.12.0-dev.1</version>
     <packaging>jar</packaging>
 
     <name>Bingo Elastic</name>
@@ -53,18 +53,18 @@
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
-            <version>7.16.2</version>
+            <version>7.13.0</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.8.2</version>
+            <version>5.9.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>1.16.2</version>
+            <version>1.17.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -87,6 +87,9 @@
                 <version>2.22.2</version>
                 <configuration>
                     <forkCount>0</forkCount>
+                    <excludes>
+                        <exclude>com.epam.indigo.BaseLocalOpensearchTest</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>

@@ -37,7 +37,7 @@ namespace indigo
     public:
         DECL_ERROR;
 
-        ReactionCdxmlLoader(Scanner& scanner);
+        ReactionCdxmlLoader(Scanner& scanner, bool is_binar = false);
         ~ReactionCdxmlLoader();
 
         void loadReaction(BaseReaction& rxn);
@@ -50,19 +50,18 @@ namespace indigo
         std::set<int> arrows_ids;
         std::set<int> agents_ids;
 
-    protected:
-        Scanner& _scanner;
-
     private:
         ReactionCdxmlLoader(const ReactionCdxmlLoader&); // no implicit copy
         void _initReaction(BaseReaction& rxn);
-        void _parseStep(const tinyxml2::XMLAttribute* pAttr);
+        void _parseStep(CDXProperty prop);
         Reaction* _prxn;
         QueryReaction* _pqrxn;
         Molecule _mol;
         QueryMolecule _qmol;
         BaseMolecule* _pmol;
-        std::map<int, tinyxml2::XMLElement*> _cdxml_elements;
+        std::map<int, CDXElement> _cdxml_elements;
+        Scanner& _scanner;
+        bool _is_binary;
     };
 
 }; // namespace indigo

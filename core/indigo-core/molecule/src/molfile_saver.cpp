@@ -95,6 +95,17 @@ void MolfileSaver::saveQueryMolecule(QueryMolecule& mol)
     _saveMolecule(mol, true);
 }
 
+void MolfileSaver::_handleCIP(BaseMolecule& mol)
+{
+    MoleculeCIPCalculator mcc;
+    mcc.removeCIPSgroups(mol); // remove old CIP-Sroups
+
+    if (add_stereo_desc && mcc.addCIPStereoDescriptors(mol))
+    {
+        mcc.addCIPSgroups(mol);
+    }
+}
+
 void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
 {
     LocaleGuard locale_guard;
@@ -112,14 +123,7 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
     {
         // auto-detect the format: save to v3000 molfile only
         // if v2000 is not enough
-        _v2000 = true;
-
-        if (mol.hasHighlighting())
-            _v2000 = false;
-        else if (!mol.stereocenters.haveAllAbsAny() && !mol.stereocenters.haveAllAndAny())
-            _v2000 = false;
-        else if (mol.vertexCount() > 999 || mol.edgeCount() > 999)
-            _v2000 = false;
+        _v2000 = !(mol.hasHighlighting() || mol.stereocenters.haveEnhancedStereocenter() || (mol.vertexCount() > 999 || mol.edgeCount() > 999));
     }
 
     bool rg2000 = (_v2000 && mol.rgroups.getRGroupCount() > 0);
@@ -146,9 +150,6 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
         _output.writeStringCR("$END HDR");
         _output.writeStringCR("$CTAB");
     }
-
-    MoleculeCIPCalculator mcc;
-    mcc.updateCIPStereoDescriptors(mol, add_stereo_desc);
 
     if (_v2000)
     {
@@ -338,6 +339,7 @@ void MolfileSaver::_writeMultiString(Output& output, const char* string, int len
 
 void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 {
+    _handleCIP(mol);
     QueryMolecule* qmol = 0;
 
     if (query)
@@ -794,7 +796,12 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     }
                 }
                 if (sup.subscript.size() > 1)
-                    out.printf(" LABEL=%s", sup.subscript.ptr());
+                {
+                    if (sup.subscript.find(' ') > -1)
+                        out.printf(" LABEL=\"%s\"", sup.subscript.ptr());
+                    else
+                        out.printf(" LABEL=%s", sup.subscript.ptr());
+                }
                 if (sup.sa_class.size() > 1)
                     out.printf(" CLASS=%s", sup.sa_class.ptr());
                 if (sup.contracted == 0)
@@ -905,7 +912,12 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 else
                     out.printf(" CONNECT=EU");
                 if (ru.subscript.size() > 1)
-                    out.printf(" LABEL=%s", ru.subscript.ptr());
+                {
+                    if (ru.subscript.find(' ') > -1)
+                        out.printf(" LABEL=\"%s\"", ru.subscript.ptr());
+                    else
+                        out.printf(" LABEL=%s", ru.subscript.ptr());
+                }
                 _writeMultiString(output, buf.ptr(), buf.size());
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
@@ -1063,6 +1075,7 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
 
 void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 {
+    _handleCIP(mol);
     QueryMolecule* qmol = 0;
 
     if (query)
@@ -1601,7 +1614,12 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 Superatom& superatom = (Superatom&)sgroup;
 
                 if (superatom.subscript.size() > 1)
-                    output.printfCR("M  SMT %3d %s", superatom.original_group, superatom.subscript.ptr());
+                {
+                    if (superatom.subscript.find(' ') > -1)
+                        output.printfCR("M  SMT %3d \"%s\"", superatom.original_group, superatom.subscript.ptr());
+                    else
+                        output.printfCR("M  SMT %3d %s", superatom.original_group, superatom.subscript.ptr());
+                }
                 if (superatom.sa_class.size() > 1)
                     output.printfCR("M  SCL %3d %s", superatom.original_group, superatom.sa_class.ptr());
                 if (superatom.bond_connections.size() > 0)
@@ -1650,7 +1668,12 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 RepeatingUnit& sru = (RepeatingUnit&)sgroup;
 
                 if (sru.subscript.size() > 1)
-                    output.printfCR("M  SMT %3d %s", sru.original_group, sru.subscript.ptr());
+                {
+                    if (sru.subscript.find(' ') > -1)
+                        output.printfCR("M  SMT %3d \"%s\"", sru.original_group, sru.subscript.ptr());
+                    else
+                        output.printfCR("M  SMT %3d %s", sru.original_group, sru.subscript.ptr());
+                }
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
             {
@@ -2007,9 +2030,7 @@ void MolfileSaver::_writeAttachmentValues2000(Output& output, BaseMolecule& frag
 bool MolfileSaver::_checkAttPointOrder(BaseMolecule& mol, int rsite)
 {
     const Vertex& vertex = mol.getVertex(rsite);
-    int i;
-
-    for (i = 0; i < vertex.degree() - 1; i++)
+    for (int i = 0; i < vertex.degree() - 1; i++)
     {
         int cur = mol.getRSiteAttachmentPointByOrder(rsite, i);
         int next = mol.getRSiteAttachmentPointByOrder(rsite, i + 1);

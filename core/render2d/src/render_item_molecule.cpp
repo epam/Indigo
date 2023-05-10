@@ -109,6 +109,11 @@ void RenderItemMolecule::init()
         auto& core = _factory.getItemFragment(_core);
         core.mol = mol;
         core.refAtom = refAtom;
+        core.aam = &mol->getAAMArray();
+        core.reactingCenters = &mol->getReactingCenterArray();
+        core.inversionArray = &mol->getInversionArray();
+        core.exactChangeArray = &mol->getExactChangeArray();
+
         if (!mol->meta().metaData().size())
         {
             core.init();

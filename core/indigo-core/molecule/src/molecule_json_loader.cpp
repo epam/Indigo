@@ -54,7 +54,8 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
 }
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
-    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false)
+    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), ignore_no_chiral_flag(false),
+      skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0)
 {
 }
 
@@ -412,6 +413,14 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             hcounts[atom_idx] = a["hCount"].GetInt();
         }
 
+        if (a.HasMember("implicitHCount"))
+        {
+            if (_pmol)
+                _pmol->setImplicitH(atom_idx, a["implicitHCount"].GetInt());
+            else
+                throw Error("implicitHCount is allowed only for molecules");
+        }
+
         if (a.HasMember("invRet"))
         {
             mol.reaction_atom_inversion[atom_idx] = a["invRet"].GetInt();
@@ -478,6 +487,14 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
         if (a.HasMember("alias"))
         {
             mol.aliases.findOrInsert(atom_idx).readString(a["alias"].GetString(), true);
+        }
+
+        if (a.HasMember("cip"))
+        {
+            std::string cip = a["cip"].GetString();
+            auto cip_it = KStringToCIP.find(cip);
+            if (cip_it != KStringToCIP.end())
+                mol.setAtomCIP(atom_idx, cip_it->second);
         }
     }
 
@@ -575,6 +592,15 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
                     break;
                 }
             }
+
+            if (b.HasMember("cip"))
+            {
+                std::string cip = b["cip"].GetString();
+                auto cip_it = KStringToCIP.find(cip);
+                if (cip_it != KStringToCIP.end())
+                    mol.setBondCIP(bond_idx, cip_it->second);
+            }
+
             if (rcenter)
             {
                 mol.reaction_bond_reacting_center[i] = rcenter;

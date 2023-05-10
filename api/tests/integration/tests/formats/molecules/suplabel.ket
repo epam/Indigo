@@ -1,0 +1,43 @@
+﻿{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "Cl",
+                "location": [
+                    12.4,
+                    -7.4750000000000005,
+                    0
+                ],
+                "charge": -1
+            },
+            {
+                "label": "Na",
+                "location": [
+                    11.4,
+                    -7.625,
+                    0
+                ],
+                "charge": -1
+            }
+        ],
+        "sgroups": [
+            {
+                "type": "SUP",
+                "atoms": [
+                    0,
+                    1
+                ],
+                "name": "sodium chloride",
+                "id": 0
+            }
+        ]
+    }
+}

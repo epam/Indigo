@@ -35,7 +35,8 @@ public class IndigoRecord {
     // Error handler called when IndigoRecord cannot be created
     protected ErrorHandler errorHandler;
 
-    public IndigoRecord() {}
+    public IndigoRecord() {
+    }
 
     public String getInternalID() {
         return internalID;
@@ -81,7 +82,7 @@ public class IndigoRecord {
         return new Field(value);
     }
 
-    public abstract static class IndigoRecordBuilder <T extends IndigoRecord> {
+    public abstract static class IndigoRecordBuilder<T extends IndigoRecord> {
         protected final List<Consumer<T>> operations;
 
         public IndigoRecordBuilder() {
@@ -159,6 +160,7 @@ public class IndigoRecord {
 
         /**
          * Build method should be
+         *
          * @return
          * @throws BingoElasticException
          */

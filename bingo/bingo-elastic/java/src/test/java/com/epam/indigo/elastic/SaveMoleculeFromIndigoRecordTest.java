@@ -14,6 +14,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -37,7 +38,7 @@ public class SaveMoleculeFromIndigoRecordTest {
         ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepositoryBuilder<>();
         repository = builder
                 .withIndexName(NamingConstants.BINGO_MOLECULES)
-                .withHostName(elasticsearchContainer.getHost())
+                .withHostsNames(Collections.singletonList(elasticsearchContainer.getHost()))
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
                 .withRefreshInterval("1s")

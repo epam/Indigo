@@ -9,7 +9,9 @@ extern "C"
 #include "catalog/pg_type.h"
 #include "executor/spi.h"
 #include "utils/builtins.h"
+#if PG_VERSION_NUM / 100 < 1500
 #include "utils/int8.h"
+#endif
 }
 
 #include "bingo_pg_fix_post.h"
@@ -140,7 +142,11 @@ public:
                 BINGO_PG_TRY
                 {
                     data.reset(new int64);
+#if PG_VERSION_NUM / 100 < 1500
                     scanint8(str, false, data.get());
+#else
+                    *data = pg_strtoint64(str);
+#endif
                 }
                 BINGO_PG_HANDLE(data.reset(0); throw BingoPgError("error while converting to int64: %s", message));
             }
@@ -182,7 +188,11 @@ public:
                 BINGO_PG_TRY
                 {
                     data.reset(new int32);
+#if PG_VERSION_NUM / 100 < 1500
                     *data = pg_atoi(str2.ptr(), sizeof(int32), 0);
+#else
+                    *data = pg_strtoint32(str2.ptr());
+#endif
                 }
                 BINGO_PG_HANDLE(data.reset(0); throw BingoPgError("error while converting to int32: %s", message));
             }

@@ -16,7 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "molecule/molecule_auto_loader.h"
+#include <regex>
+
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "gzip/gzip_scanner.h"
@@ -25,6 +26,7 @@
 #include "molecule/icm_saver.h"
 #include "molecule/inchi_wrapper.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_auto_loader.h"
 #include "molecule/molecule_cdx_loader.h"
 #include "molecule/molecule_cdxml_loader.h"
 #include "molecule/molecule_json_loader.h"
@@ -88,9 +90,11 @@ void MoleculeAutoLoader::loadMolecule(BaseMolecule& mol)
 {
     _loadMolecule(mol);
     if (!mol.isQueryMolecule())
+    {
         mol.asMolecule().setIgnoreBadValenceFlag(ignore_bad_valence);
-    if (dearomatize_on_load)
-        mol.dearomatize(arom_options);
+        if (dearomatize_on_load)
+            mol.dearomatize(arom_options);
+    }
 }
 
 bool MoleculeAutoLoader::tryMDLCT(Scanner& scanner, Array<char>& outbuf)
@@ -179,7 +183,6 @@ void MoleculeAutoLoader::readAllDataToString(Scanner& scanner, Array<char>& data
             GZipScanner gzscanner(scanner);
             gzscanner.readAll(dataBuf);
             dataBuf.push('\0');
-
             return;
         }
     }
@@ -197,19 +200,27 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
     // chack for base64
     uint8_t base64_id[] = "base64::";
     std::unique_ptr<BufferScanner> base64_scanner;
+    Array<char> base64_data;
     if (local_scanner->length() >= (sizeof(base64_id) - 1))
     {
         byte id[sizeof(base64_id) - 1];
         long long pos = local_scanner->tell();
         local_scanner->readCharsFix(sizeof(base64_id) - 1, (char*)id);
-        if (std::equal(std::begin(id), std::end(id), std::begin(base64_id)))
+        bool is_base64 = (std::equal(std::begin(id), std::end(id), std::begin(base64_id)));
+        if (!is_base64)
+            local_scanner->seek(pos, SEEK_SET);
+
+        std::string base64_str;
+        local_scanner->readAll(base64_str);
+        base64_str.erase(std::remove_if(base64_str.begin(), base64_str.end(), [](char c) { return c == '\n' || c == '\r'; }), base64_str.end());
+        if (validate_base64(base64_str))
         {
-            Array<char> base64_data;
-            local_scanner->readAll(base64_data);
+            base64_data.copy(base64_str.data(), base64_str.size());
             base64_scanner = std::make_unique<BufferScanner>(base64_data, true);
             local_scanner = base64_scanner.get();
         }
         local_scanner->seek(pos, SEEK_SET);
+        _scanner->seek(pos, SEEK_SET);
     }
 
     // check for GZip format
@@ -240,18 +251,13 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
         }
     }
 
-    // check for CDX format
     {
-        if (local_scanner->findWord("VjCD0100"))
+        if (local_scanner->findWord(kCDX_HeaderString))
         {
-            MoleculeCdxLoader loader(*local_scanner);
+            local_scanner->seek(kCDX_HeaderLength, SEEK_CUR);
+            MoleculeCdxmlLoader loader(*local_scanner, true);
             loader.stereochemistry_options = stereochemistry_options;
-            if (query)
-                throw Error("CDX queries not supported yet");
-            loader.loadMolecule(mol.asMolecule());
-
-            properties.copy(loader.properties);
-
+            loader.loadMolecule(mol);
             return;
         }
     }
@@ -325,8 +331,6 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
         _scanner->skipSpace();
         if (_scanner->lookNext() == '<' && _scanner->findWord("CDXML"))
         {
-            if (_scanner->findWord("<arrow"))
-                throw Error("CDXML: not a molecule. Arrows found.");
             _scanner->seek(pos, SEEK_SET);
             MoleculeCdxmlLoader loader(*_scanner);
             loader.stereochemistry_options = stereochemistry_options;

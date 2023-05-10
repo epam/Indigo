@@ -21,6 +21,7 @@ class InputFormatSchema(Schema):
         "chemical/x-inchi-aux",
         "chemical/x-chemaxon-cxsmiles",
         "chemical/x-cdxml",
+        "chemical/x-cdx",
     )
     input_format = fields.Str(missing=None, validate=OneOf(struct_mime_types))
 

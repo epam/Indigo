@@ -1193,6 +1193,18 @@ CEXPORT int indigoCountRGroups(int molecule)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoCopyRGroups(int molecule_from, int molecule_to)
+{
+    INDIGO_BEGIN
+    {
+        BaseMolecule& mol_from = self.getObject(molecule_from).getBaseMolecule();
+        BaseMolecule& mol_to = self.getObject(molecule_to).getBaseMolecule();
+        mol_from.rgroups.copyRGroupsFromMolecule(mol_to.rgroups);
+        return 0;
+    }
+    INDIGO_END(-1);
+}
+
 bool IndigoRGroupsIter::hasNext()
 {
     bool result = false;

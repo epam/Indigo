@@ -90,6 +90,7 @@ void Indigo::init()
     molfile_saving_add_stereo_desc = false;
 
     json_saving_add_stereo_desc = false;
+    json_saving_pretty = false;
 
     molfile_saving_add_implicit_h = true;
 
@@ -158,12 +159,14 @@ void Indigo::initMolfileSaver(MolfileSaver& saver)
 
 void Indigo::initMoleculeJsonSaver(MoleculeJsonSaver& saver)
 {
-    saver._add_stereo_desc = json_saving_add_stereo_desc;
+    saver.add_stereo_desc = json_saving_add_stereo_desc;
+    saver.pretty_json = json_saving_pretty;
 }
 
 void Indigo::initReactionJsonSaver(ReactionJsonSaver& saver)
 {
-    saver._add_stereo_desc = json_saving_add_stereo_desc;
+    saver.add_stereo_desc = json_saving_add_stereo_desc;
+    saver.pretty_json = json_saving_pretty;
 }
 
 void Indigo::initRxnfileSaver(RxnfileSaver& saver)
@@ -263,7 +266,6 @@ CEXPORT qword indigoAllocSessionId()
     sf::xlock_safe_ptr(IndigoLocaleHandler::handler())->setLocale(LC_NUMERIC, "C");
     IndigoOptionManager::getIndigoOptionManager().createOrGetLocalCopy(id);
     IndigoOptionHandlerSetter::setBasicOptionHandlers(id);
-    abbreviations::indigoCreateAbbreviationsInstance();
 #ifdef INDIGO_DEBUG
     std::stringstream ss;
     ss << "IndigoSession(" << id << ")";
@@ -573,3 +575,12 @@ CEXPORT qword indigoDbgProfilingGetCounter(const char* name, int whole_session)
     }
     INDIGO_END(-1);
 }
+
+auto Indigo::getAbbreviations() -> const abbreviations::IndigoAbbreviations&
+{
+    if (_abbreviations == nullptr)
+    {
+        _abbreviations = std::make_unique<abbreviations::IndigoAbbreviations>();
+    }
+    return *_abbreviations;
+};
