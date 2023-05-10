@@ -215,7 +215,6 @@ else()
 #            PUBLIC -DCAIRO_WIN32_STATIC_BUILD)
     endif()
 endif()
-<<<<<<< HEAD
 #if(APPLE)
 #    target_link_libraries(${PROJECT_NAME} PUBLIC "-framework CoreFoundation -framework ApplicationServices")
 #endif()
@@ -226,23 +225,6 @@ endif()
 #    target_link_libraries(${PROJECT_NAME} PUBLIC freetype fontconfig)
 #endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC freetype)
-=======
-if(APPLE)
-    target_link_libraries(${PROJECT_NAME} PUBLIC "-framework CoreFoundation -framework ApplicationServices")
-endif()
-if(WIN32)
-    target_link_libraries(${PROJECT_NAME} PUBLIC msimg32 gdi32)
-endif()
-
-if (EMSCRIPTEN)
-    target_link_libraries(${PROJECT_NAME} PUBLIC freetype)
-else()
-    if (UNIX AND NOT APPLE)
-        target_link_libraries(${PROJECT_NAME} PUBLIC freetype fontconfig)
-        target_include_directories(${PROJECT_NAME} PRIVATE /usr/include/freetype2)
-    endif()
-endif()
->>>>>>> 9cbb88a0a7c63ccf8914fef37ba8ad0f9732bc52
 
 message(STATUS "Using local version of ${PROJECT_NAME}")
 
