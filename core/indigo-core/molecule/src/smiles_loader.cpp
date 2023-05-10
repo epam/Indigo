@@ -621,7 +621,8 @@ void SmilesLoader::_readOtherStuff()
                                 {
                                     std::unique_ptr<QueryMolecule::Atom> atom(_qmol->releaseAtom(i));
                                     atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
-                                    _qmol->resetAtom(i, QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
+                                    _qmol->resetAtom(
+                                        i, QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
                                 }
                             }
                         }
