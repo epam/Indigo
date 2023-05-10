@@ -151,12 +151,12 @@ namespace indigo
         void cairoCheckStatus() const;
         void cairoCheckSurfaceStatus() const;
 
-//#ifdef _WIN32
-//        cairo_surface_t* createWin32Surface();
-//        cairo_surface_t* createWin32PrintingSurfaceForHDC();
-//        cairo_surface_t* createWin32PrintingSurfaceForMetafile(bool& isLarge);
-//        void storeAndDestroyMetafile(bool discard);
-//#endif
+        // #ifdef _WIN32
+        //         cairo_surface_t* createWin32Surface();
+        //         cairo_surface_t* createWin32PrintingSurfaceForHDC();
+        //         cairo_surface_t* createWin32PrintingSurfaceForMetafile(bool& isLarge);
+        //         void storeAndDestroyMetafile(bool discard);
+        // #endif
 
         void fontsClear();
         void fontsInit();
@@ -213,8 +213,8 @@ namespace indigo
         cairo_t* _cr;
         cairo_surface_t* _surface;
         cairo_font_face_t* _cairo_face;
-        FT_Library  library;
-        FT_Face     face;
+        FT_Library library;
+        FT_Face face;
         void* _meta_hdc;
 
 #ifdef RENDER_USE_FONT_MANAGER

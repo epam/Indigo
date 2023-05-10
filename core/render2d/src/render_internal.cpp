@@ -1683,12 +1683,12 @@ void MoleculeRenderInternal::_initAtomData()
             ad.color = CWC_BASE;
             ad.pseudo.readString(bm.getPseudoAtom(i), true);
         }
-//        if (bm.aliases.find(i))
-//        {
-//            ad.type = AtomDesc::TYPE_PSEUDO;
-//            ad.pseudo.readString(bm.aliases.at(i).ptr(), true);
-//            ad.color = _opt.aliasesColoring ? ad.color = _cw.getElementColor(atomNumber) : CWC_BASE;
-//        }
+        //        if (bm.aliases.find(i))
+        //        {
+        //            ad.type = AtomDesc::TYPE_PSEUDO;
+        //            ad.pseudo.readString(bm.aliases.at(i).ptr(), true);
+        //            ad.color = _opt.aliasesColoring ? ad.color = _cw.getElementColor(atomNumber) : CWC_BASE;
+        //        }
         else if (bm.isTemplateAtom(i))
         {
             ad.type = AtomDesc::TYPE_PSEUDO;
@@ -4254,11 +4254,11 @@ void MoleculeRenderInternal::_precalcScale()
             carr.readString(bm.getTemplateAtom(i), true);
             output_length = carr.size();
         }
-//        else if (bm.aliases.size() > 0 && bm.aliases.find(i))
-//        {
-//            carr.readString(bm.aliases.at(i).ptr(), true);
-//            output_length = carr.size();
-//        }
+        //        else if (bm.aliases.size() > 0 && bm.aliases.find(i))
+        //        {
+        //            carr.readString(bm.aliases.at(i).ptr(), true);
+        //            output_length = carr.size();
+        //        }
         else if (bm.isRSite(i))
         {
             output_length = 0;
