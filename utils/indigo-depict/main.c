@@ -854,6 +854,7 @@ int main(int argc, char* argv[])
     indigoSetOption("ignore-stereochemistry-errors", "on");
     indigoSetOption("molfile-saving-mode", "3000");
     indigoSetOptionBool("json-saving-pretty", "on");
+    indigoSetOptionBool("ignore-no-chiral-flag", "on");
 
     if (parseParams(&p, argc, argv) < 0)
         return -1;
