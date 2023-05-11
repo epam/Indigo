@@ -61,7 +61,6 @@ assert m.getAtom(7).stereocenterType() == indigo.OR
 assert m.getAtom(10).stereocenterType() == indigo.OR
 
 # test 4
-print("# test 4")
 m = indigo.loadMolecule(
     "C[C@@H]1[C@H](C)C(C2O[C@](F)(C)[C@]2(C)C)CN1 |&1:1,o1:7,10|"
 )
