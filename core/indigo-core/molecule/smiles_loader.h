@@ -19,11 +19,14 @@
 #ifndef __smiles_loader__
 #define __smiles_loader__
 
+#include <unordered_set>
+
 #include "base_cpp/exception.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
+
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -65,6 +68,13 @@ namespace indigo
         StereocentersOptions stereochemistry_options;
         bool ignore_cistrans_errors;
         bool ignore_bad_valence;
+        int treat_stereo_as; // treat stereo as 'ucf', 'abs', 'rel', 'rac', 'any'
+                             //  = 0 ('ucf') - use chiral flag (default value)
+                             //  = ATOM_ABS ('abs')
+                             //  = ATOM_OR  ('rel')
+                             //  = ATOM_AND ('rac')
+                             //  = ATOM_ANY ('any')
+        bool ignore_no_chiral_flag{false};
 
     protected:
         enum
@@ -187,6 +197,7 @@ namespace indigo
 
     private:
         SmilesLoader(const SmilesLoader&); // no implicit copy
+        std::unordered_set<int> _overtly_defined_abs;
     };
 
 } // namespace indigo

@@ -38,6 +38,7 @@ SmilesLoader::SmilesLoader(Scanner& scanner) : _scanner(scanner)
     ignore_closing_bond_direction_mismatch = false;
     ignore_cistrans_errors = false;
     ignore_bad_valence = false;
+    ignore_no_chiral_flag = false;
     _mol = 0;
     _qmol = 0;
     _bmol = 0;
@@ -340,8 +341,10 @@ void SmilesLoader::_readOtherStuff()
             {
                 int idx = _scanner.readUnsigned();
 
-                if (_bmol->stereocenters.exists(idx))
+                if (_bmol->stereocenters.exists(idx)){
                     _bmol->stereocenters.setType(idx, MoleculeStereocenters::ATOM_ABS, 0);
+                    _overtly_defined_abs.insert(idx);
+                }
                 else if (!stereochemistry_options.ignore_errors)
                     throw Error("atom %d is not a stereocenter", idx);
 
@@ -771,8 +774,23 @@ void SmilesLoader::_readOtherStuff()
                 for (int i = s.begin(); i != s.end(); i = s.next(i))
                 {
                     int atom = s.getAtomIndex(i);
-                    if (s.getType(atom) == MoleculeStereocenters::ATOM_ABS)
+
+                    std::cout << std::endl;
+                    std::cout << " atom, MoleculeStereocenters before : " << s.getType(atom) << std::endl;
+                    std::cout << " atom.chirality : " << _atoms[atom].chirality << std::endl;
+
+                    std::cout << "_bmol->getChiralFlag() : " << _bmol->getChiralFlag() << std::endl;
+                    std::cout << "ignore_no_chiral_flag : " << ignore_no_chiral_flag << std::endl;
+
+                    if (s.getType(atom) == MoleculeStereocenters::ATOM_ABS
+                        // && _bmol->getChiralFlag()
+                        //&& _bmol->
+                        && !ignore_no_chiral_flag
+                        //&& !_chiral && treat_stereo_as == 0
+                        && _overtly_defined_abs.find(atom) == _overtly_defined_abs.end())
                         s.setType(atom, MoleculeStereocenters::ATOM_AND, 1);
+                    std::cout << "_bmol->getChiralFlag() : " << _bmol->getChiralFlag() << std::endl;
+                    std::cout << "\n atom, MoleculeStereocenters after : " << s.getType(atom) << std::endl;
                 }
             }
         }

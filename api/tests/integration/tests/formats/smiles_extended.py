@@ -16,6 +16,7 @@ indigo = Indigo()
 indigo.setOption("ignore-no-chiral-flag", False)
 
 # test 1
+print("# test 1")
 m = indigo.loadMolecule(
     "C[C@@H]1[C@H](C)C(C2O[C@](F)(C)[C@]2(C)C)CN1 |&1:1,a:2,o1:7,10,r|"
 )
@@ -35,7 +36,10 @@ for atom in m.iterateStereocenters():
 
 # getAtom - Molecule method returns atom by index
 # assert m.getAtom(10).stereocenterType() == indigo.OR #- asserted
-
+# ATOM_ANY = 1,
+# ATOM_AND = 2,
+# ATOM_OR = 3,
+# ATOM_ABS = 4
 assert m.getAtom(1).stereocenterType() == indigo.AND
 assert m.getAtom(2).stereocenterType() == indigo.ABS
 assert m.getAtom(7).stereocenterType() == indigo.OR
@@ -47,6 +51,7 @@ assert m.getAtom(10).stereocenterType() == indigo.OR
 # atom index = 10 stereo = 2 OR
 
 # test 2
+print("# test 2")
 m = indigo.loadMolecule(
     "C[C@@H]1[C@H](C)C(C2O[C@](F)(C)[C@]2(C)C)CN1 |&1:1,a:2,o1:7,10|"
 )
@@ -67,7 +72,17 @@ assert m.getAtom(10).stereocenterType() == indigo.OR
 # atom index = 7 stereo = 2 OR
 # atom index = 10 stereo = 2 OR
 
+# ATOM_ANY = 1,
+# ATOM_AND = 2,
+# ATOM_OR = 3,
+# ATOM_ABS = 4
+# atom index = 0 stereo = 3 AND
+# atom index = 1 stereo = 1 ABS
+# atom index = 7 stereo = 2 OR
+# atom index = 10 stereo = 2 OR
+
 # test 3
+print("# test 3")
 m = indigo.loadMolecule(
     "C[C@@H]1[C@H](C)C(C2O[C@](F)(C)[C@]2(C)C)CN1 |&1:1,o1:7,10,r|"
 )
@@ -78,7 +93,10 @@ for atom in m.iterateStereocenters():
             atom.index(), atom.stereocenterType()
         )
     )
-
+# ATOM_ANY = 1,
+# ATOM_AND = 2,
+# ATOM_OR = 3,
+# ATOM_ABS = 4
 assert m.getAtom(1).stereocenterType() == indigo.AND
 assert m.getAtom(2).stereocenterType() == indigo.AND
 assert m.getAtom(7).stereocenterType() == indigo.OR
@@ -90,6 +108,7 @@ assert m.getAtom(10).stereocenterType() == indigo.OR
 # atom index = 10 stereo = 2 OR
 
 # test 4
+print("# test 4")
 m = indigo.loadMolecule(
     "C[C@@H]1[C@H](C)C(C2O[C@](F)(C)[C@]2(C)C)CN1 |&1:1,o1:7,10|"
 )
@@ -113,6 +132,7 @@ assert m.getAtom(10).stereocenterType() == indigo.OR
 
 indigo.setOption("ignore-no-chiral-flag", True)
 # test 5
+print("# test 5")
 m = indigo.loadMolecule(
     "C[C@@H]1[C@H](C)C(C2O[C@](F)(C)[C@]2(C)C)CN1 |&1:1,a:2,o1:7,10,r|"
 )
@@ -135,6 +155,7 @@ assert m.getAtom(10).stereocenterType() == indigo.OR
 # atom index = 10 stereo = 2 OR
 
 # test 6
+print("# test 6")
 m = indigo.loadMolecule(
     "C[C@@H]1[C@H](C)C(C2O[C@](F)(C)[C@]2(C)C)CN1 |&1:1,a:2,o1:7,10|"
 )
@@ -156,6 +177,7 @@ assert m.getAtom(10).stereocenterType() == indigo.OR
 # atom index = 10 stereo = 2 OR
 
 # test 7
+print("# test 7")
 m = indigo.loadMolecule(
     "C[C@@H]1[C@H](C)C(C2O[C@](F)(C)[C@]2(C)C)CN1 |&1:1,o1:7,10,r|"
 )
@@ -167,6 +189,10 @@ for atom in m.iterateStereocenters():
         )
     )
 
+# ATOM_ANY = 1,
+# ATOM_AND = 2,
+# ATOM_OR = 3,
+# ATOM_ABS = 4
 assert m.getAtom(1).stereocenterType() == indigo.AND
 assert m.getAtom(2).stereocenterType() == indigo.ABS
 assert m.getAtom(7).stereocenterType() == indigo.OR
@@ -178,6 +204,7 @@ assert m.getAtom(10).stereocenterType() == indigo.OR
 # atom index = 10 stereo = 2 OR
 
 # test 8
+print("# test 8")
 m = indigo.loadMolecule(
     "C[C@@H]1[C@H](C)C(C2O[C@](F)(C)[C@]2(C)C)CN1 |&1:1,o1:7,10|"
 )

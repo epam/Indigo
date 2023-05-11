@@ -343,6 +343,7 @@ Molecule& IndigoSmilesMolecule::getMolecule()
 
         loader.stereochemistry_options = self.stereochemistry_options;
         loader.ignore_bad_valence = self.ignore_bad_valence;
+        loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
 
         loader.loadMolecule(_mol);
         _loaded = true;
@@ -385,6 +386,7 @@ Reaction& IndigoSmilesReaction::getReaction()
 
         loader.stereochemistry_options = self.stereochemistry_options;
         loader.ignore_bad_valence = self.ignore_bad_valence;
+        loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
 
         loader.loadReaction(_rxn);
         _loaded = true;
