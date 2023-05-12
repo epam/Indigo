@@ -1813,3 +1813,36 @@ V0074
   4 14  1  0  0  0  0
 M  END
 
+****** Extended smiles options  *******
+atom index = 1 stereo = 3
+atom index = 2 stereo = 1
+atom index = 7 stereo = 2
+atom index = 10 stereo = 2
+atom index = 1 stereo = 3
+atom index = 2 stereo = 1
+atom index = 7 stereo = 2
+atom index = 10 stereo = 2
+atom index = 1 stereo = 3
+atom index = 2 stereo = 3
+atom index = 7 stereo = 2
+atom index = 10 stereo = 2
+atom index = 1 stereo = 3
+atom index = 2 stereo = 1
+atom index = 7 stereo = 2
+atom index = 10 stereo = 2
+atom index = 1 stereo = 3
+atom index = 2 stereo = 1
+atom index = 7 stereo = 2
+atom index = 10 stereo = 2
+atom index = 1 stereo = 3
+atom index = 2 stereo = 1
+atom index = 7 stereo = 2
+atom index = 10 stereo = 2
+atom index = 1 stereo = 3
+atom index = 2 stereo = 1
+atom index = 7 stereo = 2
+atom index = 10 stereo = 2
+atom index = 1 stereo = 3
+atom index = 2 stereo = 1
+atom index = 7 stereo = 2
+atom index = 10 stereo = 2
