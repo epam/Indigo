@@ -341,8 +341,10 @@ void SmilesLoader::_readOtherStuff()
             {
                 int idx = _scanner.readUnsigned();
 
-                if (_bmol->stereocenters.exists(idx))
+                if (_bmol->stereocenters.exists(idx)){
                     _bmol->stereocenters.setType(idx, MoleculeStereocenters::ATOM_ABS, 0);
+                    _overtly_defined_abs.insert(idx);
+                }
                 else if (!stereochemistry_options.ignore_errors)
                     throw Error("atom %d is not a stereocenter", idx);
 
@@ -772,7 +774,8 @@ void SmilesLoader::_readOtherStuff()
                 for (int i = s.begin(); i != s.end(); i = s.next(i))
                 {
                     int atom = s.getAtomIndex(i);
-                    if (s.getType(atom) == MoleculeStereocenters::ATOM_ABS)
+                    if (s.getType(atom) == MoleculeStereocenters::ATOM_ABS && !ignore_no_chiral_flag &&
+                        _overtly_defined_abs.find(atom) == _overtly_defined_abs.end())
                         s.setType(atom, MoleculeStereocenters::ATOM_AND, 1);
                 }
             }

@@ -19,6 +19,8 @@
 #ifndef __smiles_loader__
 #define __smiles_loader__
 
+#include <unordered_set>
+
 #include "base_cpp/exception.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/molecule.h"
@@ -65,6 +67,7 @@ namespace indigo
         StereocentersOptions stereochemistry_options;
         bool ignore_cistrans_errors;
         bool ignore_bad_valence;
+        bool ignore_no_chiral_flag{false};
 
     protected:
         enum
@@ -187,6 +190,7 @@ namespace indigo
 
     private:
         SmilesLoader(const SmilesLoader&); // no implicit copy
+        std::unordered_set<int> _overtly_defined_abs;
     };
 
 } // namespace indigo

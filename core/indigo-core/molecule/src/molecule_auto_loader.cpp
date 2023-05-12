@@ -436,6 +436,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
             loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
             loader.stereochemistry_options = stereochemistry_options;
             loader.ignore_cistrans_errors = ignore_cistrans_errors;
+            loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
 
             /*
             If exception is thrown, the string is rather an IUPAC name than a SMILES string
