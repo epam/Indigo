@@ -39,6 +39,7 @@ SmilesLoader::SmilesLoader(Scanner& scanner) : _scanner(scanner)
     ignore_closing_bond_direction_mismatch = false;
     ignore_cistrans_errors = false;
     ignore_bad_valence = false;
+    ignore_no_chiral_flag = false;
     _mol = 0;
     _qmol = 0;
     _bmol = 0;
@@ -341,7 +342,8 @@ void SmilesLoader::_readOtherStuff()
             {
                 int idx = _scanner.readUnsigned();
 
-                if (_bmol->stereocenters.exists(idx)){
+                if (_bmol->stereocenters.exists(idx))
+                {
                     _bmol->stereocenters.setType(idx, MoleculeStereocenters::ATOM_ABS, 0);
                     _overtly_defined_abs.insert(idx);
                 }
