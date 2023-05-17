@@ -2,3 +2,18 @@
 1032-quadra.ket:SUCCEED
 1046-imp_hydrogen.ket:SUCCEED
 SgroupDifferent.ket:SUCCEED
+suplabel.ket:FAILED
+--- 
+
++++ 
+
+@@ -36,7 +36,7 @@
+
+                     0,
+                     1
+                 ],
+-                "name": "\"sodium"
++                "name": "sodium chloride"
+             }
+         ]
+     }

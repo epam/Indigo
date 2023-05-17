@@ -185,6 +185,9 @@ namespace indigo
         void saveAtoms(BaseMolecule& mol, JsonWriter& writer);
         void saveBonds(BaseMolecule& mol, JsonWriter& writer);
         void saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, JsonWriter& writer);
+        void saveFragment(BaseMolecule& fragment, JsonWriter& writer);
+        void saveTGroup(TGroup& tg, JsonWriter& writer);
+
         void saveSGroups(BaseMolecule& mol, JsonWriter& writer);
         void saveSGroup(SGroup& sgroup, JsonWriter& writer);
         void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
@@ -196,6 +199,7 @@ namespace indigo
 
     protected:
         void _checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list);
+        bool _checkAttPointOrder(BaseMolecule& mol, int rsite);
 
         Molecule* _pmol;
         QueryMolecule* _pqmol;
