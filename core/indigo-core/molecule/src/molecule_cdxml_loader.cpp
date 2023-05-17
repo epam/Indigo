@@ -57,20 +57,23 @@ CDXProperty CDXProperty::getNextProp()
     if (_first_id)
         return CDXProperty(_data, _data_limit, _size, 0, _style_index, _style_prop);
 
-    auto ptr16 = (uint16_t*)_data;
-    if (*ptr16 == kCDXProp_Text && _style_index >= 0 && _style_prop >= 0)
+    if (_data)
     {
-        if (++_style_prop < KStyleProperties.size())
-            return CDXProperty(_data, _data_limit, _size, 0, _style_index, _style_prop);
-        else
-            return CDXProperty();
-    }
+        auto ptr16 = (uint16_t*)_data;
+        if (*ptr16 == kCDXProp_Text && _style_index >= 0 && _style_prop >= 0)
+        {
+            if (++_style_prop < KStyleProperties.size())
+                return CDXProperty(_data, _data_limit, _size, 0, _style_index, _style_prop);
+            else
+                return CDXProperty();
+        }
 
-    ptr16 = (uint16_t*)CDXElement::skipProperty((uint8_t*)ptr16);
-    if (ptr16 < _data_limit && *ptr16 && *ptr16 < kCDXTag_Object)
-    {
-        auto sz = *(ptr16 + 1);
-        return CDXProperty(ptr16, _data_limit, sz + sizeof(uint16_t) * 2);
+        ptr16 = (uint16_t*)CDXElement::skipProperty((uint8_t*)ptr16);
+        if (ptr16 < _data_limit && *ptr16 && *ptr16 < kCDXTag_Object)
+        {
+            auto sz = *(ptr16 + 1);
+            return CDXProperty(ptr16, _data_limit, sz + sizeof(uint16_t) * 2);
+        }
     }
     return CDXProperty();
 }
@@ -80,8 +83,8 @@ CDXReader::CDXReader(Scanner& scanner) : _scanner(scanner)
     scanner.readAll(_buffer);
 }
 
-MoleculeCdxmlLoader::MoleculeCdxmlLoader(Scanner& scanner, bool is_binary)
-    : _scanner(scanner), _is_binary(is_binary), _has_bounding_box(false), _pmol(nullptr), _pqmol(nullptr), ignore_bad_valence(false)
+MoleculeCdxmlLoader::MoleculeCdxmlLoader(Scanner& scanner, bool is_binary, bool is_fragment)
+    : _scanner(scanner), _is_binary(is_binary), _is_fragment(is_fragment), _has_bounding_box(false), _pmol(nullptr), _pqmol(nullptr), ignore_bad_valence(false)
 {
 }
 
@@ -117,8 +120,16 @@ void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     _initMolecule(mol);
     std::unique_ptr<CDXReader> cdx_reader = _is_binary ? std::make_unique<CDXReader>(_scanner) : std::make_unique<CDXMLReader>(_scanner);
     cdx_reader->process();
-    parseCDXMLAttributes(cdx_reader->rootElement().firstProperty());
-    _parseCDXMLPage(cdx_reader->rootElement());
+    auto root = cdx_reader->rootElement();
+
+    if (_is_fragment)
+    {
+        loadMoleculeFromFragment(mol, root);
+        return;
+    }
+
+    parseCDXMLAttributes(root.firstProperty());
+    _parseCDXMLPage(root);
 
     if (!nodes.size())
         throw Error("CDXML has no data");
@@ -446,7 +457,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                 _pmol->setExplicitValence(atom_idx, atom.valence);
             _pmol->setAtomRadical(atom_idx, atom.radical);
             _pmol->setAtomIsotope(atom_idx, atom.isotope);
-            if (atom.type == kCDXNodeType_GenericNickname)
+            if (atom.type == kCDXNodeType_GenericNickname || atom.element == ELEM_PSEUDO)
                 _pmol->setPseudoAtom(atom_idx, atom.label.c_str());
             switch (atom.enchanced_stereo)
             {
@@ -476,11 +487,12 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
         int bond_idx;
         if (_pmol)
         {
+            if (bond.id == 2699)
+                printf("stop\n");
             auto bond_first_it = _id_to_atom_idx.find(bond.be.first);
             auto bond_second_it = _id_to_atom_idx.find(bond.be.second);
             auto& fn = nodes[_id_to_node_index.at(bond.be.first)];
             auto& sn = nodes[_id_to_node_index.at(bond.be.second)];
-
             if (bond_first_it != _id_to_atom_idx.end() && bond_second_it != _id_to_atom_idx.end())
             {
                 if (bond.swap_bond)
@@ -515,7 +527,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                             a1 = it->second;
                         }
                         else
-                            throw Error("unable to cennect node %d", a1);
+                            throw Error("unable to connect node %d", a1);
                     }
                     else
                         throw Error("orphaned node %d", a1);
@@ -561,6 +573,18 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                     if (bond.dir > 0)
                         _pmol->setBondDirection(bi, bond.dir);
                 }
+            }
+            else if (is_fragment(fn.type) && is_fragment(sn.type))
+            {
+                auto bit_beg = fn.bond_id_to_connection_idx.find(bond.id);
+                auto bit_end = sn.bond_id_to_connection_idx.find(bond.id);
+
+                int a1 = fn.connections[bit_beg->second].atom_idx;
+                int a2 =  sn.connections[bit_beg->second].atom_idx;
+
+                auto bi = _pmol->addBond_Silent(a1, a2, bond.order);
+                if (bond.dir > 0)
+                  _pmol->setBondDirection(bi, bond.dir);
             }
         }
     }
@@ -830,6 +854,17 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
             _parseLabel(child_elem, label);
             if (label.size() > 1 && label.find("R") == 0)
                 node.rg_index = label.substr(1);
+            else if (node.element == ELEM_C) // overridable
+            {
+                auto elem = Element::fromString2(label.c_str());
+                if (elem > 0)
+                    node.element = elem;
+                else if (node.label.empty())
+                {
+                    node.label = label;
+                    node.element = ELEM_PSEUDO;
+                }
+            }
         }
         else if (child_elem.name() == "fragment")
         {

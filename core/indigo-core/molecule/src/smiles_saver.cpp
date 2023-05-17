@@ -321,6 +321,7 @@ void SmilesSaver::_saveMolecule()
         else if (counter != 3)
             throw Error("cannot calculate chirality");
 
+
         if (MoleculeStereocenters::isPyramidMappingRigid(pyramid_mapping))
             _atoms[atom_idx].chirality = 1;
         else

@@ -395,7 +395,7 @@ int parseParams(Params* p, int argc, char* argv[])
     indigoSetOptionBool("treat-x-as-pseudoatom", 1);
     indigoSetOptionBool("render-coloring", 1);
     indigoSetOptionBool("render-highlight-color-enabled", 1);
-    indigoSetOption("render-superatom-mode", "collapse");
+    // indigoSetOption("render-superatom-mode", "collapse");
 
     for (; i < argc; i++)
     {
@@ -910,7 +910,16 @@ int main(int argc, char* argv[])
         else if (p.query_set)
             obj = indigoLoadQueryMolecule(reader);
         else
-            obj = indigoLoadMolecule(reader);
+        {
+            if (strnicmp(p.infile_ext, "cdx", 3) == 0 )
+            {
+                auto obj_it = indigoIterateCDXFile(p.file_to_load);
+                obj = indigoNext(obj_it);
+            } else
+                obj = indigoLoadMolecule(reader);
+            char* psm = indigoSmiles(obj);
+            printf("SMILES: %s\n", psm);
+        }
 
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
