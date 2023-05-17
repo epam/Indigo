@@ -699,7 +699,8 @@ bool OracleStatement::executeSingleClob(Array<char>& result, OracleEnv& env, con
         return false;
     }
 
-    if (statement.gotNull(1)) { // null LOB?
+    if (statement.gotNull(1)) // null LOB?
+    {
         va_end(args);
         return false;
     }
