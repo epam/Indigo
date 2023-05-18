@@ -3134,7 +3134,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                 subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, element);
             else
             {
-                if (element_assigned)
+                if (element_assigned && !stereochemistry_options.ignore_errors)
                     throw Error("two element labels for one atom");
                 atom.label = element;
             }
