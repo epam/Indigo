@@ -487,8 +487,6 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
         int bond_idx;
         if (_pmol)
         {
-            if (bond.id == 2699)
-                printf("stop\n");
             auto bond_first_it = _id_to_atom_idx.find(bond.be.first);
             auto bond_second_it = _id_to_atom_idx.find(bond.be.second);
             auto& fn = nodes[_id_to_node_index.at(bond.be.first)];
@@ -560,7 +558,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                             a2 = it->second;
                         }
                         else
-                            throw Error("unable to cennect node %d", a1);
+                            throw Error("unable to connect node %d", a1);
                     }
                     else
                         throw Error("orphaned node %d", a1);
@@ -578,13 +576,15 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
             {
                 auto bit_beg = fn.bond_id_to_connection_idx.find(bond.id);
                 auto bit_end = sn.bond_id_to_connection_idx.find(bond.id);
+                if (bit_beg != fn.bond_id_to_connection_idx.end() && bit_end != sn.bond_id_to_connection_idx.end())
+                {
+                    int a1 = fn.connections[bit_beg->second].atom_idx;
+                    int a2 = sn.connections[bit_end->second].atom_idx;
 
-                int a1 = fn.connections[bit_beg->second].atom_idx;
-                int a2 =  sn.connections[bit_beg->second].atom_idx;
-
-                auto bi = _pmol->addBond_Silent(a1, a2, bond.order);
-                if (bond.dir > 0)
-                  _pmol->setBondDirection(bi, bond.dir);
+                    auto bi = _pmol->addBond_Silent(a1, a2, bond.order);
+                    if (bond.dir > 0)
+                        _pmol->setBondDirection(bi, bond.dir);
+                }
             }
         }
     }
