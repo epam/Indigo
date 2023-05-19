@@ -19,6 +19,7 @@
 #include <cctype>
 #include <memory>
 #include <regex>
+#include <unordered_set>
 
 #include "base_cpp/scanner.h"
 #include "graph/cycle_basis.h"
@@ -261,6 +262,8 @@ void SmilesLoader::_readOtherStuff()
     MoleculeCisTrans& cis_trans = _bmol->cis_trans;
 
     QS_DEF(Array<int>, to_remove);
+
+    std::unordered_set<int> _overtly_defined_abs;
 
     to_remove.clear();
 
