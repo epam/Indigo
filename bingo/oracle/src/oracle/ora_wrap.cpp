@@ -599,10 +599,7 @@ bool OracleStatement::executeSingleInt(int& result, OracleEnv& env, const char* 
     statement.prepare();
     statement.defineIntByPos(1, &result);
     if (!statement.executeAllowNoData())
-    {
-        va_end(args);
         return false;
-    }
     va_end(args);
     return true;
 }
@@ -619,10 +616,7 @@ bool OracleStatement::executeSingleFloat(float& result, OracleEnv& env, const ch
     statement.prepare();
     statement.defineFloatByPos(1, &result);
     if (!statement.executeAllowNoData())
-    {
-        va_end(args);
         return false;
-    }
     va_end(args);
     return true;
 }
@@ -642,7 +636,6 @@ bool OracleStatement::executeSingleString(Array<char>& result, OracleEnv& env, c
     if (!statement.executeAllowNoData())
     {
         result.clear();
-        va_end(args);
         return false;
     }
     va_end(args);
@@ -666,10 +659,8 @@ bool OracleStatement::executeSingleBlob(Array<char>& result, OracleEnv& env, con
 
     statement.defineBlobByPos(1, lob);
     if (!statement.executeAllowNoData())
-    {
-        va_end(args);
         return false;
-    }
+
     va_end(args);
 
     if (statement.gotNull(1)) // null LOB?
@@ -694,16 +685,11 @@ bool OracleStatement::executeSingleClob(Array<char>& result, OracleEnv& env, con
 
     statement.defineClobByPos(1, lob);
     if (!statement.executeAllowNoData())
-    {
-        va_end(args);
         return false;
-    }
 
     if (statement.gotNull(1)) // null LOB?
-    {
-        va_end(args);
         return false;
-    }
+
     va_end(args);
     lob.readAll(result, false);
     return true;
