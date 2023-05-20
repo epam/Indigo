@@ -1157,13 +1157,10 @@ void SmilesLoader::_parseMolecule()
                 // closing some previously numbered atom, like the last '1' in c1ccccc1
                 if (_cycles[number].beg >= 0)
                 {
-                    bond = &_bonds.push();
-                    bond->dir = 0;
-                    bond->topology = 0;
+                    _bonds.push(_BondDesc{});
+                    bond = &_bonds.top();
                     bond->beg = _atom_stack.top();
                     bond->end = _cycles[number].beg;
-                    bond->type = -1; // will later become single or aromatic bond
-                    bond->index = -1;
                     _cycles[number].clear();
                     added_bond = true;
 
@@ -1269,13 +1266,9 @@ void SmilesLoader::_parseMolecule()
 
         if (!first_atom)
         {
-            bond = &_bonds.push();
+            _bonds.push(_BondDesc{});
+            bond = &_bonds.top();
             bond->beg = _atom_stack.top();
-            bond->end = -1;
-            bond->type = -1;
-            bond->dir = 0;
-            bond->topology = 0;
-            bond->index = -1;
             added_bond = true;
         }
 
@@ -3291,4 +3284,8 @@ void SmilesLoader::_AtomDesc::closure(int cycle, int end)
             break;
         }
     }
+}
+
+SmilesLoader::_BondDesc::_BondDesc() : beg(-1), end(-1), type(-1), dir(0), topology(0), index(-1)
+{
 }
