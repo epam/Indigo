@@ -1137,11 +1137,10 @@ void SmilesLoader::_parseMolecule()
             break;
 
         _BondDesc* bond = 0;
+        bool added_bond = false;
 
         if (!first_atom)
         {
-            bool added_bond = false;
-
             while (isdigit(next) || next == '%')
             {
                 int number;
@@ -1277,11 +1276,12 @@ void SmilesLoader::_parseMolecule()
             bond->dir = 0;
             bond->topology = 0;
             bond->index = -1;
+            added_bond = true;
         }
 
         std::unique_ptr<QueryMolecule::Bond> qbond;
 
-        if (bond != 0)
+        if (added_bond)
         {
             QS_DEF(Array<char>, bond_str);
 
@@ -1434,7 +1434,7 @@ void SmilesLoader::_parseMolecule()
         if (_qmol != 0)
             qatom = std::make_unique<QueryMolecule::Atom>();
 
-        if (bond != 0)
+        if (added_bond)
             bond->end = _atoms.size() - 1;
 
         QS_DEF(Array<char>, atom_str);
@@ -1484,11 +1484,11 @@ void SmilesLoader::_parseMolecule()
         {
             _qmol->addAtom(qatom.release());
 
-            if (bond != 0)
+            if (added_bond)
                 bond->index = _qmol->addBond(bond->beg, bond->end, qbond.release());
         }
 
-        if (bond != 0)
+        if (added_bond)
         {
             _atoms[bond->beg].neighbors.add(bond->end);
             _atoms[bond->end].neighbors.add(bond->beg);
@@ -2934,7 +2934,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             }
             else
             {
-                std::string current((const char*)scanner.curptr());
+                std::string current((const char*)scanner.curptr(), scanner.length() - scanner.tell());
                 std::smatch match;
                 if (std::regex_search(current, match, std::regex("^(TH|AL)([1-2])")))
                 {
