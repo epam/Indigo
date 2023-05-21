@@ -1,12 +1,12 @@
 include(FindPackageHandleStandardArgs)
 
 find_library(Cairo_LIBRARY NAMES cairo)
-find_path(Cairo_INCLUDE_DIR NAMES cairo.h)
+find_path(Cairo_INCLUDE_DIR NAMES cairo/cairo.h)
 
 
-IF (Cairo_INCLUDE_DIRS)
-    IF (EXISTS "${Cairo_INCLUDE_DIRS}/cairo-version.h")
-        FILE(READ "${Cairo_INCLUDE_DIRS}/cairo-version.h" Cairo_VERSION_CONTENT)
+IF (Cairo_INCLUDE_DIR)
+    IF (EXISTS "${Cairo_INCLUDE_DIR}/cairo/cairo-version.h")
+        FILE(READ "${Cairo_INCLUDE_DIR}/cairo/cairo-version.h" Cairo_VERSION_CONTENT)
 
         STRING(REGEX MATCH "#define +CAIRO_VERSION_MAJOR +([0-9]+)" _dummy "${Cairo_VERSION_CONTENT}")
         SET(Cairo_VERSION_MAJOR "${CMAKE_MATCH_1}")

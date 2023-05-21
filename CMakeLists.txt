@@ -110,7 +110,7 @@ message(STATUS "BUILD_BINGO_ELASTIC=${BUILD_BINGO_ELASTIC}")
 
 # Set up compiler flags and other preparatory steps
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
-include(cmake/setup)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/setup.cmake)
 
 # In subprojects we'll add dependencies for this pseudo-target to build all packages at once
 if (BUILD_INDIGO OR BUILD_INDIGO_UTILS OR BUILD_BINGO_POSTGRES OR BUILD_BINGO_ORACLE OR BUILD_BINGO_SQLSERVER)

@@ -27,8 +27,9 @@ find_package_handle_standard_args(RapidJSON REQUIRED_VARS RapidJSON_INCLUDE_DIRS
 
 if(RapidJSON_FOUND)
     if(NOT TARGET RapidJSON::RapidJSON)
-        add_library(RapidJSON::RapidJSON INTERFACE)
+        add_library(RapidJSON INTERFACE)
         set_target_properties(RapidJSON PROPERTIES
                 INTERFACE_INCLUDE_DIRECTORIES "${RapidJSON_INCLUDE_DIRS}")
+        add_library(RapidJSON::RapidJSON ALIAS RapidJSON)
     endif()
 endif()

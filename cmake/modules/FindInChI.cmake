@@ -1,11 +1,11 @@
 include(FindPackageHandleStandardArgs)
 
-find_library(InChI_LIBRARY NAMES cairo)
-find_path(InChI_INCLUDE_DIR NAMES cairo.h)
+find_library(InChI_LIBRARY NAMES inchi)
+find_path(InChI_INCLUDE_DIR NAMES inchi_api.h)
 
-if (InChI_INCLUDE_DIRS)
-    if (EXISTS "${InChI_INCLUDE_DIRS}/inchi_api.h")
-        file(READ "${InChI_INCLUDE_DIRS}/inchi_api.h" InChI_VERSION_CONTENT)
+if (InChI_INCLUDE_DIR)
+    if (EXISTS "${InChI_INCLUDE_DIR}/inchi_api.h")
+        file(READ "${InChI_INCLUDE_DIR}/inchi_api.h" InChI_VERSION_CONTENT)
         string(REGEX MATCH "Software version +([0-9]+\\.[0-9]+)" _dummy "${InChI_VERSION_CONTENT}")
         set(InChI_VERSION "${CMAKE_MATCH_1}")
     endif ()

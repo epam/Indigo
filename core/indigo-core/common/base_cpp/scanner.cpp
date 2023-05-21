@@ -22,14 +22,14 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <limits>
+
+#include <cppcodec/base64_default_rfc4648.hpp>
 
 #include "base_c/defs.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 #include "reusable_obj_array.h"
-
-#include <../cppcodec/cppcodec/base64_default_rfc4648.hpp>
-#include <limits>
 
 using namespace indigo;
 
