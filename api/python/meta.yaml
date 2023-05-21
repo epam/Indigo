@@ -4,7 +4,7 @@ package:
 
 source:
     git_url: https://github.com/epam/indigo.git
-    git_rev: indigo-1.10.0
+    git_rev: 48f6d154f17c460635c20fa815eb691b2c41ef45
 
 requirements:
     build:
