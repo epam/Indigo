@@ -1137,11 +1137,10 @@ void SmilesLoader::_parseMolecule()
             break;
 
         _BondDesc* bond = 0;
+        bool added_bond = false;
 
         if (!first_atom)
         {
-            bool added_bond = false;
-
             while (isdigit(next) || next == '%')
             {
                 int number;
@@ -1158,13 +1157,10 @@ void SmilesLoader::_parseMolecule()
                 // closing some previously numbered atom, like the last '1' in c1ccccc1
                 if (_cycles[number].beg >= 0)
                 {
-                    bond = &_bonds.push();
-                    bond->dir = 0;
-                    bond->topology = 0;
+                    _bonds.push(_BondDesc{});
+                    bond = &_bonds.top();
                     bond->beg = _atom_stack.top();
                     bond->end = _cycles[number].beg;
-                    bond->type = -1; // will later become single or aromatic bond
-                    bond->index = -1;
                     _cycles[number].clear();
                     added_bond = true;
 
@@ -1270,18 +1266,15 @@ void SmilesLoader::_parseMolecule()
 
         if (!first_atom)
         {
-            bond = &_bonds.push();
+            _bonds.push(_BondDesc{});
+            bond = &_bonds.top();
             bond->beg = _atom_stack.top();
-            bond->end = -1;
-            bond->type = -1;
-            bond->dir = 0;
-            bond->topology = 0;
-            bond->index = -1;
+            added_bond = true;
         }
 
         std::unique_ptr<QueryMolecule::Bond> qbond;
 
-        if (bond != 0)
+        if (added_bond)
         {
             QS_DEF(Array<char>, bond_str);
 
@@ -1434,7 +1427,7 @@ void SmilesLoader::_parseMolecule()
         if (_qmol != 0)
             qatom = std::make_unique<QueryMolecule::Atom>();
 
-        if (bond != 0)
+        if (added_bond)
             bond->end = _atoms.size() - 1;
 
         QS_DEF(Array<char>, atom_str);
@@ -1484,11 +1477,11 @@ void SmilesLoader::_parseMolecule()
         {
             _qmol->addAtom(qatom.release());
 
-            if (bond != 0)
+            if (added_bond)
                 bond->index = _qmol->addBond(bond->beg, bond->end, qbond.release());
         }
 
-        if (bond != 0)
+        if (added_bond)
         {
             _atoms[bond->beg].neighbors.add(bond->end);
             _atoms[bond->end].neighbors.add(bond->beg);
@@ -2934,7 +2927,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             }
             else
             {
-                std::string current((const char*)scanner.curptr());
+                std::string current((const char*)scanner.curptr(), scanner.length() - scanner.tell());
                 std::smatch match;
                 if (std::regex_search(current, match, std::regex("^(TH|AL)([1-2])")))
                 {
@@ -3291,4 +3284,8 @@ void SmilesLoader::_AtomDesc::closure(int cycle, int end)
             break;
         }
     }
+}
+
+SmilesLoader::_BondDesc::_BondDesc() : beg(-1), end(-1), type(-1), dir(0), topology(0), index(-1)
+{
 }

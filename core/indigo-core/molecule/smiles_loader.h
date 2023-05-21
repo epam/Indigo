@@ -110,6 +110,7 @@ namespace indigo
 
         struct _BondDesc
         {
+            _BondDesc();
             int beg;
             int end;
             int type;
