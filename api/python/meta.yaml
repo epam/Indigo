@@ -1,0 +1,26 @@
+package:
+    name: indigo
+    version: 1.10.0
+
+source:
+    git_url: https://github.com/epam/indigo.git
+    git_rev: indigo-1.10.0
+
+requirements:
+    build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+    - make
+    - python
+    - cairo
+    - tinyxml2
+    run:
+    - python
+    - cairo
+    - tinyxml2
+
+about:
+    home: https://lifescience.opensource.epam.com/indigo/index.html
+    description:
+    license: Apache-2.0

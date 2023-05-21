@@ -1,6 +1,5 @@
 if (BUILD_STANDALONE)
     # InChI don't have a Conan package yet
-    add_subdirectory(inchi)
     add_subdirectory(rapidjson)
     add_subdirectory(zlib)
     add_subdirectory(tinyxml2)
@@ -23,4 +22,5 @@ if (ENABLE_TESTS)
     add_subdirectory(googletest)
 endif()
 
+add_subdirectory(inchi)
 add_subdirectory(object_threadsafe)
