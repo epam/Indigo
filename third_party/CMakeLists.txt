@@ -1,5 +1,5 @@
 if (BUILD_STANDALONE)
-    # InChI don't have a Conan package yet
+    add_subdirectory(inchi)
     add_subdirectory(rapidjson)
     add_subdirectory(zlib)
     add_subdirectory(tinyxml2)
@@ -22,5 +22,9 @@ if (ENABLE_TESTS)
     add_subdirectory(googletest)
 endif()
 
-add_subdirectory(inchi)
-add_subdirectory(object_threadsafe)
+FetchContent_Declare(
+        object_threadsafe
+        GIT_REPOSITORY https://github.com/AlexeyAB/object_threadsafe.git
+        GIT_TAG        940911017993d73ebfe5cb9ebabd3a9dd7bd45b2
+)
+FetchContent_MakeAvailable(object_threadsafe)
