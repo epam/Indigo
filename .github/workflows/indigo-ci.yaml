@@ -410,7 +410,7 @@ jobs:
         env:
           INDIGO_PATH: ${{ github.workspace }}/dist
         run: |
-          java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -j junit_report.xml
+          java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -j junit_report.xml -p cdx
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v3
