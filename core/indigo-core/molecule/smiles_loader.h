@@ -65,6 +65,7 @@ namespace indigo
         StereocentersOptions stereochemistry_options;
         bool ignore_cistrans_errors;
         bool ignore_bad_valence;
+        bool ignore_no_chiral_flag{false};
 
     protected:
         enum
