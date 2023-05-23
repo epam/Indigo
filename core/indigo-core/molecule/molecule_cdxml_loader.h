@@ -224,17 +224,12 @@ namespace indigo
 
         CDXProperty next()
         {
-            return _size ? getNextProp() : CDXProperty(attribute().Next());
+            return _size || _first_id ? getNextProp() : CDXProperty(attribute().Next());
         }
 
         CDXProperty getNextProp();
 
         std::string name()
-        {
-            return _size ? getName() : std::string(attribute().Name());
-        }
-
-        std::string getName()
         {
             if (_first_id)
                 return "id";
@@ -242,6 +237,11 @@ namespace indigo
             if (_style_prop >= 0)
                 return KStyleProperties[_style_prop];
 
+            return _size ? getName() : std::string(attribute().Name());
+        }
+
+        std::string getName()
+        {
             auto ptag = (uint16_t*)_data;
             auto it = KCDXPropToName.find(*ptag);
             return it == KCDXPropToName.end() ? std::string{} : it->second.first;
@@ -255,16 +255,14 @@ namespace indigo
 
         std::string value()
         {
+            if (_first_id)
+                return formatValue((uint8_t*)&_first_id, sizeof(_first_id), 0, ECDXType::CDXObjectID);
             return _size ? getValue() : std::string(attribute().Value());
         }
 
         std::string getValue()
         {
-            if (_first_id)
-                return formatValue((uint8_t*)&_first_id, sizeof(_first_id), 0, ECDXType::CDXObjectID);
-
             auto ptr16 = (uint16_t*)_data;
-
             if (_style_prop >= 0 && _style_index >= 0)
             {
                 auto tsp = (CDXTextStyleProperty*)ptr16;
@@ -280,9 +278,7 @@ namespace indigo
                 else
                     return std::string();
             }
-
             auto tag = *ptr16;
-
             auto it = KCDXPropToName.find(tag);
             ptr16++;
             auto sz = *ptr16;
@@ -321,7 +317,9 @@ namespace indigo
                 {
                     if (i)
                         ss << " ";
-                    ss << double(ptr32[i ^ 1]) / (1 << 16);
+                    double val = ptr32[i ^ 1];
+                    val = round(val * 100 / (1 << 16)) / 100;
+                    ss << val;
                 }
                 result = ss.str();
             }
@@ -335,7 +333,9 @@ namespace indigo
                 {
                     if (i)
                         ss << " ";
-                    ss << double(ptr32[i]) / (1 << 16);
+                    double val = ptr32[i];
+                    val = round(val * 100 / (1 << 16)) / 100;
+                    ss << val;
                 }
                 result = ss.str();
             }
@@ -344,7 +344,9 @@ namespace indigo
             case ECDXType::CDXCoordinate: {
                 auto ptr32 = (int32_t*)ptr;
                 std::stringstream ss;
-                ss << std::setprecision(2) << std::fixed << double(*ptr32) / (1 << 16);
+                double val = *ptr32;
+                val = round(val * 100 / (1 << 16)) / 100;
+                ss << std::setprecision(2) << std::fixed << val;
                 result = ss.str();
             }
             break;
@@ -435,6 +437,17 @@ namespace indigo
                 return ss.str();
             }
             break;
+            case ECDXType::CDXINT16ListWithCounts: {
+                auto pcount = (int16_t*)ptr;
+                auto ptr16 = pcount + 1;
+                for (int i = 0; i < *pcount; ++i)
+                {
+                    if (i)
+                        result += " ";
+                    result += std::to_string(ptr16[i]);
+                }
+            }
+            break;
             default:
                 throw Error("undefined property type: %d", cdx_type);
                 break;
@@ -507,10 +520,11 @@ namespace indigo
                 return kCDXEnhancedStereoIDToStr.at(val);
                 break;
             case kCDXProp_Bond_CIPStereochemistry:
-            case kCDXProp_Atom_CIPStereochemistry: {
+                return std::string{kCIPBondStereochemistryIndexToChar[val]};
+                break;
+            case kCDXProp_Atom_CIPStereochemistry:
                 return std::string{kCIPStereochemistryIndexToChar[val]};
-            }
-            break;
+                break;
             case kCDXProp_Bracket_Usage:
                 return std::string{kBracketUsageIntToName.at(val)};
                 break;
@@ -531,7 +545,7 @@ namespace indigo
 
         bool hasContent()
         {
-            return _data;
+            return _data || _first_id;
         }
 
     protected:
@@ -553,20 +567,6 @@ namespace indigo
 
         CDXElement(const void* data, int size = 0, int style_index = -1) : _data(data), _size(size), _style_index(style_index)
         {
-            auto ptag = (uint16_t*)data;
-            if (ptag && size)
-            {
-                if (*ptag < kCDXTag_Object) // root element starts from property
-                {
-                    if (*ptag == kCDXProp_Text)
-                    {
-                        if (_style_index < 0)
-                        {
-                            _style_index = 0;
-                        }
-                    }
-                }
-            }
         }
 
         CDXProperty firstProperty()
@@ -589,12 +589,12 @@ namespace indigo
                     ptr += sizeof(uint32_t); // skip tag and id to enter inside the current object
                     ptr16 = (uint16_t*)ptr;
                 }
-                if (tag || *ptr16 < kCDXTag_Object)
-                {
-                    auto sz = *(ptr16 + 1); // property size
-                    return CDXProperty(ptr16, (uint8_t*)_data + _size, sz + sizeof(uint16_t) * 2, tag, _style_index,
+
+                if (*ptr16 && *ptr16 < kCDXTag_Object)
+                    return CDXProperty(ptr16, (uint8_t*)_data + _size, *(ptr16 + 1) + sizeof(uint16_t) * 2, tag, _style_index,
                                        _style_index < 0 ? -1 : 0); // total chunk size = property size + tag + size
-                }
+                else if (tag)
+                    return CDXProperty(nullptr, nullptr, 0, tag); // return fake tag property
             }
             return CDXProperty();
         }
@@ -674,7 +674,7 @@ namespace indigo
                     {
                         ptr = (uint8_t*)ptr16;
                         auto sz = ptr16[1];
-                        return CDXElement(ptr, sz + sizeof(uint16_t) * 2); // simulated style object
+                        return CDXElement(ptr, sz + sizeof(uint16_t) * 2, 0); // simulated style object
                     }
                     ptr16 = (uint16_t*)skipProperty((uint8_t*)ptr16);
                 }
@@ -857,7 +857,6 @@ namespace indigo
             if (_xml.Error())
                 throw Error("XML parsing error: %s", _xml.ErrorStr());
         }
-
         CDXElement rootElement() override
         {
             return CDXElement{_xml.RootElement()};
@@ -886,7 +885,7 @@ namespace indigo
 
         DECL_ERROR;
 
-        MoleculeCdxmlLoader(Scanner& scanner, bool is_binary = false);
+        MoleculeCdxmlLoader(Scanner& scanner, bool is_binary = false, bool is_fragment = false);
 
         void loadMolecule(BaseMolecule& mol, bool load_arrows = false);
         void loadMoleculeFromFragment(BaseMolecule& mol, CDXElement elem);
@@ -952,6 +951,7 @@ namespace indigo
         std::vector<EnhancedStereoCenter> _stereo_centers;
         Scanner& _scanner;
         bool _is_binary;
+        bool _is_fragment;
         bool _has_bounding_box;
 
     private:

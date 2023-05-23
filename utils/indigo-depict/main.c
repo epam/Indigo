@@ -396,8 +396,6 @@ int parseParams(Params* p, int argc, char* argv[])
     indigoSetOptionBool("render-coloring", 1);
     indigoSetOptionBool("render-highlight-color-enabled", 1);
     indigoSetOption("render-superatom-mode", "collapse");
-    indigoSetOption("render-atom-ids-visible", "true");
-    indigoSetOption("render-bond-ids-visible", "true");
     for (; i < argc; i++)
     {
         if (strcmp(argv[i], "-w") == 0)
