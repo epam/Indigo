@@ -4,7 +4,7 @@ package:
 
 source:
     git_url: https://github.com/epam/indigo.git
-    git_rev: e665348e3472f9f324547d04b1c11e65291fb877
+    git_rev: 7c97c96fe57b0a7420db4327878a9bf3032e17de
 
 requirements:
     build:
@@ -25,5 +25,5 @@ requirements:
 
 about:
     home: https://lifescience.opensource.epam.com/indigo/index.html
-    description: "Cheminformatics toolkit"
+    description: "Universal cheminformatics toolkit"
     license: Apache-2.0
