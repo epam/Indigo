@@ -318,7 +318,7 @@ namespace indigo
                     if (i)
                         ss << " ";
                     double val = ptr32[i ^ 1];
-                    val = round(val*100/(1 << 16))/100;
+                    val = round(val * 100 / (1 << 16)) / 100;
                     ss << val;
                 }
                 result = ss.str();
