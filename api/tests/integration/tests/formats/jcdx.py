@@ -11,6 +11,7 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
 
+
 def readCdxAndPrintInfo(fname):
     for idx, m in enumerate(
         indigo.iterateCDXFile(joinPathPy(fname, __file__))
@@ -21,5 +22,6 @@ def readCdxAndPrintInfo(fname):
         print(m.smiles())
         print("Molfile:")
         print(m.molfile())
+
 
 readCdxAndPrintInfo("molecules/CDX3_4molecules_prop.cdx")
