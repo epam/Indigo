@@ -12,7 +12,7 @@ pyparsing==2.4.7
 PyPDF2==1.27.5
 pyproject-flake8==0.0.1a2
 pytest==6.2.5
-requests==2.26.0
+requests==2.31.0
 toml==0.10.2
 types-Pillow==8.3.11
 types-requests==2.26.3
