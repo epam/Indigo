@@ -10,5 +10,5 @@ cmake -B ./build \
     -D BUILD_BINGO_ELASTIC=OFF \
     -D ENABLE_TESTS=OFF \
     .
-VERBOSE=1 cmake --build ./build --target indigo-python
-pip install ./dist/indigo-python*.whl
+cmake --build ./build --target indigo-python -- -j $(nproc)
+python -m pip install --no-deps --ignore-installed ./dist/epam.indigo-*.whl

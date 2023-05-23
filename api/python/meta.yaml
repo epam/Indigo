@@ -12,6 +12,7 @@ requirements:
     - {{ compiler('cxx') }}
     - cmake
     - make
+    host:
     - python
     - cairo
     - inchi
@@ -23,7 +24,21 @@ requirements:
     - inchi
     - tinyxml2
 
+test:
+    imports:
+        - indigo
+        - indigo.renderer
+        - indigo.inchi
+        - indigo.bingo
+    commands:
+        - python -c "import indigo; indigo = Indigo(); assert indigo.version().startswith('1.')"
+
 about:
     home: https://lifescience.opensource.epam.com/indigo/index.html
     description: "Universal cheminformatics toolkit"
     license: Apache-2.0
+
+
+extra:
+    recipe-maintainers:
+        - mkviatkovskii
