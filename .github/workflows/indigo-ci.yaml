@@ -278,7 +278,7 @@ jobs:
         if: ${{ matrix.os == 'macos' }}
         run: python3 -m pip install dist/*macosx_10_7_intel*.whl
       - name: Test
-        run: python3 api/tests/integration/test.py -t 1 -j junit_report.xml
+        run: python3 api/tests/integration/test.py -t 1 -j junit_report.xml -p jcdx
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v3
@@ -410,7 +410,7 @@ jobs:
         env:
           INDIGO_PATH: ${{ github.workspace }}/dist
         run: |
-          java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -j junit_report.xml -p cdx
+          java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -j junit_report.xml -p jcdx
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v3
@@ -563,20 +563,20 @@ jobs:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: |
-          dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml
+          dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml -p jcdx
       - name: Test macOS
         if: ${{ matrix.os == 'macos' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
         run: |
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
-          dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml
+          dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml -p jcdx
       - name: Test Windows
         if: ${{ matrix.os == 'windows' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
-        run: ./IronPython/net462/ipy.exe api/tests/integration/test.py -t 1 -j junit_report.xml
+        run: ./IronPython/net462/ipy.exe api/tests/integration/test.py -t 1 -j junit_report.xml -p jcdx
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v3

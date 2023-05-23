@@ -920,12 +920,14 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, CDXProperty prop)
 
 void MoleculeCdxmlLoader::parsePos(const std::string& data, Vec3f& pos)
 {
+    printf("parsePos:%s\n", data.c_str());
     std::vector<std::string> coords = split(data, ' ');
     if (coords.size() >= 2)
     {
         pos.x = std::stof(coords[0]);
         pos.y = std::stof(coords[1]);
         pos.z = 0;
+        printf("pos:%f %f\n", pos.x, pos.y);
         if (this->_has_bounding_box)
         {
             pos.x -= this->cdxml_bbox.left();
@@ -933,6 +935,7 @@ void MoleculeCdxmlLoader::parsePos(const std::string& data, Vec3f& pos)
         }
         pos.x /= SCALE;
         pos.y /= -SCALE;
+        printf("div:%f %f\n", pos.x, pos.y);
     }
     else
         throw Error("Not enought coordinates");
