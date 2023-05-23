@@ -21,5 +21,6 @@ endif()
 if (InChI_FOUND AND NOT TARGET InChI::InChI)
     add_library(InChI::InChI IMPORTED UNKNOWN)
     set_target_properties(InChI::InChI PROPERTIES IMPORTED_LOCATION ${InChI_LIBRARY})
-    target_include_directories(InChI::InChI INTERFACE ${InChI_INCLUDE_DIR})
+    target_include_directories(InChI::InChI INTERFACE ${InChI_INCLUDE_DIR}
+            INTERFACE ${InChI_INCLUDE_DIR}/inchi)
 endif()
