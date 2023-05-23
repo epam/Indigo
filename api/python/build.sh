@@ -1,5 +1,4 @@
-rm CMakeCache.txt
-cmake \
+cmake -B ./build \
     -D CMAKE_BUILD_TYPE=Release \
     -D CMAKE_SYSTEM_PREFIX_PATH=${PREFIX} \
     -D CMAKE_INSTALL_PREFIX=${PREFIX} \
@@ -11,5 +10,5 @@ cmake \
     -D BUILD_BINGO_ELASTIC=OFF \
     -D ENABLE_TESTS=OFF
     .
-VERBOSE=1 cmake --build . --target indigo-python
+VERBOSE=1 cmake --build ./build --target indigo-python
 pip install ./dist/indigo-python*.whl

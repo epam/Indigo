@@ -2,6 +2,9 @@ include(FindPackageHandleStandardArgs)
 
 find_library(InChI_LIBRARY NAMES inchi)
 find_path(InChI_INCLUDE_DIR NAMES inchi_api.h)
+if (NOT InChI_INCLUDE_DIR)
+    find_path(InChI_INCLUDE_DIR NAMES inchi/inchi_api.h)
+endif()
 
 if (InChI_INCLUDE_DIR)
     if (EXISTS "${InChI_INCLUDE_DIR}/inchi_api.h")
@@ -22,5 +25,5 @@ if (InChI_FOUND AND NOT TARGET InChI::InChI)
     add_library(InChI::InChI IMPORTED UNKNOWN)
     set_target_properties(InChI::InChI PROPERTIES IMPORTED_LOCATION ${InChI_LIBRARY})
     target_include_directories(InChI::InChI INTERFACE ${InChI_INCLUDE_DIR}
-            INTERFACE ${InChI_INCLUDE_DIR}/inchi)
+    )
 endif()
