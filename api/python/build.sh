@@ -8,7 +8,7 @@ cmake -B ./build \
     -D BUILD_INDIGO_UTILS=OFF \
     -D BUILD_BINGO=OFF \
     -D BUILD_BINGO_ELASTIC=OFF \
-    -D ENABLE_TESTS=OFF
+    -D ENABLE_TESTS=OFF \
     .
 VERBOSE=1 cmake --build ./build --target indigo-python
 pip install ./dist/indigo-python*.whl
