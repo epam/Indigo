@@ -317,7 +317,9 @@ namespace indigo
                 {
                     if (i)
                         ss << " ";
-                    ss << double(ptr32[i ^ 1]) / (1 << 16);
+                    double val = ptr32[i ^ 1];
+                    val = round(val*100/(1 << 16))/100;
+                    ss << val;
                 }
                 result = ss.str();
             }
@@ -331,7 +333,9 @@ namespace indigo
                 {
                     if (i)
                         ss << " ";
-                    ss << double(ptr32[i]) / (1 << 16);
+                    double val = ptr32[i];
+                    val = round(val * 100 / (1 << 16)) / 100;
+                    ss << val;
                 }
                 result = ss.str();
             }
@@ -340,7 +344,9 @@ namespace indigo
             case ECDXType::CDXCoordinate: {
                 auto ptr32 = (int32_t*)ptr;
                 std::stringstream ss;
-                ss << std::setprecision(2) << std::fixed << double(*ptr32) / (1 << 16);
+                double val = *ptr32;
+                val = round(val * 100 / (1 << 16)) / 100;
+                ss << std::setprecision(2) << std::fixed << val;
                 result = ss.str();
             }
             break;
