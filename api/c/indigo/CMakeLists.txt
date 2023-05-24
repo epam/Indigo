@@ -21,6 +21,8 @@ if (NOT EMSCRIPTEN)
     target_link_libraries(${PROJECT_NAME}
             PRIVATE indigo-core
     )
+    set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER indigo.h)
+    install(TARGETS ${PROJECT_NAME})
 
     if(UNIX AND NOT APPLE)
          target_link_options(${PROJECT_NAME} PRIVATE -Wl,--dynamic-list-cpp-typeinfo -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/src/libindigo.sym)
