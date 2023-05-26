@@ -498,7 +498,17 @@ void SmilesLoader::_readOtherStuff()
                         }
 
                         if (_mol != 0)
-                            _mol->setPseudoAtom(i, label.ptr());
+                        {
+                            const auto atomNumber = _mol->getAtomNumber(i);
+                            if (ELEM_MIN < atomNumber && atomNumber < ELEM_MAX)
+                            {
+                                _mol->aliases.findOrInsert(i).readString(label.ptr(), true);
+                            }
+                            else
+                            {
+                                _mol->setPseudoAtom(i, label.ptr());
+                            }
+                        }
                         else
                         {
                             if (label.size() == 2 && label[0] == 'Q')
@@ -610,9 +620,18 @@ void SmilesLoader::_readOtherStuff()
                             }
                             else
                             {
-                                std::unique_ptr<QueryMolecule::Atom> atom(_qmol->releaseAtom(i));
-                                atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
-                                _qmol->resetAtom(i, QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
+                                const auto atomNumber = _qmol->getAtomNumber(i);
+                                if (ELEM_MIN < atomNumber && atomNumber < ELEM_MAX)
+                                {
+                                    _qmol->aliases.findOrInsert(i).readString(label.ptr(), true);
+                                }
+                                else
+                                {
+                                    std::unique_ptr<QueryMolecule::Atom> atom(_qmol->releaseAtom(i));
+                                    atom->removeConstraints(QueryMolecule::ATOM_NUMBER);
+                                    _qmol->resetAtom(
+                                        i, QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
+                                }
                             }
                         }
                     }
