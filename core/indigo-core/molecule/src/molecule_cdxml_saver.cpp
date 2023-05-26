@@ -1367,6 +1367,18 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
                 s->SetAttribute("font", 4);
                 s->SetAttribute("size", font_size / kCDXMLFonsSizeMultiplier);
                 s->SetAttribute("face", font_face.face);
+                if (font_face.is_superscript)
+                {
+                    // s->SetAttribute("superscript", "yes");
+                    s->SetAttribute("superscript", KETTextObject::ESuperScript);
+                    s->SetAttribute("face", "64");
+                    // s->SetAttribute("BoundingBox", "116.84 150.75 180.16 175.05");
+                    // s->SetAttribute("p", "148.5 164.25");
+                    // s->SetAttribute("style", "SUPERSCRIPT");
+                    // s->SetAttribute("script_type", 1);
+                }
+                if (font_face.is_subscript)
+                    s->SetAttribute("subscript", KETTextObject::ESubScript);
                 XMLText* txt = _doc->NewText(sub_text.c_str());
                 s->LinkEndChild(txt);
                 current_styles = kvp.second;
