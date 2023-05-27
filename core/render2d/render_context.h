@@ -19,11 +19,10 @@
 #ifndef __render_context_h__
 #define __render_context_h__
 
+#include <cairo-pdf.h>
+#include <cairo-svg.h>
+#include <cairo.h>
 #include <vector>
-
-#include <cairo/cairo-pdf.h>
-#include <cairo/cairo-svg.h>
-#include <cairo/cairo.h>
 
 #include "render_common.h"
 

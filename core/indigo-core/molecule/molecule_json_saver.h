@@ -159,6 +159,10 @@ namespace indigo
 
         void Flush()
         {
+            if (pretty_json)
+                _pretty_writer.Flush();
+            else
+                _writer.Flush();
         }
 
     private:

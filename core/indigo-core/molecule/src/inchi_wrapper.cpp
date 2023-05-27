@@ -17,9 +17,7 @@
  ***************************************************************************/
 
 #include <algorithm>
-// #include <mode.h>
-
-#include <inchi_api.h>
+#include <mode.h>
 
 #include "molecule/inchi_wrapper.h"
 
@@ -27,6 +25,7 @@
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_dearom.h"
+// #include "mode.h"
 
 using namespace indigo;
 
@@ -74,7 +73,7 @@ private:
 
 const char* InchiWrapper::version()
 {
-    return "v1.03";
+    return APP_DESCRIPTION;
 }
 
 InchiWrapper::InchiWrapper() : _stereo_opt(_STEREO_ABS)
