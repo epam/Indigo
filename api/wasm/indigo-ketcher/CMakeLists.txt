@@ -6,7 +6,7 @@ add_library(${PROJECT_NAME}-object OBJECT indigo-ketcher.cpp)
 target_link_libraries(${PROJECT_NAME}-object indigo-static indigo-inchi-static indigo-renderer-static cppcodec)
 
 set(EMCC_FLAGS
-#        -Oz -flto --closure 1
+        -Oz -flto --closure 1
         --bind
         -s INITIAL_MEMORY=32mb
         -s ALLOW_MEMORY_GROWTH=1
