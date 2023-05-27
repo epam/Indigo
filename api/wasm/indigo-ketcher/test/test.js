@@ -675,7 +675,7 @@ M  END
     {
         test("reactionComponents", "basic", () => {
             let options = new indigo.MapStringString();
-            assert.equal(indigo.reactionComponents("C>O>N |$Carbon;Oxygen;Nitrogen$|", options), {
+            assert.deepStrictEqual(JSON.parse(indigo.reactionComponents("C>O>N |$Carbon;Oxygen;Nitrogen$|", options)), {
                 "reactants": ["C |$Carbon$|"],
                 "catalysts": ["O |$Oxygen$|"],
                 "products": ["N |$Nitrogen$|"]
