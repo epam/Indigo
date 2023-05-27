@@ -755,7 +755,6 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml.']}"
         # self.assertEqual(smiles, results_get)
 
     def test_convert_utf8(self):
-
         text = """
   Ketcher 02051318482D 1   1.00000     0.00000     0
 

@@ -428,7 +428,7 @@ void RSmilesLoader::_loadReaction()
                             else
                             {
                                 QueryMolecule& qmol = dynamic_cast<QueryMolecule&>(*mols[group]);
-                                const auto atomNumber = qmol.getAtomNumber(idx);                                
+                                const auto atomNumber = qmol.getAtomNumber(idx);
                                 if (ELEM_MIN < atomNumber && atomNumber < ELEM_MAX)
                                 {
                                     qmol.aliases.findOrInsert(idx).readString(label.ptr(), true);

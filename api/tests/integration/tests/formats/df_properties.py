@@ -53,13 +53,11 @@ saver_rd.close()
 
 print("********* Properties after SDF reload")
 for m in indigo.iterateSDFile(sdf_file_name):
-
     for p in m.iterateProperties():
         print("%s: %s" % (p.name(), p.rawData()))
 
 print("********* Properties after RDF reload")
 for m in indigo.iterateRDFile(rdf_file_name):
-
     for p in m.iterateProperties():
         print("%s: %s" % (p.name(), p.rawData()))
 

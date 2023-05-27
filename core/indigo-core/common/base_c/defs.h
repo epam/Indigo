@@ -24,7 +24,7 @@
 #endif
 
 #if defined(_WIN32) && !defined(__MINGW32__)
-//#define vsnprintf _vsnprintf
+// #define vsnprintf _vsnprintf
 #if _MSC_VER < 1900
 #define snprintf _snprintf
 #endif

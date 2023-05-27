@@ -805,7 +805,6 @@ def convert():
             indigo=indigo,
         )
     elif request.method == "GET":
-
         input_dict = {
             "struct": request.args["struct"],
             "output_format": request.args["output_format"]

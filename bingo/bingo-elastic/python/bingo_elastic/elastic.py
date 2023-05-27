@@ -231,7 +231,6 @@ class AsyncElasticRepository:
         options: str = "",
         **kwargs,
     ) -> AsyncGenerator[IndigoRecord, None]:
-
         if limit > MAX_ALLOWED_SIZE:
             raise ValueError(
                 f"limit should less or equal to {MAX_ALLOWED_SIZE}"
@@ -328,7 +327,6 @@ class ElasticRepository:
         options: str = "",
         **kwargs,
     ) -> Generator[IndigoRecord, None, None]:
-
         if limit > MAX_ALLOWED_SIZE:
             raise ValueError(
                 f"limit should less or equal to {MAX_ALLOWED_SIZE}"

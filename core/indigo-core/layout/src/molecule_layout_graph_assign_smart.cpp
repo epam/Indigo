@@ -16,7 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
-//#include "api/src/indigo_internal.h"
+// #include "api/src/indigo_internal.h"
 
 #include "base_cpp/profiling.h"
 #include "graph/biconnected_decomposer.h"

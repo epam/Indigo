@@ -32,14 +32,12 @@ def printInfo(mol):
 
 
 def testMolv2000Charge(filename):
-
     print(filename)
     mol = indigo.loadMoleculeFromFile(joinPathPy(filename, __file__))
     printInfo(mol)
 
 
 def testSDF2000Charge(filename):
-
     print(filename)
     with indigo.iterateSDFile(joinPathPy(filename, __file__)) as iterator:
         while iterator.hasNext():

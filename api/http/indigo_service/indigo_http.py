@@ -93,7 +93,6 @@ def indigo_version() -> jsonapi.VersionResponse:
 def similarities(
     request: jsonapi.SimilaritiesRequest,
 ) -> jsonapi.SimilaritiesResponse:
-
     fingerprint = request.data.attributes.fingerprint
     alpha = request.data.attributes.alpha
     beta = request.data.attributes.beta
