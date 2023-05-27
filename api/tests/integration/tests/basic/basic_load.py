@@ -144,9 +144,6 @@ m = indigo.loadMoleculeFromFile(
 indigo.setOption("molfile-saving-mode", "2000")
 print(m.molfile())
 
-print("****** Alias handling (SMILES) ********")
-print(m.canonicalSmiles())
-
 print("****** Test load from gzip buffer ********")
 with open(joinPathPy("molecules/benzene.mol.gz", __file__), "rb") as gz_mol:
     buf = gz_mol.read()

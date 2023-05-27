@@ -486,7 +486,15 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
 
         if (a.HasMember("alias"))
         {
-            mol.aliases.findOrInsert(atom_idx).readString(a["alias"].GetString(), true);
+            Array<char> alias;
+            alias.readString(a["alias"].GetString(), true);
+            int idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+            DataSGroup& sgroup = (DataSGroup&)mol.sgroups.getSGroup(idx);
+            sgroup.atoms.push(atom_idx);
+            sgroup.name.readString("INDIGO_ALIAS", true);
+            sgroup.data.copy(alias);
+            sgroup.display_pos.x = mol.getAtomXyz(atom_idx).x;
+            sgroup.display_pos.y = mol.getAtomXyz(atom_idx).y;
         }
 
         if (a.HasMember("cip"))

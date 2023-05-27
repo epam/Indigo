@@ -67,7 +67,7 @@ if has_match3 != has_match_orig:
     )
 
 print("****** Bad valence, smiles and unfold ********")
-m = indigo.loadMolecule("C\\C=C(/N(O)=O)N(O)=O")
+m = indigo.loadMolecule("C\C=C(/N(O)=O)N(O)=O")
 sm = m.smiles()
 print(m.smiles())
 print(m.canonicalSmiles())
@@ -82,7 +82,7 @@ if sm2 != sm:
     sys.stderr.write("Error: %s != %s" % (sm, sm2))
 
 print("****** Serialize and atom changing ********")
-m = indigo.loadMolecule("CC[C@@H](N)\\C=C/C")
+m = indigo.loadMolecule("CC[C@@H](N)\C=C/C")
 print(m.smiles())
 print(m.canonicalSmiles())
 
@@ -93,7 +93,7 @@ print(m.smiles())
 print(m.canonicalSmiles())
 
 try:
-    m2 = indigo.deserialize(m.serialize())
+    m2 = indigo.unserialize(m.serialize())
     print(m2.smiles())
     print(m2.canonicalSmiles())
 except IndigoException as e:
@@ -105,7 +105,7 @@ for a in m.iterateAtoms():
     print("%d %d" % (a.charge(), a.valence()))
 
 try:
-    m2 = indigo.deserialize(m.serialize())
+    m2 = indigo.unserialize(m.serialize())
     print(m2.smiles())
     print(m2.canonicalSmiles())
     for a in m2.iterateAtoms():
@@ -217,7 +217,7 @@ print(m.smiles())
 
 
 print("****** Symmetric stereocenters and cis-trans bonds ********")
-m = indigo.loadMolecule("C[C@H]1CCC(CC1)C(\\C1CC[C@H](C)CC1)=C(\\C)C1CCCCC1")
+m = indigo.loadMolecule("C[C@H]1CCC(CC1)C(\C1CC[C@H](C)CC1)=C(\C)C1CCCCC1")
 print(m.smiles())
 m2 = m.clone()
 m.resetSymmetricCisTrans()
@@ -279,13 +279,13 @@ for mstr in mols:
     m = indigo.loadMolecule(mstr)
     print(m.canonicalSmiles())
     m.normalize()
-    m2 = indigo.deserialize(m.serialize())
+    m2 = indigo.unserialize(m.serialize())
     print(m2.canonicalSmiles())
 
 print("***** Serialization of aromatic hydrogens *****")
 m = indigo.loadMolecule("C[c]1(C)ccccc1")
 q = indigo.loadQueryMolecule("N([H])[H]")
-m2 = indigo.deserialize(m.serialize())
+m2 = indigo.unserialize(m.serialize())
 matcher = indigo.substructureMatcher(m2)
 assert matcher.match(q) == None
 

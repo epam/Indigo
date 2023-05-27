@@ -1479,7 +1479,14 @@ void MolfileLoader::_readCtab2000()
 
             if (_atom_types[atom_idx] == _ATOM_ELEMENT)
             {
-                _bmol->aliases.findOrInsert(atom_idx).copy(alias);
+                int idx = _bmol->sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+                DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(idx);
+
+                sgroup.atoms.push(atom_idx);
+                sgroup.name.readString("INDIGO_ALIAS", true);
+                sgroup.data.copy(alias);
+                sgroup.display_pos.x = _bmol->getAtomXyz(atom_idx).x;
+                sgroup.display_pos.y = _bmol->getAtomXyz(atom_idx).y;
             }
             else
             {

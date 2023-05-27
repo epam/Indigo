@@ -220,9 +220,18 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                     }
                 }
 
-                if (mol.aliases.find(i))
+                for (int j = _mol->sgroups.begin(); j != _mol->sgroups.end(); j = _mol->sgroups.next(j))
                 {
-                    atom->SetAttribute("mrvAlias", mol.aliases.at(i).ptr());
+                    SGroup& sgroup = _mol->sgroups.getSGroup(j);
+                    if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+                    {
+                        DataSGroup& dsg = (DataSGroup&)sgroup;
+                        if ((dsg.name.size() >= 12) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0) && (dsg.atoms.size() > 0) && (dsg.atoms[0] == i) &&
+                            dsg.data.size() > 0)
+                        {
+                            atom->SetAttribute("mrvAlias", dsg.data.ptr());
+                        }
+                    }
                 }
             }
 
@@ -535,6 +544,13 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
         for (i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
         {
             SGroup& sgroup = _mol->sgroups.getSGroup(i);
+
+            if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+            {
+                DataSGroup& dsg = (DataSGroup&)sgroup;
+                if ((dsg.name.size() >= 12) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0))
+                    continue;
+            }
 
             if (sgroup.parent_group == 0)
                 _addSgroupElement(molecule, *_mol, sgroup);

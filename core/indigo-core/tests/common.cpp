@@ -38,37 +38,19 @@ bool IndigoCoreTest::substructureMatch(const char* targetString, const char* que
     return matcher.find();
 }
 
-std::string IndigoCoreTest::smilesLoadSaveLoad(const std::string& queryString, bool smarts)
+std::string IndigoCoreTest::smartsLoadSaveLoad(const std::string& queryString)
 {
-    if (smarts)
-    {
-        QueryMolecule query;
-        loadQueryMolecule(queryString.c_str(), query);
-        Array<char> buffer;
-        ArrayOutput output(buffer);
-        CanonicalSmilesSaver smilesSaver(output);
-        if (smarts)
-        {
-            smilesSaver.smarts_mode = true;
-            smilesSaver.ignore_hydrogens = false;
-        }
-        smilesSaver.saveQueryMolecule(query);
-        output.writeChar(0);
-        std::string result(buffer.ptr());
-        return result;
-    }
-    else
-    {
-        Molecule molecule;
-        loadMolecule(queryString.c_str(), molecule);
-        Array<char> buffer;
-        ArrayOutput output(buffer);
-        CanonicalSmilesSaver smilesSaver(output);
-        smilesSaver.saveMolecule(molecule);
-        output.writeChar(0);
-        std::string result(buffer.ptr());
-        return result;
-    }
+    QueryMolecule query;
+    loadQueryMolecule(queryString.c_str(), query);
+    Array<char> buffer;
+    ArrayOutput output(buffer);
+    CanonicalSmilesSaver smilesSaver(output);
+    smilesSaver.smarts_mode = true;
+    smilesSaver.ignore_hydrogens = false;
+    smilesSaver.saveQueryMolecule(query);
+    output.writeChar(0);
+    std::string result(buffer.ptr());
+    return result;
 }
 
 std::string IndigoCoreTest::dataPath(const char* dataPathSuffix)

@@ -20,7 +20,7 @@ namespace indigo
         static void loadMolecule(const char* buf, Molecule& molecule);
         static void loadQueryMolecule(const char* buf, QueryMolecule& queryMolecule);
         bool substructureMatch(const char* targetString, const char* queryString);
-        std::string smilesLoadSaveLoad(const std::string& queryString, bool smarts=false);
+        std::string smartsLoadSaveLoad(const std::string& queryString);
 
         static std::string dataPath(const char* dataPathSuffix);
     };

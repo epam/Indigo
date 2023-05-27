@@ -413,31 +413,12 @@ void RSmilesLoader::_loadReaction()
                         else
                         {
                             if (_rxn != 0)
-                            {
-                                Molecule& mol = dynamic_cast<Molecule&>(*mols[group]);
-                                const auto atomNumber = mol.getAtomNumber(idx);
-                                if (ELEM_MIN < atomNumber && atomNumber < ELEM_MAX)
-                                {
-                                    mol.aliases.findOrInsert(idx).readString(label.ptr(), true);
-                                }
-                                else
-                                {
-                                    mol.setPseudoAtom(idx, label.ptr());
-                                }
-                            }
+                                (dynamic_cast<Molecule&>(*mols[group])).setPseudoAtom(idx, label.ptr());
                             else
                             {
                                 QueryMolecule& qmol = dynamic_cast<QueryMolecule&>(*mols[group]);
-                                const auto atomNumber = qmol.getAtomNumber(idx);                                
-                                if (ELEM_MIN < atomNumber && atomNumber < ELEM_MAX)
-                                {
-                                    qmol.aliases.findOrInsert(idx).readString(label.ptr(), true);
-                                }
-                                else
-                                {
-                                    qmol.resetAtom(idx, (QueryMolecule::Atom*)QueryMolecule::Atom::und(
-                                                            qmol.releaseAtom(idx), new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
-                                }
+                                qmol.resetAtom(idx, (QueryMolecule::Atom*)QueryMolecule::Atom::und(
+                                                        qmol.releaseAtom(idx), new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
                             }
                         }
                     }

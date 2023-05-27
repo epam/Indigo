@@ -589,6 +589,22 @@ void MoleculeJsonSaver::saveSelection(BaseMolecule& mol, JsonWriter& writer)
 
 void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
 {
+    // collect aliases
+    std::unordered_map<int, std::string> aliases;
+    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+    {
+        SGroup& sgroup = mol.sgroups.getSGroup(i);
+        if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+        {
+            DataSGroup& dsg = (DataSGroup&)sgroup;
+            if ((dsg.name.size() > 11) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0) && (dsg.atoms.size() > 0) && dsg.data.size() > 0)
+            {
+                aliases.emplace(dsg.atoms[0], dsg.data.ptr());
+                mol.sgroups.remove(i);
+            }
+        }
+    }
+
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     for (auto i : mol.vertices())
@@ -676,10 +692,11 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 writer.String(buf.ptr());
             }
 
-            if (mol.aliases.find(i))
+            auto alias_it = aliases.find(i);
+            if (alias_it != aliases.end())
             {
                 writer.Key("alias");
-                writer.String(mol.aliases.at(i).ptr());
+                writer.String(alias_it->second.c_str());
             }
         }
 
