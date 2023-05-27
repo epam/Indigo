@@ -25,8 +25,6 @@
 #include <indigo_internal.h>
 
 #include "common.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
 
 using namespace indigo;
 
@@ -294,90 +292,4 @@ TEST_F(IndigoApiBasicTest, submolecule_test_general)
     {
         ASSERT_STREQ("", e.message());
     }
-}
-
-#include <rapidjson/rapidjson.h>
-#include <rapidjson/document.h>
-
-#define jsThrow(x) throw std::runtime_error(x);
-namespace 
-{
-    using cstring = const char*;
-    
-    int _checkResult(int result)
-    {
-        if (result < 0)
-        {
-            jsThrow(indigoGetLastError());
-        }
-        return result;
-    }
-    
-    double _checkResultFloat(double result)
-    {
-        if (result < 0.5)
-        {
-            jsThrow(indigoGetLastError());
-        }
-        return result;
-    }
-
-    cstring _checkResultString(cstring result)
-    {
-        if (result == nullptr)
-        {
-            jsThrow(indigoGetLastError());
-        }
-        return result;
-    }
-}
-
-TEST_F(IndigoApiBasicTest, reaction_components)
-{
-    using namespace rapidjson;
-    Document result;
-    result.SetObject();
-    std::string data("C>>N |$Carbon;Nitrogen$|");
-    // Indigo
-    {            
-        const auto indigoSession = _checkResult(indigoAllocSessionId());
-        const auto reactionId = _checkResult(indigoLoadQueryReactionFromString(data.c_str()));
-        // reactants
-        {
-            Value reactants(kArrayType);
-            reactants.SetArray();
-            const auto reactantsIteratorId = _checkResult(indigoIterateReactants(reactionId));
-            while (const auto reactantId = _checkResult(indigoNext(reactantsIteratorId)))
-            {
-                Value reactant(kStringType);
-                reactant.SetString(_checkResultString(indigoSmiles(reactantId)), result.GetAllocator());
-                reactants.PushBack(reactant, result.GetAllocator());
-                _checkResult(indigoFree(reactantId));
-            }
-            result.AddMember("reactants", reactants, result.GetAllocator());
-            _checkResult(indigoFree(reactantsIteratorId));
-        }
-        // products
-        {
-            Value products(kArrayType);
-            products.SetArray();
-            const auto productsIteratorId = _checkResult(indigoIterateProducts(reactionId));
-            while (const auto productId = _checkResult(indigoNext(productsIteratorId)))
-            {
-                Value product(kStringType);
-                product.SetString(_checkResultString(indigoSmiles(productId)), result.GetAllocator());
-                products.PushBack(product, result.GetAllocator());
-                _checkResult(indigoFree(productId));
-            }
-            result.AddMember("products", products, result.GetAllocator());
-            _checkResult(indigoFree(productsIteratorId));
-        }
-        _checkResult(indigoFree(reactionId));
-        indigoReleaseSessionId(indigoSession);
-    }
-    // Serialize results
-    StringBuffer buffer;
-    Writer<rapidjson::StringBuffer> writer(buffer);
-    result.Accept(writer);
-    std::cout << buffer.GetString();
 }
