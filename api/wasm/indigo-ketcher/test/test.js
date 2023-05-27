@@ -63,7 +63,7 @@ indigoModuleFn().then(indigo => {
         test("automap", "basic", () => {
             let options = new indigo.MapStringString();
             assert.doesNotThrow(() => {
-                const result = indigo.automap(rxn_smiles, "discard", "molfile",options);
+                const result = indigo.automap(rxn_smiles, "discard", "molfile", options);
                 assert.equal(result.indexOf("$RXN"), 0);
             });
             options.delete();
@@ -313,7 +313,7 @@ M  END
             selected.push_back(1);
             selected.push_back(2);
             assert.doesNotThrow(() => {
-                indigo.clean2d(mol_smiles,"molfile",options, selected)
+                indigo.clean2d(mol_smiles, "molfile", options, selected)
             });
             selected.delete();
             options.delete();
@@ -342,7 +342,7 @@ M  END
 
         test("convert", "molfile3000_auto", () => {
             let options = new indigo.MapStringString();
-			options.set('ignore-stereochemistry-errors', 'true');
+            options.set('ignore-stereochemistry-errors', 'true');
             options.set('ignore-bad-valence', 'true');
             options.set('molfile-saving-mode', 'auto');
             const molfile_2000 = indigo.convert(`
@@ -480,8 +480,8 @@ M  END
             var fs = require('fs');
             const cdx_data = fs.readFileSync("test64.cdx");
             const ket = indigo.convert(cdx_data, "ket", options);
-            const ket_data = indigo.convert(fs.readFileSync("test64.ket"),"ket", options);
-            fs.writeFileSync("test64a.ket",ket);
+            const ket_data = indigo.convert(fs.readFileSync("test64.ket"), "ket", options);
+            fs.writeFileSync("test64a.ket", ket);
             assert.equal(ket, ket_data);
             options.delete();
         });
@@ -492,7 +492,7 @@ M  END
     {
         test("dearomatize", "basic", () => {
             let options = new indigo.MapStringString();
-            const dearomatized_smiles = indigo.convert(indigo.dearomatize(mol_smiles_aromatized, "molfile",  options), "smiles", options);
+            const dearomatized_smiles = indigo.convert(indigo.dearomatize(mol_smiles_aromatized, "molfile", options), "smiles", options);
             assert.equal(dearomatized_smiles, "C1C=CC=CC=1");
             options.delete();
         });
@@ -510,7 +510,7 @@ M  END
     {
         test("layout", "basic", () => {
             let options = new indigo.MapStringString();
-            assert(indigo.layout(mol_smiles,"molfile", options).indexOf("-1.6") !== -1);
+            assert(indigo.layout(mol_smiles, "molfile", options).indexOf("-1.6") !== -1);
             options.delete();
         });
     }
@@ -549,7 +549,7 @@ M  END
         });
 
         // TODO: check if looksSame() works correctly for svg files
-        // test("render", "uf8_svg", async () => {
+        // test("render", "utf8_svg", async () => {
         //     let options = new indigo.MapStringString();
         //     options.set("render-output-format", "svg");
         //     var fs = require('fs');
@@ -561,10 +561,10 @@ M  END
         //     options.delete();
         // });
 
-        test("render", "uf8_png", async () => {
+        test("render", "utf8_png", async () => {
             let options = new indigo.MapStringString();
             options.set("render-output-format", "png");
-            options.set("render-background-color","1,1,1");
+            options.set("render-background-color", "1,1,1");
             var fs = require('fs');
             const ket_data = fs.readFileSync("test_symbols_4_styles_2_sizes.ket");
             const png = Buffer.from(indigo.render(ket_data, options), "base64");
@@ -577,7 +577,7 @@ M  END
         test("render", "ketcher_text_panel_regular", async () => {
             let options = new indigo.MapStringString();
             options.set("render-output-format", "png");
-            options.set("render-background-color","1,1,1");
+            options.set("render-background-color", "1,1,1");
             var fs = require('fs');
             const ket_data = fs.readFileSync("ketcher_text_panel_test_regular.ket");
             const png = Buffer.from(indigo.render(ket_data, options), "base64");
@@ -590,7 +590,7 @@ M  END
         test("render", "ketcher_text_panel_bold", async () => {
             let options = new indigo.MapStringString();
             options.set("render-output-format", "png");
-            options.set("render-background-color","1,1,1");
+            options.set("render-background-color", "1,1,1");
             var fs = require('fs');
             const ket_data = fs.readFileSync("ketcher_text_panel_test_bold.ket");
             const png = Buffer.from(indigo.render(ket_data, options), "base64");
@@ -603,7 +603,7 @@ M  END
         test("render", "ketcher_text_panel_italic", async () => {
             let options = new indigo.MapStringString();
             options.set("render-output-format", "png");
-            options.set("render-background-color","1,1,1");
+            options.set("render-background-color", "1,1,1");
             var fs = require('fs');
             const ket_data = fs.readFileSync("ketcher_text_panel_test_italic.ket");
             const png = Buffer.from(indigo.render(ket_data, options), "base64");
@@ -616,7 +616,7 @@ M  END
         test("render", "ketcher_text_panel_bold_italic", async () => {
             let options = new indigo.MapStringString();
             options.set("render-output-format", "png");
-            options.set("render-background-color","1,1,1");
+            options.set("render-background-color", "1,1,1");
             var fs = require('fs');
             const ket_data = fs.readFileSync("ketcher_text_panel_test_bold_italic.ket");
             const png = Buffer.from(indigo.render(ket_data, options), "base64");
@@ -668,6 +668,19 @@ M  END
     {
         test("version", "basic", () => {
             assert(indigo.version().indexOf("wasm") !== -1);
+        });
+    }
+
+    // reactionComponents
+    {
+        test("reactionComponents", "basic", () => {
+            let options = new indigo.MapStringString();
+            assert.equal(indigo.reactionComponents("C>O>N |$Carbon;Oxygen;Nitrogen$|", options), {
+                "reactants": ["C |$Carbon$|"],
+                "catalysts": ["O |$Oxygen$|"],
+                "products": ["N |$Nitrogen$|"]
+            });
+            options.delete();
         });
     }
 
