@@ -49,18 +49,18 @@ A   13
 ^R
 A   14
 ^R5
-M  STY  2  10 SRU  11 SRU
-M  SLB  2  10  10  11  11
-M  SCN  2  10 HT   11 HT 
-M  SAL  10  1  11
-M  SBL  10  1   9
-M  SMT  10 m
-M  SDI  10  4    1.2300   -0.4700    1.2300    0.3600
-M  SDI  10  4    2.1700    0.3500    2.1700   -0.4700
-M  SAL  11  3  12  13  14
-M  SBL  11  1  10
-M  SDI  11  4    3.7900    0.6000    1.9800    0.6000
-M  SDI  11  4    1.9200    2.6300    3.8000    2.6300
+M  STY  2   1 SRU   2 SRU
+M  SLB  2   1   1   2   2
+M  SCN  2   1 HT    2 HT 
+M  SAL   1  1  11
+M  SBL   1  1   9
+M  SMT   1 m
+M  SDI   1  4    1.2300   -0.4700    1.2300    0.3600
+M  SDI   1  4    2.1700    0.3500    2.1700   -0.4700
+M  SAL   2  3  12  13  14
+M  SBL   2  1  10
+M  SDI   2  4    3.7900    0.6000    1.9800    0.6000
+M  SDI   2  4    1.9200    2.6300    3.8000    2.6300
 M  END
 
  molfile-saving-mode: 2000
@@ -114,18 +114,18 @@ A   13
 ^R
 A   14
 ^R5
-M  STY  2  10 SRU  11 SRU
-M  SLB  2  10  10  11  11
-M  SCN  2  10 HT   11 HT 
-M  SAL  10  1  11
-M  SBL  10  1   9
-M  SMT  10 m
-M  SDI  10  4    1.2300   -0.4700    1.2300    0.3600
-M  SDI  10  4    2.1700    0.3500    2.1700   -0.4700
-M  SAL  11  3  12  13  14
-M  SBL  11  1  10
-M  SDI  11  4    3.7900    0.6000    1.9800    0.6000
-M  SDI  11  4    1.9200    2.6300    3.8000    2.6300
+M  STY  2   1 SRU   2 SRU
+M  SLB  2   1   1   2   2
+M  SCN  2   1 HT    2 HT 
+M  SAL   1  1  11
+M  SBL   1  1   9
+M  SMT   1 m
+M  SDI   1  4    1.2300   -0.4700    1.2300    0.3600
+M  SDI   1  4    2.1700    0.3500    2.1700   -0.4700
+M  SAL   2  3  12  13  14
+M  SBL   2  1  10
+M  SDI   2  4    3.7900    0.6000    1.9800    0.6000
+M  SDI   2  4    1.9200    2.6300    3.8000    2.6300
 M  END
 
  molfile-saving-mode: 3000
@@ -134,7 +134,7 @@ M  END
 
   0  0  0  0  0  0  0  0  0  0  0 V3000
 M  V30 BEGIN CTAB
-M  V30 COUNTS 14 14 11 0 0
+M  V30 COUNTS 14 14 2 0 0
 M  V30 BEGIN ATOM
 M  V30 1 C 4.3917 0.3333 0.0 0
 M  V30 2 C 5.0583 -0.1458 0.0 0
@@ -168,32 +168,14 @@ M  V30 13 2 4 5
 M  V30 14 1 12 14
 M  V30 END BOND
 M  V30 BEGIN SGROUP
-M  V30 1 DAT 1 ATOMS=(1 1) FIELDNAME=INDIGO_ALIAS FIELDDISP="    4.3917    0.-
-M  V30 3333    AA    ALL  1       1  " FIELDDATA="^W"
-M  V30 2 DAT 2 ATOMS=(1 6) FIELDNAME=INDIGO_ALIAS FIELDDISP="    3.5583   -1.-
-M  V30 6417    AA    ALL  1       1  " FIELDDATA="^R2"
-M  V30 3 DAT 3 ATOMS=(1 7) FIELDNAME=INDIGO_ALIAS FIELDDISP="    5.2083   -1.-
-M  V30 6458    AA    ALL  1       1  " FIELDDATA="^R4"
-M  V30 4 DAT 4 ATOMS=(1 8) FIELDNAME=INDIGO_ALIAS FIELDDISP="    5.8542    0.-
-M  V30 0667    AA    ALL  1       1  " FIELDDATA="^Q"
-M  V30 5 DAT 5 ATOMS=(1 9) FIELDNAME=INDIGO_ALIAS FIELDDISP="    6.5667   -0.-
-M  V30 3458    AA    ALL  1       1  " FIELDDATA="^R3"
-M  V30 6 DAT 6 ATOMS=(1 10) FIELDNAME=INDIGO_ALIAS FIELDDISP="    2.9208    0-
-M  V30 .0750    AA    ALL  1       1  " FIELDDATA="^A"
-M  V30 7 DAT 7 ATOMS=(1 11) FIELDNAME=INDIGO_ALIAS FIELDDISP="    1.5667   -0-
-M  V30 .2042    AA    ALL  1       1  " FIELDDATA="^R1"
-M  V30 8 DAT 8 ATOMS=(1 13) FIELDNAME=INDIGO_ALIAS FIELDDISP="    2.3375    1-
-M  V30 .8792    AA    ALL  1       1  " FIELDDATA="^R"
-M  V30 9 DAT 9 ATOMS=(1 14) FIELDNAME=INDIGO_ALIAS FIELDDISP="    3.5083    1-
-M  V30 .8750    AA    ALL  1       1  " FIELDDATA="^R5"
-M  V30 10 SRU 10 ATOMS=(1 11) XBONDS=(1 9) BRKXYZ=(9 1.230000 -0.470000 0.000-
-M  V30 000 1.230000 0.360000 0.000000 0.000000 0.000000 0.000000) BRKXYZ=(9 2-
-M  V30 .170000 0.350000 0.000000 2.170000 -0.470000 0.000000 0.000000 0.00000-
-M  V30 0 0.000000) CONNECT=HT LABEL=m
-M  V30 11 SRU 11 ATOMS=(3 12 13 14) XBONDS=(1 10) BRKXYZ=(9 3.790000 0.600000-
-M  V30  0.000000 1.980000 0.600000 0.000000 0.000000 0.000000 0.000000) BRKXY-
-M  V30 Z=(9 1.920000 2.630000 0.000000 3.800000 2.630000 0.000000 0.000000 0.-
-M  V30 000000 0.000000) CONNECT=HT
+M  V30 1 SRU 1 ATOMS=(1 11) XBONDS=(1 9) BRKXYZ=(9 1.230000 -0.470000 0.00000-
+M  V30 0 1.230000 0.360000 0.000000 0.000000 0.000000 0.000000) BRKXYZ=(9 2.1-
+M  V30 70000 0.350000 0.000000 2.170000 -0.470000 0.000000 0.000000 0.000000 -
+M  V30 0.000000) CONNECT=HT LABEL=m
+M  V30 2 SRU 2 ATOMS=(3 12 13 14) XBONDS=(1 10) BRKXYZ=(9 3.790000 0.600000 0-
+M  V30 .000000 1.980000 0.600000 0.000000 0.000000 0.000000 0.000000) BRKXYZ=-
+M  V30 (9 1.920000 2.630000 0.000000 3.800000 2.630000 0.000000 0.000000 0.00-
+M  V30 0000 0.000000) CONNECT=HT
 M  V30 END SGROUP
 M  V30 END CTAB
 M  END
@@ -7930,7 +7912,7 @@ ind-291-list3v2000.mol:
 
   0  0  0  0  0  0  0  0  0  0  0 V3000
 M  V30 BEGIN CTAB
-M  V30 COUNTS 17 17 1 0 0
+M  V30 COUNTS 17 17 0 0 0
 M  V30 BEGIN ATOM
 M  V30 1 C 4.4861 -7.0041 0.0 0
 M  V30 2 C 4.4849 -7.8315 0.0 0
@@ -7972,10 +7954,6 @@ M  V30 END BOND
 M  V30 BEGIN COLLECTION
 M  V30 MDLV30/STERAC1 ATOMS=(1 7)
 M  V30 END COLLECTION
-M  V30 BEGIN SGROUP
-M  V30 1 DAT 1 ATOMS=(1 16) FIELDNAME=INDIGO_ALIAS FIELDDISP="    3.7715   -6-
-M  V30 .5918    AA    ALL  1       1  " FIELDDATA="Fred"
-M  V30 END SGROUP
 M  V30 END CTAB
 M  END
 
@@ -8030,7 +8008,7 @@ M  END
 
   0  0  0  0  0  0  0  0  0  0  0 V3000
 M  V30 BEGIN CTAB
-M  V30 COUNTS 17 17 1 0 0
+M  V30 COUNTS 17 17 0 0 0
 M  V30 BEGIN ATOM
 M  V30 1 C 4.4861 -7.0041 0.0 0
 M  V30 2 C 4.4849 -7.8315 0.0 0
@@ -8072,10 +8050,6 @@ M  V30 END BOND
 M  V30 BEGIN COLLECTION
 M  V30 MDLV30/STERAC1 ATOMS=(1 7)
 M  V30 END COLLECTION
-M  V30 BEGIN SGROUP
-M  V30 1 DAT 1 ATOMS=(1 16) FIELDNAME=INDIGO_ALIAS FIELDDISP="    3.7715   -6-
-M  V30 .5918    AA    ALL  1       1  " FIELDDATA="Fred"
-M  V30 END SGROUP
 M  V30 END CTAB
 M  END
 
@@ -13029,148 +13003,4 @@ M  V30 END CTAB
 M  END
 
 *** 2-digit pseudoatom index ***
-C1(CCCCCC1)CCCC(=O)CC1CSC(C(C(C)CC)N)=N1
-*** INDIGO_ALIAS molfile ***
-
-  -INDIGO-01000000002D
-
- 13 13  0  0  0  0  0  0  0  0999 V2000
-   -0.8662    1.5003    0.0000 C   0  0  0  0  0  7  0  0  0  0  0  0
-   -1.7324    1.0003    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.7324    0.0001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.8662   -0.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0001    1.0002    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.5982    1.5002    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.8659    1.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.8663   -1.4999    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
-    0.5876   -0.8089    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.9943   -0.1045    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.2079   -0.9779    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.7431    0.6690    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0  0  0  0
-  1  6  2  0  0  0  0
-  2  3  2  0  0  0  0
-  3  4  1  0  0  0  0
-  4  5  2  0  0  0  0
-  5  6  1  0  0  0  0
-  2  7  1  0  0  0  0
-  6  8  1  0  0  0  0
-  4  9  1  0  0  0  0
-  5 10  1  0  0  0  0
-  5 11  1  0  0  0  0
-  5 12  1  0  0  0  0
-  5 13  1  0  0  0  0
-M  RAD  1   3   3
-A    7
-Psd
-A    8
-Pol
-M  END
-
-
-  -INDIGO-01000000002D
-
-  0  0  0  0  0  0  0  0  0  0  0 V3000
-M  V30 BEGIN CTAB
-M  V30 COUNTS 13 13 2 0 0
-M  V30 BEGIN ATOM
-M  V30 1 C -0.8662 1.5003 0.0 0 VAL=7
-M  V30 2 C -1.7324 1.0003 0.0 0
-M  V30 3 C -1.7324 0.0001 0.0 0 CHG=-40 RAD=3
-M  V30 4 C -0.8662 -0.5001 0.0 0
-M  V30 5 C 0.0 0.0 0.0 0
-M  V30 6 C 0.0001 1.0002 0.0 0
-M  V30 7 C -2.5982 1.5002 0.0 0
-M  V30 8 C 0.8659 1.5001 0.0 0
-M  V30 9 N -0.8663 -1.4999 0.0 0
-M  V30 10 C 0.5876 -0.8089 0.0 0
-M  V30 11 C 0.9943 -0.1045 0.0 0
-M  V30 12 C -0.2079 -0.9779 0.0 0
-M  V30 13 C 0.7431 0.669 0.0 0
-M  V30 END ATOM
-M  V30 BEGIN BOND
-M  V30 1 1 1 2
-M  V30 2 2 1 6
-M  V30 3 2 2 3
-M  V30 4 1 3 4
-M  V30 5 2 4 5
-M  V30 6 1 5 6
-M  V30 7 1 2 7
-M  V30 8 1 6 8
-M  V30 9 1 4 9
-M  V30 10 1 5 10
-M  V30 11 1 5 11
-M  V30 12 1 5 12
-M  V30 13 1 5 13
-M  V30 END BOND
-M  V30 BEGIN SGROUP
-M  V30 1 DAT 1 ATOMS=(1 7) FIELDNAME=INDIGO_ALIAS FIELDDISP="   -2.5982    1.-
-M  V30 5002    AA    ALL  1       1  " FIELDDATA="Psd"
-M  V30 2 DAT 2 ATOMS=(1 8) FIELDNAME=INDIGO_ALIAS FIELDDISP="    0.8659    1.-
-M  V30 5001    AA    ALL  1       1  " FIELDDATA="Pol"
-M  V30 END SGROUP
-M  V30 END CTAB
-M  END
-
-<?xml version="1.0" encoding="UTF-8"?>
-<cml>
-    <molecule title="">
-        <atomArray>
-            <atom id="a0" elementType="C" mrvValence="7" hydrogenCount="4" x2="-0.8662" y2="1.5003"/>
-            <atom id="a1" elementType="C" x2="-1.7324" y2="1.0003"/>
-            <atom id="a2" elementType="C" formalCharge="-40" spinMultiplicity="3" radical="divalent3" x2="-1.7324" y2="0.0001"/>
-            <atom id="a3" elementType="C" x2="-0.8662" y2="-0.5001"/>
-            <atom id="a4" elementType="C" x2="0" y2="0"/>
-            <atom id="a5" elementType="C" x2="0.0001" y2="1.0002"/>
-            <atom id="a6" elementType="C" mrvAlias="Psd" x2="-2.5982" y2="1.5002"/>
-            <atom id="a7" elementType="C" mrvAlias="Pol" x2="0.8659" y2="1.5001"/>
-            <atom id="a8" elementType="N" x2="-0.8663" y2="-1.4999"/>
-            <atom id="a9" elementType="C" x2="0.5876" y2="-0.8089"/>
-            <atom id="a10" elementType="C" x2="0.9943" y2="-0.1045"/>
-            <atom id="a11" elementType="C" x2="-0.2079" y2="-0.9779"/>
-            <atom id="a12" elementType="C" x2="0.7431" y2="0.669"/>
-        </atomArray>
-        <bondArray>
-            <bond atomRefs2="a0 a1" order="1"/>
-            <bond atomRefs2="a0 a5" order="2">
-                <bondStereo atomRefs4="a1 a0 a5 a4">C</bondStereo>
-            </bond>
-            <bond atomRefs2="a1 a2" order="2">
-                <bondStereo atomRefs4="a0 a1 a2 a3">C</bondStereo>
-            </bond>
-            <bond atomRefs2="a2 a3" order="1"/>
-            <bond atomRefs2="a3 a4" order="2"/>
-            <bond atomRefs2="a4 a5" order="1"/>
-            <bond atomRefs2="a1 a6" order="1"/>
-            <bond atomRefs2="a5 a7" order="1"/>
-            <bond atomRefs2="a3 a8" order="1"/>
-            <bond atomRefs2="a4 a9" order="1"/>
-            <bond atomRefs2="a4 a10" order="1"/>
-            <bond atomRefs2="a4 a11" order="1"/>
-            <bond atomRefs2="a4 a12" order="1"/>
-        </bondArray>
-    </molecule>
-</cml>
-
-*** Single atom NOT list ***
-
-  -INDIGO-01000000002D
-
-  0  0  0  0  0  0  0  0  0  0  0 V3000
-M  V30 BEGIN CTAB
-M  V30 COUNTS 4 3 0 0 0
-M  V30 BEGIN ATOM
-M  V30 1 C -4.1766 4.6848 0.0 0
-M  V30 2 C -3.4621 4.2723 0.0 0
-M  V30 3 NOT[N] -2.7476 4.6848 0.0 0
-M  V30 4 C -2.0331 4.2723 0.0 0
-M  V30 END ATOM
-M  V30 BEGIN BOND
-M  V30 1 1 1 2
-M  V30 2 1 2 3
-M  V30 3 1 3 4
-M  V30 END BOND
-M  V30 END CTAB
-M  END
-
+C1(CCCCCC1)CCCC(=O)CC1CSC(C(C(C)CC)N)=N1 |$Lys;;Asn;Asp;;His;;;;;;Glu;;;;;;;;;;;;$|
