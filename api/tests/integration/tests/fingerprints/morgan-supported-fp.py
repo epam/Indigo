@@ -31,7 +31,6 @@ for fp_type in [
     "FCFP8",
     "lmao6",
 ]:
-
     print(fp_type)
 
     try:

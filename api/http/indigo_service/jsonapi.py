@@ -492,7 +492,6 @@ def make_validation_response(
 
 
 class Descriptors(str, Enum):
-
     COUNT_ALLENE_CENTERS = "countAlleneCenters"
     COUNT_ATOMS = "countAtoms"
     COUNT_ATTACHMENT_POINTS = "countAttachmentPoints"

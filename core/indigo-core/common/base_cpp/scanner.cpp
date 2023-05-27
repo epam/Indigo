@@ -19,10 +19,10 @@
 #include <algorithm>
 #include <ctype.h>
 #include <errno.h>
+#include <limits>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
-#include <limits>
 
 #include <cppcodec/base64_default_rfc4648.hpp>
 

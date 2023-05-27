@@ -330,7 +330,6 @@ def test_custom_fields(
     loaded_sdf: IndigoRecordMolecule,
     resource_loader,
 ):
-
     mol = indigo_fixture.loadMoleculeFromFile(
         resource_loader("molecules/composition1.mol")
     )
@@ -434,7 +433,6 @@ def test_similarity_matches_reactions(
     resource_loader,
     indigo_fixture,
 ) -> None:
-
     reaction = indigo_fixture.loadReactionFromFile(
         resource_loader("reactions/rheadb/50353.rxn")
     )
@@ -480,7 +478,6 @@ async def test_a_similaririty_matches_reactions(
     resource_loader,
     indigo_fixture,
 ) -> None:
-
     reaction = indigo_fixture.loadReactionFromFile(
         resource_loader("reactions/rheadb/50353.rxn")
     )

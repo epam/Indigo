@@ -304,7 +304,6 @@ def imago_upload_post():
             415,
         )
     try:
-
         select_exten = {
             "cmu-raster": "ras",
             "tiff": "tiff",

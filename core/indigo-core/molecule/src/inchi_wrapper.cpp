@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 #include <algorithm>
-//#include <mode.h>
+// #include <mode.h>
 
 #include <inchi_api.h>
 

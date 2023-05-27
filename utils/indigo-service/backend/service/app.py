@@ -24,7 +24,7 @@ app.register_blueprint(common_api, url_prefix="/v2")
 swagger = Swagger(app)
 logging.basicConfig(
     stream=sys.stdout,
-    format=u"[%(asctime)s: %(levelname)-8s/%(filename)s:%(lineno)d]  %(message)s",
+    format="[%(asctime)s: %(levelname)-8s/%(filename)s:%(lineno)d]  %(message)s",
     level=app.config.get("LOG_LEVEL"),
 )
 

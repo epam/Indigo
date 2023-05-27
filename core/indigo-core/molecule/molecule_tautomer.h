@@ -48,7 +48,7 @@ namespace indigo
         RSMARTS
     } TautomerMethod;
 
-    //#define TRACE_TAUTOMER_MATCHING
+    // #define TRACE_TAUTOMER_MATCHING
 
     struct TautomerRule
     {

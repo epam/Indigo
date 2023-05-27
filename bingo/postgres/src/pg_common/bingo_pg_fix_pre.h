@@ -19,4 +19,4 @@
 
 #endif
 
-#endif //#ifndef __bingo_pg_fix_pre_h__
+#endif // #ifndef __bingo_pg_fix_pre_h__

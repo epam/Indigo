@@ -70,7 +70,6 @@ def extract_pairs(
 def to_string(
     compound: IndigoObject, string_format: jsonapi.CompoundFormat
 ) -> Tuple[str, jsonapi.CompoundFormat]:
-
     if string_format == jsonapi.CompoundFormat.AUTO:
         string_format = jsonapi.CompoundFormat.MOLFILE
 

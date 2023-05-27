@@ -82,10 +82,10 @@ Datum bingo_insert(PG_FUNCTION_ARGS)
     }
     PG_BINGO_END
 
-    //#ifdef NOT_USED
+    // #ifdef NOT_USED
     //	Relation	heapRel = (Relation) PG_GETARG_POINTER(4);
     //	IndexUniqueCheck checkUnique = (IndexUniqueCheck) PG_GETARG_INT32(5);
-    //#endif
+    // #endif
     //	IndexTuple	itup;
     //
     //	/* generate an index tuple */
