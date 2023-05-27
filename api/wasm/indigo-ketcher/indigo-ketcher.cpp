@@ -177,7 +177,6 @@ namespace indigo
             std::stringstream ss;
             ss << "Unknown output format: " << outputFormat;
             jsThrow(ss.str().c_str());
-            return "";  // We never get here, since we throw
         }
 
         IndigoKetcherObject substructure(const std::vector<int>& selected_atoms) const
@@ -772,5 +771,5 @@ namespace indigo
 
         emscripten::register_vector<int>("VectorInt");
         emscripten::register_map<std::string, std::string>("MapStringString");
-    }
+    };
 }

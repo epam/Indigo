@@ -36,7 +36,7 @@
     "test": "node test.js",
     "test_cjk": "node test_cjk.js"
   },
-  "dependencies": {
+  "devDependencies": {
     "looks-same": "^8.1.0"
   }
 }

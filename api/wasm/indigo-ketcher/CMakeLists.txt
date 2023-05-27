@@ -24,7 +24,7 @@ endif ()
 
 add_custom_target(${PROJECT_NAME}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-        COMMAND ${CMAKE_C_COMPILER}
+        COMMAND emcc
         -o ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/indigo-ketcher.js
         ${EMCC_FLAGS}
         $<TARGET_OBJECTS:${PROJECT_NAME}-object>
