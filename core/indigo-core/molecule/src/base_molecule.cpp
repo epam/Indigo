@@ -388,6 +388,13 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     // highlighting
     highlightSubmolecule(mol, mapping.ptr(), false);
 
+    // aliases
+    for (auto i = mol.aliases.begin(); i != mol.aliases.end(); i = mol.aliases.next(i))
+    {
+        Array<char>& array = aliases.findOrInsert(mapping[i]);
+        array.copy(mol.aliases.value(i));
+    }
+
     // subclass stuff (Molecule or QueryMolecule)
     _mergeWithSubmolecule(mol, vertices, edges, mapping, skip_flags);
 
@@ -646,6 +653,13 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
     _meta.clone(other._meta);
 
     name.copy(other.name);
+
+    aliases.clear();
+    for (auto i = other.aliases.begin(); i != other.aliases.end(); i = other.aliases.next(i))
+    {
+        Array<char>& array = aliases.findOrInsert(i);
+        array.copy(other.aliases.value(i));
+    }
 }
 
 void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
@@ -679,6 +693,13 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
     _mergeWithSubmolecule_Sub(other, vertices, 0, mapping, edge_mapping, skip_flags);
 
     name.copy(other.name);
+
+    aliases.clear();
+    for (auto i = other.aliases.begin(); i != other.aliases.end(); i = other.aliases.next(i))
+    {
+        Array<char>& array = aliases.findOrInsert(i);
+        array.copy(other.aliases.value(i));
+    }
 }
 
 void BaseMolecule::mergeWithMolecule(BaseMolecule& other, Array<int>* mapping, int skip_flags)
@@ -738,6 +759,15 @@ void BaseMolecule::removeAtoms(const Array<int>& indices)
             unhighlightBond(b_idx);
             if (getBondDirection(b_idx) > 0)
                 setBondDirection(b_idx, 0);
+        }
+    }
+
+    // aliases
+    for (i = 0; i < indices.size(); i++)
+    {
+        if (aliases.find(indices[i]))
+        {
+            aliases.remove(indices[i]);
         }
     }
 
