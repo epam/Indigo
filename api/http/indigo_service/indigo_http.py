@@ -120,7 +120,7 @@ def similarities(
 
 @app.post(
     f"{BASE_URL_INDIGO}/exactMatch",
-    response_model=jsonapi.MatchResponse,  # type: ignore
+    response_model=jsonapi.MatchResponse,
     response_model_exclude_unset=True,
 )
 def exact_match(request: jsonapi.MatchRequest) -> jsonapi.MatchResponse:
