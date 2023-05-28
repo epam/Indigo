@@ -5,3 +5,4 @@ FetchContent_Declare(
         GIT_TAG        8019b8b580f8573c33c50372baec7039dfe5a8ce
 )
 FetchContent_MakeAvailable(cppcodec)
+message(STATUS "Found cppcodec: ${cppcodec_SOURCE_DIR}")
