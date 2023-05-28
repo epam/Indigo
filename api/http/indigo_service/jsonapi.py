@@ -404,11 +404,8 @@ class SimilaritiesModel(BaseModel):
     options: Optional[Dict[str, Any]] = None
 
     @validator("alpha", "beta")
-    def tversky_factor(
-        cls, factor: Optional[float]
-    ) -> Optional[
-        float
-    ]:  # pylint: disable=no-self-argument,no-self-use,line-too-long
+    # pylint: disable=no-self-argument,line-too-long
+    def tversky_factor(cls, factor: Optional[float]) -> Optional[float]:
         if factor is not None:
             if not 0 <= factor <= 1:
                 raise ValueError("alpha and beta should be between 0 and 1")
@@ -492,7 +489,6 @@ def make_validation_response(
 
 
 class Descriptors(str, Enum):
-
     COUNT_ALLENE_CENTERS = "countAlleneCenters"
     COUNT_ATOMS = "countAtoms"
     COUNT_ATTACHMENT_POINTS = "countAttachmentPoints"

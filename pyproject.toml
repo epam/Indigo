@@ -12,3 +12,13 @@ line_length = 79
 
 [tool.mypy]
 ignore_missing_imports = true
+
+[tool.pylint.MASTER]
+disable= [
+    "missing-module-docstring",
+    "missing-function-docstring",
+    "missing-class-docstring",
+    "too-few-public-methods",
+    "unsubscriptable-object",
+    "duplicate-code"
+]

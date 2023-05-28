@@ -30,7 +30,7 @@
 
 using namespace indigo_cpp;
 
-//#define INDIGO_CPP_DEBUG
+// #define INDIGO_CPP_DEBUG
 
 #ifdef INDIGO_CPP_DEBUG
 #include <iostream>
@@ -64,11 +64,11 @@ unsigned long long IndigoSession::getSessionId() const
 
 void IndigoSession::setSessionId() const
 {
-    //#ifdef INDIGO_CPP_DEBUG
-    //    std::stringstream ss;
-    //    ss << "T_" << std::this_thread::get_id() << ": IndigoSession::_setSessionId(" << id << ")\n";
-    //    std:: cout << ss.str();
-    //#endif
+    // #ifdef INDIGO_CPP_DEBUG
+    //     std::stringstream ss;
+    //     ss << "T_" << std::this_thread::get_id() << ": IndigoSession::_setSessionId(" << id << ")\n";
+    //     std:: cout << ss.str();
+    // #endif
     indigoSetSessionId(id);
 }
 

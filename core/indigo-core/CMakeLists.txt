@@ -13,9 +13,9 @@ file(GLOB ${PROJECT_NAME}_SOURCES CONFIUGURE_DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/layout/src/*.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/reaction/src/*.cpp)
 if (MSVC OR MINGW)
-    list(FILTER ${PROJECT_NAME}_SOURCES EXCLUDE REGEX .*posix\.cp*$)
+    list(FILTER ${PROJECT_NAME}_SOURCES EXCLUDE REGEX .*posix\\.cp*$)
 else()
-    list(FILTER ${PROJECT_NAME}_SOURCES EXCLUDE REGEX .*win32\.cp*$)
+    list(FILTER ${PROJECT_NAME}_SOURCES EXCLUDE REGEX .*win32\\.cp*$)
 endif()
 
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES})
@@ -30,7 +30,8 @@ if (BUILD_STANDALONE)
             PUBLIC z
             PUBLIC tinyxml2
             PUBLIC rapidjson
-            PUBLIC inchi)
+            PUBLIC inchi
+            PUBLIC cppcodec)
 else()
     find_package(InChI REQUIRED)
     find_package(TinyXML2 REQUIRED)

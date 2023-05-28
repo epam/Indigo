@@ -60,7 +60,7 @@ void LayoutPatternHolder::_initPatterns()
 #define ADD_ATOM(idx, x, y) {LayoutPattenItem::_ADD_ATOM, idx, -1, -1, x, y},
 #define ADD_BOND(idx1, idx2, type) {LayoutPattenItem::_ADD_BOND, type, idx1, idx2, -1.f, -1.f},
 #define OUTLINE_POINT(idx, x, y) {LayoutPattenItem::_OUTLINE_POINT, idx, -1, -1, x, y},
-        //#define FIX_PATTERN
+        // #define FIX_PATTERN
 
 #define END_PATTERN()                                                                                                                                          \
     }                                                                                                                                                          \
@@ -82,7 +82,7 @@ void LayoutPatternHolder::_initPatterns()
 #include "layout_patterns.inc"
 
 #undef BEGIN_PATTERN
-//#undef FIX_PATTERN
+// #undef FIX_PATTERN
 #undef ADD_ATOM
 #undef ADD_BOND
 #undef OUTLINE_POINT

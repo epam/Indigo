@@ -21,7 +21,7 @@
 #include "indigo_internal.h"
 #include "indigo_molecule.h"
 
-//#define INDIGO_DEBUG
+// #define INDIGO_DEBUG
 
 #ifdef INDIGO_DEBUG
 #include <iostream>

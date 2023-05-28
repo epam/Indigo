@@ -11,7 +11,7 @@ from bingo_elastic.model.record import (
 
 def iterate_file(
     file: Path,
-    iterator: str = None,
+    iterator: Optional[str] = None,
     error_handler: Optional[Callable[[object, BaseException], None]] = None,
 ) -> Generator[IndigoRecordMolecule, None, None]:
     """

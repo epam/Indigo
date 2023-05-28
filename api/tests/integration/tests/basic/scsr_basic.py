@@ -21,7 +21,6 @@ indigo.setOption("ignore-stereochemistry-errors", "true")
 for item in indigo.iterateSDFile(
     joinPathPy("molecules/peptides.sdf.gz", __file__)
 ):
-
     mol = item.clone()
 
     print("****** transform CTAB to SCSR structure ********")

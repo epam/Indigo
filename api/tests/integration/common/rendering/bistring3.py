@@ -2829,7 +2829,6 @@ class Bits(object):
             f = self._findregex
             x = re.compile(bs._getbin())
         while True:
-
             p = f(x, start, end, bytealigned)
             if not p:
                 break

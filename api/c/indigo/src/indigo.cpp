@@ -32,8 +32,8 @@
 
 #include "indigo_abbreviations.h"
 
-//#define INDIGO_DEBUG
-//#define INDIGO_OBJECT_DEBUG
+// #define INDIGO_DEBUG
+// #define INDIGO_OBJECT_DEBUG
 
 #ifdef INDIGO_DEBUG
 #include <iostream>

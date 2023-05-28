@@ -39,7 +39,9 @@ class CompilableQuery(metaclass=ABCMeta):
 
     @abstractmethod
     def compile(
-        self, query: Dict, postprocess_actions: PostprocessType = None
+        self,
+        query: Dict,
+        postprocess_actions: Optional[PostprocessType] = None,
     ) -> None:
         pass
 
@@ -49,7 +51,9 @@ class KeywordQuery(CompilableQuery):
         self._value = value
 
     def compile(
-        self, query: Dict, postprocess_actions: PostprocessType = None
+        self,
+        query: Dict,
+        postprocess_actions: Optional[PostprocessType] = None,
     ) -> None:
         bool_head = head_by_path(
             query, ("query", "script_score", "query", "bool")
@@ -87,7 +91,9 @@ class SubstructureQuery(CompilableQuery):
         return clauses(fp_list, "sub_fingerprint")
 
     def compile(
-        self, query: Dict, postprocess_actions: PostprocessType = None
+        self,
+        query: Dict,
+        postprocess_actions: Optional[PostprocessType] = None,
     ) -> None:
         bool_head = head_by_path(query, ("query", "bool"))
         if not bool_head.get("must"):
@@ -107,7 +113,9 @@ class RangeQuery(CompilableQuery):
         self.upper = upper
 
     def compile(
-        self, query: Dict, postprocess_actions: PostprocessType = None
+        self,
+        query: Dict,
+        postprocess_actions: Optional[PostprocessType] = None,
     ) -> None:
         bool_head = head_by_path(
             query, ("query", "script_score", "query", "bool")
@@ -134,7 +142,9 @@ class WildcardQuery(CompilableQuery):
         self.wildcard = wildcard
 
     def compile(
-        self, query: Dict, postprocess_actions: PostprocessType = None
+        self,
+        query: Dict,
+        postprocess_actions: Optional[PostprocessType] = None,
     ) -> None:
         bool_head = head_by_path(
             query, ("query", "script_score", "query", "bool")
@@ -158,7 +168,9 @@ class BaseMatch(metaclass=ABCMeta):
 
     # pylint: disable=unused-argument
     def compile(
-        self, query: Dict, postprocess_actions: PostprocessType = None
+        self,
+        query: Dict,
+        postprocess_actions: Optional[PostprocessType] = None,
     ) -> None:
         bool_head = head_by_path(
             query, ("query", "script_score", "query", "bool")
@@ -291,7 +303,7 @@ class ExactMatch(CompilableQuery):
         return None
 
     def compile(
-        self, query, postprocess_actions: PostprocessType = None
+        self, query, postprocess_actions: Optional[PostprocessType] = None
     ) -> None:
         bool_head = head_by_path(query, ("query", "bool"))
         if not bool_head.get("must"):
