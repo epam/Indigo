@@ -1,7 +1,10 @@
 include(FindPackageHandleStandardArgs)
 
 find_library(Cairo_LIBRARY NAMES cairo)
-find_path(Cairo_INCLUDE_DIR NAMES cairo/cairo.h)
+find_path(Cairo_INCLUDE_DIR NAMES cairo.h)
+if (NOT Cairo_INCLUDE_DIR)
+    find_path(Cairo_INCLUDE_DIR NAMES cairo/cairo.h)
+endif()
 
 
 IF (Cairo_INCLUDE_DIR)

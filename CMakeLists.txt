@@ -16,7 +16,6 @@ option(WITH_STATIC "Build Indigo static library as well as shared" OFF)
 
 # Indigo API options
 option(BUILD_INDIGO "Build indigo shared library" ON)
-option(USE_FONT_MANAGER "Build indigo render with font_face_manager" OFF)
 
 # Indigo API Wrappers options
 option(BUILD_INDIGO_WRAPPERS "Build all existing Indigo API wrappers" ON)
@@ -71,7 +70,6 @@ if (EMSCRIPTEN)
     set(BUILD_BINGO_SQLSERVER OFF)
     set(BUILD_BINGO_ORACLE OFF)
     set(BUILD_BINGO_ELASTIC OFF)
-    set(USE_FONT_MANAGER ON)
 endif()
 
 if (BUILD_INDIGO OR BUILD_INDIGO_UTILS OR BUILD_BINGO_SQLSERVER OR BUILD_BINGO_ORACLE OR BUILD_BINGO_POSTGRES OR EMSCRIPTEN)
