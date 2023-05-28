@@ -9,8 +9,8 @@ from typing import Any, BinaryIO, Dict, Iterable, List, Optional
 import PyPDF2
 import pytest
 from fastapi.testclient import TestClient
+from httpx import Response
 from PIL import Image
-from requests import Response
 
 from indigo_service import jsonapi
 from indigo_service.indigo_http import app
@@ -309,9 +309,9 @@ def test_render_pdf_base64_correct_options() -> None:
             options=correct_options,
         ),
     )
-    read_file = PyPDF2.PdfReader(decode_image(response, "application/pdf"))
-    page_height = read_file.pages[0].mediabox.height  # pylint: disable=no-member
-    page_width = read_file.pages[0].mediabox.width  # pylint: disable=no-member
+    reader = PyPDF2.PdfReader(decode_image(response, "application/pdf"))
+    page_height = reader.pages[0].mediabox.height  # pylint: disable=no-member
+    page_width = reader.pages[0].mediabox.width  # pylint: disable=no-member
     assert response.status_code == 200
     assert page_height == 400
     assert page_width == 500
