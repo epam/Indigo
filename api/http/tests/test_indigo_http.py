@@ -310,8 +310,8 @@ def test_render_pdf_base64_correct_options() -> None:
         ),
     )
     read_file = PyPDF2.PdfReader(decode_image(response, "application/pdf"))
-    page_height = read_file.pages[0].mediabox.height
-    page_width = read_file.pages[0].mediabox.width
+    page_height = read_file.pages[0].mediabox.height  # pylint: disable=no-member
+    page_width = read_file.pages[0].mediabox.width  # pylint: disable=no-member
     assert response.status_code == 200
     assert page_height == 400
     assert page_width == 500
