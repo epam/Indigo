@@ -16,7 +16,7 @@ on:
 jobs:
   static_analysis:
     runs-on: ubuntu-latest
-    container: epmlsop/indigo-tester:20230320-125107
+    container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -51,7 +51,7 @@ jobs:
              git fetch --tags -f
       - name: Build Linux
         if: ${{ matrix.os == 'ubuntu' }}
-        uses: docker://epmlsop/buildpack-centos7:20230320-125107
+        uses: docker://epmlsop/buildpack-centos7:latest
         with:
           args: >
             /bin/sh -c "
@@ -133,7 +133,7 @@ jobs:
              git fetch --tags -f
       - name: Build Linux
         if: ${{ matrix.os == 'ubuntu' }}
-        uses: docker://epmlsop/buildpack-arm64:20230320-125107
+        uses: docker://epmlsop/buildpack-arm64:latest
         with:
           args: >
             /bin/sh -c "
@@ -164,7 +164,7 @@ jobs:
         wrapper: [ python, java, dotnet ]
     runs-on: ubuntu-latest
     needs: [ build_indigo_libs_x86_64, build_indigo_libs_aarch64, build_indigo_libs_i386 ]
-    container: epmlsop/indigo-tester:20230320-125107
+    container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -860,7 +860,7 @@ jobs:
              git fetch --tags -f
       - name: Build utils Linux
         if: ${{ matrix.os == 'ubuntu' }}
-        uses: docker://epmlsop/buildpack-centos7:20230320-125107
+        uses: docker://epmlsop/buildpack-centos7:latest
         with:
           args: >
             /bin/sh -c "
@@ -894,8 +894,8 @@ jobs:
 
   build_bingo_oracle_linux_x86_64:
     runs-on: ubuntu-latest
-    needs: build_indigo_wrappers
-    container: epmlsop/buildpack-centos7:20230320-125107
+    needs: static_analysis
+    container: epmlsop/buildpack-centos7:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -920,7 +920,7 @@ jobs:
 
   build_bingo_oracle_windows_mingw_x86_64:
     runs-on: windows-latest
-    needs: build_indigo_wrappers
+    needs: static_analysis
     defaults:
       run:
         shell: msys2 {0}
@@ -952,7 +952,7 @@ jobs:
 
   build_bingo_oracle_windows_msvc_x86_64:
     runs-on: windows-latest
-    needs: build_indigo_wrappers
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -981,7 +981,7 @@ jobs:
       matrix:
         postgres_major_version: [ 11, 12, 13, 14, 15 ]
     runs-on: ubuntu-latest
-    needs: build_indigo_wrappers
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -997,7 +997,7 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Install postgres server headers and build bingo-postgres
-        uses: docker://epmlsop/buildpack-centos7:20230320-125107
+        uses: docker://epmlsop/buildpack-centos7:latest
         with:
           args: >
             /bin/sh -c "
@@ -1055,7 +1055,7 @@ jobs:
       matrix:
         postgres_major_version: [ "11", "12", "13", "14", "15" ]
     runs-on: windows-latest
-    needs: build_indigo_wrappers
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -1091,7 +1091,7 @@ jobs:
       matrix:
         postgres_major_version: [ 11, 12, 13, 14, 15 ]
     runs-on: macos-latest
-    needs: build_indigo_wrappers
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -1126,7 +1126,7 @@ jobs:
       matrix:
         os: [ windows ]
     runs-on: ${{ matrix.os }}-latest
-    needs: build_indigo_wrappers
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -1153,7 +1153,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest
     needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
-    container: epmlsop/indigo-tester:20230320-125107
+    container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -1191,7 +1191,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest
     needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
-    container: epmlsop/indigo-tester:20230320-125107
+    container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -1223,7 +1223,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest
     needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
-    container: epmlsop/indigo-tester:20230320-125107
+    container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -1260,7 +1260,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest
     needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
-    container: epmlsop/indigo-tester:20230320-125107
+    container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3

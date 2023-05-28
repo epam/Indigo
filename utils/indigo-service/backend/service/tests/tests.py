@@ -55,4 +55,4 @@ if __name__ == "__main__":
                     suite.addTests(test_suite)
         return suite
 
-    exit(unittest.main(verbosity=2, warnings="ignore"))
+    unittest.main(verbosity=2, warnings="ignore")

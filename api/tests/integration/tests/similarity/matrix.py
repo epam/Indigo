@@ -16,7 +16,7 @@ mol_list = list(
     )
 )
 pairs = product(mol_list, mol_list)
-for (p1, p2) in pairs:
+for p1, p2 in pairs:
     print("%s %s" % (p1.name(), p2.name()))
     print(
         "  tversky sim:         %0.4f" % (indigo.similarity(p1, p2, "tversky"))

@@ -4,51 +4,51 @@
 
 //
 ///*
-//#include "bingo_postgres.h"
+// #include "bingo_postgres.h"
 //*/
 //
 //
 //
-// PG_FUNCTION_INFO_V1(bingo_in);
-// Datum      bingo_in(PG_FUNCTION_ARGS);
+//  PG_FUNCTION_INFO_V1(bingo_in);
+//  Datum      bingo_in(PG_FUNCTION_ARGS);
 //
-// PG_FUNCTION_INFO_V1(bingo_out);
-// Datum      bingo_out(PG_FUNCTION_ARGS);
+//  PG_FUNCTION_INFO_V1(bingo_out);
+//  Datum      bingo_out(PG_FUNCTION_ARGS);
 //
-// PG_FUNCTION_INFO_V1(bingo_compress);
-// Datum      bingo_compress(PG_FUNCTION_ARGS);
+//  PG_FUNCTION_INFO_V1(bingo_compress);
+//  Datum      bingo_compress(PG_FUNCTION_ARGS);
 //
-// PG_FUNCTION_INFO_V1(bingo_decompress);
-// Datum      bingo_decompress(PG_FUNCTION_ARGS);
+//  PG_FUNCTION_INFO_V1(bingo_decompress);
+//  Datum      bingo_decompress(PG_FUNCTION_ARGS);
 //
-// PG_FUNCTION_INFO_V1(bingo_consistent);
-// Datum      bingo_consistent(PG_FUNCTION_ARGS);
+//  PG_FUNCTION_INFO_V1(bingo_consistent);
+//  Datum      bingo_consistent(PG_FUNCTION_ARGS);
 //
-// PG_FUNCTION_INFO_V1(bingo_union);
-// Datum      bingo_union(PG_FUNCTION_ARGS);
+//  PG_FUNCTION_INFO_V1(bingo_union);
+//  Datum      bingo_union(PG_FUNCTION_ARGS);
 //
-// PG_FUNCTION_INFO_V1(bingo_same);
-// Datum      bingo_same(PG_FUNCTION_ARGS);
+//  PG_FUNCTION_INFO_V1(bingo_same);
+//  Datum      bingo_same(PG_FUNCTION_ARGS);
 //
-// PG_FUNCTION_INFO_V1(bingo_penalty);
-// Datum      bingo_penalty(PG_FUNCTION_ARGS);
+//  PG_FUNCTION_INFO_V1(bingo_penalty);
+//  Datum      bingo_penalty(PG_FUNCTION_ARGS);
 //
-// PG_FUNCTION_INFO_V1(bingo_picksplit);
-// Datum      bingo_picksplit(PG_FUNCTION_ARGS);
+//  PG_FUNCTION_INFO_V1(bingo_picksplit);
+//  Datum      bingo_picksplit(PG_FUNCTION_ARGS);
 //
-// Datum
-// bingo_in(PG_FUNCTION_ARGS)
+//  Datum
+//  bingo_in(PG_FUNCTION_ARGS)
 //{
-//   elog(ERROR, "not implemented");
-//   PG_RETURN_DATUM(0);
-//}
+//    elog(ERROR, "not implemented");
+//    PG_RETURN_DATUM(0);
+// }
 //
-// Datum
-// bingo_out(PG_FUNCTION_ARGS)
+//  Datum
+//  bingo_out(PG_FUNCTION_ARGS)
 //{
-//   elog(ERROR, "not implemented");
-//   PG_RETURN_DATUM(0);
-//}
+//    elog(ERROR, "not implemented");
+//    PG_RETURN_DATUM(0);
+// }
 //
 ///*
 // static void
@@ -201,11 +201,11 @@
 //         CPTRGM(((char *) &tmp), ptr + k);
 //         count += GETBIT(sign, HASHVAL(tmp));
 //      }
-//#ifdef DIVUNION
+// #ifdef DIVUNION
 //      res = (len == count) ? true : ((((((float4) count) / ((float4) (len - count)))) >= trgm_limit) ? true : false);
-//#else
+// #else
 //      res = (len == 0) ? false : ((((((float4) count) / ((float4) len))) >= trgm_limit) ? true : false);
-//#endif
+// #endif
 //   }
 //
 //   PG_RETURN_BOOL(res);*/
@@ -434,7 +434,7 @@
 //      memcpy((void *) item->sign, (void *) GETSIGN(key), sizeof(BITVEC));
 //}
 //
-//#define WISH_F(a,b,c) (double)( -(double)(((a)-(b))*((a)-(b))*((a)-(b)))*(c) )
+// #define WISH_F(a,b,c) (double)( -(double)(((a)-(b))*((a)-(b))*((a)-(b)))*(c) )
 // typedef struct
 //{
 //   OffsetNumber pos;

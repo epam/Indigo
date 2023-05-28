@@ -1,5 +1,6 @@
 if (BUILD_STANDALONE)
     # InChI don't have a Conan package yet
+    add_subdirectory(cppcodec)
     add_subdirectory(inchi)
     add_subdirectory(rapidjson)
     add_subdirectory(zlib)
@@ -15,10 +16,6 @@ if (BUILD_INDIGO OR BUILD_INDIGO_UTILS)
         add_subdirectory(cairo)
     endif()
 endif ()
-if (EMSCRIPTEN)
-    # Required for base64 encoding
-    add_subdirectory(cppcodec)
-endif()
 if (ENABLE_TESTS)
     add_subdirectory(googletest)
 endif()

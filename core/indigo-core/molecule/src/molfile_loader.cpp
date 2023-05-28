@@ -268,7 +268,7 @@ void MolfileLoader::_readCtab2000()
         // Atom label can be both left-bound or right-bound: "  N", "N  " or even " N ".
         char* buf = _strtrim(atom_label_array);
 
-        //#349: make 'isotope' field optional
+        // #349: make 'isotope' field optional
         try
         {
             atom_line.skip(3 - read_chars_atom_label);

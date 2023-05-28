@@ -37,7 +37,7 @@ alarm_problems_counter = 0
 worst_problem_difference = 0
 worst_problem_data = (None, None, 0.0, 0.0)
 
-for (m1, m2) in product(control_mols, mols):
+for m1, m2 in product(control_mols, mols):
     f1 = m1.fingerprint("sim")
     f2 = m2.fingerprint("sim")
 

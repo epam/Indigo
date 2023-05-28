@@ -4,21 +4,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  set-tag:
-    runs-on: ubuntu-latest
-    outputs:
-      tag_output: ${{ steps.step1.outputs.tag_output }}
-    steps:
-      - name: Set image tag
-        id: step1
-        run: |
-          echo "Setting image tag..."
-          export IMAGE_TAG="$(date +%Y%m%d-%H%M%S)"
-          echo "tag_output=$IMAGE_TAG" >> $GITHUB_OUTPUT
-          echo "IMAGE_TAG=$IMAGE_TAG"
   docker-buildpack-centos7:
     runs-on: ubuntu-latest
-    needs: set-tag
     steps:
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -35,12 +22,11 @@ jobs:
         with:
           context: .
           file: .ci/docker/buildpack-centos7/Dockerfile
-          tags: epmlsop/buildpack-centos7:${{ needs.set-tag.outputs.tag_output }}
+          tags: epmlsop/buildpack-centos7:latest
       - name: Push buildpack-centos7
-        run: docker push epmlsop/buildpack-centos7:${{ needs.set-tag.outputs.tag_output }}
+        run: docker push epmlsop/buildpack-centos7:latest
   docker-buildpack-arm64:
     runs-on: ubuntu-latest
-    needs: set-tag
     steps:
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -57,12 +43,11 @@ jobs:
         with:
           context: .
           file: .ci/docker/buildpack-arm64/Dockerfile
-          tags: epmlsop/buildpack-arm64:${{ needs.set-tag.outputs.tag_output }}
+          tags: epmlsop/buildpack-arm64:latest
       - name: Push buildpack-arm64
-        run: docker push epmlsop/buildpack-arm64:${{ needs.set-tag.outputs.tag_output }}
+        run: docker push epmlsop/buildpack-arm64:latest
   docker-indigo-tester:
     runs-on: ubuntu-latest
-    needs: set-tag
     steps:
       - name: Login to DockerHub
         uses: docker/login-action@v1
@@ -79,6 +64,6 @@ jobs:
         with:
           context: .
           file: .ci/docker/indigo-tester/Dockerfile
-          tags: epmlsop/indigo-tester:${{ needs.set-tag.outputs.tag_output }}
+          tags: epmlsop/indigo-tester:latest
       - name: Push indigo-tester
-        run: docker push epmlsop/indigo-tester:${{ needs.set-tag.outputs.tag_output }}
+        run: docker push epmlsop/indigo-tester:latest
