@@ -317,7 +317,7 @@ async def test_a_wildcard_search(
         resource_loader("molecules/composition1.mol")
     )
     async with a_elastic_repository_molecule() as rep:
-        rep.index_record(IndigoRecordMolecule(indigo_object=mol))
+        await rep.index_record(IndigoRecordMolecule(indigo_object=mol))
     async with a_elastic_repository_molecule() as rep:
         result = rep.filter(name=WildcardQuery("Comp*"))
         async for item in result:
@@ -360,7 +360,7 @@ async def test_a_custom_fields(
         indigo_object=mol, PUBCHEM_IUPAC_INCHIKEY="RDHQFKQIGNGIED-UHFFFAOYSA-N"
     )
     async with a_elastic_repository_molecule() as rep:
-        rep.index_record(rec)
+        await rep.index_record(rec)
 
     async with a_elastic_repository_molecule() as rep:
         result = rep.filter(

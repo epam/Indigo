@@ -346,4 +346,4 @@ M  END
 
 
 if __name__ == "__main__":
-    exit(unittest.main(verbosity=2, warnings="ignore"))
+    unittest.main(verbosity=2, warnings="ignore")

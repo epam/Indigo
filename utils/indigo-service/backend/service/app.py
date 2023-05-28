@@ -66,6 +66,6 @@ if __name__ == "__main__":
         help="Specify port",
     )
 
-    (options, args) = parser.parse_args()
+    options = parser.parse_args()
     if options.run_server:
         run_server(options.port)

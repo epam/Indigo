@@ -157,8 +157,8 @@ def prepare(
 def response_to_records(
     res: dict,
     index_name: str,
-    postprocess_actions: PostprocessType = None,
-    indigo_session: Indigo = None,
+    postprocess_actions: Optional[PostprocessType] = None,
+    indigo_session: Optional[Indigo] = None,
     options: str = "",
 ) -> Generator[IndigoRecord, None, None]:
     for el_response in res.get("hits", {}).get("hits", []):
@@ -348,7 +348,7 @@ class ElasticRepository:
 def compile_query(
     query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
     limit: int = 10,
-    postprocess_actions: PostprocessType = None,
+    postprocess_actions: Optional[PostprocessType] = None,
     **kwargs,
 ) -> Dict:
     query = {

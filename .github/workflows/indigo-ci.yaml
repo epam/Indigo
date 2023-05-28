@@ -894,7 +894,7 @@ jobs:
 
   build_bingo_oracle_linux_x86_64:
     runs-on: ubuntu-latest
-    needs: build_indigo_wrappers
+    needs: static_analysis
     container: epmlsop/buildpack-centos7:latest
     steps:
       - name: Checkout
@@ -920,7 +920,7 @@ jobs:
 
   build_bingo_oracle_windows_mingw_x86_64:
     runs-on: windows-latest
-    needs: build_indigo_wrappers
+    needs: static_analysis
     defaults:
       run:
         shell: msys2 {0}
@@ -952,7 +952,7 @@ jobs:
 
   build_bingo_oracle_windows_msvc_x86_64:
     runs-on: windows-latest
-    needs: build_indigo_wrappers
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -981,7 +981,7 @@ jobs:
       matrix:
         postgres_major_version: [ 11, 12, 13, 14, 15 ]
     runs-on: ubuntu-latest
-    needs: build_indigo_wrappers
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -1055,7 +1055,7 @@ jobs:
       matrix:
         postgres_major_version: [ "11", "12", "13", "14", "15" ]
     runs-on: windows-latest
-    needs: build_indigo_wrappers
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -1091,7 +1091,7 @@ jobs:
       matrix:
         postgres_major_version: [ 11, 12, 13, 14, 15 ]
     runs-on: macos-latest
-    needs: build_indigo_wrappers
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -1126,7 +1126,7 @@ jobs:
       matrix:
         os: [ windows ]
     runs-on: ${{ matrix.os }}-latest
-    needs: build_indigo_wrappers
+    needs: static_analysis
     steps:
       - name: Checkout
         uses: actions/checkout@v3
