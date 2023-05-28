@@ -263,8 +263,8 @@ def test_render_pdf_base64() -> None:
         "/indigo/render",
         json=render_request(structure="C", output_format="application/pdf"),
     )
-    read_file = PyPDF2.PdfFileReader(decode_image(response, "application/pdf"))
-    pages_number = read_file.numPages
+    read_file = PyPDF2.PdfReader(decode_image(response, "application/pdf"))
+    pages_number = len(read_file.pages)
     assert response.status_code == 200
     assert pages_number == 1
 
@@ -309,9 +309,9 @@ def test_render_pdf_base64_correct_options() -> None:
             options=correct_options,
         ),
     )
-    read_file = PyPDF2.PdfFileReader(decode_image(response, "application/pdf"))
-    page_height = read_file.getPage(0).mediaBox.getHeight()
-    page_width = read_file.getPage(0).mediaBox.getWidth()
+    read_file = PyPDF2.PdfReader(decode_image(response, "application/pdf"))
+    page_height = read_file.pages[0].mediabox.height
+    page_width = read_file.pages[0].mediabox.width
     assert response.status_code == 200
     assert page_height == 400
     assert page_width == 500
