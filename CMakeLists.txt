@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 3.9)
 # Common options
 option(ENABLE_TESTS "Enable CTest tests" ON)
 
-option(BUILD_STANDALONE "Build without any system dependencies except for libc, otherwise require tinyxml2, zlib, rapidjson, and cairo for renderer" OFF)
+option(BUILD_STANDALONE "Build without any system dependencies except for libc, otherwise require tinyxml2, zlib, rapidjson, and cairo for renderer" ON)
 option(USE_CLANG_TIDY "Use clang-tidy for static analysis" OFF)
 option(WITH_STATIC "Build Indigo static library as well as shared" OFF)
 
