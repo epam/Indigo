@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include "base_c/defs.h"
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
