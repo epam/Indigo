@@ -19,10 +19,14 @@ indigo = Indigo()
 root_rea = joinPathPy("reactions/", __file__)
 
 try:
-    reaction = indigo.loadReactionFromFile(os.path.join(root_rea, "bad_stereo.ket"))
+    reaction = indigo.loadReactionFromFile(
+        os.path.join(root_rea, "bad_stereo.ket")
+    )
 except IndigoException as e:
     print(getIndigoExceptionText(e))
 
 indigo.setOption("ignore-stereochemistry-errors", "1")
-reaction = indigo.loadReactionFromFile(os.path.join(root_rea, "bad_stereo.ket"))
+reaction = indigo.loadReactionFromFile(
+    os.path.join(root_rea, "bad_stereo.ket")
+)
 print(reaction.smiles())
