@@ -27,7 +27,7 @@ O-Alkylation_Rxn1:success
 O-Alkylation_Rxn2:success
 Reductive Amination_Rxn1:success
 Reductive Amination_Rxn2:success
-SnAr_Rxn1:failed
-SnAr_Rxn2:failed
+SnAr_Rxn1:success
+SnAr_Rxn2:success
 Suzuki_Rxn1:success
 Suzuki_Rxn2:success
