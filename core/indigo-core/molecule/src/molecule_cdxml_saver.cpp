@@ -1372,7 +1372,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
                     s->SetAttribute("face", "64");
                 }
                 if (font_face.is_subscript)
-                    s->SetAttribute("subscript", KETTextObject::ESubScript);
+                    s->SetAttribute("face", "32");
                 XMLText* txt = _doc->NewText(sub_text.c_str());
                 s->LinkEndChild(txt);
                 current_styles = kvp.second;
