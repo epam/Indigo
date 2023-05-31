@@ -15,8 +15,14 @@ indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
 print("*** CDXML to KET ***")
 ref_path = joinPathPy("ref/", __file__)
-mol = indigo.loadMoleculeFromFile(
+mol_superscript = indigo.loadMoleculeFromFile(
     joinPathPy("cdxml/x_supescript2.cdxml", __file__)
 )
 
-print(mol.json())
+print(mol_superscript.json())
+
+mol_subscript = indigo.loadMoleculeFromFile(
+    joinPathPy("cdxml/x_subscript2.cdxml", __file__)
+)
+
+print(mol_subscript.json())
