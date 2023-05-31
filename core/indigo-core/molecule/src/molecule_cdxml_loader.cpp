@@ -131,12 +131,6 @@ void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     parseCDXMLAttributes(root.firstProperty());
     _parseCDXMLPage(root);
 
-    if (!nodes.size())
-    {
-        ;
-        // throw Error("CDXML has no data");
-    }
-
     _parseCollections(mol);
     int arrows_count = mol.meta().getMetaCount(KETReactionArrow::CID);
     if (arrows_count && !load_arrows)
