@@ -13,9 +13,9 @@ file(GLOB ${PROJECT_NAME}_SOURCES CONFIUGURE_DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/layout/src/*.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/reaction/src/*.cpp)
 if (MSVC OR MINGW)
-    list(FILTER ${PROJECT_NAME}_SOURCES EXCLUDE REGEX .*posix\.cp*$)
+    list(FILTER ${PROJECT_NAME}_SOURCES EXCLUDE REGEX .*posix\\.cp*$)
 else()
-    list(FILTER ${PROJECT_NAME}_SOURCES EXCLUDE REGEX .*win32\.cp*$)
+    list(FILTER ${PROJECT_NAME}_SOURCES EXCLUDE REGEX .*win32\\.cp*$)
 endif()
 
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES})
