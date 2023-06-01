@@ -5,8 +5,10 @@ project(indigo LANGUAGES C CXX)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/indigo_version.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/indigo_version.h)
 
 file(GLOB ${PROJECT_NAME}_SOURCES CONFIUGURE_DEPENDS
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+	${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
+	${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
+)
 
 add_library(${PROJECT_NAME}-object OBJECT ${${PROJECT_NAME}_SOURCES})
 target_include_directories(${PROJECT_NAME}-object
@@ -33,6 +35,7 @@ if (NOT EMSCRIPTEN)
         target_link_options(${PROJECT_NAME} PRIVATE -Wl,--exclude-libs,ALL)
     else()
         # On MSVC we cannot statically link C++ runtime, so we need to copy required files as dependencies
+        # TODO: we actually **can** statically link with C++ runtime
         set(INDIGO_MSVC_SYSTEM_RUNTIME_LIBS "")
         list(APPEND INDIGO_MSVC_SYSTEM_RUNTIME_LIBS_SUBSTRINGS
                 vcruntime140_1.dll

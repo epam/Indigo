@@ -18,9 +18,18 @@ else()
 
 
     file(GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS
-            src/pg_am/*.cpp src/pg_am/*.c
-            src/pg_common/*.cpp src/pg_common/*.c
-            src/pg_core/*.cpp src/pg_core/*.c)
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_am/*.cpp 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_am/*.c
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_am/*.h
+
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_common/*.cpp 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_common/*.c
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_common/*.h
+
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_core/*.cpp 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_core/*.c
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_core/*.h
+    )
     add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_SOURCES})
     target_link_libraries(${PROJECT_NAME}
             PUBLIC bingo-core-c-static)

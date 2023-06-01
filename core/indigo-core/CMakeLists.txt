@@ -2,16 +2,26 @@ cmake_minimum_required(VERSION 3.6)
 
 project(indigo-core LANGUAGES C CXX)
 
-file(GLOB ${PROJECT_NAME}_SOURCES CONFIUGURE_DEPENDS
-        ${CMAKE_CURRENT_SOURCE_DIR}/common/base_c/*.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/common/base_cpp/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/common/gzip/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/common/lzw/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/common/math/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/graph/src/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/molecule/src/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/layout/src/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/reaction/src/*.cpp)
+file(GLOB_RECURSE ${PROJECT_NAME}_SOURCES CONFIUGURE_DEPENDS
+    ${CMAKE_CURRENT_SOURCE_DIR}/common/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/common/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/common/*.c
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/graph/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/graph/*.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/molecule/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/molecule/*.cpp
+
+    # while subdirectories other than src have no includes, 
+    # this will work, otherwise extra headers may be added 
+    ${CMAKE_CURRENT_SOURCE_DIR}/layout/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/layout/src/*.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/reaction/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/reaction/*.cpp
+)
+
 if (MSVC OR MINGW)
     list(FILTER ${PROJECT_NAME}_SOURCES EXCLUDE REGEX .*posix\\.cp*$)
 else()
