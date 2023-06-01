@@ -37,11 +37,6 @@ ReactionJsonLoader::ReactionJsonLoader(Document& ket)
     : _loader(ket), _molecule(kArrayType), _prxn(nullptr), _pqrxn(nullptr), ignore_noncritical_query_features(false)
 {
     ignore_bad_valence = false;
-
-    _loader.stereochemistry_options = stereochemistry_options;
-    _loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-    _loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-    _loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
 }
 
 ReactionJsonLoader::~ReactionJsonLoader()
@@ -50,6 +45,11 @@ ReactionJsonLoader::~ReactionJsonLoader()
 
 void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
 {
+    _loader.stereochemistry_options = stereochemistry_options;
+    _loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    _loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    _loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+
     if (rxn.isQueryReaction())
         _pqrxn = &rxn.asQueryReaction();
     else
