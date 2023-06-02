@@ -144,15 +144,6 @@ for filename in files:
             os.path.join(root_cdxml, filename + ".cdxml")
         )
         resb64 = rea.b64cdx()
-        rxn = rea.rxnfile()
-        #with open(os.path.join(ref_path, filename + ".rxn"), 'w') as file:
-        #  file.write(rxn)
-        with open(os.path.join(ref_path, filename + ".rxn"), "r") as file:
-          refrxn = file.read()
-
-        df = find_diff(refrxn, rxn)
-        if df:
-          print(df)
 
         # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
         #    file.write(resb64)

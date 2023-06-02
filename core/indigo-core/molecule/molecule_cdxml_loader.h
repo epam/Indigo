@@ -356,9 +356,9 @@ namespace indigo
                 result = parseCDXUINT16(*ptr16, tag);
             }
             break;
-            case ECDXType::CDXINT16: {
-                auto ptr16 = (int32_t*)ptr;
-                result = parseCDXINT16(*ptr16, tag);
+            case ECDXType::CDXINT16: {                
+                int16_t val16 = sz == 1 ? *((int8_t*)ptr) : *((int16_t*)ptr); // ChemDraw 8.0 bug fix
+                result = parseCDXINT16(val16, tag);
             }
             break;
             case ECDXType::CDXUINT8:

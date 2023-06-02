@@ -10,6 +10,7 @@ from env_indigo import *  # noqa
 
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
+indigo.setOption("json-saving-pretty", True)
 
 print("*** CDX to ket ***")
 

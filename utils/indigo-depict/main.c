@@ -909,15 +909,7 @@ int main(int argc, char* argv[])
         else if (p.query_set)
             obj = indigoLoadQueryMolecule(reader);
         else
-        {
-            if (strcmp(p.infile_ext, "cdx") == 0)
-            {
-                auto cdx_it = indigoIterateCDXFile(p.file_to_load);
-                obj = indigoNext(cdx_it);
-                obj = indigoNext(cdx_it);
-            } else
             obj = indigoLoadMolecule(reader);
-        }
 
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
