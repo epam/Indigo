@@ -131,9 +131,6 @@ void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     parseCDXMLAttributes(root.firstProperty());
     _parseCDXMLPage(root);
 
-    if (!nodes.size())
-        throw Error("CDXML has no data");
-
     _parseCollections(mol);
     int arrows_count = mol.meta().getMetaCount(KETReactionArrow::CID);
     if (arrows_count && !load_arrows)
@@ -1203,7 +1200,7 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec3
                     ket_text_style.styles.push_back(KETFontItalicStr);
                 if (fs.is_superscript)
                     ket_text_style.styles.push_back(KETFontSuperscriptStr);
-                if (fs.is_superscript)
+                if (fs.is_subscript)
                     ket_text_style.styles.push_back(KETFontSubscriptStr);
             }
             if (font_size > 0 && (int)font_size != KETDefaultFontSize)
