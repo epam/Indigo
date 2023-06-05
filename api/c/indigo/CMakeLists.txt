@@ -35,7 +35,6 @@ if (NOT EMSCRIPTEN)
         target_link_options(${PROJECT_NAME} PRIVATE -Wl,--exclude-libs,ALL)
     else()
         # On MSVC we cannot statically link C++ runtime, so we need to copy required files as dependencies
-        # TODO: we actually **can** statically link with C++ runtime
         set(INDIGO_MSVC_SYSTEM_RUNTIME_LIBS "")
         list(APPEND INDIGO_MSVC_SYSTEM_RUNTIME_LIBS_SUBSTRINGS
                 vcruntime140_1.dll
