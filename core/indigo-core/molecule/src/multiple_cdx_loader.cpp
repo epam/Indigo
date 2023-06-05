@@ -23,7 +23,7 @@
 typedef unsigned short int UINT16;
 typedef int INT32;
 typedef unsigned int UINT32;
-#include "molecule/CDXConstants.h"
+#include "molecule/CDXCommons.h"
 
 using namespace indigo;
 
@@ -366,7 +366,7 @@ void MultipleCdxLoader::_checkHeader()
 
 void MultipleCdxLoader::_getString(int size, Array<char>& buf, bool no_style)
 {
-    UINT16 flag = 0;
+    UINT16 style_count = 0;
 
     buf.clear_resize(size);
     buf.zerofill();
@@ -381,14 +381,10 @@ void MultipleCdxLoader::_getString(int size, Array<char>& buf, bool no_style)
             _scanner.read(size, buf);
         else
         {
-            flag = _scanner.readBinaryWord();
-            if (flag == 0)
-                _scanner.read(size - sizeof(flag), buf);
-            else
-            {
-                _scanner.seek(flag * 10, SEEK_CUR);
-                _scanner.read(size - sizeof(flag) - flag * 10, buf);
-            }
+            style_count = _scanner.readBinaryWord();
+            auto styles_size = sizeof(style_count) + sizeof(CDXTextStyle) * style_count;
+            _scanner.seek(style_count * sizeof(CDXTextStyle), SEEK_CUR);
+            _scanner.read(size - styles_size, buf);
         }
     }
     return;

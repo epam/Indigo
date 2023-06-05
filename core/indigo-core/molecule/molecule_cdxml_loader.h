@@ -303,7 +303,7 @@ namespace indigo
             return ss.str();
         }
 
-        std::string formatValue(uint8_t* ptr, uint16_t sz, uint16_t tag, ECDXType cdx_type)
+        std::string formatValue(uint8_t* ptr, uint16_t value_size, uint16_t tag, ECDXType cdx_type)
         {
             std::string result;
             switch (cdx_type)
@@ -313,7 +313,7 @@ namespace indigo
                 auto ptr32 = (int32_t*)ptr;
                 std::stringstream ss;
                 ss << std::setprecision(2) << std::fixed;
-                for (int i = 0; i < sz / sizeof(int32_t); ++i)
+                for (int i = 0; i < value_size / sizeof(int32_t); ++i)
                 {
                     if (i)
                         ss << " ";
@@ -329,7 +329,7 @@ namespace indigo
                 auto ptr32 = (int32_t*)ptr;
                 std::stringstream ss;
                 ss << std::setprecision(2) << std::fixed;
-                for (int i = 0; i < sz / sizeof(int32_t); ++i)
+                for (int i = 0; i < value_size / sizeof(int32_t); ++i)
                 {
                     if (i)
                         ss << " ";
@@ -357,7 +357,7 @@ namespace indigo
             }
             break;
             case ECDXType::CDXINT16: {
-                int16_t val16 = sz == 1 ? *((int8_t*)ptr) : *((int16_t*)ptr); // ChemDraw 8.0 bug fix
+                int16_t val16 = value_size == sizeof(int8_t) ? *((int8_t*)ptr) : *((int16_t*)ptr); // ChemDraw 8.0 bug fix
                 result = parseCDXINT16(val16, tag);
             }
             break;
@@ -379,7 +379,7 @@ namespace indigo
             break;
             case ECDXType::CDXObjectIDArray: {
                 auto ptr32 = (uint32_t*)ptr;
-                for (int i = 0; i < sz / sizeof(uint32_t); ++i)
+                for (int i = 0; i < value_size / sizeof(uint32_t); ++i)
                 {
                     if (i)
                         result += " ";
@@ -391,10 +391,10 @@ namespace indigo
                 // get raw string.
                 auto ptr16 = (uint16_t*)ptr;
                 int offset = (*ptr16) * sizeof(CDXTextStyle) + sizeof(uint16_t);
-                sz -= offset;
-                if (sz > 0)
+                value_size -= offset;
+                if (value_size > 0)
                 {
-                    return std::string((char*)(ptr + offset), sz);
+                    return std::string((char*)(ptr + offset), value_size);
                 }
                 return std::string();
             }
@@ -431,7 +431,7 @@ namespace indigo
             case ECDXType::CDXUnformatted: {
                 std::stringstream ss;
                 ss << std::hex;
-                std::vector<uint8_t> val_dump(ptr, ptr + sz);
+                std::vector<uint8_t> val_dump(ptr, ptr + value_size);
                 for (auto val : val_dump)
                     ss << std::setw(2) << std::setfill('0') << (int)val;
                 return ss.str();

@@ -136,8 +136,6 @@ files = [
 
 files.sort()
 
-indigo.setOption("molfile-saving-skip-date", True)
-
 for filename in files:
     try:
         rea = indigo.loadReactionFromFile(
