@@ -26,6 +26,8 @@ namespace indigo
     const char kCDXReserved[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     const float kColorMult = ((1 << 16) - 1);
     const float kCDXMLFonsSizeMultiplier = 1.5;
+    const std::uint16_t KCDXMLFontStyleSubscript = 0x20;
+    const std::uint16_t KCDXMLFontStyleSuperscript = 0x40;
 
 #pragma pack(push, 1)
 
