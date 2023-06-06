@@ -12,7 +12,10 @@ if (ENABLE_TESTS)
     set(DATA_PATH ${CMAKE_SOURCE_DIR}/data)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common.h.in ${CMAKE_CURRENT_BINARY_DIR}/common.h)
 
-    file(GLOB_RECURSE ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp)
+    file(GLOB_RECURSE ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS 
+		${CMAKE_CURRENT_SOURCE_DIR}/**/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/**/*.h
+    )
     add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES} common.cpp main.cpp)
     target_link_libraries(${PROJECT_NAME} indigo-core gtest)
     target_include_directories(${PROJECT_NAME}

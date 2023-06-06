@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 3.4)
 project(bingo-core-c LANGUAGES CXX)
 
 file(GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+	${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
+)
 
 add_library(${PROJECT_NAME}-object OBJECT ${${PROJECT_NAME}_SOURCES})
 target_link_libraries(${PROJECT_NAME}-object
