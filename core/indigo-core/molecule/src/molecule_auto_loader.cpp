@@ -27,7 +27,6 @@
 #include "molecule/inchi_wrapper.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_auto_loader.h"
-#include "molecule/molecule_cdx_loader.h"
 #include "molecule/molecule_cdxml_loader.h"
 #include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_name_parser.h"
