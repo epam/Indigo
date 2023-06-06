@@ -2154,5 +2154,11 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoDbgInternalType(self));
         }
+
+        public int copyRGroups(IndigoObject other)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoCopyRGroups(other.self, self));
+        }
     }
 }
