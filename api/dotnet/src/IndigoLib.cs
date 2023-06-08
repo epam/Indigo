@@ -1193,5 +1193,8 @@ namespace com.epam.indigo
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoDbgBreakpoint();
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoCopyRGroups(int molecule_from, int molecule_to);
     }
 }

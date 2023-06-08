@@ -1864,4 +1864,9 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoDbgInternalType(self));
     }
+
+    public int copyRGroups(IndigoObject other) {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoCopyRGroups(other.self, self));
+    }
 }
