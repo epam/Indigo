@@ -219,9 +219,24 @@ void MoleculeRenderInternal::setMolecule(BaseMolecule* mol)
 
     bool superatoms = _mol->sgroups.getSGroupCount(SGroup::SG_TYPE_SUP) > 0;
     bool mulsgroups = _mol->sgroups.getSGroupCount(SGroup::SG_TYPE_MUL) > 0;
-    if (mulsgroups || _opt.collapseSuperatoms && superatoms)
+    auto isThereAtLeastOneContracted = false;
+    if (superatoms || mulsgroups)
     {
-        _prepareSGroups();
+        auto count = _mol->sgroups.getSGroupCount(SGroup::SG_TYPE_SUP);
+        BaseMolecule& mol = *_mol;
+        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+        {
+            SGroup& sgroup = mol.sgroups.getSGroup(i);
+            if (abs(sgroup.contracted) == 1)
+            {
+                isThereAtLeastOneContracted = true;
+                break;
+            }
+        }
+    }
+    if (mulsgroups || (_opt.collapseSuperatoms || isThereAtLeastOneContracted) && superatoms)
+    {
+        _prepareSGroups(isThereAtLeastOneContracted);
     }
 
     _data.atoms.clear();
@@ -867,90 +882,93 @@ void MoleculeRenderInternal::_cloneAndFillMappings()
     _own_mol = true;
 }
 
-void MoleculeRenderInternal::_prepareSGroups()
+void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
 {
     _cloneAndFillMappings();
 
     BaseMolecule& mol = *_mol;
-    if (_opt.collapseSuperatoms)
+    if (_opt.collapseSuperatoms || collapseAtLeastOneSuperatom)
     {
         for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
         {
             SGroup& sgroup = mol.sgroups.getSGroup(i);
-            if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
+            if (abs(sgroup.contracted) == 1)
             {
-                const Superatom& group = (Superatom&)sgroup;
-                Vec3f centre;
-                for (int i = 0; i < group.atoms.size(); ++i)
+                if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
                 {
-                    int aid = group.atoms[i];
-                    centre.add(mol.getAtomXyz(aid));
-                }
-                centre.scale(1.0f / group.atoms.size());
-                int said = -1;
-
-                if (mol.isQueryMolecule())
-                {
-                    said = mol.asQueryMolecule().addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, group.subscript.ptr()));
-                }
-                else
-                {
-                    Molecule& amol = mol.asMolecule();
-                    said = amol.addAtom(ELEM_PSEUDO);
-                    amol.setPseudoAtom(said, group.subscript.ptr());
-                }
-                QS_DEF(RedBlackSet<int>, groupAtoms);
-                groupAtoms.clear();
-                for (int j = 0; j < group.atoms.size(); ++j)
-                {
-                    groupAtoms.insert(group.atoms[j]);
-                }
-                Vec3f pos;
-                int posCnt = 0;
-                while (mol.sgroups.hasSGroup(i) && group.atoms.size() > 0)
-                {
-                    int aid = group.atoms[0];
-                    const Vertex& v = mol.getVertex(aid);
-                    bool posCounted = false;
-                    for (int j = v.neiBegin(); j < v.neiEnd(); j = v.neiNext(j))
+                    const Superatom& group = (Superatom&)sgroup;
+                    Vec3f centre;
+                    for (int i = 0; i < group.atoms.size(); ++i)
                     {
-                        int naid = v.neiVertex(j);
-                        if (!groupAtoms.find(naid))
+                        int aid = group.atoms[i];
+                        centre.add(mol.getAtomXyz(aid));
+                    }
+                    centre.scale(1.0f / group.atoms.size());
+                    int said = -1;
+
+                    if (mol.isQueryMolecule())
+                    {
+                        said = mol.asQueryMolecule().addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, group.subscript.ptr()));
+                    }
+                    else
+                    {
+                        Molecule& amol = mol.asMolecule();
+                        said = amol.addAtom(ELEM_PSEUDO);
+                        amol.setPseudoAtom(said, group.subscript.ptr());
+                    }
+                    QS_DEF(RedBlackSet<int>, groupAtoms);
+                    groupAtoms.clear();
+                    for (int j = 0; j < group.atoms.size(); ++j)
+                    {
+                        groupAtoms.insert(group.atoms[j]);
+                    }
+                    Vec3f pos;
+                    int posCnt = 0;
+                    while (mol.sgroups.hasSGroup(i) && group.atoms.size() > 0)
+                    {
+                        int aid = group.atoms[0];
+                        const Vertex& v = mol.getVertex(aid);
+                        bool posCounted = false;
+                        for (int j = v.neiBegin(); j < v.neiEnd(); j = v.neiNext(j))
                         {
-                            pos.add(mol.getAtomXyz(aid));
-                            posCounted = true;
-                            posCnt++;
-                            int nbid = v.neiEdge(j), bid = -1;
-                            if (mol.findEdgeIndex(naid, said) < 0)
+                            int naid = v.neiVertex(j);
+                            if (!groupAtoms.find(naid))
                             {
-                                if (mol.isQueryMolecule())
+                                pos.add(mol.getAtomXyz(aid));
+                                posCounted = true;
+                                posCnt++;
+                                int nbid = v.neiEdge(j), bid = -1;
+                                if (mol.findEdgeIndex(naid, said) < 0)
                                 {
-                                    QueryMolecule& qm = mol.asQueryMolecule();
-                                    bid = qm.addBond(said, naid, qm.getBond(nbid).clone());
+                                    if (mol.isQueryMolecule())
+                                    {
+                                        QueryMolecule& qm = mol.asQueryMolecule();
+                                        bid = qm.addBond(said, naid, qm.getBond(nbid).clone());
+                                    }
+                                    else
+                                    {
+                                        Molecule& amol = mol.asMolecule();
+                                        bid = amol.addBond(said, naid, amol.getBondOrder(nbid));
+                                        amol.setEdgeTopology(bid, amol.getBondTopology(nbid));
+                                    }
+                                    if (_bondMappingInv.find(bid) != _bondMappingInv.end())
+                                        _bondMappingInv.erase(bid);
+                                    _bondMappingInv.emplace(bid, _bondMappingInv.at(nbid));
                                 }
-                                else
-                                {
-                                    Molecule& amol = mol.asMolecule();
-                                    bid = amol.addBond(said, naid, amol.getBondOrder(nbid));
-                                    amol.setEdgeTopology(bid, amol.getBondTopology(nbid));
-                                }
-                                if (_bondMappingInv.find(bid) != _bondMappingInv.end())
-                                    _bondMappingInv.erase(bid);
-                                _bondMappingInv.emplace(bid, _bondMappingInv.at(nbid));
                             }
                         }
+                        mol.removeAtom(aid);
                     }
-                    mol.removeAtom(aid);
+                    if (posCnt == 0)
+                    {
+                        pos.copy(centre);
+                    }
+                    else
+                    {
+                        pos.scale(1.f / posCnt);
+                    }
+                    mol.setAtomXyz(said, pos.x, pos.y, pos.z);
                 }
-                if (posCnt == 0)
-                {
-                    pos.copy(centre);
-                }
-                else
-                {
-                    pos.scale(1.f / posCnt);
-                }
-                mol.setAtomXyz(said, pos.x, pos.y, pos.z);
             }
         }
     }

@@ -60,6 +60,7 @@ SGroup::SGroup()
     original_group = 0;
     parent_group = 0;
     parent_idx = -1;
+    contracted = -1;
 }
 
 SGroup::~SGroup()
@@ -84,7 +85,7 @@ DataSGroup::~DataSGroup()
 Superatom::Superatom()
 {
     sgroup_type = SGroup::SG_TYPE_SUP;
-    contracted = -1;
+    // contracted = -1;
     seqid = -1;
     attachment_points.clear();
     bond_connections.clear();
