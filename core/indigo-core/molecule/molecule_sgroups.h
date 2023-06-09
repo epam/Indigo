@@ -153,7 +153,6 @@ namespace indigo
 
         Array<char> subscript;     // SMT in Molfile format
         Array<char> sa_class;      // SCL in Molfile format
-        // int contracted;            // display option (-1 if undefined, 0 - expanded, 1 - contracted)
                                    // SDS in Molfile format
         int seqid;                 // SEQID (V3000 - 2017)
         Array<char> sa_natreplace; // NATREPLACE (V3000 - 2017)
