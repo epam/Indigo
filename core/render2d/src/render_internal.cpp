@@ -185,7 +185,7 @@ void RenderOptions::clear()
     centerDoubleBondWhenStereoAdjacent = false;
     showCycles = false;
     agentsBelowArrow = true;
-    collapseSuperatoms = false;
+    // collapseSuperatoms = false;
     atomColorProp.clear();
 }
 
@@ -234,7 +234,7 @@ void MoleculeRenderInternal::setMolecule(BaseMolecule* mol)
             }
         }
     }
-    if (mulsgroups || (_opt.collapseSuperatoms || isThereAtLeastOneContracted) && superatoms)
+    if (mulsgroups || /* (_opt.collapseSuperatoms ||*/ isThereAtLeastOneContracted /*)*/ && superatoms)
     {
         _prepareSGroups(isThereAtLeastOneContracted);
     }
@@ -887,7 +887,7 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
     _cloneAndFillMappings();
 
     BaseMolecule& mol = *_mol;
-    if (_opt.collapseSuperatoms || collapseAtLeastOneSuperatom)
+    if (/* _opt.collapseSuperatoms ||*/ collapseAtLeastOneSuperatom)
     {
         for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
         {
