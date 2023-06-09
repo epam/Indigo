@@ -20,32 +20,125 @@ if not os.path.exists(joinPathPy("out", __file__)):
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
 
-mol1 = indigo.loadMoleculeFromFile(
+print("***   test png output   ***")
+
+print("***   test ket input   ***")
+
+mol11 = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/contracted_fg_ss.ket", __file__)
 )
 indigo.setOption("render-output-format", "png")
 renderer.renderToFile(
-    mol1, joinPathPy("out/contracted_fg_ss_ket.png", __file__)
+    mol11, joinPathPy("out/contracted_fg_ss_ket.png", __file__)
 )
 print(checkImageSimilarity("contracted_fg_ss_ket.png"))
 
-mol2 = indigo.loadMoleculeFromFile(
+mol12 = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/contracted_expanded_fg_ss.ket", __file__)
 )
 indigo.setOption("render-output-format", "png")
 renderer.renderToFile(
-    mol2, joinPathPy("out/contracted_expanded_fg_ss_ket.png", __file__)
+    mol12, joinPathPy("out/contracted_expanded_fg_ss_ket.png", __file__)
 )
 print(checkImageSimilarity("contracted_expanded_fg_ss_ket.png"))
 
-mol3 = indigo.loadMoleculeFromFile(
+mol13 = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/expanded_fg_ss.ket", __file__)
+)
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(
+    mol13, joinPathPy("out/expanded_fg_ss_ket.png", __file__)
+)
+print(checkImageSimilarity("expanded_fg_ss_ket.png"))
+
+print("***   test mol input   ***")
+
+mol14 = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/contracted_fg_ss.mol", __file__)
+)
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(
+    mol14, joinPathPy("out/contracted_fg_ss_mol.png", __file__)
+)
+print("***   contracted_fg_ss_mol.png done  ***")
+print(checkImageSimilarity("contracted_fg_ss_mol.png"))
+
+mol15 = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/contracted_expanded_fg_ss.mol", __file__)
 )
 indigo.setOption("render-output-format", "png")
 renderer.renderToFile(
-    mol3, joinPathPy("out/contracted_expanded_fg_ss_mol.png", __file__)
+    mol15, joinPathPy("out/contracted_expanded_fg_ss_mol.png", __file__)
 )
 print(checkImageSimilarity("contracted_expanded_fg_ss_mol.png"))
+
+mol16 = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/expanded_fg_ss.mol", __file__)
+)
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(
+    mol16, joinPathPy("out/expanded_fg_ss_mol.png", __file__)
+)
+print(checkImageSimilarity("expanded_fg_ss_mol.png"))
+
+print("***   test svg output   ***")
+
+print("***   test ket input   ***")
+mol21 = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/contracted_fg_ss.ket", __file__)
+)
+indigo.setOption("render-output-format", "svg")
+renderer.renderToFile(
+    mol21, joinPathPy("out/contracted_fg_ss_ket.svg", __file__)
+)
+print(checkImageSimilarity("contracted_fg_ss_ket.svg"))
+
+mol22 = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/contracted_expanded_fg_ss.ket", __file__)
+)
+indigo.setOption("render-output-format", "svg")
+renderer.renderToFile(
+    mol22, joinPathPy("out/contracted_expanded_fg_ss_ket.svg", __file__)
+)
+print(checkImageSimilarity("contracted_expanded_fg_ss_ket.svg"))
+
+mol23 = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/expanded_fg_ss.ket", __file__)
+)
+indigo.setOption("render-output-format", "svg")
+renderer.renderToFile(
+    mol23, joinPathPy("out/expanded_fg_ss_ket.svg", __file__)
+)
+print(checkImageSimilarity("expanded_fg_ss_ket.svg"))
+
+print("***   test mol input   ***")
+
+mol24 = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/contracted_fg_ss.mol", __file__)
+)
+indigo.setOption("render-output-format", "svg")
+renderer.renderToFile(
+    mol24, joinPathPy("out/contracted_fg_ss_mol.svg", __file__)
+)
+print(checkImageSimilarity("contracted_fg_ss_mol.svg"))
+
+mol25 = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/contracted_expanded_fg_ss.mol", __file__)
+)
+indigo.setOption("render-output-format", "svg")
+renderer.renderToFile(
+    mol25, joinPathPy("out/contracted_expanded_fg_ss_mol.svg", __file__)
+)
+print(checkImageSimilarity("contracted_expanded_fg_ss_mol.svg"))
+
+mol26 = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/expanded_fg_ss.mol", __file__)
+)
+indigo.setOption("render-output-format", "svg")
+renderer.renderToFile(
+    mol26, joinPathPy("out/expanded_fg_ss_mol.svg", __file__)
+)
+print(checkImageSimilarity("expanded_fg_ss_mol.svg"))
 
 if isIronPython():
     renderer.Dispose()
