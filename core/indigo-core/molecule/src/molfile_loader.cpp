@@ -1327,7 +1327,7 @@ void MolfileLoader::_readCtab2000()
                         {
                             Superatom& sup = (Superatom&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
                             // sup.contracted = 0;
-                            sup.contracted = 1;
+                            sup.contracted = -1; // 1
                         }
                     }
                 }
