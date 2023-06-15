@@ -55,7 +55,6 @@ protected:
         indigoSetOption("render-stereo-style", "none");
         indigoSetOptionXY("render-image-size", 400, 400);
         indigoSetOption("render-output-format", "png");
-        indigoSetOption("render-superatom-mode", "collapse");
 
         try
         {

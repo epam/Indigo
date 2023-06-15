@@ -271,10 +271,6 @@ void indigoRenderGetCatalystsPlacement(Array<char>& value)
         value.readString("above", true);
 }
 
-void indigoRenderGetSuperatomMode(Array<char>& value)
-{
-}
-
 static MultilineTextLayout _parseTextLayout(const char* text)
 {
     // Try to read as float for compatibility with previous versions
