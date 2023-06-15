@@ -271,10 +271,6 @@ void indigoRenderGetCatalystsPlacement(Array<char>& value)
         value.readString("above", true);
 }
 
-void indigoRenderSetSuperatomMode(const char* mode)
-{
-}
-
 void indigoRenderGetSuperatomMode(Array<char>& value)
 {
 }
@@ -714,7 +710,6 @@ void IndigoRenderer::setOptionsHandlers()
         mgr->setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition, indigoRenderGetCommentPosition);
         mgr->setOptionHandlerString("render-stereo-style", indigoRenderSetStereoStyle, indigoRenderGetStereoStyle);
         mgr->setOptionHandlerString("render-catalysts-placement", indigoRenderSetCatalystsPlacement, indigoRenderGetCatalystsPlacement);
-        mgr->setOptionHandlerString("render-superatom-mode", indigoRenderSetSuperatomMode, indigoRenderGetSuperatomMode);
         mgr->setOptionHandlerString("render-atom-color-property", SETTER_GETTER_STR_OPTION(rp.rOpt.atomColorProp));
 
         mgr->setOptionHandlerBool("render-coloring", SETTER_GETTER_BOOL_OPTION(rp.rOpt.atomColoring));
