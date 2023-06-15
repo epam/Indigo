@@ -185,7 +185,6 @@ void RenderOptions::clear()
     centerDoubleBondWhenStereoAdjacent = false;
     showCycles = false;
     agentsBelowArrow = true;
-    // collapseSuperatoms = false;
     atomColorProp.clear();
 }
 
@@ -887,7 +886,7 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
     _cloneAndFillMappings();
 
     BaseMolecule& mol = *_mol;
-    if (/* _opt.collapseSuperatoms ||*/ collapseAtLeastOneSuperatom)
+    if (collapseAtLeastOneSuperatom)
     {
         for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
         {
