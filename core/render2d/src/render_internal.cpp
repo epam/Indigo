@@ -233,7 +233,7 @@ void MoleculeRenderInternal::setMolecule(BaseMolecule* mol)
             }
         }
     }
-    if (mulsgroups || /* (_opt.collapseSuperatoms ||*/ isThereAtLeastOneContracted /*)*/ && superatoms)
+    if (mulsgroups || isThereAtLeastOneContracted && superatoms)
     {
         _prepareSGroups(isThereAtLeastOneContracted);
     }
