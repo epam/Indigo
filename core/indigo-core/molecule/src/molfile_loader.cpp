@@ -1326,7 +1326,7 @@ void MolfileLoader::_readCtab2000()
                         if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_SUP)
                         {
                             Superatom& sup = (Superatom&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                            sup.contracted = 0;
+                            sup.contracted = DisplayOption::Expanded;
                         }
                     }
                 }
@@ -3544,12 +3544,12 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 if (c == 'E')
                 {
                     if (sup != 0)
-                        sup->contracted = 0;
+                        sup->contracted = DisplayOption::Expanded;
                 }
                 else
                 {
                     if (sup != 0)
-                        sup->contracted = -1;
+                        sup->contracted = DisplayOption::Undefined;
                 }
             }
         }

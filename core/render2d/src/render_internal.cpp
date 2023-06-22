@@ -23,6 +23,7 @@
 #include "base_cpp/tree.h"
 #include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_sgroups.h"
 #include "molecule/query_molecule.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
@@ -226,7 +227,7 @@ void MoleculeRenderInternal::setMolecule(BaseMolecule* mol)
         for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
         {
             SGroup& sgroup = mol.sgroups.getSGroup(i);
-            if (abs(sgroup.contracted) == 1)
+            if (sgroup.contracted == DisplayOption::Contracted || sgroup.contracted == DisplayOption::Undefined)
             {
                 isThereAtLeastOneContracted = true;
                 break;
@@ -891,7 +892,7 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
         for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
         {
             SGroup& sgroup = mol.sgroups.getSGroup(i);
-            if (abs(sgroup.contracted) == 1)
+            if (sgroup.contracted == DisplayOption::Contracted || sgroup.contracted == DisplayOption::Undefined)
             {
                 if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
                 {
@@ -899,21 +900,23 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                     Vec3f centre;
                     for (int i = 0; i < group.atoms.size(); ++i)
                     {
-                        int aid = group.atoms[i];
-                        centre.add(mol.getAtomXyz(aid));
+                        //int aid = group.atoms[i];
+                        int atomID = group.atoms[i];
+                        centre.add(mol.getAtomXyz(atomID));
                     }
                     centre.scale(1.0f / group.atoms.size());
-                    int said = -1;
+                    //int said = -1;
+                    int superAtomID = -1;
 
                     if (mol.isQueryMolecule())
                     {
-                        said = mol.asQueryMolecule().addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, group.subscript.ptr()));
+                        superAtomID = mol.asQueryMolecule().addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, group.subscript.ptr()));
                     }
                     else
                     {
                         Molecule& amol = mol.asMolecule();
-                        said = amol.addAtom(ELEM_PSEUDO);
-                        amol.setPseudoAtom(said, group.subscript.ptr());
+                        superAtomID = amol.addAtom(ELEM_PSEUDO);
+                        amol.setPseudoAtom(superAtomID, group.subscript.ptr());
                     }
                     QS_DEF(RedBlackSet<int>, groupAtoms);
                     groupAtoms.clear();
@@ -925,38 +928,38 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                     int posCnt = 0;
                     while (mol.sgroups.hasSGroup(i) && group.atoms.size() > 0)
                     {
-                        int aid = group.atoms[0];
-                        const Vertex& v = mol.getVertex(aid);
+                        int atomID = group.atoms[0];
+                        const Vertex& v = mol.getVertex(atomID);
                         bool posCounted = false;
                         for (int j = v.neiBegin(); j < v.neiEnd(); j = v.neiNext(j))
                         {
-                            int naid = v.neiVertex(j);
-                            if (!groupAtoms.find(naid))
+                            int neighboringAtomID = v.neiVertex(j);
+                            if (!groupAtoms.find(neighboringAtomID))
                             {
-                                pos.add(mol.getAtomXyz(aid));
+                                pos.add(mol.getAtomXyz(atomID));
                                 posCounted = true;
                                 posCnt++;
-                                int nbid = v.neiEdge(j), bid = -1;
-                                if (mol.findEdgeIndex(naid, said) < 0)
+                                int neighboringBondID = v.neiEdge(j), bondID = -1;
+                                if (mol.findEdgeIndex(neighboringAtomID, superAtomID) < 0)
                                 {
                                     if (mol.isQueryMolecule())
                                     {
                                         QueryMolecule& qm = mol.asQueryMolecule();
-                                        bid = qm.addBond(said, naid, qm.getBond(nbid).clone());
+                                        bondID = qm.addBond(superAtomID, neighboringAtomID, qm.getBond(neighboringBondID).clone());
                                     }
                                     else
                                     {
                                         Molecule& amol = mol.asMolecule();
-                                        bid = amol.addBond(said, naid, amol.getBondOrder(nbid));
-                                        amol.setEdgeTopology(bid, amol.getBondTopology(nbid));
+                                        bondID = amol.addBond(superAtomID, neighboringAtomID, amol.getBondOrder(neighboringBondID));
+                                        amol.setEdgeTopology(bondID, amol.getBondTopology(neighboringBondID));
                                     }
-                                    if (_bondMappingInv.find(bid) != _bondMappingInv.end())
-                                        _bondMappingInv.erase(bid);
-                                    _bondMappingInv.emplace(bid, _bondMappingInv.at(nbid));
+                                    if (_bondMappingInv.find(bondID) != _bondMappingInv.end())
+                                        _bondMappingInv.erase(bondID);
+                                    _bondMappingInv.emplace(bondID, _bondMappingInv.at(neighboringBondID));
                                 }
                             }
                         }
-                        mol.removeAtom(aid);
+                        mol.removeAtom(atomID);
                     }
                     if (posCnt == 0)
                     {
@@ -966,7 +969,7 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                     {
                         pos.scale(1.f / posCnt);
                     }
-                    mol.setAtomXyz(said, pos.x, pos.y, pos.z);
+                    mol.setAtomXyz(superAtomID, pos.x, pos.y, pos.z);
                 }
             }
         }

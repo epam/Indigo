@@ -60,7 +60,7 @@ SGroup::SGroup()
     original_group = 0;
     parent_group = 0;
     parent_idx = -1;
-    contracted = -1;
+    contracted = DisplayOption::Undefined;
 }
 
 SGroup::~SGroup()
@@ -415,7 +415,7 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
             if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
             {
                 Superatom& sup = (Superatom&)sg;
-                if (sup.contracted == value)
+                if (sup.contracted == (DisplayOption)value) // value) //(DisplayOption)value)
                 {
                     sgs.push(i);
                 }

@@ -19,7 +19,9 @@
 #ifndef __molecule_h__
 #define __molecule_h__
 
+#include "molecule/CDXConstants.h"
 #include "molecule/base_molecule.h"
+#include "molecule/molecule_sgroups.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -48,7 +50,7 @@ namespace indigo
         void setTemplateAtomName(int idx, const char* text);
         void setTemplateAtomClass(int idx, const char* text);
         void setTemplateAtomSeqid(int idx, int seq_id);
-        void setTemplateAtomDisplayOption(int idx, int contracted);
+        void setTemplateAtomDisplayOption(int idx, int contracted);//);//DisplayOption option);
 
         int addBond(int beg, int end, int order);
         int addBond_Silent(int beg, int end, int order);
@@ -209,7 +211,8 @@ namespace indigo
             int name_idx;   // index in _template_names
             int class_idx;  // index in _template_classes
             int seq_id;     // sequence id
-            int contracted; // display option (-1 if undefined, 0 - expanded, 1 - contracted)
+            // int contracted; // display option (-1 if undefined, 0 - expanded, 1 - contracted)
+            DisplayOption contracted;
 
             Array<_AttachOrder> order; // attach order info
         };

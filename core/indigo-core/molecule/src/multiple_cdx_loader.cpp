@@ -20,9 +20,6 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 
-typedef unsigned short int UINT16;
-typedef int INT32;
-typedef unsigned int UINT32;
 #include "molecule/CDXConstants.h"
 
 using namespace indigo;

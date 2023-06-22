@@ -34,6 +34,19 @@ namespace indigo
 
     class BaseMolecule;
 
+    enum class DisplayOption
+    {
+//    public:
+        /* static const int*/ Undefined = -1,
+        /* static const int*/ Expanded = 0,
+        /* static const int*/ Contracted = 1
+    };
+
+//        static const int DisplayOptionUndefined = -1;
+//        static const int DisplayOptionExpanded = 0;
+//        static const int DisplayOptionContracted = 1;
+
+
     class DLLEXPORT SGroup
     {
     public:
@@ -113,7 +126,8 @@ namespace indigo
 
         int brk_style;            // represented with SBT in Molfile format
         Array<Vec2f[2]> brackets; // represented with SDI in Molfile format
-        int contracted;           // display option (-1 if undefined, 0 - expanded, 1 - contracted)
+        // int contracted;           // display option (-1 if undefined, 0 - expanded, 1 - contracted)
+        DisplayOption contracted;
 
         static const char* typeToString(int sg_type);
         static int getType(const char* sg_type);
