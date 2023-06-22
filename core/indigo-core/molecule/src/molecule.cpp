@@ -377,13 +377,13 @@ void Molecule::setTemplateAtomSeqid(int idx, int seq_id)
     updateEditRevision();
 }
 
-void Molecule::setTemplateAtomDisplayOption(int idx, int option) // DisplayOption option)
+void Molecule::setTemplateAtomDisplayOption(int idx, int option)
 {
     if (_atoms[idx].number != ELEM_TEMPLATE)
         throw Error("setTemplateAtomDisplayOption(): atom #%d is not a template atom", idx);
 
     _TemplateOccurrence& occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
-    occur.contracted = (DisplayOption)option; // option; //(DisplayOption)option;
+    occur.contracted = (DisplayOption)option;
     updateEditRevision();
 }
 

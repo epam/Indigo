@@ -50,7 +50,7 @@ namespace indigo
         void setTemplateAtomName(int idx, const char* text);
         void setTemplateAtomClass(int idx, const char* text);
         void setTemplateAtomSeqid(int idx, int seq_id);
-        void setTemplateAtomDisplayOption(int idx, int contracted); //);//DisplayOption option);
+        void setTemplateAtomDisplayOption(int idx, int contracted);
 
         int addBond(int beg, int end, int order);
         int addBond_Silent(int beg, int end, int order);

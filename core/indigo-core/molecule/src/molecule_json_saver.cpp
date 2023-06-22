@@ -258,7 +258,7 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         Superatom& sa = (Superatom&)sgroup;
         writer.Key("name");
         writer.String(sa.subscript.ptr());
-        if (sa.contracted == DisplayOption::Expanded) // 0)
+        if (sa.contracted == DisplayOption::Expanded)
         {
             writer.Key("expanded");
             writer.Bool(true);

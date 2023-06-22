@@ -900,12 +900,10 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                     Vec3f centre;
                     for (int i = 0; i < group.atoms.size(); ++i)
                     {
-                        // int aid = group.atoms[i];
                         int atomID = group.atoms[i];
                         centre.add(mol.getAtomXyz(atomID));
                     }
                     centre.scale(1.0f / group.atoms.size());
-                    // int said = -1;
                     int superAtomID = -1;
 
                     if (mol.isQueryMolecule())

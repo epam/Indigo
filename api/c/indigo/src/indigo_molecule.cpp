@@ -3216,7 +3216,6 @@ CEXPORT int indigoGetSGroupDisplayOption(int sgroup)
     INDIGO_BEGIN
     {
         Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        // if (sup.contracted > DisplayOptionUndefined)
         if (sup.contracted > DisplayOption::Undefined)
             return (int)sup.contracted;
 
