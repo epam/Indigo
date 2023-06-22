@@ -804,7 +804,8 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 }
                 if (sup.sa_class.size() > 1)
                     out.printf(" CLASS=%s", sup.sa_class.ptr());
-                if (sup.contracted == DisplayOption::Expanded) out.printf(" ESTATE=E");
+                if (sup.contracted == DisplayOption::Expanded)
+                    out.printf(" ESTATE=E");
                 if (sup.attachment_points.size() > 0)
                 {
                     for (int j = sup.attachment_points.begin(); j < sup.attachment_points.end(); j = sup.attachment_points.next(j))

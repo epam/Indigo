@@ -36,16 +36,15 @@ namespace indigo
 
     enum class DisplayOption
     {
-//    public:
+        //    public:
         /* static const int*/ Undefined = -1,
         /* static const int*/ Expanded = 0,
         /* static const int*/ Contracted = 1
     };
 
-//        static const int DisplayOptionUndefined = -1;
-//        static const int DisplayOptionExpanded = 0;
-//        static const int DisplayOptionContracted = 1;
-
+    //        static const int DisplayOptionUndefined = -1;
+    //        static const int DisplayOptionExpanded = 0;
+    //        static const int DisplayOptionContracted = 1;
 
     class DLLEXPORT SGroup
     {
