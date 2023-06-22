@@ -64,8 +64,8 @@ namespace indigo
         bool _findObject(long long& beg, int& length);
         bool _hasNextObject();
         void _skipObject();
-        void _getObject();
-        void _getString(int size, Array<char>& str);
+        void _getObject(int parent_tag);
+        void _getString(int size, Array<char>& str, bool no_style = false);
         void _getValue(int type, int size, Array<char>& str);
     };
 

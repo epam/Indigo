@@ -131,9 +131,6 @@ void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     parseCDXMLAttributes(root.firstProperty());
     _parseCDXMLPage(root);
 
-    if (!nodes.size())
-        throw Error("CDXML has no data");
-
     _parseCollections(mol);
     int arrows_count = mol.meta().getMetaCount(KETReactionArrow::CID);
     if (arrows_count && !load_arrows)
@@ -169,6 +166,7 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         case kCDXNodeType_Element:
         case kCDXNodeType_ElementList:
         case kCDXNodeType_GenericNickname:
+        case kCDXNodeType_Unspecified:
             atoms.push_back(node_idx);
             break;
         case kCDXNodeType_ExternalConnectionPoint: {
@@ -586,6 +584,10 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                         _pmol->setBondDirection(bi, bond.dir);
                 }
             }
+            else
+            {
+                throw Error("orphaned node!!!");
+            }
         }
     }
 }
@@ -853,7 +855,11 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
             std::string label;
             _parseLabel(child_elem, label);
             if (label.size() > 1 && label.find("R") == 0)
+            {
                 node.rg_index = label.substr(1);
+                node.type = kCDXNodeType_NamedAlternativeGroup;
+                node.element = ELEM_RSITE;
+            }
             else if (node.element == ELEM_C) // overridable
             {
                 auto elem = Element::fromString2(label.c_str());
@@ -1097,13 +1103,17 @@ void MoleculeCdxmlLoader::_parseArrow(CDXElement elem)
 
 void MoleculeCdxmlLoader::_parseLabel(CDXElement elem, std::string& label)
 {
+    label.clear();
     for (auto text_style = elem.firstChildElement(); text_style.hasContent(); text_style = text_style.nextSiblingElement())
     {
         std::string text_element = text_style.value();
         if (text_element == "s")
         {
-            label = text_style.getText();
-            break;
+            label += text_style.getText();
+            if (label == "R")
+                continue;
+            else
+                break;
         }
     }
 }
@@ -1190,7 +1200,7 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec3
                     ket_text_style.styles.push_back(KETFontItalicStr);
                 if (fs.is_superscript)
                     ket_text_style.styles.push_back(KETFontSuperscriptStr);
-                if (fs.is_superscript)
+                if (fs.is_subscript)
                     ket_text_style.styles.push_back(KETFontSubscriptStr);
             }
             if (font_size > 0 && (int)font_size != KETDefaultFontSize)

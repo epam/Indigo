@@ -835,4 +835,6 @@ public interface IndigoLib extends Library {
     int indigoDbgBreakpoint();
 
     Pointer indigoDbgInternalType(int object);
+
+    int indigoCopyRGroups(int molecule_from, int molecule_to);
 }
