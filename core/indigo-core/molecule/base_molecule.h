@@ -44,7 +44,6 @@
 
 namespace indigo
 {
-
     enum
     {
         CHARGE_UNKNOWN = -100
