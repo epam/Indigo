@@ -25,10 +25,6 @@
 #include "reaction/reaction_cdxml_saver.h"
 #include "render_params.h"
 
-typedef unsigned short int UINT16;
-typedef int INT32;
-typedef unsigned int UINT32;
-
 using namespace indigo;
 
 // Molecule position on the page

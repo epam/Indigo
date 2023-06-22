@@ -377,7 +377,7 @@ void Molecule::setTemplateAtomSeqid(int idx, int seq_id)
     updateEditRevision();
 }
 
-void Molecule::setTemplateAtomDisplayOption(int idx, int option) //DisplayOption option)
+void Molecule::setTemplateAtomDisplayOption(int idx, int option) // DisplayOption option)
 {
     if (_atoms[idx].number != ELEM_TEMPLATE)
         throw Error("setTemplateAtomDisplayOption(): atom #%d is not a template atom", idx);

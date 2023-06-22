@@ -50,7 +50,7 @@ namespace indigo
         void setTemplateAtomName(int idx, const char* text);
         void setTemplateAtomClass(int idx, const char* text);
         void setTemplateAtomSeqid(int idx, int seq_id);
-        void setTemplateAtomDisplayOption(int idx, int contracted);//);//DisplayOption option);
+        void setTemplateAtomDisplayOption(int idx, int contracted); //);//DisplayOption option);
 
         int addBond(int beg, int end, int order);
         int addBond_Silent(int beg, int end, int order);
@@ -208,9 +208,9 @@ namespace indigo
 
         struct _TemplateOccurrence
         {
-            int name_idx;   // index in _template_names
-            int class_idx;  // index in _template_classes
-            int seq_id;     // sequence id
+            int name_idx;  // index in _template_names
+            int class_idx; // index in _template_classes
+            int seq_id;    // sequence id
             // int contracted; // display option (-1 if undefined, 0 - expanded, 1 - contracted)
             DisplayOption contracted;
 
