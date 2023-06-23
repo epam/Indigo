@@ -24,10 +24,6 @@
 #endif //  defined( _X86_ ) && !defined( _CS3D )
 #endif // QUADCONST
 
-typedef unsigned short int UINT16;
-typedef int INT32;
-typedef unsigned int UINT32;
-
 typedef UINT16 CDXTag;
 typedef INT32 CDXObjectID; // signed for now, due to mac compiler bug?
 const CDXObjectID kCDXUndefinedId = (CDXObjectID)-1;

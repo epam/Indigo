@@ -51,6 +51,21 @@ typedef unsigned int dword;
 typedef unsigned char byte;
 #endif
 
+#ifndef __UINT16_typedef__
+#define __UINT16_typedef__
+typedef unsigned short int UINT16;
+#endif
+
+#ifndef __INT32_typedef__
+#define __INT32_typedef__
+typedef int INT32;
+#endif
+
+#ifndef __UINT32_typedef__
+#define __UINT32_typedef__
+typedef unsigned int UINT32;
+#endif
+
 #ifndef EXPORT_SYMBOL
 #ifdef _WIN32
 #define EXPORT_SYMBOL __declspec(dllexport)

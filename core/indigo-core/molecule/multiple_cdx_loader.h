@@ -22,11 +22,6 @@
 #include "base_cpp/properties_map.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "base_cpp/tlscont.h"
-
-typedef unsigned short int UINT16;
-typedef int INT32;
-typedef unsigned int UINT32;
-
 namespace indigo
 {
 

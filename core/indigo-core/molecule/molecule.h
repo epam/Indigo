@@ -19,7 +19,6 @@
 #ifndef __molecule_h__
 #define __molecule_h__
 
-#include "molecule/CDXConstants.h"
 #include "molecule/base_molecule.h"
 #include "molecule/molecule_sgroups.h"
 
