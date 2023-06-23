@@ -22,7 +22,6 @@
 #include "base_cpp/properties_map.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "base_cpp/tlscont.h"
-
 namespace indigo
 {
 

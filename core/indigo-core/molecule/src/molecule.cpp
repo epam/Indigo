@@ -343,7 +343,7 @@ void Molecule::setTemplateAtom(int idx, const char* text)
     _TemplateOccurrence& occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
     occur.name_idx = _template_names.add(text);
     occur.seq_id = -1;
-    occur.contracted = -1;
+    occur.contracted = DisplayOption::Undefined;
     updateEditRevision();
 }
 
@@ -383,7 +383,7 @@ void Molecule::setTemplateAtomDisplayOption(int idx, int option)
         throw Error("setTemplateAtomDisplayOption(): atom #%d is not a template atom", idx);
 
     _TemplateOccurrence& occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
-    occur.contracted = option;
+    occur.contracted = (DisplayOption)option;
     updateEditRevision();
 }
 
@@ -1471,7 +1471,8 @@ const int Molecule::getTemplateAtomDisplayOption(int idx)
         throw Error("getTemplateAtomDisplayOption(): atom #%d is not a template atom", idx);
 
     _TemplateOccurrence& occur = _template_occurrences.at(atom.template_occur_idx);
-    const int res = occur.contracted;
+    const int res = static_cast<int>(occur.contracted);
+    // const int res = occur.contracted;
 
     return res;
 }

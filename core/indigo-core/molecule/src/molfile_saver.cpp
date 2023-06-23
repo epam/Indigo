@@ -804,7 +804,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 }
                 if (sup.sa_class.size() > 1)
                     out.printf(" CLASS=%s", sup.sa_class.ptr());
-                if (sup.contracted == 0)
+                if (sup.contracted == DisplayOption::Expanded)
                     out.printf(" ESTATE=E");
                 if (sup.attachment_points.size() > 0)
                 {
@@ -1630,7 +1630,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                                         superatom.bond_connections[j].bond_dir.x, superatom.bond_connections[j].bond_dir.y);
                     }
                 }
-                if (superatom.contracted == 0)
+                if (superatom.contracted == DisplayOption::Expanded)
                 {
                     output.printfCR("M  SDS EXP  1 %3d", superatom.original_group);
                 }
