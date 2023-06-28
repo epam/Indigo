@@ -834,21 +834,21 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                 // assert(attachmentPoints.IsArray());
                 // for (SizeType i = 0; i < a.Size(); i++) // Uses SizeType instead of size_t
                 // printf("a[%d] = %d\n", i, a[i].GetInt());
-                std :: cout << "attachmentPoints.Size() : " << attachmentPoints.Size() << std::endl;
+                std ::cout << "attachmentPoints.Size() : " << attachmentPoints.Size() << std::endl;
                 for (SizeType j = 0; j < attachmentPoints.Size(); ++j)
                 {
                     // const Value& a = (const rapidjson::GenericValue<rapidjson::UTF8<> >&)attachmentPoints[j];
                     // const Value& attachmentAtom = (const rapidjson::GenericValue<rapidjson::UTF8<> >&)attachmentPoints[j];
                     int attachmentAtom = attachmentPoints[j]["attachmentAtom"].GetInt();
-                    std :: cout << "attachmentAtom : " << attachmentAtom << std::endl;
+                    std ::cout << "attachmentAtom : " << attachmentAtom << std::endl;
                     int leavingAtom = attachmentPoints[j]["leavingAtom"].GetInt();
-                    std :: cout << "leavingAtom : " << leavingAtom << std::endl;
+                    std ::cout << "leavingAtom : " << leavingAtom << std::endl;
                     std::string id = attachmentPoints[j]["id"].GetString();
-                    std :: cout << "id : " << id << std::endl;
+                    std ::cout << "id : " << id << std::endl;
 
-                    // /home/vg/workspace/indigo/core/indigo-core/molecule/src/molecule_json_loader.cpp:840:38: error: invalid initialization of reference of type ‘const Value&’ {aka ‘const rapidjson::GenericValue<rapidjson::UTF8<> >&’} from expression of type ‘const indigo::Superatom::_AttachmentPoint’
-                    // sg.attachment_points.push(10);
-                    // auto attachmentPoint = attachmentPoints[j]; // s["atoms"];
+                    // /home/vg/workspace/indigo/core/indigo-core/molecule/src/molecule_json_loader.cpp:840:38: error: invalid initialization of reference of
+                    // type ‘const Value&’ {aka ‘const rapidjson::GenericValue<rapidjson::UTF8<> >&’} from expression of type ‘const
+                    // indigo::Superatom::_AttachmentPoint’ sg.attachment_points.push(10); auto attachmentPoint = attachmentPoints[j]; // s["atoms"];
                     // attachmentPoint.
                     // sg.attachment_points.push();
                     // sgroup.bonds.push(bonds[j].GetInt());
