@@ -263,6 +263,26 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             writer.Key("expanded");
             writer.Bool(true);
         }
+
+        if (sa.attachment_points.size())
+        {
+            writer.Key("attachmentPoints");
+            writer.StartArray();
+            for (int i = sa.attachment_points.begin(); i != sa.attachment_points.end(); i = sa.attachment_points.next(i))
+            {
+                writer.StartObject();
+                auto& atp = sa.attachment_points[i];
+                writer.Key("attachmentAtom");
+                writer.Int(atp.aidx);
+                writer.Key("leavingAtom");
+                writer.Int(atp.aidx);
+                writer.Key("id");
+                std::string atp_id_str(atp.apid.ptr(), atp.apid.size());
+                writer.String(atp_id_str.c_str());
+                writer.EndObject();
+            }
+            writer.EndArray();
+        }
     }
     break;
     case SGroup::SG_TYPE_SRU: {
