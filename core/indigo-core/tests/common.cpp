@@ -1,4 +1,7 @@
 #include "common.h"
+#include "reaction/reaction_cml_saver.h"
+#include "reaction/reaction_json_saver.h"
+#include "reaction/rxnfile_saver.h"
 
 #include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
@@ -92,7 +95,7 @@ void IndigoCoreTest::loadQueryReaction(const char* buf, QueryReaction& queryReac
     loader.loadQueryReaction(queryReaction);
 }
 
-std::string IndigoCoreTest::saveReaction(Reaction& reaction)
+std::string IndigoCoreTest::saveReactionSmiles(Reaction& reaction)
 {
     Array<char> buffer;
     ArrayOutput output(buffer);
@@ -103,13 +106,59 @@ std::string IndigoCoreTest::saveReaction(Reaction& reaction)
     return result;
 }
 
-std::string IndigoCoreTest::saveQueryReaction(QueryReaction& queryReaction, const bool smarts)
+std::string IndigoCoreTest::saveReactionSmiles(QueryReaction& queryReaction, const bool smarts)
 {
     Array<char> buffer;
     ArrayOutput output(buffer);
     RSmilesSaver smilesSaver(output);
     smilesSaver.smarts_mode = smarts;
     smilesSaver.saveQueryReaction(queryReaction);
+    output.writeChar(0);
+    std::string result(buffer.ptr());
+    return result;
+}
+
+std::string IndigoCoreTest::saveRxnfle(Reaction& reaction)
+{
+    Array<char> buffer;
+    ArrayOutput output(buffer);
+    RxnfileSaver rxnfileSaver(output);
+    rxnfileSaver.skip_date = true;
+    rxnfileSaver.saveReaction(reaction);
+    output.writeChar(0);
+    std::string result(buffer.ptr());
+    return result;
+}
+
+std::string IndigoCoreTest::saveRxnfle(QueryReaction& queryReaction)
+{
+    Array<char> buffer;
+    ArrayOutput output(buffer);
+    RxnfileSaver rxnfileSaver(output);
+    rxnfileSaver.skip_date = true;
+    rxnfileSaver.saveQueryReaction(queryReaction);
+    output.writeChar(0);
+    std::string result(buffer.ptr());
+    return result;
+}
+
+std::string IndigoCoreTest::saveReactionCML(Reaction& reaction)
+{
+    Array<char> buffer;
+    ArrayOutput output(buffer);
+    ReactionCmlSaver saver(output);
+    saver.saveReaction(reaction);
+    output.writeChar(0);
+    std::string result(buffer.ptr());
+    return result;
+}
+
+std::string IndigoCoreTest::saverReactionJson(BaseReaction& reaction)
+{
+    Array<char> buffer;
+    ArrayOutput output(buffer);
+    ReactionJsonSaver saver(output);
+    saver.saveReaction(reaction);
     output.writeChar(0);
     std::string result(buffer.ptr());
     return result;

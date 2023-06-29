@@ -34,14 +34,27 @@ TEST_F(IndigoCoreReactionTest, pseudoatoms)
 {
     Reaction reaction;
     loadReaction("*>>* |$Carbon;$|", reaction);
-    ASSERT_STREQ("*>>* |$Carbon;A$|", saveReaction(reaction).c_str());
+    ASSERT_STREQ("*>>* |$Carbon;A$|", saveReactionSmiles(reaction).c_str());
 }
 
 TEST_F(IndigoCoreReactionTest, aliases)
 {
     Reaction reaction;
     loadReaction("C>>N |$Carbon;$|", reaction);
-    ASSERT_STREQ("C>>N |$Carbon;$|", saveReaction(reaction).c_str());
+    ASSERT_STREQ("C>>N |$Carbon;$|", saveReactionSmiles(reaction).c_str());
+    ASSERT_STREQ("$RXN\n\n -INDIGO- 0100000000\n\n  1  1\n$MOL\n\n  -INDIGO-01000000002D\n\n  1  0  0  0  0  0  0  0  0  0999 V2000\n    0.0000    0.0000    "
+                 "0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\nA    1\nCarbon\nM  END\n$MOL\n\n  -INDIGO-01000000002D\n\n  1  0  0  0  0  0  0  0  0  0999 "
+                 "V2000\n    0.0000    0.0000    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0\nM  END\n",
+                 saveRxnfle(reaction).c_str());
+    ASSERT_STREQ("<?xml version=\"1.0\" ?>\n<cml>\n<reaction>\n<reactantList>\n<molecule>\n    <atomArray>\n        <atom id=\"a0\" elementType=\"C\" "
+                 "mrvAlias=\"Carbon\"/>\n    </atomArray>\n</molecule>\n</reactantList>\n<productList>\n<molecule>\n    <atomArray>\n        <atom id=\"a0\" "
+                 "elementType=\"N\"/>\n    </atomArray>\n</molecule>\n</productList>\n</reaction>\n</cml>\n",
+                 saveReactionCML(reaction).c_str());
+    ASSERT_STREQ(
+        "{\"root\":{\"nodes\":[{\"$ref\":\"mol0\"},{\"$ref\":\"mol1\"},{\"type\":\"arrow\",\"data\":{\"mode\":\"open-angle\",\"pos\":[{\"x\":-2.0,\"y\":0.0,"
+        "\"z\":0.0},{\"x\":2.0,\"y\":0.0,\"z\":0.0}]}}]},\"mol0\":{\"type\":\"molecule\",\"atoms\":[{\"label\":\"C\",\"alias\":\"Carbon\",\"location\":[0.0,0."
+        "0,0.0]}],\"bonds\":[]},\"mol1\":{\"type\":\"molecule\",\"atoms\":[{\"label\":\"N\",\"location\":[2.0,0.0,0.0]}],\"bonds\":[]}}",
+        saverReactionJson(reaction).c_str());
 }
 
 TEST_F(IndigoCoreReactionTest, aliases_complex)
@@ -49,5 +62,26 @@ TEST_F(IndigoCoreReactionTest, aliases_complex)
     QueryReaction reaction;
     loadQueryReaction("[#6:1]=[#6:2][#6:3].[#6:4]=[#6:5][#6:6]>>[#6:3][#6:2]=[#6:5][#6:6] |$;;R1;;;R2;R1;;;R2$|", reaction);
     reaction.clearAAM();
-    ASSERT_STREQ("[#6]=[#6]-[#6].[#6]=[#6]-[#6]>>[#6]-[#6]=[#6]-[#6] |$;;R1;;;R2;R1;;;R2$|", saveQueryReaction(reaction, true).c_str());
+    ASSERT_STREQ("[#6]=[#6]-[#6].[#6]=[#6]-[#6]>>[#6]-[#6]=[#6]-[#6] |$;;R1;;;R2;R1;;;R2$|", saveReactionSmiles(reaction, true).c_str());
+    ASSERT_STREQ("$RXN\n\n -INDIGO- 0100000000\n\n  2  1\n$MOL\n\n  -INDIGO-01000000002D\n\n  3  2  0  0  0  0  0  0  0  0999 V2000\n    0.0000    0.0000    "
+                 "0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    0.0000   "
+                 " 0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  2  0  0  0  0\n  2  3  1  0  0  0  0\nA    3\nR1\nM  END\n$MOL\n\n  "
+                 "-INDIGO-01000000002D\n\n  3  2  0  0  0  0  0  0  0  0999 V2000\n    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    "
+                 "0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n  "
+                 "1  2  2  0  0  0  0\n  2  3  1  0  0  0  0\nA    3\nR2\nM  END\n$MOL\n\n  -INDIGO-01000000002D\n\n  4  3  0  0  0  0  0  0  0  0999 V2000\n  "
+                 "  0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n "
+                 "   0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  "
+                 "0\n  1  2  1  0  0  0  0\n  2  3  2  0  0  0  0\n  3  4  1  0  0  0  0\nA    1\nR1\nA    4\nR2\nM  END\n",
+                 saveRxnfle(reaction).c_str());
+    ASSERT_STREQ(
+        "{\"root\":{\"nodes\":[{\"$ref\":\"mol0\"},{\"$ref\":\"mol1\"},{\"$ref\":\"mol2\"},{\"type\":\"plus\",\"location\":[0.0,0.0,0.0]},{\"type\":\"arrow\","
+        "\"data\":{\"mode\":\"open-angle\",\"pos\":[{\"x\":-1.0,\"y\":0.0,\"z\":0.0},{\"x\":1.0,\"y\":0.0,\"z\":0.0}]}}]},\"mol0\":{\"type\":\"molecule\","
+        "\"atoms\":[{\"label\":\"C\",\"location\":[0.0,0.5,0.0]},{\"label\":\"C\",\"location\":[0.8660253882408142,0.0,0.0]},{\"label\":\"C\",\"alias\":\"R1\","
+        "\"location\":[1.732050895690918,0.4999999701976776,0.0]}],\"bonds\":[{\"type\":2,\"atoms\":[0,1]},{\"type\":1,\"atoms\":[1,2]}]},\"mol1\":{\"type\":"
+        "\"molecule\",\"atoms\":[{\"label\":\"C\",\"location\":[3.732050895690918,0.5,0.0]},{\"label\":\"C\",\"location\":[4.598076343536377,0.0,0.0]},{"
+        "\"label\":\"C\",\"alias\":\"R2\",\"location\":[5.464101791381836,0.4999999701976776,0.0]}],\"bonds\":[{\"type\":2,\"atoms\":[0,1]},{\"type\":1,"
+        "\"atoms\":[1,2]}]},\"mol2\":{\"type\":\"molecule\",\"atoms\":[{\"label\":\"C\",\"alias\":\"R1\",\"location\":[0.0,2.5,0.0]},{\"label\":\"C\","
+        "\"location\":[0.8660253286361694,3.0,0.0]},{\"label\":\"C\",\"location\":[1.7320506572723389,2.5,0.0]},{\"label\":\"C\",\"alias\":\"R2\",\"location\":"
+        "[2.598076105117798,3.0,0.0]}],\"bonds\":[{\"type\":1,\"atoms\":[0,1]},{\"type\":2,\"atoms\":[1,2]},{\"type\":1,\"atoms\":[2,3]}]}}",
+        saverReactionJson(reaction).c_str());
 }

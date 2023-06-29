@@ -32,6 +32,8 @@ namespace indigo
     class BaseReaction;
     class BaseMolecule;
     class Vec2f;
+    class MoleculeJsonSaver;
+
     class ReactionJsonSaver
     {
     public:
