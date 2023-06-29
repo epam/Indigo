@@ -276,7 +276,7 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
                 writer.Int(atp.aidx);
                 writer.Key("leavingAtom");
                 writer.Int(atp.aidx);
-                writer.Key("id");
+                writer.Key("attachmentId");
                 std::string atp_id_str(atp.apid.ptr(), atp.apid.size());
                 writer.String(atp_id_str.c_str());
                 writer.EndObject();

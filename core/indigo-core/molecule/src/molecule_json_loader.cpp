@@ -836,7 +836,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                 {
                     int attachmentAtom = attachmentPoints[j]["attachmentAtom"].GetInt();
                     int leavingAtom = attachmentPoints[j]["leavingAtom"].GetInt();
-                    std::string id = attachmentPoints[j]["id"].GetString();
+                    std::string id = attachmentPoints[j]["attachmentId"].GetString();
                     int ap_idx = sg.attachment_points.add();
                     Superatom::_AttachmentPoint& ap = sg.attachment_points.at(ap_idx);
                     ap.aidx = attachmentAtom;
