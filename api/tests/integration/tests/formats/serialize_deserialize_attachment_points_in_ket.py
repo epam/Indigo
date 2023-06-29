@@ -35,7 +35,7 @@ for filename in files:
     ket = ket_in.json()
     diff = find_diff(ket_ref, ket)
     if not diff:
-       print(filename + ".ket:SUCCEED")
+        print(filename + ".ket:SUCCEED")
     else:
-       print(filename + ".ket:FAILED")
-       print(diff)
+        print(filename + ".ket:FAILED")
+        print(diff)
