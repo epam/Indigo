@@ -19,8 +19,6 @@ indigo.setOption("json-saving-pretty", True)
 
 print("*** KET to KET ***")
 
-# root = joinPathPy("molecules/", __file__)
-# ref_path = joinPathPy("ref/", __file__)
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
