@@ -18,7 +18,6 @@
 
 #include <memory>
 #include <set>
-#include <vector>
 
 #include "layout/molecule_layout.h"
 #include "molecule/ket_commons.h"
@@ -676,10 +675,10 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 writer.String(buf.ptr());
             }
 
-            if (mol.aliases.find(i))
+            if (mol.isAlias(i))
             {
                 writer.Key("alias");
-                writer.String(mol.aliases.at(i).ptr());
+                writer.String(mol.getAlias(i));
             }
         }
 

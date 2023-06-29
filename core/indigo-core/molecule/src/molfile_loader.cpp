@@ -16,10 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "base_cpp/scanner.h"
-#include "base_cpp/tlscont.h"
 #include <memory>
 
+#include "base_cpp/scanner.h"
+#include "base_cpp/tlscont.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_3d_constraints.h"
@@ -27,8 +27,6 @@
 #include "molecule/molfile_loader.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
-
-#include "base_cpp/multimap.h"
 
 #define STRCMP(a, b) strncmp((a), (b), strlen(b))
 
@@ -1479,7 +1477,7 @@ void MolfileLoader::_readCtab2000()
 
             if (_atom_types[atom_idx] == _ATOM_ELEMENT)
             {
-                _bmol->aliases.findOrInsert(atom_idx).copy(alias);
+                _bmol->setAlias(atom_idx, alias.ptr());
             }
             else
             {

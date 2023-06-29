@@ -1090,6 +1090,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
     QS_DEF(Array<int>, unsaturated);
     QS_DEF(Array<int[2]>, substitution_count);
     QS_DEF(Array<int[2]>, ring_bonds);
+    QS_DEF(Array<int>, aliases);
 
     _atom_mapping.clear_resize(mol.vertexEnd());
     _bond_mapping.clear_resize(mol.edgeEnd());
@@ -1102,6 +1103,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
     unsaturated.clear();
     substitution_count.clear();
     ring_bonds.clear();
+    aliases.clear();
 
     int iw = 1;
 
@@ -1119,6 +1121,11 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
         if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
             atom_radical = mol.getAtomRadical_NoThrow(i, 0);
+
+        if (mol.isAlias(i))
+        {
+            aliases.push(i);
+        }
 
         if (mol.isRSite(i))
         {
@@ -1503,10 +1510,10 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         output.writeCR();
     }
 
-    for (i = mol.aliases.begin(); i != mol.aliases.end(); i = mol.aliases.next(i))
+    for (i = 0; i < aliases.size(); i++)
     {
-        output.printfCR("A  %3d", mol.aliases.key(i) + 1);
-        output.writeString(mol.aliases.value(i).ptr());
+        output.printfCR("A  %3d", _atom_mapping[aliases[i]]);
+        output.writeString(mol.getAlias(aliases[i]));
         output.writeCR();
     }
 

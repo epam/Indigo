@@ -5,6 +5,8 @@
 #include <molecule/canonical_smiles_saver.h>
 #include <molecule/molecule_auto_loader.h>
 #include <molecule/molecule_substructure_matcher.h>
+#include <reaction/reaction_auto_loader.h>
+#include <reaction/rsmiles_saver.h>
 
 using namespace indigo;
 
@@ -24,7 +26,7 @@ void IndigoCoreTest::loadQueryMolecule(const char* buf, QueryMolecule& queryMole
 {
     BufferScanner scanner(buf);
     MoleculeAutoLoader loader(scanner);
-    loader.loadMolecule(queryMolecule);
+    loader.loadQueryMolecule(queryMolecule);
 }
 
 bool IndigoCoreTest::substructureMatch(const char* targetString, const char* queryString)
@@ -74,4 +76,41 @@ std::string IndigoCoreTest::smilesLoadSaveLoad(const std::string& queryString, b
 std::string IndigoCoreTest::dataPath(const char* dataPathSuffix)
 {
     return dataPathPrefix + "/" + dataPathSuffix;
+}
+
+void IndigoCoreTest::loadReaction(const char* buf, Reaction& reaction)
+{
+    BufferScanner scanner(buf);
+    ReactionAutoLoader loader(scanner);
+    loader.loadReaction(reaction);
+}
+
+void IndigoCoreTest::loadQueryReaction(const char* buf, QueryReaction& queryReaction)
+{
+    BufferScanner scanner(buf);
+    ReactionAutoLoader loader(scanner);
+    loader.loadQueryReaction(queryReaction);
+}
+
+std::string IndigoCoreTest::saveReaction(Reaction& reaction)
+{
+    Array<char> buffer;
+    ArrayOutput output(buffer);
+    RSmilesSaver smilesSaver(output);
+    smilesSaver.saveReaction(reaction);
+    output.writeChar(0);
+    std::string result(buffer.ptr());
+    return result;
+}
+
+std::string IndigoCoreTest::saveQueryReaction(QueryReaction& queryReaction, const bool smarts)
+{
+    Array<char> buffer;
+    ArrayOutput output(buffer);
+    RSmilesSaver smilesSaver(output);
+    smilesSaver.smarts_mode = smarts;
+    smilesSaver.saveQueryReaction(queryReaction);
+    output.writeChar(0);
+    std::string result(buffer.ptr());
+    return result;
 }

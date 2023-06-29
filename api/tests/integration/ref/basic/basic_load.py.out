@@ -1746,7 +1746,7 @@ Alias
 M  END
 
 ****** Alias handling (SMILES) ********
-CC |$Alias;$|
+CC |$;Alias$|
 ****** Test load from gzip buffer ********
 C1C=CC=CC=1
 ****** Load V3000 with DISP keyword ********
