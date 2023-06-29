@@ -16,11 +16,11 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include "molecule/base_molecule.h"
 #include "base_cpp/crc32.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "graph/dfs_walk.h"
-#include "molecule/base_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/inchi_wrapper.h"
 #include "molecule/molecule_arom_match.h"

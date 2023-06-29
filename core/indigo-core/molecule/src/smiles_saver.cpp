@@ -16,6 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include "molecule/smiles_saver.h"
 #include "base_cpp/array.h"
 #include "base_cpp/output.h"
 #include "base_cpp/tlscont.h"
@@ -28,7 +29,6 @@
 #include "molecule/molecule_savers.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
-#include "molecule/smiles_saver.h"
 
 using namespace indigo;
 
@@ -1623,7 +1623,8 @@ void SmilesSaver::_writePseudoAtoms()
     {
         for (i = 0; i < _written_atoms.size(); i++)
         {
-            if (mol.isAlias(_written_atoms[i]) || mol.isPseudoAtom(_written_atoms[i]) || (mol.isRSite(_written_atoms[i]) && mol.getRSiteBits(_written_atoms[i]) != 0))
+            if (mol.isAlias(_written_atoms[i]) || mol.isPseudoAtom(_written_atoms[i]) ||
+                (mol.isRSite(_written_atoms[i]) && mol.getRSiteBits(_written_atoms[i]) != 0))
                 break;
             if (_qmol != 0)
             {

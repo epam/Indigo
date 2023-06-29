@@ -16,6 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include "reaction/rsmiles_loader.h"
 #include "base_cpp/scanner.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
@@ -24,7 +25,6 @@
 #include "reaction/base_reaction.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
-#include "reaction/rsmiles_loader.h"
 
 using namespace indigo;
 
