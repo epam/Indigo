@@ -38,7 +38,8 @@ ElasticRepositoryT = TypeVar("ElasticRepositoryT")
 class IndexName(Enum):
     BINGO_MOLECULE = "bingo-molecules"
     BINGO_REACTION = "bingo-reactions"
-
+    def set_value(self, new_value):
+        self._value_ = new_value
 
 def get_index_name(record: IndigoRecord) -> IndexName:
     if isinstance(record, IndigoRecordMolecule):
@@ -49,11 +50,13 @@ def get_index_name(record: IndigoRecord) -> IndexName:
 
 
 def get_record_by_index(
-    response: Dict, index: str
+        response: Dict, index: str
 ) -> Union[IndigoRecordMolecule, IndigoRecordReaction]:
     if index == IndexName.BINGO_MOLECULE.value:
         return IndigoRecordMolecule(elastic_response=response)
     if index == IndexName.BINGO_REACTION.value:
+        return IndigoRecordReaction(elastic_response=response)
+    else:
         return IndigoRecordReaction(elastic_response=response)
     raise AttributeError(f"Unknown index {index}")
 
