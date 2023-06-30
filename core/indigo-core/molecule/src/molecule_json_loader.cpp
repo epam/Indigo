@@ -833,7 +833,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                 const Value& attachmentPoints = s["attachmentPoints"];
                 assert(attachmentPoints.IsArray());
                 int attachmentAtom{-1};
-                int leavingAtom {-1};
+                int leavingAtom{-1};
                 std::string attachmentId{""};
 
                 for (SizeType j = 0; j < attachmentPoints.Size(); ++j)
