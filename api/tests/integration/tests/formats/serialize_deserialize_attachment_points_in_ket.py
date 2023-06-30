@@ -40,7 +40,6 @@ for filename in ket_files:
         ket_in = indigo.loadMoleculeFromFile(
             os.path.join(root, filename + ".ket")
         )
-        # print(ket_in.json())
         with open(
             os.path.join(ref_path, filename) + "_out" + ".ket", "w"
         ) as file:
@@ -63,14 +62,10 @@ print("*** MOL to MOL ***")
 mol_files.sort()
 for filename in mol_files:
     mol_in = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".mol"))
-    # print(ket_in.json())
     with open(os.path.join(ref_path, filename) + "_out" + ".mol", "w") as file:
         file.write(mol_in.molfile())
     with open(os.path.join(ref_path, filename) + "_out" + ".mol", "r") as file:
         mol_ref = file.read()
-    # mol_ket = mol_in.json()
-    # print("mol_ref : ", mol_ref)
-    # print("mol_ref : ", mol_ref)
     diff = find_diff(mol_ref, mol_in.molfile())
     if not diff:
         print(filename + ".mol:SUCCEED")
