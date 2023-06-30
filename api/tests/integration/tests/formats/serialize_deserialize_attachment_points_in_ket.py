@@ -25,7 +25,7 @@ ref_path = joinPathPy("ref/", __file__)
 ket_files = [
     "super_atom_attachment_point_wo_leav_pnt",
     "super_atom_attachment_point_w_leav_pnt",
-    "super_atom_attachment_point_w_leav_pnt_wo_mandatory"
+    "super_atom_attachment_point_w_leav_pnt_wo_mandatory",
 ]
 
 mol_files = [
@@ -37,11 +37,17 @@ print("*** KET to KET ***")
 ket_files.sort()
 for filename in ket_files:
     try:
-        ket_in = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
+        ket_in = indigo.loadMoleculeFromFile(
+            os.path.join(root, filename + ".ket")
+        )
         # print(ket_in.json())
-        with open(os.path.join(ref_path, filename) + "_out"+".ket", "w") as file:
+        with open(
+            os.path.join(ref_path, filename) + "_out" + ".ket", "w"
+        ) as file:
             file.write(ket_in.json())
-        with open(os.path.join(ref_path, filename) + "_out" + ".ket", "r") as file:
+        with open(
+            os.path.join(ref_path, filename) + "_out" + ".ket", "r"
+        ) as file:
             ket_ref = file.read()
         ket = ket_in.json()
         diff = find_diff(ket_ref, ket)
@@ -58,8 +64,8 @@ mol_files.sort()
 for filename in mol_files:
     mol_in = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".mol"))
     # print(ket_in.json())
-    with open(os.path.join(ref_path, filename) + "_out"+".mol", "w") as file:
-       file.write(mol_in.molfile())
+    with open(os.path.join(ref_path, filename) + "_out" + ".mol", "w") as file:
+        file.write(mol_in.molfile())
     with open(os.path.join(ref_path, filename) + "_out" + ".mol", "r") as file:
         mol_ref = file.read()
     # mol_ket = mol_in.json()
