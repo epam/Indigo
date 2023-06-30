@@ -272,13 +272,19 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             {
                 writer.StartObject();
                 auto& atp = sa.attachment_points[i];
+                std::string atp_id_str(atp.apid.ptr(), atp.apid.size());
                 writer.Key("attachmentAtom");
                 writer.Int(atp.aidx);
-                writer.Key("leavingAtom");
-                writer.Int(atp.aidx);
-                writer.Key("attachmentId");
-                std::string atp_id_str(atp.apid.ptr(), atp.apid.size());
-                writer.String(atp_id_str.c_str());
+                if (atp.lvidx != -1)
+                {
+                    writer.Key("leavingAtom");
+                    writer.Int(atp.lvidx);
+                }
+                if (atp_id_str.length() > 0)
+                {
+                    writer.Key("attachmentId");
+                    writer.String(atp_id_str.c_str());
+                }
                 writer.EndObject();
             }
             writer.EndArray();

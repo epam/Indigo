@@ -1,2 +1,7 @@
 *** KET to KET ***
-super_atom_attachment_points.ket:SUCCEED
+super_atom_attachment_point_w_leav_pnt.ket:SUCCEED
+molecule json loader: Attachment atom in a superatom is mandatory. Check input ket-file
+super_atom_attachment_point_wo_leav_pnt.ket:SUCCEED
+*** MOL to MOL ***
+super_atom_attachment_point_w_leav_pnt.mol:SUCCEED
+super_atom_attachment_point_wo_leav_pnt.mol:SUCCEED

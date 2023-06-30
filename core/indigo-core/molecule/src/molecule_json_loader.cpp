@@ -832,16 +832,28 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             {
                 const Value& attachmentPoints = s["attachmentPoints"];
                 assert(attachmentPoints.IsArray());
+                int attachmentAtom{-1};
+                int leavingAtom {-1};
+                std::string attachmentId{""};
+
                 for (SizeType j = 0; j < attachmentPoints.Size(); ++j)
                 {
-                    int attachmentAtom = attachmentPoints[j]["attachmentAtom"].GetInt();
-                    int leavingAtom = attachmentPoints[j]["leavingAtom"].GetInt();
-                    std::string id = attachmentPoints[j]["attachmentId"].GetString();
+                    if (!attachmentPoints[j].HasMember("attachmentAtom"))
+                        throw Error("Attachment atom in a superatom is mandatory. Check input ket-file");
+                    attachmentAtom = attachmentPoints[j]["attachmentAtom"].GetInt();
+                    if (attachmentPoints[j].HasMember("leavingAtom"))
+                    {
+                        leavingAtom = attachmentPoints[j]["leavingAtom"].GetInt();
+                    }
+                    if (attachmentPoints[j].HasMember("attachmentId"))
+                    {
+                        attachmentId = attachmentPoints[j]["attachmentId"].GetString();
+                    }
                     int ap_idx = sg.attachment_points.add();
                     Superatom::_AttachmentPoint& ap = sg.attachment_points.at(ap_idx);
                     ap.aidx = attachmentAtom;
                     ap.lvidx = leavingAtom;
-                    ap.apid.readString(id.c_str(), true);
+                    ap.apid.readString(attachmentId.c_str(), true);
                 }
             }
         }
