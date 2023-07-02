@@ -2038,7 +2038,7 @@ bool MolfileSaver::_checkAttPointOrder(BaseMolecule& mol, int rsite)
         if (cur == -1 || next == -1)
             return true; // here we treat "undefined" as "ok"
 
-        if (next > cur)
+        if (cur > next)
             return false;
     }
 

@@ -959,9 +959,7 @@ void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, 
 bool MoleculeJsonSaver::_checkAttPointOrder(BaseMolecule& mol, int rsite)
 {
     const Vertex& vertex = mol.getVertex(rsite);
-    int i;
-
-    for (i = 0; i < vertex.degree() - 1; i++)
+    for (int i = 0; i < vertex.degree() - 1; i++)
     {
         int cur = mol.getRSiteAttachmentPointByOrder(rsite, i);
         int next = mol.getRSiteAttachmentPointByOrder(rsite, i + 1);
@@ -969,7 +967,7 @@ bool MoleculeJsonSaver::_checkAttPointOrder(BaseMolecule& mol, int rsite)
         if (cur == -1 || next == -1)
             return true; // here we treat "undefined" as "ok"
 
-        if (next > cur)
+        if (cur > next)
             return false;
     }
 
