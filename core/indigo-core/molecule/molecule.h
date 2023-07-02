@@ -20,6 +20,7 @@
 #define __molecule_h__
 
 #include "molecule/base_molecule.h"
+#include "molecule/molecule_sgroups.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -206,10 +207,10 @@ namespace indigo
 
         struct _TemplateOccurrence
         {
-            int name_idx;   // index in _template_names
-            int class_idx;  // index in _template_classes
-            int seq_id;     // sequence id
-            int contracted; // display option (-1 if undefined, 0 - expanded, 1 - contracted)
+            int name_idx;             // index in _template_names
+            int class_idx;            // index in _template_classes
+            int seq_id;               // sequence id
+            DisplayOption contracted; // display option (-1 if undefined, 0 - expanded, 1 - contracted)
 
             Array<_AttachOrder> order; // attach order info
         };

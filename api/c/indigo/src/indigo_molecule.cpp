@@ -3216,8 +3216,8 @@ CEXPORT int indigoGetSGroupDisplayOption(int sgroup)
     INDIGO_BEGIN
     {
         Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        if (sup.contracted > -1)
-            return sup.contracted;
+        if (sup.contracted > DisplayOption::Undefined)
+            return (int)sup.contracted;
 
         return 0;
     }
@@ -3229,7 +3229,7 @@ CEXPORT int indigoSetSGroupDisplayOption(int sgroup, int option)
     INDIGO_BEGIN
     {
         Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        sup.contracted = option;
+        sup.contracted = (DisplayOption)option;
 
         return 1;
     }

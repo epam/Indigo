@@ -34,6 +34,13 @@ namespace indigo
 
     class BaseMolecule;
 
+    enum class DisplayOption
+    {
+        Undefined = -1,
+        Expanded = 0,
+        Contracted = 1
+    };
+
     class DLLEXPORT SGroup
     {
     public:
@@ -113,6 +120,7 @@ namespace indigo
 
         int brk_style;            // represented with SBT in Molfile format
         Array<Vec2f[2]> brackets; // represented with SDI in Molfile format
+        DisplayOption contracted; // display option (-1 if undefined, 0 - expanded, 1 - contracted)
 
         static const char* typeToString(int sg_type);
         static int getType(const char* sg_type);
@@ -152,7 +160,6 @@ namespace indigo
 
         Array<char> subscript;     // SMT in Molfile format
         Array<char> sa_class;      // SCL in Molfile format
-        int contracted;            // display option (-1 if undefined, 0 - expanded, 1 - contracted)
                                    // SDS in Molfile format
         int seqid;                 // SEQID (V3000 - 2017)
         Array<char> sa_natreplace; // NATREPLACE (V3000 - 2017)
