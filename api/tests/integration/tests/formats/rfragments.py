@@ -1,18 +1,12 @@
-﻿import difflib
 import os
 import sys
-from deepdiff import DeepDiff
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+
 from env_indigo import *  # noqa
 
 indigo = Indigo()
