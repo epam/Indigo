@@ -814,14 +814,14 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         if (mol.isRSite(i) && !_checkAttPointOrder(mol, i))
         {
             const Vertex& vertex = mol.getVertex(i);
-            writer.Key("attOrder");
+            writer.Key("attachmentOrder");
             writer.StartArray();
             for (int k = 0; k < vertex.degree(); k++)
             {
                 writer.StartObject();
-                writer.Key("index");
+                writer.Key("attachmentAtom");
                 writer.Int(mol.getRSiteAttachmentPointByOrder(i, k));
-                writer.Key("id");
+                writer.Key("attachmentId");
                 writer.Int(k);
                 writer.EndObject();
             }
@@ -969,7 +969,7 @@ bool MoleculeJsonSaver::_checkAttPointOrder(BaseMolecule& mol, int rsite)
         if (cur == -1 || next == -1)
             return true; // here we treat "undefined" as "ok"
 
-        if (cur > next)
+        if (next > cur)
             return false;
     }
 
