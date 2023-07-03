@@ -28,6 +28,7 @@
 #include "graph/filter.h"
 #include "graph/graph_iterators.h"
 #include <list>
+#include <unordered_set>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -140,6 +141,7 @@ namespace indigo
         EdgesAuto edges();
 
         virtual void clear();
+        virtual void changed();
 
         const Vertex& getVertex(int idx) const;
 
@@ -228,8 +230,12 @@ namespace indigo
 
         int vertexComponent(int v_idx);
         int countComponents();
+        int countComponents(const std::list<std::unordered_set<int>>& external_neighbors);
         int countComponentVertices(int comp_idx);
+        int countComponentVertices(int comp_idx, const std::list<std::unordered_set<int>>& external_neighbors);
         int countComponentEdges(int comp_idx);
+        int countComponentEdges(int comp_idx, const std::list<std::unordered_set<int>>& external_neighbors);
+
         const Array<int>& getDecomposition();
 
         bool isTerminalVertex(int v_idx) const;
@@ -263,8 +269,7 @@ namespace indigo
         void _calculateSSSRInit();
         void _calculateSSSRByCycleBasis(CycleBasis& basis);
         void _calculateSSSRAddEdgesAndVertices(const Array<int>& cycle, List<int>& edges, List<int>& vertices);
-        void _calculateComponents();
-
+        void _calculateComponents(const std::list<std::unordered_set<int>> external_neighbors = {{}});
         // This is a bad hack for those who are too lazy to handle the mappings.
         // NEVER USE IT.
         void _cloneGraph_KeepIndices(const Graph& other);

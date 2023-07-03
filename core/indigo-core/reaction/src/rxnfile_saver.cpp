@@ -83,7 +83,7 @@ void RxnfileSaver::_saveReaction()
                 _v2000 = false;
                 break;
             }
-            if (!_brxn->getBaseMolecule(i).stereocenters.haveAllAbsAny() && !_brxn->getBaseMolecule(i).stereocenters.haveAllAndAny())
+            if (_brxn->getBaseMolecule(i).stereocenters.haveEnhancedStereocenter())
             {
                 _v2000 = false;
                 break;
@@ -110,6 +110,12 @@ void RxnfileSaver::_saveReaction()
     _writeProductsHeader();
 
     for (int i = _brxn->productBegin(); i < _brxn->productEnd(); i = _brxn->productNext(i))
+    {
+        _writeMolHeader();
+        _writeMol(molfileSaver, i);
+    }
+
+    for (int i = _brxn->intermediateBegin(); i < _brxn->intermediateEnd(); i = _brxn->intermediateNext(i))
     {
         _writeMolHeader();
         _writeMol(molfileSaver, i);
@@ -159,16 +165,17 @@ void RxnfileSaver::_writeRxnHeader(BaseReaction& reaction)
     if (_v2000)
     {
         if (reaction.catalystCount() > 0)
-            _output.printf("%3d%3d%3d\n", reaction.reactantsCount(), reaction.productsCount(), reaction.catalystCount());
+            _output.printf("%3d%3d%3d\n", reaction.reactantsCount(), reaction.productsCount() + reaction.intermediateCount(), reaction.catalystCount());
         else
-            _output.printf("%3d%3d\n", reaction.reactantsCount(), reaction.productsCount());
+            _output.printf("%3d%3d\n", reaction.reactantsCount(), reaction.productsCount() + reaction.intermediateCount());
     }
     else
     {
         if (reaction.catalystCount() > 0)
-            _output.printf("M  V30 COUNTS %d %d %d\n", reaction.reactantsCount(), reaction.productsCount(), reaction.catalystCount());
+            _output.printf("M  V30 COUNTS %d %d %d\n", reaction.reactantsCount(), reaction.productsCount() + reaction.intermediateCount(),
+                           reaction.catalystCount());
         else
-            _output.printf("M  V30 COUNTS %d %d\n", reaction.reactantsCount(), reaction.productsCount());
+            _output.printf("M  V30 COUNTS %d %d\n", reaction.reactantsCount(), reaction.productsCount() + reaction.intermediateCount());
     }
 }
 

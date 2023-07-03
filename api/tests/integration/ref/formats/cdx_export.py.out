@@ -1,0 +1,33 @@
+*** Mol to CDX ***
+enhanced_stereo1:success
+enhanced_stereo2:success
+enhanced_stereo3:success
+stereo_either-0020:success
+*** KET to CDX ***
+agents:success
+*** CDXML to CDX ***
+AlcoholOxidation_Rxn1:success
+AlcoholOxidation_Rxn1:success
+AlcoholOxidation_Rxn2:success
+Amidation_Rxn1:success
+Amidation_Rxn2:success
+BuchwaldHartwig_Rxn1:success
+BuchwaldHartwig_Rxn2:success
+CarbonylReduction_Rxn1:success
+CarbonylReduction_Rxn2:success
+Esterification_Rxn1:success
+Esterification_Rxn2:success
+Grignard_Rxn1:success
+Grignard_Rxn2:success
+N-Alkylation_Rxn1:success
+N-Alkylation_Rxn2:success
+N-Sulfonylation_Rxn1:success
+N-Sulfonylation_Rxn2:success
+O-Alkylation_Rxn1:success
+O-Alkylation_Rxn2:success
+Reductive Amination_Rxn1:success
+Reductive Amination_Rxn2:success
+SnAr_Rxn1:success
+SnAr_Rxn2:success
+Suzuki_Rxn1:success
+Suzuki_Rxn2:success

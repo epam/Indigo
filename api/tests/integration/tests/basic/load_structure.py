@@ -227,7 +227,6 @@ def testLoadFromString():
 
 
 try:
-
     testLoadFromString()
     testLoadFromBuffer()
     testLoadFromFile()

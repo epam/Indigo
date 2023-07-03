@@ -66,7 +66,7 @@ def getMatrix(mols, metric):
     for m1 in mols:
         for m2 in mols:
             sim = indigo.similarity(m1, m2, metric)
-            sys.stdout.write(" %0.3f" % (round(sim, 3)))
+            sys.stdout.write(" %0.3f" % (round(float(sim), 3)))
         sys.stdout.write("\n")
 
 

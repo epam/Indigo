@@ -132,40 +132,28 @@ MoleculeIter::SourceRGroups::SourceRGroups(const MoleculeIter& m)
 {
     Array<int> fs;
     m._at.dump(fs);
-    MultiMap<int, int> rgroup2fragment;
+    std::multimap<int, int> rgroup2fragment;
     std::map<Fragment, int> fragment2count;
     for (auto i = 0; i < fs.size(); i++)
     {
         auto x = m._parent._fragment_coordinates(i, fs[i]);
-        if (rgroup2fragment.find(x.rgroup, x.fragment))
-        {
-            int count = fragment2count.at(x);
-            fragment2count.erase(x);
-            fragment2count.emplace(x, count + 1);
-        }
-        else
-        {
-            rgroup2fragment.insert(x.rgroup, x.fragment);
-            fragment2count.emplace(x, 1);
-        }
+        rgroup2fragment.emplace(x.rgroup, x.fragment);
+        fragment2count.emplace(x, 1);
     }
 
-    const RedBlackSet<int>& rgroups = rgroup2fragment.keys();
-    for (auto i = rgroups.begin(); i != rgroups.end(); i = rgroups.next(i))
+    for (auto it = rgroup2fragment.begin(); it != rgroup2fragment.end(); it = rgroup2fragment.upper_bound(it->first))
     {
-        auto r = rgroups.key(i);
         RGroup& rgroup = _rgroups.push();
-        RGroup& source = m._parent._rgroups.getRGroup(r);
+        RGroup& source = m._parent._rgroups.getRGroup(it->first);
 
-        const RedBlackSet<int>& fs_r = rgroup2fragment[r];
-        for (auto j = fs_r.begin(); j != fs_r.end(); j = fs_r.next(j))
+        const auto it_end = rgroup2fragment.upper_bound(it->first);
+        for (auto it_fs_r = rgroup2fragment.lower_bound(it->first); it_fs_r != it_end; it_fs_r++)
         {
-            auto f = fs_r.key(j);
-            for (auto k = 0; k < fragment2count.at({r, f}); k++)
+            for (auto k = 0; k < fragment2count.at({it->first, it_fs_r->second}); k++)
             {
                 int fr_idx = rgroup.fragments.add(new Molecule());
                 BaseMolecule* fragment = rgroup.fragments.at(fr_idx);
-                fragment->clone(*source.fragments[f], nullptr, nullptr);
+                fragment->clone(*source.fragments[it_fs_r->second], nullptr, nullptr);
                 fragment->removeAttachmentPoints();
             }
         }

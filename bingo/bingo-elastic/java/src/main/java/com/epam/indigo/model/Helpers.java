@@ -20,7 +20,8 @@ public class Helpers {
 
 
     protected static IndigoRecordMolecule load(IndigoObject comp) {
-        return load(comp, error -> {});
+        return load(comp, error -> {
+        });
     }
 
     protected static IndigoRecordMolecule load(IndigoObject comp, ErrorHandler errorHandler) {
@@ -40,7 +41,8 @@ public class Helpers {
     }
 
     public static Iterable<IndigoRecordMolecule> iterateSdf(String sdfFile) {
-        return iterateSdf(sdfFile, error -> {});
+        return iterateSdf(sdfFile, error -> {
+        });
     }
 
     public static Iterable<IndigoRecordMolecule> iterateSdf(String sdfFile, ErrorHandler errorHandler) {
@@ -49,7 +51,8 @@ public class Helpers {
     }
 
     public static Iterable<IndigoRecordMolecule> iterateSmiles(String smilesFile) {
-        return iterateSmiles(smilesFile, error -> {});
+        return iterateSmiles(smilesFile, error -> {
+        });
     }
 
     public static Iterable<IndigoRecordMolecule> iterateSmiles(String smilesFile, ErrorHandler errorHandler) {
@@ -60,7 +63,8 @@ public class Helpers {
     }
 
     public static Iterable<IndigoRecordMolecule> iterateCml(String cmlFile) {
-        return iterateCml(cmlFile, error -> {});
+        return iterateCml(cmlFile, error -> {
+        });
     }
 
     public static Iterable<IndigoRecordMolecule> iterateCml(String cmlFile, ErrorHandler errorHandler) {

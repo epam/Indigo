@@ -28,6 +28,7 @@
 #include <utility>
 
 #include "indigo.h"
+#include "indigo_abbreviations.h"
 
 #include "base_cpp/cancellation_handler.h"
 #include "base_cpp/exception.h"
@@ -200,6 +201,8 @@ public:
     virtual MonomersProperties& getMonomersProperties();
     virtual void copyProperties(PropertiesMap&);
 
+    void toBase64String(Array<char>& str);
+
 private:
     IndigoObject(const IndigoObject&);
 };
@@ -315,6 +318,7 @@ public:
     bool molfile_saving_add_stereo_desc;
     bool molfile_saving_add_implicit_h;
     bool json_saving_add_stereo_desc;
+    bool json_saving_pretty;
     bool smiles_saving_write_name;
     bool smiles_saving_smarts_mode;
 
@@ -357,6 +361,7 @@ public:
     static void setErrorMessage(const char* message);
     static void handleError(const char* message);
     static void setErrorHandler(INDIGO_ERROR_HANDLER handler, void* context);
+    auto getAbbreviations() -> const abbreviations::IndigoAbbreviations&;
 
 private:
     static Array<char>& error_message();
@@ -370,6 +375,7 @@ private:
     };
     sf::safe_shared_hide_obj<ObjectsHolder> _objects_holder;
     int _indigo_id;
+    std::unique_ptr<abbreviations::IndigoAbbreviations> _abbreviations = nullptr;
 };
 
 class DLLEXPORT IndigoPluginContext

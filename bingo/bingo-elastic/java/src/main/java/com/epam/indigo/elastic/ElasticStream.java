@@ -33,6 +33,7 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
     private final List<IndigoPredicate<? super T>> predicates = new ArrayList<>();
     private final String indexName;
     private int size = 10;
+    private final int MAX_ALLOWED_SIZE = 1000;
 
     public ElasticStream(RestHighLevelClient elasticClient, String indexName) {
         this.elasticClient = elasticClient;
@@ -50,6 +51,8 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
 
     @Override
     public Stream<T> limit(long maxSize) {
+        if (maxSize > MAX_ALLOWED_SIZE)
+            throw new IllegalArgumentException(String.format("Bingo Elastic max page size should be less than or equal to %1", MAX_ALLOWED_SIZE));
         this.size = (int) maxSize;
         return this;
     }

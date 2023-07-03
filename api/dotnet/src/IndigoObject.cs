@@ -112,6 +112,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoCdxml(self));
         }
 
+        public string b64cdx()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoCdxBase64(self));
+        }
+
         public void saveCdxml(string filename)
         {
             dispatcher.setSessionID();
@@ -2147,6 +2153,12 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoDbgInternalType(self));
+        }
+
+        public int copyRGroups(IndigoObject other)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoCopyRGroups(other.self, self));
         }
     }
 }

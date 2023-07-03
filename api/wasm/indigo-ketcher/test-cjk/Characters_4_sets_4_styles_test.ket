@@ -1,0 +1,39 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "type": "text",
+                "data": {
+                    "content": "{\"blocks\":[{\"key\":\"5bui1\",\"text\":\"latin\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"m6u0\",\"text\":\"αβγ\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"f7nfp\",\"text\":\"кириллица\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"2u39q\",\"text\":\"℃℉∑\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"cckmv\",\"text\":\"乐亂\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"fgc0a\",\"text\":\"abc_αβγ_абв_℃℉∑_乐亂\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"4igt2\",\"text\":\"abc αβγ абв ℃℉∑ 乐亂\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"dat2r\",\"text\":\"\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"ag3s4\",\"text\":\"latin\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":5,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"c9sgk\",\"text\":\"αβγ\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":3,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"5vd1h\",\"text\":\"кириллица\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":9,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"3m37r\",\"text\":\"℃℉∑\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":3,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"29ln2\",\"text\":\"乐亂\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":2,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"165qa\",\"text\":\"abc_αβγ_абв_℃℉∑_乐亂\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":18,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"ahjg3\",\"text\":\"abc αβγ абв ℃℉∑ 乐亂\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":18,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"e0ts0\",\"text\":\"\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"s4u8\",\"text\":\"latin\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":5,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"1qcmo\",\"text\":\"αβγ\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":3,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"a7acd\",\"text\":\"кириллица\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":9,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"8p77o\",\"text\":\"℃℉∑\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":3,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"cq0q3\",\"text\":\"乐亂\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":2,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"dmqjn\",\"text\":\"abc_αβγ_абв_℃℉∑_乐亂\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":18,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"6g7m0\",\"text\":\"abc αβγ абв ℃℉∑ 乐亂\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":18,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"1b01v\",\"text\":\"\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"43hnm\",\"text\":\"latin\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":5,\"style\":\"BOLD\"},{\"offset\":0,\"length\":5,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"4svsi\",\"text\":\"αβγ\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":3,\"style\":\"BOLD\"},{\"offset\":0,\"length\":3,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"bt3gl\",\"text\":\"кириллица\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":9,\"style\":\"BOLD\"},{\"offset\":0,\"length\":9,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"1jhj\",\"text\":\"℃℉∑\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":3,\"style\":\"BOLD\"},{\"offset\":0,\"length\":3,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"3m3i1\",\"text\":\"乐亂\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":2,\"style\":\"BOLD\"},{\"offset\":0,\"length\":2,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"752ai\",\"text\":\"abc_αβγ_абв_℃℉∑_乐亂\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":18,\"style\":\"BOLD\"},{\"offset\":0,\"length\":18,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"key\":\"96he9\",\"text\":\"abc αβγ абв ℃℉∑ 乐亂\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[{\"offset\":0,\"length\":18,\"style\":\"BOLD\"},{\"offset\":0,\"length\":18,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
+                    "position": {
+                        "x": 19.175,
+                        "y": -14.274999999999999,
+                        "z": 0
+                    },
+                    "pos": [
+                        {
+                            "x": 19.175,
+                            "y": -14.274999999999999,
+                            "z": 0
+                        },
+                        {
+                            "x": 19.175,
+                            "y": -25.691666936874388,
+                            "z": 0
+                        },
+                        {
+                            "x": 23.186962890625,
+                            "y": -25.691666936874388,
+                            "z": 0
+                        },
+                        {
+                            "x": 23.186962890625,
+                            "y": -14.274999999999999,
+                            "z": 0
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

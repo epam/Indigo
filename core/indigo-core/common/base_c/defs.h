@@ -24,7 +24,7 @@
 #endif
 
 #if defined(_WIN32) && !defined(__MINGW32__)
-//#define vsnprintf _vsnprintf
+// #define vsnprintf _vsnprintf
 #if _MSC_VER < 1900
 #define snprintf _snprintf
 #endif
@@ -49,6 +49,21 @@ typedef unsigned int dword;
 #ifndef __byte_typedef__
 #define __byte_typedef__
 typedef unsigned char byte;
+#endif
+
+#ifndef __UINT16_typedef__
+#define __UINT16_typedef__
+typedef unsigned short int UINT16;
+#endif
+
+#ifndef __INT32_typedef__
+#define __INT32_typedef__
+typedef int INT32;
+#endif
+
+#ifndef __UINT32_typedef__
+#define __UINT32_typedef__
+typedef unsigned int UINT32;
 #endif
 
 #ifndef EXPORT_SYMBOL

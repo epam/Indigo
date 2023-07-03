@@ -97,7 +97,7 @@ namespace indigo
         void _convertCoordinate(const Array<Vec2f[2]>& original, Array<Vec2f[2]>& converted);
         void _adjustBrackets(const Array<Vec2f[2]>& converted, Array<Vec2f[2]>& placed);
 
-        void _prepareSGroups();
+        void _prepareSGroups(bool collapseAtLeastOneSuperatom = false);
         void _initSGroups(Tree& sgroups, Rect2f parent);
         void _initSGroups();
 

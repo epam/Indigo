@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - master
-      - indigo-1.5
     tags:
       - 'indigo-*'
   workflow_dispatch:
@@ -20,12 +19,14 @@ jobs:
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Check
         run: |
           python3 -m pip install -r api/python/requirements_dev.txt
@@ -37,14 +38,17 @@ jobs:
       matrix:
         os: [ macos, ubuntu, windows ]
     runs-on: ${{ matrix.os }}-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build Linux
         if: ${{ matrix.os == 'ubuntu' }}
         uses: docker://epmlsop/buildpack-centos7:latest
@@ -74,7 +78,7 @@ jobs:
           cmake --build . --config Release --target ALL_BUILD
           ctest --verbose -C Release
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-libs-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-x86_64
           path: dist
@@ -85,14 +89,17 @@ jobs:
       matrix:
         os: [ windows ]
     runs-on: ${{ matrix.os }}-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build Windows
         if: ${{ matrix.os == 'windows' }}
         run: |
@@ -102,7 +109,7 @@ jobs:
           cmake --build . --config Release --target ALL_BUILD
           ctest --verbose -C Release
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-libs-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-i386
           path: dist
@@ -113,14 +120,17 @@ jobs:
       matrix:
         os: [ macos, ubuntu ]
     runs-on: ${{ matrix.os }}-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build Linux
         if: ${{ matrix.os == 'ubuntu' }}
         uses: docker://epmlsop/buildpack-arm64:latest
@@ -142,7 +152,7 @@ jobs:
           cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
           # ctest --verbose  # NOTE: We can't run tests until we have native ARM64 node
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-libs-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-aarch64
           path: dist
@@ -157,41 +167,43 @@ jobs:
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download Linux native libs x86_64
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-linux-x86_64
           path: dist/
       - name: Download Linux native libs aarch64
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-linux-aarch64
           path: dist/
       - name: Download Windows native libs x86_64
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-windows-x86_64
           path: dist/
       - name: Download Windows native libs i386
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-windows-i386
           path: dist/
       - name: Download macOS native libs x86_64
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-macos-x86_64
           path: dist/
       - name: Download macOS native libs aarch64
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-libs-macos-aarch64
           path: dist/
@@ -204,27 +216,27 @@ jobs:
           cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target indigo-${{ matrix.wrapper }}
       - name: Upload native shared libs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-native-shared-libs
           path: |
             dist/lib
       - name: Upload Python wrappers
         if: ${{ matrix.wrapper == 'python' }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-python
           path: |
             dist/*.whl
       - name: Upload Java wrappers
         if: ${{ matrix.wrapper == 'java' }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-java
           path: dist/*.jar
       - name: Upload .NET wrappers
         if: ${{ matrix.wrapper == 'dotnet' }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-dotnet
           path: dist/*.nupkg
@@ -239,21 +251,23 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: dist/
       - name: Install Pillow
-        run: python3 -m pip install Pillow
+        run: python3 -m pip install Pillow==9.5.0
       - name: Install wrappers Linux
         if: ${{ matrix.os == 'ubuntu' }}
         run: python3 -m pip install dist/*manylinux1_x86_64*.whl
@@ -267,7 +281,7 @@ jobs:
         run: python3 api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -283,16 +297,18 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: dist/
@@ -306,12 +322,12 @@ jobs:
           run: |
             apt update
             apt install -y --no-install-recommends python3 python3-pip
-            python3 -m pip install Pillow
+            python3 -m pip install Pillow==9.5.0
             python3 -m pip install dist/*manylinux2014_aarch64*.whl
             python3 api/tests/integration/test.py -p basic/basic.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -327,16 +343,18 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: dist/
@@ -346,7 +364,7 @@ jobs:
           python-version: 3.7
           architecture: x86
       - name: Install Pillow
-        run: python -m pip install Pillow
+        run: python -m pip install Pillow==9.5.0
       - name: Install wrappers Windows
         if: ${{ matrix.os == 'windows' }}
         run: Get-ChildItem dist -Filter *win32*.whl -Recurse | % { python -m pip install $_.FullName }
@@ -354,7 +372,7 @@ jobs:
         run: python api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -370,16 +388,18 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-java
           path: dist/
@@ -393,7 +413,7 @@ jobs:
           java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -409,16 +429,18 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-java
           path: dist/
@@ -437,7 +459,7 @@ jobs:
             java -Xss4m -jar jython.jar api/tests/integration/test.py -p basic/basic.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -453,16 +475,18 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-java
           path: dist/
@@ -481,7 +505,7 @@ jobs:
           java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -497,16 +521,18 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-dotnet
           path: dist/
@@ -515,28 +541,20 @@ jobs:
           mkdir IronPython
           mkdir tmp
           cd IronPython
-          curl -OL https://github.com/IronLanguages/ironpython2/releases/download/ipy-2.7.12/IronPython.2.7.12.zip
+          curl -OL https://github.com/IronLanguages/ironpython3/releases/download/v3.4.0/IronPython.3.4.0.zip
       - name: Prepare UNIX
         if: ${{ matrix.os != 'windows' }}
         run: |
           cd IronPython
-          unzip IronPython.2.7.12.zip
+          unzip IronPython.3.4.0.zip
           cd ../tmp
           unzip ../dist/Indigo.Net.*.nupkg
           chmod -R a+rw .
-      - name: Prepare macOS
-        if: ${{ matrix.os == 'macos' }}
-        run: |
-          brew install mono-libgdiplus
-      - name: Prepare Linux
-        if: ${{ matrix.os == 'ubuntu' }}
-        run: |
-          sudo apt install -y libgdiplus
       - name: Prepare Windows
         if: ${{ matrix.os == 'windows' }}
         run: |
           cd IronPython
-          Expand-Archive IronPython.2.7.12.zip .
+          Expand-Archive IronPython.3.4.0.zip .
           cd ../tmp
           Expand-Archive ../dist/Indigo.Net.*.nupkg .
       - name: Test Linux
@@ -545,23 +563,23 @@ jobs:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: |
-          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -t 1 -j junit_report.xml
+          dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Test macOS
         if: ${{ matrix.os == 'macos' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
         run: |
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
-          dotnet IronPython/netcoreapp3.1/ipy.dll -X:ExceptionDetail api/tests/integration/test.py -t 1 -j junit_report.xml -platform mac
+          dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Test Windows
         if: ${{ matrix.os == 'windows' }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
-        run: ./IronPython/net45/ipy.exe -X:ExceptionDetail api/tests/integration/test.py -t 1 -j junit_report.xml -platform ironwin
+        run: ./IronPython/net462/ipy.exe api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -577,16 +595,18 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-dotnet
           path: dist/
@@ -595,12 +615,12 @@ jobs:
           mkdir IronPython
           mkdir tmp
           cd IronPython
-          curl -OL https://github.com/IronLanguages/ironpython2/releases/download/ipy-2.7.12/IronPython.2.7.12.zip
+          curl -OL https://github.com/IronLanguages/ironpython3/releases/download/v3.4.0/IronPython.3.4.0.zip
       - name: Prepare Windows
         if: ${{ matrix.os == 'windows' }}
         run: |
           cd IronPython
-          Expand-Archive IronPython.2.7.12.zip .
+          Expand-Archive IronPython.3.4.0.zip .
           cd ../tmp
           Expand-Archive ../dist/Indigo.Net.*.nupkg .
       - name: Test Windows
@@ -608,10 +628,10 @@ jobs:
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x86/native
-        run: ./IronPython/net45/ipy32.exe -X:ExceptionDetail api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml -platform ironwin
+        run: ./IronPython/net462/ipy32.exe api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -625,7 +645,7 @@ jobs:
         python-version: [ '3.7', '3.10' ]
     needs: build_indigo_wrappers
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
@@ -635,7 +655,7 @@ jobs:
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: dist/
@@ -662,7 +682,7 @@ jobs:
         run: pytest tests
         working-directory: bingo/bingo-elastic/python
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bingo-elastic-python
           path: dist
@@ -676,7 +696,7 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -691,7 +711,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-java
           path: dist/
@@ -704,12 +724,13 @@ jobs:
   build_indigo_windows_mingw_x86_64:
     timeout-minutes: 60
     runs-on: windows-latest
+    needs: static_analysis
     defaults:
       run:
         shell: msys2 {0}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -718,7 +739,9 @@ jobs:
           msystem: mingw64
           install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git mingw-w64-x86_64-python mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-wheel mingw-w64-x86_64-python-pillow
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build native libs
         run: |
           mkdir build
@@ -741,27 +764,30 @@ jobs:
 #          python api/tests/integration/test.py -t 1 -j junit_report.xml -platform mingw
 #      - name: Publish Test Report
 #        if: always()
-#        uses: mikepenz/action-junit-report@v1
+#        uses: mikepenz/action-junit-report@v3
 #        with:
 #          report_paths: 'junit_report.xml'
 #          github_token: ${{ secrets.GITHUB_TOKEN }}
 #          check_name: "windows-mingw_python_test_report"
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-libs-windows-mingw-x86_64
           path: dist
 
   build_indigo_ketcher:
     runs-on: ubuntu-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Install Emcripten SDK
         uses: mymindstorm/setup-emsdk@v7
       - name: Update version
@@ -777,9 +803,42 @@ jobs:
           emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
           cmake --build . --config Release --target indigo-ketcher-package -- -j $(nproc)
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-ketcher
+          path: dist/indigo-ketcher*.tgz
+
+  build_indigo_ketcher_cjk:
+    runs-on: ubuntu-latest
+    needs: static_analysis
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Install Emcripten SDK
+        uses: mymindstorm/setup-emsdk@v7
+      - name: Update version
+        run: |
+          cd api/wasm/indigo-ketcher
+          ver=$(git describe --abbrev=0 --tags --match "indigo-*")-$(git rev-list $(git describe --abbrev=0 --tags --match "indigo-*").. --count)
+          ver=$(echo $ver | sed 's/indigo-//g' | sed 's/-0//g')
+          npm version --allow-same-version ${ver}
+      - name: Build, Test, Pack
+        run: |
+          mkdir build
+          cd build
+          emcmake cmake .. -DCMAKE_BUILD_TYPE=Release -DRENDER_ENABLE_CJK=ON
+          cmake --build . --config Release --target indigo-ketcher-package -- -j $(nproc)
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: indigo-ketcher-cjk
           path: dist/indigo-ketcher*.tgz
 
   build_indigo_utils_x86_64:
@@ -788,14 +847,17 @@ jobs:
       matrix:
         os: [ macos, ubuntu, windows ]
     runs-on: ${{ matrix.os }}-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build utils Linux
         if: ${{ matrix.os == 'ubuntu' }}
         uses: docker://epmlsop/buildpack-centos7:latest
@@ -825,22 +887,25 @@ jobs:
           cmake --build . --config Release --target ALL_BUILD
           ctest --verbose -C Release
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: indigo-utils-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-x86_64
           path: dist/utils
 
   build_bingo_oracle_linux_x86_64:
     runs-on: ubuntu-latest
+    needs: static_analysis
     container: epmlsop/buildpack-centos7:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build bingo-oracle
         run: |
           mkdir build
@@ -848,19 +913,20 @@ jobs:
           cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bingo-oracle-linux-x86_64
           path: dist/bingo-oracle*.tgz
 
   build_bingo_oracle_windows_mingw_x86_64:
     runs-on: windows-latest
+    needs: static_analysis
     defaults:
       run:
         shell: msys2 {0}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -869,7 +935,9 @@ jobs:
           msystem: mingw64
           install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build bingo-oracle
         run: |
           mkdir build
@@ -877,21 +945,24 @@ jobs:
           cmake .. -G "MinGW Makefiles" -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bingo-oracle-windows-mingw-x86_64
           path: dist/bingo-oracle*.zip
 
   build_bingo_oracle_windows_msvc_x86_64:
     runs-on: windows-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build bingo-oracle
         run: |
           mkdir build
@@ -899,7 +970,7 @@ jobs:
           cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-oracle
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bingo-oracle-windows-msvc-x86_64
           path: dist/bingo-oracle*.zip
@@ -908,11 +979,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 10, 11, 12, 13, 14 ]
+        postgres_major_version: [ 11, 12, 13, 14, 15 ]
     runs-on: ubuntu-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
@@ -921,7 +993,9 @@ jobs:
         with:
           python-version: 3.7
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Install postgres server headers and build bingo-postgres
         uses: docker://epmlsop/buildpack-centos7:latest
         with:
@@ -939,6 +1013,11 @@ jobs:
             cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF -DCMAKE_PREFIX_PATH=/usr/pgsql-${{ matrix.postgres_major_version }} &&
             cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
             "
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: bingo-postgres-${{ matrix.postgres_major_version }}-linux-x86_64
+          path: dist/bingo-postgres*.tgz
       - name: Build Docker image
         run: |
           docker build --tag epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest -f bingo/postgres/Dockerfile --build-arg BINGO_PG_VERSION=${{ matrix.postgres_major_version }} .
@@ -953,14 +1032,18 @@ jobs:
           export PYTHONPATH=${{ github.workspace }}/bingo/bingo-elastic/python
           pytest --tb=no --db postgres --junit-xml=junit_report.xml
         working-directory: bingo/tests
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+      - name: Login to DockerHub
+        if: startsWith(github.ref, 'refs/tags/indigo-')
+        uses: docker/login-action@v1
         with:
-          name: bingo-postgres-${{ matrix.postgres_major_version }}-linux-x86_64
-          path: dist/bingo-postgres*.tgz
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Publish Docker images
+        if: startsWith(github.ref, 'refs/tags/indigo-')
+        run: docker push epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
       - name: Publish Test Report
         if: always()
-        uses: mikepenz/action-junit-report@v1
+        uses: mikepenz/action-junit-report@v3
         with:
           report_paths: 'bingo/tests/junit_report.xml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -970,19 +1053,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ "10", "11", "12", "13" ]
+        postgres_major_version: [ "11", "12", "13", "14", "15" ]
     runs-on: windows-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Setup Postgres
         run: |
-          $pg_version = switch(${{ matrix.postgres_major_version }}) { "13" { "13.6" } "12" { "12.10" } "11" { "11.15" } "10" { "10.20" } }
+          $pg_version = switch(${{ matrix.postgres_major_version }}) { "15" { "15.1" } "14" { "14.6" } "13" { "13.9" } "12" { "12.13" } "11" { "11.18" } }
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-windows-x64-binaries.zip
           Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip
           mv postgresql-${pg_version}-1-windows-x64-binaries/pgsql pgsql
@@ -994,7 +1080,7 @@ jobs:
           cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF -DPostgreSQL_ROOT="$(resolve-path $pwd/../pgsql)"
           cmake --build . --config Release --target package-bingo-postgres
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-windows-x86_64
           path: dist/bingo-postgres*.zip
@@ -1003,19 +1089,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 10, 11, 12, 13, 14 ]
+        postgres_major_version: [ 11, 12, 13, 14, 15 ]
     runs-on: macos-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Setup Postgres
         run: |
-          case ${{ matrix.postgres_major_version }} in 14) pg_version=14.2;; 13) pg_version=13.6;; 12) pg_version=12.10;; 11) pg_version=11.15;; 10) pg_version=10.20;; esac;
+          case ${{ matrix.postgres_major_version }} in 15) pg_version=15.1;; 14) pg_version=14.6;; 13) pg_version=13.9;; 12) pg_version=12.13;; 11) pg_version=11.18;; esac;
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
           unzip postgresql-${pg_version}-1-osx-binaries.zip
           mv pgsql/include/zlib.h pgsql/include/zlib.h.bck
@@ -1026,7 +1115,7 @@ jobs:
           cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF -DPostgreSQL_ROOT="$(dirname $PWD)/pgsql" -DPostgreSQL_ADDITIONAL_VERSIONS=${{ matrix.postgres_major_version }}
           cmake --build . --config Release --target package-bingo-postgres
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-macos-x86_64
           path: dist/bingo-postgres*.tgz
@@ -1037,14 +1126,17 @@ jobs:
       matrix:
         os: [ windows ]
     runs-on: ${{ matrix.os }}-latest
+    needs: static_analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Build
         run: |
           mkdir build
@@ -1052,60 +1144,140 @@ jobs:
           cmake .. -DBUILD_BINGO_SQLSERVER=ON -DBUILD_BINGO_POSTGRES=OFF -DBUILD_BINGO_ORACLE=OFF  -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
           cmake --build . --config Release --target package-bingo-sqlserver
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bingo-sqlserver-${{ matrix.os }}-x86_64
           path: dist/bingo-sqlserver*.zip
 
-  publish_indigo:
+  publish_indigo_to_pypi:
     if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest
-    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64]
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Create folder for native libs
         run: mkdir -p dist/lib
       - name: Download native shared libraries
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-native-shared-libs
           path: dist/lib
       - name: Download Python wheels
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: dist/
-      - name: Download .NET nupkg
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-dotnet
-          path: dist/
       - name: Download bingo-elastic-python
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: bingo-elastic-python
-          path: dist/
-      - name: Download indigo-ketcher NPM package
-        uses: actions/download-artifact@v2
-        with:
-          name: indigo-ketcher
           path: dist/
       - name: Publish Python wheels to PyPI
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
              twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*.whl
+
+  publish_indigo_to_nuget:
+    if: startsWith(github.ref, 'refs/tags/indigo-')
+    runs-on: ubuntu-latest
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
+    container: epmlsop/indigo-tester:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Create folder for native libs
+        run: mkdir -p dist/lib
+      - name: Download native shared libraries
+        uses: actions/download-artifact@v3
+        with:
+          name: indigo-native-shared-libs
+          path: dist/lib
+      - name: Download .NET nupkg
+        uses: actions/download-artifact@v3
+        with:
+          name: indigo-dotnet
+          path: dist/
       - name: Publish .NET nupkg to Nuget
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: dotnet nuget push dist/*.nupkg --api-key ${NUGET_API_KEY} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+  publish_indigo_to_npm:
+    if: startsWith(github.ref, 'refs/tags/indigo-')
+    runs-on: ubuntu-latest
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
+    container: epmlsop/indigo-tester:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Create folder for native libs
+        run: mkdir -p dist/lib
+      - name: Download native shared libraries
+        uses: actions/download-artifact@v3
+        with:
+          name: indigo-native-shared-libs
+          path: dist/lib
+      - name: Download indigo-ketcher NPM package
+        uses: actions/download-artifact@v3
+        with:
+          name: indigo-ketcher
+          path: dist/
+      - name: Publish indigo-ketcher to NPM
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_EMAIL: ${{ secrets.NPM_EMAIL }}
+        run: |
+          echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} >> ~/.npmrc
+          echo email=${NPM_EMAIL} >> ~/.npmrc
+          echo always-auth=true >> ~/.npmrc
+          npm publish ./dist/indigo-ketcher-*.tgz
+
+  publish_indigo_to_maven:
+    if: startsWith(github.ref, 'refs/tags/indigo-')
+    runs-on: ubuntu-latest
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
+    container: epmlsop/indigo-tester:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Create folder for native libs
+        run: mkdir -p dist/lib
+      - name: Download native shared libraries
+        uses: actions/download-artifact@v3
+        with:
+          name: indigo-native-shared-libs
+          path: dist/lib
       - name: Publish Java jars to Maven Central
         env:
           MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
@@ -1126,15 +1298,6 @@ jobs:
           ./mvnw -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
           cd ${GITHUB_WORKSPACE}/bingo/bingo-elastic/java/
           ${GITHUB_WORKSPACE}/api/java/mvnw -DskipTests -Dmaven.test.skip=true -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
-      - name: Publish indigo-ketcher to NPM
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_EMAIL: ${{ secrets.NPM_EMAIL }}
-        run: |
-          echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} >> ~/.npmrc
-          echo email=${NPM_EMAIL} >> ~/.npmrc
-          echo always-auth=true >> ~/.npmrc
-          npm publish ./dist/indigo-ketcher-*.tgz
 
   build_test_publish_indigo_service_old:
     timeout-minutes: 60
@@ -1142,20 +1305,32 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: utils/indigo-service/backend/lib/
       - name: Build
         run: docker build -f ./utils/indigo-service/backend/Dockerfile -t epmlsop/indigo-service:latest ./utils/indigo-service/backend
-# TODO: add tests
+      - name: Test Imago
+        run: |
+          docker run  --rm=true -d -p 8080:80 --name=indigo_service epmlsop/indigo-service:latest
+          sleep 10
+          docker logs indigo_service
+          docker ps
+          export INDIGO_SERVICE_URL=http://localhost:8080/v2
+          python3 utils/indigo-service/backend/service/tests/api/imago_test.py
+          docker logs indigo_service
+          docker stop indigo_service
+# TODO: add indigo tests
 #      - name: Test
 #        run: |
 #          container_id=$(docker run --detach -it --rm -p 12345:80 epmlsop/indigo-service:latest)
@@ -1166,6 +1341,7 @@ jobs:
 #          docker logs ${container_id}
 #          docker stop ${container_id}
       - name: Login to DockerHub
+        if: startsWith(github.ref, 'refs/tags/indigo-')
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -1178,9 +1354,6 @@ jobs:
           docker tag epmlsop/indigo-service:latest epmlsop/indigo-service:${clean_tag}
           docker push epmlsop/indigo-service:${clean_tag}
           docker push epmlsop/indigo-service:latest
-      - name: Publish master
-        if: github.ref == 'refs/heads/master'
-        run: docker push epmlsop/indigo-service:latest
 
   build_test_publish_indigo_service_new:
     timeout-minutes: 60
@@ -1188,20 +1361,23 @@ jobs:
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: false
           fetch-depth: 500
       - name: Git fetch tags
-        run: git fetch --tags -f
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
       - name: Download wrappers
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: indigo-python
           path: api/http/
       - name: Build
         run: docker build -f ./api/http/Dockerfile -t epmlsop/indigo-service:enhanced-latest ./api/http
       - name: Login to DockerHub
+        if: startsWith(github.ref, 'refs/tags/indigo-')
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -1214,6 +1390,3 @@ jobs:
           docker tag epmlsop/indigo-service:enhanced-latest epmlsop/indigo-service:enhanced-${clean_tag}
           docker push epmlsop/indigo-service:enhanced-${clean_tag}
           docker push epmlsop/indigo-service:enhanced-latest
-      - name: Publish master
-        if: github.ref == 'refs/heads/master'
-        run: docker push epmlsop/indigo-service:enhanced-latest

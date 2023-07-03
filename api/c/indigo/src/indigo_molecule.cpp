@@ -1193,6 +1193,18 @@ CEXPORT int indigoCountRGroups(int molecule)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoCopyRGroups(int molecule_from, int molecule_to)
+{
+    INDIGO_BEGIN
+    {
+        BaseMolecule& mol_from = self.getObject(molecule_from).getBaseMolecule();
+        BaseMolecule& mol_to = self.getObject(molecule_to).getBaseMolecule();
+        mol_from.rgroups.copyRGroupsFromMolecule(mol_to.rgroups);
+        return 0;
+    }
+    INDIGO_END(-1);
+}
+
 bool IndigoRGroupsIter::hasNext()
 {
     bool result = false;
@@ -3204,8 +3216,8 @@ CEXPORT int indigoGetSGroupDisplayOption(int sgroup)
     INDIGO_BEGIN
     {
         Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        if (sup.contracted > -1)
-            return sup.contracted;
+        if (sup.contracted > DisplayOption::Undefined)
+            return (int)sup.contracted;
 
         return 0;
     }
@@ -3217,7 +3229,7 @@ CEXPORT int indigoSetSGroupDisplayOption(int sgroup, int option)
     INDIGO_BEGIN
     {
         Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        sup.contracted = option;
+        sup.contracted = (DisplayOption)option;
 
         return 1;
     }

@@ -32,6 +32,8 @@ namespace indigo
     class BaseReaction;
     class BaseMolecule;
     class Vec2f;
+    class MoleculeJsonSaver;
+
     class ReactionJsonSaver
     {
     public:
@@ -41,8 +43,8 @@ namespace indigo
         void saveReaction(BaseReaction& rxn);
         void saveReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver);
         void saveReactionWithMetaData(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver);
-
-        bool _add_stereo_desc;
+        bool add_stereo_desc;
+        bool pretty_json;
         DECL_ERROR;
 
     protected:

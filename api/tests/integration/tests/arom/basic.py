@@ -272,7 +272,7 @@ indigo = Indigo()
 for model in ["basic", "generic"]:
     print(model)
     indigo.setOption("aromaticity-model", model)
-    m = indigo.loadMolecule("Cn1c2ccccc2c(-c2ccccc2)n/c(=N\O)c1=O")
+    m = indigo.loadMolecule("Cn1c2ccccc2c(-c2ccccc2)n/c(=N\\O)c1=O")
     print(m.smiles())
     m.dearomatize()
     print(m.smiles())
@@ -348,3 +348,7 @@ indigo.setOption("dearomatize-on-load", "false")
 styr = indigo.loadMolecule(aromatized_styr)
 # should be aromatized
 print(styr.molfile())
+# should not dearomatize queries
+indigo.setOption("dearomatize-on-load", "true")
+q = indigo.loadQueryMolecule("[#6]=,:[#6]")
+print(q.json())

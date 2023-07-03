@@ -1,7 +1,13 @@
+from typing import Optional
+
 import psycopg2  # type: ignore
-from sqlalchemy import create_engine  # type: ignore
+from sqlalchemy import Engine, create_engine  # type: ignore
 from sqlalchemy.ext.declarative import declarative_base  # type: ignore
-from sqlalchemy.orm import scoped_session, sessionmaker  # type: ignore
+from sqlalchemy.orm import (  # type: ignore
+    Session,
+    scoped_session,
+    sessionmaker,
+)
 
 from ..common.config import BINGO_POSTGRES
 
@@ -16,13 +22,14 @@ Base = declarative_base()
 
 
 if HAS_BINGO_DB:
-    engine = create_engine(
+    engine: Optional[Engine] = create_engine(
         "postgresql://", creator=connect, convert_unicode=True
     )
 
-    db_session = scoped_session(
+    db_session: Optional[scoped_session[Session]] = scoped_session(
         sessionmaker(autocommit=False, autoflush=False, bind=engine)
     )
+    assert db_session is not None
     Base.query = db_session.query_property()
 else:
     engine = None

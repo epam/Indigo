@@ -18,6 +18,8 @@
 #ifndef __metadata_storage__
 #define __metadata_storage__
 
+#include <cstdint>
+
 #include "base_cpp/ptr_array.h"
 
 namespace indigo
@@ -52,6 +54,7 @@ namespace indigo
             _plus_indexes.clear();
             _arrow_indexes.clear();
             _simple_object_indexes.clear();
+            _text_object_indexes.clear();
         }
 
         void resetReactionData();
@@ -62,7 +65,10 @@ namespace indigo
         }
 
         int getMetaCount(uint32_t meta_type) const;
+        int getNonChemicalMetaCount() const;
+
         const MetaObject& getMetaObject(uint32_t meta_type, int index) const;
+        int getMetaObjectIndex(uint32_t meta_type, int index) const;
 
     protected:
         PtrArray<MetaObject> _meta_data; // TODO: should be replaced with list of unique_ptr

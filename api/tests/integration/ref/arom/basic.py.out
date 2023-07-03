@@ -464,3 +464,4 @@ M  END
   8  1  4  0  0  0  0
 M  END
 
+{"root":{"nodes":[{"$ref":"mol0"}]},"mol0":{"type":"molecule","atoms":[{"label":"C","location":[0.0,0.0,0.0]},{"label":"C","location":[1.0,0.0,0.0]}],"bonds":[{"type":7,"atoms":[0,1]}]}}

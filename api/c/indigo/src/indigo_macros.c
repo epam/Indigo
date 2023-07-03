@@ -142,6 +142,22 @@ CEXPORT const char* indigoMolfile(int molecule)
     return res;
 }
 
+CEXPORT const char* indigoCdxBase64(int object)
+{
+    int b = indigoWriteBuffer();
+    const char* res;
+
+    if (b == -1)
+        return 0;
+
+    if (indigoSaveCdx(object, b) == -1)
+        return 0;
+
+    res = indigoToBase64String(b);
+    indigoFree(b);
+    return res;
+}
+
 CEXPORT const char* indigoCml(int molecule)
 {
     int b = indigoWriteBuffer();
@@ -197,6 +213,20 @@ CEXPORT int indigoSaveCdxmlToFile(int item, const char* filename)
         return -1;
 
     res = indigoSaveCdxml(item, f);
+
+    indigoFree(f);
+    return res;
+}
+
+CEXPORT int indigoSaveCdxToFile(int item, const char* filename)
+{
+    int f = indigoWriteFile(filename);
+    int res;
+
+    if (f == -1)
+        return -1;
+
+    res = indigoSaveCdx(item, f);
 
     indigoFree(f);
     return res;

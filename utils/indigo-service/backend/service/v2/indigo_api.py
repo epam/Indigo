@@ -373,6 +373,8 @@ def save_moldata(md, output_format=None, options={}, indigo=None):
         return md.struct.cml()
     elif output_format == "chemical/x-cdxml":
         return md.struct.cdxml()
+    elif output_format == "chemical/x-cdx":
+        return md.struct.b64cdx()
     elif output_format == "chemical/x-inchi":
         return indigo.inchi.getInchi(md.struct)
     elif output_format == "chemical/x-inchi-key":
@@ -803,7 +805,6 @@ def convert():
             indigo=indigo,
         )
     elif request.method == "GET":
-
         input_dict = {
             "struct": request.args["struct"],
             "output_format": request.args["output_format"]

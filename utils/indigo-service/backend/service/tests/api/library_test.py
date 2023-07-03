@@ -496,9 +496,7 @@ M  END
                     break
                 self.assertEqual(1, result_len)
                 if not structures[0]["library_id"] in ids:
-                    ids[structures[0]["library_id"]] = [
-                        structures[0]["id"],
-                    ]
+                    ids[structures[0]["library_id"]] = [structures[0]["id"]]
                 else:
                     ids[structures[0]["library_id"]].append(
                         structures[0]["id"]

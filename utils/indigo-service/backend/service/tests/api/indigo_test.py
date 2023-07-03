@@ -755,7 +755,6 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml.']}"
         # self.assertEqual(smiles, results_get)
 
     def test_convert_utf8(self):
-
         text = """
   Ketcher 02051318482D 1   1.00000     0.00000     0
 
@@ -1461,72 +1460,6 @@ M  END""",
                     self.assertIn(
                         result_struct, self.aromatized_mols[output_format]
                     )
-
-    def test_json_check(self):
-        headers, data = self.get_headers(
-            {
-                "struct": """
-  Ketcher 08151618402D 1   1.00000     0.00000     0
-
- 13 13  0     0  0            999 V2000
-   -0.8662    1.5003    0.0000 C   0  0  0  0  0  7  0  0  0  0  0  0
-   -1.7324    1.0003    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.7324    0.0001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.8662   -0.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0001    1.0002    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.5982    1.5002    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.8659    1.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.8663   -1.4999    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
-    0.5876   -0.8089    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.9943   -0.1045    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.2079   -0.9779    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.7431    0.6690    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0     0  0
-  1  6  2  0     0  0
-  2  3  2  0     0  0
-  3  4  1  0     0  0
-  4  5  2  0     0  0
-  5  6  1  0     0  0
-  2  7  1  0     0  0
-  6  8  1  0     0  0
-  4  9  1  0     0  0
-  5 10  1  0     0  0
-  5 11  1  0     0  0
-  5 12  1  0     0  0
-  5 13  1  0     0  0
-M  CHG  1   3 -40
-M  RAD  1   3   3
-M  STY  1   1 DAT
-M  SLB  1   1   1
-M  SAL   1  1   7
-M  SDT   1 INDIGO_ALIAS
-M  SDD   1    -2.5982    1.5002    AA    ALL  1      1
-M  SED   1 Psd
-M  STY  1   2 DAT
-M  SLB  1   2   2
-M  SAL   2  1   8
-M  SDT   2 INDIGO_ALIAS
-M  SDD   2     0.8659    1.5001    AA    ALL  1      1
-M  SED   2 Pol
-M  END
-""",
-            }
-        )
-        result = requests.post(
-            self.url_prefix + "/check", headers=headers, data=data
-        )
-        self.assertEqual(200, result.status_code)
-        result_data = json.loads(result.text)
-        self.assertEqual(
-            "Structure contains atoms with unusual valence: (2,4)",
-            result_data["valence"],
-        )
-        self.assertEqual(
-            "Structure contains radicals: (2)",
-            result_data["radicals"],
-        )
-        self.assertEqual("Structure contains S-groups", result_data["sgroups"])
 
     def test_check(self):
         headers, data = self.get_headers(
@@ -3006,4 +2939,4 @@ M  END
 
 
 if __name__ == "__main__":
-    exit(unittest.main(verbosity=2, warnings="ignore"))
+    unittest.main(verbosity=2, warnings="ignore")

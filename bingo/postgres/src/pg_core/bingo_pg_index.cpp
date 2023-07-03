@@ -1,7 +1,5 @@
 #include "bingo_pg_fix_pre.h"
 
-#include <algorithm>
-
 extern "C"
 {
 #include "postgres.h"
@@ -12,11 +10,12 @@ extern "C"
 
 #include "bingo_pg_fix_post.h"
 
+#include <algorithm>
+
 #include "base_cpp/profiling.h"
 
 #include "bingo_core_c.h"
 #include "bingo_pg_build_engine.h"
-#include "bingo_pg_common.h"
 #include "bingo_pg_config.h"
 #include "bingo_pg_ext_bitset.h"
 #include "bingo_pg_index.h"
@@ -421,14 +420,14 @@ void BingoPgIndex::insertStructure(BingoPgFpData& data_item)
         _initializeNewSection();
     }
     elog(DEBUG1, "bingo: index: start adding a structure to the section %d", _currentSectionIdx);
-    //#ifdef BINGO_PG_INTEGRITY_DIR
-    //   Relation index = (Relation) _index;
+    // #ifdef BINGO_PG_INTEGRITY_DIR
+    //    Relation index = (Relation) _index;
     //
-    //   BingoPgWrapper rel_wr;
-    //   const char* rel_name = rel_wr.getRelName(index->rd_id);
+    //    BingoPgWrapper rel_wr;
+    //    const char* rel_name = rel_wr.getRelName(index->rd_id);
     //
-    //   indigo::FileOutput fout(false, "%s/insert/%s_%d_%d_%d", BINGO_PG_INTEGRITY_DIR, rel_name, _currentSectionIdx, );
-    //#endif
+    //    indigo::FileOutput fout(false, "%s/insert/%s_%d_%d_%d", BINGO_PG_INTEGRITY_DIR, rel_name, _currentSectionIdx, );
+    // #endif
     /*
      * Add a structure
      */

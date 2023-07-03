@@ -19,6 +19,9 @@
 #ifndef __base_molecule__
 #define __base_molecule__
 
+#include <map>
+#include <set>
+
 #include "base_cpp/obj_array.h"
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
@@ -26,6 +29,7 @@
 #include "molecule/metadata_storage.h"
 #include "molecule/molecule_allene_stereo.h"
 #include "molecule/molecule_arom.h"
+#include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_cis_trans.h"
 #include "molecule/molecule_ionize.h"
 #include "molecule/molecule_rgroups.h"
@@ -33,8 +37,6 @@
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_tgroups.h"
-#include <map>
-#include <set>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -104,6 +106,7 @@ namespace indigo
     class DLLEXPORT BaseMolecule : public Graph
     {
     public:
+        friend class MoleculeCIPCalculator;
         typedef std::map<int, int> Mapping;
 
         BaseMolecule();
@@ -118,6 +121,7 @@ namespace indigo
         virtual bool isQueryMolecule();
 
         void clear() override;
+        virtual void changed() override;
 
         // 'neu' means 'new' in German
         virtual BaseMolecule* neu() = 0;
@@ -232,6 +236,12 @@ namespace indigo
             CHANGED_ALL = 0xFF,
         };
         virtual void invalidateAtom(int index, int mask);
+        void addCIP();
+        void clearCIP();
+        CIPDesc getAtomCIP(int atom_idx);
+        CIPDesc getBondCIP(int bond_idx);
+        void setAtomCIP(int atom_idx, CIPDesc cip);
+        void setBondCIP(int bond_idx, CIPDesc cip);
 
         Vec3f& getAtomXyz(int idx);
         void setAtomXyz(int idx, float x, float y, float z);
@@ -244,8 +254,29 @@ namespace indigo
         MoleculeAlleneStereo allene_stereo;
 
         bool have_xyz = false;
+        bool have_cip = false;
 
         bool isChiral();
+
+        Array<int>& getAAMArray()
+        {
+            return reaction_atom_mapping;
+        }
+
+        Array<int>& getReactingCenterArray()
+        {
+            return reaction_bond_reacting_center;
+        }
+
+        Array<int>& getInversionArray()
+        {
+            return reaction_atom_inversion;
+        }
+
+        Array<int>& getExactChangeArray()
+        {
+            return reaction_atom_exact_change;
+        }
 
         struct TemplateAttPoint
         {
@@ -412,6 +443,13 @@ namespace indigo
 
         // calc bounding box
         void getBoundingBox(Rect2f& bbox) const;
+        void getBoundingBox(Vec2f& a, Vec2f& b) const;
+
+        // aliases
+        bool isAlias(int atom_idx) const;
+        const char* getAlias(int atom_idx) const;
+        void setAlias(int atom_idx, const char* alias);
+        void removeAlias(int atom_idx);
 
         DECL_ERROR;
 
@@ -462,7 +500,10 @@ namespace indigo
         Array<int> _bond_directions;
 
         Array<Vec3f> _xyz;
-        std::map<int, Vec3f> _stereo_flag_positions;
+        RedBlackMap<int, Vec3f> _stereo_flag_positions;
+        // CIP maps should be changed to std::unordered_map
+        RedBlackMap<int, CIPDesc> _cip_atoms;
+        RedBlackMap<int, CIPDesc> _cip_bonds;
 
         ObjArray<Array<int>> _rsite_attachment_points;
         bool _rGroupFragment;
@@ -476,6 +517,8 @@ namespace indigo
         int _edit_revision;
 
         MetaDataStorage _meta;
+
+        RedBlackObjMap<int, Array<char>> aliases;
     };
 
 } // namespace indigo

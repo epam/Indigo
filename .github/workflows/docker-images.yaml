@@ -1,9 +1,6 @@
 name: Indigo Docker images preparation
 
 on:
-  push:
-    branches:
-      - master
   workflow_dispatch:
 
 jobs:
