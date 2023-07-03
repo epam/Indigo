@@ -262,6 +262,32 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             writer.Key("expanded");
             writer.Bool(true);
         }
+
+        if (sa.attachment_points.size())
+        {
+            writer.Key("attachmentPoints");
+            writer.StartArray();
+            for (int i = sa.attachment_points.begin(); i != sa.attachment_points.end(); i = sa.attachment_points.next(i))
+            {
+                writer.StartObject();
+                auto& atp = sa.attachment_points[i];
+                std::string atp_id_str(atp.apid.ptr(), atp.apid.size());
+                writer.Key("attachmentAtom");
+                writer.Int(atp.aidx);
+                if (atp.lvidx != -1)
+                {
+                    writer.Key("leavingAtom");
+                    writer.Int(atp.lvidx);
+                }
+                if (atp_id_str.length() > 0)
+                {
+                    writer.Key("attachmentId");
+                    writer.String(atp_id_str.c_str());
+                }
+                writer.EndObject();
+            }
+            writer.EndArray();
+        }
     }
     break;
     case SGroup::SG_TYPE_SRU: {
@@ -813,14 +839,14 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         if (mol.isRSite(i) && !_checkAttPointOrder(mol, i))
         {
             const Vertex& vertex = mol.getVertex(i);
-            writer.Key("attOrder");
+            writer.Key("attachmentOrder");
             writer.StartArray();
             for (int k = 0; k < vertex.degree(); k++)
             {
                 writer.StartObject();
-                writer.Key("index");
+                writer.Key("attachmentAtom");
                 writer.Int(mol.getRSiteAttachmentPointByOrder(i, k));
-                writer.Key("id");
+                writer.Key("attachmentId");
                 writer.Int(k);
                 writer.EndObject();
             }
@@ -958,9 +984,7 @@ void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, 
 bool MoleculeJsonSaver::_checkAttPointOrder(BaseMolecule& mol, int rsite)
 {
     const Vertex& vertex = mol.getVertex(rsite);
-    int i;
-
-    for (i = 0; i < vertex.degree() - 1; i++)
+    for (int i = 0; i < vertex.degree() - 1; i++)
     {
         int cur = mol.getRSiteAttachmentPointByOrder(rsite, i);
         int next = mol.getRSiteAttachmentPointByOrder(rsite, i + 1);
