@@ -57,8 +57,6 @@ public class Helpers {
 
     public static Iterable<IndigoRecordMolecule> iterateSmiles(String smilesFile, ErrorHandler errorHandler) {
         Indigo indigo = new Indigo();
-        indigo.setOption("ignore-stereochemistry-errors", true);
-        indigo.setOption("ignore-bad-valence", true);
         return iterateIndigoObject(indigo.iterateSmilesFile(smilesFile), errorHandler);
     }
 
