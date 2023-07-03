@@ -249,6 +249,24 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                     rsite_idx = std::stoi(ref);
                     elem = ELEM_RSITE;
                     label = "R";
+                    if (a.HasMember("attachmentOrder"))
+                    {
+                        const auto& rattachments = a["attachmentOrder"];
+                        for (SizeType j = 0; j < rattachments.Size(); ++j)
+                        {
+                            const auto& rattachment = rattachments[j];
+                            if (rattachment.HasMember("attachmentAtom"))
+                            {
+                                auto attindex = rattachment["attachmentAtom"].GetInt();
+                                int attid = -1;
+                                if (rattachment.HasMember("attachmentId"))
+                                {
+                                    attid = rattachment["attachmentId"].GetInt();
+                                }
+                                mol.setRSiteAttachmentOrder(i, attindex, attid);
+                            }
+                        }
+                    }
                 }
                 else
                     throw Error("invalid refs: %s", ref.c_str());
@@ -910,8 +928,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         }
 
         auto& mol_node = _mol_nodes[node_idx];
-        std::string type = mol_node["type"].GetString();
-        if (type.compare("molecule") == 0 || type.compare("rgroup") == 0)
+        if (mol_node.HasMember("atoms"))
         {
             // parse atoms
             auto& atoms = mol_node["atoms"];
@@ -945,7 +962,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         }
         else
         {
-            throw Error("unknown type: %s", type.c_str());
+            throw Error("Expected atoms block not found");
         }
 
         Array<int> mapping;
@@ -963,14 +980,31 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     for (auto& rgrp : _rgroups)
     {
         RGroup& rgroup = rgroups.getRGroup(rgrp.first);
-        std::unique_ptr<BaseMolecule> fragment(mol.neu());
         Value one_rnode(kArrayType);
         Value& rnode = rgrp.second;
-        one_rnode.PushBack(rnode, data.GetAllocator());
-        MoleculeJsonLoader loader(one_rnode);
-        loader.stereochemistry_options = stereochemistry_options;
-        loader.loadMolecule(*fragment.get());
-        rgroup.fragments.add(fragment.release());
+        if (rnode.HasMember("fragments"))
+        {
+            auto& rfragments = rnode["fragments"];
+            for (SizeType i = 0; i < rfragments.Size(); i++)
+            {
+                std::unique_ptr<BaseMolecule> fragment(mol.neu());
+                one_rnode.PushBack(rfragments[i], data.GetAllocator());
+                MoleculeJsonLoader loader(one_rnode);
+                loader.stereochemistry_options = stereochemistry_options;
+                loader.loadMolecule(*fragment.get());
+                rgroup.fragments.add(fragment.release());
+                one_rnode.Clear();
+            }
+        }
+        else
+        {
+            std::unique_ptr<BaseMolecule> fragment(mol.neu());
+            one_rnode.PushBack(rnode, data.GetAllocator());
+            MoleculeJsonLoader loader(one_rnode);
+            loader.stereochemistry_options = stereochemistry_options;
+            loader.loadMolecule(*fragment.get());
+            rgroup.fragments.add(fragment.release());
+        }
     }
 
     std::vector<int> ignore_cistrans(mol.edgeCount());

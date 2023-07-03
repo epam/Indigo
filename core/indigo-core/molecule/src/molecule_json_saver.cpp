@@ -814,14 +814,14 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         if (mol.isRSite(i) && !_checkAttPointOrder(mol, i))
         {
             const Vertex& vertex = mol.getVertex(i);
-            writer.Key("attOrder");
+            writer.Key("attachmentOrder");
             writer.StartArray();
             for (int k = 0; k < vertex.degree(); k++)
             {
                 writer.StartObject();
-                writer.Key("index");
+                writer.Key("attachmentAtom");
                 writer.Int(mol.getRSiteAttachmentPointByOrder(i, k));
-                writer.Key("id");
+                writer.Key("attachmentId");
                 writer.Int(k);
                 writer.EndObject();
             }
@@ -959,9 +959,7 @@ void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, 
 bool MoleculeJsonSaver::_checkAttPointOrder(BaseMolecule& mol, int rsite)
 {
     const Vertex& vertex = mol.getVertex(rsite);
-    int i;
-
-    for (i = 0; i < vertex.degree() - 1; i++)
+    for (int i = 0; i < vertex.degree() - 1; i++)
     {
         int cur = mol.getRSiteAttachmentPointByOrder(rsite, i);
         int next = mol.getRSiteAttachmentPointByOrder(rsite, i + 1);
