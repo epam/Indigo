@@ -505,7 +505,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
 
         if (a.HasMember("alias"))
         {
-            mol.aliases.findOrInsert(atom_idx).readString(a["alias"].GetString(), true);
+            mol.setAlias(atom_idx, a["alias"].GetString());
         }
 
         if (a.HasMember("cip"))

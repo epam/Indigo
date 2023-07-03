@@ -25,7 +25,6 @@
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
-#include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_rgroups.h"
 #include "molecule/molecule_savers.h"
 #include "molecule/molecule_stereocenters.h"
@@ -1624,7 +1623,8 @@ void SmilesSaver::_writePseudoAtoms()
     {
         for (i = 0; i < _written_atoms.size(); i++)
         {
-            if (mol.aliases.find(i) || mol.isPseudoAtom(_written_atoms[i]) || (mol.isRSite(_written_atoms[i]) && mol.getRSiteBits(_written_atoms[i]) != 0))
+            if (mol.isAlias(_written_atoms[i]) || mol.isPseudoAtom(_written_atoms[i]) ||
+                (mol.isRSite(_written_atoms[i]) && mol.getRSiteBits(_written_atoms[i]) != 0))
                 break;
             if (_qmol != 0)
             {
@@ -1669,9 +1669,9 @@ void SmilesSaver::_writePseudoAtoms()
         {
             writeSpecialAtom(_written_atoms[i], _output);
         }
-        else if (mol.aliases.find(i))
+        else if (mol.isAlias(i))
         {
-            writePseudoAtom(mol.aliases.at(i).ptr(), _output);
+            writePseudoAtom(mol.getAlias(i), _output);
         }
     }
 

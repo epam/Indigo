@@ -502,7 +502,7 @@ void SmilesLoader::_readOtherStuff()
                             const auto atomNumber = _mol->getAtomNumber(i);
                             if (ELEM_MIN < atomNumber && atomNumber < ELEM_MAX)
                             {
-                                _mol->aliases.findOrInsert(i).readString(label.ptr(), true);
+                                _mol->setAlias(i, label.ptr());
                             }
                             else
                             {
@@ -623,7 +623,7 @@ void SmilesLoader::_readOtherStuff()
                                 const auto atomNumber = _qmol->getAtomNumber(i);
                                 if (ELEM_MIN < atomNumber && atomNumber < ELEM_MAX)
                                 {
-                                    _qmol->aliases.findOrInsert(i).readString(label.ptr(), true);
+                                    _qmol->setAlias(i, label.ptr());
                                 }
                                 else
                                 {

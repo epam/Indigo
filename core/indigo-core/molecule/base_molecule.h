@@ -19,6 +19,9 @@
 #ifndef __base_molecule__
 #define __base_molecule__
 
+#include <map>
+#include <set>
+
 #include "base_cpp/obj_array.h"
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
@@ -34,8 +37,6 @@
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_tgroups.h"
-#include <map>
-#include <set>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -300,7 +301,6 @@ namespace indigo
         StringPool custom_collections;
 
         Array<char> name;
-        RedBlackObjMap<int, Array<char>> aliases;
 
         Array<int> reaction_atom_mapping;
         Array<int> reaction_atom_inversion;
@@ -445,6 +445,12 @@ namespace indigo
         void getBoundingBox(Rect2f& bbox) const;
         void getBoundingBox(Vec2f& a, Vec2f& b) const;
 
+        // aliases
+        bool isAlias(int atom_idx) const;
+        const char* getAlias(int atom_idx) const;
+        void setAlias(int atom_idx, const char* alias);
+        void removeAlias(int atom_idx);
+
         DECL_ERROR;
 
     protected:
@@ -511,6 +517,8 @@ namespace indigo
         int _edit_revision;
 
         MetaDataStorage _meta;
+
+        RedBlackObjMap<int, Array<char>> aliases;
     };
 
 } // namespace indigo

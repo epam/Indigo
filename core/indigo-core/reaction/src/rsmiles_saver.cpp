@@ -19,7 +19,6 @@
 #include "reaction/rsmiles_saver.h"
 
 #include "base_cpp/output.h"
-#include "molecule/canonical_smiles_saver.h"
 #include "molecule/elements.h"
 #include "molecule/smiles_saver.h"
 #include "reaction/query_reaction.h"
@@ -329,7 +328,7 @@ void RSmilesSaver::_writeRadicals()
         const _Idx& idx = _written_atoms[i];
         BaseMolecule& bmol = _brxn->getBaseMolecule(idx.mol);
 
-        if (bmol.isRSite(idx.idx) || bmol.isPseudoAtom(idx.idx))
+        if (bmol.isRSite(idx.idx) || bmol.isPseudoAtom(idx.idx) || bmol.isAlias(idx.idx))
             continue;
 
         int radical = bmol.getAtomRadical(idx.idx);
@@ -376,7 +375,7 @@ void RSmilesSaver::_writePseudoAtoms()
         BaseMolecule& mol = _brxn->getBaseMolecule(_written_atoms[i].mol);
         int idx = _written_atoms[i].idx;
 
-        if (mol.isPseudoAtom(idx))
+        if (mol.isPseudoAtom(idx) || mol.isAlias(idx))
             break;
         if (mol.isRSite(idx) && mol.getRSiteBits(idx) > 0)
             break;
@@ -406,6 +405,8 @@ void RSmilesSaver::_writePseudoAtoms()
 
         if (mol.isPseudoAtom(idx.idx))
             SmilesSaver::writePseudoAtom(mol.getPseudoAtom(idx.idx), _output);
+        else if (mol.isAlias(idx.idx))
+            SmilesSaver::writePseudoAtom(mol.getAlias(idx.idx), _output);
         else if (mol.isRSite(idx.idx) && mol.getRSiteBits(idx.idx) > 0)
             // ChemAxon's Extended SMILES notation for R-sites
             _output.printf("_R%d", mol.getSingleAllowedRGroup(idx.idx));

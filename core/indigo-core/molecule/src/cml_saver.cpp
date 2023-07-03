@@ -220,9 +220,9 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                     }
                 }
 
-                if (mol.aliases.find(i))
+                if (mol.isAlias(i))
                 {
-                    atom->SetAttribute("mrvAlias", mol.aliases.at(i).ptr());
+                    atom->SetAttribute("mrvAlias", mol.getAlias(i));
                 }
             }
 

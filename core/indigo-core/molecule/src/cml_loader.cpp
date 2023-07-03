@@ -803,7 +803,7 @@ void CmlLoader::_loadMoleculeElement(XMLHandle& handle)
             {
                 if (strncmp(a.alias.c_str(), "0", 1) != 0)
                 {
-                    _bmol->aliases.findOrInsert(idx).readString(a.alias.c_str(), true);
+                    _bmol->setAlias(idx, a.alias.c_str());
                 }
             }
 
