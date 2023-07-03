@@ -10,6 +10,7 @@
 #include "molecule/elements.h"
 #include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_sgroups.h"
 #include "molecule/query_molecule.h"
 
 using namespace rapidjson;
@@ -845,6 +846,34 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                 sg.subscript.readString(s["name"].GetString(), true);
             if (s.HasMember("expanded"))
                 sg.contracted = s["expanded"].GetBool() ? DisplayOption::Expanded : DisplayOption::Contracted;
+            if (s.HasMember("attachmentPoints"))
+            {
+                const Value& attachmentPoints = s["attachmentPoints"];
+                assert(attachmentPoints.IsArray());
+                int attachmentAtom{-1};
+                int leavingAtom{-1};
+                std::string attachmentId{""};
+
+                for (SizeType j = 0; j < attachmentPoints.Size(); ++j)
+                {
+                    if (!attachmentPoints[j].HasMember("attachmentAtom"))
+                        throw Error("Attachment atom in a superatom is mandatory. Check input ket-file");
+                    attachmentAtom = attachmentPoints[j]["attachmentAtom"].GetInt();
+                    if (attachmentPoints[j].HasMember("leavingAtom"))
+                    {
+                        leavingAtom = attachmentPoints[j]["leavingAtom"].GetInt();
+                    }
+                    if (attachmentPoints[j].HasMember("attachmentId"))
+                    {
+                        attachmentId = attachmentPoints[j]["attachmentId"].GetString();
+                    }
+                    int ap_idx = sg.attachment_points.add();
+                    Superatom::_AttachmentPoint& ap = sg.attachment_points.at(ap_idx);
+                    ap.aidx = attachmentAtom;
+                    ap.lvidx = leavingAtom;
+                    ap.apid.readString(attachmentId.c_str(), true);
+                }
+            }
         }
         break;
         case SGroup::SG_TYPE_DAT: {
