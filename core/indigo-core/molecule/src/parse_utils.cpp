@@ -18,6 +18,8 @@
 
 #include "molecule/parse_utils.h"
 
+#include <cstdint>
+
 namespace indigo
 {
     const size_t kAsciiSize = 0x80;
