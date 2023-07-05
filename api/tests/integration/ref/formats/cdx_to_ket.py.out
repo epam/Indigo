@@ -2177,7 +2177,7 @@ arom64.cdx
         ]
     }
 }
-invalid-ascii.CDX
+invalid-ascii.cdx
 {
     "root": {
         "nodes": [
