@@ -26,6 +26,7 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_cdxml_loader.h"
 #include "molecule/molecule_scaffold_detection.h"
+#include "molecule/parse_utils.h"
 
 using namespace indigo;
 using namespace tinyxml2;
@@ -856,11 +857,18 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
             _parseLabel(child_elem, label);
             if (label.size() > 1 && label.find("R") == 0)
             {
-                node.rg_index = label.substr(1);
-                node.type = kCDXNodeType_NamedAlternativeGroup;
-                node.element = ELEM_RSITE;
+                try
+                {
+                    node.rg_index = label.substr(1);
+                    node.type = kCDXNodeType_NamedAlternativeGroup;
+                    node.element = ELEM_RSITE;
+                }
+                catch (const std::exception& ex)
+                {
+                    // not a R-Group
+                }
             }
-            else if (node.element == ELEM_C) // overridable
+            if (node.element == ELEM_C) // overridable
             {
                 auto elem = Element::fromString2(label.c_str());
                 if (elem > 0)
@@ -1109,7 +1117,11 @@ void MoleculeCdxmlLoader::_parseLabel(CDXElement elem, std::string& label)
         std::string text_element = text_style.value();
         if (text_element == "s")
         {
-            label += text_style.getText();
+            auto txt = text_style.getText();
+            if (!is_valid_utf8(txt))
+                txt = latin1_to_utf8(txt);
+
+            label += txt;
             if (label == "R")
                 continue;
             else
@@ -1250,7 +1262,11 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec3
     if (text_bbox.width() > 0 && text_bbox.height() > 0)
         tpos.set(text_bbox.center().x, text_bbox.center().y, 0);
 
-    text_parsed.emplace_back(tpos, s.GetString());
+    std::string txt = s.GetString();
+    if (!is_valid_utf8(txt))
+        txt = latin1_to_utf8(txt);
+
+    text_parsed.emplace_back(tpos, txt.c_str());
 }
 
 void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, CDXProperty prop)
