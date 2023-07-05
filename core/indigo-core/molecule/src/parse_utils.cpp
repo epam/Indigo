@@ -25,6 +25,18 @@ namespace indigo
     const size_t kAsciiSize = 0x80;
     const uint8_t kUpper_2_bits_shift = 6;
     const uint8_t kLower6bitsMask = 0x3F;
+    const uint8_t kUtf8Magic2bytes = 0b110;
+    const uint8_t kUtf8Magic3bytes = 0b1110;
+    const uint8_t kUtf8Magic4bytes = 0b11110;
+    const uint8_t kUtf8MagicLowerByte = 0b10;
+    const uint8_t kUtf8Check3HighBits = 5;
+    const uint8_t kUtf8Check4HighBits = 4;
+    const uint8_t kUtf8Check5HighBits = 3;
+    const uint8_t kUtf8Check2HighBits = 6;
+
+    const uint8_t kUtf8ExtraByteSz2 = 1;
+    const uint8_t kUtf8ExtraByteSz3 = 2;
+    const uint8_t kUtf8ExtraByteSz4 = 3;
 
     std::string latin1_to_utf8(const std::string& src)
     {
@@ -51,18 +63,18 @@ namespace indigo
         {
             if (cnt == 0)
             {
-                if ((ch >> 5) == 0b110)
-                    cnt = 1;
-                else if ((ch >> 4) == 0b1110)
-                    cnt = 2;
-                else if ((ch >> 3) == 0b11110)
-                    cnt = 3;
-                else if ((ch >> 7))
+                if ((ch >> kUtf8Check3HighBits) == kUtf8Magic2bytes)
+                    cnt = kUtf8ExtraByteSz2;
+                else if ((ch >> kUtf8Check4HighBits) == kUtf8Magic3bytes)
+                    cnt = kUtf8ExtraByteSz3;
+                else if ((ch >> kUtf8Check5HighBits) == kUtf8Magic4bytes)
+                    cnt = kUtf8ExtraByteSz4;
+                else if (ch & kAsciiSize)
                     return false;
             }
             else
             {
-                if ((ch >> 6) != 0b10)
+                if ((ch >> kUtf8Check2HighBits) != kUtf8MagicLowerByte)
                     return false;
                 cnt--;
             }
