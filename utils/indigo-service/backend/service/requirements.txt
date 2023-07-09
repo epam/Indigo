@@ -9,3 +9,4 @@ pyparsing==3.0
 psycopg2-binary
 redis==4.5.4
 SQLAlchemy==2.0
+tzdata
