@@ -1,4 +1,5 @@
 # Indigo 1.12.0
+Released 2023-07-09
 
 ## What's Changed
 
@@ -99,7 +100,7 @@ Released 2023-01-31
 * Improve ssl bingo elastic by @MysterionRise in #901
 * bingo: postgres: add support for Postgres 15, drop support for Postgres 10 by @mkviatkovskii in #903
 * #521: core: replace MultiMap in MoleculeRGroupsComposition class by @loimu in #917
-* #521: core: replace MultiMap in MolfileLoader class by @loimu in #911 
+* #521: core: replace MultiMap in MolfileLoader class by @loimu in #911Â 
 * #929: fix auto-saving to CTAB v3000 by @mkviatkovskii in #931
 
 **Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.8.0...indigo-1.9.0
