@@ -44,6 +44,7 @@ class IndexName(Enum):
     def set_value(self, new_value):
         self._value_ = new_value
 
+
 def get_index_name(record: IndigoRecord) -> IndexName:
     if isinstance(record, IndigoRecordMolecule):
         return IndexName.BINGO_MOLECULE
