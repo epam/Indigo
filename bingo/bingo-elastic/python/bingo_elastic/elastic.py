@@ -38,7 +38,6 @@ MAX_ALLOWED_SIZE = 1000
 
 
 class IndexName(Enum):
-
     def __init__(self, value):
         self._value_ = value
 
