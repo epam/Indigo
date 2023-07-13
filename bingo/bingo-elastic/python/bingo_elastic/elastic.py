@@ -38,6 +38,10 @@ MAX_ALLOWED_SIZE = 1000
 
 
 class IndexName(Enum):
+    
+    def __init__(self, value):
+        self._value_ = value
+        
     BINGO_MOLECULE = "bingo-molecules"
     BINGO_REACTION = "bingo-reactions"
     BINGO_CUSTOM = "custom-index"
