@@ -40,6 +40,7 @@ MAX_ALLOWED_SIZE = 1000
 class IndexName(Enum):
     BINGO_MOLECULE = "bingo-molecules"
     BINGO_REACTION = "bingo-reactions"
+    BINGO_CUSTOM = "custom-index"
 
     def set_value(self, new_value):
         self._value_ = new_value
@@ -50,6 +51,8 @@ def get_index_name(record: IndigoRecord) -> IndexName:
         return IndexName.BINGO_MOLECULE
     if isinstance(record, IndigoRecordReaction):
         return IndexName.BINGO_REACTION
+    if isinstance(record, str):
+        return IndexName.BINGO_CUSTOM
     raise AttributeError(f"Unknown IndigoRecord type {record}")
 
 
@@ -146,14 +149,14 @@ async def a_create_index(
 
 
 def prepare(
-    index_name: str, records: Generator[IndigoRecord, None, None]
+    records: Generator[IndigoRecord, None, None]
 ) -> Generator[Dict, None, None]:
     for record in records:
-        if get_index_name(record).value != index_name:
-            raise ValueError(
-                f"Index {index_name} doesn't support store value "
-                f"of type {type(record)}"
-            )
+        # if get_index_name(record).value != index_name:
+        #     raise ValueError(
+        #         f"Index {index_name} doesn't support store value "
+        #         f"of type {type(record)}"
+        #     )
         yield record.as_dict()
 
 
@@ -220,7 +223,7 @@ class AsyncElasticRepository:
         # pylint: disable=unused-variable
         async for is_ok, action in async_streaming_bulk(
             self.el_client,
-            prepare(self.index_name, records),
+            prepare(records),
             index=self.index_name,
             chunk_size=chunk_size,
         ):
@@ -310,7 +313,7 @@ class ElasticRepository:
         # pylint: disable=unused-variable
         for is_ok, action in streaming_bulk(
             self.el_client,
-            prepare(self.index_name, records),
+            prepare(records),
             index=self.index_name,
             chunk_size=chunk_size,
         ):
