@@ -190,24 +190,26 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                 sa.sa_class.copy(supersa.sa_class);
                 sa.sa_natreplace.copy(supersa.sa_natreplace);
                 sa.contracted = supersa.contracted;
-                if (supersa.attachment_points.size() > 0)
+                if (supersa.hasAttachmentPoints())
                 {
-                    for (int j = supersa.attachment_points.begin(); j < supersa.attachment_points.end(); j = supersa.attachment_points.next(j))
+                    const auto& super_aps = supersa.getAttachmentPoints();
+                    auto& aps = sa.getAttachmentPoints();
+                    for (int j = super_aps.begin(); j < super_aps.end(); j = super_aps.next(j))
                     {
-                        int ap_idx = sa.attachment_points.add();
-                        Superatom::_AttachmentPoint& ap = sa.attachment_points.at(ap_idx);
-                        int a_idx = supersa.attachment_points[j].aidx;
+                        int ap_idx = aps.add();
+                        Superatom::_AttachmentPoint& ap = aps.at(ap_idx);
+                        int a_idx = super_aps[j].aidx;
                         if (a_idx > -1)
                             ap.aidx = mapping[a_idx];
                         else
                             ap.aidx = a_idx;
-                        int leave_idx = supersa.attachment_points[j].lvidx;
+                        int leave_idx = super_aps[j].lvidx;
                         if (leave_idx > -1)
                             ap.lvidx = mapping[leave_idx];
                         else
                             ap.lvidx = leave_idx;
 
-                        ap.apid.copy(supersa.attachment_points[j].apid);
+                        ap.apid.copy(super_aps[j].apid);
                     }
                 }
             }
@@ -434,11 +436,12 @@ void BaseMolecule::_flipSuperatomBond(Superatom& sa, int src_bond_idx, int new_b
                 bond.bond_idx = new_bond_idx;
         }
     }
-    if (sa.attachment_points.size() > 0)
+    if (sa.hasAttachmentPoints())
     {
-        for (int j = sa.attachment_points.begin(); j != sa.attachment_points.end(); j = sa.attachment_points.next(j))
+        auto& aps = sa.getAttachmentPoints();
+        for (int j = aps.begin(); j != aps.end(); j = aps.next(j))
         {
-            Superatom::_AttachmentPoint& ap = sa.attachment_points.at(j);
+            Superatom::_AttachmentPoint& ap = aps.at(j);
             const Edge& edge = getEdge(new_bond_idx);
             if ((edge.beg == ap.aidx) || (edge.end == ap.aidx))
 
@@ -1111,7 +1114,7 @@ void BaseMolecule::getTemplateAtomAttachmentPointId(int atom_idx, int order, Arr
     throw Error("attachment point order %d is out of range (%d)", order, ap_count);
 }
 
-int BaseMolecule::getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& att_id)
+int BaseMolecule::getTemplateAtomAttachmentPointById(int atom_idx, const Array<char>& att_id)
 {
     QS_DEF(Array<char>, tmp);
     int aidx = -1;
@@ -1404,11 +1407,12 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
             {
                 Superatom& su = (Superatom&)sg;
 
-                if (su.attachment_points.size() > 0)
+                if (su.hasAttachmentPoints())
                 {
-                    for (int k = su.attachment_points.begin(); k < su.attachment_points.end(); k = su.attachment_points.next(k))
+                    const auto& aps = su.getAttachmentPoints();
+                    for (int k = aps.begin(); k < aps.end(); k = aps.next(k))
                     {
-                        Superatom::_AttachmentPoint& ap = su.attachment_points.at(k);
+                        const Superatom::_AttachmentPoint& ap = aps.at(k);
                         ap_points_atoms.push(ap.aidx);
                         ap_lgrp_atoms.push(ap.lvidx);
                         ap_ids.push(ap_points_ids.add(ap.apid));
@@ -2174,11 +2178,12 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
             {
                 Superatom& su = (Superatom&)sg;
 
-                if (su.attachment_points.size() > 0)
+                if (su.hasAttachmentPoints())
                 {
-                    for (int k = su.attachment_points.begin(); k < su.attachment_points.end(); k = su.attachment_points.next(k))
+                    const auto& aps = su.getAttachmentPoints();
+                    for (int k = aps.begin(); k < aps.end(); k = aps.next(k))
                     {
-                        Superatom::_AttachmentPoint& ap = su.attachment_points.at(k);
+                        const Superatom::_AttachmentPoint& ap = aps.at(k);
                         ap_points_atoms.push(ap.aidx);
                         ap_lgrp_atoms.push(ap.lvidx);
                         ap_ids.push(ap_points_ids.add(ap.apid));
@@ -2934,11 +2939,12 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
 
     // printf("Template = %s (%d)\n", tgroup.tgroup_name.ptr(), idx);
 
-    if (su.attachment_points.size() > 0)
+    if (su.hasAttachmentPoints())
     {
-        for (int j = su.attachment_points.begin(); j < su.attachment_points.end(); j = su.attachment_points.next(j))
+        const auto& aps = su.getAttachmentPoints();
+        for (int j = aps.begin(); j < aps.end(); j = aps.next(j))
         {
-            Superatom::_AttachmentPoint& ap = su.attachment_points.at(j);
+            const Superatom::_AttachmentPoint& ap = aps.at(j);
 
             int att_atom_idx = getTemplateAtomAttachmentPointById(idx, ap.apid);
             if (att_atom_idx > -1)
@@ -3053,14 +3059,18 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
                 {
                     su.bonds.push(bond_idx);
 
-                    for (int j = su.attachment_points.begin(); j < su.attachment_points.end(); j = su.attachment_points.next(j))
+                    if (su.hasAttachmentPoints())
                     {
-                        Superatom::_AttachmentPoint& ap = su.attachment_points.at(j);
+                        auto& aps = su.getAttachmentPoints();
+                        for (int j = aps.begin(); j < aps.end(); j = aps.next(j))
+                        {
+                            Superatom::_AttachmentPoint& ap = aps.at(j);
 
-                        // printf("SUP AP  ap.aidx = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", ap.aidx, tg_atoms[i], mapping[tg_atoms[i]]);
+                            // printf("SUP AP  ap.aidx = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", ap.aidx, tg_atoms[i], mapping[tg_atoms[i]]);
 
-                        if (ap.aidx == mapping[tg_atoms[i]])
-                            ap.lvidx = att_atoms[i];
+                            if (ap.aidx == mapping[tg_atoms[i]])
+                                ap.lvidx = att_atoms[i];
+                        }
                     }
                 }
             }
@@ -3107,14 +3117,15 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
     ap_points_ids.clear();
     ap_ids.clear();
 
-    if (su.attachment_points.size() == 0 && su.bonds.size() == 0)
+    if (!su.hasAttachmentPoints() && su.bonds.size() == 0)
         return -1;
 
-    if (su.attachment_points.size() > 0)
+    if (su.hasAttachmentPoints())
     {
-        for (int k = su.attachment_points.begin(); k < su.attachment_points.end(); k = su.attachment_points.next(k))
+        const auto& aps = su.getAttachmentPoints();
+        for (int k = aps.begin(); k < aps.end(); k = aps.next(k))
         {
-            Superatom::_AttachmentPoint& ap = su.attachment_points.at(k);
+            const Superatom::_AttachmentPoint& ap = aps.at(k);
             ap_points_atoms.push(ap.aidx);
             ap_ids.push(ap_points_ids.add(ap.apid));
         }
@@ -3141,8 +3152,8 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
                 continue;
             }
 
-            int idap = su.attachment_points.add();
-            Superatom::_AttachmentPoint& ap = su.attachment_points.at(idap);
+            int idap = su.getAttachmentPoints().add();
+            Superatom::_AttachmentPoint& ap = su.getAttachmentPoints().at(idap);
 
             if (_isNTerminus(su, ap_aidx)) //  N-terminus ?
                 ap.apid.readString("Al", true);
@@ -3201,7 +3212,8 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
         else
         {
             Superatom& sup_new = (Superatom&)sg;
-            if ((strcmp(su.subscript.ptr(), sup_new.subscript.ptr()) == 0) && (su.attachment_points.size() == sup_new.attachment_points.size()))
+            if ((strcmp(su.subscript.ptr(), sup_new.subscript.ptr()) == 0) && sup_new.hasAttachmentPoints() &&
+                (su.getAttachmentPoints().size() == sup_new.getAttachmentPoints().size()))
             {
                 new_sg_idx = sgs[j];
             }
@@ -3403,11 +3415,12 @@ int BaseMolecule::_createSGroupFromFragment(Array<int>& sg_atoms, const TGroup& 
 
     Superatom& su = (Superatom&)sg;
 
-    if (su.attachment_points.size() > 0)
+    if (su.hasAttachmentPoints())
     {
-        for (int j = su.attachment_points.begin(); j < su.attachment_points.end(); j = su.attachment_points.next(j))
+        const auto& aps = su.getAttachmentPoints();
+        for (int j = aps.begin(); j < aps.end(); j = aps.next(j))
         {
-            Superatom::_AttachmentPoint& ap = su.attachment_points.at(j);
+            const Superatom::_AttachmentPoint& ap = aps.at(j);
 
             tg_atoms.push(ap.aidx);
             lvgroups.push(ap.lvidx);
@@ -3440,8 +3453,8 @@ int BaseMolecule::_createSGroupFromFragment(Array<int>& sg_atoms, const TGroup& 
                         if (fragment.getBondOrder(q_xbond_idx) == this->asMolecule().getBondOrder(t_xbond_idx))
                         {
                             su_new.bonds.push(t_xbond_idx);
-                            int idap = su_new.attachment_points.add();
-                            Superatom::_AttachmentPoint& ap = su_new.attachment_points.at(idap);
+                            int idap = su_new.getAttachmentPoints().add();
+                            Superatom::_AttachmentPoint& ap = su_new.getAttachmentPoints().at(idap);
                             ap.aidx = att_point_idx;
                             ap.lvidx = v.neiVertex(k);
                             ap.apid.readString(ap_points_ids.at(l), true);
@@ -3498,13 +3511,14 @@ void BaseMolecule::_removeAtomsFromSuperatom(Superatom& sa, Array<int>& mapping)
                 sa.bond_connections.remove(j);
         }
     }
-    if (sa.attachment_points.size() > 0)
+    if (sa.hasAttachmentPoints())
     {
-        for (int j = sa.attachment_points.begin(); j < sa.attachment_points.end(); j = sa.attachment_points.next(j))
+        auto& aps = sa.getAttachmentPoints();
+        for (int j = aps.begin(); j < aps.end(); j = aps.next(j))
         {
-            Superatom::_AttachmentPoint& ap = sa.attachment_points.at(j);
+            Superatom::_AttachmentPoint& ap = aps.at(j);
             if (ap.aidx >= 0 && mapping[ap.aidx] == -1)
-                sa.attachment_points.remove(j);
+                aps.remove(j);
             else if (ap.lvidx >= 0 && mapping[ap.lvidx] == -1)
                 ap.lvidx = -1;
         }
@@ -4133,8 +4147,8 @@ int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& n
             {
                 throw Error("internal error: attachment point was not found");
             }
-            int idap = sg.attachment_points.add();
-            Superatom::_AttachmentPoint& ap = sg.attachment_points.at(idap);
+            int idap = sg.getAttachmentPoints().add();
+            Superatom::_AttachmentPoint& ap = sg.getAttachmentPoints().at(idap);
             ap.aidx = ap_idx;
             ap.lvidx = i;
             if (r_num == 0)

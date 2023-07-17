@@ -39,7 +39,7 @@ namespace indigo
         ~StringPool();
 
         int add(const char* str);
-        int add(Array<char>& str);
+        int add(const Array<char>& str);
         int add(int size);
         void remove(int idx);
         int size() const;

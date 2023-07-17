@@ -19,6 +19,8 @@
 #ifndef __molecule_sgroups__
 #define __molecule_sgroups__
 
+#include <memory>
+
 #include "base_cpp/array.h"
 #include "base_cpp/obj_pool.h"
 #include "base_cpp/ptr_pool.h"
@@ -106,7 +108,13 @@ namespace indigo
         };
 
         SGroup();
-        virtual ~SGroup();
+        SGroup(const SGroup&) = delete;
+        SGroup(SGroup&&) noexcept = default;
+
+        virtual ~SGroup() = default;
+
+        SGroup& operator=(const SGroup&) = delete;
+        SGroup& operator=(SGroup&&) noexcept = default;
 
         int sgroup_type;    // group type, represnted with STY in Molfile format
         int sgroup_subtype; // group subtype, represnted with SST in Molfile format
@@ -124,16 +132,17 @@ namespace indigo
 
         static const char* typeToString(int sg_type);
         static int getType(const char* sg_type);
-
-    private:
-        SGroup(const SGroup&);
     };
 
     class DLLEXPORT DataSGroup : public SGroup
     {
     public:
         DataSGroup();
-        ~DataSGroup() override;
+        DataSGroup(const DataSGroup&) = delete;
+        DataSGroup(DataSGroup&&) noexcept = default;
+
+        DataSGroup& operator=(const DataSGroup&) = delete;
+        DataSGroup& operator=(DataSGroup&&) noexcept = default;
 
         Array<char> description; // SDT in Molfile format (filed units or format)
         Array<char> name;        // SDT in Molfile format (field name)
@@ -148,15 +157,17 @@ namespace indigo
         int num_chars; // number of characters
         int dasp_pos;
         char tag; // tag
-    private:
-        DataSGroup(const DataSGroup&);
     };
 
     class DLLEXPORT Superatom : public SGroup
     {
     public:
         Superatom();
-        ~Superatom() override;
+        Superatom(const Superatom&) = delete;
+        Superatom(Superatom&&) noexcept = default;
+
+        Superatom& operator=(const Superatom&) = delete;
+        Superatom& operator=(Superatom&&) noexcept = default;
 
         Array<char> subscript;     // SMT in Molfile format
         Array<char> sa_class;      // SCL in Molfile format
@@ -170,7 +181,9 @@ namespace indigo
             int lvidx;
             Array<char> apid;
         };
-        ObjPool<_AttachmentPoint> attachment_points; // SAP in Molfile format
+        const ObjPool<_AttachmentPoint>& getAttachmentPoints() const;
+        ObjPool<_AttachmentPoint>& getAttachmentPoints();
+        bool hasAttachmentPoints() const;
 
         struct _BondConnection
         {
@@ -180,32 +193,35 @@ namespace indigo
         Array<_BondConnection> bond_connections; // SBV in Molfile format
 
     private:
-        Superatom(const Superatom&);
+        mutable std::unique_ptr<ObjPool<_AttachmentPoint>> _attachment_points; // SAP in Molfile format
     };
 
     class DLLEXPORT RepeatingUnit : public SGroup
     {
     public:
         RepeatingUnit();
-        ~RepeatingUnit() override;
+        RepeatingUnit(const RepeatingUnit&) = delete;
+        RepeatingUnit(RepeatingUnit&&) noexcept = default;
+
+        RepeatingUnit& operator=(const RepeatingUnit&) = delete;
+        RepeatingUnit& operator=(RepeatingUnit&&) noexcept = default;
 
         int connectivity;
         Array<char> subscript; // SMT in Molfile format
-    private:
-        RepeatingUnit(const RepeatingUnit&);
     };
 
     class DLLEXPORT MultipleGroup : public SGroup
     {
     public:
         MultipleGroup();
-        ~MultipleGroup() override;
+        MultipleGroup(const MultipleGroup&) = delete;
+        MultipleGroup(MultipleGroup&&) noexcept = default;
+
+        MultipleGroup& operator=(const MultipleGroup&) = delete;
+        MultipleGroup& operator=(MultipleGroup&&) noexcept = default;
 
         Array<int> parent_atoms;
         int multiplier;
-
-    private:
-        MultipleGroup(const MultipleGroup&);
     };
 
     class Tree;
@@ -213,7 +229,11 @@ namespace indigo
     {
     public:
         MoleculeSGroups();
-        ~MoleculeSGroups();
+        MoleculeSGroups(const MoleculeSGroups&) = delete;
+        MoleculeSGroups(MoleculeSGroups&&) noexcept = default;
+
+        MoleculeSGroups& operator=(const MoleculeSGroups&) = delete;
+        MoleculeSGroups& operator=(MoleculeSGroups&&) noexcept = default;
 
         DECL_ERROR;
 
@@ -255,7 +275,7 @@ namespace indigo
         void registerUnfoldedHydrogen(int idx, int new_h_idx);
 
     protected:
-        PtrPool<SGroup> _sgroups;
+        std::unique_ptr<PtrPool<SGroup>> _sgroups;
 
     private:
         int _findSGroupById(int id);

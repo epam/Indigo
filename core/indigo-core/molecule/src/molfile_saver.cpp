@@ -806,15 +806,16 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     out.printf(" CLASS=%s", sup.sa_class.ptr());
                 if (sup.contracted == DisplayOption::Expanded)
                     out.printf(" ESTATE=E");
-                if (sup.attachment_points.size() > 0)
+                if (sup.hasAttachmentPoints())
                 {
-                    for (int j = sup.attachment_points.begin(); j < sup.attachment_points.end(); j = sup.attachment_points.next(j))
+                    const auto& aps = sup.getAttachmentPoints();
+                    for (int j = aps.begin(); j < aps.end(); j = aps.next(j))
                     {
                         int leave_idx = 0;
-                        if (sup.attachment_points[j].lvidx > -1)
-                            leave_idx = _atom_mapping[sup.attachment_points[j].lvidx];
+                        if (aps[j].lvidx > -1)
+                            leave_idx = _atom_mapping[aps[j].lvidx];
 
-                        out.printf(" SAP=(3 %d %d %s)", _atom_mapping[sup.attachment_points[j].aidx], leave_idx, sup.attachment_points[j].apid.ptr());
+                        out.printf(" SAP=(3 %d %d %s)", _atom_mapping[aps[j].aidx], leave_idx, aps[j].apid.ptr());
                     }
                 }
                 if (sup.seqid > 0)
@@ -1641,12 +1642,13 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 {
                     output.printfCR("M  SDS EXP  1 %3d", superatom.original_group);
                 }
-                if (superatom.attachment_points.size() > 0)
+                if (superatom.hasAttachmentPoints())
                 {
                     bool next_line = true;
-                    int nrem = superatom.attachment_points.size();
+                    const auto& aps = superatom.getAttachmentPoints();
+                    int nrem = aps.size();
                     int k = 0;
-                    for (int j = superatom.attachment_points.begin(); j < superatom.attachment_points.end(); j = superatom.attachment_points.next(j))
+                    for (int j = aps.begin(); j < aps.end(); j = aps.next(j))
                     {
                         if (next_line)
                         {
@@ -1655,10 +1657,9 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                         }
 
                         int leave_idx = 0;
-                        if (superatom.attachment_points[j].lvidx > -1)
-                            leave_idx = _atom_mapping[superatom.attachment_points[j].lvidx];
-                        output.printf(" %3d %3d %c%c", _atom_mapping[superatom.attachment_points[j].aidx], leave_idx, superatom.attachment_points[j].apid[0],
-                                      superatom.attachment_points[j].apid[1]);
+                        if (aps[j].lvidx > -1)
+                            leave_idx = _atom_mapping[aps[j].lvidx];
+                        output.printf(" %3d %3d %c%c", _atom_mapping[aps[j].aidx], leave_idx, aps[j].apid[0], aps[j].apid[1]);
                         k++;
                         nrem--;
                         if ((k == 6) || (nrem == 0))

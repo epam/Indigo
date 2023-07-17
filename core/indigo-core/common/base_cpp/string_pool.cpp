@@ -63,7 +63,7 @@ int StringPool::add(int size)
     return _add(0, size);
 }
 
-int StringPool::add(Array<char>& str)
+int StringPool::add(const Array<char>& str)
 {
     return _add(str.ptr(), str.size());
 }
