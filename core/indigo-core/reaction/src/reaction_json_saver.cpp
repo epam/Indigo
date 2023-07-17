@@ -35,7 +35,10 @@ IMPL_ERROR(ReactionJsonSaver, "reaction KET saver");
 
 void ReactionJsonSaver::_getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max_vec, float scale)
 {
-    mol.getBoundingBox(min_vec, max_vec);
+    Rect2f bbox;
+    mol.getBoundingBox(bbox, MIN_MOL_SIZE);
+    min_vec.copy( bbox.leftBottom());
+    max_vec.copy(bbox.rightTop());
     min_vec.scale(scale);
     max_vec.scale(scale);
 }
