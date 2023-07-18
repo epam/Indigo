@@ -808,89 +808,81 @@ void SmilesLoader::_readOtherStuff()
         {
             // SGroup block found
             _scanner.skip(1);
-            auto sg_char = _scanner.readChar();
-            if (sg_char == ':')
+            if (_scanner.readChar() != ':')
+                throw Error("colon expected after 'Sg'");
+            char sg = _scanner.lookNext();
+            int sg_type = -1;
+            char pchar_sg_type[3];
+            std::string sg_type_str;
+            if (sg == 'n')
             {
-                char sg = _scanner.lookNext();
-                int sg_type = -1;
-                char pchar_sg_type[3];
-                std::string sg_type_str;
-                if (sg == 'n')
+                _scanner.skip(1);
+                if (_scanner.readChar() != ':')
+                    throw Error("colon expected after 'Sg:n'");
+                sg_type = SGroup::SG_TYPE_SRU;
+            }
+            else if (sg == 'g')
+            {
+                _scanner.readCharsFix(sizeof(pchar_sg_type), pchar_sg_type);
+                sg_type_str = std::string(pchar_sg_type, sizeof(pchar_sg_type));
+                if (sg_type_str == "gen")
                 {
-                    _scanner.skip(1);
                     if (_scanner.readChar() != ':')
-                        throw Error("colon expected after 'Sg:n'");
-                    sg_type = SGroup::SG_TYPE_SRU;
-                }
-                else if (sg == 'g')
-                {
-                    _scanner.readCharsFix(sizeof(pchar_sg_type), pchar_sg_type);
-                    sg_type_str = std::string(pchar_sg_type, sizeof(pchar_sg_type));
-                    if (sg_type_str == "gen")
-                    {
-                        if (_scanner.readChar() != ':')
-                            throw Error("colon expected after 'Sg:%s'", sg_type_str.c_str());
-                        sg_type = SGroup::SG_TYPE_GEN;
-                    }
-                    else
-                        throw Error("unexpected 'Sg' %s", sg_type_str.c_str());
+                        throw Error("colon expected after 'Sg:%s'", sg_type_str.c_str());
+                    sg_type = SGroup::SG_TYPE_GEN;
                 }
                 else
-                {
-                    throw Error("Unsupported Sg type");
-                }
-
-                int idx = _bmol->sgroups.addSGroup(sg_type);
-                auto& sgroup = _bmol->sgroups.getSGroup(idx);
-
-                // add brackets
-                Vec2f* p = sgroup.brackets.push();
-                p[0].set(0, 0);
-                p[1].set(0, 0);
-                p = sgroup.brackets.push();
-                p[0].set(0, 0);
-                p[1].set(0, 0);
-
-                _scanner.lookNext();
-
-                while (isdigit(_scanner.lookNext()))
-                {
-                    auto atom_idx = _scanner.readUnsigned();
-                    sgroup.atoms.push(atom_idx);
-                    if (_scanner.lookNext() == ',')
-                        _scanner.skip(1);
-                }
-
-                if (_scanner.readChar() != ':')
-                    throw Error("colon expected after 'Sg'");
-
-                if (sg_type == SGroup::SG_TYPE_SRU)
-                {
-                    RepeatingUnit& ru = (RepeatingUnit&)sgroup;
-                    std::string subscript, connectivity;
-                    while (_scanner.lookNext() != ':')
-                        subscript += _scanner.readChar();
-
-                    if (subscript.size())
-                        ru.subscript.readString(subscript.c_str(), true);
-                    _scanner.skip(1);
-
-                    while (_scanner.lookNext() != '|')
-                        connectivity += _scanner.readChar();
-                    if (connectivity == "ht")
-                        ru.connectivity = RepeatingUnit::HEAD_TO_TAIL;
-                    else if (connectivity == "hh")
-                        ru.connectivity = RepeatingUnit::HEAD_TO_HEAD;
-                    else if (connectivity == "eu")
-                        ru.connectivity = RepeatingUnit::EITHER;
-                }
+                    throw Error("unexpected 'Sg' %s", sg_type_str.c_str());
             }
-            else if (sg_char == 'D')
+            else
             {
+                throw Error("Unsupported Sg type");
+            }
 
+            int idx = _bmol->sgroups.addSGroup(sg_type);
+            auto& sgroup = _bmol->sgroups.getSGroup(idx);
 
-            } else
-                throw Error("colon or D expected after 'Sg'");
+            // add brackets
+            Vec2f* p = sgroup.brackets.push();
+            p[0].set(0, 0);
+            p[1].set(0, 0);
+            p = sgroup.brackets.push();
+            p[0].set(0, 0);
+            p[1].set(0, 0);
+
+            _scanner.lookNext();
+
+            while (isdigit(_scanner.lookNext()))
+            {
+                auto atom_idx = _scanner.readUnsigned();
+                sgroup.atoms.push(atom_idx);
+                if (_scanner.lookNext() == ',')
+                    _scanner.skip(1);
+            }
+
+            if (_scanner.readChar() != ':')
+                throw Error("colon expected after 'Sg'");
+
+            if (sg_type == SGroup::SG_TYPE_SRU)
+            {
+                RepeatingUnit& ru = (RepeatingUnit&)sgroup;
+                std::string subscript, connectivity;
+                while (_scanner.lookNext() != ':')
+                    subscript += _scanner.readChar();
+
+                if (subscript.size())
+                    ru.subscript.readString(subscript.c_str(), true);
+                _scanner.skip(1);
+
+                while (_scanner.lookNext() != '|')
+                    connectivity += _scanner.readChar();
+                if (connectivity == "ht")
+                    ru.connectivity = RepeatingUnit::HEAD_TO_TAIL;
+                else if (connectivity == "hh")
+                    ru.connectivity = RepeatingUnit::HEAD_TO_HEAD;
+                else if (connectivity == "eu")
+                    ru.connectivity = RepeatingUnit::EITHER;
+            }
         }
         else if ((c == 'R') && (_scanner.lookNext() == 'G'))
         {
