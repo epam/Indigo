@@ -6,16 +6,13 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+
 from env_indigo import *  # noqa
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
-
-print("*** Rxn without layout to KET ***")
-
-root = joinPathPy("reactions", __file__)
-files = ["1113-no-layout.rxn "]
-for filename in files:
-    print(filename)
-    rxn = indigo.loadReactionFromFile(os.path.join(root, filename))
-    print(rxn.json())
+root_rxn = joinPathPy("reactions/", __file__)
+filename = "1113-no-layout.rxn"
+print(filename)
+rxn = indigo.loadReactionFromFile(os.path.join(root_rxn, filename))
+print(rxn.json())
