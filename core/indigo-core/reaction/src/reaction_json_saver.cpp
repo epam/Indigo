@@ -22,11 +22,11 @@
 #include <rapidjson/document.h>
 
 #include "base_cpp/output.h"
+#include "layout/reaction_layout.h"
 #include "molecule/molecule_json_saver.h"
 #include "molecule/query_molecule.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_json_saver.h"
-#include "layout/reaction_layout.h"
 
 using namespace indigo;
 using namespace indigo;
@@ -36,28 +36,27 @@ IMPL_ERROR(ReactionJsonSaver, "reaction KET saver");
 
 void ReactionJsonSaver::_fixLayout(BaseReaction& rxn)
 {
-        Vec2f rmax, pmin;
-        Rect2f bb;
-        for (int i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
-        {
-            rxn.getBaseMolecule(i).getBoundingBox(bb);
-            rmax.max(bb.rightTop());
-        }
+    Vec2f rmax, pmin;
+    Rect2f bb;
+    for (int i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
+    {
+        rxn.getBaseMolecule(i).getBoundingBox(bb);
+        rmax.max(bb.rightTop());
+    }
 
-        for (int i = rxn.productBegin(); i != rxn.productEnd(); i = rxn.productNext(i))
-        {
-            rxn.getBaseMolecule(i).getBoundingBox(bb);
-            pmin.min(bb.leftBottom());
-        }
+    for (int i = rxn.productBegin(); i != rxn.productEnd(); i = rxn.productNext(i))
+    {
+        rxn.getBaseMolecule(i).getBoundingBox(bb);
+        pmin.min(bb.leftBottom());
+    }
 
-        if (rmax.x > pmin.x)
-        {
-            ReactionLayout rl(rxn, true);
-            rl.preserve_molecule_layout = true;
-            rl.make();
-        }
+    if (rmax.x > pmin.x)
+    {
+        ReactionLayout rl(rxn, true);
+        rl.preserve_molecule_layout = true;
+        rl.make();
+    }
 }
-
 
 void ReactionJsonSaver::_getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max_vec, float scale)
 {

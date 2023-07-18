@@ -51,7 +51,7 @@ void ReactionLayout::make()
     {
         bool single_atom = _getMol(i).vertexCount() == 1;
         if (i != _r.reactantBegin())
-            _pushSpace(line, plus_interval_factor + (single_atom ? bond_length : bond_length/2));
+            _pushSpace(line, plus_interval_factor + (single_atom ? bond_length : bond_length / 2));
         _pushMol(line, i);
     }
 
