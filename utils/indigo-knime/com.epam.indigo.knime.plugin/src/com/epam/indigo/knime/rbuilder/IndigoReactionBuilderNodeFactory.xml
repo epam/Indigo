@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/reaction-builder.png" type="Manipulator">
+    <name>Reaction Builder</name>
+    
+    <shortDescription>
+        
+    </shortDescription>
+    
+    <fullDescription>
+        <intro><p>This node combines the input molecules and creates reactions from given reactants, products and catalysts columns. 
+		               Defines the output column type automatically.</p>
+				     <p>
+				        <b>Supported types:</b> 
+				        <ul>
+						<li>Molecule:  String, SDF, Smiles, CML, Mol, InChI</li>
+						<li>Query molecule:  String, Smiles, Mol, SMARTS, SDF</li>
+						</ul>
+					 </p>
+               <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p>
+        </intro>
+        <option name="Add reactants">Flag (append or skip) and column selection for molecule reactants.</option>
+        <option name="Add products">Flag (append or skip) and column selection for molecule products.</option>
+        <option name="Add catalysts">Flag (append or skip) and column selection for molecule catalysts.</option>
+        <option name="Result reaction column name">Column name for the output molecules</option>
+        
+        <option name="Input type">Treat input as a reaction or as a query reaction</option>
+        <option name="Output type">Result column type.</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+        <option name="Treat input String as SMARTS">Treat string input for molecule as SMARTS</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input molecules">Table containing molecules or query molecules</inPort>
+        <outPort index="0" name="Result reactions">The same as input, plus the column with the created reactions</outPort>
+        <outPort index="1" name="Invalid data">The same as input, contains invalid data (unconvertible to Indigo)</outPort>
+    </ports>    
+</knimeNode>

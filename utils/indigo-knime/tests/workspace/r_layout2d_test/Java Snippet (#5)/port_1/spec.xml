@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="spec.xml">
+<entry key="spec_name" type="xstring" value="default"/>
+<entry key="number_columns" type="xint" value="1"/>
+<config key="column_spec_0">
+<entry key="column_name" type="xstring" value="column1"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" value="org.knime.core.data.def.StringCell"/>
+</config>
+<config key="column_domain">
+<config key="possible_values">
+<entry key="array-size" type="xint" value="1"/>
+<config key="0">
+<entry key="datacell" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<config key="org.knime.core.data.def.StringCell">
+<entry key="StringCell" type="xstring" value="$RXN%%00010%%00010  %%00010%%00010  1  1%%00010$MOL%%00010%%00010  Marvin  02161211522D          %%00010%%00010  6  6  0  0  0  0            999 V2000%%00010   -2.9759   -0.3536    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   -3.3663   -0.7661    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   -4.1323   -0.9134    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   -3.4179   -1.3259    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   -3.9114   -3.9188    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   -2.7034   -0.0884    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010  1  2  1  0  0  0  0%%00010  1  6  1  0  0  0  0%%00010  2  3  1  0  0  0  0%%00010  3  4  1  0  0  0  0%%00010  4  5  1  0  0  0  0%%00010  5  6  1  0  0  0  0%%00010M  END%%00010$MOL%%00010%%00010            %%00010%%00010  4  4  0  0  0  0            999 V2000%%00010    2.8978    1.5427    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    3.4768   -1.8347    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    3.8009   -0.5652    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    4.7924   -0.4019    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010  3  1  1  0  0  0  0%%00010  1  2  1  0  0  0  0%%00010  2  3  1  0  0  0  0%%00010  3  4  1  0  0  0  0%%00010M  END"/>
+</config>
+</config>
+</config>
+</config>
+<config key="column_properties"/>
+</config>
+</config>

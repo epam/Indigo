@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/component-splitter.png" type="Other">
+    <name>Component Separator</name>
+    
+    <shortDescription>
+    </shortDescription>
+    
+    <fullDescription>
+        <intro><p>This node decomposes the input molecules into connected components and writes the components
+               into the output table columns. The biggest component goes into the first column, the
+               second biggest component goes into the second column, and so on.</p>
+               	<p>
+		        <b>Supported types:</b> 
+		        <ul>
+				<li>Molecule:  String, SDF, Smiles, CML, Mol, InChI</li>
+				</ul>
+				</p>
+               <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p>
+        </intro>
+        
+        <option name="Target column">The column that contains molecule structures.</option>
+		<option name="New column prefix">Each of the new columns will be named with this prefix + number (1,2,3,..)</option>
+        <option name="Limit component number">Flag for skipping molecule components. The node writes first components (in descending order by the atoms count) where the number of components is less or equal to the limit number parameter</option>
+   
+   		<option name="Input type">Treat input as: a molecule</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input molecules">Table containing molecule structures</inPort>
+        <outPort index="0" name="Connected components">The same as input, plus the columns with the connected components</outPort>
+    </ports>    
+</knimeNode>

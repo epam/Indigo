@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Groups>
+  <Group name="Alkali metals">
+    <Elements>Li, Na, K, Rb, Cs, Fr</Elements>
+  </Group>
+  <Group name="Alkaline earth metals">
+    <Elements>Be, Mg, Ca, Sr, Ba, Ra</Elements>
+  </Group>
+  <Group name="Lanthanides">
+    <Elements>La, Ce, Pr, Nd, Pm, Sm, Eu, Gd, Tb, Dy, Ho, Er, Tm, Yb, Lu</Elements>
+  </Group>
+  <Group name="Actinides">
+    <Elements>Ac, Th, Pa, U, Np, Pu, Am, Cm, Bk, Cf, Es, Fm, Md, No, Lr</Elements>
+  </Group>
+  <Group name="Inner transition metals">
+    <Include>Lanthanides</Include>
+    <Include>Actinides</Include>
+  </Group>
+  <Group name="Transition metals">
+    <Elements>Sc, Ti, V, Cr, Mn, Fe, Co, Ni, Cu, Zn, Y, Zr, Nb, Mo, Tc, Ru, Rh, Pd, Ag, Cd, Hf, Ta, W, Re, Os, Ir, Pt, Au, Hg, Rf, Db, Sg, Bh, Hs</Elements>
+  </Group>
+  <Group name="Post-transition metals">
+    <Elements>Tl, Pb, Bi, In, Sn, Al, Ga</Elements>
+  </Group>
+  <Group name="Metals">
+    <Include>Alkali metals</Include>
+    <Include>Alkaline earth metals</Include>
+    <Include>Inner transition metals</Include>
+    <Include>Transition metals</Include>
+    <Include>Post-transition metals</Include>
+  </Group>
+  <Group name="Metalloids">
+    <Elements>B, Si, Ge, As, Sb, Te, Po</Elements>
+  </Group>
+  <Group name="Other nonmetals">
+    <Elements>H, C, N, O, P, S, Se</Elements>
+  </Group>
+  <Group name="Halogens">
+    <Elements>F, Cl, Br, I, At</Elements>
+  </Group>
+  <Group name="Noble gases">
+    <Elements>He, Ne, Ar, Kr, Xe, Rn</Elements>
+  </Group>
+  <Group name="Nonmetals">
+    <Include>Other nonmetals</Include>
+    <Include>Halogens</Include>
+    <Include>Noble gases</Include>
+  </Group>
+  <Group name="R-groups">
+    <Elements>R, R1, R2, R3, R4, R5, R6, R7, R8, R9</Elements>
+  </Group>
+</Groups>

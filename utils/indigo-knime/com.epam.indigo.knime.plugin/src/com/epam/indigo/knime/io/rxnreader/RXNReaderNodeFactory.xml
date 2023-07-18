@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../../indigo.png" type="Source">
+    <name>RXN Reader</name>
+    
+    <shortDescription>
+        
+    </shortDescription>
+    
+    <fullDescription>
+        <intro><p>Converts the elements in one of the input table's columns into an internal
+        format (IndigoMolCell), which can then be rendered as molecule or used for further computations.
+        The target column must contain string representations of molecules (SDF, Smiles, CML).</p>
+        <p>This node uses <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> classes to parse and display structures.</p></intro>
+        
+        <option name="Molecule Column">The column that contains the molecules.</option>
+        <option name="Append Column">Appends a new molecule column (with the name as specified in the text field) if checked, replaces the original column otherwise.</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+    </fullDescription>
+    
+    <ports>
+        <outPort index="0" name="Valid Molecules">Table with the successfully parsed molecules</outPort>
+    </ports>    
+</knimeNode>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/highlighter.png" type="Manipulator">
+    <name>Highlighter</name>
+    
+    <shortDescription>
+        
+    </shortDescription>
+    
+    <fullDescription>
+        <intro><p>This node highlights the structure atoms and bond by indices privided in a column value. Indices can be separated by space or comma.</p>
+        <p>
+        <b>Supported types:</b> 
+        <ul>
+		<li>Molecule:  String, SDF, Smiles, CML, Mol, InChI</li>
+		</ul>
+		</p>
+        <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p></intro>
+        
+        <option name="Target Column">The column that contains molecule structures</option>
+        <option name="Append Column">Appends a new structure column (with the name as specified in the text field) if checked, replaces the original column otherwise.</option>
+        <option name="Clear Highlighting">Option to clear any previous highlighting.</option>
+        <option name="Highlighted Atoms Indices">The column that contains indices of highlighted bonds.</option>
+        <option name="Highlighted Bonds Indices">The column that contains indices of highlighted bonds.</option>
+        <option name="Input type">Treat input as: a molecule</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input structures">Table containing a column with molecules</inPort>
+        <outPort index="0" name="Highlighted structures">The same as input, but with atoms and bonds highlighted</outPort>
+    </ports>    
+</knimeNode>

@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Indigo extensions for KNIME Workbench
+Bundle-SymbolicName: com.epam.indigo.knime.plugin;singleton:=true
+Bundle-Version: 2.0.0.qualifier
+Bundle-ClassPath: com.epam.indigo.knime.jar,
+ lib/indigo.jar,
+ lib/indigo-renderer.jar,
+ lib/jna.jar,
+ lib/indigo-inchi.jar
+Bundle-Vendor: EPAM Systems, Inc.
+Require-Bundle: org.eclipse.core.runtime,
+ org.knime.workbench.core,
+ org.knime.workbench.repository,
+ org.knime.base,
+ org.knime.product,
+ org.knime.chem.types;bundle-version="[3.0.0,5.0.0)"
+Export-Package: com.epam.indigo,
+ com.epam.indigo.knime,
+ com.epam.indigo.knime.cell,
+ com.epam.indigo.knime.common,
+ com.epam.indigo.knime.plugin,
+ com.sun.jna
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: com.epam.indigo.knime.plugin.IndigoPlugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8

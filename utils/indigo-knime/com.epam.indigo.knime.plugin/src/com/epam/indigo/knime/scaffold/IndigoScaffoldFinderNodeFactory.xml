@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/scaffold-finder.png" type="Other">
+    <name>MCS Scaffold Finder</name>
+    
+    <shortDescription>
+    </shortDescription>
+    
+    <fullDescription>
+        <intro><p>This node finds the maximum common scaffold (MCS) of an arbitrary amount of the input molecules. In case of multiple
+               MCS, they are all written to the output table</p>
+               	<p>
+		        <b>Supported types:</b> 
+		        <ul>
+				<li>Molecule:  String, SDF, Smiles, CML, Mol, InChI</li>
+				</ul>
+				</p>
+               <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p>
+        </intro>
+        
+        <option name="Molecule column">The column that contains molecule structures.</option>
+        <option name="New column with scaffolds">Name for the new column that contains the found scaffold(s).</option>
+        <option name="Try exact method">Try to find the exact MCS (may take a lot of time on some complex structures,
+        which gives the reason for the iterations limit parameter.</option>
+        <option name="Maximum number of iterations for exact method">If this limit is reached without exact MCS found, the node
+        falls back to the approximate method. Zero value of this parameter means no limit (i.e. never fall back to the approximate method).</option>
+        <option name="Number of iterations for approximate method">The approximate method is guaranteed to terminate after this number
+        of iterations.</option>
+        <option name="Input type">Treat input as: a molecule.</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms.</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input molecules">Table containing molecules</inPort>
+        <outPort index="0" name="Scaffolds">Query molecules that are the found maximum common scaffolds.</outPort>
+    </ports>    
+</knimeNode>
