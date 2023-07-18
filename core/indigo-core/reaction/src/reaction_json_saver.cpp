@@ -95,19 +95,19 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
     Vec2f rmin(0, 0), rmax(0, 0), pmin(0, 0), pmax(0, 0), cmin(0, 0), cmax(0, 0);
     bool last_single_reactant = false;
     bool first_single_product = false;
-    std::unique_ptr<BaseReaction> rea(rxn.neu());
-    rea->clone(rxn);
+    std::unique_ptr<BaseReaction> reaction(rxn.neu());
+    reaction->clone(rxn);
 
-    if (rea->reactantsCount() > 0)
+    if (reaction->reactantsCount() > 0)
     {
         int rcount = 1;
-        for (int i = rea->reactantBegin(); i != rea->reactantEnd(); i = rea->reactantNext(i))
+        for (int i = reaction->reactantBegin(); i != reaction->reactantEnd(); i = reaction->reactantNext(i))
         {
             Vec2f min1, max1;
-            _getBounds(rea->getBaseMolecule(i), min1, max1, 1.0);
-            merged.mergeWithMolecule(rea->getBaseMolecule(i), 0, 0);
+            _getBounds(reaction->getBaseMolecule(i), min1, max1, 1.0);
+            merged.mergeWithMolecule(reaction->getBaseMolecule(i), 0, 0);
 
-            if (i == rea->reactantBegin())
+            if (i == reaction->reactantBegin())
             {
                 rmin = min1;
                 rmax = max1;
@@ -118,33 +118,33 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
                 rmax.max(max1);
             }
 
-            if (rcount < rea->reactantsCount())
+            if (rcount < reaction->reactantsCount())
             {
                 Vec2f min2, max2;
-                _getBounds(rea->getBaseMolecule(rea->reactantNext(i)), min2, max2, 1.0);
+                _getBounds(reaction->getBaseMolecule(reaction->reactantNext(i)), min2, max2, 1.0);
                 pluses.emplace_back((max1.x + min2.x) / 2, (min1.y + max1.y) / 2);
                 rcount++;
             }
-            last_single_reactant = rea->getBaseMolecule(i).vertexCount() == 1;
+            last_single_reactant = reaction->getBaseMolecule(i).vertexCount() == 1;
         }
     }
 
-    if (rea->productsCount() > 0)
+    if (reaction->productsCount() > 0)
     {
         int rcount = 1;
         Vec2f min1, max1;
 
-        for (int i = rea->productBegin(); i != rea->productEnd(); i = rea->productNext(i))
+        for (int i = reaction->productBegin(); i != reaction->productEnd(); i = reaction->productNext(i))
         {
             Vec2f min1, max1;
-            _getBounds(rea->getBaseMolecule(i), min1, max1, 1.0);
-            merged.mergeWithMolecule(rea->getBaseMolecule(i), 0, 0);
+            _getBounds(reaction->getBaseMolecule(i), min1, max1, 1.0);
+            merged.mergeWithMolecule(reaction->getBaseMolecule(i), 0, 0);
 
-            if (i == rea->productBegin())
+            if (i == reaction->productBegin())
             {
                 pmin = min1;
                 pmax = max1;
-                first_single_product = rea->getBaseMolecule(i).vertexCount() == 1;
+                first_single_product = reaction->getBaseMolecule(i).vertexCount() == 1;
             }
             else
             {
@@ -152,24 +152,24 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
                 pmax.max(max1);
             }
 
-            if (rcount < rea->productsCount())
+            if (rcount < reaction->productsCount())
             {
                 Vec2f min2, max2;
-                _getBounds(rea->getBaseMolecule(rea->productNext(i)), min2, max2, 1.0);
+                _getBounds(reaction->getBaseMolecule(reaction->productNext(i)), min2, max2, 1.0);
                 pluses.emplace_back((max1.x + min2.x) / 2, (min1.y + max1.y) / 2);
                 rcount++;
             }
         }
     }
 
-    if (rea->catalystCount() > 0)
+    if (reaction->catalystCount() > 0)
     {
-        for (int i = rea->catalystBegin(); i != rea->catalystEnd(); i = rea->catalystNext(i))
+        for (int i = reaction->catalystBegin(); i != reaction->catalystEnd(); i = reaction->catalystNext(i))
         {
             Vec2f min1, max1;
-            _getBounds(rea->getBaseMolecule(i), min1, max1, 1.0);
-            merged.mergeWithMolecule(rea->getBaseMolecule(i), 0, 0);
-            if (i == rea->catalystBegin())
+            _getBounds(reaction->getBaseMolecule(i), min1, max1, 1.0);
+            merged.mergeWithMolecule(reaction->getBaseMolecule(i), 0, 0);
+            if (i == reaction->catalystBegin())
             {
                 cmin = min1;
                 cmax = max1;
@@ -210,16 +210,16 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
     // calculate arrow
     Vec2f arrow_head(0, 0);
     Vec2f arrow_tail(0, 0);
-    if (rea->reactantsCount() || rea->productsCount())
+    if (reaction->reactantsCount() || reaction->productsCount())
     {
-        if (rea->productsCount() == 0)
+        if (reaction->productsCount() == 0)
         {
             arrow_tail.x = rmax.x + 1.0f;
             arrow_tail.y = (rmin.y + rmax.y) / 2;
             arrow_head.x = arrow_tail.x + 1.0f;
             arrow_head.y = arrow_tail.y;
         }
-        else if (rea->reactantsCount() == 0)
+        else if (reaction->reactantsCount() == 0)
         {
             arrow_head.x = pmin.x - 1.0f;
             arrow_head.y = (pmin.y + pmax.y) / 2;
