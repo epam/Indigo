@@ -1,7 +1,7 @@
+#include "molecule/structure_checker.h"
 #include "common.h"
 #include <base_cpp/scanner.h>
 #include <molecule/molecule_auto_loader.h>
-#include "molecule/structure_checker.h"
 
 using namespace std;
 using namespace indigo;

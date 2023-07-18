@@ -1,18 +1,18 @@
 
 TEST: 3D_Structure
-Result: {"rgroups":"Structure contains R-groups","3d":"R20:Structure contains 3D coordinates: (0,1,2,3,4,5)"}
+Result: {"rgroups":"Structure contains R-groups","3d":"R-Group R20:Structure contains 3D coordinates: (0,1,2,3,4,5)"}
 
 TEST: Chirality
-Result: {"rgroups":"Structure contains R-groups","chiral":"R28:Structure contains chirality"}
+Result: {"rgroups":"Structure contains R-groups","chiral":"R-Group R28:Structure contains chirality"}
 
 TEST: Overlapping_Atoms
-Result: {"rgroups":"Structure contains R-groups","overlapping_atoms":"R12:Structure contains overlapping atoms: (11,12)","chiral":"R12:Structure contains chirality"}
+Result: {"rgroups":"Structure contains R-groups","overlapping_atoms":"R-Group R12:Structure contains overlapping atoms: (11,12)","chiral":"R-Group R12:Structure contains chirality"}
 
 TEST: Pseudoatom
-Result: {"rgroups":"Structure contains R-groups","radicals":"R28:Structure contains pseudoatoms, so radicals could not be checked","pseudoatoms":"R28:Structure contains pseudoatoms: (5)"}
+Result: {"rgroups":"Structure contains R-groups","radicals":"R-Group R28:Structure contains pseudoatoms, so radicals could not be checked","pseudoatoms":"R-Group R28:Structure contains pseudoatoms: (5)"}
 
 TEST: Radical
-Result: {"rgroups":"Structure contains R-groups","radicals":"R28:Structure contains radicals: (2)"}
+Result: {"rgroups":"Structure contains R-groups","radicals":"R-Group R28:Structure contains radicals: (2)"}
 
 TEST: Stereochemistry
-Result: {"rgroups":"Structure contains R-groups","stereo":"R2:Structure contains stereocenters with undefined stereo configuration: (3,4,5)"}
+Result: {"rgroups":"Structure contains R-groups","stereo":"R-Group R2:Structure contains stereocenters with undefined stereo configuration: (3,4,5)"}
