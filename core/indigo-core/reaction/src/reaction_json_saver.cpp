@@ -97,7 +97,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
     bool first_single_product = false;
     std::unique_ptr<BaseReaction> reaction(rxn.neu());
     reaction->clone(rxn);
-
+    _fixLayout(*reaction);
     if (reaction->reactantsCount() > 0)
     {
         int rcount = 1;
