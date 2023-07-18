@@ -22,7 +22,7 @@ TEST_F(IndigoCoreStructureCheckTest, issue731)
     ASSERT_EQ(result.messages[1].code, StructureChecker::CheckMessageCode::CHECK_MSG_RADICAL);
     ASSERT_EQ(result.messages[1].ids.size(), 1);
     ASSERT_EQ(result.messages[1].ids[0], 5);
-    ASSERT_STREQ(result.messages[1].prefix.c_str(), "R23");
+    ASSERT_STREQ(result.messages[1].prefix.c_str(), "R-Group R23");
 }
 
 TEST_F(IndigoCoreStructureCheckTest, no_msg)
@@ -79,5 +79,5 @@ TEST_F(IndigoCoreStructureCheckTest, issue731_stereo)
     ASSERT_EQ(result.messages[1].ids[0], 3);
     ASSERT_EQ(result.messages[1].ids[1], 4);
     ASSERT_EQ(result.messages[1].ids[2], 5);
-    ASSERT_STREQ(result.messages[1].prefix.c_str(), "R2");
+    ASSERT_STREQ(result.messages[1].prefix.c_str(), "R-Group R2");
 }
