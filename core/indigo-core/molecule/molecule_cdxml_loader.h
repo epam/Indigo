@@ -738,6 +738,11 @@ namespace indigo
             return _data;
         }
 
+        bool isBinary()
+        {
+            return _size ? true : false;
+        }
+
         std::string name()
         {
             return _size ? getBinaryName() : std::string(xml().Name());
