@@ -16,7 +16,7 @@ options = {
     "gross-formula-add-rsites": "true",
     "ignore-stereochemistry-errors": "true",
     "mass-skip-error-on-pseudoatoms": "true",
-    "smart-layout": "true"
+    "smart-layout": "true",
 }
 for option, value in options.items():
     indigo.setOption(option, value)
@@ -33,9 +33,7 @@ tests = [
 check_flags = "radicals;pseudoatoms;stereo;query;overlapping_atoms;overlapping_bonds;rgroups;chiral;chiral-flag;3d"
 errors = ""
 for test in tests:
-    with open(
-        joinPathPy("issue731/" + test + ".mol", __file__), "r"
-    ) as file:
+    with open(joinPathPy("issue731/" + test + ".mol", __file__), "r") as file:
         molfile = file.read()
     print(
         "\nTEST: "
