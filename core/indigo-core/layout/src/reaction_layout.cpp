@@ -51,7 +51,7 @@ void ReactionLayout::make()
     {
         bool single_atom = _getMol(i).vertexCount() == 1;
         if (i != _r.reactantBegin())
-            _pushSpace(line, plus_interval_factor + (single_atom ? bond_length : 0));
+            _pushSpace(line, plus_interval_factor + (single_atom ? bond_length : bond_length/2));
         _pushMol(line, i);
     }
 
@@ -100,7 +100,6 @@ Metalayout::LayoutItem& ReactionLayout::_pushMol(Metalayout::LayoutLine& line, i
     item.fragment = true;
     item.id = id;
     auto& mol = _getMol(id);
-    // Metalayout::getBoundRect(item.min, item.max, mol);
     if (is_agent)
     {
         item.verticalAlign = Metalayout::LayoutItem::ItemVerticalAlign::ETop;
@@ -118,7 +117,7 @@ Metalayout::LayoutItem& ReactionLayout::_pushMol(Metalayout::LayoutLine& line, i
     }
     else
     {
-        mol.getBoundingBox(bbox);
+        mol.getBoundingBox(bbox, Vec2f(bond_length, bond_length));
         item.minScaledSize.set(bond_length, bond_length);
     }
     item.min.copy(bbox.leftBottom());
