@@ -32,6 +32,8 @@ ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
 
 void ReactionLayout::make()
 {
+    const auto kHalfBondLength = bond_length / 2;
+    const auto kDoubleBondLength = bond_length * 2;
     // update layout of molecules, if needed
     if (!preserve_molecule_layout)
     {
@@ -51,7 +53,7 @@ void ReactionLayout::make()
     {
         bool single_atom = _getMol(i).vertexCount() == 1;
         if (i != _r.reactantBegin())
-            _pushSpace(line, plus_interval_factor + (single_atom ? bond_length : bond_length / 2));
+            _pushSpace(line, plus_interval_factor + (single_atom ? bond_length : kHalfBondLength));
         _pushMol(line, i);
     }
 
@@ -61,7 +63,7 @@ void ReactionLayout::make()
         {
             auto& mol = _getMol(i);
             Rect2f bbox;
-            mol.getBoundingBox(bbox, Vec2f(bond_length * 2, bond_length * 2));
+            mol.getBoundingBox(bbox, Vec2f(kDoubleBondLength, kDoubleBondLength));
             _pushSpace(line, bbox.width() / 2);
             _pushMol(line, i, true);
         }
