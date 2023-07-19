@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/fingerprint.png" type="Other">
+    <name>Indigo Fingerprint</name>
+    
+    <shortDescription>
+   
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>
+               <p>This node calculates Indigo structural fingerprints for structures.</p>
+                    <p>
+			        <b>Supported types:</b> 
+			        <ul>
+					<li>Molecule:  String, SDF, Smiles, CML, Mol, InChI</li>
+					<li>Reaction:  String, RXN, SMILES</li>
+					</ul>
+					</p>
+               <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p>
+        </intro>
+        	
+        <option name="Target column">The column that contains molecule or reaction structures.</option>
+        <option name="New column name">Name of the fingerprint column in the output table.</option>
+        <option name="Dense representation">Output cell format is DenseBitVectorCell instead of SparseBitVectorCell.</option>
+        
+        <option name="“Similarity” part size in qwords">	Size of “similarity” part of a fingerprint (1 qword = 8 bytes; 8 by default).</option>
+        <option name="“Ordinary” part size in qwords">Size of “ordinary” part of a fingerprint (1 qword = 8 bytes; 0 by default).</option>
+        <option name="“Tautomer” part size in qwords">Size of “tautomer” part of a fingerprint (1 qword = 8 bytes; 0 by default).</option>
+        <option name="“Any” part size in qwords">Size of “any” part of a fingerprint (1 qword = 8 bytes; 0 by default).</option>
+
+        <option name="Include 3-byte “EXT” part">Sets whether to include or not 3-byte “EXT” part of the fingerprint for substructure search, where each bit 
+						corresponds to some property: has changes, has 2 halogens, has isotopes, etc.
+		</option>
+		
+        <option name="Similarity fingerprint">Useful for calculating similarity measures (default value).</option>
+        <option name="Substructure fingerprint">Useful for substructure screening (building “ext”, “sub” and “any” part).</option>
+        <option name="Resonance substructure fingerprint">Useful for resonance substructure screening (building “ext” and “any” part).</option>
+        <option name="Tautomer substructure fingerprint">Useful for tautomer substructure screening (building “ext”, “any” and “tau” part).</option>
+        <option name="Full fingerprint">Has all the mentioned fingerprint types included.</option>
+		
+        
+        <option name="Input type">Treat input as: a molecule, a reaction.</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms.</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+	    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input structures">Table containing molecule or reaction structures.</inPort>
+        <outPort index="0" name="Structures with fingerprints">The same as input, plus the fingerprints.</outPort>
+    </ports>    
+</knimeNode>

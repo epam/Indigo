@@ -1,0 +1,855 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+<entry key="node_file" type="xstring" value="settings.xml"/>
+<config key="flow_stack"/>
+<config key="internal_node_subsettings">
+<entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+</config>
+<config key="model">
+<config key="rowIndices">
+<entry key="array-size" type="xint" value="263"/>
+<entry key="0" type="xint" value="0"/>
+<entry key="1" type="xint" value="1"/>
+<entry key="2" type="xint" value="2"/>
+<entry key="3" type="xint" value="3"/>
+<entry key="4" type="xint" value="4"/>
+<entry key="5" type="xint" value="5"/>
+<entry key="6" type="xint" value="6"/>
+<entry key="7" type="xint" value="7"/>
+<entry key="8" type="xint" value="8"/>
+<entry key="9" type="xint" value="9"/>
+<entry key="10" type="xint" value="10"/>
+<entry key="11" type="xint" value="11"/>
+<entry key="12" type="xint" value="12"/>
+<entry key="13" type="xint" value="13"/>
+<entry key="14" type="xint" value="14"/>
+<entry key="15" type="xint" value="15"/>
+<entry key="16" type="xint" value="16"/>
+<entry key="17" type="xint" value="17"/>
+<entry key="18" type="xint" value="18"/>
+<entry key="19" type="xint" value="19"/>
+<entry key="20" type="xint" value="20"/>
+<entry key="21" type="xint" value="21"/>
+<entry key="22" type="xint" value="22"/>
+<entry key="23" type="xint" value="23"/>
+<entry key="24" type="xint" value="24"/>
+<entry key="25" type="xint" value="25"/>
+<entry key="26" type="xint" value="26"/>
+<entry key="27" type="xint" value="27"/>
+<entry key="28" type="xint" value="28"/>
+<entry key="29" type="xint" value="29"/>
+<entry key="30" type="xint" value="30"/>
+<entry key="31" type="xint" value="31"/>
+<entry key="32" type="xint" value="32"/>
+<entry key="33" type="xint" value="33"/>
+<entry key="34" type="xint" value="34"/>
+<entry key="35" type="xint" value="35"/>
+<entry key="36" type="xint" value="36"/>
+<entry key="37" type="xint" value="37"/>
+<entry key="38" type="xint" value="38"/>
+<entry key="39" type="xint" value="39"/>
+<entry key="40" type="xint" value="40"/>
+<entry key="41" type="xint" value="41"/>
+<entry key="42" type="xint" value="42"/>
+<entry key="43" type="xint" value="43"/>
+<entry key="44" type="xint" value="44"/>
+<entry key="45" type="xint" value="45"/>
+<entry key="46" type="xint" value="46"/>
+<entry key="47" type="xint" value="47"/>
+<entry key="48" type="xint" value="48"/>
+<entry key="49" type="xint" value="49"/>
+<entry key="50" type="xint" value="50"/>
+<entry key="51" type="xint" value="51"/>
+<entry key="52" type="xint" value="52"/>
+<entry key="53" type="xint" value="53"/>
+<entry key="54" type="xint" value="54"/>
+<entry key="55" type="xint" value="55"/>
+<entry key="56" type="xint" value="56"/>
+<entry key="57" type="xint" value="57"/>
+<entry key="58" type="xint" value="58"/>
+<entry key="59" type="xint" value="59"/>
+<entry key="60" type="xint" value="60"/>
+<entry key="61" type="xint" value="61"/>
+<entry key="62" type="xint" value="62"/>
+<entry key="63" type="xint" value="63"/>
+<entry key="64" type="xint" value="64"/>
+<entry key="65" type="xint" value="65"/>
+<entry key="66" type="xint" value="66"/>
+<entry key="67" type="xint" value="67"/>
+<entry key="68" type="xint" value="68"/>
+<entry key="69" type="xint" value="69"/>
+<entry key="70" type="xint" value="70"/>
+<entry key="71" type="xint" value="71"/>
+<entry key="72" type="xint" value="72"/>
+<entry key="73" type="xint" value="73"/>
+<entry key="74" type="xint" value="74"/>
+<entry key="75" type="xint" value="75"/>
+<entry key="76" type="xint" value="76"/>
+<entry key="77" type="xint" value="77"/>
+<entry key="78" type="xint" value="78"/>
+<entry key="79" type="xint" value="79"/>
+<entry key="80" type="xint" value="80"/>
+<entry key="81" type="xint" value="81"/>
+<entry key="82" type="xint" value="82"/>
+<entry key="83" type="xint" value="83"/>
+<entry key="84" type="xint" value="84"/>
+<entry key="85" type="xint" value="85"/>
+<entry key="86" type="xint" value="86"/>
+<entry key="87" type="xint" value="87"/>
+<entry key="88" type="xint" value="88"/>
+<entry key="89" type="xint" value="89"/>
+<entry key="90" type="xint" value="90"/>
+<entry key="91" type="xint" value="91"/>
+<entry key="92" type="xint" value="92"/>
+<entry key="93" type="xint" value="93"/>
+<entry key="94" type="xint" value="94"/>
+<entry key="95" type="xint" value="95"/>
+<entry key="96" type="xint" value="96"/>
+<entry key="97" type="xint" value="97"/>
+<entry key="98" type="xint" value="98"/>
+<entry key="99" type="xint" value="99"/>
+<entry key="100" type="xint" value="100"/>
+<entry key="101" type="xint" value="101"/>
+<entry key="102" type="xint" value="102"/>
+<entry key="103" type="xint" value="103"/>
+<entry key="104" type="xint" value="104"/>
+<entry key="105" type="xint" value="105"/>
+<entry key="106" type="xint" value="106"/>
+<entry key="107" type="xint" value="107"/>
+<entry key="108" type="xint" value="108"/>
+<entry key="109" type="xint" value="109"/>
+<entry key="110" type="xint" value="110"/>
+<entry key="111" type="xint" value="111"/>
+<entry key="112" type="xint" value="112"/>
+<entry key="113" type="xint" value="113"/>
+<entry key="114" type="xint" value="114"/>
+<entry key="115" type="xint" value="115"/>
+<entry key="116" type="xint" value="116"/>
+<entry key="117" type="xint" value="117"/>
+<entry key="118" type="xint" value="118"/>
+<entry key="119" type="xint" value="119"/>
+<entry key="120" type="xint" value="120"/>
+<entry key="121" type="xint" value="121"/>
+<entry key="122" type="xint" value="122"/>
+<entry key="123" type="xint" value="123"/>
+<entry key="124" type="xint" value="124"/>
+<entry key="125" type="xint" value="125"/>
+<entry key="126" type="xint" value="126"/>
+<entry key="127" type="xint" value="127"/>
+<entry key="128" type="xint" value="128"/>
+<entry key="129" type="xint" value="129"/>
+<entry key="130" type="xint" value="130"/>
+<entry key="131" type="xint" value="131"/>
+<entry key="132" type="xint" value="132"/>
+<entry key="133" type="xint" value="133"/>
+<entry key="134" type="xint" value="134"/>
+<entry key="135" type="xint" value="135"/>
+<entry key="136" type="xint" value="136"/>
+<entry key="137" type="xint" value="137"/>
+<entry key="138" type="xint" value="138"/>
+<entry key="139" type="xint" value="139"/>
+<entry key="140" type="xint" value="140"/>
+<entry key="141" type="xint" value="141"/>
+<entry key="142" type="xint" value="142"/>
+<entry key="143" type="xint" value="143"/>
+<entry key="144" type="xint" value="144"/>
+<entry key="145" type="xint" value="145"/>
+<entry key="146" type="xint" value="146"/>
+<entry key="147" type="xint" value="147"/>
+<entry key="148" type="xint" value="148"/>
+<entry key="149" type="xint" value="149"/>
+<entry key="150" type="xint" value="150"/>
+<entry key="151" type="xint" value="151"/>
+<entry key="152" type="xint" value="152"/>
+<entry key="153" type="xint" value="153"/>
+<entry key="154" type="xint" value="154"/>
+<entry key="155" type="xint" value="155"/>
+<entry key="156" type="xint" value="156"/>
+<entry key="157" type="xint" value="157"/>
+<entry key="158" type="xint" value="158"/>
+<entry key="159" type="xint" value="159"/>
+<entry key="160" type="xint" value="160"/>
+<entry key="161" type="xint" value="161"/>
+<entry key="162" type="xint" value="162"/>
+<entry key="163" type="xint" value="163"/>
+<entry key="164" type="xint" value="164"/>
+<entry key="165" type="xint" value="165"/>
+<entry key="166" type="xint" value="166"/>
+<entry key="167" type="xint" value="167"/>
+<entry key="168" type="xint" value="168"/>
+<entry key="169" type="xint" value="169"/>
+<entry key="170" type="xint" value="170"/>
+<entry key="171" type="xint" value="171"/>
+<entry key="172" type="xint" value="172"/>
+<entry key="173" type="xint" value="173"/>
+<entry key="174" type="xint" value="174"/>
+<entry key="175" type="xint" value="175"/>
+<entry key="176" type="xint" value="176"/>
+<entry key="177" type="xint" value="177"/>
+<entry key="178" type="xint" value="178"/>
+<entry key="179" type="xint" value="179"/>
+<entry key="180" type="xint" value="180"/>
+<entry key="181" type="xint" value="181"/>
+<entry key="182" type="xint" value="182"/>
+<entry key="183" type="xint" value="183"/>
+<entry key="184" type="xint" value="184"/>
+<entry key="185" type="xint" value="185"/>
+<entry key="186" type="xint" value="186"/>
+<entry key="187" type="xint" value="187"/>
+<entry key="188" type="xint" value="188"/>
+<entry key="189" type="xint" value="189"/>
+<entry key="190" type="xint" value="190"/>
+<entry key="191" type="xint" value="191"/>
+<entry key="192" type="xint" value="192"/>
+<entry key="193" type="xint" value="193"/>
+<entry key="194" type="xint" value="194"/>
+<entry key="195" type="xint" value="195"/>
+<entry key="196" type="xint" value="196"/>
+<entry key="197" type="xint" value="197"/>
+<entry key="198" type="xint" value="198"/>
+<entry key="199" type="xint" value="199"/>
+<entry key="200" type="xint" value="200"/>
+<entry key="201" type="xint" value="201"/>
+<entry key="202" type="xint" value="202"/>
+<entry key="203" type="xint" value="203"/>
+<entry key="204" type="xint" value="204"/>
+<entry key="205" type="xint" value="205"/>
+<entry key="206" type="xint" value="206"/>
+<entry key="207" type="xint" value="207"/>
+<entry key="208" type="xint" value="208"/>
+<entry key="209" type="xint" value="209"/>
+<entry key="210" type="xint" value="210"/>
+<entry key="211" type="xint" value="211"/>
+<entry key="212" type="xint" value="212"/>
+<entry key="213" type="xint" value="213"/>
+<entry key="214" type="xint" value="214"/>
+<entry key="215" type="xint" value="215"/>
+<entry key="216" type="xint" value="216"/>
+<entry key="217" type="xint" value="217"/>
+<entry key="218" type="xint" value="218"/>
+<entry key="219" type="xint" value="219"/>
+<entry key="220" type="xint" value="220"/>
+<entry key="221" type="xint" value="221"/>
+<entry key="222" type="xint" value="222"/>
+<entry key="223" type="xint" value="223"/>
+<entry key="224" type="xint" value="224"/>
+<entry key="225" type="xint" value="225"/>
+<entry key="226" type="xint" value="226"/>
+<entry key="227" type="xint" value="227"/>
+<entry key="228" type="xint" value="228"/>
+<entry key="229" type="xint" value="229"/>
+<entry key="230" type="xint" value="230"/>
+<entry key="231" type="xint" value="231"/>
+<entry key="232" type="xint" value="232"/>
+<entry key="233" type="xint" value="233"/>
+<entry key="234" type="xint" value="234"/>
+<entry key="235" type="xint" value="235"/>
+<entry key="236" type="xint" value="236"/>
+<entry key="237" type="xint" value="237"/>
+<entry key="238" type="xint" value="238"/>
+<entry key="239" type="xint" value="239"/>
+<entry key="240" type="xint" value="240"/>
+<entry key="241" type="xint" value="241"/>
+<entry key="242" type="xint" value="242"/>
+<entry key="243" type="xint" value="243"/>
+<entry key="244" type="xint" value="244"/>
+<entry key="245" type="xint" value="245"/>
+<entry key="246" type="xint" value="246"/>
+<entry key="247" type="xint" value="247"/>
+<entry key="248" type="xint" value="248"/>
+<entry key="249" type="xint" value="249"/>
+<entry key="250" type="xint" value="250"/>
+<entry key="251" type="xint" value="251"/>
+<entry key="252" type="xint" value="252"/>
+<entry key="253" type="xint" value="253"/>
+<entry key="254" type="xint" value="254"/>
+<entry key="255" type="xint" value="255"/>
+<entry key="256" type="xint" value="256"/>
+<entry key="257" type="xint" value="257"/>
+<entry key="258" type="xint" value="258"/>
+<entry key="259" type="xint" value="259"/>
+<entry key="260" type="xint" value="260"/>
+<entry key="261" type="xint" value="261"/>
+<entry key="262" type="xint" value="262"/>
+</config>
+<config key="columnIndices">
+<entry key="array-size" type="xint" value="263"/>
+<entry key="0" type="xint" value="0"/>
+<entry key="1" type="xint" value="0"/>
+<entry key="2" type="xint" value="0"/>
+<entry key="3" type="xint" value="0"/>
+<entry key="4" type="xint" value="0"/>
+<entry key="5" type="xint" value="0"/>
+<entry key="6" type="xint" value="0"/>
+<entry key="7" type="xint" value="0"/>
+<entry key="8" type="xint" value="0"/>
+<entry key="9" type="xint" value="0"/>
+<entry key="10" type="xint" value="0"/>
+<entry key="11" type="xint" value="0"/>
+<entry key="12" type="xint" value="0"/>
+<entry key="13" type="xint" value="0"/>
+<entry key="14" type="xint" value="0"/>
+<entry key="15" type="xint" value="0"/>
+<entry key="16" type="xint" value="0"/>
+<entry key="17" type="xint" value="0"/>
+<entry key="18" type="xint" value="0"/>
+<entry key="19" type="xint" value="0"/>
+<entry key="20" type="xint" value="0"/>
+<entry key="21" type="xint" value="0"/>
+<entry key="22" type="xint" value="0"/>
+<entry key="23" type="xint" value="0"/>
+<entry key="24" type="xint" value="0"/>
+<entry key="25" type="xint" value="0"/>
+<entry key="26" type="xint" value="0"/>
+<entry key="27" type="xint" value="0"/>
+<entry key="28" type="xint" value="0"/>
+<entry key="29" type="xint" value="0"/>
+<entry key="30" type="xint" value="0"/>
+<entry key="31" type="xint" value="0"/>
+<entry key="32" type="xint" value="0"/>
+<entry key="33" type="xint" value="0"/>
+<entry key="34" type="xint" value="0"/>
+<entry key="35" type="xint" value="0"/>
+<entry key="36" type="xint" value="0"/>
+<entry key="37" type="xint" value="0"/>
+<entry key="38" type="xint" value="0"/>
+<entry key="39" type="xint" value="0"/>
+<entry key="40" type="xint" value="0"/>
+<entry key="41" type="xint" value="0"/>
+<entry key="42" type="xint" value="0"/>
+<entry key="43" type="xint" value="0"/>
+<entry key="44" type="xint" value="0"/>
+<entry key="45" type="xint" value="0"/>
+<entry key="46" type="xint" value="0"/>
+<entry key="47" type="xint" value="0"/>
+<entry key="48" type="xint" value="0"/>
+<entry key="49" type="xint" value="0"/>
+<entry key="50" type="xint" value="0"/>
+<entry key="51" type="xint" value="0"/>
+<entry key="52" type="xint" value="0"/>
+<entry key="53" type="xint" value="0"/>
+<entry key="54" type="xint" value="0"/>
+<entry key="55" type="xint" value="0"/>
+<entry key="56" type="xint" value="0"/>
+<entry key="57" type="xint" value="0"/>
+<entry key="58" type="xint" value="0"/>
+<entry key="59" type="xint" value="0"/>
+<entry key="60" type="xint" value="0"/>
+<entry key="61" type="xint" value="0"/>
+<entry key="62" type="xint" value="0"/>
+<entry key="63" type="xint" value="0"/>
+<entry key="64" type="xint" value="0"/>
+<entry key="65" type="xint" value="0"/>
+<entry key="66" type="xint" value="0"/>
+<entry key="67" type="xint" value="0"/>
+<entry key="68" type="xint" value="0"/>
+<entry key="69" type="xint" value="0"/>
+<entry key="70" type="xint" value="0"/>
+<entry key="71" type="xint" value="0"/>
+<entry key="72" type="xint" value="0"/>
+<entry key="73" type="xint" value="0"/>
+<entry key="74" type="xint" value="0"/>
+<entry key="75" type="xint" value="0"/>
+<entry key="76" type="xint" value="0"/>
+<entry key="77" type="xint" value="0"/>
+<entry key="78" type="xint" value="0"/>
+<entry key="79" type="xint" value="0"/>
+<entry key="80" type="xint" value="0"/>
+<entry key="81" type="xint" value="0"/>
+<entry key="82" type="xint" value="0"/>
+<entry key="83" type="xint" value="0"/>
+<entry key="84" type="xint" value="0"/>
+<entry key="85" type="xint" value="0"/>
+<entry key="86" type="xint" value="0"/>
+<entry key="87" type="xint" value="0"/>
+<entry key="88" type="xint" value="0"/>
+<entry key="89" type="xint" value="0"/>
+<entry key="90" type="xint" value="0"/>
+<entry key="91" type="xint" value="0"/>
+<entry key="92" type="xint" value="0"/>
+<entry key="93" type="xint" value="0"/>
+<entry key="94" type="xint" value="0"/>
+<entry key="95" type="xint" value="0"/>
+<entry key="96" type="xint" value="0"/>
+<entry key="97" type="xint" value="0"/>
+<entry key="98" type="xint" value="0"/>
+<entry key="99" type="xint" value="0"/>
+<entry key="100" type="xint" value="0"/>
+<entry key="101" type="xint" value="0"/>
+<entry key="102" type="xint" value="0"/>
+<entry key="103" type="xint" value="0"/>
+<entry key="104" type="xint" value="0"/>
+<entry key="105" type="xint" value="0"/>
+<entry key="106" type="xint" value="0"/>
+<entry key="107" type="xint" value="0"/>
+<entry key="108" type="xint" value="0"/>
+<entry key="109" type="xint" value="0"/>
+<entry key="110" type="xint" value="0"/>
+<entry key="111" type="xint" value="0"/>
+<entry key="112" type="xint" value="0"/>
+<entry key="113" type="xint" value="0"/>
+<entry key="114" type="xint" value="0"/>
+<entry key="115" type="xint" value="0"/>
+<entry key="116" type="xint" value="0"/>
+<entry key="117" type="xint" value="0"/>
+<entry key="118" type="xint" value="0"/>
+<entry key="119" type="xint" value="0"/>
+<entry key="120" type="xint" value="0"/>
+<entry key="121" type="xint" value="0"/>
+<entry key="122" type="xint" value="0"/>
+<entry key="123" type="xint" value="0"/>
+<entry key="124" type="xint" value="0"/>
+<entry key="125" type="xint" value="0"/>
+<entry key="126" type="xint" value="0"/>
+<entry key="127" type="xint" value="0"/>
+<entry key="128" type="xint" value="0"/>
+<entry key="129" type="xint" value="0"/>
+<entry key="130" type="xint" value="0"/>
+<entry key="131" type="xint" value="0"/>
+<entry key="132" type="xint" value="0"/>
+<entry key="133" type="xint" value="0"/>
+<entry key="134" type="xint" value="0"/>
+<entry key="135" type="xint" value="0"/>
+<entry key="136" type="xint" value="0"/>
+<entry key="137" type="xint" value="0"/>
+<entry key="138" type="xint" value="0"/>
+<entry key="139" type="xint" value="0"/>
+<entry key="140" type="xint" value="0"/>
+<entry key="141" type="xint" value="0"/>
+<entry key="142" type="xint" value="0"/>
+<entry key="143" type="xint" value="0"/>
+<entry key="144" type="xint" value="0"/>
+<entry key="145" type="xint" value="0"/>
+<entry key="146" type="xint" value="0"/>
+<entry key="147" type="xint" value="0"/>
+<entry key="148" type="xint" value="0"/>
+<entry key="149" type="xint" value="0"/>
+<entry key="150" type="xint" value="0"/>
+<entry key="151" type="xint" value="0"/>
+<entry key="152" type="xint" value="0"/>
+<entry key="153" type="xint" value="0"/>
+<entry key="154" type="xint" value="0"/>
+<entry key="155" type="xint" value="0"/>
+<entry key="156" type="xint" value="0"/>
+<entry key="157" type="xint" value="0"/>
+<entry key="158" type="xint" value="0"/>
+<entry key="159" type="xint" value="0"/>
+<entry key="160" type="xint" value="0"/>
+<entry key="161" type="xint" value="0"/>
+<entry key="162" type="xint" value="0"/>
+<entry key="163" type="xint" value="0"/>
+<entry key="164" type="xint" value="0"/>
+<entry key="165" type="xint" value="0"/>
+<entry key="166" type="xint" value="0"/>
+<entry key="167" type="xint" value="0"/>
+<entry key="168" type="xint" value="0"/>
+<entry key="169" type="xint" value="0"/>
+<entry key="170" type="xint" value="0"/>
+<entry key="171" type="xint" value="0"/>
+<entry key="172" type="xint" value="0"/>
+<entry key="173" type="xint" value="0"/>
+<entry key="174" type="xint" value="0"/>
+<entry key="175" type="xint" value="0"/>
+<entry key="176" type="xint" value="0"/>
+<entry key="177" type="xint" value="0"/>
+<entry key="178" type="xint" value="0"/>
+<entry key="179" type="xint" value="0"/>
+<entry key="180" type="xint" value="0"/>
+<entry key="181" type="xint" value="0"/>
+<entry key="182" type="xint" value="0"/>
+<entry key="183" type="xint" value="0"/>
+<entry key="184" type="xint" value="0"/>
+<entry key="185" type="xint" value="0"/>
+<entry key="186" type="xint" value="0"/>
+<entry key="187" type="xint" value="0"/>
+<entry key="188" type="xint" value="0"/>
+<entry key="189" type="xint" value="0"/>
+<entry key="190" type="xint" value="0"/>
+<entry key="191" type="xint" value="0"/>
+<entry key="192" type="xint" value="0"/>
+<entry key="193" type="xint" value="0"/>
+<entry key="194" type="xint" value="0"/>
+<entry key="195" type="xint" value="0"/>
+<entry key="196" type="xint" value="0"/>
+<entry key="197" type="xint" value="0"/>
+<entry key="198" type="xint" value="0"/>
+<entry key="199" type="xint" value="0"/>
+<entry key="200" type="xint" value="0"/>
+<entry key="201" type="xint" value="0"/>
+<entry key="202" type="xint" value="0"/>
+<entry key="203" type="xint" value="0"/>
+<entry key="204" type="xint" value="0"/>
+<entry key="205" type="xint" value="0"/>
+<entry key="206" type="xint" value="0"/>
+<entry key="207" type="xint" value="0"/>
+<entry key="208" type="xint" value="0"/>
+<entry key="209" type="xint" value="0"/>
+<entry key="210" type="xint" value="0"/>
+<entry key="211" type="xint" value="0"/>
+<entry key="212" type="xint" value="0"/>
+<entry key="213" type="xint" value="0"/>
+<entry key="214" type="xint" value="0"/>
+<entry key="215" type="xint" value="0"/>
+<entry key="216" type="xint" value="0"/>
+<entry key="217" type="xint" value="0"/>
+<entry key="218" type="xint" value="0"/>
+<entry key="219" type="xint" value="0"/>
+<entry key="220" type="xint" value="0"/>
+<entry key="221" type="xint" value="0"/>
+<entry key="222" type="xint" value="0"/>
+<entry key="223" type="xint" value="0"/>
+<entry key="224" type="xint" value="0"/>
+<entry key="225" type="xint" value="0"/>
+<entry key="226" type="xint" value="0"/>
+<entry key="227" type="xint" value="0"/>
+<entry key="228" type="xint" value="0"/>
+<entry key="229" type="xint" value="0"/>
+<entry key="230" type="xint" value="0"/>
+<entry key="231" type="xint" value="0"/>
+<entry key="232" type="xint" value="0"/>
+<entry key="233" type="xint" value="0"/>
+<entry key="234" type="xint" value="0"/>
+<entry key="235" type="xint" value="0"/>
+<entry key="236" type="xint" value="0"/>
+<entry key="237" type="xint" value="0"/>
+<entry key="238" type="xint" value="0"/>
+<entry key="239" type="xint" value="0"/>
+<entry key="240" type="xint" value="0"/>
+<entry key="241" type="xint" value="0"/>
+<entry key="242" type="xint" value="0"/>
+<entry key="243" type="xint" value="0"/>
+<entry key="244" type="xint" value="0"/>
+<entry key="245" type="xint" value="0"/>
+<entry key="246" type="xint" value="0"/>
+<entry key="247" type="xint" value="0"/>
+<entry key="248" type="xint" value="0"/>
+<entry key="249" type="xint" value="0"/>
+<entry key="250" type="xint" value="0"/>
+<entry key="251" type="xint" value="0"/>
+<entry key="252" type="xint" value="0"/>
+<entry key="253" type="xint" value="0"/>
+<entry key="254" type="xint" value="0"/>
+<entry key="255" type="xint" value="0"/>
+<entry key="256" type="xint" value="0"/>
+<entry key="257" type="xint" value="0"/>
+<entry key="258" type="xint" value="0"/>
+<entry key="259" type="xint" value="0"/>
+<entry key="260" type="xint" value="0"/>
+<entry key="261" type="xint" value="0"/>
+<entry key="262" type="xint" value="0"/>
+</config>
+<config key="values">
+<entry key="array-size" type="xint" value="263"/>
+<entry key="0" type="xstring" value="O(C(C)=O)C(CC(=O)[O-])C[N+](C)(C)C.P(=O)(O)(OCC(C(C(C(CC(C(=O)O)=O)O)O)O)O)OCC1C(O)C(O)C(N2C(=O)N=C(N)C=C2)O1&gt;&gt;O1C(CO)C(O)CC1N1C=NC2C(N=C(N)NC1=2)=O.O1CC(O)C(O)C1CO"/>
+<entry key="1" type="xstring" value="P(=O)(O)(OCC(C(C(C(CC(C(=O)O)=O)O)O)O)O)OCC1C(O)C(O)C(N2C(=O)N=C(N)C=C2)O1.O1C(CO)C(O)CC1N1C=NC2C(N=C(N)NC1=2)=O&gt;&gt;O1CC(O)C(O)C1CO.NC(C)C=CC=CCCCCCCCC"/>
+<entry key="2" type="xstring" value="O1C(CO)C(O)CC1N1C=NC2C(N=C(N)NC1=2)=O.O1CC(O)C(O)C1CO&gt;&gt;NC(C)C=CC=CCCCCCCCC.P(=O)(O)(O)OC1C(COP(=O)(O)OP(=O)(O)O)OC(N2C=NC3=C(N)N=CN=C23)C1O"/>
+<entry key="3" type="xstring" value="O1CC(O)C(O)C1CO.NC(C)C=CC=CCCCCCCCC&gt;&gt;P(=O)(O)(O)OC1C(COP(=O)(O)OP(=O)(O)O)OC(N2C=NC3=C(N)N=CN=C23)C1O.O=C(CCCCCCCC=CCCCCCCCC)N"/>
+<entry key="4" type="xstring" value="NC(C)C=CC=CCCCCCCCC.P(=O)(O)(O)OC1C(COP(=O)(O)OP(=O)(O)O)OC(N2C=NC3=C(N)N=CN=C23)C1O&gt;&gt;O=C(CCCCCCCC=CCCCCCCCC)N.FC1C=CC(C2=C(C3C=CC=CC=3)C(C(NC3C=CC=CC=3)=O)=C(C(C)C)N2CCC(CC(CC(=O)O)O)O)=CC=1"/>
+<entry key="5" type="xstring" value="P(=O)(O)(O)OC1C(COP(=O)(O)OP(=O)(O)O)OC(N2C=NC3=C(N)N=CN=C23)C1O.O=C(CCCCCCCC=CCCCCCCCC)N&gt;&gt;FC1C=CC(C2=C(C3C=CC=CC=3)C(C(NC3C=CC=CC=3)=O)=C(C(C)C)N2CCC(CC(CC(=O)O)O)O)=CC=1.ON1C(C2C=CC(C(=O)O)=CC=2)=[N+]([O-])C(C)(C)C1(C)C"/>
+<entry key="6" type="xstring" value="O=C(CCCCCCCC=CCCCCCCCC)N.FC1C=CC(C2=C(C3C=CC=CC=3)C(C(NC3C=CC=CC=3)=O)=C(C(C)C)N2CCC(CC(CC(=O)O)O)O)=CC=1&gt;&gt;ON1C(C2C=CC(C(=O)O)=CC=2)=[N+]([O-])C(C)(C)C1(C)C.S1C(C)(C)C(C(NC(C(N)=O)C(C)O)=O)NC(=O)C(C(C)O)NC(=O)C(CCCN)NC(=O)C(CC2=CNC3=CC=CC=C23)NC(=O)C(CC2C=CC(O)=CC=2)NC(=O)C(NC(C(CC2C=CC=CC=2)N)=O)CS1"/>
+<entry key="7" type="xstring" value="FC1C=CC(C2=C(C3C=CC=CC=3)C(C(NC3C=CC=CC=3)=O)=C(C(C)C)N2CCC(CC(CC(=O)O)O)O)=CC=1.ON1C(C2C=CC(C(=O)O)=CC=2)=[N+]([O-])C(C)(C)C1(C)C&gt;&gt;S1C(C)(C)C(C(NC(C(N)=O)C(C)O)=O)NC(=O)C(C(C)O)NC(=O)C(CCCN)NC(=O)C(CC2=CNC3=CC=CC=C23)NC(=O)C(CC2C=CC(O)=CC=2)NC(=O)C(NC(C(CC2C=CC=CC=2)N)=O)CS1.OC1=CC=CC([N+](C)(C)CC)=C1"/>
+<entry key="8" type="xstring" value="ON1C(C2C=CC(C(=O)O)=CC=2)=[N+]([O-])C(C)(C)C1(C)C.S1C(C)(C)C(C(NC(C(N)=O)C(C)O)=O)NC(=O)C(C(C)O)NC(=O)C(CCCN)NC(=O)C(CC2=CNC3=CC=CC=C23)NC(=O)C(CC2C=CC(O)=CC=2)NC(=O)C(NC(C(CC2C=CC=CC=2)N)=O)CS1&gt;&gt;OC1=CC=CC([N+](C)(C)CC)=C1.ClC1C=CC=C(Cl)C=1CC(/N=C(\N)/N)=O"/>
+<entry key="9" type="xstring" value="S1C(C)(C)C(C(NC(C(N)=O)C(C)O)=O)NC(=O)C(C(C)O)NC(=O)C(CCCN)NC(=O)C(CC2=CNC3=CC=CC=C23)NC(=O)C(CC2C=CC(O)=CC=2)NC(=O)C(NC(C(CC2C=CC=CC=2)N)=O)CS1.OC1=CC=CC([N+](C)(C)CC)=C1&gt;&gt;ClC1C=CC=C(Cl)C=1CC(/N=C(\N)/N)=O.O1C=C(O)C(=O)C=C1CO"/>
+<entry key="10" type="xstring" value="OC1=CC=CC([N+](C)(C)CC)=C1.ClC1C=CC=C(Cl)C=1CC(/N=C(\N)/N)=O&gt;&gt;O1C=C(O)C(=O)C=C1CO.OC1(C)CCC2C3CCC4=CC(CCC4(C)C3CCC12C)=O"/>
+<entry key="11" type="xstring" value="ClC1C=CC=C(Cl)C=1CC(/N=C(\N)/N)=O.O1C=C(O)C(=O)C=C1CO&gt;&gt;OC1(C)CCC2C3CCC4=CC(CCC4(C)C3CCC12C)=O.P(=O)(O)(OP(=O)(O)OCC1C(O)C(O)C([N+]2=CC=CC(C(N)=O)=C2)O1)OCC1C(O)C(O)C(N2C=NC3C(N=CNC2=3)=O)O1"/>
+<entry key="12" type="xstring" value="O1C=C(O)C(=O)C=C1CO.OC1(C)CCC2C3CCC4=CC(CCC4(C)C3CCC12C)=O&gt;&gt;P(=O)(O)(OP(=O)(O)OCC1C(O)C(O)C([N+]2=CC=CC(C(N)=O)=C2)O1)OCC1C(O)C(O)C(N2C=NC3C(N=CNC2=3)=O)O1.P(CP(=O)(O)O)(=O)(O)OCC1C(O)C(O)C(N2C=NC3=C(N)N=CN=C23)O1"/>
+<entry key="13" type="xstring" value="OC1(C)CCC2C3CCC4=CC(CCC4(C)C3CCC12C)=O.P(=O)(O)(OP(=O)(O)OCC1C(O)C(O)C([N+]2=CC=CC(C(N)=O)=C2)O1)OCC1C(O)C(O)C(N2C=NC3C(N=CNC2=3)=O)O1&gt;&gt;P(CP(=O)(O)O)(=O)(O)OCC1C(O)C(O)C(N2C=NC3=C(N)N=CN=C23)O1.S(C(C)(C)C(C(NC(C(=O)O)C(C)(C)SN=O)=O)NC(=O)OC)N=O"/>
+<entry key="14" type="xstring" value="P(=O)(O)(OP(=O)(O)OCC1C(O)C(O)C([N+]2=CC=CC(C(N)=O)=C2)O1)OCC1C(O)C(O)C(N2C=NC3C(N=CNC2=3)=O)O1.P(CP(=O)(O)O)(=O)(O)OCC1C(O)C(O)C(N2C=NC3=C(N)N=CN=C23)O1&gt;&gt;S(C(C)(C)C(C(NC(C(=O)O)C(C)(C)SN=O)=O)NC(=O)OC)N=O.S(CC(N)=O)P(=O)(O)OP(=O)(O)OP(=O)(O)OCC1C(O)C(O)C(N2C=NC3=C(N)N=CN=C23)O1"/>
+<entry key="15" type="xstring" value="P(CP(=O)(O)O)(=O)(O)OCC1C(O)C(O)C(N2C=NC3=C(N)N=CN=C23)O1.S(C(C)(C)C(C(NC(C(=O)O)C(C)(C)SN=O)=O)NC(=O)OC)N=O&gt;&gt;S(CC(N)=O)P(=O)(O)OP(=O)(O)OP(=O)(O)OCC1C(O)C(O)C(N2C=NC3=C(N)N=CN=C23)O1.ClC1C=C(Cl)C=C(Cl)C=1C(=O)O"/>
+<entry key="16" type="xstring" value="S(C(C)(C)C(C(NC(C(=O)O)C(C)(C)SN=O)=O)NC(=O)OC)N=O.S(CC(N)=O)P(=O)(O)OP(=O)(O)OP(=O)(O)OCC1C(O)C(O)C(N2C=NC3=C(N)N=CN=C23)O1&gt;&gt;ClC1C=C(Cl)C=C(Cl)C=1C(=O)O.O=C1CC2=CC=CC=C2N1C"/>
+<entry key="17" type="xstring" value="S(CC(N)=O)P(=O)(O)OP(=O)(O)OP(=O)(O)OCC1C(O)C(O)C(N2C=NC3=C(N)N=CN=C23)O1.ClC1C=C(Cl)C=C(Cl)C=1C(=O)O&gt;&gt;O=C1CC2=CC=CC=C2N1C.ClC(C(F)(F)Cl)(F)Cl"/>
+<entry key="18" type="xstring" value="ClC1C=C(Cl)C=C(Cl)C=1C(=O)O.O=C1CC2=CC=CC=C2N1C&gt;&gt;ClC(C(F)(F)Cl)(F)Cl.S(C1C=CC(N)=C2C(=CC=CC=12)O)(=O)(=O)O"/>
+<entry key="19" type="xstring" value="O=C1CC2=CC=CC=C2N1C.ClC(C(F)(F)Cl)(F)Cl&gt;&gt;S(C1C=CC(N)=C2C(=CC=CC=12)O)(=O)(=O)O.O=C=NC1C=CC(C2C=CC(N=C=O)=C(C)C=2)=CC=1C"/>
+<entry key="20" type="xstring" value="ClC(C(F)(F)Cl)(F)Cl.S(C1C=CC(N)=C2C(=CC=CC=12)O)(=O)(=O)O&gt;&gt;O=C=NC1C=CC(C2C=CC(N=C=O)=C(C)C=2)=CC=1C.O=C1CCC(C(C)(C)C)CC1"/>
+<entry key="21" type="xstring" value="S(C1C=CC(N)=C2C(=CC=CC=12)O)(=O)(=O)O.O=C=NC1C=CC(C2C=CC(N=C=O)=C(C)C=2)=CC=1C&gt;&gt;O=C1CCC(C(C)(C)C)CC1.[Hg]C1C=CC=CC=1.OC(CCCCCCCC=CCCCCCCCC)=O |f:3.4|"/>
+<entry key="22" type="xstring" value="O=C=NC1C=CC(C2C=CC(N=C=O)=C(C)C=2)=CC=1C.O=C1CCC(C(C)(C)C)CC1&gt;&gt;[Hg]C1C=CC=CC=1.OC(CCCCCCCC=CCCCCCCCC)=O.O(C=C)CC |f:2.3|"/>
+<entry key="23" type="xstring" value="O=C1CCC(C(C)(C)C)CC1.[Hg]C1C=CC=CC=1.OC(CCCCCCCC=CCCCCCCCC)=O&gt;&gt;O(C=C)CC.O(C(C1=CC=CC=C1C(=O)OCCCCCCCC)=O)CCCCCCCC |f:1.2|"/>
+<entry key="24" type="xstring" value="[Hg]C1C=CC=CC=1.OC(CCCCCCCC=CCCCCCCCC)=O.O(C=C)CC&gt;&gt;O(C(C1=CC=CC=C1C(=O)OCCCCCCCC)=O)CCCCCCCC.Cl.N1=C(N)C=CC(/N=N/C2C=CC=CC=2)=C1N |f:0.1,4.5|"/>
+<entry key="25" type="xstring" value="O(C=C)CC.O(C(C1=CC=CC=C1C(=O)OCCCCCCCC)=O)CCCCCCCC&gt;&gt;Cl.N1=C(N)C=CC(/N=N/C2C=CC=CC=2)=C1N.OC([C@@H](CC1=CNC2=CC=CC=C12)N)=O |f:2.3|"/>
+<entry key="26" type="xstring" value="O(C(C1=CC=CC=C1C(=O)OCCCCCCCC)=O)CCCCCCCC.Cl.N1=C(N)C=CC(/N=N/C2C=CC=CC=2)=C1N&gt;&gt;OC([C@@H](CC1=CNC2=CC=CC=C12)N)=O.O=C1C=C(NCCC[N+](CC)(CC)CC2C=CC=CC=2)C(=O)C=C1NCCC[N+](CC)(CC)CC1C=CC=CC=1 |f:1.2|"/>
+<entry key="27" type="xstring" value="Cl.N1=C(N)C=CC(/N=N/C2C=CC=CC=2)=C1N.OC([C@@H](CC1=CNC2=CC=CC=C12)N)=O&gt;&gt;O=C1C=C(NCCC[N+](CC)(CC)CC2C=CC=CC=2)C(=O)C=C1NCCC[N+](CC)(CC)CC1C=CC=CC=1.[As](C1C=CC=CC=1)(F)F |f:0.1|"/>
+<entry key="28" type="xstring" value="OC([C@@H](CC1=CNC2=CC=CC=C12)N)=O.O=C1C=C(NCCC[N+](CC)(CC)CC2C=CC=CC=2)C(=O)C=C1NCCC[N+](CC)(CC)CC1C=CC=CC=1&gt;&gt;[As](C1C=CC=CC=1)(F)F.C(C)(C)(C)C"/>
+<entry key="29" type="xstring" value="O=C1C=C(NCCC[N+](CC)(CC)CC2C=CC=CC=2)C(=O)C=C1NCCC[N+](CC)(CC)CC1C=CC=CC=1.[As](C1C=CC=CC=1)(F)F&gt;&gt;C(C)(C)(C)C.OC1=CC=CC(CC[N+](C)(C)C)=C1"/>
+<entry key="30" type="xstring" value="[As](C1C=CC=CC=1)(F)F.C(C)(C)(C)C&gt;&gt;OC1=CC=CC(CC[N+](C)(C)C)=C1.C12C=C(CC)C=CC(C)=C1C=CC=2C"/>
+<entry key="31" type="xstring" value="C(C)(C)(C)C.OC1=CC=CC(CC[N+](C)(C)C)=C1&gt;&gt;C12C=C(CC)C=CC(C)=C1C=CC=2C.Cl.S1C2=CC=CC=C2C(=O)C2C1=C(C)C=CC=2NCCN(CC)CC |f:3.4|"/>
+<entry key="32" type="xstring" value="OC1=CC=CC(CC[N+](C)(C)C)=C1.C12C=C(CC)C=CC(C)=C1C=CC=2C&gt;&gt;Cl.S1C2=CC=CC=C2C(=O)C2C1=C(C)C=CC=2NCCN(CC)CC.O=C1C=CC2=CC=CNC2=C1 |f:2.3|"/>
+<entry key="33" type="xstring" value="C12C=C(CC)C=CC(C)=C1C=CC=2C.Cl.S1C2=CC=CC=C2C(=O)C2C1=C(C)C=CC=2NCCN(CC)CC&gt;&gt;O=C1C=CC2=CC=CNC2=C1.S(CC)P(=O)(OCC)OC1C=CC([N+](=O)[O-])=CC=1 |f:1.2|"/>
+<entry key="34" type="xstring" value="Cl.S1C2=CC=CC=C2C(=O)C2C1=C(C)C=CC=2NCCN(CC)CC.O=C1C=CC2=CC=CNC2=C1&gt;&gt;S(CC)P(=O)(OCC)OC1C=CC([N+](=O)[O-])=CC=1.ClC(CCl)CC |f:0.1|"/>
+<entry key="35" type="xstring" value="O=C1C=CC2=CC=CNC2=C1.S(CC)P(=O)(OCC)OC1C=CC([N+](=O)[O-])=CC=1&gt;&gt;ClC(CCl)CC.ICCCCI"/>
+<entry key="36" type="xstring" value="S(CC)P(=O)(OCC)OC1C=CC([N+](=O)[O-])=CC=1.ClC(CCl)CC&gt;&gt;ICCCCI.Cl[Si](C)(CCC(F)(F)F)Cl"/>
+<entry key="37" type="xstring" value="ClC(CCl)CC.ICCCCI&gt;&gt;Cl[Si](C)(CCC(F)(F)F)Cl.N#CC=CC#N"/>
+<entry key="38" type="xstring" value="ICCCCI.Cl[Si](C)(CCC(F)(F)F)Cl&gt;&gt;N#CC=CC#N.O(CC)C(C1C=CC=CC=1)CCN1CCN(C2=CC=CC(C)=C2)CC1"/>
+<entry key="39" type="xstring" value="Cl[Si](C)(CCC(F)(F)F)Cl.N#CC=CC#N&gt;&gt;O(CC)C(C1C=CC=CC=1)CCN1CCN(C2=CC=CC(C)=C2)CC1.[O-][N+](C1C=CC(N(C)N=O)=CC=1)=O"/>
+<entry key="40" type="xstring" value="N#CC=CC#N.O(CC)C(C1C=CC=CC=1)CCN1CCN(C2=CC=CC(C)=C2)CC1&gt;&gt;[O-][N+](C1C=CC(N(C)N=O)=CC=1)=O.[Sn](C)(C)(C)Cl"/>
+<entry key="41" type="xstring" value="O(CC)C(C1C=CC=CC=1)CCN1CCN(C2=CC=CC(C)=C2)CC1.[O-][N+](C1C=CC(N(C)N=O)=CC=1)=O&gt;&gt;[Sn](C)(C)(C)Cl.[O-][N+](C1=CC=CC=C1C1C=CC(N)=CC=1)=O"/>
+<entry key="42" type="xstring" value="[O-][N+](C1C=CC(N(C)N=O)=CC=1)=O.[Sn](C)(C)(C)Cl&gt;&gt;[O-][N+](C1=CC=CC=C1C1C=CC(N)=CC=1)=O.FC1C=CC(C(CCCN2CCC3(CCCCCC3)C2)=O)=CC=1"/>
+<entry key="43" type="xstring" value="[Sn](C)(C)(C)Cl.[O-][N+](C1=CC=CC=C1C1C=CC(N)=CC=1)=O&gt;&gt;FC1C=CC(C(CCCN2CCC3(CCCCCC3)C2)=O)=CC=1.OC1C=CC(C)=CC=1C(C)=O"/>
+<entry key="44" type="xstring" value="[O-][N+](C1=CC=CC=C1C1C=CC(N)=CC=1)=O.FC1C=CC(C(CCCN2CCC3(CCCCCC3)C2)=O)=CC=1&gt;&gt;OC1C=CC(C)=CC=1C(C)=O.P(=O)(O)(O)OC(C)C"/>
+<entry key="45" type="xstring" value="FC1C=CC(C(CCCN2CCC3(CCCCCC3)C2)=O)=CC=1.OC1C=CC(C)=CC=1C(C)=O&gt;&gt;P(=O)(O)(O)OC(C)C.N(C)C1C=CC(CC2C=CC(NC)=CC=2)=CC=1"/>
+<entry key="46" type="xstring" value="OC1C=CC(C)=CC=1C(C)=O.P(=O)(O)(O)OC(C)C&gt;&gt;N(C)C1C=CC(CC2C=CC(NC)=CC=2)=CC=1.N(C1C=CC=CC=1)C1=NC(NC2C=CC=CC=2)=NC(NC2C=CC=CC=2)=N1"/>
+<entry key="47" type="xstring" value="P(=O)(O)(O)OC(C)C.N(C)C1C=CC(CC2C=CC(NC)=CC=2)=CC=1&gt;&gt;N(C1C=CC=CC=1)C1=NC(NC2C=CC=CC=2)=NC(NC2C=CC=CC=2)=N1.OC1(C#CCN(CC)CC)C2=CC=CC=C2C2=CC=CC=C12"/>
+<entry key="48" type="xstring" value="N(C)C1C=CC(CC2C=CC(NC)=CC=2)=CC=1.N(C1C=CC=CC=1)C1=NC(NC2C=CC=CC=2)=NC(NC2C=CC=CC=2)=N1&gt;&gt;OC1(C#CCN(CC)CC)C2=CC=CC=C2C2=CC=CC=C12.O=CCCCCC=CCC"/>
+<entry key="49" type="xstring" value="N(C1C=CC=CC=1)C1=NC(NC2C=CC=CC=2)=NC(NC2C=CC=CC=2)=N1.OC1(C#CCN(CC)CC)C2=CC=CC=C2C2=CC=CC=C12&gt;&gt;O=CCCCCC=CCC.O1C(=O)C=CC2C=CC(C)=CC1=2"/>
+<entry key="50" type="xstring" value="OC1(C#CCN(CC)CC)C2=CC=CC=C2C2=CC=CC=C12.O=CCCCCC=CCC&gt;&gt;O1C(=O)C=CC2C=CC(C)=CC1=2.O(C(C1C=CC(C)=CC=1N1C(=O)C2=CC=CC=C2N=C1C)=O)CCN(CC)CC"/>
+<entry key="51" type="xstring" value="O=CCCCCC=CCC.O1C(=O)C=CC2C=CC(C)=CC1=2&gt;&gt;O(C(C1C=CC(C)=CC=1N1C(=O)C2=CC=CC=C2N=C1C)=O)CCN(CC)CC.N1(C2=NC3=CC=CC=C3C3=CC=CC=C3N2)CCCC1"/>
+<entry key="52" type="xstring" value="O1C(=O)C=CC2C=CC(C)=CC1=2.O(C(C1C=CC(C)=CC=1N1C(=O)C2=CC=CC=C2N=C1C)=O)CCN(CC)CC&gt;&gt;N1(C2=NC3=CC=CC=C3C3=CC=CC=C3N2)CCCC1.OC(C12CCCCC1CCCC2)=O"/>
+<entry key="53" type="xstring" value="O(C(C1C=CC(C)=CC=1N1C(=O)C2=CC=CC=C2N=C1C)=O)CCN(CC)CC.N1(C2=NC3=CC=CC=C3C3=CC=CC=C3N2)CCCC1&gt;&gt;OC(C12CCCCC1CCCC2)=O.[Cl-].OC1=C(O)C=C2CC[NH2+]C(CC3C=CC(O)=C(O)C=3)C2=C1 |f:3.4|"/>
+<entry key="54" type="xstring" value="N1(C2=NC3=CC=CC=C3C3=CC=CC=C3N2)CCCC1.OC(C12CCCCC1CCCC2)=O&gt;&gt;[Cl-].OC1=C(O)C=C2CC[NH2+]C(CC3C=CC(O)=C(O)C=3)C2=C1.O=CNC12CC3CC(CC(C3)C1)C2 |f:2.3|"/>
+<entry key="55" type="xstring" value="OC(C12CCCCC1CCCC2)=O.[Cl-].OC1=C(O)C=C2CC[NH2+]C(CC3C=CC(O)=C(O)C=3)C2=C1&gt;&gt;O=CNC12CC3CC(CC(C3)C1)C2.ClC(C1N=C(C(Cl)(Cl)Cl)N=C(NC2C=CC(Cl)=CC=2)N=1)(Cl)Cl |f:1.2|"/>
+<entry key="56" type="xstring" value="[Cl-].OC1=C(O)C=C2CC[NH2+]C(CC3C=CC(O)=C(O)C=3)C2=C1.O=CNC12CC3CC(CC(C3)C1)C2&gt;&gt;ClC(C1N=C(C(Cl)(Cl)Cl)N=C(NC2C=CC(Cl)=CC=2)N=1)(Cl)Cl.O(C)C1=CC=C(C(=N)N(CCCCCCCC)CCCCCCCC)C2=CC=CC=C12 |f:0.1|"/>
+<entry key="57" type="xstring" value="O=CNC12CC3CC(CC(C3)C1)C2.ClC(C1N=C(C(Cl)(Cl)Cl)N=C(NC2C=CC(Cl)=CC=2)N=1)(Cl)Cl&gt;&gt;O(C)C1=CC=C(C(=N)N(CCCCCCCC)CCCCCCCC)C2=CC=CC=C12.S=C1C=CC2=CC=CC=C2O1"/>
+<entry key="58" type="xstring" value="ClC(C1N=C(C(Cl)(Cl)Cl)N=C(NC2C=CC(Cl)=CC=2)N=1)(Cl)Cl.O(C)C1=CC=C(C(=N)N(CCCCCCCC)CCCCCCCC)C2=CC=CC=C12&gt;&gt;S=C1C=CC2=CC=CC=C2O1.O=C1C2=CC=CC=C2NC2=CC=CC=C2N1CCCN(CC)CC"/>
+<entry key="59" type="xstring" value="O(C)C1=CC=C(C(=N)N(CCCCCCCC)CCCCCCCC)C2=CC=CC=C12.S=C1C=CC2=CC=CC=C2O1&gt;&gt;O=C1C2=CC=CC=C2NC2=CC=CC=C2N1CCCN(CC)CC.BrC1C=C(C)C=CC=1C(C)C"/>
+<entry key="60" type="xstring" value="S=C1C=CC2=CC=CC=C2O1.O=C1C2=CC=CC=C2NC2=CC=CC=C2N1CCCN(CC)CC&gt;&gt;BrC1C=C(C)C=CC=1C(C)C.BrC(C)=CC"/>
+<entry key="61" type="xstring" value="O=C1C2=CC=CC=C2NC2=CC=CC=C2N1CCCN(CC)CC.BrC1C=C(C)C=CC=1C(C)C&gt;&gt;BrC(C)=CC.[As](C1C=CC(N(CCO)CCO)=CC=1)=O"/>
+<entry key="62" type="xstring" value="BrC1C=C(C)C=CC=1C(C)C.BrC(C)=CC&gt;&gt;[As](C1C=CC(N(CCO)CCO)=CC=1)=O.O=C(CC1=CNC2=CC=CC=C12)NN"/>
+<entry key="63" type="xstring" value="BrC(C)=CC.[As](C1C=CC(N(CCO)CCO)=CC=1)=O&gt;&gt;O=C(CC1=CNC2=CC=CC=C12)NN.N12CCC(CC1)CC2CC1=CNC2=CC=CC=C12"/>
+<entry key="64" type="xstring" value="[As](C1C=CC(N(CCO)CCO)=CC=1)=O.O=C(CC1=CNC2=CC=CC=C12)NN&gt;&gt;N12CCC(CC1)CC2CC1=CNC2=CC=CC=C12.ON=C(C)C1=CN=CC=C1"/>
+<entry key="65" type="xstring" value="O=C(CC1=CNC2=CC=CC=C12)NN.N12CCC(CC1)CC2CC1=CNC2=CC=CC=C12&gt;&gt;ON=C(C)C1=CN=CC=C1.[Cl-].O(CCNC(C[N+]1C=CC=CC=1)=O)C(CCCCCCCCCCC)=O |f:3.4|"/>
+<entry key="66" type="xstring" value="N12CCC(CC1)CC2CC1=CNC2=CC=CC=C12.ON=C(C)C1=CN=CC=C1&gt;&gt;[Cl-].O(CCNC(C[N+]1C=CC=CC=1)=O)C(CCCCCCCCCCC)=O.N(C)(C)CCCCC(C#N)C1=CC=CC2=CC=CC=C12 |f:2.3|"/>
+<entry key="67" type="xstring" value="ON=C(C)C1=CN=CC=C1.[Cl-].O(CCNC(C[N+]1C=CC=CC=1)=O)C(CCCCCCCCCCC)=O&gt;&gt;N(C)(C)CCCCC(C#N)C1=CC=CC2=CC=CC=C12.ClC1C=CC2=C(NC(CO)=N2)C=1 |f:1.2|"/>
+<entry key="68" type="xstring" value="[Cl-].O(CCNC(C[N+]1C=CC=CC=1)=O)C(CCCCCCCCCCC)=O.N(C)(C)CCCCC(C#N)C1=CC=CC2=CC=CC=C12&gt;&gt;ClC1C=CC2=C(NC(CO)=N2)C=1.O=C(C(C1C=CC=CC=1)(C1C=CC=CC=1)CC[N+](C)(CC)CC)N |f:0.1|"/>
+<entry key="69" type="xstring" value="N(C)(C)CCCCC(C#N)C1=CC=CC2=CC=CC=C12.ClC1C=CC2=C(NC(CO)=N2)C=1&gt;&gt;O=C(C(C1C=CC=CC=1)(C1C=CC=CC=1)CC[N+](C)(CC)CC)N.[Br-].[Br-].O=C(CC1C=CC(C2C=CC(CC([N+](C)(C)C)=O)=CC=2)=CC=1)[N+](C)(C)C |f:3.4.5|"/>
+<entry key="70" type="xstring" value="ClC1C=CC2=C(NC(CO)=N2)C=1.O=C(C(C1C=CC=CC=1)(C1C=CC=CC=1)CC[N+](C)(CC)CC)N&gt;&gt;[Br-].[Br-].O=C(CC1C=CC(C2C=CC(CC([N+](C)(C)C)=O)=CC=2)=CC=1)[N+](C)(C)C.O(CCOCC[N+](C)(CC)CC)C(C(C1C=CC=CC=1)[N+]1(C)CCCCC1)=O |f:2.3.4|"/>
+<entry key="71" type="xstring" value="O=C(C(C1C=CC=CC=1)(C1C=CC=CC=1)CC[N+](C)(CC)CC)N.[Br-].[Br-].O=C(CC1C=CC(C2C=CC(CC([N+](C)(C)C)=O)=CC=2)=CC=1)[N+](C)(C)C&gt;&gt;O(CCOCC[N+](C)(CC)CC)C(C(C1C=CC=CC=1)[N+]1(C)CCCCC1)=O.[O-][N+]1=CC=CC=C1C=C |f:1.2.3|"/>
+<entry key="72" type="xstring" value="[Br-].[Br-].O=C(CC1C=CC(C2C=CC(CC([N+](C)(C)C)=O)=CC=2)=CC=1)[N+](C)(C)C.O(CCOCC[N+](C)(CC)CC)C(C(C1C=CC=CC=1)[N+]1(C)CCCCC1)=O&gt;&gt;[O-][N+]1=CC=CC=C1C=C.O(CC)C(C1C=CC(N(C)C)=CC=1)=O |f:0.1.2|"/>
+<entry key="73" type="xstring" value="O(CCOCC[N+](C)(CC)CC)C(C(C1C=CC=CC=1)[N+]1(C)CCCCC1)=O.[O-][N+]1=CC=CC=C1C=C&gt;&gt;O(CC)C(C1C=CC(N(C)C)=CC=1)=O.O(C(C)CO)C(C)COC"/>
+<entry key="74" type="xstring" value="[O-][N+]1=CC=CC=C1C=C.O(CC)C(C1C=CC(N(C)C)=CC=1)=O&gt;&gt;O(C(C)CO)C(C)COC.N(C(C)CCCCC)C1CC1"/>
+<entry key="75" type="xstring" value="O(CC)C(C1C=CC(N(C)C)=CC=1)=O.O(C(C)CO)C(C)COC&gt;&gt;N(C(C)CCCCC)C1CC1.ClC1C2=CC(C=CC2(C)C2CCC3(C)C(C(C)=O)(OC(C)=O)CCC3C2C=1)=O"/>
+<entry key="76" type="xstring" value="O(C(C)CO)C(C)COC.N(C(C)CCCCC)C1CC1&gt;&gt;ClC1C2=CC(C=CC2(C)C2CCC3(C)C(C(C)=O)(OC(C)=O)CCC3C2C=1)=O.OC(C1C=CC=CC=1)(C1C=CC=CC=1)C(C)CN"/>
+<entry key="77" type="xstring" value="N(C(C)CCCCC)C1CC1.ClC1C2=CC(C=CC2(C)C2CCC3(C)C(C(C)=O)(OC(C)=O)CCC3C2C=1)=O&gt;&gt;OC(C1C=CC=CC=1)(C1C=CC=CC=1)C(C)CN.OC1=CC=CC2=C1C=CC1=C(C)C3=CC=CC=C3C(C)=C12"/>
+<entry key="78" type="xstring" value="ClC1C2=CC(C=CC2(C)C2CCC3(C)C(C(C)=O)(OC(C)=O)CCC3C2C=1)=O.OC(C1C=CC=CC=1)(C1C=CC=CC=1)C(C)CN&gt;&gt;OC1=CC=CC2=C1C=CC1=C(C)C3=CC=CC=C3C(C)=C12.O(C1C=CC(N)=CC=1OC)CCCCCCC1C=CC=CC=1"/>
+<entry key="79" type="xstring" value="OC(C1C=CC=CC=1)(C1C=CC=CC=1)C(C)CN.OC1=CC=CC2=C1C=CC1=C(C)C3=CC=CC=C3C(C)=C12&gt;&gt;O(C1C=CC(N)=CC=1OC)CCCCCCC1C=CC=CC=1.O(C)C1=CC=CC2=C1C1CCNCCC=1N2C"/>
+<entry key="80" type="xstring" value="OC1=CC=CC2=C1C=CC1=C(C)C3=CC=CC=C3C(C)=C12.O(C1C=CC(N)=CC=1OC)CCCCCCC1C=CC=CC=1&gt;&gt;O(C)C1=CC=CC2=C1C1CCNCCC=1N2C.O(CC=C)CCCCCCC"/>
+<entry key="81" type="xstring" value="O(C1C=CC(N)=CC=1OC)CCCCCCC1C=CC=CC=1.O(C)C1=CC=CC2=C1C1CCNCCC=1N2C&gt;&gt;O(CC=C)CCCCCCC.[Cl-].[Cl-].[O-][N+](C1=CC=CC2C1=C(C1=CC=CC=C1N=2)[NH2+]CC[NH+](CC)CC)=O |f:3.4.5|"/>
+<entry key="82" type="xstring" value="O(C)C1=CC=CC2=C1C1CCNCCC=1N2C.O(CC=C)CCCCCCC&gt;&gt;[Cl-].[Cl-].[O-][N+](C1=CC=CC2C1=C(C1=CC=CC=C1N=2)[NH2+]CC[NH+](CC)CC)=O.[I-].S1C=CC(C(C2=CSC=C2)(CC(C)[N+](C)(CCC)CCC)O)=C1 |f:2.3.4,5.6|"/>
+<entry key="83" type="xstring" value="O(CC=C)CCCCCCC.[Cl-].[Cl-].[O-][N+](C1=CC=CC2C1=C(C1=CC=CC=C1N=2)[NH2+]CC[NH+](CC)CC)=O&gt;&gt;[I-].S1C=CC(C(C2=CSC=C2)(CC(C)[N+](C)(CCC)CCC)O)=C1.O=C(CC1C(=O)OC2C=CC(=CC=2C=1)N)N1CCCCC1 |f:1.2.3,4.5|"/>
+<entry key="84" type="xstring" value="[Cl-].[Cl-].[O-][N+](C1=CC=CC2C1=C(C1=CC=CC=C1N=2)[NH2+]CC[NH+](CC)CC)=O.[I-].S1C=CC(C(C2=CSC=C2)(CC(C)[N+](C)(CCC)CCC)O)=C1&gt;&gt;O=C(CC1C(=O)OC2C=CC(=CC=2C=1)N)N1CCCCC1.ClC1=CC=CC2=C1C1C3=CC=CC=C3C2(OCCN(C)C)CC1 |f:0.1.2,3.4|"/>
+<entry key="85" type="xstring" value="[I-].S1C=CC(C(C2=CSC=C2)(CC(C)[N+](C)(CCC)CCC)O)=C1.O=C(CC1C(=O)OC2C=CC(=CC=2C=1)N)N1CCCCC1&gt;&gt;ClC1=CC=CC2=C1C1C3=CC=CC=C3C2(OCCN(C)C)CC1.S(=O)(=O)([O-])OC.P(C)(=O)(OCC[N+](C)(C)C1C=CC=CC=1)F |f:0.1,4.5|"/>
+<entry key="86" type="xstring" value="O=C(CC1C(=O)OC2C=CC(=CC=2C=1)N)N1CCCCC1.ClC1=CC=CC2=C1C1C3=CC=CC=C3C2(OCCN(C)C)CC1&gt;&gt;S(=O)(=O)([O-])OC.P(C)(=O)(OCC[N+](C)(C)C1C=CC=CC=1)F.O(C1C=CC=CC=1)C(CCCC)=O |f:2.3|"/>
+<entry key="87" type="xstring" value="ClC1=CC=CC2=C1C1C3=CC=CC=C3C2(OCCN(C)C)CC1.S(=O)(=O)([O-])OC.P(C)(=O)(OCC[N+](C)(C)C1C=CC=CC=1)F&gt;&gt;O(C1C=CC=CC=1)C(CCCC)=O.[Cl-].[Cl-].O(C1C([NH3+])=CC=CC=1C(CCC)=O)CC[NH+](CC)CC |f:1.2,4.5.6|"/>
+<entry key="88" type="xstring" value="S(=O)(=O)([O-])OC.P(C)(=O)(OCC[N+](C)(C)C1C=CC=CC=1)F.O(C1C=CC=CC=1)C(CCCC)=O&gt;&gt;[Cl-].[Cl-].O(C1C([NH3+])=CC=CC=1C(CCC)=O)CC[NH+](CC)CC.O(C(C(C1C=CC=CC=1)C1C=CC=CC=1)=O)CCN(CC)C1CCCC1 |f:0.1,3.4.5|"/>
+<entry key="89" type="xstring" value="O(C1C=CC=CC=1)C(CCCC)=O.[Cl-].[Cl-].O(C1C([NH3+])=CC=CC=1C(CCC)=O)CC[NH+](CC)CC&gt;&gt;O(C(C(C1C=CC=CC=1)C1C=CC=CC=1)=O)CCN(CC)C1CCCC1.N1C=CC2C=CC(=CC1=2)CC(C)N |f:1.2.3|"/>
+<entry key="90" type="xstring" value="[Cl-].[Cl-].O(C1C([NH3+])=CC=CC=1C(CCC)=O)CC[NH+](CC)CC.O(C(C(C1C=CC=CC=1)C1C=CC=CC=1)=O)CCN(CC)C1CCCC1&gt;&gt;N1C=CC2C=CC(=CC1=2)CC(C)N.ICS(=O)(=O)O |f:0.1.2|"/>
+<entry key="91" type="xstring" value="O(C(C(C1C=CC=CC=1)C1C=CC=CC=1)=O)CCN(CC)C1CCCC1.N1C=CC2C=CC(=CC1=2)CC(C)N&gt;&gt;ICS(=O)(=O)O.O([C@H]1C[C@H](N)[C@H](O)[C@H](C)O1)[C@@H]1C2=C(C3C(=O)C4C(=CC=CC=4C(=O)C=3C(O)=C2C[C@](C(CO)=O)(O)C1)OC)O"/>
+<entry key="92" type="xstring" value="N1C=CC2C=CC(=CC1=2)CC(C)N.ICS(=O)(=O)O&gt;&gt;O([C@H]1C[C@H](N)[C@H](O)[C@H](C)O1)[C@@H]1C2=C(C3C(=O)C4C(=CC=CC=4C(=O)C=3C(O)=C2C[C@](C(CO)=O)(O)C1)OC)O.O1C(C)=NC2=C1CCC1=CC=CC=C1/C/2=C1/CCN(C)CC/1"/>
+<entry key="93" type="xstring" value="ICS(=O)(=O)O.O([C@H]1C[C@H](N)[C@H](O)[C@H](C)O1)[C@@H]1C2=C(C3C(=O)C4C(=CC=CC=4C(=O)C=3C(O)=C2C[C@](C(CO)=O)(O)C1)OC)O&gt;&gt;O1C(C)=NC2=C1CCC1=CC=CC=C1/C/2=C1/CCN(C)CC/1.[Cl-].[NH+]1(C(=N)N)CC2C=CC=C(C3C=CC=CC=3)C=2CC1 |f:3.4|"/>
+<entry key="94" type="xstring" value="O([C@H]1C[C@H](N)[C@H](O)[C@H](C)O1)[C@@H]1C2=C(C3C(=O)C4C(=CC=CC=4C(=O)C=3C(O)=C2C[C@](C(CO)=O)(O)C1)OC)O.O1C(C)=NC2=C1CCC1=CC=CC=C1/C/2=C1/CCN(C)CC/1&gt;&gt;[Cl-].[NH+]1(C(=N)N)CC2C=CC=C(C3C=CC=CC=3)C=2CC1.ClC(C1=NC(N(CC)CCC#N)=NC(CCCCC)=N1)(Cl)Cl |f:2.3|"/>
+<entry key="95" type="xstring" value="O1C(C)=NC2=C1CCC1=CC=CC=C1/C/2=C1/CCN(C)CC/1.[Cl-].[NH+]1(C(=N)N)CC2C=CC=C(C3C=CC=CC=3)C=2CC1&gt;&gt;ClC(C1=NC(N(CC)CCC#N)=NC(CCCCC)=N1)(Cl)Cl.O(CCC)C(C)C1(C(=O)NC(=O)NC1=O)CC=C |f:1.2|"/>
+<entry key="96" type="xstring" value="[Cl-].[NH+]1(C(=N)N)CC2C=CC=C(C3C=CC=CC=3)C=2CC1.ClC(C1=NC(N(CC)CCC#N)=NC(CCCCC)=N1)(Cl)Cl&gt;&gt;O(CCC)C(C)C1(C(=O)NC(=O)NC1=O)CC=C.FC(C1C=C([N+](=O)[O-])C(N(CCC)CC2CC2)=C([N+](=O)[O-])C=1)(F)F |f:0.1|"/>
+<entry key="97" type="xstring" value="ClC(C1=NC(N(CC)CCC#N)=NC(CCCCC)=N1)(Cl)Cl.O(CCC)C(C)C1(C(=O)NC(=O)NC1=O)CC=C&gt;&gt;FC(C1C=C([N+](=O)[O-])C(N(CCC)CC2CC2)=C([N+](=O)[O-])C=1)(F)F.S(C1C=CC(C)=CC=1)(=O)(=O)[O-].O(C(NC1C=CC=CC=1)=O)CC(COC(NC1C=CC=CC=1)=O)[NH+](CC)CC |f:3.4|"/>
+<entry key="98" type="xstring" value="O(CCC)C(C)C1(C(=O)NC(=O)NC1=O)CC=C.FC(C1C=C([N+](=O)[O-])C(N(CCC)CC2CC2)=C([N+](=O)[O-])C=1)(F)F&gt;&gt;S(C1C=CC(C)=CC=1)(=O)(=O)[O-].O(C(NC1C=CC=CC=1)=O)CC(COC(NC1C=CC=CC=1)=O)[NH+](CC)CC.O1C(=O)C(C(C2C=CC=CC=2)=O)CC1COCC#C |f:2.3|"/>
+<entry key="99" type="xstring" value="FC(C1C=C([N+](=O)[O-])C(N(CCC)CC2CC2)=C([N+](=O)[O-])C=1)(F)F.S(C1C=CC(C)=CC=1)(=O)(=O)[O-].O(C(NC1C=CC=CC=1)=O)CC(COC(NC1C=CC=CC=1)=O)[NH+](CC)CC&gt;&gt;O1C(=O)C(C(C2C=CC=CC=2)=O)CC1COCC#C.FC(C1C=CC=C2C=1C1CCCCC=1N2CCCN(C)C)(F)F |f:1.2|"/>
+<entry key="100" type="xstring" value="S(C1C=CC(C)=CC=1)(=O)(=O)[O-].O(C(NC1C=CC=CC=1)=O)CC(COC(NC1C=CC=CC=1)=O)[NH+](CC)CC.O1C(=O)C(C(C2C=CC=CC=2)=O)CC1COCC#C&gt;&gt;FC(C1C=CC=C2C=1C1CCCCC=1N2CCCN(C)C)(F)F.O=C(C)CC1N=C(N)N=C(N)N=1 |f:0.1|"/>
+<entry key="101" type="xstring" value="O1C(=O)C(C(C2C=CC=CC=2)=O)CC1COCC#C.FC(C1C=CC=C2C=1C1CCCCC=1N2CCCN(C)C)(F)F&gt;&gt;O=C(C)CC1N=C(N)N=C(N)N=1.ClC1N=C(N)N=C(C=[N+]=[N-])N=1"/>
+<entry key="102" type="xstring" value="FC(C1C=CC=C2C=1C1CCCCC=1N2CCCN(C)C)(F)F.O=C(C)CC1N=C(N)N=C(N)N=1&gt;&gt;ClC1N=C(N)N=C(C=[N+]=[N-])N=1.ClC(C1=NC(=O)N=C(C(Cl)(Cl)Cl)N1)(Cl)Cl"/>
+<entry key="103" type="xstring" value="O=C(C)CC1N=C(N)N=C(N)N=1.ClC1N=C(N)N=C(C=[N+]=[N-])N=1&gt;&gt;ClC(C1=NC(=O)N=C(C(Cl)(Cl)Cl)N1)(Cl)Cl.[Cl-].O1CC[NH+](CCOC2C(OC)=CC(C(C3C=CC=CC=3)=O)=CC=2OC)CC1 |f:3.4|"/>
+<entry key="104" type="xstring" value="ClC1N=C(N)N=C(C=[N+]=[N-])N=1.ClC(C1=NC(=O)N=C(C(Cl)(Cl)Cl)N1)(Cl)Cl&gt;&gt;[Cl-].O1CC[NH+](CCOC2C(OC)=CC(C(C3C=CC=CC=3)=O)=CC=2OC)CC1.O[C@@H](C1C=CC(O)=C(O)C=1)[C@H]1CCCCN1 |f:2.3|"/>
+<entry key="105" type="xstring" value="ClC(C1=NC(=O)N=C(C(Cl)(Cl)Cl)N1)(Cl)Cl.[Cl-].O1CC[NH+](CCOC2C(OC)=CC(C(C3C=CC=CC=3)=O)=CC=2OC)CC1&gt;&gt;O[C@@H](C1C=CC(O)=C(O)C=1)[C@H]1CCCCN1.O(C)C1C=CC2=C(C(CC(NO)=O)=C(C)N2)C=1 |f:1.2|"/>
+<entry key="106" type="xstring" value="[Cl-].O1CC[NH+](CCOC2C(OC)=CC(C(C3C=CC=CC=3)=O)=CC=2OC)CC1.O[C@@H](C1C=CC(O)=C(O)C=1)[C@H]1CCCCN1&gt;&gt;O(C)C1C=CC2=C(C(CC(NO)=O)=C(C)N2)C=1.[Cl-].OC(C1C=CC(C)=CC=1)C(C)[NH3+] |f:0.1,4.5|"/>
+<entry key="107" type="xstring" value="O[C@@H](C1C=CC(O)=C(O)C=1)[C@H]1CCCCN1.O(C)C1C=CC2=C(C(CC(NO)=O)=C(C)N2)C=1&gt;&gt;[Cl-].OC(C1C=CC(C)=CC=1)C(C)[NH3+].ClC1=CC(Cl)=CC2C1=CC(=C1C=CC(C(F)(F)F)=CC1=2)C(CCN(CCCC)CCCC)O |f:2.3|"/>
+<entry key="108" type="xstring" value="O(C)C1C=CC2=C(C(CC(NO)=O)=C(C)N2)C=1.[Cl-].OC(C1C=CC(C)=CC=1)C(C)[NH3+]&gt;&gt;ClC1=CC(Cl)=CC2C1=CC(=C1C=CC(C(F)(F)F)=CC1=2)C(CCN(CCCC)CCCC)O.ClC1C=CC2=C(OCCC=C2CCCN(C)C)C=1 |f:1.2|"/>
+<entry key="109" type="xstring" value="[Cl-].OC(C1C=CC(C)=CC=1)C(C)[NH3+].ClC1=CC(Cl)=CC2C1=CC(=C1C=CC(C(F)(F)F)=CC1=2)C(CCN(CCCC)CCCC)O&gt;&gt;ClC1C=CC2=C(OCCC=C2CCCN(C)C)C=1.ClCC(N(CC(=O)OCC)C1C(CC)=CC=CC=1CC)=O |f:0.1|"/>
+<entry key="110" type="xstring" value="ClC1=CC(Cl)=CC2C1=CC(=C1C=CC(C(F)(F)F)=CC1=2)C(CCN(CCCC)CCCC)O.ClC1C=CC2=C(OCCC=C2CCCN(C)C)C=1&gt;&gt;ClCC(N(CC(=O)OCC)C1C(CC)=CC=CC=1CC)=O.O(C)C1=C(OC)C=C2CCN(CCC)C3CC4=CC=CC=C4C1=C23"/>
+<entry key="111" type="xstring" value="ClC1C=CC2=C(OCCC=C2CCCN(C)C)C=1.ClCC(N(CC(=O)OCC)C1C(CC)=CC=CC=1CC)=O&gt;&gt;O(C)C1=C(OC)C=C2CCN(CCC)C3CC4=CC=CC=C4C1=C23.O(CCC)C1=CC=CC=C1NC(CN(CC)CC)=O"/>
+<entry key="112" type="xstring" value="ClCC(N(CC(=O)OCC)C1C(CC)=CC=CC=1CC)=O.O(C)C1=C(OC)C=C2CCN(CCC)C3CC4=CC=CC=C4C1=C23&gt;&gt;O(CCC)C1=CC=CC=C1NC(CN(CC)CC)=O.O(C(C1=CC=CC=C1C(=O)OCCCC)=O)CCCCCCCC(C)C"/>
+<entry key="113" type="xstring" value="O(C)C1=C(OC)C=C2CCN(CCC)C3CC4=CC=CC=C4C1=C23.O(CCC)C1=CC=CC=C1NC(CN(CC)CC)=O&gt;&gt;O(C(C1=CC=CC=C1C(=O)OCCCC)=O)CCCCCCCC(C)C.OC1(CC#CCN(CC)CC)CC2CCC1(C)C2(C)C"/>
+<entry key="114" type="xstring" value="O(CCC)C1=CC=CC=C1NC(CN(CC)CC)=O.O(C(C1=CC=CC=C1C(=O)OCCCC)=O)CCCCCCCC(C)C&gt;&gt;OC1(CC#CCN(CC)CC)CC2CCC1(C)C2(C)C.[O-][N+]1=C(C(=O)O)C=NC=C1C"/>
+<entry key="115" type="xstring" value="O(C(C1=CC=CC=C1C(=O)OCCCC)=O)CCCCCCCC(C)C.OC1(CC#CCN(CC)CC)CC2CCC1(C)C2(C)C&gt;&gt;[O-][N+]1=C(C(=O)O)C=NC=C1C.ClC1C=CC(OC(C(=O)OC2=CC=CC=C2C(=O)OCC)(C)C)=CC=1"/>
+<entry key="116" type="xstring" value="OC1(CC#CCN(CC)CC)CC2CCC1(C)C2(C)C.[O-][N+]1=C(C(=O)O)C=NC=C1C&gt;&gt;ClC1C=CC(OC(C(=O)OC2=CC=CC=C2C(=O)OCC)(C)C)=CC=1.S1C=C(CCNC)C2=CC=CC=C12"/>
+<entry key="117" type="xstring" value="[O-][N+]1=C(C(=O)O)C=NC=C1C.ClC1C=CC(OC(C(=O)OC2=CC=CC=C2C(=O)OCC)(C)C)=CC=1&gt;&gt;S1C=C(CCNC)C2=CC=CC=C12.O=C(CN(CC)CC)NC1C=CC(C(C)=O)=CC=1"/>
+<entry key="118" type="xstring" value="ClC1C=CC(OC(C(=O)OC2=CC=CC=C2C(=O)OCC)(C)C)=CC=1.S1C=C(CCNC)C2=CC=CC=C12&gt;&gt;O=C(CN(CC)CC)NC1C=CC(C(C)=O)=CC=1.O1C2=C(C=C3CC[N+](C)(C)C(C3=C2)CC2C=CC(=CC=2)OC2=C(C=CC(=C2)CC2C3C(CC[N+]2(C)C)=CC(OC)=C(OC)C1=3)O)OC"/>
+<entry key="119" type="xstring" value="S1C=C(CCNC)C2=CC=CC=C12.O=C(CN(CC)CC)NC1C=CC(C(C)=O)=CC=1&gt;&gt;O1C2=C(C=C3CC[N+](C)(C)C(C3=C2)CC2C=CC(=CC=2)OC2=C(C=CC(=C2)CC2C3C(CC[N+]2(C)C)=CC(OC)=C(OC)C1=3)O)OC.ClC1C(Cl)=C(OCC(=O)O)C=CC=1C(C1=CC=CO1)=O"/>
+<entry key="120" type="xstring" value="O=C(CN(CC)CC)NC1C=CC(C(C)=O)=CC=1.O1C2=C(C=C3CC[N+](C)(C)C(C3=C2)CC2C=CC(=CC=2)OC2=C(C=CC(=C2)CC2C3C(CC[N+]2(C)C)=CC(OC)=C(OC)C1=3)O)OC&gt;&gt;ClC1C(Cl)=C(OCC(=O)O)C=CC=1C(C1=CC=CO1)=O.OC1=CC=CC2=CC3C=CC4C=CC=C5C=CC(C=3C=45)=C12"/>
+<entry key="121" type="xstring" value="O1C2=C(C=C3CC[N+](C)(C)C(C3=C2)CC2C=CC(=CC=2)OC2=C(C=CC(=C2)CC2C3C(CC[N+]2(C)C)=CC(OC)=C(OC)C1=3)O)OC.ClC1C(Cl)=C(OCC(=O)O)C=CC=1C(C1=CC=CO1)=O&gt;&gt;OC1=CC=CC2=CC3C=CC4C=CC=C5C=CC(C=3C=45)=C12.N1(CCC)CC2=CC=CC=C2CC1"/>
+<entry key="122" type="xstring" value="ClC1C(Cl)=C(OCC(=O)O)C=CC=1C(C1=CC=CO1)=O.OC1=CC=CC2=CC3C=CC4C=CC=C5C=CC(C=3C=45)=C12&gt;&gt;N1(CCC)CC2=CC=CC=C2CC1.O(C)C1C=CC(C(C2C=CC=CC=2)=O)=CC=1CN(C)C"/>
+<entry key="123" type="xstring" value="OC1=CC=CC2=CC3C=CC4C=CC=C5C=CC(C=3C=45)=C12.N1(CCC)CC2=CC=CC=C2CC1&gt;&gt;O(C)C1C=CC(C(C2C=CC=CC=2)=O)=CC=1CN(C)C.O1CCN(CCCN2C(=O)CC3=CC=CC=C3C(C3C=CC=CC=3)=N2)CC1"/>
+<entry key="124" type="xstring" value="N1(CCC)CC2=CC=CC=C2CC1.O(C)C1C=CC(C(C2C=CC=CC=2)=O)=CC=1CN(C)C&gt;&gt;O1CCN(CCCN2C(=O)CC3=CC=CC=C3C(C3C=CC=CC=3)=N2)CC1.O1C(C(=O)OCC=O)CC(=O)C2C=CC(=CC12)O"/>
+<entry key="125" type="xstring" value="O(C)C1C=CC(C(C2C=CC=CC=2)=O)=CC=1CN(C)C.O1CCN(CCCN2C(=O)CC3=CC=CC=C3C(C3C=CC=CC=3)=N2)CC1&gt;&gt;O1C(C(=O)OCC=O)CC(=O)C2C=CC(=CC12)O.O1N=C2C(=CC=C(N3CCN(CCO)CC3)C2=[N+]1[O-])[N+](=O)[O-]"/>
+<entry key="126" type="xstring" value="O1CCN(CCCN2C(=O)CC3=CC=CC=C3C(C3C=CC=CC=3)=N2)CC1.O1C(C(=O)OCC=O)CC(=O)C2C=CC(=CC12)O&gt;&gt;O1N=C2C(=CC=C(N3CCN(CCO)CC3)C2=[N+]1[O-])[N+](=O)[O-].N1C2CCCC=2C(N)=C2C=1CCC2"/>
+<entry key="127" type="xstring" value="O1C(C(=O)OCC=O)CC(=O)C2C=CC(=CC12)O.O1N=C2C(=CC=C(N3CCN(CCO)CC3)C2=[N+]1[O-])[N+](=O)[O-]&gt;&gt;N1C2CCCC=2C(N)=C2C=1CCC2.[Cl-].O(C1=C(OC)C(OC)=C2C(C(C)=CC(=O)O2)=C1)CC(C[NH2+]CC(C)C)O |f:3.4|"/>
+<entry key="128" type="xstring" value="O1N=C2C(=CC=C(N3CCN(CCO)CC3)C2=[N+]1[O-])[N+](=O)[O-].N1C2CCCC=2C(N)=C2C=1CCC2&gt;&gt;[Cl-].O(C1=C(OC)C(OC)=C2C(C(C)=CC(=O)O2)=C1)CC(C[NH2+]CC(C)C)O.[Cl-].O(C(CC)=O)C(CC)C(C1C=CC=CC=1)(C1C=CC=CC=1)CC(C)[NH+](C)C |f:2.3,4.5|"/>
+<entry key="129" type="xstring" value="N1C2CCCC=2C(N)=C2C=1CCC2.[Cl-].O(C1=C(OC)C(OC)=C2C(C(C)=CC(=O)O2)=C1)CC(C[NH2+]CC(C)C)O&gt;&gt;[Cl-].O(C(CC)=O)C(CC)C(C1C=CC=CC=1)(C1C=CC=CC=1)CC(C)[NH+](C)C.S(CCN(C)CCSSC#N)SC#N |f:1.2,3.4|"/>
+<entry key="130" type="xstring" value="[Cl-].O(C1=C(OC)C(OC)=C2C(C(C)=CC(=O)O2)=C1)CC(C[NH2+]CC(C)C)O.[Cl-].O(C(CC)=O)C(CC)C(C1C=CC=CC=1)(C1C=CC=CC=1)CC(C)[NH+](C)C&gt;&gt;S(CCN(C)CCSSC#N)SC#N.ClC1C=CC(CCC2C3C=C(C)C(C)=CC=3CC(C)N2C)=CC=1 |f:0.1,2.3|"/>
+<entry key="131" type="xstring" value="[Cl-].O(C(CC)=O)C(CC)C(C1C=CC=CC=1)(C1C=CC=CC=1)CC(C)[NH+](C)C.S(CCN(C)CCSSC#N)SC#N&gt;&gt;ClC1C=CC(CCC2C3C=C(C)C(C)=CC=3CC(C)N2C)=CC=1.ClC1C=CC(OCC2C=CC=CC=2)=C2CCCC([NH+](C)C)C=12.[Cl-] |f:0.1,4.5|"/>
+<entry key="132" type="xstring" value="S(CCN(C)CCSSC#N)SC#N.ClC1C=CC(CCC2C3C=C(C)C(C)=CC=3CC(C)N2C)=CC=1&gt;&gt;ClC1C=CC(OCC2C=CC=CC=2)=C2CCCC([NH+](C)C)C=12.[Cl-].Cl.Cl.OC(COC1=CC=CC=C1C(C)=O)CN1CCN(C2C=CC=C(OC)C=2)CC1 |f:2.3,4.5.6|"/>
+<entry key="133" type="xstring" value="ClC1C=CC(CCC2C3C=C(C)C(C)=CC=3CC(C)N2C)=CC=1.ClC1C=CC(OCC2C=CC=CC=2)=C2CCCC([NH+](C)C)C=12.[Cl-]&gt;&gt;Cl.Cl.OC(COC1=CC=CC=C1C(C)=O)CN1CCN(C2C=CC=C(OC)C=2)CC1.[Cl-].O(C(N(C)C)=O)C1=CC=CC([N+](C)(CC)CC)=C1 |f:1.2,3.4.5,6.7|"/>
+<entry key="134" type="xstring" value="ClC1C=CC(OCC2C=CC=CC=2)=C2CCCC([NH+](C)C)C=12.[Cl-].Cl.Cl.OC(COC1=CC=CC=C1C(C)=O)CN1CCN(C2C=CC=C(OC)C=2)CC1&gt;&gt;[Cl-].O(C(N(C)C)=O)C1=CC=CC([N+](C)(CC)CC)=C1.[I-].[I-].O(CCC[N+](C)(C)C)CCC[N+](C)(C)C |f:0.1,2.3.4,5.6,7.8.9|"/>
+<entry key="135" type="xstring" value="Cl.Cl.OC(COC1=CC=CC=C1C(C)=O)CN1CCN(C2C=CC=C(OC)C=2)CC1.[Cl-].O(C(N(C)C)=O)C1=CC=CC([N+](C)(CC)CC)=C1&gt;&gt;[I-].[I-].O(CCC[N+](C)(C)C)CCC[N+](C)(C)C.[N+]1(C=CC2=CC=CC=C2C=1)CCCN(C)C |f:0.1.2,3.4,5.6.7|"/>
+<entry key="136" type="xstring" value="[Cl-].O(C(N(C)C)=O)C1=CC=CC([N+](C)(CC)CC)=C1.[I-].[I-].O(CCC[N+](C)(C)C)CCC[N+](C)(C)C&gt;&gt;[N+]1(C=CC2=CC=CC=C2C=1)CCCN(C)C.O1N=C2C(=CC=C(N3CCN(C4=CC=CC(C)=C4)CC3)C2=N1)[N+](=O)[O-] |f:0.1,2.3.4|"/>
+<entry key="137" type="xstring" value="[I-].[I-].O(CCC[N+](C)(C)C)CCC[N+](C)(C)C.[N+]1(C=CC2=CC=CC=C2C=1)CCCN(C)C&gt;&gt;O1N=C2C(=CC=C(N3CCN(C4=CC=CC(C)=C4)CC3)C2=N1)[N+](=O)[O-].O(CCCOC1=CC=CC=C1NC1C2=CC=CC=C2N=C2C=CC=CC=12)C1=CC=CC=C1NC1C2=CC=CC=C2N=C2C=CC=CC=12 |f:0.1.2|"/>
+<entry key="138" type="xstring" value="[N+]1(C=CC2=CC=CC=C2C=1)CCCN(C)C.O1N=C2C(=CC=C(N3CCN(C4=CC=CC(C)=C4)CC3)C2=N1)[N+](=O)[O-]&gt;&gt;O(CCCOC1=CC=CC=C1NC1C2=CC=CC=C2N=C2C=CC=CC=12)C1=CC=CC=C1NC1C2=CC=CC=C2N=C2C=CC=CC=12.[Br-].O(C(N(C)C)=O)C1C=CC=NC=1C[N+](C)(CCCC)CCCC |f:3.4|"/>
+<entry key="139" type="xstring" value="O1N=C2C(=CC=C(N3CCN(C4=CC=CC(C)=C4)CC3)C2=N1)[N+](=O)[O-].O(CCCOC1=CC=CC=C1NC1C2=CC=CC=C2N=C2C=CC=CC=12)C1=CC=CC=C1NC1C2=CC=CC=C2N=C2C=CC=CC=12&gt;&gt;[Br-].O(C(N(C)C)=O)C1C=CC=NC=1C[N+](C)(CCCC)CCCC.[Cl-].OC1=CC=CC(C23CCCC(C2)[NH+](C2CCCC2)C3C)=C1 |f:2.3,4.5|"/>
+<entry key="140" type="xstring" value="O(CCCOC1=CC=CC=C1NC1C2=CC=CC=C2N=C2C=CC=CC=12)C1=CC=CC=C1NC1C2=CC=CC=C2N=C2C=CC=CC=12.[Br-].O(C(N(C)C)=O)C1C=CC=NC=1C[N+](C)(CCCC)CCCC&gt;&gt;[Cl-].OC1=CC=CC(C23CCCC(C2)[NH+](C2CCCC2)C3C)=C1.O(C(C1C=CC=CC=1)=O)CCCN1CCCC(C)C1C |f:1.2,3.4|"/>
+<entry key="141" type="xstring" value="[Br-].O(C(N(C)C)=O)C1C=CC=NC=1C[N+](C)(CCCC)CCCC.[Cl-].OC1=CC=CC(C23CCCC(C2)[NH+](C2CCCC2)C3C)=C1&gt;&gt;O(C(C1C=CC=CC=1)=O)CCCN1CCCC(C)C1C.O1CCN(CC2=C(O)C=CC3C(C=C(C)OC2=3)=O)CC1 |f:0.1,2.3|"/>
+<entry key="142" type="xstring" value="[Cl-].OC1=CC=CC(C23CCCC(C2)[NH+](C2CCCC2)C3C)=C1.O(C(C1C=CC=CC=1)=O)CCCN1CCCC(C)C1C&gt;&gt;O1CCN(CC2=C(O)C=CC3C(C=C(C)OC2=3)=O)CC1.N12C=CC=CC1=NC1C=CC(N)=NC2=1 |f:0.1|"/>
+<entry key="143" type="xstring" value="O(C(C1C=CC=CC=1)=O)CCCN1CCCC(C)C1C.O1CCN(CC2=C(O)C=CC3C(C=C(C)OC2=3)=O)CC1&gt;&gt;N12C=CC=CC1=NC1C=CC(N)=NC2=1.ClC1C=CC2=C(C(CC3=CC=CC=C3S2)SCC[NH+](C)C)C=1.[Cl-] |f:3.4|"/>
+<entry key="144" type="xstring" value="O1CCN(CC2=C(O)C=CC3C(C=C(C)OC2=3)=O)CC1.N12C=CC=CC1=NC1C=CC(N)=NC2=1&gt;&gt;ClC1C=CC2=C(C(CC3=CC=CC=C3S2)SCC[NH+](C)C)C=1.[Cl-].[Cl-].O(C(C1C=CC(N)=CC=1)=O)CCC1CCCC[NH2+]1 |f:2.3,4.5|"/>
+<entry key="145" type="xstring" value="N12C=CC=CC1=NC1C=CC(N)=NC2=1.ClC1C=CC2=C(C(CC3=CC=CC=C3S2)SCC[NH+](C)C)C=1.[Cl-]&gt;&gt;[Cl-].O(C(C1C=CC(N)=CC=1)=O)CCC1CCCC[NH2+]1.ClC1=CC(Cl)=C(Cl)C=C1C1=CC=CC=C1Cl |f:1.2,3.4|"/>
+<entry key="146" type="xstring" value="ClC1C=CC2=C(C(CC3=CC=CC=C3S2)SCC[NH+](C)C)C=1.[Cl-].[Cl-].O(C(C1C=CC(N)=CC=1)=O)CCC1CCCC[NH2+]1&gt;&gt;ClC1=CC(Cl)=C(Cl)C=C1C1=CC=CC=C1Cl.[Cl-].S(CCCCCCC)(NC1C=CC([NH2+]C2=C3C=CC=NC3=NC3=CC=CC=C23)=C(OC)C=1)(=O)=O |f:0.1,2.3,5.6|"/>
+<entry key="147" type="xstring" value="[Cl-].O(C(C1C=CC(N)=CC=1)=O)CCC1CCCC[NH2+]1.ClC1=CC(Cl)=C(Cl)C=C1C1=CC=CC=C1Cl&gt;&gt;[Cl-].S(CCCCCCC)(NC1C=CC([NH2+]C2=C3C=CC=NC3=NC3=CC=CC=C23)=C(OC)C=1)(=O)=O.ClC1C=CC(C(N2C3C=CC(=CC=3C(CC(=O)OCCN3CCN(C(CCC(C(N(CCC)CCC)=O)NC(C4C=CC=CC=4)=O)=O)CC3)=C2C)OC)=O)=CC=1 |f:0.1,3.4|"/>
+<entry key="148" type="xstring" value="ClC1=CC(Cl)=C(Cl)C=C1C1=CC=CC=C1Cl.[Cl-].S(CCCCCCC)(NC1C=CC([NH2+]C2=C3C=CC=NC3=NC3=CC=CC=C23)=C(OC)C=1)(=O)=O&gt;&gt;ClC1C=CC(C(N2C3C=CC(=CC=3C(CC(=O)OCCN3CCN(C(CCC(C(N(CCC)CCC)=O)NC(C4C=CC=CC=4)=O)=O)CC3)=C2C)OC)=O)=CC=1.[Cl-].[Cl-].[N+]1(CC)=C(C)NC2C=C(C=CC1=2)[NH3+] |f:1.2,4.5.6|"/>
+<entry key="149" type="xstring" value="[Cl-].S(CCCCCCC)(NC1C=CC([NH2+]C2=C3C=CC=NC3=NC3=CC=CC=C23)=C(OC)C=1)(=O)=O.ClC1C=CC(C(N2C3C=CC(=CC=3C(CC(=O)OCCN3CCN(C(CCC(C(N(CCC)CCC)=O)NC(C4C=CC=CC=4)=O)=O)CC3)=C2C)OC)=O)=CC=1&gt;&gt;[Cl-].[Cl-].[N+]1(CC)=C(C)NC2C=C(C=CC1=2)[NH3+].O(C(NC1C=CC=CC=1)=O)C1C=CC2=C(C(=CN2)CCN)C=1 |f:0.1,3.4.5|"/>
+<entry key="150" type="xstring" value="ClC1C=CC(C(N2C3C=CC(=CC=3C(CC(=O)OCCN3CCN(C(CCC(C(N(CCC)CCC)=O)NC(C4C=CC=CC=4)=O)=O)CC3)=C2C)OC)=O)=CC=1.[Cl-].[Cl-].[N+]1(CC)=C(C)NC2C=C(C=CC1=2)[NH3+]&gt;&gt;O(C(NC1C=CC=CC=1)=O)C1C=CC2=C(C(=CN2)CCN)C=1.S(C1C=CC(OC)=CC=1C(=O)OC)(N(C)C)(=O)=O |f:1.2.3|"/>
+<entry key="151" type="xstring" value="[Cl-].[Cl-].[N+]1(CC)=C(C)NC2C=C(C=CC1=2)[NH3+].O(C(NC1C=CC=CC=1)=O)C1C=CC2=C(C(=CN2)CCN)C=1&gt;&gt;S(C1C=CC(OC)=CC=1C(=O)OC)(N(C)C)(=O)=O.IC1C=CC([NH2+]C2C3=CC=CC=C3N=C3C=CC=CC=23)=CC=1.[Cl-] |f:0.1.2,5.6|"/>
+<entry key="152" type="xstring" value="O(C(NC1C=CC=CC=1)=O)C1C=CC2=C(C(=CN2)CCN)C=1.S(C1C=CC(OC)=CC=1C(=O)OC)(N(C)C)(=O)=O&gt;&gt;IC1C=CC([NH2+]C2C3=CC=CC=C3N=C3C=CC=CC=23)=CC=1.[Cl-].F[C@@H]1C2=CC(C=CC2(C)[C@H]2[C@H](C[C@]3(C)[C@@]4(C(CO)=O)[C@H](OC(C)(C)O4)CC3[C@@H]2C1)O)=O.F[C@@H]1C2=CC(C=CC2(C)[C@H]2[C@H](C[C@]3(C)[C@@]4(C(CO)=O)[C@H](OC(C)(C)O4)CC3[C@@H]2C1)O)=O.O |f:2.3,4.5.6|"/>
+<entry key="153" type="xstring" value="S(C1C=CC(OC)=CC=1C(=O)OC)(N(C)C)(=O)=O.IC1C=CC([NH2+]C2C3=CC=CC=C3N=C3C=CC=CC=23)=CC=1.[Cl-]&gt;&gt;F[C@@H]1C2=CC(C=CC2(C)[C@H]2[C@H](C[C@]3(C)[C@@]4(C(CO)=O)[C@H](OC(C)(C)O4)CC3[C@@H]2C1)O)=O.F[C@@H]1C2=CC(C=CC2(C)[C@H]2[C@H](C[C@]3(C)[C@@]4(C(CO)=O)[C@H](OC(C)(C)O4)CC3[C@@H]2C1)O)=O.O.[N+](C)(CC)(CCCCCC[N+](C)(CC)CC)CCCCCC[N+](C)(CC)CCCCCC[N+](C)(CC)CC |f:1.2,3.4.5|"/>
+<entry key="154" type="xstring" value="IC1C=CC([NH2+]C2C3=CC=CC=C3N=C3C=CC=CC=23)=CC=1.[Cl-].F[C@@H]1C2=CC(C=CC2(C)[C@H]2[C@H](C[C@]3(C)[C@@]4(C(CO)=O)[C@H](OC(C)(C)O4)CC3[C@@H]2C1)O)=O.F[C@@H]1C2=CC(C=CC2(C)[C@H]2[C@H](C[C@]3(C)[C@@]4(C(CO)=O)[C@H](OC(C)(C)O4)CC3[C@@H]2C1)O)=O.O&gt;&gt;[N+](C)(CC)(CCCCCC[N+](C)(CC)CC)CCCCCC[N+](C)(CC)CCCCCC[N+](C)(CC)CC.O(C)C1=CC=CC=C1/C=N/C1C=CC(N2CCN(C3=CC=CC=C3C)CC2)=CC=1 |f:0.1,2.3.4|"/>
+<entry key="155" type="xstring" value="F[C@@H]1C2=CC(C=CC2(C)[C@H]2[C@H](C[C@]3(C)[C@@]4(C(CO)=O)[C@H](OC(C)(C)O4)CC3[C@@H]2C1)O)=O.F[C@@H]1C2=CC(C=CC2(C)[C@H]2[C@H](C[C@]3(C)[C@@]4(C(CO)=O)[C@H](OC(C)(C)O4)CC3[C@@H]2C1)O)=O.O.[N+](C)(CC)(CCCCCC[N+](C)(CC)CC)CCCCCC[N+](C)(CC)CCCCCC[N+](C)(CC)CC&gt;&gt;O(C)C1=CC=CC=C1/C=N/C1C=CC(N2CCN(C3=CC=CC=C3C)CC2)=CC=1.[Br-].[Br-].FC1C=CC(/[NH+]=C(\C2C=CC=CC=2)/NC2C=CC(OCC[NH+](C(C)C)C(C)C)=CC=2)=CC=1 |f:0.1.2,5.6.7|"/>
+<entry key="156" type="xstring" value="[N+](C)(CC)(CCCCCC[N+](C)(CC)CC)CCCCCC[N+](C)(CC)CCCCCC[N+](C)(CC)CC.O(C)C1=CC=CC=C1/C=N/C1C=CC(N2CCN(C3=CC=CC=C3C)CC2)=CC=1&gt;&gt;[Br-].[Br-].FC1C=CC(/[NH+]=C(\C2C=CC=CC=2)/NC2C=CC(OCC[NH+](C(C)C)C(C)C)=CC=2)=CC=1.ClC1=CC=CC(C2SCCS2)=C1 |f:2.3.4|"/>
+<entry key="157" type="xstring" value="O(C)C1=CC=CC=C1/C=N/C1C=CC(N2CCN(C3=CC=CC=C3C)CC2)=CC=1.[Br-].[Br-].FC1C=CC(/[NH+]=C(\C2C=CC=CC=2)/NC2C=CC(OCC[NH+](C(C)C)C(C)C)=CC=2)=CC=1&gt;&gt;ClC1=CC=CC(C2SCCS2)=C1.O(C(C)C)C([C@]1(C2C=CC=CC=2)C[C@@H]1CN(C)C)=O |f:1.2.3|"/>
+<entry key="158" type="xstring" value="[Br-].[Br-].FC1C=CC(/[NH+]=C(\C2C=CC=CC=2)/NC2C=CC(OCC[NH+](C(C)C)C(C)C)=CC=2)=CC=1.ClC1=CC=CC(C2SCCS2)=C1&gt;&gt;O(C(C)C)C([C@]1(C2C=CC=CC=2)C[C@@H]1CN(C)C)=O.FC(C1C=CC=CC=1)(C1C=CC=CC=1)C(=O)OC1CN2CCC1CC2 |f:0.1.2|"/>
+<entry key="159" type="xstring" value="ClC1=CC=CC(C2SCCS2)=C1.O(C(C)C)C([C@]1(C2C=CC=CC=2)C[C@@H]1CN(C)C)=O&gt;&gt;FC(C1C=CC=CC=1)(C1C=CC=CC=1)C(=O)OC1CN2CCC1CC2.S1C(/N=C(\N)/N)=NC(C2=CN=C(C)N2)=C1"/>
+<entry key="160" type="xstring" value="O(C(C)C)C([C@]1(C2C=CC=CC=2)C[C@@H]1CN(C)C)=O.FC(C1C=CC=CC=1)(C1C=CC=CC=1)C(=O)OC1CN2CCC1CC2&gt;&gt;S1C(/N=C(\N)/N)=NC(C2=CN=C(C)N2)=C1.[N+](C)(C)(C)CCCC/N=C(\N)/N"/>
+<entry key="161" type="xstring" value="FC(C1C=CC=CC=1)(C1C=CC=CC=1)C(=O)OC1CN2CCC1CC2.S1C(/N=C(\N)/N)=NC(C2=CN=C(C)N2)=C1&gt;&gt;[N+](C)(C)(C)CCCC/N=C(\N)/N.S1C(SCC(NN=CC2C=CC(N(CC)CC)=CC=2)=O)=NC2=CC=CC=C12"/>
+<entry key="162" type="xstring" value="S1C(/N=C(\N)/N)=NC(C2=CN=C(C)N2)=C1.[N+](C)(C)(C)CCCC/N=C(\N)/N&gt;&gt;S1C(SCC(NN=CC2C=CC(N(CC)CC)=CC=2)=O)=NC2=CC=CC=C12.O=C(C1C=CC(N)=CC=1)NC1=C(CC)C=CC=C1C(C)C"/>
+<entry key="163" type="xstring" value="[N+](C)(C)(C)CCCC/N=C(\N)/N.S1C(SCC(NN=CC2C=CC(N(CC)CC)=CC=2)=O)=NC2=CC=CC=C12&gt;&gt;O=C(C1C=CC(N)=CC=1)NC1=C(CC)C=CC=C1C(C)C.ClC1C=CC(/N=C2/N(NC(C3C=CC(NC(C4C=C(OC)C(OC)=C(OC)C=4)=O)=CC=3)=O)C(=O)CS/2)=CC=1"/>
+<entry key="164" type="xstring" value="S1C(SCC(NN=CC2C=CC(N(CC)CC)=CC=2)=O)=NC2=CC=CC=C12.O=C(C1C=CC(N)=CC=1)NC1=C(CC)C=CC=C1C(C)C&gt;&gt;ClC1C=CC(/N=C2/N(NC(C3C=CC(NC(C4C=C(OC)C(OC)=C(OC)C=4)=O)=CC=3)=O)C(=O)CS/2)=CC=1.O=C(C[N+](C)(CC)CC)NC1C(C)=CC(C)=C(NC(C[N+](C)(CC)CC)=O)C=1"/>
+<entry key="165" type="xstring" value="O=C(C1C=CC(N)=CC=1)NC1=C(CC)C=CC=C1C(C)C.ClC1C=CC(/N=C2/N(NC(C3C=CC(NC(C4C=C(OC)C(OC)=C(OC)C=4)=O)=CC=3)=O)C(=O)CS/2)=CC=1&gt;&gt;O=C(C[N+](C)(CC)CC)NC1C(C)=CC(C)=C(NC(C[N+](C)(CC)CC)=O)C=1.O1CCN=C1NC1=C(C)C=CC(C(C)C)=C1"/>
+<entry key="166" type="xstring" value="ClC1C=CC(/N=C2/N(NC(C3C=CC(NC(C4C=C(OC)C(OC)=C(OC)C=4)=O)=CC=3)=O)C(=O)CS/2)=CC=1.O=C(C[N+](C)(CC)CC)NC1C(C)=CC(C)=C(NC(C[N+](C)(CC)CC)=O)C=1&gt;&gt;O1CCN=C1NC1=C(C)C=CC(C(C)C)=C1.O=C(CCCOC1C=CC2=C(CN3CC(=O)N=C3N2)C=1)N(C)C1CCCCC1"/>
+<entry key="167" type="xstring" value="O=C(C[N+](C)(CC)CC)NC1C(C)=CC(C)=C(NC(C[N+](C)(CC)CC)=O)C=1.O1CCN=C1NC1=C(C)C=CC(C(C)C)=C1&gt;&gt;O=C(CCCOC1C=CC2=C(CN3CC(=O)N=C3N2)C=1)N(C)C1CCCCC1.ClC1C=CC(NCCOCCCC)=C(C(N)=O)C=1"/>
+<entry key="168" type="xstring" value="O1CCN=C1NC1=C(C)C=CC(C(C)C)=C1.O=C(CCCOC1C=CC2=C(CN3CC(=O)N=C3N2)C=1)N(C)C1CCCCC1&gt;&gt;ClC1C=CC(NCCOCCCC)=C(C(N)=O)C=1.S1C(NC)=C(CCN(C)C)/C(=N/C)/S1"/>
+<entry key="169" type="xstring" value="O=C(CCCOC1C=CC2=C(CN3CC(=O)N=C3N2)C=1)N(C)C1CCCCC1.ClC1C=CC(NCCOCCCC)=C(C(N)=O)C=1&gt;&gt;S1C(NC)=C(CCN(C)C)/C(=N/C)/S1.S(CC(=O)O)C1C=CC([N+](=O)[O-])=CC=1"/>
+<entry key="170" type="xstring" value="ClC1C=CC(NCCOCCCC)=C(C(N)=O)C=1.S1C(NC)=C(CCN(C)C)/C(=N/C)/S1&gt;&gt;S(CC(=O)O)C1C=CC([N+](=O)[O-])=CC=1.ClCC(NC1C=CC(C(NCC[NH+](CC)CC)=O)=CC=1)=O.OC(C(=O)[O-])=O |f:3.4|"/>
+<entry key="171" type="xstring" value="S1C(NC)=C(CCN(C)C)/C(=N/C)/S1.S(CC(=O)O)C1C=CC([N+](=O)[O-])=CC=1&gt;&gt;ClCC(NC1C=CC(C(NCC[NH+](CC)CC)=O)=CC=1)=O.OC(C(=O)[O-])=O.S=C(C1C=CC=CC=1)OCCN(CC)CC |f:2.3|"/>
+<entry key="172" type="xstring" value="S(CC(=O)O)C1C=CC([N+](=O)[O-])=CC=1.ClCC(NC1C=CC(C(NCC[NH+](CC)CC)=O)=CC=1)=O.OC(C(=O)[O-])=O&gt;&gt;S=C(C1C=CC=CC=1)OCCN(CC)CC.P(CO[C@H](CO)CN1C(=O)N=C(N)C=C1)(=O)(O)O |f:1.2|"/>
+<entry key="173" type="xstring" value="ClCC(NC1C=CC(C(NCC[NH+](CC)CC)=O)=CC=1)=O.OC(C(=O)[O-])=O.S=C(C1C=CC=CC=1)OCCN(CC)CC&gt;&gt;P(CO[C@H](CO)CN1C(=O)N=C(N)C=C1)(=O)(O)O.O=CC(C)C1C=CC(C)=CC=1 |f:0.1|"/>
+<entry key="174" type="xstring" value="S=C(C1C=CC=CC=1)OCCN(CC)CC.P(CO[C@H](CO)CN1C(=O)N=C(N)C=C1)(=O)(O)O&gt;&gt;O=CC(C)C1C=CC(C)=CC=1.N(C1C=CC=CC=1)(C(C)C)C(C)C"/>
+<entry key="175" type="xstring" value="P(CO[C@H](CO)CN1C(=O)N=C(N)C=C1)(=O)(O)O.O=CC(C)C1C=CC(C)=CC=1&gt;&gt;N(C1C=CC=CC=1)(C(C)C)C(C)C.[Pb+2].[O-]N=O.[O-]N=O |f:3.4.5|"/>
+<entry key="176" type="xstring" value="O=CC(C)C1C=CC(C)=CC=1.N(C1C=CC=CC=1)(C(C)C)C(C)C&gt;&gt;[Pb+2].[O-]N=O.[O-]N=O.S(C1C=CC(CCCCCCCCCCCC)=CC=1)(=O)(=O)O.OC(C)CN |f:2.3.4,5.6|"/>
+<entry key="177" type="xstring" value="N(C1C=CC=CC=1)(C(C)C)C(C)C.[Pb+2].[O-]N=O.[O-]N=O&gt;&gt;S(C1C=CC(CCCCCCCCCCCC)=CC=1)(=O)(=O)O.OC(C)CN.O1B(OC(C)CCOB2OCCC(C)O2)OCCC1C |f:1.2.3,4.5|"/>
+<entry key="178" type="xstring" value="[Pb+2].[O-]N=O.[O-]N=O.S(C1C=CC(CCCCCCCCCCCC)=CC=1)(=O)(=O)O.OC(C)CN&gt;&gt;O1B(OC(C)CCOB2OCCC(C)O2)OCCC1C.S1C=NC(C2=NC3=CC=CC=C3N2)=C1.P(=O)O |f:0.1.2,3.4,6.7|"/>
+<entry key="179" type="xstring" value="S(C1C=CC(CCCCCCCCCCCC)=CC=1)(=O)(=O)O.OC(C)CN.O1B(OC(C)CCOB2OCCC(C)O2)OCCC1C&gt;&gt;S1C=NC(C2=NC3=CC=CC=C3N2)=C1.P(=O)O.ClC1C=C(Cl)C=CC=1N1C(=O)C2=CC=CC=C2N=C1C |f:0.1,3.4|"/>
+<entry key="180" type="xstring" value="O1B(OC(C)CCOB2OCCC(C)O2)OCCC1C.S1C=NC(C2=NC3=CC=CC=C3N2)=C1.P(=O)O&gt;&gt;ClC1C=C(Cl)C=CC=1N1C(=O)C2=CC=CC=C2N=C1C.ClC1C=CC2=C(N=C(C)N(C2=O)C2C=C(C)C=C(C)C=2)C=1 |f:1.2|"/>
+<entry key="181" type="xstring" value="S1C=NC(C2=NC3=CC=CC=C3N2)=C1.P(=O)O.ClC1C=C(Cl)C=CC=1N1C(=O)C2=CC=CC=C2N=C1C&gt;&gt;ClC1C=CC2=C(N=C(C)N(C2=O)C2C=C(C)C=C(C)C=2)C=1.O=C1C2=CC=CC=C2N=CN1CNC1C=CC=CC=1 |f:0.1|"/>
+<entry key="182" type="xstring" value="ClC1C=C(Cl)C=CC=1N1C(=O)C2=CC=CC=C2N=C1C.ClC1C=CC2=C(N=C(C)N(C2=O)C2C=C(C)C=C(C)C=2)C=1&gt;&gt;O=C1C2=CC=CC=C2N=CN1CNC1C=CC=CC=1.O=C(CC[N+]1(C)CCCC1)NC12CC3CC(CC(C3)C1)C2"/>
+<entry key="183" type="xstring" value="ClC1C=CC2=C(N=C(C)N(C2=O)C2C=C(C)C=C(C)C=2)C=1.O=C1C2=CC=CC=C2N=CN1CNC1C=CC=CC=1&gt;&gt;O=C(CC[N+]1(C)CCCC1)NC12CC3CC(CC(C3)C1)C2.S(C12CC3CC(CC(C3)C1)C2)(NC(C(NC(C(NC(C=O)C(C)C)=O)C)=O)CCCCNC(C1C=CC(C(=O)O)=CC=1)=O)(=O)=O"/>
+<entry key="184" type="xstring" value="O=C1C2=CC=CC=C2N=CN1CNC1C=CC=CC=1.O=C(CC[N+]1(C)CCCC1)NC12CC3CC(CC(C3)C1)C2&gt;&gt;S(C12CC3CC(CC(C3)C1)C2)(NC(C(NC(C(NC(C=O)C(C)C)=O)C)=O)CCCCNC(C1C=CC(C(=O)O)=CC=1)=O)(=O)=O.O=C(C(CC1C=CC(OCCN(C)C)=CC=1)NC(C1C=CC=CC=1)=O)N(CCC)CCC.OC(C(=O)O)=O |f:3.4|"/>
+<entry key="185" type="xstring" value="O=C(CC[N+]1(C)CCCC1)NC12CC3CC(CC(C3)C1)C2.S(C12CC3CC(CC(C3)C1)C2)(NC(C(NC(C(NC(C=O)C(C)C)=O)C)=O)CCCCNC(C1C=CC(C(=O)O)=CC=1)=O)(=O)=O&gt;&gt;O=C(C(CC1C=CC(OCCN(C)C)=CC=1)NC(C1C=CC=CC=1)=O)N(CCC)CCC.OC(C(=O)O)=O.O(C(C1=CC=CC=C1C1C2C=CC(=CC=2OC2=C/C(/C=CC=12)=[N+](\CC)/CC)N(CC)CC)=O)CCCCCCCCCCCCCCCCCC |f:2.3|"/>
+<entry key="186" type="xstring" value="S(C12CC3CC(CC(C3)C1)C2)(NC(C(NC(C(NC(C=O)C(C)C)=O)C)=O)CCCCNC(C1C=CC(C(=O)O)=CC=1)=O)(=O)=O.O=C(C(CC1C=CC(OCCN(C)C)=CC=1)NC(C1C=CC=CC=1)=O)N(CCC)CCC.OC(C(=O)O)=O&gt;&gt;O(C(C1=CC=CC=C1C1C2C=CC(=CC=2OC2=C/C(/C=CC=12)=[N+](\CC)/CC)N(CC)CC)=O)CCCCCCCCCCCCCCCCCC.S(C(C1C=CC=CC=1)=O)CCCCCCCC |f:1.2|"/>
+<entry key="187" type="xstring" value="O=C(C(CC1C=CC(OCCN(C)C)=CC=1)NC(C1C=CC=CC=1)=O)N(CCC)CCC.OC(C(=O)O)=O.O(C(C1=CC=CC=C1C1C2C=CC(=CC=2OC2=C/C(/C=CC=12)=[N+](\CC)/CC)N(CC)CC)=O)CCCCCCCCCCCCCCCCCC&gt;&gt;S(C(C1C=CC=CC=1)=O)CCCCCCCC.S1CN(C([C@@H]2CCC(=O)N2)=O)[C@H](C(=O)O)C1 |f:0.1|"/>
+<entry key="188" type="xstring" value="O(C(C1=CC=CC=C1C1C2C=CC(=CC=2OC2=C/C(/C=CC=12)=[N+](\CC)/CC)N(CC)CC)=O)CCCCCCCCCCCCCCCCCC.S(C(C1C=CC=CC=1)=O)CCCCCCCC&gt;&gt;S1CN(C([C@@H]2CCC(=O)N2)=O)[C@H](C(=O)O)C1.[Er](Cl)(Cl)Cl"/>
+<entry key="189" type="xstring" value="S(C(C1C=CC=CC=1)=O)CCCCCCCC.S1CN(C([C@@H]2CCC(=O)N2)=O)[C@H](C(=O)O)C1&gt;&gt;[Er](Cl)(Cl)Cl.O(CC)C(C1=CC=CC=C1C)=O"/>
+<entry key="190" type="xstring" value="S1CN(C([C@@H]2CCC(=O)N2)=O)[C@H](C(=O)O)C1.[Er](Cl)(Cl)Cl&gt;&gt;O(CC)C(C1=CC=CC=C1C)=O.O(C1C=CC(C)=CC=1)CCOCCO"/>
+<entry key="191" type="xstring" value="[Er](Cl)(Cl)Cl.O(CC)C(C1=CC=CC=C1C)=O&gt;&gt;O(C1C=CC(C)=CC=1)CCOCCO.S(C1C=CC2C(=O)OC(=O)C=2C=1)(=O)(=O)O"/>
+<entry key="192" type="xstring" value="O(CC)C(C1=CC=CC=C1C)=O.O(C1C=CC(C)=CC=1)CCOCCO&gt;&gt;S(C1C=CC2C(=O)OC(=O)C=2C=1)(=O)(=O)O.FC1=CC=CC(C2=NC=C(C3C=CC=CC=3)O2)=C1"/>
+<entry key="193" type="xstring" value="O(C1C=CC(C)=CC=1)CCOCCO.S(C1C=CC2C(=O)OC(=O)C=2C=1)(=O)(=O)O&gt;&gt;FC1=CC=CC(C2=NC=C(C3C=CC=CC=3)O2)=C1.IC(C(F)(F)Br)(F)F"/>
+<entry key="194" type="xstring" value="S(C1C=CC2C(=O)OC(=O)C=2C=1)(=O)(=O)O.FC1=CC=CC(C2=NC=C(C3C=CC=CC=3)O2)=C1&gt;&gt;IC(C(F)(F)Br)(F)F.[N+]1(=CC=C(C=C2C=CN(CCC(C)C)C3=CC=CC=C23)C2=CC=CC=C12)CCC(C)C"/>
+<entry key="195" type="xstring" value="FC1=CC=CC(C2=NC=C(C3C=CC=CC=3)O2)=C1.IC(C(F)(F)Br)(F)F&gt;&gt;[N+]1(=CC=C(C=C2C=CN(CCC(C)C)C3=CC=CC=C23)C2=CC=CC=C12)CCC(C)C.O[C@@]1(C#C)CC[C@H]2[C@@H]3CCC4=CC(=C(C=C4[C@H]3CC[C@]12C)OC)O"/>
+<entry key="196" type="xstring" value="IC(C(F)(F)Br)(F)F.[N+]1(=CC=C(C=C2C=CN(CCC(C)C)C3=CC=CC=C23)C2=CC=CC=C12)CCC(C)C&gt;&gt;O[C@@]1(C#C)CC[C@H]2[C@@H]3CCC4=CC(=C(C=C4[C@H]3CC[C@]12C)OC)O.ClC1C=C(Cl)C=CC=1C(=C(C)N1C=NC=C1)OCCOC1C=CC(Cl)=CC=1"/>
+<entry key="197" type="xstring" value="[N+]1(=CC=C(C=C2C=CN(CCC(C)C)C3=CC=CC=C23)C2=CC=CC=C12)CCC(C)C.O[C@@]1(C#C)CC[C@H]2[C@@H]3CCC4=CC(=C(C=C4[C@H]3CC[C@]12C)OC)O&gt;&gt;ClC1C=C(Cl)C=CC=1C(=C(C)N1C=NC=C1)OCCOC1C=CC(Cl)=CC=1.OC1CN[C@H](C(=O)O)C1"/>
+<entry key="198" type="xstring" value="O[C@@]1(C#C)CC[C@H]2[C@@H]3CCC4=CC(=C(C=C4[C@H]3CC[C@]12C)OC)O.ClC1C=C(Cl)C=CC=1C(=C(C)N1C=NC=C1)OCCOC1C=CC(Cl)=CC=1&gt;&gt;OC1CN[C@H](C(=O)O)C1.FC(C(C1C=CC(F)=CC=1)=O)(F)F"/>
+<entry key="199" type="xstring" value="ClC1C=C(Cl)C=CC=1C(=C(C)N1C=NC=C1)OCCOC1C=CC(Cl)=CC=1.OC1CN[C@H](C(=O)O)C1&gt;&gt;FC(C(C1C=CC(F)=CC=1)=O)(F)F.FC1(C(F)C(F)(F)C(F)C1(F)F)F"/>
+<entry key="200" type="xstring" value="OC1CN[C@H](C(=O)O)C1.FC(C(C1C=CC(F)=CC=1)=O)(F)F&gt;&gt;FC1(C(F)C(F)(F)C(F)C1(F)F)F.O(C(C=O)=O)CC"/>
+<entry key="201" type="xstring" value="FC(C(C1C=CC(F)=CC=1)=O)(F)F.FC1(C(F)C(F)(F)C(F)C1(F)F)F&gt;&gt;O(C(C=O)=O)CC.[O-]N(C1C=CC2=CC=CC=C2C=1)N=O.[NH4+] |f:3.4|"/>
+<entry key="202" type="xstring" value="FC1(C(F)C(F)(F)C(F)C1(F)F)F.O(C(C=O)=O)CC&gt;&gt;[O-]N(C1C=CC2=CC=CC=C2C=1)N=O.[NH4+].O(CC)C(C1=C(C)NC(C)=C(C(=O)OCC)C1CC)=O |f:2.3|"/>
+<entry key="203" type="xstring" value="O(C(C=O)=O)CC.[O-]N(C1C=CC2=CC=CC=C2C=1)N=O.[NH4+]&gt;&gt;O(CC)C(C1=C(C)NC(C)=C(C(=O)OCC)C1CC)=O.S(CCN(C)C)C(N1C2=CC=CC=C2C(C)(C)C2=CC=CC=C12)=O |f:1.2|"/>
+<entry key="204" type="xstring" value="[O-]N(C1C=CC2=CC=CC=C2C=1)N=O.[NH4+].O(CC)C(C1=C(C)NC(C)=C(C(=O)OCC)C1CC)=O&gt;&gt;S(CCN(C)C)C(N1C2=CC=CC=C2C(C)(C)C2=CC=CC=C12)=O.[Na+].[Na+].[O-]C1C2=CC=CC=C2NC=1C1=C([O-])C2=CC=CC=C2N1 |f:0.1,4.5.6|"/>
+<entry key="205" type="xstring" value="O(CC)C(C1=C(C)NC(C)=C(C(=O)OCC)C1CC)=O.S(CCN(C)C)C(N1C2=CC=CC=C2C(C)(C)C2=CC=CC=C12)=O&gt;&gt;[Na+].[Na+].[O-]C1C2=CC=CC=C2NC=1C1=C([O-])C2=CC=CC=C2N1.IC1C(NC([C@@H]([C@H]([C@@H]([C@@H](CO)O)O)O)O)=O)=C(I)C(C(NC)=O)=C(I)C=1NC([C@@H]([C@H]([C@@H]([C@@H](CO)O)O)O)O)=O |f:2.3.4|"/>
+<entry key="206" type="xstring" value="S(CCN(C)C)C(N1C2=CC=CC=C2C(C)(C)C2=CC=CC=C12)=O.[Na+].[Na+].[O-]C1C2=CC=CC=C2NC=1C1=C([O-])C2=CC=CC=C2N1&gt;&gt;IC1C(NC([C@@H]([C@H]([C@@H]([C@@H](CO)O)O)O)O)=O)=C(I)C(C(NC)=O)=C(I)C=1NC([C@@H]([C@H]([C@@H]([C@@H](CO)O)O)O)O)=O.O1C=CC2=C1NC1=CC(=O)C(OC)=CC1=C2OC |f:1.2.3|"/>
+<entry key="207" type="xstring" value="[Na+].[Na+].[O-]C1C2=CC=CC=C2NC=1C1=C([O-])C2=CC=CC=C2N1.IC1C(NC([C@@H]([C@H]([C@@H]([C@@H](CO)O)O)O)O)=O)=C(I)C(C(NC)=O)=C(I)C=1NC([C@@H]([C@H]([C@@H]([C@@H](CO)O)O)O)O)=O&gt;&gt;O1C=CC2=C1NC1=CC(=O)C(OC)=CC1=C2OC.O=C1C2=C(C=CC(O)=C2C(=O)C2=C(C=CC(NCCOCCO)=C12)NCCOCCO)O |f:0.1.2|"/>
+<entry key="208" type="xstring" value="IC1C(NC([C@@H]([C@H]([C@@H]([C@@H](CO)O)O)O)O)=O)=C(I)C(C(NC)=O)=C(I)C=1NC([C@@H]([C@H]([C@@H]([C@@H](CO)O)O)O)O)=O.O1C=CC2=C1NC1=CC(=O)C(OC)=CC1=C2OC&gt;&gt;O=C1C2=C(C=CC(O)=C2C(=O)C2=C(C=CC(NCCOCCO)=C12)NCCOCCO)O.O1C[C@@]23[C@H]4CC(=O)O[C@@H]2[C@@H]([C@H]2C(C)=C(O[C@H]5[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO)O5)C(=O)C[C@]2(C)[C@H]3[C@H]([C@H](O)C14C(=O)OC)O)OC(/C=C(\C)/C)=O"/>
+<entry key="209" type="xstring" value="O1C=CC2=C1NC1=CC(=O)C(OC)=CC1=C2OC.O=C1C2=C(C=CC(O)=C2C(=O)C2=C(C=CC(NCCOCCO)=C12)NCCOCCO)O&gt;&gt;O1C[C@@]23[C@H]4CC(=O)O[C@@H]2[C@@H]([C@H]2C(C)=C(O[C@H]5[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO)O5)C(=O)C[C@]2(C)[C@H]3[C@H]([C@H](O)C14C(=O)OC)O)OC(/C=C(\C)/C)=O.O1CCC2[C@@H]3C[C@@H]4N(C2)CC[C@]24C4=CC(OC)=C(OC)C=C4N4C(C[C@H]1[C@H]3[C@@H]24)=O"/>
+<entry key="210" type="xstring" value="O=C1C2=C(C=CC(O)=C2C(=O)C2=C(C=CC(NCCOCCO)=C12)NCCOCCO)O.O1C[C@@]23[C@H]4CC(=O)O[C@@H]2[C@@H]([C@H]2C(C)=C(O[C@H]5[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO)O5)C(=O)C[C@]2(C)[C@H]3[C@H]([C@H](O)C14C(=O)OC)O)OC(/C=C(\C)/C)=O&gt;&gt;O1CCC2[C@@H]3C[C@@H]4N(C2)CC[C@]24C4=CC(OC)=C(OC)C=C4N4C(C[C@H]1[C@H]3[C@@H]24)=O.S1C2=CC=CC=C2C2=C1C=C1C(=N2)C=CC2=CC=CC=C12"/>
+<entry key="211" type="xstring" value="O1C[C@@]23[C@H]4CC(=O)O[C@@H]2[C@@H]([C@H]2C(C)=C(O[C@H]5[C@H](O)[C@@H](O)[C@H](O)[C@@H](CO)O5)C(=O)C[C@]2(C)[C@H]3[C@H]([C@H](O)C14C(=O)OC)O)OC(/C=C(\C)/C)=O.O1CCC2[C@@H]3C[C@@H]4N(C2)CC[C@]24C4=CC(OC)=C(OC)C=C4N4C(C[C@H]1[C@H]3[C@@H]24)=O&gt;&gt;S1C2=CC=CC=C2C2=C1C=C1C(=N2)C=CC2=CC=CC=C12.O(C1C=CC(OC2C=CC=CC=2)=CC=1)C1C=CC=C(OC2C=CC(OC3C=CC=CC=3)=CC=2)C=1"/>
+<entry key="212" type="xstring" value="O1CCC2[C@@H]3C[C@@H]4N(C2)CC[C@]24C4=CC(OC)=C(OC)C=C4N4C(C[C@H]1[C@H]3[C@@H]24)=O.S1C2=CC=CC=C2C2=C1C=C1C(=N2)C=CC2=CC=CC=C12&gt;&gt;O(C1C=CC(OC2C=CC=CC=2)=CC=1)C1C=CC=C(OC2C=CC(OC3C=CC=CC=3)=CC=2)C=1.O(C)C1=CC(OC)=C(OC)C=C1C(C)=O"/>
+<entry key="213" type="xstring" value="S1C2=CC=CC=C2C2=C1C=C1C(=N2)C=CC2=CC=CC=C12.O(C1C=CC(OC2C=CC=CC=2)=CC=1)C1C=CC=C(OC2C=CC(OC3C=CC=CC=3)=CC=2)C=1&gt;&gt;O(C)C1=CC(OC)=C(OC)C=C1C(C)=O.ICCN(C1C=CC(S(N)(=O)=O)=CC=1)CCCI"/>
+<entry key="214" type="xstring" value="O(C1C=CC(OC2C=CC=CC=2)=CC=1)C1C=CC=C(OC2C=CC(OC3C=CC=CC=3)=CC=2)C=1.O(C)C1=CC(OC)=C(OC)C=C1C(C)=O&gt;&gt;ICCN(C1C=CC(S(N)(=O)=O)=CC=1)CCCI.OC1C(C)=CC(C=O)=CC=1C"/>
+<entry key="215" type="xstring" value="O(C)C1=CC(OC)=C(OC)C=C1C(C)=O.ICCN(C1C=CC(S(N)(=O)=O)=CC=1)CCCI&gt;&gt;OC1C(C)=CC(C=O)=CC=1C.O(C(N=NC(=O)OC(C)C)=O)C(C)C"/>
+<entry key="216" type="xstring" value="ICCN(C1C=CC(S(N)(=O)=O)=CC=1)CCCI.OC1C(C)=CC(C=O)=CC=1C&gt;&gt;O(C(N=NC(=O)OC(C)C)=O)C(C)C.ClCC(N(C)C)=O"/>
+<entry key="217" type="xstring" value="OC1C(C)=CC(C=O)=CC=1C.O(C(N=NC(=O)OC(C)C)=O)C(C)C&gt;&gt;ClCC(N(C)C)=O.N(C)(C)C1C=CC(N=N)=CC=1"/>
+<entry key="218" type="xstring" value="O(C(N=NC(=O)OC(C)C)=O)C(C)C.ClCC(N(C)C)=O&gt;&gt;N(C)(C)C1C=CC(N=N)=CC=1.ClC1C(F)=C(Cl)C=C([N+](=O)[O-])C=1"/>
+<entry key="219" type="xstring" value="ClCC(N(C)C)=O.N(C)(C)C1C=CC(N=N)=CC=1&gt;&gt;ClC1C(F)=C(Cl)C=C([N+](=O)[O-])C=1.Cl[Si](C)(CC[Si](C)(Cl)Cl)Cl"/>
+<entry key="220" type="xstring" value="N(C)(C)C1C=CC(N=N)=CC=1.ClC1C(F)=C(Cl)C=C([N+](=O)[O-])C=1&gt;&gt;Cl[Si](C)(CC[Si](C)(Cl)Cl)Cl.ClC1C=CC(C2CCN(C3C=CC(S(CCO)(=O)=O)=CC=3)N=2)=CC=1"/>
+<entry key="221" type="xstring" value="ClC1C(F)=C(Cl)C=C([N+](=O)[O-])C=1.Cl[Si](C)(CC[Si](C)(Cl)Cl)Cl&gt;&gt;ClC1C=CC(C2CCN(C3C=CC(S(CCO)(=O)=O)=CC=3)N=2)=CC=1.N(CCC1CCCCC1)CC1CCC(CNCCC2CCCCC2)CC1"/>
+<entry key="222" type="xstring" value="Cl[Si](C)(CC[Si](C)(Cl)Cl)Cl.ClC1C=CC(C2CCN(C3C=CC(S(CCO)(=O)=O)=CC=3)N=2)=CC=1&gt;&gt;N(CCC1CCCCC1)CC1CCC(CNCCC2CCCCC2)CC1.BrC1C=CC(C(CCl)=O)=CC=1"/>
+<entry key="223" type="xstring" value="ClC1C=CC(C2CCN(C3C=CC(S(CCO)(=O)=O)=CC=3)N=2)=CC=1.N(CCC1CCCCC1)CC1CCC(CNCCC2CCCCC2)CC1&gt;&gt;BrC1C=CC(C(CCl)=O)=CC=1.OC(C1C(C2C=CC=CC=2)C(C(=O)O)C1C1C=CC=CC=1)=O"/>
+<entry key="224" type="xstring" value="N(CCC1CCCCC1)CC1CCC(CNCCC2CCCCC2)CC1.BrC1C=CC(C(CCl)=O)=CC=1&gt;&gt;OC(C1C(C2C=CC=CC=2)C(C(=O)O)C1C1C=CC=CC=1)=O.O(CC)C(COC)OCC"/>
+<entry key="225" type="xstring" value="BrC1C=CC(C(CCl)=O)=CC=1.OC(C1C(C2C=CC=CC=2)C(C(=O)O)C1C1C=CC=CC=1)=O&gt;&gt;O(CC)C(COC)OCC.S(CCC[N+](C)(C)CCCNC(C(=C)C)=O)(=O)(=O)[O-]"/>
+<entry key="226" type="xstring" value="OC(C1C(C2C=CC=CC=2)C(C(=O)O)C1C1C=CC=CC=1)=O.O(CC)C(COC)OCC&gt;&gt;S(CCC[N+](C)(C)CCCNC(C(=C)C)=O)(=O)(=O)[O-].[Si](CC)(OC)(OC)OC"/>
+<entry key="227" type="xstring" value="O(CC)C(COC)OCC.S(CCC[N+](C)(C)CCCNC(C(=C)C)=O)(=O)(=O)[O-]&gt;&gt;[Si](CC)(OC)(OC)OC.S(C)(=O)(=O)O[C@@H]1[C@@H]2[C@@H](OC(C)(C)O2)O[C@@H]1[C@H]1COC(C)(C)O1"/>
+<entry key="228" type="xstring" value="S(CCC[N+](C)(C)CCCNC(C(=C)C)=O)(=O)(=O)[O-].[Si](CC)(OC)(OC)OC&gt;&gt;S(C)(=O)(=O)O[C@@H]1[C@@H]2[C@@H](OC(C)(C)O2)O[C@@H]1[C@H]1COC(C)(C)O1.ClS(C1C=C(NC(C)=O)C=CC=1OC)(=O)=O"/>
+<entry key="229" type="xstring" value="[Si](CC)(OC)(OC)OC.S(C)(=O)(=O)O[C@@H]1[C@@H]2[C@@H](OC(C)(C)O2)O[C@@H]1[C@H]1COC(C)(C)O1&gt;&gt;ClS(C1C=C(NC(C)=O)C=CC=1OC)(=O)=O.BrCC=C(C)CC/C=C(\C)/C"/>
+<entry key="230" type="xstring" value="S(C)(=O)(=O)O[C@@H]1[C@@H]2[C@@H](OC(C)(C)O2)O[C@@H]1[C@H]1COC(C)(C)O1.ClS(C1C=C(NC(C)=O)C=CC=1OC)(=O)=O&gt;&gt;BrCC=C(C)CC/C=C(\C)/C.S(/C(=N\C)/NC)CCCCCCCCCC"/>
+<entry key="231" type="xstring" value="ClS(C1C=C(NC(C)=O)C=CC=1OC)(=O)=O.BrCC=C(C)CC/C=C(\C)/C&gt;&gt;S(/C(=N\C)/NC)CCCCCCCCCC.O=C(CCCCCCCCCCCCCCCCC)NO"/>
+<entry key="232" type="xstring" value="BrCC=C(C)CC/C=C(\C)/C.S(/C(=N\C)/NC)CCCCCCCCCC&gt;&gt;O=C(CCCCCCCCCCCCCCCCC)NO.O(CCO)C(C(C)C)=O"/>
+<entry key="233" type="xstring" value="S(/C(=N\C)/NC)CCCCCCCCCC.O=C(CCCCCCCCCCCCCCCCC)NO&gt;&gt;O(CCO)C(C(C)C)=O.P(C(C)C)(C(C)C)(=O)OC1C=CC([N+](=O)[O-])=CC=1"/>
+<entry key="234" type="xstring" value="O=C(CCCCCCCCCCCCCCCCC)NO.O(CCO)C(C(C)C)=O&gt;&gt;P(C(C)C)(C(C)C)(=O)OC1C=CC([N+](=O)[O-])=CC=1.[Sn](C=C)(C=C)(Cl)Cl"/>
+<entry key="235" type="xstring" value="O(CCO)C(C(C)C)=O.P(C(C)C)(C(C)C)(=O)OC1C=CC([N+](=O)[O-])=CC=1&gt;&gt;[Sn](C=C)(C=C)(Cl)Cl.OC1C(C)=CC(CCCCCCC)=CC=1C"/>
+<entry key="236" type="xstring" value="P(C(C)C)(C(C)C)(=O)OC1C=CC([N+](=O)[O-])=CC=1.[Sn](C=C)(C=C)(Cl)Cl&gt;&gt;OC1C(C)=CC(CCCCCCC)=CC=1C.O(C(CCC(=O)OCCCCCCCCCC)=O)CCCCCCCCCC"/>
+<entry key="237" type="xstring" value="[Sn](C=C)(C=C)(Cl)Cl.OC1C(C)=CC(CCCCCCC)=CC=1C&gt;&gt;O(C(CCC(=O)OCCCCCCCCCC)=O)CCCCCCCCCC.Cl[Si](CCCCCC[Si](Cl)(Cl)Cl)(Cl)Cl"/>
+<entry key="238" type="xstring" value="OC1C(C)=CC(CCCCCCC)=CC=1C.O(C(CCC(=O)OCCCCCCCCCC)=O)CCCCCCCCCC&gt;&gt;Cl[Si](CCCCCC[Si](Cl)(Cl)Cl)(Cl)Cl.O(C(CCCCCCCCCCCCCCCCC)=O)CC[N+](C)(CCO)CCN(C(CCCCCCCCCCCCCCCCC)=O)CCO"/>
+<entry key="239" type="xstring" value="O(C(CCC(=O)OCCCCCCCCCC)=O)CCCCCCCCCC.Cl[Si](CCCCCC[Si](Cl)(Cl)Cl)(Cl)Cl&gt;&gt;O(C(CCCCCCCCCCCCCCCCC)=O)CC[N+](C)(CCO)CCN(C(CCCCCCCCCCCCCCCCC)=O)CCO.BrCCC[Si](Cl)(Cl)Cl"/>
+<entry key="240" type="xstring" value="Cl[Si](CCCCCC[Si](Cl)(Cl)Cl)(Cl)Cl.O(C(CCCCCCCCCCCCCCCCC)=O)CC[N+](C)(CCO)CCN(C(CCCCCCCCCCCCCCCCC)=O)CCO&gt;&gt;BrCCC[Si](Cl)(Cl)Cl.[Fe+3].[O-]C(C)=CC(C)=O.[O-]C(C)=CC(C)=O.[O-]C(C)=CC(C)=O |f:3.4.5.6|"/>
+<entry key="241" type="xstring" value="O(C(CCCCCCCCCCCCCCCCC)=O)CC[N+](C)(CCO)CCN(C(CCCCCCCCCCCCCCCCC)=O)CCO.BrCCC[Si](Cl)(Cl)Cl&gt;&gt;[Fe+3].[O-]C(C)=CC(C)=O.[O-]C(C)=CC(C)=O.[O-]C(C)=CC(C)=O.S(C1C=C(NC2=CC=CC=C2S(C=C)(=O)=O)C2C(C3=CC=CC=C3C(=O)C=2C=1N)=O)(=O)(=O)O |f:2.3.4.5|"/>
+<entry key="242" type="xstring" value="BrCCC[Si](Cl)(Cl)Cl.[Fe+3].[O-]C(C)=CC(C)=O.[O-]C(C)=CC(C)=O.[O-]C(C)=CC(C)=O&gt;&gt;S(C1C=C(NC2=CC=CC=C2S(C=C)(=O)=O)C2C(C3=CC=CC=C3C(=O)C=2C=1N)=O)(=O)(=O)O.O(C)C1=CC(N)=C(OC)C=C1C(C1C=CC=CC=1)=O |f:1.2.3.4|"/>
+<entry key="243" type="xstring" value="[Fe+3].[O-]C(C)=CC(C)=O.[O-]C(C)=CC(C)=O.[O-]C(C)=CC(C)=O.S(C1C=C(NC2=CC=CC=C2S(C=C)(=O)=O)C2C(C3=CC=CC=C3C(=O)C=2C=1N)=O)(=O)(=O)O&gt;&gt;O(C)C1=CC(N)=C(OC)C=C1C(C1C=CC=CC=1)=O.S(CC(=O)OC)CC(=O)OC |f:0.1.2.3|"/>
+<entry key="244" type="xstring" value="S(C1C=C(NC2=CC=CC=C2S(C=C)(=O)=O)C2C(C3=CC=CC=C3C(=O)C=2C=1N)=O)(=O)(=O)O.O(C)C1=CC(N)=C(OC)C=C1C(C1C=CC=CC=1)=O&gt;&gt;S(CC(=O)OC)CC(=O)OC.OC(C1(C2C=CC(OC)=CC=2)CC1)=O"/>
+<entry key="245" type="xstring" value="O(C)C1=CC(N)=C(OC)C=C1C(C1C=CC=CC=1)=O.S(CC(=O)OC)CC(=O)OC&gt;&gt;OC(C1(C2C=CC(OC)=CC=2)CC1)=O.O(C(C(C(C(=O)OC1CCCCC1)O)O)=O)C1CCCCC1"/>
+<entry key="246" type="xstring" value="S(CC(=O)OC)CC(=O)OC.OC(C1(C2C=CC(OC)=CC=2)CC1)=O&gt;&gt;O(C(C(C(C(=O)OC1CCCCC1)O)O)=O)C1CCCCC1.O(C(CO)CC)[N+](=O)[O-]"/>
+<entry key="247" type="xstring" value="OC(C1(C2C=CC(OC)=CC=2)CC1)=O.O(C(C(C(C(=O)OC1CCCCC1)O)O)=O)C1CCCCC1&gt;&gt;O(C(CO)CC)[N+](=O)[O-].ClC(CCl)COP(=O)(OC1C=CC([N+](=O)[O-])=CC=1)OCC(CCl)Cl"/>
+<entry key="248" type="xstring" value="O(C(C(C(C(=O)OC1CCCCC1)O)O)=O)C1CCCCC1.O(C(CO)CC)[N+](=O)[O-]&gt;&gt;ClC(CCl)COP(=O)(OC1C=CC([N+](=O)[O-])=CC=1)OCC(CCl)Cl.O1[C@@H](C)[C@H](O)[C@@H](O)[C@@H](O)[C@@H]1O[C@@H](C=O)[C@H]([C@@H]([C@@H](CO)O)O)O"/>
+<entry key="249" type="xstring" value="O(C(CO)CC)[N+](=O)[O-].ClC(CCl)COP(=O)(OC1C=CC([N+](=O)[O-])=CC=1)OCC(CCl)Cl&gt;&gt;O1[C@@H](C)[C@H](O)[C@@H](O)[C@@H](O)[C@@H]1O[C@@H](C=O)[C@H]([C@@H]([C@@H](CO)O)O)O.ClC(CCCCCCCCCCCC)=O"/>
+<entry key="250" type="xstring" value="C/C=C/C(=O)O.NCC&gt;&gt;C(/C=C/C)(NCC)=O"/>
+<entry key="251" type="xstring" value="C/C=C/C(=O)O.NC1CCCC1&gt;&gt;C(/C=C/C)(NC1CCCC1)=O"/>
+<entry key="252" type="xstring" value="C/C=C/C(=O)O.C[C@H](N)CC&gt;&gt;C(/C=C/C)(N[C@H](CC)C)=O"/>
+<entry key="253" type="xstring" value="C(/C(=O)O)=C/C(=O)O.NCC&gt;&gt;C(/C=C/C(=O)O)(NCC)=O"/>
+<entry key="254" type="xstring" value="C(/C(=O)O)=C/C(=O)O.NC1CCCC1&gt;&gt;C(/C=C/C(=O)O)(NC1CCCC1)=O"/>
+<entry key="255" type="xstring" value="C(/C(=O)O)=C/C(=O)O.C[C@H](N)CC&gt;&gt;C(/C=C/C(=O)O)(N[C@H](CC)C)=O"/>
+<entry key="256" type="xstring" value="C1C=C([C@@H](C)C(O)=O)C=CC=1.NCC&gt;&gt;C([C@H](C)C1=CC=CC=C1)(NCC)=O |&amp;1:3,15|"/>
+<entry key="257" type="xstring" value="C1C=C([C@@H](C)C(O)=O)C=CC=1.NC1CCCC1&gt;&gt;C([C@H](C)C1=CC=CC=C1)(NC1CCCC1)=O |&amp;1:3,18|"/>
+<entry key="258" type="xstring" value="C1C=C([C@@H](C)C(O)=O)C=CC=1.C[C@H](N)CC&gt;&gt;C([C@H](C)C1=CC=CC=C1)(N[C@H](CC)C)=O |&amp;1:3,17,a:12,26|"/>
+<entry key="259" type="xstring" value="C(/C=C/C(=O)O)(NCC)=O.NCC&gt;&gt;C(/C=C/C(NCC)=O)(NCC)=O"/>
+<entry key="260" type="xstring" value="C(/C=C/C(=O)O)(NC1CCCC1)=O.NC1CCCC1&gt;&gt;C(/C=C/C(NC1CCCC1)=O)(NC1CCCC1)=O"/>
+<entry key="261" type="xstring" value="C(/C=C/C(=O)O)(N[C@H](CC)C)=O.C[C@H](N)CC&gt;&gt;C(/C=C/C(N[C@H](CC)C)=O)(N[C@H](CC)C)=O"/>
+<entry key="262" type="xstring" value="N.NS(O)(O)F&gt;&gt;CS(N)(O)O"/>
+</config>
+<entry key="rowIdPrefix" type="xstring" value="Row"/>
+<entry key="rowIdSuffix" type="xstring" value=""/>
+<entry key="rowIdStartValue" type="xint" value="1"/>
+<entry key="highlightOutputTable" type="xboolean" value="false"/>
+<config key="columnProperties">
+<config key="0">
+<entry key="UserSetValues" type="xboolean" value="false"/>
+<entry key="MissValuePattern" type="xstring" value=""/>
+<entry key="FormatParameter" type="xstring" value=""/>
+<entry key="ReadPossValsFromFile" type="xboolean" value="false"/>
+<entry key="SkipThisColumn" type="xboolean" value="false"/>
+<entry key="ColumnName" type="xstring" value="column1"/>
+<config key="ColumnClass">
+<entry key="cell_class" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<entry key="is_null" type="xboolean" value="false"/>
+</config>
+</config>
+</config>
+</config>
+<entry key="customDescription" type="xstring" isnull="true" value=""/>
+<entry key="state" type="xstring" value="EXECUTED"/>
+<entry key="factory" type="xstring" value="org.knime.base.node.io.tablecreator.TableCreator2NodeFactory"/>
+<entry key="node-name" type="xstring" value="Table Creator"/>
+<entry key="node-bundle-name" type="xstring" value="KNIME Base Nodes"/>
+<entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.base"/>
+<entry key="node-bundle-vendor" type="xstring" value="KNIME GmbH, Konstanz, Germany"/>
+<entry key="node-bundle-version" type="xstring" value="2.11.1.0045704"/>
+<entry key="node-feature-name" type="xstring" isnull="true" value=""/>
+<entry key="node-feature-symbolic-name" type="xstring" isnull="true" value=""/>
+<entry key="node-feature-vendor" type="xstring" isnull="true" value=""/>
+<entry key="node-feature-version" type="xstring" value="0.0.0"/>
+<config key="factory_settings"/>
+<entry key="name" type="xstring" value="Table Creator"/>
+<entry key="hasContent" type="xboolean" value="true"/>
+<entry key="isInactive" type="xboolean" value="false"/>
+<config key="ports">
+<config key="port_1">
+<entry key="index" type="xint" value="1"/>
+<entry key="port_spec_class" type="xstring" value="org.knime.core.data.DataTableSpec"/>
+<entry key="port_object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+<entry key="port_object_summary" type="xstring" value="Rows: 263, Cols: 1"/>
+<entry key="port_dir_location" type="xstring" value="port_1"/>
+</config>
+</config>
+<config key="filestores">
+<entry key="file_store_location" type="xstring" isnull="true" value=""/>
+<entry key="file_store_id" type="xstring" isnull="true" value=""/>
+</config>
+</config>

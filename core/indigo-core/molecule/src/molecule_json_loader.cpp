@@ -724,8 +724,14 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
         rep->sgroups.clear(SGroup::SG_TYPE_SRU);
         rep->sgroups.clear(SGroup::SG_TYPE_MUL);
 
-        int rep_start = mapping[start];
-        int rep_end = mapping[end];
+        int rep_start{-1};
+        if (start != -1)
+            rep_start = mapping[start];
+
+        int rep_end{-1};
+        if (end != -1)
+            rep_end = mapping[end];
+
         MultipleGroup& mg = (MultipleGroup&)sgroup;
         if (mg.multiplier > 1)
         {

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/aromatizer.png" type="Manipulator">
+    <name>Aromatizer</name>
+    
+    <shortDescription>
+        
+    </shortDescription>
+    
+    <fullDescription>
+        <intro><p>This node converts one of the incoming columns with chemical structures into the aromatic form. The new column is appended to the input table or replaces an old
+		target column.</p>
+        <p>
+        <b>Supported types:</b> 
+        <ul>
+		<li>Molecule:  String, SDF, Smiles, CML, Mol, InChI</li>
+		<li>Reaction:  String, RXN, SMILES</li>
+		</ul>
+		</p>
+        <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p></intro>
+        
+        <option name="Target Column">The column that contains molecule or reaction structures.</option>
+        <option name="Append Column">Appends a new structure column (with the name as specified in the text field) if checked, replaces the original column otherwise.</option>
+        <option name="Input type">Treat input as: a molecule, a reaction.</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms.</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input structures">Table containing molecule or reaction structures.</inPort>
+        <outPort index="0" name="Aromatized structures">The same as input, with aromatized structures</outPort>
+    </ports>    
+</knimeNode>

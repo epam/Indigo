@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/murco.png" type="Manipulator">
+    <name>Murcko Scaffold</name>
+    
+    <shortDescription>
+    </shortDescription>
+    
+    <fullDescription>
+        <intro><p>This node calculates Murcko scaffolds of input molecules.</p>
+        <p>
+        <b>Supported types:</b> 
+        <ul>
+		<li>Molecule:  String, SDF, Smiles, CML, Mol, InChI</li>
+		</ul>
+		</p>
+        <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p>
+        </intro>
+        
+        <option name="Target Column">The column that contains molecule ctructures.</option>
+        <option name="Append Column">Append a new molecule column (with the name as specified in the text field) if checked, replace the original column otherwise.</option>
+        <option name="Remove terminal 3-rings">Remove 1-substituted rings of size 3.</option>
+        <option name="Remove terminal 4-rings">Remove 1-substituted rings of size 4.</option>
+        <option name="Input type">Treat input as: a molecule.</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms.</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input data">Table containing a column with molecules.</inPort>
+        <outPort index="0" name="Murcko scaffolds">The same as input, plus the calculated Murcko scaffolds.</outPort>
+    </ports>    
+</knimeNode>

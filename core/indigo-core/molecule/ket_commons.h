@@ -42,6 +42,7 @@ namespace indigo
     const uint8_t KETReagentUpArea = 1;
     const uint8_t KETReagentDownArea = 2;
     const uint8_t KETProductArea = 3;
+    const Vec2f MIN_MOL_SIZE = {0.5, 0.5};
 
     const std::unordered_map<std::string, CIPDesc> KStringToCIP = {{"R", CIPDesc::R}, {"S", CIPDesc::S}, {"r", CIPDesc::r},
                                                                    {"s", CIPDesc::s}, {"E", CIPDesc::E}, {"Z", CIPDesc::Z}};

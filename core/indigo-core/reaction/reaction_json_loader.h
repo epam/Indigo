@@ -68,7 +68,6 @@ namespace indigo
         bool ignore_no_chiral_flag;
 
         const Vec2f PLUS_BBOX_SHIFT = {0.9, 0.9};
-        const Vec2f MIN_MOL_SIZE = {0.5, 0.5};
         const Vec2f ARROW_BBOX_SHIFT = {0.0, 0.9};
 
     private:

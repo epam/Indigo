@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/fingerprint-similarity.png" type="Other">
+    <name>Fingerprint Similarity</name>
+    
+    <shortDescription>
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>
+               <p>This node calculates the values of structural similarity of input fingerprints against a given reference fingerprint.
+               It also can take multiple reference fingerprints and aggregate the similarity values.</p>
+               <p><b>Supported types:</b> BitVector</p>
+               <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p>
+        </intro>
+        
+        <option name="Fingerprints column">The column that contains the fingerprints.</option>
+        <option name="Reference fingerprint column">The column that contains reference fingerprint(s).</option>
+        <option name="New column">Name of the new column that contains similarity values.</option>
+        <option name="Metric">Metric for similarity computation.</option>
+        <option name="Aggregation type">When there are multiple reference fingerprints in the second port,
+        the node can calculate minimum, maximum, or average similarity values, according to this option.
+        If there is only one reference fingerprint, this option has no effect.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input fingerprints">Table containing fingerprints</inPort>
+        <inPort index="1" name="Reference fingerprint">Table containing reference fingerprint(s)</inPort>
+        <outPort index="0" name="Similarity values">The same as input fingerprints, plus an extra column with similarity values</outPort>
+    </ports>    
+</knimeNode>

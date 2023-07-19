@@ -53,6 +53,8 @@ namespace indigo
     private:
         ReactionJsonSaver(const ReactionJsonSaver&); // no implicit copy
         static void _getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max_vec, float scale);
+        void _fixLayout(BaseReaction& rxn);
+
         std::unordered_map<int, std::string> _arrow_type2string = {
             {ReactionComponent::ARROW_BASIC, "open-angle"},
             {ReactionComponent::ARROW_FILLED_TRIANGLE, "filled-triangle"},
