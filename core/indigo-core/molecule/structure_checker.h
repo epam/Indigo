@@ -107,6 +107,7 @@ namespace indigo
             CheckMessage(CheckMessageCode _code, int _index, const std::vector<int>& _ids, const CheckResult& _subresult);
             CheckMessageCode code = StructureChecker::CheckMessageCode::CHECK_MSG_NONE;
             std::string message();
+            std::string prefix;
             int index = -1;
             std::vector<int> ids;
             CheckResult subresult;
