@@ -76,6 +76,30 @@ void SmilesLoader::loadQueryMolecule(QueryMolecule& mol)
     _loadMolecule();
 }
 
+static char readSgChar(Scanner& scanner)
+{
+    char c = scanner.readChar();
+    if (c == '&' && scanner.lookNext() == '#') // Escaped char - &#code;
+    {
+        long long pos = scanner.tell();
+        scanner.skip(1); // Skip '#'
+        int code = scanner.tryReadUnsigned();
+        if (code >= 0 && code < 256 && scanner.lookNext() == ';')
+        {
+            std::string sgroup_field_sep = ",;:|{}";
+            // Decode only ,;:|{}
+            if (sgroup_field_sep.find(code) >=0)
+            {
+                scanner.skip(1); // skip ';'
+                return code;     // return decoded character
+            }
+        }
+        // no decoded char returned - restore position and return '&' as is.
+        scanner.seek(pos, SEEK_SET);
+    }
+    return c;
+}
+
 void SmilesLoader::_calcStereocenters()
 {
     int i, j;
@@ -808,35 +832,61 @@ void SmilesLoader::_readOtherStuff()
         {
             // SGroup block found
             _scanner.skip(1);
-            if (_scanner.readChar() != ':')
-                throw Error("colon expected after 'Sg'");
-            char sg = _scanner.lookNext();
             int sg_type = -1;
-            char pchar_sg_type[3];
-            std::string sg_type_str;
-            if (sg == 'n')
+            // Data S-group - 'SgD:atomic_indexes:field_name:data_value:query_op:unit:tag:(coords)'
+            // Optional coordinates in parenthesis if necessary, separated by colon characters.
+            // The field values with special characters are escaped.
+            // If atomic coordinates are exported (with option c ) (-1) is used in the coordinate field for Data S-group attached to the atoms.
+            if (_scanner.lookNext() == 'D')
             {
                 _scanner.skip(1);
-                if (_scanner.readChar() != ':')
-                    throw Error("colon expected after 'Sg:n'");
-                sg_type = SGroup::SG_TYPE_SRU;
+                sg_type = SGroup::SG_TYPE_DAT;
             }
-            else if (sg == 'g')
+            if (_scanner.readChar() != ':')
+                throw Error("colon expected after 'Sg'");
+
+            // If not a data S-group - get group type after colon 
+            // 
+            // 'Sg:type:atomic_indexes:subscript:superscript:head_bond_indexes:tail_bond_indexes:bracket
+            // 
+            // atomic_indexes - Atom indexes separated with commas
+            // subscript - Subscript of the S-group. If the subscript equals the keyword of the S-group this field can be empty. Escaped field.
+            // superscript - Superscript of the S-group. In the superscript only connectivity and flip information is allowed. This field can be empty. Escaped field.
+            // *_bond_indexes - The indexes of bonds that share a common bracket in case of ladder-type polymers. 
+            // head_bond_indexes - Head crossing bond indexes. This field can be empty.
+            // tail_bond_indexes - Tail crossing bond indexes. This field can be empty.
+            // bracket - bracket orientation, bracket type followed by the coordinates (4 pair, separated with commas). Bracket orientation
+            //     can be s or d (single or double), bracket type can be b,c,r,s for braces, chevrons, round and square, respectively.
+            //     The brackets are written between parentheses and separated with semicolons.
+            if (sg_type == -1)
             {
-                _scanner.readCharsFix(sizeof(pchar_sg_type), pchar_sg_type);
-                sg_type_str = std::string(pchar_sg_type, sizeof(pchar_sg_type));
-                if (sg_type_str == "gen")
+                char sg = _scanner.lookNext();
+                char pchar_sg_type[3];
+                std::string sg_type_str;
+                if (sg == 'n')
                 {
+                    sg_type = SGroup::SG_TYPE_SRU;
+                    _scanner.skip(1);
                     if (_scanner.readChar() != ':')
-                        throw Error("colon expected after 'Sg:%s'", sg_type_str.c_str());
-                    sg_type = SGroup::SG_TYPE_GEN;
+                        throw Error("colon expected after 'Sg:n'");
+                }
+                else if (sg == 'g')
+                {
+                    _scanner.readCharsFix(sizeof(pchar_sg_type), pchar_sg_type);
+                    sg_type_str = std::string(pchar_sg_type, sizeof(pchar_sg_type));
+                    if (sg_type_str == "gen")
+                    {
+                        if (_scanner.readChar() != ':')
+                            throw Error("colon expected after 'Sg:%s'", sg_type_str.c_str());
+                        sg_type = SGroup::SG_TYPE_GEN;
+                    }
+                    else
+                        throw Error("unexpected 'Sg' %s", sg_type_str.c_str());
                 }
                 else
-                    throw Error("unexpected 'Sg' %s", sg_type_str.c_str());
-            }
-            else
-            {
-                throw Error("Unsupported Sg type");
+                {
+                    throw Error("Unsupported Sg type");
+                }
             }
 
             int idx = _bmol->sgroups.addSGroup(sg_type);
@@ -850,8 +900,6 @@ void SmilesLoader::_readOtherStuff()
             p[0].set(0, 0);
             p[1].set(0, 0);
 
-            _scanner.lookNext();
-
             while (isdigit(_scanner.lookNext()))
             {
                 auto atom_idx = _scanner.readUnsigned();
@@ -860,13 +908,74 @@ void SmilesLoader::_readOtherStuff()
                     _scanner.skip(1);
             }
 
-            if (_scanner.readChar() != ':')
-                throw Error("colon expected after 'Sg'");
+            if (_scanner.lookNext() != ':')
+                continue;
 
-            if (sg_type == SGroup::SG_TYPE_SRU)
+            _scanner.skip(1); // skip ':'
+
+            if (sg_type == SGroup::SG_TYPE_DAT)
             {
+                char c;
+                DataSGroup& dsg = (DataSGroup&)sgroup;
+                // field_name
+                _scanner.readWord(dsg.name, ":,|");
+                if (_scanner.lookNext() != ':') // No more fields
+                    continue;
+                _scanner.skip(1); // Skip :
+                // data_value
+                _scanner.readWord(dsg.data, ":,|");
+                if (_scanner.lookNext() != ':') // No more fields
+                    continue;
+                _scanner.skip(1); // Skip :
+                // query_op
+                _scanner.readWord(dsg.queryoper, ":,|");
+                if (_scanner.lookNext() != ':') // No more fields
+                    continue;
+                _scanner.skip(1); // Skip :
+                // unit
+                _scanner.readWord(dsg.description, ":,|");
+                if (_scanner.lookNext() != ':') // No more fields
+                    continue;
+                _scanner.skip(1); // Skip :
+                // tag
+                c = _scanner.lookNext();
+                if (c != ':' && c != ',')
+                {
+                    dsg.tag = c;
+                    _scanner.skip(1); // Skip tag
+                }
+                if (_scanner.lookNext() != ':') // No more fields
+                    continue;
+                _scanner.skip(1); // Skip :
+                // (coords)
+                c = _scanner.lookNext();
+                if (c != '(') // No more fields
+                    continue;
+                long long pos = _scanner.tell();
+                if (_scanner.length() - pos >= 4)
+                {
+                    // check for (-1)
+                    char buf[5];
+                    _scanner.read(4, buf);
+                    buf[4] = 0;
+                    if (strncmp(buf, "(-1)", sizeof(buf)) == 0)
+                        continue;
+                    _scanner.seek(pos, SEEK_SET);
+                }
+                _scanner.skip(1); // Skip (
+                dsg.display_pos.x = _scanner.readFloat();
+                c = _scanner.readChar();
+                if (c != ',')
+                    throw Error("Data S-group coord error");
+                dsg.display_pos.y = _scanner.readFloat();
+                c = _scanner.readChar();
+                if (c != ')')
+                    throw Error("Data S-group coord error");
+            }
+            else 
+            { //if (sg_type == SGroup::SG_TYPE_SRU)
                 RepeatingUnit& ru = (RepeatingUnit&)sgroup;
-                std::string subscript, connectivity;
+                std::string subscript, connectivity, flip;
                 while (_scanner.lookNext() != ':')
                     subscript += _scanner.readChar();
 
@@ -874,14 +983,69 @@ void SmilesLoader::_readOtherStuff()
                     ru.subscript.readString(subscript.c_str(), true);
                 _scanner.skip(1);
 
-                while (_scanner.lookNext() != '|')
-                    connectivity += _scanner.readChar();
+                while (_scanner.lookNext() != '|' && _scanner.lookNext() != ':' && _scanner.lookNext() != ',')
+                    connectivity += readSgChar(_scanner);
+                // If ',' in field - it is both connectivity and flip
+                std::size_t pos = connectivity.find(',');
+                if (pos != std::string::npos)
+                {
+                    flip = connectivity.substr(pos + 1);
+                    connectivity = connectivity.substr(0, pos);
+                }
                 if (connectivity == "ht")
                     ru.connectivity = RepeatingUnit::HEAD_TO_TAIL;
                 else if (connectivity == "hh")
                     ru.connectivity = RepeatingUnit::HEAD_TO_HEAD;
                 else if (connectivity == "eu")
                     ru.connectivity = RepeatingUnit::EITHER;
+                if (_scanner.lookNext() != ':')
+                    continue;
+                _scanner.skip(1); // skip :
+                // head_bond_indexes - Head crossing bond indexes. This field can be empty.
+                while (isdigit(_scanner.lookNext()))
+                {
+                    auto atom_idx = _scanner.readUnsigned();
+                    //ru.bonds.push(atom_idx);
+                    if (_scanner.lookNext() == ',')
+                        _scanner.skip(1);
+                }
+                if (_scanner.lookNext() != ':')
+                    continue;
+                _scanner.skip(1); // skip :
+                // tail_bond_indexes - Tail crossing bond indexes. This field can be empty.
+                while (isdigit(_scanner.lookNext()))
+                {
+                    auto atom_idx = _scanner.readUnsigned();
+                    // ru.bonds.push(atom_idx);
+                    if (_scanner.lookNext() == ',')
+                        _scanner.skip(1);
+                }
+                if (_scanner.lookNext() != ':')
+                    continue;
+                _scanner.skip(1); // skip :
+                // bracket - bracket orientation, bracket type followed by the coordinates (4 pair, separated with commas). Bracket orientation
+                if (_scanner.lookNext() != '(')
+                    continue;
+                _scanner.skip(1); // skip (
+                char br_orient = _scanner.readChar();
+                c = _scanner.readChar();
+                if (c != ',')
+                    throw Error("S-group bracket orientation format error");
+                char br_type = _scanner.readChar();
+                c = _scanner.readChar();
+                int count = 0;
+                while (c == ',' && count < 8)
+                {
+                    float tmp = _scanner.readFloat();
+                    c = _scanner.readChar();
+                    ++count;
+                }
+                if (count < 8)
+                    throw Error("S-group bracket orientation format error");
+                if (c ==',')
+                    c = _scanner.readChar();
+                if (c != ')')
+                    throw Error("S-group bracket orientation format error");
             }
         }
         else if ((c == 'R') && (_scanner.lookNext() == 'G'))

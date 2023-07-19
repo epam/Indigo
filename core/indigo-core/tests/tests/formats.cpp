@@ -112,3 +112,102 @@ TEST_F(IndigoCoreFormatsTest, save_cml)
 
     ASSERT_TRUE(out.size() > 1000);
 }
+
+TEST_F(IndigoCoreFormatsTest, read_cml_data_sgroups)
+{
+    Molecule t_mol;
+
+    loadMolecule("c1ccccc1N |SgD:3,2,1,0:name:data:like:unit:t:(-1)|", t_mol);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 1);
+    SGroup& sg = t_mol.sgroups.getSGroup(0);
+    ASSERT_EQ(sg.sgroup_type, SGroup::SG_TYPE_DAT);
+    DataSGroup& dsg = (DataSGroup&)sg;
+    ASSERT_STREQ(dsg.name.ptr(), "name");
+    ASSERT_STREQ(dsg.data.ptr(), "data");
+    ASSERT_STREQ(dsg.queryoper.ptr(), "like");
+    ASSERT_STREQ(dsg.description.ptr(), "unit");
+    ASSERT_EQ(dsg.tag, 't');
+    ASSERT_EQ(dsg.display_pos.x, 0.0f);
+    ASSERT_EQ(dsg.display_pos.y, 0.0f);
+    ASSERT_EQ(dsg.atoms.size(), 4);
+    ASSERT_EQ(dsg.atoms.at(0), 3);
+    ASSERT_EQ(dsg.atoms.at(1), 2);
+    ASSERT_EQ(dsg.atoms.at(2), 1);
+    ASSERT_EQ(dsg.atoms.at(3), 0);
+}
+
+TEST_F(IndigoCoreFormatsTest, read_cml_data_sgroups_coords)
+{
+    Molecule t_mol;
+
+    loadMolecule("c1ccccc1N |SgD:1,2,0:::::s:(-1.5,7.8)|", t_mol);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 1);
+    SGroup& sg = t_mol.sgroups.getSGroup(0);
+    ASSERT_EQ(sg.sgroup_type, SGroup::SG_TYPE_DAT);
+    DataSGroup& dsg = (DataSGroup&)sg;
+    ASSERT_STREQ(dsg.name.ptr(), "");
+    ASSERT_STREQ(dsg.data.ptr(), "");
+    ASSERT_STREQ(dsg.queryoper.ptr(), "");
+    ASSERT_STREQ(dsg.description.ptr(), "");
+    ASSERT_EQ(dsg.tag, 's');
+    ASSERT_EQ(dsg.display_pos.x, -1.5f);
+    ASSERT_EQ(dsg.display_pos.y, 7.8f);
+    ASSERT_EQ(dsg.atoms.size(), 3);
+    ASSERT_EQ(dsg.atoms.at(0), 1);
+    ASSERT_EQ(dsg.atoms.at(1), 2);
+    ASSERT_EQ(dsg.atoms.at(2), 0);
+}
+
+TEST_F(IndigoCoreFormatsTest, read_cml_data_sgroups_short)
+{
+    Molecule t_mol;
+
+    loadMolecule("c1ccccc1N |SgD:1,2,0:name|", t_mol);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 1);
+    SGroup& sg = t_mol.sgroups.getSGroup(0);
+    ASSERT_EQ(sg.sgroup_type, SGroup::SG_TYPE_DAT);
+    DataSGroup& dsg = (DataSGroup&)sg;
+    ASSERT_STREQ(dsg.name.ptr(), "name");
+    ASSERT_EQ(dsg.data.size(), 0);
+    ASSERT_EQ(dsg.queryoper.size(), 0);
+    ASSERT_EQ(dsg.description.size(), 0);
+    ASSERT_EQ(dsg.tag, ' ');
+    ASSERT_EQ(dsg.display_pos.x, 0.0f);
+    ASSERT_EQ(dsg.display_pos.y, 0.0f);
+    ASSERT_EQ(dsg.atoms.size(), 3);
+    ASSERT_EQ(dsg.atoms.at(0), 1);
+    ASSERT_EQ(dsg.atoms.at(1), 2);
+    ASSERT_EQ(dsg.atoms.at(2), 0);
+}
+
+TEST_F(IndigoCoreFormatsTest, read_cml_pol_sgroups_conn_and_flip)
+{
+    Molecule t_mol;
+
+    loadMolecule("*CC(*)C(*)N* |$star_e;;;star_e;;star_e;;star_e$,Sg:n:6,1,2,4::hh&#44;f:6,0,:4,2,|", t_mol);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 1);
+    SGroup& sg = t_mol.sgroups.getSGroup(0);
+    ASSERT_EQ(sg.sgroup_type, SGroup::SG_TYPE_SRU);
+    RepeatingUnit& ru = (RepeatingUnit&)sg;
+    ASSERT_EQ(ru.atoms.size(), 4);
+    ASSERT_EQ(ru.atoms.at(0), 6);
+    ASSERT_EQ(ru.atoms.at(1), 1);
+    ASSERT_EQ(ru.atoms.at(2), 2);
+    ASSERT_EQ(ru.atoms.at(3), 4);
+}
+
+TEST_F(IndigoCoreFormatsTest, read_cml_pol_sgroups_conn_and_flip)
+{
+    Molecule t_mol;
+
+    loadMolecule("*CC(*)C(*)N* |$star_e;;;star_e;;star_e;;star_e$,Sg:n:6,1,2,4::hh&#44;f:6,0,:4,2,|", t_mol);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 1);
+    SGroup& sg = t_mol.sgroups.getSGroup(0);
+    ASSERT_EQ(sg.sgroup_type, SGroup::SG_TYPE_SRU);
+    RepeatingUnit& ru = (RepeatingUnit&)sg;
+    ASSERT_EQ(ru.atoms.size(), 4);
+    ASSERT_EQ(ru.atoms.at(0), 6);
+    ASSERT_EQ(ru.atoms.at(1), 1);
+    ASSERT_EQ(ru.atoms.at(2), 2);
+    ASSERT_EQ(ru.atoms.at(3), 4);
+}
