@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+<entry key="node_file" type="xstring" value="settings.xml"/>
+<config key="flow_stack"/>
+<config key="internal_node_subsettings">
+<entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+</config>
+<config key="model">
+<config key="rowIndices">
+<entry key="array-size" type="xint" value="12"/>
+<entry key="0" type="xint" value="0"/>
+<entry key="1" type="xint" value="1"/>
+<entry key="2" type="xint" value="2"/>
+<entry key="3" type="xint" value="3"/>
+<entry key="4" type="xint" value="4"/>
+<entry key="5" type="xint" value="5"/>
+<entry key="6" type="xint" value="6"/>
+<entry key="7" type="xint" value="7"/>
+<entry key="8" type="xint" value="8"/>
+<entry key="9" type="xint" value="9"/>
+<entry key="10" type="xint" value="10"/>
+<entry key="11" type="xint" value="11"/>
+</config>
+<config key="columnIndices">
+<entry key="array-size" type="xint" value="12"/>
+<entry key="0" type="xint" value="0"/>
+<entry key="1" type="xint" value="0"/>
+<entry key="2" type="xint" value="0"/>
+<entry key="3" type="xint" value="0"/>
+<entry key="4" type="xint" value="0"/>
+<entry key="5" type="xint" value="0"/>
+<entry key="6" type="xint" value="0"/>
+<entry key="7" type="xint" value="0"/>
+<entry key="8" type="xint" value="0"/>
+<entry key="9" type="xint" value="0"/>
+<entry key="10" type="xint" value="0"/>
+<entry key="11" type="xint" value="0"/>
+</config>
+<config key="values">
+<entry key="array-size" type="xint" value="12"/>
+<entry key="0" type="xstring" value="[N:7]#[C:4][C:1]1=[CH:3][CH:6]=[CH:8][CH:5]=[CH:2]1.[CH3:17][CH2:13][C:9]12[CH2:12][CH2:16][CH2:18][CH2:15][CH:10]1[CH2:14][O:11]2&gt;&gt;[CH3:17][CH2:13][C:9]12[CH2:12][CH2:16][CH2:18][CH2:15][CH:10]1[CH2:14][O:11][C:4](=[N:7]2)[C:1]1=[CH:2][CH:5]=[CH:8][CH:6]=[CH:3]1"/>
+<entry key="1" type="xstring" value="[H][C@:1](N)([CH2:2][CH2:5][CH2:8][CH2:9]N)[C:3]([OH:6])=[O:7]&gt;&gt;[H][C@:1]1([CH2:2][CH2:5][CH2:8][CH2:9]N1)[C:3]([OH:6])=[O:7]"/>
+<entry key="2" type="xstring" value="[CH3:4][N:1]1[CH:2]=[CH:5][CH:6]=[CH:3]1&gt;&gt;[CH3:4][N:1]1[CH:2]=[CH:5][CH:6]=[C:3]1[N+]([O-])=O"/>
+<entry key="3" type="xstring" value="Br[CH2:11][CH2:8][C:5](=[O:9])[NH:2][C:1]1=[CH:3][CH:6]=[CH:10][CH:7]=[CH:4]1&gt;&gt;[O:9]=[C:5]1[CH2:8][CH2:11][N:2]1[C:1]1=[CH:3][CH:6]=[CH:10][CH:7]=[CH:4]1"/>
+<entry key="4" type="xstring" value="[CH3:9][CH2:7][O:4][C:1]1=[CH:3][N:6]=[CH:8][CH:5]=[CH:2]1.[CH3:11][CH:10]=[O:12]&gt;&gt;[CH3:9][CH2:7][O:4][C:1]1=[C:3]([N:6]=[CH:8][CH:5]=[CH:2]1)[CH:10]([CH3:11])[OH:12]"/>
+<entry key="5" type="xstring" value="C[Si](C)(C)[CH2:2][S:6](Cl)(=[O:7])=[O:8].[CH2:16]1[CH2:17][CH:13]=[C:10]([CH2:12]1)[N:11]1[CH2:14][CH2:18][O:20][CH2:19][CH2:15]1&gt;&gt;[O:7]=[S:6]1(=[O:8])[CH2:2][C:10]2([CH2:12][CH2:16][CH2:17][CH:13]12)[N:11]1[CH2:14][CH2:18][O:20][CH2:19][CH2:15]1"/>
+<entry key="6" type="xstring" value="[CH3:5][C:2]([CH3:6])([O:1][Si](C)(C)C)[C:4](=[O:11])[CH2:10][C:12](=O)[CH:13]=[CH2:15]&gt;&gt;[CH3:5][C:2]1([CH3:6])[O:1][C:12]([CH:13]=[CH2:15])=[CH:10][C:4]1=[O:11]"/>
+<entry key="7" type="xstring" value="[CH3:2][C:1]([O-])=[O:3].[H][C@@:5]12[O:8][Si:13]([O:17][Si:25]([O:16][CH2:12][C:7]1=[CH:11][C@@:9]([H])([N:14]1[CH:21]=[N:32][C:30]3=[C:20]1[N:31]=[CH:39][N:44]=[C:38]3[NH2:45])[C@:6]2([H])OS(=O)(=O)C(F)(F)F)([CH:36]([CH3:40])[CH3:41])[CH:37]([CH3:42])[CH3:43])([CH:18]([CH3:26])[CH3:27])[CH:19]([CH3:28])[CH3:29]&gt;&gt;[H][C@@:5]12[O:8][Si:13]([O:17][Si:25]([O:16][CH2:12][C:7]1=[CH:11][C@@:9]([H])([N:14]1[CH:21]=[N:32][C:30]3=[C:20]1[N:31]=[CH:39][N:44]=[C:38]3[NH2:45])[C@@:6]2([H])O[C:1]([CH3:2])=[O:3])([CH:36]([CH3:40])[CH3:41])[CH:37]([CH3:42])[CH3:43])([CH:18]([CH3:26])[CH3:27])[CH:19]([CH3:28])[CH3:29]"/>
+<entry key="8" type="xstring" value="[O:18]=[C:13]1[O:6][C:2]2=[C:1]([C:4](=[O:10])[O:9][C:11]3=[C:5]2[CH:12]=[CH:17][CH:20]=[CH:16]3)[C:3]2=[C:7]1[CH2:14][CH2:19][CH2:15][CH2:8]2&gt;&gt;[O:18]=[C:13]1[O:6][C:2]2=[C:1]([C:4](=[O:10])[O:9][C:11]3=[C:5]2[CH:12]=[CH:17][CH:20]=[CH:16]3)[C:3]2=[C:7]1[CH:14]=[CH:19][CH:15]=[CH:8]2"/>
+<entry key="9" type="xstring" value="[CH3:7][N:3]1[N:2]([C:1]11[CH2:4][CH2:8][CH2:13][CH2:9][CH2:5]1)[S:6](=[O:11])(=[O:12])[C:10]1=[CH:14][CH:16]=[C:18]([CH3:19])[CH:17]=[CH:15]1.[O:28]=[C:26]=[N:23][C:20]1=[CH:21][CH:24]=[CH:27][CH:25]=[CH:22]1&gt;&gt;[CH3:7][N:3]1[N:2]([C:26](=[O:28])[N:23]([C:20]2=[CH:21][CH:24]=[CH:27][CH:25]=[CH:22]2)[C:1]11[CH2:4][CH2:8][CH2:13][CH2:9][CH2:5]1)[S:6](=[O:11])(=[O:12])[C:10]1=[CH:14][CH:16]=[C:18]([CH3:19])[CH:17]=[CH:15]1"/>
+<entry key="10" type="xstring" value="[CH3:1][OH:2].N[C:10](=[O:16])[C:5]1=[CH:9][CH:14]=[CH:11][CH:6]=[C:3]1[C:4]1=[N:7][C:12](=[N:13][S:8]1)[C:17]1=[CH:18][CH:20]=[CH:22][CH:21]=[CH:19]1&gt;&gt;[CH3:1][O:2][C:10](=[O:16])[C:5]1=[CH:9][CH:14]=[CH:11][CH:6]=[C:3]1[C:4]1=[N:7][C:12](=[N:13][S:8]1)[C:17]1=[CH:18][CH:20]=[CH:22][CH:21]=[CH:19]1"/>
+<entry key="11" type="xstring" value="[CH3:28][CH2:24][O:19][C:13](=[O:20])[C:8](=[O:14])[CH:4]=[C:1]([CH2:3][C:7](=[N:12][NH:18][C:23]1=[CH:27][CH:30]=[CH:31][CH:29]=[CH:26]1)[C:11]1=[CH:16][CH:21]=[CH:25][CH:22]=[CH:17]1)[C:2]1=[CH:5][CH:9]=[CH:15][CH:10]=[CH:6]1&gt;&gt;[CH3:28][CH2:24][O:19][C:13](=[O:20])[C:8](=[O:14])[CH2:4][C:1]1([CH2:3][C:7](=[N:12][N:18]1[C:23]1=[CH:27][CH:30]=[CH:31][CH:29]=[CH:26]1)[C:11]1=[CH:16][CH:21]=[CH:25][CH:22]=[CH:17]1)[C:2]1=[CH:5][CH:9]=[CH:15][CH:10]=[CH:6]1"/>
+</config>
+<entry key="rowIdPrefix" type="xstring" value="Row"/>
+<entry key="rowIdSuffix" type="xstring" value=""/>
+<entry key="rowIdStartValue" type="xint" value="1"/>
+<entry key="highlightOutputTable" type="xboolean" value="false"/>
+<config key="columnProperties">
+<config key="0">
+<entry key="UserSetValues" type="xboolean" value="true"/>
+<entry key="MissValuePattern" type="xstring" value=""/>
+<entry key="FormatParameter" type="xstring" isnull="true" value=""/>
+<entry key="ReadPossValsFromFile" type="xboolean" value="false"/>
+<entry key="SkipThisColumn" type="xboolean" value="false"/>
+<entry key="ColumnName" type="xstring" value="column1"/>
+<config key="ColumnClass">
+<entry key="cell_class" type="xstring" value="org.knime.chem.types.SmilesCell"/>
+<entry key="is_null" type="xboolean" value="false"/>
+</config>
+</config>
+</config>
+</config>
+<entry key="customDescription" type="xstring" isnull="true" value=""/>
+<entry key="state" type="xstring" value="EXECUTED"/>
+<entry key="factory" type="xstring" value="org.knime.base.node.io.tablecreator.TableCreator2NodeFactory"/>
+<entry key="node-name" type="xstring" value="Table Creator"/>
+<entry key="node-bundle-name" type="xstring" value="KNIME Base Nodes"/>
+<entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.base"/>
+<entry key="node-bundle-vendor" type="xstring" value="KNIME GmbH, Konstanz, Germany"/>
+<entry key="node-bundle-version" type="xstring" value="3.3.1.v201612190931"/>
+<entry key="node-feature-name" type="xstring" value="KNIME Core"/>
+<entry key="node-feature-symbolic-name" type="xstring" value="org.knime.features.base.feature.group"/>
+<entry key="node-feature-vendor" type="xstring" value="KNIME GmbH, Konstanz, Germany"/>
+<entry key="node-feature-version" type="xstring" value="3.3.1.v201612192115"/>
+<config key="factory_settings"/>
+<entry key="name" type="xstring" value="Table Creator"/>
+<entry key="hasContent" type="xboolean" value="true"/>
+<entry key="isInactive" type="xboolean" value="false"/>
+<config key="ports">
+<config key="port_1">
+<entry key="index" type="xint" value="1"/>
+<entry key="port_spec_class" type="xstring" value="org.knime.core.data.DataTableSpec"/>
+<entry key="port_object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+<entry key="port_object_summary" type="xstring" value="Rows: 12, Cols: 1"/>
+<entry key="port_dir_location" type="xstring" value="port_1"/>
+</config>
+</config>
+<config key="filestores">
+<entry key="file_store_location" type="xstring" isnull="true" value=""/>
+<entry key="file_store_id" type="xstring" value="d2d54793-97af-4ed7-bdcf-df68a75ecbb0"/>
+</config>
+</config>

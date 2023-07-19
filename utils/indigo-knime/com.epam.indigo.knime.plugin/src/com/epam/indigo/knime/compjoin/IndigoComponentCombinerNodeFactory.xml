@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/component-combiner.png" type="Manipulator">
+    <name>Component Combiner</name>
+    
+    <shortDescription>
+    </shortDescription>
+    
+    <fullDescription>
+        <intro><p>This node combines the input molecule components into joined molecules and writes the result molecules
+               into the output table column. Defines the output column type automatically.</p>
+		        <p>
+					<b>Supported types:</b> 
+					<ul>
+						<li>Molecule:  String, SDF, Smiles, CML, Mol, InChI</li>
+						<li>Query molecule:  String, SMARTS, Smiles, Mol, Sdf</li>
+					</ul>
+				</p>
+               <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p>
+        </intro>
+               
+               
+        <option name="Include Columns">Filter for choosing the component columns</option>
+        <option name="Result molecule column name">Column name for the output molecules</option>
+        
+       	<option name="Input type">Treat input as: a molecule, a query molecule</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+        <option name="Treat query as SMARTS">Treat a string input as SMARTS (available for query molecules).</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input molecules">Table containing molecules or query molecules</inPort>
+        <outPort index="0" name="Joined components">The same as input, plus the column with the combined components</outPort>
+        <outPort index="1" name="Invalid data">The same as input, contains rows with invalid data</outPort>
+    </ports>    
+</knimeNode>

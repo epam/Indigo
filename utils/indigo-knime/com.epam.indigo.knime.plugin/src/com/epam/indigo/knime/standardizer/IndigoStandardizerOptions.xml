@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Groups>
+	<Group name="Stereo">
+		<Option name="standardize-stereo">
+			<Description>Sets or repairs the stereo on a molecule</Description>
+			<Scope>1</Scope>
+		</Option>
+		<Option name="standardize-clear-stereo">
+			<Description>Sets all atoms and bonds to NoStereo</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-clear-enhanced-stereo">
+			<Description>Removes all relative stereo groupings</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-clear-unknown-stereo">
+			<Description>Sets all atoms and bonds marked UnknownStereo to NoStereo</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-clear-unknown-atom-stereo">
+			<Description>Sets all atoms marked UnknownStereo to NoStereo</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-clear-unknown-bond-stereo">
+			<Description>Sets all bonds marked UnknownStereo to NoStereo</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-clear-cis-trans">
+			<Description>Sets all bonds marked CisStereo or TransStereo to UnknownStereo</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-stereo-from-coordinates">
+			<Description>Uses 2D coordinates and up/down bond markings (or 3D coordinates) to assign the stereochemistry of the atoms or bonds</Description>
+			<Scope>3</Scope>
+		</Option>
+		<Option name="standardize-reposition-stereo-bonds">
+			<Description>Repositions the stereo bond markings in an attempt to find the best bond to mark as a wedge bond for each stereo atom</Description>
+			<Scope>3</Scope>
+		</Option>
+		<Option name="standardize-reposition-axial-stereo-bonds">
+			<Description>Repositions the stereo bond markings for axial stereo centers (allenes and atropisomers) in an attempt to find the best bond to mark as a wedge bond for each center</Description>
+			<Scope>3</Scope>
+		</Option>
+		<Option name="standardize-fix-direction-wedge-bonds">
+			<Description>Checks the wedge bonds in the molecule to ensure that the wedge is drawn with the stereo atom at the narrow end of the wedge</Description>
+			<Scope>0</Scope>
+		</Option>
+
+	</Group>
+	<Group name="Charges">
+		<Option name="standardize-charges">
+			<Description>Sets the charges on a molecule to a standard form</Description>
+			<Scope>1</Scope>
+		</Option>
+		<Option name="standardize-clear-charges">
+			<Description>Sets all formal charges to zero</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-neutralize-zwitterions">
+			<Description>Converts directly bonded zwitterions (positively charged atom bonded to negatively charged atom, A+B-) to the neutral representation (A=B)</Description>
+			<Scope>1</Scope>
+		</Option>
+	</Group>
+	<Group name="Geometry">
+		<Option name="standardize-center-molecule">
+			<Description>Translates a molecule so its geometric center lies at the origin</Description>
+			<Scope>3</Scope>
+		</Option>
+		<Option name="standardize-remove-single-atoms">
+			<Description>Removes fragments that consist of only a single heavy atom</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-keep-smallest">
+			<Description>Keeps only the smallest fragment in the molecule</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-keep-largest">
+			<Description>Keeps only the largest fragment in the molecule</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-remove-largest">
+			<Description>Removes the largest fragment in the molecule</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-clear-coordinates">
+			<Description>Sets all x, y, z coordinates to zero</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-straighten-triple-bonds">
+			<Description>Finds atoms with triple bonds and non-linear geometry and fixes them so that the bond angles are 180 degrees</Description>
+			<Scope>3</Scope>
+		</Option>
+		<Option name="standardize-straighten-allens">
+			<Description>Finds atoms with two double-bonds and non-linear geometry and fixes them so that the bond angles are 180 degrees</Description>
+			<Scope>3</Scope>
+		</Option>
+		<Option name="standardize-clear-molecule">
+			<Description>Deletes all atoms and bonds in the molecule, keeping the molecule object in the data record</Description>
+			<Scope>0</Scope>
+		</Option>
+	</Group>
+	<Group name="Query">
+		<Option name="standardize-make-non-h-to-c-atoms">
+			<Description>Converts all non-Hydrogen atoms atoms in the molecule to carbon</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-make-non-h-to-a-atoms">
+			<Description>Converts all non-Hydrogen atoms in the molecule to the A query atom type</Description>
+			<Scope>2</Scope>
+		</Option>
+		<Option name="standardize-make-non-h-c-to-q-atoms">
+			<Description>Converts all non-Carbon, non-Hydrogen atoms in the molecule to the Q query atom type</Description>
+			<Scope>2</Scope>
+		</Option>
+	</Group>
+	<Group name="Misc">
+		<Option name="standardize-make-all-bonds-single">
+			<Description>Converts all bonds in the molecule to single bonds</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-highlight-colors">
+			<Description>Clears any highlight colors from atoms and bonds</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-clear-unusual-valences">
+			<Description>Clears any atom valence query features and resets all implicit hydrogen counts to their standard values</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-clear-isotopes">
+			<Description>Clears all isotope markings from atoms</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-clear-dative-bonds">
+			<Description>Clears all explicit zero-order coordination bonds of dative type (V3000 type-9 bonds)</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-create-dative-bonds">
+			<Description>Create coordination bond (zero-order bond) instead of wrong co-valent bond</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-create-hydrogen-bonds">
+			<Description>Create hydrogen bond (zero-order bond) instead of wrong co-valent bond</Description>
+			<Scope>0</Scope>
+		</Option>
+		<Option name="standardize-clear-hydrogen-bonds">
+			<Description>Clears all explicit zero-order hydrogen bonds (V3000 type-10 bonds)</Description>
+			<Scope>0</Scope>
+		</Option>
+	</Group>
+	<!-- Meaning of the SCOPE attribute value:
+		 0 - applicable for a molecule and a query molecule
+         1 - applicable for a molecule only
+         2 - applicable for a query molecule only
+         3 - applicable for molecule with non-zero coordinates only (based on molfiles)
+     -->
+</Groups>
+

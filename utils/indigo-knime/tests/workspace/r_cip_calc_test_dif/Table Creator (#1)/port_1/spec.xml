@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="spec.xml">
+<entry key="spec_name" type="xstring" value="default"/>
+<entry key="number_columns" type="xint" value="1"/>
+<config key="column_spec_0">
+<entry key="column_name" type="xstring" value="column1"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" value="org.knime.core.data.def.StringCell"/>
+</config>
+<config key="column_domain">
+<config key="possible_values">
+<entry key="array-size" type="xint" value="6"/>
+<config key="0">
+<entry key="datacell" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<config key="org.knime.core.data.def.StringCell">
+<entry key="StringCell" type="xstring" value="N1([C@H]2[C@H](CO)[C@@H](CO)C2)C=NC2=C1N=C(N)NC2=O |&amp;1:1,2,5|&gt;&gt;N1([C@H]2[C@H](CO)[C@@H](CO)C2)C=NC2=C1N=C(N)NC2=O |&amp;1:1,2,5|"/>
+</config>
+</config>
+<config key="1">
+<entry key="datacell" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<config key="org.knime.core.data.def.StringCell">
+<entry key="StringCell" type="xstring" value="[C@](CO)([14CH2]C)([H])CC |&amp;1:0|&gt;&gt;[C@](CO)([14CH2]C)([H])CC |&amp;1:0|"/>
+</config>
+</config>
+<config key="2">
+<entry key="datacell" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<config key="org.knime.core.data.def.StringCell">
+<entry key="StringCell" type="xstring" value="[C@](CO)(C[14CH3])([H])CC |&amp;1:0|&gt;&gt;[C@](CO)(C[14CH3])([H])CC |&amp;1:0|"/>
+</config>
+</config>
+<config key="3">
+<entry key="datacell" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<config key="org.knime.core.data.def.StringCell">
+<entry key="StringCell" type="xstring" value="[C@H](C1CCCCC1)(C1CC1)C1CCC1 |&amp;1:0|&gt;&gt;[C@H](C1CCCCC1)(C1CC1)C1CCC1 |&amp;1:0|"/>
+</config>
+</config>
+<config key="4">
+<entry key="datacell" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<config key="org.knime.core.data.def.StringCell">
+<entry key="StringCell" type="xstring" value="[C@H](N1CCCCC1)(N1CC1)N1CCC1 |&amp;1:0|&gt;&gt;[C@H](N1CCCCC1)(N1CC1)N1CCC1 |&amp;1:0|"/>
+</config>
+</config>
+<config key="5">
+<entry key="datacell" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<config key="org.knime.core.data.def.StringCell">
+<entry key="StringCell" type="xstring" value="C/C=C\C=C\CCC&gt;&gt;C/C=C\C=C\CCC"/>
+</config>
+</config>
+</config>
+</config>
+<config key="column_properties"/>
+</config>
+</config>
