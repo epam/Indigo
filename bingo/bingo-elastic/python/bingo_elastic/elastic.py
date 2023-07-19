@@ -62,11 +62,9 @@ def get_index_name(record: IndigoRecord) -> IndexName:
 def get_record_by_index(
     response: Dict, index: str
 ) -> Union[IndigoRecordMolecule, IndigoRecordReaction]:
-    if index == IndexName.BINGO_MOLECULE.value:
-        return IndigoRecordMolecule(elastic_response=response)
     if index == IndexName.BINGO_REACTION.value:
         return IndigoRecordReaction(elastic_response=response)
-    raise AttributeError(f"Unknown index {index}")
+    return IndigoRecordMolecule(elastic_response=response)
 
 
 def elastic_repository_molecule(*args, **kwargs):
