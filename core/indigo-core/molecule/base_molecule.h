@@ -443,6 +443,7 @@ namespace indigo
 
         // calc bounding box
         void getBoundingBox(Rect2f& bbox) const;
+        void getBoundingBox(Rect2f& bbox, const Vec2f& minbox) const;
         void getBoundingBox(Vec2f& a, Vec2f& b) const;
 
         // aliases

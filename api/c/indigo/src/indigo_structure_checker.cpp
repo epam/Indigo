@@ -159,6 +159,8 @@ void dumpMessage(StructureChecker::CheckMessage& msg, std::string& out_str)
 {
     if (!out_str.empty())
         out_str += ", ";
+    if (!msg.prefix.empty())
+        out_str += msg.prefix + ':';
     out_str += msg.message();
     if (!msg.ids.empty())
     {

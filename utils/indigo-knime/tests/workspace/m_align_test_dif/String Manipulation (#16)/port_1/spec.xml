@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="spec.xml">
+<entry key="spec_name" type="xstring" value="default"/>
+<entry key="number_columns" type="xint" value="2"/>
+<config key="column_spec_0">
+<entry key="column_name" type="xstring" value="column1"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" value="org.knime.chem.types.MolAdapterCell"/>
+<config key="adapter_classes">
+<entry key="array-size" type="xint" value="6"/>
+<entry key="0" type="xstring" value="org.knime.chem.types.MolValue"/>
+<entry key="1" type="xstring" value="org.knime.core.data.DataValue"/>
+<entry key="2" type="xstring" value="org.knime.chem.types.SdfValue"/>
+<entry key="3" type="xstring" value="org.knime.core.data.StringValue"/>
+<entry key="4" type="xstring" value="org.knime.core.data.RWAdapterValue"/>
+<entry key="5" type="xstring" value="org.knime.core.data.AdapterValue"/>
+</config>
+</config>
+<config key="column_domain"/>
+<config key="column_properties"/>
+</config>
+<config key="column_spec_1">
+<entry key="column_name" type="xstring" value="Align column"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" value="org.knime.core.data.def.StringCell"/>
+</config>
+<config key="column_domain">
+<config key="possible_values">
+<entry key="array-size" type="xint" value="4"/>
+<config key="0">
+<entry key="datacell" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<config key="org.knime.core.data.def.StringCell">
+<entry key="StringCell" type="xstring" value="%%00010  -INDIGO-000000002D%%00010%%00010 13 14  0  0  0  0  0  0  0  0999 V2000%%00010    9.2750   -6.5500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    8.4090   -7.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    8.4090   -8.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    9.2750   -8.5500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.1410   -8.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   11.0070   -8.5500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   11.8730   -8.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   11.8730   -7.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   11.0070   -6.5500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.1410   -7.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   12.7391   -6.5500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   13.6051   -7.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   14.4711   -6.5500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010  2  1  1  0  0  0  0%%00010  3  2  1  0  0  0  0%%00010  4  3  1  0  0  0  0%%00010  5  4  1  0  0  0  0%%00010  5  6  1  0  0  0  0%%00010  6  7  1  0  0  0  0%%00010  7  8  1  0  0  0  0%%00010  8  9  1  0  0  0  0%%00010  9 10  1  0  0  0  0%%00010  1 10  1  0  0  0  0%%00010 10  5  1  0  0  0  0%%00010  8 11  1  0  0  0  0%%00010 11 12  1  0  0  0  0%%00010 12 13  1  0  0  0  0%%00010M  END%%00010"/>
+</config>
+</config>
+<config key="1">
+<entry key="datacell" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<config key="org.knime.core.data.def.StringCell">
+<entry key="StringCell" type="xstring" value="%%00010  -INDIGO-000000002D%%00010%%00010 12 13  0  0  0  0  0  0  0  0999 V2000%%00010    9.2750   -6.5500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    8.4090   -7.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    8.4090   -8.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    9.2750   -8.5500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.1410   -8.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.1410   -7.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    9.2750   -9.5500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    8.4090  -10.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    8.4090  -11.0499    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    9.2750  -11.5499    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.1410  -11.0499    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.1410  -10.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010  2  1  2  0  0  0  0%%00010  3  2  1  0  0  0  0%%00010  4  3  2  0  0  0  0%%00010  5  4  1  0  0  0  0%%00010  6  5  2  0  0  0  0%%00010  1  6  1  0  0  0  0%%00010  4  7  1  0  0  0  0%%00010  8  7  2  0  0  0  0%%00010  9  8  1  0  0  0  0%%00010 10  9  2  0  0  0  0%%00010 11 10  1  0  0  0  0%%00010 12 11  2  0  0  0  0%%00010  7 12  1  0  0  0  0%%00010M  END%%00010"/>
+</config>
+</config>
+<config key="2">
+<entry key="datacell" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<config key="org.knime.core.data.def.StringCell">
+<entry key="StringCell" type="xstring" value="%%00010  -INDIGO-000000002D%%00010%%00010 18 18  0  0  0  0  0  0  0  0999 V2000%%00010    8.7553   -7.4498    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    9.1018   -7.2500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    9.4483   -7.4501    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    9.4482   -7.8500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    9.1017   -8.0498    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    9.7948   -7.2504    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.1413   -7.4505    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.4878   -7.2507    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.4879   -6.8509    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.3511   -6.4750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.7451   -7.1573    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.6248   -6.4752    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.8345   -6.6511    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.8819   -6.9205    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.1414   -6.6507    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.1415   -6.2509    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    9.7950   -6.0507    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    9.7949   -6.8505    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010  1  2  1  0  0  0  0%%00010  2  3  1  0  0  0  0%%00010  3  4  1  0  0  0  0%%00010  4  5  1  0  0  0  0%%00010  3  6  1  0  0  0  0%%00010  7  6  2  0  0  0  0%%00010  8  7  1  0  0  0  0%%00010  9  8  2  0  0  0  0%%00010  9 10  1  0  0  0  0%%00010  9 11  1  0  0  0  0%%00010  9 12  1  0  0  0  0%%00010  9 13  1  0  0  0  0%%00010  9 14  1  0  0  0  0%%00010 15  9  1  0  0  0  0%%00010 15 16  1  0  0  0  0%%00010 16 17  1  0  0  0  0%%00010 18 15  2  0  0  0  0%%00010  6 18  1  0  0  0  0%%00010M  END%%00010"/>
+</config>
+</config>
+<config key="3">
+<entry key="datacell" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<config key="org.knime.core.data.def.StringCell">
+<entry key="StringCell" type="xstring" value="%%00010  -INDIGO-000000002D%%00010%%00010  6  6  0  0  0  0  0  0  0  0999 V2000%%00010    9.2750   -6.5500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    8.4090   -7.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    8.4090   -8.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    9.2750   -8.5500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.1410   -8.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   10.1410   -7.0500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010  2  1  2  0  0  0  0%%00010  3  2  1  0  0  0  0%%00010  4  3  2  0  0  0  0%%00010  5  4  1  0  0  0  0%%00010  6  5  2  0  0  0  0%%00010  1  6  1  0  0  0  0%%00010M  END%%00010"/>
+</config>
+</config>
+</config>
+</config>
+<config key="column_properties"/>
+</config>
+</config>

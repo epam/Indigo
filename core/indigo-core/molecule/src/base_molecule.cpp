@@ -4360,6 +4360,19 @@ void BaseMolecule::getBoundingBox(Vec2f& a, Vec2f& b) const
     }
 }
 
+void BaseMolecule::getBoundingBox(Rect2f& bbox, const Vec2f& minbox) const
+{
+    getBoundingBox(bbox);
+    if (bbox.width() < minbox.x || bbox.height() < minbox.y)
+    {
+        Vec2f center(bbox.center());
+        const auto half_width = std::max(bbox.width() / 2, minbox.x / 2);
+        const auto half_height = std::max(bbox.height() / 2, minbox.y / 2);
+        Rect2f new_bbox(Vec2f(center.x - half_width, center.y - half_height), Vec2f(center.x + half_width, center.y + half_height));
+        bbox.copy(new_bbox);
+    }
+}
+
 void BaseMolecule::getBoundingBox(Rect2f& bbox) const
 {
     Vec2f a, b;

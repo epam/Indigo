@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse version="3.0"?>
+
+<plugin>
+   <extension point="org.knime.workbench.repository.nodes">
+      
+      
+      <node category-path="/community/indigo 2/molecule" factory-class="com.epam.indigo.knime.compjoin.IndigoComponentCombinerNodeFactory" id="com.epam.indigo.knime.compjoin.IndigoComponentCombinerNodeFactory"/>
+      <node category-path="/community/indigo 2/molecule" factory-class="com.epam.indigo.knime.compsep.IndigoComponentSeparatorNodeFactory" id="com.epam.indigo.knime.compsep.IndigoComponentSeparatorNodeFactory"/>
+      <node category-path="/community/indigo 2/molecule" factory-class="com.epam.indigo.knime.murcko.IndigoMurckoScaffoldNodeFactory" id="com.epam.indigo.knime.murcko.IndigoMurckoScaffoldNodeFactory"/>
+      <node category-path="/community/indigo 2/molecule" factory-class="com.epam.indigo.knime.rgdecomp.IndigoRGroupDecomposerNodeFactory" id="com.epam.indigo.knime.IndigoRGroupDecomposerNodeFactory"/>
+      <node category-path="/community/indigo 2/molecule" factory-class="com.epam.indigo.knime.scaffold.IndigoScaffoldFinderNodeFactory" id="com.epam.indigo.knime.IndigoScaffoldFinderNodeFactory"/>
+      <node category-path="/community/indigo 2/structure" factory-class="com.epam.indigo.knime.submatchcounter.IndigoSubstructureMatchCounterNodeFactory" id="com.epam.indigo.knime.IndigoSubstructureMatchCounterNodeFactory"/>
+      <node category-path="/community/indigo 2/structure" factory-class="com.epam.indigo.knime.submatcher.IndigoSubstructureMatcherNodeFactory" id="com.epam.indigo.knime.IndigoSubstructureMatcherNodeFactory"/>
+      <node category-path="/community/indigo 2/molecule" factory-class="com.epam.indigo.knime.transform.IndigoMoleculeTransformNodeFactory" id="com.epam.indigo.knime.transform.IndigoMoleculeTransformNodeFactory"/>
+      <node category-path="/community/indigo 2/molecule" factory-class="com.epam.indigo.knime.isomers.IndigoIsomersEnumeratorNodeFactory" id="com.epam.indigo.knime.isomers.IndigoIsomersEnumeratorNodeFactory"/>
+      <node category-path="/community/indigo 2/molecule" factory-class="com.epam.indigo.knime.highlighter.IndigoHighlighterNodeFactory" id="com.epam.indigo.knime.highlighter.IndigoHighlighterNodeFactory"/>
+      <node category-path="/community/indigo 2/molecule" factory-class="com.epam.indigo.knime.weightfilter.IndigoWeightSplitterNodeFactory" id="com.epam.indigo.knime.molfilter.IndigoWeightFilterNodeFactory"/>
+      <node category-path="/community/indigo 2/molecule" factory-class="com.epam.indigo.knime.formulafilter.IndigoFormulaFilterNodeFactory" id="com.epam.indigo.knime.formulafilter.IndigoFormulaFilterNodeFactory"/>
+      <node category-path="/community/indigo 2/molecule" factory-class="com.epam.indigo.knime.organicfilter.IndigoOrganicSplitterNodeFactory" id="com.epam.indigo.knime.organic.IndigoOrganicFilterNodeFactory"/>
+      
+      <node category-path="/community/indigo 2/reaction" factory-class="com.epam.indigo.knime.rautomapper.IndigoReactionAutomapperNodeFactory" id="com.epam.indigo.knime.rautomapper.ReactionAutomapperNodeFactory"/>
+      <node category-path="/community/indigo 2/reaction" factory-class="com.epam.indigo.knime.rbuilder.IndigoReactionBuilderNodeFactory" id="com.epam.indigo.knime.rbuilder.IndigoReactionBuilderNodeFactory"/>
+      <node category-path="/community/indigo 2/reaction" factory-class="com.epam.indigo.knime.rsplitter.IndigoReactionSplitterNodeFactory" id="com.epam.indigo.knime.rsplitter.IndigoReactionSplitterNodeFactory"/>
+      
+      <node category-path="/community/indigo 2/manipulators" factory-class="com.epam.indigo.knime.arom.IndigoAromatizerNodeFactory" id="com.epam.indigo.knime.IndigoAromatizerNodeFactory"/>
+      <node category-path="/community/indigo 2/manipulators" factory-class="com.epam.indigo.knime.dearom.IndigoDearomatizerNodeFactory" id="com.epam.indigo.knime.IndigoDearomatizerNodeFactory"/>
+      <node category-path="/community/indigo 2/manipulators" factory-class="com.epam.indigo.knime.areplacer.IndigoAtomReplacerNodeFactory" id="com.epam.indigo.knime.areplacer.IndigoAtomReplacerNodeFactory"/>
+      <node category-path="/community/indigo 2/manipulators" factory-class="com.epam.indigo.knime.bondreplacer.IndigoBondReplacerNodeFactory" id="com.epam.indigo.knime.bondreplacer.IndigoBondReplacerNodeFactory"/>
+      <node category-path="/community/indigo 2/manipulators" factory-class="com.epam.indigo.knime.fremover.IndigoFeatureRemoverNodeFactory" id="com.epam.indigo.knime.fremover.IndigoFeatureRemoverNodeFactory"/>
+      <node category-path="/community/indigo 2/manipulators" factory-class="com.epam.indigo.knime.hadder.IndigoHydrogenAdderNodeFactory" id="com.epam.indigo.knime.IndigoHydrogenAdderNodeFactory"/>
+      <node category-path="/community/indigo 2/manipulators" factory-class="com.epam.indigo.knime.hremover.IndigoHydrogenRemoverNodeFactory" id="com.epam.indigo.knime.IndigoHydrogenRemoverNodeFactory"/>
+      <node category-path="/community/indigo 2/manipulators" factory-class="com.epam.indigo.knime.layout.IndigoLayout2DNodeFactory" id="com.epam.indigo.knime.layout.IndigoLayout2DNodeFactory"/>
+      <node category-path="/community/indigo 2/manipulators" factory-class="com.epam.indigo.knime.standardizer.IndigoStandardizerNodeFactory" id="com.epam.indigo.knime.standardizer.IndigoStandardizerNodeFactory"/>
+      
+      <node category-path="/community/indigo 2/properties" factory-class="com.epam.indigo.knime.molprop.IndigoMoleculePropertiesNodeFactory" id="com.epam.indigo.knime.IndigoMoleculePropertiesNodeFactory"/>
+      <node category-path="/community/indigo 2/properties" factory-class="com.epam.indigo.knime.valence.IndigoValenceCheckerNodeFactory" id="com.epam.indigo.knime.IndigoValenceCheckerNodeFactory"/>
+      <node category-path="/community/indigo 2/properties" factory-class="com.epam.indigo.knime.canonsmiles.IndigoCanonicalSmilesNodeFactory" id="com.epam.indigo.knime.canonsmiles.IndigoCanonicalSmilesNodeFactory"/>
+  
+      <node category-path="/community/indigo 2/structure" factory-class="com.epam.indigo.knime.fpsim.IndigoFingerprintSimilarityNodeFactory" id="com.epam.indigo.knime.IndigoFingerprintSimilarityNodeFactory"/>
+      <node category-path="/community/indigo 2/structure" factory-class="com.epam.indigo.knime.molfp.IndigoMoleculeFingerprinterNodeFactory" id="com.epam.indigo.knime.IndigoMoleculeFingerprinterNodeFactory"/>
+
+      <node category-path="/community/indigo 2/combinatorial_chemistry" factory-class="com.epam.indigo.knime.combchem.IndigoReactionGeneratorNodeFactory" id="com.epam.indigo.knime.combchem.IndigoReactionGeneratorNodeFactory"/>
+      <node
+            category-path="/community/indigo 2/properties"
+            deprecated="false"
+            factory-class="com.epam.indigo.knime.inchi.IndigoInchiNodeFactory"
+            id="com.epam.indigo.knime.inchi.IndigoInchiNodeFactory">
+      </node>
+
+
+</extension>
+   
+    <extension point="org.knime.workbench.repository.categories">
+      <category description="Indigo 2" icon="icons/indigo.png" level-id="indigo 2" name="Indigo 2" path="/community"/>
+    </extension>
+    <extension point="org.knime.workbench.repository.categories">
+      <category
+            description="Molecule Nodes"
+            level-id="molecule"
+            name="Molecule Nodes"
+            path="/community/indigo 2"/>
+      <category
+            after="molecule"
+            description="Reaction Nodes"
+            level-id="reaction"
+            name="Reaction Nodes"
+            path="/community/indigo 2">
+      </category>
+      <category
+            after="reaction"
+            description="Match and Similarity"
+            level-id="structure"
+            name="Match and Similarity"
+            path="/community/indigo 2">
+      </category>
+      <category
+            after="structure"
+            description="Combinatorial Chemistry"
+            icon="icons/groups/combichem-group.png"
+            level-id="combinatorial_chemistry"
+            name="Combinatorial Chemistry"
+            path="/community/indigo 2">
+      </category>
+      <category
+            after="combinatorial_chemistry"
+            description="Manipulators"
+            icon="icons/groups/manipulators.png"
+            level-id="manipulators"
+            name="Manipulators"
+            path="/community/indigo 2">
+      </category>
+      <category
+            after="manipulators"
+            description="Properties"
+            icon="icons/groups/properties.png"
+            level-id="properties"
+            name="Properties"
+            path="/community/indigo 2">
+      </category>
+    </extension>
+    <extension point="org.eclipse.equinox.preferences.preferences">
+       <initializer class="com.epam.indigo.knime.plugin.IndigoPreferenceInitializer"/>
+    </extension>
+    <extension point="org.eclipse.ui.preferencePages">
+      <page category="org.knime.chem.preferences" class="com.epam.indigo.knime.plugin.IndigoPreferencePage" id="com.epam.indigo.knime.preferences" name="Indigo"/>
+    </extension>
+    <extension point="org.knime.product.splashExtension">
+       <splashExtension icon="icons/indigo-splash.png" id="indigo" tooltip="Indigo"/>
+    </extension>
+    <extension
+          point="org.knime.core.DataValueRenderer">
+       <dataValue
+             valueClass="org.knime.chem.types.MolValue">
+          <renderer
+                rendererFactoryClass="com.epam.indigo.knime.cell.IndigoDataValueRenderer$Factory"
+                suggestAsDefault="true">
+          </renderer>
+          <renderer
+                rendererFactoryClass="org.knime.chem.types.MolValueRenderer$Factory"
+                suggestAsDefault="false">
+          </renderer>
+       </dataValue>
+       <dataValue
+             valueClass="org.knime.chem.types.SdfValue">
+          <renderer
+                rendererFactoryClass="com.epam.indigo.knime.cell.IndigoDataValueRenderer$Factory"
+                suggestAsDefault="true">
+          </renderer>
+          <renderer
+                rendererFactoryClass="org.knime.chem.types.SdfValueRenderer$Factory"
+                suggestAsDefault="false">
+          </renderer>
+       </dataValue>
+       <dataValue
+             valueClass="org.knime.chem.types.SmilesValue">
+          <renderer
+                rendererFactoryClass="com.epam.indigo.knime.cell.IndigoDataValueRenderer$Factory"
+                suggestAsDefault="true">
+          </renderer>
+          <renderer
+                rendererFactoryClass="org.knime.core.data.renderer.StringValueRenderer$Factory"
+                suggestAsDefault="false">
+          </renderer>
+       </dataValue>
+       <dataValue
+             valueClass="org.knime.chem.types.SmartsValue">
+          <renderer
+                rendererFactoryClass="com.epam.indigo.knime.cell.IndigoDataValueRenderer$Factory"
+                suggestAsDefault="true">
+          </renderer>
+          <renderer
+                rendererFactoryClass="org.knime.core.data.renderer.DefaultDataValueRenderer$Factory"
+                suggestAsDefault="false">
+          </renderer>
+       </dataValue>
+       <dataValue
+             valueClass="org.knime.chem.types.RxnValue">
+          <renderer
+                rendererFactoryClass="com.epam.indigo.knime.cell.IndigoDataValueRenderer$Factory"
+                suggestAsDefault="true">
+          </renderer>
+          <renderer
+                rendererFactoryClass="org.knime.chem.types.RxnValueRenderer$Factory"
+                suggestAsDefault="false">
+          </renderer>
+       </dataValue>
+       <dataValue
+             valueClass="org.knime.chem.types.CMLValue">
+          <renderer
+                rendererFactoryClass="com.epam.indigo.knime.cell.IndigoDataValueRenderer$Factory"
+                suggestAsDefault="true">
+          </renderer>
+          <renderer
+                rendererFactoryClass="org.knime.chem.types.CMLValueRenderer$Factory"
+                suggestAsDefault="false">
+          </renderer>
+       </dataValue>
+    </extension>
+    <extension
+          point="org.knime.core.DataType">
+       <DataType
+             cellClass="com.epam.indigo.knime.cell.IndigoMolCell"
+             factoryClass="com.epam.indigo.knime.cell.IndigoMolCellFactory">
+          <serializer
+                cellClass="com.epam.indigo.knime.cell.IndigoMolCell"
+                serializerClass="com.epam.indigo.knime.cell.IndigoMolCell$Serializer">
+          </serializer>
+          <serializer
+                cellClass="com.epam.indigo.knime.cell.IndigoMolAdapterCell"
+                serializerClass="com.epam.indigo.knime.cell.IndigoMolAdapterCell$Serializer">
+          </serializer>
+       </DataType>
+       <DataType
+             cellClass="com.epam.indigo.knime.cell.IndigoReactionCell"
+             factoryClass="com.epam.indigo.knime.cell.IndigoReactionCellFactory">
+          <serializer
+                cellClass="com.epam.indigo.knime.cell.IndigoReactionCell"
+                serializerClass="com.epam.indigo.knime.cell.IndigoReactionCell$Serializer">
+          </serializer>
+          <serializer
+                cellClass="com.epam.indigo.knime.cell.IndigoReactionAdapterCell"
+                serializerClass="com.epam.indigo.knime.cell.IndigoReactionAdapterCell$Serializer">
+          </serializer>
+       </DataType>
+       <DataType
+             cellClass="com.epam.indigo.knime.cell.IndigoQueryMolCell"
+             factoryClass="com.epam.indigo.knime.cell.IndigoQueryMolCellFactory">
+          <serializer
+                cellClass="com.epam.indigo.knime.cell.IndigoQueryMolCell"
+                serializerClass="com.epam.indigo.knime.cell.IndigoQueryMolCell$Serializer">
+          </serializer>
+          <serializer
+                cellClass="com.epam.indigo.knime.cell.IndigoQueryMolAdapterCell"
+                serializerClass="com.epam.indigo.knime.cell.IndigoQueryMolAdapterCell$Serializer">
+          </serializer>
+       </DataType>
+       <DataType
+             cellClass="com.epam.indigo.knime.cell.IndigoQueryReactionCell"
+             factoryClass="com.epam.indigo.knime.cell.IndigoQueryReactionCellFactory">
+          <serializer
+                cellClass="com.epam.indigo.knime.cell.IndigoQueryReactionCell"
+                serializerClass="com.epam.indigo.knime.cell.IndigoQueryReactionCell$Serializer">
+          </serializer>
+          <serializer
+                cellClass="com.epam.indigo.knime.cell.IndigoQueryReactionAdapterCell"
+                serializerClass="com.epam.indigo.knime.cell.IndigoQueryReactionAdapterCell$Serializer">
+          </serializer>
+       </DataType>
+    </extension>
+</plugin>

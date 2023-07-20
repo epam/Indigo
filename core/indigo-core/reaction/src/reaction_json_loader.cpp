@@ -232,16 +232,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         BaseMolecule& mol = *component;
         mol.makeSubmolecule(*_pmol, filter, 0, 0);
         Rect2f bbox;
-        mol.getBoundingBox(bbox);
-
-        if (bbox.width() < MIN_MOL_SIZE.x || bbox.height() < MIN_MOL_SIZE.y)
-        {
-            Vec2f center(bbox.center());
-            const auto hw = std::max(bbox.width() / 2, MIN_MOL_SIZE.x / 2);
-            const auto hh = std::max(bbox.height() / 2, MIN_MOL_SIZE.y / 2);
-            Rect2f new_bbox(Vec2f(center.x - hw, center.y - hh), Vec2f(center.x + hw, center.y + hh));
-            bbox.copy(new_bbox);
-        }
+        mol.getBoundingBox(bbox, MIN_MOL_SIZE);
 
         mol_tops.emplace_back(bbox.top(), i);
         mol_bottoms.emplace_back(bbox.bottom(), i);

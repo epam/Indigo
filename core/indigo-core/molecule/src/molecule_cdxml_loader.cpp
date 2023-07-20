@@ -1122,12 +1122,7 @@ void MoleculeCdxmlLoader::_parseLabel(CDXElement elem, std::string& label)
             auto txt = text_style.getText();
             if (!is_valid_utf8(txt))
                 txt = latin1_to_utf8(txt);
-
             label += txt;
-            if (label == "R")
-                continue;
-            else
-                break;
         }
     }
 }
