@@ -17,8 +17,6 @@
  ***************************************************************************/
 
 #include <algorithm>
-#include <string>
-
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
@@ -1166,123 +1164,54 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec3
 
     std::list<CdxmlKetTextLine> ket_text_lines;
     ket_text_lines.emplace_back();
-    if (elem.isBinary())
+    for (auto text_style = elem.firstChildElement(); text_style.hasContent(); text_style = text_style.nextSiblingElement())
     {
-        int shift = 0;
-        for (auto text_style = elem.firstChildElement(); text_style.hasContent(); text_style = text_style.nextSiblingElement(), ++shift)
+        std::string text_element = text_style.name();
+        auto& ket_text_line = ket_text_lines.back();
+        if (text_element == "s")
         {
-            std::string text_element = text_style.name();
-            auto& ket_text_line = ket_text_lines.back();
-            if (text_element == "s")
+            std::string label_part = text_style.getText();
+            if (label_part == "+")
             {
-                std::string label_part = text_style.getText();
-                if (label_part == "+")
-                {
-                    _pluses.push_back(text_bbox.center());
-                    return;
-                }
-
-                ket_text_line.text_styles.emplace_back();
-                auto& ket_text_style = ket_text_line.text_styles.back();
-
-                auto initial_size = label_part.size();
-                label_part.erase(std::remove_if(label_part.begin(), label_part.end(), [](auto ch) { return (ch == '\n' || ch == '\r'); }), label_part.end());
-                if (initial_size > label_part.size()) // line break
-                    ket_text_lines.emplace_back();
-
-                ket_text_style.offset = ket_text_line.text.size();
-                ket_text_style.size = 1; // label_part.size();
-                label_part = std::string(label_part.begin() + shift, label_part.begin() + shift + 1);
-                ket_text_line.text += label_part;
-
-                font_face = 0;
-                font_size = 0.0;
-                auto style = text_style.firstProperty();
-                applyDispatcher(style, style_dispatcher);
-
-                CDXMLFontStyle fs(font_face);
-                auto is_font_size_set = false;
-                if (font_face == KCDXMLChemicalFontStyle)
-                {
-                    // special case
-                }
-                else
-                {
-                    if (fs.is_bold)
-                        ket_text_style.styles.push_back(KETFontBoldStr);
-                    if (fs.is_italic)
-                        ket_text_style.styles.push_back(KETFontItalicStr);
-                    if (fs.is_superscript)
-                    {
-                        ket_text_style.styles.push_back(KETFontSuperscriptStr);
-                        ket_text_style.styles.push_back(std::string(KETFontCustomSizeStr) + "_" +
-                                                        std::to_string((int)ceil(font_size / kCDXMLFonsSizeMultiplier)) + "px");
-                        is_font_size_set = true;
-                    }
-                    if (fs.is_subscript)
-                    {
-                        ket_text_style.styles.push_back(KETFontSubscriptStr);
-                        ket_text_style.styles.push_back(std::string(KETFontCustomSizeStr) + "_" +
-                                                        std::to_string((int)ceil(font_size / kCDXMLFonsSizeMultiplier)) + "px");
-                        is_font_size_set = true;
-                    }
-                }
-                if (!is_font_size_set && font_size > 0 && (int)font_size != KETDefaultFontSize)
-                    ket_text_style.styles.push_back(std::string(KETFontCustomSizeStr) + "_" + std::to_string((int)ceil(font_size)) + "px");
+                _pluses.push_back(text_bbox.center());
+                return;
             }
-        }
-    }
-    else
-    {
-        for (auto text_style = elem.firstChildElement(); text_style.hasContent(); text_style = text_style.nextSiblingElement())
-        {
-            std::string text_element = text_style.name();
-            auto& ket_text_line = ket_text_lines.back();
-            if (text_element == "s")
+
+            ket_text_line.text_styles.emplace_back();
+            auto& ket_text_style = ket_text_line.text_styles.back();
+
+            auto initial_size = label_part.size();
+            label_part.erase(std::remove_if(label_part.begin(), label_part.end(), [](auto ch) { return (ch == '\n' || ch == '\r'); }), label_part.end());
+            if (initial_size > label_part.size()) // line break
+                ket_text_lines.emplace_back();
+
+            ket_text_style.offset = ket_text_line.text.size();
+            ket_text_style.size = label_part.size();
+            ket_text_line.text += label_part;
+
+            font_face = 0;
+            font_size = 0.0;
+            auto style = text_style.firstProperty();
+            applyDispatcher(style, style_dispatcher);
+
+            CDXMLFontStyle fs(font_face);
+            if (font_face == KCDXMLChemicalFontStyle)
             {
-                std::string label_part = text_style.getText();
-                if (label_part == "+")
-                {
-                    _pluses.push_back(text_bbox.center());
-                    return;
-                }
-
-                ket_text_line.text_styles.emplace_back();
-                auto& ket_text_style = ket_text_line.text_styles.back();
-
-                auto initial_size = label_part.size();
-                label_part.erase(std::remove_if(label_part.begin(), label_part.end(), [](auto ch) { return (ch == '\n' || ch == '\r'); }), label_part.end());
-                if (initial_size > label_part.size()) // line break
-                    ket_text_lines.emplace_back();
-
-                ket_text_style.offset = ket_text_line.text.size();
-                ket_text_style.size = label_part.size();
-                ket_text_line.text += label_part;
-
-                font_face = 0;
-                font_size = 0.0;
-                auto style = text_style.firstProperty();
-                applyDispatcher(style, style_dispatcher);
-
-                CDXMLFontStyle fs(font_face);
-                if (font_face == KCDXMLChemicalFontStyle)
-                {
-                    // special case
-                }
-                else
-                {
-                    if (fs.is_bold)
-                        ket_text_style.styles.push_back(KETFontBoldStr);
-                    if (fs.is_italic)
-                        ket_text_style.styles.push_back(KETFontItalicStr);
-                    if (fs.is_superscript)
-                        ket_text_style.styles.push_back(KETFontSuperscriptStr);
-                    if (fs.is_subscript)
-                        ket_text_style.styles.push_back(KETFontSubscriptStr);
-                }
-                if (font_size > 0 && (int)font_size != KETDefaultFontSize)
-                    ket_text_style.styles.push_back(std::string(KETFontCustomSizeStr) + "_" + std::to_string((int)ceil(font_size)) + "px");
+                // special case
             }
+            else
+            {
+                if (fs.is_bold)
+                    ket_text_style.styles.push_back(KETFontBoldStr);
+                if (fs.is_italic)
+                    ket_text_style.styles.push_back(KETFontItalicStr);
+                if (fs.is_superscript)
+                    ket_text_style.styles.push_back(KETFontSuperscriptStr);
+                if (fs.is_subscript)
+                    ket_text_style.styles.push_back(KETFontSubscriptStr);
+            }
+            if (font_size > 0 && (int)font_size != KETDefaultFontSize)
+                ket_text_style.styles.push_back(std::string(KETFontCustomSizeStr) + "_" + std::to_string((int)ceil(font_size)) + "px");
         }
     }
 
