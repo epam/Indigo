@@ -1870,19 +1870,40 @@ void SmilesSaver::_writeSGroups()
     for (int i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
     {
         SGroup& sg = _bmol->sgroups.getSGroup(i);
-        if (!sg.atoms.size() || (sg.sgroup_type != SGroup::SG_TYPE_GEN && sg.sgroup_type != SGroup::SG_TYPE_SRU))
+        if (!sg.atoms.size() || (sg.sgroup_type != SGroup::SG_TYPE_DAT && sg.sgroup_type != SGroup::SG_TYPE_GEN && sg.sgroup_type != SGroup::SG_TYPE_SRU))
             continue;
         _startExtension();
-        _output.writeString("Sg:");
+        _output.writeString(sg.sgroup_type == SGroup::SG_TYPE_DAT ? "SgD:" : "Sg:");
         switch (sg.sgroup_type)
         {
+        case SGroup::SG_TYPE_DAT: {
+            DataSGroup& dsg = static_cast<DataSGroup&>(sg);
+            _writeSGroupAtoms(sg);
+            _output.writeChar(':');
+            if (dsg.name.size() > 0)
+                _output.writeString(dsg.name.ptr());
+            _output.writeChar(':');
+            if (dsg.data.size() > 0)
+                _output.writeString(dsg.data.ptr());
+            _output.writeChar(':');
+            if (dsg.queryoper.size() > 0)
+                _output.writeString(dsg.queryoper.ptr());
+            _output.writeChar(':');
+            if (dsg.description.size() > 0)
+                _output.writeString(dsg.description.ptr());
+            _output.writeChar(':');
+            _output.writeChar(dsg.tag);
+            _output.writeChar(':');
+            // No coords output for now
+            }
+            break;
         case SGroup::SG_TYPE_GEN:
             _output.writeString("gen:");
             _writeSGroupAtoms(sg);
             _output.writeString(":");
             break;
         case SGroup::SG_TYPE_SRU: {
-            RepeatingUnit& ru = (RepeatingUnit&)sg;
+            RepeatingUnit& ru = static_cast<RepeatingUnit&>(sg);
             _output.writeString("n:");
             _writeSGroupAtoms(sg);
             _output.printf(":%s:", ru.subscript.ptr() ? ru.subscript.ptr() : "");

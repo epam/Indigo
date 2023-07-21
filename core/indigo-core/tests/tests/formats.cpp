@@ -23,6 +23,7 @@
 #include <molecule/cmf_loader.h>
 #include <molecule/cmf_saver.h>
 #include <molecule/cml_saver.h>
+#include <molecule/smiles_saver.h>
 #include <molecule/molecule_cdxml_saver.h>
 #include <molecule/molecule_mass.h>
 #include <molecule/molecule_substructure_matcher.h>
@@ -113,7 +114,7 @@ TEST_F(IndigoCoreFormatsTest, save_cml)
     ASSERT_TRUE(out.size() > 1000);
 }
 
-TEST_F(IndigoCoreFormatsTest, read_cml_data_sgroups)
+TEST_F(IndigoCoreFormatsTest, smiles_data_sgroups)
 {
     Molecule t_mol;
 
@@ -121,7 +122,7 @@ TEST_F(IndigoCoreFormatsTest, read_cml_data_sgroups)
     ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 1);
     SGroup& sg = t_mol.sgroups.getSGroup(0);
     ASSERT_EQ(sg.sgroup_type, SGroup::SG_TYPE_DAT);
-    DataSGroup& dsg = (DataSGroup&)sg;
+    DataSGroup& dsg = static_cast<DataSGroup&>(sg);
     ASSERT_STREQ(dsg.name.ptr(), "name");
     ASSERT_STREQ(dsg.data.ptr(), "data");
     ASSERT_STREQ(dsg.queryoper.ptr(), "like");
@@ -134,17 +135,24 @@ TEST_F(IndigoCoreFormatsTest, read_cml_data_sgroups)
     ASSERT_EQ(dsg.atoms.at(1), 2);
     ASSERT_EQ(dsg.atoms.at(2), 1);
     ASSERT_EQ(dsg.atoms.at(3), 0);
+    Array<char> out;
+    ArrayOutput std_out(out);
+    SmilesSaver saver(std_out);
+    saver.saveMolecule(t_mol);
+    ASSERT_EQ(out.size(), 48);
+    std::string str{out.ptr(), static_cast<std::size_t>(out.size())};
+    ASSERT_STREQ(str.c_str(), "c1c(N)cccc1 |SgD:3,2,1,0:name:data:like:unit:t:|");
 }
 
-TEST_F(IndigoCoreFormatsTest, read_cml_data_sgroups_coords)
+TEST_F(IndigoCoreFormatsTest, smiles_data_sgroups_coords)
 {
     Molecule t_mol;
 
-    loadMolecule("c1ccccc1N |SgD:1,2,0:::::s:(-1.5,7.8)|", t_mol);
+    loadMolecule("c1ccccc1 |SgD:1,2,0:::::s:(-1.5,7.8)|", t_mol);
     ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 1);
     SGroup& sg = t_mol.sgroups.getSGroup(0);
     ASSERT_EQ(sg.sgroup_type, SGroup::SG_TYPE_DAT);
-    DataSGroup& dsg = (DataSGroup&)sg;
+    DataSGroup& dsg = static_cast<DataSGroup&>(sg);
     ASSERT_STREQ(dsg.name.ptr(), "");
     ASSERT_STREQ(dsg.data.ptr(), "");
     ASSERT_STREQ(dsg.queryoper.ptr(), "");
@@ -156,17 +164,24 @@ TEST_F(IndigoCoreFormatsTest, read_cml_data_sgroups_coords)
     ASSERT_EQ(dsg.atoms.at(0), 1);
     ASSERT_EQ(dsg.atoms.at(1), 2);
     ASSERT_EQ(dsg.atoms.at(2), 0);
+    Array<char> out;
+    ArrayOutput std_out(out);
+    SmilesSaver saver(std_out);
+    saver.saveMolecule(t_mol);
+    ASSERT_EQ(out.size(), 27);
+    std::string str{out.ptr(), static_cast<std::size_t>(out.size())};
+    ASSERT_STREQ(str.c_str(), "c1ccccc1 |SgD:1,2,0:::::s:|");
 }
 
-TEST_F(IndigoCoreFormatsTest, read_cml_data_sgroups_short)
+TEST_F(IndigoCoreFormatsTest, smiles_data_sgroups_short)
 {
     Molecule t_mol;
 
-    loadMolecule("c1ccccc1N |SgD:1,2,0:name|", t_mol);
+    loadMolecule("c1ccccc1 |SgD:1,2,0:name|", t_mol);
     ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 1);
     SGroup& sg = t_mol.sgroups.getSGroup(0);
     ASSERT_EQ(sg.sgroup_type, SGroup::SG_TYPE_DAT);
-    DataSGroup& dsg = (DataSGroup&)sg;
+    DataSGroup& dsg = static_cast<DataSGroup&>(sg);
     ASSERT_STREQ(dsg.name.ptr(), "name");
     ASSERT_EQ(dsg.data.size(), 0);
     ASSERT_EQ(dsg.queryoper.size(), 0);
@@ -178,36 +193,60 @@ TEST_F(IndigoCoreFormatsTest, read_cml_data_sgroups_short)
     ASSERT_EQ(dsg.atoms.at(0), 1);
     ASSERT_EQ(dsg.atoms.at(1), 2);
     ASSERT_EQ(dsg.atoms.at(2), 0);
+    Array<char> out;
+    ArrayOutput std_out(out);
+    SmilesSaver saver(std_out);
+    saver.saveMolecule(t_mol);
+    ASSERT_EQ(out.size(), 31);
+    std::string str{out.ptr(), static_cast<std::size_t>(out.size())};
+    ASSERT_STREQ(str.c_str(), "c1ccccc1 |SgD:1,2,0:name:::: :|");
 }
 
-TEST_F(IndigoCoreFormatsTest, read_cml_pol_sgroups_conn_and_flip)
+TEST_F(IndigoCoreFormatsTest, smiles_pol_sgroups_conn_and_flip)
 {
     Molecule t_mol;
 
-    loadMolecule("*CC(*)C(*)N* |$star_e;;;star_e;;star_e;;star_e$,Sg:n:6,1,2,4::hh&#44;f:6,0,:4,2,|", t_mol);
+    loadMolecule("*CC*C*N* |$star;;;star;;star;;star$,Sg:n:6,1,2,4::hh&#44;f:6,0,:4,2,|", t_mol);
     ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 1);
     SGroup& sg = t_mol.sgroups.getSGroup(0);
     ASSERT_EQ(sg.sgroup_type, SGroup::SG_TYPE_SRU);
-    RepeatingUnit& ru = (RepeatingUnit&)sg;
+    RepeatingUnit& ru = static_cast<RepeatingUnit&>(sg);
     ASSERT_EQ(ru.atoms.size(), 4);
     ASSERT_EQ(ru.atoms.at(0), 6);
     ASSERT_EQ(ru.atoms.at(1), 1);
     ASSERT_EQ(ru.atoms.at(2), 2);
     ASSERT_EQ(ru.atoms.at(3), 4);
+    ASSERT_EQ(ru.connectivity, RepeatingUnit::HEAD_TO_HEAD);
+    Array<char> out;
+    ArrayOutput std_out(out);
+    SmilesSaver saver(std_out);
+    saver.saveMolecule(t_mol);
+    ASSERT_EQ(out.size(), 53);
+    std::string str{out.ptr(), static_cast<std::size_t>(out.size())};
+    ASSERT_STREQ(str.c_str(), "*CC*C*N* |$star;;;star;;star;;star$,Sg:n:6,1,2,4::hh|");
 }
 
-TEST_F(IndigoCoreFormatsTest, read_cml_pol_sgroups_conn_and_flip)
+TEST_F(IndigoCoreFormatsTest, smiles_pol_sgroups_bracket)
 {
     Molecule t_mol;
 
-    loadMolecule("*CC(*)C(*)N* |$star_e;;;star_e;;star_e;;star_e$,Sg:n:6,1,2,4::hh&#44;f:6,0,:4,2,|", t_mol);
+    loadMolecule("C1CCCCC1 |Sg:n:0,5,4,3,2,1:::::(d,s,-7.03,2.12,-2.21,2.12,-2.21,-3.11,-7.03,-3.11,)|", t_mol);
     ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 1);
     SGroup& sg = t_mol.sgroups.getSGroup(0);
     ASSERT_EQ(sg.sgroup_type, SGroup::SG_TYPE_SRU);
-    RepeatingUnit& ru = (RepeatingUnit&)sg;
-    ASSERT_EQ(ru.atoms.size(), 4);
-    ASSERT_EQ(ru.atoms.at(0), 6);
-    ASSERT_EQ(ru.atoms.at(1), 1);
-    ASSERT_EQ(ru.atoms.at(2), 2);
-    ASSERT_EQ(ru.atoms.at(3), 4);
+    RepeatingUnit& ru = static_cast<RepeatingUnit&>(sg);
+    ASSERT_EQ(ru.atoms.size(), 6);
+    ASSERT_EQ(ru.atoms.at(0), 0);
+    ASSERT_EQ(ru.atoms.at(1), 5);
+    ASSERT_EQ(ru.atoms.at(2), 4);
+    ASSERT_EQ(ru.atoms.at(3), 3);
+    ASSERT_EQ(ru.atoms.at(4), 2);
+    ASSERT_EQ(ru.atoms.at(5), 1);
+    Array<char> out;
+    ArrayOutput std_out(out);
+    SmilesSaver saver(std_out);
+    saver.saveMolecule(t_mol);
+    ASSERT_EQ(out.size(), 31);
+    std::string str{out.ptr(), static_cast<std::size_t>(out.size())};
+    ASSERT_STREQ(str.c_str(), "C1CCCCC1 |Sg:n:0,5,4,3,2,1::eu|");
 }

@@ -88,7 +88,7 @@ static char readSgChar(Scanner& scanner)
         {
             std::string sgroup_field_sep = ",;:|{}";
             // Decode only ,;:|{}
-            if (sgroup_field_sep.find(code) >=0)
+            if (sgroup_field_sep.find(code) != std::string::npos)
             {
                 scanner.skip(1); // skip ';'
                 return code;     // return decoded character
@@ -916,7 +916,7 @@ void SmilesLoader::_readOtherStuff()
             if (sg_type == SGroup::SG_TYPE_DAT)
             {
                 char c;
-                DataSGroup& dsg = (DataSGroup&)sgroup;
+                DataSGroup& dsg = static_cast<DataSGroup&>(sgroup);
                 // field_name
                 _scanner.readWord(dsg.name, ":,|");
                 if (_scanner.lookNext() != ':') // No more fields
@@ -973,14 +973,10 @@ void SmilesLoader::_readOtherStuff()
                     throw Error("Data S-group coord error");
             }
             else 
-            { //if (sg_type == SGroup::SG_TYPE_SRU)
-                RepeatingUnit& ru = (RepeatingUnit&)sgroup;
+            {
                 std::string subscript, connectivity, flip;
                 while (_scanner.lookNext() != ':')
                     subscript += _scanner.readChar();
-
-                if (subscript.size())
-                    ru.subscript.readString(subscript.c_str(), true);
                 _scanner.skip(1);
 
                 while (_scanner.lookNext() != '|' && _scanner.lookNext() != ':' && _scanner.lookNext() != ',')
@@ -992,12 +988,21 @@ void SmilesLoader::_readOtherStuff()
                     flip = connectivity.substr(pos + 1);
                     connectivity = connectivity.substr(0, pos);
                 }
-                if (connectivity == "ht")
-                    ru.connectivity = RepeatingUnit::HEAD_TO_TAIL;
-                else if (connectivity == "hh")
-                    ru.connectivity = RepeatingUnit::HEAD_TO_HEAD;
-                else if (connectivity == "eu")
-                    ru.connectivity = RepeatingUnit::EITHER;
+
+                // Set fields for SRU S-Group
+                if (sg_type == SGroup::SG_TYPE_SRU)
+                {
+                    RepeatingUnit& ru = static_cast<RepeatingUnit&>(sgroup);
+                    if (subscript.size())
+                        ru.subscript.readString(connectivity.c_str(), true);
+                    if (connectivity == "ht")
+                        ru.connectivity = RepeatingUnit::HEAD_TO_TAIL;
+                    else if (connectivity == "hh")
+                        ru.connectivity = RepeatingUnit::HEAD_TO_HEAD;
+                    else if (connectivity == "eu")
+                        ru.connectivity = RepeatingUnit::EITHER;
+                }
+
                 if (_scanner.lookNext() != ':')
                     continue;
                 _scanner.skip(1); // skip :
@@ -1005,7 +1010,7 @@ void SmilesLoader::_readOtherStuff()
                 while (isdigit(_scanner.lookNext()))
                 {
                     auto atom_idx = _scanner.readUnsigned();
-                    //ru.bonds.push(atom_idx);
+                    // no support for now
                     if (_scanner.lookNext() == ',')
                         _scanner.skip(1);
                 }
@@ -1016,14 +1021,14 @@ void SmilesLoader::_readOtherStuff()
                 while (isdigit(_scanner.lookNext()))
                 {
                     auto atom_idx = _scanner.readUnsigned();
-                    // ru.bonds.push(atom_idx);
+                    // no support for now
                     if (_scanner.lookNext() == ',')
                         _scanner.skip(1);
                 }
                 if (_scanner.lookNext() != ':')
                     continue;
                 _scanner.skip(1); // skip :
-                // bracket - bracket orientation, bracket type followed by the coordinates (4 pair, separated with commas). Bracket orientation
+                // bracket - bracket orientation, bracket type followed by the coordinates (4 pair, separated with commas).
                 if (_scanner.lookNext() != '(')
                     continue;
                 _scanner.skip(1); // skip (
@@ -1042,7 +1047,7 @@ void SmilesLoader::_readOtherStuff()
                 }
                 if (count < 8)
                     throw Error("S-group bracket orientation format error");
-                if (c ==',')
+                if (c == ',')
                     c = _scanner.readChar();
                 if (c != ')')
                     throw Error("S-group bracket orientation format error");
