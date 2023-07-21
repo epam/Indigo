@@ -325,6 +325,11 @@ namespace indigo
         return _checkResultString(indigoVersion());
     }
 
+    std::string versionInfo()
+    {
+        return _checkResultString(indigoVersionInfo());
+    }
+
     std::string convert(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
     {
         const IndigoSession session;

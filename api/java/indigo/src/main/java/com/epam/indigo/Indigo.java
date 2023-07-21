@@ -197,6 +197,10 @@ public class Indigo {
         return lib.indigoVersion();
     }
 
+    public String versionInfo() {
+        return lib.indigoVersionInfo();
+    }
+
     public int countReferences() {
         setSessionID();
         return checkResult(this, lib.indigoCountReferences());

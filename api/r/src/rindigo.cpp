@@ -38,6 +38,14 @@ REXPORT SEXP r_indigoVersion()
     return result;
 }
 
+REXPORT SEXP r_indigoVersionInfo()
+{
+    SEXP result = PROTECT(allocVector(STRSXP, 1));
+    _setStringToSTRSXP(&result, indigoVersionInfo());
+    UNPROTECT(1);
+    return result;
+}
+
 REXPORT SEXP r_indigoGetLastError()
 {
     SEXP result = PROTECT(allocVector(STRSXP, 1));
