@@ -3507,3 +3507,39 @@ simple_rgrp64.cdx
         ]
     }
 }
+x_sup.cdx
+{
+    "root": {
+        "nodes": [
+            {
+                "type": "text",
+                "data": {
+                    "content": "{\"blocks\":[{\"text\":\"X2\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":1,\"style\":\"CUSTOM_FONT_SIZE_12px\"},{\"offset\":1,\"length\":1,\"style\":\"SUPERSCRIPT\"},{\"offset\":1,\"length\":1,\"style\":\"CUSTOM_FONT_SIZE_12px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
+                    "position": {
+                        "x": 6.925000190734863,
+                        "y": -7.525000095367432,
+                        "z": 0.0
+                    }
+                }
+            }
+        ]
+    }
+}
+x_sup_sub_default_size.cdx
+{
+    "root": {
+        "nodes": [
+            {
+                "type": "text",
+                "data": {
+                    "content": "{\"blocks\":[{\"text\":\"X2D3C4D\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":1,\"style\":\"CUSTOM_FONT_SIZE_12px\"},{\"offset\":1,\"length\":1,\"style\":\"SUPERSCRIPT\"},{\"offset\":1,\"length\":1,\"style\":\"CUSTOM_FONT_SIZE_12px\"},{\"offset\":2,\"length\":1,\"style\":\"CUSTOM_FONT_SIZE_12px\"},{\"offset\":3,\"length\":1,\"style\":\"SUBSCRIPT\"},{\"offset\":3,\"length\":1,\"style\":\"CUSTOM_FONT_SIZE_12px\"},{\"offset\":4,\"length\":1,\"style\":\"CUSTOM_FONT_SIZE_12px\"},{\"offset\":5,\"length\":1,\"style\":\"SUPERSCRIPT\"},{\"offset\":5,\"length\":1,\"style\":\"CUSTOM_FONT_SIZE_12px\"},{\"offset\":6,\"length\":1,\"style\":\"CUSTOM_FONT_SIZE_12px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
+                    "position": {
+                        "x": 8.300000190734864,
+                        "y": -10.050000190734864,
+                        "z": 0.0
+                    }
+                }
+            }
+        ]
+    }
+}
