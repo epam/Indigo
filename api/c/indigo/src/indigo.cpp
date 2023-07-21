@@ -21,6 +21,7 @@
 
 #include <atomic>
 #include <clocale>
+#include <string>
 
 #include "base_cpp/output.h"
 #include "base_cpp/profiling.h"
@@ -41,6 +42,15 @@
 
 static _SessionLocalContainer<Indigo> indigo_self;
 
+static const std::string kVersionInfo = R"({
+    "majorVersion": "1.13",
+    "minorVersion": "0",
+    "devTag": "rc.1.0",
+    "commitHash": "g8b04633b1",
+    "compilerVersion": "clang-13.0.0",
+    "complierPlatform": "wasm32-wasm"
+})";
+
 DLLEXPORT Indigo& indigoGetInstance()
 {
     return indigo_self.getLocalCopy();
@@ -49,6 +59,11 @@ DLLEXPORT Indigo& indigoGetInstance()
 CEXPORT const char* indigoVersion()
 {
     return INDIGO_VERSION "-" INDIGO_PLATFORM;
+}
+
+CEXPORT const char* indigoVersionInfo()
+{
+    return kVersionInfo.c_str();
 }
 
 void Indigo::init()
