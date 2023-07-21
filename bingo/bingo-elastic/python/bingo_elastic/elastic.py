@@ -54,6 +54,8 @@ def get_index_name(record: IndigoRecord) -> IndexName:
         return IndexName.BINGO_MOLECULE
     if isinstance(record, IndigoRecordReaction):
         return IndexName.BINGO_REACTION
+    if isinstance(record, str):
+        return IndexName.BINGO_CUSTOM
     raise AttributeError(f"Unknown IndigoRecord type {record}")
 
 
@@ -64,8 +66,6 @@ def get_record_by_index(
         return IndigoRecordMolecule(elastic_response=response)
     if index == IndexName.BINGO_REACTION.value:
         return IndigoRecordReaction(elastic_response=response)
-    if index == IndexName.BINGO_CUSTOM.value:
-        return IndigoRecordMolecule(elastic_response=response)
     raise AttributeError(f"Unknown index {index}")
 
 
