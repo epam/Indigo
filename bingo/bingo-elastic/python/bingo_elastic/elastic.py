@@ -51,7 +51,7 @@ def get_index_name(record: IndigoRecord) -> IndexName:
 
 
 def get_record_by_index(
-    response: Dict, index: str
+        response: Dict, index: str
 ) -> Union[IndigoRecordMolecule, IndigoRecordReaction]:
     if index == IndexName.BINGO_MOLECULE.value:
         return IndigoRecordMolecule(elastic_response=response)
@@ -69,21 +69,23 @@ def elastic_repository_reaction(*args, **kwargs):
 
 
 def get_client(
-    *,
-    client_type: Type[ElasticRepositoryT],
-    host: Union[str, List[str]] = "localhost",
-    port: int = 9200,
-    scheme: str = "",
-    http_auth: Optional[Tuple[str]] = None,
-    ssl_context: Any = None,
-    request_timeout: int = 60,
-    retry_on_timeout: bool = True,
+        *,
+        client_type: Type[ElasticRepositoryT],
+        host: Union[str, List[str]] = "localhost",
+        port: int = 9200,
+        scheme: str = "",
+        http_auth: Optional[List[str]] = None,
+        ssl_context: Any = None,
+        request_timeout: int = 60,
+        timeout: int = 60,
+        retry_on_timeout: bool = True,
 ) -> ElasticRepositoryT:
     arguments = {
         "port": port,
         "scheme": "https" if scheme == "https" else "http",
         "request_timeout": request_timeout,
         "retry_on_timeout": retry_on_timeout,
+        "timeout": timeout
     }
     if isinstance(host, str):
         arguments["host"] = host
@@ -119,8 +121,8 @@ def check_index_exception(err_: RequestError) -> None:
         raise err_
     cause = err_.info.get("error", {}).get("root_cause", [])
     if (
-        len(cause) == 1
-        and cause[0].get("type") == "resource_already_exists_exception"
+            len(cause) == 1
+            and cause[0].get("type") == "resource_already_exists_exception"
     ):
         return
     raise err_
@@ -134,7 +136,7 @@ def create_index(index_name: str, el_client: Elasticsearch) -> None:
 
 
 async def a_create_index(
-    index_name: str, el_client: "AsyncElasticsearch"
+        index_name: str, el_client: "AsyncElasticsearch"
 ) -> None:
     try:
         await el_client.indices.create(index=index_name, body=index_body)
@@ -143,7 +145,7 @@ async def a_create_index(
 
 
 def prepare(
-    index_name: str, records: Generator[IndigoRecord, None, None]
+        index_name: str, records: Generator[IndigoRecord, None, None]
 ) -> Generator[Dict, None, None]:
     for record in records:
         if get_index_name(record).value != index_name:
@@ -155,11 +157,11 @@ def prepare(
 
 
 def response_to_records(
-    res: dict,
-    index_name: str,
-    postprocess_actions: PostprocessType = None,
-    indigo_session: Indigo = None,
-    options: str = "",
+        res: dict,
+        index_name: str,
+        postprocess_actions: PostprocessType = None,
+        indigo_session: Indigo = None,
+        options: str = "",
 ) -> Generator[IndigoRecord, None, None]:
     for el_response in res.get("hits", {}).get("hits", []):
         record = get_record_by_index(el_response, index_name)
@@ -172,16 +174,17 @@ def response_to_records(
 
 class AsyncElasticRepository:
     def __init__(
-        self,
-        index_name: IndexName,
-        *,
-        host: Union[str, List[str]] = "localhost",
-        port: int = 9200,
-        scheme: str = "",
-        http_auth: Optional[Tuple[str]] = None,
-        ssl_context: Any = None,
-        request_timeout: int = 60,
-        retry_on_timeout: bool = True,
+            self,
+            index_name: IndexName,
+            *,
+            host: Union[str, List[str]] = "localhost",
+            port: int = 9200,
+            scheme: str = "",
+            http_auth: Optional[Tuple[str]] = None,
+            ssl_context: Any = None,
+            request_timeout: int = 60,
+            timeout: int = 60,
+            retry_on_timeout: bool = True,
     ) -> None:
         """
         :param index_name: use function  get_index_name for setting this argument
@@ -203,6 +206,7 @@ class AsyncElasticRepository:
             http_auth=http_auth,
             ssl_context=ssl_context,
             request_timeout=request_timeout,
+            timeout=timeout,
             retry_on_timeout=retry_on_timeout,
         )
 
@@ -216,20 +220,20 @@ class AsyncElasticRepository:
         await a_create_index(self.index_name, self.el_client)
         # pylint: disable=unused-variable
         async for is_ok, action in async_streaming_bulk(
-            self.el_client,
-            prepare(self.index_name, records),
-            index=self.index_name,
-            chunk_size=chunk_size,
+                self.el_client,
+                prepare(self.index_name, records),
+                index=self.index_name,
+                chunk_size=chunk_size,
         ):
             pass
 
     async def filter(
-        self,
-        query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-        indigo_session: Indigo = None,
-        limit: int = 10,
-        options: str = "",
-        **kwargs,
+            self,
+            query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+            indigo_session: Indigo = None,
+            limit: int = 10,
+            options: str = "",
+            **kwargs,
     ) -> AsyncGenerator[IndigoRecord, None]:
 
         if limit > MAX_ALLOWED_SIZE:
@@ -247,7 +251,7 @@ class AsyncElasticRepository:
         )
         res = await self.el_client.search(index=self.index_name, body=query)
         for record in response_to_records(
-            res, self.index_name, postprocess_actions, indigo_session, options
+                res, self.index_name, postprocess_actions, indigo_session, options
         ):
             yield record
 
@@ -263,16 +267,17 @@ class AsyncElasticRepository:
 
 class ElasticRepository:
     def __init__(
-        self,
-        index_name: IndexName,
-        *,
-        host: Union[str, List[str]] = "localhost",
-        port: int = 9200,
-        scheme: str = "",
-        http_auth: Optional[Tuple[str]] = None,
-        ssl_context: Any = None,
-        request_timeout: int = 60,
-        retry_on_timeout: bool = True,
+            self,
+            index_name: IndexName,
+            *,
+            host: Union[str, List[str]] = "localhost",
+            port: int = 9200,
+            scheme: str = "",
+            http_auth: Optional[Tuple[str]] = None,
+            ssl_context: Any = None,
+            request_timeout: int = 60,
+            timeout: int = 60,
+            retry_on_timeout: bool = True,
     ) -> None:
         """
         :param index_name: use function  get_index_name for setting this argument
@@ -294,6 +299,7 @@ class ElasticRepository:
             http_auth=http_auth,
             ssl_context=ssl_context,
             request_timeout=request_timeout,
+            timeout=timeout,
             retry_on_timeout=retry_on_timeout,
         )
 
@@ -307,10 +313,10 @@ class ElasticRepository:
         create_index(self.index_name, self.el_client)
         # pylint: disable=unused-variable
         for is_ok, action in streaming_bulk(
-            self.el_client,
-            prepare(self.index_name, records),
-            index=self.index_name,
-            chunk_size=chunk_size,
+                self.el_client,
+                prepare(self.index_name, records),
+                index=self.index_name,
+                chunk_size=chunk_size,
         ):
             pass
 
@@ -321,12 +327,12 @@ class ElasticRepository:
             pass
 
     def filter(
-        self,
-        query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-        indigo_session: Indigo = None,
-        limit: int = 10,
-        options: str = "",
-        **kwargs,
+            self,
+            query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+            indigo_session: Indigo = None,
+            limit: int = 10,
+            options: str = "",
+            **kwargs,
     ) -> Generator[IndigoRecord, None, None]:
 
         if limit > MAX_ALLOWED_SIZE:
@@ -348,10 +354,10 @@ class ElasticRepository:
 
 
 def compile_query(
-    query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-    limit: int = 10,
-    postprocess_actions: PostprocessType = None,
-    **kwargs,
+        query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+        limit: int = 10,
+        postprocess_actions: PostprocessType = None,
+        **kwargs,
 ) -> Dict:
     query = {
         "size": limit,
