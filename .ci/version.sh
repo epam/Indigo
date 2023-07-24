@@ -40,6 +40,7 @@ else
   old_version_python="${old_version}"
 fi 
 
+old_dev_tag="${old_suffix}.${old_revision}"
 
 if ! [[ ${1} =~ ^[0-9]+\.[0-9]+\.[0-9]+[\.0-9]*$ ]]; then
   echo "First argument (version) should be in MAJOR.MINOR.PATCH[.BUILD] format!"
@@ -81,13 +82,16 @@ else
   new_version_python="${new_version}"
 fi 
 
+new_dev_tag="${new_suffix}.${new_revision}"
 new_hash_sum=$(echo "${new_base_version}${new_suffix}${new_revision}${new_java_snapshot}" | sha256sum | awk '{print $1}')
 
 # version.txt
 printf "${new_base_version}\n${new_suffix}\n${new_revision}\n${new_java_snapshot}\n${new_hash_sum}" > ${root}/.ci/version.txt
 
 # C
-sed -i "s/${old_version}/${new_version}/g" ${root}/api/indigo-version.cmake
+sed -i "s/${old_base_version}/${new_base_version}/g" ${root}/api/indigo-version.cmake
+sed -i "s/${old_dev_tag}/${new_dev_tag}/g" ${root}/api/indigo-version.cmake
+sed -i "s/${old_hash_sum}/${new_hash_sum}/g" ${root}/api/indigo-version.cmake
 
 # .NET
 sed -i "s/${old_version}/${new_version}/g" ${root}/api/dotnet/src/Indigo.Net.csproj

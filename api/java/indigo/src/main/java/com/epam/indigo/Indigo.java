@@ -197,8 +197,8 @@ public class Indigo {
         return lib.indigoVersion();
     }
 
-    public String versionInfo() {
-        return lib.indigoVersionInfo();
+    public String baseVersion() {
+        return lib.indigoBaseVersion();
     }
 
     public int countReferences() {

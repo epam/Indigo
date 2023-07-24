@@ -42,7 +42,7 @@ Indigo$methods(
 Indigo$methods(
   version = function(){
     setSession()
-    return(checkResultPtr(.Call("r_indigoVersionInfo")));
+    return(checkResultPtr(.Call("r_indigoBaseVersion")));
 })
 
 Indigo$methods(
@@ -124,7 +124,7 @@ version <- function() {
 }
 
 versionInfo <- function() {
-    .Call("r_indigoVersionInfo")
+    .Call("r_indigoBaseVersion")
 }
 
 setOption <- function(option, value){

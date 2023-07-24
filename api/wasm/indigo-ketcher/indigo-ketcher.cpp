@@ -325,9 +325,9 @@ namespace indigo
         return _checkResultString(indigoVersion());
     }
 
-    std::string versionInfo()
+    std::string baseVersion()
     {
-        return _checkResultString(indigoVersionInfo());
+        return _checkResultString(indigoBaseVersion());
     }
 
     std::string convert(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)

@@ -246,9 +246,9 @@ namespace com.epam.indigo
             return checkResult(IndigoLib.indigoVersion());
         }
 
-        public string versionInfo()
+        public string baseVersion()
         {
-            return checkResult(IndigoLib.indigoVersionInfo());
+            return checkResult(IndigoLib.indigoBaseVersion());
         }
 
         public Indigo(string lib_path)

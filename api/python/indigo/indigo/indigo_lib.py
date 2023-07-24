@@ -42,8 +42,8 @@ class IndigoLib:
         IndigoLib.lib = Lib.load("indigo")
         IndigoLib.lib.indigoVersion.restype = c_char_p
         IndigoLib.lib.indigoVersion.argtypes = []
-        IndigoLib.lib.indigoVersionInfo.restype = c_char_p
-        IndigoLib.lib.indigoVersionInfo.argtypes = []
+        IndigoLib.lib.indigoBaseVersion.restype = c_char_p
+        IndigoLib.lib.indigoBaseVersion.argtypes = []
         IndigoLib.lib.indigoAllocSessionId.restype = c_ulonglong
         IndigoLib.lib.indigoAllocSessionId.argtypes = []
         IndigoLib.lib.indigoSetSessionId.restype = None
