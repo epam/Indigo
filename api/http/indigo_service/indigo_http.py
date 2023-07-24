@@ -93,11 +93,12 @@ def indigo_version() -> jsonapi.VersionResponse:
 def similarities(
     request: jsonapi.SimilaritiesRequest,
 ) -> jsonapi.SimilaritiesResponse:
-
     fingerprint = request.data.attributes.fingerprint
     alpha = request.data.attributes.alpha
     beta = request.data.attributes.beta
     metric = request.data.attributes.metric
+
+    service.set_indigo_options(request.data.attributes.options)
 
     compound, *_ = service.extract_compounds(source(request))
     target_pairs = targets(request)
@@ -119,10 +120,12 @@ def similarities(
 
 @app.post(
     f"{BASE_URL_INDIGO}/exactMatch",
-    response_model=jsonapi.MatchResponse,  # type: ignore
+    response_model=jsonapi.MatchResponse,
     response_model_exclude_unset=True,
 )
 def exact_match(request: jsonapi.MatchRequest) -> jsonapi.MatchResponse:
+    service.set_indigo_options(request.data.attributes.options)
+
     compound, *_ = service.extract_compounds(source(request))
     target_pairs = targets(request)
     target_compounds = service.extract_compounds(target_pairs)
@@ -152,6 +155,7 @@ def exact_match(request: jsonapi.MatchRequest) -> jsonapi.MatchResponse:
 def convert(
     request: jsonapi.CompoundConvertRequest,
 ) -> jsonapi.CompoundResponse:
+    service.set_indigo_options(request.data.attributes.options)
     compound, *_ = service.extract_compounds(
         compounds(request), request.data.attributes.compound.modifiers
     )
@@ -166,6 +170,7 @@ def convert(
     response_model_exclude_unset=True,
 )
 def validate(request: jsonapi.ValidationRequest) -> jsonapi.ValidationResponse:
+    service.set_indigo_options(request.data.attributes.options)
     compound, *_ = service.extract_compounds(compounds(request))
     validations = request.data.attributes.validations
     results = {}
@@ -182,6 +187,7 @@ def validate(request: jsonapi.ValidationRequest) -> jsonapi.ValidationResponse:
 def descriptors(
     request: jsonapi.DescriptorRequest,
 ) -> jsonapi.DescriptorResponse:
+    service.set_indigo_options(request.data.attributes.options)
     compound, *_ = service.extract_compounds(compounds(request))
     properties = request.data.attributes.descriptors
     results = {}
@@ -198,6 +204,7 @@ def descriptors(
 def common_bits(
     request: jsonapi.CommonBitsRequest,
 ) -> jsonapi.CommonBitsResponse:
+    service.set_indigo_options(request.data.attributes.options)
     compound, *_ = service.extract_compounds(source(request))
     target_compounds = service.extract_compounds(targets(request))
     source_fp = compound.fingerprint("sim")
@@ -212,20 +219,23 @@ def common_bits(
 def render(
     request: jsonapi.RenderRequest,
 ) -> jsonapi.RenderResponse:
-    compound, *_ = service.extract_compounds(compounds(request))
-    output_format = request.data.attributes.outputFormat
     indigo_renderer = IndigoRenderer(indigo())
+
+    output_format = request.data.attributes.outputFormat
+    options = request.data.attributes.options
+    if options:
+        output_format_option = options.get("render-output-format")
+        if output_format_option and output_format_option not in output_format:
+            raise HTTPException(
+                status_code=400, detail="Choose only one output format"
+            )
+
     indigo().setOption(
         "render-output-format", jsonapi.rendering_formats.get(output_format)
     )
-    options = request.data.attributes.options
-    if options:
-        for option, value in options.items():
-            if option == "render-output-format":
-                raise HTTPException(
-                    status_code=400, detail="Choose only one output format"
-                )
-            indigo().setOption(option, value)
+    service.set_indigo_options(options)
+
+    compound, *_ = service.extract_compounds(compounds(request))
     raw_image = indigo_renderer.renderToBuffer(compound)
     return jsonapi.make_render_response(raw_image, output_format)
 

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/rgroup-deco.png" type="Other">
+    <name>R-Group Decomposer</name>
+    
+    <shortDescription>
+    </shortDescription>
+    
+    <fullDescription>
+        <intro><p>This node performs R-Group decomposition of a given collection of structures, using a scaffold that
+               is common for these structures.</p>
+               	<p>
+		        <b>Supported types:</b> 
+		        <ul>
+				<li>Molecule:  String, SDF, Smiles, CML, Mol, InChI</li>
+				</ul>
+				</p>
+               <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p>
+        </intro>
+        
+        <option name="Target molecule column">Column that contains molecule structures.</option>
+        <option name="Scaffold column">Column that contains the scaffold (query molecule).</option>
+		<option name="R-Group column prefix">Each of the new R-group columns will be named with this prefix + number (1,2,3,..).</option>
+        <option name="Aromatize">Aromatize input molecules.</option>
+        
+        <option name="Input type">Treat input as: a molecule</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms.</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+        <option name="Treat input scaffold string as SMARTS">Treat input string to create a query as SMARTS.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input data">Table containing molecule structures.</inPort>
+        <inPort index="1" name="Scaffold">Table containing the scaffold (query molecule).</inPort>
+        <outPort index="0" name="R-Groups">Same as input, with R-Group columns.</outPort>
+        <outPort index="1" name="Scaffold">Same as input scaffold, but with marked R-sites.</outPort>
+    </ports>    
+</knimeNode>

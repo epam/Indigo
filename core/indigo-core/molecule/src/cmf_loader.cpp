@@ -746,7 +746,11 @@ void CmfLoader::_readSGroup(int code, Molecule& mol)
         _readString(s.subscript);
         _readString(s.sa_class);
         byte bits = _scanner->readByte();
-        s.contracted = bits & 0x01;
+        if (bits & 0x01) // -1 and 1 are the same from here
+            s.contracted = DisplayOption::Contracted;
+        else
+            s.contracted = DisplayOption::Expanded;
+
         int bcons = bits >> 1;
         if (bcons > 0)
         {

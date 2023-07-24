@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/substructure.png" type="Manipulator" >
+    <name>Standardizer</name>
+    
+    <shortDescription>
+        
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>
+             <p>This node accepts a table with molecules and returns table with standardized molecules in accordance to applied options. 
+             	In case of activation multiple options the order of applied modifications corresponds to the order of options in the list of picked options.</p>
+		     <p>
+		        <b>Supported types:</b> 
+		        <ul>
+				<li>Molecule:  String, SDF, Smiles, CML, Mol, InChI</li>
+				<li>Query molecule:  String, Smiles, Mol</li>
+				</ul>
+			 </p>
+             <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p>
+        </intro>
+        
+        
+        <option name="Target Column">The column that contains molecule or query molecule structures.</option>
+        <option name="Append Column">Appends a new structure column (with the name as specified in the text field) if checked, replaces the original column otherwise.</option>
+        <option name="Input type">Treat input as: a molecule, a query molecule.</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+        <option name="Options">Two listboxes: the left one contains all the possible standardizing options to apply (can be filtered); 
+       	the right one contains all options which are going to be applied (Note: options order matters). Also there is a control box allowing to move options between the listboxes. 
+        Corresponding mouse over tooltip containing option' description is available for every option.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input data">Table containing molecule or query molecule structures.</inPort>
+        <outPort index="0" name="Standardized">The same as input, with standardized molecules.</outPort>
+    </ports>    
+</knimeNode>

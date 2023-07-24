@@ -1,0 +1,10 @@
+***   test png output   ***
+***   test ket input   ***
+contracted_fg_ss_ket.png rendering status: OK
+contracted_expanded_fg_ss_ket.png rendering status: OK
+expanded_fg_ss_ket.png rendering status: OK
+***   test mol input   ***
+***   contracted_fg_ss_mol.png done  ***
+contracted_fg_ss_mol.png rendering status: OK
+contracted_expanded_fg_ss_mol.png rendering status: OK
+expanded_fg_ss_mol.png rendering status: OK

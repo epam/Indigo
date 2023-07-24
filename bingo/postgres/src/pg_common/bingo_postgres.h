@@ -40,7 +40,7 @@
 
 #endif
 
-//#define PG_OBJECT void*
+// #define PG_OBJECT void*
 /*
  * Postgres internal conflicts with the indigo library
  * That is why there is a workaround with void pointer

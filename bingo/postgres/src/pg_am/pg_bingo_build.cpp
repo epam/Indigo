@@ -148,10 +148,10 @@ static void bingoIndexCallback(Relation index, ItemPointer item_ptr, Datum* valu
 static void bingoIndexCallback(Relation index, HeapTuple htup, Datum* values, bool* isnull, bool tupleIsAlive, void* state);
 #endif
 
-//#include <signal.h>
-// void error_handler(int i) {
-//   elog(ERROR, "query was cancelled");
-//}
+// #include <signal.h>
+//  void error_handler(int i) {
+//    elog(ERROR, "query was cancelled");
+// }
 
 /*
  * Bingo build the index

@@ -4,24 +4,21 @@ import logging
 import os
 import re
 import traceback
-import types
 from time import time
 
-import flask_restful  # type: ignore
 import indigo  # type: ignore
 import redis  # type: ignore
-from flask import Blueprint, Response, request  # type: ignore
+from flask import Blueprint, Response, request, url_for  # type: ignore
 from flask_httpauth import HTTPBasicAuth  # type: ignore
 from indigo import Indigo, IndigoException  # type: ignore
 from indigo.inchi import IndigoInchi  # type: ignore
-from indigo.renderer import IndigoRenderer  # type: ignore
 from marshmallow.exceptions import ValidationError  # type: ignore
 from psycopg2.extras import Json  # type: ignore
 from pyparsing import ParseException  # type: ignore
 
 from .celery_app import celery
 from .common import config
-from .common.util import api_route, item_to_sdf_chunk, merge_dicts
+from .common.util import item_to_sdf_chunk, merge_dicts
 from .db.BingoPostgresAdapter import BingoPostgresAdapter
 from .db.database import db_session
 from .db.models import LibraryMeta
@@ -30,21 +27,22 @@ from .validation import LibrarySchema, SearcherSchema, UserSchema
 
 libraries_api = Blueprint("libraries_api", __name__)
 
-if not os.path.exists(config.__dict__["UPLOAD_FOLDER"]):
-    os.makedirs(config.__dict__["UPLOAD_FOLDER"])
-libraries_api.indigo = Indigo()  # type: ignore
-libraries_api.renderer = IndigoRenderer(libraries_api.indigo)  # type: ignore
-libraries_api.indigo_inchi = IndigoInchi(libraries_api.indigo)  # type: ignore
-libraries_api.config = config.__dict__  # type: ignore
-libraries_api.adapter = BingoPostgresAdapter(  # type: ignore
-    libraries_api.config, libraries_api.indigo, libraries_api.indigo_inchi  # type: ignore
+os.makedirs(config.__dict__["UPLOAD_FOLDER"], exist_ok=True)
+library_singletone = dict()
+library_singletone["indigo"] = Indigo()
+library_singletone["indigo_inchi"] = IndigoInchi(library_singletone["indigo"])
+library_singletone["config"] = config.__dict__
+library_singletone["adapter"] = BingoPostgresAdapter(  # type: ignore
+    library_singletone["config"],
+    library_singletone["indigo"],
+    library_singletone["indigo_inchi"],
 )
-libraries_api.redis = redis.StrictRedis(host="localhost", port=6379, db=0)  # type: ignore
-libraries_api_app = flask_restful.Api(libraries_api)
+library_singletone["redis"] = redis.StrictRedis(
+    host="localhost", port=6379, db=0
+)
 libraries_api_logger = logging.getLogger("libraries")
 # libraries_api_logger.addHandler(logging.FileHandler('/srv/api/app.log'))
 auth = HTTPBasicAuth()
-libraries_api_app.route = types.MethodType(api_route, libraries_api_app)  # type: ignore
 
 
 @auth.verify_password
@@ -75,7 +73,7 @@ def _prepare_row(row):
 def search_total(self, params):
     try:
         params.update({"total": True})
-        result = libraries_api.adapter.do_search(params)
+        result = library_singletone["adapter"].do_search(params)
         total = 0
         search_result = []
         for item in result:
@@ -88,7 +86,7 @@ def search_total(self, params):
         params.pop("limit", None)
         params.pop("offset", None)
         # print(params, search_result)
-        libraries_api.redis.hmset(
+        library_singletone["redis"].hmset(
             ":".join(["search", self.request.id]),
             {
                 "parameters": json.dumps(params),
@@ -102,271 +100,268 @@ def search_total(self, params):
         return {"error": "Internal server error"}, 500
 
 
-@libraries_api_app.route("/search")
-class Searcher(flask_restful.Resource):
-    def post(self):
-        """
-        Search in library
-        ---
-        tags:
-          - bingo
-        responses:
-          200:
-            description: search results
-        """
+@libraries_api.route("/search", methods=["POST"])
+def search_post():
+    """
+    Search in library
+    ---
+    tags:
+        - bingo
+    responses:
+        200:
+        description: search results
+    """
+    libraries_api_logger.info(
+        "[REQUEST] POST /search {0}".format(request.data)
+    )
+    try:
+        input_dict = json.loads(request.data.decode("utf-8"))
+    except ValueError:
+        return {"error": "Invalid input JSON: {0}".format(request.data)}, 400
+    try:
+        print(input_dict)
+        search_params = SearcherSchema().load(input_dict)
+        print(search_params)
+        for library_id in search_params["library_ids"]:
+            if not LibraryMeta.query.filter(
+                LibraryMeta.library_id == library_id
+            ).first():
+                return {"error": "Library does not exist"}, 404
+        task = search_total.apply_async((search_params,))
+        cursor = library_singletone["adapter"].do_search(search_params)
+        results = []
+        for row in cursor:
+            item = _prepare_row(row)
+            item["structure"] = item["structure"]
+            results.append(item)
         libraries_api_logger.info(
-            "[REQUEST] POST /search {0}".format(request.data)
+            "[RESPONSE] POST /search found {0} items".format(len(results))
         )
-        try:
-            input_dict = json.loads(request.data.decode("utf-8"))
-        except ValueError:
-            return {
-                "error": "Invalid input JSON: {0}".format(request.data)
-            }, 400
-        try:
-            print(input_dict)
-            search_params = SearcherSchema().load(input_dict)
-            print(search_params)
-            for library_id in search_params["library_ids"]:
-                if not LibraryMeta.query.filter(
-                    LibraryMeta.library_id == library_id
-                ).first():
-                    return {"error": "Library does not exist"}, 404
-            task = search_total.apply_async((search_params,))
-            cursor = libraries_api.adapter.do_search(search_params)
-            results = []
-            for row in cursor:
-                item = _prepare_row(row)
-                item["structure"] = item["structure"]
-                results.append(item)
+        return {"result": results, "search_id": task.id}
+    except ValidationError as e:
+        libraries_api_logger.error(
+            "[RESPONSE-400] validation error: {0}".format(e.messages)
+        )
+        return {"error": e.messages}, 400
+    except ParseException as e:
+        libraries_api_logger.error(
+            "[RESPONSE-422] query parser error: {0}".format(e.msg)
+        )
+        return {"error": {"query_text": "Incorrect query syntax."}}, 422
+    except IndigoException as e:
+        libraries_api_logger.error(
+            "[RESPONSE-500] Indigo error: {}\n{}".format(
+                str(e), traceback.format_exc()
+            )
+        )
+        return {"error": "Indigo engine failed."}, 500
+    except Exception as e:
+        libraries_api_logger.error(
+            "[RESPONSE-500] internal error: {}\n{}".format(
+                str(e), traceback.format_exc()
+            )
+        )
+        return {"error": "Internal server error."}, 500
+
+
+@libraries_api.route("/search/<search_id>", methods=["GET"])
+def search_get(search_id):
+    libraries_api_logger.info("[REQUEST] GET /search/{}".format(search_id))
+    try:
+        spec = search_id.split(".")
+        search_id = spec[0]
+        if len(spec) > 1 and spec[1] == "sdf":
+            params = library_singletone["redis"].hmget(
+                ":".join(["search", search_id]), "parameters"
+            )
+            if not params[0]:
+                return {"error": "Not found."}, 404
             libraries_api_logger.info(
-                "[RESPONSE] POST /search found {0} items".format(len(results))
+                "retrieved search params: {}".format(params)
             )
-            return {"result": results, "search_id": task.id}
-        except ValidationError as e:
-            libraries_api_logger.error(
-                "[RESPONSE-400] validation error: {0}".format(e.messages)
+            cursor = library_singletone["adapter"].do_search(
+                json.loads(params[0])
             )
-            return {"error": e.messages}, 400
-        except ParseException as e:
-            libraries_api_logger.error(
-                "[RESPONSE-422] query parser error: {0}".format(e.msg)
+
+            def generate():
+                for row in cursor:
+                    item = _prepare_row(row)
+                    yield item_to_sdf_chunk(item)
+
+            return Response(generate(), mimetype="chemical/x-mdl-sdfile")
+        else:
+            task = search_total.AsyncResult(search_id)
+            response = {"state": task.state}
+            if task.info:
+                response["result"] = task.info
+            libraries_api_logger.info("[RESPONSE-200] {}".format(response))
+            return response
+    except Exception as e:
+        libraries_api_logger.error(
+            "[RESPONSE-500] internal error: {}\n{}".format(
+                str(e), traceback.format_exc()
             )
-            return {"error": {"query_text": "Incorrect query syntax."}}, 422
-        except IndigoException as e:
-            libraries_api_logger.error(
-                "[RESPONSE-500] Indigo error: {}\n{}".format(
-                    str(e), traceback.format_exc()
-                )
-            )
-            return {"error": "Indigo engine failed."}, 500
-        except Exception as e:
-            libraries_api_logger.error(
-                "[RESPONSE-500] internal error: {}\n{}".format(
-                    str(e), traceback.format_exc()
-                )
-            )
-            return {"error": "Internal server error."}, 500
-
-
-@libraries_api_app.route("/search/<search_id>")
-class SearcherExporter(flask_restful.Resource):
-    def get(self, search_id):
-        libraries_api_logger.info("[REQUEST] GET /search/{}".format(search_id))
-        try:
-            spec = search_id.split(".")
-            search_id = spec[0]
-            if len(spec) > 1 and spec[1] == "sdf":
-                params = libraries_api.redis.hmget(
-                    ":".join(["search", search_id]), "parameters"
-                )
-                if not params[0]:
-                    return {"error": "Not found."}, 404
-                libraries_api_logger.info(
-                    "retrieved search params: {}".format(params)
-                )
-                cursor = libraries_api.adapter.do_search(json.loads(params[0]))
-
-                def generate():
-                    for row in cursor:
-                        item = _prepare_row(row)
-                        yield item_to_sdf_chunk(item)
-
-                return Response(generate(), mimetype="chemical/x-mdl-sdfile")
-            else:
-                task = search_total.AsyncResult(search_id)
-                response = {"state": task.state}
-                if task.info:
-                    response["result"] = task.info
-                libraries_api_logger.info("[RESPONSE-200] {}".format(response))
-                return response
-        except Exception as e:
-            libraries_api_logger.error(
-                "[RESPONSE-500] internal error: {}\n{}".format(
-                    str(e), traceback.format_exc()
-                )
-            )
-            return {"error": "Internal server error."}, 500
-
-
-@libraries_api_app.route("/libraries")
-class LibraryList(flask_restful.Resource):
-    def get(self):
-        """
-        Get list of existing libraries
-        """
-        libraries_api_logger.info("[REQUEST] GET /libraries")
-        try:
-            res = []
-            for lib in LibraryMeta.query.all():
-                res.append(
-                    merge_dicts({"id": lib.library_id}, lib.service_data)
-                )
-            return res
-        except Exception as e:
-            libraries_api_logger.error(
-                "[RESPONSE-500] internal error: {}\n{}".format(
-                    str(e), traceback.format_exc()
-                )
-            )
-            return {"error": "Internal server error."}, 500
-
-    def post(self):
-        """
-        Create new library
-        """
-        libraries_api_logger.info(
-            "[REQUEST] POST /libraries {0}".format(request.data)
         )
-        try:
-            input_dict = json.loads(request.data.decode("utf-8"))
-        except ValueError:
-            return {
-                "error": "Invalid input JSON: {0}".format(request.data)
-            }, 400
-        try:
-
-            data = LibrarySchema().load(input_dict)
-            library_id = libraries_api.adapter.library_create(
-                data["name"], data["user_data"]
-            )
-            libraries_api_logger.info("library_id: {0}".format(library_id))
-            return (
-                {"id": library_id},
-                201,
-                {
-                    "Location": libraries_api_app.url_for(
-                        Library, library_id=library_id, _external=True
-                    )
-                },
-            )
-        except ValidationError as e:
-            libraries_api_logger.error(
-                "[RESPONSE-400] validation error: {0}".format(e.messages)
-            )
-            return {"error": e.messages}, 400
-        except Exception as e:
-            libraries_api_logger.error(
-                "[RESPONSE-500] internal error: {}\n{}".format(
-                    str(e), traceback.format_exc()
-                )
-            )
-            return {"error": "Internal server error."}, 500
+        return {"error": "Internal server error."}, 500
 
 
-@libraries_api_app.route("/libraries/<library_id>")
-class Library(flask_restful.Resource):
-    def get(self, library_id=None):
-        """
-        Get information about existing library for current library_id
-        """
-        libraries_api_logger.info(
-            "[REQUEST] GET /libraries/{0}".format(library_id)
+@libraries_api.route("/libraries", methods=["GET"])
+def libraries_get():
+    """
+    Get list of existing libraries
+    """
+    libraries_api_logger.info("[REQUEST] GET /libraries")
+    try:
+        res = []
+        for lib in LibraryMeta.query.all():
+            res.append(merge_dicts({"id": lib.library_id}, lib.service_data))
+        return res
+    except Exception as e:
+        libraries_api_logger.error(
+            "[RESPONSE-500] internal error: {}\n{}".format(
+                str(e), traceback.format_exc()
+            )
         )
-        if not library_id:
-            return {"error": "Libary ID should be specified"}, 400
-        if not LibraryMeta.query.filter(
-            LibraryMeta.library_id == library_id
-        ).first():
-            return {"error": "Library does not exist"}, 404
-        try:
-            return libraries_api.adapter.library_get_info(library_id)
-        except Exception as e:
-            libraries_api_logger.error(
-                "[RESPONSE-500] internal error: {}\n{}".format(
-                    str(e), traceback.format_exc()
-                )
-            )
-            return {"error": "Internal server error."}, 500
+        return {"error": "Internal server error."}, 500
 
-    def put(self, library_id):
-        libraries_api_logger.info(
-            "[REQUEST] PUT /libraries/{} {}".format(library_id, request.data)
-        )
-        if not LibraryMeta.query.filter(
-            LibraryMeta.library_id == library_id
-        ).first():
-            return {"error": "Library does not exist"}, 404
-        try:
-            data = json.loads(request.data.decode("utf-8"))
-        except ValueError:
-            return {
-                "error": "Invalid input JSON: {0}".format(request.data)
-            }, 400
-        if "name" in data and not data["name"]:
-            return {"error": {"name": "Library name cannot be empty."}}, 400
-        try:
-            return {
-                "status": libraries_api.adapter.library_update(
-                    library_id, data
-                )
-            }
-        except Exception as e:
-            libraries_api_logger.error(
-                "[RESPONSE-500] internal error: {}\n{}".format(
-                    str(e), traceback.format_exc()
-                )
-            )
-            return {"error": "Internal server error."}, 500
 
-    def delete(self, library_id):
-        """
-        Delete existing library
-        """
-        libraries_api_logger.info(
-            "[REQUEST] DELETE /libraries/{0}".format(library_id)
+@libraries_api.route("/libraries", methods=["POST"])
+def libraries_post():
+    """
+    Create new library
+    """
+    libraries_api_logger.info(
+        "[REQUEST] POST /libraries {0}".format(request.data)
+    )
+    try:
+        input_dict = json.loads(request.data.decode("utf-8"))
+    except ValueError:
+        return {"error": "Invalid input JSON: {0}".format(request.data)}, 400
+    try:
+        data = LibrarySchema().load(input_dict)
+        library_id = library_singletone["adapter"].library_create(
+            data["name"], data["user_data"]
         )
-        if not LibraryMeta.query.filter(
-            LibraryMeta.library_id == library_id
-        ).first():
-            return {"error": "Library does not exist"}, 404
-        try:
-            return {"status": libraries_api.adapter.library_delete(library_id)}
-        except Exception as e:
-            libraries_api_logger.error(
-                "[RESPONSE-500] internal error: {}\n{}".format(
-                    str(e), traceback.format_exc()
+        libraries_api_logger.info("library_id: {0}".format(library_id))
+        return (
+            {"id": library_id},
+            201,
+            {
+                "Location": url_for(
+                    "libraries", library_id=library_id, _external=True
                 )
+            },
+        )
+    except ValidationError as e:
+        libraries_api_logger.error(
+            "[RESPONSE-400] validation error: {0}".format(e.messages)
+        )
+        return {"error": e.messages}, 400
+    except Exception as e:
+        libraries_api_logger.error(
+            "[RESPONSE-500] internal error: {}\n{}".format(
+                str(e), traceback.format_exc()
             )
-            return {"error": "Internal server error."}, 500
+        )
+        return {"error": "Internal server error."}, 500
+
+
+@libraries_api.route("/libraries/<library_id>", methods=["GET"])
+def library_id_get(library_id=None):
+    """
+    Get information about existing library for current library_id
+    """
+    libraries_api_logger.info(
+        "[REQUEST] GET /libraries/{0}".format(library_id)
+    )
+    if not library_id:
+        return {"error": "Libary ID should be specified"}, 400
+    if not LibraryMeta.query.filter(
+        LibraryMeta.library_id == library_id
+    ).first():
+        return {"error": "Library does not exist"}, 404
+    try:
+        return library_singletone["adapter"].library_get_info(library_id)
+    except Exception as e:
+        libraries_api_logger.error(
+            "[RESPONSE-500] internal error: {}\n{}".format(
+                str(e), traceback.format_exc()
+            )
+        )
+        return {"error": "Internal server error."}, 500
+
+
+@libraries_api.route("/libraries/<library_id>", methods=["PUT"])
+def library_id_put(library_id):
+    libraries_api_logger.info(
+        "[REQUEST] PUT /libraries/{} {}".format(library_id, request.data)
+    )
+    if not LibraryMeta.query.filter(
+        LibraryMeta.library_id == library_id
+    ).first():
+        return {"error": "Library does not exist"}, 404
+    try:
+        data = json.loads(request.data.decode("utf-8"))
+    except ValueError:
+        return {"error": "Invalid input JSON: {0}".format(request.data)}, 400
+    if "name" in data and not data["name"]:
+        return {"error": {"name": "Library name cannot be empty."}}, 400
+    try:
+        return {
+            "status": library_singletone["adapter"].library_update(
+                library_id, data
+            )
+        }
+    except Exception as e:
+        libraries_api_logger.error(
+            "[RESPONSE-500] internal error: {}\n{}".format(
+                str(e), traceback.format_exc()
+            )
+        )
+        return {"error": "Internal server error."}, 500
+
+
+@libraries_api.route("/libraries/<library_id>", methods=["DELETE"])
+def delete(library_id):
+    """
+    Delete existing library
+    """
+    libraries_api_logger.info(
+        "[REQUEST] DELETE /libraries/{0}".format(library_id)
+    )
+    if not LibraryMeta.query.filter(
+        LibraryMeta.library_id == library_id
+    ).first():
+        return {"error": "Library does not exist"}, 404
+    try:
+        return {
+            "status": library_singletone["adapter"].library_delete(library_id)
+        }
+    except Exception as e:
+        libraries_api_logger.error(
+            "[RESPONSE-500] internal error: {}\n{}".format(
+                str(e), traceback.format_exc()
+            )
+        )
+        return {"error": "Internal server error."}, 500
 
 
 @celery.task(bind=True)
 def import_file(self, library_id, path):
     try:
         # TODO: Improve incorrect file detection
-        LibraryUpload.drop_indices(library_id)
+        drop_indices(library_id)
         self.update_state(state="PROCESSING", meta={"stage": "inserting"})
-        result_dict = LibraryUpload.external_insert(library_id, path)
+        result_dict = external_insert(library_id, path)
         self.update_state(
             state="PROCESSING", meta=result_dict.update({"stage": "indexing"})
         )
-        index_time = LibraryUpload.index_table(library_id)
+        index_time = index_table(library_id)
         result_dict["index_time"] = round(index_time, 3)
         result_dict["index_speed"] = int(
             result_dict["structures_count"] / index_time
         )
-        LibraryUpload.update_library_structures_count(
+        update_library_structures_count(
             library_id, result_dict["structures_count"]
         )
         self.update_state(state="SUCCESS", meta=result_dict)
@@ -376,186 +371,194 @@ def import_file(self, library_id, path):
         return {"error": str(e)}, 500
 
 
-@libraries_api_app.route("/libraries/<library_id>/uploads")
-class LibraryUpload(flask_restful.Resource):
-    @staticmethod
-    def save_file(library_id, stream, mime_type):
-        path = os.path.join(
-            libraries_api.config["UPLOAD_FOLDER"],
-            "{0}_{1}.{2}".format(library_id, int(time() * 1000), "sdf.gz"),
-        )
-        if mime_type == "chemical/x-mdl-sdfile":
-            with gzip.open(path, "wb") as f:
-                f.write(stream.read())
-        else:
-            with open(path, "wb") as f:
-                f.write(stream.read())
-        return path
+def save_file(library_id, stream, mime_type):
+    path = os.path.join(
+        library_singletone["config"]["UPLOAD_FOLDER"],
+        "{0}_{1}.{2}".format(library_id, int(time() * 1000), "sdf.gz"),
+    )
+    if mime_type == "chemical/x-mdl-sdfile":
+        with gzip.open(path, "wb") as f:
+            f.write(stream.read())
+    else:
+        with open(path, "wb") as f:
+            f.write(stream.read())
+    return path
 
-    @staticmethod
-    def external_insert(library_id, path):
-        struct_count = 0
-        start = time()
-        data = []
-        molecule: indigo.IndigoObject
-        for molecule in libraries_api.indigo.iterateSDFile(path):
-            props = []
-            for prop in molecule.iterateProperties():
-                prop_name = prop.name()
-                prop_value = molecule.getProperty(prop_name)
-                prop = {}
-                prop["x"] = prop_name.lower()
-                try:
-                    prop["y"] = json.loads(prop_value)
-                except Exception:
-                    prop["y"] = prop_value
-                prop["a"] = prop_name
-                prop["b"] = prop_value
-                props.append(prop)
-            data.append((molecule.rawData(), Json(props)))
-            struct_count += 1
-        libraries_api.adapter.insert_sdf(library_id, data)
-        total_time = time() - start
-        return {
-            "insert_time": total_time,
-            "structures_count": struct_count,
-            "insert_speed": struct_count / total_time,
-        }
 
-    @staticmethod
-    def drop_indices(library_id):
-        libraries_api.adapter.drop_indices(
-            libraries_api.adapter.get_table_name_for_id(library_id)
-        )
+def external_insert(library_id, path):
+    struct_count = 0
+    start = time()
+    data = []
+    molecule: indigo.IndigoObject
+    for molecule in library_singletone["indigo"].iterateSDFile(path):
+        props = []
+        for prop in molecule.iterateProperties():
+            prop_name = prop.name()
+            prop_value = molecule.getProperty(prop_name)
+            prop = {}
+            prop["x"] = prop_name.lower()
+            try:
+                prop["y"] = json.loads(prop_value)
+            except Exception:
+                prop["y"] = prop_value
+            prop["a"] = prop_name
+            prop["b"] = prop_value
+            props.append(prop)
+        data.append((molecule.rawData(), Json(props)))
+        struct_count += 1
+    library_singletone["adapter"].insert_sdf(library_id, data)
+    total_time = time() - start
+    return {
+        "insert_time": total_time,
+        "structures_count": struct_count,
+        "insert_speed": struct_count / total_time,
+    }
 
-    @staticmethod
-    def index_table(library_id):
-        start_time = time()
-        libraries_api.adapter.create_indices(
-            libraries_api.adapter.get_table_name_for_id(library_id)
-        )
-        return time() - start_time
 
-    @staticmethod
-    def update_library_structures_count(library_id, structures_count):
-        data = libraries_api.adapter.library_get_info(library_id)
-        service_data = data["service_data"]
-        service_data["structures_count"] += structures_count
-        service_data["updated_timestamp"] = int(time() * 1000)
-        index_data = {
-            "properties": libraries_api.adapter.library_get_properties(
-                library_id
-            )
-        }
-        return libraries_api.adapter.library_update(
-            library_id, service_data, index_data
-        )
+def drop_indices(library_id):
+    library_singletone["adapter"].drop_indices(
+        library_singletone["adapter"].get_table_name_for_id(library_id)
+    )
 
-    def post(self, library_id):
-        """
-        Upload and index file to the selected library_id
-        """
-        full_mime_type = request.headers.get("Content-Type")
-        # optional parameters might be appended, get just the type
-        mime_type = re.search(r"\A([^;]+)", full_mime_type).group(1)
-        libraries_api_logger.info(
-            "[REQUEST] POST /libraries/{0}/uploads Content-Type: {1}".format(
-                library_id, mime_type
-            )
+
+def index_table(library_id):
+    start_time = time()
+    library_singletone["adapter"].create_indices(
+        library_singletone["adapter"].get_table_name_for_id(library_id)
+    )
+    return time() - start_time
+
+
+def update_library_structures_count(library_id, structures_count):
+    data = library_singletone["adapter"].library_get_info(library_id)
+    service_data = data["service_data"]
+    service_data["structures_count"] += structures_count
+    service_data["updated_timestamp"] = int(time() * 1000)
+    index_data = {
+        "properties": library_singletone["adapter"].library_get_properties(
+            library_id
         )
-        allowed_types = (
-            "chemical/x-mdl-sdfile",
-            "application/x-gzip",
-            "application/gzip",
+    }
+    return library_singletone["adapter"].library_update(
+        library_id, service_data, index_data
+    )
+
+
+@libraries_api.route("/libraries/<library_id>/uploads", methods=["POST"])
+def libraries_uploads_post(library_id):
+    """
+    Upload and index file to the selected library_id
+    """
+    full_mime_type = request.headers.get("Content-Type")
+    # optional parameters might be appended, get just the type
+    mime_type = re.search(r"\A([^;]+)", full_mime_type).group(1)
+    libraries_api_logger.info(
+        "[REQUEST] POST /libraries/{0}/uploads Content-Type: {1}".format(
+            library_id, mime_type
         )
-        if mime_type not in allowed_types:
-            return {
+    )
+    allowed_types = (
+        "chemical/x-mdl-sdfile",
+        "application/x-gzip",
+        "application/gzip",
+    )
+    if mime_type not in allowed_types:
+        return (
+            {
                 "error": "Incorrect Content-Type '{0}', should be one of [{1}]".format(
                     mime_type, ", ".join(allowed_types)
                 )
-            }, 415
-        if not LibraryMeta.query.filter(
-            LibraryMeta.library_id == library_id
+            },
+            415,
+        )
+    if not LibraryMeta.query.filter(
+        LibraryMeta.library_id == library_id
+    ).first():
+        return {"error": "Library does not exist"}, 404
+    try:
+        path = save_file(library_id, request.stream, mime_type)
+        upload = import_file.apply_async((library_id, path))
+        return {"upload_id": upload.id}
+    except Exception as e:
+        libraries_api_logger.error(
+            "[RESPONSE-500] internal error: {}\n{}".format(
+                str(e), traceback.format_exc()
+            )
+        )
+        return {"error": "Internal server error."}, 500
+
+
+@libraries_api.route(
+    "/libraries/<library_id>/uploads/<upload_id>", methods=["GET"]
+)
+def libraries_uploads_get(library_id, upload_id):
+    """
+    Check upload status for selected library_id and upload_id
+    """
+    libraries_api_logger.info(
+        "[REQUEST] GET /libraries/{0}/uploads/{1}".format(
+            library_id, upload_id
+        )
+    )
+    try:
+        task = import_file.AsyncResult(upload_id)
+        result_dict = {"state": task.state}
+        if task.info:
+            if (type(task) is list and "error" in task.info[0]) or (
+                type(task) is dict and "error" in task.info
+            ):
+                libraries_api_logger.error(
+                    "[RESPONSE-400] {0}".format(result_dict)
+                )
+                result_dict["metadata"] = task.info
+                return result_dict, 400
+        libraries_api_logger.info("[RESPONSE-200] {0}".format(result_dict))
+        return result_dict
+    except Exception as e:
+        libraries_api_logger.error(
+            "[RESPONSE-500] internal error: {}\n{}".format(
+                str(e), traceback.format_exc()
+            )
+        )
+        return {"error": "Internal server error."}, 500
+
+
+@libraries_api.route("/users", methods=["GET"])
+@auth.login_required
+def users_get():
+    libraries_api_logger.info("[REQUEST] GET /users")
+    try:
+        return library_singletone["adapter"].user_all()
+    except Exception as e:
+        libraries_api_logger.error(
+            "[RESPONSE-500] internal error: {}\n{}".format(
+                str(e), traceback.format_exc()
+            )
+        )
+        return {"error": "Internal server error."}, 500
+
+
+def user_create(params):
+    u = Usermodel(params)
+    db_session.add(u)
+    db_session.commit()
+    return u
+
+
+@libraries_api.route("/users", methods=["POST"])
+def users_post():
+    libraries_api_logger.info("[REQUEST] POST /users {0}".format(request.data))
+    try:
+        input_dict = json.loads(request.data.decode("utf-8"))
+    except ValueError:
+        return {"error": "Invalid input JSON: {0}".format(request.data)}, 400
+    try:
+        input_dict = UserSchema().load(input_dict)
+        if Usermodel.query.filter(
+            Usermodel.email == input_dict["email"]
         ).first():
-            return {"error": "Library does not exist"}, 404
-        try:
-            path = self.save_file(library_id, request.stream, mime_type)
-            upload = import_file.apply_async((library_id, path))
-            return {"upload_id": upload.id}
-        except Exception as e:
-            libraries_api_logger.error(
-                "[RESPONSE-500] internal error: {}\n{}".format(
-                    str(e), traceback.format_exc()
-                )
-            )
-            return {"error": "Internal server error."}, 500
-
-
-@libraries_api_app.route("/libraries/<library_id>/uploads/<upload_id>")
-class LibraryUploadStatus(flask_restful.Resource):
-    def get(self, library_id, upload_id):
-        """
-        Check upload status for selected library_id and upload_id
-        """
-        libraries_api_logger.info(
-            "[REQUEST] GET /libraries/{0}/uploads/{1}".format(
-                library_id, upload_id
-            )
-        )
-        try:
-            task = import_file.AsyncResult(upload_id)
-            result_dict = {"state": task.state}
-            if task.info:
-                if (type(task) is list and "error" in task.info[0]) or (
-                    type(task) is dict and "error" in task.info
-                ):
-                    libraries_api_logger.error(
-                        "[RESPONSE-400] {0}".format(result_dict)
-                    )
-                    result_dict["metadata"] = task.info
-                    return result_dict, 400
-            libraries_api_logger.info("[RESPONSE-200] {0}".format(result_dict))
-            return result_dict
-        except Exception as e:
-            libraries_api_logger.error(
-                "[RESPONSE-500] internal error: {}\n{}".format(
-                    str(e), traceback.format_exc()
-                )
-            )
-            return {"error": "Internal server error."}, 500
-
-
-@libraries_api_app.route("/users")
-class UsersList(flask_restful.Resource):
-    @auth.login_required
-    def get(self):
-        libraries_api_logger.info("[REQUEST] GET /users")
-        try:
-            return libraries_api.adapter.user_all()
-        except Exception as e:
-            libraries_api_logger.error(
-                "[RESPONSE-500] internal error: {}\n{}".format(
-                    str(e), traceback.format_exc()
-                )
-            )
-            return {"error": "Internal server error."}, 500
-
-    def post(self):
-        libraries_api_logger.info(
-            "[REQUEST] POST /users {0}".format(request.data)
-        )
-        try:
-            input_dict = json.loads(request.data.decode("utf-8"))
-        except ValueError:
-            return {
-                "error": "Invalid input JSON: {0}".format(request.data)
-            }, 400
-        try:
-            input_dict = UserSchema().load(input_dict)
-            if Usermodel.query.filter(
-                Usermodel.email == input_dict["email"]
-            ).first():
-                return {
+            return (
+                {
                     "error": {
                         "email": [
                             'Email "{}" is already used.'.format(
@@ -563,41 +566,30 @@ class UsersList(flask_restful.Resource):
                             )
                         ]
                     }
-                }, 409
-            u = self.user_create(input_dict)
-            libraries_api_logger.info(
-                "New user created, id={}".format(u.user_id)
-            )
-            return (
-                {"id": u.user_id},
-                201,
-                {
-                    "Location": libraries_api_app.url_for(
-                        User, user_id=u.user_id, _external=True
-                    )
                 },
+                409,
             )
-        except ValidationError as e:
-            libraries_api_logger.error(
-                "[RESPONSE-400] validation error: {0}".format(e.messages)
+        u = user_create(input_dict)
+        libraries_api_logger.info("New user created, id={}".format(u.user_id))
+        return (
+            {"id": u.user_id},
+            201,
+            {"Location": url_for("users", user_id=u.user_id, _external=True)},
+        )
+    except ValidationError as e:
+        libraries_api_logger.error(
+            "[RESPONSE-400] validation error: {0}".format(e.messages)
+        )
+        return {"error": e.messages}, 400
+    except Exception as e:
+        libraries_api_logger.error(
+            "[RESPONSE-500] internal error: {}\n{}".format(
+                str(e), traceback.format_exc()
             )
-            return {"error": e.messages}, 400
-        except Exception as e:
-            libraries_api_logger.error(
-                "[RESPONSE-500] internal error: {}\n{}".format(
-                    str(e), traceback.format_exc()
-                )
-            )
-            return {"error": "Internal server error."}, 500
-
-    def user_create(self, params):
-        u = Usermodel(params)
-        db_session.add(u)
-        db_session.commit()
-        return u
+        )
+        return {"error": "Internal server error."}, 500
 
 
-@libraries_api_app.route("/users/<user_id>")
-class User(flask_restful.Resource):
-    def get(self, user_id):
-        pass  # need to have this method for url_for(User, ...) to work
+@libraries_api.route("/users/<user_id>", methods=["GET"])
+def user_id_get(user_id):
+    pass  # need to have this method for url_for(User, ...) to work

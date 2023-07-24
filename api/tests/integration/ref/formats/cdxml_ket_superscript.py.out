@@ -1,0 +1,35 @@
+*** CDXML to KET ***
+{
+    "root": {
+        "nodes": [
+            {
+                "type": "text",
+                "data": {
+                    "content": "{\"blocks\":[{\"text\":\"X2\",\"inlineStyleRanges\":[{\"offset\":1,\"length\":1,\"style\":\"SUPERSCRIPT\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
+                    "position": {
+                        "x": 4.449999809265137,
+                        "y": -7.900000095367432,
+                        "z": 0.0
+                    }
+                }
+            }
+        ]
+    }
+}
+{
+    "root": {
+        "nodes": [
+            {
+                "type": "text",
+                "data": {
+                    "content": "{\"blocks\":[{\"text\":\"X2\",\"inlineStyleRanges\":[{\"offset\":1,\"length\":1,\"style\":\"SUBSCRIPT\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
+                    "position": {
+                        "x": 8.399999618530274,
+                        "y": -9.475000381469727,
+                        "z": 0.0
+                    }
+                }
+            }
+        ]
+    }
+}

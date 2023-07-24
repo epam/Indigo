@@ -19,17 +19,17 @@
 #include <algorithm>
 #include <ctype.h>
 #include <errno.h>
+#include <limits>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+
+#include <cppcodec/base64_default_rfc4648.hpp>
 
 #include "base_c/defs.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 #include "reusable_obj_array.h"
-
-#include <../cppcodec/cppcodec/base64_default_rfc4648.hpp>
-#include <limits>
 
 using namespace indigo;
 
@@ -496,6 +496,18 @@ unsigned int Scanner::readPackedUInt()
     }
 }
 
+void Scanner::readAll(std::string& str)
+{
+    const long long size = length() - tell();
+    const int max_int = std::numeric_limits<int>::max();
+    if (size > max_int)
+    {
+        throw Error("Cannot read more than %d into memory", max_int);
+    }
+    str.resize(size);
+    read(str.size(), &str[0]);
+}
+
 void Scanner::readAll(Array<char>& arr)
 {
     const long long size = length() - tell();
@@ -695,7 +707,8 @@ void BufferScanner::_init(const char* buffer, int size)
         throw Error("incorrect parameters in BufferScanner constructor");
     if (_is_base64)
     {
-        auto decoded = base64::decode(buffer, size);
+        std::string encoded(buffer, size);
+        auto decoded = base64::decode(encoded.c_str(), encoded.size());
         _base64_buffer.copy((char*)decoded.data(), decoded.size());
         _buffer = _base64_buffer.ptr();
         _size = _base64_buffer.size();

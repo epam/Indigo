@@ -22,14 +22,14 @@
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
 #include "molecule/cml_loader.h"
-#include "molecule/molecule_cdx_loader.h"
+#include "molecule/molecule_cdxml_loader.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/multiple_cdx_loader.h"
 #include "molecule/multiple_cml_loader.h"
 #include "molecule/rdf_loader.h"
 #include "molecule/sdf_loader.h"
 #include "molecule/smiles_loader.h"
-#include "reaction/reaction_cdx_loader.h"
+#include "reaction/reaction_cdxml_loader.h"
 #include "reaction/reaction_cml_loader.h"
 #include "reaction/reaction_json_loader.h"
 #include "reaction/rsmiles_loader.h"
@@ -343,6 +343,7 @@ Molecule& IndigoSmilesMolecule::getMolecule()
 
         loader.stereochemistry_options = self.stereochemistry_options;
         loader.ignore_bad_valence = self.ignore_bad_valence;
+        loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
 
         loader.loadMolecule(_mol);
         _loaded = true;
@@ -810,7 +811,7 @@ Molecule& IndigoCdxMolecule::getMolecule()
         Indigo& self = indigoGetInstance();
 
         BufferScanner scanner(_data);
-        MoleculeCdxLoader loader(scanner);
+        MoleculeCdxmlLoader loader(scanner, true, true);
         loader.stereochemistry_options = self.stereochemistry_options;
         loader.ignore_bad_valence = self.ignore_bad_valence;
         loader.loadMolecule(_mol);
@@ -855,7 +856,7 @@ Reaction& IndigoCdxReaction::getReaction()
         Indigo& self = indigoGetInstance();
 
         BufferScanner scanner(_data);
-        ReactionCdxLoader loader(scanner);
+        ReactionCdxmlLoader loader(scanner, true);
         loader.stereochemistry_options = self.stereochemistry_options;
         loader.ignore_bad_valence = self.ignore_bad_valence;
         loader.loadReaction(_rxn);

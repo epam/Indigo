@@ -140,6 +140,8 @@ public interface IndigoLib extends Library {
 
     Pointer indigoCdxml(int object);
 
+    Pointer indigoCdxBase64(int object);
+
     int indigoSaveMDLCT(int item, int output);
 
     int indigoLoadReaction(int source);
@@ -833,4 +835,6 @@ public interface IndigoLib extends Library {
     int indigoDbgBreakpoint();
 
     Pointer indigoDbgInternalType(int object);
+
+    int indigoCopyRGroups(int molecule_from, int molecule_to);
 }

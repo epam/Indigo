@@ -123,7 +123,7 @@ namespace indigo
 }
 
 // "Quasi-static" variable definition. Calls clear() at the end
-//#define QS_DEF(TYPE, name) \
+// #define QS_DEF(TYPE, name) \
 //    static _ReusableVariablesPool<_GET_TYPE(TYPE)> _POOL_##name;                                                                          \
 //    int _POOL_##name##_idx; \
 //    _GET_TYPE(TYPE)& name = _POOL_##name.getVacant(_POOL_##name##_idx); \
@@ -134,7 +134,7 @@ namespace indigo
 #define QS_DEF(TYPE, name) TYPE name;
 
 // "Quasi-static" variable definition. Calls clear_resize() at the end
-//#define QS_DEF_RES(TYPE, name, len) \
+// #define QS_DEF_RES(TYPE, name, len) \
 //    static _ReusableVariablesPool<_GET_TYPE(TYPE)> _POOL_##name;                                                                          \
 //    int _POOL_##name##_idx; \
 //    _GET_TYPE(TYPE)& name = _POOL_##name.getVacant(_POOL_##name##_idx); \

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+<entry key="node_file" type="xstring" value="settings.xml"/>
+<config key="flow_stack"/>
+<config key="internal_node_subsettings">
+<entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+</config>
+<config key="model">
+<config key="rowIndices">
+<entry key="array-size" type="xint" value="4"/>
+<entry key="0" type="xint" value="0"/>
+<entry key="1" type="xint" value="1"/>
+<entry key="2" type="xint" value="2"/>
+<entry key="3" type="xint" value="3"/>
+</config>
+<config key="columnIndices">
+<entry key="array-size" type="xint" value="4"/>
+<entry key="0" type="xint" value="0"/>
+<entry key="1" type="xint" value="0"/>
+<entry key="2" type="xint" value="0"/>
+<entry key="3" type="xint" value="0"/>
+</config>
+<config key="values">
+<entry key="array-size" type="xint" value="4"/>
+<entry key="0" type="xstring" value="$RXN@ @ @ @  1  1  0 @$MOL@ @  Ketcher 00000000000D 1   1.00000     0.00000     0 @ @ 13 14  0     0  0            999 V2000 @    7.9100   -5.9750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @    7.0439   -6.4750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @    7.0439   -7.4750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @    7.9100   -7.9750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @    8.7760   -7.4750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @    8.7760   -6.4750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @    9.6420   -5.9750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @    9.6420   -7.9750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   10.5081   -7.9750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   10.5081   -6.4750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   11.3741   -5.9750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   12.2401   -6.4750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   13.1061   -5.9750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @  1  2  1  0     0  0 @  1  6  1  0     0  0 @  2  3  1  0     0  0 @  3  4  1  0     0  0 @  4  5  1  0     0  0 @  7  6  1  0     0  0 @  6  5  1  0     0  0 @  5  8  1  0     0  0 @  7 10  1  0     0  0 @  8  9  1  0     0  0 @  9 10  1  0     0  0 @ 10 11  1  0     0  0 @ 11 12  1  0     0  0 @ 12 13  1  0     0  0 @M  END @$MOL@ @  Ketcher 00000000000D 1   1.00000     0.00000     0 @ @ 13 14  0     0  0            999 V2000 @   18.9350   -6.0250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   18.0689   -6.5250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   18.0689   -7.5250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   18.9350   -8.0250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   19.8010   -7.5250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   19.8010   -6.5250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   20.6670   -6.0250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   20.6670   -8.0250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   21.5331   -8.0250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   21.5331   -6.5250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   22.3991   -6.0250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   23.2651   -6.5250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   24.1311   -6.0250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @  1  2  1  0     0  0 @  1  6  1  0     0  0 @  2  3  1  0     0  0 @  3  4  1  0     0  0 @  4  5  1  0     0  0 @  7  6  1  0     0  0 @  6  5  1  0     0  0 @  5  8  1  0     0  0 @  7 10  1  0     0  0 @  8  9  1  0     0  0 @  9 10  1  0     0  0 @ 10 11  1  0     0  0 @ 11 12  1  0     0  0 @ 12 13  1  0     0  0 @M  END @"/>
+<entry key="1" type="xstring" value="$RXN@ @ @ @  1  1  0 @$MOL@ @  Ketcher 00000000000D 1   1.00000     0.00000     0 @ @ 12 13  0     0  0            999 V2000 @    7.9750   -7.1750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @    7.9750   -5.9340    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @    9.4750   -6.3090    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @    9.9750   -7.1750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @    9.4750   -8.0410    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @    8.4750   -8.0410    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   10.9750   -7.1750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   11.4750   -6.3090    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   12.4750   -6.3090    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   12.9750   -7.1750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   12.4750   -8.0410    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   11.4750   -8.0410    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @  1  2  2  0     0  0 @  2  3  1  0     0  0 @  3  4  2  0     0  0 @  4  5  1  0     0  0 @  5  6  2  0     0  0 @  6  1  1  0     0  0 @  4  7  1  0     0  0 @  7  8  2  0     0  0 @  8  9  1  0     0  0 @  9 10  2  0     0  0 @ 10 11  1  0     0  0 @ 11 12  2  0     0  0 @ 12  7  1  0     0  0 @M  END @$MOL@ @  Ketcher 00000000000D 1   1.00000     0.00000     0 @ @ 12 13  0     0  0            999 V2000 @   17.8750   -7.2250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   18.3750   -6.3590    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   19.3750   -6.3590    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   19.8750   -7.2250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   19.3750   -8.0910    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   18.3750   -8.0910    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   20.8750   -7.2250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   21.3750   -6.3590    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   22.3750   -6.3590    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   22.8750   -7.2250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   22.3750   -8.0910    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   21.3750   -8.0910    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @  1  2  2  0     0  0 @  2  3  1  0     0  0 @  3  4  2  0     0  0 @  4  5  1  0     0  0 @  5  6  2  0     0  0 @  6  1  1  0     0  0 @  4  7  1  0     0  0 @  7  8  2  0     0  0 @  8  9  1  0     0  0 @  9 10  2  0     0  0 @ 10 11  1  0     0  0 @ 11 12  2  0     0  0 @ 12  7  1  0     0  0 @M  END @"/>
+<entry key="2" type="xstring" value="$RXN@ @ @ @  1  1  0 @$MOL@ @  Ketcher 00000000000D 1   1.00000     0.00000     0 @ @ 18 18  0     0  0            999 V2000 @    9.2000   -6.4094    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   10.6250   -5.6094    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   11.1250   -4.7434    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   10.6250   -3.8774    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @    9.4000   -2.3774    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   12.1250   -4.7434    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   12.7500   -2.2524    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   13.6250   -3.8774    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   14.1250   -4.7434    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0 @   14.2986   -5.7282    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   14.2986   -3.7586    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   14.8911   -4.1006    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   15.1250   -4.7434    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   14.8911   -5.3862    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   13.6250   -5.6094    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   14.1250   -6.4754    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   13.6250   -7.3414    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   12.6250   -5.6094    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @  1  2  1  0     0  0 @  2  3  1  0     0  0 @  3  4  1  0     0  0 @  4  5  1  0     0  0 @  3  6  1  0     0  0 @  6  7  2  0     0  0 @  7  8  1  0     0  0 @  8  9  2  0     0  0 @  9 10  1  0     0  0 @  9 11  1  0     0  0 @  9 12  1  0     0  0 @  9 13  1  0     0  0 @  9 14  1  0     0  0 @  9 15  1  0     0  0 @ 15 16  1  0     0  0 @ 16 17  1  0     0  0 @ 15 18  2  0     0  0 @ 18  6  1  0     0  0 @M  END @$MOL@ @  Ketcher 00000000000D 1   1.00000     0.00000     0 @ @ 18 18  0     0  0            999 V2000 @   20.3250   -6.0094    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   21.3250   -6.0094    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   21.8250   -5.1434    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   21.3250   -4.2774    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   20.3250   -4.2774    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   22.8250   -5.1434    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   23.3250   -4.2774    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   24.3250   -4.2774    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   24.8250   -5.1434    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0 @   24.9986   -6.1282    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   24.9986   -4.1586    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   25.5911   -4.5006    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   25.8250   -5.1434    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   25.5911   -5.7862    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   24.3250   -6.0094    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   24.8250   -6.8754    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   24.3250   -7.7414    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   23.3250   -6.0094    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @  1  2  1  0     0  0 @  2  3  1  0     0  0 @  3  4  1  0     0  0 @  4  5  1  0     0  0 @  3  6  1  0     0  0 @  6  7  2  0     0  0 @  7  8  1  0     0  0 @  8  9  2  0     0  0 @  9 10  1  0     0  0 @  9 11  1  0     0  0 @  9 12  1  0     0  0 @  9 13  1  0     0  0 @  9 14  1  0     0  0 @  9 15  1  0     0  0 @ 15 16  1  0     0  0 @ 16 17  1  0     0  0 @ 15 18  2  0     0  0 @ 18  6  1  0     0  0 @M  END @"/>
+<entry key="3" type="xstring" value="$RXN@ @ @ @  1  1  0 @$MOL@ @  Ketcher 00000000000D 1   1.00000     0.00000     0 @ @  6  6  0     0  0            999 V2000 @   11.5250   -3.3000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   10.4590   -2.7500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   10.6590   -4.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   11.5250   -5.3000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   12.3910   -4.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   12.3910   -3.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @  1  2  2  0     0  0 @  2  3  1  0     0  0 @  3  4  2  0     0  0 @  4  5  1  0     0  0 @  5  6  2  0     0  0 @  6  1  1  0     0  0 @M  END @$MOL@ @  Ketcher 00000000000D 1   1.00000     0.00000     0 @ @  6  6  0     0  0            999 V2000 @   16.4750   -3.3500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   15.6090   -3.8500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   15.6090   -4.8500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   16.4750   -5.3500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   17.3410   -4.8500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   17.3410   -3.8500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @  1  2  2  0     0  0 @  2  3  1  0     0  0 @  3  4  2  0     0  0 @  4  5  1  0     0  0 @  5  6  2  0     0  0 @  6  1  1  0     0  0 @M  END @$RXN@ @ @ @  1  1  0 @$MOL @ @  Ketcher 00000000000D 1   1.00000     0.00000     0 @ @  6  6  0     0  0            999 V2000 @   11.5250   -3.3000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   10.4590   -2.7500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   10.6590   -4.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   11.5250   -5.3000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   12.3910   -4.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   12.3910   -3.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @  1  2  2  0     0  0 @  2  3  1  0     0  0 @  3  4  2  0     0  0 @  4  5  1  0     0  0 @  5  6  2  0     0  0 @  6  1  1  0     0  0 @M  END @$MOL @ @  Ketcher 00000000000D 1   1.00000     0.00000     0 @ @  6  6  0     0  0            999 V2000 @   16.4750   -3.3500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   15.6090   -3.8500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   15.6090   -4.8500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   16.4750   -5.3500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   17.3410   -4.8500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @   17.3410   -3.8500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0 @  1  2  2  0     0  0 @  2  3  1  0     0  0 @  3  4  2  0     0  0 @  4  5  1  0     0  0 @  5  6  2  0     0  0 @  6  1  1  0     0  0 @M  END @"/>
+</config>
+<entry key="rowIdPrefix" type="xstring" value="Row"/>
+<entry key="rowIdSuffix" type="xstring" value=""/>
+<entry key="rowIdStartValue" type="xint" value="1"/>
+<entry key="highlightOutputTable" type="xboolean" value="false"/>
+<config key="columnProperties">
+<config key="0">
+<entry key="UserSetValues" type="xboolean" value="true"/>
+<entry key="MissValuePattern" type="xstring" value=""/>
+<entry key="FormatParameter" type="xstring" isnull="true" value=""/>
+<entry key="ReadPossValsFromFile" type="xboolean" value="false"/>
+<entry key="SkipThisColumn" type="xboolean" value="false"/>
+<entry key="ColumnName" type="xstring" value="column1"/>
+<config key="ColumnClass">
+<entry key="cell_class" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<entry key="is_null" type="xboolean" value="false"/>
+</config>
+</config>
+</config>
+</config>
+<entry key="customDescription" type="xstring" isnull="true" value=""/>
+<entry key="state" type="xstring" value="EXECUTED"/>
+<entry key="factory" type="xstring" value="org.knime.base.node.io.tablecreator.TableCreator2NodeFactory"/>
+<entry key="node-name" type="xstring" value="Table Creator"/>
+<entry key="node-bundle-name" type="xstring" value="KNIME Base Nodes"/>
+<entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.base"/>
+<entry key="node-bundle-vendor" type="xstring" value="KNIME GmbH, Konstanz, Germany"/>
+<entry key="node-bundle-version" type="xstring" value="3.3.1.v201612190931"/>
+<entry key="node-feature-name" type="xstring" value="KNIME Core"/>
+<entry key="node-feature-symbolic-name" type="xstring" value="org.knime.features.base.feature.group"/>
+<entry key="node-feature-vendor" type="xstring" value="KNIME GmbH, Konstanz, Germany"/>
+<entry key="node-feature-version" type="xstring" value="3.3.1.v201612192115"/>
+<config key="factory_settings"/>
+<entry key="name" type="xstring" value="Table Creator"/>
+<entry key="hasContent" type="xboolean" value="true"/>
+<entry key="isInactive" type="xboolean" value="false"/>
+<config key="ports">
+<config key="port_1">
+<entry key="index" type="xint" value="1"/>
+<entry key="port_spec_class" type="xstring" value="org.knime.core.data.DataTableSpec"/>
+<entry key="port_object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+<entry key="port_object_summary" type="xstring" value="Rows: 4, Cols: 1"/>
+<entry key="port_dir_location" type="xstring" value="port_1"/>
+</config>
+</config>
+<config key="filestores">
+<entry key="file_store_location" type="xstring" isnull="true" value=""/>
+<entry key="file_store_id" type="xstring" value="0f5c8eea-c799-4e9f-8970-e2f1cc6daa42"/>
+</config>
+</config>

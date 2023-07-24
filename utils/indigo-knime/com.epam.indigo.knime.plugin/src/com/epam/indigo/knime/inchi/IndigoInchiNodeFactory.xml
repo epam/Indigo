@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/substructure.png" type="Other" >
+  <name>InChi</name>
+    
+    <shortDescription>
+        
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>
+             <p>This node takes a table containing a column with molecules as a target and append new column with these objects in InChi format and, if required, with
+             	InChiKey representation(both column types are String).</p>
+		        <p>
+		        <b>Supported types:</b> 
+		        <ul>
+				<li>Molecule:  String, SDF, Smiles, CML, Mol, InChI</li>
+				</ul>
+				</p>
+               <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p>
+        </intro>
+        
+        
+        <option name="Target column">The column that contains molecules.</option>
+        <option name="InChi column">The column that contains molecules in the InChi format.</option>
+        <option name="Append InChiKey column">Name for the InChiKey column that contains InChiKey molecule's representation.</option>
+        <option name="Input type">Treat input as: a molecule.</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms.</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input data">Table containing molecules.</inPort>
+        <outPort index="0" name="Output data">The same as input, but with a new string column containing InChi representations. One more column with corresponding
+        		InChiKey representation can be appended as well.
+        		</outPort>
+    </ports>    
+</knimeNode>

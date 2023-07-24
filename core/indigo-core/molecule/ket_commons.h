@@ -26,12 +26,28 @@
 
 #include "common/math/algebra.h"
 #include "graph/graph.h"
+#include "molecule/molecule_cip_calculator.h"
 #include "reaction/base_reaction.h"
 
 namespace indigo
 {
     const double KETDefaultFontSize = 13;
     const double KETFontScaleFactor = 47;
+    const auto KETFontBoldStr = "BOLD";
+    const auto KETFontItalicStr = "ITALIC";
+    const auto KETFontSuperscriptStr = "SUPERSCRIPT";
+    const auto KETFontSubscriptStr = "SUBSCRIPT";
+    const auto KETFontCustomSizeStr = "CUSTOM_FONT_SIZE";
+    const uint8_t KETReactantArea = 0;
+    const uint8_t KETReagentUpArea = 1;
+    const uint8_t KETReagentDownArea = 2;
+    const uint8_t KETProductArea = 3;
+    const Vec2f MIN_MOL_SIZE = {0.5, 0.5};
+
+    const std::unordered_map<std::string, CIPDesc> KStringToCIP = {{"R", CIPDesc::R}, {"S", CIPDesc::S}, {"r", CIPDesc::r},
+                                                                   {"s", CIPDesc::s}, {"E", CIPDesc::E}, {"Z", CIPDesc::Z}};
+    const std::unordered_map<int, std::string> KCIPToString = {{(int)CIPDesc::R, "R"}, {(int)CIPDesc::S, "S"}, {(int)CIPDesc::r, "r"},
+                                                               {(int)CIPDesc::s, "s"}, {(int)CIPDesc::E, "E"}, {(int)CIPDesc::Z, "Z"}};
 
     struct compareFunction
     {
@@ -53,7 +69,49 @@ namespace indigo
         return string_hash(s, count);
     }
 
-    const std::unordered_map<std::string, int> KTextStylesMap{{"BOLD", 0}, {"ITALIC", 1}, {"SUPERSCRIPT", 2}, {"SUBSCRIPT", 3}};
+    inline uint8_t getPointSide(const Vec2f& point, const Vec2f& beg, const Vec2f& end)
+    {
+        uint8_t bit_mask = 0;
+        Vec2f arrow_vec(beg);
+        arrow_vec.sub(end);
+
+        Vec2f slope1(point.x, point.y);
+        Vec2f slope2(slope1);
+        slope1.sub(beg);
+        slope2.sub(end);
+        auto dt1 = Vec2f::dot(slope1, arrow_vec);
+        auto dt2 = Vec2f::dot(slope2, arrow_vec);
+
+        if (std::signbit(dt1))
+            bit_mask |= KETReagentUpArea;
+
+        if (std::signbit(dt2))
+            bit_mask |= KETReagentDownArea;
+
+        return bit_mask;
+    }
+
+    inline bool isCIPSGroup(SGroup& sgroup)
+    {
+        if (sgroup.sgroup_type == SGroup::SG_DATA)
+        {
+            auto& dsg = (DataSGroup&)sgroup;
+            return std::string(dsg.name.ptr()) == "INDIGO_CIP_DESC";
+        }
+        return false;
+    }
+
+    inline void getSGroupAtoms(BaseMolecule& mol, std::list<std::unordered_set<int>>& neighbors)
+    {
+        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+        {
+            SGroup& sgroup = mol.sgroups.getSGroup(i);
+            neighbors.push_back({});
+            auto& sg_set = neighbors.back();
+            for (auto atom_idx : sgroup.atoms)
+                sg_set.insert(atom_idx);
+        }
+    }
 
     class KETSimpleObject : public MetaObject
     {
@@ -85,12 +143,16 @@ namespace indigo
     public:
         enum
         {
-            EBold = 0,
-            EItalic = 1,
-            ESuperScript = 2,
-            ESubScript = 3,
-            EFontSize = 4
+            EPlain = 0,
+            EBold = 1,
+            EItalic = 2,
+            ESuperScript = 3,
+            ESubScript = 4,
+            EFontSize = 5
         };
+
+        const std::unordered_map<std::string, int> KTextStylesMap{
+            {KETFontBoldStr, EBold}, {KETFontItalicStr, EItalic}, {KETFontSuperscriptStr, ESuperScript}, {KETFontSubscriptStr, ESubScript}};
 
         struct KETTextLine
         {
@@ -278,8 +340,8 @@ namespace indigo
             CONNECTED = -1
         };
 
-        ReactionComponent(int ctype, const Rect2f& box, std::unique_ptr<BaseMolecule> mol)
-            : component_type(ctype), bbox(box), molecule(std::move(mol)), summ_block_idx(NOT_CONNECTED){};
+        ReactionComponent(int ctype, const Rect2f& box, int idx, std::unique_ptr<BaseMolecule> mol)
+            : component_type(ctype), bbox(box), molecule(std::move(mol)), summ_block_idx(NOT_CONNECTED), index(idx){};
 
         int component_type;
         Rect2f bbox;
@@ -287,6 +349,7 @@ namespace indigo
         std::list<MolSumm>::iterator summ_block_it;
         int summ_block_idx;
         std::vector<Vec2f> coordinates;
+        int index;
     };
 
 }

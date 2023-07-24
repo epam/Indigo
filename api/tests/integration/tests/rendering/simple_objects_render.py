@@ -47,6 +47,13 @@ indigo.setOption("render-output-format", "png")
 renderer.renderToFile(rea, joinPathPy("out/multi.png", __file__))
 print(checkImageSimilarity("multi.png"))
 
+rea = indigo.loadReactionFromFile(
+    joinPathPy("reactions/single_arrow.ker", __file__)
+)
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(rea, joinPathPy("out/single_arrow.png", __file__))
+print(checkImageSimilarity("single_arrow.png"))
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()

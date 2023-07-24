@@ -1,0 +1,41 @@
+1910.mol:SUCCEED
+C14_R_iso.mol:SUCCEED
+C14_R_iso_2.mol:SUCCEED
+CIP_issue.mol:SUCCEED
+P-9.5.2.2_ex3.mol:SUCCEED
+P-92.5.1.mol:SUCCEED
+P-92.5.3.mol:SUCCEED
+P-92.6.mol:SUCCEED
+P-92.6_2.mol:SUCCEED
+P-92.6_ex2.mol:SUCCEED
+P-92_2_1_1_3_ex1.mol:SUCCEED
+P-92_2_1_1_3_ex2.mol:SUCCEED
+P-92_2_1_2_1_ex1.mol:SUCCEED
+P-92_2_1_2_1_ex2.mol:SUCCEED
+P-92_2_1_2_1_ex3.mol:SUCCEED
+P-92_2_1_3_ex1.mol:SUCCEED
+P-92_2_1_3_ex2.mol:SUCCEED
+RS-symmetrical-structure.mol:SUCCEED
+RS.mol:SUCCEED
+RS_for_incorrect_valence.mol:SUCCEED
+S-R diff.mol:SUCCEED
+StereochemComplexTester_AllAbs.mol:SUCCEED
+all-trans-inositol.mol:SUCCEED
+atom_any.mol:SUCCEED
+cis.mol:SUCCEED
+different stereo 2.mol:SUCCEED
+different stereo 3.mol:SUCCEED
+different stereo 4.mol:SUCCEED
+different stereo 5.mol:SUCCEED
+different stereo.mol:SUCCEED
+ketcher.mol:SUCCEED
+stereo-different-ketcher-marvin.mol:SUCCEED
+stereo-different-ketcher-marvin2.mol:SUCCEED
+t4_R.mol:SUCCEED
+t4_R_iso.mol:SUCCEED
+t4_S.mol:SUCCEED
+t4_S_iso.mol:SUCCEED
+trans.mol:SUCCEED
+without_stereo_label.mol:SUCCEED
+crazystereo.rxn:SUCCEED
+

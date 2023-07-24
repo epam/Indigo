@@ -165,6 +165,9 @@ namespace com.epam.indigo
         public static extern byte* indigoCdxml(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern byte* indigoCdxBase64(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoSaveMDLCT(int item, int output);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
@@ -1190,5 +1193,8 @@ namespace com.epam.indigo
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoDbgBreakpoint();
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoCopyRGroups(int molecule_from, int molecule_to);
     }
 }

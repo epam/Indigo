@@ -24,10 +24,16 @@ import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.xcontent.XContentBuilder;
-import org.elasticsearch.xcontent.XContentFactory;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -41,7 +47,7 @@ import static com.epam.indigo.model.NamingConstants.*;
 public class ElasticRepository<T extends IndigoRecord> implements GenericRepository<T> {
 
     private String indexName;
-    private String hostName;
+    private List<String> hostsNames;
     private int port;
     private String scheme;
     private String userName;
@@ -192,8 +198,6 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
 //        TODO do we need it?
 //        FlushRequest flushRequest = new FlushRequest();
 //        this.elasticClient.indices().flushAsync(flushRequest, RequestOptions.DEFAULT);
-//        ForceMergeRequest forceMergeRequest = new ForceMergeRequest();
-//        this.elasticClient.indices().forcemerge(forceMergeRequest, RequestOptions.DEFAULT);
     }
 
     @Override
@@ -225,8 +229,8 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
             return this;
         }
 
-        public ElasticRepositoryBuilder<T> withHostName(String hostName) {
-            operations.add(repo -> repo.hostName = hostName);
+        public ElasticRepositoryBuilder<T> withHostsNames(List<String> hostsNames) {
+            operations.add(repo -> repo.hostsNames = hostsNames);
             return this;
         }
 
@@ -279,21 +283,54 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
             ElasticRepository<T> repository = new ElasticRepository<>();
             operations.forEach(operation -> operation.accept(repository));
             if (repository.elasticClient == null) {
-                RestClientBuilder builder = RestClient.builder(new HttpHost(repository.hostName, repository.port, repository.scheme));
+                RestClientBuilder builder = RestClient.builder(repository.hostsNames.stream().map(hostName -> new HttpHost(hostName, repository.port, repository.scheme)).toArray(HttpHost[]::new));
                 if (repository.userName != null && repository.password != null) {
                     final CredentialsProvider credentialsProvider =
                             new BasicCredentialsProvider();
                     credentialsProvider.setCredentials(AuthScope.ANY,
                             new UsernamePasswordCredentials(repository.userName, repository.password));
-                    builder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
-                            .disableAuthCaching()
-                            .setSSLHostnameVerifier((s, sslSession) -> repository.ignoreSSL)
-                            .setDefaultCredentialsProvider(credentialsProvider));
+                    if (repository.ignoreSSL) {
+                        builder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
+                                .disableAuthCaching()
+                                .setSSLContext(initSSLContext())
+                                .setSSLHostnameVerifier((s, sslSession) -> repository.ignoreSSL)
+                                .setDefaultCredentialsProvider(credentialsProvider));
+                    } else {
+                        builder.setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
+                                .setDefaultCredentialsProvider(credentialsProvider));
+                    }
                 }
                 repository.elasticClient = new RestHighLevelClient(builder);
             }
             validate(repository);
             return repository;
+        }
+
+        private SSLContext initSSLContext() {
+            SSLContext sc = null;
+            try {
+                TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                    }
+
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                    }
+                }
+                };
+                // Install the all-trusting trust manager
+                sc = SSLContext.getInstance("SSL");
+                sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            } catch (NoSuchAlgorithmException e) {
+                throw new BingoElasticException(
+                        "Elasticsearch isn't started at");
+            } catch (KeyManagementException e) {
+                throw new RuntimeException(e);
+            }
+            return sc;
         }
 
         private void validate(ElasticRepository<T> repository) {
@@ -304,13 +341,13 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
             try {
                 ping = repository.elasticClient.ping(RequestOptions.DEFAULT);
                 if (!ping) {
-                    throw new BingoElasticException("Elasticsearch isn't started at " + repository.hostName + ":" + repository.port);
+                    throw new BingoElasticException("Elasticsearch isn't started at " + repository.scheme + "://" + repository.hostsNames + ":" + repository.port);
                 }
             } catch (IOException e) {
-                throw new BingoElasticException("Elasticsearch isn't started at " + repository.hostName + ":" + repository.port);
+                throw new BingoElasticException("Elasticsearch isn't started at " + repository.scheme + "://" + repository.hostsNames + ":" + repository.port);
             } catch (ElasticsearchException e) {
-                throw  new BingoElasticException("Elasticsearch isn't started at " + repository.hostName + ":" + repository.port
-                + " " + e.getDetailedMessage());
+                throw new BingoElasticException("Elasticsearch isn't started at " + repository.scheme + "://" + repository.hostsNames + ":" + repository.port
+                        + " " + e.getDetailedMessage());
             }
 
         }

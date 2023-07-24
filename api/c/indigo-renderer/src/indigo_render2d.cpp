@@ -33,7 +33,7 @@
 #include "indigo_renderer_internal.h"
 #include "option_manager.h"
 
-//#define INDIGO_DEBUG
+// #define INDIGO_DEBUG
 
 #ifdef INDIGO_DEBUG
 #include <iostream>
@@ -271,35 +271,6 @@ void indigoRenderGetCatalystsPlacement(Array<char>& value)
         value.readString("above", true);
 }
 
-void indigoRenderSetSuperatomMode(const char* mode)
-{
-    std::string mode_string(mode);
-    int result;
-    if (mode_string == "expand")
-    {
-        result = 0;
-    }
-    else if (mode_string == "collapse")
-    {
-        result = 1;
-    }
-    else
-    {
-        throw IndigoError("Invalid label mode, should be 'expand' or 'collapse'");
-    }
-    RenderParams& rp = indigoRendererGetInstance().renderParams;
-    rp.rOpt.collapseSuperatoms = result != 0;
-}
-
-void indigoRenderGetSuperatomMode(Array<char>& value)
-{
-    RenderParams& rp = indigoRendererGetInstance().renderParams;
-    if (rp.rOpt.collapseSuperatoms)
-        value.readString("collapse", true);
-    else
-        value.readString("expand", true);
-}
-
 static MultilineTextLayout _parseTextLayout(const char* text)
 {
     // Try to read as float for compatibility with previous versions
@@ -488,18 +459,18 @@ CEXPORT int indigoRender(int object, int output)
         if (IndigoBaseMolecule::is(obj))
         {
             if (obj.getBaseMolecule().isQueryMolecule())
-                rp.mol = std::make_unique<QueryMolecule>();
+                rp.mol.reset(new QueryMolecule());
             else
-                rp.mol = std::make_unique<Molecule>();
+                rp.mol.reset(new Molecule());
             rp.mol->clone_KeepIndices(self.getObject(object).getBaseMolecule());
             rp.rmode = RENDER_MOL;
         }
         else if (IndigoBaseReaction::is(obj))
         {
             if (obj.getBaseReaction().isQueryReaction())
-                rp.rxn = std::make_unique<QueryReaction>();
+                rp.rxn.reset(new QueryReaction());
             else
-                rp.rxn = std::make_unique<Reaction>();
+                rp.rxn.reset(new Reaction());
             rp.rxn->clone(self.getObject(object).getBaseReaction(), 0, 0, 0);
             rp.rmode = RENDER_RXN;
         }
@@ -735,7 +706,6 @@ void IndigoRenderer::setOptionsHandlers()
         mgr->setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition, indigoRenderGetCommentPosition);
         mgr->setOptionHandlerString("render-stereo-style", indigoRenderSetStereoStyle, indigoRenderGetStereoStyle);
         mgr->setOptionHandlerString("render-catalysts-placement", indigoRenderSetCatalystsPlacement, indigoRenderGetCatalystsPlacement);
-        mgr->setOptionHandlerString("render-superatom-mode", indigoRenderSetSuperatomMode, indigoRenderGetSuperatomMode);
         mgr->setOptionHandlerString("render-atom-color-property", SETTER_GETTER_STR_OPTION(rp.rOpt.atomColorProp));
 
         mgr->setOptionHandlerBool("render-coloring", SETTER_GETTER_BOOL_OPTION(rp.rOpt.atomColoring));

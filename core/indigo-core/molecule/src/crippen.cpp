@@ -389,7 +389,7 @@ namespace
 
                 auto node = make_shared<PKANode>(id, isLeaf, pkaValue, smarts);
                 MoleculeAutoLoader loader(smarts.c_str());
-                loader.loadQueryMolecule(node->smarts);
+                loader.loadMolecule(node->smarts);
 
                 nodes[id] = node;
                 if (parentId > 0)

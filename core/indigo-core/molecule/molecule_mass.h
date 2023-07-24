@@ -20,7 +20,10 @@
 #define __molecule_mass_h__
 #include "base_cpp/red_black.h"
 #include "molecule/molecule_mass_options.h"
+
+#include <map>
 #include <set>
+
 namespace indigo
 {
 
@@ -30,6 +33,8 @@ namespace indigo
     class MoleculeMass
     {
         DECL_ERROR;
+
+        const double* _relativeAtomicMassByNumber(int number) const;
 
     protected:
         struct _ElemCounter
@@ -44,7 +49,7 @@ namespace indigo
         MoleculeMass();
         MassOptions mass_options;
 
-        const RedBlackMap<int, double>* relative_atomic_mass_map;
+        const std::map<int, double>* relative_atomic_mass_map;
 
         /* Mass of a molecule calculated using the average mass of each
          * element weighted for its natural isotopic abundance

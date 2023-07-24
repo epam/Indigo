@@ -45,6 +45,7 @@ namespace indigo
 
         virtual byte readByte();
         virtual void readAll(Array<char>& arr);
+        virtual void readAll(std::string& str);
 
         void read(int length, Array<char>& buf);
 

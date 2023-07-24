@@ -4,13 +4,13 @@ import itertools
 import os
 import pathlib
 import xml.etree.ElementTree as elTree
-from typing import Any, BinaryIO, Dict, List, Optional
+from typing import Any, BinaryIO, Dict, Iterable, List, Optional
 
 import PyPDF2
 import pytest
 from fastapi.testclient import TestClient
+from httpx import Response  # type: ignore
 from PIL import Image
-from requests import Response
 
 from indigo_service import jsonapi
 from indigo_service.indigo_http import app
@@ -27,6 +27,18 @@ test_structures = [
         "format": "auto",
     },
 ]
+
+test_stereo_err_structure = {
+    "structure": "C1[C@@H]=CC=[C@H]C=1",
+    "format": "auto",
+}
+
+test_bad_valence_structure = {"structure": "C(=O)(=O)(=O)=O", "format": "auto"}
+
+test_isotopes_structure = {
+    "structure": "InChI=1S/C2H6OS/c1-4(2)3/h1-2H3/i1D3,2D3",
+    "format": "auto",
+}
 
 
 # Convert
@@ -251,8 +263,8 @@ def test_render_pdf_base64() -> None:
         "/indigo/render",
         json=render_request(structure="C", output_format="application/pdf"),
     )
-    read_file = PyPDF2.PdfFileReader(decode_image(response, "application/pdf"))
-    pages_number = read_file.numPages
+    read_file = PyPDF2.PdfReader(decode_image(response, "application/pdf"))
+    pages_number = len(read_file.pages)
     assert response.status_code == 200
     assert pages_number == 1
 
@@ -297,9 +309,9 @@ def test_render_pdf_base64_correct_options() -> None:
             options=correct_options,
         ),
     )
-    read_file = PyPDF2.PdfFileReader(decode_image(response, "application/pdf"))
-    page_height = read_file.getPage(0).mediaBox.getHeight()
-    page_width = read_file.getPage(0).mediaBox.getWidth()
+    reader = PyPDF2.PdfReader(decode_image(response, "application/pdf"))
+    page_height = reader.pages[0].mediabox.height  # pylint: disable=no-member
+    page_width = reader.pages[0].mediabox.width  # pylint: disable=no-member
     assert response.status_code == 200
     assert page_height == 400
     assert page_width == 500
@@ -342,6 +354,183 @@ def test_render_incorrect_options() -> None:
     assert error_msg == (
         'option manager: Cannot recognize "whatever" as a color value'
     )
+
+
+def get_request_attributes(  # pylint: disable=too-many-arguments
+    compound: Optional[dict[str, str]] = None,
+    modifiers: Optional[Iterable[tuple[str, Any]]] = None,
+    source: Optional[dict[str, str]] = None,
+    targets: Optional[list[dict[str, str]]] = None,
+    fingerprint: Optional[str] = None,
+    metric: Optional[str] = None,
+    descriptors: Optional[list[str]] = None,
+    validations: Optional[list[str]] = None,
+    output_format: Optional[str] = None,
+) -> dict[str, Any]:
+    if compound and modifiers:
+        compound.update(modifiers)
+    request = {
+        "compound": compound,
+        "source": source,
+        "targets": targets,
+        "fingerprint": fingerprint,
+        "metric": metric,
+        "descriptors": descriptors,
+        "validations": validations,
+        "outputFormat": output_format,
+        "options": None,
+    }
+    return dict((k, v) for k, v in request.items() if v is not None)
+
+
+@pytest.mark.parametrize(
+    "url, type_, attributes, fail_response, fixing_option, ok_response",
+    [
+        (
+            [
+                "similarities",
+                "similarities",
+                get_request_attributes(
+                    source=test_stereo_err_structure,
+                    targets=[test_stereo_err_structure],
+                    fingerprint="sim",
+                    metric="tanimoto",
+                ),
+                {400: "chirality not possible on atom #1"},
+                [("options", {"ignore-stereochemistry-errors": 1})],
+                {200: None},
+            ]
+        ),
+        (
+            [
+                "exactMatch",
+                "match",
+                get_request_attributes(
+                    source=test_stereo_err_structure,
+                    targets=[test_stereo_err_structure],
+                    output_format="highlightedTargetSmiles",
+                ),
+                {400: "chirality not possible on atom #1"},
+                [("options", {"ignore-stereochemistry-errors": 1})],
+                {200: None},
+            ]
+        ),
+        (
+            [
+                "convert",
+                "convert",
+                get_request_attributes(
+                    compound=test_stereo_err_structure,
+                    modifiers=[("modifiers", ["clean2d"])],
+                    output_format="smiles",
+                ),
+                {400: "chirality not possible on atom #1"},
+                [("options", {"ignore-stereochemistry-errors": 1})],
+                {200: None},
+            ]
+        ),
+        (
+            [
+                "validate",
+                "validation",
+                get_request_attributes(
+                    compound=test_bad_valence_structure,
+                    validations=["badValence"],
+                ),
+                {
+                    200: {
+                        "badValence": (
+                            "element: bad valence on C having 8 drawn bonds, "
+                            "charge 0, and 0 radical electrons"
+                        )
+                    }
+                },
+                [("options", {"ignore-bad-valence": 1})],
+                {200: {"badValence": ""}},
+            ]
+        ),
+        (
+            [
+                "descriptors",
+                "descriptor",
+                get_request_attributes(
+                    compound=test_isotopes_structure,
+                    descriptors=["grossFormula"],
+                ),
+                {200: {"grossFormula": "C2 H6 O S"}},
+                [("options", {"gross-formula-add-isotopes": 1})],
+                {200: {"grossFormula": "C2 D6 O S"}},
+            ]
+        ),
+        (
+            [
+                "commonBits",
+                "commonBits",
+                get_request_attributes(
+                    source=test_stereo_err_structure,
+                    targets=[test_stereo_err_structure],
+                ),
+                {400: "chirality not possible on atom #1"},
+                [("options", {"ignore-stereochemistry-errors": 1})],
+                {200: None},
+            ]
+        ),
+        (
+            [
+                "render",
+                "render",
+                get_request_attributes(
+                    compound=test_stereo_err_structure,
+                    output_format="image/png",
+                ),
+                {400: "chirality not possible on atom #1"},
+                [("options", {"ignore-stereochemistry-errors": 1})],
+                {200: None},
+            ]
+        ),
+    ],
+)
+def test_indigo_options(  # pylint: disable=too-many-arguments
+    url: str,
+    type_: str,
+    attributes: dict[str, Any],
+    fail_response: dict[int, str],
+    fixing_option: Iterable[tuple[str, Any]],
+    ok_response: dict[int, Optional[dict[str, str]]],
+) -> None:
+    response = client.post(
+        f"/indigo/{url}",
+        json={
+            "data": {
+                "type": type_,
+                "attributes": attributes,
+            }
+        },
+    )
+
+    for status_code, message in fail_response.items():
+        assert response.status_code == status_code
+        if status_code == 200:
+            assert response.json()["data"]["attributes"] == message
+        elif status_code == 400:
+            assert message in response.json()["errors"][0]["detail"]
+
+    attributes.update(fixing_option)
+
+    options_response = client.post(
+        f"/indigo/{url}",
+        json={
+            "data": {
+                "type": type_,
+                "attributes": attributes,
+            }
+        },
+    )
+
+    for status_code, message in ok_response.items():  # type: ignore
+        assert options_response.status_code == status_code
+        if message:
+            assert options_response.json()["data"]["attributes"] == message
 
 
 # TODO: /indigo/render with alternative responses types

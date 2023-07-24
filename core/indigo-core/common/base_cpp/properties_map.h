@@ -45,6 +45,8 @@ namespace indigo
         void copy(RedBlackStringObjMap<Array<char>>& properties);
         void copy(PropertiesMap&);
         void insert(const char* key, const char* value);
+        void insert(const char* key, const std::string& value);
+
         Array<char>& insert(const char* key);
 
         const char* key(int);

@@ -773,7 +773,8 @@ namespace indigo
         {
             INDIGO_BEGIN
             {
-                AbbreviationExpander expander(indigoGetAbbreviationsInstance().abbreviations);
+                const auto& indigoAbbreviations = self.getAbbreviations();
+                AbbreviationExpander expander(indigoAbbreviations.abbreviations);
 
                 IndigoObject& obj = self.getObject(molecule);
                 Molecule& mol = obj.getMolecule();

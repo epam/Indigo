@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/molecule-transformation.png" type="Manipulator">
+    <name>Molecule Transformation (beta)</name>
+    
+    <shortDescription>
+    </shortDescription>
+    
+    <fullDescription>
+        <intro> <p>This node transforms molecules according to 
+        	reaction-base set of rules. See the <a href="http://lifescience.opensource.epam.com/indigo/concepts/transformation">examples</a> for more details.    
+	         </p>
+	         	<p>
+		        <b>Supported types:</b> 
+		        <ul>
+				<li>Molecule:  String, SDF, Smiles, CML, Mol, InChI</li>
+				</ul>
+				</p>
+	       <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p>
+        </intro>
+        
+        <option name="Target molecule column">The column that contains molecule structures.</option>
+        <option name="Query Reaction column">The column that contains Indigo query reactions.</option>
+        <option name="Append Column">Appends a new molecule column (with the name as specified in the text field) if checked, replaces the original column otherwise.</option>
+                
+        <option name="Molecule type">Treat input as: a molecule.</option>
+        <option name="Reaction type">Treat input as a query reaction</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms.</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+        <option name="Treat query reaction as SMARTS">Treat input strings for reaction (port 2) as SMARTS.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input molecules">Table containing molecules to transform.</inPort>
+        <inPort index="1" name="Reaction pattern">Table containing query reactions describing transformations.</inPort>
+        <outPort index="0" name="Result molecules">The transformed molecules table.</outPort>
+    </ports>    
+</knimeNode>

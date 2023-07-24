@@ -34,7 +34,6 @@ def indigo(thread_local: bool = False) -> Indigo:
         if __cur_thread.get() != ident:
             __indigo.set(Indigo())
             __cur_thread.set(ident)
-
     return __indigo.get()
 
 

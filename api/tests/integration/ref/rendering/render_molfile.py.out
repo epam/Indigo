@@ -83,3 +83,15 @@ molfile/ind-514-h-arom-cycle.mol_t.png rendering status: OK
 
 molfile/ind-514-h-arom-cycle.mol_q.png rendering status: OK
    OK
+istruct.mol: 
+  molfile loader: unaturated atoms are allowed only for queries
+
+molfile/istruct.mol_q.png rendering status: OK
+   OK
+rcstruct.mol: 
+
+molfile/rcstruct.mol_t.png rendering status: OK
+   OK
+
+molfile/rcstruct.mol_q.png rendering status: OK
+   OK

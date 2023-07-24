@@ -16,10 +16,13 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "reaction/reaction_cdxml_saver.h"
+#include <string>
+
 #include "base_cpp/output.h"
+#include "molecule/ket_commons.h"
 #include "molecule/molecule_cdxml_saver.h"
 #include "reaction/reaction.h"
+#include "reaction/reaction_cdxml_saver.h"
 
 using namespace indigo;
 
@@ -63,7 +66,7 @@ void _getBounds(BaseMolecule& mol, Vec2f& min, Vec2f& max, float scale)
 
 IMPL_ERROR(ReactionCdxmlSaver, "reaction CDXML saver");
 
-ReactionCdxmlSaver::ReactionCdxmlSaver(Output& output) : _output(output)
+ReactionCdxmlSaver::ReactionCdxmlSaver(Output& output, bool is_binary) : _output(output), _is_binary(is_binary), _id(0)
 {
 }
 
@@ -74,55 +77,56 @@ ReactionCdxmlSaver::~ReactionCdxmlSaver()
 void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
 {
     int i;
-    Array<int> reactants_ids;
-    Array<int> products_ids;
-    ObjArray<Array<int>> nodes_ids;
+    std::vector<int> mol_ids;
+    std::vector<int> meta_ids;
 
-    int arrow_id;
+    std::vector<std::vector<int>> nodes_ids;
 
-    MoleculeCdxmlSaver molsaver(_output);
+    MoleculeCdxmlSaver molsaver(_output, _is_binary);
     MoleculeCdxmlSaver::Bounds b;
-
-    reactants_ids.clear();
-    products_ids.clear();
-
-    _generateCdxmlObjIds(rxn, reactants_ids, products_ids, nodes_ids, arrow_id);
 
     molsaver.beginDocument(NULL);
     molsaver.addDefaultFontTable();
     molsaver.addDefaultColorTable();
     molsaver.beginPage(NULL);
 
+    _id = molsaver.getId();
+    _generateCdxmlObjIds(rxn, mol_ids, meta_ids, nodes_ids);
+
+    std::vector<std::pair<int, int>> arrow_ids;
+    int arrow_count = rxn.meta().getMetaCount(KETReactionArrow::CID);
+    if (arrow_count)
+    {
+        for (int i = 0; i < arrow_count; ++i)
+        {
+            int array_index = rxn.meta().getMetaObjectIndex(KETReactionArrow::CID, i);
+            arrow_ids.emplace_back(meta_ids[array_index], arrow_count > 1 ? array_index : -1);
+        }
+    }
+    else
+        arrow_ids.emplace_back(++_id, -1);
+
     Vec2f offset(0, 0);
 
-    if (rxn.reactantsCount() > 0)
-    {
-        for (i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
-        {
-            molsaver.saveMoleculeFragment(rxn.getBaseMolecule(i), offset, 1, reactants_ids[i], nodes_ids[i]);
-        }
-    }
-    if (rxn.productsCount() > 0)
-    {
-        for (i = rxn.productBegin(); i != rxn.productEnd(); i = rxn.productNext(i))
-        {
-            molsaver.saveMoleculeFragment(rxn.getBaseMolecule(i), offset, 1, products_ids[i], nodes_ids[i]);
-        }
-    }
-    /*
-       if (rxn.catalystCount() > 0)
-       {
-          for (i = rxn.catalystBegin(); i != rxn.catalystEnd(); i = rxn.catalystNext(i))
-          {
-             molsaver.saveMoleculeFragment(rxn.getBaseMolecule(i), offset, 1);
-          }
-       }
-    */
-    _addPlusses(rxn, molsaver);
+    for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+        molsaver.saveMoleculeFragment(rxn.getBaseMolecule(i), offset, 1, mol_ids[i], _id, nodes_ids[i]);
 
-    _addArrow(rxn, molsaver, arrow_id);
+    if (rxn.meta().metaData().size()) // we have metadata
+    {
+        for (int i = 0; i < rxn.meta().metaData().size(); ++i)
+        {
+            molsaver.addMetaObject(*rxn.meta().metaData()[i], meta_ids[i]);
+        }
+    }
+    else
+    {
+        _addPlusses(rxn, molsaver);
+        _addArrow(rxn, molsaver, arrow_ids.front().first);
+    }
+
     _addScheme(molsaver);
-    _addStep(rxn, molsaver, reactants_ids, products_ids, nodes_ids, arrow_id);
+    for (const auto& ar_id : arrow_ids)
+        _addStep(rxn, molsaver, mol_ids, nodes_ids, ar_id);
     _closeScheme(molsaver);
 
     if (rxn.name.size() > 0)
@@ -181,7 +185,6 @@ void ReactionCdxmlSaver::_addPlusses(BaseReaction& rxn, MoleculeCdxmlSaver& mols
 
 void ReactionCdxmlSaver::_addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, int arrow_id)
 {
-    int id = -1;
     Vec2f p1(0, 0);
     Vec2f p2(0, 0);
     PropertiesMap attrs;
@@ -272,17 +275,7 @@ void ReactionCdxmlSaver::_addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsav
         }
     }
 
-    Array<char> buf;
-    ArrayOutput buf_out(buf);
-    buf_out.printf("%d", arrow_id);
-    buf.push(0);
-
-    attrs.insert("id", buf.ptr());
-    attrs.insert("GraphicType", "Line");
-    attrs.insert("ArrowType", "FullHead");
-    attrs.insert("HeadSize", "1000");
-
-    molsaver.addGraphic(id, p1, p2, attrs);
+    molsaver.addArrow(arrow_id, KETReactionArrow::EOpenAngle, p2, p1);
 }
 
 void ReactionCdxmlSaver::_addScheme(MoleculeCdxmlSaver& molsaver)
@@ -303,8 +296,8 @@ void ReactionCdxmlSaver::_closeScheme(MoleculeCdxmlSaver& molsaver)
     molsaver.endCurrentElement();
 }
 
-void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, Array<int>& reactants_ids, Array<int>& products_ids,
-                                  ObjArray<Array<int>>& nodes_ids, int arrow_id)
+void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, std::vector<int>& mol_ids, std::vector<std::vector<int>>& nodes_ids,
+                                  const std::pair<int, int>& arrow_id)
 {
     int id = -1;
     Array<char> name;
@@ -317,11 +310,25 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
 
     Array<char> buf;
     ArrayOutput buf_out(buf);
-    for (auto i = 0; i < reactants_ids.size(); i++)
+
+    if (arrow_id.second < 0)
     {
-        if (reactants_ids[i] > 0)
-            buf_out.printf("%d ", reactants_ids[i]);
+        for (auto i = rxn.reactantBegin(); i < rxn.reactantEnd(); i = rxn.reactantNext(i))
+        {
+            if (mol_ids[i] > 0)
+                buf_out.printf("%d ", mol_ids[i]);
+        }
     }
+    else
+    {
+        if (rxn.reactionBlocksCount())
+        {
+            auto& rb = rxn.reactionBlock(arrow_id.second);
+            for (auto i : rb.reactants)
+                buf_out.printf("%d ", mol_ids[i]);
+        }
+    }
+
     if (buf.size() > 1)
     {
         buf.pop();
@@ -330,11 +337,24 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
     }
 
     buf.clear();
-    for (auto i = 0; i < products_ids.size(); i++)
+    if (arrow_id.second < 0)
     {
-        if (products_ids[i] > 0)
-            buf_out.printf("%d ", products_ids[i]);
+        for (auto i = rxn.productBegin(); i < rxn.productEnd(); i = rxn.productNext(i))
+        {
+            if (mol_ids[i] > 0)
+                buf_out.printf("%d ", mol_ids[i]);
+        }
     }
+    else
+    {
+        if (rxn.reactionBlocksCount())
+        {
+            auto& rb = rxn.reactionBlock(arrow_id.second);
+            for (auto i : rb.products)
+                buf_out.printf("%d ", mol_ids[i]);
+        }
+    }
+
     if (buf.size() > 1)
     {
         buf.pop();
@@ -342,8 +362,25 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
         attrs.insert("ReactionStepProducts", buf.ptr());
     }
 
+    std::string below_arrow, above_arrow;
+    for (auto i = rxn.catalystBegin(); i < rxn.catalystEnd(); i = rxn.catalystNext(i))
+    {
+        if (mol_ids[i] > 0)
+        {
+            if (above_arrow.size())
+                above_arrow += " ";
+            above_arrow += std::to_string(mol_ids[i]);
+        }
+    }
+
+    if (above_arrow.size())
+        attrs.insert("ReactionStepObjectsAboveArrow", above_arrow.c_str());
+
+    if (below_arrow.size())
+        attrs.insert("ReactionStepObjectsAboveArrow", above_arrow.c_str());
+
     buf.clear();
-    buf_out.printf("%d", arrow_id);
+    buf_out.printf("%d", arrow_id.first);
     buf.push(0);
     attrs.insert("ReactionStepArrows", buf.ptr());
 
@@ -380,56 +417,29 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
     molsaver.addCustomElement(id, name, attrs);
 }
 
-void ReactionCdxmlSaver::_generateCdxmlObjIds(BaseReaction& rxn, Array<int>& reactants_ids, Array<int>& products_ids, ObjArray<Array<int>>& nodes_ids,
-                                              int& arrow_id)
+void ReactionCdxmlSaver::_generateCdxmlObjIds(BaseReaction& rxn, std::vector<int>& mol_ids, std::vector<int>& meta_ids,
+                                              std::vector<std::vector<int>>& nodes_ids)
 {
-    reactants_ids.clear_resize(rxn.reactantEnd());
-    reactants_ids.zerofill();
-
-    products_ids.clear_resize(rxn.productEnd());
-    products_ids.zerofill();
-
-    int id = 0;
-
-    for (auto i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
+    for (auto i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
     {
-        id++;
-        reactants_ids[i] = id;
+        mol_ids.push_back(++_id);
 
         BaseMolecule& mol = rxn.getBaseMolecule(i);
-
-        nodes_ids.expand(i + 1);
-        nodes_ids[i].clear_resize(mol.vertexEnd());
-        nodes_ids[i].zerofill();
+        nodes_ids.push_back({});
 
         for (auto j = mol.vertexBegin(); j != mol.vertexEnd(); j = mol.vertexNext(j))
-        {
-            id++;
-            nodes_ids[i][j] = id;
-        }
+            nodes_ids[i].push_back(++_id);
     }
 
-    for (auto i = rxn.productBegin(); i != rxn.productEnd(); i = rxn.productNext(i))
+    // generate ids for meta objects. 1 node and 1 extra object. text or graphics
+    for (auto i = 0; i < rxn.meta().metaData().size(); ++i)
     {
-        id++;
-        products_ids[i] = id;
-
-        BaseMolecule& mol = rxn.getBaseMolecule(i);
-
-        nodes_ids.expand(i + 1);
-        nodes_ids[i].clear_resize(mol.vertexEnd());
-        nodes_ids[i].zerofill();
-
-        for (auto j = mol.vertexBegin(); j != mol.vertexEnd(); j = mol.vertexNext(j))
-        {
-            id++;
-            nodes_ids[i][j] = id;
-        }
+        int r_id = i + rxn.end();
+        meta_ids.push_back(++_id);
+        nodes_ids.push_back({});
+        _id += 2;
+        nodes_ids[r_id].push_back(_id);
     }
-
-    arrow_id = id + 1;
-
-    return;
 }
 
 void ReactionCdxmlSaver::_addTitle(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver)

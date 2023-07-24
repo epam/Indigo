@@ -102,6 +102,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoCdxml(self));
     }
 
+    public String b64cdx() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoCdxBase64(self));
+    }
+
     public void saveCdxml(String filename) {
         dispatcher.setSessionID();
         Indigo.checkResult(this, lib.indigoSaveCdxmlToFile(self, filename));
@@ -1858,5 +1863,10 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public String dbgInternalType() {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoDbgInternalType(self));
+    }
+
+    public int copyRGroups(IndigoObject other) {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoCopyRGroups(other.self, self));
     }
 }

@@ -34,10 +34,19 @@ from bingo_elastic.utils import PostprocessType
 
 ElasticRepositoryT = TypeVar("ElasticRepositoryT")
 
+MAX_ALLOWED_SIZE = 1000
+
 
 class IndexName(Enum):
+    def __init__(self, value):
+        self._value_ = value
+
     BINGO_MOLECULE = "bingo-molecules"
     BINGO_REACTION = "bingo-reactions"
+    BINGO_CUSTOM = "custom-index"
+
+    def set_value(self, new_value):
+        self._value_ = new_value
 
 
 def get_index_name(record: IndigoRecord) -> IndexName:
@@ -45,6 +54,8 @@ def get_index_name(record: IndigoRecord) -> IndexName:
         return IndexName.BINGO_MOLECULE
     if isinstance(record, IndigoRecordReaction):
         return IndexName.BINGO_REACTION
+    if isinstance(record, str):
+        return IndexName.BINGO_CUSTOM
     raise AttributeError(f"Unknown IndigoRecord type {record}")
 
 
@@ -55,6 +66,8 @@ def get_record_by_index(
         return IndigoRecordMolecule(elastic_response=response)
     if index == IndexName.BINGO_REACTION.value:
         return IndigoRecordReaction(elastic_response=response)
+    if index == IndexName.BINGO_CUSTOM.value:
+        return IndigoRecordMolecule(elastic_response=response)
     raise AttributeError(f"Unknown index {index}")
 
 
@@ -141,22 +154,22 @@ async def a_create_index(
 
 
 def prepare(
-    index_name: str, records: Generator[IndigoRecord, None, None]
+    records: Generator[IndigoRecord, None, None]
 ) -> Generator[Dict, None, None]:
     for record in records:
-        if get_index_name(record).value != index_name:
-            raise ValueError(
-                f"Index {index_name} doesn't support store value "
-                f"of type {type(record)}"
-            )
+        # if get_index_name(record).value != index_name:
+        #     raise ValueError(
+        #         f"Index {index_name} doesn't support store value "
+        #         f"of type {type(record)}"
+        #     )
         yield record.as_dict()
 
 
 def response_to_records(
     res: dict,
     index_name: str,
-    postprocess_actions: PostprocessType = None,
-    indigo_session: Indigo = None,
+    postprocess_actions: Optional[PostprocessType] = None,
+    indigo_session: Optional[Indigo] = None,
     options: str = "",
 ) -> Generator[IndigoRecord, None, None]:
     for el_response in res.get("hits", {}).get("hits", []):
@@ -215,7 +228,7 @@ class AsyncElasticRepository:
         # pylint: disable=unused-variable
         async for is_ok, action in async_streaming_bulk(
             self.el_client,
-            prepare(self.index_name, records),
+            prepare(records),
             index=self.index_name,
             chunk_size=chunk_size,
         ):
@@ -229,7 +242,10 @@ class AsyncElasticRepository:
         options: str = "",
         **kwargs,
     ) -> AsyncGenerator[IndigoRecord, None]:
-
+        if limit > MAX_ALLOWED_SIZE:
+            raise ValueError(
+                f"limit should less or equal to {MAX_ALLOWED_SIZE}"
+            )
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
 
@@ -302,7 +318,7 @@ class ElasticRepository:
         # pylint: disable=unused-variable
         for is_ok, action in streaming_bulk(
             self.el_client,
-            prepare(self.index_name, records),
+            prepare(records),
             index=self.index_name,
             chunk_size=chunk_size,
         ):
@@ -322,7 +338,10 @@ class ElasticRepository:
         options: str = "",
         **kwargs,
     ) -> Generator[IndigoRecord, None, None]:
-
+        if limit > MAX_ALLOWED_SIZE:
+            raise ValueError(
+                f"limit should less or equal to {MAX_ALLOWED_SIZE}"
+            )
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
         query = compile_query(
@@ -340,7 +359,7 @@ class ElasticRepository:
 def compile_query(
     query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
     limit: int = 10,
-    postprocess_actions: PostprocessType = None,
+    postprocess_actions: Optional[PostprocessType] = None,
     **kwargs,
 ) -> Dict:
     query = {

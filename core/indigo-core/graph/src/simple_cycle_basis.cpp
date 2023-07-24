@@ -71,8 +71,8 @@ void SimpleCycleBasis::create()
 
     int new_vertex = spanning_tree.addVertex();
 
-    vertices_spanning_tree.insert(current_vertex, new_vertex);
-    spanning_tree_vertices.insert(new_vertex, current_vertex);
+    vertices_spanning_tree.emplace(current_vertex, new_vertex);
+    spanning_tree_vertices.emplace(new_vertex, current_vertex);
 
     vertex_queue.push(current_vertex);
 
@@ -101,18 +101,18 @@ void SimpleCycleBasis::create()
 
                 int next_vertex = subgraph.getEdge(edge).findOtherEnd(current_vertex);
 
-                if (!vertices_spanning_tree.find(next_vertex))
+                if (vertices_spanning_tree.find(next_vertex) == vertices_spanning_tree.end())
                 {
                     // tree edge
 
                     tree_edges.push(edge);
 
                     int new_vertex = spanning_tree.addVertex();
-                    vertices_spanning_tree.insert(next_vertex, new_vertex);
-                    spanning_tree_vertices.insert(new_vertex, next_vertex);
+                    vertices_spanning_tree.emplace(next_vertex, new_vertex);
+                    spanning_tree_vertices.emplace(new_vertex, next_vertex);
 
                     // create a new (directed) Edge object (as explained above)
-                    spanning_tree.addEdge(vertices_spanning_tree.at(current_vertex), vertices_spanning_tree.at(next_vertex));
+                    spanning_tree.addEdge(vertices_spanning_tree.at(current_vertex), new_vertex);
 
                     // add the next vertex to the BFS-FIFO
                     vertex_queue.push(next_vertex);
@@ -369,7 +369,7 @@ void SimpleCycleBasis::_createEdgeIndexMap()
     _edgeIndexMap.clear();
     for (int i = 0; i < _edgeList.size(); ++i)
     {
-        _edgeIndexMap.insert(_edgeList[i], i);
+        _edgeIndexMap.emplace(_edgeList[i], i);
     }
 }
 
@@ -427,28 +427,29 @@ void SimpleCycleBasis::_prepareSubgraph(Graph& subgraph)
     }
 }
 
+int AuxiliaryGraph::_findOrCreateVertex(std::map<int, int>& vertexMap, int vertex)
+{
+    const auto it = vertexMap.find(vertex);
+    if (it != vertexMap.end())
+    {
+        return it->second;
+    }
+
+    int newVertex = addVertex();
+    vertexMap.emplace(vertex, newVertex);
+    _auxVertexMap.emplace(newVertex, vertex);
+
+    return newVertex;
+}
+
 int AuxiliaryGraph::auxVertex0(int vertex)
 {
-    if (!_vertexMap0.find(vertex))
-    {
-        int newVertex0 = addVertex();
-        _vertexMap0.insert(vertex, newVertex0);
-        _auxVertexMap.insert(newVertex0, vertex);
-        return newVertex0;
-    }
-    return _vertexMap0.at(vertex);
+    return _findOrCreateVertex(_vertexMap0, vertex);
 }
 
 int AuxiliaryGraph::auxVertex1(int vertex)
 {
-    if (!_vertexMap1.find(vertex))
-    {
-        int newVertex1 = addVertex();
-        _vertexMap1.insert(vertex, newVertex1);
-        _auxVertexMap.insert(newVertex1, vertex);
-        return newVertex1;
-    }
-    return _vertexMap1.at(vertex);
+    return _findOrCreateVertex(_vertexMap1, vertex);
 }
 
 const Vertex& AuxiliaryGraph::getVertexAndBuild(int auxVertex)
@@ -472,7 +473,7 @@ const Vertex& AuxiliaryGraph::getVertexAndBuild(int auxVertex)
             if (ex_aux_edge == -1)
             {
                 int auxEdge = addEdge(vertex1u, vertex2u);
-                _auxEdgeMap.insert(auxEdge, edge);
+                _auxEdgeMap.emplace(auxEdge, edge);
             }
 
             vertex1u = auxVertex1(vertex1);
@@ -482,7 +483,7 @@ const Vertex& AuxiliaryGraph::getVertexAndBuild(int auxVertex)
             if (ex_aux_edge == -1)
             {
                 int auxEdge = addEdge(vertex1u, vertex2u);
-                _auxEdgeMap.insert(auxEdge, edge);
+                _auxEdgeMap.emplace(auxEdge, edge);
             }
         }
         else
@@ -493,7 +494,7 @@ const Vertex& AuxiliaryGraph::getVertexAndBuild(int auxVertex)
             if (ex_aux_edge == -1)
             {
                 int auxEdge = addEdge(vertex1u, vertex2u);
-                _auxEdgeMap.insert(auxEdge, edge);
+                _auxEdgeMap.emplace(auxEdge, edge);
             }
 
             vertex1u = auxVertex1(vertex1);
@@ -502,7 +503,7 @@ const Vertex& AuxiliaryGraph::getVertexAndBuild(int auxVertex)
             if (ex_aux_edge == -1)
             {
                 int auxEdge = addEdge(vertex1u, vertex2u);
-                _auxEdgeMap.insert(auxEdge, edge);
+                _auxEdgeMap.emplace(auxEdge, edge);
             }
         }
     }
@@ -512,5 +513,5 @@ const Vertex& AuxiliaryGraph::getVertexAndBuild(int auxVertex)
 
 int AuxiliaryGraph::edge(int auxEdge)
 {
-    return _auxEdgeMap.value(auxEdge);
+    return _auxEdgeMap.at(auxEdge);
 }

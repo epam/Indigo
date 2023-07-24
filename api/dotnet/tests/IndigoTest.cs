@@ -124,5 +124,21 @@ M  END
             Assert.IsTrue(cml.Contains("бензол"));
             Assert.IsFalse(cml.Contains("??????"));
         }
+
+        [TestMethod]
+        public void IndigoTestCopyRGroup()
+        {
+            using var indigo = new Indigo();
+            IndigoObject mol_with_rg = indigo.loadMolecule(
+                "C%91C.[*:1]%91 |$;;_R1$,RG:_R1={F%91.Cl%92.Br%93.[*:1]%91.[*:1]%92.[*:1]%93 |$;;;_AP1;_AP1;_AP1$|}|"
+            );
+            Assert.IsTrue(mol_with_rg.countRGroups() == 1);
+            IndigoObject mol_with_no_rg = indigo.loadMolecule(
+                "C%91C.[*:1]%91 |$;;_R1$|"
+            );
+            Assert.IsTrue(mol_with_no_rg.countRGroups() == 0);
+            mol_with_rg.copyRGroups(mol_with_no_rg);
+            Assert.IsTrue(mol_with_no_rg.countRGroups() == 1);
+        }
     }
 }

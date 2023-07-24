@@ -187,6 +187,19 @@ CEXPORT const char* indigoToString(int handle)
     INDIGO_END(0);
 }
 
+CEXPORT const char* indigoToBase64String(int handle)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(handle);
+
+        auto& tmp = self.getThreadTmpData();
+        obj.toBase64String(tmp.string);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
+}
+
 CEXPORT int indigoToBuffer(int handle, char** buf, int* size)
 {
     INDIGO_BEGIN

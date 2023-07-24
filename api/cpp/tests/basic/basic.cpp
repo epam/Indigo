@@ -48,11 +48,15 @@ TEST(Basic, Molfile)
     ASSERT_TRUE(molfile.rfind("M  END") != -1);
 }
 
-// TODO: This causes a memory leak that could be catched by Valgrind
 TEST(Basic, LoadQueryMolecule)
 {
     auto session = IndigoSession::create();
     const auto& m_1 = session->loadQueryMolecule("* |$Q_e$|");
+    const auto& m_2 = session->loadQueryMolecule("* |$QH_e$|");
+    const auto& m_3 = session->loadQueryMolecule("* |$M_e$|");
+    const auto& m_4 = session->loadQueryMolecule("* |$MH_e$|");
+    const auto& m_5 = session->loadQueryMolecule("* |$X_e$|");
+    const auto& m_6 = session->loadQueryMolecule("* |$XH_e$|");
 }
 
 TEST(Basic, MolecularWeight)
