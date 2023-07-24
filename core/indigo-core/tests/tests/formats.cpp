@@ -23,7 +23,6 @@
 #include <molecule/cmf_loader.h>
 #include <molecule/cmf_saver.h>
 #include <molecule/cml_saver.h>
-#include <molecule/smiles_saver.h>
 #include <molecule/molecule_cdxml_saver.h>
 #include <molecule/molecule_mass.h>
 #include <molecule/molecule_substructure_matcher.h>
@@ -31,6 +30,7 @@
 #include <molecule/query_molecule.h>
 #include <molecule/sdf_loader.h>
 #include <molecule/smiles_loader.h>
+#include <molecule/smiles_saver.h>
 
 #include "common.h"
 
