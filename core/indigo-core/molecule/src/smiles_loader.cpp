@@ -845,14 +845,14 @@ void SmilesLoader::_readOtherStuff()
             if (_scanner.readChar() != ':')
                 throw Error("colon expected after 'Sg'");
 
-            // If not a data S-group - get group type after colon 
-            // 
+            // If not a data S-group - get group type after colon
+            //
             // 'Sg:type:atomic_indexes:subscript:superscript:head_bond_indexes:tail_bond_indexes:bracket
-            // 
+            //
             // atomic_indexes - Atom indexes separated with commas
             // subscript - Subscript of the S-group. If the subscript equals the keyword of the S-group this field can be empty. Escaped field.
-            // superscript - Superscript of the S-group. In the superscript only connectivity and flip information is allowed. This field can be empty. Escaped field.
-            // *_bond_indexes - The indexes of bonds that share a common bracket in case of ladder-type polymers. 
+            // superscript - Superscript of the S-group. Only connectivity and flip information is allowed. This field can be empty. Escaped field.
+            // *_bond_indexes - The indexes of bonds that share a common bracket in case of ladder-type polymers.
             // head_bond_indexes - Head crossing bond indexes. This field can be empty.
             // tail_bond_indexes - Tail crossing bond indexes. This field can be empty.
             // bracket - bracket orientation, bracket type followed by the coordinates (4 pair, separated with commas). Bracket orientation
@@ -972,7 +972,7 @@ void SmilesLoader::_readOtherStuff()
                 if (c != ')')
                     throw Error("Data S-group coord error");
             }
-            else 
+            else
             {
                 std::string subscript, connectivity, flip;
                 while (_scanner.lookNext() != ':')

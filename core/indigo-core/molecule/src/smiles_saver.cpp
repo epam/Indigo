@@ -1876,25 +1876,26 @@ void SmilesSaver::_writeSGroups()
         _output.writeString(sg.sgroup_type == SGroup::SG_TYPE_DAT ? "SgD:" : "Sg:");
         switch (sg.sgroup_type)
         {
-        case SGroup::SG_TYPE_DAT: {
-            DataSGroup& dsg = static_cast<DataSGroup&>(sg);
+        case SGroup::SG_TYPE_DAT:
             _writeSGroupAtoms(sg);
             _output.writeChar(':');
-            if (dsg.name.size() > 0)
-                _output.writeString(dsg.name.ptr());
-            _output.writeChar(':');
-            if (dsg.data.size() > 0)
-                _output.writeString(dsg.data.ptr());
-            _output.writeChar(':');
-            if (dsg.queryoper.size() > 0)
-                _output.writeString(dsg.queryoper.ptr());
-            _output.writeChar(':');
-            if (dsg.description.size() > 0)
-                _output.writeString(dsg.description.ptr());
-            _output.writeChar(':');
-            _output.writeChar(dsg.tag);
-            _output.writeChar(':');
-            // No coords output for now
+            {
+                DataSGroup& dsg = static_cast<DataSGroup&>(sg);
+                if (dsg.name.size() > 0)
+                    _output.writeString(dsg.name.ptr());
+                _output.writeChar(':');
+                if (dsg.data.size() > 0)
+                    _output.writeString(dsg.data.ptr());
+                _output.writeChar(':');
+                if (dsg.queryoper.size() > 0)
+                    _output.writeString(dsg.queryoper.ptr());
+                _output.writeChar(':');
+                if (dsg.description.size() > 0)
+                    _output.writeString(dsg.description.ptr());
+                _output.writeChar(':');
+                _output.writeChar(dsg.tag);
+                _output.writeChar(':');
+                // No coords output for now
             }
             break;
         case SGroup::SG_TYPE_GEN:
