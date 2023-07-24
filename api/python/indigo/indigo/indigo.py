@@ -313,7 +313,7 @@ class Indigo:
         """
 
         return IndigoLib.checkResultString(self._lib().indigoVersion())
-    
+
     def versionInfo(self):
         """Returns Indigo version information
 
