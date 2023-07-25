@@ -37,35 +37,35 @@ ElasticRepositoryT = TypeVar("ElasticRepositoryT")
 MAX_ALLOWED_SIZE = 1000
 
 
-class IndexName(Enum):
+class IndexType(Enum):
     BINGO_MOLECULE = "bingo-molecules"
     BINGO_REACTION = "bingo-reactions"
 
 
-def get_index_name(record: IndigoRecord) -> IndexName:
+def get_index_type(record: IndigoRecord) -> IndexType:
     if isinstance(record, IndigoRecordMolecule):
-        return IndexName.BINGO_MOLECULE
+        return IndexType.BINGO_MOLECULE
     if isinstance(record, IndigoRecordReaction):
-        return IndexName.BINGO_REACTION
+        return IndexType.BINGO_REACTION
     raise AttributeError(f"Unknown IndigoRecord type {record}")
 
 
 def get_record_by_index(
-        response: Dict, index: str
+        response: Dict, index_type: IndexType
 ) -> Union[IndigoRecordMolecule, IndigoRecordReaction]:
-    if index == IndexName.BINGO_MOLECULE.value:
+    if index_type == IndexType.BINGO_MOLECULE:
         return IndigoRecordMolecule(elastic_response=response)
-    if index == IndexName.BINGO_REACTION.value:
+    if index_type == IndexType.BINGO_REACTION:
         return IndigoRecordReaction(elastic_response=response)
-    raise AttributeError(f"Unknown index {index}")
+    raise AttributeError(f"Unknown index {str(index_type)}")
 
 
-def elastic_repository_molecule(*args, **kwargs):
-    return ElasticRepository(IndexName.BINGO_MOLECULE, *args, **kwargs)
+def elastic_repository_molecule(index_name: str, *args, **kwargs):
+    return ElasticRepository(IndexType.BINGO_MOLECULE, index_name, *args, **kwargs)
 
 
-def elastic_repository_reaction(*args, **kwargs):
-    return ElasticRepository(IndexName.BINGO_REACTION, *args, **kwargs)
+def elastic_repository_reaction(index_name: str, *args, **kwargs):
+    return ElasticRepository(IndexType.BINGO_REACTION, index_name, *args, **kwargs)
 
 
 def get_client(
@@ -145,12 +145,12 @@ async def a_create_index(
 
 
 def prepare(
-        index_name: str, records: Generator[IndigoRecord, None, None]
+        index_type: IndexType, records: Generator[IndigoRecord, None, None]
 ) -> Generator[Dict, None, None]:
     for record in records:
-        if get_index_name(record).value != index_name:
+        if index_type == get_index_type(record):
             raise ValueError(
-                f"Index {index_name} doesn't support store value "
+                f"Index {str(index_type)} doesn't support store value "
                 f"of type {type(record)}"
             )
         yield record.as_dict()
@@ -158,13 +158,13 @@ def prepare(
 
 def response_to_records(
         res: dict,
-        index_name: str,
+        index_type: IndexType,
         postprocess_actions: PostprocessType = None,
         indigo_session: Indigo = None,
         options: str = "",
 ) -> Generator[IndigoRecord, None, None]:
     for el_response in res.get("hits", {}).get("hits", []):
-        record = get_record_by_index(el_response, index_name)
+        record = get_record_by_index(el_response, index_type)
         for action_fn in postprocess_actions:  # type: ignore
             record = action_fn(record, indigo_session, options)  # type: ignore
             if not record:
@@ -175,7 +175,8 @@ def response_to_records(
 class AsyncElasticRepository:
     def __init__(
             self,
-            index_name: IndexName,
+            index_type: IndexType,
+            index_name: str,
             *,
             host: Union[str, List[str]] = "localhost",
             port: int = 9200,
@@ -187,7 +188,8 @@ class AsyncElasticRepository:
             retry_on_timeout: bool = True,
     ) -> None:
         """
-        :param index_name: use function  get_index_name for setting this argument
+        :param index_type: use function  get_index_name for setting this argument
+        :param index_name: the name of the index
         :param host: host or list of hosts
         :param port:
         :param scheme: http or https
@@ -196,7 +198,8 @@ class AsyncElasticRepository:
         :param timeout:
         :param retry_on_timeout:
         """
-        self.index_name = index_name.value
+        self.index_type = index_type
+        self.index_name = index_type.value + index_name
 
         self.el_client = get_client(
             client_type=AsyncElasticsearch,
@@ -221,7 +224,7 @@ class AsyncElasticRepository:
         # pylint: disable=unused-variable
         async for is_ok, action in async_streaming_bulk(
                 self.el_client,
-                prepare(self.index_name, records),
+                prepare(self.index_type, records),
                 index=self.index_name,
                 chunk_size=chunk_size,
         ):
@@ -251,7 +254,7 @@ class AsyncElasticRepository:
         )
         res = await self.el_client.search(index=self.index_name, body=query)
         for record in response_to_records(
-                res, self.index_name, postprocess_actions, indigo_session, options
+                res, self.index_type, postprocess_actions, indigo_session, options
         ):
             yield record
 
@@ -268,7 +271,8 @@ class AsyncElasticRepository:
 class ElasticRepository:
     def __init__(
             self,
-            index_name: IndexName,
+            index_type: IndexType,
+            index_name: str,
             *,
             host: Union[str, List[str]] = "localhost",
             port: int = 9200,
@@ -280,7 +284,8 @@ class ElasticRepository:
             retry_on_timeout: bool = True,
     ) -> None:
         """
-        :param index_name: use function  get_index_name for setting this argument
+        :param index_type: use function  get_index_name for setting this argument
+        :param index_name: the name of this index after index type.
         :param host: host or list of hosts
         :param port:
         :param scheme: http or https
@@ -289,7 +294,8 @@ class ElasticRepository:
         :param timeout:
         :param retry_on_timeout:
         """
-        self.index_name = index_name.value
+        self.index_type = index_type
+        self.index_name = index_type.value + index_name
 
         self.el_client = get_client(
             client_type=Elasticsearch,
@@ -314,7 +320,7 @@ class ElasticRepository:
         # pylint: disable=unused-variable
         for is_ok, action in streaming_bulk(
                 self.el_client,
-                prepare(self.index_name, records),
+                prepare(self.index_type, records),
                 index=self.index_name,
                 chunk_size=chunk_size,
         ):
@@ -349,7 +355,7 @@ class ElasticRepository:
         )
         res = self.el_client.search(index=self.index_name, body=query)
         yield from response_to_records(
-            res, self.index_name, postprocess_actions, indigo_session, options
+            res, self.index_type, postprocess_actions, indigo_session, options
         )
 
 
