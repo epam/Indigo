@@ -148,7 +148,7 @@ def prepare(
         index_type: IndexType, records: Generator[IndigoRecord, None, None]
 ) -> Generator[Dict, None, None]:
     for record in records:
-        if index_type == get_index_type(record):
+        if index_type != get_index_type(record):
             raise ValueError(
                 f"Index {str(index_type)} doesn't support store value "
                 f"of type {type(record)}"
@@ -181,7 +181,7 @@ class AsyncElasticRepository:
             host: Union[str, List[str]] = "localhost",
             port: int = 9200,
             scheme: str = "",
-            http_auth: Optional[Tuple[str]] = None,
+            http_auth: Optional[List[str]] = None,
             ssl_context: Any = None,
             request_timeout: int = 60,
             timeout: int = 60,
@@ -277,7 +277,7 @@ class ElasticRepository:
             host: Union[str, List[str]] = "localhost",
             port: int = 9200,
             scheme: str = "",
-            http_auth: Optional[Tuple[str]] = None,
+            http_auth: Optional[List[str]] = None,
             ssl_context: Any = None,
             request_timeout: int = 60,
             timeout: int = 60,
