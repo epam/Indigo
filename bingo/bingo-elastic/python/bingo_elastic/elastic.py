@@ -258,6 +258,18 @@ class AsyncElasticRepository:
         ):
             yield record
 
+    async def delete(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+                     limit: int = 10, **kwargs,) -> None:
+        """
+        Delete documents in index by a query filter.
+        """
+        query = compile_query(
+            query_subject=query_subject,
+            limit=limit,
+            **kwargs,
+        )
+        await self.el_client.delete_by_query(index=self.index_name, body=query)
+
     async def close(self) -> None:
         await self.el_client.close()
 
@@ -357,6 +369,22 @@ class ElasticRepository:
         yield from response_to_records(
             res, self.index_type, postprocess_actions, indigo_session, options
         )
+
+    def delete(self,
+               query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+               limit: int = 10,
+               **kwargs,) -> None:
+        """
+        Delete documents in index by a query filter.
+        """
+        query = compile_query(
+            query_subject=query_subject,
+            limit=limit,
+            **kwargs,
+        )
+        self.el_client.delete_by_query(index=self.index_name, body=query)
+
+
 
 
 def compile_query(
