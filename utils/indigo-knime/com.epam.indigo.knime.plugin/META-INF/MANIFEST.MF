@@ -14,7 +14,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.knime.workbench.repository;bundle-version="[5.1.0,6.0.0)",
  org.knime.base;bundle-version="[5.1.0,6.0.0)",
  org.knime.product;bundle-version="[5.1.0,6.0.0)",
- org.knime.chem.types;bundle-version="[5.1.0,6.0.0)"
+ org.knime.chem.types;bundle-version="[5.1.0,6.0.0)",
+ org.knime.chem.base;bundle-version="[5.1.0,6.0.0)"
 Export-Package: com.epam.indigo,
  com.epam.indigo.knime,
  com.epam.indigo.knime.cell,
