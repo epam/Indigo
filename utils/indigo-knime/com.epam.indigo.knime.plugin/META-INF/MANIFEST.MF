@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Indigo extensions for KNIME Workbench
 Bundle-SymbolicName: com.epam.indigo.knime.plugin;singleton:=true
-Bundle-Version: 2.0.0.qualifier
+Bundle-Version: 2.1.0.qualifier
 Bundle-ClassPath: com.epam.indigo.knime.jar,
  lib/indigo-1.3.0beta.r16.jar,
  lib/indigo-renderer-1.3.0beta.r16.jar,
@@ -22,4 +22,4 @@ Export-Package: com.epam.indigo,
  com.epam.indigo.knime.plugin
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: com.epam.indigo.knime.plugin.IndigoPlugin
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-17
