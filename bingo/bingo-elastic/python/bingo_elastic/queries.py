@@ -62,6 +62,28 @@ class KeywordQuery(CompilableQuery):
         default_script_score(query)
 
 
+class TermQuery(CompilableQuery):
+    """
+    Result must match at least one result in the querying field.
+    """
+    def __init__(self, value_list: List[str]):
+        self._value = value_list
+
+    def compile(
+        self, query: Dict, postprocess_actions: PostprocessType = None
+    ) -> None:
+        bool_head: Dict = head_by_path(
+            query, ("query", "script_score", "query", "bool")
+        )
+        field_name = str(self.field) + ".keyword"
+        if not bool_head.get("must"):
+            bool_head["must"] = []
+        bool_head["must"].append({
+            "terms": {field_name: self._value}
+        })
+        default_script_score(query)
+
+
 class SubstructureQuery(CompilableQuery):
     def __init__(self, key: str, value: IndigoObject) -> None:
         self._key = key
