@@ -4,15 +4,15 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.knime</groupId>
-	<artifactId>community-repository-template</artifactId>
+	<groupId>org.epam.indigo.knime</groupId>
+	<artifactId>indigo-knime</artifactId>
 	<version>${revision}${changelist}</version>
 	<packaging>pom</packaging>
 
 	<properties>
 		<revision>1.0.0</revision>
 		<changelist>-SNAPSHOT</changelist>
-		<knime.version>5.0</knime.version>
+		<knime.version>5.1</knime.version>
 		<tycho.version>2.7.5</tycho.version>
 		<tycho.extras.version>${tycho.version}</tycho.extras.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,6 +21,7 @@
 
 	<!-- List the modules of your project here -->
 	<modules>
+		<module>com.epam.indigo.knime.plugin/lib/fetch_jars</module>
 		<module>com.epam.indigo.knime.plugin</module>
 		<module>com.epam.indigo.knime.feature</module>
 		<module>com.epam.indigo.knime.update</module>
