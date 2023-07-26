@@ -269,7 +269,7 @@ TEST_F(IndigoCoreFormatsTest, smiles_pol_sgroups_gen)
     ASSERT_STREQ(str.c_str(), "CCCC |Sg:gen:0,1,2:|");
 }
 
-TEST_F(IndigoCoreFormatsTest, mol_saver_issue)
+TEST_F(IndigoCoreFormatsTest, mol_saver_issue_1200)
 {
     Molecule t_mol;
 
