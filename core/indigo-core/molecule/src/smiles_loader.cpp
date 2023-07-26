@@ -912,28 +912,29 @@ void SmilesLoader::_readOtherStuff()
                 continue;
 
             _scanner.skip(1); // skip ':'
+            const char* word_delimiter = ":,|";
 
             if (sg_type == SGroup::SG_TYPE_DAT)
             {
                 char c;
                 DataSGroup& dsg = static_cast<DataSGroup&>(sgroup);
                 // field_name
-                _scanner.readWord(dsg.name, ":,|");
+                _scanner.readWord(dsg.name, word_delimiter);
                 if (_scanner.lookNext() != ':') // No more fields
                     continue;
                 _scanner.skip(1); // Skip :
                 // data_value
-                _scanner.readWord(dsg.data, ":,|");
+                _scanner.readWord(dsg.data, word_delimiter);
                 if (_scanner.lookNext() != ':') // No more fields
                     continue;
                 _scanner.skip(1); // Skip :
                 // query_op
-                _scanner.readWord(dsg.queryoper, ":,|");
+                _scanner.readWord(dsg.queryoper, word_delimiter);
                 if (_scanner.lookNext() != ':') // No more fields
                     continue;
                 _scanner.skip(1); // Skip :
                 // unit
-                _scanner.readWord(dsg.description, ":,|");
+                _scanner.readWord(dsg.description, word_delimiter);
                 if (_scanner.lookNext() != ':') // No more fields
                     continue;
                 _scanner.skip(1); // Skip :
@@ -974,19 +975,34 @@ void SmilesLoader::_readOtherStuff()
             }
             else
             {
-                std::string subscript, connectivity, flip;
-                while (_scanner.lookNext() != ':')
-                    subscript += _scanner.readChar();
-                _scanner.skip(1);
-
-                while (_scanner.lookNext() != '|' && _scanner.lookNext() != ':' && _scanner.lookNext() != ',')
-                    connectivity += readSgChar(_scanner);
-                // If ',' in field - it is both connectivity and flip
-                std::size_t pos = connectivity.find(',');
-                if (pos != std::string::npos)
+                QS_DEF(Array<char>, subscript);
+                QS_DEF(Array<char>, conn_arr);
+                std::string connectivity, flip;
+                subscript.clear();
+                conn_arr.clear();
+                _scanner.readWord(subscript, word_delimiter);
+                if (_scanner.lookNext() == ':')
                 {
-                    flip = connectivity.substr(pos + 1);
-                    connectivity = connectivity.substr(0, pos);
+                    _scanner.skip(1);
+                    _scanner.readWord(conn_arr, word_delimiter);
+                    if (conn_arr.find('#') >= 0)
+                    {
+                        // Possible encoded symbols. Try to decode
+                        BufferScanner word_scan{conn_arr};
+                        while (!word_scan.isEOF())
+                            connectivity += readSgChar(word_scan);
+                    }
+                    else
+                    {
+                        connectivity = conn_arr.ptr();
+                    }
+                    // If ',' in field - it is both connectivity and flip
+                    std::size_t pos = connectivity.find(',');
+                    if (pos != std::string::npos)
+                    {
+                        flip = connectivity.substr(pos + 1);
+                        connectivity = connectivity.substr(0, pos);
+                    }
                 }
 
                 // Set fields for SRU S-Group
@@ -994,7 +1010,7 @@ void SmilesLoader::_readOtherStuff()
                 {
                     RepeatingUnit& ru = static_cast<RepeatingUnit&>(sgroup);
                     if (subscript.size())
-                        ru.subscript.readString(connectivity.c_str(), true);
+                        ru.subscript.readString(subscript.ptr(), true);
                     if (connectivity == "ht")
                         ru.connectivity = RepeatingUnit::HEAD_TO_TAIL;
                     else if (connectivity == "hh")

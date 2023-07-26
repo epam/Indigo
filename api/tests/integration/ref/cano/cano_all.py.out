@@ -6872,7 +6872,7 @@ Database: ../../../../../data/molecules/basic/explicit_valence.sdf
 diborane (#1): [H]1[BH2][H][BH2]1
  (#2): C[O-2](C)(C)C
  (#3): [O]#C[Ru+]12345([H][Ru+]6789(C#[O])(C#[O])[C-]%10(C%11C=CC=CC=%11)[C]6(C6C=CC=CC=6)=[C]7(C6C=CC=CC=6)[C]8(C6C=CC=CC=6)=[C]9%10O[H]O[C]61[C-]2(C1C=CC=CC=1)[C]3(C1C=CC=CC=1)=[C]4(C1C=CC=CC=1)[C]5=6C1C=CC=CC=1)C#[O]
- (#4): [Li+].[2H][Al]([2H])([2H])[2H]
+ (#4): [Li+].[2H][Al]([2H])([2H])[2H] |SgD:1,2,3,4,5:MDLBG_FRAGMENT_CHARGE:-1::: :|
  (#5): [H+]
 Hcp1_d (#6): [H+].C1C=CC=CC=1
 Hv1_d (#7): [HH+].C1C=CC=CC=1

@@ -27,6 +27,7 @@
 #include <molecule/molecule_mass.h>
 #include <molecule/molecule_substructure_matcher.h>
 #include <molecule/molfile_loader.h>
+#include <molecule/molfile_saver.h>
 #include <molecule/query_molecule.h>
 #include <molecule/sdf_loader.h>
 #include <molecule/smiles_loader.h>
@@ -249,4 +250,74 @@ TEST_F(IndigoCoreFormatsTest, smiles_pol_sgroups_bracket)
     ASSERT_EQ(out.size(), 31);
     std::string str{out.ptr(), static_cast<std::size_t>(out.size())};
     ASSERT_STREQ(str.c_str(), "C1CCCCC1 |Sg:n:0,5,4,3,2,1::eu|");
+}
+
+TEST_F(IndigoCoreFormatsTest, smiles_pol_sgroups_gen)
+{
+    Molecule t_mol;
+
+    loadMolecule("CCCC |Sg:gen:0,1,2:|", t_mol);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 1);
+    SGroup& sg = t_mol.sgroups.getSGroup(0);
+    ASSERT_EQ(sg.sgroup_type, SGroup::SG_TYPE_GEN);
+    Array<char> out;
+    ArrayOutput std_out(out);
+    SmilesSaver saver(std_out);
+    saver.saveMolecule(t_mol);
+    ASSERT_EQ(out.size(), 20);
+    std::string str{out.ptr(), static_cast<std::size_t>(out.size())};
+    ASSERT_STREQ(str.c_str(), "CCCC |Sg:gen:0,1,2:|");
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_saver_issue)
+{
+    Molecule t_mol;
+
+    loadMolecule(R"(
+  -INDIGO-07262316452D
+
+  6  6  0  0  0  0  0  0  0  0999 V2000
+   -1.4617   -0.6508    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.3856   -0.8000    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+    2.5747    0.2706    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+    1.9239    1.7323    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.3327    1.5650    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  2  0  0  0  0
+  2  3  4  0  0  0  0
+  3  4  4  0  0  0  0
+  4  5  4  0  0  0  0
+  5  6  4  0  0  0  0
+  6  2  4  0  0  0  0
+M  STY  4   1 DAT   2 DAT   3 DAT   4 DAT
+M  SLB  4   1   1   2   2   3   3   4   4
+M  SAL   1  1   3
+M  SDT   1 MRV_IMPLICIT_H                                                       
+M  SDD   1     0.0000    0.0000    DA    ALL  1       1  
+M  SED   1 IMPL_H1
+M  SAL   2  1   4
+M  SDT   2 MRV_IMPLICIT_H                                                       
+M  SDD   2     0.0000    0.0000    DA    ALL  1       1  
+M  SED   2 IMPL_H1
+M  SAL   3  1   3
+M  SDT   3 MRV_IMPLICIT_H                                                       
+M  SDD   3     0.0000    0.0000    DA    ALL  1       1  
+M  SED   3 IMPL_H1
+M  SAL   4  1   4
+M  SDT   4 MRV_IMPLICIT_H                                                       
+M  SDD   4     0.0000    0.0000    DA    ALL  1       1  
+M  SED   4 IMPL_H1
+M  END
+)",
+                 t_mol);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 0);
+    Array<char> out;
+    ArrayOutput std_out(out);
+    MolfileSaver saver(std_out);
+    saver.saveMolecule(t_mol);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 2);
+    saver.saveMolecule(t_mol);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 4);
+    saver.saveMolecule(t_mol);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 6);
 }
