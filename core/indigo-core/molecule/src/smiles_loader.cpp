@@ -79,12 +79,14 @@ void SmilesLoader::loadQueryMolecule(QueryMolecule& mol)
 static char readSgChar(Scanner& scanner)
 {
     char c = scanner.readChar();
+    constexpr int min_ascii = 0;
+    constexpr int max_ascii = 127;
     if (c == '&' && scanner.lookNext() == '#') // Escaped char - &#code;
     {
         long long pos = scanner.tell();
         scanner.skip(1); // Skip '#'
         int code = scanner.tryReadUnsigned();
-        if (code >= 0 && code < 256 && scanner.lookNext() == ';')
+        if (code >= min_ascii && code <= max_ascii && scanner.lookNext() == ';')
         {
             std::string sgroup_field_sep = ",;:|{}";
             // Decode only ,;:|{}
@@ -861,7 +863,8 @@ void SmilesLoader::_readOtherStuff()
             if (sg_type == -1)
             {
                 char sg = _scanner.lookNext();
-                char pchar_sg_type[3];
+                constexpr size_t sg_type_max_len = 3;
+                char pchar_sg_type[sg_type_max_len];
                 std::string sg_type_str;
                 if (sg == 'n')
                 {
@@ -953,13 +956,14 @@ void SmilesLoader::_readOtherStuff()
                 if (c != '(') // No more fields
                     continue;
                 long long pos = _scanner.tell();
-                if (_scanner.length() - pos >= 4)
+                constexpr char minus1[] = "(-1)";
+                constexpr size_t minus1_len = sizeof(minus1) - 1;
+                if (_scanner.length() - pos >= minus1_len)
                 {
                     // check for (-1)
-                    char buf[5];
-                    _scanner.read(4, buf);
-                    buf[4] = 0;
-                    if (strncmp(buf, "(-1)", sizeof(buf)) == 0)
+                    char buf[minus1_len];
+                    _scanner.read(minus1_len, buf);
+                    if (strncmp(buf, minus1, sizeof(buf)) == 0)
                         continue;
                     _scanner.seek(pos, SEEK_SET);
                 }
@@ -1055,13 +1059,14 @@ void SmilesLoader::_readOtherStuff()
                 char br_type = _scanner.readChar();
                 c = _scanner.readChar();
                 int count = 0;
-                while (c == ',' && count < 8)
+                constexpr int bracket_coord_count = 8;
+                while (c == ',' && count < bracket_coord_count)
                 {
                     float tmp = _scanner.readFloat();
                     c = _scanner.readChar();
                     ++count;
                 }
-                if (count < 8)
+                if (count < bracket_coord_count)
                     throw Error("S-group bracket orientation format error");
                 if (c == ',')
                     c = _scanner.readChar();
