@@ -92,6 +92,13 @@ indigoModuleFn().then(indigo => {
         });
     }
 
+    // Version Info
+    {
+        test("versionInfo", "basic", () => {
+            assert(indigo.versionInfo().indexOf("wasm") !== -1);
+        });
+    }
+
     // Run tests
     run();
 });
