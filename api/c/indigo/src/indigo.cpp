@@ -74,7 +74,8 @@ CEXPORT const char* indigoVersionInfo()
         complier_platform.append(slice(os));
 
         char buf[1024];
-        snprintf(buf, sizeof(buf), R"({"majorVersion": %s, "minorVersion": %s, "devTag": %s, "commitHash": %s, "compilerPlatform": %s, "compilerVersion": %s})",
+        snprintf(buf, sizeof(buf),
+                 R"({"majorVersion": "%s", "minorVersion": "%s", "devTag": "%s", "commitHash": "%s", "compilerPlatform": "%s", "compilerVersion": "%s"})",
                  major_version.c_str(), minor_version.c_str(), dev_tag.c_str(), commit_hash.c_str(), complier_platform.c_str(), version.c_str());
         auto& tmp = self.getThreadTmpData();
         tmp.string.readString(buf, true);
