@@ -1,6 +1,6 @@
+import json
 import os
 import sys
-import json
 
 sys.path.append(
     os.path.normpath(
