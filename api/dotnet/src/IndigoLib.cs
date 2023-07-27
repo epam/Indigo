@@ -9,7 +9,7 @@ namespace com.epam.indigo
         public static extern byte* indigoVersion();
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern byte* indigoBaseVersion();
+        public static extern byte* indigoVersionInfo();
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern long indigoAllocSessionId();

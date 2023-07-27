@@ -142,10 +142,10 @@ std::string IndigoSession::version() const
     return _checkResultString(indigoVersion());
 }
 
-std::string IndigoSession::baseVersion() const
+std::string IndigoSession::versionInfo() const
 {
     setSessionId();
-    return _checkResultString(indigoBaseVersion());
+    return _checkResultString(indigoVersionInfo());
 }
 
 IndigoMolecule IndigoSession::loadMolecule(const std::string& data)

@@ -59,7 +59,7 @@ typedef unsigned char byte;
 /* System */
 
 CEXPORT const char* indigoVersion();
-CEXPORT const char* indigoBaseVersion();
+CEXPORT const char* indigoVersionInfo();
 
 // Allocate a new session. Each session has its own
 // set of objects created and options set up.

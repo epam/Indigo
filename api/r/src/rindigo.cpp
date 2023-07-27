@@ -38,10 +38,10 @@ REXPORT SEXP r_indigoVersion()
     return result;
 }
 
-REXPORT SEXP r_indigoBaseVersion()
+REXPORT SEXP r_indigoVersionInfo()
 {
     SEXP result = PROTECT(allocVector(STRSXP, 1));
-    _setStringToSTRSXP(&result, indigoBaseVersion());
+    _setStringToSTRSXP(&result, indigoVersionInfo());
     UNPROTECT(1);
     return result;
 }
