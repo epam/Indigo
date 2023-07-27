@@ -40,6 +40,7 @@ else
   old_version_python="${old_version}"
 fi 
 
+
 if ! [[ ${1} =~ ^[0-9]+\.[0-9]+\.[0-9]+[\.0-9]*$ ]]; then
   echo "First argument (version) should be in MAJOR.MINOR.PATCH[.BUILD] format!"
   exit 4
