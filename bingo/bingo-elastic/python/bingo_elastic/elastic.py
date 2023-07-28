@@ -199,7 +199,7 @@ class AsyncElasticRepository:
         :param retry_on_timeout:
         """
         self.index_type = index_type
-        self.index_name = index_type.value + index_name
+        self.index_name = index_type.value + "-" + index_name
 
         self.el_client = get_client(
             client_type=AsyncElasticsearch,
@@ -263,6 +263,8 @@ class AsyncElasticRepository:
         """
         Delete documents in index by a query filter.
         """
+        if not self.el_client.indices.exists(index=self.index_name):
+            return dict()
         query = compile_query(
             query_subject=query_subject,
             limit=limit,
@@ -307,7 +309,7 @@ class ElasticRepository:
         :param retry_on_timeout:
         """
         self.index_type = index_type
-        self.index_name = index_type.value + index_name
+        self.index_name = index_type.value + "-" + index_name
 
         self.el_client = get_client(
             client_type=Elasticsearch,
@@ -352,7 +354,6 @@ class ElasticRepository:
             options: str = "",
             **kwargs,
     ) -> Generator[IndigoRecord, None, None]:
-
         if limit > MAX_ALLOWED_SIZE:
             raise ValueError(
                 f"limit should less or equal to {MAX_ALLOWED_SIZE}"
@@ -377,6 +378,8 @@ class ElasticRepository:
         """
         Delete documents in index by a query filter.
         """
+        if not self.el_client.indices.exists(index=self.index_name):
+            return dict()
         query = compile_query(
             query_subject=query_subject,
             limit=limit,
