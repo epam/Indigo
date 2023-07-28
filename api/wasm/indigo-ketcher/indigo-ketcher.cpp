@@ -762,6 +762,7 @@ namespace indigo
     EMSCRIPTEN_BINDINGS(module)
     {
         emscripten::function("version", &version);
+        emscripten::function("versionInfo", &versionInfo);
         emscripten::function("convert", &convert);
         emscripten::function("aromatize", &aromatize);
         emscripten::function("dearomatize", &dearomatize);
