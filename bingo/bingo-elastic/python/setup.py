@@ -21,7 +21,7 @@ Operating System :: MacOS
 
 setup(
     name="bingo_elastic",
-    version="1.12.1",
+    version="1.12.1alpha",
     description="Cartridge that provides fast, scalable, and efficient storage and searching solution for chemical information using Elasticsearch",
     author="Ruslan Khyurri",
     author_email="ruslan_khyurri@epam.com",
