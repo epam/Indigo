@@ -199,7 +199,9 @@ class AsyncElasticRepository:
         :param retry_on_timeout:
         """
         self.index_type = index_type
-        self.index_name = index_type.value + "-" + index_name
+        self.index_name = index_type.value
+        if index_name:
+            self.index_name += "-" + index_name
 
         self.el_client = get_client(
             client_type=AsyncElasticsearch,
@@ -309,7 +311,9 @@ class ElasticRepository:
         :param retry_on_timeout:
         """
         self.index_type = index_type
-        self.index_name = index_type.value + "-" + index_name
+        self.index_name = index_type.value
+        if index_name:
+            self.index_name += "-" + index_name
 
         self.el_client = get_client(
             client_type=Elasticsearch,
