@@ -45,7 +45,7 @@ public class IndigoWeightSplitterNodeFactory extends NodeFactory<IndigoSplitterN
             BufferedDataContainer matchOutput = cons[0]; // matching rows
             BufferedDataContainer unmatchOutput = cons[1]; // not matching rows
             
-            float weight = 0;
+            double weight = 0;
             
             if (nodeSettings.molecularWeight.getBooleanValue()) {
                weight = io.molecularWeight();
@@ -56,10 +56,10 @@ public class IndigoWeightSplitterNodeFactory extends NodeFactory<IndigoSplitterN
             }
             
                
-            float error = 1e-7f; // let's put 1e-7 order as molecule's weight has that accuracy; 
+            double error = 1e-7f; // let's put 1e-7 order as molecule's weight has that accuracy; 
             
-            boolean equalMin = Math.abs(weight - (float)nodeSettings.minMolWeight.getDoubleValue()) <= error;
-            boolean equalMax = Math.abs(weight - (float)nodeSettings.maxMolWeight.getDoubleValue()) <= error;
+            boolean equalMin = Math.abs(weight - nodeSettings.minMolWeight.getDoubleValue()) <= error;
+            boolean equalMax = Math.abs(weight - nodeSettings.maxMolWeight.getDoubleValue()) <= error;
             
             boolean match = !((nodeSettings.minMolWeightActive.getBooleanValue() && 
                                                 (!equalMin && weight < nodeSettings.minMolWeight.getDoubleValue()))
