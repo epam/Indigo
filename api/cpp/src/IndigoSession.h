@@ -57,6 +57,7 @@ namespace indigo_cpp
         void setOption(const std::string& key, bool value) const;
 
         std::string version() const;
+        std::string versionInfo() const;
 
         static IndigoSessionPtr create();
 

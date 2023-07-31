@@ -27,6 +27,8 @@ import com.sun.jna.ptr.PointerByReference;
 public interface IndigoLib extends Library {
     String indigoVersion();
 
+    String indigoVersionInfo();
+
     long indigoAllocSessionId();
 
     void indigoSetSessionId(long id);

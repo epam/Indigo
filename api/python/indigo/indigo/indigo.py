@@ -314,6 +314,15 @@ class Indigo:
 
         return IndigoLib.checkResultString(self._lib().indigoVersion())
 
+    def versionInfo(self):
+        """Returns Indigo version info
+
+        Returns:
+            str: version info string
+        """
+
+        return IndigoLib.checkResultString(self._lib().indigoVersionInfo())
+
     def countReferences(self):
         """Returns the number of objects in pool
 
