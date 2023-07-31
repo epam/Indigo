@@ -19,6 +19,8 @@
 #ifndef __reaction_cdxml_saver__
 #define __reaction_cdxml_saver__
 
+#include <unordered_map>
+
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/obj_array.h"
@@ -33,7 +35,7 @@ namespace indigo
     class DLLEXPORT ReactionCdxmlSaver
     {
     public:
-        explicit ReactionCdxmlSaver(Output& output);
+        explicit ReactionCdxmlSaver(Output& output, bool is_binary = false);
         ~ReactionCdxmlSaver();
 
         void saveReaction(BaseReaction& rxn);
@@ -51,10 +53,12 @@ namespace indigo
         void _addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, int arrow_id);
         void _addScheme(MoleculeCdxmlSaver& molsaver);
         void _closeScheme(MoleculeCdxmlSaver& molsaver);
-        void _addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, Array<int>& reactants_ids, Array<int>& products_ids, ObjArray<Array<int>>& nodes_ids,
-                      int arrow_id);
-        void _generateCdxmlObjIds(BaseReaction& rxn, Array<int>& reactants_ids, Array<int>& products_ids, ObjArray<Array<int>>& nodes_ids, int& arrow_id);
+        void _addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, std::vector<int>& mol_ids, std::vector<std::vector<int>>& nodes_ids,
+                      const std::pair<int, int>& arrow_id);
+        void _generateCdxmlObjIds(BaseReaction& rxn, std::vector<int>& mol_ids, std::vector<int>& meta_ids, std::vector<std::vector<int>>& nodes_ids);
         void _addTitle(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver);
+        int _id;
+        bool _is_binary;
     };
 
 } // namespace indigo

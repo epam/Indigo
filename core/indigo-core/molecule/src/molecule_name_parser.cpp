@@ -1542,7 +1542,7 @@ void MoleculeNameParser::SmilesBuilder::_calcHydrogens(const Element& element, i
 
             if (hydrogens > 0)
             {
-                char buff[3];
+                char buff[12];
                 ::sprintf(buff, "%d", hydrogens);
                 buffer += "[" + element.second + "H" + buff + "]";
             }

@@ -55,3 +55,4 @@ if __name__ == "__main__":
     mol = mfile.read()
     detect(indigo, mol)
     mfile.close()
+    detect(indigo, "[#6]1-[#6]=[#6]-[#6]=[#6]-[#6]=1")

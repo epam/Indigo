@@ -5,6 +5,8 @@
 #include <gtest/gtest.h>
 
 #include <molecule/molecule.h>
+#include <reaction/reaction.h>
+#include <reaction/query_reaction.h>
 
 #define METHANE "C"
 #define BENZENE "C1=CC=CC=C1"
@@ -20,6 +22,15 @@ namespace indigo
         static void loadMolecule(const char* buf, Molecule& molecule);
         static void loadQueryMolecule(const char* buf, QueryMolecule& queryMolecule);
         bool substructureMatch(const char* targetString, const char* queryString);
+        std::string smilesLoadSaveLoad(const std::string& queryString, bool smarts = false);
+        static void loadReaction(const char* buf, Reaction& reaction);
+        static void loadQueryReaction(const char* buf, QueryReaction& queryReaction);
+        std::string saveReactionSmiles(Reaction& reaction);
+        std::string saveReactionSmiles(QueryReaction& queryReaction, bool smarts = false);
+        std::string saveRxnfle(Reaction& reaction);
+        std::string saveRxnfle(QueryReaction& queryReaction);
+        std::string saveReactionCML(Reaction& reaction);
+        std::string saverReactionJson(BaseReaction& reaction);
         static std::string dataPath(const char* dataPathSuffix);
     };
 }

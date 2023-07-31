@@ -5,7 +5,10 @@ if (APPLE)
 else()
 	project(bingo-oracle LANGUAGES CXX)
 
-	file (GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS "src/oracle/*.cpp")
+	file (GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/oracle/*.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/oracle/*.h
+	)
 
 	find_package(OCI REQUIRED)
 

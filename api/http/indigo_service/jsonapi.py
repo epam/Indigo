@@ -19,7 +19,7 @@
 import base64
 import functools
 from enum import Enum
-from typing import Dict, Generic, List, Optional, TypeVar, Union
+from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
 
 from fastapi import HTTPException
 from pydantic import BaseModel, conlist, validator
@@ -147,6 +147,7 @@ class CompoundObjectWithModifiers(CompoundObject):
 class CompoundModel(GenericModel, Generic[OutputFormatT]):
     compound: CompoundObjectWithModifiers
     outputFormat: OutputFormatT
+    options: Optional[Dict[str, Any]] = None
 
 
 class CompoundArrayModel(GenericModel, Generic[OutputFormatT]):
@@ -164,6 +165,7 @@ class CompoundPair(GenericModel, Generic[OutputFormatT]):
     compounds: conlist(CompoundObject, min_items=2, max_items=2)  # type: ignore # pylint: disable=line-too-long
     # fmt: on
     outputFormat: Optional[OutputFormatT]
+    options: Optional[Dict[str, Any]] = None
 
 
 CompoundRequest = Request[CompoundModelType, CompoundModel[CompoundFormat]]
@@ -265,6 +267,7 @@ class MatchModel(BaseModel):
     targets: List[CompoundObject]
     outputFormat: MatchOutputFormat
     flag: Optional[str] = "ALL"
+    options: Optional[Dict[str, Any]] = None
 
 
 MapAtomResponse = Response[MapAtomModelType, MapModel[MapAtomModel]]
@@ -328,6 +331,7 @@ class CommonBitsModelType(BaseModel):
 class CommonBitsModel(BaseModel):
     source: CompoundObject
     targets: List[CompoundObject]
+    options: Optional[Dict[str, Any]] = None
 
 
 class CommonBitsCountModel(BaseModel):
@@ -397,13 +401,11 @@ class SimilaritiesModel(BaseModel):
     metric: SimilarityMetric
     alpha: Optional[float] = 0.5
     beta: Optional[float] = 0.5
+    options: Optional[Dict[str, Any]] = None
 
     @validator("alpha", "beta")
-    def tversky_factor(
-        cls, factor: Optional[float]
-    ) -> Optional[
-        float
-    ]:  # pylint: disable=no-self-argument,no-self-use,line-too-long
+    # pylint: disable=no-self-argument,line-too-long
+    def tversky_factor(cls, factor: Optional[float]) -> Optional[float]:
         if factor is not None:
             if not 0 <= factor <= 1:
                 raise ValueError("alpha and beta should be between 0 and 1")
@@ -455,6 +457,7 @@ class ValidationResultsModelType(BaseModel):
 class ValidationModel(BaseModel):
     compound: CompoundObject
     validations: List[Validations]
+    options: Optional[Dict[str, Any]] = None
 
 
 class ValidationResultsModel(BaseModel):
@@ -486,7 +489,6 @@ def make_validation_response(
 
 
 class Descriptors(str, Enum):
-
     COUNT_ALLENE_CENTERS = "countAlleneCenters"
     COUNT_ATOMS = "countAtoms"
     COUNT_ATTACHMENT_POINTS = "countAttachmentPoints"
@@ -527,6 +529,7 @@ class DescriptorModelType(BaseModel):
 class DescriptorModel(BaseModel):
     compound: CompoundObject
     descriptors: List[Descriptors]
+    options: Optional[Dict[str, Any]] = None
 
 
 class DescriptorResultModelType(BaseModel):
@@ -598,7 +601,7 @@ rendering_formats = {
 class RenderModel(BaseModel):
     compound: CompoundObject
     outputFormat: str
-    options: Optional[Dict[str, Union[int, float, bool, str]]] = None
+    options: Optional[Dict[str, Any]] = None
 
 
 class RenderModelType(BaseModel):

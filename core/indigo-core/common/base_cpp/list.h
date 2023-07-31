@@ -43,11 +43,33 @@ namespace indigo
         {
         }
 
+        List(List<T>&& src) noexcept : _pool(src._pool), _size(src._size), _head(src._head), _tail(src._tail), _own_pool(src._own_pool)
+        {
+            src._size = 0;
+            src._head = -1;
+            src._tail = -1;
+            // src still pointing to _pool, but ensure not owning pool
+            src._own_pool = false;
+        }
+
         ~List()
         {
             clear();
             if (_own_pool)
                 delete _pool;
+        }
+
+        List<T>& operator=(List<T>&& src) noexcept
+        {
+            if (this != &src)
+            {
+                std::swap(_pool, src._pool);
+                std::swap(_size, src._size);
+                std::swap(_head, src._head);
+                std::swap(_tail, src._tail);
+                std::swap(_own_pool, src._own_pool);
+            }
+            return *this;
         }
 
         int add()
@@ -223,6 +245,7 @@ namespace indigo
 
     private:
         List(const List<T>&); // no implicit copy
+        List<T>& operator=(const List<T>&);
     };
 
 } // namespace indigo

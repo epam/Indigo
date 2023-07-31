@@ -73,7 +73,7 @@ SideIter SideAuto::begin()
         idx = _owner.catalystBegin();
         break;
     case BaseReaction::INTERMEDIATE:
-        idx = _owner.catalystBegin();
+        idx = _owner.intermediateBegin();
         break;
     case BaseReaction::UNDEFINED:
         idx = _owner.catalystBegin();
@@ -266,6 +266,22 @@ void BaseReaction::clearAAM()
         BaseMolecule& mol = *_allMolecules.at(i);
         mol.reaction_atom_mapping.zerofill();
     }
+}
+
+int BaseReaction::addSpecialCondition(int meta_idx, const Rect2f& bbox)
+{
+    _specialConditions.push(SpecialCondition(meta_idx, bbox));
+    return _specialConditions.size() - 1;
+}
+
+void BaseReaction::clearSpecialConditions()
+{
+    _specialConditions.clear();
+}
+
+const SpecialCondition& BaseReaction::specialCondition(int meta_idx) const
+{
+    return _specialConditions[meta_idx];
 }
 
 int BaseReaction::addReactantCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)

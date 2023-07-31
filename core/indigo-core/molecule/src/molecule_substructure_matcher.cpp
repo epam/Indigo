@@ -506,6 +506,8 @@ bool MoleculeSubstructureMatcher::matchQueryAtom(QueryMolecule::Atom* query, Bas
         return query->valueWithinRange(target.getAtomAromaticity(super_idx));
     case QueryMolecule::HIGHLIGHTING:
         return query->valueWithinRange((int)target.isAtomHighlighted(super_idx));
+    case QueryMolecule::ATOM_IMPLICIT_H:
+        return query->valueWithinRange(target.asMolecule().getImplicitH(super_idx));
     default:
         throw Error("bad query atom type: %d", query->type);
     }

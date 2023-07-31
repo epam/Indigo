@@ -79,8 +79,6 @@ void RSmilesLoader::_loadReaction()
 {
     _brxn->clear();
 
-    int i;
-
     std::unique_ptr<BaseMolecule> mols[3];
     std::unique_ptr<BaseMolecule>& rcnt = mols[0];
     std::unique_ptr<BaseMolecule>& ctlt = mols[1];
@@ -215,13 +213,13 @@ void RSmilesLoader::_loadReaction()
     c_fragments.clear_resize(ctlt->countComponents());
     p_fragments.clear_resize(prod->countComponents());
 
-    for (i = 0; i < r_fragments.size(); i++)
+    for (int i = 0; i < r_fragments.size(); i++)
         r_fragments[i] = i;
 
-    for (i = 0; i < c_fragments.size(); i++)
+    for (int i = 0; i < c_fragments.size(); i++)
         c_fragments[i] = i;
 
-    for (i = 0; i < p_fragments.size(); i++)
+    for (int i = 0; i < p_fragments.size(); i++)
         p_fragments[i] = i;
 
     bool have_highlighting = false;
@@ -377,7 +375,7 @@ void RSmilesLoader::_loadReaction()
                 int k = rcnt->vertexCount() + ctlt->vertexCount() + prod->vertexCount();
                 QS_DEF(Array<char>, label);
 
-                for (i = 0; i < k; i++)
+                for (int i = 0; i < k; i++)
                 {
                     label.clear();
 
@@ -413,12 +411,31 @@ void RSmilesLoader::_loadReaction()
                         else
                         {
                             if (_rxn != 0)
-                                (dynamic_cast<Molecule&>(*mols[group])).setPseudoAtom(idx, label.ptr());
+                            {
+                                Molecule& mol = dynamic_cast<Molecule&>(*mols[group]);
+                                const auto atomNumber = mol.getAtomNumber(idx);
+                                if (ELEM_MIN < atomNumber && atomNumber < ELEM_MAX)
+                                {
+                                    mol.setAlias(idx, label.ptr());
+                                }
+                                else
+                                {
+                                    mol.setPseudoAtom(idx, label.ptr());
+                                }
+                            }
                             else
                             {
                                 QueryMolecule& qmol = dynamic_cast<QueryMolecule&>(*mols[group]);
-                                qmol.resetAtom(idx, (QueryMolecule::Atom*)QueryMolecule::Atom::und(
-                                                        qmol.releaseAtom(idx), new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
+                                const auto atomNumber = qmol.getAtomNumber(idx);
+                                if (ELEM_MIN < atomNumber && atomNumber < ELEM_MAX)
+                                {
+                                    qmol.setAlias(idx, label.ptr());
+                                }
+                                else
+                                {
+                                    qmol.resetAtom(idx, (QueryMolecule::Atom*)QueryMolecule::Atom::und(
+                                                            qmol.releaseAtom(idx), new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label.ptr())));
+                                }
                             }
                         }
                     }
@@ -481,10 +498,8 @@ void RSmilesLoader::_loadReaction()
 
     for (int v = 0; v < 3; ++v)
     {
-        for (i = 0; i < fragments[v]->size(); i++)
+        for (int i = 0; i < fragments[v]->size(); i++)
         {
-            int j, k;
-
             if ((*fragments[v])[i] == -1)
                 continue;
 
@@ -494,7 +509,7 @@ void RSmilesLoader::_loadReaction()
             hl_atoms_frag.clear();
             hl_bonds_frag.clear();
 
-            for (j = i; j < fragments[v]->size(); j++)
+            for (int j = i; j < fragments[v]->size(); j++)
             {
                 std::unique_ptr<BaseMolecule> fragment;
 
@@ -511,7 +526,7 @@ void RSmilesLoader::_loadReaction()
 
                     mol->mergeWithMolecule(*fragment, 0);
 
-                    for (k = 0; k < fragment->vertexCount(); k++)
+                    for (int k = 0; k < fragment->vertexCount(); k++)
                     {
                         aam.push((*aams[v])[mapping[k]]);
                         if (ignorable_aams[v] != 0)
@@ -525,7 +540,7 @@ void RSmilesLoader::_loadReaction()
                         hl_atoms_frag.push(hl_atoms[idx]);
                     }
 
-                    for (k = 0; k < fragment->edgeCount(); k++)
+                    for (int k = 0; k < fragment->edgeCount(); k++)
                     {
                         const Edge& edge = fragment->getEdge(k);
 

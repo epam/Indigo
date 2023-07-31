@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/automapper.png" type="Manipulator">
+    <name>Reaction Automapper</name>
+    
+    <shortDescription>
+        
+    </shortDescription>
+    
+    <fullDescription>
+        <intro><p>Generates reaction atom-to-atom mappings (AAM).</p>
+		         	<p>
+			        <b>Supported types:</b> 
+			        <ul>
+					<li>Reaction:  String, Rxn, Smiles, CML</li>
+					<li>Query reaction:  String, Rxn, Smiles, SMARTS</li>
+					</ul>
+					</p>
+               <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p>
+        </intro>
+        
+        
+        <option name="Target Column">The column that contains the reactions.</option>
+        <option name="Append Column">Appends a new reaction column (with the name as specified in the text field) if checked, replaces the original column otherwise.</option>
+        <option name="Mode">
+			<ul>
+			<li>discard : discards the existing mapping entirely and considers only the existing reaction centers (the default)</li>
+			<li>keep    : keeps the existing mapping and maps unmapped atoms</li>
+			<li>alter   : alters the existing mapping, and maps the rest of the reaction but may change the existing mapping</li>
+			<li>clear   : removes the mapping from the reaction</li>
+			</ul>
+        </option>
+        <option name="Ignore charges">Skips atom charges from input structures.</option>
+        <option name="Ignore isotopes">Skips atom isotopes from input structures.</option>
+        <option name="Ignore radicals">Skips atom radicals from input structures.</option>
+        <option name="Ignore valence">Skips atom valence from input structures.</option>
+        
+        <option name="Input type">Treat input as: a reaction, a query reaction.</option>
+        <option name="Output reaction type">Result reaction column type.</option>
+        <option name="Input type">Treat input as: a reaction, a query reaction.</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms.</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+        <option name="Treat query reaction as SMARTS">Treat string input for reaction as SMARTS.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input Data">Table containing reactions to map.</inPort>
+        <outPort index="0" name="Valid Reactions">Table with the successfully mapped reactions.</outPort>
+        <outPort index="1" name="Invalid Reactions">Table with the reactions that mapped with errors.</outPort>
+    </ports>    
+</knimeNode>

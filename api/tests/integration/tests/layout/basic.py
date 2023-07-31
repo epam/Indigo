@@ -118,8 +118,8 @@ res = moleculeLayoutDiff(indigo, mol, "ind-617-test-fixed-1.mol")
 print("  mol Result: {}".format(res))
 res = moleculeLayoutDiff(indigo, mol2, "ind-617-test-fixed-2.mol")
 print("  mol2 Result: {}".format(res))
-mol2.saveMolfile(joinPathPy("out/ind-617-test-fixed-1.mol", __file__))
-mol.saveMolfile(joinPathPy("out/ind-617-test-fixed-2.mol", __file__))
+mol2.saveMolfile(joinPathPy("out/ind-617-test-fixed-2.mol", __file__))
+mol.saveMolfile(joinPathPy("out/ind-617-test-fixed-1.mol", __file__))
 # Ensure that coordinates have been changed
 if indigo.exactMatch(mol, mol2, "0.0000001"):
     sys.stderr.write("Error: Match should have failed")

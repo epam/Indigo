@@ -24,7 +24,7 @@ app.register_blueprint(common_api, url_prefix="/v2")
 swagger = Swagger(app)
 logging.basicConfig(
     stream=sys.stdout,
-    format=u"[%(asctime)s: %(levelname)-8s/%(filename)s:%(lineno)d]  %(message)s",
+    format="[%(asctime)s: %(levelname)-8s/%(filename)s:%(lineno)d]  %(message)s",
     level=app.config.get("LOG_LEVEL"),
 )
 
@@ -42,7 +42,8 @@ def run_server(port):
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
-    db_session.remove()
+    if db_session is not None:
+        db_session.remove()
 
 
 if __name__ == "__main__":
@@ -65,6 +66,6 @@ if __name__ == "__main__":
         help="Specify port",
     )
 
-    (options, args) = parser.parse_args()
+    options = parser.parse_args()
     if options.run_server:
         run_server(options.port)

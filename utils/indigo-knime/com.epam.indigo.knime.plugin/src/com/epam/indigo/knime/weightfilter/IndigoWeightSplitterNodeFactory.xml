@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/substructure.png" type="Manipulator" >
+  <name>Weight Splitter</name>
+    
+    <shortDescription>
+        
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>
+             <p>This node accepts a table with molecules and splits it into three sets, the first one with all rows
+             that satisfy the specified conditions, the second - with all the rest except rows with invalid data, the last one gathers all the rows with invalid data 
+             (with data which cannot be translated into indigo object for some reasons).</p>
+		        <p>
+		        <b>Supported types:</b> 
+		        <ul>
+				<li>Molecule:  String, SDF, Smiles, CML, Mol, InChI</li>
+				</ul>
+				</p>
+               <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p>
+        </intro>
+        
+        
+        <option name="Target column">The column that contains molecules.</option>
+        <option name="Append column">Name for the new column that contains weights/masses corresponding to molecules.</option>
+        <option name="Сriterion">The weight function to be used on Indigo molecules for comparsion.</option>
+        <option name="Bounds">The lower and upper bounds that need to be specified for the weight filter.</option>
+        <option name="Input type">Treat input as: a molecule.</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms.</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input data">Table containing molecules.</inPort>
+        <outPort index="0" name="Matched">Rows with molecules that satisfy the specified conditions.</outPort>
+        <outPort index="1" name="Unmatched">Rows with molecules that do not satisfy the specified conditions.</outPort>
+        <outPort index="2" name="Invalid input">Rows with invalid data: data cannot be translated into Indigo object.</outPort>
+    </ports>    
+</knimeNode>

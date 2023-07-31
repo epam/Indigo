@@ -2,16 +2,16 @@
 set -eux
 
 if [ "${1:-}" == "" ]; then
-  echo "Usage: ${0} MAJOR.MINOR.PATCH [suffix] [<revision_number>]"
+  echo "Usage: ${0} MAJOR.MINOR.PATCH[.BUILD] [suffix] [<revision_number>]"
   exit 1
 fi 
 
 root=$(realpath "$(dirname ${0})/..")
 
-if [ "$(git branch --show-current)" != "master" ]; then
-  echo "Version update should be done only on master!"
+if [[ $(git branch --show-current) != release* && $(git branch --show-current) != master ]]; then
+  echo "Version update should be done only on master or release/* branches!"
   exit 2
-fi 
+fi
 
 
 old_base_version=$(sed -n 1p ${root}/.ci/version.txt)
@@ -41,8 +41,8 @@ else
 fi 
 
 
-if ! [[ ${1} =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-  echo "First argument (version) should be in MAJOR.MINOR.PATCH format!"
+if ! [[ ${1} =~ ^[0-9]+\.[0-9]+\.[0-9]+[\.0-9]*$ ]]; then
+  echo "First argument (version) should be in MAJOR.MINOR.PATCH[.BUILD] format!"
   exit 4
 fi
 if [[ "${2:-}" != "" ]] && ! [[ ${2} =~ ^[a-z]+$ ]]; then
@@ -110,4 +110,4 @@ sed -i "s/${old_version}/${new_version}/g" ${root}/api/r/DESCRIPTION
 
 # JS
 sed -i "s/${old_version}/${new_version}/g" ${root}/api/wasm/indigo-ketcher/package.json
-sed -i "s/${old_version}/${new_version}/g" ${root}/utils/indigo-service-client/package.json
+sed -i "s/${old_version}/${new_version}/g" ${root}/utils/indigo-service/frontend/ui/package.json

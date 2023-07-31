@@ -1181,12 +1181,12 @@ dest_write_back_wide (pixman_iter_t *iter)
     case PIXMAN_DITHER_GOOD:
     case PIXMAN_DITHER_BEST:
     case PIXMAN_DITHER_ORDERED_BLUE_NOISE_64:
-	buffer = dither_apply_ordered (iter, dither_factor_blue_noise_64);
+	buffer = dither_apply_ordered (iter, (dither_factor_t)dither_factor_blue_noise_64);
 	break;
 
     case PIXMAN_DITHER_FAST:
     case PIXMAN_DITHER_ORDERED_BAYER_8:
-	buffer = dither_apply_ordered (iter, dither_factor_bayer_8);
+	buffer = dither_apply_ordered (iter, (dither_factor_t)dither_factor_bayer_8);
 	break;
     }
 

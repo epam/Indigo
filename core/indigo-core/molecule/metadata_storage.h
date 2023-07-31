@@ -18,6 +18,7 @@
 #ifndef __metadata_storage__
 #define __metadata_storage__
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -40,12 +41,14 @@ namespace indigo
     {
     public:
         DECL_ERROR;
+        void clone(const MetaDataStorage& other);
+        void append(const MetaDataStorage& other);
 
         using MetadataVector = std::vector<std::shared_ptr<MetaObject>>;
 
         virtual ~MetaDataStorage() = default;
 
-        void addMetaObject(MetaObject* pobj);
+        int addMetaObject(MetaObject* pobj);
 
         void resetMetaData()
         {
@@ -53,6 +56,7 @@ namespace indigo
             _plus_indexes.clear();
             _arrow_indexes.clear();
             _simple_object_indexes.clear();
+            _text_object_indexes.clear();
         }
 
         void resetReactionData();
@@ -63,7 +67,10 @@ namespace indigo
         }
 
         int getMetaCount(uint32_t meta_type) const;
+        int getNonChemicalMetaCount() const;
+
         const MetaObject& getMetaObject(uint32_t meta_type, int index) const;
+        int getMetaObjectIndex(uint32_t meta_type, int index) const;
 
     protected:
         MetadataVector _meta_data;

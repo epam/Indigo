@@ -25,7 +25,6 @@
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
-#include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_rgroups.h"
 #include "molecule/molecule_savers.h"
 #include "molecule/molecule_stereocenters.h"
@@ -47,6 +46,7 @@ SmilesSaver::SmilesSaver(Output& output)
     ignore_hydrogens = false;
     canonize_chiralities = false;
     write_extra_info = true;
+    chemaxon = true;
     _mol = 0;
     smarts_mode = false;
     inside_rsmiles = false;
@@ -536,7 +536,7 @@ void SmilesSaver::_saveMolecule()
             else if (_qmol != 0)
                 _writeSmartsAtom(v_idx, &_qmol->getAtom(v_idx), _atoms[v_idx].chirality, 0, false, false);
             else
-                throw Error("SMARTS format availble for query only!");
+                throw Error("SMARTS format available for query only!");
 
             QS_DEF(Array<int>, closing);
 
@@ -600,7 +600,7 @@ void SmilesSaver::_saveMolecule()
         }
     }
 
-    if (write_extra_info)
+    if (write_extra_info && chemaxon)
     {
         // Before we write the |...| block (ChemAxon's Extended SMILES),
         // we must clean up the mess we did with the attachment points
@@ -621,6 +621,7 @@ void SmilesSaver::_saveMolecule()
         _writePseudoAtoms();
         _writeHighlighting();
         _writeRGroups();
+        _writeSGroups();
         _writeRingBonds();
         _writeUnsaturated();
         _writeSubstitutionCounts();
@@ -972,6 +973,18 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         break;
     }
 
+    case QueryMolecule::ATOM_IMPLICIT_H: {
+        if (atom->value_min == 1 && atom->value_max == 100)
+        {
+            _output.printf("h");
+        }
+        else
+        {
+            _output.printf("h%d", atom->value_min);
+        }
+        break;
+    }
+
     case QueryMolecule::ATOM_UNSATURATION: {
         _output.printf("$([*,#1]=,#,:[*,#1])");
         break;
@@ -996,8 +1009,13 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         break;
     }
 
+    case QueryMolecule::ATOM_CONNECTIVITY: {
+        _output.printf("X%d", atom->value_min);
+        break;
+    }
+
     default: {
-        throw Error("Unknown atom attribute");
+        throw Error("Unknown atom attribute %d", atom->type);
         break;
     }
     }
@@ -1605,7 +1623,8 @@ void SmilesSaver::_writePseudoAtoms()
     {
         for (i = 0; i < _written_atoms.size(); i++)
         {
-            if (mol.isPseudoAtom(_written_atoms[i]) || (mol.isRSite(_written_atoms[i]) && mol.getRSiteBits(_written_atoms[i]) != 0))
+            if (mol.isAlias(_written_atoms[i]) || mol.isPseudoAtom(_written_atoms[i]) ||
+                (mol.isRSite(_written_atoms[i]) && mol.getRSiteBits(_written_atoms[i]) != 0))
                 break;
             if (_qmol != 0)
             {
@@ -1630,7 +1649,9 @@ void SmilesSaver::_writePseudoAtoms()
             _output.writeChar(';');
 
         if (mol.isPseudoAtom(_written_atoms[i]))
+        {
             writePseudoAtom(mol.getPseudoAtom(_written_atoms[i]), _output);
+        }
         else if (mol.isRSite(_written_atoms[i]) && mol.getRSiteBits(_written_atoms[i]) != 0)
         // ChemAxon's Extended SMILES notation for R-sites
         // and added support of multiple R-groups on one R-site
@@ -1645,7 +1666,13 @@ void SmilesSaver::_writePseudoAtoms()
             }
         }
         else if ((_qmol != 0) && (QueryMolecule::queryAtomIsSpecial(*_qmol, _written_atoms[i])))
+        {
             writeSpecialAtom(_written_atoms[i], _output);
+        }
+        else if (mol.isAlias(i))
+        {
+            writePseudoAtom(mol.getAlias(i), _output);
+        }
     }
 
     for (i = 0; i < _attachment_indices.size(); i++)
@@ -1828,6 +1855,57 @@ void SmilesSaver::_writeRingBonds()
     }
 }
 
+void SmilesSaver::_writeSGroupAtoms(const SGroup& sgroup)
+{
+    for (int i = 0; i < sgroup.atoms.size(); ++i)
+    {
+        if (i)
+            _output.printf(",");
+        _output.printf("%d", sgroup.atoms[i]);
+    }
+}
+
+void SmilesSaver::_writeSGroups()
+{
+    for (int i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
+    {
+        SGroup& sg = _bmol->sgroups.getSGroup(i);
+        if (!sg.atoms.size() || (sg.sgroup_type != SGroup::SG_TYPE_GEN && sg.sgroup_type != SGroup::SG_TYPE_SRU))
+            continue;
+        _startExtension();
+        _output.writeString("Sg:");
+        switch (sg.sgroup_type)
+        {
+        case SGroup::SG_TYPE_GEN:
+            _output.writeString("gen:");
+            _writeSGroupAtoms(sg);
+            _output.writeString(":");
+            break;
+        case SGroup::SG_TYPE_SRU: {
+            RepeatingUnit& ru = (RepeatingUnit&)sg;
+            _output.writeString("n:");
+            _writeSGroupAtoms(sg);
+            _output.printf(":%s:", ru.subscript.ptr() ? ru.subscript.ptr() : "");
+            switch (ru.connectivity)
+            {
+            case SGroup::HEAD_TO_TAIL:
+                _output.writeString("ht");
+                break;
+            case SGroup::HEAD_TO_HEAD:
+                _output.writeString("hh");
+                break;
+            default:
+                _output.writeString("eu");
+                break;
+            }
+        }
+        break;
+        default:
+            break;
+        }
+    }
+}
+
 void SmilesSaver::_writeRGroups()
 {
     if (_bmol->rgroups.getRGroupCount() > 0)
@@ -1990,15 +2068,19 @@ void SmilesSaver::_checkSRU()
     _polymer_indices.clear_resize(_bmol->vertexEnd());
     _polymer_indices.fffill();
 
+    if (chemaxon) // let's handle it in the extened block
+        return;
+
     int i, j, k;
 
     // check overlapping (particularly nested) blocks
     for (i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
     {
-        SGroup* sg = &_bmol->sgroups.getSGroup(i);
-        if (sg->sgroup_type == SGroup::SG_TYPE_SRU)
+        auto& ru = (RepeatingUnit&)_bmol->sgroups.getSGroup(i);
+
+        if (ru.sgroup_type == SGroup::SG_TYPE_SRU)
         {
-            Array<int>& atoms = sg->atoms;
+            Array<int>& atoms = ru.atoms;
 
             for (j = 0; j < atoms.size(); j++)
             {
@@ -2162,4 +2244,29 @@ void SmilesSaver::_writeRingCisTrans()
 const Array<int>& SmilesSaver::getSavedCisTransParities()
 {
     return _cis_trans_parity;
+}
+
+SmilesSaver::SMILES_MODE SmilesSaver::parseFormatMode(const std::string& format)
+{
+    if (format == "daylight")
+        return SMILES_MODE::SMILES_DAYLIGHT;
+    else if (format == "chemaxon")
+        return SMILES_MODE::SMILES_CHEMAXON;
+    else
+        throw Error("unknown SMILES format: %s, supported values: chemaxon, daylight", format.c_str());
+}
+
+void SmilesSaver::saveFormatMode(SmilesSaver::SMILES_MODE mode, std::string& output)
+{
+    switch (mode)
+    {
+    case SMILES_MODE::SMILES_CHEMAXON:
+        output = "chemaxon";
+        break;
+    case SMILES_MODE::SMILES_DAYLIGHT:
+        output = "daylight";
+        break;
+    default:
+        throw Error("unknown SMILES format mode: %d", mode);
+    }
 }

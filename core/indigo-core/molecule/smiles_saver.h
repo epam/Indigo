@@ -43,6 +43,11 @@ namespace indigo
     {
     public:
         DECL_ERROR;
+        enum class SMILES_MODE
+        {
+            SMILES_CHEMAXON = 0,
+            SMILES_DAYLIGHT
+        };
 
         SmilesSaver(Output& output);
         ~SmilesSaver();
@@ -55,6 +60,7 @@ namespace indigo
         bool ignore_hydrogens;
         bool canonize_chiralities;
         bool write_extra_info;
+        bool chemaxon;
         bool separate_rsites;
         bool rsite_indices_as_aam;
 
@@ -64,6 +70,8 @@ namespace indigo
 
         static void writePseudoAtom(const char* label, Output& out);
         void writeSpecialAtom(int aid, Output& out);
+        static SMILES_MODE parseFormatMode(const std::string& format);
+        static void saveFormatMode(SMILES_MODE mode, std::string& output);
 
         bool inside_rsmiles;
 
@@ -114,6 +122,9 @@ namespace indigo
         void _writePseudoAtoms();
         void _writeHighlighting();
         void _writeRGroups();
+        void _writeSGroups();
+        void _writeSGroupAtoms(const SGroup& sgroup);
+
         void _writeRingBonds();
         void _writeUnsaturated();
         void _writeSubstitutionCounts();

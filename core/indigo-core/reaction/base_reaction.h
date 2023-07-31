@@ -37,6 +37,16 @@ namespace indigo
     class QueryReaction;
     class BaseReaction;
 
+    struct SpecialCondition
+    {
+    public:
+        SpecialCondition(int idx, const Rect2f& box) : meta_idx(idx), bbox(box)
+        {
+        }
+        int meta_idx;
+        Rect2f bbox;
+    };
+
     class SideIter : public AutoIterator
     {
     public:
@@ -69,12 +79,13 @@ namespace indigo
     public:
         void copy(const ReactionBlock& other)
         {
-            indexes.copy(other.indexes);
-            arrows_to.copy(other.arrows_to);
+            reactants.copy(other.reactants);
+            products.copy(other.products);
+            arrow_index = other.arrow_index;
         }
-        Array<int> indexes;
-        Array<int> arrows_to;
-        int role;
+        Array<int> reactants;
+        Array<int> products;
+        int arrow_index;
     };
 
     class DLLEXPORT BaseReaction : public NonCopyable
@@ -197,6 +208,16 @@ namespace indigo
             return _types[index];
         }
 
+        int undefinedCount() const
+        {
+            return _undefinedCount;
+        }
+
+        int intermediateCount() const
+        {
+            return _intermediateCount;
+        }
+
         int reactantsCount() const
         {
             return _reactantCount;
@@ -208,6 +229,11 @@ namespace indigo
         int catalystCount() const
         {
             return _catalystCount;
+        }
+
+        int specialConditionsCount() const
+        {
+            return _specialConditions.size();
         }
 
         int reactionBlocksCount() const
@@ -270,6 +296,9 @@ namespace indigo
         int addCatalyst();
         int addIntermediate();
         int addUndefined();
+        int addSpecialCondition(int meta_idx, const Rect2f& bbox);
+        void clearSpecialConditions();
+        const SpecialCondition& specialCondition(int meta_idx) const;
 
         int addReactantCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
         int addProductCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
@@ -304,12 +333,14 @@ namespace indigo
         ObjArray<ReactionBlock> _reactionBlocks; // for multistep reactions only
 
         Array<int> _types;
+        Array<SpecialCondition> _specialConditions;
 
         int _reactantCount;
         int _productCount;
         int _catalystCount;
         int _intermediateCount;
         int _undefinedCount;
+        int _specialCount;
 
         int _nextElement(int type, int index);
 

@@ -353,7 +353,7 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _encodeBaseSGroup(mol, sa, mapping);
             _encodeString(sa.subscript);
             _encodeString(sa.sa_class);
-            byte packed = (sa.contracted & 0x01) | (sa.bond_connections.size() << 1);
+            byte packed = ((int)sa.contracted & 0x01) | (sa.bond_connections.size() << 1);
             _output->writeByte(packed);
             if (sa.bond_connections.size() > 0)
             {

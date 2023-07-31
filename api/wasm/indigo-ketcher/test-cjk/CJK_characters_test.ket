@@ -1,0 +1,39 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "type": "text",
+                "data": {
+                    "content": "{\"blocks\":[{\"key\":\"5u7k2\",\"text\":\"japanese_人類\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"8qcj5\",\"text\":\"korean_모든\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"bdoc9\",\"text\":\"chinese_traditional_鑑於\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"b3901\",\"text\":\"chinese_simplified_鉴于\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"33u6q\",\"text\":\"CJK_Unified_Ideographs_一丁\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"bha7c\",\"text\":\"CJK_Compatibility_Ideographs_豈類\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"dq2g5\",\"text\":\"CJK_Unified_Ideographs_Extension_A_㐀㐁\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"d40a8\",\"text\":\"Hangul_Syllables_가각\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"b7e4o\",\"text\":\"Hangul_Jamo_ᄀᄁ\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"acba7\",\"text\":\"Hiragana_ぁあ\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}},{\"key\":\"djffn\",\"text\":\"Katakana_゠ァジ\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
+                    "position": {
+                        "x": 24.075000000000003,
+                        "y": -12.4,
+                        "z": 0
+                    },
+                    "pos": [
+                        {
+                            "x": 24.075000000000003,
+                            "y": -12.4,
+                            "z": 0
+                        },
+                        {
+                            "x": 24.075000000000003,
+                            "y": -16.61666684150696,
+                            "z": 0
+                        },
+                        {
+                            "x": 30.56636123657227,
+                            "y": -16.61666684150696,
+                            "z": 0
+                        },
+                        {
+                            "x": 30.56636123657227,
+                            "y": -12.4,
+                            "z": 0
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

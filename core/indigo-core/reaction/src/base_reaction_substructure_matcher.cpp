@@ -140,7 +140,7 @@ bool BaseReactionSubstructureMatcher::find()
 }
 
 // Init data for reaction substructure search
-void BaseReactionSubstructureMatcher::_initMap(BaseReaction& reaction, int side, RedBlackMap<int, int>& aam_map)
+void BaseReactionSubstructureMatcher::_initMap(BaseReaction& reaction, int side, std::map<int, int>& aam_map)
 {
     int i, j;
     int* val;
@@ -158,8 +158,11 @@ void BaseReactionSubstructureMatcher::_initMap(BaseReaction& reaction, int side,
 
             if (aam_number != 0)
             {
-                if ((val = aam_map.at2(aam_number)) == 0)
-                    aam_map.insert(aam_number, i);
+                auto it = aam_map.find(aam_number);
+                val = it != aam_map.end() ? &(it->second) : nullptr;
+
+                if (!val)
+                    aam_map.emplace(aam_number, i);
                 else if (*val < 0)
                     (*val)--;
                 else
@@ -193,8 +196,13 @@ bool BaseReactionSubstructureMatcher::_checkAAM()
             aam2 = _target.getAAM(_matchers[i]->_current_molecule_2, k);
 
             if (aam1 > 0 && aam2 > 0)
-                if ((aam = _aam_core_first_side.at2(aam1)) != 0 && *aam != aam2)
+            {
+                auto it = _aam_core_first_side.find(aam1);
+                aam = it != _aam_core_first_side.end() ? &(it->second) : nullptr;
+
+                if (aam && *aam != aam2)
                     return false;
+            }
         }
     }
 
@@ -357,8 +365,10 @@ int BaseReactionSubstructureMatcher::_Matcher::nextPair()
         if (first_aam_1 > 0 && first_aam_2 > 0)
         {
             // Check the other side if needed
-            int* mol_1_idx_ss_ptr = _context._aam_to_second_side_1.at2(first_aam_1);
-            int* mol_2_idx_ss_ptr = _context._aam_to_second_side_2.at2(first_aam_2);
+            auto it_1 = _context._aam_to_second_side_1.find(first_aam_1);
+            int* mol_1_idx_ss_ptr = it_1 != _context._aam_to_second_side_1.end() ? &(it_1->second) : nullptr;
+            auto it_2 = _context._aam_to_second_side_2.find(first_aam_2);
+            int* mol_2_idx_ss_ptr = it_2 != _context._aam_to_second_side_2.end() ? &(it_2->second) : nullptr;
 
             if (mol_1_idx_ss_ptr == 0 && mol_2_idx_ss_ptr == 0)
                 // There is no pair for both atom
@@ -489,15 +499,18 @@ bool BaseReactionSubstructureMatcher::_Matcher::addPair(int mol1_idx, int mol2_i
 
                 if (aam1 > 0 && aam2 > 0)
                 {
-                    if ((aam = _context._aam_core_first_side.at2(aam1)) == 0)
+                    auto it = _context._aam_core_first_side.find(aam1);
+                    aam = it != _context._aam_core_first_side.end() ? &(it->second) : nullptr;
+
+                    if (!aam)
                     {
-                        _context._aam_core_first_side.insert(aam1, aam2);
+                        _context._aam_core_first_side.emplace(aam1, aam2);
                         _mapped_aams.push(aam1);
                     }
                     else if (*aam != aam2)
                     {
                         while (_mapped_aams.size() > 0)
-                            _context._aam_core_first_side.remove(_mapped_aams.pop());
+                            _context._aam_core_first_side.erase(_mapped_aams.pop());
                         return false;
                     }
                 }
@@ -535,7 +548,7 @@ void BaseReactionSubstructureMatcher::_Matcher::restore()
     _context._molecule_core_2[_selected_molecule_2] = -1;
 
     while (_mapped_aams.size() > 0)
-        _context._aam_core_first_side.remove(_mapped_aams.pop());
+        _context._aam_core_first_side.erase(_mapped_aams.pop());
 }
 
 int BaseReactionSubstructureMatcher::_Matcher::_embedding(Graph& subgraph, Graph& supergraph, int* core_sub, int* core_super, void* userdata)
@@ -584,8 +597,13 @@ bool BaseReactionSubstructureMatcher::_Matcher::_matchAtoms(Graph& subgraph, Gra
         {
             aam2 = self->_context._target.getAAM(self->_current_molecule_2, super_idx);
             if (aam2 != 0)
-                if ((aam = self->_context._aam_core_first_side.at2(aam1)) != 0 && *aam != aam2)
+            {
+                auto it = self->_context._aam_core_first_side.find(aam1);
+                aam = it != self->_context._aam_core_first_side.end() ? &(it->second) : nullptr;
+
+                if (aam && *aam != aam2)
                     return false;
+            }
         }
     }
 

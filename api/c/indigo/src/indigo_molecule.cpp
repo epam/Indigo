@@ -486,6 +486,8 @@ CEXPORT int indigoLoadMolecule(int source)
         loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
         loader.treat_stereo_as = self.treat_stereo_as;
         loader.ignore_bad_valence = self.ignore_bad_valence;
+        loader.dearomatize_on_load = self.dearomatize_on_load;
+        loader.arom_options = self.arom_options;
 
         std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
 
@@ -508,12 +510,14 @@ CEXPORT int indigoLoadQueryMolecule(int source)
 
         loader.stereochemistry_options = self.stereochemistry_options;
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
+        loader.dearomatize_on_load = self.dearomatize_on_load;
+        loader.arom_options = self.arom_options;
 
         std::unique_ptr<IndigoQueryMolecule> molptr = std::make_unique<IndigoQueryMolecule>();
 
         QueryMolecule& qmol = molptr->qmol;
 
-        loader.loadQueryMolecule(qmol);
+        loader.loadMolecule(qmol);
         molptr->copyProperties(loader.properties);
 
         return self.addObject(molptr.release());
@@ -1185,6 +1189,18 @@ CEXPORT int indigoCountRGroups(int molecule)
     {
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
         return mol.rgroups.getRGroupCount();
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoCopyRGroups(int molecule_from, int molecule_to)
+{
+    INDIGO_BEGIN
+    {
+        BaseMolecule& mol_from = self.getObject(molecule_from).getBaseMolecule();
+        BaseMolecule& mol_to = self.getObject(molecule_to).getBaseMolecule();
+        mol_from.rgroups.copyRGroupsFromMolecule(mol_to.rgroups);
+        return 0;
     }
     INDIGO_END(-1);
 }
@@ -3200,8 +3216,8 @@ CEXPORT int indigoGetSGroupDisplayOption(int sgroup)
     INDIGO_BEGIN
     {
         Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        if (sup.contracted > -1)
-            return sup.contracted;
+        if (sup.contracted > DisplayOption::Undefined)
+            return (int)sup.contracted;
 
         return 0;
     }
@@ -3213,7 +3229,7 @@ CEXPORT int indigoSetSGroupDisplayOption(int sgroup, int option)
     INDIGO_BEGIN
     {
         Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        sup.contracted = option;
+        sup.contracted = (DisplayOption)option;
 
         return 1;
     }

@@ -143,25 +143,25 @@ dearomatization: non-unique dearomatization: Dearomatization is not unique. Cann
 C5 H6 N2
 94.115 94.053 94.053 C5 H6 N2 C 63.81 H 6.43 N 29.77
 0.000 0.000 0.000  
-mass: Cannot calculate mass for structure with repeating units
-mass: Cannot calculate mass for structure with repeating units
-mass: Cannot calculate mass for structure with repeating units
-mass: Cannot calculate mass for structure with repeating units
+calculation error: Cannot calculate mass for structure with repeating units
+calculation error: Cannot calculate mass for structure with repeating units
+calculation error: Cannot calculate mass for structure with repeating units
+calculation error: Cannot calculate mass for structure with repeating units
 C2 H6(C H2)n
-mass: Cannot calculate mass for structure with repeating units
-mass: Cannot calculate mass for structure with repeating units
-mass: Cannot calculate mass for structure with repeating units
-mass: Cannot calculate mass for structure with repeating units
+calculation error: Cannot calculate mass for structure with repeating units
+calculation error: Cannot calculate mass for structure with repeating units
+calculation error: Cannot calculate mass for structure with repeating units
+calculation error: Cannot calculate mass for structure with repeating units
 C13 H28(C2 H4)n(C3 H6)k
 254.494
 254.297
 254.297
 C 84.95 H 15.05
 C18 H38
-mass: Cannot calculate mass for structure with repeating units
-mass: Cannot calculate mass for structure with repeating units
-mass: Cannot calculate mass for structure with repeating units
-mass: Cannot calculate mass for structure with repeating units
+calculation error: Cannot calculate mass for structure with repeating units
+calculation error: Cannot calculate mass for structure with repeating units
+calculation error: Cannot calculate mass for structure with repeating units
+calculation error: Cannot calculate mass for structure with repeating units
 C12 H26(C2 H4)n(C3 H6)k(C H2)n
 65.093
 65.039
@@ -173,21 +173,21 @@ C5 H5
 52.031
 C 92.26 H 7.74
 C4 H4
-mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
-mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
-mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
-mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+calculation error: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+calculation error: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+calculation error: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+calculation error: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
 C4 H4
 *** R-sites in gross formula ***
-mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
-mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
-mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
-mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+calculation error: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+calculation error: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+calculation error: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+calculation error: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
 C5 H5 R#
-mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
-mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
-mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
-mass: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+calculation error: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+calculation error: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+calculation error: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
+calculation error: Cannot calculate mass for structure with pseudoatoms, template atoms or RSites
 C5 H5
 *** Isotopic gross formula ***
 104.209

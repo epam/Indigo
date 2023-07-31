@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+#include <string>
 
 #include "base_cpp/properties_map.h"
 
@@ -38,6 +39,12 @@ void PropertiesMap::copy(PropertiesMap& other)
         insert(other.key(p), other.value(p));
     }
 }
+
+void PropertiesMap::insert(const char* key, const std::string& value)
+{
+    insert(key, value.c_str());
+}
+
 void PropertiesMap::insert(const char* key, const char* value)
 {
     if (_properties.find(key))

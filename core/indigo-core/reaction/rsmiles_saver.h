@@ -48,6 +48,7 @@ namespace indigo
         void saveQueryReaction(QueryReaction& reaction);
 
         bool smarts_mode;
+        bool chemaxon;
 
     protected:
         BaseReaction* _brxn;

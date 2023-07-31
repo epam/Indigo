@@ -16,10 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "base_cpp/scanner.h"
-#include "base_cpp/tlscont.h"
 #include <memory>
 
+#include "base_cpp/scanner.h"
+#include "base_cpp/tlscont.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_3d_constraints.h"
@@ -27,8 +27,6 @@
 #include "molecule/molfile_loader.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
-
-#include "base_cpp/multimap.h"
 
 #define STRCMP(a, b) strncmp((a), (b), strlen(b))
 
@@ -268,7 +266,7 @@ void MolfileLoader::_readCtab2000()
         // Atom label can be both left-bound or right-bound: "  N", "N  " or even " N ".
         char* buf = _strtrim(atom_label_array);
 
-        //#349: make 'isotope' field optional
+        // #349: make 'isotope' field optional
         try
         {
             atom_line.skip(3 - read_chars_atom_label);
@@ -855,10 +853,10 @@ void MolfileLoader::_readCtab2000()
                                 atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, 0)));
                         else if (rbcount == -2) // as drawn
                         {
-                            int k, rbonds = 0;
+                            int rbonds = 0;
                             const Vertex& vertex = _qmol->getVertex(atom_idx);
 
-                            for (k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
+                            for (int k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
                                 if (_qmol->getEdgeTopology(vertex.neiEdge(k)) == TOPOLOGY_RING)
                                     rbonds++;
 
@@ -1326,7 +1324,7 @@ void MolfileLoader::_readCtab2000()
                         if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_SUP)
                         {
                             Superatom& sup = (Superatom&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                            sup.contracted = 0;
+                            sup.contracted = DisplayOption::Expanded;
                         }
                     }
                 }
@@ -1479,14 +1477,7 @@ void MolfileLoader::_readCtab2000()
 
             if (_atom_types[atom_idx] == _ATOM_ELEMENT)
             {
-                int idx = _bmol->sgroups.addSGroup(SGroup::SG_TYPE_DAT);
-                DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(idx);
-
-                sgroup.atoms.push(atom_idx);
-                sgroup.name.readString("INDIGO_ALIAS", true);
-                sgroup.data.copy(alias);
-                sgroup.display_pos.x = _bmol->getAtomXyz(atom_idx).x;
-                sgroup.display_pos.y = _bmol->getAtomXyz(atom_idx).y;
+                _bmol->setAlias(atom_idx, alias.ptr());
             }
             else
             {
@@ -1938,8 +1929,7 @@ void MolfileLoader::_postLoad()
 
     if (_mol != 0)
     {
-        int k;
-        for (k = 0; k < _atoms_num; k++)
+        for (int k = 0; k < _atoms_num; k++)
             if (_hcount[k] > 0)
                 _mol->setImplicitH(k, _hcount[k] - 1);
     }
@@ -1987,8 +1977,7 @@ void MolfileLoader::_postLoad()
             }
         }
 
-        int k;
-        for (k = 0; k < _atoms_num; k++)
+        for (int k = 0; k < _atoms_num; k++)
         {
             int expl_h = 0;
 
@@ -2099,6 +2088,8 @@ void MolfileLoader::_postLoad()
              _bmol->rgroups.getRGroup(i).occurrence.push((1 << 16) | 0xFFFF);
     */
     _bmol->have_xyz = true;
+    MoleculeCIPCalculator cip;
+    cip.convertSGroupsToCIP(*_bmol);
 }
 
 void MolfileLoader::_readRGroups2000()
@@ -2636,7 +2627,11 @@ void MolfileLoader::_readCtab3000()
                         if (subst == -1)
                             _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, 0)));
                         else if (subst == -2)
-                            throw Error("Query substitution count as drawn is not supported yet (SUBST=%d)", subst);
+                        {
+                            _qmol->resetAtom(
+                                i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
+                                                            new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN, _qmol->getVertex(i).degree())));
+                        }
                         else if (subst > 0)
                             _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst,
                                                                                                                         (subst < 6 ? subst : 100))));
@@ -2674,8 +2669,19 @@ void MolfileLoader::_readCtab3000()
                         {
                             if (rb == -1)
                                 rb = 0;
+                            else if (rb == -2)
+                            {
+                                int rbonds = 0;
+                                const Vertex& vertex = _qmol->getVertex(i);
 
-                            if (rb > 1)
+                                for (int k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
+                                    if (_qmol->getEdgeTopology(vertex.neiEdge(k)) == TOPOLOGY_RING)
+                                        rbonds++;
+
+                                _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
+                                                                             new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbonds)));
+                            }
+                            else if (rb > 1)
                                 _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
                                                                              new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rb, (rb < 4 ? rb : 100))));
                             else
@@ -3002,28 +3008,28 @@ void MolfileLoader::_fillSGroupsParentIndices()
 {
     MoleculeSGroups& sgroups = _bmol->sgroups;
 
-    MultiMap<int, int> indices;
+    std::multimap<int, int> indices;
     // original index can be arbitrary, sometimes key is used multiple times
 
     for (auto i = sgroups.begin(); i != sgroups.end(); i++)
     {
         SGroup& sgroup = sgroups.getSGroup(i);
-        indices.insert(sgroup.original_group, i);
+        indices.emplace(sgroup.original_group, i);
     }
 
     // TODO: replace parent_group with parent_idx
     for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
     {
         SGroup& sgroup = sgroups.getSGroup(i);
-        const auto& set = indices.get(sgroup.parent_group);
-        if (set.size() == 1)
+        if (indices.count(sgroup.parent_group) == 1)
         {
+            const auto it = indices.find(sgroup.parent_group);
             // TODO: check fix
-            auto parent_idx = set.key(set.begin());
+            auto parent_idx = it->second;
             SGroup& parent_sgroup = sgroups.getSGroup(parent_idx);
             if (&sgroup != &parent_sgroup)
             {
-                sgroup.parent_idx = set.key(set.begin());
+                sgroup.parent_idx = it->second;
             }
             else
             {
@@ -3470,10 +3476,19 @@ void MolfileLoader::_readSGroup3000(const char* str)
         }
         else if (strcmp(entity.ptr(), "LABEL") == 0)
         {
+            bool has_quote = false;
             while (!scanner.isEOF())
             {
                 char c = scanner.readChar();
-                if (c == ' ')
+                if (c == '"')
+                {
+                    if (has_quote)
+                        break;
+                    else
+                        has_quote = true;
+                    continue;
+                }
+                if (c == ' ' && !has_quote)
                     break;
                 if (sup != 0)
                     sup->subscript.push(c);
@@ -3527,12 +3542,12 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 if (c == 'E')
                 {
                     if (sup != 0)
-                        sup->contracted = 0;
+                        sup->contracted = DisplayOption::Expanded;
                 }
                 else
                 {
                     if (sup != 0)
-                        sup->contracted = 1;
+                        sup->contracted = DisplayOption::Undefined;
                 }
             }
         }

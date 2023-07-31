@@ -5,7 +5,9 @@ project(bingo-core LANGUAGES CXX)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/core/bingo_version.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/core/bingo_version.h)
 
 file(GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/*.cpp)
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/core/*.h
+)
 
 add_library(${PROJECT_NAME} OBJECT ${${PROJECT_NAME}_SOURCES})
 target_link_libraries(${PROJECT_NAME}

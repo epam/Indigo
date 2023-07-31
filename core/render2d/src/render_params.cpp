@@ -69,8 +69,6 @@ void RenderParams::clear()
     relativeThickness = 1.0f;
     bondLineWidthFactor = 1.0f;
     rmode = RENDER_NONE;
-    mol.reset(nullptr);
-    rxn.reset(nullptr);
     rOpt.clear();
     cnvOpt.clear();
     clearArrays();

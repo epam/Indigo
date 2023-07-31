@@ -1,0 +1,157 @@
+>************************************************************
+1.1.13
+Indigo to Molecule node can produce InChI aux information. Thanks to Nico for suggestion: http://tech.knime.org/forum/indigo/inchi-conversion-into-2d-structure#comment-28514
+Combinatorial Reaction Enumeration node has an additional option with the products limit: https://groups.google.com/d/msg/indigo-general/TAqjxONDdco/ZDZmkHWCauMJ
+Indigo 1.1.10
+
+>************************************************************
+1.1.12
+Properties Node has "Highlighted atoms" and "Highlighted bonds" properties
+Highlighter Node to clear highlighting or to highlight specific atoms and bonds. Thanks to gkirsten and richards99: http://tech.knime.org/forum/indigo/selected-atoms-get-lost
+Substructure Counter Node can use counter column name from query table row. Thanks to Dr_Van_Nostrand: http://tech.knime.org/forum/indigo/substructure-match-counter
+
+>************************************************************
+1.1.11
+Indigo 1.1.8
+Tests were restored
+
+>************************************************************
+1.1.10
+Regression with Atom Replacer node when replacing R-groups. Thanks to Natasja and Simon: http://tech.knime.org/forum/indigo/indigo-atom-replacer-node
+Indigo 1.1.7.147: some bugs has been fixed including regression with R-groups labels
+
+>************************************************************
+1.1.9
+Problem with Feature Remover has been fixed: http://tech.knime.org/forum/indigo/problem-with-feature-remover
+Indigo 1.1.7: some bugs has been fixed
+
+>************************************************************
+1.1.8
+IndigoFingerprint node has an option to output values in the dense format: http://tech.knime.org/forum/indigo/molecule-fingerprint-to-string-converter
+Isomer Enumerator node: http://tech.knime.org/forum/indigo/isomer-enumerator-node-request
+
+>************************************************************
+1.1.7
+Atom numbering is the same now: http://tech.knime.org/forum/indigo/indigo-bug-in-handling-sdfs
+Indigo 1.1.6: A lot of changes in the indigo
+
+>************************************************************
+1.1.6
+Indigo 1.1.3: Mac 10.8 Support
+
+>************************************************************
+1.1.5
+JNA 3.4.0 -> JNA 3.4.1: http://tech.knime.org/forum/indigo/bundle-could-not-be-activated
+
+>************************************************************
+1.1.4
+Indigo has been updated to the version 1.1.
+
+>************************************************************
+1.1.3
+Fixed Murcko scaffold computation issue. Thanks to Hinnerk: https://groups.google.com/d/msg/indigo-bugs/Fvr4l8CQvAQ/aKsiafinbykJ
+Many issues with loading SGroups from Molfile has been fixed.
+"Highlight Reacting Centers" option was added. Thanks to James: http://tech.knime.org/forum/indigo/reaction-automapper-bond-highlighting
+AAM for query reactions bug was fixed.
+RGroup scaffold iteration bug was fixed. Thanks to Simon: http://tech.knime.org/forum/indigo/r-group-decomposer
+AAM Timeout option was added. Thanks to Daniel: http://groups.google.com/group/indigo-dev/browse_thread/thread/4430412b9864f3fd 
+new API was implemented for the RGroup Decomposer node. There are several important changes (molecules with no matches handling, high-symmetric systems correct processing etc.)
+
+>************************************************************
+1.1.2
+Fixed InChI computation caused KNIME application temintation. Thanks to Hinnerk: https://groups.google.com/d/msg/indigo-bugs/Fvr4l8CQvAQ/r_HYDxumALAJ
+Options for Tverksy metric for Similarity Node was restored. Thanks to Simon: http://tech.knime.org/forum/indigo/fingerprint-similarity-improvement-request
+Fixed memory issues with substructure matcher. Thanks to fab: http://tech.knime.org/forum/indigo/error-in-loop
+
+
+>************************************************************
+1.1.0.201202272004
+Indigo throwing exeptions bug was fixed. (Thanks to Linel, http://tech.knime.org/forum/indigo/changes-in-molecule-properties-node)
+CMF extended format was applied. (Thanks to Hinnerck, https://groups.google.com/group/indigo-bugs/browse_thread/thread/16faf897c090bc04)
+Transformation node bug was fixed (Thanks to Chris, http://tech.knime.org/forum/indigo/combinatorial-reaction-enumeration-node-bug-and-feature-requests)
+
+
+>************************************************************
+1.1.0.201202211836
+Fixed regression with automapper: http://tech.knime.org/forum/indigo/reaction-automapper-bug
+
+>************************************************************
+1.1.0.201202162303
+Old nodes compatibility was restored
+Cosmetic in node names, More convinient nodes order (Thanks to Simon http://tech.knime.org/forum/indigo/minor-change-to-the-order-of-the-indigo-directories)
+Molecules Transformation description was fixed (Thanks to Simon http://tech.knime.org/forum/indigo/molecule-transform-node-description-bug)
+Bug with incorrect molecules for Scaffold node was fixed (Thanks to Hinnerick https://groups.google.com/group/indigo-bugs/browse_thread/thread/16faf897c090bc04)
+Possible exceptions and runtime errors for molecules with incorrect valence were replaced by warnings(Thanks to Hinnerick)
+Bond replacer node now supports Reactions
+2d coordinates node was added (thanks to Simon http://tech.knime.org/forum/indigo/molecule-cleanup-node)
+New memory model was applied for IndigoDataCells. The new model is stable to huge data sets. (Thanks to Hinnerick and Steve http://tech.knime.org/forum/indigo/memory-errors-and-instability-after-nightly-update)
+
+
+>************************************************************
+1.1.0.201201312226
+Windows XP 32-bit rendering compatibility
+InChI conversion in both directions (but without stereochemistry yet)
+Combinatorial Reaction Enumeration
+Bond Replacer Node
+Icons
+
+
+>************************************************************
+1.1.0.201201261932  nightly build:
+Molecule transformation node
+Bug with highlighting was fixed
+Load from smarts parameter was added for query reactions and molecules
+Limit component number parameter was added for the Component Separator node
+Component Combiner node was added (supports Indigo Molecule and Query Molecule inputs)
+New parameters loading model was applied (convenience for appending new parameters)
+Reaction Builder node was implemented (supports Indigo Molecule and Query Molecule inputs) 
+Reaction Splitter node was implemented (supports Indigo Reaction and Query Reaction inputs)
+
+>************************************************************
+1.1.0.201201191806 nightly build:
+
+1. Bug with QueryReactionCell was fixed. Thanks to Simon http://tech.knime.org/forum/indigo/reaction-automapper-errors
+2. Reaction AAM ignore flags support was added.
+3. New filters for all the indigo nodes were added.
+4. Reaction support was added for the Substructure Matcher Node
+5. Cosmetic in all nodes dialogs
+6. Reaction support was added for the Hydrogen Adder node
+7. Reaction support was added for the Hydrogen Remover node
+8. Reaction support was added for the Aromatizer node
+9. Reaction support was added for the Dearomatizer node
+10. Reaction support was added for the Feature remover node
+11. Reaction support was added for the Indigo Fingerprint node
+12.  Reaction support was added for the Valence Checker node
+
+
+>************************************************************
+Changes in the version 1.0.0.0001075 from the nightly build:
+
+1. New translators nodes for converting RxnCell into Indigo cell and vice versa (query reactions are also supported).
+
+2. New Reaction Automapper node for automatic atom-to-atom mapping for reaction.
+
+3. There are additional options for Atom Replacer node: replace only highlighted atoms, replace only specific atom type. Thanks to Simon (richards99) for the suggestion: http://tech.knime.org/forum/indigo/atom-replacer-feature-request
+There are small bug currently in this node, but it will be fixed in the next nightly build.
+
+4. There is an additions option for Substructure Matcher: Align by query. Thanks to James (James Davidson) for the suggestion: http://tech.knime.org/forum/indigo/substructure-matcher-align-matched-structures
+
+5. Indigo Renderer is now set as non-default renderer for MolCell, SDFCell, CMLCell, SmilesCell, SmartsCell. Renderer can be selected by clicking right button on the column header in a table with molecules.
+
+6. Translator nodes now automatically find column to translate. It is not necessary to configure them unless there are some ambiguity. Also translator nodes now accept string values for input.
+
+7. Indigo Renderer now can render query molecules better. But currently produced image appears to be wider then is can be. Thanks Steve (s.roughley) for mentioning this: http://tech.knime.org/forum/indigo/substructure-match-counter-and-query-molecule-to-indigo-nodes-suggested-imporvements
+
+Fixed bug:
+
+1. "red-black tree: at(): key not found" exception when a lot of Indigo objects are used. Thanks to Simon (richards99) for providing this bug report: http://tech.knime.org/forum/indigo/atom-replacer-node-bug
+
+2. Minor bug was fixed in the dialog for Molecule Substructure Matcher.
+
+Plans for the nearest future:
+
+1. Add more nodes for reactions: reaction substructure search, combinatorial chemistry, reaction-based transformation of molecules.
+
+2. Add file readers and savers for reactions. There is a lack of reaction readers in the Knime core.
+
+3. Implement suggestions that wre gived here.

@@ -125,6 +125,12 @@ namespace indigo
                 {
                     return _checkResultString(indigoCanonicalSmiles(id()));
                 }
+
+                if (outputFormat == "chemical/x-chemaxon-cxsmiles")
+                    indigoSetOption("smiles-saving-format", "chemaxon");
+                else if (outputFormat == "chemical/x-daylight-smiles")
+                    indigoSetOption("smiles-saving-format", "daylight");
+
                 return _checkResultString(indigoSmiles(id()));
             }
             else if (outputFormat == "smarts" || outputFormat == "chemical/x-daylight-smarts")
@@ -138,6 +144,14 @@ namespace indigo
             else if (outputFormat == "cml" || outputFormat == "chemical/x-cml")
             {
                 return _checkResultString(indigoCml(id()));
+            }
+            else if (outputFormat == "cdxml" || outputFormat == "chemical/x-cdxml")
+            {
+                return _checkResultString(indigoCdxml(id()));
+            }
+            else if (outputFormat == "cdx" || outputFormat == "chemical/x-cdx")
+            {
+                return _checkResultString(indigoCdxBase64(id()));
             }
             else if (outputFormat == "inchi" || outputFormat == "chemical/x-inchi")
             {
@@ -677,7 +691,68 @@ namespace indigo
         return cppcodec::base64_rfc4648::encode(raw_ptr, size);
     }
 
-#ifdef __EMSCRIPTEN__
+    std::string reactionComponents(const std::string& data, const std::map<std::string, std::string>& options)
+    {
+        using namespace rapidjson;
+        Document result;
+        result.SetObject();
+        {
+            const IndigoSession session;
+            indigoSetOptions(options);
+            const auto reactionId = _checkResult(indigoLoadQueryReactionFromString(data.c_str()));
+            // reactants
+            {
+                Value reactants(kArrayType);
+                reactants.SetArray();
+                const auto reactantsIteratorId = _checkResult(indigoIterateReactants(reactionId));
+                while (const auto reactantId = _checkResult(indigoNext(reactantsIteratorId)))
+                {
+                    Value reactant(kStringType);
+                    reactant.SetString(_checkResultString(indigoSmiles(reactantId)), result.GetAllocator());
+                    reactants.PushBack(reactant, result.GetAllocator());
+                    _checkResult(indigoFree(reactantId));
+                }
+                result.AddMember("reactants", reactants, result.GetAllocator());
+                _checkResult(indigoFree(reactantsIteratorId));
+            }
+            // catalysts
+            {
+                Value catalysts(kArrayType);
+                catalysts.SetArray();
+                const auto catalystsIteratorId = _checkResult(indigoIterateCatalysts(reactionId));
+                while (const auto catalystId = _checkResult(indigoNext(catalystsIteratorId)))
+                {
+                    Value catalyst(kStringType);
+                    catalyst.SetString(_checkResultString(indigoSmiles(catalystId)), result.GetAllocator());
+                    catalysts.PushBack(catalyst, result.GetAllocator());
+                    _checkResult(indigoFree(catalystId));
+                }
+                result.AddMember("catalysts", catalysts, result.GetAllocator());
+                _checkResult(indigoFree(catalystsIteratorId));
+            }
+            // products
+            {
+                Value products(kArrayType);
+                products.SetArray();
+                const auto productsIteratorId = _checkResult(indigoIterateProducts(reactionId));
+                while (const auto productId = _checkResult(indigoNext(productsIteratorId)))
+                {
+                    Value product(kStringType);
+                    product.SetString(_checkResultString(indigoSmiles(productId)), result.GetAllocator());
+                    products.PushBack(product, result.GetAllocator());
+                    _checkResult(indigoFree(productId));
+                }
+                result.AddMember("products", products, result.GetAllocator());
+                _checkResult(indigoFree(productsIteratorId));
+            }
+            _checkResult(indigoFree(reactionId));
+        }
+        // Serialize results
+        StringBuffer buffer;
+        Writer<rapidjson::StringBuffer> writer(buffer);
+        result.Accept(writer);
+        return buffer.GetString();
+    }
 
     EMSCRIPTEN_BINDINGS(module)
     {
@@ -692,11 +767,9 @@ namespace indigo
         emscripten::function("calculateCip", &calculateCip);
         emscripten::function("calculate", &calculate);
         emscripten::function("render", &render);
+        emscripten::function("reactionComponents", &reactionComponents);
 
         emscripten::register_vector<int>("VectorInt");
         emscripten::register_map<std::string, std::string>("MapStringString");
-    }
-
-#endif
-
-} // namespace indigo
+    };
+}

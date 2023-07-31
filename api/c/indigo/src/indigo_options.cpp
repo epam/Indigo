@@ -18,6 +18,7 @@
 
 #include "indigo_internal.h"
 #include "molecule/molfile_saver.h"
+#include "molecule/smiles_saver.h"
 
 static void setStrValue(const char* source, char* dest, int len)
 {
@@ -36,6 +37,20 @@ static void indigoGetMolfileSavingMode(Array<char>& value)
 {
     Indigo& self = indigoGetInstance();
     MolfileSaver::saveFormatMode(self.molfile_saving_mode, value);
+}
+
+static void indigoSetSmilesSavingFormat(const char* mode)
+{
+    Indigo& self = indigoGetInstance();
+    self.smiles_saving_format = SmilesSaver::parseFormatMode(mode);
+}
+
+static void indigoGetSmilesSavingFormat(Array<char>& value)
+{
+    Indigo& self = indigoGetInstance();
+    std::string str_val;
+    SmilesSaver::saveFormatMode(self.smiles_saving_format, str_val);
+    value.readString(str_val.c_str(), true);
 }
 
 static void indigoSetFilenameEncoding(const char* encoding)
@@ -259,17 +274,21 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerBool("ignore-closing-bond-direction-mismatch", SETTER_GETTER_BOOL_OPTION(indigo.ignore_closing_bond_direction_mismatch));
     mgr->setOptionHandlerBool("ignore-bad-valence", SETTER_GETTER_BOOL_OPTION(indigo.ignore_bad_valence));
     mgr->setOptionHandlerBool("treat-x-as-pseudoatom", SETTER_GETTER_BOOL_OPTION(indigo.treat_x_as_pseudoatom));
+    mgr->setOptionHandlerBool("dearomatize-on-load", SETTER_GETTER_BOOL_OPTION(indigo.dearomatize_on_load));
     mgr->setOptionHandlerBool("aromatize-skip-superatoms", SETTER_GETTER_BOOL_OPTION(indigo.aromatize_skip_superatoms));
     mgr->setOptionHandlerBool("skip-3d-chirality", SETTER_GETTER_BOOL_OPTION(indigo.skip_3d_chirality));
     mgr->setOptionHandlerBool("deconvolution-aromatization", SETTER_GETTER_BOOL_OPTION(indigo.deconvolution_aromatization));
     mgr->setOptionHandlerBool("deco-save-ap-bond-orders", SETTER_GETTER_BOOL_OPTION(indigo.deco_save_ap_bond_orders));
     mgr->setOptionHandlerBool("deco-ignore-errors", SETTER_GETTER_BOOL_OPTION(indigo.deco_ignore_errors));
     mgr->setOptionHandlerString("molfile-saving-mode", indigoSetMolfileSavingMode, indigoGetMolfileSavingMode);
+    mgr->setOptionHandlerString("smiles-saving-format", indigoSetSmilesSavingFormat, indigoGetSmilesSavingFormat);
+
     mgr->setOptionHandlerInt("molfile-saving-no-chiral", SETTER_GETTER_INT_OPTION(indigo.molfile_saving_no_chiral));
     mgr->setOptionHandlerInt("molfile-saving-chiral-flag", SETTER_GETTER_INT_OPTION(indigo.molfile_saving_chiral_flag));
     mgr->setOptionHandlerBool("molfile-saving-skip-date", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_skip_date));
     mgr->setOptionHandlerBool("molfile-saving-add-stereo-desc", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_stereo_desc));
     mgr->setOptionHandlerBool("json-saving-add-stereo-desc", SETTER_GETTER_BOOL_OPTION(indigo.json_saving_add_stereo_desc));
+    mgr->setOptionHandlerBool("json-saving-pretty", SETTER_GETTER_BOOL_OPTION(indigo.json_saving_pretty));
     mgr->setOptionHandlerBool("molfile-saving-add-implicit-h", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_implicit_h));
     mgr->setOptionHandlerBool("smiles-saving-write-name", SETTER_GETTER_BOOL_OPTION(indigo.smiles_saving_write_name));
     mgr->setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding, indigoGetFilenameEncoding);

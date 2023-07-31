@@ -19,6 +19,8 @@
 #ifndef __bingo_context__
 #define __bingo_context__
 
+#include <map>
+
 #include "base_cpp/nullable.h"
 #include "bingo_version.h"
 #include "lzw/lzw_dictionary.h"
@@ -81,7 +83,7 @@ namespace indigo
 
         PtrArray<TautomerRule> tautomer_rules;
 
-        RedBlackMap<int, double> relative_atomic_mass_map;
+        std::map<int, double> relative_atomic_mass_map;
 
         void setLoaderSettings(MoleculeAutoLoader& loader);
         void setLoaderSettings(ReactionAutoLoader& loader);
