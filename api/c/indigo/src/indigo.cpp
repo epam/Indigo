@@ -64,8 +64,9 @@ CEXPORT const char* indigoVersionInfo()
             return value;
         };
 
-        const std::string major_version = slice(version.substr(0, parse(1).find_last_of(digits)));
-        const std::string minor_version = slice(parse(0).substr(parse(0).find_last_of(digits)));
+        const std::string base_version = slice(parse(0));
+        const std::string major_version = base_version.substr(0, base_version.find_last_of(".\\"));
+        const std::string minor_version = base_version.substr(base_version.find_last_of(".\\") + 1);
         const std::string dev_tag = slice(parse(0));
         const std::string commit_hash = slice(parse(0));
         std::string complier_platform = slice(parse(1));
