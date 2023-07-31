@@ -19,6 +19,8 @@
 #define __metadata_storage__
 
 #include <cstdint>
+#include <memory>
+#include <vector>
 
 #include "base_cpp/ptr_array.h"
 
@@ -42,9 +44,9 @@ namespace indigo
         void clone(const MetaDataStorage& other);
         void append(const MetaDataStorage& other);
 
-        virtual ~MetaDataStorage()
-        {
-        }
+        using MetadataVector = std::vector<std::shared_ptr<MetaObject>>;
+
+        virtual ~MetaDataStorage() = default;
 
         int addMetaObject(MetaObject* pobj);
 
@@ -59,7 +61,7 @@ namespace indigo
 
         void resetReactionData();
 
-        const PtrArray<MetaObject>& metaData() const
+        const MetadataVector& metaData() const
         {
             return _meta_data;
         }
@@ -71,11 +73,11 @@ namespace indigo
         int getMetaObjectIndex(uint32_t meta_type, int index) const;
 
     protected:
-        PtrArray<MetaObject> _meta_data; // TODO: should be replaced with list of unique_ptr
-        Array<int> _plus_indexes;
-        Array<int> _arrow_indexes;
-        Array<int> _simple_object_indexes;
-        Array<int> _text_object_indexes;
+        MetadataVector _meta_data;
+        std::vector<int> _plus_indexes;
+        std::vector<int> _arrow_indexes;
+        std::vector<int> _simple_object_indexes;
+        std::vector<int> _text_object_indexes;
     };
 }
 #endif

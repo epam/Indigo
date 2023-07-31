@@ -81,7 +81,7 @@ void ReactionJsonSaver::saveReactionWithMetaData(BaseReaction& rxn, BaseMolecule
     for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
         merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
 
-    merged.meta().clone(rxn.meta());
+    merged.meta() = rxn.meta();
     StringBuffer s;
     JsonWriter writer(pretty_json);
     writer.Reset(s);
