@@ -1,1 +1,9 @@
+**/bin/
+**/target/
+**/build/
+**/.flattened-pom.xml
+
+# Mac finder stuff
+*.DS_Store
+
 com.epam.indigo.knime.plugin/bin

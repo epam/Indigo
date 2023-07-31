@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature id="com.epam.indigo.knime.feature" version="0.0.0">
+       <category name="indigo-knime" />
+   </feature>
+   <feature id="com.epam.indigo.knime.feature.source" version="0.0.0">
+       <category name="indigo-knime" />
+   </feature>
+
+   <category-def name="indigo-knime" label="Build artifacts from indigo-knime">
+       <description>Build artifacts from indigo-knime</description>
+   </category-def>
+</site>
