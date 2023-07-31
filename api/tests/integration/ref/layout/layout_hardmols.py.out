@@ -31,7 +31,7 @@ C12C3C4C5C6C7C8C9=C%10C%11=C%12C%13=C%14C%15C%16C%17=C%18C=%15C%12=C%10C%10=C%18
 ../../../../../data/molecules/chebi/ChEBI_9022_fixed.mol
 C12C3C4=C5C(=C6C7C(=C([W])C([W])=C6[W])C([W])=C6C([W])=C8C(=C9C%10C%11C%12=C%13C%14=C%15C(=C%12C=3C(=C6C4=7)C=%118)C=1C1C(C(=C([W])C3C=1C%15=C1C4C6=C(C([W])=C7C([W])=C([W])C([W])=C8C7=C6C6C(=C8[W])C([W])=C7C([W])=C(C([W])=C9[W])C=%10C%13=C7C=6C%14=4)C([W])=C1C=3[W])[W])=C([W])C2=C5[W])[W])[W]
 ../../../../../data/molecules/chebi/issue230.mol
-C1=CC2C[C@H]3[C@]4([H])[C@@](CCN3C)(CCCC4)C=2C=C1OC |&1:4,5,7,r|
+C1=CC2C[C@H]3[C@]4([H])[C@@](CCN3C)(CCCC4)C=2C=C1OC |&1:4,5,7,r,SgD:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20:MDLBG_FRAGMENT_STEREO:racemate::: :|
 *** Layout with timeout ***
 layout-max-iterations: 1
 layout-max-iterations: 2

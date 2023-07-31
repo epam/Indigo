@@ -128,10 +128,12 @@ int Scanner::readInt(void)
     return result;
 }
 
-int Scanner::readUnsigned()
+// Try to read unsigned int. Return readed value, on error return -1 and restore position
+int Scanner::tryReadUnsigned()
 {
     int result = 0;
     bool was_digit = false;
+    long long pos = tell();
 
     while (!isEOF())
     {
@@ -147,8 +149,19 @@ int Scanner::readUnsigned()
             break;
         }
     }
-
     if (!was_digit)
+    {
+        seek(pos, SEEK_SET);
+        return -1;
+    }
+
+    return result;
+}
+
+int Scanner::readUnsigned()
+{
+    int result = tryReadUnsigned();
+    if (result < 0)
         throw Error("readUnsigned(): no digits");
 
     return result;
