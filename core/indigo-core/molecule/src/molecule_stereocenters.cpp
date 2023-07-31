@@ -862,9 +862,11 @@ bool MoleculeStereocenters::haveAllAndAny()
 
 bool MoleculeStereocenters::haveEnhancedStereocenter()
 {
-    for (auto i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
+    for (const auto& pair : _stereocenters)
     {
-        if (_stereocenters.value(i).type == ATOM_OR || _stereocenters.value(i).type == ATOM_AND)
+        const _Atom& atom = pair.second;
+
+        if (atom.type == ATOM_OR || atom.type == ATOM_AND)
         {
             return true;
         }
