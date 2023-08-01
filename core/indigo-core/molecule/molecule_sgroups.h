@@ -150,6 +150,7 @@ namespace indigo
         char tag; // tag
         bool isMrv_implicit();
         void setMrv_implicit(int atom_idx, const char* sdata);
+
     private:
         DataSGroup(const DataSGroup&);
     };
