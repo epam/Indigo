@@ -80,6 +80,32 @@ void convert_xyz_to_string(Vec3f& xyz, std::stringstream& coords)
     write_c(xyz.z, coords);
 }
 
+/*
+ * Remove added implicit sgroups
+ */
+void _removeImplicitSGroups(BaseMolecule& mol, std::list<int>& implicit_sgroups_indexes)
+{
+    for (int idx : implicit_sgroups_indexes)
+    {
+        SGroup& sg = mol.sgroups.getSGroup(idx);
+        if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
+        {
+            DataSGroup& dsg = static_cast<DataSGroup&>(sg);
+            if (dsg.isMrv_implicit())
+            {
+                mol.sgroups.remove(idx);
+            }
+            else
+            {
+                throw MolfileSaver::Error("internal: wanted mrv_implicit sgroup but got other");
+            }
+        }
+        else
+        {
+            throw MolfileSaver::Error("internal: wanted data sgroup but got other");
+        }
+    }
+}
 void MolfileSaver::saveBaseMolecule(BaseMolecule& mol)
 {
     _saveMolecule(mol, mol.isQueryMolecule());
@@ -352,6 +378,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
     int i;
     int iw = 1;
     QS_DEF(Array<char>, buf);
+    std::list<int> implicit_sgroups_indexes;
 
     _atom_mapping.clear_resize(mol.vertexEnd());
     _bond_mapping.clear_resize(mol.edgeEnd());
@@ -471,18 +498,11 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             int sg_idx;
 
             sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
-            DataSGroup& sgroup = (DataSGroup&)mol.sgroups.getSGroup(sg_idx);
+            implicit_sgroups_indexes.push_front(sg_idx);
+            DataSGroup& sgroup = static_cast<DataSGroup&>(mol.sgroups.getSGroup(sg_idx));
 
-            sgroup.atoms.push(i);
-
-            QS_DEF(Array<char>, tmp_buf);
-            ArrayOutput tmp_out(tmp_buf);
-            tmp_out.printf("IMPL_H%d", hcount);
-            tmp_buf.push(0);
-            sgroup.data.readString(tmp_buf.ptr(), true);
-
-            sgroup.name.readString("MRV_IMPLICIT_H", true);
-            sgroup.detached = true;
+            std::string sdata = "IMPL_H" + std::to_string(hcount);
+            sgroup.setMrv_implicit(i, sdata.c_str());
         }
 
         if (radical > 0)
@@ -786,7 +806,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
             {
-                Superatom& sup = (Superatom&)sgroup;
+                Superatom& sup = static_cast<Superatom&>(sgroup);
                 if (sup.bond_connections.size() > 0)
                 {
                     for (int j = 0; j < sup.bond_connections.size(); j++)
@@ -827,7 +847,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
             {
-                DataSGroup& dsg = (DataSGroup&)sgroup;
+                DataSGroup& dsg = static_cast<DataSGroup&>(sgroup);
 
                 const char* name = dsg.name.ptr();
                 if (name != 0 && strlen(name) > 0)
@@ -904,7 +924,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
             {
-                RepeatingUnit& ru = (RepeatingUnit&)sgroup;
+                RepeatingUnit& ru = static_cast<RepeatingUnit&>(sgroup);
                 if (ru.connectivity == SGroup::HEAD_TO_HEAD)
                     out.printf(" CONNECT=HH");
                 else if (ru.connectivity == SGroup::HEAD_TO_TAIL)
@@ -922,7 +942,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
             {
-                MultipleGroup& mg = (MultipleGroup&)sgroup;
+                MultipleGroup& mg = static_cast<MultipleGroup&>(sgroup);
                 if (mg.parent_atoms.size() > 0)
                 {
                     out.printf(" PATOMS=(%d", mg.parent_atoms.size());
@@ -940,6 +960,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             }
         }
         output.writeStringCR("M  V30 END SGROUP");
+        _removeImplicitSGroups(mol, implicit_sgroups_indexes);
     }
 
     output.writeStringCR("M  V30 END CTAB");
@@ -1091,6 +1112,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
     QS_DEF(Array<int[2]>, substitution_count);
     QS_DEF(Array<int[2]>, ring_bonds);
     QS_DEF(Array<int>, aliases);
+    std::list<int> implicit_sgroups_indexes;
 
     _atom_mapping.clear_resize(mol.vertexEnd());
     _bond_mapping.clear_resize(mol.edgeEnd());
@@ -1282,19 +1304,11 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             int sg_idx;
 
             sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
-            DataSGroup& sgroup = (DataSGroup&)mol.sgroups.getSGroup(sg_idx);
+            implicit_sgroups_indexes.push_front(sg_idx);
+            DataSGroup& sgroup = static_cast<DataSGroup&>(mol.sgroups.getSGroup(sg_idx));
 
-            sgroup.atoms.push(i);
-
-            QS_DEF(Array<char>, tmp_buf);
-            ArrayOutput tmp_out(tmp_buf);
-            tmp_buf.clear();
-            tmp_out.printf("IMPL_H%d", hydrogens_count);
-            tmp_buf.push(0);
-            sgroup.data.readString(tmp_buf.ptr(), true);
-
-            sgroup.name.readString("MRV_IMPLICIT_H", true);
-            sgroup.detached = true;
+            std::string sdata = "IMPL_H" + std::to_string(hydrogens_count);
+            sgroup.setMrv_implicit(i, sdata.c_str());
 
             hydrogens_count = 0;
         }
@@ -1768,6 +1782,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             }
         }
     }
+    _removeImplicitSGroups(mol, implicit_sgroups_indexes);
 }
 
 void MolfileSaver::_writeFormattedString(Output& output, Array<char>& str, int length)

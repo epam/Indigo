@@ -148,6 +148,8 @@ namespace indigo
         int num_chars; // number of characters
         int dasp_pos;
         char tag; // tag
+        bool isMrv_implicit();
+        void setMrv_implicit(int atom_idx, const char* sdata);
     private:
         DataSGroup(const DataSGroup&);
     };

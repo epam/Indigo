@@ -273,7 +273,7 @@ TEST_F(IndigoCoreFormatsTest, mol_saver_issue_1200)
 {
     Molecule t_mol;
 
-    loadMolecule(R"(
+    const char* mol = R"(
   -INDIGO-07262316452D
 
   6  6  0  0  0  0  0  0  0  0999 V2000
@@ -308,16 +308,18 @@ M  SDT   4 MRV_IMPLICIT_H
 M  SDD   4     0.0000    0.0000    DA    ALL  1       1  
 M  SED   4 IMPL_H1
 M  END
-)",
-                 t_mol);
+)";
+    loadMolecule(mol, t_mol);
     ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 0);
     Array<char> out;
     ArrayOutput std_out(out);
     MolfileSaver saver(std_out);
     saver.saveMolecule(t_mol);
-    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 2);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 0);
+    saver.mode = MolfileSaver::MODE_2000;
     saver.saveMolecule(t_mol);
-    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 4);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 0);
+    saver.mode = MolfileSaver::MODE_3000;
     saver.saveMolecule(t_mol);
-    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 6);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 0);
 }
