@@ -148,9 +148,9 @@ namespace indigo
         int num_chars; // number of characters
         int dasp_pos;
         char tag; // tag
-        static const char* mrv_implicit_h;
-        static const char* impl_prefix;
-        static const size_t impl_prefix_len;
+        static constexpr char mrv_implicit_h[] = "MRV_IMPLICIT_H";
+        static constexpr char impl_prefix[] = "IMPL_H";
+        static constexpr size_t impl_prefix_len = sizeof(impl_prefix) - 1;
         bool isMrv_implicit();
         void setMrv_implicit(int atom_idx, int hydrogens_count);
 

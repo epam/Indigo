@@ -82,10 +82,6 @@ DataSGroup::~DataSGroup()
 {
 }
 
-const char* DataSGroup::mrv_implicit_h = "MRV_IMPLICIT_H";
-const char* DataSGroup::impl_prefix = "IMPL_H";
-const size_t DataSGroup::impl_prefix_len = sizeof(DataSGroup::impl_prefix) - 1;
-
 bool DataSGroup::isMrv_implicit()
 {
     return name.size() == sizeof(mrv_implicit_h) && strncmp(name.ptr(), mrv_implicit_h, name.size()) == 0;
