@@ -500,9 +500,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
             implicit_sgroups_indexes.push_front(sg_idx);
             DataSGroup& sgroup = static_cast<DataSGroup&>(mol.sgroups.getSGroup(sg_idx));
-
-            std::string sdata = "IMPL_H" + std::to_string(hcount);
-            sgroup.setMrv_implicit(i, sdata.c_str());
+            sgroup.setMrv_implicit(i, hcount);
         }
 
         if (radical > 0)
@@ -1306,9 +1304,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
             implicit_sgroups_indexes.push_front(sg_idx);
             DataSGroup& sgroup = static_cast<DataSGroup&>(mol.sgroups.getSGroup(sg_idx));
-
-            std::string sdata = "IMPL_H" + std::to_string(hydrogens_count);
-            sgroup.setMrv_implicit(i, sdata.c_str());
+            sgroup.setMrv_implicit(i, hydrogens_count);
 
             hydrogens_count = 0;
         }
