@@ -82,6 +82,9 @@ DataSGroup::~DataSGroup()
 {
 }
 
+constexpr char DataSGroup::mrv_implicit_h[];
+constexpr char DataSGroup::impl_prefix[];
+
 bool DataSGroup::isMrv_implicit()
 {
     return name.size() == sizeof(mrv_implicit_h) && strncmp(name.ptr(), mrv_implicit_h, name.size()) == 0;
