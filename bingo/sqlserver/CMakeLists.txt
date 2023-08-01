@@ -13,7 +13,7 @@ else()
 	
 		include(CSharpUtilities)
 	
-		file (GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS Source/*.cs)
+		file (GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS Source/*.cs ${CMAKE_CURRENT_SOURCE_DIR}/../../api/dotnet/src/IndigoException.cs)
 	
 		add_custom_target(before-${PROJECT_NAME}
 			COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:bingo-core-c> ${CMAKE_CURRENT_SOURCE_DIR}/Resources/
@@ -27,6 +27,7 @@ else()
 			VS_GLOBAL_AllowUnsafeBlocks true
 			VS_GLOBAL_AssemblyOriginatorKeyFile ${CMAKE_CURRENT_SOURCE_DIR}/indigo.snk
 			VS_GLOBAL_SignAssembly true
+			VS_GLOBAL_RootNamespace indigo
 			VS_DOTNET_REFERENCES "System;System.Data;System.Xml"
 			DOTNET_TARGET_FRAMEWORK_VERSION v3.5
 		)
