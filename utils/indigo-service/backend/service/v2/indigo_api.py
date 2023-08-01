@@ -539,6 +539,24 @@ def info():
         {"Content-Type": "application/json"},
     )
 
+def versionInfo():
+    """
+    Get information about Indigo version info
+    ---
+    tags:
+      - indigo
+    responses:
+      200:
+        description: JSON with Indigo version
+    """
+    indigo_api_logger.info("[REQUEST] /info")
+    indigo = indigo_init()
+    return (
+        jsonify({"Indigo": {"version_info": indigo.versionInfo()}}),
+        200,
+        {"Content-Type": "application/json"},
+    )
+
 
 @indigo_api.route("/aromatize", methods=["POST"])
 @check_exceptions
