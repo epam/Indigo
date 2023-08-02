@@ -1,23 +1,16 @@
-*** Testing string is readable ***
-{"majorVersion": "1.11", "minorVersion": "0", "devTag": "rc.1.45", "commitHash": "g03b004112", "compilerPlatform": "86_64-linux", "compilerVersion": "gnu-11.3.0"}
+*** Testing string is printable ***
+True
 *** Testing string is valid json ***
-{
-  "majorVersion": "1.11",
-  "minorVersion": "0",
-  "devTag": "rc.1.45",
-  "commitHash": "g03b004112",
-  "compilerPlatform": "86_64-linux",
-  "compilerVersion": "gnu-11.3.0"
-}
+True
 *** Testing string contains 'majorVersion' key ***
-1.11
+True
 *** Testing string contains 'minorVersion' key ***
-0
+True
 *** Testing string contains 'devTag' key ***
-rc.1.45
+True
 *** Testing string contains 'commitHash' key ***
-g03b004112
+True
 *** Testing string contains 'compilerVersion' key ***
-gnu-11.3.0
+True
 *** Testing string contains 'compilerPlatform' key ***
-86_64-linux
+True
