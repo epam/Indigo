@@ -36,7 +36,7 @@ def testMol(mol):
         if bond.topology() == indigo.RING and bond.bondOrder() == 2:
             bond.resetStereo()
     mol.resetSymmetricCisTrans()
-    base_smiles = mol.canonicalSmiles()
+    base_smiles = mol.smiles()
     perm_mol = indigo.loadMolecule(base_smiles)
     perm_smiles = perm_mol.canonicalSmiles()
     if perm_smiles != base_smiles:

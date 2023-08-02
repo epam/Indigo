@@ -51,7 +51,7 @@ def testScaffold(filename, mode, print_molfile):
     for item in deco.iterateDecomposedMolecules():
         print(item.decomposedMoleculeHighlighted().smiles())
         mol = item.decomposedMoleculeWithRGroups()
-        print("decomposed molecule: " + mol.canonicalSmiles())
+        print("decomposed molecule: " + mol.smiles())
         if print_molfile:
             prepareStructure(mol)
             print("decomposed molecule: " + mol.molfile())
@@ -65,7 +65,7 @@ def testScaffold(filename, mode, print_molfile):
                 frag = rg.iterateRGroupFragments().next()
                 print(
                     "  fragment #%s: %s"
-                    % (str(frag.index()), frag.canonicalSmiles())
+                    % (str(frag.index()), frag.smiles())
                 )
             else:
                 print("NO FRAGMENT")

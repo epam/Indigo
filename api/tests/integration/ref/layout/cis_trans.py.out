@@ -1,7 +1,7 @@
 Cis-trans check for inverse
-CCC(CP)=C1C=CC(=CC2=CC=CC=C2S(O)(=O)=O)C=C1.O=S=O |t:4,8|
-CCC(CP)=C1C=CC(=CC2=CC=CC=C2S(O)(=O)=O)C=C1.O=S=O |t:4,8|
-CCC(CP)=C1C=CC(=CC2=CC=CC=C2S(O)(=O)=O)C=C1.O=S=O |t:4,8|
+CCC(CP)=C1C=CC(=CC2=CC=CC=C2S(O)(=O)=O)C=C1.O=S=O
+CCC(CP)=C1C=CC(=CC2=CC=CC=C2S(O)(=O)=O)C=C1.O=S=O
+CCC(CP)=C1C=CC(=CC2=CC=CC=C2S(O)(=O)=O)C=C1.O=S=O
 Cis-trans check for bad angle
 COC1C=CC2=CC=CC=C2C=1/C=C1/CNCN(C)C/1=O
 COC1C=CC2=CC=CC=C2C=1/C=C1/CNCN(C)C/1=O

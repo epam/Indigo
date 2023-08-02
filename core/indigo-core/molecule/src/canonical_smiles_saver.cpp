@@ -36,6 +36,7 @@ CanonicalSmilesSaver::CanonicalSmilesSaver(Output& output) : SmilesSaver(output)
     ignore_invalid_hcount = false;
     ignore_hydrogens = true;
     canonize_chiralities = true;
+    write_extra_info = false;
     _initial_to_actual.clear();
     _initial_to_actual.emplace(0, 0);
     _aam_counter = 0;

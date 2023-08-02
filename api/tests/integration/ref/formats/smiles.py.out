@@ -42,7 +42,7 @@ SMILES saver: undefined atom number
 default smiles:
 CCCC |Sg:gen:0,1,2:|
 canonical smiles:
-CCCC |Sg:gen:0,1,2:|
+CCCC
 default smiles:
 CCCC |Sg:n:0,1,2:3-6:eu|
 canonical smiles:

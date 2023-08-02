@@ -27,7 +27,7 @@ indigo.setOption("molfile-saving-skip-date", True)
 
 
 def printMolfile(mol):
-    smiles = mol.canonicalSmiles()
+    smiles = mol.smiles()
     print("Smiles: " + smiles)
     for format in ["2000", "3000", "auto"]:
         print("Format: " + format)
@@ -35,7 +35,7 @@ def printMolfile(mol):
         molfile = mol.molfile()
         print(molfile)
         # Check correctness by loading molfile and saving into smiles
-        sm2 = indigo.loadMolecule(molfile).canonicalSmiles()
+        sm2 = indigo.loadMolecule(molfile).smiles()
         if smiles != sm2:
             sys.stderr.write(
                 "Error: smiles are different\n  %s\n  %s\n" % (smiles, sm2)

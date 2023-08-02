@@ -78,7 +78,7 @@ def replaceAttachmentPointsWithLayout(mol, offset):
 for item in deco.iterateDecomposedMolecules():
     print("Molecule: %s" % (item.decomposedMoleculeHighlighted().smiles()))
     mol = item.decomposedMoleculeWithRGroups()
-    print("  decomposed molecule: " + mol.canonicalSmiles())
+    print("  decomposed molecule: " + mol.smiles())
     print(
         "  mapped scaffold: "
         + item.decomposedMoleculeScaffold().canonicalSmiles()
@@ -91,7 +91,7 @@ for item in deco.iterateDecomposedMolecules():
                 "      fragment #"
                 + str(frag.index())
                 + ": "
-                + frag.canonicalSmiles()
+                + frag.smiles()
             )
             processRGroup(frag, "        ")
         else:
