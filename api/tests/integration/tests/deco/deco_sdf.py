@@ -64,8 +64,7 @@ def testScaffold(filename, mode, print_molfile):
             if rg.iterateRGroupFragments().hasNext():
                 frag = rg.iterateRGroupFragments().next()
                 print(
-                    "  fragment #%s: %s"
-                    % (str(frag.index()), frag.smiles())
+                    "  fragment #%s: %s" % (str(frag.index()), frag.smiles())
                 )
             else:
                 print("NO FRAGMENT")

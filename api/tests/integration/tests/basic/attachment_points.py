@@ -88,10 +88,7 @@ for item in deco.iterateDecomposedMolecules():
         if rg.iterateRGroupFragments().hasNext():
             frag = rg.iterateRGroupFragments().next()
             print(
-                "      fragment #"
-                + str(frag.index())
-                + ": "
-                + frag.smiles()
+                "      fragment #" + str(frag.index()) + ": " + frag.smiles()
             )
             processRGroup(frag, "        ")
         else:
