@@ -539,6 +539,7 @@ def info():
         {"Content-Type": "application/json"},
     )
 
+
 def versionInfo():
     """
     Get information about Indigo version info
