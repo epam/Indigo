@@ -1,4 +1,3 @@
-import difflib
 import os
 import sys
 
@@ -20,4 +19,3 @@ mol = indigo.loadMoleculeFromFile(
 )
 
 print(mol.json())
-
