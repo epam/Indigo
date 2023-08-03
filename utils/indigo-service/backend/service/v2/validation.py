@@ -38,8 +38,6 @@ class IndigoRendererSchema(InputFormatSchema):
     output_format = fields.Str(
         missing="image/svg+xml", validate=OneOf(images_formats)
     )
-    width = fields.Str(missing="200px")
-    height = fields.Str(missing="200px")
     struct = fields.Str(missing=None)
     query = fields.Str(missing=None)
     options = fields.Dict(missing={})
