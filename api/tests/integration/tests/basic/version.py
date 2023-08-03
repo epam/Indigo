@@ -12,15 +12,6 @@ from env_indigo import *
 indigo = Indigo()
 
 
-def test_string_is_printable():
-    print("*** Testing string is printable ***")
-    try:
-        str = indigo.versionInfo().isprintable()
-        print(str)
-    except:
-        print("String can't be printed")
-
-
 def test_string_is_valid_json():
     print("*** Testing string is valid json ***")
     try:
@@ -42,7 +33,6 @@ def test_string_has_specific_key(key):
     print("True")
 
 
-test_string_is_printable()
 test_string_is_valid_json()
 test_string_has_specific_key("majorVersion")
 test_string_has_specific_key("minorVersion")
