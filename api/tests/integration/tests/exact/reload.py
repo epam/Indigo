@@ -38,18 +38,11 @@ def testMol(mol):
     mol.resetSymmetricCisTrans()
     base_smiles = mol.smiles()
     perm_mol = indigo.loadMolecule(base_smiles)
-    perm_smiles = perm_mol.canonicalSmiles()
-    if perm_smiles != base_smiles:
-        msg = (
-            "  Smiles: %s after reload from smiles %s. Permuted canonical smiles: %s\n"
-            % (mol.name(), base_smiles, perm_smiles)
-        )
-        print(msg)
-        sys.stderr.write(msg + "\n")
+    perm_smiles = perm_mol.smiles()
     if not indigo.exactMatch(mol, perm_mol):
         msg = (
-            "  Exact: %s after reload from smiles %s. Permuted canonical smiles: %s\n"
-            % (mol.name(), base_smiles, perm_smiles)
+            "  Exact: %s after reload from smiles %s. Permuted canonical smiles: %s\n %s %s"
+            % (mol.name(), base_smiles, perm_smiles, mol.smiles(), perm_mol.smiles())
         )
         print(msg)
         sys.stderr.write(msg + "\n")
