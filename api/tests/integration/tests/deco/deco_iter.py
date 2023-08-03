@@ -36,7 +36,8 @@ def printMolfile(mol):
         mol2 = indigo.loadMolecule(molfile)
         if not indigo.exactMatch(mol, mol2):
             sys.stderr.write(
-                "Error: molecules are different\n  %s\n  %s\n" % (molfile, mol2.molfile())
+                "Error: molecules are different\n  %s\n  %s\n"
+                % (molfile, mol2.molfile())
             )
     indigo.setOption("molfile-saving-mode", "auto")
 
