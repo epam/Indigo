@@ -45,15 +45,13 @@ def searchSim(bingo, q, minSim, maxSim, metric=None):
 
 
 indigo = Indigo()
-
-if dir_exists(joinPathPy("out/basic", __file__)):
-    rmdir(joinPathPy("out/basic", __file__))
-makedirs(joinPathPy("out/basic", __file__))
+db_dir = joinPathPy("out/basic", __file__)
+if dir_exists(db_dir):
+    rmdir(db_dir)
+makedirs(db_dir)
 
 print("*** Creating temporary database ****")
-bingo = Bingo.createDatabaseFile(
-    indigo, joinPathPy("out", "basic"), "molecule", ""
-)
+bingo = Bingo.createDatabaseFile(indigo, db_dir, "molecule", "")
 print(bingo.version())
 m = indigo.loadMolecule("C1CCCCC1")
 bingo.insert(m)
@@ -79,7 +77,7 @@ except BingoException as e:
 bingo.close()
 
 print("*** Loading existing database ****")
-bingo = Bingo.loadDatabaseFile(indigo, joinPathPy("out", "basic"), "")
+bingo = Bingo.loadDatabaseFile(indigo, db_dir, "")
 m = indigo.loadMolecule("C1CCCCC1")
 searchSim(bingo, m, 0.9, 1, "tanimoto")
 searchSim(bingo, m, 0.9, 1, "tversky")
@@ -115,9 +113,7 @@ indigo.setOption("fp-ext-enabled", True)
 
 
 print("*** Simple exact search ****")
-bingo = Bingo.createDatabaseFile(
-    indigo, joinPathPy("out", "basic"), "molecule"
-)
+bingo = Bingo.createDatabaseFile(indigo, db_dir, "molecule")
 mol1 = indigo.loadMolecule(
     "ICCCCOC(=O)C1=CC([N+]([O-])=O)=C([N+]([O-])=O)C=C1"
 )
@@ -129,9 +125,7 @@ searchExact(bingo, mol2)
 bingo.close()
 
 print("*** Simple enumerate id ****")
-bingo = Bingo.createDatabaseFile(
-    indigo, joinPathPy("out/basic", __file__), "molecule"
-)
+bingo = Bingo.createDatabaseFile(indigo, db_dir, "molecule")
 mol = indigo.loadMolecule("CCCC")
 bingo.insert(mol)
 bingo.insert(mol)

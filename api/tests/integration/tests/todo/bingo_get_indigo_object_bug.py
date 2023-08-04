@@ -9,7 +9,9 @@ sys.path.append(
 from env_indigo import *
 
 indigo = Indigo()
-bingo = Bingo.createDatabaseFile(indigo, "get_indigo_object_bug", "molecule")
+bingo = Bingo.createDatabaseFile(
+    indigo, joiinPathPy("out/get_indigo_object_bug", __file__), "molecule"
+)
 for item in ("C1=CC=CC=C1", "C1=CN=CC=C1"):
     bingo.insert(indigo.loadMolecule(item))
 result = bingo.searchSim(

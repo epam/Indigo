@@ -70,7 +70,7 @@ def searchExact(bingo, q, options=""):
 
 indigo = Indigo()
 bingo = Bingo.createDatabaseFile(
-    indigo, joinPathPy("db_molecule", __file__), "molecule", ""
+    indigo, joinPathPy("out/db_molecule", __file__), "molecule", ""
 )
 
 index = 0
