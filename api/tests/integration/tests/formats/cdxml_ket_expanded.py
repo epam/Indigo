@@ -15,7 +15,7 @@ indigo.setOption("json-saving-pretty", True)
 print("*** CDXML to KET ***")
 ref_path = joinPathPy("ref/", __file__)
 mol = indigo.loadMoleculeFromFile(
-    joinPathPy("ref/contracted_expanded_structures.cdxml", __file__)
+    joinPathPy("ref/cdxml_ket_expanded.cdxml", __file__)
 )
 
 print(mol.json())
