@@ -59,15 +59,11 @@ for db_name, load_fund in mol_db_names:
 
             mol.layout()
             mol.dearomatize()
-            cansm = mol.canonicalSmiles()
+            cansm = mol.smiles()
             mol2 = indigo.loadMolecule(cansm)
             mol2.layout()
             mol2.markEitherCisTrans()
             cansm2 = mol2.canonicalSmiles()
-            # issue #1200 related.
-            # saveMolfile add MRV_IMPLICIT_H Data S-groups for saving the number of implicit H for aromatic atoms.
-            # these Data S-Groups removed in readMolfile.
-            # so generate SMILES before save to avoid differences.
             mol_f2 = mol2.molfile()
             mol3 = indigo.loadMolecule(mol_f2)
             cansm3 = mol3.canonicalSmiles()

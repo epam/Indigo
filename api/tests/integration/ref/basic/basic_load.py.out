@@ -348,7 +348,7 @@ M  END
 
 H2
 ****** S-group's SCL (CLASS) support ********
-NC(=O)C[C@@H](C=O)NC(=O)[C@H](CC(N)=O)NN[C@@H](CC(N)=O)C(=O)N[C@@H](CC(N)=O)C=O |&1:4,10,17,25,r|
+NC(=O)C[C@@H](C=O)NC(=O)[C@H](CC(N)=O)NN[C@@H](CC(N)=O)C(=O)N[C@@H](CC(N)=O)C=O
 
   -INDIGO-01000000002D
 
@@ -440,7 +440,7 @@ M  SCL   4 AA
 M  SAP   4  2  11  24 Al  31   0 Br
 M  END
 
-NC(=O)C[C@@H](C=O)NC(=O)[C@H](CC(N)=O)NN[C@@H](CC(N)=O)C(=O)N[C@@H](CC(N)=O)C=O |&1:4,10,17,25,r|
+NC(=O)C[C@@H](C=O)NC(=O)[C@H](CC(N)=O)NN[C@@H](CC(N)=O)C(=O)N[C@@H](CC(N)=O)C=O
 
   -INDIGO-01000000002D
 
@@ -531,7 +531,7 @@ M  V30 END CTAB
 M  END
 
 ****** S-group's SPL (PARENT) support ********
-CC(C)C[C@@H](C=O)NC(=O)[C@H](CS)NC(=O)[C@H](CS)NC(=O)[C@H](C)N |Sg:gen:0,3,4,5,6,7,20,21,22,23,24,1,2,8,9,10,11,12,13,14,15,16,17,18,19:,SgD:5:[DUP]:\10::: :|
+CC(C)C[C@@H](C=O)NC(=O)[C@H](CS)NC(=O)[C@H](CS)NC(=O)[C@H](C)N
 
   -INDIGO-01000000002D
 
@@ -614,7 +614,7 @@ M  SDD   5    -4.5860    5.0322    DAU   ALL  1       1
 M  SED   5 \10
 M  END
 
-CC(C)C[C@@H](C=O)NC(=O)[C@H](CS)NC(=O)[C@H](CS)NC(=O)[C@H](C)N |Sg:gen:0,3,4,5,6,7,20,21,22,23,24,1,2,8,9,10,11,12,13,14,15,16,17,18,19:,SgD:5:[DUP]:\10::: :|
+CC(C)C[C@@H](C=O)NC(=O)[C@H](CS)NC(=O)[C@H](CS)NC(=O)[C@H](C)N
 
   -INDIGO-01000000002D
 
@@ -1746,7 +1746,7 @@ Alias
 M  END
 
 ****** Alias handling (SMILES) ********
-CC |$;Alias$|
+CC
 ****** Test load from gzip buffer ********
 C1C=CC=CC=1
 ****** Load V3000 with DISP keyword ********

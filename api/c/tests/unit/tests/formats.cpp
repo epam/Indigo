@@ -55,7 +55,7 @@ TEST_F(IndigoApiFormatsTest, molecule)
         // 2
         obj = indigoLoadStructureFromString(mStr.c_str(), "");
         EXPECT_STREQ(expected.c_str(), indigoSmiles(obj));
-        EXPECT_STREQ("*C1C=CC=CC=1 |$A;;;;;;$|", indigoCanonicalSmiles(obj));
+        EXPECT_STREQ("*C1C=CC=CC=1", indigoCanonicalSmiles(obj));
         EXPECT_EQ(7, indigoCountAtoms(obj));
         EXPECT_EQ(7, indigoCountBonds(obj));
 

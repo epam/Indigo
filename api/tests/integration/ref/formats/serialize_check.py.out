@@ -73667,9 +73667,9 @@ Molecules set: molecules/serialize.sdf
 
 Testing molecule #0
 C1%91C%92%93C%94C%95C%96C%97C%98C%991.[*:1]%91.[*:2]%99.[*:3]%98.[*:4]%97.[*:5]%96.[*:6]%95.[*:7]%94.[*:8]%92.[*:9]%93 |$;;;;;;;;_R1;_R2;_R3;_R4;_R5;_R6;_R7;_R8;_R9$|
-[*:9]C1%91C%92C%93C%94C%95C%96C%97C%981.[*:8]%91.[*:7]%92.[*:6]%93.[*:5]%94.[*:4]%95.[*:3]%96.[*:2]%97.[*:1]%98 |$_R9;;;;;;;;;_R8;_R7;_R6;_R5;_R4;_R3;_R2;_R1$|
+[*:9]C1%91C%92C%93C%94C%95C%96C%97C%981.[*:8]%91.[*:7]%92.[*:6]%93.[*:5]%94.[*:4]%95.[*:3]%96.[*:2]%97.[*:1]%98
 C1%91C%92C%93C%94C%95C%96C%97C%98%991.[*:1]%91.[*:2]%92.[*:3]%93.[*:4]%94.[*:5]%95.[*:6]%96.[*:7]%97.[*:8]%98.[*:9]%99 |$;;;;;;;;_R1;_R2;_R3;_R4;_R5;_R6;_R7;_R8;_R9$|
-[*:9]C1%91C%92C%93C%94C%95C%96C%97C%981.[*:8]%91.[*:7]%92.[*:6]%93.[*:5]%94.[*:4]%95.[*:3]%96.[*:2]%97.[*:1]%98 |$_R9;;;;;;;;;_R8;_R7;_R6;_R5;_R4;_R3;_R2;_R1$|
+[*:9]C1%91C%92C%93C%94C%95C%96C%97C%981.[*:8]%91.[*:7]%92.[*:6]%93.[*:5]%94.[*:4]%95.[*:3]%96.[*:2]%97.[*:1]%98
 * checkEqualProperties *
 allenecenters: 0 0 
 atoms: 17 17 
@@ -73740,9 +73740,9 @@ Item
   stereocenters:0
   superatoms:0
 C1%91C%92%93C%94C%95C%96C%97C%98C%991.[*:1]%91.[*:2]%99.[*:3]%98.[*:4]%97.[*:5]%96.[*:6]%95.[*:7]%94.[*:8]%92.[*:9]%93 |$;;;;;;;;_R1;_R2;_R3;_R4;_R5;_R6;_R7;_R8;_R9$|
-[*:9]C1%91C%92C%93C%94C%95C%96C%97C%981.[*:8]%91.[*:7]%92.[*:6]%93.[*:5]%94.[*:4]%95.[*:3]%96.[*:2]%97.[*:1]%98 |$_R9;;;;;;;;;_R8;_R7;_R6;_R5;_R4;_R3;_R2;_R1$|
+[*:9]C1%91C%92C%93C%94C%95C%96C%97C%981.[*:8]%91.[*:7]%92.[*:6]%93.[*:5]%94.[*:4]%95.[*:3]%96.[*:2]%97.[*:1]%98
 C1%91C%92C%93C%94C%95C%96C%97C%98%991.[*:1]%91.[*:2]%92.[*:3]%93.[*:4]%94.[*:5]%95.[*:6]%96.[*:7]%97.[*:8]%98.[*:9]%99 |$;;;;;;;;_R1;_R2;_R3;_R4;_R5;_R6;_R7;_R8;_R9$|
-[*:9]C1%91C%92C%93C%94C%95C%96C%97C%981.[*:8]%91.[*:7]%92.[*:6]%93.[*:5]%94.[*:4]%95.[*:3]%96.[*:2]%97.[*:1]%98 |$_R9;;;;;;;;;_R8;_R7;_R6;_R5;_R4;_R3;_R2;_R1$|
+[*:9]C1%91C%92C%93C%94C%95C%96C%97C%981.[*:8]%91.[*:7]%92.[*:6]%93.[*:5]%94.[*:4]%95.[*:3]%96.[*:2]%97.[*:1]%98
 * checkEqualProperties *
 allenecenters: 0 0 
 atoms: 17 17 
@@ -73963,9 +73963,9 @@ Item
 
 Testing molecule #2
 OC(=[C][H])C |^1:2|
-CC(=[CH])O |^1:2|
+CC(=[CH])O
 OC(C)=[C][H] |^1:3|
-CC(=[CH])O |^1:2|
+CC(=[CH])O
 * checkEqualProperties *
 allenecenters: 0 0 
 atoms: 5 5 
@@ -74036,9 +74036,9 @@ Item
   stereocenters:0
   superatoms:0
 OC(=[C][H])C |^1:2|
-CC(=[CH])O |^1:2|
+CC(=[CH])O
 OC(C)=[C][H] |^1:3|
-CC(=[CH])O |^1:2|
+CC(=[CH])O
 * checkEqualProperties *
 allenecenters: 0 0 
 atoms: 5 5 
@@ -74111,9 +74111,9 @@ Item
 
 Testing molecule #3
 ClC1C(=C(C([H])=C([H])C=1C(N([H])C([H])([H])C([H])([H])[N+]1(C([H])([H])C2C([H])([H])S[C@]3([H])[C@@]([H])(C(N3C=2C(=O)O[H])=O)N([H])C(/C(/C2=C([H])SC(N([H])[H])=N2)=N\OC(=[C][H])C(=O)O[H])=O)C([H])([H])C([H])([H])C([H])([H])C1([H])[H])=O)O[H])O[H] |^1:55|
-[CH]=C(O/N=C(/C1=CSC(N)=N1)\C(=O)N[C@H]1[C@H]2SCC(C[N+]3(CCNC(=O)C4C=CC(O)=C(O)C=4Cl)CCCC3)=C(C(O)=O)N2C1=O)C(O)=O |^1:0|
+[CH]=C(O/N=C(/C1=CSC(N)=N1)\C(=O)N[C@H]1[C@H]2SCC(C[N+]3(CCNC(=O)C4C=CC(O)=C(O)C=4Cl)CCCC3)=C(C(O)=O)N2C1=O)C(O)=O
 ClC1=C(C(=O)N(C(C([N+]2(C([H])([H])C([H])([H])C([H])([H])C2([H])[H])C(C2=C(C(O[H])=O)N3[C@]([C@](N(C(=O)/C(=N\OC(C(O[H])=O)=[C][H])/C4N=C(N([H])[H])SC=4[H])[H])(C3=O)[H])([H])SC2([H])[H])([H])[H])([H])[H])([H])[H])[H])C([H])=C([H])C(O[H])=C1O[H] |^1:42|
-[CH]=C(O/N=C(/C1=CSC(N)=N1)\C(=O)N[C@H]1[C@H]2SCC(C[N+]3(CCNC(=O)C4C=CC(O)=C(O)C=4Cl)CCCC3)=C(C(O)=O)N2C1=O)C(O)=O |^1:0|
+[CH]=C(O/N=C(/C1=CSC(N)=N1)\C(=O)N[C@H]1[C@H]2SCC(C[N+]3(CCNC(=O)C4C=CC(O)=C(O)C=4Cl)CCCC3)=C(C(O)=O)N2C1=O)C(O)=O
 * checkEqualProperties *
 allenecenters: 0 0 
 atoms: 79 79 
@@ -74184,9 +74184,9 @@ Item
   stereocenters:2
   superatoms:0
 Clc1c(c(c([H])c([H])c1C(N([H])C([H])([H])C([H])([H])[N+]1(C([H])([H])C2C([H])([H])S[C@]3([H])[C@@]([H])(C(N3C=2C(=O)O[H])=O)N([H])C(/C(/c2c([H])[s]c(N([H])[H])[n]2)=N\OC(=[C][H])C(=O)O[H])=O)C([H])([H])C([H])([H])C([H])([H])C1([H])[H])=O)O[H])O[H] |^1:55|
-[CH]=C(O/N=C(/c1c[s]c(N)[n]1)\C(=O)N[C@H]1[C@H]2SCC(C[N+]3(CCNC(=O)c4ccc(O)c(O)c4Cl)CCCC3)=C(C(O)=O)N2C1=O)C(O)=O |^1:0|
+[CH]=C(O/N=C(/c1c[s]c(N)[n]1)\C(=O)N[C@H]1[C@H]2SCC(C[N+]3(CCNC(=O)c4ccc(O)c(O)c4Cl)CCCC3)=C(C(O)=O)N2C1=O)C(O)=O
 Clc1c(C(=O)N(C(C([N+]2(C([H])([H])C([H])([H])C([H])([H])C2([H])[H])C(C2=C(C(O[H])=O)N3[C@]([C@](N(C(=O)/C(=N\OC(C(O[H])=O)=[C][H])/c4[n]c(N([H])[H])[s]c4[H])[H])(C3=O)[H])([H])SC2([H])[H])([H])[H])([H])[H])([H])[H])[H])c([H])c([H])c(O[H])c1O[H] |^1:42|
-[CH]=C(O/N=C(/c1c[s]c(N)[n]1)\C(=O)N[C@H]1[C@H]2SCC(C[N+]3(CCNC(=O)c4ccc(O)c(O)c4Cl)CCCC3)=C(C(O)=O)N2C1=O)C(O)=O |^1:0|
+[CH]=C(O/N=C(/c1c[s]c(N)[n]1)\C(=O)N[C@H]1[C@H]2SCC(C[N+]3(CCNC(=O)c4ccc(O)c(O)c4Cl)CCCC3)=C(C(O)=O)N2C1=O)C(O)=O
 * checkEqualProperties *
 allenecenters: 0 0 
 atoms: 79 79 
