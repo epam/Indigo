@@ -1500,8 +1500,6 @@ def render():
     # indigo = md.struct._session
     # indigo = indigo_init(data["options"])
     indigo.setOption("render-coloring", True)
-    indigo.setOption("render-image-width", data["width"])
-    indigo.setOption("render-image-height", data["height"])
     content_type = data["output_format"]
     if "render-output-format" in data["options"]:
         rof = data["options"]["render-output-format"]
