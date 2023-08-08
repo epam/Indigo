@@ -34,7 +34,6 @@ files = [
 
 files.sort()
 for filename in files:
-    print(filename)
     mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".mol"))
 
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
