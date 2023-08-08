@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
