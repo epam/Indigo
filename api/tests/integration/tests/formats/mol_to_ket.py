@@ -23,11 +23,18 @@ print("*** MOL to KET ***")
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
-files = ["1032-quadra", "1046-imp_hydrogen", "SgroupDifferent", "suplabel", "atropisomer", "non_atrop"]
+files = [
+    "1032-quadra",
+    "1046-imp_hydrogen",
+    "SgroupDifferent",
+    "suplabel",
+    "atropisomer",
+    "non_atrop",
+]
 
 files.sort()
 for filename in files:
-    print( filename )
+    print(filename)
     mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".mol"))
 
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
