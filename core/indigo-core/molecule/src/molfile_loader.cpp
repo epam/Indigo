@@ -1939,11 +1939,11 @@ void MolfileLoader::_postLoad()
         SGroup& sgroup = _bmol->sgroups.getSGroup(i);
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
-            DataSGroup& dsg = (DataSGroup&)sgroup;
-            if (dsg.name.size() > 0 && strncmp(dsg.name.ptr(), "MRV_IMPLICIT_H", 14) == 0)
+            DataSGroup& dsg = static_cast<DataSGroup&>(sgroup);
+            if (dsg.isMrv_implicit())
             {
                 BufferScanner scanner(dsg.data);
-                scanner.skip(6); // IMPL_H
+                scanner.skip(DataSGroup::impl_prefix_len); // IMPL_H
                 int hcount = scanner.readInt1();
                 int k = dsg.atoms[0];
 

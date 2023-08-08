@@ -49,7 +49,7 @@ TEST_F(IndigoCoreStructureCheckTest, radical)
 TEST_F(IndigoCoreStructureCheckTest, issue731_stereo)
 {
     Molecule molecule;
-    char* mol = R"({"root":{"nodes":[{"$ref":"rg2"}]},
+    const char* mol = R"({"root":{"nodes":[{"$ref":"rg2"}]},
 "header":{"moleculeName":"null"},"rg2":{"rlogic":{"number":2},"type":"rgroup",
 "atoms":[{"label":"C","location":[14.808632653403645,17.2218585385598,0]},
 {"label":"C","location":[13.997755777985581,16.696221303012916,0]},

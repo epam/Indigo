@@ -29762,7 +29762,7 @@ $END MOL
 
 mapped scaffold: OCC1OC(O)C(O)C(O)C1O
   RGROUP #1
-  fragment #0: c12c(Cl)c(ccc1[nH]cc%912)Br.[*:1]%91 |$;;;;;;;;;;;_AP1$,SgD:5:MRV_IMPLICIT_H:IMPL_H1::: :|
+  fragment #0: c12c(Cl)c(ccc1[nH]cc%912)Br.[*:1]%91 |$;;;;;;;;;;;_AP1$|
 C1(COP(=O)(O)O)C(O)C(C(O)C(OP(=O)(O)O)O1)O.C1CCCCC1N.C1CCCCC1N.C1CCCCC1N.C1CCCCC1N.O |ha:0,1,2,7,8,9,10,11,12,13,18,19,hb:0,1,6,7,8,9,10,11,12,17,18,19|
 decomposed molecule: C1(CO%91)C(O)C(C(O)C(O%92)O1)O.[*:3]%91.[*:1]%92 |$;;;;;;;;;;;;_R3;_R1$,RG:_R1={P%91(=O)(O)O.[*:1]%91 |$;;;;_AP1$|},_R3={P%91(=O)(O)O.[*:1]%91 |$;;;;_AP1$|}|
 decomposed molecule: $MDL  REV  1 0100000000
@@ -48077,7 +48077,7 @@ $END MOL
 
 mapped scaffold: OCC1OC(O)C(O)C(O)C1O
   RGROUP #1
-  fragment #0: c1%91c[nH]c2ccc(Br)c(Cl)c12.[*:1]%91 |$;;;;;;;;;;;_AP1$,SgD:5:MRV_IMPLICIT_H:IMPL_H1::: :|
+  fragment #0: c1%91c[nH]c2ccc(Br)c(Cl)c12.[*:1]%91 |$;;;;;;;;;;;_AP1$|
   RGROUP #2
   fragment #0: C1%91C(O)C(C(OC2C(O)C(C(O)C(CO)O2)O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;;;;;;;;;;;;_AP1$|
 C1(CO)(OC(C(O)C1OC1C(O)C(C(O)C(CO)O1)O)CO)OC1C(O)C(C(O)C(CO)O1)O.O |ha:22,23,24,25,26,27,28,29,30,31,32,33,hb:24,25,26,27,28,29,30,31,32,33,34,35|
