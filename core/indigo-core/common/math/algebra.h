@@ -59,6 +59,16 @@ namespace indigo
 
         float x, y;
 
+        static constexpr auto min_coord()
+        {
+            return std::numeric_limits<decltype(x)>::min();
+        }
+
+        static constexpr auto max_coord()
+        {
+            return std::numeric_limits<decltype(x)>::max();
+        }
+
         inline void set(float xx, float yy)
         {
             x = xx;
