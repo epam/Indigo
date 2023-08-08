@@ -2,6 +2,10 @@
 Database: ../../../../../data/molecules/basic/zinc-slice.sdf.gz
 Database: ../../../../../data/molecules/basic/thiazolidines.sdf
 Database: ../../../../../data/molecules/basic/sugars.sdf
+Exception for #100: molfile loader: 'any' atoms are allowed only for queries
+Exception for #211: molfile loader: 'any' atoms are allowed only for queries
+Exception for #219: molfile loader: 'any' atoms are allowed only for queries
+Exception for #244: molfile loader: 'any' atoms are allowed only for queries
 Exception for #262: stereocenters: one bond up, one bond down -- indefinite case near atom 0
 Database: ../../../../../data/molecules/stereo/stereo_cis_trans.sdf
 Database: ../../../../../data/molecules/basic/helma.smi
@@ -9,6 +13,10 @@ Database: ../../../../../data/molecules/basic/helma.smi
 Database: ../../../../../data/molecules/basic/zinc-slice.sdf.gz
 Database: ../../../../../data/molecules/basic/thiazolidines.sdf
 Database: ../../../../../data/molecules/basic/sugars.sdf
+Exception for #100: molfile loader: 'any' atoms are allowed only for queries
+Exception for #211: molfile loader: 'any' atoms are allowed only for queries
+Exception for #219: molfile loader: 'any' atoms are allowed only for queries
+Exception for #244: molfile loader: 'any' atoms are allowed only for queries
 Exception for #262: stereocenters: one bond up, one bond down -- indefinite case near atom 0
 Database: ../../../../../data/molecules/stereo/stereo_cis_trans.sdf
 Database: ../../../../../data/molecules/basic/helma.smi

@@ -671,6 +671,13 @@ M  END
         });
     }
 
+    // Version Info
+    {
+        test("versionInfo", "basic", () => {
+            assert(indigo.versionInfo().indexOf("wasm") !== -1);
+        });
+    }
+
     // reactionComponents
     {
         test("reactionComponents", "basic", () => {

@@ -64,9 +64,12 @@ def makeSearchExact(db, pid, query, options, output=None):
     outPrint("PID {0}) Total count {1}".format(pid, cnt), pid, output)
 
 
+db_dir = joinPathPy("out/mol_part_db", __file__)
+
+
 def partCreate():
     bingo = Bingo.createDatabaseFile(
-        indigo, joinPathPy("mol_part_db", __file__), "molecule", "mt_size:2000"
+        indigo, db_dir, "molecule", "mt_size:2000"
     )
 
     insertSmi(bingo, dataPath("molecules/basic/sample_100000.smi"))
@@ -75,9 +78,7 @@ def partCreate():
 
 
 def partTest(size, searchType="sub"):
-    bingo = Bingo.loadDatabaseFile(
-        indigo, joinPathPy("mol_part_db", __file__), ""
-    )
+    bingo = Bingo.loadDatabaseFile(indigo, db_dir, "")
     index = 0
 
     for m in indigo.iterateSDFile(

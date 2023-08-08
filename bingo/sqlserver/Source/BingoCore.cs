@@ -29,7 +29,7 @@ namespace indigo
          {
             if (_lib == null)
             {
-               BingoDllLoader.Instance.loadLibrary(null, "bingo-core-c.dll", "resource", false);
+               BingoDllLoader.Instance.loadLibrary(null, "bingo-core-c.dll", "indigo.resource", false);
                _lib = BingoDllLoader.Instance.getInterface<BingoCoreLib>("bingo-core-c.dll");
             }
             return _lib;

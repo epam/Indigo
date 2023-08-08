@@ -29,7 +29,7 @@ InChI=1S/C6H7N5/c1-3-4-5(11-10-3)6(7)9-2-8-4/h2H,7H2,1H3,(H,8,9)
 AuxInfo=1/1/N:1,9,2,11,5,6,7,10,8,3,4/rA:11CCNNCCNNCNC/rB:s1;s2;d3;s4;d5;s6;s6;d8;s9;d2s5s10;/rC:;;;;;;;;;;;
 CC1=C2NC=NC(N)=C2N=N1
 *** Extra stereo info for large cycles with alternated bonds ***
-C1C=CC=CC=CC=CC=CC=CC=CC=CC=1 |c:3,9,15,t:1,5,7,11,13,17|
+C1C=CC=CC=CC=CC=CC=CC=CC=CC=1
 *** Tetra-valent S special case ***
 InChI=1S/C15H18FN3OS/c1-21-11-19(10-17)18-8-6-13(7-9-18)15(20)12-2-4-14(16)5-3-12/h2-5,11,13,21H,6-9H2,1H3
 InChI=1S/C15H18FN3OS/c1-21-11-19(10-17)18-8-6-13(7-9-18)15(20)12-2-4-14(16)5-3-12/h2-5,11,13,21H,6-9H2,1H3

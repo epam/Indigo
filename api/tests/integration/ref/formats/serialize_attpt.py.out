@@ -1,65 +1,65 @@
 molecules/recursive1.mol
   rgroup 1 frag 0
-  fragment serialized to 55 bytes
+  fragment serialized to 63 bytes
     C%91C%92.[*:2]%92.[*:1]%91 |$;;_R2;_AP1$|
     C%91C%92.[*:2]%92.[*:1]%91 |$;;_R2;_AP1$|
   rgroup 1 frag 1
-  fragment serialized to 55 bytes
+  fragment serialized to 63 bytes
     C%91C%92.[*:3]%92.[*:1]%91 |$;;_R3;_AP1$|
     C%91C%92.[*:3]%92.[*:1]%91 |$;;_R3;_AP1$|
   rgroup 2 frag 0
-  fragment serialized to 37 bytes
+  fragment serialized to 42 bytes
     F%91.[*:1]%91 |$;_AP1$|
     F%91.[*:1]%91 |$;_AP1$|
   rgroup 3 frag 0
-  fragment serialized to 37 bytes
+  fragment serialized to 42 bytes
     Cl%91.[*:1]%91 |$;_AP1$|
     Cl%91.[*:1]%91 |$;_AP1$|
 molecules/recursive2.mol
   rgroup 1 frag 0
-  fragment serialized to 55 bytes
+  fragment serialized to 63 bytes
     C%91C%92.[*:2]%92.[*:1]%91 |$;;_R2;_AP1$|
     C%91C%92.[*:2]%92.[*:1]%91 |$;;_R2;_AP1$|
   rgroup 1 frag 1
-  fragment serialized to 55 bytes
+  fragment serialized to 63 bytes
     C%91C%92.[*:1]%92.[*:1]%91 |$;;_R1;_AP1$|
     C%91C%92.[*:1]%92.[*:1]%91 |$;;_R1;_AP1$|
   rgroup 2 frag 0
-  fragment serialized to 37 bytes
+  fragment serialized to 42 bytes
     F%91.[*:1]%91 |$;_AP1$|
     F%91.[*:1]%91 |$;_AP1$|
 molecules/r_occur.mol
   rgroup 1 frag 0
-  fragment serialized to 52 bytes
-    C1CC%911.[*:1]%91 |$;;;_AP1$|
-    C1CC%911.[*:1]%91 |$;;;_AP1$|
+  fragment serialized to 62 bytes
+    C1%91CC1.[*:1]%91 |$;;;_AP1$|
+    C1%91CC1.[*:1]%91 |$;;;_AP1$|
   rgroup 2 frag 0
-  fragment serialized to 58 bytes
-    C1CCC%911.[*:1]%91 |$;;;;_AP1$|
-    C1CCC%911.[*:1]%91 |$;;;;_AP1$|
+  fragment serialized to 70 bytes
+    C1%91CCC1.[*:1]%91 |$;;;;_AP1$|
+    C1%91CCC1.[*:1]%91 |$;;;;_AP1$|
   rgroup 3 frag 0
-  fragment serialized to 64 bytes
-    C1CCCC%911.[*:1]%91 |$;;;;;_AP1$|
-    C1CCCC%911.[*:1]%91 |$;;;;;_AP1$|
+  fragment serialized to 78 bytes
+    C1%91CCCC1.[*:1]%91 |$;;;;;_AP1$|
+    C1%91CCCC1.[*:1]%91 |$;;;;;_AP1$|
 molecules/r_occur_2.mol
   rgroup 1 frag 0
-  fragment serialized to 52 bytes
-    C1CC%911.[*:1]%91 |$;;;_AP1$|
-    C1CC%911.[*:1]%91 |$;;;_AP1$|
+  fragment serialized to 62 bytes
+    C1%91CC1.[*:1]%91 |$;;;_AP1$|
+    C1%91CC1.[*:1]%91 |$;;;_AP1$|
   rgroup 2 frag 0
-  fragment serialized to 58 bytes
-    C1CCC%911.[*:1]%91 |$;;;;_AP1$|
-    C1CCC%911.[*:1]%91 |$;;;;_AP1$|
+  fragment serialized to 70 bytes
+    C1%91CCC1.[*:1]%91 |$;;;;_AP1$|
+    C1%91CCC1.[*:1]%91 |$;;;;_AP1$|
   rgroup 3 frag 0
-  fragment serialized to 64 bytes
-    C1CCCC%911.[*:1]%91 |$;;;;;_AP1$|
-    C1CCCC%911.[*:1]%91 |$;;;;;_AP1$|
+  fragment serialized to 78 bytes
+    C1%91CCCC1.[*:1]%91 |$;;;;;_AP1$|
+    C1%91CCCC1.[*:1]%91 |$;;;;;_AP1$|
 molecules/sub_mar_q01.mol
   rgroup 1 frag 0
-  fragment serialized to 39 bytes
+  fragment serialized to 44 bytes
     N%91%92.[*:1]%91.[*:2]%92 |$;_AP1;_AP2$|
     N%91%92.[*:1]%91.[*:2]%92 |$;_AP1;_AP2$|
   rgroup 1 frag 1
-  fragment serialized to 53 bytes
-    CN%91C%92.[*:1]%91.[*:2]%92 |$;;;_AP1;_AP2$|
-    CN%91C%92.[*:1]%91.[*:2]%92 |$;;;_AP1;_AP2$|
+  fragment serialized to 62 bytes
+    N%91(C)C%92.[*:1]%91.[*:2]%92 |$;;;_AP1;_AP2$|
+    N%91(C)C%92.[*:1]%91.[*:2]%92 |$;;;_AP1;_AP2$|

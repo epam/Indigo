@@ -102,6 +102,10 @@ def getNameAndCano(m):
 for db_name, load_fund in mol_db_names:
     print("Database: %s" % relativePath(db_name))
     idx = 1
+    # issue #1199 workaround. Should be removed after #1199 fix.
+    if db_name == mol_db_names[-1][0]:
+        indigo.setOption("serialize-preserve-ordering", True)
+    # end of issue #1199 workaround
     for item in load_fund(db_name):
         name, cansm, sm = getNameAndCano(item)
         print("%s (#%s): %s" % (name, idx, cansm))

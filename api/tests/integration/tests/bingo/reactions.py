@@ -67,7 +67,7 @@ def searchExact(bingo, q, options=""):
 
 indigo = Indigo()
 bingo = Bingo.createDatabaseFile(
-    indigo, joinPathPy("db_reaction", __file__), "reaction", ""
+    indigo, joinPathPy("out/db_reaction", __file__), "reaction", ""
 )
 
 index = 0

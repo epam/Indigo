@@ -32,7 +32,9 @@ file = joinPathPy("molecules/" + filename, __file__)
 mol = indigo.loadQueryMoleculeFromFile(file)
 
 indigo.setOption("render-output-format", "svg")
-renderer.renderToFile(mol, joinPathPy(out_dir + filename + "_q.svg", __file__))
+renderer.renderToFile(
+    mol, joinPathPy(out_dir + "/" + filename + "_q.svg", __file__)
+)
 print(checkImageSimilarity("%s" % (filename + "_q.svg")))
 
 indigo.setOption("render-output-format", "png")

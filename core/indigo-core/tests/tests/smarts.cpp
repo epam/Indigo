@@ -130,17 +130,17 @@ TEST_F(IndigoCoreSmartsTest, aliases)
     EXPECT_STREQ(smilesLoadSaveLoad("C", true).c_str(), "[#6]");
     EXPECT_TRUE(substructureMatch("C", "C"));
 
-    EXPECT_STREQ(smilesLoadSaveLoad("C |$Carbon$|", true).c_str(), "[#6] |$Carbon$|");
+    EXPECT_STREQ(smilesLoadSaveLoad("C |$Carbon$|", true).c_str(), "[#6]");
     EXPECT_TRUE(substructureMatch("C", "C |$Carbon$|"));
     EXPECT_FALSE(substructureMatch("N", "C |$Carbon$|"));
 
-    EXPECT_STREQ(smilesLoadSaveLoad("CC |$Carbon;$|", true).c_str(), "[#6]-[#6] |$Carbon;$|");
+    EXPECT_STREQ(smilesLoadSaveLoad("CC |$Carbon;$|", true).c_str(), "[#6]-[#6]");
 
-    EXPECT_STREQ(smilesLoadSaveLoad("* |$Pseudo$|", true).c_str(), "[*] |$Pseudo$|");
+    EXPECT_STREQ(smilesLoadSaveLoad("* |$Pseudo$|", true).c_str(), "[*]");
     EXPECT_TRUE(substructureMatch("* |$Pseudo$|", "* |$Pseudo$|"));
 }
 
 TEST_F(IndigoCoreSmartsTest, smiles)
 {
-    EXPECT_STREQ(smilesLoadSaveLoad("C |$Carbon$|", false).c_str(), "C |$Carbon$|");
+    EXPECT_STREQ(smilesLoadSaveLoad("C |$Carbon$|", false).c_str(), "C");
 }

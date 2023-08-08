@@ -28,8 +28,6 @@ files.sort()
 for filename in files:
     rea = indigo.loadReactionFromFile(os.path.join(root, filename + ".smi"))
     rea.layout()
-    with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-        file.write(rea.json())
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
         ket_ref = file.read()
     ket = rea.json()

@@ -82,6 +82,23 @@ DataSGroup::~DataSGroup()
 {
 }
 
+constexpr char DataSGroup::mrv_implicit_h[];
+constexpr char DataSGroup::impl_prefix[];
+
+bool DataSGroup::isMrv_implicit()
+{
+    return name.size() == sizeof(mrv_implicit_h) && strncmp(name.ptr(), mrv_implicit_h, name.size()) == 0;
+}
+
+void DataSGroup::setMrv_implicit(int atom_idx, int hydrogens_count)
+{
+    atoms.push(atom_idx);
+    std::string sdata = impl_prefix + std::to_string(hydrogens_count);
+    data.readString(sdata.c_str(), true);
+    name.readString(mrv_implicit_h, true);
+    detached = true;
+}
+
 Superatom::Superatom()
 {
     sgroup_type = SGroup::SG_TYPE_SUP;

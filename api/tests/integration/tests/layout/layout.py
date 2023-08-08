@@ -59,12 +59,12 @@ for db_name, load_fund in mol_db_names:
 
             mol.layout()
             mol.dearomatize()
-            cansm = mol.canonicalSmiles()
+            cansm = mol.smiles()
             mol2 = indigo.loadMolecule(cansm)
             mol2.layout()
             mol2.markEitherCisTrans()
-            mol_f2 = mol2.molfile()
             cansm2 = mol2.canonicalSmiles()
+            mol_f2 = mol2.molfile()
             mol3 = indigo.loadMolecule(mol_f2)
             cansm3 = mol3.canonicalSmiles()
             if cansm2 != cansm3:
