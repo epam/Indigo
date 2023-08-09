@@ -240,6 +240,9 @@ namespace indigo
         void clearCIP();
         CIPDesc getAtomCIP(int atom_idx);
         CIPDesc getBondCIP(int bond_idx);
+        bool isAtropisomerismReferenceAtom(int atom_idx);
+        bool isRotationBond(int bond_idx);
+
         void setAtomCIP(int atom_idx, CIPDesc cip);
         void setBondCIP(int bond_idx, CIPDesc cip);
 
