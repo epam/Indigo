@@ -36,20 +36,23 @@ IMPL_ERROR(ReactionJsonSaver, "reaction KET saver");
 
 void ReactionJsonSaver::_fixLayout(BaseReaction& rxn)
 {
-    Vec2f rmax, pmin;
+    Vec2f rmax{Vec2f::min_coord(), Vec2f::min_coord()}, pmin{Vec2f::max_coord(), Vec2f::max_coord()};
     Rect2f bb;
+    // Calculate rightTop of reactant bounding box
     for (int i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
     {
         rxn.getBaseMolecule(i).getBoundingBox(bb);
         rmax.max(bb.rightTop());
     }
 
+    // Calculate leftBottom of product bounding box
     for (int i = rxn.productBegin(); i != rxn.productEnd(); i = rxn.productNext(i))
     {
         rxn.getBaseMolecule(i).getBoundingBox(bb);
         pmin.min(bb.leftBottom());
     }
 
+    // if left side of product bb at left of right side of reactant bb - fix layout
     if (rmax.x > pmin.x)
     {
         ReactionLayout rl(rxn, true);
