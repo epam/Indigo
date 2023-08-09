@@ -361,6 +361,12 @@ namespace indigo
             return 0.0; // if pt is inside the box
         }
 
+        inline void extend(const Rect2f& second)
+        {
+            _leftBottom.min(second._leftBottom);
+            _rightTop.max(second._rightTop);
+        }
+
         inline float left() const
         {
             return _leftBottom.x;
@@ -378,13 +384,23 @@ namespace indigo
             return _rightTop.y;
         }
 
+        inline static float middle(const float& one, const float& second)
+        {
+            return (one + second) / 2;
+        }
+
         inline float middleX() const
         {
-            return (_leftBottom.x + _rightTop.x) / 2;
+            return middle(_leftBottom.x, _rightTop.x);
         }
         inline float middleY() const
         {
-            return (_leftBottom.y + _rightTop.y) / 2;
+            return middle(_leftBottom.y, _rightTop.y);
+        }
+
+        inline float between_left_box(const Rect2f& second) const
+        {
+            return middle(second.right(), left());
         }
 
         inline Vec2f leftBottom() const
