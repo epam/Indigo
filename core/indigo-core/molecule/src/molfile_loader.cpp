@@ -2063,7 +2063,9 @@ void MolfileLoader::_postLoad()
         {
             if (_bmol->stereocenters.getType(i) == 0)
             {
-                if (!stereochemistry_options.ignore_errors)
+                if (_bmol->isAtropisomerismReferenceAtom(i))
+                    _bmol->stereocenters.add_ignore(*_bmol, i, _stereocenter_types[i], _stereocenter_groups[i], false);
+                else if (!stereochemistry_options.ignore_errors)
                     throw Error("stereo type specified for atom #%d, but the bond "
                                 "directions does not say that it is a stereocenter",
                                 i);
