@@ -173,6 +173,17 @@ namespace indigo
                 print_js(outputFormat.c_str());
                 return _checkResultString(indigoJson(id()));
             }
+            else if (outputFormat == "sdf" || outputFormat == "chemical/x-sdf")
+            {
+                auto comp_it = IndigoObject(_checkResult(indigoIterateComponents(id())));
+                while (const auto frag_id = _checkResult(indigoNext(comp_it.id)))
+                {
+                     const mol_obj = IndigoObject(_checkResult(indigoClone(frag_id)));    
+                }
+
+                print_js(outputFormat.c_str());
+                return _checkResultString(indigoJson(id()));
+            }
 
             std::stringstream ss;
             ss << "Unknown output format: " << outputFormat;
