@@ -115,6 +115,12 @@ namespace indigo
         {
             return _meta;
         }
+
+        PropertiesMap& properties()
+        {
+            return _properties;
+        }
+
         // Casting methods. Invalid casting throws exceptions.
         virtual Molecule& asMolecule();
         virtual QueryMolecule& asQueryMolecule();
@@ -520,6 +526,7 @@ namespace indigo
         MetaDataStorage _meta;
 
         RedBlackObjMap<int, Array<char>> aliases;
+        PropertiesMap _properties;
     };
 
 } // namespace indigo

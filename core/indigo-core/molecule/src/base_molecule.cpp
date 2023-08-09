@@ -650,7 +650,7 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
     makeSubmolecule(other, *mapping, inv_mapping, skip_flags);
 
     _meta.clone(other._meta);
-
+    _properties.copy(other._properties);
     name.copy(other.name);
 }
 
@@ -681,7 +681,7 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
     _cloneGraph_KeepIndices(other);
 
     _meta.clone(other._meta);
-
+    _properties.copy(other._properties);
     _mergeWithSubmolecule_Sub(other, vertices, 0, mapping, edge_mapping, skip_flags);
 
     name.copy(other.name);

@@ -251,6 +251,7 @@ enum
     OEXT_CDXML,
     OEXT_CDXMLR,
     OEXT_SMI,
+    OEXT_SD1,
     OEXT_OTHER
 };
 
@@ -339,7 +340,7 @@ int parseParams(Params* p, int argc, char* argv[])
         p->file_to_load = argv[1];
 
         if (strcasecmp(p->infile_ext, "cdx") == 0 || strcasecmp(p->infile_ext, "b64") == 0 || strcasecmp(p->infile_ext, "mol") == 0 ||
-            strcasecmp(p->infile_ext, "ket") == 0 || strcasecmp(p->infile_ext, "xml") == 0)
+            strcasecmp(p->infile_ext, "ket") == 0 || strcasecmp(p->infile_ext, "xml") == 0 || strcasecmp(p->infile_ext, "sd1") == 0)
             p->mode = MODE_SINGLE_MOLECULE;
         else if (strcasecmp(p->infile_ext, "rxn") == 0 || strcasecmp(p->infile_ext, "ker") == 0 || strcasecmp(p->infile_ext, "cdr") == 0 ||
                  strcasecmp(p->infile_ext, "xmr") == 0)
@@ -882,6 +883,8 @@ int main(int argc, char* argv[])
         p.out_ext = OEXT_CDX64;
     else if (strcmp(p.outfile_ext, "cdr") == 0)
         p.out_ext = OEXT_CDR;
+    else if (strcmp(p.outfile_ext, "sd1") == 0)
+        p.out_ext = OEXT_SD1;
 
     // guess whether to layout or render by extension
     p.action = ACTION_LAYOUT;
