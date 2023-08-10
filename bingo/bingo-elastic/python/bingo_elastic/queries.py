@@ -112,6 +112,7 @@ class SubstructureQuery(CompilableQuery):
             return None
 
         mol = record.as_indigo_object(indigo)
+        mol.aromatize()
         matcher = indigo.substructureMatcher(mol, options)
 
         if matcher.match(self._value):
