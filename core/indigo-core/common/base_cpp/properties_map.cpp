@@ -96,6 +96,11 @@ void PropertiesMap::clear()
     _propertyNames.clear();
 }
 
+bool PropertiesMap::is_empty()
+{
+    return _properties.size() == 0;
+}
+
 bool PropertiesMap::contains(const char* key) const
 {
     return _properties.find(key);

@@ -16,6 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
 #include <regex>
 
 #include "base_cpp/output.h"
@@ -499,6 +501,31 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
             else
                 loader.loadMolecule((Molecule&)*mol_fragment);
             mol_fragment->properties().copy(properties);
+            if (!properties.is_empty())
+            {
+                using namespace rapidjson;
+                StringBuffer str_buf;
+                Writer<StringBuffer> string_writer(str_buf);
+                string_writer.StartObject();
+                string_writer.Key("properties");
+                string_writer.StartArray();
+                for (auto it = properties.elements().begin(); it != properties.elements().end(); ++it)
+                {
+                    string_writer.StartObject();
+                    string_writer.Key("key");
+                    string_writer.String(properties.key(*it));
+                    string_writer.Key("value");
+                    string_writer.String(properties.value(*it));
+                    string_writer.EndObject();
+                }
+                string_writer.EndArray();
+                string_writer.EndObject();
+                int grp_idx = mol_fragment->sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+                auto& dsg = (DataSGroup&)mol_fragment->sgroups.getSGroup(grp_idx);
+                dsg.atoms.push(0);
+                dsg.name.readString("sdf", true);
+                dsg.data.readString(str_buf.GetString(), true);
+            }
             Array<int> mapping;
             mol.mergeWithMolecule(*mol_fragment, &mapping, 0);
         }

@@ -850,6 +850,7 @@ int main(int argc, char* argv[])
     indigoSetErrorHandler(onError, 0);
 
     indigoSetOption("ignore-stereochemistry-errors", "on");
+    indigoSetOption("ignore-bad-valence", "on");
     indigoSetOption("molfile-saving-mode", "3000");
     indigoSetOptionBool("json-saving-pretty", "on");
 
@@ -955,6 +956,32 @@ int main(int argc, char* argv[])
                 if (fp)
                 {
                     fputs(pMol, fp);
+                    fclose(fp);
+                }
+                else
+                {
+                    fprintf(stderr, "can not write: %s\n", p.outfile);
+                    return -1;
+                }
+            }
+            else if (p.out_ext == OEXT_SD1)
+            {
+                auto buffer = indigoWriteBuffer();
+                auto comp_it = indigoIterateComponents(obj);
+                while( indigoHasNext(comp_it))
+                {
+                    auto frag_id = indigoNext(comp_it);
+                    const auto mol_obj = indigoClone(frag_id);
+                    indigoSdfAppend(buffer, mol_obj);
+                    indigoFree(mol_obj);
+                    indigoFree(frag_id);
+                }
+                indigoFree(comp_it);
+                char* pSdf = indigoToString( buffer );
+                FILE* fp = fopen(p.outfile, "w+");
+                if (fp)
+                {
+                    fputs(pSdf, fp);
                     fclose(fp);
                 }
                 else

@@ -149,23 +149,58 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<int>, sgs_sorted);
     _checkSGroupIndices(mol, sgs_sorted);
-
+    bool sgroups_written = false;
     if (mol.countSGroups() > 0)
     {
-        writer.Key("sgroups");
-        writer.StartArray();
         int idx = 1;
         for (int i = 0; i < sgs_sorted.size(); i++)
         {
             int sg_idx = sgs_sorted[i];
-            saveSGroup(mol.sgroups.getSGroup(sg_idx), writer);
+            auto& sgrp = mol.sgroups.getSGroup(sg_idx);
+            if (sgrp.sgroup_type == SGroup::SG_TYPE_DAT && dataSGroupToSDFProperty(mol, (DataSGroup&)sgrp))
+                continue;
+            if (!sgroups_written)
+            {
+                writer.Key("sgroups");
+                writer.StartArray();
+                sgroups_written = true;
+            }
+            saveSGroup(mol, sgrp, writer);
         }
-        writer.EndArray();
+        if (sgroups_written)
+            writer.EndArray();
     }
 }
 
-void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
+bool MoleculeJsonSaver::dataSGroupToSDFProperty(BaseMolecule& mol, DataSGroup& dsg)
 {
+    auto name = dsg.name.ptr();
+    auto data = dsg.data.ptr();
+    if (name == std::string("sdf"))
+    {
+        Document doc;
+        if (!doc.Parse(data).HasParseError())
+        {
+            if (doc.HasMember("properties"))
+            {
+                Value& props = doc["properties"];
+                // rewind to first molecule node
+                for (int i = 0; i < props.Size(); ++i)
+                {
+                    Value& prop = props[i];
+                    if (prop.HasMember("key") && prop.HasMember("value"))
+                        mol.properties().insert(prop["key"].GetString(), prop["value"].GetString());
+                }
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void MoleculeJsonSaver::saveSGroup(BaseMolecule& mol, SGroup& sgroup, JsonWriter& writer)
+{
+
     writer.StartObject();
     writer.Key("type");
     writer.String(SGroup::typeToString(sgroup.sgroup_type));
@@ -185,12 +220,12 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
     case SGroup::SG_TYPE_DAT: {
         DataSGroup& dsg = (DataSGroup&)sgroup;
         auto name = dsg.name.ptr();
+        auto data = dsg.data.ptr();
         if (name && strlen(name))
         {
             writer.Key("fieldName");
             writer.String(name);
         }
-        auto data = dsg.data.ptr();
         if (data && strlen(data))
         {
             writer.Key("fieldData");
@@ -1072,7 +1107,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     {
         _pmol = nullptr;
         _pqmol = nullptr;
-
         Filter filt(mol->getDecomposition().ptr(), Filter::EQ, idx);
         std::unique_ptr<BaseMolecule> component(mol->neu());
         component->makeSubmolecule(*mol, filt, NULL, NULL);
@@ -1142,6 +1176,21 @@ void MoleculeJsonSaver::saveFragment(BaseMolecule& fragment, JsonWriter& writer)
     saveSGroups(fragment, writer);
     saveHighlights(fragment, writer);
     saveSelection(fragment, writer);
+    if (!fragment.properties().is_empty())
+    {
+        writer.Key("properties");
+        writer.StartArray();
+        for (auto it = fragment.properties().elements().begin(); it != fragment.properties().elements().end(); ++it)
+        {
+            writer.StartObject();
+            writer.Key("key");
+            writer.String(fragment.properties().key(*it));
+            writer.Key("value");
+            writer.String(fragment.properties().value(*it));
+            writer.EndObject();
+        }
+        writer.EndArray();
+    }
 }
 
 void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol)

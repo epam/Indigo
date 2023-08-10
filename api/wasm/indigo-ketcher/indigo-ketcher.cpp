@@ -175,19 +175,22 @@ namespace indigo
             }
             else if (outputFormat == "sdf" || outputFormat == "chemical/x-sdf")
             {
+                auto buffer = IndigoObject(_checkResult(indigoWriteBuffer()));
                 auto comp_it = IndigoObject(_checkResult(indigoIterateComponents(id())));
-                while (const auto frag_id = _checkResult(indigoNext(comp_it.id)))
+                while (indigoHasNext(comp_it.id))
                 {
-                     const mol_obj = IndigoObject(_checkResult(indigoClone(frag_id)));    
+                     const auto frag = IndigoObject(_checkResult(indigoNext(comp_it.id)));
+                     const auto mol = IndigoObject(_checkResult(indigoClone(frag.id))); 
+                     indigoSdfAppend(buffer.id, mol.id);   
                 }
-
                 print_js(outputFormat.c_str());
-                return _checkResultString(indigoJson(id()));
+                return _checkResultString(indigoToString(buffer.id));
             }
 
             std::stringstream ss;
             ss << "Unknown output format: " << outputFormat;
             jsThrow(ss.str().c_str());
+            return ""; // suppress warning
         }
 
         IndigoKetcherObject substructure(const std::vector<int>& selected_atoms) const
