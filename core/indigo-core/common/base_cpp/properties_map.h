@@ -44,6 +44,7 @@ namespace indigo
         //   }
         void copy(RedBlackStringObjMap<Array<char>>& properties);
         void copy(PropertiesMap&);
+        void merge(PropertiesMap&);
         void insert(const char* key, const char* value);
         void insert(const char* key, const std::string& value);
 
@@ -57,6 +58,7 @@ namespace indigo
         const char* at(const char* key) const;
         void remove(const char* key);
         void clear();
+        bool is_empty();
 
         class PrIter : public AutoIterator
         {

@@ -383,6 +383,13 @@ def save_moldata(md, output_format=None, options={}, indigo=None):
         res = indigo.inchi.getInchi(md.struct)
         aux = indigo.inchi.getAuxInfo()
         return "{}\n{}".format(res, aux)
+    elif output_format == "chemical/x-sdf":
+        buffer = indigo.writeBuffer()
+        sdfSaver = indigo.createSaver(buffer, "sdf")
+        for frag in md.struct.iterateComponents():
+            sdfSaver.append(frag.clone())
+        sdfSaver.close()
+        return buffer.toString()
     raise HttpException("Format %s is not supported" % output_format, 400)
 
 

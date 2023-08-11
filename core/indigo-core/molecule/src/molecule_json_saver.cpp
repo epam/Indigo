@@ -149,7 +149,6 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<int>, sgs_sorted);
     _checkSGroupIndices(mol, sgs_sorted);
-
     if (mol.countSGroups() > 0)
     {
         writer.Key("sgroups");
@@ -158,13 +157,14 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
         for (int i = 0; i < sgs_sorted.size(); i++)
         {
             int sg_idx = sgs_sorted[i];
-            saveSGroup(mol.sgroups.getSGroup(sg_idx), writer);
+            auto& sgrp = mol.sgroups.getSGroup(sg_idx);
+            saveSGroup(sgrp, writer);
         }
         writer.EndArray();
     }
 }
 
-void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
+void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
 {
     writer.StartObject();
     writer.Key("type");
@@ -185,12 +185,12 @@ void indigo::MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
     case SGroup::SG_TYPE_DAT: {
         DataSGroup& dsg = (DataSGroup&)sgroup;
         auto name = dsg.name.ptr();
+        auto data = dsg.data.ptr();
         if (name && strlen(name))
         {
             writer.Key("fieldName");
             writer.String(name);
         }
-        auto data = dsg.data.ptr();
         if (data && strlen(data))
         {
             writer.Key("fieldData");
@@ -1006,7 +1006,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
-
     if (!BaseMolecule::hasCoord(*mol))
     {
         MoleculeLayout ml(*mol, false);
@@ -1072,7 +1071,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     {
         _pmol = nullptr;
         _pqmol = nullptr;
-
         Filter filt(mol->getDecomposition().ptr(), Filter::EQ, idx);
         std::unique_ptr<BaseMolecule> component(mol->neu());
         component->makeSubmolecule(*mol, filt, NULL, NULL);
@@ -1142,6 +1140,22 @@ void MoleculeJsonSaver::saveFragment(BaseMolecule& fragment, JsonWriter& writer)
     saveSGroups(fragment, writer);
     saveHighlights(fragment, writer);
     saveSelection(fragment, writer);
+    if (fragment.properties().size())
+    {
+        auto& props = fragment.properties().value(0);
+        writer.Key("properties");
+        writer.StartArray();
+        for (auto it = props.elements().begin(); it != props.elements().end(); ++it)
+        {
+            writer.StartObject();
+            writer.Key("key");
+            writer.String(props.key(*it));
+            writer.Key("value");
+            writer.String(props.value(*it));
+            writer.EndObject();
+        }
+        writer.EndArray();
+    }
 }
 
 void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol)

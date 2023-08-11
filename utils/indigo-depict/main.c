@@ -251,6 +251,7 @@ enum
     OEXT_CDXML,
     OEXT_CDXMLR,
     OEXT_SMI,
+    OEXT_SD1,
     OEXT_OTHER
 };
 
@@ -339,7 +340,7 @@ int parseParams(Params* p, int argc, char* argv[])
         p->file_to_load = argv[1];
 
         if (strcasecmp(p->infile_ext, "cdx") == 0 || strcasecmp(p->infile_ext, "b64") == 0 || strcasecmp(p->infile_ext, "mol") == 0 ||
-            strcasecmp(p->infile_ext, "ket") == 0 || strcasecmp(p->infile_ext, "xml") == 0)
+            strcasecmp(p->infile_ext, "ket") == 0 || strcasecmp(p->infile_ext, "xml") == 0 || strcasecmp(p->infile_ext, "sd1") == 0)
             p->mode = MODE_SINGLE_MOLECULE;
         else if (strcasecmp(p->infile_ext, "rxn") == 0 || strcasecmp(p->infile_ext, "ker") == 0 || strcasecmp(p->infile_ext, "cdr") == 0 ||
                  strcasecmp(p->infile_ext, "xmr") == 0)
@@ -849,6 +850,7 @@ int main(int argc, char* argv[])
     indigoSetErrorHandler(onError, 0);
 
     indigoSetOption("ignore-stereochemistry-errors", "on");
+    indigoSetOption("ignore-bad-valence", "on");
     indigoSetOption("molfile-saving-mode", "3000");
     indigoSetOptionBool("json-saving-pretty", "on");
 
@@ -882,6 +884,8 @@ int main(int argc, char* argv[])
         p.out_ext = OEXT_CDX64;
     else if (strcmp(p.outfile_ext, "cdr") == 0)
         p.out_ext = OEXT_CDR;
+    else if (strcmp(p.outfile_ext, "sd1") == 0)
+        p.out_ext = OEXT_SD1;
 
     // guess whether to layout or render by extension
     p.action = ACTION_LAYOUT;
@@ -952,6 +956,32 @@ int main(int argc, char* argv[])
                 if (fp)
                 {
                     fputs(pMol, fp);
+                    fclose(fp);
+                }
+                else
+                {
+                    fprintf(stderr, "can not write: %s\n", p.outfile);
+                    return -1;
+                }
+            }
+            else if (p.out_ext == OEXT_SD1)
+            {
+                auto buffer = indigoWriteBuffer();
+                auto comp_it = indigoIterateComponents(obj);
+                while (indigoHasNext(comp_it))
+                {
+                    auto frag_id = indigoNext(comp_it);
+                    const auto mol_obj = indigoClone(frag_id);
+                    indigoSdfAppend(buffer, mol_obj);
+                    indigoFree(mol_obj);
+                    indigoFree(frag_id);
+                }
+                indigoFree(comp_it);
+                char* pSdf = indigoToString(buffer);
+                FILE* fp = fopen(p.outfile, "w+");
+                if (fp)
+                {
+                    fputs(pSdf, fp);
                     fclose(fp);
                 }
                 else

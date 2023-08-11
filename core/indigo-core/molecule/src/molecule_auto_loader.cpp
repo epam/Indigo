@@ -16,6 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
 #include <regex>
 
 #include "base_cpp/output.h"
@@ -476,24 +478,44 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
 
     {
         SdfLoader sdf_loader(*_scanner);
-        sdf_loader.readNext();
+        bool is_first = true;
+        while (!sdf_loader.isEOF())
+        {
+            sdf_loader.readNext();
 
-        // Copy properties
-        properties.copy(sdf_loader.properties);
+            // Copy properties
+            properties.copy(sdf_loader.properties);
 
-        BufferScanner scanner2(sdf_loader.data);
+            BufferScanner scanner2(sdf_loader.data);
 
-        MolfileLoader loader(scanner2);
-        loader.stereochemistry_options = stereochemistry_options;
-        loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-        loader.skip_3d_chirality = skip_3d_chirality;
-        loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-        loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-        loader.treat_stereo_as = treat_stereo_as;
+            MolfileLoader loader(scanner2);
+            loader.stereochemistry_options = stereochemistry_options;
+            loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+            loader.skip_3d_chirality = skip_3d_chirality;
+            loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+            loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+            loader.treat_stereo_as = treat_stereo_as;
 
-        if (query)
-            loader.loadQueryMolecule((QueryMolecule&)mol);
-        else
-            loader.loadMolecule((Molecule&)mol);
+            if (is_first && sdf_loader.isEOF())
+            {
+                if (query)
+                    loader.loadQueryMolecule((QueryMolecule&)mol);
+                else
+                    loader.loadMolecule((Molecule&)mol);
+            }
+            else
+            {
+                std::unique_ptr<BaseMolecule> mol_fragment(mol.neu());
+                if (query)
+                    loader.loadQueryMolecule((QueryMolecule&)*mol_fragment);
+                else
+                    loader.loadMolecule((Molecule&)*mol_fragment);
+                if (!properties.is_empty() && mol_fragment->vertexCount())
+                    mol_fragment->properties().insert(0).copy(properties);
+                Array<int> mapping;
+                mol.mergeWithMolecule(*mol_fragment, &mapping, 0);
+            }
+            is_first = false;
+        }
     }
 }

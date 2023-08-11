@@ -40,6 +40,12 @@ void PropertiesMap::copy(PropertiesMap& other)
     }
 }
 
+void PropertiesMap::merge(PropertiesMap& other)
+{
+    for (auto p : other.elements())
+        insert(other.key(p), other.value(p));
+}
+
 void PropertiesMap::insert(const char* key, const std::string& value)
 {
     insert(key, value.c_str());
@@ -94,6 +100,11 @@ void PropertiesMap::clear()
 {
     _properties.clear();
     _propertyNames.clear();
+}
+
+bool PropertiesMap::is_empty()
+{
+    return _properties.size() == 0;
 }
 
 bool PropertiesMap::contains(const char* key) const

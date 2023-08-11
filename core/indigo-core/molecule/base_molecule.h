@@ -23,6 +23,7 @@
 #include <set>
 
 #include "base_cpp/obj_array.h"
+#include "base_cpp/properties_map.h"
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
 #include "math/algebra.h"
@@ -115,6 +116,12 @@ namespace indigo
         {
             return _meta;
         }
+
+        RedBlackObjMap<int, PropertiesMap>& properties()
+        {
+            return _properties;
+        }
+
         // Casting methods. Invalid casting throws exceptions.
         virtual Molecule& asMolecule();
         virtual QueryMolecule& asQueryMolecule();
@@ -330,6 +337,7 @@ namespace indigo
         void clone_KeepIndices(BaseMolecule& other, int skip_flags = 0);
 
         void mergeWithMolecule(BaseMolecule& other, Array<int>* mapping, int skip_flags = 0);
+        void copyProperties(BaseMolecule& other, const Array<int>& mapping);
 
         void removeAtoms(const Array<int>& indices);
         void removeAtoms(const Filter& filter);
@@ -523,6 +531,7 @@ namespace indigo
         MetaDataStorage _meta;
 
         RedBlackObjMap<int, Array<char>> aliases;
+        RedBlackObjMap<int, PropertiesMap> _properties;
     };
 
 } // namespace indigo

@@ -945,6 +945,17 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
     }
 }
 
+void MoleculeJsonLoader::parseProperties(const rapidjson::Value& props, BaseMolecule& mol)
+{
+    auto& properties = mol.properties().insert(0);
+    for (SizeType i = 0; i < props.Size(); i++)
+    {
+        const Value& prop = props[i];
+        if (prop.HasMember("key") && prop.HasMember("value"))
+            properties.insert(prop["key"].GetString(), prop["value"].GetString());
+    }
+}
+
 void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 {
     for (int node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
@@ -993,6 +1004,11 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             if (mol_node.HasMember("stereoFlagPosition"))
             {
                 setStereoFlagPosition(mol_node["stereoFlagPosition"], node_idx, mol);
+            }
+
+            if (mol_node.HasMember("properties"))
+            {
+                parseProperties(mol_node["properties"], *pmol);
             }
         }
         else
