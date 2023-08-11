@@ -51,8 +51,8 @@ Atoms: 0
 Bonds: 0
 
 (** #14 **): Load from compessed binary (../../../../../data/molecules/basic/benzodiazepine.sdf.gz)
-Atoms: 33
-Bonds: 35
+Atoms: 668941
+Bonds: 707945
 
 ---- TestLoadFromFile ----
 
