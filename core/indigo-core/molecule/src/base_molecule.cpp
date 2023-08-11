@@ -642,7 +642,7 @@ void BaseMolecule::copyProperties(BaseMolecule& other, const Array<int>& mapping
     {
         auto ref_atom = mapping[other._properties.key(it)];
         if (ref_atom >= 0)
-            _properties.insert(ref_atom).copy(other._properties.value(it));
+            _properties.findOrInsert(ref_atom).copy(other._properties.value(it));
     }
 }
 
