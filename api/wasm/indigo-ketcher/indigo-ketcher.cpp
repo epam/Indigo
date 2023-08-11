@@ -179,9 +179,9 @@ namespace indigo
                 auto comp_it = IndigoObject(_checkResult(indigoIterateComponents(id())));
                 while (indigoHasNext(comp_it.id))
                 {
-                     const auto frag = IndigoObject(_checkResult(indigoNext(comp_it.id)));
-                     const auto mol = IndigoObject(_checkResult(indigoClone(frag.id))); 
-                     indigoSdfAppend(buffer.id, mol.id);   
+                    const auto frag = IndigoObject(_checkResult(indigoNext(comp_it.id)));
+                    const auto mol = IndigoObject(_checkResult(indigoClone(frag.id)));
+                    indigoSdfAppend(buffer.id, mol.id);
                 }
                 print_js(outputFormat.c_str());
                 return _checkResultString(indigoToString(buffer.id));

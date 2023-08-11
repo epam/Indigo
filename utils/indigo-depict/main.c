@@ -917,7 +917,7 @@ int main(int argc, char* argv[])
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
-            // indigoLayout(obj);
+            indigoLayout(obj);
             if (p.out_ext == OEXT_MOL)
                 indigoSaveMolfileToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_KET)
@@ -968,7 +968,7 @@ int main(int argc, char* argv[])
             {
                 auto buffer = indigoWriteBuffer();
                 auto comp_it = indigoIterateComponents(obj);
-                while( indigoHasNext(comp_it))
+                while (indigoHasNext(comp_it))
                 {
                     auto frag_id = indigoNext(comp_it);
                     const auto mol_obj = indigoClone(frag_id);
@@ -977,11 +977,12 @@ int main(int argc, char* argv[])
                     indigoFree(frag_id);
                 }
                 indigoFree(comp_it);
-                char* pSdf = indigoToString( buffer );
+                char* pSdf = indigoToString(buffer);
                 FILE* fp = fopen(p.outfile, "w+");
                 if (fp)
                 {
-                    fputs(pSdf, fp);                    fclose(fp);
+                    fputs(pSdf, fp);
+                    fclose(fp);
                 }
                 else
                 {
