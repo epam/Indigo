@@ -914,9 +914,6 @@ int main(int argc, char* argv[])
         else
             obj = indigoLoadMolecule(reader);
 
-        auto chir = indigoCheckChirality(obj);
-        printf("chir=%d\n", chir);
-
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {

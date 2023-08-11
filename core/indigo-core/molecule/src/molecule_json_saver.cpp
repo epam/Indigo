@@ -158,13 +158,13 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
         {
             int sg_idx = sgs_sorted[i];
             auto& sgrp = mol.sgroups.getSGroup(sg_idx);
-            saveSGroup(mol, sgrp, writer);
+            saveSGroup(sgrp, writer);
         }
         writer.EndArray();
     }
 }
 
-void MoleculeJsonSaver::saveSGroup(BaseMolecule& mol, SGroup& sgroup, JsonWriter& writer)
+void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
 {
     writer.StartObject();
     writer.Key("type");

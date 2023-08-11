@@ -478,9 +478,9 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
 
     {
         SdfLoader sdf_loader(*_scanner);
+        bool is_first = true;
         while (!sdf_loader.isEOF())
         {
-            std::unique_ptr<BaseMolecule> mol_fragment(mol.neu());
             sdf_loader.readNext();
 
             // Copy properties
@@ -496,14 +496,26 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader.treat_stereo_as = treat_stereo_as;
 
-            if (query)
-                loader.loadQueryMolecule((QueryMolecule&)*mol_fragment);
+            if (is_first && sdf_loader.isEOF())
+            {
+                if (query)
+                    loader.loadQueryMolecule((QueryMolecule&)mol);
+                else
+                    loader.loadMolecule((Molecule&)mol);
+            }
             else
-                loader.loadMolecule((Molecule&)*mol_fragment);
-            if (!properties.is_empty() && mol_fragment->vertexCount())
-                mol_fragment->properties().insert(0).copy(properties);
-            Array<int> mapping;
-            mol.mergeWithMolecule(*mol_fragment, &mapping, 0);
+            {
+                std::unique_ptr<BaseMolecule> mol_fragment(mol.neu());
+                if (query)
+                    loader.loadQueryMolecule((QueryMolecule&)*mol_fragment);
+                else
+                    loader.loadMolecule((Molecule&)*mol_fragment);
+                if (!properties.is_empty() && mol_fragment->vertexCount())
+                    mol_fragment->properties().insert(0).copy(properties);
+                Array<int> mapping;
+                mol.mergeWithMolecule(*mol_fragment, &mapping, 0);
+            }
+            is_first = false;
         }
     }
 }
