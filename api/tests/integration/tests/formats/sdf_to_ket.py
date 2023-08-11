@@ -28,10 +28,14 @@ files = ["acd2d_err"]
 files.sort()
 for filename in files:
     try:
-        mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".sdf"))
+        mol = indigo.loadMoleculeFromFile(
+            os.path.join(root, filename + ".sdf")
+        )
     except:
         try:
-            mol = indigo.loadQueryMoleculeFromFile(os.path.join(root, filename + ".sdf"))
+            mol = indigo.loadQueryMoleculeFromFile(
+                os.path.join(root, filename + ".sdf")
+            )
         except IndigoException as e:
             print("  %s" % (getIndigoExceptionText(e)))
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:

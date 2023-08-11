@@ -24,24 +24,26 @@ print("*** KET to SDF ***")
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
-files = [
-    "acd2d_err3",
-]
+files = ["acd2d_err3"]
 
 files.sort()
 for filename in files:
     try:
-        ket = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
+        ket = indigo.loadMoleculeFromFile(
+            os.path.join(root, filename + ".ket")
+        )
     except:
         try:
-            ket = indigo.loadQueryMoleculeFromFile(os.path.join(root, filename + ".ket"))
+            ket = indigo.loadQueryMoleculeFromFile(
+                os.path.join(root, filename + ".ket")
+            )
         except IndigoException as e:
             print("  %s" % (getIndigoExceptionText(e)))
 
     buffer = indigo.writeBuffer()
     sdfSaver = indigo.createSaver(buffer, "sdf")
     for frag in ket.iterateComponents():
-        sdfSaver.append( frag.clone() )
+        sdfSaver.append(frag.clone())
     sdfSaver.close()
     sdf = buffer.toString()
     # with open(os.path.join(ref_path, filename) + ".sdf", "w") as file:
