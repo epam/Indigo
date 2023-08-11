@@ -500,8 +500,8 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
                 loader.loadQueryMolecule((QueryMolecule&)*mol_fragment);
             else
                 loader.loadMolecule((Molecule&)*mol_fragment);
-
-            mol_fragment->properties().insert(0).copy(properties);
+            if (!properties.is_empty() && mol_fragment->vertexCount())
+                mol_fragment->properties().insert(0).copy(properties);
             Array<int> mapping;
             mol.mergeWithMolecule(*mol_fragment, &mapping, 0);
         }
