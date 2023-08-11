@@ -149,24 +149,18 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<int>, sgs_sorted);
     _checkSGroupIndices(mol, sgs_sorted);
-    bool sgroups_written = false;
     if (mol.countSGroups() > 0)
     {
+        writer.Key("sgroups");
+        writer.StartArray();
         int idx = 1;
         for (int i = 0; i < sgs_sorted.size(); i++)
         {
             int sg_idx = sgs_sorted[i];
             auto& sgrp = mol.sgroups.getSGroup(sg_idx);
-            if (!sgroups_written)
-            {
-                writer.Key("sgroups");
-                writer.StartArray();
-                sgroups_written = true;
-            }
             saveSGroup(mol, sgrp, writer);
         }
-        if (sgroups_written)
-            writer.EndArray();
+        writer.EndArray();
     }
 }
 
