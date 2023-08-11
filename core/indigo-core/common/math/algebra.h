@@ -367,6 +367,12 @@ namespace indigo
             _rightTop.max(second._rightTop);
         }
 
+        inline void extend_x(const float& x)
+        {
+            _leftBottom.x -= x;
+            _rightTop.x += x;
+        }
+
         inline float left() const
         {
             return _leftBottom.x;

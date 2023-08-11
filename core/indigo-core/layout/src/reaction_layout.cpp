@@ -24,8 +24,8 @@
 using namespace indigo;
 
 ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
-    : bond_length(1), plus_interval_factor(2), arrow_interval_factor(2), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout),
-      horizontal_interval_factor(0.5f)
+    : bond_length(1), plus_interval_factor(1), arrow_interval_factor(2), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout),
+      horizontal_interval_factor(0.5f), atom_label_width(0.5f)
 {
     max_iterations = 0;
 }
@@ -53,7 +53,7 @@ void ReactionLayout::make()
     {
         bool single_atom = _getMol(i).vertexCount() == 1;
         if (i != _r.reactantBegin())
-            _pushSpace(line, plus_interval_factor + (single_atom ? bond_length : kHalfBondLength));
+            _pushSpace(line, plus_interval_factor);
         _pushMol(line, i);
     }
 
@@ -78,7 +78,7 @@ void ReactionLayout::make()
     {
         bool single_atom = _getMol(i).vertexCount() == 1;
         if (i != _r.productBegin())
-            _pushSpace(line, plus_interval_factor + (single_atom ? bond_length : 0));
+            _pushSpace(line, plus_interval_factor);
         _pushMol(line, i);
     }
 
@@ -108,20 +108,8 @@ Metalayout::LayoutItem& ReactionLayout::_pushMol(Metalayout::LayoutLine& line, i
     }
 
     Rect2f bbox;
-    if (mol.vertexCount() == 1)
-    {
-        int max_h = mol.getAtomMaxH(0);
-        int mult = max_h + 1;
-        if (mult > kMaxSymbols)
-            mult = kMaxSymbols;
-        item.minScaledSize.set(0, kMinHeight);
-        mol.getBoundingBox(bbox, Vec2f(bond_length * mult, bond_length));
-    }
-    else
-    {
-        mol.getBoundingBox(bbox, Vec2f(bond_length, bond_length));
-        item.minScaledSize.set(bond_length, bond_length);
-    }
+    mol.getBoundingBox(bbox);
+    bbox.extend_x(atom_label_width);
     item.min.copy(bbox.leftBottom());
     item.max.copy(bbox.rightTop());
     return item;
@@ -154,6 +142,8 @@ void ReactionLayout::cb_process(Metalayout::LayoutItem& item, const Vec2f& pos, 
     if (item.fragment)
     {
         ReactionLayout* layout = (ReactionLayout*)context;
-        layout->_ml.adjustMol(layout->_getMol(item.id), item.min, pos2);
+        Vec2f atom_min{item.min};
+        atom_min.x += layout->atom_label_width;
+        layout->_ml.adjustMol(layout->_getMol(item.id), atom_min, pos2);
     }
 }

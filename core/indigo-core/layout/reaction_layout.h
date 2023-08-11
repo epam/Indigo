@@ -36,6 +36,7 @@ namespace indigo
         void make();
 
         float bond_length;
+        float atom_label_width;
         float plus_interval_factor;
         float arrow_interval_factor;
         float horizontal_interval_factor;
