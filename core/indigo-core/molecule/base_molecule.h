@@ -117,7 +117,7 @@ namespace indigo
             return _meta;
         }
 
-        PropertiesMap& properties()
+        RedBlackObjMap<int, PropertiesMap>& properties()
         {
             return _properties;
         }
@@ -334,6 +334,7 @@ namespace indigo
         void clone_KeepIndices(BaseMolecule& other, int skip_flags = 0);
 
         void mergeWithMolecule(BaseMolecule& other, Array<int>* mapping, int skip_flags = 0);
+        void copyProperties(BaseMolecule& other, const Array<int>& mapping);
 
         void removeAtoms(const Array<int>& indices);
         void removeAtoms(const Filter& filter);
@@ -527,7 +528,7 @@ namespace indigo
         MetaDataStorage _meta;
 
         RedBlackObjMap<int, Array<char>> aliases;
-        PropertiesMap _properties;
+        RedBlackObjMap<int, PropertiesMap> _properties;
     };
 
 } // namespace indigo

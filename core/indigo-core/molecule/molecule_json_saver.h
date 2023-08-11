@@ -190,7 +190,6 @@ namespace indigo
 
         void saveSGroups(BaseMolecule& mol, JsonWriter& writer);
         void saveSGroup(BaseMolecule& mol, SGroup& sgroup, JsonWriter& writer);
-        bool dataSGroupToSDFProperty(BaseMolecule& mol, DataSGroup& dsg);
         void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
         void saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
         void saveHighlights(BaseMolecule& mol, JsonWriter& writer);

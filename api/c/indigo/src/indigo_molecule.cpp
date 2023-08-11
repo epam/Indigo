@@ -642,7 +642,7 @@ int IndigoMoleculeComponent::getIndex()
 
 IndigoObject* IndigoMoleculeComponent::clone()
 {
-    std::unique_ptr<IndigoObject> res;
+    std::unique_ptr<IndigoBaseMolecule> res;
     BaseMolecule* newmol;
 
     if (mol.isQueryMolecule())
@@ -658,6 +658,12 @@ IndigoObject* IndigoMoleculeComponent::clone()
 
     Filter filter(mol.getDecomposition().ptr(), Filter::EQ, index);
     newmol->makeSubmolecule(mol, filter, 0, 0);
+    for (auto it = newmol->properties().begin(); it != newmol->properties().end(); ++it)
+    {
+        auto& props = newmol->properties().value(it);
+        res->getProperties().merge(props);
+    }
+
     return res.release();
 }
 

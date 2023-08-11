@@ -487,6 +487,7 @@ void BaseMolecule::mergeWithSubmolecule(BaseMolecule& mol, const Array<int>& ver
 
     // all the chemical stuff
     _mergeWithSubmolecule_Sub(mol, vertices, edges, *mapping_out, edge_mapping, skip_flags);
+    copyProperties(mol, *mapping_out);
 }
 
 int BaseMolecule::mergeAtoms(int atom1, int atom2)
@@ -635,6 +636,16 @@ void BaseMolecule::makeEdgeSubmolecule(BaseMolecule& mol, const Array<int>& vert
     mergeWithSubmolecule(mol, vertices, &edges, v_mapping, skip_flags);
 }
 
+void BaseMolecule::copyProperties(BaseMolecule& other, const Array<int>& mapping)
+{
+    for (auto it = other._properties.begin(); it != other._properties.end(); ++it)
+    {
+        auto ref_atom = mapping[other._properties.key(it)];
+        if( ref_atom >= 0)
+            _properties.insert(ref_atom).copy(other._properties.value(it));
+    }
+}
+
 void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* inv_mapping, int skip_flags)
 {
     QS_DEF(Array<int>, tmp_mapping);
@@ -648,10 +659,9 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
         mapping->push(i);
 
     makeSubmolecule(other, *mapping, inv_mapping, skip_flags);
-
     _meta.clone(other._meta);
-    _properties.copy(other._properties);
     name.copy(other.name);
+    copyProperties(other, *mapping);
 }
 
 void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
@@ -681,10 +691,9 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
     _cloneGraph_KeepIndices(other);
 
     _meta.clone(other._meta);
-    _properties.copy(other._properties);
     _mergeWithSubmolecule_Sub(other, vertices, 0, mapping, edge_mapping, skip_flags);
-
     name.copy(other.name);
+    copyProperties(other, mapping);
 }
 
 void BaseMolecule::mergeWithMolecule(BaseMolecule& other, Array<int>* mapping, int skip_flags)

@@ -40,6 +40,12 @@ void PropertiesMap::copy(PropertiesMap& other)
     }
 }
 
+void PropertiesMap::merge(PropertiesMap& other)
+{
+    for (auto p : other.elements())
+        insert(other.key(p), other.value(p));
+}
+
 void PropertiesMap::insert(const char* key, const std::string& value)
 {
     insert(key, value.c_str());

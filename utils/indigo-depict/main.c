@@ -917,7 +917,7 @@ int main(int argc, char* argv[])
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
-            indigoLayout(obj);
+            // indigoLayout(obj);
             if (p.out_ext == OEXT_MOL)
                 indigoSaveMolfileToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_KET)
@@ -981,8 +981,7 @@ int main(int argc, char* argv[])
                 FILE* fp = fopen(p.outfile, "w+");
                 if (fp)
                 {
-                    fputs(pSdf, fp);
-                    fclose(fp);
+                    fputs(pSdf, fp);                    fclose(fp);
                 }
                 else
                 {

@@ -157,8 +157,6 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
         {
             int sg_idx = sgs_sorted[i];
             auto& sgrp = mol.sgroups.getSGroup(sg_idx);
-            if (sgrp.sgroup_type == SGroup::SG_TYPE_DAT && dataSGroupToSDFProperty(mol, (DataSGroup&)sgrp))
-                continue;
             if (!sgroups_written)
             {
                 writer.Key("sgroups");
@@ -172,35 +170,8 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
     }
 }
 
-bool MoleculeJsonSaver::dataSGroupToSDFProperty(BaseMolecule& mol, DataSGroup& dsg)
-{
-    auto name = dsg.name.ptr();
-    auto data = dsg.data.ptr();
-    if (name == std::string("sdf"))
-    {
-        Document doc;
-        if (!doc.Parse(data).HasParseError())
-        {
-            if (doc.HasMember("properties"))
-            {
-                Value& props = doc["properties"];
-                // rewind to first molecule node
-                for (int i = 0; i < props.Size(); ++i)
-                {
-                    Value& prop = props[i];
-                    if (prop.HasMember("key") && prop.HasMember("value"))
-                        mol.properties().insert(prop["key"].GetString(), prop["value"].GetString());
-                }
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 void MoleculeJsonSaver::saveSGroup(BaseMolecule& mol, SGroup& sgroup, JsonWriter& writer)
 {
-
     writer.StartObject();
     writer.Key("type");
     writer.String(SGroup::typeToString(sgroup.sgroup_type));
@@ -1041,7 +1012,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
-
     if (!BaseMolecule::hasCoord(*mol))
     {
         MoleculeLayout ml(*mol, false);
@@ -1176,17 +1146,18 @@ void MoleculeJsonSaver::saveFragment(BaseMolecule& fragment, JsonWriter& writer)
     saveSGroups(fragment, writer);
     saveHighlights(fragment, writer);
     saveSelection(fragment, writer);
-    if (!fragment.properties().is_empty())
+    if (fragment.properties().size())
     {
+        auto& props = fragment.properties().value(0);
         writer.Key("properties");
         writer.StartArray();
-        for (auto it = fragment.properties().elements().begin(); it != fragment.properties().elements().end(); ++it)
+        for (auto it = props.elements().begin(); it != props.elements().end(); ++it)
         {
             writer.StartObject();
             writer.Key("key");
-            writer.String(fragment.properties().key(*it));
+            writer.String(props.key(*it));
             writer.Key("value");
-            writer.String(fragment.properties().value(*it));
+            writer.String(props.value(*it));
             writer.EndObject();
         }
         writer.EndArray();
