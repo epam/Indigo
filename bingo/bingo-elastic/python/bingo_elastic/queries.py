@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 
 from indigo import Indigo, IndigoObject  # type: ignore
 
-from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
+from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule, IndigoRecordReaction
 from bingo_elastic.utils import PostprocessType, head_by_path
 
 
@@ -113,6 +113,8 @@ class SubstructureQuery(CompilableQuery):
 
         mol = record.as_indigo_object(indigo)
         mol.aromatize()
+        if isinstance(record, IndigoRecordReaction):
+            mol.automap()
         matcher = indigo.substructureMatcher(mol, options)
 
         if matcher.match(self._value):

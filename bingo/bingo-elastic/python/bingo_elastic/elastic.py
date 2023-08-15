@@ -248,7 +248,7 @@ class AsyncElasticRepository:
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
 
-        query = compile_query(
+        query = self.compile_query(
             query_subject=query_subject,
             limit=limit,
             postprocess_actions=postprocess_actions,
@@ -261,13 +261,13 @@ class AsyncElasticRepository:
             yield record
 
     async def delete(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-                     limit: int = 10, **kwargs,):
+                     limit: int = 10, **kwargs, ):
         """
         Delete documents in index by a query filter.
         """
         if not self.el_client.indices.exists(index=self.index_name):
             return dict()
-        query = compile_query(
+        query = self.compile_query(
             query_subject=query_subject,
             limit=limit,
             **kwargs,
@@ -282,6 +282,10 @@ class AsyncElasticRepository:
 
     async def __aexit__(self, *args, **kwargs) -> None:
         await self.close()
+
+    def compile_query(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None, limit: int = 10,
+                      postprocess_actions: PostprocessType = None, **kwargs, ) -> Dict:
+        return _compile_query(self.index_type, query_subject, limit, postprocess_actions, **kwargs)
 
 
 class ElasticRepository:
@@ -364,7 +368,7 @@ class ElasticRepository:
             )
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
-        query = compile_query(
+        query = self.compile_query(
             query_subject=query_subject,
             limit=limit,
             postprocess_actions=postprocess_actions,
@@ -378,28 +382,30 @@ class ElasticRepository:
     def delete(self,
                query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
                limit: int = 10,
-               **kwargs,) -> Dict[str, Any]:
+               **kwargs, ) -> Dict[str, Any]:
         """
         Delete documents in index by a query filter.
         """
         if not self.el_client.indices.exists(index=self.index_name):
             return dict()
-        query = compile_query(
+        query = self.compile_query(
             query_subject=query_subject,
             limit=limit,
             **kwargs,
         )
         return self.el_client.delete_by_query(index=self.index_name, body=query)
 
+    def compile_query(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None, limit: int = 10,
+                      postprocess_actions: PostprocessType = None, **kwargs, ) -> Dict:
+        return _compile_query(self.index_type, query_subject, limit, postprocess_actions, **kwargs)
 
 
-
-def compile_query(
-        query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-        limit: int = 10,
-        postprocess_actions: PostprocessType = None,
-        **kwargs,
-) -> Dict:
+def _compile_query(index_type: IndexType,
+                   query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+                   limit: int = 10,
+                   postprocess_actions: PostprocessType = None,
+                   **kwargs,
+                   ) -> Dict:
     query = {
         "size": limit,
         "_source": {
@@ -421,6 +427,8 @@ def compile_query(
         )
     elif isinstance(query_subject, IndigoObject):
         query_subject.aromatize()
+        if index_type == IndexType.BINGO_REACTION:
+            query_subject.automap()
         query_factory("substructure", query_subject).compile(
             query, postprocess_actions
         )
