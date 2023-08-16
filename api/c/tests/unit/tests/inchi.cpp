@@ -60,3 +60,17 @@ TEST_F(IndigoApiInchiTest, basic)
     const char* res_empty = indigoInchiGetInchi(empty);
     ASSERT_EQ(strcmp(res_empty, empty_inchi), 0);
 }
+
+TEST_F(IndigoApiInchiTest, incorrect_symbols)
+{
+    try
+    {
+        const char* inchi = "InChI=1S/C7H16O/c1-2-3-4-5-6-7-8$h8H,2-7H2,1H3";
+        const auto m = indigoInchiLoadMolecule(inchi);
+        EXPECT_ANY_THROW(indigoInchiGetInchi(m));
+    }
+    catch (const std::exception& e)
+    {
+        ASSERT_STREQ("inchi-wrapper: Indigo-InChI: no structural data has been provided: (null). Code: -1.", e.what()); // e.message());
+    }
+}
