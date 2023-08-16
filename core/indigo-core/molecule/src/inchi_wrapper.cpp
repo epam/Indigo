@@ -175,10 +175,8 @@ void InchiWrapper::loadMoleculeFromInchi(const char* inchi_string, Molecule& mol
     if (retcode == inchi_Ret_EOF) /* no structural data has been provided */
         throw Error("Indigo-InChI: no structural data has been provided: %s. Code: %d.", inchi_output.szMessage, retcode);
 
-
-    if (retcode == inchi_Ret_BUSY)/* Previuos call to InChI has not returned yet */
-       throw Error("Indigo-InChI: Previuos call to InChI has not returned yet: %s. Code: %d.", inchi_output.szMessage, retcode);
-
+    if (retcode == inchi_Ret_BUSY) /* Previuos call to InChI has not returned yet */
+        throw Error("Indigo-InChI: Previuos call to InChI has not returned yet: %s. Code: %d.", inchi_output.szMessage, retcode);
 
     if (retcode != inchi_Ret_OKAY && retcode != inchi_Ret_WARNING)
         throw Error("Indigo-InChI: InChI loading failed: %s. Code: %d.", inchi_output.szMessage, retcode);
