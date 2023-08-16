@@ -20,12 +20,13 @@
 #include "layout/molecule_layout.h"
 #include "molecule/molecule.h"
 #include "reaction/reaction.h"
+#include <stdio.h>
 
 using namespace indigo;
 
 ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
-    : bond_length(1), plus_interval_factor(1), arrow_interval_factor(2), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout),
-      horizontal_interval_factor(0.5f), atom_label_width(0.5f)
+    : bond_length(MoleculeLayout::DEFAULT_BOND_LENGTH), plus_interval_factor(1), arrow_interval_factor(2), preserve_molecule_layout(false), _r(r),
+      _smart_layout(smart_layout), horizontal_interval_factor(DEFAULT_HOR_INTERVAL_FACTOR), atom_label_width(1.3f)
 {
     max_iterations = 0;
 }
@@ -93,10 +94,11 @@ void ReactionLayout::make()
     _ml.process();
 }
 
-Metalayout::LayoutItem& ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_agent)
+void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_agent)
 {
-    const int kMaxSymbols = 3;
-    const auto kMinHeight = bond_length / 8;
+    // Molecule label alligned to atom center by non-hydrogen
+    // Hydrogen may be at left or at right H2O, PH3 - so add space before and after molecule
+    _pushSpace(line, atom_label_width);
     Metalayout::LayoutItem& item = line.items.push();
     item.type = 0;
     item.fragment = true;
@@ -109,19 +111,17 @@ Metalayout::LayoutItem& ReactionLayout::_pushMol(Metalayout::LayoutLine& line, i
 
     Rect2f bbox;
     mol.getBoundingBox(bbox);
-    bbox.extend_x(atom_label_width);
     item.min.copy(bbox.leftBottom());
     item.max.copy(bbox.rightTop());
-    return item;
+    _pushSpace(line, atom_label_width);
 }
 
-Metalayout::LayoutItem& ReactionLayout::_pushSpace(Metalayout::LayoutLine& line, float size)
+void ReactionLayout::_pushSpace(Metalayout::LayoutLine& line, float size)
 {
     Metalayout::LayoutItem& item = line.items.push();
     item.type = 1;
     item.fragment = false;
     item.scaledSize.set(size, 0);
-    return item;
 }
 
 BaseMolecule& ReactionLayout::_getMol(int id)
@@ -142,8 +142,6 @@ void ReactionLayout::cb_process(Metalayout::LayoutItem& item, const Vec2f& pos, 
     if (item.fragment)
     {
         ReactionLayout* layout = (ReactionLayout*)context;
-        Vec2f atom_min{item.min};
-        atom_min.x += layout->atom_label_width;
-        layout->_ml.adjustMol(layout->_getMol(item.id), atom_min, pos2);
+        layout->_ml.adjustMol(layout->_getMol(item.id), item.min, pos2);
     }
 }
