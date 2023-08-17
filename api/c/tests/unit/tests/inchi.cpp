@@ -80,3 +80,17 @@ TEST_F(IndigoApiInchiTest, incorrect_symbols)
         ASSERT_STREQ("inchi-wrapper: Indigo-InChI: no structural data has been provided: (null). Code: -1.", e.what());
     }
 }
+
+TEST_F(IndigoApiInchiTest, incorrect_symbols_123)
+{
+    try
+    {
+        const char* inchi = "InChI=123";
+        const auto m = indigoInchiLoadMolecule(inchi);
+        EXPECT_ANY_THROW(indigoInchiGetInchi(m));
+    }
+    catch (const std::exception& e)
+    {
+        ASSERT_STREQ("inchi-wrapper: Indigo-InChI: no structural data has been provided: (null). Code: -1.", e.what());
+    }
+}
