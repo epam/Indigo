@@ -56,7 +56,7 @@ CEXPORT int indigoLayout(int object)
             }
 
             ml.max_iterations = self.layout_max_iterations;
-            ml.bond_length = 1.6f;
+            ml.bond_length = MoleculeLayout::DEFAULT_BOND_LENGTH;
             ml.layout_orientation = (layout_orientation_value)self.layout_orientation;
 
             TimeoutCancellationHandler cancellation(self.cancellation_timeout);
@@ -105,7 +105,7 @@ CEXPORT int indigoLayout(int object)
                 ReactionLayout rl(rxn, self.smart_layout);
                 rl.max_iterations = self.layout_max_iterations;
                 rl.layout_orientation = (layout_orientation_value)self.layout_orientation;
-                rl.bond_length = 1.6f;
+                rl.bond_length = MoleculeLayout::DEFAULT_BOND_LENGTH;
                 rl.horizontal_interval_factor = self.layout_horintervalfactor;
                 rl.make();
                 try

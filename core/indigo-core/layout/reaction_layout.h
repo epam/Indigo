@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #ifndef __reaction_layout__
+#define __reaction_layout__
 
 #include "layout/metalayout.h"
 #include "reaction/base_reaction.h"
@@ -33,9 +34,12 @@ namespace indigo
     public:
         explicit ReactionLayout(BaseReaction& r, bool smart_layout = false);
 
+        static constexpr float DEFAULT_HOR_INTERVAL_FACTOR = 1.4f;
+
         void make();
 
         float bond_length;
+        float atom_label_width;
         float plus_interval_factor;
         float arrow_interval_factor;
         float horizontal_interval_factor;
@@ -45,8 +49,8 @@ namespace indigo
         layout_orientation_value layout_orientation;
 
     private:
-        Metalayout::LayoutItem& _pushMol(Metalayout::LayoutLine& line, int id, bool is_agent = false);
-        Metalayout::LayoutItem& _pushSpace(Metalayout::LayoutLine& line, float size);
+        void _pushMol(Metalayout::LayoutLine& line, int id, bool is_agent = false);
+        void _pushSpace(Metalayout::LayoutLine& line, float size);
         BaseMolecule& _getMol(int id);
         void _shiftMol(const Metalayout::LayoutItem& item, const Vec2f& pos);
         void _make();
