@@ -24,9 +24,7 @@ root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 root_rea = joinPathPy("reactions/", __file__)
 
-files = [
-    "suplabel",
-]
+files = ["suplabel"]
 
 files.sort()
 for filename in files:
@@ -41,16 +39,17 @@ for filename in files:
         print(filename + ".ket:FAILED")
         print(diff)
 
-files = [
-    "ket-reaction-arrow",
-]
+files = ["ket-reaction-arrow", "empty_apid"]
 
 files.sort()
 for filename in files:
     rc = indigo.loadReactionFromFile(os.path.join(root_rea, filename + ".ket"))
+    ket = rc.rxnfile()
+    # with open(os.path.join(ref_path, filename) + ".mol", "w") as file:
+    #    file.write(ket)
+
     with open(os.path.join(ref_path, filename) + ".mol", "r") as file:
         ket_ref = file.read()
-    ket = rc.rxnfile()
     diff = find_diff(ket_ref, ket)
     if not diff:
         print(filename + ".ket:SUCCEED")
