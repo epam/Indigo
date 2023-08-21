@@ -628,7 +628,7 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
         if (bracket.is_superatom)
         {
             Superatom& sa = (Superatom&)sgroup;
-            sa.contracted = DisplayOption::Expanded;
+            sa.contracted = DisplayOption::Contracted;
             sa.subscript.readString(bracket.label.c_str(), true);
         }
         else
