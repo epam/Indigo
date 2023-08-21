@@ -1,4 +1,4 @@
-from marshmallow imp.ort Schema, fields  # type: ignore
+from marshmallow import Schema, fields  # type: ignore
 from marshmallow.decorators import (  # type: ignore
     post_load,
     validates,
@@ -16,7 +16,6 @@ class InputFormatSchema(Schema):
         "chemical/x-daylight-smiles",
         "chemical/x-cml",
         "chemical/x-inchi",
-        "chemical/x-inchi-key",
         "chemical/x-iupac",
         "chemical/x-daylight-smarts",
         "chemical/x-inchi-aux",
