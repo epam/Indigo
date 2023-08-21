@@ -16,6 +16,7 @@ class InputFormatSchema(Schema):
         "chemical/x-daylight-smiles",
         "chemical/x-cml",
         "chemical/x-inchi",
+        "chemical/x-inchi-key",
         "chemical/x-iupac",
         "chemical/x-daylight-smarts",
         "chemical/x-inchi-aux",
@@ -228,12 +229,7 @@ class SearcherSchema(Schema):
 
     @validates_schema
     def sim_max_range(self, data, **kwargs):
-        print(
-            data,
-            data.get("type"),
-            data.get("max_sim"),
-            data.get("min_sim"),
-        )
+        print(data, data.get("type"), data.get("max_sim"), data.get("min_sim"))
         if (
             data.get("type")
             and "sim" in data.get("type")
