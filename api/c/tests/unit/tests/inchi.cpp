@@ -63,7 +63,7 @@ TEST_F(IndigoApiInchiTest, basic)
     }
     catch (const std::exception& e)
     {
-        ASSERT_STREQ("inchi-wrapper: Indigo-InChI: no structural data has been provided: . Code: -1.", e.what());
+        ASSERT_STREQ("inchi-wrapper: Wrong InChI format", e.what());
     }
 }
 
@@ -77,7 +77,7 @@ TEST_F(IndigoApiInchiTest, incorrect_symbols)
     }
     catch (const std::exception& e)
     {
-        ASSERT_STREQ("inchi-wrapper: Indigo-InChI: no structural data has been provided: (null). Code: -1.", e.what());
+        ASSERT_STREQ("inchi-wrapper: Wrong InChI format", e.what());
     }
 }
 
@@ -91,6 +91,6 @@ TEST_F(IndigoApiInchiTest, incorrect_symbols_123)
     }
     catch (const std::exception& e)
     {
-        ASSERT_STREQ("inchi-wrapper: Indigo-InChI: no structural data has been provided: (null). Code: -1.", e.what());
+        ASSERT_STREQ("inchi-wrapper: Wrong InChI format", e.what());
     }
 }

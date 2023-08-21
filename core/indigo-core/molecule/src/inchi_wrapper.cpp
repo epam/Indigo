@@ -173,13 +173,13 @@ void InchiWrapper::loadMoleculeFromInchi(const char* inchi_string, Molecule& mol
         log.readString(inchi_output.szLog, true);
 
     if (retcode == inchi_Ret_EOF) /* no structural data has been provided */
-        throw Error("Indigo-InChI: no structural data has been provided: %s. Code: %d.", inchi_output.szMessage, retcode);
+        throw Error("Wrong InChI format");
 
     if (retcode == inchi_Ret_BUSY) /* Previuos call to InChI has not returned yet */
-        throw Error("Indigo-InChI: Previuos call to InChI has not returned yet: %s. Code: %d.", inchi_output.szMessage, retcode);
+        throw Error("Internal error parsing InChI string");
 
     if (retcode != inchi_Ret_OKAY && retcode != inchi_Ret_WARNING)
-        throw Error("Indigo-InChI: InChI loading failed: %s. Code: %d.", inchi_output.szMessage, retcode);
+        throw Error("Internal error parsing InChI string");
 
     // Check stereo options
     _stereo_opt = _STEREO_ABS;
