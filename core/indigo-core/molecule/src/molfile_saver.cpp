@@ -1667,8 +1667,11 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                         int leave_idx = 0;
                         if (superatom.attachment_points[j].lvidx > -1)
                             leave_idx = _atom_mapping[superatom.attachment_points[j].lvidx];
-                        output.printf(" %3d %3d %c%c", _atom_mapping[superatom.attachment_points[j].aidx], leave_idx, superatom.attachment_points[j].apid[0],
-                                      superatom.attachment_points[j].apid[1]);
+                        const int KApIdNumPlaces = 2;
+                        std::string apid_str = superatom.attachment_points[j].apid.ptr();
+                        if (apid_str.size() < KApIdNumPlaces)
+                            apid_str = std::string(KApIdNumPlaces - apid_str.size(), ' ') + apid_str;
+                        output.printf(" %3d %3d %.*s", _atom_mapping[superatom.attachment_points[j].aidx], leave_idx, KApIdNumPlaces, apid_str.c_str());
                         k++;
                         nrem--;
                         if ((k == 6) || (nrem == 0))
