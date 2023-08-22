@@ -427,8 +427,6 @@ def _compile_query(index_type: IndexType,
         )
     elif isinstance(query_subject, IndigoObject):
         query_subject.aromatize()
-        if index_type == IndexType.BINGO_REACTION:
-            query_subject.automap()
         query_factory("substructure", query_subject).compile(
             query, postprocess_actions
         )

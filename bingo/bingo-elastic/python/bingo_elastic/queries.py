@@ -113,8 +113,6 @@ class SubstructureQuery(CompilableQuery):
 
         mol = record.as_indigo_object(indigo)
         mol.aromatize()
-        if isinstance(record, IndigoRecordReaction):
-            mol.automap()
         matcher = indigo.substructureMatcher(mol, options)
 
         if matcher.match(self._value):
