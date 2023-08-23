@@ -142,6 +142,9 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
         int16_t val = pAttr->IntValue();
         switch (tag)
         {
+        case kCDXProp_Node_Type:
+            val = KNodeTypeNameToInt.at(pAttr->Value());
+            break;
         case kCDXProp_Graphic_Type:
             val = kCDXPropGraphicTypeStrToID.at(pAttr->Value());
             break;
