@@ -433,6 +433,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
         try
         {
             SmilesLoader loader(*_scanner);
+            long long start = _scanner->tell();
 
             loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
             loader.stereochemistry_options = stereochemistry_options;
@@ -451,6 +452,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
                 }
                 catch (Exception& e)
                 {
+                    _scanner->seek(start, SEEK_SET);
                     loader.loadSMARTS(static_cast<QueryMolecule&>(mol));
                 }
             }
