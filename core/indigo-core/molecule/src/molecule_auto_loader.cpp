@@ -440,13 +440,24 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
 
             /*
-            If exception is thrown, the string is rather an IUPAC name than a SMILES string
+            If exception is thrown, try the SMARTS, if exception thrown again - the string is rather an IUPAC name than a SMILES string
             We catch it and pass down to IUPAC name conversion
             */
             if (query)
-                loader.loadQueryMolecule((QueryMolecule&)mol);
+            {
+                try
+                {
+                    loader.loadQueryMolecule(static_cast<QueryMolecule&>(mol));
+                }
+                catch (Exception& e)
+                {
+                    loader.loadSMARTS(static_cast<QueryMolecule&>(mol));
+                }
+            }
             else
-                loader.loadMolecule((Molecule&)mol);
+            {
+                loader.loadMolecule(static_cast<Molecule&>(mol));
+            }
             return;
         }
         catch (Exception& e)
