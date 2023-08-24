@@ -284,6 +284,7 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
     // check for SMILES format
     if (Scanner::isSingleLine(*_scanner))
     {
+        long long pos = _scanner->tell();
         RSmilesLoader loader(*_scanner);
 
         loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
@@ -292,9 +293,23 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
         loader.ignore_bad_valence = ignore_bad_valence;
 
         if (query)
-            loader.loadQueryReaction((QueryReaction&)reaction);
+        {
+            // Try to load query as SMILES, if error occured - try to load as SMARTS
+            try
+            {
+                loader.loadQueryReaction(static_cast<QueryReaction&>(reaction));
+            }
+            catch (Exception& e)
+            {
+                loader.smarts_mode = true;
+                _scanner->seek(pos, SEEK_SET);
+                loader.loadQueryReaction(static_cast<QueryReaction&>(reaction));
+            }
+        }
         else
-            loader.loadReaction((Reaction&)reaction);
+        {
+            loader.loadReaction(static_cast<Reaction&>(reaction));
+        }
     }
 
     // default is Rxnfile format
