@@ -236,7 +236,8 @@ class AsyncElasticRepository:
             self,
             query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
             indigo_session: Indigo = None,
-            limit: int = 10,
+            offset: int = 0,
+            limit: int = MAX_ALLOWED_SIZE,
             options: str = "",
             **kwargs,
     ) -> AsyncGenerator[IndigoRecord, None]:
@@ -250,6 +251,7 @@ class AsyncElasticRepository:
 
         query = self.compile_query(
             query_subject=query_subject,
+            offset=offset,
             limit=limit,
             postprocess_actions=postprocess_actions,
             **kwargs,
@@ -283,9 +285,10 @@ class AsyncElasticRepository:
     async def __aexit__(self, *args, **kwargs) -> None:
         await self.close()
 
-    def compile_query(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None, limit: int = 10,
+    def compile_query(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+                      offset: int = 0, limit: int = 10,
                       postprocess_actions: PostprocessType = None, **kwargs, ) -> Dict:
-        return _compile_query(self.index_type, query_subject, limit, postprocess_actions, **kwargs)
+        return _compile_query(self.index_type, query_subject, offset, limit, postprocess_actions, **kwargs)
 
 
 class ElasticRepository:
@@ -358,6 +361,7 @@ class ElasticRepository:
             self,
             query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
             indigo_session: Indigo = None,
+            offset: int = 0,
             limit: int = 10,
             options: str = "",
             **kwargs,
@@ -370,6 +374,7 @@ class ElasticRepository:
         postprocess_actions: PostprocessType = []
         query = self.compile_query(
             query_subject=query_subject,
+            offset=offset,
             limit=limit,
             postprocess_actions=postprocess_actions,
             **kwargs,
@@ -395,14 +400,15 @@ class ElasticRepository:
         )
         return self.el_client.delete_by_query(index=self.index_name, body=query)
 
-    def compile_query(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None, limit: int = 10,
+    def compile_query(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+                      offset: int = 0, limit: int = 10,
                       postprocess_actions: PostprocessType = None, **kwargs, ) -> Dict:
-        return _compile_query(self.index_type, query_subject, limit, postprocess_actions, **kwargs)
+        return _compile_query(self.index_type, query_subject, offset, limit, postprocess_actions, **kwargs)
 
 
 def _compile_query(index_type: IndexType,
                    query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-                   limit: int = 10,
+                   offset: int = 0, limit: int = 10,
                    postprocess_actions: PostprocessType = None,
                    **kwargs,
                    ) -> Dict:
@@ -418,6 +424,8 @@ def _compile_query(index_type: IndexType,
             ],
         },
     }
+    if offset > 0:
+        query["from"] = offset
 
     if isinstance(query_subject, BaseMatch):
         query_subject.compile(query, postprocess_actions)
