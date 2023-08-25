@@ -25,6 +25,8 @@ files = [
     "enhanced_stereo1",
     "enhanced_stereo2",
     "enhanced_stereo3",
+    "two_bn",
+    "rgroup",
 ]
 
 ref_path = joinPathPy("ref/", __file__)
@@ -150,3 +152,4 @@ for filename in files:
 
     except IndigoException as e:
         print(getIndigoExceptionText(e))
+/

@@ -984,6 +984,18 @@ void MoleculeCdxmlLoader::_parseAltGroup(CDXElement elem)
 {
     std::vector<AutoInt> r_labels;
     std::vector<CDXElement> r_fragments;
+
+    std::pair<Vec2f, Vec2f> bbox, text_frame, group_frame;
+    auto bbox_lambda = [&bbox, this](const std::string& data) { this->parseSeg(data, bbox.first, bbox.second); };
+    auto text_frame_lambda = [&text_frame, this](const std::string& data) { this->parseSeg(data, text_frame.first, text_frame.second); };
+    auto group_frame_lambda = [&group_frame, this](const std::string& data) { this->parseSeg(data, group_frame.first, group_frame.second); };
+
+    std::unordered_map<std::string, std::function<void(const std::string&)>> altgroup_dispatcher = {
+        {"BoundingBox", bbox_lambda}, {"TextFrame", text_frame_lambda}, {"GroupFrame", group_frame_lambda}};
+
+    auto prop = elem.firstProperty();
+    applyDispatcher(prop, altgroup_dispatcher);
+
     for (auto r_elem = elem.firstChildElement(); r_elem.hasContent(); r_elem = r_elem.nextSiblingElement())
     {
         auto el_name = r_elem.name();
@@ -998,16 +1010,20 @@ void MoleculeCdxmlLoader::_parseAltGroup(CDXElement elem)
         }
     }
 
-    if (r_fragments.size() && r_labels.size())
+    if (r_labels.size())
     {
-        MoleculeCdxmlLoader alt_loader(_scanner, _is_binary);
-        BaseMolecule& mol = _pmol ? *(BaseMolecule*)_pmol : *(BaseMolecule*)_pqmol;
-        std::unique_ptr<BaseMolecule> fragment(mol.neu());
-        alt_loader.stereochemistry_options = stereochemistry_options;
-        alt_loader.loadMoleculeFromFragment(*fragment.get(), r_fragments.front());
-        MoleculeRGroups& rgroups = mol.rgroups;
-        RGroup& rgroup = rgroups.getRGroup(r_labels.front());
-        rgroup.fragments.add(fragment.release());
+        // TODO: check if there are some fragments inside of group_frame_lambda and put them into r_fragments
+        if (r_fragments.size())
+        {
+            MoleculeCdxmlLoader alt_loader(_scanner, _is_binary);
+            BaseMolecule& mol = _pmol ? *(BaseMolecule*)_pmol : *(BaseMolecule*)_pqmol;
+            std::unique_ptr<BaseMolecule> fragment(mol.neu());
+            alt_loader.stereochemistry_options = stereochemistry_options;
+            alt_loader.loadMoleculeFromFragment(*fragment.get(), r_fragments.front());
+            MoleculeRGroups& rgroups = mol.rgroups;
+            RGroup& rgroup = rgroups.getRGroup(r_labels.front());
+            rgroup.fragments.add(fragment.release());
+        }
     }
 }
 

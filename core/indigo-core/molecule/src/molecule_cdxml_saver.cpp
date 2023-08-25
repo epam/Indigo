@@ -485,6 +485,26 @@ void MoleculeCdxmlSaver::addDefaultColorTable()
     addColorTable(color.ptr());
 }
 
+int MoleculeCdxmlSaver::_getAttachmentPoint(BaseMolecule& mol, int atom_idx)
+{
+    int val = 0;
+    if (mol.attachmentPointCount())
+    {
+        for (int idx = 1; idx <= mol.attachmentPointCount(); idx++)
+        {
+            for (int j = 0; mol.getAttachmentPoint(idx, j) != -1; j++)
+            {
+                if (mol.getAttachmentPoint(idx, j) == atom_idx)
+                {
+                    val |= 1 << (idx - 1);
+                    break;
+                }
+            }
+        }
+    }
+    return val;
+}
+
 void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragment, int atom_idx, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord,
                                            Vec2f& node_pos)
 {
@@ -569,6 +589,11 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
 
             if (hcount >= 0)
                 node->SetAttribute("NumHydrogens", hcount);
+        }
+
+        if (_getAttachmentPoint(mol, atom_idx))
+        {
+            node->SetAttribute("NodeType", "ExternalConnectionPoint");
         }
     }
     else if (atom_number < 0)
@@ -1057,6 +1082,46 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
     saveMoleculeFragment(mol, offset, scale, -1, id, ids);
 }
 
+void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum)
+{
+    XMLElement* parent = _current;
+    XMLElement* fragment = _doc->NewElement("altgroup");
+    _current->LinkEndChild(fragment);
+    _current = fragment;
+    fragment->SetAttribute("id", ++_id);
+    Vec2f rmin, rmax;
+    int valence = 0;
+    for (int i = fragments.begin(); i != fragments.end(); i = fragments.next(i))
+    {
+        Vec2f min_coord, max_coord;
+        fragments[i]->getBoundingBox(min_coord, max_coord);
+        if (i == fragments.begin())
+        {
+            rmin.copy(min_coord);
+            rmax.copy(max_coord);
+        }
+        else
+        {
+            rmin.min(min_coord);
+            rmax.max(max_coord);
+        }
+        saveMoleculeFragment(*fragments[i], offset, 1);
+        valence += fragments[i]->attachmentPointCount();
+    }
+    std::string rg_name("R");
+    rg_name += std::to_string(rgnum);
+    rmin.add(offset);
+    rmax.add(offset);
+    Vec2f text_origin(rmin.x, rmax.y);
+    addText(text_origin, rg_name.c_str(), nullptr);
+    rmin.x *= _scale;
+    rmax.x *= _scale;
+    rmax.y *= -_scale;
+    rmin.y *= -_scale;
+    auto gframe = std::to_string(rmin.x) + " " + std::to_string(rmin.y) + " " + std::to_string(rmax.x) + " " + std::to_string(rmax.y);
+    fragment->SetAttribute("Valence", valence);
+}
+
 void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float structure_scale, int frag_id, int& id, std::vector<int>& ids)
 {
     _atoms_ids.clear();
@@ -1404,7 +1469,8 @@ void MoleculeCdxmlSaver::addText(const Vec2f& pos, const char* text, const char*
     out.printf("%f %f", _bond_length * pos.x, -_bond_length * pos.y);
     buf.push(0);
     t->SetAttribute("p", buf.ptr());
-    t->SetAttribute("Justification", alignment);
+    if (alignment)
+        t->SetAttribute("Justification", alignment);
     t->SetAttribute("InterpretChemically", "no");
 
     XMLElement* s = _doc->NewElement("s");
@@ -1797,6 +1863,13 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& mol)
     Vec2f offset(-min_coord.x, -max_coord.y);
 
     saveMoleculeFragment(mol, offset, 1);
+    for (int i = 1; i <= mol.rgroups.getRGroupCount(); i++)
+    {
+        auto& rgrp = mol.rgroups.getRGroup(i);
+        if (rgrp.fragments.size())
+            saveRGroup(rgrp.fragments, offset, i);
+    }
+
     endPage();
     endDocument();
 }
