@@ -990,11 +990,11 @@ void MoleculeCdxmlLoader::_parseAltGroup(CDXElement elem)
     auto text_frame_lambda = [&text_frame, this](const std::string& data) { this->parseSeg(data, text_frame.first, text_frame.second); };
     auto group_frame_lambda = [&group_frame, this](const std::string& data) { this->parseSeg(data, group_frame.first, group_frame.second); };
 
-    std::unordered_map<std::string, std::function<void(const std::string&)>> graphic_dispatcher = {
+    std::unordered_map<std::string, std::function<void(const std::string&)>> altgroup_dispatcher = {
         {"BoundingBox", bbox_lambda}, {"TextFrame", text_frame_lambda}, {"GroupFrame", group_frame_lambda}};
 
     auto prop = elem.firstProperty();
-    applyDispatcher(prop, graphic_dispatcher);
+    applyDispatcher(prop, altgroup_dispatcher);
 
     for (auto r_elem = elem.firstChildElement(); r_elem.hasContent(); r_elem = r_elem.nextSiblingElement())
     {
