@@ -388,11 +388,11 @@ void Scanner::skipBom()
 {
     long long pos = tell();
     const int kBOMSize = 3;
-    const std::array<char, kBOMSize> kBOM = {0xEF, 0xBB, 0xBF};
+    const std::array<unsigned char, kBOMSize> kBOM = {0xEF, 0xBB, 0xBF};
     if (length() >= kBOMSize)
     {
-        std::array<char, kBOMSize> bom;
-        readCharsFix(kBOMSize, bom.data());
+        std::array<unsigned char, kBOMSize> bom;
+        readCharsFix(kBOMSize, (char*)bom.data());
         if (bom != kBOM)
             seek(pos, SEEK_SET);
     }
