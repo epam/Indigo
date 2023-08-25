@@ -991,10 +991,7 @@ void MoleculeCdxmlLoader::_parseAltGroup(CDXElement elem)
     auto group_frame_lambda = [&group_frame, this](const std::string& data) { this->parseSeg(data, group_frame.first, group_frame.second); };
 
     std::unordered_map<std::string, std::function<void(const std::string&)>> graphic_dispatcher = {
-        {"BoundingBox", bbox_lambda},
-        {"TextFrame", text_frame_lambda},
-        {"GroupFrame", group_frame_lambda}
-    };
+        {"BoundingBox", bbox_lambda}, {"TextFrame", text_frame_lambda}, {"GroupFrame", group_frame_lambda}};
 
     auto prop = elem.firstProperty();
     applyDispatcher(prop, graphic_dispatcher);
@@ -1015,7 +1012,7 @@ void MoleculeCdxmlLoader::_parseAltGroup(CDXElement elem)
 
     if (r_labels.size())
     {
-        // TODO: check if there are some fragments inside of group_frame_lambda and put them into r_fragments 
+        // TODO: check if there are some fragments inside of group_frame_lambda and put them into r_fragments
         if (r_fragments.size())
         {
             MoleculeCdxmlLoader alt_loader(_scanner, _is_binary);
