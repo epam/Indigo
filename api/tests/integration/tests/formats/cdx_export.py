@@ -26,6 +26,7 @@ files = [
     "enhanced_stereo2",
     "enhanced_stereo3",
     "two_bn",
+    "rgroup"
 ]
 
 ref_path = joinPathPy("ref/", __file__)

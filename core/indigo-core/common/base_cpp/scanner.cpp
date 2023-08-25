@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <array>
 #include <cppcodec/base64_default_rfc4648.hpp>
 
 #include "base_c/defs.h"
@@ -381,6 +382,20 @@ void Scanner::skipSpace()
 {
     while (isspace(lookNext()))
         skip(1);
+}
+
+void Scanner::skipBom()
+{
+    long long pos = tell();
+    const int kBOMSize = 3;
+    const std::array<char, kBOMSize> kBOM = {0xEF, 0xBB, 0xBF};
+    if (length() >= kBOMSize)
+    {
+        std::array<char, kBOMSize> bom;
+        readCharsFix(kBOMSize, bom.data());
+        if (bom != kBOM)
+            seek(pos, SEEK_SET);
+    }
 }
 
 void Scanner::skipUntil(const char* delimiters)
