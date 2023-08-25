@@ -37,64 +37,55 @@ ElasticRepositoryT = TypeVar("ElasticRepositoryT")
 MAX_ALLOWED_SIZE = 1000
 
 
-class IndexName(Enum):
-    def __init__(self, value):
-        self._value_ = value
-
+class IndexType(Enum):
     BINGO_MOLECULE = "bingo-molecules"
     BINGO_REACTION = "bingo-reactions"
-    BINGO_CUSTOM = "custom-index"
-
-    def set_value(self, new_value):
-        self._value_ = new_value
 
 
-def get_index_name(record: IndigoRecord) -> IndexName:
+def get_index_type(record: IndigoRecord) -> IndexType:
     if isinstance(record, IndigoRecordMolecule):
-        return IndexName.BINGO_MOLECULE
+        return IndexType.BINGO_MOLECULE
     if isinstance(record, IndigoRecordReaction):
-        return IndexName.BINGO_REACTION
-    if isinstance(record, str):
-        return IndexName.BINGO_CUSTOM
+        return IndexType.BINGO_REACTION
     raise AttributeError(f"Unknown IndigoRecord type {record}")
 
 
 def get_record_by_index(
-    response: Dict, index: str
+        response: Dict, index_type: IndexType
 ) -> Union[IndigoRecordMolecule, IndigoRecordReaction]:
-    if index == IndexName.BINGO_MOLECULE.value:
+    if index_type == IndexType.BINGO_MOLECULE:
         return IndigoRecordMolecule(elastic_response=response)
-    if index == IndexName.BINGO_REACTION.value:
+    if index_type == IndexType.BINGO_REACTION:
         return IndigoRecordReaction(elastic_response=response)
-    if index == IndexName.BINGO_CUSTOM.value:
-        return IndigoRecordMolecule(elastic_response=response)
-    raise AttributeError(f"Unknown index {index}")
+    raise AttributeError(f"Unknown index {str(index_type)}")
 
 
-def elastic_repository_molecule(*args, **kwargs):
-    return ElasticRepository(IndexName.BINGO_MOLECULE, *args, **kwargs)
+def elastic_repository_molecule(index_name: str, *args, **kwargs):
+    return ElasticRepository(IndexType.BINGO_MOLECULE, index_name, *args, **kwargs)
 
 
-def elastic_repository_reaction(*args, **kwargs):
-    return ElasticRepository(IndexName.BINGO_REACTION, *args, **kwargs)
+def elastic_repository_reaction(index_name: str, *args, **kwargs):
+    return ElasticRepository(IndexType.BINGO_REACTION, index_name, *args, **kwargs)
 
 
 def get_client(
-    *,
-    client_type: Type[ElasticRepositoryT],
-    host: Union[str, List[str]] = "localhost",
-    port: int = 9200,
-    scheme: str = "",
-    http_auth: Optional[Tuple[str]] = None,
-    ssl_context: Any = None,
-    request_timeout: int = 60,
-    retry_on_timeout: bool = True,
+        *,
+        client_type: Type[ElasticRepositoryT],
+        host: Union[str, List[str]] = "localhost",
+        port: int = 9200,
+        scheme: str = "",
+        http_auth: Optional[List[str]] = None,
+        ssl_context: Any = None,
+        request_timeout: int = 60,
+        timeout: int = 60,
+        retry_on_timeout: bool = True,
 ) -> ElasticRepositoryT:
     arguments = {
         "port": port,
         "scheme": "https" if scheme == "https" else "http",
         "request_timeout": request_timeout,
         "retry_on_timeout": retry_on_timeout,
+        "timeout": timeout
     }
     if isinstance(host, str):
         arguments["host"] = host
@@ -130,8 +121,8 @@ def check_index_exception(err_: RequestError) -> None:
         raise err_
     cause = err_.info.get("error", {}).get("root_cause", [])
     if (
-        len(cause) == 1
-        and cause[0].get("type") == "resource_already_exists_exception"
+            len(cause) == 1
+            and cause[0].get("type") == "resource_already_exists_exception"
     ):
         return
     raise err_
@@ -145,7 +136,7 @@ def create_index(index_name: str, el_client: Elasticsearch) -> None:
 
 
 async def a_create_index(
-    index_name: str, el_client: "AsyncElasticsearch"
+        index_name: str, el_client: "AsyncElasticsearch"
 ) -> None:
     try:
         await el_client.indices.create(index=index_name, body=index_body)
@@ -154,26 +145,26 @@ async def a_create_index(
 
 
 def prepare(
-    records: Generator[IndigoRecord, None, None]
+        index_type: IndexType, records: Generator[IndigoRecord, None, None]
 ) -> Generator[Dict, None, None]:
     for record in records:
-        # if get_index_name(record).value != index_name:
-        #     raise ValueError(
-        #         f"Index {index_name} doesn't support store value "
-        #         f"of type {type(record)}"
-        #     )
+        if index_type != get_index_type(record):
+            raise ValueError(
+                f"Index {str(index_type)} doesn't support store value "
+                f"of type {type(record)}"
+            )
         yield record.as_dict()
 
 
 def response_to_records(
-    res: dict,
-    index_name: str,
-    postprocess_actions: Optional[PostprocessType] = None,
-    indigo_session: Optional[Indigo] = None,
-    options: str = "",
+        res: dict,
+        index_type: IndexType,
+        postprocess_actions: PostprocessType = None,
+        indigo_session: Indigo = None,
+        options: str = "",
 ) -> Generator[IndigoRecord, None, None]:
     for el_response in res.get("hits", {}).get("hits", []):
-        record = get_record_by_index(el_response, index_name)
+        record = get_record_by_index(el_response, index_type)
         for action_fn in postprocess_actions:  # type: ignore
             record = action_fn(record, indigo_session, options)  # type: ignore
             if not record:
@@ -183,19 +174,22 @@ def response_to_records(
 
 class AsyncElasticRepository:
     def __init__(
-        self,
-        index_name: IndexName,
-        *,
-        host: Union[str, List[str]] = "localhost",
-        port: int = 9200,
-        scheme: str = "",
-        http_auth: Optional[Tuple[str]] = None,
-        ssl_context: Any = None,
-        request_timeout: int = 60,
-        retry_on_timeout: bool = True,
+            self,
+            index_type: IndexType,
+            index_name: str,
+            *,
+            host: Union[str, List[str]] = "localhost",
+            port: int = 9200,
+            scheme: str = "",
+            http_auth: Optional[List[str]] = None,
+            ssl_context: Any = None,
+            request_timeout: int = 60,
+            timeout: int = 60,
+            retry_on_timeout: bool = True,
     ) -> None:
         """
-        :param index_name: use function  get_index_name for setting this argument
+        :param index_type: use function  get_index_name for setting this argument
+        :param index_name: the name of the index
         :param host: host or list of hosts
         :param port:
         :param scheme: http or https
@@ -204,7 +198,10 @@ class AsyncElasticRepository:
         :param timeout:
         :param retry_on_timeout:
         """
-        self.index_name = index_name.value
+        self.index_type = index_type
+        self.index_name = index_type.value
+        if index_name:
+            self.index_name += "-" + index_name
 
         self.el_client = get_client(
             client_type=AsyncElasticsearch,
@@ -214,6 +211,7 @@ class AsyncElasticRepository:
             http_auth=http_auth,
             ssl_context=ssl_context,
             request_timeout=request_timeout,
+            timeout=timeout,
             retry_on_timeout=retry_on_timeout,
         )
 
@@ -227,21 +225,23 @@ class AsyncElasticRepository:
         await a_create_index(self.index_name, self.el_client)
         # pylint: disable=unused-variable
         async for is_ok, action in async_streaming_bulk(
-            self.el_client,
-            prepare(records),
-            index=self.index_name,
-            chunk_size=chunk_size,
+                self.el_client,
+                prepare(self.index_type, records),
+                index=self.index_name,
+                chunk_size=chunk_size,
         ):
             pass
 
     async def filter(
-        self,
-        query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-        indigo_session: Indigo = None,
-        limit: int = 10,
-        options: str = "",
-        **kwargs,
+            self,
+            query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+            indigo_session: Indigo = None,
+            offset: int = 0,
+            limit: int = MAX_ALLOWED_SIZE,
+            options: str = "",
+            **kwargs,
     ) -> AsyncGenerator[IndigoRecord, None]:
+
         if limit > MAX_ALLOWED_SIZE:
             raise ValueError(
                 f"limit should less or equal to {MAX_ALLOWED_SIZE}"
@@ -249,17 +249,32 @@ class AsyncElasticRepository:
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
 
-        query = compile_query(
+        query = self.compile_query(
             query_subject=query_subject,
+            offset=offset,
             limit=limit,
             postprocess_actions=postprocess_actions,
             **kwargs,
         )
         res = await self.el_client.search(index=self.index_name, body=query)
         for record in response_to_records(
-            res, self.index_name, postprocess_actions, indigo_session, options
+                res, self.index_type, postprocess_actions, indigo_session, options
         ):
             yield record
+
+    async def delete(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+                     limit: int = 10, **kwargs, ):
+        """
+        Delete documents in index by a query filter.
+        """
+        if not self.el_client.indices.exists(index=self.index_name):
+            return dict()
+        query = self.compile_query(
+            query_subject=query_subject,
+            limit=limit,
+            **kwargs,
+        )
+        await self.el_client.delete_by_query(index=self.index_name, body=query)
 
     async def close(self) -> None:
         await self.el_client.close()
@@ -270,22 +285,30 @@ class AsyncElasticRepository:
     async def __aexit__(self, *args, **kwargs) -> None:
         await self.close()
 
+    def compile_query(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+                      offset: int = 0, limit: int = 10,
+                      postprocess_actions: PostprocessType = None, **kwargs, ) -> Dict:
+        return _compile_query(self.index_type, query_subject, offset, limit, postprocess_actions, **kwargs)
+
 
 class ElasticRepository:
     def __init__(
-        self,
-        index_name: IndexName,
-        *,
-        host: Union[str, List[str]] = "localhost",
-        port: int = 9200,
-        scheme: str = "",
-        http_auth: Optional[Tuple[str]] = None,
-        ssl_context: Any = None,
-        request_timeout: int = 60,
-        retry_on_timeout: bool = True,
+            self,
+            index_type: IndexType,
+            index_name: str,
+            *,
+            host: Union[str, List[str]] = "localhost",
+            port: int = 9200,
+            scheme: str = "",
+            http_auth: Optional[List[str]] = None,
+            ssl_context: Any = None,
+            request_timeout: int = 60,
+            timeout: int = 60,
+            retry_on_timeout: bool = True,
     ) -> None:
         """
-        :param index_name: use function  get_index_name for setting this argument
+        :param index_type: use function  get_index_name for setting this argument
+        :param index_name: the name of this index after index type.
         :param host: host or list of hosts
         :param port:
         :param scheme: http or https
@@ -294,7 +317,10 @@ class ElasticRepository:
         :param timeout:
         :param retry_on_timeout:
         """
-        self.index_name = index_name.value
+        self.index_type = index_type
+        self.index_name = index_type.value
+        if index_name:
+            self.index_name += "-" + index_name
 
         self.el_client = get_client(
             client_type=Elasticsearch,
@@ -304,6 +330,7 @@ class ElasticRepository:
             http_auth=http_auth,
             ssl_context=ssl_context,
             request_timeout=request_timeout,
+            timeout=timeout,
             retry_on_timeout=retry_on_timeout,
         )
 
@@ -317,10 +344,10 @@ class ElasticRepository:
         create_index(self.index_name, self.el_client)
         # pylint: disable=unused-variable
         for is_ok, action in streaming_bulk(
-            self.el_client,
-            prepare(records),
-            index=self.index_name,
-            chunk_size=chunk_size,
+                self.el_client,
+                prepare(self.index_type, records),
+                index=self.index_name,
+                chunk_size=chunk_size,
         ):
             pass
 
@@ -331,12 +358,13 @@ class ElasticRepository:
             pass
 
     def filter(
-        self,
-        query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-        indigo_session: Indigo = None,
-        limit: int = 10,
-        options: str = "",
-        **kwargs,
+            self,
+            query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+            indigo_session: Indigo = None,
+            offset: int = 0,
+            limit: int = 10,
+            options: str = "",
+            **kwargs,
     ) -> Generator[IndigoRecord, None, None]:
         if limit > MAX_ALLOWED_SIZE:
             raise ValueError(
@@ -344,24 +372,46 @@ class ElasticRepository:
             )
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
-        query = compile_query(
+        query = self.compile_query(
             query_subject=query_subject,
+            offset=offset,
             limit=limit,
             postprocess_actions=postprocess_actions,
             **kwargs,
         )
         res = self.el_client.search(index=self.index_name, body=query)
         yield from response_to_records(
-            res, self.index_name, postprocess_actions, indigo_session, options
+            res, self.index_type, postprocess_actions, indigo_session, options
         )
 
+    def delete(self,
+               query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+               limit: int = 10,
+               **kwargs, ) -> Dict[str, Any]:
+        """
+        Delete documents in index by a query filter.
+        """
+        if not self.el_client.indices.exists(index=self.index_name):
+            return dict()
+        query = self.compile_query(
+            query_subject=query_subject,
+            limit=limit,
+            **kwargs,
+        )
+        return self.el_client.delete_by_query(index=self.index_name, body=query)
 
-def compile_query(
-    query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-    limit: int = 10,
-    postprocess_actions: Optional[PostprocessType] = None,
-    **kwargs,
-) -> Dict:
+    def compile_query(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+                      offset: int = 0, limit: int = 10,
+                      postprocess_actions: PostprocessType = None, **kwargs, ) -> Dict:
+        return _compile_query(self.index_type, query_subject, offset, limit, postprocess_actions, **kwargs)
+
+
+def _compile_query(index_type: IndexType,
+                   query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+                   offset: int = 0, limit: int = 10,
+                   postprocess_actions: PostprocessType = None,
+                   **kwargs,
+                   ) -> Dict:
     query = {
         "size": limit,
         "_source": {
@@ -374,6 +424,8 @@ def compile_query(
             ],
         },
     }
+    if offset > 0:
+        query["from"] = offset
 
     if isinstance(query_subject, BaseMatch):
         query_subject.compile(query, postprocess_actions)
@@ -382,6 +434,7 @@ def compile_query(
             query, postprocess_actions
         )
     elif isinstance(query_subject, IndigoObject):
+        query_subject.aromatize()
         query_factory("substructure", query_subject).compile(
             query, postprocess_actions
         )
