@@ -1100,8 +1100,8 @@ void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2
         fragments[i]->getBoundingBox(min_coord, max_coord);
         if (i == fragments.begin())
         {
-            rmin.copy( min_coord );
-            rmax.copy( max_coord );
+            rmin.copy(min_coord);
+            rmax.copy(max_coord);
         }
         else
         {
@@ -1472,7 +1472,7 @@ void MoleculeCdxmlSaver::addText(const Vec2f& pos, const char* text, const char*
     out.printf("%f %f", _bond_length * pos.x, -_bond_length * pos.y);
     buf.push(0);
     t->SetAttribute("p", buf.ptr());
-    if ( alignment )
+    if (alignment)
         t->SetAttribute("Justification", alignment);
     t->SetAttribute("InterpretChemically", "no");
 
