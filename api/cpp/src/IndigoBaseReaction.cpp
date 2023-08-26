@@ -25,7 +25,7 @@ using namespace indigo_cpp;
 
 namespace
 {
-    constexpr std::array<const char*, 4> AUTOMAP_MODES{"discard", "keep", "alter", "clear"};
+    const std::array<const char*, 4> AUTOMAP_MODES{"discard", "keep", "alter", "clear"};
 }
 
 IndigoBaseReaction::IndigoBaseReaction(const int id, IndigoSessionPtr session) : IndigoChemicalStructure(id, std::move(session))
