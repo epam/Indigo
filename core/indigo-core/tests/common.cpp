@@ -163,3 +163,21 @@ std::string IndigoCoreTest::saverReactionJson(BaseReaction& reaction)
     std::string result(buffer.ptr());
     return result;
 }
+
+std::string IndigoCoreTest::smiles(Molecule& m)
+{
+    Array<char> smiles;
+    ArrayOutput output(smiles);
+    SmilesSaver saver(output);
+    saver.saveMolecule(m);
+    return {smiles.ptr(), static_cast<std::size_t>(smiles.size())};
+}
+
+std::string IndigoCoreTest::smiles(QueryMolecule& m)
+{
+    Array<char> smiles;
+    ArrayOutput output(smiles);
+    SmilesSaver saver(output);
+    saver.saveQueryMolecule(m);
+    return {smiles.ptr(), static_cast<std::size_t>(smiles.size())};
+}
