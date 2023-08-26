@@ -689,6 +689,20 @@ M  END
             });
             options.delete();
         });
+        test("reactionComponents", "complex_1", () => {
+            let options = new indigo.MapStringString();
+            assert.deepStrictEqual(JSON.parse(indigo.reactionComponents("[#6:1][C:2](=[O:3])[OH1:4].[C:5][N:6]>>[#6:1][C:2](=[O:3])[N:6][C:5] |$R1;;;OH;R2;NHR3;R1;;;NR3;R2$|", options)), {
+                "reactants": ["CC([OH])=O |$R1;;OH;$|", "CN |$R2;NHR3$|"],
+                "catalysts": [],
+                "products": ["CC(NC)=O |$R1;;NR3;R2;$|"]
+            });
+            assert.deepStrictEqual(JSON.parse(indigo.reactionComponents("[#6:1][C:2](=[O:3])[OH1:4].[C:5][N:6]>>[#6:1][C:2](=[O:3])[N:6][C:5] |$R1;;;OH;R2;NHR3;R1;;;NR3;R2$|", options)), {
+                "reactants": ["CC([OH])=O |$R1;;OH;$|", "CN |$R2;NHR3$|"],
+                "catalysts": [],
+                "products": ["CC(NC)=O |$R1;;NR3;R2;$|"]
+            });
+            options.delete();
+        });
     }
 
     // Run tests
