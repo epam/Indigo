@@ -32,5 +32,7 @@ namespace indigo
         std::string saveReactionCML(Reaction& reaction);
         std::string saverReactionJson(BaseReaction& reaction);
         static std::string dataPath(const char* dataPathSuffix);
+        static std::string smiles(Molecule& m);
+        static std::string smiles(QueryMolecule& m);
     };
 }

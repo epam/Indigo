@@ -1669,9 +1669,9 @@ void SmilesSaver::_writePseudoAtoms()
         {
             writeSpecialAtom(_written_atoms[i], _output);
         }
-        else if (mol.isAlias(i))
+        else if (mol.isAlias(_written_atoms[i]))
         {
-            writePseudoAtom(mol.getAlias(i), _output);
+            writePseudoAtom(mol.getAlias(_written_atoms[i]), _output);
         }
     }
 
