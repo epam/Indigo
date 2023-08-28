@@ -22,7 +22,8 @@
 
 namespace indigo_cpp
 {
-    enum class IndigoAutomapMode {
+    enum class IndigoAutomapMode
+    {
         DISCARD = 0,
         KEEP,
         ALTER,
