@@ -42,7 +42,7 @@ class BingoElasticPageCriteria:
     """
     _pit_id: Optional[str]
     _page_size: int
-    _pit_stay_alive_minutes: int
+    _pit_stay_alive_minutes: float
     _sort: List[Dict[str, str]]
     _search_after: List[Any]
     _query: Optional[Dict[str, Any]]
@@ -143,7 +143,6 @@ class BingoElasticPageResult(Awaitable, Iterable):
     _last_hit_sort_object: List[Any]
     _gen: Generator[IndigoRecord, None, None]
     _completed_processing: bool
-    _tracking_iterator: Optional[Iterator[Optional[IndigoRecord]]] = None
 
     def get_records(self, filter_false_positives: bool = True) -> Tuple[Optional[IndigoRecord], ...]:
         """
@@ -224,9 +223,7 @@ class BingoElasticPageResult(Awaitable, Iterable):
         We track the iterator, so it never goes back like before, to mimic its behavior.
         """
         self.synchronized()
-        if self._tracking_iterator is None:
-            self._tracking_iterator = self.get_records(filter_false_positives=False).__iter__()
-        return self._tracking_iterator
+        return self.get_records(filter_false_positives=False).__iter__()
 
     def __await__(self) -> Generator[IndigoRecord, None, None]:
         for record in self._gen:
