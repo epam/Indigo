@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 
 from indigo import Indigo, IndigoObject  # type: ignore
 
-from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule, IndigoRecordReaction
+from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
 from bingo_elastic.utils import PostprocessType, head_by_path
 
 
