@@ -163,7 +163,7 @@ class BingoElasticPageResult(Awaitable, Iterable):
     _current_page_criteria: BingoElasticPageCriteria
     _num_hits_in_elastic: int
     _num_actual_hits: int
-    _last_hit_sort_object: List[Any]
+    _last_hit_sort_object: Optional[List[Any]]
     _gen: Generator[IndigoRecord, None, None]
     _completed_processing: bool
 
@@ -239,6 +239,7 @@ class BingoElasticPageResult(Awaitable, Iterable):
         self._num_hits_in_elastic = 0
         self._num_actual_hits = 0
         self._completed_processing = False
+        self._last_hit_sort_object = None
 
     def __iter__(self) -> Iterator[Optional[IndigoRecord]]:
         """
