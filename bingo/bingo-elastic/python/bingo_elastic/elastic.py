@@ -42,9 +42,9 @@ class BingoElasticPageCriteria:
     """
     _pit_id: Optional[str]
     _page_size: int
-    _pit_stay_alive_minutes: float
-    _sort: List[Dict[str, str]]
-    _search_after: List[Any]
+    _pit_stay_alive_minutes: int
+    _sort: Optional[List[Dict[str, str]]]
+    _search_after: Optional[List[Any]]
     _query: Optional[Dict[str, Any]]
     _next_page_search_after: List[Any]
 
@@ -78,32 +78,55 @@ class BingoElasticPageCriteria:
 
     @property
     def query(self) -> Optional[Dict[str, Any]]:
+        """
+        Get the precompiled query, which will be stored in the following pages of first page for performance.
+        """
         return self._query
 
     @property
     def pit_id(self) -> Optional[str]:
+        """
+        Get the Point In Time (PIT) query identifier. The identifier must either be blank, or must be non-expired.
+        """
         return self._pit_id
 
     @property
     def page_size(self) -> int:
+        """
+        The page size of the query total.
+        Cannot exceed maximum 999 (1 extra is canary for testing next page availability).
+        """
         return self._page_size
 
     @property
     def pit_stay_alive_minutes(self) -> int:
+        """
+        Get the Point In Time query stay alive minutes, which will be refreshed if there is another paged query again.
+        Note the elasticsearch does not support floating point values.
+        """
         return self._pit_stay_alive_minutes
 
     @property
-    def sort_criteria(self) -> List[Dict[str, str]]:
+    def sort_criteria(self) -> Optional[List[Dict[str, str]]]:
+        """
+        By default, the query will be sorted by score followed by PIT shard ID as tie-breaker implicitly.
+        If an alternative sort order is desired, enter it here.
+        """
         return self._sort
 
     @property
-    def search_after(self) -> List[Any]:
+    def search_after(self) -> Optional[List[Any]]:
+        """
+        The cursor of the page we are retrieving of the previous record of the first record of this page.
+        If this is the first page. This will be None.
+        """
         return self._search_after
 
     def __init__(self, page_size: int = 10,
-                 pit_id: Optional[str] = None, sort: Optional[List[Dict[str, str]]] = None,
+                 pit_id: Optional[str] = None,
+                 sort: Optional[List[Dict[str, str]]] = None,
                  pit_stay_alive_minutes: int = 30,
-                 search_after: List[Any] = None,
+                 search_after: Optional[List[Any]] = None,
                  query: Optional[Dict[str, Any]] = None):
         """
         Create custom page criteria to query any particular page with particular number of records to skip.
