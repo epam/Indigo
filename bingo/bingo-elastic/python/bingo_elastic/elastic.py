@@ -496,7 +496,7 @@ class AsyncElasticRepository:
         return ret
 
     async def delete(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-                     limit: int = 10, **kwargs, ) -> Dict[str, Any]:
+                     limit: int = 1000, **kwargs, ) -> Dict[str, Any]:
         """
         Delete documents in index by a query filter.
         """
@@ -504,7 +504,8 @@ class AsyncElasticRepository:
             return dict()
         page_criteria = self.compile_query(
             query_subject=query_subject,
-            limit=limit,
+            page_criteria=BingoElasticPageCriteria(page_size=limit-1),
+            is_delete_query=True,
             **kwargs,
         )
         return await self.el_client.delete_by_query(index=self.index_name, body=page_criteria.query, slices="auto")
@@ -520,9 +521,10 @@ class AsyncElasticRepository:
 
     def compile_query(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
                       page_criteria: Optional[BingoElasticPageCriteria] = None,
-                      postprocess_actions: PostprocessType = None, **kwargs, ) -> BingoElasticPageCriteria:
+                      postprocess_actions: PostprocessType = None,
+                      is_delete_query: bool = True, **kwargs, ) -> BingoElasticPageCriteria:
         return _compile_query(self.index_name, self.el_client,
-                              query_subject, page_criteria, postprocess_actions, **kwargs)
+                              query_subject, page_criteria, postprocess_actions, is_delete_query, **kwargs)
 
 
 class ElasticRepository:
@@ -617,7 +619,7 @@ class ElasticRepository:
 
     def delete(self,
                query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-               limit: int = 999,
+               limit: int = 1000,
                **kwargs, ) -> Dict[str, Any]:
         """
         Delete documents in index by a query filter.
@@ -626,7 +628,8 @@ class ElasticRepository:
             return dict()
         page_criteria = self.compile_query(
             query_subject=query_subject,
-            limit=limit,
+            page_criteria=BingoElasticPageCriteria(page_size=limit-1),
+            is_delete_query=True,
             **kwargs,
         )
         return self.el_client.delete_by_query(index=self.index_name, body=page_criteria.query,
@@ -634,15 +637,17 @@ class ElasticRepository:
 
     def compile_query(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
                       page_criteria: Optional[BingoElasticPageCriteria] = None,
-                      postprocess_actions: PostprocessType = None, **kwargs, ) -> BingoElasticPageCriteria:
+                      postprocess_actions: PostprocessType = None,
+                      is_delete_query: bool = False, **kwargs, ) -> BingoElasticPageCriteria:
         return _compile_query(self.index_name, self.el_client,
-                              query_subject, page_criteria, postprocess_actions, **kwargs)
+                              query_subject, page_criteria, postprocess_actions, is_delete_query, **kwargs)
 
 
 def _compile_query(index_name: str, el_client: ElasticRepositoryT,
                    query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
                    page_criteria: Optional[BingoElasticPageCriteria] = None,
                    postprocess_actions: PostprocessType = None,
+                   is_delete_query: bool = False,
                    **kwargs,
                    ) -> BingoElasticPageCriteria:
     # record last elastic hit's sort object, regardless of its post-process filtering status.
@@ -650,7 +655,7 @@ def _compile_query(index_name: str, el_client: ElasticRepositoryT,
         postprocess_actions = []
     if page_criteria is None:
         page_criteria = BingoElasticPageCriteria()
-    if not page_criteria.pit_id:
+    if not page_criteria.pit_id and not is_delete_query:
         pit_result = el_client.open_point_in_time(index=index_name,
                                                   keep_alive=str(page_criteria.pit_stay_alive_minutes) + "m")
         pit_id: str = pit_result["id"]
@@ -662,7 +667,8 @@ def _compile_query(index_name: str, el_client: ElasticRepositoryT,
         page_criteria._next_page_search_after = record.sort
         return record
 
-    postprocess_actions.insert(0, page_processing_routine)
+    if not is_delete_query:
+        postprocess_actions.insert(0, page_processing_routine)
 
     query: Dict[str, Any]
     if not page_criteria.query:
@@ -677,13 +683,14 @@ def _compile_query(index_name: str, el_client: ElasticRepositoryT,
                     "sub_fingerprint",
                 ],
             },
-            "pit": {
-                "id": page_criteria.pit_id,
-                "keep_alive": str(page_criteria.pit_stay_alive_minutes) + "m"
-            },
             # Sort is necessary for paging.
             "sort": page_criteria.sort_criteria
         }
+        if not is_delete_query:
+            query["pit"] = {
+                "id": page_criteria.pit_id,
+                "keep_alive": str(page_criteria.pit_stay_alive_minutes) + "m"
+            }
 
         if isinstance(query_subject, BaseMatch):
             query_subject.compile(query, postprocess_actions)
