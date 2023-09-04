@@ -30,7 +30,7 @@ files = [
     "suplabel",
     "atropisomer",
     "non_atrop",
-    "monomerTemplates"
+    "monomerTemplates",
 ]
 
 files.sort()
