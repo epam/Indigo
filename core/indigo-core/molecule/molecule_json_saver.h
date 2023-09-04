@@ -184,7 +184,6 @@ namespace indigo
         static std::string monomerClass(const TGroup& tg);
         static std::string naturalAnalog(const TGroup& tg);
 
-
         bool add_stereo_desc;
         bool pretty_json;
 

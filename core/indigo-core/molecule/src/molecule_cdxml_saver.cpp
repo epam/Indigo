@@ -17,12 +17,12 @@
  ***************************************************************************/
 
 #include "molecule/molecule_cdxml_saver.h"
-#include "molecule/parse_utils.h"
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cdxml_loader.h"
+#include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 
 #include <codecvt>

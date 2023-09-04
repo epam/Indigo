@@ -19,8 +19,8 @@
 #ifndef __parse_utils__
 #define __parse_utils__
 
-#include <string>
 #include <regex>
+#include <string>
 
 #ifdef _WIN32
 #pragma warning(push)
