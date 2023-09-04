@@ -25,6 +25,8 @@
 #include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_savers.h"
+#include "molecule/monomer_commons.h"
+#include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 
 using namespace indigo;
@@ -271,7 +273,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             {
                 writer.StartObject();
                 auto& atp = sa.attachment_points[i];
-                std::string atp_id_str(atp.apid.ptr(), atp.apid.size());
+                std::string atp_id_str(atp.apid.ptr());
                 writer.Key("attachmentAtom");
                 writer.Int(atp.aidx);
                 if (atp.lvidx != -1)
@@ -903,43 +905,173 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
     }
 }
 
-void MoleculeJsonSaver::saveTGroup(TGroup& tg, JsonWriter& writer)
+std::string MoleculeJsonSaver::monomerId(const TGroup& tg)
 {
-    QS_DEF(Array<char>, buf);
-    ArrayOutput out(buf);
-    buf.clear();
-    out.printf("tg%d", tg.tgroup_id);
-    buf.push(0);
-    writer.Key(buf.ptr());
+    std::string name;
+    std::string monomer_class;
+    if (tg.tgroup_name.ptr())
+        name = tg.tgroup_name.ptr();
+    if (tg.tgroup_class.ptr())
+        monomer_class = tg.tgroup_class.ptr();
+    if (name.size())
+        name = normalizeMonomerName(monomer_class, name);
+    else
+        name = std::string("#") + std::to_string(tg.tgroup_id);
+    return name;
+}
+
+std::string MoleculeJsonSaver::monomerClass(const TGroup& tg)
+{
+    auto mclass = std::string(tg.tgroup_class.ptr());
+    if (mclass == "dAA" || mclass == "AA")
+        return "AminoAcid";
+    if (mclass == "RNA" || mclass == "DNA" || mclass.find("MOD") == 0 || mclass.find("XLINK") == 0)
+        return mclass;
+    for (auto it = mclass.begin(); it < mclass.end(); ++it)
+        *it = it > mclass.begin() ? std::tolower(*it) : std::toupper(*it);
+    return mclass;
+}
+
+std::string MoleculeJsonSaver::naturalAnalog(const TGroup& tg)
+{
+    std::string res;
+    if (tg.tgroup_natreplace.ptr())
+    {
+        auto nat_replace = split(std::string(), '/');
+        if (nat_replace.size() > 1)
+            res = normalizeMonomerName(nat_replace.front(), nat_replace[1]);
+    }
+    return res;
+}
+
+std::string MoleculeJsonSaver::monomerAlias(const TGroup& tg)
+{
+    std::string monomer_class;
+    std::string alias;
+
+    if (tg.tgroup_class.ptr())
+        monomer_class = tg.tgroup_class.ptr();
+
+    if (tg.tgroup_alias.ptr())
+        alias = tg.tgroup_alias.ptr();
+
+    if (alias.size())
+        alias = normalizeMonomerAlias(monomer_class, alias);
+    else
+    {
+        if (tg.tgroup_name.size() == 1)
+            alias = std::toupper(tg.tgroup_name[0]);
+        else
+            alias = monomerId(tg);
+    }
+    return alias;
+}
+
+void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
+{
+    std::string template_name("monomerTemplate-");
+    std::string tg_name(monomerId(tg));
+    std::string template_class;
+
+    template_name += tg_name;
+    writer.Key(template_name.c_str());
     writer.StartObject();
     writer.Key("type");
-    writer.String("tgroup");
-    writer.Key("name");
-    writer.String(tg.tgroup_name.ptr());
+    writer.String("monomerTemplate");
+    writer.Key("id");
+    writer.String(tg_name.c_str());
     if (tg.tgroup_class.size())
     {
         writer.Key("class");
-        writer.String(tg.tgroup_class.ptr());
+        writer.String(monomerClass(tg).c_str());
     }
-    if (tg.tgroup_alias.size())
+
+    writer.Key("alias");
+    writer.String(monomerAlias(tg).c_str());
+
+    auto analog = naturalAnalog(tg);
+    if (analog.size())
     {
-        writer.Key("alias");
-        writer.String(tg.tgroup_alias.ptr());
+        writer.Key("naturalAnalog");
+        writer.String(analog.c_str());
     }
-    if (tg.tgroup_natreplace.size())
-    {
-        writer.Key("natreplace");
-        writer.String(tg.tgroup_natreplace.ptr());
-    }
+
     if (tg.tgroup_comment.size())
     {
         writer.Key("comment");
         writer.String(tg.tgroup_comment.ptr());
     }
+
+    saveMonomerAttachmentPoints(tg, writer);
     saveFragment(*tg.fragment, writer);
     writer.EndObject();
 }
 
+void MoleculeJsonSaver::saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writer)
+{
+    auto& sgroups = tg.fragment->sgroups;
+    sgroups.getSGroupCount();
+    for (int j = sgroups.begin(); j != sgroups.end(); j = sgroups.next(j))
+    {
+        SGroup& sg = sgroups.getSGroup(j);
+        if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+        {
+            auto& sa = (Superatom&)sg;
+            std::map<std::string, int> sorted_attachment_points;
+            if (sa.sa_class.size())
+            {
+                std::string sa_class = sa.sa_class.ptr();
+                if (sa.attachment_points.size())
+                {
+                    for (int i = sa.attachment_points.begin(); i != sa.attachment_points.end(); i = sa.attachment_points.next(i))
+                    {
+                        auto& atp = sa.attachment_points[i];
+                        std::string atp_id_str(atp.apid.ptr());
+                        if (atp_id_str.size())
+                            sorted_attachment_points.insert(std::make_pair(atp_id_str, i));
+                    }
+
+                    if (sorted_attachment_points.size())
+                    {
+                        writer.Key("attachmentPoints");
+                        writer.StartArray();
+                        int order = 0;
+                        for (const auto& kvp : sorted_attachment_points)
+                        {
+                            writer.StartObject();
+                            auto& atp = sa.attachment_points[kvp.second];
+                            std::string atp_id_str(atp.apid.ptr());
+                            if (!isAttachmentPointsInOrder(order++, atp_id_str))
+                            {
+                                writer.Key("type");
+                                if (atp_id_str == "Al" || atp_id_str == "R1")
+                                    writer.String("left");
+                                else if (atp_id_str == "Br" || atp_id_str == "R2")
+                                    writer.String("right");
+                                else
+                                    writer.String("side");
+                                writer.Key("label");
+                                writer.String(atp_id_str.c_str());
+                            }
+                            writer.Key("attachmentAtom");
+                            writer.Int(atp.aidx);
+                            writer.Key("leavingGroup");
+                            writer.StartObject();
+                            writer.Key("atoms");
+                            writer.StartArray();
+                            writer.Int(atp.lvidx);
+                            writer.EndArray();
+                            writer.EndObject();
+                            writer.EndObject();
+                        }
+                        writer.EndArray();
+                    }
+                }
+            }
+            sgroups.remove(j);
+        }
+    }
+}
 void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, JsonWriter& writer)
 {
     QS_DEF(Array<char>, buf);
@@ -1052,19 +1184,25 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
         writer.EndObject();
     }
 
-    for (int i = mol->tgroups.begin(); i != mol->tgroups.end(); i = mol->tgroups.next(i))
+    writer.EndArray(); // nodes
+
+    if (mol->tgroups.getTGroupCount())
     {
-        TGroup& tg = mol->tgroups.getTGroup(i);
-        buf.clear();
-        out.printf("tg%d", i);
-        buf.push(0);
-        writer.StartObject();
-        writer.Key("$ref");
-        writer.String(buf.ptr());
-        writer.EndObject();
+        writer.Key("templates");
+        writer.StartArray();
+
+        for (int i = mol->tgroups.begin(); i != mol->tgroups.end(); i = mol->tgroups.next(i))
+        {
+            TGroup& tg = mol->tgroups.getTGroup(i);
+            auto template_name = std::string("monomerTemplate-") + monomerId(tg);
+            writer.StartObject();
+            writer.Key("$ref");
+            writer.String(template_name.c_str());
+            writer.EndObject();
+        }
+        writer.EndArray(); // templates
     }
 
-    writer.EndArray();  // nodes
     writer.EndObject(); // root
 
     for (int idx = 0; idx < mol->countComponents(s_neighbors); idx++)
@@ -1119,7 +1257,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     for (int i = mol->tgroups.begin(); i != mol->tgroups.end(); i = mol->tgroups.next(i))
     {
         TGroup& tg = mol->tgroups.getTGroup(i);
-        saveTGroup(tg, writer);
+        saveMonomerTemplate(tg, writer);
     }
 
     writer.EndObject();

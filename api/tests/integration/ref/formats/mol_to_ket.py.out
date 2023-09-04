@@ -3,5 +3,6 @@
 1046-imp_hydrogen.ket:SUCCEED
 SgroupDifferent.ket:SUCCEED
 atropisomer.ket:SUCCEED
+monomerTemplates.ket:SUCCEED
 non_atrop.ket:SUCCEED
 suplabel.ket:SUCCEED

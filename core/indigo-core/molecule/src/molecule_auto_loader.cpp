@@ -23,6 +23,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "gzip/gzip_scanner.h"
+#include "molecule/parse_utils.h"
 #include "molecule/cml_loader.h"
 #include "molecule/icm_loader.h"
 #include "molecule/icm_saver.h"

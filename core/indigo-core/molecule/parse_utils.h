@@ -20,6 +20,7 @@
 #define __parse_utils__
 
 #include <string>
+#include <regex>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -30,6 +31,28 @@ namespace indigo
 {
     std::string latin1_to_utf8(const std::string& src);
     bool is_valid_utf8(const std::string& data);
+
+    inline bool validate_base64(const std::string& str)
+    {
+        if (str.size() & 3) // check for padding
+            return false;
+        std::regex base64reg_exp("^[a-zA-Z0-9\\+/]*={0,3}$");
+        return std::regex_match(str, base64reg_exp);
+    }
+
+    inline std::vector<std::string> split(const std::string& str, char delim)
+    {
+        std::vector<std::string> strings;
+        size_t start;
+        size_t end = 0;
+        while ((start = str.find_first_not_of(delim, end)) != std::string::npos)
+        {
+            end = str.find(delim, start);
+            strings.push_back(str.substr(start, end - start));
+        }
+        return strings;
+    }
+
 } // namespace indigo
 
 #ifdef _WIN32
