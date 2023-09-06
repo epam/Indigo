@@ -15,4 +15,3 @@ rxn1 = indigo.loadReactionSmarts("([#8:1].[#6:2])>>([#8:1].[#6:2])")
 assert rxn1.countReactants() == 1
 assert rxn1.countProducts() == 1
 print("SMARTS component-level grouping load ok")
-
