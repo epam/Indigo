@@ -75,7 +75,45 @@ void SmilesSaver::saveQueryMolecule(QueryMolecule& mol)
     _bmol = &mol;
     _qmol = &mol;
     _mol = 0;
-    _saveMolecule();
+    if (smarts_mode)
+    {
+        std::unordered_set<int> component_nums;
+        for (int i = 0; i < _qmol->components.size(); i++)
+        {
+            component_nums.insert(i);
+        }
+        if (component_nums.size() > 1)
+        {
+            // decompose _qmol and save each component separately
+            std::list<std::unordered_set<int>> extNeighbors;
+            // fill extNeighbors
+            int fragment_count = _qmol->countComponents(extNeighbors);
+            for (int i = 0; i < fragment_count; ++i)
+            {
+                Array<int> mapping;
+                auto fragment = std::make_unique<QueryMolecule>();
+                Filter filt(_qmol->getDecomposition().ptr(), Filter::EQ, i);
+                fragment->makeSubmolecule(*_qmol, filt, &mapping, 0);
+                saveQueryMolecule(*fragment);
+            }
+            _saveMolecule();
+        }
+        else
+        {
+            // _qmol.components contains only one value.
+            // If this value == 0 - no grouping used
+            // otherwise grouping used - SMARTS should be in parentheses
+            if (component_nums.count(0) == 0)
+                _output.writeChar('(');
+            _saveMolecule();
+            if (component_nums.count(0) == 0)
+                _output.writeChar(')');
+        }
+    }
+    else
+    {
+        _saveMolecule();
+    }
 }
 
 void SmilesSaver::_saveMolecule()
@@ -600,7 +638,7 @@ void SmilesSaver::_saveMolecule()
         }
     }
 
-    if (write_extra_info && chemaxon)
+    if (write_extra_info && chemaxon && !smarts_mode) // no extended block in SMARTS
     {
         // Before we write the |...| block (ChemAxon's Extended SMILES),
         // we must clean up the mess we did with the attachment points
