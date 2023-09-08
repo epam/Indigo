@@ -75,25 +75,6 @@ void RSmilesLoader::loadQueryReaction(QueryReaction& rxn)
     _loadReaction();
 }
 
-static void _createComponenetsExternalNeighbors(QueryMolecule& qmol, std::list<std::unordered_set<int>>& externNeib)
-{
-    std::unordered_map<int, std::unordered_set<int>> componentAtoms;
-    for (int i = 0; i < qmol.components.size(); ++i)
-    {
-        int componentId = qmol.components[i];
-        if (componentId > 0)
-        { // vertice[i] belongs to component #Id
-            componentAtoms[componentId].insert(i);
-        }
-    }
-    for (auto elem : componentAtoms)
-    {
-        auto atoms = elem.second;
-        if (atoms.size() > 1)
-            externNeib.emplace_back(atoms);
-    }
-}
-
 void RSmilesLoader::_loadReaction()
 {
     _brxn->clear();
@@ -147,7 +128,7 @@ void RSmilesLoader::_loadReaction()
     {
         rcnt = std::make_unique<QueryMolecule>();
         r_loader.loadQueryMolecule(static_cast<QueryMolecule&>(*rcnt));
-        _createComponenetsExternalNeighbors(static_cast<QueryMolecule&>(*rcnt), rcnt_extNeibs);
+        rcnt_extNeibs = static_cast<QueryMolecule&>(*rcnt).getComponentNeighbors();
     }
     rcnt_aam.copy(rcnt->reaction_atom_mapping);
 
@@ -181,7 +162,7 @@ void RSmilesLoader::_loadReaction()
     {
         ctlt = std::make_unique<QueryMolecule>();
         c_loader.loadQueryMolecule(static_cast<QueryMolecule&>(*ctlt));
-        _createComponenetsExternalNeighbors(static_cast<QueryMolecule&>(*ctlt), ctlt_extNeibs);
+        ctlt_extNeibs = static_cast<QueryMolecule&>(*ctlt).getComponentNeighbors();
     }
     ctlt_aam.copy(ctlt->reaction_atom_mapping);
 
@@ -221,7 +202,7 @@ void RSmilesLoader::_loadReaction()
     {
         prod = std::make_unique<QueryMolecule>();
         p_loader.loadQueryMolecule(static_cast<QueryMolecule&>(*prod));
-        _createComponenetsExternalNeighbors(static_cast<QueryMolecule&>(*prod), prod_extNeibs);
+        prod_extNeibs = static_cast<QueryMolecule&>(*prod).getComponentNeighbors();
     }
     prod_aam.copy(prod->reaction_atom_mapping);
 

@@ -372,6 +372,8 @@ namespace indigo
         // must belong to different connected components of the target molecule
         Array<int> components;
 
+        std::list<std::unordered_set<int>>& getComponentNeighbors();
+
         void invalidateAtom(int index, int mask) override;
 
         int getAtomMaxExteralConnectivity(int idx);
@@ -397,6 +399,10 @@ namespace indigo
 
         PtrArray<Atom> _atoms;
         PtrArray<Bond> _bonds;
+
+        std::list<std::unordered_set<int>> _component_neighbors;
+        bool _component_neighbors_valid;
+        void _calculateComponentNeighbors();
     };
 
 } // namespace indigo

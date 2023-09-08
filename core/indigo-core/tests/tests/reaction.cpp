@@ -20,6 +20,7 @@
 
 #include <base_cpp/output.h>
 #include <reaction/reaction.h>
+#include <reaction/rsmiles_saver.h>
 
 #include "common.h"
 
@@ -99,4 +100,12 @@ TEST_F(IndigoCoreReactionTest, smarts_reaction)
     loadQueryReaction(smarts_in.c_str(), qr);
     ASSERT_EQ(qr.reactantsCount(), 1);
     ASSERT_EQ(qr.productsCount(), 1);
+    Array<char> out;
+    ArrayOutput std_out(out);
+    RSmilesSaver saver(std_out);
+    saver.smarts_mode = true;
+    saver.saveQueryReaction(qr);
+    out.push(0);
+    std::string smarts_out{out.ptr()};
+    ASSERT_EQ(smarts_in, smarts_out);
 }

@@ -323,3 +323,23 @@ M  END
     saver.saveMolecule(t_mol);
     ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 0);
 }
+
+TEST_F(IndigoCoreFormatsTest, smarts_load_save)
+{
+    QueryMolecule q_mol;
+
+    //std::string smarts_in{"([#8:1].[#6:2])"};
+    std::string smarts_in{"([#8:1].[#6:2]).([#8:1].[#6:2])"};
+    BufferScanner scanner(smarts_in.c_str());
+    SmilesLoader loader(scanner);
+    loader.smarts_mode = true;
+    loader.loadQueryMolecule(q_mol);
+    Array<char> out;
+    ArrayOutput std_out(out);
+    SmilesSaver saver(std_out);
+    saver.smarts_mode = true;
+    saver.saveQueryMolecule(q_mol);
+    std::string smarts_out{out.ptr(), static_cast<std::size_t>(out.size())};
+    printf("smart_in=%s\nsmart_out=%s\n", smarts_in, smarts_out);
+}
+

@@ -10,8 +10,11 @@ from env_indigo import *
 
 indigo = Indigo()
 
-
-rxn1 = indigo.loadReactionSmarts("([#8:1].[#6:2])>>([#8:1].[#6:2])")
+smarts_in = "([#8:1].[#6:2])>>([#8:1].[#6:2])"
+rxn1 = indigo.loadReactionSmarts(smarts_in)
 assert rxn1.countReactants() == 1
 assert rxn1.countProducts() == 1
 print("SMARTS component-level grouping load ok")
+smarts_out = rxn1.smarts()
+assert smarts_in == smarts_out
+print("SMARTS component-level grouping save ok")

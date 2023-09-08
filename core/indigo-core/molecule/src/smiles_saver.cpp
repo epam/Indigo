@@ -80,13 +80,13 @@ void SmilesSaver::saveQueryMolecule(QueryMolecule& mol)
         std::unordered_set<int> component_nums;
         for (int i = 0; i < _qmol->components.size(); i++)
         {
-            component_nums.insert(i);
+            component_nums.insert(_qmol->components[i]);
         }
         if (component_nums.size() > 1)
         {
+            std::unique_ptr<QueryMolecule> mol = std::make_unique<QueryMolecule>();
             // decompose _qmol and save each component separately
-            std::list<std::unordered_set<int>> extNeighbors;
-            // fill extNeighbors
+            std::list<std::unordered_set<int>>& extNeighbors = _qmol->getComponentNeighbors();
             int fragment_count = _qmol->countComponents(extNeighbors);
             for (int i = 0; i < fragment_count; ++i)
             {
@@ -94,9 +94,9 @@ void SmilesSaver::saveQueryMolecule(QueryMolecule& mol)
                 auto fragment = std::make_unique<QueryMolecule>();
                 Filter filt(_qmol->getDecomposition().ptr(), Filter::EQ, i);
                 fragment->makeSubmolecule(*_qmol, filt, &mapping, 0);
+                mol->mergeWithMolecule(*fragment, 0);
                 saveQueryMolecule(*fragment);
             }
-            _saveMolecule();
         }
         else
         {
