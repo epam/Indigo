@@ -52,12 +52,6 @@ namespace indigo
         return true;
     }
 
-    inline double round_to_decplace(const double& val, int dec_place)
-    {
-        double mult = dec_place * 10;
-        return std::round(val * mult) / mult;
-    }
-
 } // namespace indigo
 
 #ifdef _WIN32
