@@ -1095,7 +1095,7 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
                             if (total_h)
                             {
                                 group_name += 'H';
-                                if ( total_h > 1 )
+                                if (total_h > 1)
                                     group_name += std::to_string(total_h);
                             }
                         }
