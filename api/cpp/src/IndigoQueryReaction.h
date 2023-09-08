@@ -18,31 +18,18 @@
 
 #pragma once
 
-#include "IndigoChemicalStructure.h"
+#include "IndigoBaseReaction.h"
 
 namespace indigo_cpp
 {
-    enum class IndigoAutomapMode {
-        DISCARD = 0,
-        KEEP,
-        ALTER,
-        CLEAR
-    };
-
-    class IndigoBaseReaction : public IndigoChemicalStructure
+    class IndigoQueryReaction final : public IndigoBaseReaction
     {
-    protected:
-        IndigoBaseReaction(int id, IndigoSessionPtr session);
-        IndigoBaseReaction(IndigoBaseReaction&&) = default;
-        IndigoBaseReaction& operator=(IndigoBaseReaction&&) = default;
-        IndigoBaseReaction(const IndigoBaseReaction& other);
-        IndigoBaseReaction& operator=(const IndigoBaseReaction&) = default;
-        ~IndigoBaseReaction() override = default;
-
     public:
-        std::string rxnfile() const;
-        std::string ctfile() const override;
-
-        void automap(const IndigoAutomapMode& mode);
+        IndigoQueryReaction(int id, IndigoSessionPtr session);
+        IndigoQueryReaction(IndigoQueryReaction&&) = default;
+        IndigoQueryReaction& operator=(IndigoQueryReaction&&) = default;
+        IndigoQueryReaction(const IndigoQueryReaction&);
+        IndigoQueryReaction& operator=(const IndigoQueryReaction&) = default;
+        ~IndigoQueryReaction() final = default;
     };
 }
