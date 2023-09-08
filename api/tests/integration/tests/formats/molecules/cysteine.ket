@@ -1,0 +1,176 @@
+{
+    "root": {
+        "nodes": [],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-Cys"
+            }
+        ]
+    },
+    "monomerTemplate-Cys": {
+        "type": "monomerTemplate",
+        "id": "Cys",
+        "class": "AminoAcid",
+        "alias": "C",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 8,
+                "leavingGroup": {
+                    "atoms": [
+                        1
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 6,
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        0
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "H",
+                "location": [
+                    9.201199531555176,
+                    -7.158699989318848,
+                    0.0
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    8.374699592590332,
+                    -7.985400199890137,
+                    0.0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    10.02810001373291,
+                    -7.985400199890137,
+                    0.0
+                ]
+            },
+            {
+                "label": "S",
+                "location": [
+                    9.718199729919434,
+                    -6.737199783325195,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    9.194899559020996,
+                    -7.6427001953125,
+                    0.0
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "O",
+                "location": [
+                    9.698399543762207,
+                    -8.580300331115723,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    9.698399543762207,
+                    -7.97629976272583,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    9.194899559020996,
+                    -7.03879976272583,
+                    0.0
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    8.704099655151368,
+                    -7.994699954986572,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    0
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    8,
+                    1
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    6,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    7
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    7,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    6
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    8,
+                    4
+                ]
+            }
+        ]
+    }
+}

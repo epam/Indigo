@@ -1,4 +1,10 @@
 *** KET to MOL ***
+all_templates.ket:SUCCEED
+chem.ket:SUCCEED
+cysteine.ket:SUCCEED
+dcysteine.ket:SUCCEED
+dthymine.ket:SUCCEED
 suplabel.ket:SUCCEED
+thymine.ket:SUCCEED
 empty_apid.ket:SUCCEED
 ket-reaction-arrow.ket:SUCCEED
