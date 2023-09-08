@@ -16,40 +16,26 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "IndigoBaseReaction.h"
+#include <gtest/gtest.h>
 
-#include <array>
+#include <IndigoReaction.h>
 
-#include <indigo.h>
+#include "common.h"
 
 using namespace indigo_cpp;
 
-namespace
+TEST(Reaction, automapReactionSmarts)
 {
-    const std::array<const char*, 4> AUTOMAP_MODES{"discard", "keep", "alter", "clear"};
+    const auto& session = IndigoSession::create();
+    auto reaction = session->loadReaction("[C:1]=[C:2][C:3].[C:4]=[C:5][C:6]>>[C:3][C:2]=[C:5][C:6]");
+    reaction.automap(IndigoAutomapMode::CLEAR);
+    ASSERT_STREQ("[#6]=[#6]-[#6].[#6]=[#6]-[#6]>>[#6]-[#6]=[#6]-[#6] |^3:0,3,^1:1,4,7,8|", reaction.smarts().c_str());
 }
 
-IndigoBaseReaction::IndigoBaseReaction(const int id, IndigoSessionPtr session) : IndigoChemicalStructure(id, std::move(session))
+TEST(Reaction, automapQueryReactionSmarts)
 {
-}
-
-IndigoBaseReaction::IndigoBaseReaction(const IndigoBaseReaction& other) : IndigoChemicalStructure(other)
-{
-}
-
-std::string IndigoBaseReaction::rxnfile() const
-{
-    session()->setSessionId();
-    return session()->_checkResultString(indigoRxnfile(id()));
-}
-
-std::string IndigoBaseReaction::ctfile() const
-{
-    return rxnfile();
-}
-
-void IndigoBaseReaction::automap(const IndigoAutomapMode& mode)
-{
-    session()->setSessionId();
-    session()->_checkResult(indigoAutomap(id(), AUTOMAP_MODES.at(static_cast<size_t>(mode))));
+    const auto& session = IndigoSession::create();
+    auto reaction = session->loadQueryReaction("[C:1]=[C:2][C:3].[C:4]=[C:5][C:6]>>[C:3][C:2]=[C:5][C:6] |$;;R1;;;R2;R1;;;R2$|");
+    reaction.automap(IndigoAutomapMode::CLEAR);
+    ASSERT_STREQ("[#6]=[#6]-[#6].[#6]=[#6]-[#6]>>[#6]-[#6]=[#6]-[#6] |$;;R1;;;R2;R1;;;R2$|", reaction.smarts().c_str());
 }

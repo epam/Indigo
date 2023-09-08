@@ -16,34 +16,14 @@
  * limitations under the License.
  ***************************************************************************/
 
-#pragma once
+#include "IndigoQueryReaction.h"
 
-#include "IndigoChemicalStructure.h"
+using namespace indigo_cpp;
 
-namespace indigo_cpp
+IndigoQueryReaction::IndigoQueryReaction(const int id, IndigoSessionPtr session) : IndigoBaseReaction(id, std::move(session))
 {
-    enum class IndigoAutomapMode
-    {
-        DISCARD = 0,
-        KEEP,
-        ALTER,
-        CLEAR
-    };
+}
 
-    class IndigoBaseReaction : public IndigoChemicalStructure
-    {
-    protected:
-        IndigoBaseReaction(int id, IndigoSessionPtr session);
-        IndigoBaseReaction(IndigoBaseReaction&&) = default;
-        IndigoBaseReaction& operator=(IndigoBaseReaction&&) = default;
-        IndigoBaseReaction(const IndigoBaseReaction& other);
-        IndigoBaseReaction& operator=(const IndigoBaseReaction&) = default;
-        ~IndigoBaseReaction() override = default;
-
-    public:
-        std::string rxnfile() const;
-        std::string ctfile() const override;
-
-        void automap(const IndigoAutomapMode& mode);
-    };
+IndigoQueryReaction::IndigoQueryReaction(const IndigoQueryReaction& other) : IndigoBaseReaction(other)
+{
 }

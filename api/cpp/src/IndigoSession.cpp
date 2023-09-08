@@ -206,3 +206,9 @@ IndigoReaction IndigoSession::loadReaction(const std::string& data)
     setSessionId();
     return {_checkResult(indigoLoadReactionFromString(data.c_str())), shared_from_this()};
 }
+
+IndigoReaction IndigoSession::loadQueryReaction(const std::string& data)
+{
+    setSessionId();
+    return {_checkResult(indigoLoadQueryReactionFromString(data.c_str())), shared_from_this()};
+}
