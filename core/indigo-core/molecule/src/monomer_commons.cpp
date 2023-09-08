@@ -36,12 +36,15 @@ namespace indigo
     const std::unordered_map<std::string, std::string> kAliasToNucleic = {{"A", "Ade"}, {"C", "Cyt"},  {"G", "Gua"},  {"U", "Ura"}, {"T", "Thy"},
                                                                           {"r", "Rib"}, {"d", "dRib"}, {"m", "mRib"}, {"p", "Pi"}};
 
+    const std::string kPrefix_d("d");
+    const std::string kPrefix_r("r");
+
     std::string classToPrefix(const std::string& monomer_class)
     {
-        if (monomer_class == "dAA" || monomer_class == "DNA")
-            return "d";
-        else if (monomer_class == "RNA")
-            return "r";
+        if (monomer_class == kMonomerClassdAA || monomer_class == kMonomerClassDNA)
+            return kPrefix_d;
+        else if (monomer_class == kMonomerClassRNA)
+            return kPrefix_r;
         return "";
     }
 
@@ -101,8 +104,8 @@ namespace indigo
         auto res = alias;
         if (res.size() == 1)
             res = std::toupper(res[0]);
-        if (monomer_class == "dAA")
-            res = std::string("d") + res;
+        if (monomer_class == kMonomerClassdAA)
+            res = kPrefix_d + res;
         return res;
     }
 

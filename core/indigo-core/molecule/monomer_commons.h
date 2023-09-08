@@ -2,6 +2,7 @@
 #define __monomer_commons__
 
 #include <string>
+#include <unordered_set>
 
 #include "molecule/parse_utils.h"
 
@@ -9,14 +10,29 @@ namespace indigo
 {
     const int kStdMonomerDef = 3;
 
+    const std::string kMonomerClassAA = "AA";
+    const std::string kMonomerClassdAA = "dAA";
+    const std::string kMonomerClassDNA = "DNA";
+    const std::string kMonomerClassRNA = "RNA";
+    const std::string kMonomerClassSUGAR = "SUGAR";
+    const std::string kMonomerClassBASE = "BASE";
+    const std::string kMonomerClassPHOSPHATE = "PHOSPHATE";
+    const std::string kMonomerClassAminoAcid = "AminoAcid";
+    const std::string kPrefix_d("d");
+    const std::string kPrefix_r("r");
+
+    const std::unordered_set<std::string> kNucleicClasses = {kMonomerClassDNA, kMonomerClassRNA, kMonomerClassSUGAR, kMonomerClassBASE, kMonomerClassPhosphate};
+    const std::unordered_set<std::string> kAminoClasses = {kMonomerClassAA,   kMonomerClassdAA,       kMonomerClassSUGAR,
+                                                           kMonomerClassBASE, kMonomerClassPhosphate, kMonomerClassAminoAcid};
+
     inline bool isNucleicClass(const std::string& monomer_class)
     {
-        return monomer_class == "RNA" || monomer_class == "DNA" || monomer_class == "BASE" || monomer_class == "PHOSPHATE" || monomer_class == "SUGAR";
+        return kNucleicClasses.find(monomer_class) != kNucleicClasses.end();
     }
 
     inline bool isAminoAcidClass(const std::string& monomer_class)
     {
-        return monomer_class == "AA" || monomer_class == "dAA" || monomer_class == "AminoAcid";
+        return kAminoClasses.find(monomer_class) != kAminoClasses.end();
     }
 
     std::string classToPrefix(const std::string& monomer_class);
