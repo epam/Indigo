@@ -937,7 +937,7 @@ std::string MoleculeJsonSaver::naturalAnalog(const TGroup& tg)
     std::string res;
     if (tg.tgroup_natreplace.ptr())
     {
-        auto nat_replace = split(std::string(), '/');
+        auto nat_replace = split(std::string(tg.tgroup_natreplace.ptr()), '/');
         if (nat_replace.size() > 1)
             res = normalizeMonomerName(nat_replace.front(), nat_replace[1]);
     }
@@ -948,6 +948,7 @@ std::string MoleculeJsonSaver::monomerAlias(const TGroup& tg)
 {
     std::string monomer_class;
     std::string alias;
+    std::string name;
 
     if (tg.tgroup_class.ptr())
         monomer_class = tg.tgroup_class.ptr();
@@ -955,12 +956,15 @@ std::string MoleculeJsonSaver::monomerAlias(const TGroup& tg)
     if (tg.tgroup_alias.ptr())
         alias = tg.tgroup_alias.ptr();
 
+    if (tg.tgroup_name.ptr())
+        name = tg.tgroup_name.ptr();
+
     if (alias.size())
         alias = normalizeMonomerAlias(monomer_class, alias);
     else
     {
-        if (tg.tgroup_name.size() == 1)
-            alias = std::toupper(tg.tgroup_name[0]);
+        if (name.size() == 1)
+            alias = std::toupper(name[0]);
         else
             alias = monomerId(tg);
     }
@@ -971,7 +975,7 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
 {
     std::string template_name("monomerTemplate-");
     std::string tg_name(monomerId(tg));
-    std::string template_class;
+    std::string template_class(monomerClass(tg));
 
     template_name += tg_name;
     writer.Key(template_name.c_str());
@@ -983,7 +987,7 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     if (tg.tgroup_class.size())
     {
         writer.Key("class");
-        writer.String(monomerClass(tg).c_str());
+        writer.String(template_class.c_str());
     }
 
     writer.Key("alias");
@@ -994,6 +998,12 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     {
         writer.Key("naturalAnalog");
         writer.String(analog.c_str());
+        auto nat_alias = monomerAliasByName(template_class, analog);
+        if (nat_alias.size() < analog.size())
+        {
+            writer.Key("naturalAnalogShort");
+            writer.String(nat_alias.c_str());
+        }
     }
 
     if (tg.tgroup_comment.size())
@@ -1051,6 +1061,15 @@ void MoleculeJsonSaver::saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writ
                                 else
                                     writer.String("side");
                                 writer.Key("label");
+                                if (::isupper(atp_id_str[0]) && atp_id_str.size() == 2)
+                                {
+                                    if (atp_id_str == "Al")
+                                        atp_id_str = "R1";
+                                    else if (atp_id_str == "Br")
+                                        atp_id_str = "R2";
+                                    else if (atp_id_str[1] == 'x')
+                                        atp_id_str = std::string("R") + std::to_string(atp_id_str[0] - 'A' + 1);
+                                }
                                 writer.String(atp_id_str.c_str());
                             }
                             writer.Key("attachmentAtom");

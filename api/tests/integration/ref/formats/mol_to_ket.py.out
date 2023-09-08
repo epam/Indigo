@@ -3,6 +3,11 @@
 1046-imp_hydrogen.ket:SUCCEED
 SgroupDifferent.ket:SUCCEED
 atropisomer.ket:SUCCEED
+chem.ket:SUCCEED
+cysteine.ket:SUCCEED
+dcysteine.ket:SUCCEED
+dthymine.ket:SUCCEED
 monomerTemplates.ket:SUCCEED
 non_atrop.ket:SUCCEED
 suplabel.ket:SUCCEED
+thymine.ket:SUCCEED
