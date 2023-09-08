@@ -91,3 +91,12 @@ TEST_F(IndigoCoreReactionTest, aliases_complex)
         saverReactionJson(reaction).c_str());
     */
 }
+
+TEST_F(IndigoCoreReactionTest, smarts_reaction)
+{
+    QueryReaction qr;
+    std::string smarts_in = "([#8:1].[#6:2])>>([#8:1].[#6:2])";
+    loadQueryReaction(smarts_in.c_str(), qr);
+    ASSERT_EQ(qr.reactantsCount(), 1);
+    ASSERT_EQ(qr.productsCount(), 1);
+}

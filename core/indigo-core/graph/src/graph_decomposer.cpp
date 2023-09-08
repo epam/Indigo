@@ -72,7 +72,7 @@ int GraphDecomposer::decompose(const Filter* filter, const Filter* edge_filter, 
         int top = 1, bottom = 0;
 
         queue[0] = vertex_idx;
-        while (top != bottom)
+        while (top != bottom) // while queue not empty
         {
             auto v_bottom_id = queue[bottom];
             const Vertex& vertex = _graph.getVertex(v_bottom_id);
@@ -92,10 +92,10 @@ int GraphDecomposer::decompose(const Filter* filter, const Filter* edge_filter, 
                 if (edge_filter != 0 && !edge_filter->valid(vertex.neiEdge(i)))
                     continue;
 
-                if (_component_ids[other] == -1)
+                if (_component_ids[other] == -1) // if other unused
                 {
-                    queue[top++] = other;
-                    _component_ids[other] = -2;
+                    queue[top++] = other;       // queue.push(other)
+                    _component_ids[other] = -2; // mark as in_queue
                 }
 
                 if (_component_ids[other] == -2)
@@ -129,7 +129,7 @@ int GraphDecomposer::decompose(const Filter* filter, const Filter* edge_filter, 
                     }
                 }
             }
-            bottom++;
+            bottom++; // queue.pop()
         }
 
         n_comp++;
