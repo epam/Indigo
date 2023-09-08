@@ -104,7 +104,7 @@ namespace indigo
         void parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol);
 
     private:
-        void fillXBondsAndBrackets( Superatom& sa, BaseMolecule& mol );
+        void fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol);
         rapidjson::Value& _mol_nodes;
         RGroupDescriptionList _rgroups;
 
