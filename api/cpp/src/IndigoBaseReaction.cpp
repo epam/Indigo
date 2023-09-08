@@ -17,7 +17,8 @@
  ***************************************************************************/
 
 #include "IndigoBaseReaction.h"
-#include "IndigoSession.h"
+
+#include <array>
 
 #include <indigo.h>
 
