@@ -878,6 +878,11 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
     case QueryMolecule::OP_AND: {
         for (i = 0; i < atom->children.size(); i++)
         {
+            if (atom->children[i]->type == QueryMolecule::ATOM_RADICAL || atom->children[i]->type == QueryMolecule::ATOM_VALENCE)
+            {
+                continue;
+            }
+
             if (i > 0)
                 _output.writeChar(has_or_parent ? '&' : ';');
             _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[i], chirality, depth + 1, has_or_parent, has_not_parent);
@@ -887,6 +892,11 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
     case QueryMolecule::OP_OR: {
         for (i = 0; i < atom->children.size(); i++)
         {
+            if (atom->children[i]->type == QueryMolecule::ATOM_RADICAL || atom->children[i]->type == QueryMolecule::ATOM_VALENCE)
+            {
+                continue;
+            }
+
             if (i > 0)
                 _output.printf(has_not_parent ? "!" : ",");
             _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[i], chirality, depth + 1, true, has_not_parent);
