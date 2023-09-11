@@ -1014,7 +1014,8 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         break;
     }
 
-    case QueryMolecule::ATOM_PSEUDO: {
+    case QueryMolecule::ATOM_PSEUDO:
+    case QueryMolecule::ATOM_RSITE: {
         _output.printf("*", atom->alias.ptr());
         break;
     }
