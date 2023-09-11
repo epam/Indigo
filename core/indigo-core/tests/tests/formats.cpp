@@ -329,7 +329,7 @@ TEST_F(IndigoCoreFormatsTest, smarts_load_save)
     QueryMolecule q_mol;
 
     //std::string smarts_in{"([#8:1].[#6:2])"};
-    std::string smarts_in{"([#8:1].[#6:2]).([#8:1].[#6:2])"};
+    std::string smarts_in{"([#8].[#6]).([#6].[#8])"};
     BufferScanner scanner(smarts_in.c_str());
     SmilesLoader loader(scanner);
     loader.smarts_mode = true;
@@ -340,6 +340,6 @@ TEST_F(IndigoCoreFormatsTest, smarts_load_save)
     saver.smarts_mode = true;
     saver.saveQueryMolecule(q_mol);
     std::string smarts_out{out.ptr(), static_cast<std::size_t>(out.size())};
-    printf("smart_in=%s\nsmart_out=%s\n", smarts_in, smarts_out);
+    ASSERT_EQ(smarts_in, smarts_out);
 }
 
