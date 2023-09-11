@@ -2162,7 +2162,7 @@ void QueryMolecule::_calculateComponentNeighbors()
 
 std::list<std::unordered_set<int>>& QueryMolecule::getComponentNeighbors()
 {
-    if(!_component_neighbors_valid)
+    if (!_component_neighbors_valid)
         _calculateComponentNeighbors();
 
     return _component_neighbors;
