@@ -39,3 +39,16 @@ TEST(Reaction, automapQueryReactionSmarts)
     reaction.automap(IndigoAutomapMode::CLEAR);
     ASSERT_STREQ("[#6]=[#6]-[#6].[#6]=[#6]-[#6]>>[#6]-[#6]=[#6]-[#6] |$;;R1;;;R2;R1;;;R2$|", reaction.smarts().c_str());
 }
+
+TEST(Reaction, smarts_rgroups)
+{
+    const auto& session = IndigoSession::create();
+    {
+        const auto& reaction = session->loadReaction("[*]B(O)O.[CH3:2]Cl>>[*][*] |$_R1;;;;;;_R1;_R2$|");
+        EXPECT_STREQ("[*]-[#5](-[#8])-[#8].[#6:2]-[#17]>>[*]-[*] |$_R1;;;;;;_R1;_R2$|", reaction.smarts().c_str());
+    }
+    {
+        const auto& queryReaction = session->loadQueryReaction("[*]B(O)O.[CH3:2]Cl>>[*][*] |$_R1;;;;;;_R1;_R2$|");
+        EXPECT_STREQ("[*]-[#5](-[#8])-[#8].[#6:2;H3]-[#17]>>[*]-[*] |$_R1;;;;;;_R1;_R2$|", queryReaction.smarts().c_str());
+    }
+}
