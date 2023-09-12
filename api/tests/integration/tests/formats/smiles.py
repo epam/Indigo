@@ -117,10 +117,7 @@ for sm in mols_smiles:
     print(indigo.loadMolecule(sm).smiles())
 
 print("*** Atropisomers ***")
-mols_smiles = [
-    "C1C(O)=C(C2C=CC(C)=CC=2N)C(C)=CC=1 |o1:3,r,wU:3.12|",
-]
+mols_smiles = ["C1C(O)=C(C2C=CC(C)=CC=2N)C(C)=CC=1 |o1:3,r,wU:3.12|"]
 for sm in mols_smiles:
     print("atropisomer:")
     print(indigo.loadMolecule(sm).smiles())
-
