@@ -82,6 +82,8 @@ namespace indigo
         int* getPyramid(int idx);
         void setType(int idx, int type, int group);
         void setType(int idx, int type);
+        void setAtropisomeric(int idx, bool val);
+        bool isAtropisomeric(int idx);
         void invertPyramid(int idx);
 
         bool sameGroup(int idx1, int idx2);
@@ -137,6 +139,7 @@ namespace indigo
             // [X, Y, Z, W] -- atom indices or -1 for implicit hydrogen
             // (X, Y, Z) go counterclockwise when looking from W.
             // if there are pure (implicit) hydrogen, it is W
+            bool is_atropisomeric = false;
             int pyramid[4];
         };
 

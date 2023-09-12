@@ -390,6 +390,9 @@ namespace indigo
         void clearBondDirections();
         int getBondDirection(int idx) const;
         void setBondDirection(int idx, int dir);
+        void setForcedStereoBond(int idx);
+        bool isForcedStereoBond(int idx);
+        const RedBlackSet<int>& forcedStereoBonds();
 
         int getBondDirection2(int center_idx, int nei_idx);
 
@@ -510,6 +513,10 @@ namespace indigo
         Array<int> _sl_bonds;
 
         Array<int> _bond_directions;
+
+        // non standard bonds with direction to make SMILES 
+        // aware and avoid using chirality expressions and use wU/wD instead
+        RedBlackSet<int> _forced_stereo_bonds;
 
         Array<Vec3f> _xyz;
         RedBlackMap<int, Vec3f> _stereo_flag_positions;

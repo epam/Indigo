@@ -262,7 +262,7 @@ void SmilesSaver::_saveMolecule()
 
         stereocenters.get(i, atom_idx, type, group, pyramid);
 
-        if (type < MoleculeStereocenters::ATOM_AND)
+        if (type < MoleculeStereocenters::ATOM_AND || stereocenters.isAtropisomeric(atom_idx))
             continue;
 
         int implicit_h_idx = -1;
@@ -625,6 +625,7 @@ void SmilesSaver::_saveMolecule()
         _writeRingBonds();
         _writeUnsaturated();
         _writeSubstitutionCounts();
+        _writeWedges();
 
         if (_comma)
             _output.writeChar('|');
@@ -1820,6 +1821,40 @@ void SmilesSaver::_writeSubstitutionCounts()
                 default:
                     _output.printf("%d:%d", i, subst);
                     break;
+                }
+            }
+        }
+    }
+}
+
+void SmilesSaver::_writeWedges()
+{
+    bool is_first = true;
+
+    if (_bmol)
+    {
+        if (_bmol->forcedStereoBonds().size())
+        {
+            for (int i = 0; i < _written_bonds.size(); ++i)
+            {
+                auto bond_idx = _written_bonds[i];
+                if (_bmol->isForcedStereoBond(bond_idx))
+                {
+                    auto bdir = _bmol->getBondDirection(bond_idx);
+                    if (bdir && bdir < BOND_EITHER)
+                    {
+                        if (is_first)
+                        {
+                            _startExtension();
+                            _output.writeString(bdir == BOND_UP ? "wU:" : "wD:");
+                            is_first = false;
+                        }
+                        else
+                            _output.writeString(",");
+                        const auto& edge = _bmol->getEdge(bond_idx);
+                        auto wa_idx = _written_atoms.find(edge.beg);
+                        _output.printf("%d.%d", wa_idx, i);
+                    }
                 }
             }
         }
