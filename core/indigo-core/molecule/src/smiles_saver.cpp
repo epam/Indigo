@@ -1838,7 +1838,8 @@ void SmilesSaver::_writeWedges()
             for (int i = 0; i < _written_bonds.size(); ++i)
             {
                 auto bond_idx = _written_bonds[i];
-                if (_bmol->isForcedStereoBond(bond_idx))
+                auto& e = _bmol->getEdge(bond_idx);
+                if (_bmol->isForcedStereoBond(bond_idx) && _bmol->stereocenters.getType(e.beg))
                 {
                     auto bdir = _bmol->getBondDirection(bond_idx);
                     if (bdir && bdir < BOND_EITHER)
