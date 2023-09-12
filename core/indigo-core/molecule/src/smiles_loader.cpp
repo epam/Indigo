@@ -361,9 +361,9 @@ void SmilesLoader::_readOtherStuff()
                             _bmol->swapEdgeEnds(bond_idx);
                         if (v.beg == atom_idx)
                         {
+                            _bmol->setBondDirection(bond_idx, wmode == 'U' ? BOND_UP : BOND_DOWN);
                             if (_bmol->isAtropisomerismReferenceAtom(atom_idx))
                             {
-                                _bmol->setBondDirection(bond_idx, wmode == 'U' ? BOND_UP : BOND_DOWN);
                                 if (!_bmol->stereocenters.exists(atom_idx))
                                     _bmol->addStereocenters(atom_idx, MoleculeStereocenters::ATOM_ANY, 0, false);
                                 _bmol->stereocenters.setAtropisomeric(atom_idx, true);
