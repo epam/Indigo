@@ -26,7 +26,7 @@
 
 using namespace indigo;
 
-QueryMolecule::QueryMolecule() : spatial_constraints(*this)
+QueryMolecule::QueryMolecule() : spatial_constraints(*this), _component_neighbors_valid(false)
 {
 }
 
