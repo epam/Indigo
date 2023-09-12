@@ -20,11 +20,11 @@ def test_smarts_load_save(smarts_in):
     m = indigo.loadSmarts(smarts_in)
     smarts_out = m.smarts()
     if smarts_in == smarts_out:
-        print("smarts_in==smarts_out")
+        print("%s is ok. smarts_in==smarts_out" % smarts_in)
     else:
         print("smarts_in!=smarts_out")
         print(" smarts_in=%s", smarts_in)
-        print("smarts_out=%s", smarts_in)
+        print("smarts_out=%s", smarts_out)
 
 
 molstr = """
@@ -93,5 +93,6 @@ print("**** Load and Save as Query with not list ****")
 m = indigo.loadQueryMolecule(notlist)
 print(m.smarts())
 
-test_smarts_load_save("([#8:1].[#6:2])")
-test_smarts_load_save("([#8:1].[#6:2]).([#8:1].[#6:2])")
+print("**** Load and Save as Query with component-level grouping ****")
+test_smarts_load_save("([#8].[#6])")
+test_smarts_load_save("([#8].[#6]).([#8].[#6])")
