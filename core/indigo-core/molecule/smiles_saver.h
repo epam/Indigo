@@ -128,6 +128,7 @@ namespace indigo
         void _writeRingBonds();
         void _writeUnsaturated();
         void _writeSubstitutionCounts();
+        void _writeWedges();
 
         bool _shouldWriteAromaticBond(int bond_idx);
         void _startExtension();

@@ -708,6 +708,16 @@ void MoleculeStereocenters::setType(int idx, int type)
     _stereocenters.at(idx).type = type;
 }
 
+void MoleculeStereocenters::setAtropisomeric(int idx, bool val)
+{
+    _stereocenters.at(idx).is_atropisomeric = val;
+}
+
+bool MoleculeStereocenters::isAtropisomeric(int idx)
+{
+    return _stereocenters.at(idx).is_atropisomeric;
+}
+
 const int* MoleculeStereocenters::getPyramid(int idx) const
 {
     return _stereocenters.at(idx).pyramid;
