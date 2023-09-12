@@ -12,9 +12,16 @@ indigo = Indigo()
 
 smarts_in = "([#8:1].[#6:2])>>([#8:1].[#6:2])"
 rxn1 = indigo.loadReactionSmarts(smarts_in)
-assert rxn1.countReactants() == 1
-assert rxn1.countProducts() == 1
-print("SMARTS component-level grouping load ok")
+if rxn1.countReactants() == 1 and rxn1.countProducts() == 1:
+    print("SMARTS component-level grouping load ok")
+else:
+    print("SMARTS component-level grouping load failed")
+    print("rxn1.countReactants()=%s" % rxn1.countReactants())
+    print("rxn1.countProducts()=%s" % rxn1.countProducts())
 smarts_out = rxn1.smarts()
-assert smarts_in == smarts_out
-print("SMARTS component-level grouping save ok")
+if smarts_in == smarts_out:
+    print("SMARTS component-level grouping save ok")
+else:
+    print("SMARTS component-level grouping save failed")
+    print("smart_in=%s" % smarts_in)
+    print("smart_ou=%s" % smarts_out)
