@@ -429,7 +429,7 @@ void SmilesLoader::_readOtherStuff()
                 int idx = _scanner.readUnsigned();
                 if (_bmol->stereocenters.exists(idx))
                     _bmol->stereocenters.setType(idx, MoleculeStereocenters::ATOM_AND, groupno);
-                else 
+                else
                     _bmol->addStereocenters(idx, MoleculeStereocenters::ATOM_AND, groupno, false);
 
                 if (_scanner.lookNext() == ',')
@@ -2439,6 +2439,7 @@ void SmilesLoader::_loadMolecule()
 
     _parseMolecule();
     _loadParsedMolecule();
+    _validateStereoCenters();
 }
 
 void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond)
