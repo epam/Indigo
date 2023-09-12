@@ -26,7 +26,7 @@
 
 using namespace indigo;
 
-QueryMolecule::QueryMolecule() : spatial_constraints(*this), _component_neighbors_valid(false)
+QueryMolecule::QueryMolecule() : spatial_constraints(*this)
 {
 }
 
@@ -2162,8 +2162,6 @@ void QueryMolecule::_calculateComponentNeighbors()
 
 std::list<std::unordered_set<int>>& QueryMolecule::getComponentNeighbors()
 {
-    if (!_component_neighbors_valid)
-        _calculateComponentNeighbors();
-
+    _calculateComponentNeighbors();
     return _component_neighbors;
 }

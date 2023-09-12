@@ -401,7 +401,6 @@ namespace indigo
         PtrArray<Bond> _bonds;
 
         std::list<std::unordered_set<int>> _component_neighbors;
-        bool _component_neighbors_valid;
         void _calculateComponentNeighbors();
     };
 
