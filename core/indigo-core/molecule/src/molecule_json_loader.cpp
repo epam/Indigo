@@ -1111,13 +1111,13 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             {
                 mol.stereocenters.add_ignore(mol, sc._atom_idx, sc._type, sc._group, false);
                 mol.stereocenters.setAtropisomeric(sc._atom_idx, true);
-            } else
-            if (!stereochemistry_options.ignore_errors)
+            }
+            else if (stereochemistry_options.ignore_errors)
+                mol.addStereocentersIgnoreBad(sc._atom_idx, sc._type, sc._group, false); // add non-valid stereocenters
+            else
                 throw Error("stereo type specified for atom #%d, but the bond "
                             "directions does not say that it is a stereocenter",
                             sc._atom_idx);
-            else
-                mol.addStereocentersIgnoreBad(sc._atom_idx, sc._type, sc._group, false); // add non-valid stereocenters
         }
         else
             mol.stereocenters.setType(sc._atom_idx, sc._type, sc._group);
@@ -1127,11 +1127,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     {
         if (mol.getBondDirection(i) > 0 && !sensible_bond_directions[i])
         {
-            if (stereochemistry_options.ignore_errors)
-            {
-                mol.setForcedStereoBond(i);
-            }
-            else
+            if (!stereochemistry_options.ignore_errors)
                 throw Error("direction of bond #%d makes no sense", i);
         }
     }

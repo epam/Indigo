@@ -1833,29 +1833,26 @@ void SmilesSaver::_writeWedges()
 
     if (_bmol)
     {
-        if (_bmol->forcedStereoBonds().size())
+        for (int i = 0; i < _written_bonds.size(); ++i)
         {
-            for (int i = 0; i < _written_bonds.size(); ++i)
+            auto bond_idx = _written_bonds[i];
+            auto& e = _bmol->getEdge(bond_idx);
+            if (_bmol->stereocenters.exists(e.beg) && _bmol->stereocenters.isAtropisomeric(e.beg))
             {
-                auto bond_idx = _written_bonds[i];
-                auto& e = _bmol->getEdge(bond_idx);
-                if (_bmol->isForcedStereoBond(bond_idx) && _bmol->stereocenters.getType(e.beg))
+                auto bdir = _bmol->getBondDirection(bond_idx);
+                if (bdir && bdir < BOND_EITHER)
                 {
-                    auto bdir = _bmol->getBondDirection(bond_idx);
-                    if (bdir && bdir < BOND_EITHER)
+                    if (is_first)
                     {
-                        if (is_first)
-                        {
-                            _startExtension();
-                            _output.writeString(bdir == BOND_UP ? "wU:" : "wD:");
-                            is_first = false;
-                        }
-                        else
-                            _output.writeString(",");
-                        const auto& edge = _bmol->getEdge(bond_idx);
-                        auto wa_idx = _written_atoms.find(edge.beg);
-                        _output.printf("%d.%d", wa_idx, i);
+                        _startExtension();
+                        _output.writeString(bdir == BOND_UP ? "wU:" : "wD:");
+                        is_first = false;
                     }
+                    else
+                        _output.writeString(",");
+                    const auto& edge = _bmol->getEdge(bond_idx);
+                    auto wa_idx = _written_atoms.find(edge.beg);
+                    _output.printf("%d.%d", wa_idx, i);
                 }
             }
         }

@@ -3933,25 +3933,9 @@ void BaseMolecule::setBondDirection(int idx, int dir)
     _bond_directions[idx] = dir;
 }
 
-void BaseMolecule::setForcedStereoBond(int idx)
-{
-    _forced_stereo_bonds.find_or_insert( idx );
-}
-
-bool BaseMolecule::isForcedStereoBond(int idx)
-{
-    return _forced_stereo_bonds.find(idx);
-}
-
-const RedBlackSet<int>& BaseMolecule::forcedStereoBonds()
-{
-    return _forced_stereo_bonds;
-}
-
 void BaseMolecule::clearBondDirections()
 {
     _bond_directions.clear();
-    _forced_stereo_bonds.clear();
 }
 
 bool BaseMolecule::isChiral()

@@ -367,7 +367,6 @@ void SmilesLoader::_readOtherStuff()
                                 if (!_bmol->stereocenters.exists(atom_idx))
                                     _bmol->addStereocenters(atom_idx, MoleculeStereocenters::ATOM_ANY, 0, false);
                                 _bmol->stereocenters.setAtropisomeric(atom_idx, true);
-                                _bmol->setForcedStereoBond(bond_idx);
                             }
                         }
                     }

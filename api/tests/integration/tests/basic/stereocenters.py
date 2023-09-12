@@ -62,10 +62,6 @@ for idx, m in enumerate(
     )
 ):
     print("%d: %s" % (idx, m.smiles()))
-    if idx == 261:
-        for prop in m.iterateProperties():
-            print("%s: %s" % (prop.name(), prop.rawData()))
-
     for s in m.iterateStereocenters():
         print("  " + ",".join([str(i) for i in s.stereocenterPyramid()]))
 
