@@ -152,4 +152,3 @@ for filename in files:
 
     except IndigoException as e:
         print(getIndigoExceptionText(e))
-/
