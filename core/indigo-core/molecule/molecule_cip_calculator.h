@@ -29,6 +29,7 @@ namespace indigo
 {
     class BaseMolecule;
     class Molecule;
+    class StereocenterIterator;
 
     enum class CIPDesc : int
     {
@@ -81,8 +82,8 @@ namespace indigo
                                                                        {"(s)", CIPDesc::s}, {"(E)", CIPDesc::E}, {"(Z)", CIPDesc::Z}};
 
     private:
-        void _calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, Array<CIPDesc>& atom_cip_desc, Array<int>& stereo_passed,
-                                     bool use_stereo, Array<EquivLigand>& equiv_ligands, bool& digraph_cip_used);
+        void _calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, const StereocenterIterator& id, Array<CIPDesc>& atom_cip_desc,
+                                     Array<StereocenterIterator>& stereo_passed, bool use_stereo, Array<EquivLigand>& equiv_ligands, bool& digraph_cip_used);
         void _calcEZStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, Array<CIPDesc>& bond_cip_desc);
         bool _checkLigandsEquivalence(Array<int>& ligands, Array<EquivLigand>& equiv_ligands, CIPContext& context);
         static int _getNumberOfStereoDescritors(const Array<CIPDesc>& atom_cip_desc);

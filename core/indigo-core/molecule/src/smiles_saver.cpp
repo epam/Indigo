@@ -27,6 +27,7 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_rgroups.h"
 #include "molecule/molecule_savers.h"
+#include "molecule/molecule_stereocenter_iterator.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
 
@@ -256,7 +257,7 @@ void SmilesSaver::_saveMolecule()
     // detect chiral configurations
     MoleculeStereocenters& stereocenters = _bmol->stereocenters;
 
-    for (i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
+    for (auto i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
     {
         int atom_idx, type, group, pyramid[4];
 
@@ -1492,9 +1493,10 @@ void SmilesSaver::_writeStereogroups()
 {
     BaseMolecule& mol = *_bmol;
     MoleculeStereocenters& stereocenters = mol.stereocenters;
-    int i, j;
+    int j;
 
-    for (i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
+    StereocenterIterator i = stereocenters.begin();
+    for (; i != stereocenters.end(); i = stereocenters.next(i))
     {
         int atom, type, group;
         stereocenters.get(i, atom, type, group, 0);
@@ -1514,7 +1516,7 @@ void SmilesSaver::_writeStereogroups()
     marked.clear_resize(_written_atoms.size());
     marked.zerofill();
 
-    for (i = 0; i < _written_atoms.size(); i++)
+    for (int i = 0; i < _written_atoms.size(); i++)
     {
         if (marked[i])
             continue;

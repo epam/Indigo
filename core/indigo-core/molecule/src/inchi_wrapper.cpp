@@ -25,6 +25,7 @@
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_dearom.h"
+#include "molecule/molecule_stereocenter_iterator.h"
 // #include "mode.h"
 
 using namespace indigo;
@@ -527,7 +528,7 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
     }
 
     // Process tetrahedral stereocenters
-    for (int i = mol.stereocenters.begin(); i != mol.stereocenters.end(); i = mol.stereocenters.next(i))
+    for (auto i = mol.stereocenters.begin(); i != mol.stereocenters.end(); i = mol.stereocenters.next(i))
     {
         int v = mol.stereocenters.getAtomIndex(i);
 

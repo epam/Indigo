@@ -23,6 +23,7 @@
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_automorphism_search.h"
+#include "molecule/molecule_stereocenter_iterator.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molfile_saver.h"
@@ -42,7 +43,7 @@ bool MoleculeCIPCalculator::addCIPStereoDescriptors(BaseMolecule& mol)
     else
         unfolded_h_mol = std::make_unique<Molecule>();
     QS_DEF(Array<int>, markers);
-    QS_DEF(Array<int>, stereo_passed);
+    QS_DEF(Array<StereocenterIterator>, stereo_passed);
 
     QS_DEF(Array<int>, ignored);
 
@@ -292,8 +293,9 @@ void MoleculeCIPCalculator::convertSGroupsToCIP(BaseMolecule& mol)
     }
 }
 
-void MoleculeCIPCalculator::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, Array<CIPDesc>& atom_cip_desc,
-                                                    Array<int>& stereo_passed, bool use_stereo, Array<EquivLigand>& equiv_ligands, bool& digraph_cip_used)
+void MoleculeCIPCalculator::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, const StereocenterIterator& it,
+                                                    Array<CIPDesc>& atom_cip_desc, Array<StereocenterIterator>& stereo_passed, bool use_stereo,
+                                                    Array<EquivLigand>& equiv_ligands, bool& digraph_cip_used)
 {
     Array<int> ligands;
     Array<int> used1;
@@ -307,7 +309,7 @@ void MoleculeCIPCalculator::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolec
     int parity = 0;
     int cip_parity = 0;
 
-    mol.stereocenters.get(idx, atom_idx, type, group, pyramid);
+    mol.stereocenters.get(it, atom_idx, type, group, pyramid);
 
     if (type <= MoleculeStereocenters::ATOM_ANY)
         return;
@@ -339,7 +341,7 @@ void MoleculeCIPCalculator::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolec
         {
             if (!use_stereo)
             {
-                stereo_passed.push(idx);
+                stereo_passed.push(it);
                 atom_cip_desc[atom_idx] = CIPDesc::UNKNOWN;
             }
             else if (mol.vertexInRing(atom_idx))
@@ -494,7 +496,7 @@ CIPDesc MoleculeCIPCalculator::_calcCIPDigraphDescriptor(BaseMolecule& mol, int 
     QS_DEF(Array<CIPDesc>, atom_cip_desc);
     QS_DEF(Array<CIPDesc>, bond_cip_desc);
     QS_DEF(Array<int>, markers);
-    QS_DEF(Array<int>, stereo_passed);
+    QS_DEF(Array<StereocenterIterator>, stereo_passed);
 
     QS_DEF(Array<int>, ignored);
 

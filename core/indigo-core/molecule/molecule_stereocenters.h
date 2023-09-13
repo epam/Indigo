@@ -19,7 +19,9 @@
 #ifndef __molecule_stereocenters__
 #define __molecule_stereocenters__
 
-#include "base_cpp/red_black.h"
+#include <map>
+
+#include "base_cpp/array.h"
 #include "math/algebra.h"
 
 #ifdef _WIN32
@@ -31,10 +33,21 @@ namespace indigo
 {
     class Filter;
     class StereocentersOptions;
+    class StereocenterIterator;
     class BaseMolecule;
 
     class DLLEXPORT MoleculeStereocenters
     {
+        struct _Atom
+        {
+            int type;  // ANY, AND, OR, ABS
+            int group; // stereogroup index
+            // [X, Y, Z, W] -- atom indices or -1 for implicit hydrogen
+            // (X, Y, Z) go counterclockwise when looking from W.
+            // if there are pure (implicit) hydrogen, it is W
+            int pyramid[4];
+        };
+
     public:
         enum
         {
@@ -45,6 +58,11 @@ namespace indigo
         };
 
         explicit MoleculeStereocenters();
+        MoleculeStereocenters(const MoleculeStereocenters&) = delete; // no implicit copy
+        MoleculeStereocenters(MoleculeStereocenters&&) = default;
+
+        MoleculeStereocenters& operator=(const MoleculeStereocenters&) = delete; // no implicit copy
+        MoleculeStereocenters& operator=(MoleculeStereocenters&&) = default;
 
         void clear();
 
@@ -69,7 +87,6 @@ namespace indigo
         void add_ignore(BaseMolecule& baseMolecule, int atom_idx, int type, int group, bool inverse_pyramid);
         void add_ignore(BaseMolecule& baseMolecule, int atom_idx, int type, int group, const int pyramid[4]);
 
-        void get(int i, int& atom_idx, int& type, int& group, int* pyramid) const;
         void remove(int idx);
 
         bool exists(int atom_idx) const;
@@ -102,11 +119,12 @@ namespace indigo
 
         void flipBond(int atom_parent, int atom_from, int atom_to);
 
-        int begin() const;
-        int end() const;
-        int next(int i) const;
+        StereocenterIterator begin() const;
+        StereocenterIterator end() const;
+        StereocenterIterator next(const StereocenterIterator& it) const;
 
-        int getAtomIndex(int i) const;
+        void get(const StereocenterIterator& it, int& atom_idx, int& type, int& group, int* pyramid) const;
+        int getAtomIndex(const StereocenterIterator& it) const;
 
         bool isPossibleStereocenter(BaseMolecule& baseMolecule, int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
 
@@ -121,7 +139,7 @@ namespace indigo
         static void moveMinimalToEnd(int pyramid[4]);
         static void moveElementToEnd(int pyramid[4], int element);
 
-        static bool isAutomorphism(BaseMolecule& mol, const Array<int>& mapping, const Filter* filter = NULL);
+        static bool isAutomorphism(BaseMolecule& mol, const Array<int>& mapping);
 
         DECL_ERROR;
 
@@ -130,16 +148,6 @@ namespace indigo
         static void rotatePyramid(int* pyramid);
 
     private:
-        struct _Atom
-        {
-            int type;  // ANY, AND, OR, ABS
-            int group; // stereogroup index
-            // [X, Y, Z, W] -- atom indices or -1 for implicit hydrogen
-            // (X, Y, Z) go counterclockwise when looking from W.
-            // if there are pure (implicit) hydrogen, it is W
-            int pyramid[4];
-        };
-
         struct _EdgeIndVec
         {
             int edge_idx;
@@ -157,7 +165,8 @@ namespace indigo
             int implicit_degree;
         };
 
-        RedBlackMap<int, _Atom> _stereocenters;
+        using Container = std::map<int, _Atom>;
+        Container _stereocenters;
 
         static int _sign(const Vec3f& v1, const Vec3f& v2, const Vec3f& v3);
         static int _xyzzy(const Vec3f& v1, const Vec3f& v2, const Vec3f& u);
@@ -178,7 +187,7 @@ namespace indigo
 
         int _getDirection(BaseMolecule& mol, int atom_from, int atom_to, bool bidirectional_mode);
 
-        MoleculeStereocenters(const MoleculeStereocenters&); // no implicit copy
+        friend class StereocenterIterator;
     };
 
 } // namespace indigo

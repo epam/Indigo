@@ -24,6 +24,7 @@
 #include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_sgroups.h"
+#include "molecule/molecule_stereocenter_iterator.h"
 #include "molecule/query_molecule.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
@@ -1420,7 +1421,7 @@ void MoleculeRenderInternal::_determineStereoGroupsMode()
         return;
     bool allAbs = true, singleAndGroup = true, none = true;
     int andGid = -1;
-    for (int i = sc.begin(); i < sc.end(); i = sc.next(i))
+    for (auto i = sc.begin(); i != sc.end(); i = sc.next(i))
     {
         int aid, type, gid, pyramid[4];
         sc.get(i, aid, type, gid, pyramid);
@@ -1459,7 +1460,7 @@ void MoleculeRenderInternal::_determineStereoGroupsMode()
 
     _lopt.stereoMode = STEREOGROUPS_SHOW;
     int aid, type, groupId, pyramid[4];
-    for (int i = sc.begin(); i < sc.end(); i = sc.next(i))
+    for (auto i = sc.begin(); i != sc.end(); i = sc.next(i))
     {
         sc.get(i, aid, type, groupId, pyramid);
         AtomDesc& ad = _ad(aid);

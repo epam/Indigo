@@ -25,6 +25,7 @@
 #include "graph/cycle_basis.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_stereocenter_iterator.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
@@ -821,7 +822,7 @@ void SmilesLoader::_readOtherStuff()
             {
                 // All stereocenters are relative instead of abs
                 MoleculeStereocenters& s = _bmol->stereocenters;
-                for (int i = s.begin(); i != s.end(); i = s.next(i))
+                for (auto i = s.begin(); i != s.end(); i = s.next(i))
                 {
                     int atom = s.getAtomIndex(i);
                     if (s.getType(atom) == MoleculeStereocenters::ATOM_ABS && !ignore_no_chiral_flag &&
