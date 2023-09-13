@@ -1,27 +1,34 @@
-# EPAM Indigo projects #
+# General Info
 
-Copyright (c) 2009-2022 EPAM Systems
+The frontend is a React app, which was reworked from the legacy Mithrill library. It features two primary
+paths: `/search` and `/libs`.
 
-## Introduction ##
+## /search
 
-This repository includes web UI for Indigo service
+The `/search` path includes a Ketcher window and various tools for searching molecules from libraries. As a user, you
+can:
 
-## Source code organization ##
+- Search using Bingo-Elastic
+- Search using Postgres
+- Search by different match types (exact match, similarity match, submatch)
+- Draw the desired molecule using the Ketcher window
 
-## Build instructions ##
+## /libs
+
+The `/libs` path requires a password for user access. The password is stored in the `REACT_APP_LIBS_PASSWORD`
+environment variable. In the libs tab, users can:
+
+- Add new libraries
+- Remove a library
+- Upload .sdf files to a library
+
+By exploring the `/search` and `/libs` paths, users can access the essential features of the Indigo toolkit through the
+Indigo Service.
+
+## How to build
+
+To build react app use next command:
 
 ```
-npm install && gulp
-```
-
-### Use docker
-
-```
-docker-compose up
-```
-
-## Run server with proxy path ##
-
-```
-npm install && gulp && gulp serve --api-proxy="http://indigoweb.epm-lsop.projects.epam.com"
+yarn run build
 ```
