@@ -128,7 +128,7 @@ void RSmilesLoader::_loadReaction()
     {
         rcnt = std::make_unique<QueryMolecule>();
         r_loader.loadQueryMolecule(static_cast<QueryMolecule&>(*rcnt));
-        rcnt_extNeibs = static_cast<QueryMolecule&>(*rcnt).getComponentNeighbors();
+        static_cast<QueryMolecule&>(*rcnt).getComponentNeighbors(rcnt_extNeibs);
     }
     rcnt_aam.copy(rcnt->reaction_atom_mapping);
 
@@ -162,7 +162,7 @@ void RSmilesLoader::_loadReaction()
     {
         ctlt = std::make_unique<QueryMolecule>();
         c_loader.loadQueryMolecule(static_cast<QueryMolecule&>(*ctlt));
-        ctlt_extNeibs = static_cast<QueryMolecule&>(*ctlt).getComponentNeighbors();
+        static_cast<QueryMolecule&>(*ctlt).getComponentNeighbors(ctlt_extNeibs);
     }
     ctlt_aam.copy(ctlt->reaction_atom_mapping);
 
@@ -202,7 +202,7 @@ void RSmilesLoader::_loadReaction()
     {
         prod = std::make_unique<QueryMolecule>();
         p_loader.loadQueryMolecule(static_cast<QueryMolecule&>(*prod));
-        prod_extNeibs = static_cast<QueryMolecule&>(*prod).getComponentNeighbors();
+        static_cast<QueryMolecule&>(*prod).getComponentNeighbors(prod_extNeibs);
     }
     prod_aam.copy(prod->reaction_atom_mapping);
 

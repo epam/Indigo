@@ -2141,7 +2141,7 @@ void QueryMolecule::getQueryAtomLabel(int qa, Array<char>& result)
         result.readString(it->second.c_str(), true);
 }
 
-void QueryMolecule::_calculateComponentNeighbors()
+void QueryMolecule::getComponentNeighbors(std::list<std::unordered_set<int>> &componentNeighbors)
 {
     std::unordered_map<int, std::unordered_set<int>> componentAtoms;
     for (int i = 0; i < components.size(); ++i)
@@ -2152,16 +2152,11 @@ void QueryMolecule::_calculateComponentNeighbors()
             componentAtoms[componentId].insert(i);
         }
     }
+    componentNeighbors.clear();
     for (auto elem : componentAtoms)
     {
         auto atoms = elem.second;
         if (atoms.size() > 1)
-            _component_neighbors.emplace_back(atoms);
+            componentNeighbors.emplace_back(atoms);
     }
-}
-
-std::list<std::unordered_set<int>>& QueryMolecule::getComponentNeighbors()
-{
-    _calculateComponentNeighbors();
-    return _component_neighbors;
 }

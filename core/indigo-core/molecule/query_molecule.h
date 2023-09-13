@@ -372,7 +372,7 @@ namespace indigo
         // must belong to different connected components of the target molecule
         Array<int> components;
 
-        std::list<std::unordered_set<int>>& getComponentNeighbors();
+        void getComponentNeighbors(std::list<std::unordered_set<int>> &componentNeighbors);
 
         void invalidateAtom(int index, int mask) override;
 
@@ -399,9 +399,6 @@ namespace indigo
 
         PtrArray<Atom> _atoms;
         PtrArray<Bond> _bonds;
-
-        std::list<std::unordered_set<int>> _component_neighbors;
-        void _calculateComponentNeighbors();
     };
 
 } // namespace indigo
