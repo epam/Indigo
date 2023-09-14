@@ -185,6 +185,47 @@ void SmilesSaver::_saveMolecule()
     walk.walk();
 
     const Array<DfsWalk::SeqElem>& v_seq = walk.getSequence();
+    Array<int> v_to_comp_group;
+    v_to_comp_group.resize(v_seq.size());
+    v_to_comp_group.fffill();
+
+    if (_qmol != nullptr && smarts_mode && _qmol->components.size() >= v_seq.size())
+    {
+        if (v_seq.size() < 1)
+            return; // No atoms to save
+        std::set<int> components;
+        int cur_component = -1;
+        for (int i = 0; i < v_seq.size(); ++i)
+        {
+            // In v_seq each fragment started with vertex which parent == -1
+            // In SMARTS some fragments could be grouped (component-level grouping)
+            // In QueryMolecule group number stored in "".components" member. GroupId == 0 means no group defined.
+            // Each fragment - connected graph, so all vertexes should belong to one group.
+            // All group fragments should go one by one - in SMARTS its inside "()".
+            if (v_seq[i].parent_vertex < 0) // New Fragment
+            {
+                int new_component = _qmol->components[v_seq[i].idx];
+                // if component defined for new fragment(id>0) and its different from previous and seen before
+                if (new_component > 0 && new_component != cur_component && components.count(new_component))
+                {
+                    // According to the DfsWalk code, the groups components should be neighbors.
+                    // If will be found case when it wrong - add code to rearrange fragments
+                    throw Error("SMARTS fragments need to reaarange.");
+                }
+                components.emplace(new_component);
+                cur_component = new_component;
+            }
+            else
+            {
+                if (cur_component != _qmol->components[v_seq[i].idx])
+                {
+                    // Fragment contains atoms from different components - something went wrong
+                    throw Error("Fragment contains atoms from different components.");
+                }
+            }
+            v_to_comp_group[i] = cur_component;
+        }
+    }
 
     // fill up neighbor lists for the stereocenters calculation
     for (i = 0; i < v_seq.size(); i++)
@@ -525,8 +566,25 @@ void SmilesSaver::_saveMolecule()
         else
         {
             if (!first_component)
+            {
+                // group == 0 means no group set.
+                int prev_group = v_to_comp_group[i - 1];
+                int new_group = v_to_comp_group[i];
+                bool different_groups = new_group != prev_group;
+                if (smarts_mode && prev_group && different_groups) // if component group ended
+                    _output.writeChar(')');
+
                 _output.writeChar('.');
-            first_component = false;
+
+                if (smarts_mode && new_group && different_groups) // if new group started
+                    _output.writeChar('(');
+            }
+            else
+            {
+                if (smarts_mode && v_to_comp_group[i] > 0) // component level grouping set for this fragment
+                    _output.writeChar('(');
+                first_component = false;
+            }
             _written_components++;
         }
         if (write_atom)
@@ -599,8 +657,10 @@ void SmilesSaver::_saveMolecule()
                 _output.writeString("{+n}");
         }
     }
+    if (smarts_mode && v_to_comp_group[i - 1] > 0) // if group set for last fragment - add finish )
+        _output.writeChar(')');
 
-    if (write_extra_info && chemaxon)
+    if (write_extra_info && chemaxon && !smarts_mode) // no extended block in SMARTS
     {
         // Before we write the |...| block (ChemAxon's Extended SMILES),
         // we must clean up the mess we did with the attachment points

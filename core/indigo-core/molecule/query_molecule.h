@@ -372,6 +372,8 @@ namespace indigo
         // must belong to different connected components of the target molecule
         Array<int> components;
 
+        void getComponentNeighbors(std::list<std::unordered_set<int>>& componentNeighbors);
+
         void invalidateAtom(int index, int mask) override;
 
         int getAtomMaxExteralConnectivity(int idx);

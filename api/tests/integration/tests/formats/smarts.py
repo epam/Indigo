@@ -16,6 +16,17 @@ def testSmarts(m):
     print(m.smiles())
 
 
+def test_smarts_load_save(smarts_in):
+    m = indigo.loadSmarts(smarts_in)
+    smarts_out = m.smarts()
+    if smarts_in == smarts_out:
+        print("%s is ok. smarts_in==smarts_out" % smarts_in)
+    else:
+        print("smarts_in!=smarts_out")
+        print(" smarts_in=%s", smarts_in)
+        print("smarts_out=%s", smarts_out)
+
+
 molstr = """
   Ketcher 11241617102D 1   1.00000     0.00000     0
 
@@ -81,3 +92,7 @@ testSmarts(m)
 print("**** Load and Save as Query with not list ****")
 m = indigo.loadQueryMolecule(notlist)
 print(m.smarts())
+
+print("**** Load and Save as Query with component-level grouping ****")
+test_smarts_load_save("([#8].[#6])")
+test_smarts_load_save("([#8].[#6]).([#8].[#6])")
