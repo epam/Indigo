@@ -1676,10 +1676,11 @@ void MoleculeStereocenters::markBond(BaseMolecule& baseMolecule, int atom_idx)
 
 void MoleculeStereocenters::markBonds(BaseMolecule& baseMolecule)
 {
-    int i;
-
-    for (i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
-        markBond(baseMolecule, _stereocenters.key(i));
+    for (int i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
+    {
+        if (!_stereocenters.value(i).is_atropisomeric)
+            markBond(baseMolecule, _stereocenters.key(i));
+    }
 }
 
 bool MoleculeStereocenters::isAutomorphism(BaseMolecule& mol, const Array<int>& mapping, const Filter* filter)
