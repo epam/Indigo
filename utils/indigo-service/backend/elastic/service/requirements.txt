@@ -1,0 +1,11 @@
+celery==5.2.7
+redis==4.5.5
+aenum==3.1.11
+bingo_elastic==1.14.0rc1
+elasticsearch==7.16.2
+epam.indigo==1.14.0.rc1
+Flask==2.2.3
+Flask_Cors==3.0.10
+python-dotenv==1.0.0
+urllib3==1.26.14
+gunicorn==20.1.0
