@@ -8,13 +8,21 @@ services:
     env_file: ./env/db.env
     ports:
       - "5432:5432"
-    volumes:
-      - db_pgdata:/var/lib/postgresql/data
     restart: always
 
-  backend:
+  elastic:
+    image: elasticsearch:8.8.1
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.license.self_generated.type=trial
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+
+  backend-postgres:
     build:
-      context: ./backend/
+      context: ./backend/postgres/
       dockerfile: ./Dockerfile
     env_file: ./env/db.env
     depends_on:
@@ -22,15 +30,22 @@ services:
     restart: always
     command: supervisord -n
 
+  backend-elastic:
+    build:
+      context: ./backend/elastic/
+      dockerfile: ./Dockerfile
+    depends_on:
+      - elastic
+    restart: always
+    command: supervisord -n
+
   frontend:
     build:
       context: ./frontend/
       dockerfile: ./Dockerfile
+    env_file: ./frontend/ui/.env
     depends_on:
-      - backend
+      - backend-postgres
     ports:
-      - "80:80"
+      - "8080:80"
     restart: always
-
-volumes:
-  db_pgdata:
