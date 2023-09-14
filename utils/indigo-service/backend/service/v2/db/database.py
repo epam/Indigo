@@ -23,7 +23,7 @@ Base = declarative_base()
 
 if HAS_BINGO_DB:
     engine: Optional[Engine] = create_engine(
-        "postgresql://", creator=connect, convert_unicode=True
+        "postgresql://", creator=connect
     )
 
     db_session: Optional[scoped_session[Session]] = scoped_session(

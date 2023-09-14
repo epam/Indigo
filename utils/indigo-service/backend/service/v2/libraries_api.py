@@ -38,7 +38,7 @@ library_singletone["adapter"] = BingoPostgresAdapter(  # type: ignore
     library_singletone["indigo_inchi"],
 )
 library_singletone["redis"] = redis.StrictRedis(
-    host="localhost", port=6379, db=0
+    host=config.host_ip, port=6379, db=0
 )
 libraries_api_logger = logging.getLogger("libraries")
 # libraries_api_logger.addHandler(logging.FileHandler('/srv/api/app.log'))

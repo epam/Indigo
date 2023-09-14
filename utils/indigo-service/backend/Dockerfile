@@ -4,12 +4,14 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt update && \
     apt upgrade -y
+RUN apt-get  -y install software-properties-common
+RUN add-apt-repository -y ppa:deadsnakes/ppa
 RUN apt install -y --no-install-recommends \
         ca-certificates \
         curl \
         libfreetype6-dev \
         libfontconfig1-dev \
-        python3 \
+        python3.9 \
         python3-pip \
         python3-wheel \
         python3-setuptools \
@@ -34,7 +36,7 @@ COPY ./conf/redis.auto.conf /etc/supervisor/conf.d/
 COPY ./conf/gunicorn.auto.conf /etc/supervisor/conf.d/
 
 # Install Imago
-RUN mkdir -p /srv/imago/imago-console-2.0.0 && \ 
+RUN mkdir -p /srv/imago/imago-console-2.0.0 && \
     cd /srv/imago/imago-console-2.0.0 && \
     curl https://lifescience.opensource.epam.com/downloads/imago-2.0.0/imago-2.0.0-linux64-console.zip -o imago-2.0.0-linux64-console.zip && \
     unzip imago-2.0.0-linux64-console.zip && \
