@@ -3916,7 +3916,7 @@ int BaseMolecule::getBondDirection(int idx) const
 
 void BaseMolecule::markForcedStereoBond(int idx)
 {
-    _forced_bond_directions.find_or_insert( idx );
+    _forced_bond_directions.find_or_insert(idx);
 }
 
 bool BaseMolecule::isForcedStereoBond(int idx)
