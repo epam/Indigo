@@ -3914,6 +3914,21 @@ int BaseMolecule::getBondDirection(int idx) const
     return _bond_directions[idx];
 }
 
+void BaseMolecule::markForcedStereoBond(int idx)
+{
+    _forced_bond_directions.find_or_insert( idx );
+}
+
+bool BaseMolecule::isForcedStereoBond(int idx)
+{
+    return _forced_bond_directions.find(idx);
+}
+
+const RedBlackSet<int>& BaseMolecule::forcedStereoBonds()
+{
+    return _forced_bond_directions;
+}
+
 int BaseMolecule::getBondDirection2(int center_idx, int nei_idx)
 {
     int idx = findEdgeIndex(center_idx, nei_idx);
@@ -3936,6 +3951,7 @@ void BaseMolecule::setBondDirection(int idx, int dir)
 void BaseMolecule::clearBondDirections()
 {
     _bond_directions.clear();
+    _forced_bond_directions.clear();
 }
 
 bool BaseMolecule::isChiral()
@@ -4444,7 +4460,7 @@ bool BaseMolecule::isAtropisomerismReferenceAtom(int atom_idx)
             for (int i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
             {
                 auto bond_idx = v.neiEdge(i);
-                if (getBondDirection(bond_idx))
+                if (getBondDirection(bond_idx) && getEdgeTopology(bond_idx) == TOPOLOGY_RING)
                     continue;
                 if (isRotationBond(bond_idx))
                     rotation_bonds.insert(bond_idx);

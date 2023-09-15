@@ -2080,7 +2080,9 @@ void MolfileLoader::_postLoad()
     for (i = 0; i < _bonds_num; i++)
         if (_bmol->getBondDirection(i) > 0 && !_sensible_bond_directions[i])
         {
-            if (!stereochemistry_options.ignore_errors)
+            if (stereochemistry_options.ignore_errors)
+                _bmol->markForcedStereoBond(i);
+            else
                 throw Error("direction of bond #%d makes no sense", i);
         }
 

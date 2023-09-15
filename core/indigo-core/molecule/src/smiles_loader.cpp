@@ -356,19 +356,19 @@ void SmilesLoader::_readOtherStuff()
                     auto bond_idx = _scanner.readUnsigned();
                     if (wmode)
                     {
+                        _bmol->setBondDirection(bond_idx, wmode == 'U' ? BOND_UP : BOND_DOWN);
                         auto& v = _bmol->getEdge(bond_idx);
                         if (v.end == atom_idx)
                             _bmol->swapEdgeEnds(bond_idx);
-                        if (v.beg == atom_idx)
+                        if (_bmol->getEdgeTopology(bond_idx) == TOPOLOGY_RING && _bmol->isAtropisomerismReferenceAtom(atom_idx) &&
+                            (v.beg == atom_idx || v.end == atom_idx))
                         {
-                            _bmol->setBondDirection(bond_idx, wmode == 'U' ? BOND_UP : BOND_DOWN);
-                            if (_bmol->isAtropisomerismReferenceAtom(atom_idx))
-                            {
-                                if (!_bmol->stereocenters.exists(atom_idx))
-                                    _bmol->addStereocenters(atom_idx, MoleculeStereocenters::ATOM_ANY, 0, false);
-                                _bmol->stereocenters.setAtropisomeric(atom_idx, true);
-                            }
+                            if (!_bmol->stereocenters.exists(atom_idx))
+                                _bmol->addStereocenters(atom_idx, MoleculeStereocenters::ATOM_ABS, 0, false);
+                            _bmol->stereocenters.setAtropisomeric(atom_idx, true);
                         }
+                        if (!_bmol->stereocenters.exists(atom_idx) || _bmol->stereocenters.isAtropisomeric(atom_idx))
+                            _bmol->markForcedStereoBond(bond_idx);
                     }
                 }
 
@@ -1345,11 +1345,9 @@ void SmilesLoader::_validateStereoCenters()
     for (int i = _bmol->stereocenters.begin(); i < _bmol->stereocenters.end(); i = _bmol->stereocenters.next(i))
     {
         auto atom_idx = _bmol->stereocenters.getAtomIndex(i);
-        if (_bmol->isPossibleStereocenter(atom_idx) || _bmol->isAtropisomerismReferenceAtom(atom_idx))
+        if (_bmol->isPossibleStereocenter(atom_idx) || _bmol->stereocenters.isAtropisomeric(atom_idx))
             continue;
-        if (stereochemistry_options.ignore_errors)
-            _bmol->stereocenters.remove(i);
-        else
+        if (!stereochemistry_options.ignore_errors)
             throw Error("atom %d is not a stereocenter", atom_idx);
     }
 }

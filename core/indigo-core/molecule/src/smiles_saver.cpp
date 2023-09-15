@@ -27,6 +27,7 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_rgroups.h"
 #include "molecule/molecule_savers.h"
+#include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
 
@@ -1840,31 +1841,80 @@ void SmilesSaver::_writeSubstitutionCounts()
 
 void SmilesSaver::_writeWedges()
 {
-    bool is_first = true;
-
     if (_bmol)
     {
+        std::vector<std::pair<int, int>> down_dirs, up_dirs;
+        std::vector<int> sensible_bond_directions;
+        StereocentersOptions stereochemistry_options;
+
+        sensible_bond_directions.resize(_written_bonds.size(), 0);
+
+        for (int i = 0; i < _written_bonds.size(); i++)
+            if (_bmol->getBondDirection(i) == BOND_EITHER)
+            {
+                if (MoleculeCisTrans::isGeomStereoBond(*_bmol, i, 0, true))
+                    sensible_bond_directions[i] = 1;
+                else
+                {
+                    int k;
+                    const Vertex& v = _bmol->getVertex(_bmol->getEdge(i).beg);
+
+                    for (k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+                    {
+                        if (MoleculeCisTrans::isGeomStereoBond(*_bmol, v.neiEdge(k), 0, true))
+                        {
+                            sensible_bond_directions[i] = 1;
+                            break;
+                        }
+                    }
+                }
+            }
+
         for (int i = 0; i < _written_bonds.size(); ++i)
         {
             auto bond_idx = _written_bonds[i];
             auto& e = _bmol->getEdge(bond_idx);
-            if (_bmol->stereocenters.exists(e.beg) && _bmol->stereocenters.isAtropisomeric(e.beg))
+            auto bdir = _bmol->getBondDirection(bond_idx);
+            if (bdir && bdir < BOND_EITHER && _bmol->isForcedStereoBond(bond_idx))
             {
-                auto bdir = _bmol->getBondDirection(bond_idx);
-                if (bdir && bdir < BOND_EITHER)
+                const auto& edge = _bmol->getEdge(bond_idx);
+                auto wa_idx = _written_atoms.find(edge.beg);
+                if (bdir == BOND_UP)
+                    up_dirs.emplace_back(wa_idx, i);
+                else
+                    down_dirs.emplace_back(wa_idx, i);
+            }
+        }
+        bool is_first = true;
+        if (up_dirs.size())
+        {
+            for (const auto& kvp : up_dirs)
+            {
+                if (is_first)
                 {
-                    if (is_first)
-                    {
-                        _startExtension();
-                        _output.writeString(bdir == BOND_UP ? "wU:" : "wD:");
-                        is_first = false;
-                    }
-                    else
-                        _output.writeString(",");
-                    const auto& edge = _bmol->getEdge(bond_idx);
-                    auto wa_idx = _written_atoms.find(edge.beg);
-                    _output.printf("%d.%d", wa_idx, i);
+                    _startExtension();
+                    _output.writeString("wU:");
+                    is_first = false;
                 }
+                else
+                    _output.writeString(",");
+                _output.printf("%d.%d", kvp.first, kvp.second);
+            }
+        }
+        is_first = true;
+        if (down_dirs.size())
+        {
+            for (const auto& kvp : down_dirs)
+            {
+                if (is_first)
+                {
+                    _startExtension();
+                    _output.writeString("wD:");
+                    is_first = false;
+                }
+                else
+                    _output.writeString(",");
+                _output.printf("%d.%d", kvp.first, kvp.second);
             }
         }
     }

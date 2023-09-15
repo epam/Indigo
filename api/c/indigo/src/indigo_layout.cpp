@@ -58,8 +58,8 @@ CEXPORT int indigoLayout(int object)
             ml.max_iterations = self.layout_max_iterations;
             ml.bond_length = 1.6f;
             ml.layout_orientation = (layout_orientation_value)self.layout_orientation;
-            bool has_atropisomery = mol->hasAtropisomericCenter();
-            if (has_atropisomery)
+            bool has_forced_stereo = mol->forcedStereoBonds().size();
+            if (has_forced_stereo)
                 ml.respect_existing_layout = true;
 
             TimeoutCancellationHandler cancellation(self.cancellation_timeout);
@@ -69,7 +69,7 @@ CEXPORT int indigoLayout(int object)
 
             if (obj.type != IndigoObject::SUBMOLECULE)
             {
-                if (!has_atropisomery)
+                if (!has_forced_stereo)
                     mol->clearBondDirections();
                 try
                 {

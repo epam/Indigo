@@ -1127,7 +1127,9 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     {
         if (mol.getBondDirection(i) > 0 && !sensible_bond_directions[i])
         {
-            if (!stereochemistry_options.ignore_errors)
+            if (stereochemistry_options.ignore_errors)
+                mol.markForcedStereoBond(i);
+            else
                 throw Error("direction of bond #%d makes no sense", i);
         }
     }
