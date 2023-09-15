@@ -71,3 +71,6 @@ chemaxon:
 CCCC |Sg:n:0,1,2::ht|
 chemaxon:
 CCCCC |Sg:n:1,2,3::hh|
+*** Atropisomers ***
+atropisomer:
+C1=CC=C(C)C(C2=C(N)C=C(C)C=C2)=C1O |o1:5,r,wU:5.4|
