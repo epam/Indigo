@@ -626,8 +626,8 @@ void SmilesSaver::_saveMolecule()
         _writeRingBonds();
         _writeUnsaturated();
         _writeSubstitutionCounts();
-        if( _bmol->hasAtropisomericCenter())
-          _writeWedges();
+        if (_bmol->hasAtropisomericCenter())
+            _writeWedges();
 
         if (_comma)
             _output.writeChar('|');
