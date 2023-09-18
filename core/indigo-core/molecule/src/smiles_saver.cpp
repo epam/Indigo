@@ -922,6 +922,31 @@ void SmilesSaver::_writeCharge(int charge) const
         _output.printf("-");
 }
 
+static void _write_num(indigo::Output& output, unsigned char ch, int num)
+{
+    output.writeChar(ch);
+    if (num != 1)
+        output.printf("%d", num);
+}
+
+static void _write_num_if_set(indigo::Output& output, unsigned char ch, int min, int max)
+{
+    if (min == 1 && max == 100)
+        output.writeChar(ch);
+    else
+    {
+        output.printf("%c%d", ch, min);
+    }
+}
+
+static void writeAnd(Output& _output, QueryMolecule::Node* node, bool has_or_parent)
+{
+    if (has_or_parent)
+        _output.writeChar('&');
+    else if (node->hasOP_OR())
+        _output.writeChar(';');
+}
+
 void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chirality, int depth, bool has_or_parent, bool has_not_parent) const
 {
     int i;
@@ -937,16 +962,42 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         break;
     }
     case QueryMolecule::OP_AND: {
-        for (i = 0; i < atom->children.size(); i++)
+        // Convert a & #6 -> c,  A & #6 -> C
+        if (atom->children.size() == 2 &&
+            ((atom->children[0]->type == QueryMolecule::ATOM_AROMATICITY && atom->children[1]->type == QueryMolecule::ATOM_NUMBER) ||
+             (atom->children[1]->type == QueryMolecule::ATOM_AROMATICITY && atom->children[0]->type == QueryMolecule::ATOM_NUMBER)))
         {
-            if (atom->children[i]->type == QueryMolecule::ATOM_RADICAL || atom->children[i]->type == QueryMolecule::ATOM_VALENCE)
+            int number = -1;
+            bool aromatic = false;
+            char atom_name[10];
+            if (atom->children[0]->type == QueryMolecule::ATOM_NUMBER)
             {
-                continue;
+                number = static_cast<QueryMolecule::Atom*>(atom->children[0])->value_max;
+                aromatic = static_cast<QueryMolecule::Atom*>(atom->children[1])->value_min == ATOM_AROMATIC;
             }
+            else
+            {
+                aromatic = static_cast<QueryMolecule::Atom*>(atom->children[0])->value_min == ATOM_AROMATIC;
+                number = static_cast<QueryMolecule::Atom*>(atom->children[1])->value_max;
+            }
+            strncpy(atom_name, Element::toString(number), sizeof(atom_name));
+            if (aromatic)
+                atom_name[0] = tolower(atom_name[0]);
+            _output.printf("%s", atom_name);
+        }
+        else
+        {
+            for (i = 0; i < atom->children.size(); i++)
+            {
+                if (atom->children[i]->type == QueryMolecule::ATOM_RADICAL || atom->children[i]->type == QueryMolecule::ATOM_VALENCE)
+                {
+                    continue;
+                }
 
-            if (i > 0)
-                _output.writeChar(has_or_parent ? '&' : ';');
-            _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[i], chirality, depth + 1, has_or_parent, has_not_parent);
+                if (i > 0)
+                    writeAnd(_output, atom, has_or_parent);
+                _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[i], chirality, depth + 1, has_or_parent, has_not_parent);
+            }
         }
         break;
     }
@@ -1002,6 +1053,8 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
             _output.printf("+");
         else if (charge == -1)
             _output.printf("-");
+        else
+            _output.printf("+0");
         break;
     }
     case QueryMolecule::ATOM_FRAGMENT: {
@@ -1021,11 +1074,12 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         _output.writeChar('*');
         break;
     case QueryMolecule::ATOM_TOTAL_H: {
-        int hydro = atom->value_min;
-        if (hydro == 1)
-            _output.printf("H");
-        else
-            _output.printf("H%d", hydro);
+        _write_num(_output, 'H', atom->value_min);
+        break;
+    }
+
+    case QueryMolecule::ATOM_SSSR_RINGS: {
+        _write_num_if_set(_output, 'R', atom->value_min, atom->value_max);
         break;
     }
 
@@ -1035,24 +1089,12 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
     }
 
     case QueryMolecule::ATOM_RING_BONDS: {
-        if (atom->value_min == 1 && atom->value_max == 100)
-            _output.printf("x");
-        else
-        {
-            _output.printf("x%d", atom->value_min);
-        }
+        _write_num_if_set(_output, 'x', atom->value_min, atom->value_max);
         break;
     }
 
     case QueryMolecule::ATOM_IMPLICIT_H: {
-        if (atom->value_min == 1 && atom->value_max == 100)
-        {
-            _output.printf("h");
-        }
-        else
-        {
-            _output.printf("h%d", atom->value_min);
-        }
+        _write_num_if_set(_output, 'h', atom->value_min, atom->value_max);
         break;
     }
 
@@ -1062,6 +1104,7 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
     }
 
     case QueryMolecule::ATOM_SMALLEST_RING_SIZE: {
+        _write_num_if_set(_output, 'r', atom->value_min, atom->value_max);
         break;
     }
 
@@ -1082,6 +1125,11 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
 
     case QueryMolecule::ATOM_CONNECTIVITY: {
         _output.printf("X%d", atom->value_min);
+        break;
+    }
+
+    case QueryMolecule::ATOM_TOTAL_BOND_ORDER: {
+        _write_num(_output, 'v', atom->value_min);
         break;
     }
 
@@ -1130,7 +1178,8 @@ void SmilesSaver::_writeSmartsBond(int idx, QueryMolecule::Bond* bond, bool has_
         for (i = 0; i < bond->children.size(); i++)
         {
             if (i > 0)
-                _output.writeChar(has_or_parent ? '&' : ';');
+                writeAnd(_output, bond, has_or_parent);
+            //_output.writeChar(has_or_parent ? '&' : ';');
             _writeSmartsBond(idx, (QueryMolecule::Bond*)bond->children[i], has_or_parent);
         }
         break;
@@ -1146,6 +1195,15 @@ void SmilesSaver::_writeSmartsBond(int idx, QueryMolecule::Bond* bond, bool has_
             _output.writeChar('#');
         else if (bond_order == BOND_AROMATIC)
             _output.writeChar(':');
+        else if (bond_order == BOND_SMARTS_UP)
+            _output.writeChar('/');
+        else if (bond_order == BOND_SMARTS_DOWN)
+            _output.writeChar('\\');
+        break;
+    }
+    case QueryMolecule::BOND_TOPOLOGY: {
+        if (bond->value == TOPOLOGY_RING)
+            _output.writeChar('@');
         break;
     }
     default:;

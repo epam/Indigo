@@ -12,7 +12,7 @@ C1C=CC=CC=1* |$;;;;;;A$|
 C1C=CC=CC=1*
 
 (** #4 **): Smile (smarts parameter):
-C1C=CC=CC=1*
+C1C=CC=CC=1* |$;;;;;;*$|
 
 ---- Reaction Structure ----
 
@@ -20,13 +20,13 @@ C1C=CC=CC=1*
 C1C=CC=CC=1*>>C1C=C(*)C=CC=1
 
 (** #6 **): smarts parameter:
-C1C=CC=CC=1*>>C1C=C(*)C=CC=1
+C1C=CC=CC=1*>>C1C=C(*)C=CC=1 |$;;;;;;*;;;;*;;;$|
 
 (** #7 **): Smiles, (no parameter):
 C1C=CC=CC=1* |$;;;;;;A$|
 
 (** #8 **): Smarts, (smarts parameter):
-[#8;A;H]-[#6;a]1-,:[#6;a]-,:[#6;a]-,:[#6;a]-,:[#6;a]-,:[#6;a]-,:1
+[#8AH]-[c]1-,:[c]-,:[c]-,:[c]-,:[c]-,:[c]-,:1
 
 (** #9 **): Smarts, (query parameter):
 [OH]C1:C:C:C:C:C:1

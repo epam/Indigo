@@ -1,3 +1,4 @@
+#!/bin/env python3
 import os
 import sys
 
@@ -23,8 +24,8 @@ def test_smarts_load_save(smarts_in):
         print("%s is ok. smarts_in==smarts_out" % smarts_in)
     else:
         print("smarts_in!=smarts_out")
-        print(" smarts_in=%s", smarts_in)
-        print("smarts_out=%s", smarts_out)
+        print(" smarts_in=%s" % smarts_in)
+        print("smarts_out=%s" % smarts_out)
 
 
 molstr = """
@@ -96,3 +97,22 @@ print(m.smarts())
 print("**** Load and Save as Query with component-level grouping ****")
 test_smarts_load_save("([#8].[#6])")
 test_smarts_load_save("([#8].[#6]).([#8].[#6])")
+
+test_smarts_load_save("[!C!b]")
+test_smarts_load_save("[*]")
+test_smarts_load_save("[*R]")
+test_smarts_load_save("[*R0]")
+test_smarts_load_save("[*R1]")
+test_smarts_load_save("[*R3]")
+test_smarts_load_save("[r]")
+test_smarts_load_save("[r0]")
+test_smarts_load_save("[r1]")
+test_smarts_load_save("[r3]")
+test_smarts_load_save("[v]")
+test_smarts_load_save("[v0]")
+test_smarts_load_save("[v3]")
+test_smarts_load_save("[+0]")
+test_smarts_load_save("[!*]")
+test_smarts_load_save("[#6]@[#6]")
+test_smarts_load_save("[#9]/[#6]")
+test_smarts_load_save("[#9]/[#6]=[C]/[#17]")

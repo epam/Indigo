@@ -175,8 +175,8 @@ Smiles: [*][*][*][*]NC
 [CH6]
 [CH6]
 ****** SMARTS and query SMILES ********
-O*C(F)(F)F
-O*C(F)(F)F
+O*C(F)(F)F |$;*;;;;$|
+O*C(F)(F)F |$;*;;;;$|
 ******** |$;AH_p;Q_e;QH_p;M_p;MH_p;X_p;XH_p$|
 
   -INDIGO-01000000002D

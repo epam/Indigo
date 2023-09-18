@@ -1186,6 +1186,30 @@ bool QueryMolecule::Node::sureValueBelongs(int what_type, const int* arr, int co
     }
 }
 
+bool QueryMolecule::Node::hasOP_OR()
+{
+    int i;
+
+    switch (type)
+    {
+    case OP_AND: {
+        for (i = 0; i < children.size(); i++)
+            if (children[i]->hasOP_OR())
+                return true;
+
+        return false;
+    }
+    case OP_OR: {
+        return true;
+    }
+    case OP_NOT:
+        // return children[0]->hasOP_OR();
+        return false;
+    default:
+        return false;
+    }
+}
+
 QueryMolecule::Atom* QueryMolecule::Atom::sureConstraint(int what_type)
 {
     int count = 0;

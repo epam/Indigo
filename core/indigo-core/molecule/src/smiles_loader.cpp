@@ -1884,9 +1884,11 @@ void SmilesLoader::_loadParsedMolecule()
         _setRadicalsAndHCounts();
     }
 
+    /*
     if (smarts_mode)
         // Forbid matching SMARTS atoms to hydrogens
         _forbidHydrogens();
+    //*/
 
     if (!inside_rsmiles)
     {
@@ -2565,7 +2567,10 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         else if (next == '/')
         {
             scanner.skip(1);
-            order = BOND_SINGLE;
+            if (smarts_mode)
+                order = BOND_SMARTS_UP;
+            else
+                order = BOND_SINGLE;
             if (bond.dir == 2)
                 throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");
             bond.dir = 1;
@@ -2573,7 +2578,10 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         else if (next == '\\')
         {
             scanner.skip(1);
-            order = BOND_SINGLE;
+            if (smarts_mode)
+                order = BOND_SMARTS_DOWN;
+            else
+                order = BOND_SINGLE;
             if (bond.dir == 1)
                 throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");
             bond.dir = 2;
@@ -2879,10 +2887,15 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                         int rc = scanner.readUnsigned();
 
                         if (rc == 0)
-                            subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RING_BONDS, 0);
+                            if (smarts_mode)
+                                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SSSR_RINGS, 0);
+                            else
+                                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RING_BONDS, 0);
                         else
                             subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SSSR_RINGS, rc);
                     }
+                    else if (smarts_mode)
+                        subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SSSR_RINGS, 1, 100);
                     else
                         subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RING_BONDS, 1, 100);
                 }
@@ -2944,22 +2957,29 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
         {
             atom.star_atom = true;
             scanner.skip(1);
-            if (first_in_brackets && atom_str.size() < 2 && !smarts_mode)
+            if (smarts_mode)
             {
-                atom.label = ELEM_RSITE;
-            }
-            else if (first_in_brackets && scanner.lookNext() == ':' && !inside_rsmiles)
-            {
-                atom.label = ELEM_RSITE;
+                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, "*");
             }
             else
             {
-                if (qatom.get() == 0)
-                    atom.label = ELEM_PSEUDO;
+                if (first_in_brackets && atom_str.size() < 2)
+                {
+                    atom.label = ELEM_RSITE;
+                }
+                else if (first_in_brackets && scanner.lookNext() == ':' && !inside_rsmiles)
+                {
+                    atom.label = ELEM_RSITE;
+                }
                 else
                 {
-                    subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, ELEM_H);
-                    subatom.reset(QueryMolecule::Atom::nicht(subatom.release()));
+                    if (qatom.get() == 0)
+                        atom.label = ELEM_PSEUDO;
+                    else
+                    {
+                        subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, ELEM_H);
+                        subatom.reset(QueryMolecule::Atom::nicht(subatom.release()));
+                    }
                 }
             }
         }
@@ -3301,6 +3321,8 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
 
             if (isdigit(scanner.lookNext()))
                 subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SMALLEST_RING_SIZE, scanner.readUnsigned());
+            else if (smarts_mode)
+                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SMALLEST_RING_SIZE, 1, 100);
             else
                 subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RING_BONDS, 1, 100);
         }
