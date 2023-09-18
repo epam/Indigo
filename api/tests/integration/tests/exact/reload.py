@@ -41,7 +41,8 @@ def testMol(mol):
     perm_smiles = perm_mol.smiles()
     if not indigo.exactMatch(mol, perm_mol):
         msg = (
-            "  Exact: %s after reload from smiles %s. Permuted canonical smiles: %s\n" % (mol.name(), base_smiles, perm_smiles)
+            "  Exact: %s after reload from smiles %s. Permuted canonical smiles: %s\n %s %s"
+            % (mol.name(), base_smiles, perm_smiles)
         )
         print(msg)
         sys.stderr.write(msg + "\n")
