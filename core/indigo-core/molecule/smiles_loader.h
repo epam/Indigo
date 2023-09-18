@@ -156,6 +156,7 @@ namespace indigo
         int _balance;
         int _current_compno;
         bool _inside_smarts_component;
+        bool _has_atom_coordinates = false;
 
         BaseMolecule* _bmol;
         QueryMolecule* _qmol;
@@ -177,6 +178,7 @@ namespace indigo
         bool _isAlleneLike(int i);
         void _handleCurlyBrace(_AtomDesc& atom, bool& inside_polymer);
         void _handlePolymerRepetition(int i);
+        void _handleForcedStereo();
 
         void _readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom);
 

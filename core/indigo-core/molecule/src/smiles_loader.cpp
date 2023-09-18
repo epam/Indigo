@@ -62,6 +62,7 @@ void SmilesLoader::loadMolecule(Molecule& mol)
     _bmol = &mol;
     _mol = &mol;
     _qmol = 0;
+    _has_atom_coordinates = false;
     _loadMolecule();
 
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
@@ -356,19 +357,17 @@ void SmilesLoader::_readOtherStuff()
                     auto bond_idx = _scanner.readUnsigned();
                     if (wmode)
                     {
-                        _bmol->setBondDirection(bond_idx, wmode == 'U' ? BOND_UP : BOND_DOWN);
-                        auto& v = _bmol->getEdge(bond_idx);
-                        if (v.end == atom_idx)
-                            _bmol->swapEdgeEnds(bond_idx);
-                        if (_bmol->getEdgeTopology(bond_idx) == TOPOLOGY_RING && _bmol->isAtropisomerismReferenceAtom(atom_idx) &&
-                            (v.beg == atom_idx || v.end == atom_idx))
+                        if (bond_idx < _bmol->edgeCount() && atom_idx < _bmol->vertexCount())
                         {
-                            if (!_bmol->stereocenters.exists(atom_idx))
-                                _bmol->addStereocenters(atom_idx, MoleculeStereocenters::ATOM_ABS, 0, false);
-                            _bmol->stereocenters.setAtropisomeric(atom_idx, true);
+                            auto& v = _bmol->getEdge(bond_idx);
+                            if (v.end == atom_idx)
+                                _bmol->swapEdgeEnds(bond_idx);
+
+                            if (v.beg == atom_idx)
+                            {
+                                _bmol->setForcedBondDirection(bond_idx, wmode == 'U' ? BOND_UP : BOND_DOWN);
+                            }
                         }
-                        if (!_bmol->stereocenters.exists(atom_idx) || _bmol->stereocenters.isAtropisomeric(atom_idx))
-                            _bmol->markForcedStereoBond(bond_idx);
                     }
                 }
 
@@ -752,8 +751,7 @@ void SmilesLoader::_readOtherStuff()
             }
             if (_scanner.readChar() != ')')
                 throw Error("expected ')' after coordinates");
-            _bmol->markBondsStereocenters();
-            _bmol->markBondsAlleneStereo();
+            _has_atom_coordinates = true;
         }
         else if (c == 'h') // highlighting (Indigo's own extension)
         {
@@ -1338,6 +1336,20 @@ void SmilesLoader::_readOtherStuff()
 
     if (to_remove.size() > 0)
         _bmol->removeAtoms(to_remove);
+}
+
+void SmilesLoader::_handleForcedStereo()
+{
+    auto& fbonds = _bmol->forcedStereoBonds();
+    for (int i = fbonds.begin(); i != fbonds.end(); i = fbonds.next(i))
+        _bmol->setBondDirection(fbonds.key(i), fbonds.value(i));
+
+    for (int i = fbonds.begin(); i != fbonds.end(); i = fbonds.next(i))
+    {
+        auto& e = _bmol->getEdge(fbonds.key(i));
+        if (_bmol->stereocenters.exists(e.beg) && _bmol->isAtropisomerismReferenceAtom(e.beg))
+            _bmol->stereocenters.setAtropisomeric(e.beg, true);
+    }
 }
 
 void SmilesLoader::_validateStereoCenters()
@@ -1926,6 +1938,14 @@ void SmilesLoader::_loadParsedMolecule()
     {
         _scanner.skip(1);
         _readOtherStuff();
+        if (_has_atom_coordinates)
+        {
+            _bmol->markBondsStereocenters();
+            _bmol->markBondsAlleneStereo();
+        }
+
+        if (_bmol->forcedStereoBonds().size())
+            _handleForcedStereo();
     }
 
     // Update attachment orders for rsites

@@ -626,7 +626,8 @@ void SmilesSaver::_saveMolecule()
         _writeRingBonds();
         _writeUnsaturated();
         _writeSubstitutionCounts();
-        _writeWedges();
+        if( _bmol->hasAtropisomericCenter())
+          _writeWedges();
 
         if (_comma)
             _output.writeChar('|');
@@ -1844,32 +1845,6 @@ void SmilesSaver::_writeWedges()
     if (_bmol)
     {
         std::vector<std::pair<int, int>> down_dirs, up_dirs;
-        std::vector<int> sensible_bond_directions;
-        StereocentersOptions stereochemistry_options;
-
-        sensible_bond_directions.resize(_written_bonds.size(), 0);
-
-        for (int i = 0; i < _written_bonds.size(); i++)
-            if (_bmol->getBondDirection(i) == BOND_EITHER)
-            {
-                if (MoleculeCisTrans::isGeomStereoBond(*_bmol, i, 0, true))
-                    sensible_bond_directions[i] = 1;
-                else
-                {
-                    int k;
-                    const Vertex& v = _bmol->getVertex(_bmol->getEdge(i).beg);
-
-                    for (k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
-                    {
-                        if (MoleculeCisTrans::isGeomStereoBond(*_bmol, v.neiEdge(k), 0, true))
-                        {
-                            sensible_bond_directions[i] = 1;
-                            break;
-                        }
-                    }
-                }
-            }
-
         for (int i = 0; i < _written_bonds.size(); ++i)
         {
             auto bond_idx = _written_bonds[i];
@@ -1916,6 +1891,19 @@ void SmilesSaver::_writeWedges()
                     _output.writeString(",");
                 _output.printf("%d.%d", kvp.first, kvp.second);
             }
+        }
+        if (down_dirs.size() || up_dirs.size())
+        {
+            _output.writeString(",(");
+            for (int i = 0; i < _written_atoms.size(); ++i)
+            {
+                if (i)
+                    _output.writeString(";");
+                auto atom_idx = _written_atoms[i];
+                const auto& pos = _mol->getAtomXyz(atom_idx);
+                _output.printf("%.2f,%.2f,", pos.x, pos.y);
+            }
+            _output.writeString(")");
         }
     }
 }

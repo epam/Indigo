@@ -2077,16 +2077,18 @@ void MolfileLoader::_postLoad()
                 _bmol->stereocenters.setType(i, _stereocenter_types[i], _stereocenter_groups[i]);
         }
 
+    _bmol->buildCisTrans(_ignore_cistrans.ptr());
+
     for (i = 0; i < _bonds_num; i++)
-        if (_bmol->getBondDirection(i) > 0 && !_sensible_bond_directions[i])
+    {
+        if (_bmol->getBondDirection(i) && (!_sensible_bond_directions[i] || _bmol->getBondTopology(i) == TOPOLOGY_RING))
         {
-            if (stereochemistry_options.ignore_errors)
-                _bmol->markForcedStereoBond(i);
-            else
+            auto& e = _bmol->getEdge(i);
+            _bmol->setForcedBondDirection(i, _bmol->getBondDirection(i));
+            if (!stereochemistry_options.ignore_errors && !_sensible_bond_directions[i])
                 throw Error("direction of bond #%d makes no sense", i);
         }
-
-    _bmol->buildCisTrans(_ignore_cistrans.ptr());
+    }
 
     // Remove adding default R-group logic behavior
     /*

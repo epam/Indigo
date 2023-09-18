@@ -389,10 +389,11 @@ namespace indigo
 
         void clearBondDirections();
         int getBondDirection(int idx) const;
+        int* getForcedBondDirection(int idx) const;
         void setBondDirection(int idx, int dir);
-        void markForcedStereoBond(int idx);
+        void setForcedBondDirection(int idx, int dir);
         bool isForcedStereoBond(int idx);
-        const RedBlackSet<int>& forcedStereoBonds();
+        const RedBlackMap<int, int>& forcedStereoBonds();
 
         int getBondDirection2(int center_idx, int nei_idx);
 
@@ -514,7 +515,7 @@ namespace indigo
         Array<int> _sl_bonds;
 
         Array<int> _bond_directions;
-        RedBlackSet<int> _forced_bond_directions;
+        RedBlackMap<int, int> _forced_stereo_directions;
 
         Array<Vec3f> _xyz;
         RedBlackMap<int, Vec3f> _stereo_flag_positions;

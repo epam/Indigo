@@ -1125,11 +1125,10 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 
     for (int i : mol.edges())
     {
-        if (mol.getBondDirection(i) > 0 && !sensible_bond_directions[i])
+        if (mol.getBondDirection(i) > 0 && (!sensible_bond_directions[i] || mol.getBondTopology(i) == TOPOLOGY_RING))
         {
-            if (stereochemistry_options.ignore_errors)
-                mol.markForcedStereoBond(i);
-            else
+            mol.setForcedBondDirection(i, mol.getBondDirection(i));
+            if (!stereochemistry_options.ignore_errors && !sensible_bond_directions[i])
                 throw Error("direction of bond #%d makes no sense", i);
         }
     }

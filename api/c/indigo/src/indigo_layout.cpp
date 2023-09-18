@@ -75,6 +75,9 @@ CEXPORT int indigoLayout(int object)
                 {
                     mol->markBondsStereocenters();
                     mol->markBondsAlleneStereo();
+                    auto& fbonds = mol->forcedStereoBonds();
+                    for (int i = fbonds.begin(); i != fbonds.end(); i = fbonds.next(i))
+                        mol->setBondDirection(fbonds.key(i), fbonds.value(i));
                 }
                 catch (Exception e)
                 {

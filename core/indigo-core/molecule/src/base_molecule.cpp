@@ -3914,19 +3914,25 @@ int BaseMolecule::getBondDirection(int idx) const
     return _bond_directions[idx];
 }
 
-void BaseMolecule::markForcedStereoBond(int idx)
+int* BaseMolecule::getForcedBondDirection(int idx) const
 {
-    _forced_bond_directions.find_or_insert(idx);
+    return _forced_stereo_directions.at2(idx);
+}
+
+void BaseMolecule::setForcedBondDirection(int idx, int dir)
+{
+    if (!_forced_stereo_directions.find(idx))
+        _forced_stereo_directions.insert(idx, dir);
 }
 
 bool BaseMolecule::isForcedStereoBond(int idx)
 {
-    return _forced_bond_directions.find(idx);
+    return _forced_stereo_directions.find(idx);
 }
 
-const RedBlackSet<int>& BaseMolecule::forcedStereoBonds()
+const RedBlackMap<int, int>& BaseMolecule::forcedStereoBonds()
 {
-    return _forced_bond_directions;
+    return _forced_stereo_directions;
 }
 
 int BaseMolecule::getBondDirection2(int center_idx, int nei_idx)
@@ -3951,7 +3957,7 @@ void BaseMolecule::setBondDirection(int idx, int dir)
 void BaseMolecule::clearBondDirections()
 {
     _bond_directions.clear();
-    _forced_bond_directions.clear();
+    _forced_stereo_directions.clear();
 }
 
 bool BaseMolecule::isChiral()
@@ -4447,7 +4453,7 @@ bool BaseMolecule::isAtropisomerismReferenceAtom(int atom_idx)
         // check if the atom has at least one stereo-bond
         for (int i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
         {
-            if (getBondDirection(v.neiEdge(i)))
+            if (getBondDirection(v.neiEdge(i)) || getForcedBondDirection(v.neiEdge(i)))
             {
                 has_stereo = true;
                 break;
@@ -4460,7 +4466,7 @@ bool BaseMolecule::isAtropisomerismReferenceAtom(int atom_idx)
             for (int i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
             {
                 auto bond_idx = v.neiEdge(i);
-                if (getBondDirection(bond_idx) && getEdgeTopology(bond_idx) == TOPOLOGY_RING)
+                if ((getBondDirection(bond_idx) || getForcedBondDirection(v.neiEdge(i))) && getEdgeTopology(bond_idx) == TOPOLOGY_RING)
                     continue;
                 if (isRotationBond(bond_idx))
                     rotation_bonds.insert(bond_idx);
