@@ -506,7 +506,7 @@ bool QueryMolecule::isSaturatedAtom(int idx)
     throw Error("not implemented");
 }
 
-QueryMolecule::Node::Node(int type_)
+QueryMolecule::Node::Node(int type_) : artificial(false)
 {
     type = (OpType)type_;
 }

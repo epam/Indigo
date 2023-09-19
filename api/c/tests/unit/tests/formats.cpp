@@ -67,7 +67,7 @@ TEST_F(IndigoApiFormatsTest, molecule)
         EXPECT_EQ(7, indigoCountBonds(obj));
 
         // 4
-        const string expectedQuery = "[#6]1-[#6]=[#6]-[#6]=[#6]-[#6]=1-[!#1]";
+        const string expectedQuery = "[#6]1-[#6]=[#6]-[#6]=[#6]-[#6]=1-[*]";
         obj = indigoLoadStructureFromString(mStr.c_str(), "query");
         EXPECT_STREQ(expectedQuery.c_str(), indigoSmarts(obj));
         EXPECT_EQ(7, indigoCountAtoms(obj));

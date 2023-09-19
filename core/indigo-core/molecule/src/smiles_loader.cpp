@@ -1884,11 +1884,9 @@ void SmilesLoader::_loadParsedMolecule()
         _setRadicalsAndHCounts();
     }
 
-    /*
     if (smarts_mode)
         // Forbid matching SMARTS atoms to hydrogens
         _forbidHydrogens();
-    //*/
 
     if (!inside_rsmiles)
     {
@@ -2150,8 +2148,9 @@ void SmilesLoader::_forbidHydrogens()
                 std::unique_ptr<QueryMolecule::Atom> newatom;
                 std::unique_ptr<QueryMolecule::Atom> oldatom(_qmol->releaseAtom(i));
 
-                newatom.reset(
-                    QueryMolecule::Atom::und(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)), oldatom.release()));
+                std::unique_ptr<QueryMolecule::Atom> notH(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
+                notH->artificial = true;
+                newatom.reset(QueryMolecule::Atom::und(notH.release(), oldatom.release()));
 
                 _qmol->resetAtom(i, newatom.release());
             }
@@ -2957,29 +2956,22 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
         {
             atom.star_atom = true;
             scanner.skip(1);
-            if (smarts_mode)
+            if (first_in_brackets && atom_str.size() < 2 && !smarts_mode)
             {
-                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_PSEUDO, "*");
+                atom.label = ELEM_RSITE;
+            }
+            else if (first_in_brackets && scanner.lookNext() == ':' && !inside_rsmiles)
+            {
+                atom.label = ELEM_RSITE;
             }
             else
             {
-                if (first_in_brackets && atom_str.size() < 2)
-                {
-                    atom.label = ELEM_RSITE;
-                }
-                else if (first_in_brackets && scanner.lookNext() == ':' && !inside_rsmiles)
-                {
-                    atom.label = ELEM_RSITE;
-                }
+                if (qatom.get() == 0)
+                    atom.label = ELEM_PSEUDO;
                 else
                 {
-                    if (qatom.get() == 0)
-                        atom.label = ELEM_PSEUDO;
-                    else
-                    {
-                        subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, ELEM_H);
-                        subatom.reset(QueryMolecule::Atom::nicht(subatom.release()));
-                    }
+                    subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, ELEM_H);
+                    subatom.reset(QueryMolecule::Atom::nicht(subatom.release()));
                 }
             }
         }

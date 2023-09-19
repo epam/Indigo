@@ -957,6 +957,15 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
     switch (atom->type)
     {
     case QueryMolecule::OP_NOT: {
+        if (atom->artificial) // Skip atoms added by loader (!#1)
+        {
+            break;
+        }
+        else if (QueryMolecule::isNotAtom(*atom, ELEM_H))
+        {
+            _output.printf("*");
+            break;
+        }
         _output.writeChar('!');
         _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[0], chirality, depth + 1, has_or_parent, true);
         break;
