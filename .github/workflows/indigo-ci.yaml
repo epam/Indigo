@@ -412,6 +412,7 @@ jobs:
         run: |
           java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Show diff
+        run:
           cat api/tests/integration/out/rendering/*.diff
       - name: Publish Test Report
         if: always()
