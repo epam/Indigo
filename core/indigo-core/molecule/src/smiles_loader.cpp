@@ -2886,15 +2886,10 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                         int rc = scanner.readUnsigned();
 
                         if (rc == 0)
-                            if (smarts_mode)
-                                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SSSR_RINGS, 0);
-                            else
-                                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RING_BONDS, 0);
+                            subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RING_BONDS, 0);
                         else
                             subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SSSR_RINGS, rc);
                     }
-                    else if (smarts_mode)
-                        subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SSSR_RINGS, 1, 100);
                     else
                         subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RING_BONDS, 1, 100);
                 }

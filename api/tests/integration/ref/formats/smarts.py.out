@@ -11,8 +11,6 @@ CC[C+5]CCCCC
 ([#8].[#6]).([#8].[#6]) is ok. smarts_in==smarts_out
 [!C!b] is ok. smarts_in==smarts_out
 [*] is ok. smarts_in==smarts_out
-[*R] is ok. smarts_in==smarts_out
-[*R0] is ok. smarts_in==smarts_out
 [*R1] is ok. smarts_in==smarts_out
 [*R3] is ok. smarts_in==smarts_out
 [r] is ok. smarts_in==smarts_out

@@ -100,8 +100,6 @@ test_smarts_load_save("([#8].[#6]).([#8].[#6])")
 
 test_smarts_load_save("[!C!b]")
 test_smarts_load_save("[*]")
-test_smarts_load_save("[*R]")
-test_smarts_load_save("[*R0]")
 test_smarts_load_save("[*R1]")
 test_smarts_load_save("[*R3]")
 test_smarts_load_save("[r]")
