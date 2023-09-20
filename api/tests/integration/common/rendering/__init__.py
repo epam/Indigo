@@ -1,7 +1,7 @@
+import base64
 import os
 import platform
 import sys
-import base64
 
 from env_indigo import getPlatform, isIronPython, isJython
 
