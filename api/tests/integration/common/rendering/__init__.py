@@ -1,6 +1,7 @@
 import os
 import platform
 import sys
+import base64
 
 from env_indigo import getPlatform, isIronPython, isJython
 
@@ -204,14 +205,17 @@ def checkBitmapSimilarity(filename, ref_filename):
         return "%s rendering status: Problem: %s" % (filename, str(e))
 
     channels = ["red", "green", "blue", "alpha"]
+    with open("%s/out/%s" % (dirname, filename), "rb") as file:
+        binary_data = file.read()
     for i, result in enumerate(results):
         if result > (HASH_SIZE**2) * 0.1:
             return (
-                "%s rendering status: Problem: PNG similarity is %s for %s channel"
+                "%s rendering status: Problem: PNG similarity is %s for %s channel\n%s\n"
                 % (
                     filename,
                     round(1 - (result / float(HASH_SIZE**2)), 2),
                     channels[i],
+                    base64.b64encode(binary_data),
                 )
             )
 
