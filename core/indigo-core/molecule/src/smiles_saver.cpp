@@ -1188,7 +1188,6 @@ void SmilesSaver::_writeSmartsBond(int idx, QueryMolecule::Bond* bond, bool has_
         {
             if (i > 0)
                 writeAnd(_output, bond, has_or_parent);
-            //_output.writeChar(has_or_parent ? '&' : ';');
             _writeSmartsBond(idx, (QueryMolecule::Bond*)bond->children[i], has_or_parent);
         }
         break;

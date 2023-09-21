@@ -1203,7 +1203,6 @@ bool QueryMolecule::Node::hasOP_OR()
         return true;
     }
     case OP_NOT:
-        // return children[0]->hasOP_OR();
         return false;
     default:
         return false;
