@@ -114,15 +114,15 @@ TEST_F(IndigoCoreSmartsTest, h)
     EXPECT_FALSE(substructureMatch("C", "[*h5]"));
     EXPECT_FALSE(substructureMatch("C([H])([H])([H])[H]", "[Ch]"));
 
-    EXPECT_STREQ(smilesLoadSaveLoad("[#6;h]", true).c_str(), "[#6h]");
-    EXPECT_STREQ(smilesLoadSaveLoad("[#6;h2]", true).c_str(), "[#6h2]");
+    EXPECT_STREQ(smilesLoadSaveLoad("[#6;h]", true).c_str(), "[#6;h]");
+    EXPECT_STREQ(smilesLoadSaveLoad("[#6;h2]", true).c_str(), "[#6;h2]");
 }
 
 TEST_F(IndigoCoreSmartsTest, connectivity)
 {
-    EXPECT_STREQ(smilesLoadSaveLoad("[#7;X3]", true).c_str(), "[#7X3]");
-    EXPECT_STREQ(smilesLoadSaveLoad("[#7X3]", true).c_str(), "[#7X3]");
-    EXPECT_STREQ(smilesLoadSaveLoad("[NX3]", true).c_str(), "[#7X3]");
+    EXPECT_STREQ(smilesLoadSaveLoad("[#7;X3]", true).c_str(), "[#7;X3]");
+    EXPECT_STREQ(smilesLoadSaveLoad("[#7X3]", true).c_str(), "[#7;X3]");
+    EXPECT_STREQ(smilesLoadSaveLoad("[NX3]", true).c_str(), "[#7;X3]");
 }
 
 TEST_F(IndigoCoreSmartsTest, aliases)

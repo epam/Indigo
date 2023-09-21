@@ -971,42 +971,52 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         break;
     }
     case QueryMolecule::OP_AND: {
-        // Convert a & #6 -> c,  A & #6 -> C
-        if (atom->children.size() == 2 &&
-            ((atom->children[0]->type == QueryMolecule::ATOM_AROMATICITY && atom->children[1]->type == QueryMolecule::ATOM_NUMBER) ||
-             (atom->children[1]->type == QueryMolecule::ATOM_AROMATICITY && atom->children[0]->type == QueryMolecule::ATOM_NUMBER)))
+        bool has_number = false;
+        bool has_aromatic = false;
+        bool aromatic = false;
+        char atom_name[10];
+        int cur_pos = _output.tell();
+        for (i = 0; i < atom->children.size(); i++)
         {
-            int number = -1;
-            bool aromatic = false;
-            char atom_name[10];
-            if (atom->children[0]->type == QueryMolecule::ATOM_NUMBER)
+            if (atom->children[i]->type == QueryMolecule::ATOM_NUMBER)
             {
-                number = static_cast<QueryMolecule::Atom*>(atom->children[0])->value_max;
-                aromatic = static_cast<QueryMolecule::Atom*>(atom->children[1])->value_min == ATOM_AROMATIC;
+                has_number = true;
+                strncpy(atom_name, Element::toString(static_cast<QueryMolecule::Atom*>(atom->children[0])->value_max), sizeof(atom_name));
             }
-            else
+            if (atom->children[i]->type == QueryMolecule::ATOM_AROMATICITY)
             {
-                aromatic = static_cast<QueryMolecule::Atom*>(atom->children[0])->value_min == ATOM_AROMATIC;
-                number = static_cast<QueryMolecule::Atom*>(atom->children[1])->value_max;
+                has_aromatic = true;
+                aromatic = static_cast<QueryMolecule::Atom*>(atom->children[i])->value_min == ATOM_AROMATIC;
             }
-            strncpy(atom_name, Element::toString(number), sizeof(atom_name));
+        }
+        if (has_aromatic && has_number)
+        { // Convert a & #6 -> c,  A & #6 -> C
             if (aromatic)
                 atom_name[0] = tolower(atom_name[0]);
             _output.printf("%s", atom_name);
         }
-        else
+        for (i = 0; i < atom->children.size(); i++)
         {
-            for (i = 0; i < atom->children.size(); i++)
+            if (has_aromatic && has_number &&
+                (atom->children[i]->type == QueryMolecule::ATOM_AROMATICITY || atom->children[i]->type == QueryMolecule::ATOM_NUMBER))
             {
-                if (atom->children[i]->type == QueryMolecule::ATOM_RADICAL || atom->children[i]->type == QueryMolecule::ATOM_VALENCE)
-                {
-                    continue;
-                }
-
-                if (i > 0)
-                    writeAnd(_output, atom, has_or_parent);
-                _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[i], chirality, depth + 1, has_or_parent, has_not_parent);
+                continue;
             }
+            if (atom->children[i]->type == QueryMolecule::ATOM_RADICAL || atom->children[i]->type == QueryMolecule::ATOM_VALENCE)
+            {
+                continue;
+            }
+            if (atom->children[i]->type == QueryMolecule::OP_NOT && atom->children[i]->artificial)
+            {
+                continue;
+            }
+
+            if (_output.tell() > cur_pos)
+            {
+                _output.writeChar(has_or_parent ? '&' : ';');
+                cur_pos = _output.tell();
+            }
+            _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[i], chirality, depth + 1, has_or_parent, has_not_parent);
         }
         break;
     }
@@ -1187,7 +1197,7 @@ void SmilesSaver::_writeSmartsBond(int idx, QueryMolecule::Bond* bond, bool has_
         for (i = 0; i < bond->children.size(); i++)
         {
             if (i > 0)
-                writeAnd(_output, bond, has_or_parent);
+                _output.writeChar(has_or_parent ? '&' : ';');
             _writeSmartsBond(idx, (QueryMolecule::Bond*)bond->children[i], has_or_parent);
         }
         break;
