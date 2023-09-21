@@ -17,6 +17,8 @@
  ***************************************************************************/
 
 #include <gtest/gtest.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
 
 #include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
@@ -24,6 +26,8 @@
 #include <molecule/cmf_saver.h>
 #include <molecule/cml_saver.h>
 #include <molecule/molecule_cdxml_saver.h>
+#include <molecule/molecule_json_loader.h>
+#include <molecule/molecule_json_saver.h>
 #include <molecule/molecule_mass.h>
 #include <molecule/molecule_substructure_matcher.h>
 #include <molecule/molfile_loader.h>
@@ -340,4 +344,51 @@ TEST_F(IndigoCoreFormatsTest, smarts_load_save)
     saver.saveQueryMolecule(q_mol);
     std::string smarts_out{out.ptr(), static_cast<std::size_t>(out.size())};
     ASSERT_EQ(smarts_in, smarts_out);
+}
+
+TEST_F(IndigoCoreFormatsTest, json_load_save)
+{
+    QueryMolecule q_mol;
+
+    char* ket = R"({"root":{"nodes":[{"$ref":"mol0"},{"$ref":"mol1"}]},"mol0":{"type":"molecule","atoms":[
+{"label":"C","location":[6.872400427225807,-8.203302184026775,0]},{"label":"C","location":[8.183693207880431,-9.188796758369131,0]},
+{"label":"C","location":[7.549396700010967,-8.661999658659791,0]},{"label":"C","location":[6.355203274663791,-8.661999658659791,0]},
+{"label":"C","location":[6.183604219405395,-7.66270516029316,0]},{"label":"C","location":[8.01389414271216,-8.184302288631033,0]},
+{"label":"C","location":[5.716306792119568,-9.537294839706838,0]},{"label":"C","location":[6.478602595286669,-9.074097389848514,0]}],
+"bonds":[{"type":1,"atoms":[1,2]},{"type":1,"atoms":[3,4]},{"type":1,"atoms":[4,0]},{"type":1,"atoms":[0,5]},{"type":1,"atoms":[5,1]},
+{"type":1,"atoms":[3,6]},{"type":1,"atoms":[0,7]},{"type":1,"atoms":[6,7]},{"type":1,"atoms":[3,2]}]},
+"mol1":{"type":"molecule","atoms":[{"label":"C","location":[4.759849152128566,-4.125074417174607,0]},
+{"label":"C","location":[6.490150847871433,-4.124589229177203,0]},{"label":"C","location":[5.626637509491239,-3.6249668888501874,0]},
+{"label":"C","location":[6.490150847871433,-5.125532067822148,0]},{"label":"C","location":[4.759849152128566,-5.130020056798137,0]},
+{"label":"C","location":[5.6288208554795585,-5.625033111149812,0]}],"bonds":[{"type":2,"atoms":[2,0]},{"type":2,"atoms":[3,1]},
+{"type":1,"atoms":[0,4]},{"type":1,"atoms":[1,2]},{"type":2,"atoms":[4,5]},{"type":1,"atoms":[5,3]}],
+"sgroups":[{"type":"DAT","atoms":[0,1,2,3,4,5],"context":"Fragment","fieldName":"2323fc","fieldData":"22","bonds":[0,1,2,3,4,5]}]}})";
+
+    BufferScanner scanner(ket);
+    rapidjson::Document data;
+    if (!data.Parse(ket).HasParseError())
+    {
+        if (data.HasMember("root"))
+        {
+            MoleculeJsonLoader loader(data);
+            /**
+            loader.stereochemistry_options = stereochemistry_options;
+            loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+            loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+            loader.skip_3d_chirality = skip_3d_chirality;
+            loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+            loader.treat_stereo_as = treat_stereo_as;
+            //*/
+            loader.loadMolecule(q_mol);
+            return;
+        }
+    }
+
+    Array<char> out;
+    ArrayOutput std_out(out);
+    MoleculeJsonSaver saver(std_out);
+    saver.saveMolecule(q_mol);
+    std::string smarts_out{out.ptr(), static_cast<std::size_t>(out.size())};
+    // ASSERT_EQ(smarts_in, smarts_out);
+    printf(smarts_out.c_str());
 }

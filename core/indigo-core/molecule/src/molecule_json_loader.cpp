@@ -515,6 +515,76 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             if (cip_it != KStringToCIP.end())
                 mol.setAtomCIP(atom_idx, cip_it->second);
         }
+
+        if (a.HasMember("queryProperties"))
+        {
+            if (_pqmol)
+            {
+                auto qProps = a["queryProperties"].GetObject();
+                if (qProps.HasMember("aromaticity")
+                {
+                    std::string arom = qProps["aromaticity"].GetString();
+                    int aromatic;
+                    if (arom == "aromatic")
+                        aromatic = ATOM_AROMATIC;
+                    else if (arom == "aliphatic")
+                        aromatic = ATOM_ALIPHATIC else throw Error("Wrong value for aromaticity.");
+                    _pqmol->resetAtom(
+                        atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_AROMATICITY, aromatic)));
+                }
+                if (qProps.HasMember("degree")
+                {
+                    int degree = qProps["degree"].GetInt();
+                    _pqmol->resetAtom(
+                        atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, degree)));
+                }
+                if (qProps.HasMember("ringMembership")
+                {
+                    int rmem = qProps["ringMembership"].GetInt();
+                    _pqmol->resetAtom(atom_idx,
+                                      QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SSSR_RINGS, rmem)));
+                }
+                if (qProps.HasMember("ringSize")
+                {
+                    int rsize = qProps["ringSize"].GetInt();
+                    _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
+                                                                         new QueryMolecule::Atom(QueryMolecule::ATOM_SMALLEST_RING_SIZE, rsize)));
+                }
+                if (qProps.HasMember("connectivity")
+                {
+                    int conn = qProps["connectivity"].GetInt();
+                    _pqmol->resetAtom(atom_idx,
+                                      QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_CONNECTIVITY, conn)));
+                }
+                if (qProps.HasMember("ringConnectivity")
+                {
+                    int rconn = qProps["ringConnectivity"].GetInt();
+                    _pqmol->resetAtom(atom_idx,
+                                      QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rconn)));
+                }
+                if (qProps.HasMember("atomicMass")
+                {
+                    int mass = qProps["atomicMass"].GetInt();
+                    _pqmol->resetAtom(atom_idx,
+                                      QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_ISOTOPE, mass)));
+                }
+                if (qProps.HasMember("chirality")
+                {
+                    std::string arom = qProps["chirality"].GetString();
+                    int chirality;
+                    if (arom == "clockwise")
+                        chirality = ATOM_AROMATIC;
+                    else if (arom == "anticlockwise")
+                        chirality = ATOM_ALIPHATIC else throw Error("Wrong value for chirality.");
+                    // 2do - add hirality to atom
+                }
+                if (qProps.HasMember("customQuery")
+                {
+                }
+            }
+            else if (!ignore_noncritical_query_features)
+                throw Error("queryProperties is allowed only for queries");
+        }
     }
 
     if (_pqmol)
