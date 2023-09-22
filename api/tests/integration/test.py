@@ -346,6 +346,8 @@ def run_analyze_test(args):
         f.close()
     with stdout_lock:
         sys.__stdout__.write(out_message + "\n")
+        if test_status == "[FAILED]":
+            sys.__stdout__.write(msg + "\n")
     test_result = (root, filename, test_status, msg, tspent)
     return test_result
 

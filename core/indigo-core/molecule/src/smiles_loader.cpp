@@ -2148,8 +2148,9 @@ void SmilesLoader::_forbidHydrogens()
                 std::unique_ptr<QueryMolecule::Atom> newatom;
                 std::unique_ptr<QueryMolecule::Atom> oldatom(_qmol->releaseAtom(i));
 
-                newatom.reset(
-                    QueryMolecule::Atom::und(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)), oldatom.release()));
+                std::unique_ptr<QueryMolecule::Atom> notH(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
+                notH->artificial = true;
+                newatom.reset(QueryMolecule::Atom::und(notH.release(), oldatom.release()));
 
                 _qmol->resetAtom(i, newatom.release());
             }
@@ -2565,7 +2566,10 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         else if (next == '/')
         {
             scanner.skip(1);
-            order = BOND_SINGLE;
+            if (smarts_mode)
+                order = BOND_SMARTS_UP;
+            else
+                order = BOND_SINGLE;
             if (bond.dir == 2)
                 throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");
             bond.dir = 1;
@@ -2573,7 +2577,10 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         else if (next == '\\')
         {
             scanner.skip(1);
-            order = BOND_SINGLE;
+            if (smarts_mode)
+                order = BOND_SMARTS_DOWN;
+            else
+                order = BOND_SINGLE;
             if (bond.dir == 1)
                 throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");
             bond.dir = 2;
@@ -3301,6 +3308,8 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
 
             if (isdigit(scanner.lookNext()))
                 subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SMALLEST_RING_SIZE, scanner.readUnsigned());
+            else if (smarts_mode)
+                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SMALLEST_RING_SIZE, 1, 100);
             else
                 subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RING_BONDS, 1, 100);
         }

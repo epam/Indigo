@@ -69,7 +69,9 @@ namespace indigo
         _BOND_DOUBLE_OR_AROMATIC = 7,
         _BOND_ANY = 8,
         _BOND_COORDINATION = 9,
-        _BOND_HYDROGEN = 10
+        _BOND_HYDROGEN = 10,
+        BOND_SMARTS_UP = 11,
+        BOND_SMARTS_DOWN = 12,
     };
 
     enum

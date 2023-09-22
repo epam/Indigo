@@ -506,7 +506,7 @@ bool QueryMolecule::isSaturatedAtom(int idx)
     throw Error("not implemented");
 }
 
-QueryMolecule::Node::Node(int type_)
+QueryMolecule::Node::Node(int type_) : artificial(false)
 {
     type = (OpType)type_;
 }
@@ -1183,6 +1183,29 @@ bool QueryMolecule::Node::sureValueBelongs(int what_type, const int* arr, int co
         return false;
     default:
         return _sureValueBelongs(what_type, arr, count);
+    }
+}
+
+bool QueryMolecule::Node::hasOP_OR()
+{
+    int i;
+
+    switch (type)
+    {
+    case OP_AND: {
+        for (i = 0; i < children.size(); i++)
+            if (children[i]->hasOP_OR())
+                return true;
+
+        return false;
+    }
+    case OP_OR: {
+        return true;
+    }
+    case OP_NOT:
+        return false;
+    default:
+        return false;
     }
 }
 

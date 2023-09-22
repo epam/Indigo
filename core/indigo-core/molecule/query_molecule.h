@@ -97,6 +97,7 @@ namespace indigo
             ATOM_TEMPLATE_SEQID,
             ATOM_TEMPLATE_CLASS,
             ATOM_PI_BONDED,
+            ATOM_CHILARITY,
 
             BOND_ORDER,
             BOND_TOPOLOGY,
@@ -117,6 +118,8 @@ namespace indigo
             // otherwise: no children
             PtrArray<Node> children;
 
+            bool artificial; // if true - added by parser to comply restrictions
+
             // Check if node has any constraint of the specific type
             bool hasConstraint(int what_type);
 
@@ -136,6 +139,8 @@ namespace indigo
 
             bool sureValueBelongs(int what_type, const int* arr, int count);
             bool sureValueBelongsInv(int what_type, const int* arr, int count);
+
+            bool hasOP_OR();
 
             // Optimize query for faster substructure search
             void optimize();
