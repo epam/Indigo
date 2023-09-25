@@ -612,7 +612,7 @@ void MoleculeJsonSaver::saveSelection(BaseMolecule& mol, JsonWriter& writer)
     }
 }
 
-constexpr bool MoleculeJsonSaver::_needCustomQuery(QueryMolecule::Atom* atom)
+bool MoleculeJsonSaver::_needCustomQuery(QueryMolecule::Atom* atom) const
 {
     switch (atom->type)
     {

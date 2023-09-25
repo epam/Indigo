@@ -201,7 +201,7 @@ namespace indigo
     protected:
         void _checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list);
         bool _checkAttPointOrder(BaseMolecule& mol, int rsite);
-        constexpr bool _needCustomQuery(QueryMolecule::Atom* atom);
+        bool _needCustomQuery(QueryMolecule::Atom* atom) const;
         void _writeQueryProperties(QueryMolecule::Atom* atom, JsonWriter& writer);
 
         Molecule* _pmol;
