@@ -29,6 +29,7 @@
 #include "base_cpp/output.h"
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
+#include "molecule/query_molecule.h"
 
 namespace indigo
 {
@@ -200,6 +201,8 @@ namespace indigo
     protected:
         void _checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list);
         bool _checkAttPointOrder(BaseMolecule& mol, int rsite);
+        constexpr bool _needCustomQuery(QueryMolecule::Atom* atom);
+        void _writeQueryProperties(QueryMolecule::Atom* atom, JsonWriter& writer);
 
         Molecule* _pmol;
         QueryMolecule* _pqmol;
