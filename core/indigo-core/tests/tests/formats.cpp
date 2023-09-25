@@ -365,8 +365,11 @@ TEST_F(IndigoCoreFormatsTest, json_load_save)
 "sgroups":[{"type":"DAT","atoms":[0,1,2,3,4,5],"context":"Fragment","fieldName":"2323fc","fieldData":"22","bonds":[0,1,2,3,4,5]}]}})";
 
     BufferScanner scanner(ket);
+    FileScanner sc(dataPath("ket_with_query_properties.ket").c_str());
+    std::string json;
+    sc.readAll(json);
     rapidjson::Document data;
-    if (!data.Parse(ket).HasParseError())
+    if (!data.Parse(json.c_str()).HasParseError())
     {
         if (data.HasMember("root"))
         {
@@ -380,7 +383,7 @@ TEST_F(IndigoCoreFormatsTest, json_load_save)
             loader.treat_stereo_as = treat_stereo_as;
             //*/
             loader.loadMolecule(q_mol);
-            return;
+            // return;
         }
     }
 
@@ -388,7 +391,7 @@ TEST_F(IndigoCoreFormatsTest, json_load_save)
     ArrayOutput std_out(out);
     MoleculeJsonSaver saver(std_out);
     saver.saveMolecule(q_mol);
-    std::string smarts_out{out.ptr(), static_cast<std::size_t>(out.size())};
-    // ASSERT_EQ(smarts_in, smarts_out);
-    printf(smarts_out.c_str());
+    std::string json_out{out.ptr(), static_cast<std::size_t>(out.size())};
+    printf(json_out.c_str());
+    // ASSERT_EQ(json, json_out);
 }
