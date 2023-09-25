@@ -590,7 +590,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                     }
                 }
             }
-            else if (!ignore_noncritical_query_features)
+            else
                 throw Error("queryProperties is allowed only for queries");
         }
     }

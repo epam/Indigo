@@ -16,7 +16,6 @@ from env_indigo import *  # noqa
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
-indigo.setOption("molfile-saving-skip-date", True)
 
 print("*** KET with query properties ***")
 

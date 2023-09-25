@@ -616,6 +616,7 @@ constexpr bool MoleculeJsonSaver::_needCustomQuery(QueryMolecule::Atom* atom)
 {
     switch (atom->type)
     {
+    case QueryMolecule::ATOM_NUMBER:
     case QueryMolecule::ATOM_UNSATURATION: // Processed in other place
     case QueryMolecule::ATOM_AROMATICITY:
     case QueryMolecule::ATOM_SUBSTITUENTS:
@@ -645,6 +646,7 @@ void MoleculeJsonSaver::_writeQueryProperties(QueryMolecule::Atom* atom, JsonWri
 {
     switch (atom->type)
     {
+    case QueryMolecule::ATOM_NUMBER:
     case QueryMolecule::ATOM_UNSATURATION:
         // Processed in other place
         break;
@@ -922,7 +924,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         if (_pqmol)
         {
             QueryMolecule::Atom& atom = _pqmol->getAtom(i);
-            if (atom.type != QueryMolecule::OP_NONE && atom.type != QueryMolecule::ATOM_UNSATURATION)
+            if (atom.type != QueryMolecule::ATOM_NUMBER && atom.type != QueryMolecule::OP_NONE && atom.type != QueryMolecule::ATOM_UNSATURATION)
             {
                 writer.Key("queryProperties");
                 writer.StartObject();
