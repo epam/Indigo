@@ -59,10 +59,10 @@
                 "queryProperties": {
                     "aromaticity": "aliphatic",
                     "degree": 2,
-                    "ringMembership": 1,
-                    "ringSize": 3,
-                    "connectivity": 2,
-                    "ringConnectivity": 1,
+                    "ringMembership": 3,
+                    "ringSize": 4,
+                    "connectivity": 5,
+                    "ringConnectivity": 6,
                     "atomicMass": 12
                 }
             }
