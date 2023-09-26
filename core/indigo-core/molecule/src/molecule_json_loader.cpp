@@ -540,12 +540,6 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                         _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
                                                                              new QueryMolecule::Atom(QueryMolecule::ATOM_AROMATICITY, aromatic)));
                     }
-                    if (qProps.HasMember("degree"))
-                    {
-                        int degree = qProps["degree"].GetInt();
-                        _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
-                                                                             new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, degree)));
-                    }
                     if (qProps.HasMember("ringMembership"))
                     {
                         int rmem = qProps["ringMembership"].GetInt();
@@ -564,26 +558,14 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                         _pqmol->resetAtom(
                             atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_CONNECTIVITY, conn)));
                     }
-                    if (qProps.HasMember("ringConnectivity"))
-                    {
-                        int rconn = qProps["ringConnectivity"].GetInt();
-                        _pqmol->resetAtom(
-                            atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rconn)));
-                    }
-                    if (qProps.HasMember("atomicMass"))
-                    {
-                        int mass = qProps["atomicMass"].GetInt();
-                        _pqmol->resetAtom(atom_idx,
-                                          QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_ISOTOPE, mass)));
-                    }
                     if (qProps.HasMember("chirality"))
                     {
                         std::string arom = qProps["chirality"].GetString();
                         int chirality;
                         if (arom == "clockwise")
-                            chirality = ATOM_AROMATIC;
+                            chirality = 1;
                         else if (arom == "anticlockwise")
-                            chirality = ATOM_ALIPHATIC;
+                            chirality = 2;
                         else
                             throw Error("Wrong value for chirality.");
                         // 2do - add hirality to atom

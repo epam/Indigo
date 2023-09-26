@@ -612,91 +612,6 @@ void MoleculeJsonSaver::saveSelection(BaseMolecule& mol, JsonWriter& writer)
     }
 }
 
-bool MoleculeJsonSaver::_needCustomQuery(QueryMolecule::Atom* atom) const
-{
-    switch (atom->type)
-    {
-    case QueryMolecule::ATOM_NUMBER:
-    case QueryMolecule::ATOM_UNSATURATION: // Processed in other place
-    case QueryMolecule::ATOM_AROMATICITY:
-    case QueryMolecule::ATOM_SUBSTITUENTS:
-    case QueryMolecule::ATOM_SSSR_RINGS:
-    case QueryMolecule::ATOM_SMALLEST_RING_SIZE:
-    case QueryMolecule::ATOM_CONNECTIVITY:
-    case QueryMolecule::ATOM_RING_BONDS:
-    case QueryMolecule::ATOM_ISOTOPE:
-        // 2do add hirality
-        // case QueryMolecule::ATOM_CHIRALITY:
-        return false;
-    case QueryMolecule::OP_AND:
-        for (int i = 0; i < atom->children.size(); i++)
-        {
-            if (_needCustomQuery(static_cast<QueryMolecule::Atom*>(atom->children[i])))
-                return true;
-        }
-        return false;
-    case QueryMolecule::OP_OR:
-    case QueryMolecule::OP_NOT:
-    default:
-        return true;
-    }
-}
-
-void MoleculeJsonSaver::_writeQueryProperties(QueryMolecule::Atom* atom, JsonWriter& writer)
-{
-    switch (atom->type)
-    {
-    case QueryMolecule::ATOM_NUMBER:
-    case QueryMolecule::ATOM_UNSATURATION:
-        // Processed in other place
-        break;
-    case QueryMolecule::ATOM_AROMATICITY:
-        writer.Key("aromaticity");
-        if (atom->value_min == ATOM_AROMATIC)
-            writer.String(ATOM_AROMATIC_STR);
-        else if (atom->value_min == ATOM_ALIPHATIC)
-            writer.String(ATOM_ALIPHATIC_STR);
-        else
-            throw "Wrong aromaticity value";
-        break;
-    case QueryMolecule::ATOM_SUBSTITUENTS:
-        writer.Key("degree");
-        writer.Int(atom->value_min);
-        break;
-    case QueryMolecule::ATOM_SSSR_RINGS:
-        writer.Key("ringMembership");
-        writer.Int(atom->value_min);
-        break;
-    case QueryMolecule::ATOM_SMALLEST_RING_SIZE:
-        writer.Key("ringSize");
-        writer.Int(atom->value_min);
-        break;
-    case QueryMolecule::ATOM_CONNECTIVITY:
-        writer.Key("connectivity");
-        writer.Int(atom->value_min);
-        break;
-    case QueryMolecule::ATOM_RING_BONDS:
-        writer.Key("ringConnectivity");
-        writer.Int(atom->value_min);
-        break;
-    case QueryMolecule::ATOM_ISOTOPE:
-        writer.Key("atomicMass");
-        writer.Int(atom->value_min);
-        break;
-        // 2do add hirality
-        // case QueryMolecule::ATOM_CHIRALITY:
-        // break;
-    case QueryMolecule::OP_AND:
-        for (int i = 0; i < atom->children.size(); i++)
-        {
-            _writeQueryProperties(static_cast<QueryMolecule::Atom*>(atom->children[i]), writer);
-        }
-        break;
-    default:
-        throw "Invalid queryProperties option.";
-    }
-}
-
 void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<char>, buf);
@@ -924,20 +839,51 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         if (_pqmol)
         {
             QueryMolecule::Atom& atom = _pqmol->getAtom(i);
-            if (atom.type != QueryMolecule::ATOM_NUMBER && atom.type != QueryMolecule::OP_NONE && atom.type != QueryMolecule::ATOM_UNSATURATION)
+            int query_atom_type = -1;
+            QS_DEF(Array<int>, qatom_list);
+            query_atom_type = QueryMolecule::parseQueryAtom(atom, qatom_list);
+            QueryMolecule::Atom* s_atom = QueryMolecule::stripKnownAttrs(atom);
+            bool needCustomQuery = query_atom_type == -1 && s_atom->type != QueryMolecule::ATOM_NUMBER;
+            std::map<int, const char*> qprops{{QueryMolecule::ATOM_SSSR_RINGS, "ringMembership"},
+                                              {QueryMolecule::ATOM_SMALLEST_RING_SIZE, "ringSize"},
+                                              {QueryMolecule::ATOM_CONNECTIVITY, "connectivity"}};
+            bool hasQueryProperties = atom.hasConstraint(QueryMolecule::ATOM_AROMATICITY) ||
+                                      std::any_of(qprops.cbegin(), qprops.cend(), [&atom](auto p) { return atom.hasConstraint(p.first); });
+            if (needCustomQuery || hasQueryProperties)
             {
                 writer.Key("queryProperties");
                 writer.StartObject();
-                if (_needCustomQuery(&atom))
+                if (needCustomQuery)
                 {
                     // 2do generate customquery
-                    std::string customQuery;
+                    std::string customQuery = "";
                     writer.Key("customQuery");
                     writer.String(customQuery.c_str());
                 }
                 else
                 {
-                    _writeQueryProperties(&atom, writer);
+                    int value = -1;
+
+                    if (atom.sureValue(QueryMolecule::ATOM_AROMATICITY, value))
+                    {
+                        writer.Key("aromaticity");
+                        if (value == ATOM_AROMATIC)
+                            writer.String(ATOM_AROMATIC_STR);
+                        else if (value == ATOM_ALIPHATIC)
+                            writer.String(ATOM_ALIPHATIC_STR);
+                        else
+                            throw "Wrong aromaticity value";
+                    }
+                    for (auto p : qprops)
+                    {
+                        if (atom.sureValue(p.first, value))
+                        {
+                            writer.Key(p.second);
+                            writer.Uint(value);
+                        }
+                    }
+                    // 2do add hirality
+                    //*/
                 }
                 writer.EndObject();
             }

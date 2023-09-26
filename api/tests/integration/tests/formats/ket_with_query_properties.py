@@ -20,8 +20,8 @@ indigo.setOption("json-saving-pretty", True)
 print("*** KET with query properties ***")
 
 ref_path = joinPathPy("ref/", __file__)
-
-filename = os.path.join(ref_path, "ket_with_query_properties.ket")
+name = "ket_with_query_properties.ket"
+filename = os.path.join(ref_path, name)
 
 mol = indigo.loadQueryMoleculeFromFile(filename)
 with open(filename, "r") as file:
@@ -29,7 +29,7 @@ with open(filename, "r") as file:
 ket = mol.json()
 diff = find_diff(ket_ref, ket)
 if not diff:
-    print(filename + ".ket:SUCCEED")
+    print(name + ":SUCCEED")
 else:
-    print(filename + ".ket:FAILED")
+    print(name + ":FAILED")
     print(diff)
