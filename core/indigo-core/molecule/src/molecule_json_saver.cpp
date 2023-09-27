@@ -1006,6 +1006,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
+
     if (!BaseMolecule::hasCoord(*mol))
     {
         MoleculeLayout ml(*mol, false);

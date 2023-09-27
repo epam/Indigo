@@ -425,16 +425,12 @@ bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom
 
     int i;
 
-    bool is_center = isPossibleStereocenter(baseMolecule, atom_idx, &possible_implicit_h, &possible_lone_pair);
-    bool is_atropo_center = false;
-    if (check_atropocenter && !is_center)
-        is_atropo_center = isPossibleAtropocenter(baseMolecule, atom_idx, possible_atropobond);
+    stereocenter.is_tetrahydral = isPossibleStereocenter(baseMolecule, atom_idx, &possible_implicit_h, &possible_lone_pair);
+    if (check_atropocenter && !stereocenter.is_tetrahydral)
+        stereocenter.is_atropisomeric = isPossibleAtropocenter(baseMolecule, atom_idx, possible_atropobond);
 
-    if (!is_center && !is_atropo_center)
+    if (!stereocenter.is_tetrahydral && !stereocenter.is_atropisomeric)
         return false;
-
-    if (possible_atropobond > -1)
-        stereocenter.is_atropisomeric = true;
 
     // Local synonym to get bond direction
     auto getDir = [&](int from, int to) {
@@ -828,6 +824,16 @@ void MoleculeStereocenters::setAtropisomeric(int idx, bool val)
 bool MoleculeStereocenters::isAtropisomeric(int idx) const
 {
     return _stereocenters.at(idx).is_atropisomeric;
+}
+
+void MoleculeStereocenters::setTetrahydral(int idx, bool val)
+{
+    _stereocenters.at(idx).is_tetrahydral = val;
+}
+
+bool MoleculeStereocenters::isTetrahydral(int idx) const
+{
+    return _stereocenters.at(idx).is_tetrahydral;
 }
 
 const int* MoleculeStereocenters::getPyramid(int idx) const
@@ -1341,26 +1347,31 @@ void MoleculeStereocenters::buildOnSubmolecule(BaseMolecule& baseMolecule, const
 
         new_stereocenter.group = super_stereocenter.group;
         new_stereocenter.type = super_stereocenter.type;
+        new_stereocenter.is_atropisomeric = super_stereocenter.is_atropisomeric;
+        new_stereocenter.is_tetrahydral = super_stereocenter.is_tetrahydral;
 
-        for (j = 0; j < 4; j++)
+        if (!new_stereocenter.is_atropisomeric)
         {
-            int idx = super_stereocenter.pyramid[j];
-
-            if (idx == -1)
-                new_stereocenter.pyramid[j] = -1;
-            else
+            for (j = 0; j < 4; j++)
             {
-                int val = mapping[idx];
-                if (val != -1 && baseMolecule.findEdgeIndex(sub_idx, val) == -1)
-                    val = -1;
-                new_stereocenter.pyramid[j] = val;
-            }
-        }
+                int idx = super_stereocenter.pyramid[j];
 
-        moveMinimalToEnd(new_stereocenter.pyramid);
-        if (new_stereocenter.pyramid[0] == -1 || new_stereocenter.pyramid[1] == -1 || new_stereocenter.pyramid[2] == -1)
-            // pyramid is not mapped completely
-            continue;
+                if (idx == -1)
+                    new_stereocenter.pyramid[j] = -1;
+                else
+                {
+                    int val = mapping[idx];
+                    if (val != -1 && baseMolecule.findEdgeIndex(sub_idx, val) == -1)
+                        val = -1;
+                    new_stereocenter.pyramid[j] = val;
+                }
+            }
+
+            moveMinimalToEnd(new_stereocenter.pyramid);
+            if (new_stereocenter.pyramid[0] == -1 || new_stereocenter.pyramid[1] == -1 || new_stereocenter.pyramid[2] == -1)
+                // pyramid is not mapped completely
+                continue;
+        }
 
         _stereocenters.insert(sub_idx, new_stereocenter);
 

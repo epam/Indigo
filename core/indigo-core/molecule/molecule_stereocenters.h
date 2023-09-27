@@ -86,6 +86,9 @@ namespace indigo
         void setType(int idx, int type);
         void setAtropisomeric(int idx, bool val);
         bool isAtropisomeric(int idx) const;
+        void setTetrahydral(int idx, bool val);
+        bool isTetrahydral(int idx) const;
+
         void invertPyramid(int idx);
 
         bool sameGroup(int idx1, int idx2);
@@ -146,6 +149,7 @@ namespace indigo
             // (X, Y, Z) go counterclockwise when looking from W.
             // if there are pure (implicit) hydrogen, it is W
             bool is_atropisomeric = false;
+            bool is_tetrahydral = false;
             int pyramid[4];
         };
 
