@@ -3914,27 +3914,6 @@ int BaseMolecule::getBondDirection(int idx) const
     return _bond_directions[idx];
 }
 
-int* BaseMolecule::getForcedBondDirection(int idx) const
-{
-    return _forced_stereo_directions.at2(idx);
-}
-
-void BaseMolecule::setForcedBondDirection(int idx, int dir)
-{
-    if (!_forced_stereo_directions.find(idx))
-        _forced_stereo_directions.insert(idx, dir);
-}
-
-bool BaseMolecule::isForcedStereoBond(int idx)
-{
-    return _forced_stereo_directions.find(idx);
-}
-
-const RedBlackMap<int, int>& BaseMolecule::forcedStereoBonds()
-{
-    return _forced_stereo_directions;
-}
-
 int BaseMolecule::getBondDirection2(int center_idx, int nei_idx)
 {
     int idx = findEdgeIndex(center_idx, nei_idx);
@@ -3957,7 +3936,6 @@ void BaseMolecule::setBondDirection(int idx, int dir)
 void BaseMolecule::clearBondDirections()
 {
     _bond_directions.clear();
-    _forced_stereo_directions.clear();
 }
 
 bool BaseMolecule::isChiral()
@@ -4274,6 +4252,11 @@ bool BaseMolecule::isPossibleStereocenter(int atom_idx, bool* possible_implicit_
     return stereocenters.isPossibleStereocenter(*this, atom_idx, possible_implicit_h, possible_lone_pair);
 }
 
+bool BaseMolecule::isPossibleAtropocenter(int atom_idx, int& possible_atropo_bond)
+{
+    return stereocenters.isPossibleAtropocenter(*this, atom_idx, possible_atropo_bond);
+}
+
 void BaseMolecule::buildOnSubmoleculeStereocenters(const BaseMolecule& super, int* mapping)
 {
     stereocenters.buildOnSubmolecule(*this, super, mapping);
@@ -4441,55 +4424,4 @@ void BaseMolecule::setAlias(int atom_idx, const char* alias)
 void BaseMolecule::removeAlias(int atom_idx)
 {
     aliases.remove(atom_idx);
-}
-
-bool BaseMolecule::isAtropisomerismReferenceAtom(int atom_idx)
-{
-    // TODO: implement more accurate atropisomer detection
-    if (vertexInRing(atom_idx)) // check if the atom belongs to ring
-    {
-        bool has_stereo = false;
-        const Vertex& v = getVertex(atom_idx);
-        // check if the atom has at least one stereo-bond
-        for (int i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
-        {
-            if (getBondDirection(v.neiEdge(i)) || getForcedBondDirection(v.neiEdge(i)))
-            {
-                has_stereo = true;
-                break;
-            }
-        }
-        if (has_stereo)
-        {
-            std::unordered_set<int> rotation_bonds;
-            // looking for a rotation bond
-            for (int i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
-            {
-                auto bond_idx = v.neiEdge(i);
-                if ((getBondDirection(bond_idx) || getForcedBondDirection(v.neiEdge(i))) && getEdgeTopology(bond_idx) == TOPOLOGY_RING)
-                    continue;
-                if (isRotationBond(bond_idx))
-                    rotation_bonds.insert(bond_idx);
-            }
-            if (rotation_bonds.size())
-                return true;
-        }
-    }
-    return false;
-}
-
-bool BaseMolecule::isRotationBond(int bond_idx)
-{
-    // typically a rotation doesn't belong to a ring.
-    // but there are some exclusions to be handled.
-    if (getEdgeTopology(bond_idx) == TOPOLOGY_RING)
-        return false;
-    // remove the bond and check if an extra component appears.
-    // if so this can be a rotation bond.
-    std::unique_ptr<BaseMolecule> mol(neu());
-    mol->clone_KeepIndices(*this);
-    int old_count = mol->countComponents();
-    mol->removeBond(bond_idx);
-    int new_count = mol->countComponents();
-    return new_count > old_count;
 }

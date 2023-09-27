@@ -45,6 +45,7 @@ namespace indigo
 
         // Detect Haworth projection. Default is false.
         bool detect_haworth_projection;
+
     };
 
 } // namespace indigo

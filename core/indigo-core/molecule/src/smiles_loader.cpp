@@ -355,6 +355,8 @@ void SmilesLoader::_readOtherStuff()
                 {
                     _scanner.skip(1);
                     auto bond_idx = _scanner.readUnsigned();
+                    if (!_has_directions_on_rings)
+                        _has_directions_on_rings = _bmol->getBondTopology(bond_idx) == TOPOLOGY_RING;
                     if (wmode)
                     {
                         if (bond_idx < _bmol->edgeCount() && atom_idx < _bmol->vertexCount())
@@ -365,7 +367,7 @@ void SmilesLoader::_readOtherStuff()
 
                             if (v.beg == atom_idx)
                             {
-                                _bmol->setForcedBondDirection(bond_idx, wmode == 'U' ? BOND_UP : BOND_DOWN);
+                                _bmol->setBondDirection(bond_idx, wmode == 'U' ? BOND_UP : BOND_DOWN);
                             }
                         }
                     }
@@ -1338,20 +1340,6 @@ void SmilesLoader::_readOtherStuff()
         _bmol->removeAtoms(to_remove);
 }
 
-void SmilesLoader::_handleForcedStereo()
-{
-    auto& fbonds = _bmol->forcedStereoBonds();
-    for (int i = fbonds.begin(); i != fbonds.end(); i = fbonds.next(i))
-        _bmol->setBondDirection(fbonds.key(i), fbonds.value(i));
-
-    for (int i = fbonds.begin(); i != fbonds.end(); i = fbonds.next(i))
-    {
-        auto& e = _bmol->getEdge(fbonds.key(i));
-        if (_bmol->stereocenters.exists(e.beg) && _bmol->isAtropisomerismReferenceAtom(e.beg))
-            _bmol->stereocenters.setAtropisomeric(e.beg, true);
-    }
-}
-
 void SmilesLoader::_validateStereoCenters()
 {
     for (int i = _bmol->stereocenters.begin(); i < _bmol->stereocenters.end(); i = _bmol->stereocenters.next(i))
@@ -1938,14 +1926,14 @@ void SmilesLoader::_loadParsedMolecule()
     {
         _scanner.skip(1);
         _readOtherStuff();
-        if (_has_atom_coordinates)
+        if (_has_atom_coordinates || _has_directions_on_rings)
         {
+            std::vector<int> sensible_bond_directions;
+            sensible_bond_directions.resize(_bmol->edgeCount());
+            _bmol->buildFromBondsStereocenters(stereochemistry_options, sensible_bond_directions.data());
             _bmol->markBondsStereocenters();
             _bmol->markBondsAlleneStereo();
         }
-
-        if (_bmol->forcedStereoBonds().size())
-            _handleForcedStereo();
     }
 
     // Update attachment orders for rsites

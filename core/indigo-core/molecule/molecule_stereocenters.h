@@ -19,6 +19,8 @@
 #ifndef __molecule_stereocenters__
 #define __molecule_stereocenters__
 
+#include <unordered_set>
+
 #include "base_cpp/red_black.h"
 #include "math/algebra.h"
 
@@ -83,7 +85,7 @@ namespace indigo
         void setType(int idx, int type, int group);
         void setType(int idx, int type);
         void setAtropisomeric(int idx, bool val);
-        bool isAtropisomeric(int idx);
+        bool isAtropisomeric(int idx) const;
         void invertPyramid(int idx);
 
         bool sameGroup(int idx1, int idx2);
@@ -111,6 +113,10 @@ namespace indigo
         int getAtomIndex(int i) const;
 
         bool isPossibleStereocenter(BaseMolecule& baseMolecule, int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
+        bool isPossibleAtropocenter(BaseMolecule& baseMolecule, int atom_idx, int& possible_atropo_bond);
+        bool findAtropoStereobonds(BaseMolecule& baseMolecule, RedBlackMap<int, int>& directions_map, int atom_idx, std::unordered_set<int>& visited_bonds,
+                                   bool first_only = false);
+        bool hasRing(BaseMolecule& baseMolecule, int atom_idx, std::unordered_set<int>& visited_bonds);
 
     public:
         static bool checkSub(BaseMolecule& query, BaseMolecule& target, const int* mapping, bool reset_h_isotopes, Filter* stereocenters_vertex_filter = 0);
@@ -143,6 +149,12 @@ namespace indigo
             int pyramid[4];
         };
 
+        struct _AtropoCenter
+        {
+            int atropo_bond;
+            RedBlackMap<int, int> bond_directions;
+        };
+
         struct _EdgeIndVec
         {
             int edge_idx;
@@ -161,13 +173,14 @@ namespace indigo
         };
 
         RedBlackMap<int, _Atom> _stereocenters;
+        RedBlackObjMap<int, _AtropoCenter> _atropocenters;
 
         static int _sign(const Vec3f& v1, const Vec3f& v2, const Vec3f& v3);
         static int _xyzzy(const Vec3f& v1, const Vec3f& v2, const Vec3f& u);
         static int _onPlane(const Vec3f& v1, const Vec3f& v2, const Vec3f& v3, const Vec3f& v4);
 
         bool _buildOneCenter(BaseMolecule& baseMolecule, int atom_idx, int* sensible_bonds_out, bool bidirectional_mode, bool bidirectional_either_mode,
-                             const Array<bool>& bond_ignore);
+                             const Array<bool>& bond_ignore, bool check_atropocenter = false);
 
         void _buildOneFrom3dCoordinates(BaseMolecule& baseMolecule, int idx);
 

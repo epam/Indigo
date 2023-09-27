@@ -385,7 +385,7 @@ void SmilesSaver::_saveMolecule()
 
             int idx = _written_atoms[i];
 
-            if (_atoms[idx].chirality == 0)
+            if (_atoms[idx].chirality == 0 || stereocenters.isAtropisomeric(idx))
                 continue;
 
             int type = stereocenters.getType(idx);
@@ -1502,7 +1502,6 @@ void SmilesSaver::_writeStereogroups()
     {
         int atom, type, group;
         stereocenters.get(i, atom, type, group, 0);
-
         if (type != MoleculeStereocenters::ATOM_ABS)
             break;
     }
@@ -1850,7 +1849,7 @@ void SmilesSaver::_writeWedges()
             auto bond_idx = _written_bonds[i];
             auto& e = _bmol->getEdge(bond_idx);
             auto bdir = _bmol->getBondDirection(bond_idx);
-            if (bdir && bdir < BOND_EITHER && _bmol->isForcedStereoBond(bond_idx))
+            if (bdir && bdir < BOND_EITHER)
             {
                 const auto& edge = _bmol->getEdge(bond_idx);
                 auto wa_idx = _written_atoms.find(edge.beg);
@@ -1892,7 +1891,7 @@ void SmilesSaver::_writeWedges()
                 _output.printf("%d.%d", kvp.first, kvp.second);
             }
         }
-        if (down_dirs.size() || up_dirs.size())
+        if ((down_dirs.size() || up_dirs.size()) && BaseMolecule::hasCoord(*_mol))
         {
             _output.writeString(",(");
             for (int i = 0; i < _written_atoms.size(); ++i)

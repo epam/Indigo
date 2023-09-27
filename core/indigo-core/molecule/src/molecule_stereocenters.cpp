@@ -48,10 +48,14 @@ void MoleculeStereocenters::buildFromBonds(BaseMolecule& baseMolecule, const Ste
 
     const Array<bool>& bonds_ignore = haworth_finder.getBondsMask();
     const Array<bool>& atoms_ignore = haworth_finder.getAtomsMask();
+    bool check_atropisomery = false;
     for (int i = baseMolecule.edgeBegin(); i != baseMolecule.edgeEnd(); i = baseMolecule.edgeNext(i))
     {
-        if (bonds_ignore[i] && baseMolecule.getBondDirection(i))
+        auto bdir = baseMolecule.getBondDirection(i);
+        if (bonds_ignore[i] && bdir)
             sensible_bonds_out[i] = 1;
+        if (!check_atropisomery && bdir && baseMolecule.getBondTopology(i) == TOPOLOGY_RING)
+            check_atropisomery = true;
     }
 
     for (int i = baseMolecule.vertexBegin(); i != baseMolecule.vertexEnd(); i = baseMolecule.vertexNext(i))
@@ -63,7 +67,7 @@ void MoleculeStereocenters::buildFromBonds(BaseMolecule& baseMolecule, const Ste
         bool found = false;
         try
         {
-            found = _buildOneCenter(baseMolecule, i, sensible_bonds_out, false, options.bidirectional_mode, bonds_ignore);
+            found = _buildOneCenter(baseMolecule, i, sensible_bonds_out, false, options.bidirectional_mode, bonds_ignore, check_atropisomery);
         }
         catch (Error&)
         {
@@ -193,6 +197,87 @@ void MoleculeStereocenters::_buildOneFrom3dCoordinates(BaseMolecule& baseMolecul
         add(baseMolecule, idx, ATOM_ABS, 0, false);
 }
 
+bool MoleculeStereocenters::isPossibleAtropocenter(BaseMolecule& baseMolecule, int atom_idx, int& possible_atropo_bond)
+{
+    if (baseMolecule.vertexInRing(atom_idx)) // check if the atom belongs to ring
+    {
+        bool has_stereo = false;
+        const Vertex& v = baseMolecule.getVertex(atom_idx);
+        // check if the atom has at least one stereo-bond
+        for (int i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
+        {
+            if (baseMolecule.getBondDirection(v.neiEdge(i)))
+            {
+                for (int i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
+                {
+                    auto bond_idx = v.neiEdge(i);
+                    if (baseMolecule.getEdgeTopology(bond_idx) == TOPOLOGY_CHAIN)
+                    {
+                        std::unordered_set<int> visited;
+                        RedBlackMap<int, int> dir_map;
+                        visited.insert(bond_idx);
+                        if (findAtropoStereobonds(baseMolecule, dir_map, atom_idx, visited, true))
+                        {
+                            visited.clear();
+                            dir_map.clear();
+                            visited.insert(bond_idx);
+                            if (hasRing(baseMolecule, v.neiVertex(i), visited))
+                            {
+                                possible_atropo_bond = bond_idx;
+                                return true;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
+    return false;
+}
+
+// recursive search of for stereobonds withing connected rings
+bool MoleculeStereocenters::findAtropoStereobonds(BaseMolecule& baseMolecule, RedBlackMap<int, int>& directions_map, int atom_idx,
+                                                  std::unordered_set<int>& visited_bonds, bool first_only)
+{
+    const Vertex& v = baseMolecule.getVertex(atom_idx);
+    for (int i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
+    {
+        auto bond_idx = v.neiEdge(i);
+        if (visited_bonds.find(bond_idx) == visited_bonds.end())
+        {
+            visited_bonds.insert(bond_idx);
+            auto bdir = baseMolecule.getBondDirection(bond_idx);
+            if (baseMolecule.getBondTopology(bond_idx) == TOPOLOGY_RING)
+            {
+                if (bdir && !directions_map.find(bond_idx))
+                {
+                    directions_map.insert(bond_idx, bdir);
+                    if (first_only)
+                        return true;
+                }
+                findAtropoStereobonds(baseMolecule, directions_map, v.neiVertex(i), visited_bonds);
+            }
+        }
+    }
+    return directions_map.size();
+}
+
+bool MoleculeStereocenters::hasRing(BaseMolecule& baseMolecule, int atom_idx, std::unordered_set<int>& visited_bonds)
+{
+    const Vertex& v = baseMolecule.getVertex(atom_idx);
+    for (int i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
+    {
+        auto bond_idx = v.neiEdge(i);
+        if (visited_bonds.find(bond_idx) == visited_bonds.end())
+        {
+            visited_bonds.insert(bond_idx);
+            return baseMolecule.getBondTopology(bond_idx) == TOPOLOGY_RING ? true : hasRing(baseMolecule, v.neiVertex(i), visited_bonds);
+        }
+    }
+    return false;
+}
+
 bool MoleculeStereocenters::isPossibleStereocenter(BaseMolecule& baseMolecule, int atom_idx, bool* possible_implicit_h, bool* possible_lone_pair)
 {
     const Vertex& vertex = baseMolecule.getVertex(atom_idx);
@@ -264,7 +349,7 @@ bool MoleculeStereocenters::isPossibleStereocenter(BaseMolecule& baseMolecule, i
 // can be determined by normal direction then do not check if opposite directions
 // contradicts original ones.
 bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom_idx, int* sensible_bonds_out, bool bidirectional_mode,
-                                            bool bidirectional_either_mode, const Array<bool>& bond_ignore)
+                                            bool bidirectional_either_mode, const Array<bool>& bond_ignore, bool check_atropocenter)
 {
     const Vertex& vertex = baseMolecule.getVertex(atom_idx);
 
@@ -336,10 +421,20 @@ bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom
 
     bool possible_implicit_h = false;
     bool possible_lone_pair = false;
+    int possible_atropobond = -1;
+
     int i;
 
-    if (!isPossibleStereocenter(baseMolecule, atom_idx, &possible_implicit_h, &possible_lone_pair))
+    bool is_center = isPossibleStereocenter(baseMolecule, atom_idx, &possible_implicit_h, &possible_lone_pair);
+    bool is_atropo_center = false;
+    if (check_atropocenter && !is_center)
+        is_atropo_center = isPossibleAtropocenter(baseMolecule, atom_idx, possible_atropobond);
+
+    if (!is_center && !is_atropo_center)
         return false;
+
+    if (possible_atropobond > -1)
+        stereocenter.is_atropisomeric = true;
 
     // Local synonym to get bond direction
     auto getDir = [&](int from, int to) {
@@ -362,232 +457,249 @@ bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom
         return true;
     }
 
-    if (degree == 4)
+    if (possible_atropobond > -1)
     {
-        // sort by neighbor atom index (ascending)
-        if (edge_ids[0].rank > edge_ids[1].rank)
-            std::swap(edge_ids[0], edge_ids[1]);
-        if (edge_ids[1].rank > edge_ids[2].rank)
-            std::swap(edge_ids[1], edge_ids[2]);
-        if (edge_ids[2].rank > edge_ids[3].rank)
-            std::swap(edge_ids[2], edge_ids[3]);
-        if (edge_ids[1].rank > edge_ids[2].rank)
-            std::swap(edge_ids[1], edge_ids[2]);
-        if (edge_ids[0].rank > edge_ids[1].rank)
-            std::swap(edge_ids[0], edge_ids[1]);
-        if (edge_ids[1].rank > edge_ids[2].rank)
-            std::swap(edge_ids[1], edge_ids[2]);
-
-        int main1 = -1, main2 = -1, side1 = -1, side2 = -1;
-        int main_dir = 0;
-
-        for (nei_idx = 0; nei_idx < 4; nei_idx++)
-        {
-            int stereo = getDir(atom_idx, edge_ids[nei_idx].nei_idx);
-
-            if (stereo == BOND_UP || stereo == BOND_DOWN)
-            {
-                main1 = nei_idx;
-                main_dir = stereo;
-                break;
-            }
-        }
-
-        if (main1 == -1)
-            return false;
-
-        if (zero_bond_length)
-            throw Error("zero bond length near atom %d", atom_idx);
-
-        if (n_pure_hydrogens > 1)
-            throw Error("%d hydrogens near stereocenter %d", n_pure_hydrogens, atom_idx);
-
-        int xyz1, xyz2;
-
-        // find main2 as opposite to main1
-        if (main2 == -1)
-        {
-            xyz1 = _xyzzy(edge_ids[main1].vec, edge_ids[(main1 + 1) % 4].vec, edge_ids[(main1 + 2) % 4].vec);
-            xyz2 = _xyzzy(edge_ids[main1].vec, edge_ids[(main1 + 1) % 4].vec, edge_ids[(main1 + 3) % 4].vec);
-
-            if (xyz1 + xyz2 == 3 || xyz1 + xyz2 == 12)
-            {
-                main2 = (main1 + 1) % 4;
-                side1 = (main1 + 2) % 4;
-                side2 = (main1 + 3) % 4;
-            }
-        }
-        if (main2 == -1)
-        {
-            xyz1 = _xyzzy(edge_ids[main1].vec, edge_ids[(main1 + 2) % 4].vec, edge_ids[(main1 + 1) % 4].vec);
-            xyz2 = _xyzzy(edge_ids[main1].vec, edge_ids[(main1 + 2) % 4].vec, edge_ids[(main1 + 3) % 4].vec);
-
-            if (xyz1 + xyz2 == 3 || xyz1 + xyz2 == 12)
-            {
-                main2 = (main1 + 2) % 4;
-                side1 = (main1 + 1) % 4;
-                side2 = (main1 + 3) % 4;
-            }
-        }
-        if (main2 == -1)
-        {
-            xyz1 = _xyzzy(edge_ids[main1].vec, edge_ids[(main1 + 3) % 4].vec, edge_ids[(main1 + 1) % 4].vec);
-            xyz2 = _xyzzy(edge_ids[main1].vec, edge_ids[(main1 + 3) % 4].vec, edge_ids[(main1 + 2) % 4].vec);
-
-            if (xyz1 + xyz2 == 3 || xyz1 + xyz2 == 12)
-            {
-                main2 = (main1 + 3) % 4;
-                side1 = (main1 + 2) % 4;
-                side2 = (main1 + 1) % 4;
-            }
-        }
-
-        if (main2 == -1)
-            throw Error("internal error: can not find opposite bond near atom %d", atom_idx);
-
-        if (main_dir == BOND_UP && getDir(atom_idx, edge_ids[main2].nei_idx) == BOND_DOWN)
-            throw Error("stereo types of the opposite bonds mismatch near atom %d", atom_idx);
-        if (main_dir == BOND_DOWN && getDir(atom_idx, edge_ids[main2].nei_idx) == BOND_UP)
-            throw Error("stereo types of the opposite bonds mismatch near atom %d", atom_idx);
-
-        if (main_dir == getDir(atom_idx, edge_ids[side1].nei_idx))
-            throw Error("stereo types of non-opposite bonds match near atom %d", atom_idx);
-        if (main_dir == getDir(atom_idx, edge_ids[side2].nei_idx))
-            throw Error("stereo types of non-opposite bonds match near atom %d", atom_idx);
-
-        if (main1 == 3 || main2 == 3)
-            last_atom_dir = main_dir;
+        if (!_stereocenters.find(atom_idx))
+            _stereocenters.insert(atom_idx, stereocenter);
         else
-            last_atom_dir = (main_dir == BOND_UP ? BOND_DOWN : BOND_UP);
-
-        int sign = _sign(edge_ids[0].vec, edge_ids[1].vec, edge_ids[2].vec);
-
-        if ((last_atom_dir == BOND_UP && sign > 0) || (last_atom_dir == BOND_DOWN && sign < 0))
-        {
-            pyramid[0] = edge_ids[0].nei_idx;
-            pyramid[1] = edge_ids[1].nei_idx;
-            pyramid[2] = edge_ids[2].nei_idx;
-        }
-        else
-        {
-            pyramid[0] = edge_ids[0].nei_idx;
-            pyramid[1] = edge_ids[2].nei_idx;
-            pyramid[2] = edge_ids[1].nei_idx;
-        }
-
-        pyramid[3] = edge_ids[3].nei_idx;
+            _stereocenters.at(atom_idx).is_atropisomeric = true;
+        _AtropoCenter& ac = _atropocenters.findOrInsert(atom_idx);
+        ac.atropo_bond = possible_atropobond;
+        std::unordered_set<int> visited_bonds;
+        findAtropoStereobonds(baseMolecule, ac.bond_directions, atom_idx, visited_bonds);
+        auto bdir = baseMolecule.getBondDirection(possible_atropobond);
+        if (bdir)
+            ac.bond_directions.insert(possible_atropobond, bdir);
+        for (auto i = ac.bond_directions.begin(); i != ac.bond_directions.end(); i = ac.bond_directions.next(i))
+            sensible_bonds_out[ac.bond_directions.key(i)] = 1;
     }
-    else if (degree == 3)
+    else if (!_stereocenters.find(atom_idx))
     {
-        // sort by neighbor atom index (ascending)
-        if (edge_ids[0].rank > edge_ids[1].rank)
-            std::swap(edge_ids[0], edge_ids[1]);
-        if (edge_ids[1].rank > edge_ids[2].rank)
-            std::swap(edge_ids[1], edge_ids[2]);
-        if (edge_ids[0].rank > edge_ids[1].rank)
-            std::swap(edge_ids[0], edge_ids[1]);
-
-        bool degenerate = true;
-        int dirs[3] = {0, 0, 0};
-        int main_nei = -1; // will be assigned if all three neighors belong to the same half-plane
-        int n_up = 0, n_down = 0;
-
-        for (nei_idx = 0; nei_idx < 3; nei_idx++)
+        if (degree == 4)
         {
-            dirs[nei_idx] = getDir(atom_idx, edge_ids[nei_idx].nei_idx);
-            if (dirs[nei_idx] == BOND_UP)
-                n_up++;
-            else if (dirs[nei_idx] == BOND_DOWN)
-                n_down++;
-        }
+            // sort by neighbor atom index (ascending)
+            if (edge_ids[0].rank > edge_ids[1].rank)
+                std::swap(edge_ids[0], edge_ids[1]);
+            if (edge_ids[1].rank > edge_ids[2].rank)
+                std::swap(edge_ids[1], edge_ids[2]);
+            if (edge_ids[2].rank > edge_ids[3].rank)
+                std::swap(edge_ids[2], edge_ids[3]);
+            if (edge_ids[1].rank > edge_ids[2].rank)
+                std::swap(edge_ids[1], edge_ids[2]);
+            if (edge_ids[0].rank > edge_ids[1].rank)
+                std::swap(edge_ids[0], edge_ids[1]);
+            if (edge_ids[1].rank > edge_ids[2].rank)
+                std::swap(edge_ids[1], edge_ids[2]);
 
-        if (n_down == 0 && n_up == 0)
-            return false;
+            int main1 = -1, main2 = -1, side1 = -1, side2 = -1;
+            int main_dir = 0;
 
-        for (nei_idx = 0; nei_idx < 3; nei_idx++)
-        {
-            int xyzzy = _xyzzy(edge_ids[(nei_idx + 1) % 3].vec, edge_ids[(nei_idx + 2) % 3].vec, edge_ids[nei_idx].vec);
-
-            if (xyzzy == 1)
-                main_nei = nei_idx;
-            if (xyzzy == 2)
-                degenerate = false;
-        }
-
-        int dir = 1;
-
-        if (main_nei != -1)
-        {
-            if (dirs[main_nei] != 0)
+            for (nei_idx = 0; nei_idx < 4; nei_idx++)
             {
-                if (dirs[(main_nei + 1) % 3] == dirs[main_nei] || dirs[(main_nei + 2) % 3] == dirs[main_nei])
-                    throw Error("directions of neighbor stereo bonds match near atom %d", atom_idx);
-                if (dirs[main_nei] == BOND_UP)
-                    dir = -1;
+                int stereo = getDir(atom_idx, edge_ids[nei_idx].nei_idx);
+
+                if (stereo == BOND_UP || stereo == BOND_DOWN)
+                {
+                    main1 = nei_idx;
+                    main_dir = stereo;
+                    break;
+                }
+            }
+
+            if (main1 == -1)
+                return false;
+
+            if (zero_bond_length)
+                throw Error("zero bond length near atom %d", atom_idx);
+
+            if (n_pure_hydrogens > 1)
+                throw Error("%d hydrogens near stereocenter %d", n_pure_hydrogens, atom_idx);
+
+            int xyz1, xyz2;
+
+            // find main2 as opposite to main1
+            if (main2 == -1)
+            {
+                xyz1 = _xyzzy(edge_ids[main1].vec, edge_ids[(main1 + 1) % 4].vec, edge_ids[(main1 + 2) % 4].vec);
+                xyz2 = _xyzzy(edge_ids[main1].vec, edge_ids[(main1 + 1) % 4].vec, edge_ids[(main1 + 3) % 4].vec);
+
+                if (xyz1 + xyz2 == 3 || xyz1 + xyz2 == 12)
+                {
+                    main2 = (main1 + 1) % 4;
+                    side1 = (main1 + 2) % 4;
+                    side2 = (main1 + 3) % 4;
+                }
+            }
+            if (main2 == -1)
+            {
+                xyz1 = _xyzzy(edge_ids[main1].vec, edge_ids[(main1 + 2) % 4].vec, edge_ids[(main1 + 1) % 4].vec);
+                xyz2 = _xyzzy(edge_ids[main1].vec, edge_ids[(main1 + 2) % 4].vec, edge_ids[(main1 + 3) % 4].vec);
+
+                if (xyz1 + xyz2 == 3 || xyz1 + xyz2 == 12)
+                {
+                    main2 = (main1 + 2) % 4;
+                    side1 = (main1 + 1) % 4;
+                    side2 = (main1 + 3) % 4;
+                }
+            }
+            if (main2 == -1)
+            {
+                xyz1 = _xyzzy(edge_ids[main1].vec, edge_ids[(main1 + 3) % 4].vec, edge_ids[(main1 + 1) % 4].vec);
+                xyz2 = _xyzzy(edge_ids[main1].vec, edge_ids[(main1 + 3) % 4].vec, edge_ids[(main1 + 2) % 4].vec);
+
+                if (xyz1 + xyz2 == 3 || xyz1 + xyz2 == 12)
+                {
+                    main2 = (main1 + 3) % 4;
+                    side1 = (main1 + 2) % 4;
+                    side2 = (main1 + 1) % 4;
+                }
+            }
+
+            if (main2 == -1)
+                throw Error("internal error: can not find opposite bond near atom %d", atom_idx);
+
+            if (main_dir == BOND_UP && getDir(atom_idx, edge_ids[main2].nei_idx) == BOND_DOWN)
+                throw Error("stereo types of the opposite bonds mismatch near atom %d", atom_idx);
+            if (main_dir == BOND_DOWN && getDir(atom_idx, edge_ids[main2].nei_idx) == BOND_UP)
+                throw Error("stereo types of the opposite bonds mismatch near atom %d", atom_idx);
+
+            if (main_dir == getDir(atom_idx, edge_ids[side1].nei_idx))
+                throw Error("stereo types of non-opposite bonds match near atom %d", atom_idx);
+            if (main_dir == getDir(atom_idx, edge_ids[side2].nei_idx))
+                throw Error("stereo types of non-opposite bonds match near atom %d", atom_idx);
+
+            if (main1 == 3 || main2 == 3)
+                last_atom_dir = main_dir;
+            else
+                last_atom_dir = (main_dir == BOND_UP ? BOND_DOWN : BOND_UP);
+
+            int sign = _sign(edge_ids[0].vec, edge_ids[1].vec, edge_ids[2].vec);
+
+            if ((last_atom_dir == BOND_UP && sign > 0) || (last_atom_dir == BOND_DOWN && sign < 0))
+            {
+                pyramid[0] = edge_ids[0].nei_idx;
+                pyramid[1] = edge_ids[1].nei_idx;
+                pyramid[2] = edge_ids[2].nei_idx;
             }
             else
             {
-                int d1 = dirs[(main_nei + 1) % 3];
-                int d2 = dirs[(main_nei + 2) % 3];
+                pyramid[0] = edge_ids[0].nei_idx;
+                pyramid[1] = edge_ids[2].nei_idx;
+                pyramid[2] = edge_ids[1].nei_idx;
+            }
 
-                if (d1 == 0)
-                    d1 = d2;
-                else if (d2 != 0 && d1 != d2)
-                    throw Error("directions of opposite stereo bonds do not match near atom %d", atom_idx);
+            pyramid[3] = edge_ids[3].nei_idx;
+        }
+        else if (degree == 3)
+        {
+            // sort by neighbor atom index (ascending)
+            if (edge_ids[0].rank > edge_ids[1].rank)
+                std::swap(edge_ids[0], edge_ids[1]);
+            if (edge_ids[1].rank > edge_ids[2].rank)
+                std::swap(edge_ids[1], edge_ids[2]);
+            if (edge_ids[0].rank > edge_ids[1].rank)
+                std::swap(edge_ids[0], edge_ids[1]);
 
-                if (d1 == 0)
-                    return false;
+            bool degenerate = true;
+            int dirs[3] = {0, 0, 0};
+            int main_nei = -1; // will be assigned if all three neighors belong to the same half-plane
+            int n_up = 0, n_down = 0;
 
-                if (d1 == BOND_DOWN)
+            for (nei_idx = 0; nei_idx < 3; nei_idx++)
+            {
+                dirs[nei_idx] = getDir(atom_idx, edge_ids[nei_idx].nei_idx);
+                if (dirs[nei_idx] == BOND_UP)
+                    n_up++;
+                else if (dirs[nei_idx] == BOND_DOWN)
+                    n_down++;
+            }
+
+            if (n_down == 0 && n_up == 0)
+                return false;
+
+            for (nei_idx = 0; nei_idx < 3; nei_idx++)
+            {
+                int xyzzy = _xyzzy(edge_ids[(nei_idx + 1) % 3].vec, edge_ids[(nei_idx + 2) % 3].vec, edge_ids[nei_idx].vec);
+
+                if (xyzzy == 1)
+                    main_nei = nei_idx;
+                if (xyzzy == 2)
+                    degenerate = false;
+            }
+
+            int dir = 1;
+
+            if (main_nei != -1)
+            {
+                if (dirs[main_nei] != 0)
+                {
+                    if (dirs[(main_nei + 1) % 3] == dirs[main_nei] || dirs[(main_nei + 2) % 3] == dirs[main_nei])
+                        throw Error("directions of neighbor stereo bonds match near atom %d", atom_idx);
+                    if (dirs[main_nei] == BOND_UP)
+                        dir = -1;
+                }
+                else
+                {
+                    int d1 = dirs[(main_nei + 1) % 3];
+                    int d2 = dirs[(main_nei + 2) % 3];
+
+                    if (d1 == 0)
+                        d1 = d2;
+                    else if (d2 != 0 && d1 != d2)
+                        throw Error("directions of opposite stereo bonds do not match near atom %d", atom_idx);
+
+                    if (d1 == 0)
+                        return false;
+
+                    if (d1 == BOND_DOWN)
+                        dir = -1;
+                }
+            }
+            else if (!degenerate)
+            {
+                if (n_down > 0 && n_up > 0)
+                    throw Error("one bond up, one bond down -- indefinite case near atom %d", atom_idx);
+
+                if (!possible_lone_pair)
+                {
+                    if (n_up == 3)
+                        throw Error("all 3 bonds up near stereoatom %d", atom_idx);
+                    if (n_down == 3)
+                        throw Error("all 3 bonds down near stereoatom %d", atom_idx);
+                }
+                if (n_down > 0)
                     dir = -1;
             }
-        }
-        else if (!degenerate)
-        {
-            if (n_down > 0 && n_up > 0)
-                throw Error("one bond up, one bond down -- indefinite case near atom %d", atom_idx);
+            else
+                throw Error("degenerate case for 3 bonds near stereoatom %d", atom_idx);
 
-            if (!possible_lone_pair)
+            if (zero_bond_length)
+                throw Error("zero bond length near atom %d", atom_idx);
+
+            if (n_pure_hydrogens > 0 && !possible_lone_pair)
+                throw Error("have hydrogen(s) besides implicit hydrogen near stereocenter %d", atom_idx);
+
+            int sign = _sign(edge_ids[0].vec, edge_ids[1].vec, edge_ids[2].vec);
+
+            if (sign == dir)
             {
-                if (n_up == 3)
-                    throw Error("all 3 bonds up near stereoatom %d", atom_idx);
-                if (n_down == 3)
-                    throw Error("all 3 bonds down near stereoatom %d", atom_idx);
+                pyramid[0] = edge_ids[0].nei_idx;
+                pyramid[1] = edge_ids[2].nei_idx;
+                pyramid[2] = edge_ids[1].nei_idx;
             }
-            if (n_down > 0)
-                dir = -1;
+            else
+            {
+                pyramid[0] = edge_ids[0].nei_idx;
+                pyramid[1] = edge_ids[1].nei_idx;
+                pyramid[2] = edge_ids[2].nei_idx;
+            }
+            pyramid[3] = -1;
         }
-        else
-            throw Error("degenerate case for 3 bonds near stereoatom %d", atom_idx);
-
-        if (zero_bond_length)
-            throw Error("zero bond length near atom %d", atom_idx);
-
-        if (n_pure_hydrogens > 0 && !possible_lone_pair)
-            throw Error("have hydrogen(s) besides implicit hydrogen near stereocenter %d", atom_idx);
-
-        int sign = _sign(edge_ids[0].vec, edge_ids[1].vec, edge_ids[2].vec);
-
-        if (sign == dir)
-        {
-            pyramid[0] = edge_ids[0].nei_idx;
-            pyramid[1] = edge_ids[2].nei_idx;
-            pyramid[2] = edge_ids[1].nei_idx;
-        }
-        else
-        {
-            pyramid[0] = edge_ids[0].nei_idx;
-            pyramid[1] = edge_ids[1].nei_idx;
-            pyramid[2] = edge_ids[2].nei_idx;
-        }
-        pyramid[3] = -1;
+        for (i = 0; i < degree; i++)
+            if (getDir(atom_idx, edge_ids[i].nei_idx) > 0)
+                sensible_bonds_out[edge_ids[i].edge_idx] = 1;
+        _stereocenters.insert(atom_idx, stereocenter);
     }
-
-    for (i = 0; i < degree; i++)
-        if (getDir(atom_idx, edge_ids[i].nei_idx) > 0)
-            sensible_bonds_out[edge_ids[i].edge_idx] = 1;
-
-    _stereocenters.insert(atom_idx, stereocenter);
     return true;
 }
 
@@ -713,7 +825,7 @@ void MoleculeStereocenters::setAtropisomeric(int idx, bool val)
     _stereocenters.at(idx).is_atropisomeric = val;
 }
 
-bool MoleculeStereocenters::isAtropisomeric(int idx)
+bool MoleculeStereocenters::isAtropisomeric(int idx) const
 {
     return _stereocenters.at(idx).is_atropisomeric;
 }
@@ -1546,6 +1658,19 @@ void MoleculeStereocenters::markBond(BaseMolecule& baseMolecule, int atom_idx)
         return;
 
     const _Atom& atom = *atom_ptr;
+
+    if (atom.is_atropisomeric)
+    {
+        const auto& ac = _atropocenters.at(atom_idx);
+        for (int i = ac.bond_directions.begin(); i != ac.bond_directions.end(); i = ac.bond_directions.next(i))
+        {
+            int bond_idx = ac.bond_directions.key(i);
+            int bdir = ac.bond_directions.value(i);
+            baseMolecule.setBondDirection(bond_idx, bdir);
+        }
+        return;
+    }
+
     int pyramid[4];
     int mult = 1;
     int size = 0;
@@ -1639,48 +1764,48 @@ void MoleculeStereocenters::markBond(BaseMolecule& baseMolecule, int atom_idx)
     if (baseMolecule.getEdge(edge_idx).beg != atom_idx)
         baseMolecule.swapEdgeEnds(edge_idx);
 
-    if (atom.type > ATOM_ANY)
+    if (BaseMolecule::hasCoord(baseMolecule))
     {
-        std::array<Vec3f, 4> dirs;
-        dirs.fill({0.0, 0.0, 0.0});
-        for (j = 0; j < size; j++)
+        if (atom.type > ATOM_ANY)
         {
-            dirs[j] = baseMolecule.getAtomXyz(pyramid[j]);
-            dirs[j].sub(baseMolecule.getAtomXyz(atom_idx));
-            if (!dirs[j].normalize())
-                throw Error("zero bond length");
-        }
-
-        int sign = _sign(dirs[0], dirs[1], dirs[2]);
-
-        if (size == 3)
-        {
-            // Check if all the three bonds belong to the same half-plane.
-            // This is equal to that one of the bonds lies in the smaller
-            // angle formed by the other two.
-            if (_xyzzy(dirs[1], dirs[0], dirs[2]) == 1 || _xyzzy(dirs[2], dirs[1], dirs[0]) == 1 || _xyzzy(dirs[0], dirs[2], dirs[1]) == 1)
+            std::array<Vec3f, 4> dirs;
+            dirs.fill({0.0, 0.0, 0.0});
+            for (j = 0; j < size; j++)
             {
-                if (_xyzzy(dirs[1], dirs[0], dirs[2]) == 1)
-                    mult = -1;
-                baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_DOWN : BOND_UP);
+                dirs[j] = baseMolecule.getAtomXyz(pyramid[j]);
+                dirs[j].sub(baseMolecule.getAtomXyz(atom_idx));
+                if (!dirs[j].normalize())
+                    throw Error("zero bond length");
+            }
+
+            int sign = _sign(dirs[0], dirs[1], dirs[2]);
+
+            if (size == 3)
+            {
+                // Check if all the three bonds belong to the same half-plane.
+                // This is equal to that one of the bonds lies in the smaller
+                // angle formed by the other two.
+                if (_xyzzy(dirs[1], dirs[0], dirs[2]) == 1 || _xyzzy(dirs[2], dirs[1], dirs[0]) == 1 || _xyzzy(dirs[0], dirs[2], dirs[1]) == 1)
+                {
+                    if (_xyzzy(dirs[1], dirs[0], dirs[2]) == 1)
+                        mult = -1;
+                    baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_DOWN : BOND_UP);
+                }
+                else
+                    baseMolecule.setBondDirection(edge_idx, (sign == 1) ? BOND_DOWN : BOND_UP);
             }
             else
-                baseMolecule.setBondDirection(edge_idx, (sign == 1) ? BOND_DOWN : BOND_UP);
+                baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_UP : BOND_DOWN);
         }
         else
-            baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_UP : BOND_DOWN);
+            baseMolecule.setBondDirection(edge_idx, BOND_EITHER);
     }
-    else
-        baseMolecule.setBondDirection(edge_idx, BOND_EITHER);
 }
 
 void MoleculeStereocenters::markBonds(BaseMolecule& baseMolecule)
 {
     for (int i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
-    {
-        if (!_stereocenters.value(i).is_atropisomeric)
-            markBond(baseMolecule, _stereocenters.key(i));
-    }
+        markBond(baseMolecule, _stereocenters.key(i));
 }
 
 bool MoleculeStereocenters::isAutomorphism(BaseMolecule& mol, const Array<int>& mapping, const Filter* filter)

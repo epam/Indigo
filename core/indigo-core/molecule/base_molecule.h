@@ -195,7 +195,6 @@ namespace indigo
         void removeAttachmentPointsFromAtom(int atom_index);
         int attachmentPointCount() const;
         void removeAttachmentPoints();
-
         void getAttachmentIndicesForAtom(int atom_idx, Array<int>& res);
 
         virtual bool isSaturatedAtom(int idx) = 0;
@@ -247,8 +246,6 @@ namespace indigo
         void clearCIP();
         CIPDesc getAtomCIP(int atom_idx);
         CIPDesc getBondCIP(int bond_idx);
-        bool isAtropisomerismReferenceAtom(int atom_idx);
-        bool isRotationBond(int bond_idx);
 
         void setAtomCIP(int atom_idx, CIPDesc cip);
         void setBondCIP(int bond_idx, CIPDesc cip);
@@ -389,11 +386,7 @@ namespace indigo
 
         void clearBondDirections();
         int getBondDirection(int idx) const;
-        int* getForcedBondDirection(int idx) const;
         void setBondDirection(int idx, int dir);
-        void setForcedBondDirection(int idx, int dir);
-        bool isForcedStereoBond(int idx);
-        const RedBlackMap<int, int>& forcedStereoBonds();
 
         int getBondDirection2(int center_idx, int nei_idx);
 
@@ -437,6 +430,8 @@ namespace indigo
         void buildFromBondsStereocenters(const StereocentersOptions& options, int* sensible_bonds_out);
         void buildFrom3dCoordinatesStereocenters(const StereocentersOptions& options);
         bool isPossibleStereocenter(int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
+        bool isPossibleAtropocenter(int atom_idx, int& possible_atropo_bond);
+
         void buildOnSubmoleculeStereocenters(const BaseMolecule& super, int* mapping);
 
         // proxy methods for cis_trans
@@ -515,7 +510,6 @@ namespace indigo
         Array<int> _sl_bonds;
 
         Array<int> _bond_directions;
-        RedBlackMap<int, int> _forced_stereo_directions;
 
         Array<Vec3f> _xyz;
         RedBlackMap<int, Vec3f> _stereo_flag_positions;
