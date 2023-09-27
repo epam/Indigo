@@ -2,21 +2,6 @@
 1032-quadra.ket:SUCCEED
 1046-imp_hydrogen.ket:SUCCEED
 SgroupDifferent.ket:SUCCEED
-atropisomer.ket:FAILED
---- 
-
-+++ 
-
-@@ -55,8 +55,7 @@
-
-                     26.818199157714845,
-                     -12.862500190734864,
-                     0.0
--                ],
--                "stereoLabel": "or1"
-+                ]
-             },
-             {
-                 "label": "C",
+atropisomer.ket:SUCCEED
 non_atrop.ket:SUCCEED
 suplabel.ket:SUCCEED
