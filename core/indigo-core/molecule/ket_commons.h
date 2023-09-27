@@ -27,6 +27,7 @@
 #include "common/math/algebra.h"
 #include "graph/graph.h"
 #include "molecule/molecule_cip_calculator.h"
+#include "molecule/query_molecule.h"
 #include "reaction/base_reaction.h"
 
 namespace indigo
@@ -110,6 +111,11 @@ namespace indigo
             auto& sg_set = neighbors.back();
             for (auto atom_idx : sgroup.atoms)
                 sg_set.insert(atom_idx);
+        }
+        if (mol.isQueryMolecule())
+        {
+            QueryMolecule& qmol = static_cast<QueryMolecule&>(mol);
+            qmol.getComponentNeighbors(neighbors);
         }
     }
 
