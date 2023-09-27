@@ -57,6 +57,9 @@ namespace indigo
         ATOM_ALIPHATIC = 2
     };
 
+#define ATOM_AROMATIC_STR "aromatic"
+#define ATOM_ALIPHATIC_STR "aliphatic"
+
     enum
     {
         BOND_ZERO = 0,
