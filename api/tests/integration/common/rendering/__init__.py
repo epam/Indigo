@@ -191,7 +191,7 @@ def checkBitmapSimilarity(filename, ref_filename):
                     )
                 )
         # temporary disable rendering test for mac and linux
-        if system in ["mac", "linux"]:
+        if system in ["linux"]:
             return "%s rendering status: OK" % filename
         dirname = os.path.normpath(
             os.path.abspath(
