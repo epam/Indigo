@@ -2180,7 +2180,6 @@ void QueryMolecule::getComponentNeighbors(std::list<std::unordered_set<int>>& co
             componentAtoms[componentId].insert(i);
         }
     }
-    componentNeighbors.clear();
     for (auto elem : componentAtoms)
     {
         auto atoms = elem.second;

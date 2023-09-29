@@ -110,6 +110,7 @@ namespace indigo
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
+        unsigned int components_count;
     };
 
 } // namespace indigo

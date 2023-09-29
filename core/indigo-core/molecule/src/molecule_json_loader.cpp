@@ -20,7 +20,8 @@ using namespace std;
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
-    : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false)
+    : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false),
+      components_count(0)
 {
     Value& root = ket["root"];
     Value& nodes = root["nodes"];
@@ -56,7 +57,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
     : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), ignore_no_chiral_flag(false),
-      skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0)
+      skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0), components_count(0)
 {
 }
 
@@ -672,6 +673,12 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
                 }
             }
 
+            if (b.HasMember("customQuery"))
+            {
+                std::string customQuery = b["customQuery"].GetString();
+                // 2do process custom query
+            }
+
             if (b.HasMember("cip"))
             {
                 std::string cip = b["cip"].GetString();
@@ -844,11 +851,25 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
     for (SizeType i = 0; i < sgroups.Size(); i++)
     {
         const Value& s = sgroups[i];
+        const Value& atoms = s["atoms"];
         std::string sg_type_str = s["type"].GetString(); // GEN, MUL, SRU, SUP
+        if (sg_type_str == "queryComponent")
+        {
+            if (_pqmol)
+            {
+                _pqmol->components.expandFill(_pqmol->components.size() + atoms.Size(), 0);
+                components_count++;
+                for (int j = 0; j < atoms.Size(); ++j)
+                {
+                    int atom_idx = atoms[j].GetInt();
+                    _pqmol->components[atom_idx] = components_count;
+                }
+            }
+            continue;
+        }
         int sg_type = SGroup::getType(sg_type_str.c_str());
         int grp_idx = mol.sgroups.addSGroup(sg_type);
         SGroup& sgroup = mol.sgroups.getSGroup(grp_idx);
-        const Value& atoms = s["atoms"];
         // add atoms
         std::unordered_set<int> sgroup_atoms;
         for (int j = 0; j < atoms.Size(); ++j)

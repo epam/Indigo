@@ -149,7 +149,19 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<int>, sgs_sorted);
     _checkSGroupIndices(mol, sgs_sorted);
-    if (mol.countSGroups() > 0)
+    int sGroupsCount = mol.countSGroups();
+    bool componentDefined = false;
+    if (mol.isQueryMolecule())
+    {
+        QueryMolecule& qmol = static_cast<QueryMolecule&>(mol);
+        if (qmol.components.size() > 0 && qmol.components[0])
+        {
+            componentDefined = true;
+            sGroupsCount++;
+        }
+    }
+
+    if (sGroupsCount > 0)
     {
         writer.Key("sgroups");
         writer.StartArray();
@@ -159,6 +171,25 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
             int sg_idx = sgs_sorted[i];
             auto& sgrp = mol.sgroups.getSGroup(sg_idx);
             saveSGroup(sgrp, writer);
+        }
+        // save queryComponent
+        if (mol.isQueryMolecule() && componentDefined)
+        {
+            QueryMolecule& qmol = static_cast<QueryMolecule&>(mol);
+            writer.StartObject();
+            writer.Key("type");
+            writer.String("queryComponent");
+            writer.Key("atoms");
+            writer.StartArray();
+            for (int i = 0; i < qmol.vertexCount(); i++)
+            {
+                if (qmol.components[i])
+                {
+                    writer.Int(i);
+                }
+            }
+            writer.EndArray();
+            writer.EndObject();
         }
         writer.EndArray();
     }
