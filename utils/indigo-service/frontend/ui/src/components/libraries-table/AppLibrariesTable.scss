@@ -1,0 +1,173 @@
+.libs-page {
+  .spinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  table.libs {
+    margin-top: 40px;
+    margin-bottom: 20px;
+    width: 700px;
+    max-width: 100%;
+
+    & > thead > tr > th {
+      padding: 8px;
+      line-height: 1em;
+      vertical-align: baseline;
+      border-top: 1px solid #ddd;
+    }
+
+    .action,
+    .count {
+      text-align: right;
+    }
+
+    th {
+      text-align: left;
+    }
+
+    small {
+      display: block;
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    & > tbody > tr:nth-of-type(2n + 1) {
+      background-color: #f9f9f9;
+    }
+  }
+
+  table.libs > caption + thead > tr:first-child > td,
+  table.libs > caption + thead > tr:first-child > th,
+  table.libs > colgroup + thead > tr:first-child > td,
+  table.libs > colgroup + thead > tr:first-child > th,
+  table.libs > thead:first-child > tr:first-child > td,
+  table.libs > thead:first-child > tr:first-child > th {
+    border-top: 0;
+  }
+
+  table.libs > tbody > tr > td,
+  table.libs > tbody > tr > th,
+  table.libs > tfoot > tr > td,
+  table.libs > tfoot > tr > th,
+  table.libs > thead > tr > td,
+  table.libs > thead > tr > th {
+    padding: 8px;
+    line-height: 1em;
+    vertical-align: top;
+    border-top: 1px solid #ddd;
+  }
+
+  .action {
+    width: 200px;
+  }
+
+  .count {
+    width: 5em;
+  }
+
+  .libs td:first-child {
+    font-weight: 700;
+  }
+
+  small {
+    font-size: 80%;
+  }
+
+  .libs tr.edit label,
+  .libs tr.new label {
+    display: block;
+    line-height: 0;
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .search,
+  input[type='number'],
+  input[type='search'],
+  input[type='text'],
+  select,
+  textarea {
+    display: block;
+    width: 100%;
+    height: 38px;
+    padding: 8px 12px;
+    font-size: 14px;
+    line-height: 1em;
+    color: #666;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 1px #00000013;
+    transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+
+    &:focus {
+      border: 1px solid #66afe9;
+      outline: 0;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+      0 0 8px rgba(102, 175, 233, 0.6);
+    }
+  }
+
+  input[type='reset'] {
+    color: #fff;
+    background-color: #d47500;
+    border-color: #d47500;
+  }
+
+  .libs label.upload.new,
+  .libs button.new,
+  .libs input[type='reset'].new,
+  .libs input[type='submit'].new,
+  input[type='submit'] {
+    color: #fff;
+    background-color: #446e9b;
+    border-color: #446e9b;
+  }
+
+  .libs label.upload,
+  .libs button,
+  .libs input[type='reset'],
+  .libs input[type='submit'],
+  .output a.export {
+    margin-right: 3px;
+    padding: 5px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 1px solid #474949;
+  }
+
+  .libs input[type='reset'],
+  .libs input[type='submit'] {
+    border: none;
+  }
+
+  .libs label.upload,
+  button {
+    display: inline-block;
+    vertical-align: middle;
+    border: 1px solid #474949;
+    color: #fff;
+    background-color: #474949;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+
+  .libs label.upload input {
+    left: -100%;
+    position: absolute;
+  }
+}
