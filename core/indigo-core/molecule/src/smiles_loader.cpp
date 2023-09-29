@@ -412,7 +412,9 @@ void SmilesLoader::_readOtherStuff()
                 if (_bmol->stereocenters.exists(idx))
                     _bmol->stereocenters.setType(idx, MoleculeStereocenters::ATOM_OR, groupno);
                 else
+                {
                     _bmol->addStereocenters(idx, MoleculeStereocenters::ATOM_OR, groupno, false);
+                }
 
                 if (_scanner.lookNext() == ',')
                     _scanner.skip(1);

@@ -418,7 +418,7 @@ namespace indigo
         const int* getPyramidStereocenters(int idx) const;
         void markBondsStereocenters();
         void markBondStereocenters(int atom_idx);
-        bool hasAtropisomericCenter();
+        bool hasAtropoStereoBonds();
 
         void addStereocenters(int atom_idx, int type, int group, const int pyramid[4]);
         void addStereocenters(int atom_idx, int type, int group, bool inverse_pyramid);

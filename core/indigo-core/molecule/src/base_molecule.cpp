@@ -4196,12 +4196,12 @@ void BaseMolecule::markBondsStereocenters()
     stereocenters.markBonds(*this);
 }
 
-bool BaseMolecule::hasAtropisomericCenter()
+bool BaseMolecule::hasAtropoStereoBonds()
 {
     for (int i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
     {
         auto atom_idx = stereocenters.getAtomIndex(i);
-        if (stereocenters.isAtropisomeric(atom_idx))
+        if (stereocenters.hasAtropoStereoBonds(*this, atom_idx))
             return true;
     }
     return false;

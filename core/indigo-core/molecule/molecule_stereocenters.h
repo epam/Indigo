@@ -117,8 +117,9 @@ namespace indigo
 
         bool isPossibleStereocenter(BaseMolecule& baseMolecule, int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
         bool isPossibleAtropocenter(BaseMolecule& baseMolecule, int atom_idx, int& possible_atropo_bond);
+        bool hasAtropoStereoBonds(BaseMolecule& baseMolecule, int atom_idx);
         bool findAtropoStereobonds(BaseMolecule& baseMolecule, RedBlackMap<int, int>& directions_map, int atom_idx, std::unordered_set<int>& visited_bonds,
-                                   bool first_only = false);
+                                   bool first_only = false, int* sensible_bonds_out = nullptr);
         bool hasRing(BaseMolecule& baseMolecule, int atom_idx, std::unordered_set<int>& visited_bonds);
 
     public:
@@ -149,7 +150,7 @@ namespace indigo
             // (X, Y, Z) go counterclockwise when looking from W.
             // if there are pure (implicit) hydrogen, it is W
             bool is_atropisomeric = false;
-            bool is_tetrahydral = false;
+            bool is_tetrahydral = true;
             int pyramid[4];
         };
 

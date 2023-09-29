@@ -263,7 +263,7 @@ void SmilesSaver::_saveMolecule()
 
         stereocenters.get(i, atom_idx, type, group, pyramid);
 
-        if (type < MoleculeStereocenters::ATOM_AND || stereocenters.isAtropisomeric(atom_idx))
+        if (type < MoleculeStereocenters::ATOM_AND || !stereocenters.isTetrahydral(atom_idx))
             continue;
 
         int implicit_h_idx = -1;
@@ -385,7 +385,7 @@ void SmilesSaver::_saveMolecule()
 
             int idx = _written_atoms[i];
 
-            if (_atoms[idx].chirality == 0 || stereocenters.isAtropisomeric(idx))
+            if (_atoms[idx].chirality == 0 || !stereocenters.isTetrahydral(idx))
                 continue;
 
             int type = stereocenters.getType(idx);
@@ -626,7 +626,7 @@ void SmilesSaver::_saveMolecule()
         _writeRingBonds();
         _writeUnsaturated();
         _writeSubstitutionCounts();
-        if (_bmol->hasAtropisomericCenter())
+        if (_bmol->hasAtropoStereoBonds())
             _writeWedges();
 
         if (_comma)
