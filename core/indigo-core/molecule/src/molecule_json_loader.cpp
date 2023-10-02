@@ -865,6 +865,8 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                     _pqmol->components[atom_idx] = components_count;
                 }
             }
+            else
+                throw Error("queryProperties is allowed only for queries");
             continue;
         }
         int sg_type = SGroup::getType(sg_type_str.c_str());
