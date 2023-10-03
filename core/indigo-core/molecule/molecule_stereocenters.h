@@ -56,6 +56,7 @@ namespace indigo
 
         void markBonds(BaseMolecule& baseMolecule);
         void markBond(BaseMolecule& baseMolecule, int atom_idx);
+        void markAtropisomericBond(BaseMolecule& baseMolecule, int atom_idx);
 
         // takes mapping from supermolecule to submolecule
         void buildOnSubmolecule(BaseMolecule& baseMolecule, const BaseMolecule& super, int* mapping);
@@ -142,15 +143,17 @@ namespace indigo
         static void rotatePyramid(int* pyramid);
 
     private:
-        struct _Atom
+        struct _Atom            
         {
+            _Atom() : type(-1), group(1), is_atropisomeric(false), is_tetrahydral(true), pyramid{-1,-1,-1,-1}
+            {}
             int type;  // ANY, AND, OR, ABS
             int group; // stereogroup index
             // [X, Y, Z, W] -- atom indices or -1 for implicit hydrogen
             // (X, Y, Z) go counterclockwise when looking from W.
             // if there are pure (implicit) hydrogen, it is W
-            bool is_atropisomeric = false;
-            bool is_tetrahydral = true;
+            bool is_atropisomeric;
+            bool is_tetrahydral;
             int pyramid[4];
         };
 

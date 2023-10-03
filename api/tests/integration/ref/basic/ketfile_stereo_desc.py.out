@@ -37,5 +37,20 @@ t4_S.mol:SUCCEED
 t4_S_iso.mol:SUCCEED
 trans.mol:SUCCEED
 without_stereo_label.mol:SUCCEED
-crazystereo.rxn:SUCCEED
+crazystereo.rxn:FAILED
+--- 
+
++++ 
+
+@@ -216,7 +216,8 @@
+
+                     9.062226295471192,
+                     0.7499902248382568,
+                     0.0
+-                ]
++                ],
++                "stereoLabel": "&1"
+             },
+             {
+                 "label": "C",
 

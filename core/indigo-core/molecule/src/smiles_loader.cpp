@@ -392,7 +392,10 @@ void SmilesLoader::_readOtherStuff()
                     _overtly_defined_abs.insert(idx);
                 }
                 else
+                {
                     _bmol->addStereocenters(idx, MoleculeStereocenters::ATOM_ABS, 0, false);
+                    _bmol->stereocenters.setTetrahydral(idx, false);
+                }
 
                 if (_scanner.lookNext() == ',')
                     _scanner.skip(1);
@@ -414,6 +417,7 @@ void SmilesLoader::_readOtherStuff()
                 else
                 {
                     _bmol->addStereocenters(idx, MoleculeStereocenters::ATOM_OR, groupno, false);
+                    _bmol->stereocenters.setTetrahydral(idx, false);
                 }
 
                 if (_scanner.lookNext() == ',')
@@ -433,8 +437,10 @@ void SmilesLoader::_readOtherStuff()
                 if (_bmol->stereocenters.exists(idx))
                     _bmol->stereocenters.setType(idx, MoleculeStereocenters::ATOM_AND, groupno);
                 else
+                {
                     _bmol->addStereocenters(idx, MoleculeStereocenters::ATOM_AND, groupno, false);
-
+                    _bmol->stereocenters.setTetrahydral(idx, false);
+                }
                 if (_scanner.lookNext() == ',')
                     _scanner.skip(1);
             }

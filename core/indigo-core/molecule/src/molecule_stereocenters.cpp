@@ -384,12 +384,12 @@ bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom
 {
     int possible_atropobond = -1;
     _Atom stereocenter;
-    if (check_atropocenter)
-        stereocenter.is_atropisomeric = isPossibleAtropocenter(baseMolecule, atom_idx, possible_atropobond);
+    stereocenter.group = 1;
+    stereocenter.type = ATOM_ABS;
 
-    // add atropocenter if required
-    if (possible_atropobond > -1)
+    if (check_atropocenter && isPossibleAtropocenter(baseMolecule, atom_idx, possible_atropobond))
     {
+        stereocenter.is_atropisomeric = true;
         _AtropoCenter& ac = _atropocenters.findOrInsert(atom_idx);
         ac.atropo_bond = possible_atropobond;
         if (_stereocenters.find(atom_idx))
@@ -400,15 +400,13 @@ bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom
             _stereocenters.insert(atom_idx, stereocenter);
         }
     }
+
     // check if there is a tetrahydral stereocenter already
     if (_stereocenters.find(atom_idx) && _stereocenters.at(atom_idx).is_tetrahydral)
         return true;
 
     const Vertex& vertex = baseMolecule.getVertex(atom_idx);
     int degree = vertex.degree();
-    stereocenter.group = 1;
-    stereocenter.type = ATOM_ABS;
-
     int* pyramid = stereocenter.pyramid;
     int nei_idx = 0;
     _EdgeIndVec edge_ids[4];
@@ -429,15 +427,19 @@ bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom
 
     bool is_either = false;
     bool zero_bond_length = false;
+    std::unordered_set<int> atropo_bonds_ignore;
 
     for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
     {
+
         int e_idx = vertex.neiEdge(i);
         int v_idx = vertex.neiVertex(i);
 
         edge_ids[nei_idx].edge_idx = e_idx;
         edge_ids[nei_idx].nei_idx = v_idx;
 
+        if (stereocenter.is_atropisomeric && baseMolecule.getBondDirection(e_idx) && baseMolecule.getBondTopology(e_idx) == TOPOLOGY_RING)
+            atropo_bonds_ignore.insert(e_idx);
         if (baseMolecule.possibleAtomNumberAndIsotope(v_idx, ELEM_H, 0))
         {
             if (baseMolecule.getAtomNumber(v_idx) == ELEM_H && baseMolecule.getAtomIsotope(v_idx) == 0)
@@ -477,7 +479,7 @@ bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom
     // Local synonym to get bond direction
     auto getDir = [&](int from, int to) {
         int idx = baseMolecule.findEdgeIndex(from, to);
-        if (bond_ignore[idx])
+        if (bond_ignore[idx] /* || atropo_bonds_ignore.find(idx) != atropo_bonds_ignore.end()*/)
             return 0;
         return _getDirection(baseMolecule, from, to, bidirectional_mode);
     };
@@ -730,7 +732,11 @@ bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom
     if (stereocenter.is_tetrahydral)
     {
         if (_stereocenters.find(atom_idx))
-            _stereocenters.at(atom_idx).is_tetrahydral = true;
+        {
+            auto& sc = _stereocenters.at(atom_idx);
+            sc.is_tetrahydral = true;
+            std::copy(std::begin(stereocenter.pyramid), std::end(stereocenter.pyramid), std::begin(sc.pyramid));
+        }
         else
             _stereocenters.insert(atom_idx, stereocenter);
         return true;
@@ -1069,7 +1075,7 @@ bool MoleculeStereocenters::checkSub(BaseMolecule& query, BaseMolecule& target, 
         if (stereocenters_vertex_filter != 0 && !stereocenters_vertex_filter->valid(iq))
             continue;
 
-        if (cq.type < ATOM_AND)
+        if (cq.type < ATOM_AND || !cq.is_tetrahydral)
             continue;
 
         int stereo_group_and = -1;
@@ -1841,7 +1847,14 @@ void MoleculeStereocenters::markBond(BaseMolecule& baseMolecule, int atom_idx)
                 baseMolecule.setBondDirection(edge_idx, BOND_EITHER);
         }
     }
+}
 
+void MoleculeStereocenters::markAtropisomericBond(BaseMolecule& baseMolecule, int atom_idx)
+{
+    const _Atom* atom_ptr = _stereocenters.at2(atom_idx);
+    if (atom_ptr == NULL)
+        return;
+    const _Atom& atom = *atom_ptr;
     if (atom.is_atropisomeric)
     {
         const auto& ac = _atropocenters.at(atom_idx);
@@ -1858,6 +1871,8 @@ void MoleculeStereocenters::markBonds(BaseMolecule& baseMolecule)
 {
     for (int i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
         markBond(baseMolecule, _stereocenters.key(i));
+    for (int i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
+        markAtropisomericBond(baseMolecule, _stereocenters.key(i));
 }
 
 bool MoleculeStereocenters::isAutomorphism(BaseMolecule& mol, const Array<int>& mapping, const Filter* filter)
