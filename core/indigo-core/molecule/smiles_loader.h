@@ -67,6 +67,9 @@ namespace indigo
         bool ignore_bad_valence;
         bool ignore_no_chiral_flag{false};
 
+        static void readSmartsAtomStr(const std::string& atom_str, std::unique_ptr<QueryMolecule::Atom>& qatom);
+        static void readSmartsBondStr(const std::string& bond_str, std::unique_ptr<QueryMolecule::Bond>& qbond);
+
     protected:
         enum
         {
@@ -178,14 +181,16 @@ namespace indigo
         void _handleCurlyBrace(_AtomDesc& atom, bool& inside_polymer);
         void _handlePolymerRepetition(int i);
 
-        void _readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom);
+        static void _readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom,
+                              bool smarts_mode = false, bool inside_rsmiles = false);
 
-        bool _readAtomLogic(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom);
+        static bool _readAtomLogic(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom,
+                                   bool smarts_mode = false, bool inside_rsmiles = false);
 
         int _parseCurly(Array<char>& curly, int& repetitions);
 
-        void _readBond(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond);
-        void _readBondSub(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond);
+        static void _readBond(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond, bool smarts_mode);
+        static void _readBondSub(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond, bool smarts_mode);
         void _readRGroupOccurrenceRanges(const char* str, Array<int>& ranges);
 
     private:

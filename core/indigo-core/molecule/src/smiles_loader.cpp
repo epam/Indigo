@@ -1431,7 +1431,7 @@ void SmilesLoader::_parseMolecule()
                         std::unique_ptr<QueryMolecule::Bond> qbond = std::make_unique<QueryMolecule::Bond>();
 
                         bond_str.readString(_pending_bonds_pool.at(_cycles[number].pending_bond_str), false);
-                        _readBond(bond_str, *bond, qbond);
+                        _readBond(bond_str, *bond, qbond, smarts_mode);
                         bond->index = _qmol->addBond(bond->beg, bond->end, qbond.release());
                     }
 
@@ -1542,7 +1542,7 @@ void SmilesLoader::_parseMolecule()
                 // Such case is processed after
             }
             else
-                _readBond(bond_str, *bond, qbond);
+                _readBond(bond_str, *bond, qbond, smarts_mode);
 
             // The bond "directions" are already saved in _BondDesc::dir,
             // so we can safely discard them. We are doing that to succeed
@@ -1625,7 +1625,7 @@ void SmilesLoader::_parseMolecule()
                         else
                         {
                             bond_str.readString(str, false);
-                            _readBond(bond_str, *bond, qbond);
+                            _readBond(bond_str, *bond, qbond, smarts_mode);
                         }
 
                         if (_qmol != 0)
@@ -1714,7 +1714,7 @@ void SmilesLoader::_parseMolecule()
                 atom_str.push(_scanner.readChar());
         }
 
-        _readAtom(atom_str, brackets, atom, qatom);
+        _readAtom(atom_str, brackets, atom, qatom, smarts_mode, inside_rsmiles);
         atom.brackets = brackets;
 
         if (_qmol != 0)
@@ -2443,7 +2443,15 @@ void SmilesLoader::_loadMolecule()
     _validateStereoCenters();
 }
 
-void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond)
+void SmilesLoader::readSmartsBondStr(const std::string& bond_str, std::unique_ptr<QueryMolecule::Bond>& qbond)
+{
+    _BondDesc bond;
+    Array<char> ac_str;
+    ac_str.copy(bond_str.c_str(), bond_str.size());
+    _readBond(ac_str, bond, qbond, true);
+}
+
+void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond, bool smarts_mode)
 {
     if (bond_str.find(';') != -1)
     {
@@ -2451,7 +2459,7 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique
         std::unique_ptr<QueryMolecule::Bond> subqbond;
         int i;
 
-        if (_qmol == 0)
+        if (qbond == nullptr)
             throw Error("';' is allowed only within queries");
 
         substring.clear();
@@ -2460,7 +2468,7 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique
             if (i == bond_str.size() || bond_str[i] == ';')
             {
                 subqbond = std::make_unique<QueryMolecule::Bond>();
-                _readBond(substring, bond, subqbond);
+                _readBond(substring, bond, subqbond, smarts_mode);
                 qbond.reset(QueryMolecule::Bond::und(qbond.release(), subqbond.release()));
                 substring.clear();
             }
@@ -2475,7 +2483,7 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique
         std::unique_ptr<QueryMolecule::Bond> subqbond;
         int i;
 
-        if (_qmol == 0)
+        if (qbond == nullptr)
             throw Error("',' is allowed only within queries");
 
         substring.clear();
@@ -2484,7 +2492,7 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique
             if (i == bond_str.size() || bond_str[i] == ',')
             {
                 subqbond = std::make_unique<QueryMolecule::Bond>();
-                _readBond(substring, bond, subqbond);
+                _readBond(substring, bond, subqbond, smarts_mode);
                 if (qbond->type == 0)
                     qbond.reset(subqbond.release());
                 else
@@ -2502,7 +2510,7 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique
         std::unique_ptr<QueryMolecule::Bond> subqbond;
         int i;
 
-        if (_qmol == 0)
+        if (qbond == nullptr)
             throw Error("'&' is allowed only within queries");
 
         substring.clear();
@@ -2511,7 +2519,7 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique
             if (i == bond_str.size() || bond_str[i] == '&')
             {
                 subqbond = std::make_unique<QueryMolecule::Bond>();
-                _readBond(substring, bond, subqbond);
+                _readBond(substring, bond, subqbond, smarts_mode);
                 qbond.reset(QueryMolecule::Bond::und(qbond.release(), subqbond.release()));
                 substring.clear();
             }
@@ -2520,10 +2528,10 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique
         }
         return;
     }
-    _readBondSub(bond_str, bond, qbond);
+    _readBondSub(bond_str, bond, qbond, smarts_mode);
 }
 
-void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond)
+void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond, bool smarts_mode)
 {
     BufferScanner scanner(bond_str);
 
@@ -2640,7 +2648,8 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
     }
 }
 
-bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom)
+bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom, bool smarts_mode,
+                                  bool inside_rsmiles)
 {
     QS_DEF(Array<char>, atom_str_copy);
     if (atom_str.size() < 1)
@@ -2683,7 +2692,7 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
             if (i == atom_str.size() || atom_str_copy[i] == ';')
             {
                 subqatom = std::make_unique<QueryMolecule::Atom>();
-                _readAtom(substring, first_in_brackets && (k == 0), atom, subqatom);
+                _readAtom(substring, first_in_brackets && (k == 0), atom, subqatom, smarts_mode, inside_rsmiles);
                 qatom.reset(QueryMolecule::Atom::und(qatom.release(), subqatom.release()));
                 substring.clear();
                 k++;
@@ -2709,7 +2718,7 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
             if (i == atom_str.size() || atom_str_copy[i] == ',')
             {
                 subqatom = std::make_unique<QueryMolecule::Atom>();
-                _readAtom(substring, first_in_brackets && (k == 0), atom, subqatom);
+                _readAtom(substring, first_in_brackets && (k == 0), atom, subqatom, smarts_mode, inside_rsmiles);
                 if (qatom->type == 0)
                     qatom.reset(subqatom.release());
                 else
@@ -2738,7 +2747,7 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
             if (i == atom_str.size() || atom_str_copy[i] == '&')
             {
                 subqatom = std::make_unique<QueryMolecule::Atom>();
-                _readAtom(substring, first_in_brackets && (k == 0), atom, subqatom);
+                _readAtom(substring, first_in_brackets && (k == 0), atom, subqatom, smarts_mode, inside_rsmiles);
                 qatom.reset(QueryMolecule::Atom::und(qatom.release(), subqatom.release()));
                 substring.clear();
                 k++;
@@ -2751,9 +2760,19 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
     return true;
 }
 
-void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom)
+void SmilesLoader::readSmartsAtomStr(const std::string& atom_str, std::unique_ptr<QueryMolecule::Atom>& qatom)
 {
-    if (!_readAtomLogic(atom_str, first_in_brackets, atom, qatom))
+    Pool<List<int>::Elem> neipool;
+    _AtomDesc atom{neipool};
+    Array<char> ac_str;
+    ac_str.copy(atom_str.c_str(), atom_str.size());
+    _readAtom(ac_str, true, atom, qatom, true, false);
+}
+
+void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom, bool smarts_mode,
+                             bool inside_rsmiles)
+{
+    if (!_readAtomLogic(atom_str, first_in_brackets, atom, qatom, smarts_mode, inside_rsmiles))
         return;
 
     BufferScanner scanner(atom_str);
@@ -3355,7 +3374,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             scanner.skip(1);
             if (scanner.lookNext() == '?')
             {
-                if (_qmol == 0)
+                if (qatom.get() == 0)
                     throw Error("ignorable AAM numbers are allowed only for queries");
                 atom.ignorable_aam = true;
                 scanner.skip(1);

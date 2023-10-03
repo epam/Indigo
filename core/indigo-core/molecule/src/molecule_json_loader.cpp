@@ -12,6 +12,7 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_sgroups.h"
 #include "molecule/query_molecule.h"
+#include "molecule/smiles_loader.h"
 
 using namespace rapidjson;
 using namespace indigo;
@@ -524,7 +525,10 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                 auto qProps = a["queryProperties"].GetObject();
                 if (qProps.HasMember("customQuery"))
                 {
-                    // Read custom query
+                    std::string customQuery = qProps["customQuery"].GetString();
+                    std::unique_ptr<QueryMolecule::Atom> atom = make_unique<QueryMolecule::Atom>();
+                    SmilesLoader::readSmartsAtomStr(customQuery, atom);
+                    _pqmol->resetAtom(atom_idx, atom.release());
                 }
                 else
                 {
@@ -676,7 +680,9 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
             if (b.HasMember("customQuery"))
             {
                 std::string customQuery = b["customQuery"].GetString();
-                // 2do process custom query
+                std::unique_ptr<QueryMolecule::Bond> bond = make_unique<QueryMolecule::Bond>();
+                SmilesLoader::readSmartsBondStr(customQuery, bond);
+                _pqmol->resetBond(bond_idx, bond.release());
             }
 
             if (b.HasMember("cip"))
@@ -865,6 +871,8 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                     _pqmol->components[atom_idx] = components_count;
                 }
             }
+            else
+                throw Error("queryProperties is allowed only for queries");
             continue;
         }
         int sg_type = SGroup::getType(sg_type_str.c_str());
