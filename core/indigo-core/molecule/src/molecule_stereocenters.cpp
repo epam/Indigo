@@ -235,22 +235,25 @@ bool MoleculeStereocenters::isPossibleAtropocenter(BaseMolecule& baseMolecule, i
                 for (int i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
                 {
                     auto bond_idx = v.neiEdge(i);
-                    if (baseMolecule.getEdgeTopology(bond_idx) == TOPOLOGY_CHAIN)
+                    if (baseMolecule.getEdgeTopology(bond_idx) == TOPOLOGY_CHAIN && baseMolecule.vertexInRing(v.neiVertex(i)))
                     {
                         std::unordered_set<int> visited;
                         RedBlackMap<int, int> dir_map;
                         visited.insert(bond_idx);
                         if (findAtropoStereobonds(baseMolecule, dir_map, atom_idx, visited, true))
                         {
-                            visited.clear();
-                            dir_map.clear();
-                            visited.insert(bond_idx);
-                            if (hasRing(baseMolecule, v.neiVertex(i), visited))
-                            {
-                                possible_atropo_bond = bond_idx;
-                                return true;
-                            }
+                            possible_atropo_bond = bond_idx;
+                            return true;
                         }
+                        //{ // advanced rings search. currently not in use.
+                        //    visited.clear();
+                        //    visited.insert(bond_idx);
+                        //    if (hasRing(baseMolecule, v.neiVertex(i), visited))
+                        //    {
+                        //        possible_atropo_bond = bond_idx;
+                        //        return true;
+                        //    }
+                        //}
                     }
                 }
                 break;
