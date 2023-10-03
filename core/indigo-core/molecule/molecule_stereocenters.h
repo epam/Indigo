@@ -143,10 +143,11 @@ namespace indigo
         static void rotatePyramid(int* pyramid);
 
     private:
-        struct _Atom            
+        struct _Atom
         {
-            _Atom() : type(-1), group(1), is_atropisomeric(false), is_tetrahydral(true), pyramid{-1,-1,-1,-1}
-            {}
+            _Atom() : type(-1), group(1), is_atropisomeric(false), is_tetrahydral(true), pyramid{-1, -1, -1, -1}
+            {
+            }
             int type;  // ANY, AND, OR, ABS
             int group; // stereogroup index
             // [X, Y, Z, W] -- atom indices or -1 for implicit hydrogen
