@@ -11,7 +11,7 @@ from typing import Dict, Union
 from bingo_elastic.elastic import ElasticRepository, IndexName  # type: ignore
 from bingo_elastic.model import helpers  # type: ignore
 from bingo_elastic.model.record import IndigoRecord  # type: ignore
-from bingo_elastic.queries import (    # type: ignore
+from bingo_elastic.queries import (  # type: ignore
     BaseMatch,
     EuclidSimilarityMatch,
     TanimotoSimilarityMatch,
