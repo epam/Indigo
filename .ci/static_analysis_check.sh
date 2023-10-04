@@ -20,7 +20,7 @@ pflake8 --version
 for folder in api/http api/python bingo/bingo-elastic/python api/tests/integration utils/indigo-service/backend/service
 do
   cd ${folder}
-  isort --check .
+  isort --check --profile=black .
   black --check .
   pflake8 .
   cd -

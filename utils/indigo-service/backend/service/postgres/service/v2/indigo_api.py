@@ -17,9 +17,13 @@ from marshmallow.exceptions import ValidationError  # type: ignore
 
 from .common import config
 from .common.util import highlight
-from .validation import (IndigoAutomapSchema, IndigoCalculateSchema,
-                         IndigoCheckSchema, IndigoRendererSchema,
-                         IndigoRequestSchema)
+from .validation import (
+    IndigoAutomapSchema,
+    IndigoCalculateSchema,
+    IndigoCheckSchema,
+    IndigoRendererSchema,
+    IndigoRequestSchema,
+)
 
 tls = local()
 
