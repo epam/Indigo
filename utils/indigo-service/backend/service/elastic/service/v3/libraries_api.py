@@ -11,11 +11,12 @@ from typing import Dict, Union
 from bingo_elastic.elastic import ElasticRepository, IndexName
 from bingo_elastic.model import helpers
 from bingo_elastic.model.record import IndigoRecord
-from bingo_elastic.queries import TanimotoSimilarityMatch, TverskySimilarityMatch, EuclidSimilarityMatch, BaseMatch, \
-    query_factory
+from bingo_elastic.queries import (BaseMatch, EuclidSimilarityMatch,
+                                   TanimotoSimilarityMatch,
+                                   TverskySimilarityMatch, query_factory)
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch as NativeElastic
-from flask import request, Blueprint
+from flask import Blueprint, request
 from flask_cors import cross_origin
 from indigo import Indigo, IndigoObject
 

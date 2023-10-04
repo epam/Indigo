@@ -1,9 +1,6 @@
 from marshmallow import Schema, fields  # type: ignore
-from marshmallow.decorators import (  # type: ignore
-    post_load,
-    validates,
-    validates_schema,
-)
+from marshmallow.decorators import (post_load, validates,  # type: ignore
+                                    validates_schema)
 from marshmallow.exceptions import ValidationError  # type: ignore
 from marshmallow.validate import OneOf  # type: ignore
 

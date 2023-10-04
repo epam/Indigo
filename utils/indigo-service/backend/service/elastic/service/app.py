@@ -8,9 +8,8 @@ import urllib3 as urllib3
 from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
-from werkzeug import run_simple
-
 from v3.libraries_api import libraries_api
+from werkzeug import run_simple
 
 # Flask set-up
 load_dotenv()

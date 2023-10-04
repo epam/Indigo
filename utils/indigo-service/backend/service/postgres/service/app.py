@@ -7,13 +7,12 @@ from argparse import ArgumentParser
 from flasgger import Swagger  # type: ignore
 from flask import Flask  # type: ignore
 from flask_cors import CORS
-from werkzeug.serving import run_simple  # type: ignore
-
 from v2.common_api import common_api
 from v2.db.database import db_session
 from v2.imago_api import imago_api
 from v2.indigo_api import indigo_api
 from v2.libraries_api import libraries_api
+from werkzeug.serving import run_simple  # type: ignore
 
 app = Flask(__name__)
 CORS(app)

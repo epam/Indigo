@@ -3,11 +3,8 @@ from typing import Optional
 import psycopg2  # type: ignore
 from sqlalchemy import Engine, create_engine  # type: ignore
 from sqlalchemy.ext.declarative import declarative_base  # type: ignore
-from sqlalchemy.orm import (  # type: ignore
-    Session,
-    scoped_session,
-    sessionmaker,
-)
+from sqlalchemy.orm import (Session, scoped_session,  # type: ignore
+                            sessionmaker)
 
 from ..common.config import BINGO_POSTGRES
 
