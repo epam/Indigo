@@ -74,7 +74,7 @@ class BingoPostgresAdapter(object):
             cursor = self.connection.cursor()
             cursor.execute(
                 "select service_data, user_data, index_data from indigoservice.library_metadata where library_id = %s",
-                (library_id,)
+                (library_id,),
             )
             result = cursor.fetchone()
             result_dict = {}

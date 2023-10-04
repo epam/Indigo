@@ -11,9 +11,13 @@ from typing import Dict, Union
 from bingo_elastic.elastic import ElasticRepository, IndexName
 from bingo_elastic.model import helpers
 from bingo_elastic.model.record import IndigoRecord
-from bingo_elastic.queries import (BaseMatch, EuclidSimilarityMatch,
-                                   TanimotoSimilarityMatch,
-                                   TverskySimilarityMatch, query_factory)
+from bingo_elastic.queries import (
+    BaseMatch,
+    EuclidSimilarityMatch,
+    TanimotoSimilarityMatch,
+    TverskySimilarityMatch,
+    query_factory,
+)
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch as NativeElastic
 from flask import Blueprint, request
@@ -35,10 +39,7 @@ port = os.getenv("port")
 scheme = os.getenv("scheme")
 history_index_name = "query_history"
 comment_index_name = "lib_comment"
-native_client = NativeElastic(
-    f"{scheme}://{host}:{port}",
-    verify_certs=False
-)
+native_client = NativeElastic(f"{scheme}://{host}:{port}", verify_certs=False)
 libraries_api_logger = logging.getLogger("libraries")
 
 
@@ -68,7 +69,9 @@ def save_file(library_id, stream, mime_type):
     try:
         path = os.path.join(
             save_folder_path,
-            "{0}_{1}.{2}".format(library_id, int(time.time() * 1000), "sdf.gz"),
+            "{0}_{1}.{2}".format(
+                library_id, int(time.time() * 1000), "sdf.gz"
+            ),
         )
         if mime_type == "chemical/x-mdl-sdfile":
             with gzip.open(path, "wb") as f:
@@ -81,27 +84,31 @@ def save_file(library_id, stream, mime_type):
     return path
 
 
-@libraries_api.get('/libraries')
+@libraries_api.get("/libraries")
 @cross_origin()
 def lib_list():
-    libraries_api_logger.info(
-        "[REQUEST] GET /libraries"
-    )
+    libraries_api_logger.info("[REQUEST] GET /libraries")
     result = []
     for lib in native_client.cat.indices(format="json", pretty=True):
         # 1. filter query_history index
         # 2. filter lib_comment index
         # 3. filter all indexes that start with "."
-        if lib["index"] == history_index_name \
-            or lib["index"] == comment_index_name \
-            or re.compile("^\.").search(lib["index"]):
+        if (
+            lib["index"] == history_index_name
+            or lib["index"] == comment_index_name
+            or re.compile("^\.").search(lib["index"])
+        ):
             continue
-        data = {"id": lib["index"], "name": lib["index"], "structures_count": lib["docs.count"]}
+        data = {
+            "id": lib["index"],
+            "name": lib["index"],
+            "structures_count": lib["docs.count"],
+        }
         result.append(data)
     return result, 200
 
 
-@libraries_api.post('/libraries')
+@libraries_api.post("/libraries")
 @cross_origin()
 def add_new_lib():
     libraries_api_logger.info(
@@ -111,42 +118,46 @@ def add_new_lib():
     native_client.indices.create(index=body["name"])
     comment_record = {
         "lib_id": body["name"],
-        "comemnt": body["user_data"]["comment"]
+        "comemnt": body["user_data"]["comment"],
     }
-    native_client.index(index=comment_index_name, id=body["name"], document=comment_record)
+    native_client.index(
+        index=comment_index_name, id=body["name"], document=comment_record
+    )
     return {"id": body["name"]}, 201
 
 
-@libraries_api.get('/libraries/<id>')
+@libraries_api.get("/libraries/<id>")
 @cross_origin()
 def lib_info(id):
-    libraries_api_logger.info(
-        "[REQUEST] GET /libraries/{0}".format(id)
-    )
-    index_row = native_client.cat.indices(index=id, format="json", pretty=True)[0]
-    alias = native_client.get(index=comment_index_name, id=id, format="json", pretty=True)["_source"]["comemnt"]
-    return {"service_data": {"name": index_row["index"],
-                             "structures_count": index_row["docs.count"],
-                             "created_timestamp": 0,
-                             "updated_timestamp": 0,
-                             "properties": {}},
-            "user_data": {
-                "comment": str(alias).replace("{", "").replace("}", "")}
-            }, 200
+    libraries_api_logger.info("[REQUEST] GET /libraries/{0}".format(id))
+    index_row = native_client.cat.indices(
+        index=id, format="json", pretty=True
+    )[0]
+    alias = native_client.get(
+        index=comment_index_name, id=id, format="json", pretty=True
+    )["_source"]["comemnt"]
+    return {
+        "service_data": {
+            "name": index_row["index"],
+            "structures_count": index_row["docs.count"],
+            "created_timestamp": 0,
+            "updated_timestamp": 0,
+            "properties": {},
+        },
+        "user_data": {"comment": str(alias).replace("{", "").replace("}", "")},
+    }, 200
 
 
-@libraries_api.delete('/libraries/<id>')
+@libraries_api.delete("/libraries/<id>")
 @cross_origin()
 def delete_lib(id):
-    libraries_api_logger.info(
-        "[REQUEST] DELETE /libraries/{0}".format(id)
-    )
+    libraries_api_logger.info("[REQUEST] DELETE /libraries/{0}".format(id))
     set_up_index_value(id)
     bingo_repo().delete_all_records()
     return {"status": "OK"}, 200
 
 
-@libraries_api.post('/libraries/<id>/uploads')
+@libraries_api.post("/libraries/<id>/uploads")
 @cross_origin()
 def upload_content_to_lib(id):
     libraries_api_logger.info(
@@ -176,13 +187,15 @@ def upload_content_to_lib(id):
         index(id, path)
         return {"upload_id": id}, 200
     except Exception as e:
-        return {"error": "Internal server error. Exception: {}.".format(e)}, 500
+        return {
+            "error": "Internal server error. Exception: {}.".format(e)
+        }, 500
     finally:
         if path_to_file.exists():
             path_to_file.unlink()
 
 
-@libraries_api.get('/<lib_id>/recount')
+@libraries_api.get("/<lib_id>/recount")
 @cross_origin()
 def recount(lib_id):
     libraries_api_logger.info(
@@ -192,7 +205,7 @@ def recount(lib_id):
     return "OK", 200
 
 
-@libraries_api.post('/search')
+@libraries_api.post("/search")
 @cross_origin()
 def search():
     libraries_api_logger.info(
@@ -201,8 +214,8 @@ def search():
     body = request.json
 
     ids = body["library_ids"]  # list
-    limit = body['limit']
-    raw_query = body['query_structure']
+    limit = body["limit"]
+    raw_query = body["query_structure"]
     type_val = body["type"]
 
     #   Question: does bingo support query_text?
@@ -216,7 +229,7 @@ def search():
         "query": raw_query,
         # "query_text": query_text,
         # "offset": offset,
-        "operation": type_val
+        "operation": type_val,
     }
     result_obj = []
     for id in ids:
@@ -224,17 +237,23 @@ def search():
         response = []
 
         if type_val == "exact":
-            options = body['options']
+            options = body["options"]
             history_body["options"] = options
             compound = indigo.loadMolecule(raw_query)
             rec = IndigoRecord(indigo_object=compound)
-            response = bingo_repo().filter(query_subject=rec, limit=limit, options=options)
+            response = bingo_repo().filter(
+                query_subject=rec, limit=limit, options=options
+            )
         if type_val == "sub":
-            options = body['options']
+            options = body["options"]
             history_body["options"] = options
             compound = indigo.loadQueryMolecule(raw_query)
-            response = bingo_repo().filter(query_subject=compound, indigo_session=indigo, limit=limit,
-                                           options=options)
+            response = bingo_repo().filter(
+                query_subject=compound,
+                indigo_session=indigo,
+                limit=limit,
+                options=options,
+            )
         if type_val == "sim":
             metric = body["metric"]
             threshold = body["min_sim"]
@@ -244,31 +263,39 @@ def search():
                 compound = indigo.loadMolecule(raw_query)
                 rec = IndigoRecord(indigo_object=compound)
                 tanimoto = TanimotoSimilarityMatch(rec, threshold)
-                response = bingo_repo().filter(query_subject=tanimoto, indigo_session=indigo, limit=limit)
+                response = bingo_repo().filter(
+                    query_subject=tanimoto, indigo_session=indigo, limit=limit
+                )
             if metric == "tversky":
                 compound = indigo.loadMolecule(raw_query)
                 rec = IndigoRecord(indigo_object=compound)
                 tversky = TverskySimilarityMatch(rec, threshold)
-                response = bingo_repo().filter(query_subject=tversky, indigo_session=indigo, limit=limit)
+                response = bingo_repo().filter(
+                    query_subject=tversky, indigo_session=indigo, limit=limit
+                )
             if metric == "euclid-sub":
                 compound = indigo.loadMolecule(raw_query)
                 rec = IndigoRecord(indigo_object=compound)
                 euclid = EuclidSimilarityMatch(rec, threshold)
-                response = bingo_repo().filter(query_subject=euclid, indigo_session=indigo, limit=limit)
+                response = bingo_repo().filter(
+                    query_subject=euclid, indigo_session=indigo, limit=limit
+                )
 
         for indigo_object in response:
             structure = {
                 "id": indigo_object.record_id,
                 "structure": indigo_object.as_indigo_object(indigo).molfile(),
-                "library_id": id
+                "library_id": id,
             }
             result_obj.append(structure)
 
-    native_client.index(index=history_index_name, id=search_id, document=history_body)
+    native_client.index(
+        index=history_index_name, id=search_id, document=history_body
+    )
     return {"result": result_obj, "search_id": search_id}, 200
 
 
-@libraries_api.get('/search/<search_id>')
+@libraries_api.get("/search/<search_id>")
 @cross_origin()
 def search_count(search_id):
     libraries_api_logger.info(
@@ -310,11 +337,16 @@ def search_count(search_id):
                 rec = IndigoRecord(indigo_object=compound)
                 euclid = EuclidSimilarityMatch(rec, threshold)
                 query = compile_query(query_subject=euclid)
-        count_resp = native_client.search(index=id, body=query, track_total_hits=True)
+        count_resp = native_client.search(
+            index=id, body=query, track_total_hits=True
+        )
         total_count += count_resp["hits"]["total"]["value"]
     end = time.time()
-    total_time = round(((end - start) * (10 ** 3)), 3)
-    return {"state": "SUCCESS", "result": {"count": total_count, "time": total_time}}, 200
+    total_time = round(((end - start) * (10**3)), 3)
+    return {
+        "state": "SUCCESS",
+        "result": {"count": total_count, "time": total_time},
+    }, 200
 
 
 def compile_query(
@@ -340,8 +372,8 @@ def compile_query(
     return query
 
 
-@libraries_api.get('/search/<search_id>.sdf')
+@libraries_api.get("/search/<search_id>.sdf")
 def sdf_export(search_id):
     # TODO: extra-feature
     #  CHECK libraries_apy. SearcherExporter(flask_restful.Resource)
-    return 'sdf_export'
+    return "sdf_export"

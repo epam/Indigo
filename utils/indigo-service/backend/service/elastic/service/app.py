@@ -28,16 +28,18 @@ logging.basicConfig(
 @app.errorhandler(Exception)
 def handle_exception(e):
     response = e.get_response()
-    response.data = json.dumps({
-        "code": e.code,
-        "name": e.name,
-        "description": e.description,
-    })
+    response.data = json.dumps(
+        {
+            "code": e.code,
+            "name": e.name,
+            "description": e.description,
+        }
+    )
     response.content_type = "application/json"
     return response, 500
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_simple(
         "0.0.0.0",
         80,
