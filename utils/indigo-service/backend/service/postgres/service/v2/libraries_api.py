@@ -8,7 +8,7 @@ from time import time
 
 import indigo  # type: ignore
 import redis  # type: ignore
-from flask import Blueprint, Response, request, url_for  # type: ignore
+from flask import Blueprint, Response, request  # type: ignore
 from flask_httpauth import HTTPBasicAuth  # type: ignore
 from indigo import Indigo, IndigoException  # type: ignore
 from indigo.inchi import IndigoInchi  # type: ignore
@@ -51,6 +51,15 @@ def verify_password(email, password):
     if not user or not user.check_password(password):
         return False
     return True
+
+
+def url_for(text, user_id="user_id", library_id="library_id", _external=True):
+    param = ""
+    if user_id != "user_id":
+        param = user_id
+    else:
+        param = library_id
+    return "{}/{}".format(text, param)
 
 
 def _prepare_row(row):
