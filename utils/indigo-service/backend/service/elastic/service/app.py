@@ -5,7 +5,7 @@ import logging
 import sys
 
 import urllib3 as urllib3
-from dotenv import load_dotenv
+from dotenv import load_dotenv  # type: ignore
 from flask import Flask
 from flask_cors import CORS
 from v3.libraries_api import libraries_api

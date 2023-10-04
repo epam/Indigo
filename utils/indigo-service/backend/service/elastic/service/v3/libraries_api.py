@@ -8,21 +8,21 @@ import uuid
 from pathlib import Path
 from typing import Dict, Union
 
-from bingo_elastic.elastic import ElasticRepository, IndexName
-from bingo_elastic.model import helpers
-from bingo_elastic.model.record import IndigoRecord
-from bingo_elastic.queries import (
+from bingo_elastic.elastic import ElasticRepository, IndexName  # type: ignore
+from bingo_elastic.model import helpers  # type: ignore
+from bingo_elastic.model.record import IndigoRecord  # type: ignore
+from bingo_elastic.queries import (    # type: ignore
     BaseMatch,
     EuclidSimilarityMatch,
     TanimotoSimilarityMatch,
     TverskySimilarityMatch,
     query_factory,
 )
-from dotenv import load_dotenv
-from elasticsearch import Elasticsearch as NativeElastic
+from dotenv import load_dotenv  # type: ignore
+from elasticsearch import Elasticsearch as NativeElastic  # type: ignore
 from flask import Blueprint, request
 from flask_cors import cross_origin
-from indigo import Indigo, IndigoObject
+from indigo import Indigo, IndigoObject  # type: ignore
 
 libraries_api = Blueprint("libraries_api", __name__)
 
@@ -353,8 +353,8 @@ def compile_query(
     query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
     **kwargs,
 ) -> Dict:
-    query = {}
-    postprocess_actions = []
+    query: Dict = {}
+    postprocess_actions: list = []
     if isinstance(query_subject, BaseMatch):
         query_subject.compile(query, postprocess_actions)
     elif isinstance(query_subject, IndigoRecord):
