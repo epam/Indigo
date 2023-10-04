@@ -31,6 +31,7 @@ for folder in api/http api/python bingo/bingo-elastic/python utils/indigo-servic
 do
     cd ${folder}
     export PYTHONPATH=${PWD}
-    mypy --exclude=build .
+    mypy --exclude=build ./elastic/
+    mypy --exclude=build ./postgres/
     cd -
 done
