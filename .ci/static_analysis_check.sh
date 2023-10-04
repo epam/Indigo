@@ -27,11 +27,10 @@ do
 done
 
 mypy --version
-for folder in api/http api/python bingo/bingo-elastic/python utils/indigo-service/backend/service
+for folder in api/http api/python bingo/bingo-elastic/python utils/indigo-service/backend/service/elastic utils/indigo-service/backend/service/postgres
 do
     cd ${folder}
     export PYTHONPATH=${PWD}
-    mypy --exclude=build ./elastic/
-    mypy --exclude=build ./postgres/
+    mypy --exclude=build .
     cd -
 done
