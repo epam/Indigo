@@ -434,7 +434,6 @@ bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom
 
     for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
     {
-
         int e_idx = vertex.neiEdge(i);
         int v_idx = vertex.neiVertex(i);
 
@@ -487,19 +486,19 @@ bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom
         return _getDirection(baseMolecule, from, to, bidirectional_mode);
     };
 
-    if (is_either)
+    if (stereocenter.is_tetrahydral)
     {
-        stereocenter.type = ATOM_ANY;
-        for (int i = 0; i < degree; i++)
+        if (is_either)
         {
-            stereocenter.pyramid[i] = edge_ids[i].nei_idx;
-            if (getDir(atom_idx, edge_ids[i].nei_idx) > 0)
-                sensible_bonds_out[edge_ids[i].edge_idx] = 1;
+            stereocenter.type = ATOM_ANY;
+            for (int i = 0; i < degree; i++)
+            {
+                stereocenter.pyramid[i] = edge_ids[i].nei_idx;
+                if (getDir(atom_idx, edge_ids[i].nei_idx) > 0)
+                    sensible_bonds_out[edge_ids[i].edge_idx] = 1;
+            }
         }
-    }
-    else
-    {
-        if (stereocenter.is_tetrahydral)
+        else
         {
             if (degree == 4)
             {
@@ -732,6 +731,7 @@ bool MoleculeStereocenters::_buildOneCenter(BaseMolecule& baseMolecule, int atom
                         sensible_bonds_out[edge_ids[i].edge_idx] = 1;
         }
     }
+
     if (stereocenter.is_tetrahydral)
     {
         if (_stereocenters.find(atom_idx))
@@ -1398,6 +1398,7 @@ void MoleculeStereocenters::buildOnSubmolecule(BaseMolecule& baseMolecule, const
         new_stereocenter.is_atropisomeric = super_stereocenter.is_atropisomeric;
         new_stereocenter.is_tetrahydral = super_stereocenter.is_tetrahydral;
 
+        // copy tetrahydral center
         if (new_stereocenter.is_tetrahydral)
         {
             for (j = 0; j < 4; j++)
@@ -1416,25 +1417,39 @@ void MoleculeStereocenters::buildOnSubmolecule(BaseMolecule& baseMolecule, const
             }
 
             moveMinimalToEnd(new_stereocenter.pyramid);
-            if (new_stereocenter.pyramid[0] == -1 || new_stereocenter.pyramid[1] == -1 || new_stereocenter.pyramid[2] == -1)
-                // pyramid is not mapped completely
-                continue;
+            // copy bond directions for tetrahydral center
+            const Vertex& super_vertex = super.getVertex(super_idx);
+            for (j = super_vertex.neiBegin(); j != super_vertex.neiEnd(); j = super_vertex.neiNext(j))
+            {
+                int super_edge = super_vertex.neiEdge(j);
+                if (mapping[super_vertex.neiVertex(j)] == -1)
+                    continue;
+
+                int bdir = super.getBondDirection(super_edge);
+                if (bdir)
+                    baseMolecule.setBondDirection(baseMolecule.findEdgeIndex(sub_idx, mapping[super_vertex.neiVertex(j)]), bdir);
+            }
         }
 
-        _stereocenters.insert(sub_idx, new_stereocenter);
-
-        const Vertex& super_vertex = super.getVertex(super_idx);
-
-        for (j = super_vertex.neiBegin(); j != super_vertex.neiEnd(); j = super_vertex.neiNext(j))
+        // copy atropocenter
+        if (new_stereocenter.is_atropisomeric && super.stereocenters._atropocenters.find(super_idx))
         {
-            int super_edge = super_vertex.neiEdge(j);
-            if (mapping[super_vertex.neiVertex(j)] == -1)
-                continue;
-
-            int dir = super.getBondDirection(super_edge);
-            if (dir != 0)
-                baseMolecule.setBondDirection(baseMolecule.findEdgeIndex(sub_idx, mapping[super_vertex.neiVertex(j)]), dir);
+            const auto& ac_super = super.stereocenters._atropocenters.at(super_idx);
+            auto& ac_new = baseMolecule.stereocenters._atropocenters.findOrInsert(sub_idx);
+            const auto& e = super.getEdge(ac_super.atropo_bond);
+            ac_new.atropo_bond = baseMolecule.findEdgeIndex(mapping[e.beg], mapping[e.end]);
+            // copy bond directions for atropisomeric center
+            ac_new.bond_directions.clear();
+            for (j = ac_super.bond_directions.begin(); j != ac_super.bond_directions.end(); j = ac_super.bond_directions.next(j))
+            {
+                const auto& atropo_edge = super.getEdge(ac_super.bond_directions.key(j));
+                int atropo_edge_idx = baseMolecule.findEdgeIndex(mapping[atropo_edge.beg], mapping[atropo_edge.end]);
+                int bdir = ac_super.bond_directions.value(j);
+                ac_new.bond_directions.insert(atropo_edge_idx, bdir);
+                baseMolecule.setBondDirection(atropo_edge_idx, bdir);
+            }
         }
+        _stereocenters.insert(sub_idx, new_stereocenter);
     }
 }
 

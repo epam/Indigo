@@ -129,6 +129,7 @@ namespace indigo
         void _writeUnsaturated();
         void _writeSubstitutionCounts();
         void _writeWedges();
+        void _writeBondDirs(const std::string& tag, const std::vector<std::pair<int, int>>& bonds);
 
         bool _shouldWriteAromaticBond(int bond_idx);
         void _startExtension();

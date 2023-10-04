@@ -318,6 +318,7 @@ void SmilesLoader::_readOtherStuff()
             while (isdigit(_scanner.lookNext()))
             {
                 int atom_idx = _scanner.readUnsigned();
+                // handle wiggly bonds
                 if (!wmode)
                 {
                     // This either bond can mark stereocenter or cis-trans double bond
@@ -327,7 +328,7 @@ void SmilesLoader::_readOtherStuff()
                     for (int nei : v.neighbors())
                     {
                         int edge_idx = v.neiEdge(nei);
-                        if (_bmol->getBondOrder(edge_idx) == BOND_DOUBLE)
+                        if (_bmol->getBondOrder(edge_idx) == BOND_DOUBLE && _bmol->getBondTopology(edge_idx) != TOPOLOGY_RING)
                         {
                             cis_trans.ignore(edge_idx);
                             found = true;
@@ -336,12 +337,7 @@ void SmilesLoader::_readOtherStuff()
 
                     if (!found)
                     {
-                        if (!_bmol->isPossibleStereocenter(atom_idx))
-                        {
-                            if (!stereochemistry_options.ignore_errors)
-                                throw Error("chirality not possible on atom #%d", atom_idx);
-                        }
-                        else
+                        if (_bmol->isPossibleStereocenter(atom_idx))
                         {
                             // Check if the stereocenter has already been marked as any
                             // For example [H]C1(O)c2ccnn2[C@@H](O)c2ccnn12 |r,w:1.0,1.1|
@@ -357,19 +353,14 @@ void SmilesLoader::_readOtherStuff()
                     auto bond_idx = _scanner.readUnsigned();
                     if (!_has_directions_on_rings)
                         _has_directions_on_rings = _bmol->getBondTopology(bond_idx) == TOPOLOGY_RING;
-                    if (wmode)
+                    if (bond_idx < _bmol->edgeCount() && atom_idx < _bmol->vertexCount())
                     {
-                        if (bond_idx < _bmol->edgeCount() && atom_idx < _bmol->vertexCount())
-                        {
-                            auto& v = _bmol->getEdge(bond_idx);
-                            if (v.end == atom_idx)
-                                _bmol->swapEdgeEnds(bond_idx);
+                        auto& v = _bmol->getEdge(bond_idx);
+                        if (v.end == atom_idx)
+                            _bmol->swapEdgeEnds(bond_idx);
 
-                            if (v.beg == atom_idx)
-                            {
-                                _bmol->setBondDirection(bond_idx, wmode == 'U' ? BOND_UP : BOND_DOWN);
-                            }
-                        }
+                        if (v.beg == atom_idx)
+                            _bmol->setBondDirection(bond_idx, wmode == 'U' ? BOND_UP : (wmode == 'D' ? BOND_DOWN : BOND_EITHER));
                     }
                 }
 

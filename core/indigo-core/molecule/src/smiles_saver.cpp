@@ -1839,59 +1839,57 @@ void SmilesSaver::_writeSubstitutionCounts()
     }
 }
 
+void SmilesSaver::_writeBondDirs(const std::string& tag, const std::vector<std::pair<int, int>>& bonds)
+{
+    bool is_first = true;
+    for (const auto& kvp : bonds)
+    {
+        if (is_first)
+        {
+            _startExtension();
+            _output.writeString(tag.c_str());
+            is_first = false;
+        }
+        else
+            _output.writeString(",");
+        _output.printf("%d.%d", kvp.first, kvp.second);
+    }
+}
+
 void SmilesSaver::_writeWedges()
 {
     if (_bmol)
     {
-        std::vector<std::pair<int, int>> down_dirs, up_dirs;
+        std::vector<std::pair<int, int>> down_dirs, up_dirs, wiggy_dirs;
         for (int i = 0; i < _written_bonds.size(); ++i)
         {
             auto bond_idx = _written_bonds[i];
             auto& e = _bmol->getEdge(bond_idx);
             auto bdir = _bmol->getBondDirection(bond_idx);
-            if (bdir && bdir < BOND_EITHER)
+            if (bdir)
             {
                 const auto& edge = _bmol->getEdge(bond_idx);
                 auto wa_idx = _written_atoms.find(edge.beg);
-                if (bdir == BOND_UP)
+                switch (bdir)
+                {
+                case BOND_UP:
                     up_dirs.emplace_back(wa_idx, i);
-                else
+                    break;
+                case BOND_DOWN:
                     down_dirs.emplace_back(wa_idx, i);
-            }
-        }
-        bool is_first = true;
-        if (up_dirs.size())
-        {
-            for (const auto& kvp : up_dirs)
-            {
-                if (is_first)
-                {
-                    _startExtension();
-                    _output.writeString("wU:");
-                    is_first = false;
+                    break;
+                case BOND_EITHER:
+                    wiggy_dirs.emplace_back(wa_idx, i);
+                    break;
                 }
-                else
-                    _output.writeString(",");
-                _output.printf("%d.%d", kvp.first, kvp.second);
             }
         }
-        is_first = true;
-        if (down_dirs.size())
-        {
-            for (const auto& kvp : down_dirs)
-            {
-                if (is_first)
-                {
-                    _startExtension();
-                    _output.writeString("wD:");
-                    is_first = false;
-                }
-                else
-                    _output.writeString(",");
-                _output.printf("%d.%d", kvp.first, kvp.second);
-            }
-        }
-        if ((down_dirs.size() || up_dirs.size()) && BaseMolecule::hasCoord(*_mol))
+
+        _writeBondDirs("wU:", up_dirs);
+        _writeBondDirs("wD:", down_dirs);
+        _writeBondDirs("w:", wiggy_dirs);
+
+        if ((down_dirs.size() || up_dirs.size() || wiggy_dirs.size()) && BaseMolecule::hasCoord(*_mol))
         {
             _output.writeString(",(");
             for (int i = 0; i < _written_atoms.size(); ++i)
