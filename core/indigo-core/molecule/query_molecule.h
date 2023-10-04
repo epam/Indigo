@@ -97,6 +97,7 @@ namespace indigo
             ATOM_TEMPLATE_SEQID,
             ATOM_TEMPLATE_CLASS,
             ATOM_PI_BONDED,
+            ATOM_CHILARITY,
 
             BOND_ORDER,
             BOND_TOPOLOGY,
@@ -117,6 +118,8 @@ namespace indigo
             // otherwise: no children
             PtrArray<Node> children;
 
+            bool artificial; // if true - added by parser to comply restrictions
+
             // Check if node has any constraint of the specific type
             bool hasConstraint(int what_type);
 
@@ -136,6 +139,8 @@ namespace indigo
 
             bool sureValueBelongs(int what_type, const int* arr, int count);
             bool sureValueBelongsInv(int what_type, const int* arr, int count);
+
+            bool hasOP_OR();
 
             // Optimize query for faster substructure search
             void optimize();
@@ -329,6 +334,7 @@ namespace indigo
         static bool isNotAtom(QueryMolecule::Atom& qa, int elem);
         static QueryMolecule::Atom* stripKnownAttrs(QueryMolecule::Atom& qa);
         static bool collectAtomList(Atom& qa, Array<int>& list, bool& notList);
+        static int parseQueryAtom(QueryMolecule::Atom& qa, Array<int>& list);
         static int parseQueryAtom(QueryMolecule& qm, int aid, Array<int>& list);
         static bool queryAtomIsRegular(QueryMolecule& qm, int aid);
         static bool queryAtomIsSpecial(QueryMolecule& qm, int aid);
@@ -371,6 +377,8 @@ namespace indigo
         // components[i] != components[j] > 0 means that i-th and j-th vertices
         // must belong to different connected components of the target molecule
         Array<int> components;
+
+        void getComponentNeighbors(std::list<std::unordered_set<int>>& componentNeighbors);
 
         void invalidateAtom(int index, int mask) override;
 

@@ -302,28 +302,26 @@ void SmilesLoader::_readOtherStuff()
 
         if (c == 'w') // 'ANY' stereocenters
         {
-            bool skip = true;
-
-            // TODO: up/down designators (usually come atom coordinates) -- skipped for now
+            char wmode = 0;
             if (_scanner.lookNext() == 'U')
+                wmode = 'U';
+            if (_scanner.lookNext() == 'D')
+                wmode = 'D';
+
+            if (wmode)
                 _scanner.skip(1);
-            else if (_scanner.lookNext() == 'D')
-                _scanner.skip(1);
-            else
-                skip = false;
 
             if (_scanner.readChar() != ':')
-                throw Error("colon expected after 'w'");
+                throw Error("colon expected after 'w%c'", wmode);
 
             while (isdigit(_scanner.lookNext()))
             {
-                int idx = _scanner.readUnsigned();
-
-                if (!skip)
+                int atom_idx = _scanner.readUnsigned();
+                if (!wmode)
                 {
                     // This either bond can mark stereocenter or cis-trans double bond
                     // For example CC=CN |w:1.0|
-                    const Vertex& v = _bmol->getVertex(idx);
+                    const Vertex& v = _bmol->getVertex(atom_idx);
                     bool found = false;
                     for (int nei : v.neighbors())
                     {
@@ -337,25 +335,41 @@ void SmilesLoader::_readOtherStuff()
 
                     if (!found)
                     {
-                        if (!_bmol->isPossibleStereocenter(idx))
+                        if (!_bmol->isPossibleStereocenter(atom_idx))
                         {
                             if (!stereochemistry_options.ignore_errors)
-                                throw Error("chirality not possible on atom #%d", idx);
+                                throw Error("chirality not possible on atom #%d", atom_idx);
                         }
                         else
                         {
                             // Check if the stereocenter has already been marked as any
                             // For example [H]C1(O)c2ccnn2[C@@H](O)c2ccnn12 |r,w:1.0,1.1|
-                            if (_bmol->stereocenters.getType(idx) != MoleculeStereocenters::ATOM_ANY)
-                                _bmol->addStereocenters(idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+                            if (_bmol->stereocenters.getType(atom_idx) != MoleculeStereocenters::ATOM_ANY)
+                                _bmol->addStereocenters(atom_idx, MoleculeStereocenters::ATOM_ANY, 0, false);
                         }
                     }
                 }
 
-                if (_scanner.lookNext() == '.') // skip the bond index
+                if (_scanner.lookNext() == '.')
                 {
                     _scanner.skip(1);
-                    _scanner.readUnsigned();
+                    auto bond_idx = _scanner.readUnsigned();
+                    if (wmode)
+                    {
+                        auto& v = _bmol->getEdge(bond_idx);
+                        if (v.end == atom_idx)
+                            _bmol->swapEdgeEnds(bond_idx);
+                        if (v.beg == atom_idx)
+                        {
+                            _bmol->setBondDirection(bond_idx, wmode == 'U' ? BOND_UP : BOND_DOWN);
+                            if (_bmol->isAtropisomerismReferenceAtom(atom_idx))
+                            {
+                                if (!_bmol->stereocenters.exists(atom_idx))
+                                    _bmol->addStereocenters(atom_idx, MoleculeStereocenters::ATOM_ANY, 0, false);
+                                _bmol->stereocenters.setAtropisomeric(atom_idx, true);
+                            }
+                        }
+                    }
                 }
 
                 if (_scanner.lookNext() == ',')
@@ -376,8 +390,8 @@ void SmilesLoader::_readOtherStuff()
                     _bmol->stereocenters.setType(idx, MoleculeStereocenters::ATOM_ABS, 0);
                     _overtly_defined_abs.insert(idx);
                 }
-                else if (!stereochemistry_options.ignore_errors)
-                    throw Error("atom %d is not a stereocenter", idx);
+                else
+                    _bmol->addStereocenters(idx, MoleculeStereocenters::ATOM_ABS, 0, false);
 
                 if (_scanner.lookNext() == ',')
                     _scanner.skip(1);
@@ -396,8 +410,8 @@ void SmilesLoader::_readOtherStuff()
 
                 if (_bmol->stereocenters.exists(idx))
                     _bmol->stereocenters.setType(idx, MoleculeStereocenters::ATOM_OR, groupno);
-                else if (!stereochemistry_options.ignore_errors)
-                    throw Error("atom %d is not a stereocenter", idx);
+                else
+                    _bmol->addStereocenters(idx, MoleculeStereocenters::ATOM_OR, groupno, false);
 
                 if (_scanner.lookNext() == ',')
                     _scanner.skip(1);
@@ -413,11 +427,10 @@ void SmilesLoader::_readOtherStuff()
             while (isdigit(_scanner.lookNext()))
             {
                 int idx = _scanner.readUnsigned();
-
                 if (_bmol->stereocenters.exists(idx))
                     _bmol->stereocenters.setType(idx, MoleculeStereocenters::ATOM_AND, groupno);
-                else if (!stereochemistry_options.ignore_errors)
-                    throw Error("atom %d is not a stereocenter", idx);
+                else
+                    _bmol->addStereocenters(idx, MoleculeStereocenters::ATOM_AND, groupno, false);
 
                 if (_scanner.lookNext() == ',')
                     _scanner.skip(1);
@@ -1327,6 +1340,20 @@ void SmilesLoader::_readOtherStuff()
         _bmol->removeAtoms(to_remove);
 }
 
+void SmilesLoader::_validateStereoCenters()
+{
+    for (int i = _bmol->stereocenters.begin(); i < _bmol->stereocenters.end(); i = _bmol->stereocenters.next(i))
+    {
+        auto atom_idx = _bmol->stereocenters.getAtomIndex(i);
+        if (_bmol->isPossibleStereocenter(atom_idx) || _bmol->isAtropisomerismReferenceAtom(atom_idx))
+            continue;
+        if (stereochemistry_options.ignore_errors)
+            _bmol->stereocenters.remove(i);
+        else
+            throw Error("atom %d is not a stereocenter", atom_idx);
+    }
+}
+
 void SmilesLoader::loadSMARTS(QueryMolecule& mol)
 {
     mol.clear();
@@ -2121,8 +2148,9 @@ void SmilesLoader::_forbidHydrogens()
                 std::unique_ptr<QueryMolecule::Atom> newatom;
                 std::unique_ptr<QueryMolecule::Atom> oldatom(_qmol->releaseAtom(i));
 
-                newatom.reset(
-                    QueryMolecule::Atom::und(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)), oldatom.release()));
+                std::unique_ptr<QueryMolecule::Atom> notH(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
+                notH->artificial = true;
+                newatom.reset(QueryMolecule::Atom::und(notH.release(), oldatom.release()));
 
                 _qmol->resetAtom(i, newatom.release());
             }
@@ -2412,6 +2440,7 @@ void SmilesLoader::_loadMolecule()
 
     _parseMolecule();
     _loadParsedMolecule();
+    _validateStereoCenters();
 }
 
 void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond)
@@ -2537,7 +2566,10 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         else if (next == '/')
         {
             scanner.skip(1);
-            order = BOND_SINGLE;
+            if (smarts_mode)
+                order = BOND_SMARTS_UP;
+            else
+                order = BOND_SINGLE;
             if (bond.dir == 2)
                 throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");
             bond.dir = 1;
@@ -2545,7 +2577,10 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         else if (next == '\\')
         {
             scanner.skip(1);
-            order = BOND_SINGLE;
+            if (smarts_mode)
+                order = BOND_SMARTS_DOWN;
+            else
+                order = BOND_SINGLE;
             if (bond.dir == 1)
                 throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");
             bond.dir = 2;
@@ -3273,6 +3308,8 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
 
             if (isdigit(scanner.lookNext()))
                 subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SMALLEST_RING_SIZE, scanner.readUnsigned());
+            else if (smarts_mode)
+                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SMALLEST_RING_SIZE, 1, 100);
             else
                 subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RING_BONDS, 1, 100);
         }

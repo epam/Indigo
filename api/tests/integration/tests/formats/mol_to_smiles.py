@@ -19,3 +19,10 @@ print(
         joinPathPy("molecules/1e-0.mol", __file__)
     ).smiles()
 )
+
+indigo.setOption("ignore-stereochemistry-errors", True)
+print(
+    indigo.loadMoleculeFromFile(
+        joinPathPy("molecules/atropisomer.mol", __file__)
+    ).smiles()
+)

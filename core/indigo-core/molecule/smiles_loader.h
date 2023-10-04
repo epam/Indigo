@@ -164,6 +164,7 @@ namespace indigo
         void _loadMolecule();
         void _parseMolecule();
         void _loadParsedMolecule();
+        void _validateStereoCenters();
 
         void _calcStereocenters();
         void _calcCisTrans();

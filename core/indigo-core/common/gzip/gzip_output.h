@@ -27,7 +27,7 @@
 namespace indigo
 {
 
-    class GZipOutput : public Output, OutputTell
+    class GZipOutput : public Output
     {
     public:
         enum

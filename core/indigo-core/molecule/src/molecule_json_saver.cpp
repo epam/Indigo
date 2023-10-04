@@ -149,7 +149,19 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<int>, sgs_sorted);
     _checkSGroupIndices(mol, sgs_sorted);
-    if (mol.countSGroups() > 0)
+    int sGroupsCount = mol.countSGroups();
+    bool componentDefined = false;
+    if (mol.isQueryMolecule())
+    {
+        QueryMolecule& qmol = static_cast<QueryMolecule&>(mol);
+        if (qmol.components.size() > 0 && qmol.components[0])
+        {
+            componentDefined = true;
+            sGroupsCount++;
+        }
+    }
+
+    if (sGroupsCount > 0)
     {
         writer.Key("sgroups");
         writer.StartArray();
@@ -159,6 +171,25 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
             int sg_idx = sgs_sorted[i];
             auto& sgrp = mol.sgroups.getSGroup(sg_idx);
             saveSGroup(sgrp, writer);
+        }
+        // save queryComponent
+        if (mol.isQueryMolecule() && componentDefined)
+        {
+            QueryMolecule& qmol = static_cast<QueryMolecule&>(mol);
+            writer.StartObject();
+            writer.Key("type");
+            writer.String("queryComponent");
+            writer.Key("atoms");
+            writer.StartArray();
+            for (int i = 0; i < qmol.vertexCount(); i++)
+            {
+                if (qmol.components[i])
+                {
+                    writer.Int(i);
+                }
+            }
+            writer.EndArray();
+            writer.EndObject();
         }
         writer.EndArray();
     }
@@ -833,6 +864,59 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             {
                 writer.Key("cip");
                 writer.String(cip_it->second.c_str());
+            }
+        }
+
+        if (_pqmol)
+        {
+            QueryMolecule::Atom& atom = _pqmol->getAtom(i);
+            int query_atom_type = -1;
+            QS_DEF(Array<int>, qatom_list);
+            query_atom_type = QueryMolecule::parseQueryAtom(atom, qatom_list);
+            QueryMolecule::Atom* s_atom = QueryMolecule::stripKnownAttrs(atom);
+            bool needCustomQuery = query_atom_type == -1 && s_atom->type != QueryMolecule::ATOM_NUMBER;
+            std::map<int, const char*> qprops{{QueryMolecule::ATOM_SSSR_RINGS, "ringMembership"},
+                                              {QueryMolecule::ATOM_SMALLEST_RING_SIZE, "ringSize"},
+                                              {QueryMolecule::ATOM_CONNECTIVITY, "connectivity"}};
+            bool hasQueryProperties = atom.hasConstraint(QueryMolecule::ATOM_AROMATICITY) ||
+                                      std::any_of(qprops.cbegin(), qprops.cend(), [&atom](auto p) { return atom.hasConstraint(p.first); });
+            if (needCustomQuery || hasQueryProperties)
+            {
+                writer.Key("queryProperties");
+                writer.StartObject();
+                if (needCustomQuery)
+                {
+                    // 2do generate customquery
+                    std::string customQuery = "";
+                    writer.Key("customQuery");
+                    writer.String(customQuery.c_str());
+                }
+                else
+                {
+                    int value = -1;
+
+                    if (atom.sureValue(QueryMolecule::ATOM_AROMATICITY, value))
+                    {
+                        writer.Key("aromaticity");
+                        if (value == ATOM_AROMATIC)
+                            writer.String(ATOM_AROMATIC_STR);
+                        else if (value == ATOM_ALIPHATIC)
+                            writer.String(ATOM_ALIPHATIC_STR);
+                        else
+                            throw "Wrong aromaticity value";
+                    }
+                    for (auto p : qprops)
+                    {
+                        if (atom.sureValue(p.first, value))
+                        {
+                            writer.Key(p.second);
+                            writer.Uint(value);
+                        }
+                    }
+                    // 2do add hirality
+                    //*/
+                }
+                writer.EndObject();
             }
         }
 

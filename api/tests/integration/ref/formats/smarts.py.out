@@ -6,3 +6,23 @@ CC[C+5]CCCCC
 CC[C+5]CCCCC
 **** Load and Save as Query with not list ****
 [#6]-[#6]-[!#5!#6!#7]-[#6]-[#6]-[#6]-[#6]-[#6]-[#6]
+**** Load and Save as Query with component-level grouping ****
+([#8].[#6]) is ok. smarts_in==smarts_out
+([#8].[#6]).([#8].[#6]) is ok. smarts_in==smarts_out
+[!C;!b] is ok. smarts_in==smarts_out
+[*] is ok. smarts_in==smarts_out
+[*;R1] is ok. smarts_in==smarts_out
+[*;R3] is ok. smarts_in==smarts_out
+[r] is ok. smarts_in==smarts_out
+[r0] is ok. smarts_in==smarts_out
+[r1] is ok. smarts_in==smarts_out
+[r3] is ok. smarts_in==smarts_out
+[v] is ok. smarts_in==smarts_out
+[v0] is ok. smarts_in==smarts_out
+[v3] is ok. smarts_in==smarts_out
+[+0] is ok. smarts_in==smarts_out
+[#6]@[#6] is ok. smarts_in==smarts_out
+[#9]/[#6] is ok. smarts_in==smarts_out
+[#9]/[#6]=[C]/[#17] is ok. smarts_in==smarts_out
+[O;H] is ok. smarts_in==smarts_out
+[!O;H] is ok. smarts_in==smarts_out
