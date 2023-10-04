@@ -21,7 +21,7 @@ from bingo_elastic.queries import (  # type: ignore
 from dotenv import load_dotenv  # type: ignore
 from elasticsearch import Elasticsearch as NativeElastic  # type: ignore
 from flask import Blueprint, request
-from flask_cors import cross_origin
+from flask_cors import cross_origin  # type: ignore
 from indigo import Indigo, IndigoObject  # type: ignore
 
 libraries_api = Blueprint("libraries_api", __name__)
