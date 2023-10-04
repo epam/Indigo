@@ -96,7 +96,7 @@ def lib_list():
         if (
             lib["index"] == history_index_name
             or lib["index"] == comment_index_name
-            or re.compile("^\.").search(lib["index"])
+            or re.compile("^\\.").search(lib["index"])
         ):
             continue
         data = {
@@ -342,7 +342,7 @@ def search_count(search_id):
         )
         total_count += count_resp["hits"]["total"]["value"]
     end = time.time()
-    total_time = round(((end - start) * (10**3)), 3)
+    total_time = round(((end - start) * (10 ** 3)), 3)
     return {
         "state": "SUCCESS",
         "result": {"count": total_count, "time": total_time},
