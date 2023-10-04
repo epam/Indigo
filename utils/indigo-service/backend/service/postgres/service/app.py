@@ -6,7 +6,7 @@ from argparse import ArgumentParser
 
 from flasgger import Swagger  # type: ignore
 from flask import Flask  # type: ignore
-from flask_cors import CORS
+from flask_cors import CORS  # type: ignore
 from v2.common_api import common_api
 from v2.db.database import db_session
 from v2.imago_api import imago_api
