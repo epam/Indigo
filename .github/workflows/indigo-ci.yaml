@@ -1319,7 +1319,7 @@ jobs:
           name: indigo-python
           path: utils/indigo-service/backend/lib/
       - name: Build
-        run: docker build -f ./utils/indigo-service/backend/service/postgres/Dockerfile -t ***/indigo-service:latest ./utils/indigo-service/backend/service/postgres
+        run: docker build -f ./utils/indigo-service/backend/service/postgres/Dockerfile -t epmlsop/indigo-service:latest ./utils/indigo-service/backend/service/postgres
       - name: Test Imago
         run: |
           docker run  --rm=true -d -p 8080:80 --name=indigo_service epmlsop/indigo-service:latest
