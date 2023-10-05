@@ -127,6 +127,16 @@ namespace indigo
             return _properties;
         }
 
+        enum {
+            UNKNOWN,
+            CML,
+            RDF,
+            SMILES,
+            CXSMILES,
+            SMARTS
+        };
+        int original_format;
+
         // Casting methods. Invalid casting throws exceptions.
         virtual Molecule& asMolecule();
         virtual QueryMolecule& asQueryMolecule();

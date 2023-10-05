@@ -3784,6 +3784,29 @@ CEXPORT int indigoCountComponentBonds(int molecule, int index)
     INDIGO_END(-1);
 }
 
+CEXPORT const char* indigoGetOriginalFormat(int item)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        if (IndigoBaseMolecule::is(obj))
+        {
+            BaseMolecule& mol = obj.getBaseMolecule();
+            switch (mol.original_format)
+            {
+            case BaseMolecule::SMARTS:
+                return "smarts";
+            case BaseMolecule::SMILES:
+                return "smiles";
+            default:
+                return "unknown";
+            }
+        }
+        throw IndigoError("indigoSaveJson(): expected molecule or reaction, got %s", obj.debugInfo());
+    }
+    INDIGO_END(0);
+}
+
 CEXPORT int indigoCreateMolecule()
 {
     INDIGO_BEGIN

@@ -73,18 +73,19 @@ def to_string(
     if string_format == jsonapi.CompoundFormat.AUTO:
         string_format = jsonapi.CompoundFormat.MOLFILE
 
+    original_format = compound.getOriginalFormat()
     if string_format == jsonapi.CompoundFormat.SMILES:
-        return compound.smiles(), string_format
+        return compound.smiles(), string_format, original_format
     if string_format == jsonapi.CompoundFormat.MOLFILE:
-        return compound.molfile(), string_format
+        return compound.molfile(), string_format, original_format
     if string_format == jsonapi.CompoundFormat.CML:
-        return compound.cml(), string_format
+        return compound.cml(), string_format, original_format
     if string_format == jsonapi.CompoundFormat.SMARTS:
-        return compound.smarts(), string_format
+        return compound.smarts(), string_format, original_format
     if string_format == jsonapi.CompoundFormat.KET:
-        return compound.json(), string_format
+        return compound.json(), string_format, original_format
     if string_format == jsonapi.CompoundFormat.INCHI:
-        return IndigoInchi(indigo()).getInchi(compound), string_format
+        return IndigoInchi(indigo()).getInchi(compound), string_format, original_format
     raise RuntimeError(f"{string_format} is not supported")
 
 

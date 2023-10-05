@@ -188,7 +188,7 @@ CompoundListResponse = Response[
 
 
 def make_compound_response(
-    value: str, compound_format: CompoundFormat
+    value: str, compound_format: CompoundFormat, original_format: str
 ) -> CompoundResponse:
     if compound_format == CompoundFormat.AUTO:
         raise RuntimeError(
@@ -199,7 +199,7 @@ def make_compound_response(
         **{
             "data": {
                 "type": "compound",
-                "attributes": {"structure": value, "format": compound_format},
+                "attributes": {"structure": value, "format": compound_format, "original_format": original_format},
             }
         }
     )
