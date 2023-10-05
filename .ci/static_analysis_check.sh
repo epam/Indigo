@@ -20,14 +20,14 @@ pflake8 --version
 for folder in api/http api/python bingo/bingo-elastic/python api/tests/integration utils/indigo-service/backend/service
 do
   cd ${folder}
-  isort --check .
+  isort --check --profile=black .
   black --check .
   pflake8 .
   cd -
 done
 
 mypy --version
-for folder in api/http api/python bingo/bingo-elastic/python utils/indigo-service/backend/service
+for folder in api/http api/python bingo/bingo-elastic/python utils/indigo-service/backend/service/elastic utils/indigo-service/backend/service/postgres
 do
     cd ${folder}
     export PYTHONPATH=${PWD}

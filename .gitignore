@@ -73,7 +73,7 @@ api/python/indigo/lib
 *.nupkg
 *.whl
 bin
-lib
+!lib
 obj
 TestResults
 cmake-build-debug

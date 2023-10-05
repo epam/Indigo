@@ -4,7 +4,7 @@ from .common import config
 
 celery = Celery(
     __name__,
-    broker="redis://localhost:6379/0",
-    backend="redis://localhost:6379/0",
+    broker=config.CELERY_broker_url,
+    backend=config.result_backend,
 )
 celery.conf.update(config.__dict__)

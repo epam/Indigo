@@ -1,13 +1,7 @@
 # Bingo config
 import os
 
-BINGO_POSTGRES = {
-    "host": "db",
-    "port": "5432",
-    "database": "postgres",
-    "user": "postgres",
-    "password": os.environ.get("POSTGRES_PASSWORD", ""),
-}
+host_ip = os.environ.get("HOST_IP", "localhost")
 
 # Flask config
 
@@ -16,9 +10,9 @@ UPLOAD_FOLDER = "/tmp/indigo-service/upload"
 ALLOWED_EXTENSIONS = ("sdf", "sd", "gz")
 
 # Celery config
-CELERY_broker_url = "redis://localhost:6379/0"
-result_backend = "redis://localhost:6379/0"
-imports = ("v2.imago_api", "v2.libraries_api")
+CELERY_broker_url = f"redis://{host_ip}:6379/0"
+result_backend = f"redis://{host_ip}:6379/0"
+imports = "v3.libraries_api"
 accept_content = ("json",)
 task_serializer = "json"
 result_serializer = "json"
