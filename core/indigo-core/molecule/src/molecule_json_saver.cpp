@@ -26,6 +26,7 @@
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_savers.h"
 #include "molecule/query_molecule.h"
+#include "molecule/smiles_saver.h"
 
 using namespace indigo;
 using namespace rapidjson;
@@ -416,7 +417,8 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
             int bond_order = mol.getBondOrder(i);
             if (bond_order < 0 && _pqmol)
             {
-                int qb = QueryMolecule::getQueryBondType(_pqmol->getBond(i));
+                QueryMolecule::Bond& qbond = _pqmol->getBond(i);
+                int qb = QueryMolecule::getQueryBondType(qbond);
                 if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
                     bond_order = 5;
                 else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
@@ -426,7 +428,13 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                 else if (qb == QueryMolecule::QUERY_BOND_ANY)
                     bond_order = 8;
                 if (bond_order < 0)
-                    throw Error("Invalid query bond");
+                {
+                    // throw Error("Invalid query bond");
+
+                    std::string customQuery = SmilesSaver::writeSmartsBondStr(&qbond);
+                    writer.Key("customQuery");
+                    writer.String(customQuery.c_str());
+                }
             }
 
             if (bond_order == BOND_ZERO && _pmol)
@@ -886,8 +894,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 writer.StartObject();
                 if (needCustomQuery)
                 {
-                    // 2do generate customquery
-                    std::string customQuery = "";
+                    std::string customQuery = SmilesSaver::writeSmartsAtomStr(&atom);
                     writer.Key("customQuery");
                     writer.String(customQuery.c_str());
                 }
