@@ -429,7 +429,13 @@ def get_response(md, output_struct_format, json_output, options, indigo):
 
     if json_output:
         return (
-            jsonify({"struct": output_mol, "format": output_struct_format}),
+            jsonify(
+                {
+                    "struct": output_mol,
+                    "format": output_struct_format,
+                    "original_format": md.struct.getOriginalFormat(),
+                }
+            ),
             200,
             {"Content-Type": "application/json"},
         )

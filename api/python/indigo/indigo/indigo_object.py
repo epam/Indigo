@@ -243,7 +243,9 @@ class IndigoObject:
             str: original format string
         """
 
-        return IndigoLib.checkResultString(self._lib().getOriginalFormat(self.id))
+        return IndigoLib.checkResultString(
+            self._lib().indigoGetOriginalFormat(self.id)
+        )
 
     def saveMolfile(self, filename):
         """Molecule method saves the structure into a Molfile

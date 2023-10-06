@@ -3802,7 +3802,8 @@ CEXPORT const char* indigoGetOriginalFormat(int item)
                 return "unknown";
             }
         }
-        throw IndigoError("indigoSaveJson(): expected molecule or reaction, got %s", obj.debugInfo());
+        else
+            throw IndigoError("indigoSaveJson(): expected molecule, got %s", obj.debugInfo());
     }
     INDIGO_END(0);
 }

@@ -34,7 +34,7 @@ using namespace indigo;
 
 IMPL_ERROR(BaseMolecule, "molecule");
 
-BaseMolecule::BaseMolecule():original_format(BaseMolecule::UNKNOWN)
+BaseMolecule::BaseMolecule() : original_format(BaseMolecule::UNKNOWN)
 {
     _edit_revision = 0;
 }
@@ -661,7 +661,7 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
     makeSubmolecule(other, *mapping, inv_mapping, skip_flags);
     _meta.clone(other._meta);
     name.copy(other.name);
-    other.original_format = original_format;
+    original_format = other.original_format;
     copyProperties(other, *mapping);
 }
 
@@ -694,7 +694,7 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
     _meta.clone(other._meta);
     _mergeWithSubmolecule_Sub(other, vertices, 0, mapping, edge_mapping, skip_flags);
     name.copy(other.name);
-    other.original_format = original_format;
+    original_format = other.original_format;
     copyProperties(other, mapping);
 }
 
