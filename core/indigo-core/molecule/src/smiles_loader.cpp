@@ -341,7 +341,7 @@ void SmilesLoader::_readOtherStuff()
                         {
                             // Check if the stereocenter has already been marked as any
                             // For example [H]C1(O)c2ccnn2[C@@H](O)c2ccnn12 |r,w:1.0,1.1|
-                            if (_bmol->stereocenters.getType(atom_idx) != MoleculeStereocenters::ATOM_ANY)
+                            if (!_bmol->stereocenters.exists(atom_idx))
                                 _bmol->addStereocenters(atom_idx, MoleculeStereocenters::ATOM_ANY, 0, false);
                         }
                     }
