@@ -235,7 +235,8 @@ bool MoleculeStereocenters::isPossibleAtropocenter(BaseMolecule& baseMolecule, i
                 for (int i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
                 {
                     auto bond_idx = v.neiEdge(i);
-                    if (baseMolecule.getEdgeTopology(bond_idx) == TOPOLOGY_CHAIN && baseMolecule.vertexInRing(v.neiVertex(i)))
+                    if (baseMolecule.getEdgeTopology(bond_idx) == TOPOLOGY_CHAIN && baseMolecule.getBondOrder(bond_idx) == BOND_SINGLE &&
+                        baseMolecule.vertexInRing(v.neiVertex(i)))
                     {
                         std::unordered_set<int> visited;
                         RedBlackMap<int, int> dir_map;

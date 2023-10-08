@@ -154,7 +154,7 @@ Structure 916 excluded: stereocenters: stereo types of the opposite bonds mismat
 Structure 931 excluded: stereocenters: one bond up, one bond down -- indefinite case near atom 1
 Structure 936 excluded: molfile loader: direction of bond #2 makes no sense
 Structure 940 excluded: element: bad valence on Ar having 0 drawn bonds, charge 0, and 2 radical electrons
-Structure 941 excluded: molfile loader: direction of bond #4 makes no sense
+Structure 941 excluded: molfile loader: direction of bond #3 makes no sense
 Structure 943 excluded: element: bad valence on H having 2 drawn bonds, charge -2, and 0 radical electrons
 Structure 948 excluded: molfile loader: direction of bond #15 makes no sense
 Structure 955 excluded: element: bad valence on H having 0 drawn bonds, charge -3, and 0 radical electrons
@@ -231,7 +231,7 @@ Structure 1492 excluded: stereocenters: directions of neighbor stereo bonds matc
 Structure 1498 excluded: molfile loader: direction of bond #3 makes no sense
 Structure 1501 excluded: stereocenters: directions of neighbor stereo bonds match near atom 0
 Structure 1505 excluded: element: bad valence on C having 4 drawn bonds, charge -1, and 1 radical electrons
-Structure 1514 excluded: molfile loader: direction of bond #4 makes no sense
+Structure 1514 excluded: molfile loader: direction of bond #3 makes no sense
 Structure 1552 excluded: element: bad valence on H having 1 drawn bonds, charge 1, and 0 radical electrons
 Structure 1564 excluded: stereocenters: all 3 bonds up near stereoatom 97
 Structure 1567 excluded: molfile loader: direction of bond #5 makes no sense
@@ -270,7 +270,7 @@ Structure 1831 excluded: molfile loader: direction of bond #9 makes no sense
 Structure 1842 excluded: element: bad valence on I having 2 drawn bonds, charge 0, and 0 radical electrons
 Structure 1843 excluded: molfile loader: direction of bond #8 makes no sense
 Structure 1844 excluded: molfile loader: direction of bond #13 makes no sense
-Structure 1846 excluded: molfile loader: direction of bond #4 makes no sense
+Structure 1846 excluded: molfile loader: direction of bond #3 makes no sense
 Structure 1848 excluded: molfile loader: direction of bond #9 makes no sense
 Structure 1851 excluded: stereocenters: 2 hydrogens near stereocenter 8
 Structure 1857 excluded: molfile loader: direction of bond #1 makes no sense
