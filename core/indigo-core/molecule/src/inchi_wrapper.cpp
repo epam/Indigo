@@ -529,6 +529,8 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
     // Process tetrahedral stereocenters
     for (int i = mol.stereocenters.begin(); i != mol.stereocenters.end(); i = mol.stereocenters.next(i))
     {
+        if (!mol.stereocenters.isTetrahydral(mol.stereocenters.getAtomIndex(i)))
+            continue;
         int v = mol.stereocenters.getAtomIndex(i);
 
         int type, group, pyramid[4];

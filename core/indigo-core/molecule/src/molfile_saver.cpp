@@ -1910,7 +1910,7 @@ void MolfileSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list)
 int MolfileSaver::_getStereocenterParity(BaseMolecule& mol, int idx)
 {
     int type = mol.stereocenters.getType(idx);
-    if (type == 0)
+    if (type == 0 || !mol.stereocenters.isTetrahydral(idx))
         return 0;
     if (type == MoleculeStereocenters::ATOM_ANY)
         return 3;

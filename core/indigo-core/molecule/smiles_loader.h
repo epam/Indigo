@@ -159,6 +159,8 @@ namespace indigo
         int _balance;
         int _current_compno;
         bool _inside_smarts_component;
+        bool _has_atom_coordinates = false;
+        bool _has_directions_on_rings = false;
 
         BaseMolecule* _bmol;
         QueryMolecule* _qmol;
