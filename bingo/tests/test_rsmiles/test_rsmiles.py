@@ -1,7 +1,6 @@
 import pytest
 
 from ..helpers import assert_calculate_query, query_cases
-from ..logger import logger
 
 class TestRsmiles:
     @pytest.mark.parametrize("query_id, expected", query_cases("rsmiles"))
