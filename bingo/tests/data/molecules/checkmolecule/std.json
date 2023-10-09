@@ -8352,17 +8352,17 @@
     {
         "query_id": 1671,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #22 makes no sense"
+        "expected": "molfile loader: direction of bond #185 makes no sense"
     },
     {
         "query_id": 1672,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #22 makes no sense"
+        "expected": "molfile loader: direction of bond #185 makes no sense"
     },
     {
         "query_id": 1673,
         "query_type": "checkmolecule",
-        "expected": "molfile loader: direction of bond #177 makes no sense"
+        "expected": "molfile loader: direction of bond #185 makes no sense"
     },
     {
         "query_id": 1674,
