@@ -39,7 +39,7 @@ Structure 275 excluded: molfile loader: direction of bond #7 makes no sense
 Structure 276 excluded: element: bad valence on H having 1 drawn bonds, charge 1, and 0 radical electrons
 Structure 283 excluded: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
 Structure 286 excluded: stereocenters: stereo types of the opposite bonds mismatch near atom 0
-Structure 294 excluded: molfile loader: direction of bond #22 makes no sense
+Structure 294 excluded: molfile loader: direction of bond #185 makes no sense
 Structure 295 excluded: stereocenters: stereo types of the opposite bonds mismatch near atom 0
 Structure 301 excluded: stereocenters: stereo types of the opposite bonds mismatch near atom 1
 Structure 316 excluded: stereocenters: stereo types of non-opposite bonds match near atom 30
@@ -263,7 +263,7 @@ Structure 1785 excluded: stereocenters: one bond up, one bond down -- indefinite
 Structure 1792 excluded: stereocenters: 2 hydrogens near stereocenter 6
 Structure 1797 excluded: element: bad valence on N having 5 drawn bonds, charge 1, and 0 radical electrons
 Structure 1799 excluded: molfile loader: direction of bond #45 makes no sense
-Structure 1800 excluded: molfile loader: direction of bond #177 makes no sense
+Structure 1800 excluded: molfile loader: direction of bond #185 makes no sense
 Structure 1823 excluded: molfile loader: direction of bond #0 makes no sense
 Structure 1830 excluded: molfile loader: direction of bond #1 makes no sense
 Structure 1831 excluded: molfile loader: direction of bond #9 makes no sense
@@ -288,7 +288,7 @@ Structure 1926 excluded: molfile loader: direction of bond #7 makes no sense
 Structure 1931 excluded: element: bad valence on H having 4 drawn bonds, charge 0, and 0 radical electrons
 Structure 1939 excluded: element: bad valence on C having 5 drawn bonds, charge 0, and 0 radical electrons
 Structure 1945 excluded: molfile loader: direction of bond #5 makes no sense
-Structure 1948 excluded: molfile loader: direction of bond #22 makes no sense
+Structure 1948 excluded: molfile loader: direction of bond #185 makes no sense
 Structure 1952 excluded: molfile loader: direction of bond #3 makes no sense
 Structure 1953 excluded: stereocenters: stereo types of the opposite bonds mismatch near atom 0
 Structure 1956 excluded: element: bad valence on C having 4 drawn bonds, charge -1, and 1 radical electrons

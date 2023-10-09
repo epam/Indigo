@@ -98,13 +98,20 @@ void MoleculeStereocenters::buildFromBonds(BaseMolecule& baseMolecule, const Ste
             int atom_idx = _stereocenters.key(i);
             _AtropoCenter& ac = _atropocenters.at(atom_idx);
             std::unordered_set<int> visited_bonds;
-            findAtropoStereobonds(baseMolecule, ac.bond_directions, atom_idx, visited_bonds, false, sensible_bonds_out);
-            auto bdir = baseMolecule.getBondDirection(ac.atropo_bond);
-            // include possible atropobond itself if its direction is not sensible, but direction is set
-            if (bdir && !sensible_bonds_out[ac.atropo_bond])
+            if (findAtropoStereobonds(baseMolecule, ac.bond_directions, atom_idx, visited_bonds, false, sensible_bonds_out))
             {
-                ac.bond_directions.insert(ac.atropo_bond, bdir);
-                sensible_bonds_out[ac.atropo_bond] = 1;
+                auto bdir = baseMolecule.getBondDirection(ac.atropo_bond);
+                // include possible atropobond itself if its direction is not sensible, but direction is set
+                if (bdir && !sensible_bonds_out[ac.atropo_bond])
+                {
+                    ac.bond_directions.insert(ac.atropo_bond, bdir);
+                    sensible_bonds_out[ac.atropo_bond] = 1;
+                }
+            }
+            else
+            {
+                atom.is_atropisomeric = false;
+                _atropocenters.remove(atom_idx);
             }
         }
     }
@@ -291,7 +298,7 @@ bool MoleculeStereocenters::findAtropoStereobonds(BaseMolecule& baseMolecule, Re
                     if (first_only)
                         return true;
                 }
-                findAtropoStereobonds(baseMolecule, directions_map, v.neiVertex(i), visited_bonds);
+                findAtropoStereobonds(baseMolecule, directions_map, v.neiVertex(i), visited_bonds, first_only, sensible_bonds_out);
             }
         }
     }

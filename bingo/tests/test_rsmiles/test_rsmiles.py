@@ -8,8 +8,4 @@ class TestRsmiles:
     def test_molecular_weight(self, db, entities, query_id, expected):
         reaction = entities.get(query_id)
         result = db.rsmiles(reaction)
-        if result != expected:
-            logger.info(query_id)
-            logger.info(result)
-            logger.info(expected)
         assert_calculate_query(result, expected)
