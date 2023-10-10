@@ -26,3 +26,4 @@ CC[C+5]CCCCC
 [#9]/[#6]=[C]/[#17] is ok. smarts_in==smarts_out
 [O;H] is ok. smarts_in==smarts_out
 [!O;H] is ok. smarts_in==smarts_out
+([#6]1-[#6]-[#6]-1.[#6]) is ok. smarts_in==smarts_out
