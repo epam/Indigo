@@ -85,3 +85,4 @@ C1C(O)=C(C2C=CC(C)=CC=2N)C(C)=CC=1 |w:3.3,3.12,(-2.40,1.39,;-0.80,1.39,;-0.00,2.
 suffoxide:
 C1[S@](=O)CC(=O)C=1C
 C1[S@](=O)CC(=O)C=1C
+bond:5 stereo:6
