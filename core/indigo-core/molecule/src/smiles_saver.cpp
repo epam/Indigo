@@ -189,13 +189,13 @@ void SmilesSaver::_saveMolecule()
     v_to_comp_group.resize(v_seq.size());
     v_to_comp_group.fffill();
 
-    if (_qmol != nullptr && smarts_mode && _qmol->components.size() >= v_seq.size())
+    if (_qmol != nullptr && smarts_mode)
     {
         if (v_seq.size() < 1)
             return; // No atoms to save
         std::set<int> components;
         int cur_component = -1;
-        for (int i = 0; i < v_seq.size(); ++i)
+        for (int i = 0; i < v_seq.size(); ++i && _qmol->components.size() > 0)
         {
             // In v_seq each fragment started with vertex which parent == -1
             // In SMARTS some fragments could be grouped (component-level grouping)
@@ -204,20 +204,24 @@ void SmilesSaver::_saveMolecule()
             // All group fragments should go one by one - in SMARTS its inside "()".
             if (v_seq[i].parent_vertex < 0) // New Fragment
             {
-                int new_component = _qmol->components[v_seq[i].idx];
-                // if component defined for new fragment(id>0) and its different from previous and seen before
-                if (new_component > 0 && new_component != cur_component && components.count(new_component))
+                int new_component = 0;
+                if (_qmol->components.size() > v_seq[i].idx)
                 {
-                    // According to the DfsWalk code, the groups components should be neighbors.
-                    // If will be found case when it wrong - add code to rearrange fragments
-                    throw Error("SMARTS fragments need to reaarange.");
+                    new_component = _qmol->components[v_seq[i].idx];
+                    // if component defined for new fragment(id>0) and its different from previous and seen before
+                    if (new_component > 0 && new_component != cur_component && components.count(new_component))
+                    {
+                        // According to the DfsWalk code, the groups components should be neighbors.
+                        // If will be found case when it wrong - add code to rearrange fragments
+                        throw Error("SMARTS fragments need to reaarange.");
+                    }
+                    components.emplace(new_component);
                 }
-                components.emplace(new_component);
                 cur_component = new_component;
             }
             else
             {
-                if (cur_component != _qmol->components[v_seq[i].idx])
+                if (_qmol->components.size() > v_seq[i].idx && cur_component != _qmol->components[v_seq[i].idx])
                 {
                     // Fragment contains atoms from different components - something went wrong
                     throw Error("Fragment contains atoms from different components.");
