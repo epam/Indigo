@@ -128,3 +128,14 @@ for sm in mols_smiles:
     print(mol.smiles())
     mol.layout()
     print(mol.smiles())
+
+print("*** Suffoxides ***")
+mols_smiles = [
+    "C1=C(C)C(=O)C[S@]1=O",
+]
+for sm in mols_smiles:
+    print("suffoxide:")
+    mol = indigo.loadMolecule(sm)
+    print(mol.smiles())
+    mol.layout()
+    print(mol.smiles())

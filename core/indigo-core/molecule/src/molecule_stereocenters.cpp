@@ -1771,7 +1771,7 @@ void MoleculeStereocenters::markBond(BaseMolecule& baseMolecule, int atom_idx)
         for (j = 0; j < size; j++)
         {
             edge_idx = baseMolecule.findEdgeIndex(atom_idx, pyramid[size - 1]);
-            if (baseMolecule.getBondDirection(edge_idx) == 0 && baseMolecule.getVertex(pyramid[size - 1]).degree() == 1)
+            if (baseMolecule.getBondDirection(edge_idx) == 0 && baseMolecule.getBondOrder(edge_idx) == BOND_SINGLE && baseMolecule.getVertex(pyramid[size - 1]).degree() == 1)
                 break;
             rotatePyramid(pyramid);
             if (size == 4)
@@ -1783,7 +1783,8 @@ void MoleculeStereocenters::markBond(BaseMolecule& baseMolecule, int atom_idx)
             for (j = 0; j < size; j++)
             {
                 edge_idx = baseMolecule.findEdgeIndex(atom_idx, pyramid[size - 1]);
-                if (baseMolecule.getBondDirection(edge_idx) == 0 && baseMolecule.getBondTopology(edge_idx) == TOPOLOGY_CHAIN && getType(pyramid[size - 1]) == 0)
+                if (baseMolecule.getBondDirection(edge_idx) == 0 && baseMolecule.getBondOrder(edge_idx) == BOND_SINGLE &&
+                    baseMolecule.getBondTopology(edge_idx) == TOPOLOGY_CHAIN && getType(pyramid[size - 1]) == 0)
                     break;
                 rotatePyramid(pyramid);
                 if (size == 4)
