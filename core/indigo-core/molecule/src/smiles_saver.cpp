@@ -189,7 +189,7 @@ void SmilesSaver::_saveMolecule()
     v_to_comp_group.resize(v_seq.size());
     v_to_comp_group.fffill();
 
-    if (_qmol != nullptr && smarts_mode)
+    if (_qmol != nullptr && smarts_mode && _qmol->components.size() >= v_seq.size())
     {
         if (v_seq.size() < 1)
             return; // No atoms to save
