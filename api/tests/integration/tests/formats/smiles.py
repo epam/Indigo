@@ -130,9 +130,7 @@ for sm in mols_smiles:
     print(mol.smiles())
 
 print("*** Suffoxides ***")
-mols_smiles = [
-    "C1=C(C)C(=O)C[S@]1=O",
-]
+mols_smiles = ["C1=C(C)C(=O)C[S@]1=O"]
 for sm in mols_smiles:
     print("suffoxide:")
     mol = indigo.loadMolecule(sm)
@@ -142,4 +140,4 @@ for sm in mols_smiles:
     for i in range(mol.countBonds()):
         bs = mol.getBond(i).bondStereo()
         if bs > 0:
-            print("bond:%d stereo:%d" % (i, bs) )
+            print("bond:%d stereo:%d" % (i, bs))
