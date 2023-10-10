@@ -127,7 +127,8 @@ namespace indigo
             return _properties;
         }
 
-        enum {
+        enum
+        {
             UNKNOWN,
             CML,
             RDF,
