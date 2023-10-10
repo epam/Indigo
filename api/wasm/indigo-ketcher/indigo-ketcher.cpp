@@ -111,7 +111,7 @@ namespace indigo
         std::string toString(const std::map<std::string, std::string>& options, const std::string& outputFormat) const
         {
             print_js("toString:");
-            cstring result = nullptr;
+            std::string result;
             if (outputFormat == "molfile" || outputFormat == "rxnfile" || outputFormat == "chemical/x-mdl-molfile" || outputFormat == "chemical/x-mdl-rxnfile")
             {
                 if (is_reaction())
@@ -187,21 +187,22 @@ namespace indigo
                 print_js(outputFormat.c_str());
                 result = _checkResultString(indigoToString(buffer.id));
             }
-            if (result == nullptr)
+            else
             {
                 std::stringstream ss;
                 ss << "Unknown output format: " << outputFormat;
                 jsThrow(ss.str().c_str());
                 return ""; // suppress warning
             }
-            if (auto out = options.find("output-content-type"); out != options.end() && out->second == "application/json")
+            auto out = options.find("output-content-type");
+            if (out != options.end() && out->second == "application/json")
             {
-                cstring originalFormat = _checkResultString(indigoGetOriginalFormat(id()));
+                std::string originalFormat = _checkResultString(indigoGetOriginalFormat(id()));
                 rapidjson::Document resultJson;
                 auto& allocator = resultJson.GetAllocator();
                 resultJson.SetObject();
                 resultJson.AddMember("struct", result, allocator);
-                resultJson.AddMember("format", outputFormat.c_str(), allocator);
+                resultJson.AddMember("format", outputFormat, allocator);
                 resultJson.AddMember("original_format", originalFormat, allocator);
                 rapidjson::StringBuffer buffer;
                 rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
@@ -302,8 +303,8 @@ namespace indigo
         exceptionMessages.reserve(4);
 
         int objectId = -1;
-        if (auto input_format = options.find("input-format");
-            input_format != options.end() && (input_format->second == "smarts" || input_format->second == "chemical/x-daylight-smarts"))
+        auto input_format = options.find("input-format");
+        if (input_format != options.end() && (input_format->second == "smarts" || input_format->second == "chemical/x-daylight-smarts"))
         {
             print_js("load as smarts");
             objectId = indigoLoadSmartsFromBuffer(data.c_str(), data.size());
