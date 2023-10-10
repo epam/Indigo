@@ -236,9 +236,10 @@ namespace indigo
 
     void indigoSetOptions(const std::map<std::string, std::string>& options)
     {
+        std::set<std::string> to_skip{"smiles", "smarts", "input-format", "output-content-type"};
         for (const auto& option : options)
         {
-            if (option.first != "smiles" && option.first != "smarts" && option.first != "input-format" && option.first != "output-content-type")
+            if (to_skip.count(option.first) < 1)
             {
                 _checkResult(indigoSetOption(option.first.c_str(), option.second.c_str()));
             }

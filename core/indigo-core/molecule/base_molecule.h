@@ -131,10 +131,15 @@ namespace indigo
         {
             UNKNOWN,
             CML,
+            CDXML,
+            CDX,
             RDF,
             SMILES,
             CXSMILES,
-            SMARTS
+            SMARTS,
+            MOL,
+            RXN,
+            KET
         };
         int original_format;
 

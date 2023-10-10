@@ -3795,9 +3795,13 @@ CEXPORT const char* indigoGetOriginalFormat(int item)
             switch (mol.original_format)
             {
             case BaseMolecule::SMARTS:
-                return "smarts";
+                return "chemical/x-daylight-smarts";
             case BaseMolecule::SMILES:
-                return "smiles";
+                return "chemical/x-daylight-smiles";
+            case BaseMolecule::MOL:
+                return "chemical/x-mdl-molfile";
+            case BaseMolecule::RXN:
+                return "chemical/x-mdl-rxnfile";
             default:
                 return "unknown";
             }
