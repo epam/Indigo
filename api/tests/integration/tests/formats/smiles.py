@@ -139,3 +139,7 @@ for sm in mols_smiles:
     print(mol.smiles())
     mol.layout()
     print(mol.smiles())
+    for i in range(mol.countBonds()):
+        bs = mol.getBond(i).bondStereo()
+        if bs > 0:
+            print("bond:%d stereo:%d" % (i, bs) )
