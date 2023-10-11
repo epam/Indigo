@@ -1,4 +1,4 @@
 ******  Test get original format: smiles  ***
-"molecule (NC(C(O)=O)C)" : got "chemical/x-daylight-smiles" - OK
+Molecule "N[CH](C)C(=O)O" : got "chemical/x-daylight-smiles" - OK
 ******  Test get original format: smarts  ***
-"query_molecule ([#6]1-[#6]-[#6]-1.[#6])" : got "chemical/x-daylight-smarts" - OK
+Molecule "([#6]1-[#6]-[#6]-1.[#6])" : got "chemical/x-daylight-smarts" - OK
