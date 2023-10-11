@@ -322,7 +322,7 @@ def load_moldata(
     ):
         md.struct = indigo.loadSmarts(molstr)
         md.is_query = True
-    if molstr.startswith("InChI"):
+    elif molstr.startswith("InChI"):
         md.struct = indigo.inchi.loadMolecule(molstr)
         md.is_rxn = False
         md.is_query = False

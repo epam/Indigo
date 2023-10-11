@@ -92,6 +92,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoCml(self));
         }
 
+        public string getOriginalFormat()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoGetOriginalFormat(self));
+        }
+
         public string json()
         {
             dispatcher.setSessionID();
