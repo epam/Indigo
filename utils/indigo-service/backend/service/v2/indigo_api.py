@@ -72,9 +72,12 @@ def indigo_init(options={}):
             tls.indigo.setOption(option, value)
         for option, value in options.items():
             # TODO: Remove this when Indigo API supports smiles type option
-            if option in {
+            if option in (
                 "smiles",
-            }:
+                "smarts",
+                "input-format",
+                "output-content-type",
+            ):
                 continue
             tls.indigo.setOption(option, value)
         return tls.indigo
@@ -313,7 +316,13 @@ def load_moldata(
             )
     md = MolData()
 
-    if molstr.startswith("InChI"):
+    if "input-format" in options and options["input-format"] in (
+        "smarts",
+        "chemical/x-daylight-smarts",
+    ):
+        md.struct = indigo.loadSmarts(molstr)
+        md.is_query = True
+    elif molstr.startswith("InChI"):
         md.struct = indigo.inchi.loadMolecule(molstr)
         md.is_rxn = False
         md.is_query = False
@@ -427,9 +436,15 @@ def get_response(md, output_struct_format, json_output, options, indigo):
         "[RESPONSE]", output_struct_format, options, output_mol.encode("utf-8")
     )
 
-    if json_output:
+    if json_output or options.get("output-content-type") == "application/json":
         return (
-            jsonify({"struct": output_mol, "format": output_struct_format}),
+            jsonify(
+                {
+                    "struct": output_mol,
+                    "format": output_struct_format,
+                    "original_format": md.struct.getOriginalFormat(),
+                }
+            ),
             200,
             {"Content-Type": "application/json"},
         )
