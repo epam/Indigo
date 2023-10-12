@@ -1061,6 +1061,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         {
             _pmol = &pmol->asMolecule();
         }
+        mol.original_format = BaseMolecule::KET;
 
         auto& mol_node = _mol_nodes[node_idx];
         if (mol_node.HasMember("atoms"))

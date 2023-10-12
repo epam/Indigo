@@ -2,3 +2,7 @@
 Molecule "N[CH](C)C(=O)O" : got "chemical/x-daylight-smiles" - OK
 ******  Test get original format: smarts  ***
 Molecule "([#6]1-[#6]-[#6]-1.[#6])" : got "chemical/x-daylight-smarts" - OK
+******  Test get original format: reaction  ***
+Molecule "N[CH](C)C(=O)O>>N[CH](C)C" : got "chemical/x-daylight-smiles" - OK
+******  Test get original format: reaction smarts  ***
+Molecule "([#6]1-[#6]-[#6]-1.[#6])>>([#6]1-[#6]-[#6]-1.[#6]=O)" : got "chemical/x-daylight-smarts" - OK
