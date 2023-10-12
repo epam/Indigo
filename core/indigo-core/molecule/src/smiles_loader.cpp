@@ -62,6 +62,7 @@ void SmilesLoader::loadMolecule(Molecule& mol)
     _bmol = &mol;
     _mol = &mol;
     _qmol = 0;
+    mol.original_format = BaseMolecule::SMILES;
     _loadMolecule();
 
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
@@ -73,6 +74,7 @@ void SmilesLoader::loadQueryMolecule(QueryMolecule& mol)
     _bmol = &mol;
     _mol = 0;
     _qmol = &mol;
+    mol.original_format = BaseMolecule::SMILES;
     _loadMolecule();
 }
 
@@ -1361,6 +1363,7 @@ void SmilesLoader::loadSMARTS(QueryMolecule& mol)
     _mol = 0;
     _qmol = &mol;
     smarts_mode = true;
+    mol.original_format = BaseMolecule::SMARTS;
     _loadMolecule();
 }
 

@@ -87,6 +87,8 @@ public interface IndigoLib extends Library {
 
     int indigoRemove(int item);
 
+    Pointer indigoGetOriginalFormat(int item);
+
     int indigoCreateMolecule();
 
     int indigoCreateQueryMolecule();
