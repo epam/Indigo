@@ -1196,12 +1196,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     {
         if (mol.stereocenters.getType(sc._atom_idx) == 0)
         {
-            if (mol.isAtropisomerismReferenceAtom(sc._atom_idx))
-            {
-                mol.stereocenters.add_ignore(mol, sc._atom_idx, sc._type, sc._group, false);
-                mol.stereocenters.setAtropisomeric(sc._atom_idx, true);
-            }
-            else if (stereochemistry_options.ignore_errors)
+            if (stereochemistry_options.ignore_errors)
                 mol.addStereocentersIgnoreBad(sc._atom_idx, sc._type, sc._group, false); // add non-valid stereocenters
             else
                 throw Error("stereo type specified for atom #%d, but the bond "

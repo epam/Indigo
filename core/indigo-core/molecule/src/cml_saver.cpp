@@ -368,7 +368,7 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                 }
             }
 
-            if (_mol->stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY)
+            if (_mol->stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY && _mol->stereocenters.isTetrahydral(i))
             {
                 XMLElement* atomparity = _doc->NewElement("atomParity");
                 atom->LinkEndChild(atomparity);

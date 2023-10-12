@@ -27,6 +27,7 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_rgroups.h"
 #include "molecule/molecule_savers.h"
+#include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
 
@@ -307,7 +308,7 @@ void SmilesSaver::_saveMolecule()
 
         stereocenters.get(i, atom_idx, type, group, pyramid);
 
-        if (type < MoleculeStereocenters::ATOM_AND || stereocenters.isAtropisomeric(atom_idx))
+        if (type < MoleculeStereocenters::ATOM_AND || !stereocenters.isTetrahydral(atom_idx))
             continue;
 
         int implicit_h_idx = -1;
@@ -429,7 +430,7 @@ void SmilesSaver::_saveMolecule()
 
             int idx = _written_atoms[i];
 
-            if (_atoms[idx].chirality == 0)
+            if (_atoms[idx].chirality == 0 || !stereocenters.isTetrahydral(idx))
                 continue;
 
             int type = stereocenters.getType(idx);
@@ -692,7 +693,8 @@ void SmilesSaver::_saveMolecule()
         _writeRingBonds();
         _writeUnsaturated();
         _writeSubstitutionCounts();
-        _writeWedges();
+        if (_bmol->hasAtropoStereoBonds())
+            _writeWedges();
 
         if (_comma)
             _output.writeChar('|');
@@ -1648,7 +1650,6 @@ void SmilesSaver::_writeStereogroups()
     {
         int atom, type, group;
         stereocenters.get(i, atom, type, group, 0);
-
         if (type != MoleculeStereocenters::ATOM_ABS)
             break;
     }
@@ -1986,34 +1987,68 @@ void SmilesSaver::_writeSubstitutionCounts()
     }
 }
 
-void SmilesSaver::_writeWedges()
+void SmilesSaver::_writeBondDirs(const std::string& tag, const std::vector<std::pair<int, int>>& bonds)
 {
     bool is_first = true;
+    for (const auto& kvp : bonds)
+    {
+        if (is_first)
+        {
+            _startExtension();
+            _output.writeString(tag.c_str());
+            is_first = false;
+        }
+        else
+            _output.writeString(",");
+        _output.printf("%d.%d", kvp.first, kvp.second);
+    }
+}
 
+void SmilesSaver::_writeWedges()
+{
     if (_bmol)
     {
+        std::vector<std::pair<int, int>> down_dirs, up_dirs, wiggy_dirs;
         for (int i = 0; i < _written_bonds.size(); ++i)
         {
             auto bond_idx = _written_bonds[i];
             auto& e = _bmol->getEdge(bond_idx);
-            if (_bmol->stereocenters.exists(e.beg) && _bmol->stereocenters.isAtropisomeric(e.beg))
+            auto bdir = _bmol->getBondDirection(bond_idx);
+            if (bdir)
             {
-                auto bdir = _bmol->getBondDirection(bond_idx);
-                if (bdir && bdir < BOND_EITHER)
+                const auto& edge = _bmol->getEdge(bond_idx);
+                auto wa_idx = _written_atoms.find(edge.beg);
+                switch (bdir)
                 {
-                    if (is_first)
-                    {
-                        _startExtension();
-                        _output.writeString(bdir == BOND_UP ? "wU:" : "wD:");
-                        is_first = false;
-                    }
-                    else
-                        _output.writeString(",");
-                    const auto& edge = _bmol->getEdge(bond_idx);
-                    auto wa_idx = _written_atoms.find(edge.beg);
-                    _output.printf("%d.%d", wa_idx, i);
+                case BOND_UP:
+                    up_dirs.emplace_back(wa_idx, i);
+                    break;
+                case BOND_DOWN:
+                    down_dirs.emplace_back(wa_idx, i);
+                    break;
+                case BOND_EITHER:
+                    wiggy_dirs.emplace_back(wa_idx, i);
+                    break;
                 }
             }
+        }
+
+        _writeBondDirs("wU:", up_dirs);
+        _writeBondDirs("wD:", down_dirs);
+        _writeBondDirs("w:", wiggy_dirs);
+
+        if ((down_dirs.size() || up_dirs.size() || wiggy_dirs.size()) && BaseMolecule::hasCoord(*_mol))
+        {
+            _output.writeString(",(");
+            for (int i = 0; i < _written_atoms.size(); ++i)
+            {
+                if (i)
+                    _output.writeString(";");
+                auto atom_idx = _written_atoms[i];
+                const auto& pos = _mol->getAtomXyz(atom_idx);
+                _output.printf("%.2f,%.2f,", pos.x, pos.y);
+            }
+            _output.writeString(")");
         }
     }
 }

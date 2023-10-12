@@ -62,9 +62,9 @@ void SmilesLoader::loadMolecule(Molecule& mol)
     _bmol = &mol;
     _mol = &mol;
     _qmol = 0;
+    _has_atom_coordinates = false;
     mol.original_format = BaseMolecule::SMILES;
     _loadMolecule();
-
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
 }
 
@@ -319,6 +319,7 @@ void SmilesLoader::_readOtherStuff()
             while (isdigit(_scanner.lookNext()))
             {
                 int atom_idx = _scanner.readUnsigned();
+                // handle wiggly bonds
                 if (!wmode)
                 {
                     // This either bond can mark stereocenter or cis-trans double bond
@@ -328,7 +329,7 @@ void SmilesLoader::_readOtherStuff()
                     for (int nei : v.neighbors())
                     {
                         int edge_idx = v.neiEdge(nei);
-                        if (_bmol->getBondOrder(edge_idx) == BOND_DOUBLE)
+                        if (_bmol->getBondOrder(edge_idx) == BOND_DOUBLE && _bmol->getBondTopology(edge_idx) != TOPOLOGY_RING)
                         {
                             cis_trans.ignore(edge_idx);
                             found = true;
@@ -337,16 +338,11 @@ void SmilesLoader::_readOtherStuff()
 
                     if (!found)
                     {
-                        if (!_bmol->isPossibleStereocenter(atom_idx))
-                        {
-                            if (!stereochemistry_options.ignore_errors)
-                                throw Error("chirality not possible on atom #%d", atom_idx);
-                        }
-                        else
+                        if (_bmol->isPossibleStereocenter(atom_idx))
                         {
                             // Check if the stereocenter has already been marked as any
                             // For example [H]C1(O)c2ccnn2[C@@H](O)c2ccnn12 |r,w:1.0,1.1|
-                            if (_bmol->stereocenters.getType(atom_idx) != MoleculeStereocenters::ATOM_ANY)
+                            if (!_bmol->stereocenters.exists(atom_idx))
                                 _bmol->addStereocenters(atom_idx, MoleculeStereocenters::ATOM_ANY, 0, false);
                         }
                     }
@@ -356,21 +352,16 @@ void SmilesLoader::_readOtherStuff()
                 {
                     _scanner.skip(1);
                     auto bond_idx = _scanner.readUnsigned();
-                    if (wmode)
+                    if (!_has_directions_on_rings)
+                        _has_directions_on_rings = _bmol->getBondTopology(bond_idx) == TOPOLOGY_RING;
+                    if (bond_idx < _bmol->edgeCount() && atom_idx < _bmol->vertexCount())
                     {
                         auto& v = _bmol->getEdge(bond_idx);
                         if (v.end == atom_idx)
                             _bmol->swapEdgeEnds(bond_idx);
+
                         if (v.beg == atom_idx)
-                        {
-                            _bmol->setBondDirection(bond_idx, wmode == 'U' ? BOND_UP : BOND_DOWN);
-                            if (_bmol->isAtropisomerismReferenceAtom(atom_idx))
-                            {
-                                if (!_bmol->stereocenters.exists(atom_idx))
-                                    _bmol->addStereocenters(atom_idx, MoleculeStereocenters::ATOM_ANY, 0, false);
-                                _bmol->stereocenters.setAtropisomeric(atom_idx, true);
-                            }
-                        }
+                            _bmol->setBondDirection(bond_idx, wmode == 'U' ? BOND_UP : (wmode == 'D' ? BOND_DOWN : BOND_EITHER));
                     }
                 }
 
@@ -393,7 +384,10 @@ void SmilesLoader::_readOtherStuff()
                     _overtly_defined_abs.insert(idx);
                 }
                 else
+                {
                     _bmol->addStereocenters(idx, MoleculeStereocenters::ATOM_ABS, 0, false);
+                    _bmol->stereocenters.setTetrahydral(idx, false);
+                }
 
                 if (_scanner.lookNext() == ',')
                     _scanner.skip(1);
@@ -413,7 +407,10 @@ void SmilesLoader::_readOtherStuff()
                 if (_bmol->stereocenters.exists(idx))
                     _bmol->stereocenters.setType(idx, MoleculeStereocenters::ATOM_OR, groupno);
                 else
+                {
                     _bmol->addStereocenters(idx, MoleculeStereocenters::ATOM_OR, groupno, false);
+                    _bmol->stereocenters.setTetrahydral(idx, false);
+                }
 
                 if (_scanner.lookNext() == ',')
                     _scanner.skip(1);
@@ -432,8 +429,10 @@ void SmilesLoader::_readOtherStuff()
                 if (_bmol->stereocenters.exists(idx))
                     _bmol->stereocenters.setType(idx, MoleculeStereocenters::ATOM_AND, groupno);
                 else
+                {
                     _bmol->addStereocenters(idx, MoleculeStereocenters::ATOM_AND, groupno, false);
-
+                    _bmol->stereocenters.setTetrahydral(idx, false);
+                }
                 if (_scanner.lookNext() == ',')
                     _scanner.skip(1);
             }
@@ -754,8 +753,7 @@ void SmilesLoader::_readOtherStuff()
             }
             if (_scanner.readChar() != ')')
                 throw Error("expected ')' after coordinates");
-            _bmol->markBondsStereocenters();
-            _bmol->markBondsAlleneStereo();
+            _has_atom_coordinates = true;
         }
         else if (c == 'h') // highlighting (Indigo's own extension)
         {
@@ -1347,11 +1345,9 @@ void SmilesLoader::_validateStereoCenters()
     for (int i = _bmol->stereocenters.begin(); i < _bmol->stereocenters.end(); i = _bmol->stereocenters.next(i))
     {
         auto atom_idx = _bmol->stereocenters.getAtomIndex(i);
-        if (_bmol->isPossibleStereocenter(atom_idx) || _bmol->isAtropisomerismReferenceAtom(atom_idx))
+        if (_bmol->isPossibleStereocenter(atom_idx) || _bmol->stereocenters.isAtropisomeric(atom_idx))
             continue;
-        if (stereochemistry_options.ignore_errors)
-            _bmol->stereocenters.remove(i);
-        else
+        if (!stereochemistry_options.ignore_errors)
             throw Error("atom %d is not a stereocenter", atom_idx);
     }
 }
@@ -1931,6 +1927,14 @@ void SmilesLoader::_loadParsedMolecule()
     {
         _scanner.skip(1);
         _readOtherStuff();
+        if (_has_atom_coordinates || _has_directions_on_rings)
+        {
+            std::vector<int> sensible_bond_directions;
+            sensible_bond_directions.resize(_bmol->edgeCount());
+            _bmol->buildFromBondsStereocenters(stereochemistry_options, sensible_bond_directions.data());
+            _bmol->markBondsStereocenters();
+            _bmol->markBondsAlleneStereo();
+        }
     }
 
     // Update attachment orders for rsites

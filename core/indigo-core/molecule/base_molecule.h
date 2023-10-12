@@ -216,7 +216,6 @@ namespace indigo
         void removeAttachmentPointsFromAtom(int atom_index);
         int attachmentPointCount() const;
         void removeAttachmentPoints();
-
         void getAttachmentIndicesForAtom(int atom_idx, Array<int>& res);
 
         virtual bool isSaturatedAtom(int idx) = 0;
@@ -268,8 +267,6 @@ namespace indigo
         void clearCIP();
         CIPDesc getAtomCIP(int atom_idx);
         CIPDesc getBondCIP(int bond_idx);
-        bool isAtropisomerismReferenceAtom(int atom_idx);
-        bool isRotationBond(int bond_idx);
 
         void setAtomCIP(int atom_idx, CIPDesc cip);
         void setBondCIP(int bond_idx, CIPDesc cip);
@@ -442,6 +439,7 @@ namespace indigo
         const int* getPyramidStereocenters(int idx) const;
         void markBondsStereocenters();
         void markBondStereocenters(int atom_idx);
+        bool hasAtropoStereoBonds();
 
         void addStereocenters(int atom_idx, int type, int group, const int pyramid[4]);
         void addStereocenters(int atom_idx, int type, int group, bool inverse_pyramid);
@@ -453,6 +451,8 @@ namespace indigo
         void buildFromBondsStereocenters(const StereocentersOptions& options, int* sensible_bonds_out);
         void buildFrom3dCoordinatesStereocenters(const StereocentersOptions& options);
         bool isPossibleStereocenter(int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
+        bool isPossibleAtropocenter(int atom_idx, int& possible_atropo_bond);
+
         void buildOnSubmoleculeStereocenters(const BaseMolecule& super, int* mapping);
 
         // proxy methods for cis_trans

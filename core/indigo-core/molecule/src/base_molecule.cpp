@@ -4198,6 +4198,17 @@ void BaseMolecule::markBondsStereocenters()
     stereocenters.markBonds(*this);
 }
 
+bool BaseMolecule::hasAtropoStereoBonds()
+{
+    for (int i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
+    {
+        auto atom_idx = stereocenters.getAtomIndex(i);
+        if (stereocenters.hasAtropoStereoBonds(*this, atom_idx))
+            return true;
+    }
+    return false;
+}
+
 void BaseMolecule::markBondStereocenters(int atom_idx)
 {
     stereocenters.markBond(*this, atom_idx);
@@ -4241,6 +4252,11 @@ void BaseMolecule::buildFrom3dCoordinatesStereocenters(const StereocentersOption
 bool BaseMolecule::isPossibleStereocenter(int atom_idx, bool* possible_implicit_h, bool* possible_lone_pair)
 {
     return stereocenters.isPossibleStereocenter(*this, atom_idx, possible_implicit_h, possible_lone_pair);
+}
+
+bool BaseMolecule::isPossibleAtropocenter(int atom_idx, int& possible_atropo_bond)
+{
+    return stereocenters.isPossibleAtropocenter(*this, atom_idx, possible_atropo_bond);
 }
 
 void BaseMolecule::buildOnSubmoleculeStereocenters(const BaseMolecule& super, int* mapping)
@@ -4410,55 +4426,4 @@ void BaseMolecule::setAlias(int atom_idx, const char* alias)
 void BaseMolecule::removeAlias(int atom_idx)
 {
     aliases.remove(atom_idx);
-}
-
-bool BaseMolecule::isAtropisomerismReferenceAtom(int atom_idx)
-{
-    // TODO: implement more accurate atropisomer detection
-    if (vertexInRing(atom_idx)) // check if the atom belongs to ring
-    {
-        bool has_stereo = false;
-        const Vertex& v = getVertex(atom_idx);
-        // check if the atom has at least one stereo-bond
-        for (int i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
-        {
-            if (getBondDirection(v.neiEdge(i)))
-            {
-                has_stereo = true;
-                break;
-            }
-        }
-        if (has_stereo)
-        {
-            std::unordered_set<int> rotation_bonds;
-            // looking for a rotation bond
-            for (int i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
-            {
-                auto bond_idx = v.neiEdge(i);
-                if (getBondDirection(bond_idx))
-                    continue;
-                if (isRotationBond(bond_idx))
-                    rotation_bonds.insert(bond_idx);
-            }
-            if (rotation_bonds.size())
-                return true;
-        }
-    }
-    return false;
-}
-
-bool BaseMolecule::isRotationBond(int bond_idx)
-{
-    // typically a rotation doesn't belong to a ring.
-    // but there are some exclusions to be handled.
-    if (getEdgeTopology(bond_idx) == TOPOLOGY_RING)
-        return false;
-    // remove the bond and check if an extra component appears.
-    // if so this can be a rotation bond.
-    std::unique_ptr<BaseMolecule> mol(neu());
-    mol->clone_KeepIndices(*this);
-    int old_count = mol->countComponents();
-    mol->removeBond(bond_idx);
-    int new_count = mol->countComponents();
-    return new_count > old_count;
 }
