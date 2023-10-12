@@ -41,6 +41,10 @@ namespace indigo
 
         virtual void write(const void* data, int size) = 0;
         virtual void flush() = 0;
+        virtual long long tell() const noexcept
+        {
+            return 0;
+        }
 
         virtual void writeByte(byte value);
 
@@ -63,18 +67,13 @@ namespace indigo
         void printfCR(const char* format, ...);
     };
 
-    class DLLEXPORT OutputTell
-    {
-        virtual long long tell() const noexcept = 0;
-    };
-
     class DLLEXPORT OutputSeek
     {
         virtual void seek(long long offset, int from) = 0;
         void skip(int count);
     };
 
-    class DLLEXPORT FileOutput : public Output, public OutputSeek, public OutputTell
+    class DLLEXPORT FileOutput : public Output, public OutputSeek
     {
     public:
         FileOutput(Encoding filename_encoding, const char* filename);
@@ -96,7 +95,7 @@ namespace indigo
         FILE* _file;
     };
 
-    class DLLEXPORT ArrayOutput : public Output, public OutputTell
+    class DLLEXPORT ArrayOutput : public Output
     {
     public:
         explicit ArrayOutput(Array<char>& arr);
@@ -111,7 +110,7 @@ namespace indigo
         Array<char>& _arr;
     };
 
-    class DLLEXPORT StringOutput : public Output, public OutputTell
+    class DLLEXPORT StringOutput : public Output
     {
     public:
         StringOutput() = delete;
@@ -127,7 +126,7 @@ namespace indigo
         std::string& _str;
     };
 
-    class DLLEXPORT StandardOutput : public Output, public OutputTell
+    class DLLEXPORT StandardOutput : public Output
     {
     public:
         explicit StandardOutput();

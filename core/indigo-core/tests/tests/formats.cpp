@@ -17,6 +17,8 @@
  ***************************************************************************/
 
 #include <gtest/gtest.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
 
 #include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
@@ -24,6 +26,8 @@
 #include <molecule/cmf_saver.h>
 #include <molecule/cml_saver.h>
 #include <molecule/molecule_cdxml_saver.h>
+#include <molecule/molecule_json_loader.h>
+#include <molecule/molecule_json_saver.h>
 #include <molecule/molecule_mass.h>
 #include <molecule/molecule_substructure_matcher.h>
 #include <molecule/molfile_loader.h>
@@ -322,4 +326,48 @@ M  END
     saver.mode = MolfileSaver::MODE_3000;
     saver.saveMolecule(t_mol);
     ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 0);
+}
+
+TEST_F(IndigoCoreFormatsTest, smarts_load_save)
+{
+    QueryMolecule q_mol;
+
+    std::string smarts_in{"([#8].[#6]).([#6].[#8])"};
+    BufferScanner scanner(smarts_in.c_str());
+    SmilesLoader loader(scanner);
+    loader.smarts_mode = true;
+    loader.loadQueryMolecule(q_mol);
+    Array<char> out;
+    ArrayOutput std_out(out);
+    SmilesSaver saver(std_out);
+    saver.smarts_mode = true;
+    saver.saveQueryMolecule(q_mol);
+    std::string smarts_out{out.ptr(), static_cast<std::size_t>(out.size())};
+    ASSERT_EQ(smarts_in, smarts_out);
+}
+
+TEST_F(IndigoCoreFormatsTest, json_load_save)
+{
+    QueryMolecule q_mol;
+
+    FileScanner sc(dataPath("molecules/basic/ket_with_query_properties.ket").c_str());
+    std::string json;
+    sc.readAll(json);
+    rapidjson::Document data;
+    if (!data.Parse(json.c_str()).HasParseError())
+    {
+        if (data.HasMember("root"))
+        {
+            MoleculeJsonLoader loader(data);
+            loader.loadMolecule(q_mol);
+        }
+    }
+
+    Array<char> out;
+    ArrayOutput std_out(out);
+    MoleculeJsonSaver saver(std_out);
+    saver.pretty_json = true;
+    saver.saveMolecule(q_mol);
+    std::string json_out{out.ptr(), static_cast<std::size_t>(out.size())};
+    // ASSERT_EQ(json, json_out);
 }

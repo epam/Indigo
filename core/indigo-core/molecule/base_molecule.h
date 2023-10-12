@@ -57,6 +57,9 @@ namespace indigo
         ATOM_ALIPHATIC = 2
     };
 
+#define ATOM_AROMATIC_STR "aromatic"
+#define ATOM_ALIPHATIC_STR "aliphatic"
+
     enum
     {
         BOND_ZERO = 0,
@@ -69,7 +72,9 @@ namespace indigo
         _BOND_DOUBLE_OR_AROMATIC = 7,
         _BOND_ANY = 8,
         _BOND_COORDINATION = 9,
-        _BOND_HYDROGEN = 10
+        _BOND_HYDROGEN = 10,
+        BOND_SMARTS_UP = 11,
+        BOND_SMARTS_DOWN = 12,
     };
 
     enum
@@ -121,6 +126,22 @@ namespace indigo
         {
             return _properties;
         }
+
+        enum
+        {
+            UNKNOWN,
+            CML,
+            CDXML,
+            CDX,
+            RDF,
+            SMILES,
+            CXSMILES,
+            SMARTS,
+            MOL,
+            RXN,
+            KET
+        };
+        int original_format;
 
         // Casting methods. Invalid casting throws exceptions.
         virtual Molecule& asMolecule();

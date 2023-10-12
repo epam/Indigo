@@ -486,8 +486,35 @@ M  END
             options.delete();
         });
 
+        test("convert", "output-content-type", () => {
+            let options = new indigo.MapStringString();
+            options.set("output-content-type", "application/json");
+            const smiles = indigo.convert(mol_smiles, "smiles", options);
+            assert.equal(smiles, '{"struct":"C1C=CC=CC=1","format":"smiles","original_format":"chemical/x-daylight-smiles"}');
+            options.delete();
+        });
+
+        test("convert", "input-format-smarts-short", () => {
+            let options = new indigo.MapStringString();
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "smarts");
+            const smiles = indigo.convert(mol_smiles, "smiles", options);
+            assert.equal(smiles, '{"struct":"C1C=CC=CC=1","format":"smiles","original_format":"chemical/x-daylight-smarts"}');
+            options.delete();
+        });
+
+        test("convert", "input-format-smarts-long", () => {
+            let options = new indigo.MapStringString();
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-daylight-smarts");
+            const smiles = indigo.convert(mol_smiles, "smiles", options);
+            assert.equal(smiles, '{"struct":"C1C=CC=CC=1","format":"smiles","original_format":"chemical/x-daylight-smarts"}');
+            options.delete();
+        });
+
     }
 
+    
     // Dearomatize
     {
         test("dearomatize", "basic", () => {

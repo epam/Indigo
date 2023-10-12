@@ -1,0 +1,56 @@
+@import '../../styles/variables';
+
+nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: $fs-large;
+  background-color: $c-background-primary;
+  border: 1px solid $c-accent-primary;
+  margin-bottom: 20px;
+  padding: 15px;
+  height: 50px;
+}
+
+nav div {
+  margin-right: 10px;
+}
+
+nav ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-left: 0;
+  list-style: none;
+}
+
+nav h1 {
+  font-size: inherit;
+  color: $c-light-primary;
+  padding: 15px;
+  margin-right: 15px;
+}
+
+nav ul > li > a {
+  padding: 18px 15px 16px;
+  font-size: $fs-base;
+  line-height: 1em;
+  color: $c-light-accent-primary;
+
+  &:hover {
+    color: $c-light-primary;
+  }
+}
+
+.active {
+  color: $c-light-primary;
+}
+
+nav div:not(:active){
+  color: black;
+}
+
+#endpoint_toggle {
+  height: 150px;
+  width: 200px;
+}
