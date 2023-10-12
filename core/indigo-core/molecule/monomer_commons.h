@@ -21,9 +21,9 @@ namespace indigo
     const std::string kPrefix_d("d");
     const std::string kPrefix_r("r");
 
-    const std::unordered_set<std::string> kNucleicClasses = {kMonomerClassDNA, kMonomerClassRNA, kMonomerClassSUGAR, kMonomerClassBASE, kMonomerClassPhosphate};
+    const std::unordered_set<std::string> kNucleicClasses = {kMonomerClassDNA, kMonomerClassRNA, kMonomerClassSUGAR, kMonomerClassBASE, kMonomerClassPHOSPHATE};
     const std::unordered_set<std::string> kAminoClasses = {kMonomerClassAA,   kMonomerClassdAA,       kMonomerClassSUGAR,
-                                                           kMonomerClassBASE, kMonomerClassPhosphate, kMonomerClassAminoAcid};
+                                                           kMonomerClassBASE, kMonomerClassPHOSPHATE, kMonomerClassAminoAcid};
 
     inline bool isNucleicClass(const std::string& monomer_class)
     {

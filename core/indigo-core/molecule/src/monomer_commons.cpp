@@ -36,9 +36,6 @@ namespace indigo
     const std::unordered_map<std::string, std::string> kAliasToNucleic = {{"A", "Ade"}, {"C", "Cyt"},  {"G", "Gua"},  {"U", "Ura"}, {"T", "Thy"},
                                                                           {"r", "Rib"}, {"d", "dRib"}, {"m", "mRib"}, {"p", "Pi"}};
 
-    const std::string kPrefix_d("d");
-    const std::string kPrefix_r("r");
-
     std::string classToPrefix(const std::string& monomer_class)
     {
         if (monomer_class == kMonomerClassdAA || monomer_class == kMonomerClassDNA)
