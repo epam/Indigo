@@ -163,7 +163,7 @@ namespace indigo
         struct KETTextLine
         {
             std::string text;
-            std::map<int, FONT_STYLE_SET> styles;
+            std::map<std::size_t, FONT_STYLE_SET> styles;
         };
 
         static const std::uint32_t CID = "KET text object"_hash;

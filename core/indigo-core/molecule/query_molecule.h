@@ -228,9 +228,11 @@ namespace indigo
         public:
             Bond();
             Bond(int type_, int value_);
+            Bond(int type_, int value_, int direction_);
             ~Bond() override;
 
             int value;
+            int direction;
 
             Bond* clone();
 
@@ -309,6 +311,11 @@ namespace indigo
 
         bool possibleNitrogenV5(int idx);
 
+        static std::string getSmartsBondStr(QueryMolecule::Bond* bond);
+        static void writeSmartsBond(Output& output, QueryMolecule::Bond* bond, bool has_or_parent);
+        static std::string QueryMolecule::getSmartsAtomStr(QueryMolecule::Atom* atom);
+        static void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chirality, int depth, bool has_or_parent, bool has_not_parent);
+
         enum QUERY_ATOM
         {
             QUERY_ATOM_A,
@@ -342,8 +349,10 @@ namespace indigo
         static bool isOrBond(Bond& qb, int type1, int type2);
         static bool isSingleOrDouble(Bond& qb);
         static int getQueryBondType(Bond& qb);
+        static int getQueryBondType(Bond& qb, int& direction);
         static int getAtomType(const char* label);
         static void getQueryAtomLabel(int qa, Array<char>& result);
+        static QueryMolecule::Bond* createQueryMoleculeBond(int order, int topology, int direction);
 
         bool bondStereoCare(int idx) override;
         void setBondStereoCare(int idx, bool stereo_care);

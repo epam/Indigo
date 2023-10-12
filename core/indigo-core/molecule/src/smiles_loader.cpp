@@ -2549,6 +2549,7 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         int next = scanner.lookNext();
         int order = -1;
         int topology = -1;
+        int direction = 0;
 
         if (next == '!')
         {
@@ -2582,9 +2583,8 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         {
             scanner.skip(1);
             if (smarts_mode)
-                order = BOND_SMARTS_UP;
-            else
-                order = BOND_SINGLE;
+                direction = BOND_UP;
+            order = BOND_SINGLE;
             if (bond.dir == 2)
                 throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");
             bond.dir = 1;
@@ -2593,9 +2593,8 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         {
             scanner.skip(1);
             if (smarts_mode)
-                order = BOND_SMARTS_DOWN;
-            else
-                order = BOND_SINGLE;
+                direction = BOND_DOWN;
+            order = BOND_SINGLE;
             if (bond.dir == 1)
                 throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");
             bond.dir = 2;
@@ -2625,9 +2624,9 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
             if (qbond.get() != 0)
             {
                 if (subqbond.get() == 0)
-                    subqbond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
+                    subqbond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order, direction);
                 else
-                    subqbond.reset(QueryMolecule::Bond::und(subqbond.release(), new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order)));
+                    subqbond.reset(QueryMolecule::Bond::und(subqbond.release(), new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order, direction)));
             }
         }
         else if (order == _ANY_BOND)

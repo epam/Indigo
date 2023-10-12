@@ -414,11 +414,26 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
         {
             writer.StartObject();
             writer.Key("type");
-            int bond_order = mol.getBondOrder(i);
-            if (bond_order < 0 && _pqmol)
+            if (_pmol)
+            {
+                int bond_order = mol.getBondOrder(i);
+
+                if (bond_order == BOND_ZERO && _pmol)
+                {
+                    bond_order = 9;
+                    const Edge& edge = mol.getEdge(i);
+                    if ((_pmol->getAtomNumber(edge.beg) == ELEM_H) || (_pmol->getAtomNumber(edge.end) == ELEM_H))
+                        bond_order = 10;
+                }
+
+                writer.Uint(bond_order);
+            }
+            else if (_pqmol)
             {
                 QueryMolecule::Bond& qbond = _pqmol->getBond(i);
-                int qb = QueryMolecule::getQueryBondType(qbond);
+                int direction;
+                int bond_order = 0;
+                int qb = QueryMolecule::getQueryBondType(qbond, direction);
                 if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
                     bond_order = 5;
                 else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
@@ -431,21 +446,11 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                 {
                     // throw Error("Invalid query bond");
 
-                    std::string customQuery = SmilesSaver::writeSmartsBondStr(&qbond);
+                    std::string customQuery = QueryMolecule::getSmartsBondStr(&qbond);
                     writer.Key("customQuery");
                     writer.String(customQuery.c_str());
                 }
             }
-
-            if (bond_order == BOND_ZERO && _pmol)
-            {
-                bond_order = 9;
-                const Edge& edge = mol.getEdge(i);
-                if ((_pmol->getAtomNumber(edge.beg) == ELEM_H) || (_pmol->getAtomNumber(edge.end) == ELEM_H))
-                    bond_order = 10;
-            }
-
-            writer.Uint(bond_order);
 
             int topology = -1;
             if (_pqmol)
@@ -476,7 +481,17 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
             writer.EndArray();
 
             int stereo = mol.getBondDirection(i);
-            if (mol.cis_trans.isIgnored(i))
+            bool stored_stereo = false;
+            if (_pqmol)
+            {
+                int direction = 0;
+                if (_pqmol->getBond(i).sureValue(QueryMolecule::BOND_DIRECTION, direction))
+                {
+                    stereo = direction;
+                    stored_stereo = true;
+                }
+            }
+            if (mol.cis_trans.isIgnored(i) && !stored_stereo)
                 stereo = 3;
             else
                 switch (stereo)
@@ -894,7 +909,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 writer.StartObject();
                 if (needCustomQuery)
                 {
-                    std::string customQuery = SmilesSaver::writeSmartsAtomStr(&atom);
+                    std::string customQuery = QueryMolecule::getSmartsAtomStr(&atom);
                     writer.Key("customQuery");
                     writer.String(customQuery.c_str());
                 }

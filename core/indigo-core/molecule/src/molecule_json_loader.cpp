@@ -62,32 +62,9 @@ MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
 {
 }
 
-int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int topology)
+int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int topology, int direction)
 {
-    std::unique_ptr<QueryMolecule::Bond> bond;
-    if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_COORDINATION ||
-        order == _BOND_HYDROGEN)
-        bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
-    else if (order == _BOND_SINGLE_OR_DOUBLE)
-        bond.reset(QueryMolecule::Bond::und(QueryMolecule::Bond::nicht(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),
-                                            QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
-                                                                      new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE))));
-    else if (order == _BOND_SINGLE_OR_AROMATIC)
-        bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
-                                             new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
-    else if (order == _BOND_DOUBLE_OR_AROMATIC)
-        bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE),
-                                             new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
-    else if (order == _BOND_ANY)
-        bond = std::make_unique<QueryMolecule::Bond>();
-    else
-        throw Error("unknown bond type: %d", order);
-    if (topology != 0)
-    {
-        bond.reset(
-            QueryMolecule::Bond::und(bond.release(), new QueryMolecule::Bond(QueryMolecule::BOND_TOPOLOGY, topology == 1 ? TOPOLOGY_RING : TOPOLOGY_CHAIN)));
-    }
-    return _pqmol->addBond(beg, end, bond.release());
+    return _pqmol->addBond(beg, end, QueryMolecule::createQueryMoleculeBond(order, topology, direction));
 }
 
 int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope)
@@ -653,7 +630,15 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
             int a1 = refs[0].GetInt();
             int a2 = refs[1].GetInt();
             int bond_idx = 0;
-            bond_idx = _pmol ? _pmol->addBond_Silent(a1, a2, order) : addBondToMoleculeQuery(a1, a2, order, topology);
+            int direction = 0;
+            if (_pqmol && stereo && order == BOND_SINGLE)
+            {
+                if (stereo == 1)
+                    direction = BOND_UP;
+                else if (stereo == 6)
+                    direction == BOND_DOWN;
+            }
+            bond_idx = _pmol ? _pmol->addBond_Silent(a1, a2, order) : addBondToMoleculeQuery(a1, a2, order, topology, direction);
             if (stereo)
             {
                 switch (stereo)
@@ -1051,8 +1036,8 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     {
         std::vector<EnhancedStereoCenter> stereo_centers;
         std::unique_ptr<BaseMolecule> pmol(mol.neu());
-        _pmol = NULL;
-        _pqmol = NULL;
+        _pmol = nullptr;
+        _pqmol = nullptr;
         if (pmol->isQueryMolecule())
         {
             _pqmol = &pmol->asQueryMolecule();
@@ -1199,7 +1184,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         {
             if (stereochemistry_options.ignore_errors)
                 mol.addStereocentersIgnoreBad(sc._atom_idx, sc._type, sc._group, false); // add non-valid stereocenters
-            else
+            else if (!_pqmol)
                 throw Error("stereo type specified for atom #%d, but the bond "
                             "directions does not say that it is a stereocenter",
                             sc._atom_idx);
