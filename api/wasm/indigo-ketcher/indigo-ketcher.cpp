@@ -314,6 +314,14 @@ namespace indigo
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
             }
             exceptionMessages.emplace_back(indigoGetLastError());
+            // Let's try reaction
+            print_js("try as reaction");
+            objectId = indigoLoadReactionSmartsFromBuffer(data.c_str(), data.size());
+            if (objectId >= 0)
+            {
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
+            }
+            exceptionMessages.emplace_back(indigoGetLastError());
         }
         else
         {
