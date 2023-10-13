@@ -586,7 +586,7 @@ void MolfileLoader::_readCtab2000()
         }
         else
         {
-            int direction = 0;
+            int direction = BOND_ZERO;
             if (stereo == BIOVIA_STEREO_UP)
                 direction = BOND_UP;
             else if (stereo == BIOVIA_STEREO_DOWN)

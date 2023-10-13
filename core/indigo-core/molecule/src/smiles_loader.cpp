@@ -2549,7 +2549,7 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         int next = scanner.lookNext();
         int order = -1;
         int topology = -1;
-        int direction = 0;
+        int direction = BOND_ZERO;
 
         if (next == '!')
         {

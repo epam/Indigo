@@ -27,7 +27,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     Value& root = ket["root"];
     Value& nodes = root["nodes"];
     // rewind to first molecule node
-    for (int i = 0; i < nodes.Size(); ++i)
+    for (rapidjson::SizeType i = 0; i < nodes.Size(); ++i)
     {
         if (nodes[i].HasMember("$ref"))
         {
@@ -259,7 +259,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                 const Value& elements = a["elements"];
                 int pseudo_count = 0;
                 elem = ELEM_ATOMLIST;
-                for (int j = 0; j < elements.Size(); ++j)
+                for (rapidjson::SizeType j = 0; j < elements.Size(); ++j)
                 {
                     auto elem_label = elements[j].GetString();
                     int list_elem = Element::fromString2(elem_label);
@@ -630,7 +630,7 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
             int a1 = refs[0].GetInt();
             int a2 = refs[1].GetInt();
             int bond_idx = 0;
-            int direction = 0;
+            int direction = BOND_ZERO;
             if (_pqmol && stereo && order == BOND_SINGLE)
             {
                 if (stereo == BIOVIA_STEREO_UP)
@@ -690,7 +690,7 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
 
 void indigo::MoleculeJsonLoader::parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol)
 {
-    for (int i = 0; i < highlight.Size(); ++i)
+    for (rapidjson::SizeType i = 0; i < highlight.Size(); ++i)
     {
         const rapidjson::Value& val = highlight[i];
         if (val.HasMember("entityType") && val.HasMember("items"))
@@ -699,12 +699,12 @@ void indigo::MoleculeJsonLoader::parseHighlight(const rapidjson::Value& highligh
             std::string et = val["entityType"].GetString();
             if (et == "atoms")
             {
-                for (int j = 0; i < items.Size(); ++i)
+                for (rapidjson::SizeType j = 0; i < items.Size(); ++i)
                     mol.highlightAtom(items[i].GetInt());
             }
             else if (et == "bonds")
             {
-                for (int j = 0; i < items.Size(); ++i)
+                for (rapidjson::SizeType j = 0; i < items.Size(); ++i)
                     mol.highlightBond(items[i].GetInt());
             }
         }
@@ -713,7 +713,7 @@ void indigo::MoleculeJsonLoader::parseHighlight(const rapidjson::Value& highligh
 
 void indigo::MoleculeJsonLoader::parseSelection(const rapidjson::Value& selection, BaseMolecule& mol)
 {
-    for (int i = 0; i < selection.Size(); ++i)
+    for (rapidjson::SizeType i = 0; i < selection.Size(); ++i)
     {
         const rapidjson::Value& val = selection[i];
         if (val.HasMember("entityType") && val.HasMember("items"))
@@ -722,12 +722,12 @@ void indigo::MoleculeJsonLoader::parseSelection(const rapidjson::Value& selectio
             std::string et = val["entityType"].GetString();
             if (et == "atoms")
             {
-                for (int j = 0; i < items.Size(); ++i)
+                for (rapidjson::SizeType j = 0; i < items.Size(); ++i)
                     mol.selectAtom(items[i].GetInt());
             }
             else if (et == "bonds")
             {
-                for (int j = 0; i < items.Size(); ++i)
+                for (rapidjson::SizeType j = 0; i < items.Size(); ++i)
                     mol.selectBond(items[i].GetInt());
             }
         }
@@ -848,7 +848,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             {
                 _pqmol->components.expandFill(_pqmol->components.size() + atoms.Size(), 0);
                 components_count++;
-                for (int j = 0; j < atoms.Size(); ++j)
+                for (rapidjson::SizeType j = 0; j < atoms.Size(); ++j)
                 {
                     int atom_idx = atoms[j].GetInt();
                     _pqmol->components[atom_idx] = components_count;
@@ -863,7 +863,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         SGroup& sgroup = mol.sgroups.getSGroup(grp_idx);
         // add atoms
         std::unordered_set<int> sgroup_atoms;
-        for (int j = 0; j < atoms.Size(); ++j)
+        for (rapidjson::SizeType j = 0; j < atoms.Size(); ++j)
         {
             int atom_idx = atoms[j].GetInt();
             sgroup.atoms.push(atom_idx);
@@ -1009,7 +1009,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         if (s.HasMember("bonds"))
         {
             const Value& bonds = s["bonds"];
-            for (int j = 0; j < bonds.Size(); ++j)
+            for (rapidjson::SizeType j = 0; j < bonds.Size(); ++j)
             {
                 sgroup.bonds.push(bonds[j].GetInt());
             }
@@ -1030,7 +1030,7 @@ void MoleculeJsonLoader::parseProperties(const rapidjson::Value& props, BaseMole
 
 void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 {
-    for (int node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
+    for (rapidjson::SizeType node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
     {
         std::vector<EnhancedStereoCenter> stereo_centers;
         std::unique_ptr<BaseMolecule> pmol(mol.neu());
@@ -1232,7 +1232,7 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
 
     if (meta_objects.IsArray())
     {
-        for (int obj_idx = 0; obj_idx < meta_objects.Size(); ++obj_idx)
+        for (rapidjson::SizeType obj_idx = 0; obj_idx < meta_objects.Size(); ++obj_idx)
         {
             std::string node_type = meta_objects[obj_idx]["type"].GetString();
             auto& mobj = meta_objects[obj_idx];

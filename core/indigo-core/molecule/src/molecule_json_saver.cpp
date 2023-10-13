@@ -412,7 +412,7 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
     {
         for (auto i : mol.edges())
         {
-            int direction = 0;
+            int direction = BOND_ZERO;
             bool negative = false;
             writer.StartObject();
             writer.Key("type");
