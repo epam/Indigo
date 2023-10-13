@@ -633,9 +633,9 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
             int direction = 0;
             if (_pqmol && stereo && order == BOND_SINGLE)
             {
-                if (stereo == 1)
+                if (stereo == BIOVIA_STEREO_UP)
                     direction = BOND_UP;
-                else if (stereo == 6)
+                else if (stereo == BIOVIA_STEREO_DOWN)
                     direction = BOND_DOWN;
             }
             bond_idx = _pmol ? _pmol->addBond_Silent(a1, a2, order) : addBondToMoleculeQuery(a1, a2, order, topology, direction);
@@ -643,16 +643,16 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
             {
                 switch (stereo)
                 {
-                case 1:
+                case BIOVIA_STEREO_UP:
                     mol.setBondDirection(bond_idx, BOND_UP);
                     break;
-                case 3:
+                case BIOVIA_STEREO_DOUBLE_CISTRANS:
                     mol.cis_trans.ignore(bond_idx);
                     break;
-                case 4:
+                case BIOVIA_STEREO_ETHER:
                     mol.setBondDirection(bond_idx, BOND_EITHER);
                     break;
-                case 6:
+                case BIOVIA_STEREO_DOWN:
                     mol.setBondDirection(bond_idx, BOND_DOWN);
                     break;
                 default:

@@ -587,22 +587,22 @@ void MolfileLoader::_readCtab2000()
         else
         {
             int direction = 0;
-            if (stereo == 1)
+            if (stereo == BIOVIA_STEREO_UP)
                 direction = BOND_UP;
-            else if (stereo == 6)
+            else if (stereo == BIOVIA_STEREO_DOWN)
                 direction = BOND_DOWN;
             _qmol->addBond(beg - 1, end - 1, QueryMolecule::createQueryMoleculeBond(order, topology, direction));
         }
 
-        if (stereo == 1)
+        if (stereo == BIOVIA_STEREO_UP)
             _bmol->setBondDirection(bond_idx, BOND_UP);
-        else if (stereo == 6)
+        else if (stereo == BIOVIA_STEREO_DOWN)
             _bmol->setBondDirection(bond_idx, BOND_DOWN);
-        else if (stereo == 4)
+        else if (stereo == BIOVIA_STEREO_ETHER)
             _bmol->setBondDirection(bond_idx, BOND_EITHER);
-        else if (stereo == 3)
+        else if (stereo == BIOVIA_STEREO_DOUBLE_CISTRANS)
             _ignore_cistrans[bond_idx] = 1;
-        else if (stereo != 0)
+        else if (stereo != BIOVIA_STEREO_NO)
             throw Error("unknown number for bond stereo: %d", stereo);
 
         _bmol->reaction_bond_reacting_center[bond_idx] = rcenter;

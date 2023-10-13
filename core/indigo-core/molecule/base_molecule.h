@@ -82,6 +82,15 @@ namespace indigo
         BOND_EITHER = 3
     };
 
+    enum
+    {
+        BIOVIA_STEREO_NO = 0,
+        BIOVIA_STEREO_UP = 1,
+        BIOVIA_STEREO_DOUBLE_CISTRANS = 3,
+        BIOVIA_STEREO_ETHER = 4,
+        BIOVIA_STEREO_DOWN = 6,
+    }
+
     enum layout_orientation_value
     {
         UNCPECIFIED,
