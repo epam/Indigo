@@ -882,7 +882,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             QS_DEF(Array<int>, qatom_list);
             query_atom_type = QueryMolecule::parseQueryAtom(atom, qatom_list);
             QueryMolecule::Atom* s_atom = QueryMolecule::stripKnownAttrs(atom);
-            bool needCustomQuery = query_atom_type == -1 && s_atom->type != QueryMolecule::ATOM_NUMBER;
+            bool needCustomQuery = query_atom_type == -1 && (!s_atom || s_atom->type != QueryMolecule::ATOM_NUMBER);
             std::map<int, const char*> qprops{{QueryMolecule::ATOM_SSSR_RINGS, "ringMembership"},
                                               {QueryMolecule::ATOM_SMALLEST_RING_SIZE, "ringSize"},
                                               {QueryMolecule::ATOM_CONNECTIVITY, "connectivity"}};
