@@ -375,7 +375,7 @@ void QueryMolecule::writeSmartsBond(Output& output, Bond* bond, bool has_or_pare
         {
             if (bond->direction == BOND_UP)
                 output.writeChar('/');
-            else if (bond_order == BOND_DOWN)
+            else if (bond->direction == BOND_DOWN)
                 output.writeChar('\\');
             else
                 output.writeChar('-');
@@ -1838,6 +1838,7 @@ QueryMolecule::Bond* QueryMolecule::Bond::clone()
 
     res->type = type;
     res->value = value;
+    res->direction = direction;
 
     for (i = 0; i < children.size(); i++)
         res->children.add(((Bond*)children[i])->clone());
@@ -2412,44 +2413,67 @@ bool QueryMolecule::isSingleOrDouble(QueryMolecule::Bond& qb)
     return true;
 }
 
-int QueryMolecule::getQueryBondType(Bond& qb)
+int QueryMolecule::getQueryBondType(QueryMolecule::Bond& qb)
 {
-    int direction;
-    return getQueryBondType(qb, direction);
+    if (!qb.hasConstraint(BOND_ORDER))
+        return _BOND_ANY;
+
+    Bond* qb2 = &qb;
+    std::unique_ptr<Bond> qb_modified;
+    int topology;
+    if (qb.sureValue(BOND_TOPOLOGY, topology))
+    {
+        qb_modified.reset(qb.clone());
+        qb_modified->removeConstraints(BOND_TOPOLOGY);
+        qb2 = qb_modified.get();
+    }
+
+    if (isSingleOrDouble(*qb2) || isOrBond(*qb2, BOND_SINGLE, BOND_DOUBLE))
+        return _BOND_SINGLE_OR_DOUBLE;
+    if (isOrBond(*qb2, BOND_SINGLE, BOND_AROMATIC))
+        return _BOND_SINGLE_OR_AROMATIC;
+    if (isOrBond(*qb2, BOND_DOUBLE, BOND_AROMATIC))
+        return _BOND_DOUBLE_OR_AROMATIC;
+    return -1;
 }
 
-int QueryMolecule::getQueryBondType(Bond& qb, int& direction)
+int QueryMolecule::getQueryBondType(Bond& qb, int& direction, bool& negative)
 {
     int topology;
     Bond* qbond = &qb;
-    if (qb.type == OP_AND)
+    if (qbond->type == OP_NOT)
     {
-        int idx = qb.children.size() - 1;
+        qbond = qbond->child(0);
+        negative = true;
+    }
+    if (qbond->type == OP_AND)
+    {
+        int idx = qbond->children.size() - 1;
         // Skip topology if any
-        if (qb.children[idx]->type == BOND_TOPOLOGY)
+        if (qbond->children[idx]->type == BOND_TOPOLOGY)
             --idx;
         if (idx > 0) // Looks like _BOND_SINGLE_OR_DOUBLE
         {
-            Bond* tbond = qb.child(0);
+            Bond* tbond = qbond->child(0);
             if (tbond->type != OP_NOT)
                 return -1;
             tbond = tbond->child(0);
             if (tbond->type != BOND_ORDER || tbond->value != BOND_AROMATIC)
                 return -1;
-            tbond = qb.child(1);
+            tbond = qbond->child(1);
             if (tbond->type != OP_OR || tbond->children.size() != 2)
                 return -1;
             if (tbond->child(0)->type != BOND_ORDER || tbond->child(0)->value != BOND_SINGLE)
                 return -1;
             if (tbond->child(1)->type != BOND_ORDER || tbond->child(1)->value != BOND_DOUBLE)
                 return -1;
-            return QUERY_BOND_SINGLE_OR_DOUBLE;
+            return _BOND_SINGLE_OR_DOUBLE;
         }
-        qbond = qb.child(0);
+        qbond = qbond->child(0);
     }
 
     if (qbond->type == OP_NONE)
-        return QUERY_BOND_ANY;
+        return _BOND_ANY;
 
     if (qbond->type == BOND_ORDER)
     {
@@ -2464,9 +2488,9 @@ int QueryMolecule::getQueryBondType(Bond& qb, int& direction)
     if (qb0->type != BOND_ORDER || qb1->type != BOND_ORDER)
         return -1;
     if (qb0->value == BOND_SINGLE && qb1->value == BOND_AROMATIC)
-        return QUERY_BOND_SINGLE_OR_AROMATIC;
+        return _BOND_SINGLE_OR_AROMATIC;
     if (qb0->value == BOND_DOUBLE && qb1->value == BOND_AROMATIC)
-        return QUERY_BOND_DOUBLE_OR_AROMATIC;
+        return _BOND_DOUBLE_OR_AROMATIC;
     return -1;
 }
 

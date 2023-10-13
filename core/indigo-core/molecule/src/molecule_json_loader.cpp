@@ -636,7 +636,7 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
                 if (stereo == 1)
                     direction = BOND_UP;
                 else if (stereo == 6)
-                    direction == BOND_DOWN;
+                    direction = BOND_DOWN;
             }
             bond_idx = _pmol ? _pmol->addBond_Silent(a1, a2, order) : addBondToMoleculeQuery(a1, a2, order, topology, direction);
             if (stereo)
@@ -655,8 +655,6 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
                 case 6:
                     mol.setBondDirection(bond_idx, BOND_DOWN);
                     break;
-                    break;
-
                 default:
                     break;
                 }
@@ -1197,7 +1195,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     {
         if (mol.getBondDirection(i) > 0 && !sensible_bond_directions[i])
         {
-            if (!stereochemistry_options.ignore_errors)
+            if (!stereochemistry_options.ignore_errors && !_pqmol)
                 throw Error("direction of bond #%d makes no sense", i);
         }
     }

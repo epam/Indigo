@@ -329,13 +329,6 @@ namespace indigo
             QUERY_ATOM_LIST,
             QUERY_ATOM_NOTLIST
         };
-        enum QUERY_BOND
-        {
-            QUERY_BOND_DOUBLE_OR_AROMATIC = 0,
-            QUERY_BOND_SINGLE_OR_AROMATIC,
-            QUERY_BOND_SINGLE_OR_DOUBLE,
-            QUERY_BOND_ANY
-        };
 
         static bool isKnownAttr(QueryMolecule::Atom& qa);
         static bool isNotAtom(QueryMolecule::Atom& qa, int elem);
@@ -349,7 +342,7 @@ namespace indigo
         static bool isOrBond(Bond& qb, int type1, int type2);
         static bool isSingleOrDouble(Bond& qb);
         static int getQueryBondType(Bond& qb);
-        static int getQueryBondType(Bond& qb, int& direction);
+        static int getQueryBondType(Bond& qb, int& direction, bool& negative);
         static int getAtomType(const char* label);
         static void getQueryAtomLabel(int qa, Array<char>& result);
         static QueryMolecule::Bond* createQueryMoleculeBond(int order, int topology, int direction);

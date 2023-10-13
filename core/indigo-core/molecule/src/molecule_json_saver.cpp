@@ -412,6 +412,8 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
     {
         for (auto i : mol.edges())
         {
+            int direction = 0;
+            bool negative = false;
             writer.StartObject();
             writer.Key("type");
             if (_pmol)
@@ -431,24 +433,26 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
             else if (_pqmol)
             {
                 QueryMolecule::Bond& qbond = _pqmol->getBond(i);
-                int direction;
-                int bond_order = 0;
-                int qb = QueryMolecule::getQueryBondType(qbond, direction);
-                if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
-                    bond_order = 5;
-                else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
-                    bond_order = 6;
-                else if (qb == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC)
-                    bond_order = 7;
-                else if (qb == QueryMolecule::QUERY_BOND_ANY)
-                    bond_order = 8;
-                if (bond_order < 0)
+                int bond_order = QueryMolecule::getQueryBondType(qbond, direction, negative);
+                if (bond_order < 0 || negative)
                 {
-                    // throw Error("Invalid query bond");
-
+                    writer.Uint(BOND_SINGLE);
                     std::string customQuery = QueryMolecule::getSmartsBondStr(&qbond);
                     writer.Key("customQuery");
                     writer.String(customQuery.c_str());
+                }
+                else
+                {
+                    writer.Uint(bond_order);
+                    switch (direction)
+                    {
+                    case BOND_UP:
+                        direction = 1;
+                        break;
+                    case BOND_DOWN:
+                        direction = 6;
+                        break;
+                    }
                 }
             }
 
@@ -481,17 +485,7 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
             writer.EndArray();
 
             int stereo = mol.getBondDirection(i);
-            bool stored_stereo = false;
-            if (_pqmol)
-            {
-                int direction = 0;
-                if (_pqmol->getBond(i).sureValue(QueryMolecule::BOND_DIRECTION, direction))
-                {
-                    stereo = direction;
-                    stored_stereo = true;
-                }
-            }
-            if (mol.cis_trans.isIgnored(i) && !stored_stereo)
+            if (mol.cis_trans.isIgnored(i))
                 stereo = 3;
             else
                 switch (stereo)
@@ -511,10 +505,10 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                 break;
                 }
 
-            if (stereo)
+            if (stereo || direction)
             {
                 writer.Key("stereo");
-                writer.Uint(stereo);
+                writer.Uint(direction ? direction : stereo); // If have stored direction - override calculated
             }
 
             auto cip = mol.getBondCIP(i);

@@ -629,14 +629,8 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         {
             int qb = QueryMolecule::getQueryBondType(qmol->getBond(i));
 
-            if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
-                bond_order = 5;
-            else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
-                bond_order = 6;
-            else if (qb == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC)
-                bond_order = 7;
-            else if (qb == QueryMolecule::QUERY_BOND_ANY)
-                bond_order = 8;
+            if (qb == _BOND_SINGLE_OR_DOUBLE || qb == _BOND_SINGLE_OR_AROMATIC || qb == _BOND_DOUBLE_OR_AROMATIC || qb == _BOND_ANY)
+                bond_order = qb;
         }
 
         if (bond_order < 0)
@@ -1343,14 +1337,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         {
             int qb = QueryMolecule::getQueryBondType(qmol->getBond(i));
 
-            if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
-                bond_order = 5;
-            else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
-                bond_order = 6;
-            else if (qb == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC)
-                bond_order = 7;
-            else if (qb == QueryMolecule::QUERY_BOND_ANY)
-                bond_order = 8;
+            if (qb == _BOND_SINGLE_OR_DOUBLE || qb == _BOND_SINGLE_OR_AROMATIC || qb == _BOND_DOUBLE_OR_AROMATIC || qb == _BOND_ANY)
+                bond_order = qb;
         }
 
         if (bond_order < 0)
