@@ -89,7 +89,7 @@ namespace indigo
         BIOVIA_STEREO_DOUBLE_CISTRANS = 3,
         BIOVIA_STEREO_ETHER = 4,
         BIOVIA_STEREO_DOWN = 6,
-    }
+    };
 
     enum layout_orientation_value
     {
