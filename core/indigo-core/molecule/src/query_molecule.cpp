@@ -868,11 +868,11 @@ QueryMolecule::Atom::~Atom()
 {
 }
 
-QueryMolecule::Bond::Bond() : Node(OP_NONE)
+QueryMolecule::Bond::Bond() : Node(OP_NONE), value(0), direction(0)
 {
 }
 
-QueryMolecule::Bond::Bond(int type_, int value_) : Node(type_), value(value_)
+QueryMolecule::Bond::Bond(int type_, int value_) : Node(type_), value(value_), direction(0)
 {
 }
 
