@@ -16,9 +16,9 @@ def test_smarts_to_ket(smarts_in, expected_str):
     mol = indigo.loadSmarts(smarts_in)
     json_out = mol.json()
     if expected_str in json_out:
-        print("%s OK. Expected string found.", smarts_in)
+        print("%s OK. Expected string found." % smarts_in)
     else:
-        print("%s FAILED. Expected string not found.", smarts_in)
+        print("%s FAILED. Expected string not found." % smarts_in)
 
 
 print("**** #1310 error at opening SMARTS with comma ****")
