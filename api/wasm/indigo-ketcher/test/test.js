@@ -512,6 +512,23 @@ M  END
             options.delete();
         });
 
+        test("convert", "rsmiles-app-json", () => {
+            let options = new indigo.MapStringString();
+            options.set("output-content-type", "application/json");
+            const rsmiles = indigo.convert(rxn_smiles, "smiles", options);
+            assert.equal(rsmiles, '{"struct":"C1C=CC=CC=1.N>>C1N=CC=CC=1.[CH3-]","format":"smiles","original_format":"chemical/x-daylight-smiles"}');
+            options.delete();
+        });
+
+        test("convert", "rsmiles-input-format-smarts", () => {
+            let options = new indigo.MapStringString();
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-daylight-smarts");
+            const rsmiles = indigo.convert(rxn_smiles, "smiles", options);
+            assert.equal(rsmiles, '{"struct":"C1C=CC=CC=1.N>>C1N=CC=CC=1.[CH3-]","format":"smiles","original_format":"chemical/x-daylight-smarts"}');
+            options.delete();
+        });
+
     }
 
     

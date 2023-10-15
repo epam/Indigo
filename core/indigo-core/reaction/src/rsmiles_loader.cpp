@@ -64,6 +64,10 @@ void RSmilesLoader::loadReaction(Reaction& reaction)
     _rxn = &reaction;
     _brxn = &reaction;
     _qrxn = 0;
+    if (smarts_mode)
+        reaction.original_format = BaseMolecule::SMARTS;
+    else
+        reaction.original_format = BaseMolecule::SMILES;
     _loadReaction();
 }
 
@@ -72,6 +76,10 @@ void RSmilesLoader::loadQueryReaction(QueryReaction& rxn)
     _rxn = 0;
     _brxn = &rxn;
     _qrxn = &rxn;
+    if (smarts_mode)
+        rxn.original_format = BaseMolecule::SMARTS;
+    else
+        rxn.original_format = BaseMolecule::SMILES;
     _loadReaction();
 }
 

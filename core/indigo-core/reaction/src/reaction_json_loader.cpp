@@ -68,6 +68,8 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     else
         throw Error("unknown reaction type: %s", typeid(rxn).name());
 
+    rxn.original_format = BaseMolecule::KET;
+
     rxn.meta().clone(_pmol->meta());
     _pmol->meta().resetMetaData();
 
