@@ -29,6 +29,7 @@
 #include "base_cpp/output.h"
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
+#include "molecule/query_molecule.h"
 
 namespace indigo
 {
@@ -94,12 +95,12 @@ namespace indigo
 
         bool Int64(int64_t i64)
         {
-            return pretty_json ? _pretty_writer.Uint(i64) : _writer.Uint(i64);
+            return pretty_json ? _pretty_writer.Uint64(i64) : _writer.Uint64(i64);
         }
 
         bool Uint64(uint64_t u64)
         {
-            return pretty_json ? _pretty_writer.Uint(u64) : _writer.Uint(u64);
+            return pretty_json ? _pretty_writer.Uint64(u64) : _writer.Uint64(u64);
         }
 
         bool Double(double d)
@@ -181,7 +182,8 @@ namespace indigo
         static std::string monomerId(const TGroup& tg);
         static std::string monomerAlias(const TGroup& tg);
 
-        static std::string monomerClass(const TGroup& tg);
+        static std::string monomerKETClass(const TGroup& tg);
+        static std::string monomerHELMClass(const TGroup& tg);
         static std::string naturalAnalog(const TGroup& tg);
 
         bool add_stereo_desc;
@@ -206,10 +208,13 @@ namespace indigo
     protected:
         void _checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list);
         bool _checkAttPointOrder(BaseMolecule& mol, int rsite);
+        bool _needCustomQuery(QueryMolecule::Atom* atom) const;
+        void _writeQueryProperties(QueryMolecule::Atom* atom, JsonWriter& writer);
 
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         Output& _output;
+        std::unique_ptr<QueryMolecule> _phosphate;
 
     private:
         MoleculeJsonSaver(const MoleculeJsonSaver&); // no implicit copy

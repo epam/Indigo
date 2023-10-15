@@ -1,0 +1,16 @@
+main {
+    width: 1300px;
+    margin: 0 auto;
+    position: relative;
+}
+
+#form_was {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.hidden {
+    display: none !important;
+}

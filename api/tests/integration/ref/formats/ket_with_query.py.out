@@ -1,0 +1,6 @@
+*** KET with query components ***
+ket_with_query_components.ket:SUCCEED
+*** KET with query properties ***
+ket_with_query_properties.ket:SUCCEED
+*** KET with custom query ***
+ket_with_custom_query.ket:SUCCEED

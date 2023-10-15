@@ -61,6 +61,12 @@ std::string IndigoChemicalStructure::smiles() const
     return session()->_checkResultString(indigoSmiles(id()));
 }
 
+std::string IndigoChemicalStructure::smarts() const
+{
+    session()->setSessionId();
+    return session()->_checkResultString(indigoSmarts(id()));
+}
+
 std::string IndigoChemicalStructure::canonicalSmiles() const
 {
     session()->setSessionId();

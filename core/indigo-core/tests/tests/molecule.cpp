@@ -27,7 +27,6 @@
 #include <molecule/tpsa.h>
 
 #include "common.h"
-#include "molecule/elements.h"
 
 using namespace std;
 using namespace indigo;
@@ -305,4 +304,18 @@ TEST_F(IndigoCoreMoleculeTest, pKa)
         loadMolecule("Oc1cc(cc([N+](C)(C)C)c1)C", molecule);
         EXPECT_NEAR(6.5, Crippen::pKa(molecule), 0.01);
     }
+}
+
+TEST_F(IndigoCoreMoleculeTest, atom_reorder_query)
+{
+    QueryMolecule molecule;
+    loadQueryMolecule("[A:1][C:2](=[O:3])[OH1:4] |$R1;;;OH$|", molecule);
+    EXPECT_STREQ("*C([OH])=O |$R1;;OH;$|", smiles(molecule).c_str());
+}
+
+TEST_F(IndigoCoreMoleculeTest, atom_reorder_nonquery)
+{
+    Molecule molecule;
+    loadMolecule("SC(=N)O |$R1;;;OH$|", molecule);
+    EXPECT_STREQ("SC(O)=N |$R1;;OH;$|", smiles(molecule).c_str());
 }

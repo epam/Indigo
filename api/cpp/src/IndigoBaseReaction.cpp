@@ -17,11 +17,17 @@
  ***************************************************************************/
 
 #include "IndigoBaseReaction.h"
-#include "IndigoSession.h"
+
+#include <array>
 
 #include <indigo.h>
 
 using namespace indigo_cpp;
+
+namespace
+{
+    const std::array<const char*, 4> AUTOMAP_MODES{"discard", "keep", "alter", "clear"};
+}
 
 IndigoBaseReaction::IndigoBaseReaction(const int id, IndigoSessionPtr session) : IndigoChemicalStructure(id, std::move(session))
 {
@@ -40,4 +46,10 @@ std::string IndigoBaseReaction::rxnfile() const
 std::string IndigoBaseReaction::ctfile() const
 {
     return rxnfile();
+}
+
+void IndigoBaseReaction::automap(const IndigoAutomapMode& mode)
+{
+    session()->setSessionId();
+    session()->_checkResult(indigoAutomap(id(), AUTOMAP_MODES.at(static_cast<size_t>(mode))));
 }

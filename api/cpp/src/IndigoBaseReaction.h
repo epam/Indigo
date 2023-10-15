@@ -22,6 +22,14 @@
 
 namespace indigo_cpp
 {
+    enum class IndigoAutomapMode
+    {
+        DISCARD = 0,
+        KEEP,
+        ALTER,
+        CLEAR
+    };
+
     class IndigoBaseReaction : public IndigoChemicalStructure
     {
     protected:
@@ -35,5 +43,7 @@ namespace indigo_cpp
     public:
         std::string rxnfile() const;
         std::string ctfile() const override;
+
+        void automap(const IndigoAutomapMode& mode);
     };
 }

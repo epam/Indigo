@@ -43,6 +43,12 @@ stdout_thread_printer = ThreadPrinter()
 stderr_thredd_printer = ThreadPrinter()
 stdout_lock = Lock()
 
+res_failed = "[FAILED]"
+res_passed = "[PASSED]"
+res_error = "[ERROR]"
+res_new = "[NEW]"
+res_todo = "[TODO]"
+
 
 def write_difference(fn_1, fn_2, fn_3):
     with io.open(fn_1, "rt", encoding="utf-8") as f_1, io.open(
@@ -218,10 +224,12 @@ def main():
         #     test_results.append(run_analyze_test(test_arg))
     test_status = 0
     for test_result in test_results:
-        if test_result[2] == "[FAILED]":
+        if test_result[2] == res_failed:
             test_status = test_status | 1
-        if test_result[2] == "[ERROR]":
+        if test_result[2] == res_error:
             test_status = test_status | 2
+        if test_result[2] == res_new:
+            test_status = test_status | 4
     total_time = time.time() - total_time
     print("\nTotal time: {:.2f} sec".format(total_time))
 
@@ -324,15 +332,15 @@ def run_analyze_test(args):
     spacer = "."
     msg = ""
     if failed_stderr:
-        test_status = "[ERROR]" if root != "todo" else "[TODO]"
+        test_status = res_error if root != "todo" else res_todo
     elif not base_exists:
-        test_status = "[NEW]"
+        test_status = res_new
     elif not ndiffcnt:
-        test_status = "[PASSED]"
+        test_status = res_passed
         spacer = " "
         spacer_len += 2
     else:
-        test_status = "[FAILED]" if root != "todo" else "[TODO]"
+        test_status = res_failed if root != "todo" else res_todo
     out_message += "{}{}    {:.2f} sec".format(
         spacer * spacer_len, test_status, tspent
     )
@@ -346,6 +354,8 @@ def run_analyze_test(args):
         f.close()
     with stdout_lock:
         sys.__stdout__.write(out_message + "\n")
+        if test_status == "[FAILED]":
+            sys.__stdout__.write(msg + "\n")
     test_result = (root, filename, test_status, msg, tspent)
     return test_result
 

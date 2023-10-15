@@ -27,6 +27,7 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_rgroups.h"
 #include "molecule/molecule_savers.h"
+#include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
 
@@ -185,6 +186,51 @@ void SmilesSaver::_saveMolecule()
     walk.walk();
 
     const Array<DfsWalk::SeqElem>& v_seq = walk.getSequence();
+    Array<int> v_to_comp_group;
+    v_to_comp_group.resize(v_seq.size());
+    v_to_comp_group.fffill();
+
+    if (_qmol != nullptr && smarts_mode)
+    {
+        if (v_seq.size() < 1)
+            return; // No atoms to save
+        std::set<int> components;
+        int cur_component = -1;
+        for (int i = 0; i < v_seq.size(); ++i && _qmol->components.size() > 0)
+        {
+            // In v_seq each fragment started with vertex which parent == -1
+            // In SMARTS some fragments could be grouped (component-level grouping)
+            // In QueryMolecule group number stored in "".components" member. GroupId == 0 means no group defined.
+            // Each fragment - connected graph, so all vertexes should belong to one group.
+            // All group fragments should go one by one - in SMARTS its inside "()".
+            if (v_seq[i].parent_vertex < 0) // New Fragment
+            {
+                int new_component = 0;
+                if (_qmol->components.size() > v_seq[i].idx)
+                {
+                    new_component = _qmol->components[v_seq[i].idx];
+                    // if component defined for new fragment(id>0) and its different from previous and seen before
+                    if (new_component > 0 && new_component != cur_component && components.count(new_component))
+                    {
+                        // According to the DfsWalk code, the groups components should be neighbors.
+                        // If will be found case when it wrong - add code to rearrange fragments
+                        throw Error("SMARTS fragments need to reaarange.");
+                    }
+                    components.emplace(new_component);
+                }
+                cur_component = new_component;
+            }
+            else
+            {
+                if (_qmol->components.size() > v_seq[i].idx && cur_component != _qmol->components[v_seq[i].idx])
+                {
+                    // Fragment contains atoms from different components - something went wrong
+                    throw Error("Fragment contains atoms from different components.");
+                }
+            }
+            v_to_comp_group[i] = cur_component;
+        }
+    }
 
     // fill up neighbor lists for the stereocenters calculation
     for (i = 0; i < v_seq.size(); i++)
@@ -262,7 +308,7 @@ void SmilesSaver::_saveMolecule()
 
         stereocenters.get(i, atom_idx, type, group, pyramid);
 
-        if (type < MoleculeStereocenters::ATOM_AND)
+        if (type < MoleculeStereocenters::ATOM_AND || !stereocenters.isTetrahydral(atom_idx))
             continue;
 
         int implicit_h_idx = -1;
@@ -384,7 +430,7 @@ void SmilesSaver::_saveMolecule()
 
             int idx = _written_atoms[i];
 
-            if (_atoms[idx].chirality == 0)
+            if (_atoms[idx].chirality == 0 || !stereocenters.isTetrahydral(idx))
                 continue;
 
             int type = stereocenters.getType(idx);
@@ -495,7 +541,7 @@ void SmilesSaver::_saveMolecule()
             else if ((dir == 2 && v_idx == edge.end) || (dir == 1 && v_idx == edge.beg))
                 _output.writeChar('\\');
             else if (smarts_mode && _qmol != 0)
-                _writeSmartsBond(e_idx, &_qmol->getBond(e_idx), false);
+                _writeSmartsBond(_output, &_qmol->getBond(e_idx), false);
             else if (bond_order == BOND_DOUBLE)
                 _output.writeChar('=');
             else if (bond_order == BOND_TRIPLE)
@@ -525,8 +571,25 @@ void SmilesSaver::_saveMolecule()
         else
         {
             if (!first_component)
+            {
+                // group == 0 means no group set.
+                int prev_group = v_to_comp_group[i - 1];
+                int new_group = v_to_comp_group[i];
+                bool different_groups = new_group != prev_group;
+                if (smarts_mode && prev_group && different_groups) // if component group ended
+                    _output.writeChar(')');
+
                 _output.writeChar('.');
-            first_component = false;
+
+                if (smarts_mode && new_group && different_groups) // if new group started
+                    _output.writeChar('(');
+            }
+            else
+            {
+                if (smarts_mode && v_to_comp_group[i] > 0) // component level grouping set for this fragment
+                    _output.writeChar('(');
+                first_component = false;
+            }
             _written_components++;
         }
         if (write_atom)
@@ -534,7 +597,10 @@ void SmilesSaver::_saveMolecule()
             if (!smarts_mode)
                 _writeAtom(v_idx, _atoms[v_idx].aromatic, _atoms[v_idx].lowercase, _atoms[v_idx].chirality);
             else if (_qmol != 0)
-                _writeSmartsAtom(v_idx, &_qmol->getAtom(v_idx), _atoms[v_idx].chirality, 0, false, false);
+            {
+                int aam = _bmol->reaction_atom_mapping[v_idx];
+                _writeSmartsAtom(_output, &_qmol->getAtom(v_idx), aam, _atoms[v_idx].chirality, 0, false, false);
+            }
             else
                 throw Error("SMARTS format available for query only!");
 
@@ -599,8 +665,10 @@ void SmilesSaver::_saveMolecule()
                 _output.writeString("{+n}");
         }
     }
+    if (smarts_mode && v_to_comp_group[i - 1] > 0) // if group set for last fragment - add finish )
+        _output.writeChar(')');
 
-    if (write_extra_info && chemaxon)
+    if (write_extra_info && chemaxon && !smarts_mode) // no extended block in SMARTS
     {
         // Before we write the |...| block (ChemAxon's Extended SMILES),
         // we must clean up the mess we did with the attachment points
@@ -625,6 +693,8 @@ void SmilesSaver::_saveMolecule()
         _writeRingBonds();
         _writeUnsaturated();
         _writeSubstitutionCounts();
+        if (_bmol->hasAtropoStereoBonds())
+            _writeWedges();
 
         if (_comma)
             _output.writeChar('|');
@@ -861,62 +931,139 @@ void SmilesSaver::_writeCharge(int charge) const
         _output.printf("-");
 }
 
-void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chirality, int depth, bool has_or_parent, bool has_not_parent) const
+static void _write_num(indigo::Output& output, unsigned char ch, int num)
+{
+    output.writeChar(ch);
+    if (num != 1)
+        output.printf("%d", num);
+}
+
+static void _write_num_if_set(indigo::Output& output, unsigned char ch, int min, int max)
+{
+    if (min == 1 && max == 100)
+        output.writeChar(ch);
+    else
+    {
+        output.printf("%c%d", ch, min);
+    }
+}
+
+static void writeAnd(Output& _output, QueryMolecule::Node* node, bool has_or_parent)
+{
+    if (has_or_parent)
+        _output.writeChar('&');
+    else if (node->hasOP_OR())
+        _output.writeChar(';');
+}
+
+std::string SmilesSaver::writeSmartsAtomStr(QueryMolecule::Atom* atom)
+{
+    Array<char> out;
+    ArrayOutput output(out);
+    _writeSmartsAtom(output, atom, -1, -1, 1, false, false);
+    std::string result{out.ptr(), static_cast<std::size_t>(out.size())};
+    return result;
+}
+
+void SmilesSaver::_writeSmartsAtom(Output& output, QueryMolecule::Atom* atom, int aam, int chirality, int depth, bool has_or_parent, bool has_not_parent)
 {
     int i;
 
     if (depth == 0)
-        _output.printf("[");
+        output.printf("[");
 
     switch (atom->type)
     {
     case QueryMolecule::OP_NOT: {
-        _output.writeChar('!');
-        _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[0], chirality, depth + 1, has_or_parent, true);
+        if (atom->artificial) // Skip atoms added by loader (!#1)
+        {
+            break;
+        }
+        else if (QueryMolecule::isNotAtom(*atom, ELEM_H))
+        {
+            output.printf("*");
+            break;
+        }
+        output.writeChar('!');
+        _writeSmartsAtom(output, static_cast<QueryMolecule::Atom*>(atom->children[0]), aam, chirality, depth + 1, has_or_parent, true);
         break;
     }
     case QueryMolecule::OP_AND: {
+        bool has_number = false;
+        bool has_aromatic = false;
+        bool aromatic = false;
+        char atom_name[10];
+        int cur_pos = output.tell();
         for (i = 0; i < atom->children.size(); i++)
         {
-            if (i > 0)
-                _output.writeChar(has_or_parent ? '&' : ';');
-            _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[i], chirality, depth + 1, has_or_parent, has_not_parent);
+            if (atom->children[i]->type == QueryMolecule::ATOM_NUMBER)
+            {
+                has_number = true;
+                strncpy(atom_name, Element::toString(static_cast<QueryMolecule::Atom*>(atom->children[0])->value_max), sizeof(atom_name));
+            }
+            if (atom->children[i]->type == QueryMolecule::ATOM_AROMATICITY)
+            {
+                has_aromatic = true;
+                aromatic = static_cast<QueryMolecule::Atom*>(atom->children[i])->value_min == ATOM_AROMATIC;
+            }
+        }
+        if (has_aromatic && has_number)
+        { // Convert a & #6 -> c,  A & #6 -> C
+            if (aromatic)
+                atom_name[0] = tolower(atom_name[0]);
+            output.printf("%s", atom_name);
+        }
+        for (i = 0; i < atom->children.size(); i++)
+        {
+            if (has_aromatic && has_number &&
+                (atom->children[i]->type == QueryMolecule::ATOM_AROMATICITY || atom->children[i]->type == QueryMolecule::ATOM_NUMBER))
+            {
+                continue;
+            }
+            if (atom->children[i]->type == QueryMolecule::ATOM_RADICAL || atom->children[i]->type == QueryMolecule::ATOM_VALENCE)
+            {
+                continue;
+            }
+            if (atom->children[i]->type == QueryMolecule::OP_NOT && atom->children[i]->artificial)
+            {
+                continue;
+            }
+
+            if (output.tell() > cur_pos)
+            {
+                output.writeChar(has_or_parent ? '&' : ';');
+                cur_pos = output.tell();
+            }
+            _writeSmartsAtom(output, static_cast<QueryMolecule::Atom*>(atom->children[i]), aam, chirality, depth + 1, has_or_parent, has_not_parent);
         }
         break;
     }
     case QueryMolecule::OP_OR: {
         for (i = 0; i < atom->children.size(); i++)
         {
+            if (atom->children[i]->type == QueryMolecule::ATOM_RADICAL || atom->children[i]->type == QueryMolecule::ATOM_VALENCE)
+            {
+                continue;
+            }
+
             if (i > 0)
-                _output.printf(has_not_parent ? "!" : ",");
-            _writeSmartsAtom(idx, (QueryMolecule::Atom*)atom->children[i], chirality, depth + 1, true, has_not_parent);
+                output.printf(has_not_parent ? "!" : ",");
+            _writeSmartsAtom(output, static_cast<QueryMolecule::Atom*>(atom->children[i]), aam, chirality, depth + 1, true, has_not_parent);
         }
         break;
     }
     case QueryMolecule::ATOM_ISOTOPE:
-        _output.printf("%d", atom->value_max);
+        output.printf("%d", atom->value_max);
         break;
     case QueryMolecule::ATOM_NUMBER: {
-        _output.printf("#%d", atom->value_max);
+        output.printf("#%d", atom->value_max);
         if (chirality == 1)
-            _output.printf("@");
+            output.printf("@");
         else if (chirality == 2)
-            _output.printf("@@");
-
-        if (chirality > 0 || _bmol->getAtomRadical_NoThrow(idx, 0) > 0)
-        {
-            int hydro = _bmol->getAtomTotalH(idx);
-
-            if (hydro > 1)
-                _output.printf("H%d", hydro);
-            else if (hydro == 1)
-                _output.printf("H");
-        }
-
-        int aam = _bmol->reaction_atom_mapping[idx];
+            output.printf("@@");
 
         if (aam > 0)
-            _output.printf(":%d", aam);
+            output.printf(":%d", aam);
 
         break;
     }
@@ -924,93 +1071,90 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
         int charge = atom->value_max;
 
         if (charge > 1)
-            _output.printf("+%d", charge);
+            output.printf("+%d", charge);
         else if (charge < -1)
-            _output.printf("-%d", -charge);
+            output.printf("-%d", -charge);
         else if (charge == 1)
-            _output.printf("+");
+            output.printf("+");
         else if (charge == -1)
-            _output.printf("-");
+            output.printf("-");
+        else
+            output.printf("+0");
         break;
     }
     case QueryMolecule::ATOM_FRAGMENT: {
         if (atom->fragment->fragment_smarts.ptr() == 0)
             throw Error("fragment_smarts has unexpectedly gone");
-        _output.printf("$(%s)", atom->fragment->fragment_smarts.ptr());
+        output.printf("$(%s)", atom->fragment->fragment_smarts.ptr());
         break;
     }
     case QueryMolecule::ATOM_AROMATICITY: {
         if (atom->value_min == ATOM_AROMATIC)
-            _output.printf("a");
+            output.printf("a");
         else
-            _output.printf("A");
+            output.printf("A");
         break;
     }
     case QueryMolecule::OP_NONE:
-        _output.writeChar('*');
+        output.writeChar('*');
         break;
     case QueryMolecule::ATOM_TOTAL_H: {
-        int hydro = atom->value_min;
-        if (hydro == 1)
-            _output.printf("H");
-        else
-            _output.printf("H%d", hydro);
+        _write_num(output, 'H', atom->value_min);
+        break;
+    }
+
+    case QueryMolecule::ATOM_SSSR_RINGS: {
+        _write_num_if_set(output, 'R', atom->value_min, atom->value_max);
         break;
     }
 
     case QueryMolecule::ATOM_RING_BONDS_AS_DRAWN: {
-        _output.printf("x:%d", atom->value_min);
+        output.printf("x:%d", atom->value_min);
         break;
     }
 
     case QueryMolecule::ATOM_RING_BONDS: {
-        if (atom->value_min == 1 && atom->value_max == 100)
-            _output.printf("x");
-        else
-        {
-            _output.printf("x%d", atom->value_min);
-        }
+        _write_num_if_set(output, 'x', atom->value_min, atom->value_max);
         break;
     }
 
     case QueryMolecule::ATOM_IMPLICIT_H: {
-        if (atom->value_min == 1 && atom->value_max == 100)
-        {
-            _output.printf("h");
-        }
-        else
-        {
-            _output.printf("h%d", atom->value_min);
-        }
+        _write_num_if_set(output, 'h', atom->value_min, atom->value_max);
         break;
     }
 
     case QueryMolecule::ATOM_UNSATURATION: {
-        _output.printf("$([*,#1]=,#,:[*,#1])");
+        output.printf("$([*,#1]=,#,:[*,#1])");
         break;
     }
 
     case QueryMolecule::ATOM_SMALLEST_RING_SIZE: {
+        _write_num_if_set(output, 'r', atom->value_min, atom->value_max);
         break;
     }
 
     case QueryMolecule::ATOM_SUBSTITUENTS: {
-        _output.printf("D%d", atom->value_min);
+        output.printf("D%d", atom->value_min);
         break;
     }
 
     case QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN: {
-        _output.printf("D%d", atom->value_min);
+        output.printf("D%d", atom->value_min);
         break;
     }
 
     case QueryMolecule::ATOM_PSEUDO: {
-        _output.printf("*", atom->alias.ptr());
+        output.printf("*", atom->alias.ptr());
         break;
     }
 
     case QueryMolecule::ATOM_CONNECTIVITY: {
-        _output.printf("X%d", atom->value_min);
+        output.printf("X%d", atom->value_min);
+        break;
+    }
+
+    case QueryMolecule::ATOM_TOTAL_BOND_ORDER: {
+        _write_num(output, 'v', atom->value_min);
         break;
     }
 
@@ -1021,10 +1165,19 @@ void SmilesSaver::_writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chira
     }
 
     if (depth == 0)
-        _output.writeChar(']');
+        output.writeChar(']');
 }
 
-void SmilesSaver::_writeSmartsBond(int idx, QueryMolecule::Bond* bond, bool has_or_parent) const
+std::string SmilesSaver::writeSmartsBondStr(QueryMolecule::Bond* bond)
+{
+    Array<char> out;
+    ArrayOutput output(out);
+    _writeSmartsBond(output, bond, false);
+    std::string result{out.ptr(), static_cast<std::size_t>(out.size())};
+    return result;
+}
+
+void SmilesSaver::_writeSmartsBond(Output& output, QueryMolecule::Bond* bond, bool has_or_parent)
 {
     int i;
 
@@ -1032,26 +1185,26 @@ void SmilesSaver::_writeSmartsBond(int idx, QueryMolecule::Bond* bond, bool has_
 
     if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
     {
-        _output.writeString("-,=");
+        output.writeString("-,=");
         return;
     }
 
     switch (bond->type)
     {
     case QueryMolecule::OP_NONE:
-        _output.writeChar('~');
+        output.writeChar('~');
         break;
     case QueryMolecule::OP_NOT: {
-        _output.writeChar('!');
-        _writeSmartsBond(idx, (QueryMolecule::Bond*)bond->children[0], has_or_parent);
+        output.writeChar('!');
+        _writeSmartsBond(output, (QueryMolecule::Bond*)bond->children[0], has_or_parent);
         break;
     }
     case QueryMolecule::OP_OR: {
         for (i = 0; i < bond->children.size(); i++)
         {
             if (i > 0)
-                _output.printf(",");
-            _writeSmartsBond(idx, (QueryMolecule::Bond*)bond->children[i], true);
+                output.printf(",");
+            _writeSmartsBond(output, (QueryMolecule::Bond*)bond->children[i], true);
         }
         break;
     }
@@ -1059,8 +1212,8 @@ void SmilesSaver::_writeSmartsBond(int idx, QueryMolecule::Bond* bond, bool has_
         for (i = 0; i < bond->children.size(); i++)
         {
             if (i > 0)
-                _output.writeChar(has_or_parent ? '&' : ';');
-            _writeSmartsBond(idx, (QueryMolecule::Bond*)bond->children[i], has_or_parent);
+                output.writeChar(has_or_parent ? '&' : ';');
+            _writeSmartsBond(output, (QueryMolecule::Bond*)bond->children[i], has_or_parent);
         }
         break;
     }
@@ -1068,13 +1221,22 @@ void SmilesSaver::_writeSmartsBond(int idx, QueryMolecule::Bond* bond, bool has_
         int bond_order = bond->value;
 
         if (bond_order == BOND_SINGLE)
-            _output.writeChar('-');
+            output.writeChar('-');
         if (bond_order == BOND_DOUBLE)
-            _output.writeChar('=');
+            output.writeChar('=');
         else if (bond_order == BOND_TRIPLE)
-            _output.writeChar('#');
+            output.writeChar('#');
         else if (bond_order == BOND_AROMATIC)
-            _output.writeChar(':');
+            output.writeChar(':');
+        else if (bond_order == BOND_SMARTS_UP)
+            output.writeChar('/');
+        else if (bond_order == BOND_SMARTS_DOWN)
+            output.writeChar('\\');
+        break;
+    }
+    case QueryMolecule::BOND_TOPOLOGY: {
+        if (bond->value == TOPOLOGY_RING)
+            output.writeChar('@');
         break;
     }
     default:;
@@ -1488,7 +1650,6 @@ void SmilesSaver::_writeStereogroups()
     {
         int atom, type, group;
         stereocenters.get(i, atom, type, group, 0);
-
         if (type != MoleculeStereocenters::ATOM_ABS)
             break;
     }
@@ -1669,9 +1830,9 @@ void SmilesSaver::_writePseudoAtoms()
         {
             writeSpecialAtom(_written_atoms[i], _output);
         }
-        else if (mol.isAlias(i))
+        else if (mol.isAlias(_written_atoms[i]))
         {
-            writePseudoAtom(mol.getAlias(i), _output);
+            writePseudoAtom(mol.getAlias(_written_atoms[i]), _output);
         }
     }
 
@@ -1822,6 +1983,72 @@ void SmilesSaver::_writeSubstitutionCounts()
                     break;
                 }
             }
+        }
+    }
+}
+
+void SmilesSaver::_writeBondDirs(const std::string& tag, const std::vector<std::pair<int, int>>& bonds)
+{
+    bool is_first = true;
+    for (const auto& kvp : bonds)
+    {
+        if (is_first)
+        {
+            _startExtension();
+            _output.writeString(tag.c_str());
+            is_first = false;
+        }
+        else
+            _output.writeString(",");
+        _output.printf("%d.%d", kvp.first, kvp.second);
+    }
+}
+
+void SmilesSaver::_writeWedges()
+{
+    if (_bmol)
+    {
+        std::vector<std::pair<int, int>> down_dirs, up_dirs, wiggy_dirs;
+        for (int i = 0; i < _written_bonds.size(); ++i)
+        {
+            auto bond_idx = _written_bonds[i];
+            auto& e = _bmol->getEdge(bond_idx);
+            auto bdir = _bmol->getBondDirection(bond_idx);
+            if (bdir)
+            {
+                const auto& edge = _bmol->getEdge(bond_idx);
+                auto wa_idx = _written_atoms.find(edge.beg);
+                switch (bdir)
+                {
+                case BOND_UP:
+                    up_dirs.emplace_back(wa_idx, i);
+                    break;
+                case BOND_DOWN:
+                    down_dirs.emplace_back(wa_idx, i);
+                    break;
+                case BOND_EITHER:
+                    wiggy_dirs.emplace_back(wa_idx, i);
+                    break;
+                }
+            }
+        }
+
+        _writeBondDirs("wU:", up_dirs);
+        _writeBondDirs("wD:", down_dirs);
+        _writeBondDirs("w:", wiggy_dirs);
+
+        if ((down_dirs.size() || up_dirs.size() || wiggy_dirs.size()) && BaseMolecule::hasCoord(*_mol))
+        {
+            _output.writeString(",(");
+            for (int i = 0; i < _written_atoms.size(); ++i)
+            {
+                if (i)
+                    _output.writeString(";");
+                auto atom_idx = _written_atoms[i];
+                const auto& pos = _mol->getAtomXyz(atom_idx);
+                _output.printf("%.2f,%.2f,", pos.x, pos.y);
+            }
+            _output.writeString(")");
         }
     }
 }

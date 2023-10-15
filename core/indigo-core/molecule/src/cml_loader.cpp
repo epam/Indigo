@@ -1082,11 +1082,9 @@ void CmlLoader::_loadMoleculeElement(XMLHandle& handle)
 
     if (_bmol->stereocenters.size() == 0 && BaseMolecule::hasCoord(*_bmol))
     {
-        QS_DEF(Array<int>, sensible_bond_orientations);
-
-        sensible_bond_orientations.clear_resize(_bmol->vertexEnd());
-        _bmol->buildFromBondsStereocenters(stereochemistry_options, sensible_bond_orientations.ptr());
-
+        std::vector<int> sensible_bond_orientations;
+        sensible_bond_orientations.resize(_bmol->edgeEnd(), 0);
+        _bmol->buildFromBondsStereocenters(stereochemistry_options, sensible_bond_orientations.data());
         if (!stereochemistry_options.ignore_errors)
             for (i = 0; i < _bmol->vertexCount(); i++)
                 if (_bmol->getBondDirection(i) > 0 && !sensible_bond_orientations[i])

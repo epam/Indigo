@@ -57,9 +57,7 @@ void MolfileLoader::loadMolecule(Molecule& mol)
     _mol = &mol;
     _qmol = 0;
     _loadMolecule();
-
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
-
     if (mol.stereocenters.size() == 0 && !skip_3d_chirality)
         mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
 }
@@ -92,6 +90,7 @@ void MolfileLoader::_loadMolecule()
     else
     {
         _readCtab3000();
+        printf("%d\n", _bmol->attachmentPointCount());
         _readRGroups3000();
         _readTGroups3000();
     }
@@ -2063,9 +2062,7 @@ void MolfileLoader::_postLoad()
         {
             if (_bmol->stereocenters.getType(i) == 0)
             {
-                if (_bmol->isAtropisomerismReferenceAtom(i))
-                    _bmol->stereocenters.add_ignore(*_bmol, i, _stereocenter_types[i], _stereocenter_groups[i], false);
-                else if (!stereochemistry_options.ignore_errors)
+                if (!stereochemistry_options.ignore_errors)
                     throw Error("stereo type specified for atom #%d, but the bond "
                                 "directions does not say that it is a stereocenter",
                                 i);
@@ -2074,12 +2071,16 @@ void MolfileLoader::_postLoad()
                 _bmol->stereocenters.setType(i, _stereocenter_types[i], _stereocenter_groups[i]);
         }
 
-    if (!stereochemistry_options.ignore_errors)
-        for (i = 0; i < _bonds_num; i++)
-            if (_bmol->getBondDirection(i) > 0 && !_sensible_bond_directions[i])
-                throw Error("direction of bond #%d makes no sense", i);
-
     _bmol->buildCisTrans(_ignore_cistrans.ptr());
+
+    for (i = 0; i < _bonds_num; i++)
+    {
+        if (_bmol->getBondDirection(i) && !_sensible_bond_directions[i])
+        {
+            if (!stereochemistry_options.ignore_errors)
+                throw Error("direction of bond #%d makes no sense", i);
+        }
+    }
 
     // Remove adding default R-group logic behavior
     /*

@@ -13,6 +13,7 @@
 #include "molecule/molecule_sgroups.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/query_molecule.h"
+#include "molecule/smiles_loader.h"
 
 using namespace rapidjson;
 using namespace indigo;
@@ -21,8 +22,8 @@ using namespace std;
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
-    : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _pmol(0), _pqmol(0),
-      ignore_noncritical_query_features(false)
+    : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false),
+      components_count(0)
 {
     Value& root = ket["root"];
     Value& nodes = root["nodes"];
@@ -72,8 +73,8 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
 }
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
-    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false),
-      ignore_no_chiral_flag(false), skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0)
+    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), ignore_no_chiral_flag(false),
+      skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0), components_count(0)
 {
 }
 
@@ -532,6 +533,69 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             if (cip_it != KStringToCIP.end())
                 mol.setAtomCIP(atom_idx, cip_it->second);
         }
+
+        if (a.HasMember("queryProperties"))
+        {
+            if (_pqmol)
+            {
+                auto qProps = a["queryProperties"].GetObject();
+                if (qProps.HasMember("customQuery"))
+                {
+                    std::string customQuery = qProps["customQuery"].GetString();
+                    std::unique_ptr<QueryMolecule::Atom> atom = make_unique<QueryMolecule::Atom>();
+                    SmilesLoader::readSmartsAtomStr(customQuery, atom);
+                    _pqmol->resetAtom(atom_idx, atom.release());
+                }
+                else
+                {
+                    if (qProps.HasMember("aromaticity"))
+                    {
+                        std::string arom = qProps["aromaticity"].GetString();
+                        int aromatic;
+                        if (arom == ATOM_AROMATIC_STR)
+                            aromatic = ATOM_AROMATIC;
+                        else if (arom == ATOM_ALIPHATIC_STR)
+                            aromatic = ATOM_ALIPHATIC;
+                        else
+                            throw Error("Wrong value for aromaticity.");
+                        _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
+                                                                             new QueryMolecule::Atom(QueryMolecule::ATOM_AROMATICITY, aromatic)));
+                    }
+                    if (qProps.HasMember("ringMembership"))
+                    {
+                        int rmem = qProps["ringMembership"].GetInt();
+                        _pqmol->resetAtom(
+                            atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SSSR_RINGS, rmem)));
+                    }
+                    if (qProps.HasMember("ringSize"))
+                    {
+                        int rsize = qProps["ringSize"].GetInt();
+                        _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
+                                                                             new QueryMolecule::Atom(QueryMolecule::ATOM_SMALLEST_RING_SIZE, rsize)));
+                    }
+                    if (qProps.HasMember("connectivity"))
+                    {
+                        int conn = qProps["connectivity"].GetInt();
+                        _pqmol->resetAtom(
+                            atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_CONNECTIVITY, conn)));
+                    }
+                    if (qProps.HasMember("chirality"))
+                    {
+                        std::string arom = qProps["chirality"].GetString();
+                        int chirality;
+                        if (arom == "clockwise")
+                            chirality = 1;
+                        else if (arom == "anticlockwise")
+                            chirality = 2;
+                        else
+                            throw Error("Wrong value for chirality.");
+                        // 2do - add hirality to atom
+                    }
+                }
+            }
+            else
+                throw Error("queryProperties is allowed only for queries");
+        }
     }
 
     if (_pqmol)
@@ -627,6 +691,14 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
                 default:
                     break;
                 }
+            }
+
+            if (b.HasMember("customQuery"))
+            {
+                std::string customQuery = b["customQuery"].GetString();
+                std::unique_ptr<QueryMolecule::Bond> bond = make_unique<QueryMolecule::Bond>();
+                SmilesLoader::readSmartsBondStr(customQuery, bond);
+                _pqmol->resetBond(bond_idx, bond.release());
             }
 
             if (b.HasMember("cip"))
@@ -801,11 +873,27 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
     for (SizeType i = 0; i < sgroups.Size(); i++)
     {
         const Value& s = sgroups[i];
+        const Value& atoms = s["atoms"];
         std::string sg_type_str = s["type"].GetString(); // GEN, MUL, SRU, SUP
+        if (sg_type_str == "queryComponent")
+        {
+            if (_pqmol)
+            {
+                _pqmol->components.expandFill(_pqmol->components.size() + atoms.Size(), 0);
+                components_count++;
+                for (int j = 0; j < atoms.Size(); ++j)
+                {
+                    int atom_idx = atoms[j].GetInt();
+                    _pqmol->components[atom_idx] = components_count;
+                }
+            }
+            else
+                throw Error("queryProperties is allowed only for queries");
+            continue;
+        }
         int sg_type = SGroup::getType(sg_type_str.c_str());
         int grp_idx = mol.sgroups.addSGroup(sg_type);
         SGroup& sgroup = mol.sgroups.getSGroup(grp_idx);
-        const Value& atoms = s["atoms"];
         // add atoms
         std::unordered_set<int> sgroup_atoms;
         for (int j = 0; j < atoms.Size(); ++j)
@@ -1004,7 +1092,7 @@ void MoleculeJsonLoader::fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol)
     {
         Vec2f* brk_pos = sa.brackets.push();
         brk_pos[0].copy(brackets[i]);
-        if (brackets.size() % 2)
+        if (brackets.size() < i + 1)
             brk_pos[1].set(0, 0);
         else
             brk_pos[1].copy(brackets[i + 1]);
@@ -1331,14 +1419,24 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     {
         if (mol.stereocenters.getType(sc._atom_idx) == 0)
         {
-            if (!stereochemistry_options.ignore_errors)
+            if (stereochemistry_options.ignore_errors)
+                mol.addStereocentersIgnoreBad(sc._atom_idx, sc._type, sc._group, false); // add non-valid stereocenters
+            else
                 throw Error("stereo type specified for atom #%d, but the bond "
                             "directions does not say that it is a stereocenter",
                             sc._atom_idx);
-            mol.addStereocentersIgnoreBad(sc._atom_idx, sc._type, sc._group, false); // add non-valid stereocenters
         }
         else
             mol.stereocenters.setType(sc._atom_idx, sc._type, sc._group);
+    }
+
+    for (int i : mol.edges())
+    {
+        if (mol.getBondDirection(i) > 0 && !sensible_bond_directions[i])
+        {
+            if (!stereochemistry_options.ignore_errors)
+                throw Error("direction of bond #%d makes no sense", i);
+        }
     }
 
     MoleculeLayout ml(mol, false);

@@ -146,7 +146,7 @@ void RSmilesSaver::_saveReaction()
         _writeMolecule(i);
     }
 
-    if (chemaxon)
+    if (chemaxon && !smarts_mode)
     {
         _comma = false;
         _writeFragmentsInfo();

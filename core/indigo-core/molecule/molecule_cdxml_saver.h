@@ -87,6 +87,7 @@ namespace indigo
         void addColorToTable(int id, int r, int g, int b);
         void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale, int frag_id, int& id, std::vector<int>& ids);
         void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale);
+        void saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum);
 
         void addMetaObject(const MetaObject& obj, int id);
         void addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end);
@@ -121,6 +122,7 @@ namespace indigo
 
     protected:
         void _collectSuperatoms(BaseMolecule& mol);
+        int _getAttachmentPoint(BaseMolecule& mol, int atom_idx);
         Output& _output;
 
         float _bond_length;

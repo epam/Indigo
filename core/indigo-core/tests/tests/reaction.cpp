@@ -20,6 +20,7 @@
 
 #include <base_cpp/output.h>
 #include <reaction/reaction.h>
+#include <reaction/rsmiles_saver.h>
 
 #include "common.h"
 
@@ -65,7 +66,7 @@ TEST_F(IndigoCoreReactionTest, aliases_complex)
     QueryReaction reaction;
     loadQueryReaction("[#6:1]=[#6:2][#6:3].[#6:4]=[#6:5][#6:6]>>[#6:3][#6:2]=[#6:5][#6:6] |$;;R1;;;R2;R1;;;R2$|", reaction);
     reaction.clearAAM();
-    ASSERT_STREQ("[#6]=[#6]-[#6].[#6]=[#6]-[#6]>>[#6]-[#6]=[#6]-[#6] |$;;R1;;;R2;R1;;;R2$|", saveReactionSmiles(reaction, true).c_str());
+    ASSERT_STREQ("[#6]=[#6]-[#6].[#6]=[#6]-[#6]>>[#6]-[#6]=[#6]-[#6]", saveReactionSmiles(reaction, true).c_str());
     ASSERT_STREQ("$RXN\n\n -INDIGO- 0100000000\n\n  2  1\n$MOL\n\n  -INDIGO-01000000002D\n\n  3  2  0  0  0  0  0  0  0  0999 V2000\n    0.0000    0.0000    "
                  "0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    0.0000   "
                  " 0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  2  0  0  0  0\n  2  3  1  0  0  0  0\nA    3\nR1\nM  END\n$MOL\n\n  "
@@ -90,4 +91,21 @@ TEST_F(IndigoCoreReactionTest, aliases_complex)
         "[2.598076105117798,3.0,0.0]}],\"bonds\":[{\"type\":1,\"atoms\":[0,1]},{\"type\":2,\"atoms\":[1,2]},{\"type\":1,\"atoms\":[2,3]}]}}",
         saverReactionJson(reaction).c_str());
     */
+}
+
+TEST_F(IndigoCoreReactionTest, smarts_reaction)
+{
+    QueryReaction qr;
+    std::string smarts_in = "([#8:1].[#6:2])>>([#8:1].[#6:2])";
+    loadQueryReaction(smarts_in.c_str(), qr);
+    ASSERT_EQ(qr.reactantsCount(), 1);
+    ASSERT_EQ(qr.productsCount(), 1);
+    Array<char> out;
+    ArrayOutput std_out(out);
+    RSmilesSaver saver(std_out);
+    saver.smarts_mode = true;
+    saver.saveQueryReaction(qr);
+    out.push(0);
+    std::string smarts_out{out.ptr()};
+    ASSERT_EQ(smarts_in, smarts_out);
 }
