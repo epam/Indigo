@@ -638,9 +638,9 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
         if (bond_order == BOND_ZERO)
         {
-            bond_order = 9;
+            bond_order = _BOND_COORDINATION;
             if ((mol.getAtomNumber(edge.beg) == ELEM_H) || (mol.getAtomNumber(edge.end) == ELEM_H))
-                bond_order = 10;
+                bond_order = _BOND_HYDROGEN;
         }
 
         out.printf("%d %d %d %d", iw, bond_order, _atom_mapping[edge.beg], _atom_mapping[edge.end]);

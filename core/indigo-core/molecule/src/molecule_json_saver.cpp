@@ -422,10 +422,10 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
 
                 if (bond_order == BOND_ZERO && _pmol)
                 {
-                    bond_order = 9;
+                    bond_order = _BOND_COORDINATION;
                     const Edge& edge = mol.getEdge(i);
                     if ((_pmol->getAtomNumber(edge.beg) == ELEM_H) || (_pmol->getAtomNumber(edge.end) == ELEM_H))
-                        bond_order = 10;
+                        bond_order = _BOND_HYDROGEN;
                 }
 
                 writer.Uint(bond_order);
@@ -444,13 +444,14 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                 else
                 {
                     writer.Uint(bond_order);
+                    // convert direction to Biovia constants, to override stereo later
                     switch (direction)
                     {
                     case BOND_UP:
-                        direction = 1;
+                        direction = BIOVIA_STEREO_UP;
                         break;
                     case BOND_DOWN:
-                        direction = 6;
+                        direction = BIOVIA_STEREO_DOWN;
                         break;
                     }
                 }
@@ -491,16 +492,16 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                 switch (stereo)
                 {
                 case BOND_UP:
-                    stereo = 1;
+                    stereo = BIOVIA_STEREO_UP;
                     break;
                 case BOND_EITHER:
-                    stereo = 4;
+                    stereo = BIOVIA_STEREO_ETHER;
                     break;
                 case BOND_DOWN:
-                    stereo = 6;
+                    stereo = BIOVIA_STEREO_DOWN;
                     break;
                 default: {
-                    stereo = 0;
+                    stereo = BIOVIA_STEREO_NO;
                 }
                 break;
                 }
