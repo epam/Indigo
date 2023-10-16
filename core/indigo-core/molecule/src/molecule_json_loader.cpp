@@ -11,6 +11,7 @@
 #include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_sgroups.h"
+#include "molecule/monomer_commons.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
 
@@ -21,11 +22,12 @@ using namespace std;
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
-    : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false),
-      components_count(0)
+    : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _pmol(0), _pqmol(0),
+      ignore_noncritical_query_features(false), components_count(0)
 {
     Value& root = ket["root"];
     Value& nodes = root["nodes"];
+
     // rewind to first molecule node
     for (int i = 0; i < nodes.Size(); ++i)
     {
@@ -54,11 +56,25 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
         else
             throw Error("Unsupported node for molecule");
     }
+
+    if (root.HasMember("templates"))
+    {
+        Value& templates = root["templates"];
+        for (int i = 0; i < templates.Size(); ++i)
+        {
+            std::string template_name = templates[i]["$ref"].GetString();
+            if (ket.HasMember(template_name.c_str()))
+            {
+                Value& template_node = ket[template_name.c_str()];
+                _templates.PushBack(template_node, ket.GetAllocator());
+            }
+        }
+    }
 }
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
-    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), ignore_no_chiral_flag(false),
-      skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0), components_count(0)
+    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false),
+      ignore_no_chiral_flag(false), skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0), components_count(0)
 {
 }
 
@@ -1045,6 +1061,205 @@ void MoleculeJsonLoader::parseProperties(const rapidjson::Value& props, BaseMole
     }
 }
 
+void MoleculeJsonLoader::fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol)
+{
+    std::unordered_set<int> atoms;
+    std::vector<Vec2f> brackets;
+    for (auto val : sa.atoms)
+        atoms.insert(val);
+
+    // fill crossing bonds
+
+    for (auto src_atom : sa.atoms)
+    {
+        const auto& vx = mol.getVertex(src_atom);
+        const auto& src_pos = mol.getAtomXyz(src_atom);
+        for (int i = vx.neiBegin(); i != vx.neiEnd(); i = vx.neiNext(i))
+        {
+            auto target_atom = vx.neiVertex(i);
+            if (atoms.find(target_atom) == atoms.end())
+            {
+                const auto& target_pos = mol.getAtomXyz(target_atom);
+                sa.bonds.push(vx.neiEdge(i));
+                brackets.emplace_back((target_pos.x - src_pos.x) / 2, (target_pos.y - src_pos.y) / 2);
+            }
+        }
+    }
+
+    // fill brackets
+
+    for (int i = 0; i < brackets.size(); i += 2)
+    {
+        Vec2f* brk_pos = sa.brackets.push();
+        brk_pos[0].copy(brackets[i]);
+        if (i + 1 == brackets.size())
+            brk_pos[1].set(0, 0);
+        else
+            brk_pos[1].copy(brackets[i + 1]);
+    }
+}
+
+void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol)
+{
+    auto tg_idx = mol.tgroups.addTGroup();
+    TGroup& tg = mol.tgroups.getTGroup(tg_idx);
+    tg.tgroup_id = tg_idx + 1;
+    Value one_tgroup(kArrayType);
+    Document data;
+    rapidjson::Value monomer_template_cp;
+    monomer_template_cp.CopyFrom(monomer_template, data.GetAllocator());
+    one_tgroup.PushBack(monomer_template_cp, data.GetAllocator());
+    MoleculeJsonLoader loader(one_tgroup);
+    loader.stereochemistry_options = stereochemistry_options;
+    tg.fragment.reset(mol.neu());
+    loader.loadMolecule(*tg.fragment);
+    auto& monomer_mol = *tg.fragment;
+    std::string mclass, alias, natreplace;
+    std::unordered_set<int> leaving_atoms;
+    if (monomer_template.HasMember("id"))
+    {
+        std::string id = monomer_template["id"].GetString();
+        auto id_vecs = split(id, '_');
+        tg.tgroup_name.appendString(id_vecs.front().c_str(), true);
+        if (monomer_template.HasMember("class"))
+        {
+            mclass = monomer_template["class"].GetString();
+            if (mclass == kMonomerClassAminoAcid)
+                mclass = kMonomerClassAA;
+            else if (mclass == kMonomerClassDAminoAcid)
+                mclass = kMonomerClassdAA;
+            else
+                std::transform(mclass.begin(), mclass.end(), mclass.begin(), ::toupper);
+
+            if (monomer_template.HasMember("naturalAnalog"))
+            {
+                std::string analog_alias = monomerAliasByName(mclass, monomer_template["naturalAnalog"].GetString());
+                std::string natrep_class = mclass == kMonomerClassdAA ? kMonomerClassAA : mclass;
+                natreplace = natrep_class + "/" + analog_alias;
+                tg.tgroup_natreplace.appendString(natreplace.c_str(), true);
+            }
+
+            tg.tgroup_class.appendString(mclass.c_str(), true);
+            if (monomer_template.HasMember("alias"))
+            {
+                alias = monomer_template["alias"].GetString();
+                if (mclass == kMonomerClassdAA && alias.find(kPrefix_d) == 0)
+                {
+                    alias.erase(0, 1);
+                    mclass = kMonomerClassAA;
+                }
+                tg.tgroup_alias.appendString(alias.c_str(), true);
+            }
+        }
+
+        if (monomer_template.HasMember("attachmentPoints"))
+        {
+            auto& att_points = monomer_template["attachmentPoints"];
+            std::vector<MonomerAttachmentPoint> attachment_descs;
+            for (SizeType i = 0; i < att_points.Size(); i++)
+            {
+                auto& ap = att_points[i];
+                std::string att_label(1, 'A' + i);
+                MonomerAttachmentPoint att_desc = {-1, -1, att_label + (i > 0 ? (i > 1 ? 'x' : 'r') : 'l')};
+                if (ap.HasMember("leavingGroup"))
+                {
+                    int grp_idx = monomer_mol.sgroups.addSGroup(SGroup::SG_TYPE_SUP);
+                    auto& sa = (Superatom&)monomer_mol.sgroups.getSGroup(grp_idx);
+                    auto& atoms = ap["leavingGroup"]["atoms"];
+                    std::string group_name;
+                    for (SizeType j = 0; j < atoms.Size(); j++)
+                    {
+                        auto la = atoms[j].GetInt();
+                        sa.atoms.push(la);
+                        leaving_atoms.insert(la);
+                        auto total_h = monomer_mol.getAtomTotalH(la);
+                        Array<char> label;
+                        monomer_mol.getAtomSymbol(la, label);
+                        if (label.size())
+                        {
+                            group_name += label.ptr();
+                            if (total_h)
+                            {
+                                group_name += 'H';
+                                if (total_h > 1)
+                                    group_name += std::to_string(total_h);
+                            }
+                        }
+                    }
+                    sa.sa_class.appendString("LGRP", true);
+                    sa.subscript.appendString(group_name.c_str(), true);
+
+                    att_desc.leaving_group = grp_idx;
+                    fillXBondsAndBrackets(sa, monomer_mol);
+                }
+
+                if (ap.HasMember("attachmentAtom"))
+                    att_desc.attachment_atom = ap["attachmentAtom"].GetInt();
+
+                if (ap.HasMember("label"))
+                {
+                    std::string label = ap["label"].GetString();
+                    if (label.size() > 1)
+                    {
+                        if (label == "R1")
+                            att_desc.id = "Al";
+                        else if (label == "R2")
+                            att_desc.id = "Br";
+                        else
+                        {
+                            if (label[0] == 'R')
+                            {
+                                auto rnum = label.substr(1);
+                                if (std::all_of(rnum.begin(), rnum.end(), ::isdigit))
+                                {
+                                    label = 'A' + std::stol(rnum);
+                                    label += 'x';
+                                }
+                            }
+                        }
+                    }
+                    att_desc.id = label;
+                }
+                attachment_descs.push_back(att_desc);
+            }
+
+            int grp_idx = monomer_mol.sgroups.addSGroup(SGroup::SG_TYPE_SUP);
+            auto& sa = (Superatom&)monomer_mol.sgroups.getSGroup(grp_idx);
+
+            if (mclass.size())
+                sa.sa_class.appendString(mclass.c_str(), true);
+
+            if (alias.size())
+                sa.subscript.appendString(alias.c_str(), true);
+
+            if (natreplace.size())
+                sa.sa_natreplace.appendString(natreplace.c_str(), true);
+
+            for (const auto& att_desc : attachment_descs)
+            {
+                int atp_index = sa.attachment_points.add();
+                auto& atp = sa.attachment_points[atp_index];
+                atp.aidx = att_desc.attachment_atom;
+                if (atp.lvidx >= 0)
+                {
+                    auto& lgrp = (Superatom&)monomer_mol.sgroups.getSGroup(att_desc.leaving_group);
+                    if (lgrp.atoms.size())
+                        atp.lvidx = lgrp.atoms[0];
+                }
+                atp.apid.appendString(att_desc.id.c_str(), true);
+            }
+
+            for (int i = monomer_mol.vertexBegin(); i != monomer_mol.vertexEnd(); i = monomer_mol.edgeNext(i))
+            {
+                if (leaving_atoms.find(i) == leaving_atoms.end())
+                    sa.atoms.push(i);
+            }
+
+            fillXBondsAndBrackets(sa, monomer_mol);
+        }
+    }
+}
+
 void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 {
     for (int node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
@@ -1064,6 +1279,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         mol.original_format = BaseMolecule::KET;
 
         auto& mol_node = _mol_nodes[node_idx];
+
         if (mol_node.HasMember("atoms"))
         {
             // parse atoms
@@ -1146,6 +1362,14 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             loader.loadMolecule(*fragment.get());
             rgroup.fragments.add(fragment.release());
         }
+    }
+
+    for (SizeType i = 0; i < _templates.Size(); i++)
+    {
+        auto& mt = _templates[i];
+        int tp = mt.GetType();
+        if (mt.HasMember("type") && mt["type"].GetString() == std::string("monomerTemplate"))
+            parseMonomerTemplate(mt, mol);
     }
 
     std::vector<int> ignore_cistrans(mol.edgeCount());

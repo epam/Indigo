@@ -54,14 +54,6 @@ namespace indigo
     class Molecule;
     class QueryMolecule;
 
-    inline bool validate_base64(const std::string& str)
-    {
-        if (str.size() & 3) // check for padding
-            return false;
-        std::regex base64reg_exp("^[a-zA-Z0-9\\+/]*={0,3}$");
-        return std::regex_match(str, base64reg_exp);
-    }
-
     class AutoInt
     {
     public:
@@ -185,19 +177,6 @@ namespace indigo
         std::string label;
         bool is_superatom;
     };
-
-    inline std::vector<std::string> split(const std::string& str, char delim)
-    {
-        std::vector<std::string> strings;
-        size_t start;
-        size_t end = 0;
-        while ((start = str.find_first_not_of(delim, end)) != std::string::npos)
-        {
-            end = str.find(delim, start);
-            strings.push_back(str.substr(start, end - start));
-        }
-        return strings;
-    }
 
     class CDXProperty
     {
