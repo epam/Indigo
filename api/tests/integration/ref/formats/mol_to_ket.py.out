@@ -7,7 +7,6 @@ chem.ket:SUCCEED
 cysteine.ket:SUCCEED
 dcysteine.ket:SUCCEED
 dthymine.ket:SUCCEED
-monomerTemplates.ket:SUCCEED
 non_atrop.ket:SUCCEED
 suplabel.ket:SUCCEED
 thymine.ket:SUCCEED
