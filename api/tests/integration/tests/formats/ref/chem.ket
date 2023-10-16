@@ -3,14 +3,15 @@
         "nodes": [],
         "templates": [
             {
-                "$ref": "monomerTemplate-Cch"
+                "$ref": "monomerTemplate-cch_3"
             }
         ]
     },
-    "monomerTemplate-Cch": {
+    "monomerTemplate-cch_3": {
         "type": "monomerTemplate",
-        "id": "Cch",
+        "id": "cch_3",
         "class": "Chem",
+        "classHELM": "CHEM",
         "alias": "cch",
         "attachmentPoints": [
             {

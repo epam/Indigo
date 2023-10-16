@@ -3,14 +3,15 @@
         "nodes": [],
         "templates": [
             {
-                "$ref": "monomerTemplate-rThy"
+                "$ref": "monomerTemplate-Thy_131"
             }
         ]
     },
-    "monomerTemplate-rThy": {
+    "monomerTemplate-Thy_131": {
         "type": "monomerTemplate",
-        "id": "rThy",
+        "id": "Thy_131",
         "class": "RNA",
+        "classHELM": "RNA",
         "alias": "T",
         "attachmentPoints": [
             {

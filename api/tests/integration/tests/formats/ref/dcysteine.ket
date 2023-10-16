@@ -3,17 +3,44 @@
         "nodes": [],
         "templates": [
             {
-                "$ref": "monomerTemplate-dCys"
+                "$ref": "monomerTemplate-cys_27"
             }
         ]
     },
-    "monomerTemplate-dCys": {
+    "monomerTemplate-cys_27": {
         "type": "monomerTemplate",
-        "id": "dCys",
-        "class": "AminoAcid",
-        "alias": "dC",
+        "id": "cys_27",
+        "class": "D-AminoAcid",
+        "classHELM": "PEPTIDE",
+        "alias": "dc",
         "naturalAnalog": "Cys",
         "naturalAnalogShort": "C",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 8,
+                "leavingGroup": {
+                    "atoms": [
+                        1
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 6,
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        0
+                    ]
+                }
+            }
+        ],
         "atoms": [
             {
                 "label": "H",

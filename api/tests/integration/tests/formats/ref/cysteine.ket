@@ -3,14 +3,15 @@
         "nodes": [],
         "templates": [
             {
-                "$ref": "monomerTemplate-Cys"
+                "$ref": "monomerTemplate-cys_3"
             }
         ]
     },
-    "monomerTemplate-Cys": {
+    "monomerTemplate-cys_3": {
         "type": "monomerTemplate",
-        "id": "Cys",
+        "id": "cys_3",
         "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
         "alias": "C",
         "attachmentPoints": [
             {
