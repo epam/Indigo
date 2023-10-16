@@ -1345,19 +1345,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 
     for (int idx = 0; idx < mol->countComponents(s_neighbors); idx++)
     {
-        _pmol = nullptr;
-        _pqmol = nullptr;
         Filter filt(mol->getDecomposition().ptr(), Filter::EQ, idx);
         std::unique_ptr<BaseMolecule> component(mol->neu());
         component->makeSubmolecule(*mol, filt, NULL, NULL);
-
-        if (component->isQueryMolecule())
-            _pqmol = &component->asQueryMolecule();
-        else
-            _pmol = &component->asMolecule();
-
-        if (_pmol)
-            _pmol->setIgnoreBadValenceFlag(true);
 
         if (component->vertexCount())
         {
@@ -1403,6 +1393,16 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 
 void MoleculeJsonSaver::saveFragment(BaseMolecule& fragment, JsonWriter& writer)
 {
+    _pmol = nullptr;
+    _pqmol = nullptr;
+    if (fragment.isQueryMolecule())
+        _pqmol = &fragment.asQueryMolecule();
+    else
+        _pmol = &fragment.asMolecule();
+
+    if (_pmol)
+        _pmol->setIgnoreBadValenceFlag(true);
+
     writer.Key("atoms");
     writer.StartArray();
     saveAtoms(fragment, writer);
