@@ -42,6 +42,7 @@ namespace indigo
     class Molecule;
     class QueryMolecule;
     class SGroup;
+    class Superatom;
     class MetaObjectsInterface;
 
     /*
@@ -100,13 +101,16 @@ namespace indigo
         void parseProperties(const rapidjson::Value& props, BaseMolecule& mol);
         void setStereoFlagPosition(const rapidjson::Value& pos, int fragment_index, BaseMolecule& mol);
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
+        void parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol);
 
     private:
+        void fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol);
         rapidjson::Value& _mol_nodes;
         RGroupDescriptionList _rgroups;
 
         rapidjson::Value _meta_objects;
         rapidjson::Value _mol_array;
+        rapidjson::Value _templates;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;

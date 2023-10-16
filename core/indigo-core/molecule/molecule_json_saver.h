@@ -179,6 +179,13 @@ namespace indigo
         void saveMolecule(BaseMolecule& bmol);
         void saveMolecule(BaseMolecule& bmol, JsonWriter& writer);
         static void saveMetaData(JsonWriter& writer, MetaDataStorage& meta);
+        static std::string monomerId(const TGroup& tg);
+        static std::string monomerAlias(const TGroup& tg);
+
+        static std::string monomerKETClass(const TGroup& tg);
+        static std::string monomerHELMClass(const TGroup& tg);
+        static std::string naturalAnalog(const TGroup& tg);
+
         bool add_stereo_desc;
         bool pretty_json;
 
@@ -187,8 +194,8 @@ namespace indigo
         void saveBonds(BaseMolecule& mol, JsonWriter& writer);
         void saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, JsonWriter& writer);
         void saveFragment(BaseMolecule& fragment, JsonWriter& writer);
-        void saveTGroup(TGroup& tg, JsonWriter& writer);
-
+        void saveMonomerTemplate(TGroup& tg, JsonWriter& writer);
+        void saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writer);
         void saveSGroups(BaseMolecule& mol, JsonWriter& writer);
         void saveSGroup(SGroup& sgroup, JsonWriter& writer);
         void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, JsonWriter& writer);

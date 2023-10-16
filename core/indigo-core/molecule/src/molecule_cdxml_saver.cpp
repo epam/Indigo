@@ -22,6 +22,7 @@
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cdxml_loader.h"
+#include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 
 #include <codecvt>

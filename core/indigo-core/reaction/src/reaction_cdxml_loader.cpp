@@ -22,6 +22,7 @@
 #include "base_cpp/tlscont.h"
 #include "molecule/ket_commons.h"
 #include "molecule/molecule_cdxml_loader.h"
+#include "molecule/parse_utils.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_cdxml_loader.h"
 
