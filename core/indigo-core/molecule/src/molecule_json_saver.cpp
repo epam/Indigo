@@ -25,12 +25,12 @@
 #include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_savers.h"
+#include "molecule/molecule_substructure_matcher.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
-#include "molecule/smiles_saver.h"
 #include "molecule/smiles_loader.h"
-#include "molecule/molecule_substructure_matcher.h"
+#include "molecule/smiles_saver.h"
 #include <base_cpp/scanner.h>
 
 using namespace indigo;
@@ -1014,7 +1014,7 @@ std::string MoleculeJsonSaver::monomerId(const TGroup& tg)
     if (tg.tgroup_class.ptr())
         monomer_class = tg.tgroup_class.ptr();
     if (name.size())
-        name = name + "_" + std::to_string(tg.tgroup_id);
+        name = monomerNameByAlias(monomer_class, name) + "_" + std::to_string(tg.tgroup_id);
     else
         name = std::string("#") + std::to_string(tg.tgroup_id);
     return name;
@@ -1041,8 +1041,10 @@ std::string MoleculeJsonSaver::monomerKETClass(const TGroup& tg)
 
     if (mclass == "RNA" || mclass == "DNA" || mclass.find("MOD") == 0 || mclass.find("XLINK") == 0)
         return mclass;
+
     for (auto it = mclass.begin(); it < mclass.end(); ++it)
         *it = it > mclass.begin() ? std::tolower(*it) : std::toupper(*it);
+
     return mclass;
 }
 
@@ -1144,63 +1146,59 @@ void MoleculeJsonSaver::saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writ
         {
             auto& sa = (Superatom&)sg;
             std::map<std::string, int> sorted_attachment_points;
-            if (sa.sa_class.size())
+            if (sa.attachment_points.size())
             {
-                std::string sa_class = sa.sa_class.ptr();
-                if (sa.attachment_points.size())
+                for (int i = sa.attachment_points.begin(); i != sa.attachment_points.end(); i = sa.attachment_points.next(i))
                 {
-                    for (int i = sa.attachment_points.begin(); i != sa.attachment_points.end(); i = sa.attachment_points.next(i))
-                    {
-                        auto& atp = sa.attachment_points[i];
-                        std::string atp_id_str(atp.apid.ptr());
-                        if (atp_id_str.size())
-                            sorted_attachment_points.insert(std::make_pair(atp_id_str, i));
-                    }
+                    auto& atp = sa.attachment_points[i];
+                    std::string atp_id_str(atp.apid.ptr());
+                    if (atp_id_str.size())
+                        sorted_attachment_points.insert(std::make_pair(atp_id_str, i));
+                }
 
-                    if (sorted_attachment_points.size())
+                if (sorted_attachment_points.size())
+                {
+                    writer.Key("attachmentPoints");
+                    writer.StartArray();
+                    int order = 0;
+                    for (const auto& kvp : sorted_attachment_points)
                     {
-                        writer.Key("attachmentPoints");
-                        writer.StartArray();
-                        int order = 0;
-                        for (const auto& kvp : sorted_attachment_points)
+                        writer.StartObject();
+                        auto& atp = sa.attachment_points[kvp.second];
+                        std::string atp_id_str(atp.apid.ptr());
+                        if (!isAttachmentPointsInOrder(order++, atp_id_str))
                         {
-                            writer.StartObject();
-                            auto& atp = sa.attachment_points[kvp.second];
-                            std::string atp_id_str(atp.apid.ptr());
-                            if (!isAttachmentPointsInOrder(order++, atp_id_str))
+                            writer.Key("type");
+                            if (atp_id_str == "Al" || atp_id_str == "R1")
+                                writer.String("left");
+                            else if (atp_id_str == "Br" || atp_id_str == "R2")
+                                writer.String("right");
+                            else
+                                writer.String("side");
+                            writer.Key("label");
+                            if (::isupper(atp_id_str[0]) && atp_id_str.size() == 2)
                             {
-                                writer.Key("type");
-                                if (atp_id_str == "Al" || atp_id_str == "R1")
-                                    writer.String("left");
-                                else if (atp_id_str == "Br" || atp_id_str == "R2")
-                                    writer.String("right");
-                                else
-                                    writer.String("side");
-                                writer.Key("label");
-                                if (::isupper(atp_id_str[0]) && atp_id_str.size() == 2)
-                                {
-                                    if (atp_id_str == "Al")
-                                        atp_id_str = "R1";
-                                    else if (atp_id_str == "Br")
-                                        atp_id_str = "R2";
-                                    else if (atp_id_str[1] == 'x')
-                                        atp_id_str = std::string("R") + std::to_string(atp_id_str[0] - 'A' + 1);
-                                }
-                                writer.String(atp_id_str.c_str());
+                                if (atp_id_str == "Al")
+                                    atp_id_str = "R1";
+                                else if (atp_id_str == "Br")
+                                    atp_id_str = "R2";
+                                else if (atp_id_str[1] == 'x')
+                                    atp_id_str = std::string("R") + std::to_string(atp_id_str[0] - 'A' + 1);
                             }
-                            writer.Key("attachmentAtom");
-                            writer.Int(atp.aidx);
-                            writer.Key("leavingGroup");
-                            writer.StartObject();
-                            writer.Key("atoms");
-                            writer.StartArray();
-                            writer.Int(atp.lvidx);
-                            writer.EndArray();
-                            writer.EndObject();
-                            writer.EndObject();
+                            writer.String(atp_id_str.c_str());
                         }
+                        writer.Key("attachmentAtom");
+                        writer.Int(atp.aidx);
+                        writer.Key("leavingGroup");
+                        writer.StartObject();
+                        writer.Key("atoms");
+                        writer.StartArray();
+                        writer.Int(atp.lvidx);
                         writer.EndArray();
+                        writer.EndObject();
+                        writer.EndObject();
                     }
+                    writer.EndArray();
                 }
             }
             sgroups.remove(j);

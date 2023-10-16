@@ -22,8 +22,8 @@ using namespace std;
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
-    : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false),
-      components_count(0)
+    : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _pmol(0), _pqmol(0),
+      ignore_noncritical_query_features(false), components_count(0)
 {
     Value& root = ket["root"];
     Value& nodes = root["nodes"];
@@ -73,8 +73,8 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
 }
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
-    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), ignore_no_chiral_flag(false),
-      skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0), components_count(0)
+    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false),
+      ignore_no_chiral_flag(false), skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0), components_count(0)
 {
 }
 
@@ -1092,7 +1092,7 @@ void MoleculeJsonLoader::fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol)
     {
         Vec2f* brk_pos = sa.brackets.push();
         brk_pos[0].copy(brackets[i]);
-        if (brackets.size() < i + 1)
+        if (i + 1 == brackets.size())
             brk_pos[1].set(0, 0);
         else
             brk_pos[1].copy(brackets[i + 1]);
@@ -1114,35 +1114,28 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
     tg.fragment.reset(mol.neu());
     loader.loadMolecule(*tg.fragment);
     auto& monomer_mol = *tg.fragment;
-    std::string mclass, alias;
+    std::string mclass, alias, natreplace;
     std::unordered_set<int> leaving_atoms;
     if (monomer_template.HasMember("id"))
     {
         std::string id = monomer_template["id"].GetString();
-        tg.tgroup_name.appendString(id.c_str(), true);
+        auto id_vecs = split(id, '_');
+        tg.tgroup_name.appendString(id_vecs.front().c_str(), true);
         if (monomer_template.HasMember("class"))
         {
             mclass = monomer_template["class"].GetString();
-            if (mclass == "AminoAcid")
-            {
-                if (id[0] == 'd' && id.size() > 1)
-                {
-                    mclass = "dAA";
-                    id.erase(id.begin());
-                }
-                else
-                    mclass = "AA";
-            }
+            if (mclass == kMonomerClassAminoAcid)
+                mclass = kMonomerClassAA;
+            else if (mclass == kMonomerClassDAminoAcid)
+                mclass = kMonomerClassdAA;
             else
                 std::transform(mclass.begin(), mclass.end(), mclass.begin(), ::toupper);
 
             if (monomer_template.HasMember("naturalAnalog"))
             {
                 std::string analog_alias = monomerAliasByName(mclass, monomer_template["naturalAnalog"].GetString());
-                std::string natrep_class = mclass;
-                if (natrep_class.find('d') == 0)
-                    natrep_class.erase(natrep_class.begin());
-                std::string natreplace = natrep_class + "/" + analog_alias;
+                std::string natrep_class = mclass == kMonomerClassdAA ? kMonomerClassAA : mclass;
+                natreplace = natrep_class + "/" + analog_alias;
                 tg.tgroup_natreplace.appendString(natreplace.c_str(), true);
             }
 
@@ -1150,6 +1143,11 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
             if (monomer_template.HasMember("alias"))
             {
                 alias = monomer_template["alias"].GetString();
+                if (mclass == kMonomerClassdAA && alias.find(kPrefix_d) == 0)
+                {
+                    alias.erase(0, 1);
+                    mclass = kMonomerClassAA;
+                }
                 tg.tgroup_alias.appendString(alias.c_str(), true);
             }
         }
@@ -1233,6 +1231,9 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
 
             if (alias.size())
                 sa.subscript.appendString(alias.c_str(), true);
+
+            if (natreplace.size())
+                sa.sa_natreplace.appendString(natreplace.c_str(), true);
 
             for (const auto& att_desc : attachment_descs)
             {

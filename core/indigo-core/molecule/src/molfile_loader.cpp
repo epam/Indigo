@@ -90,7 +90,6 @@ void MolfileLoader::_loadMolecule()
     else
     {
         _readCtab3000();
-        printf("%d\n", _bmol->attachmentPointCount());
         _readRGroups3000();
         _readTGroups3000();
     }

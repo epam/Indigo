@@ -99,8 +99,6 @@ namespace indigo
     std::string normalizeMonomerAlias(const std::string& monomer_class, const std::string& alias)
     {
         auto res = alias;
-        if (res.size() == 1)
-            res = std::toupper(res[0]);
         if (monomer_class == kMonomerClassdAA)
             res = kPrefix_d + res;
         return res;

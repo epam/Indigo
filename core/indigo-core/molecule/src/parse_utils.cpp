@@ -102,5 +102,4 @@ namespace indigo
         }
         return strings;
     }
-
 }
