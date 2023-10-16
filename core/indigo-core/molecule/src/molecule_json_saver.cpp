@@ -51,12 +51,6 @@ void dumpAtoms(BaseMolecule& mol)
 
 MoleculeJsonSaver::MoleculeJsonSaver(Output& output) : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false)
 {
-    _phosphate.reset(new QueryMolecule());
-    Array<char> qbuf;
-    qbuf.readString("[OH:1]P([OH:2])(=O)O", false);
-    BufferScanner sm_scanner(qbuf);
-    SmilesLoader smiles_loader(sm_scanner);
-    smiles_loader.loadQueryMolecule(*_phosphate);
 }
 
 void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list)

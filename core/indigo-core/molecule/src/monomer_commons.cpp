@@ -40,8 +40,6 @@ namespace indigo
     {
         if (monomer_class == kMonomerClassdAA || monomer_class == kMonomerClassDNA)
             return kPrefix_d;
-        else if (monomer_class == kMonomerClassRNA)
-            return kPrefix_r;
         return "";
     }
 

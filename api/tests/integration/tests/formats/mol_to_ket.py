@@ -30,7 +30,6 @@ files = [
     "suplabel",
     "atropisomer",
     "non_atrop",
-    "monomerTemplates",
     "cysteine",
     "dcysteine",
     "thymine",

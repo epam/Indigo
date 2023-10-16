@@ -214,7 +214,6 @@ namespace indigo
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         Output& _output;
-        std::unique_ptr<QueryMolecule> _phosphate;
 
     private:
         MoleculeJsonSaver(const MoleculeJsonSaver&); // no implicit copy
