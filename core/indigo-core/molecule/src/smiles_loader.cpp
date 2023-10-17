@@ -2583,7 +2583,17 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         {
             scanner.skip(1);
             if (smarts_mode)
-                direction = BOND_UP;
+            {
+                if (scanner.lookNext() == '?')
+                {
+                    direction = BOND_UP_OR_UNSPECIFIED;
+                    scanner.skip(1);
+                }
+                else
+                {
+                    direction = BOND_UP;
+                }
+            }
             order = BOND_SINGLE;
             if (bond.dir == 2)
                 throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");
@@ -2593,7 +2603,17 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         {
             scanner.skip(1);
             if (smarts_mode)
-                direction = BOND_DOWN;
+            {
+                if (scanner.lookNext() == '?')
+                {
+                    direction = BOND_DOWN_OR_UNSPECIFIED;
+                    scanner.skip(1);
+                }
+                else
+                {
+                    direction = BOND_DOWN;
+                }
+            }
             order = BOND_SINGLE;
             if (bond.dir == 1)
                 throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");

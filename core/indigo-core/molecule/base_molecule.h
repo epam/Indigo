@@ -79,7 +79,9 @@ namespace indigo
     {
         BOND_UP = 1,
         BOND_DOWN = 2,
-        BOND_EITHER = 3
+        BOND_EITHER = 3,
+        BOND_UP_OR_UNSPECIFIED = 4,
+        BOND_DOWN_OR_UNSPECIFIED = 5,
     };
 
     enum
