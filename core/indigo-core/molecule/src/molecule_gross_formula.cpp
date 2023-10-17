@@ -357,9 +357,9 @@ void MoleculeGrossFormula::_toString(const std::map<int, int>& isotopes, ArrayOu
 
         if (counters[i].isotope > 0)
         {
-            if ((counters[i].elem == ELEM_H) && (counters[i].isotope == 2))
+            if ((counters[i].elem == ELEM_H) && (counters[i].isotope == DEUTERIUM))
                 output.printf("%s", "D");
-            else if ((counters[i].elem == ELEM_H) && (counters[i].isotope == 3))
+            else if ((counters[i].elem == ELEM_H) && (counters[i].isotope == TRITIUM))
                 output.printf("%s", "T");
             else
             {

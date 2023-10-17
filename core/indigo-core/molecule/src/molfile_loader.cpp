@@ -336,12 +336,12 @@ void MolfileLoader::_readCtab2000()
         else if (buf[0] == 'D' && buf[1] == 0)
         {
             label = ELEM_H;
-            isotope = 2;
+            isotope = DEUTERIUM;
         }
         else if (buf[0] == 'T' && buf[1] == 0)
         {
             label = ELEM_H;
-            isotope = 3;
+            isotope = TRITIUM;
         }
         else
         {
@@ -2293,12 +2293,12 @@ void MolfileLoader::_readCtab3000()
             else if (buf.size() == 2 && buf[0] == 'D')
             {
                 label = ELEM_H;
-                isotope = 2;
+                isotope = DEUTERIUM;
             }
             else if (buf.size() == 2 && buf[0] == 'T')
             {
                 label = ELEM_H;
-                isotope = 3;
+                isotope = TRITIUM;
             }
             else if (buf.size() == 2 && buf[0] == 'Q')
             {

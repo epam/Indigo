@@ -310,12 +310,12 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             if (label == "D")
             {
                 elem = ELEM_H;
-                isotope = 2;
+                isotope = DEUTERIUM;
             }
             else if (label == "T")
             {
                 elem = ELEM_H;
-                isotope = 3;
+                isotope = TRITIUM;
             }
             else
             {
@@ -432,7 +432,13 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             if (_pmol)
                 _pmol->setImplicitH(atom_idx, a["implicitHCount"].GetInt());
             else
-                throw Error("implicitHCount is allowed only for molecules");
+            {
+                int count = a["implicitHCount"].GetInt();
+                if (count < 1)
+                    throw Error("Wrong value for implicitHCount: %d", count);
+                _pqmol->resetAtom(atom_idx,
+                                  QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_IMPLICIT_H, count)));
+            }
         }
 
         if (a.HasMember("invRet"))
