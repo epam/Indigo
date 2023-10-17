@@ -33,6 +33,7 @@
 #include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_name_parser.h"
 #include "molecule/molfile_loader.h"
+#include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "molecule/sdf_loader.h"
 #include "molecule/smiles_loader.h"

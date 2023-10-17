@@ -149,7 +149,8 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
     {
         // auto-detect the format: save to v3000 molfile only
         // if v2000 is not enough
-        _v2000 = !(mol.hasHighlighting() || mol.stereocenters.haveEnhancedStereocenter() || (mol.vertexCount() > 999 || mol.edgeCount() > 999));
+        _v2000 = !(mol.hasHighlighting() || mol.stereocenters.haveEnhancedStereocenter() ||
+                   (mol.vertexCount() > 999 || mol.edgeCount() > 999 || mol.tgroups.getTGroupCount()));
     }
 
     bool rg2000 = (_v2000 && mol.rgroups.getRGroupCount() > 0);
@@ -629,14 +630,8 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         {
             int qb = QueryMolecule::getQueryBondType(qmol->getBond(i));
 
-            if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
-                bond_order = 5;
-            else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
-                bond_order = 6;
-            else if (qb == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC)
-                bond_order = 7;
-            else if (qb == QueryMolecule::QUERY_BOND_ANY)
-                bond_order = 8;
+            if (qb == _BOND_SINGLE_OR_DOUBLE || qb == _BOND_SINGLE_OR_AROMATIC || qb == _BOND_DOUBLE_OR_AROMATIC || qb == _BOND_ANY)
+                bond_order = qb;
         }
 
         if (bond_order < 0)
@@ -644,9 +639,9 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
         if (bond_order == BOND_ZERO)
         {
-            bond_order = 9;
+            bond_order = _BOND_COORDINATION;
             if ((mol.getAtomNumber(edge.beg) == ELEM_H) || (mol.getAtomNumber(edge.end) == ELEM_H))
-                bond_order = 10;
+                bond_order = _BOND_HYDROGEN;
         }
 
         out.printf("%d %d %d %d", iw, bond_order, _atom_mapping[edge.beg], _atom_mapping[edge.end]);
@@ -1343,14 +1338,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         {
             int qb = QueryMolecule::getQueryBondType(qmol->getBond(i));
 
-            if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
-                bond_order = 5;
-            else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
-                bond_order = 6;
-            else if (qb == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC)
-                bond_order = 7;
-            else if (qb == QueryMolecule::QUERY_BOND_ANY)
-                bond_order = 8;
+            if (qb == _BOND_SINGLE_OR_DOUBLE || qb == _BOND_SINGLE_OR_AROMATIC || qb == _BOND_DOUBLE_OR_AROMATIC || qb == _BOND_ANY)
+                bond_order = qb;
         }
 
         if (bond_order < 0)

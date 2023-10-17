@@ -142,8 +142,8 @@ static bool ElementHygrodenOnLeft[] = {
 
 static bool _isBondWide(const BondDescr& bd)
 {
-    return bd.type == BOND_DOUBLE || bd.type == BOND_TRIPLE || bd.queryType == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC ||
-           bd.queryType == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC || bd.queryType == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE;
+    return bd.type == BOND_DOUBLE || bd.type == BOND_TRIPLE || bd.queryType == _BOND_DOUBLE_OR_AROMATIC || bd.queryType == _BOND_SINGLE_OR_AROMATIC ||
+           _BOND_SINGLE_OR_DOUBLE;
 }
 
 RenderOptions::RenderOptions()
@@ -3660,16 +3660,16 @@ void MoleculeRenderInternal::_drawBond(int b)
     default:
         switch (bd.queryType)
         {
-        case QueryMolecule::QUERY_BOND_ANY:
+        case _BOND_ANY:
             _bondAny(bd, be1, be2);
             break;
-        case QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE:
+        case _BOND_SINGLE_OR_DOUBLE:
             _bondSingleOrDouble(bd, be1, be2);
             break;
-        case QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC:
+        case _BOND_DOUBLE_OR_AROMATIC:
             _bondDoubleOrAromatic(bd, be1, be2);
             break;
-        case QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC:
+        case _BOND_SINGLE_OR_AROMATIC:
             _bondSingleOrAromatic(bd, be1, be2);
             break;
         default:

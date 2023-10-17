@@ -586,44 +586,23 @@ void MolfileLoader::_readCtab2000()
         }
         else
         {
-            std::unique_ptr<QueryMolecule::Bond> bond;
-
-            if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_HYDROGEN ||
-                order == _BOND_COORDINATION)
-                bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
-            else if (order == _BOND_SINGLE_OR_DOUBLE)
-                bond.reset(QueryMolecule::Bond::und(QueryMolecule::Bond::nicht(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),
-                                                    QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
-                                                                              new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE))));
-            else if (order == _BOND_SINGLE_OR_AROMATIC)
-                bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
-                                                     new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
-            else if (order == _BOND_DOUBLE_OR_AROMATIC)
-                bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE),
-                                                     new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
-            else if (order == _BOND_ANY)
-                bond = std::make_unique<QueryMolecule::Bond>();
-            else
-                throw Error("unknown bond type: %d", order);
-
-            if (topology != 0)
-            {
-                bond.reset(QueryMolecule::Bond::und(bond.release(),
-                                                    new QueryMolecule::Bond(QueryMolecule::BOND_TOPOLOGY, topology == 1 ? TOPOLOGY_RING : TOPOLOGY_CHAIN)));
-            }
-
-            _qmol->addBond(beg - 1, end - 1, bond.release());
+            int direction = BOND_ZERO;
+            if (stereo == BIOVIA_STEREO_UP)
+                direction = BOND_UP;
+            else if (stereo == BIOVIA_STEREO_DOWN)
+                direction = BOND_DOWN;
+            _qmol->addBond(beg - 1, end - 1, QueryMolecule::createQueryMoleculeBond(order, topology, direction));
         }
 
-        if (stereo == 1)
+        if (stereo == BIOVIA_STEREO_UP)
             _bmol->setBondDirection(bond_idx, BOND_UP);
-        else if (stereo == 6)
+        else if (stereo == BIOVIA_STEREO_DOWN)
             _bmol->setBondDirection(bond_idx, BOND_DOWN);
-        else if (stereo == 4)
+        else if (stereo == BIOVIA_STEREO_ETHER)
             _bmol->setBondDirection(bond_idx, BOND_EITHER);
-        else if (stereo == 3)
+        else if (stereo == BIOVIA_STEREO_DOUBLE_CISTRANS)
             _ignore_cistrans[bond_idx] = 1;
-        else if (stereo != 0)
+        else if (stereo != BIOVIA_STEREO_NO)
             throw Error("unknown number for bond stereo: %d", stereo);
 
         _bmol->reaction_bond_reacting_center[bond_idx] = rcenter;
@@ -2076,7 +2055,7 @@ void MolfileLoader::_postLoad()
     {
         if (_bmol->getBondDirection(i) && !_sensible_bond_directions[i])
         {
-            if (!stereochemistry_options.ignore_errors)
+            if (!stereochemistry_options.ignore_errors && !_qmol) // Don't check for query molecule
                 throw Error("direction of bond #%d makes no sense", i);
         }
     }
@@ -2830,29 +2809,7 @@ void MolfileLoader::_readCtab3000()
             }
             else
             {
-                std::unique_ptr<QueryMolecule::Bond> bond;
-
-                if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_COORDINATION ||
-                    order == _BOND_HYDROGEN)
-                    bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
-                else if (order == _BOND_SINGLE_OR_DOUBLE)
-                {
-                    bond.reset(QueryMolecule::Bond::und(QueryMolecule::Bond::nicht(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),
-                                                        QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
-                                                                                  new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE))));
-                }
-                else if (order == _BOND_SINGLE_OR_AROMATIC)
-                    bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
-                                                         new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
-                else if (order == _BOND_DOUBLE_OR_AROMATIC)
-                    bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE),
-                                                         new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
-                else if (order == _BOND_ANY)
-                    bond = std::make_unique<QueryMolecule::Bond>();
-                else
-                    throw Error("unknown bond type: %d", order);
-
-                _qmol->addBond(beg, end, bond.release());
+                _qmol->addBond(beg, end, QueryMolecule::createQueryMoleculeBond(order, 0, 0));
             }
 
             while (true)

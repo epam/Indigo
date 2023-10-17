@@ -80,9 +80,6 @@ namespace indigo
 
         const Array<int>& getSavedCisTransParities();
 
-        static std::string writeSmartsAtomStr(QueryMolecule::Atom* atom);
-        static std::string writeSmartsBondStr(QueryMolecule::Bond* bond);
-
     protected:
         void _saveMolecule();
 
