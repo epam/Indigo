@@ -163,7 +163,7 @@ namespace indigo
         struct KETTextLine
         {
             std::string text;
-            std::map<int, FONT_STYLE_SET> styles;
+            std::map<std::size_t, FONT_STYLE_SET> styles;
         };
 
         static const std::uint32_t CID = "KET text object"_hash;
@@ -178,7 +178,7 @@ namespace indigo
             if (data.HasMember("blocks"))
             {
                 Value& blocks = data["blocks"];
-                for (int i = 0; i < blocks.Size(); ++i)
+                for (rapidjson::SizeType i = 0; i < blocks.Size(); ++i)
                 {
                     KETTextLine text_line;
                     if (blocks[i].HasMember("text"))
@@ -189,7 +189,7 @@ namespace indigo
                         if (blocks[i].HasMember("inlineStyleRanges"))
                         {
                             Value& style_ranges = blocks[i]["inlineStyleRanges"];
-                            for (int j = 0; j < style_ranges.Size(); ++j)
+                            for (rapidjson::SizeType j = 0; j < style_ranges.Size(); ++j)
                             {
                                 int style_begin = style_ranges[j]["offset"].GetInt();
                                 int style_end = style_begin + style_ranges[j]["length"].GetInt();

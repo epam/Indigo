@@ -236,6 +236,17 @@ class IndigoObject:
 
         return IndigoLib.checkResult(self._lib().indigoRemove(self.id))
 
+    def getOriginalFormat(self):
+        """Molecule method return format molecule loaded from
+
+        Returns:
+            str: original format string
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoGetOriginalFormat(self.id)
+        )
+
     def saveMolfile(self, filename):
         """Molecule method saves the structure into a Molfile
 

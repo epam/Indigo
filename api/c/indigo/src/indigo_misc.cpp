@@ -1484,3 +1484,51 @@ CEXPORT const char* indigoJson(int item)
     }
     INDIGO_END(0);
 }
+
+CEXPORT const char* indigoGetOriginalFormat(int item)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        int original_format = BaseMolecule::UNKNOWN;
+        if (IndigoBaseMolecule::is(obj))
+        {
+            BaseMolecule& mol = obj.getBaseMolecule();
+            original_format = mol.original_format;
+        }
+        else if (IndigoBaseReaction::is(obj))
+        {
+            BaseReaction& rxn = obj.getBaseReaction();
+            original_format = rxn.original_format;
+        }
+        else
+            throw IndigoError("indigoSaveJson(): expected molecule, got %s", obj.debugInfo());
+
+        switch (original_format)
+        {
+        case BaseMolecule::CML:
+            return "chemical/x-cml";
+        case BaseMolecule::CDXML:
+            return "chemical/x-cdxml";
+        case BaseMolecule::CDX:
+            return "chemical/x-cdx";
+        case BaseMolecule::RDF:
+            return "chemical/x-mdl-rdfile";
+        case BaseMolecule::SMILES:
+            return "chemical/x-daylight-smiles";
+        case BaseMolecule::CXSMILES:
+            return "chemical/x-chemaxon-cxsmiles";
+        case BaseMolecule::SMARTS:
+            return "chemical/x-daylight-smarts";
+        case BaseMolecule::MOL:
+            return "chemical/x-mdl-molfile";
+        case BaseMolecule::RXN:
+            return "chemical/x-mdl-rxnfile";
+        case BaseMolecule::KET:
+            return "chemical/x-indigo-ket";
+        default:
+            return "unknown";
+        }
+    }
+    INDIGO_END(0);
+}

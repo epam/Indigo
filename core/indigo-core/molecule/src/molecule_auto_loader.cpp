@@ -33,6 +33,7 @@
 #include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_name_parser.h"
 #include "molecule/molfile_loader.h"
+#include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "molecule/sdf_loader.h"
 #include "molecule/smiles_loader.h"
@@ -263,6 +264,8 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
         }
     }
 
+    _scanner->skipBom();
+
     // check for MDLCT format
     {
         QS_DEF(Array<char>, buf);
@@ -344,17 +347,6 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
     // check json format
     long long pos = _scanner->tell();
     {
-        bool hasbom = false;
-        if (_scanner->length() >= 3)
-        {
-            unsigned char bom[3];
-            _scanner->readCharsFix(3, (char*)bom);
-            if (bom[0] == 0xEF && bom[1] == 0xBB && bom[2] == 0xBF)
-                hasbom = true;
-            else
-                _scanner->seek(pos, SEEK_SET);
-        }
-
         if (_scanner->lookNext() == '{')
         {
             if (_scanner->findWord("root") && _scanner->findWord("nodes"))
@@ -366,9 +358,6 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
                     _scanner->readAll(buf);
                     buf.push(0);
                     unsigned char* ptr = (unsigned char*)buf.ptr();
-                    // skip utf8 BOM
-                    if (hasbom)
-                        ptr += 3;
                     Document data;
                     if (!data.Parse((char*)ptr).HasParseError())
                     {

@@ -171,6 +171,13 @@ namespace indigo
         RADICAL_TRIPLET = 3
     };
 
+    enum
+    {
+        HYDROGEN = 1,
+        DEUTERIUM = 2,
+        TRITIUM = 3
+    };
+
     class DLLEXPORT Element
     {
     public:
