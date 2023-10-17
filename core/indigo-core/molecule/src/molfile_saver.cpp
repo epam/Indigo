@@ -398,12 +398,12 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         QS_DEF(Array<int>, list);
         int query_atom_type;
 
-        if (atom_number == ELEM_H && isotope == 2)
+        if (atom_number == ELEM_H && isotope == DEUTERIUM)
         {
             out.writeChar('D');
             isotope = 0;
         }
-        else if (atom_number == ELEM_H && isotope == 3)
+        else if (atom_number == ELEM_H && isotope == TRITIUM)
         {
             out.writeChar('T');
             isotope = 0;
@@ -1209,9 +1209,9 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 label[0] = 'A';
             // throw Error("error saving atom #%d: unsupported query atom", i);
         }
-        else if (atom_number == ELEM_H && atom_isotope == 2)
+        else if (atom_number == ELEM_H && atom_isotope == DEUTERIUM)
             label[0] = 'D';
-        else if (atom_number == ELEM_H && atom_isotope == 3)
+        else if (atom_number == ELEM_H && atom_isotope == TRITIUM)
             label[0] = 'T';
         else
         {

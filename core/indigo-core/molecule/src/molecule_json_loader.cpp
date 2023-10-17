@@ -310,12 +310,12 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             if (label == "D")
             {
                 elem = ELEM_H;
-                isotope = 2;
+                isotope = DEUTERIUM;
             }
             else if (label == "T")
             {
                 elem = ELEM_H;
-                isotope = 3;
+                isotope = TRITIUM;
             }
             else
             {

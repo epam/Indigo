@@ -3096,9 +3096,9 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
             label.fontsize = FONT_SIZE_LABEL;
             ArrayOutput output(label.text);
             if (ad.type == AtomDesc::TYPE_REGULAR)
-                if (ad.label == ELEM_H && isotope == 2)
+                if (ad.label == ELEM_H && isotope == DEUTERIUM)
                     output.printf("D");
-                else if (ad.label == ELEM_H && isotope == 3)
+                else if (ad.label == ELEM_H && isotope == TRITIUM)
                     output.printf("T");
                 else
                     output.printf(Element::toString(ad.label));

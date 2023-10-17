@@ -120,7 +120,7 @@ void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_l
         }
         else
         {
-            if (orig_ids.find(sgroup.parent_group) == -1 || sgroup.parent_group == sgroup.original_group)
+            if (orig_ids.find(sgroup.parent_group) == VALUE_UNKNOWN || sgroup.parent_group == sgroup.original_group)
             {
                 sgroup.parent_group = 0;
                 sgs_list.push(i);
@@ -137,10 +137,10 @@ void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_l
             if (sgroup.parent_group == 0)
                 continue;
 
-            if (added_ids.find(sgroup.original_group) != -1)
+            if (added_ids.find(sgroup.original_group) != VALUE_UNKNOWN)
                 continue;
 
-            if (added_ids.find(sgroup.parent_group) != -1)
+            if (added_ids.find(sgroup.parent_group) != VALUE_UNKNOWN)
             {
                 sgs_list.push(i);
                 added_ids.push(sgroup.original_group);
@@ -311,7 +311,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
                 std::string atp_id_str(atp.apid.ptr());
                 writer.Key("attachmentAtom");
                 writer.Int(atp.aidx);
-                if (atp.lvidx != -1)
+                if (atp.lvidx != VALUE_UNKNOWN)
                 {
                     writer.Key("leavingAtom");
                     writer.Int(atp.lvidx);
@@ -462,7 +462,7 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                 }
             }
 
-            int topology = -1;
+            int topology = VALUE_UNKNOWN;
             if (_pqmol)
             {
                 _pqmol->getBond(i).sureValue(QueryMolecule::BOND_TOPOLOGY, topology);
@@ -538,7 +538,7 @@ void MoleculeJsonSaver::saveAttachmentPoint(BaseMolecule& mol, int atom_idx, Jso
     int val = 0;
     for (int idx = 1; idx <= mol.attachmentPointCount(); idx++)
     {
-        for (int j = 0; mol.getAttachmentPoint(idx, j) != -1; j++)
+        for (int j = 0; mol.getAttachmentPoint(idx, j) != VALUE_UNKNOWN; j++)
         {
             if (mol.getAttachmentPoint(idx, j) == atom_idx)
             {
@@ -563,7 +563,7 @@ void MoleculeJsonSaver::saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWr
     for (int i = 0; i < 4; ++i)
     {
         int prm = pyramid[i];
-        if (prm == -1 && i == 3)
+        if (prm == VALUE_UNKNOWN && i == 3)
             prm = atom_idx;
         writer.Int(prm);
     }
@@ -680,7 +680,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             saveAttachmentPoint(mol, i, writer);
         QS_DEF(Array<int>, rg_list);
         int radical = 0;
-        int query_atom_type = -1;
+        int query_atom_type = QueryMolecule::QUERY_ATOM_UNKNOWN;
         std::map<int, const QueryMolecule::Atom*> query_atom_properties;
         if (mol.isRSite(i))
         {
@@ -712,25 +712,25 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             {
                 buf.readString(mol.getTemplateAtom(i), true);
             }
-            else if (anum != -1)
+            else if (anum != VALUE_UNKNOWN)
             {
                 buf.readString(Element::toString(anum), true);
                 radical = mol.getAtomRadical(i);
                 if (anum == ELEM_H)
                 {
-                    if (isotope == 2)
+                    if (isotope == DEUTERIUM)
                     {
                         buf.clear();
                         buf.appendString("D", true);
                     }
-                    if (isotope == 3)
+                    if (isotope == TRITIUM)
                     {
                         buf.clear();
                         buf.appendString("T", true);
                     }
                 }
             }
-            else if (_pqmol && query_atom_type != -1)
+            else if (_pqmol && query_atom_type != QueryMolecule::QUERY_ATOM_UNKNOWN)
             {
                 if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
                 {
@@ -755,12 +755,12 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                     if (anum == ELEM_H && query_atom_properties.count(QueryMolecule::ATOM_ISOTOPE) > 0)
                     {
                         int isotope = query_atom_properties[QueryMolecule::ATOM_ISOTOPE]->value_min;
-                        if (isotope == 2)
+                        if (isotope == DEUTERIUM)
                         {
                             buf.clear();
                             buf.appendString("D", true);
                         }
-                        else if (isotope == 3)
+                        else if (isotope == TRITIUM)
                         {
                             buf.clear();
                             buf.appendString("T", true);
@@ -801,7 +801,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
 
         if (_pqmol)
         {
-            bool needCustomQuery = query_atom_type == -1;
+            bool needCustomQuery = query_atom_type == QueryMolecule::QUERY_ATOM_UNKNOWN;
             std::map<int, const char*> qprops{{QueryMolecule::ATOM_SSSR_RINGS, "ringMembership"},
                                               {QueryMolecule::ATOM_SMALLEST_RING_SIZE, "ringSize"},
                                               {QueryMolecule::ATOM_CONNECTIVITY, "connectivity"}};
@@ -821,7 +821,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 }
                 else
                 {
-                    int value = -1;
+                    int value = VALUE_UNKNOWN;
 
                     if (query_atom_properties.count(QueryMolecule::ATOM_AROMATICITY))
                     {
@@ -867,7 +867,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 writer.Bool(true);
             }
 
-            if (hcount == -1)
+            if (hcount == VALUE_UNKNOWN)
                 hcount = 0;
             else
                 hcount++;
@@ -991,7 +991,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             }
 
             auto seqid = mol.getTemplateAtomSeqid(i);
-            if (seqid != -1)
+            if (seqid != VALUE_UNKNOWN)
             {
                 writer.Key("seqid");
                 writer.Int(seqid);
@@ -1280,7 +1280,7 @@ bool MoleculeJsonSaver::_checkAttPointOrder(BaseMolecule& mol, int rsite)
         int cur = mol.getRSiteAttachmentPointByOrder(rsite, i);
         int next = mol.getRSiteAttachmentPointByOrder(rsite, i + 1);
 
-        if (cur == -1 || next == -1)
+        if (cur == VALUE_UNKNOWN || next == VALUE_UNKNOWN)
             return true; // here we treat "undefined" as "ok"
 
         if (cur > next)
