@@ -701,7 +701,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         else
         {
             bool is_qatom_list = false;
-            std::set<int> atoms;
+            std::vector<int> atoms;
             if (_pqmol)
                 query_atom_type = QueryMolecule::parseQueryAtomSmarts(*_pqmol, i, atoms, query_atom_properties);
             if (mol.isPseudoAtom(i))

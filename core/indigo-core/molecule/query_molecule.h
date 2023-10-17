@@ -391,7 +391,7 @@ namespace indigo
 
         bool standardize(const StandardizeOptions& options);
 
-        static int parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::set<int>& list, std::map<int, const Atom*>& properties);
+        static int parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<int>& list, std::map<int, const Atom*>& properties);
 
     protected:
         void _getAtomDescription(Atom* atom, Output& out, int depth);
