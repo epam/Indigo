@@ -91,7 +91,7 @@ namespace indigo
         };
 
         int addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope);
-        int addBondToMoleculeQuery(int beg, int end, int order, int topology = 0);
+        int addBondToMoleculeQuery(int beg, int end, int order, int topology = 0, int direction = 0);
         void validateMoleculeBond(int order);
         void parseAtoms(const rapidjson::Value& atoms, BaseMolecule& mol, std::vector<EnhancedStereoCenter>& stereo_centers);
         void parseBonds(const rapidjson::Value& bonds, BaseMolecule& mol);
