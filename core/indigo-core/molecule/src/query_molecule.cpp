@@ -2327,7 +2327,7 @@ bool QueryMolecule::_isAtomOrListAndProps(const Atom* pqa, std::set<int>& list, 
         bool is_neg = false;
         if (pqa->type == OP_NOT)
         {
-            Atom* pqc = const_cast<Atom*>(pqa)->child(0);
+            pqc = const_cast<Atom*>(pqa)->child(0);
             is_neg = true;
         }
         if (pqc->type == ATOM_NUMBER && pqc->value_min == pqc->value_max)
@@ -2387,22 +2387,22 @@ int QueryMolecule::parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<
         {
             if (atom_list.size() == 1 && atom_list.count(ELEM_H) > 0)
                 return QUERY_ATOM_A; // !H
-            else if (list == std::vector<int>{ELEM_C, ELEM_H})
+            else if (list == std::vector<int>{ELEM_H, ELEM_C})
                 return QUERY_ATOM_Q;
             else if (list == std::vector<int>{ELEM_C})
                 return QUERY_ATOM_QH;
-            else if (list == std::vector<int>{ELEM_C, ELEM_N, ELEM_O, ELEM_F, ELEM_P, ELEM_S, ELEM_Cl, ELEM_Se, ELEM_Br, ELEM_I, ELEM_At, ELEM_He, ELEM_Ne,
-                                              ELEM_Ar, ELEM_Kr, ELEM_Xe, ELEM_Rn, ELEM_H})
+            else if (list == std::vector<int>{ELEM_H, ELEM_He, ELEM_C, ELEM_N, ELEM_O, ELEM_F, ELEM_Ne, ELEM_P, ELEM_S, ELEM_Cl, ELEM_Ar, ELEM_Se, ELEM_Br,
+                                              ELEM_Kr, ELEM_I, ELEM_Xe, ELEM_At, ELEM_Rn})
                 return QUERY_ATOM_M;
-            else if (list == std::vector<int>{ELEM_C, ELEM_N, ELEM_O, ELEM_F, ELEM_P, ELEM_S, ELEM_Cl, ELEM_Se, ELEM_Br, ELEM_I, ELEM_At, ELEM_He, ELEM_Ne,
-                                              ELEM_Ar, ELEM_Kr, ELEM_Xe, ELEM_Rn})
+            else if (list == std::vector<int>{ELEM_He, ELEM_C, ELEM_N, ELEM_O, ELEM_F, ELEM_Ne, ELEM_P, ELEM_S, ELEM_Cl, ELEM_Ar, ELEM_Se, ELEM_Br, ELEM_Kr,
+                                              ELEM_I, ELEM_Xe, ELEM_At, ELEM_Rn})
                 return QUERY_ATOM_MH;
         }
         else
         {
             if (list == std::vector<int>{ELEM_F, ELEM_Cl, ELEM_Br, ELEM_I, ELEM_At})
                 return QUERY_ATOM_X;
-            else if (list == std::vector<int>{ELEM_F, ELEM_Cl, ELEM_Br, ELEM_I, ELEM_At, ELEM_H})
+            else if (list == std::vector<int>{ELEM_H, ELEM_F, ELEM_Cl, ELEM_Br, ELEM_I, ELEM_At})
                 return QUERY_ATOM_XH;
         }
         if (negative)
@@ -2416,7 +2416,7 @@ int QueryMolecule::parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<
             else if (list.size() == 1)
                 return QUERY_ATOM_SINGLE;
             else
-                QUERY_ATOM_LIST;
+                return QUERY_ATOM_LIST;
         }
     }
     return -1;

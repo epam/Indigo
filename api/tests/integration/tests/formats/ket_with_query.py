@@ -46,3 +46,6 @@ check_ket_file("ket_with_custom_query.ket")
 
 print("*** KET with implicit H count ***")
 check_ket_file("ket_with_implicit_h_count.ket")
+
+print("*** KET with lists ***")
+check_ket_file("ket_with_lists.ket")
