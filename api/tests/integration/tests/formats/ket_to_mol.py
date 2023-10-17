@@ -24,7 +24,14 @@ root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 root_rea = joinPathPy("reactions/", __file__)
 
-files = ["suplabel", "cysteine", "dcysteine", "thymine", "dthymine", "dala", "chem"
+files = [
+    "suplabel",
+    "cysteine",
+    "dcysteine",
+    "thymine",
+    "dthymine",
+    "dala",
+    "chem",
 ]
 
 files.sort()
