@@ -733,7 +733,7 @@ int MoleculeAutomorphismSearch::_validStereocenterByAtom(int atom_index, Array<i
     Molecule& mol = *(Molecule*)_given_graph;
 
     int type = mol.stereocenters.getType(atom_index);
-    if (type == 0)
+    if (type == 0 || !mol.stereocenters.isTetrahydral(atom_index))
         return _UNDEF;
 
     const int* pyramid = mol.stereocenters.getPyramid(atom_index);

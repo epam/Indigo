@@ -246,6 +246,8 @@ class IndigoLib:
         IndigoLib.lib.indigoIndex.argtypes = [c_int]
         IndigoLib.lib.indigoRemove.restype = c_int
         IndigoLib.lib.indigoRemove.argtypes = [c_int]
+        IndigoLib.lib.indigoGetOriginalFormat.restype = c_char_p
+        IndigoLib.lib.indigoGetOriginalFormat.argtypes = [c_int]
         IndigoLib.lib.indigoSaveMolfileToFile.restype = c_int
         IndigoLib.lib.indigoSaveMolfileToFile.argtypes = [c_int, c_char_p]
         IndigoLib.lib.indigoMolfile.restype = c_char_p

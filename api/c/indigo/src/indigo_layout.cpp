@@ -58,15 +58,15 @@ CEXPORT int indigoLayout(int object)
             ml.max_iterations = self.layout_max_iterations;
             ml.bond_length = MoleculeLayout::DEFAULT_BOND_LENGTH;
             ml.layout_orientation = (layout_orientation_value)self.layout_orientation;
+            if (mol->hasAtropoStereoBonds())
+                ml.respect_existing_layout = true;
 
             TimeoutCancellationHandler cancellation(self.cancellation_timeout);
             ml.setCancellationHandler(&cancellation);
-
             ml.make();
 
             if (obj.type != IndigoObject::SUBMOLECULE)
             {
-                // Not for submolecule yet
                 mol->clearBondDirections();
                 try
                 {

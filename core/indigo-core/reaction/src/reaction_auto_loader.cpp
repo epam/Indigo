@@ -19,6 +19,7 @@
 #include "reaction/reaction_auto_loader.h"
 #include "gzip/gzip_scanner.h"
 #include "molecule/molecule_auto_loader.h"
+#include "molecule/parse_utils.h"
 #include "reaction/icr_loader.h"
 #include "reaction/icr_saver.h"
 #include "reaction/query_reaction.h"

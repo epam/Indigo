@@ -368,7 +368,7 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                 }
             }
 
-            if (_mol->stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY)
+            if (_mol->stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY && _mol->stereocenters.isTetrahydral(i))
             {
                 XMLElement* atomparity = _doc->NewElement("atomParity");
                 atom->LinkEndChild(atomparity);
@@ -473,13 +473,13 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
 
                 int qb = QueryMolecule::getQueryBondType(qmol->getBond(i));
 
-                if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
+                if (qb == _BOND_SINGLE_OR_DOUBLE)
                     bond->SetAttribute("queryType", "SD");
-                else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
+                else if (qb == _BOND_SINGLE_OR_AROMATIC)
                     bond->SetAttribute("queryType", "SA");
-                else if (qb == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC)
+                else if (qb == _BOND_DOUBLE_OR_AROMATIC)
                     bond->SetAttribute("queryType", "DA");
-                else if (qb == QueryMolecule::QUERY_BOND_ANY)
+                else if (qb == _BOND_ANY)
                     bond->SetAttribute("queryType", "Any");
 
                 int indigo_topology = -1;

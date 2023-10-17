@@ -54,14 +54,6 @@ namespace indigo
     class Molecule;
     class QueryMolecule;
 
-    inline bool validate_base64(const std::string& str)
-    {
-        if (str.size() & 3) // check for padding
-            return false;
-        std::regex base64reg_exp("^[a-zA-Z0-9\\+/]*={0,3}$");
-        return std::regex_match(str, base64reg_exp);
-    }
-
     class AutoInt
     {
     public:
@@ -113,8 +105,8 @@ namespace indigo
 
     struct CdxmlKetTextStyle
     {
-        int offset;
-        int size;
+        std::size_t offset;
+        std::size_t size;
         std::list<std::string> styles;
     };
 
@@ -153,8 +145,8 @@ namespace indigo
         bool is_not_list;
         bool has_fragment;
         std::vector<AutoInt> element_list;
-        std::unordered_map<int, int> bond_id_to_connection_idx;
-        std::unordered_map<int, int> node_id_to_connection_idx;
+        std::unordered_map<int, std::size_t> bond_id_to_connection_idx;
+        std::unordered_map<int, std::size_t> node_id_to_connection_idx;
         std::vector<_ExtConnection> connections;
         std::vector<int> ext_connections;
         std::vector<int> inner_nodes;
@@ -185,19 +177,6 @@ namespace indigo
         std::string label;
         bool is_superatom;
     };
-
-    inline std::vector<std::string> split(const std::string& str, char delim)
-    {
-        std::vector<std::string> strings;
-        size_t start;
-        size_t end = 0;
-        while ((start = str.find_first_not_of(delim, end)) != std::string::npos)
-        {
-            end = str.find(delim, start);
-            strings.push_back(str.substr(start, end - start));
-        }
-        return strings;
-    }
 
     class CDXProperty
     {
@@ -948,9 +927,9 @@ namespace indigo
 
         Molecule* _pmol;
         QueryMolecule* _pqmol;
-        std::unordered_map<int, int> _id_to_atom_idx;
-        std::unordered_map<int, int> _id_to_node_index;
-        std::unordered_map<int, int> _id_to_bond_index;
+        std::unordered_map<int, std::size_t> _id_to_atom_idx;
+        std::unordered_map<int, std::size_t> _id_to_node_index;
+        std::unordered_map<int, std::size_t> _id_to_bond_index;
         std::vector<int> _fragment_nodes;
         std::vector<Vec2f> _pluses;
         std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;

@@ -66,6 +66,7 @@ namespace indigo
         float readFloatFix(int digits);
         int readIntFix(int digits);
         void skipSpace();
+        void skipBom();
 
         void skipUntil(const char* delimiters);
 

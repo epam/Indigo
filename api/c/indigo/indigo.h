@@ -171,6 +171,8 @@ CEXPORT int indigoRemove(int item);
 
 /* Molecules, query molecules, SMARTS */
 
+CEXPORT const char* indigoGetOriginalFormat(int item);
+
 CEXPORT int indigoCreateMolecule(void);
 CEXPORT int indigoCreateQueryMolecule(void);
 

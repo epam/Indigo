@@ -321,6 +321,8 @@ namespace indigo
 
         Array<char> name;
 
+        int original_format;
+
         DECL_ERROR;
 
     protected:

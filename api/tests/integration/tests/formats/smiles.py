@@ -117,7 +117,27 @@ for sm in mols_smiles:
     print(indigo.loadMolecule(sm).smiles())
 
 print("*** Atropisomers ***")
-mols_smiles = ["C1C(O)=C(C2C=CC(C)=CC=2N)C(C)=CC=1 |o1:3,r,wU:3.12|"]
+mols_smiles = [
+    "C1C(O)=C(C2C=CC(C)=CC=2N)C(C)=CC=1 |o1:3,r,wU:3.12|",
+    "C1=CC=C(C)C(C2=C(N)C=C(C)C=C2)=C1O |wU:5.4,wD:5.5|",
+    "C1=CC=C(C)C(C2=C(N)C=C(C)C=C2)=C1O |w:5.4,5.5|",
+]
 for sm in mols_smiles:
     print("atropisomer:")
-    print(indigo.loadMolecule(sm).smiles())
+    mol = indigo.loadMolecule(sm)
+    print(mol.smiles())
+    mol.layout()
+    print(mol.smiles())
+
+print("*** Suffoxides ***")
+mols_smiles = ["C1=C(C)C(=O)C[S@]1=O"]
+for sm in mols_smiles:
+    print("suffoxide:")
+    mol = indigo.loadMolecule(sm)
+    print(mol.smiles())
+    mol.layout()
+    print(mol.smiles())
+    for i in range(mol.countBonds()):
+        bs = mol.getBond(i).bondStereo()
+        if bs > 0:
+            print("bond:%d stereo:%d" % (i, bs))

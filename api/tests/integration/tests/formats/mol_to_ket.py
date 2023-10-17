@@ -30,6 +30,11 @@ files = [
     "suplabel",
     "atropisomer",
     "non_atrop",
+    "cysteine",
+    "dcysteine",
+    "thymine",
+    "dthymine",
+    "chem",
 ]
 
 files.sort()

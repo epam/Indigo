@@ -24,11 +24,22 @@ root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 root_rea = joinPathPy("reactions/", __file__)
 
-files = ["suplabel"]
+files = [
+    "suplabel",
+    "cysteine",
+    "dcysteine",
+    "thymine",
+    "dthymine",
+    "dala",
+    "chem",
+]
 
 files.sort()
 for filename in files:
     mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
+    # with open(os.path.join(ref_path, filename) + ".mol", "w") as file:
+    #     file.write(mol.molfile())
+
     with open(os.path.join(ref_path, filename) + ".mol", "r") as file:
         ket_ref = file.read()
     ket = mol.molfile()

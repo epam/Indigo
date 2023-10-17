@@ -288,7 +288,7 @@ void CmfLoader::_readBond(int& code, _BondDesc& bond)
     bond.cis_trans = 0;
     bond.flags = 0;
     bond.swap = false;
-    bond.direction = 0;
+    bond.direction = BOND_ZERO;
     bond.highlighted = false;
 
     if (code == CMF_BOND_SINGLE_CHAIN)

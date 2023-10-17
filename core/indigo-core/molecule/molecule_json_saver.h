@@ -95,12 +95,12 @@ namespace indigo
 
         bool Int64(int64_t i64)
         {
-            return pretty_json ? _pretty_writer.Uint(i64) : _writer.Uint(i64);
+            return pretty_json ? _pretty_writer.Uint64(i64) : _writer.Uint64(i64);
         }
 
         bool Uint64(uint64_t u64)
         {
-            return pretty_json ? _pretty_writer.Uint(u64) : _writer.Uint(u64);
+            return pretty_json ? _pretty_writer.Uint64(u64) : _writer.Uint64(u64);
         }
 
         bool Double(double d)
@@ -179,6 +179,13 @@ namespace indigo
         void saveMolecule(BaseMolecule& bmol);
         void saveMolecule(BaseMolecule& bmol, JsonWriter& writer);
         static void saveMetaData(JsonWriter& writer, MetaDataStorage& meta);
+        static std::string monomerId(const TGroup& tg);
+        static std::string monomerAlias(const TGroup& tg);
+
+        static std::string monomerKETClass(const TGroup& tg);
+        static std::string monomerHELMClass(const TGroup& tg);
+        static std::string naturalAnalog(const TGroup& tg);
+
         bool add_stereo_desc;
         bool pretty_json;
 
@@ -187,8 +194,8 @@ namespace indigo
         void saveBonds(BaseMolecule& mol, JsonWriter& writer);
         void saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, JsonWriter& writer);
         void saveFragment(BaseMolecule& fragment, JsonWriter& writer);
-        void saveTGroup(TGroup& tg, JsonWriter& writer);
-
+        void saveMonomerTemplate(TGroup& tg, JsonWriter& writer);
+        void saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writer);
         void saveSGroups(BaseMolecule& mol, JsonWriter& writer);
         void saveSGroup(SGroup& sgroup, JsonWriter& writer);
         void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
