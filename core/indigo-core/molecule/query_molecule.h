@@ -177,10 +177,10 @@ namespace indigo
 
             ~Atom() override;
 
-            Atom* clone();
-            void copy(Atom& other);
+            Atom* clone() const;
+            void copy(const Atom& other);
 
-            Atom* child(int idx);
+            Atom* child(int idx) const;
 
             bool valueWithinRange(int value);
 
@@ -320,7 +320,8 @@ namespace indigo
             QUERY_ATOM_QH,
             QUERY_ATOM_MH,
             QUERY_ATOM_LIST,
-            QUERY_ATOM_NOTLIST
+            QUERY_ATOM_NOTLIST,
+            QUERY_ATOM_SINGLE
         };
         enum QUERY_BOND
         {
@@ -338,6 +339,7 @@ namespace indigo
         static int parseQueryAtom(QueryMolecule& qm, int aid, Array<int>& list);
         static bool queryAtomIsRegular(QueryMolecule& qm, int aid);
         static bool queryAtomIsSpecial(QueryMolecule& qm, int aid);
+        static bool queryAtomIsSpecial(int query_atom_type);
         static Bond* getBondOrderTerm(Bond& qb, bool& complex);
         static bool isOrBond(Bond& qb, int type1, int type2);
         static bool isSingleOrDouble(Bond& qb);
@@ -387,6 +389,8 @@ namespace indigo
 
         bool standardize(const StandardizeOptions& options);
 
+        static int parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::set<int>& list, std::map<int, const Atom*>& properties);
+
     protected:
         void _getAtomDescription(Atom* atom, Output& out, int depth);
         void _getBondDescription(Bond* bond, Output& out);
@@ -398,6 +402,11 @@ namespace indigo
                                        int skip_flags) override;
         void _removeAtoms(const Array<int>& indices, const int* mapping) override;
         void _removeBonds(const Array<int>& indices) override;
+
+        using AtomList = std::pair<bool, std::set<int>>;
+        static bool _isAtomListOr(const Atom* pqa, std::set<int>& list);
+        static bool _isAtomOrListAndProps(const Atom* pqa, std::set<int>& list, bool& neg, std::map<int, const Atom*>& properties);
+        static bool _isAtomList(const Atom* qa, AtomList list);
 
         Array<int> _min_h;
 

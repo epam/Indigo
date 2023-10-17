@@ -1409,7 +1409,7 @@ bool QueryMolecule::Atom::valueWithinRange(int value)
     return result;
 }
 
-QueryMolecule::Atom* QueryMolecule::Atom::child(int idx)
+QueryMolecule::Atom* QueryMolecule::Atom::child(int idx) const
 {
     return (Atom*)children[idx];
 }
@@ -1495,7 +1495,7 @@ void QueryMolecule::resetBond(int idx, QueryMolecule::Bond* bond)
     updateEditRevision();
 }
 
-void QueryMolecule::Atom::copy(Atom& other)
+void QueryMolecule::Atom::copy(const Atom& other)
 {
     type = other.type;
     value_max = other.value_max;
@@ -1515,7 +1515,7 @@ void QueryMolecule::Atom::copy(Atom& other)
         children.add(((Atom*)other.children[i])->clone());
 }
 
-QueryMolecule::Atom* QueryMolecule::Atom::clone()
+QueryMolecule::Atom* QueryMolecule::Atom::clone() const
 {
     std::unique_ptr<Atom> res = std::make_unique<Atom>();
     res->copy(*this);
@@ -1973,6 +1973,150 @@ QueryMolecule::Atom* QueryMolecule::stripKnownAttrs(QueryMolecule::Atom& qa)
     return qd == NULL ? &qa : qd;
 }
 
+bool QueryMolecule::_isAtomListOr(const Atom* pqa, std::set<int>& list)
+{
+    // Check if pqa atom list like or(a1,a2,a3, or(a4,a5,a6), a7)
+    if (!pqa)
+        return false;
+    if (pqa->type != OP_OR)
+        return false;
+    std::set<int> collected;
+    for (auto i = 0; i < pqa->children.size(); i++)
+    {
+        auto pqc = pqa->child(i);
+        if (pqc->type == ATOM_NUMBER && pqc->value_max == pqc->value_max)
+        {
+            collected.insert(pqc->value_min);
+        }
+        else if (pqc->type == OP_OR)
+        {
+            if (!_isAtomListOr(pqc, collected))
+                return false;
+        }
+        else
+            return false;
+    }
+    if (collected.size() < 1)
+        return false;
+    list.insert(collected.begin(), collected.end());
+}
+
+bool QueryMolecule::_isAtomOrListAndProps(const Atom* pqa, std::set<int>& list, bool& neg, std::map<int, const Atom*>& properties)
+{
+    // Check if pqa contains only atom or atom list and atom properties connected by "and"
+    // atom list is positive i.e. or(a1,a2,a3,or(a4,a5),a6) or negative
+    // negative list like is set of op_not(atom_number) or op_not(positevi list), this set connected by "and"
+    if (!pqa)
+        return false;
+    std::set<int> collected;
+    std::map<int, const Atom*> collected_properties;
+    if (pqa->type != OP_AND)
+    {
+        const Atom* pqc = pqa;
+        bool is_neg = false;
+        if (pqa->type == OP_NOT)
+        {
+            auto pqc = pqa->child(0);
+            is_neg = true;
+        }
+        if (pqc->type == ATOM_NUMBER && pqc->value_min == pqc->value_max)
+        {
+            list.insert(pqc->value_min);
+            neg = is_neg;
+            return true;
+        }
+        else if (!is_neg && pqc->type > ATOM_NUMBER && pqc->type <= ATOM_CHILARITY) // atom property, no negative props here
+        {
+            properties.emplace(pqc->type, pqc);
+            return true;
+        }
+        else if (_isAtomListOr(pqc, collected))
+        {
+            neg = is_neg;
+            list.insert(collected.begin(), collected.end());
+            return true;
+        }
+        return false;
+    }
+    // OP_AND
+    for (auto i = 0; i < pqa->children.size(); i++)
+    {
+        Atom* pqc = pqa->child(i);
+        bool is_neg = false;
+        if (_isAtomOrListAndProps(pqc, collected, is_neg, collected_properties))
+        {
+            if (list.size() > 0 && is_neg != neg) // allowed only one list type in set - positive or negative
+                return false;
+            neg = is_neg;
+            list.insert(collected.begin(), collected.end());
+            properties.insert(collected_properties.begin(), collected_properties.end());
+        }
+        else
+            return false;
+    }
+    return true;
+}
+
+int QueryMolecule::parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::set<int>& list, std::map<int, const Atom*>& properties)
+{
+    std::set<int> atom_list;
+    std::map<int, const Atom*> atom_pros;
+    bool negative;
+    using special = std::pair<bool, std::set<int>>;
+    std::set<int> atom_x{ELEM_F, ELEM_Cl, ELEM_Br, ELEM_I, ELEM_At};
+    std::set<int> atom_xh{ELEM_F, ELEM_Cl, ELEM_Br, ELEM_I, ELEM_At, ELEM_H};
+    std::set<int> atom_q{ELEM_C, ELEM_H};
+    std::set<int> atom_qh{ELEM_C};
+    std::set<int> atom_mh{ELEM_C, ELEM_N,  ELEM_O,  ELEM_F,  ELEM_P,  ELEM_S,  ELEM_Cl, ELEM_Se, ELEM_Br,
+                          ELEM_I, ELEM_At, ELEM_He, ELEM_Ne, ELEM_Ar, ELEM_Kr, ELEM_Xe, ELEM_Rn};
+    std::set<int> atom_m{ELEM_C, ELEM_N,  ELEM_O,  ELEM_F,  ELEM_P,  ELEM_S,  ELEM_Cl, ELEM_Se, ELEM_Br,
+                         ELEM_I, ELEM_At, ELEM_He, ELEM_Ne, ELEM_Ar, ELEM_Kr, ELEM_Xe, ELEM_Rn, ELEM_H};
+    QueryMolecule::Atom& qa = qm.getAtom(aid);
+    if (qa.type == QueryMolecule::OP_NONE)
+        return QUERY_ATOM_AH;
+    if (_isAtomOrListAndProps(&qa, atom_list, negative, atom_pros))
+    {
+        list.insert(atom_list.begin(), atom_list.end());
+        properties.insert(atom_pros.begin(), atom_pros.end());
+
+        if (negative)
+        {
+            if (atom_list.size() == 1 && atom_list.count(ELEM_H) > 0)
+                return QUERY_ATOM_A; // !H
+            else if (list == atom_q)
+                return QUERY_ATOM_Q;
+            else if (list == atom_qh)
+                return QUERY_ATOM_QH;
+            else if (list == atom_m)
+                return QUERY_ATOM_M;
+            else if (list == atom_mh)
+                return QUERY_ATOM_MH;
+        }
+        else
+        {
+            if (list == atom_x)
+                return QUERY_ATOM_X;
+            else if (list == atom_xh)
+                return QUERY_ATOM_XH;
+        }
+        if (negative)
+        {
+            return QUERY_ATOM_NOTLIST;
+        }
+        else
+        {
+            if (list.size() == 0)
+                return QUERY_ATOM_A;
+            else if (list.size() == 1)
+                return QUERY_ATOM_SINGLE;
+            else
+                QUERY_ATOM_LIST;
+        }
+    }
+    else
+        return -1;
+}
+
 int QueryMolecule::parseQueryAtom(QueryMolecule& qm, int aid, Array<int>& list)
 {
     return parseQueryAtom(qm.getAtom(aid), list);
@@ -2029,15 +2173,24 @@ bool QueryMolecule::queryAtomIsSpecial(QueryMolecule& qm, int aid)
 
     if ((query_atom_type = QueryMolecule::parseQueryAtom(qm, aid, list)) != -1)
     {
-        if ((query_atom_type == QueryMolecule::QUERY_ATOM_Q) || (query_atom_type == QueryMolecule::QUERY_ATOM_QH) ||
-            (query_atom_type == QueryMolecule::QUERY_ATOM_X) || (query_atom_type == QueryMolecule::QUERY_ATOM_XH) ||
-            (query_atom_type == QueryMolecule::QUERY_ATOM_M) || (query_atom_type == QueryMolecule::QUERY_ATOM_MH) ||
-            (query_atom_type == QueryMolecule::QUERY_ATOM_AH))
-        {
-            return true;
-        }
+        return queryAtomIsSpecial(query_atom_type);
     }
     return false;
+}
+
+bool QueryMolecule::queryAtomIsSpecial(int query_atom_type)
+{
+    if ((query_atom_type == QueryMolecule::QUERY_ATOM_Q) || (query_atom_type == QueryMolecule::QUERY_ATOM_QH) ||
+        (query_atom_type == QueryMolecule::QUERY_ATOM_X) || (query_atom_type == QueryMolecule::QUERY_ATOM_XH) ||
+        (query_atom_type == QueryMolecule::QUERY_ATOM_M) || (query_atom_type == QueryMolecule::QUERY_ATOM_MH) ||
+        (query_atom_type == QueryMolecule::QUERY_ATOM_AH))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 QueryMolecule::Bond* QueryMolecule::getBondOrderTerm(QueryMolecule::Bond& qb, bool& complex)
