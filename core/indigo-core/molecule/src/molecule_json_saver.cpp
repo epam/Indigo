@@ -439,12 +439,13 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
             {
                 QueryMolecule::Bond& qbond = _pqmol->getBond(i);
                 int bond_order = QueryMolecule::getQueryBondType(qbond, direction, negative);
-                if (bond_order < 0 || negative)
+                if (bond_order < 0 || negative || direction == BOND_UP_OR_UNSPECIFIED || direction == BOND_DOWN_OR_UNSPECIFIED)
                 {
                     writer.Uint(BOND_SINGLE);
                     std::string customQuery = QueryMolecule::getSmartsBondStr(&qbond);
                     writer.Key("customQuery");
                     writer.String(customQuery.c_str());
+                    direction = BOND_ZERO; // clean up to not override stereo
                 }
                 else
                 {
@@ -457,6 +458,9 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                         break;
                     case BOND_DOWN:
                         direction = BIOVIA_STEREO_DOWN;
+                        break;
+                    default:
+                        direction = BOND_ZERO; // clean up to not override stereo
                         break;
                     }
                 }

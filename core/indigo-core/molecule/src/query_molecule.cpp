@@ -377,6 +377,10 @@ void QueryMolecule::writeSmartsBond(Output& output, Bond* bond, bool has_or_pare
                 output.writeChar('/');
             else if (bond->direction == BOND_DOWN)
                 output.writeChar('\\');
+            else if (bond->direction == BOND_UP_OR_UNSPECIFIED)
+                output.writeString("/?");
+            else if (bond->direction == BOND_DOWN_OR_UNSPECIFIED)
+                output.writeString("\\?");
             else
                 output.writeChar('-');
         }

@@ -152,6 +152,9 @@ expected_str = '"bonds":[{"type":1,"atoms":[0,1],"stereo":6},{"type":2,"atoms":[
 test_smarts_load_save_through_ket(
     "[#9]\[#6]=[#6]/[#6]=[#6]\[#6]", expected_str
 )
+expected_str = '"bonds":[{"type":1,"customQuery":"\\\?","atoms":[0,1]},{"type":2,"atoms":[1,2]},{"type":1,"customQuery":"/?","atoms":[2,3]},{"type":2,"atoms":[3,4]},{"type":1,"customQuery":"\\\?","atoms":[4,5]}]'
+test_smarts_load_save_through_ket(
+    "[#9]\?[#6]=[#6]/?[#6]=[#6]\?[#6]", expected_str
 test_smarts_load_save_through_ket(
     "[C;@OH2]",
     '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C;@OH2"}}]',
