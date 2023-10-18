@@ -116,3 +116,14 @@ print("Check result = %s" % indigo.checkStructure(c))
 
 c = "benzene"
 print("Check result = %s" % indigo.checkStructure(c))
+
+print("****** Check query features ket with custom query bond ********")
+filename = "molecules/ket_with_custom_query_bond.ket"
+try:
+    mol = indigo.loadMoleculeFromFile(joinPathPy(filename, __file__))
+except Exception as e:
+    if "queries" in str(e):
+        mol = indigo.loadQueryMoleculeFromFile(joinPathPy(filename, __file__))
+    else:
+        print("Check failed: loaded as molecule.")
+print("Check result = %s" % mol.check())

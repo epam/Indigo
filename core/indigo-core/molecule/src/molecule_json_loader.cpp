@@ -684,6 +684,8 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
 
             if (b.HasMember("customQuery"))
             {
+                if (!_pqmol)
+                    throw Error("customQuery is allowed only for queries");
                 std::string customQuery = b["customQuery"].GetString();
                 std::unique_ptr<QueryMolecule::Bond> bond = make_unique<QueryMolecule::Bond>();
                 SmilesLoader::readSmartsBondStr(customQuery, bond);
