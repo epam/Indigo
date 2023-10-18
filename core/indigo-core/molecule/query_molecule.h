@@ -98,12 +98,34 @@ namespace indigo
             ATOM_TEMPLATE_SEQID,
             ATOM_TEMPLATE_CLASS,
             ATOM_PI_BONDED,
-            ATOM_CHILARITY,
+            ATOM_CHIRALITY,
 
             BOND_ORDER,
             BOND_TOPOLOGY,
 
             HIGHLIGHTING
+        };
+
+        enum
+        {
+            CHIRALITY_GENERAL,
+            CHIRALITY_TETRAHEDRAL,
+            CHIRALITY_ALLENE_LIKE,
+            CHIRALITY_SQUARE_PLANAR,
+            CHIRALITY_TRIGONAL_BIPYRAMIDAL,
+            CHIRALITY_OCTAHEDRAL,
+        };
+
+        static constexpr int CHIRALITY_TETRAHEDRAL_MAX = 2;
+        static constexpr int CHIRALITY_ALLENE_LIKE_MAX = 2;
+        static constexpr int CHIRALITY_SQUARE_PLANAR_MAX = 3;
+        static constexpr int CHIRALITY_TRIGONAL_BIPYRAMIDAL_MAX = 20;
+        static constexpr int CHIRALITY_OCTAHEDRAL_MAX = 30;
+
+        enum
+        {
+            CHIRALITY_ANTICLOCKWISE = 1,
+            CHIRALITY_CLOCKWISE = 2,
         };
 
         class DLLEXPORT Node

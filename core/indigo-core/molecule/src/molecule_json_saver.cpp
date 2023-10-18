@@ -809,6 +809,9 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             std::map<int, const char*> qprops{{QueryMolecule::ATOM_SSSR_RINGS, "ringMembership"},
                                               {QueryMolecule::ATOM_SMALLEST_RING_SIZE, "ringSize"},
                                               {QueryMolecule::ATOM_CONNECTIVITY, "connectivity"}};
+            if (query_atom_properties.count(QueryMolecule::ATOM_CHIRALITY) &&
+                query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_min != QueryMolecule::CHIRALITY_GENERAL)
+                needCustomQuery = true;
             bool hasQueryProperties =
                 query_atom_properties.count(QueryMolecule::ATOM_AROMATICITY) > 0 ||
                 std::any_of(qprops.cbegin(), qprops.cend(), [&query_atom_properties](auto p) { return query_atom_properties.count(p.first) > 0; });
@@ -837,6 +840,18 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                             writer.String(ATOM_ALIPHATIC_STR);
                         else
                             throw "Wrong aromaticity value";
+                    }
+                    if (query_atom_properties.count(QueryMolecule::ATOM_CHIRALITY))
+                    {
+                        // This is CHIRALITY_GENERAL
+                        writer.Key("chirality");
+                        value = query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_max;
+                        if (value == QueryMolecule::CHIRALITY_CLOCKWISE)
+                            writer.String("clockwise");
+                        else if (value == QueryMolecule::CHIRALITY_ANTICLOCKWISE)
+                            writer.String("anticlockwise");
+                        else
+                            throw Error("Wrong chirality value %d", value);
                     }
                     for (auto p : qprops)
                     {

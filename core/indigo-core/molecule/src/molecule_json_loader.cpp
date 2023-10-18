@@ -564,15 +564,17 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                     }
                     if (qProps.HasMember("chirality"))
                     {
-                        std::string arom = qProps["chirality"].GetString();
+                        std::string chirality_value = qProps["chirality"].GetString();
                         int chirality;
-                        if (arom == "clockwise")
-                            chirality = 1;
-                        else if (arom == "anticlockwise")
-                            chirality = 2;
+                        if (chirality_value == "clockwise")
+                            chirality = QueryMolecule::CHIRALITY_CLOCKWISE;
+                        else if (chirality_value == "anticlockwise")
+                            chirality = QueryMolecule::CHIRALITY_ANTICLOCKWISE;
                         else
                             throw Error("Wrong value for chirality.");
-                        // 2do - add hirality to atom
+                        _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(
+                                                        _pqmol->releaseAtom(atom_idx),
+                                                        new QueryMolecule::Atom(QueryMolecule::ATOM_CHIRALITY, QueryMolecule::CHIRALITY_GENERAL, chirality)));
                     }
                 }
             }
