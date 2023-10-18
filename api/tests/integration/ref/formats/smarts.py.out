@@ -44,3 +44,6 @@ CC[C+5]CCCCC
 [C;@] is ok. smarts_in==smarts_out
 [C;@] is ok. json_in==json_out
 [C;@] is ok. expected string found in json
+[C;@@] is ok. smarts_in==smarts_out
+[C;@@] is ok. json_in==json_out
+[C;@@] is ok. expected string found in json

@@ -164,3 +164,7 @@ test_smarts_load_save_through_ket(
     "[C;@]",
     '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"aromaticity":"aliphatic","chirality":"anticlockwise"}}]',
 )
+test_smarts_load_save_through_ket(
+    "[C;@@]",
+    '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"aromaticity":"aliphatic","chirality":"clockwise"}}]',
+)

@@ -848,7 +848,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                         value = query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_max;
                         if (value == QueryMolecule::CHIRALITY_CLOCKWISE)
                             writer.String("clockwise");
-                        if (value == QueryMolecule::CHIRALITY_ANTICLOCKWISE)
+                        else if (value == QueryMolecule::CHIRALITY_ANTICLOCKWISE)
                             writer.String("anticlockwise");
                         else
                             throw Error("Wrong chirality value %d", value);

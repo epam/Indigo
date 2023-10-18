@@ -124,8 +124,8 @@ namespace indigo
 
         enum
         {
-            CHIRALITY_ANTICLOCKWISE,
-            CHIRALITY_CLOCKWISE
+            CHIRALITY_ANTICLOCKWISE = 1,
+            CHIRALITY_CLOCKWISE = 2,
         };
 
         class DLLEXPORT Node

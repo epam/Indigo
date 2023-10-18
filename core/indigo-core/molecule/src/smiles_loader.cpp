@@ -3218,13 +3218,13 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             int chirality_type = QueryMolecule::CHIRALITY_GENERAL;
             int chirality_value = QueryMolecule::CHIRALITY_ANTICLOCKWISE;
             if (!smarts_mode)
-                atom.chirality = 1;
+                atom.chirality = chirality_value;
             scanner.skip(1);
             if (scanner.lookNext() == '@')
             {
-                if (!smarts_mode)
-                    atom.chirality = 2;
                 chirality_value = QueryMolecule::CHIRALITY_CLOCKWISE;
+                if (!smarts_mode)
+                    atom.chirality = chirality_value;
                 scanner.skip(1);
             }
             else
@@ -3263,9 +3263,9 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                     chirality_type = match.str(TB_GROUP).empty() ? QueryMolecule::CHIRALITY_OCTAHEDRAL : QueryMolecule::CHIRALITY_TRIGONAL_BIPYRAMIDAL;
                     chirality_value = value;
                 }
-                if (smarts_mode)
-                    subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_CHIRALITY, chirality_type, chirality_value);
             }
+            if (smarts_mode)
+                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_CHIRALITY, chirality_type, chirality_value);
         }
         else if (next == '+' || next == '-')
         {
