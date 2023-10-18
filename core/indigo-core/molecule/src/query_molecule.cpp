@@ -624,6 +624,55 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
         break;
     }
 
+    case ATOM_CHIRALITY: {
+        int chirality_type = atom->value_min;
+        int chirality_value = atom->value_max;
+        switch (chirality_type)
+        {
+        case CHIRALITY_GENERAL:
+            switch (chirality_value)
+            {
+            case CHIRALITY_ANTICLOCKWISE:
+                output.writeChar('@');
+                break;
+            case CHIRALITY_CLOCKWISE:
+                output.writeString("@@");
+                break;
+            default:
+                throw Error("Wrong chirality value %d.", chirality_value);
+            }
+            break;
+        case CHIRALITY_TETRAHEDRAL:
+            if (chirality_value > CHIRALITY_TETRAHEDRAL_MAX)
+                throw Error("Wrong TH chirality value %d", chirality_value);
+            output.printf("@TH%d", chirality_value);
+            break;
+        case CHIRALITY_ALLENE_LIKE:
+            if (chirality_value > CHIRALITY_ALLENE_LIKE_MAX)
+                throw Error("Wrong AL chirality value %d", chirality_value);
+            output.printf("@AL%d", chirality_value);
+            break;
+        case CHIRALITY_SQUARE_PLANAR:
+            if (chirality_value > CHIRALITY_SQUARE_PLANAR_MAX)
+                throw Error("Wrong SP chirality value %d", chirality_value);
+            output.printf("@SP%d", chirality_value);
+            break;
+        case CHIRALITY_TRIGONAL_BIPYRAMIDAL:
+            if (chirality_value > CHIRALITY_TRIGONAL_BIPYRAMIDAL_MAX)
+                throw Error("Wrong TB chirality value %d", chirality_value);
+            output.printf("@TB%d", chirality_value);
+            break;
+        case CHIRALITY_OCTAHEDRAL:
+            if (chirality_value > CHIRALITY_OCTAHEDRAL_MAX)
+                throw Error("Wrong OH chirality value %d", chirality_value);
+            output.printf("@OH%d", chirality_value);
+            break;
+        default:
+            throw Error("Wrong chirality type value %d.", chirality_type);
+        }
+        break;
+    }
+
     default: {
         throw Error("Unknown atom attribute %d", atom->type);
         break;
@@ -2336,7 +2385,7 @@ bool QueryMolecule::_isAtomOrListAndProps(const Atom* p_query_atom, std::set<int
             neg = is_neg;
             return true;
         }
-        else if (!is_neg && p_query_atom_child->type > ATOM_NUMBER && p_query_atom_child->type <= ATOM_CHILARITY) // atom property, no negative props here
+        else if (!is_neg && p_query_atom_child->type > ATOM_NUMBER && p_query_atom_child->type <= ATOM_CHIRALITY) // atom property, no negative props here
         {
             properties.emplace(p_query_atom_child->type, p_query_atom_child);
             return true;
