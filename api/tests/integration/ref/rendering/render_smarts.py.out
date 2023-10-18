@@ -582,9 +582,11 @@ smarts/0194.png rendering status: OK
 
 smarts/0195.png rendering status: OK
 196: */,\[R]=;@[R]/,\*
-  SMILES loader: Specificiation of both cis- and trans- bond restriction is not supported yet.
+
+smarts/0196.png rendering status: OK
 197: */,\[R]=,:;@[R]/,\*
-  SMILES loader: Specificiation of both cis- and trans- bond restriction is not supported yet.
+
+smarts/0197.png rendering status: OK
 198: [cR1]1[cR1][cR1][cR1][cR1][cR1]1
 
 smarts/0198.png rendering status: OK
