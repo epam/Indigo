@@ -420,7 +420,6 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
             int direction = BOND_ZERO;
             bool negative = false;
             writer.StartObject();
-            writer.Key("type");
             if (_pmol)
             {
                 int bond_order = mol.getBondOrder(i);
@@ -433,6 +432,7 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                         bond_order = _BOND_HYDROGEN;
                 }
 
+                writer.Key("type");
                 writer.Uint(bond_order);
             }
             else if (_pqmol)
@@ -441,7 +441,6 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                 int bond_order = QueryMolecule::getQueryBondType(qbond, direction, negative);
                 if (bond_order < 0 || negative || direction == BOND_UP_OR_UNSPECIFIED || direction == BOND_DOWN_OR_UNSPECIFIED)
                 {
-                    writer.Uint(BOND_SINGLE);
                     std::string customQuery = QueryMolecule::getSmartsBondStr(&qbond);
                     writer.Key("customQuery");
                     writer.String(customQuery.c_str());
@@ -449,6 +448,7 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                 }
                 else
                 {
+                    writer.Key("type");
                     writer.Uint(bond_order);
                     // convert direction to Biovia constants, to override stereo later
                     switch (direction)
