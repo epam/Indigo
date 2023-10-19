@@ -624,92 +624,102 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
     {
         const Value& b = bonds[i];
         const Value& refs = b["atoms"];
-
-        int stereo = 0;
-        if (b.HasMember("stereo"))
+        if (b.HasMember("customQuery"))
         {
-            stereo = b["stereo"].GetInt();
-        }
-
-        int topology = 0;
-        if (b.HasMember("topology"))
-        {
-            topology = b["topology"].GetInt();
-            if (topology != 0 && _pmol)
-                if (!ignore_noncritical_query_features)
-                    throw Error("bond topology is allowed only for queries");
-        }
-
-        int rcenter = 0;
-        if (b.HasMember("center"))
-        {
-            rcenter = b["center"].GetInt();
-        }
-
-        int order = b["type"].GetInt();
-        if (_pmol)
-            validateMoleculeBond(order);
-        if (refs.Size() > 1)
-        {
-            int a1 = refs[0].GetInt();
-            int a2 = refs[1].GetInt();
-            int bond_idx = 0;
-            int direction = BOND_ZERO;
-            if (_pqmol && stereo && order == BOND_SINGLE)
+            if (!_pqmol)
+                throw Error("customQuery is allowed only for queries");
+            std::string customQuery = b["customQuery"].GetString();
+            std::unique_ptr<QueryMolecule::Bond> bond = make_unique<QueryMolecule::Bond>();
+            SmilesLoader::readSmartsBondStr(customQuery, bond);
+            if (refs.Size() == 2)
             {
-                if (stereo == BIOVIA_STEREO_UP)
-                    direction = BOND_UP;
-                else if (stereo == BIOVIA_STEREO_DOWN)
-                    direction = BOND_DOWN;
+                int begin = refs[0].GetInt();
+                int end = refs[1].GetInt();
+                _pqmol->addBond(begin, end, bond.release());
             }
-            bond_idx = _pmol ? _pmol->addBond_Silent(a1, a2, order) : addBondToMoleculeQuery(a1, a2, order, topology, direction);
-            if (stereo)
+            else
             {
-                switch (stereo)
-                {
-                case BIOVIA_STEREO_UP:
-                    mol.setBondDirection(bond_idx, BOND_UP);
-                    break;
-                case BIOVIA_STEREO_DOUBLE_CISTRANS:
-                    mol.cis_trans.ignore(bond_idx);
-                    break;
-                case BIOVIA_STEREO_ETHER:
-                    mol.setBondDirection(bond_idx, BOND_EITHER);
-                    break;
-                case BIOVIA_STEREO_DOWN:
-                    mol.setBondDirection(bond_idx, BOND_DOWN);
-                    break;
-                default:
-                    break;
-                }
-            }
-
-            if (b.HasMember("customQuery"))
-            {
-                if (!_pqmol)
-                    throw Error("customQuery is allowed only for queries");
-                std::string customQuery = b["customQuery"].GetString();
-                std::unique_ptr<QueryMolecule::Bond> bond = make_unique<QueryMolecule::Bond>();
-                SmilesLoader::readSmartsBondStr(customQuery, bond);
-                _pqmol->resetBond(bond_idx, bond.release());
-            }
-
-            if (b.HasMember("cip"))
-            {
-                std::string cip = b["cip"].GetString();
-                auto cip_it = KStringToCIP.find(cip);
-                if (cip_it != KStringToCIP.end())
-                    mol.setBondCIP(bond_idx, cip_it->second);
-            }
-
-            if (rcenter)
-            {
-                mol.reaction_bond_reacting_center[i] = rcenter;
+                throw Error("Wrong bond atoms count");
             }
         }
         else
         {
-            // TODO:
+            int stereo = 0;
+            if (b.HasMember("stereo"))
+            {
+                stereo = b["stereo"].GetInt();
+            }
+
+            int topology = 0;
+            if (b.HasMember("topology"))
+            {
+                topology = b["topology"].GetInt();
+                if (topology != 0 && _pmol)
+                    if (!ignore_noncritical_query_features)
+                        throw Error("bond topology is allowed only for queries");
+            }
+
+            int rcenter = 0;
+            if (b.HasMember("center"))
+            {
+                rcenter = b["center"].GetInt();
+            }
+
+            int order = b["type"].GetInt();
+            if (_pmol)
+                validateMoleculeBond(order);
+            if (refs.Size() > 1)
+            {
+                int a1 = refs[0].GetInt();
+                int a2 = refs[1].GetInt();
+                int bond_idx = 0;
+                int direction = BOND_ZERO;
+                if (_pqmol && stereo && order == BOND_SINGLE)
+                {
+                    if (stereo == BIOVIA_STEREO_UP)
+                        direction = BOND_UP;
+                    else if (stereo == BIOVIA_STEREO_DOWN)
+                        direction = BOND_DOWN;
+                }
+                bond_idx = _pmol ? _pmol->addBond_Silent(a1, a2, order) : addBondToMoleculeQuery(a1, a2, order, topology, direction);
+                if (stereo)
+                {
+                    switch (stereo)
+                    {
+                    case BIOVIA_STEREO_UP:
+                        mol.setBondDirection(bond_idx, BOND_UP);
+                        break;
+                    case BIOVIA_STEREO_DOUBLE_CISTRANS:
+                        mol.cis_trans.ignore(bond_idx);
+                        break;
+                    case BIOVIA_STEREO_ETHER:
+                        mol.setBondDirection(bond_idx, BOND_EITHER);
+                        break;
+                    case BIOVIA_STEREO_DOWN:
+                        mol.setBondDirection(bond_idx, BOND_DOWN);
+                        break;
+                    default:
+                        break;
+                    }
+                }
+
+                if (b.HasMember("cip"))
+                {
+                    std::string cip = b["cip"].GetString();
+                    auto cip_it = KStringToCIP.find(cip);
+                    if (cip_it != KStringToCIP.end())
+                        mol.setBondCIP(bond_idx, cip_it->second);
+                }
+
+                if (rcenter)
+                {
+                    mol.reaction_bond_reacting_center[i] = rcenter;
+                }
+            }
+            else
+            {
+                // TODO:
+            }
         }
     }
 }
