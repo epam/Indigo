@@ -1643,6 +1643,9 @@ void SmilesLoader::_parseMolecule()
                         // Without this shift the 9th bond in the second structure is not double
                         _bonds.top() = pending_bond;
                         _bonds.remove(pending_bond_idx);
+                        for (int i = 0; i < _cycles.size(); i++)
+                            if (_cycles[i].pending_bond >= pending_bond_idx)
+                                --_cycles[i].pending_bond;
 
                         _cycles[number].clear();
                         continue;

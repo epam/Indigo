@@ -174,3 +174,6 @@ test_smarts_load_save_through_ket(
 test_smarts_load_save_through_ket(
     "[#6]-;!@[#6]", '"bonds":[{"type":1,"topology":2,"atoms":[0,1]}]'
 )
+print("#1292 test smarts c:1-2:c(:c:c:c:c:1)-[#6](=[#8])-[#6;X4]-[#6]-2=[#8]")
+indigo.loadSmarts("c:1-2:c(:c:c:c:c:1)-[#6](=[#8])-[#6;X4]-[#6]-2=[#8]")
+print("smarts loaded OK")
