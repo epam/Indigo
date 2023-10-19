@@ -1,0 +1,40 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    6.375,
+                    -4.5,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    7.375,
+                    -4.5,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ],
+                "customQuery": "-,#"
+            }
+        ]
+    }
+}

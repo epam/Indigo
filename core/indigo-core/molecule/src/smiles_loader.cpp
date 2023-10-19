@@ -2595,9 +2595,9 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
                 }
             }
             order = BOND_SINGLE;
-            if (bond.dir == 2)
+            if (bond.dir == BOND_DOWN && !smarts_mode)
                 throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");
-            bond.dir = 1;
+            bond.dir = BOND_UP;
         }
         else if (next == '\\')
         {
@@ -2615,9 +2615,9 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
                 }
             }
             order = BOND_SINGLE;
-            if (bond.dir == 1)
+            if (bond.dir == BOND_UP && !smarts_mode)
                 throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");
-            bond.dir = 2;
+            bond.dir = BOND_DOWN;
         }
         else if (next == '~')
         {
