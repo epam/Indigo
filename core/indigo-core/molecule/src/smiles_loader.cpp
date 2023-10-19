@@ -2631,7 +2631,15 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
             scanner.skip(1);
             if (qbond.get() == 0)
                 throw Error("'@' ring bond is allowed only for queries");
-            topology = TOPOLOGY_RING;
+            if (neg)
+            {
+                topology = TOPOLOGY_CHAIN;
+                neg = false;
+            }
+            else
+            {
+                topology = TOPOLOGY_RING;
+            }
         }
         else
             throw Error("Character #%d is unexpected during bond parsing", next);
