@@ -579,7 +579,7 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
     }
 
     case ATOM_RING_BONDS_AS_DRAWN: {
-        output.printf("x:%d", atom->value_min);
+        output.printf("x0"); // exact value should be writed in extended part
         break;
     }
 
