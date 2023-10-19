@@ -2233,7 +2233,6 @@ void MolfileLoader::_readCtab3000()
             strscan.readWord(buf, " [");
 
             char stopchar = strscan.readChar();
-
             if (stopchar == '[')
             {
                 if (_qmol == 0)
@@ -2311,93 +2310,90 @@ void MolfileLoader::_readCtab3000()
                         break;
                 }
             }
-            else if (buf.size() == 2 && buf[0] == 'D')
-            {
-                label = ELEM_H;
-                isotope = 2;
-            }
-            else if (buf.size() == 2 && buf[0] == 'T')
-            {
-                label = ELEM_H;
-                isotope = 3;
-            }
-            else if (buf.size() == 2 && buf[0] == 'Q')
-            {
-                if (_qmol == 0)
-                    throw Error("'Q' atom is allowed only for queries");
-
-                atom_type = _ATOM_Q;
-            }
-            else if (buf.size() == 3 && buf[0] == 'Q' && buf[1] == 'H')
-            {
-                if (_qmol == 0)
-                    throw Error("'QH' atom is allowed only for queries");
-
-                atom_type = _ATOM_QH;
-            }
-            else if (buf.size() == 2 && buf[0] == 'A')
-            {
-                if (_qmol == 0)
-                    throw Error("'A' atom is allowed only for queries");
-
-                atom_type = _ATOM_A;
-            }
-            else if (buf.size() == 3 && buf[0] == 'A' && buf[1] == 'H')
-            {
-                if (_qmol == 0)
-                    throw Error("'AH' atom is allowed only for queries");
-
-                atom_type = _ATOM_AH;
-            }
-            else if (buf.size() == 2 && buf[0] == 'X' && !treat_x_as_pseudoatom)
-            {
-                if (_qmol == 0)
-                    throw Error("'X' atom is allowed only for queries");
-
-                atom_type = _ATOM_X;
-            }
-            else if (buf.size() == 3 && buf[0] == 'X' && buf[1] == 'H' && !treat_x_as_pseudoatom)
-            {
-                if (_qmol == 0)
-                    throw Error("'XH' atom is allowed only for queries");
-
-                atom_type = _ATOM_XH;
-            }
-            else if (buf.size() == 2 && buf[0] == 'M')
-            {
-                if (_qmol == 0)
-                    throw Error("'M' atom is allowed only for queries");
-
-                atom_type = _ATOM_M;
-            }
-            else if (buf.size() == 3 && buf[0] == 'M' && buf[1] == 'H')
-            {
-                if (_qmol == 0)
-                    throw Error("'MH' atom is allowed only for queries");
-
-                atom_type = _ATOM_MH;
-            }
-            else if (buf.size() == 3 && buf[0] == 'R' && buf[1] == '#')
-            {
-                atom_type = _ATOM_R;
-                label = ELEM_RSITE;
-            }
             else
             {
                 label = Element::fromString2(buf.ptr());
-
-                if (label == -1)
+                long long cur_pos = strscan.tell();
+                QS_DEF(ReusableObjArray<Array<char>>, strs);
+                strs.clear();
+                strs.push().readString("CLASS", false);
+                strs.push().readString("SEQID", false);
+                auto fw_res = strscan.findWord(strs);
+                strscan.seek(cur_pos, SEEK_SET);
+                if (fw_res != -1)
+                    atom_type = _ATOM_TEMPLATE;
+                else if (label == -1)
+                    atom_type = _ATOM_PSEUDO;
+                else if (buf.size() == 2 && buf[0] == 'D')
                 {
-                    long long cur_pos = strscan.tell();
-                    QS_DEF(ReusableObjArray<Array<char>>, strs);
-                    strs.clear();
-                    strs.push().readString("CLASS", false);
-                    strs.push().readString("SEQID", false);
-                    if (strscan.findWord(strs) != -1)
-                        _atom_types[i] = _ATOM_TEMPLATE;
-                    else
-                        _atom_types[i] = _ATOM_PSEUDO;
-                    strscan.seek(cur_pos, SEEK_SET);
+                    label = ELEM_H;
+                    isotope = 2;
+                }
+                else if (buf.size() == 2 && buf[0] == 'T')
+                {
+                    label = ELEM_H;
+                    isotope = 3;
+                }
+                else if (buf.size() == 2 && buf[0] == 'Q')
+                {
+                    if (_qmol == 0)
+                        throw Error("'Q' atom is allowed only for queries");
+
+                    atom_type = _ATOM_Q;
+                }
+                else if (buf.size() == 3 && buf[0] == 'Q' && buf[1] == 'H')
+                {
+                    if (_qmol == 0)
+                        throw Error("'QH' atom is allowed only for queries");
+
+                    atom_type = _ATOM_QH;
+                }
+                else if (buf.size() == 2 && buf[0] == 'A')
+                {
+                    if (_qmol == 0)
+                        throw Error("'A' atom is allowed only for queries");
+
+                    atom_type = _ATOM_A;
+                }
+                else if (buf.size() == 3 && buf[0] == 'A' && buf[1] == 'H')
+                {
+                    if (_qmol == 0)
+                        throw Error("'AH' atom is allowed only for queries");
+
+                    atom_type = _ATOM_AH;
+                }
+                else if (buf.size() == 2 && buf[0] == 'X' && !treat_x_as_pseudoatom)
+                {
+                    if (_qmol == 0)
+                        throw Error("'X' atom is allowed only for queries");
+
+                    atom_type = _ATOM_X;
+                }
+                else if (buf.size() == 3 && buf[0] == 'X' && buf[1] == 'H' && !treat_x_as_pseudoatom)
+                {
+                    if (_qmol == 0)
+                        throw Error("'XH' atom is allowed only for queries");
+
+                    atom_type = _ATOM_XH;
+                }
+                else if (buf.size() == 2 && buf[0] == 'M')
+                {
+                    if (_qmol == 0)
+                        throw Error("'M' atom is allowed only for queries");
+
+                    atom_type = _ATOM_M;
+                }
+                else if (buf.size() == 3 && buf[0] == 'M' && buf[1] == 'H')
+                {
+                    if (_qmol == 0)
+                        throw Error("'MH' atom is allowed only for queries");
+
+                    atom_type = _ATOM_MH;
+                }
+                else if (buf.size() == 3 && buf[0] == 'R' && buf[1] == '#')
+                {
+                    atom_type = _ATOM_R;
+                    label = ELEM_RSITE;
                 }
             }
 
@@ -2529,11 +2525,12 @@ void MolfileLoader::_readCtab3000()
                     _qmol->addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
             }
 
-            //         int hcount = 0;
+            // int hcount = 0;
             int irflag = 0;
             int ecflag = 0;
             int radical = 0;
 
+            // read remaining atom properties
             while (true)
             {
                 strscan.skipSpace();
