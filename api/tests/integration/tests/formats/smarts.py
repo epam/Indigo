@@ -168,3 +168,9 @@ test_smarts_load_save_through_ket(
     "[C;@@]",
     '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"aromaticity":"aliphatic","chirality":"clockwise"}}]',
 )
+test_smarts_load_save_through_ket(
+    "[#6]-;@[#6]", '"bonds":[{"type":1,"topology":1,"atoms":[0,1]}]'
+)
+test_smarts_load_save_through_ket(
+    "[#6]-;!@[#6]", '"bonds":[{"type":1,"topology":2,"atoms":[0,1]}]'
+)

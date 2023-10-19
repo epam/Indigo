@@ -395,6 +395,8 @@ void QueryMolecule::writeSmartsBond(Output& output, Bond* bond, bool has_or_pare
     case BOND_TOPOLOGY: {
         if (bond->value == TOPOLOGY_RING)
             output.writeChar('@');
+        else
+            output.writeString("!@");
         break;
     }
     default:
