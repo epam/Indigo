@@ -686,7 +686,8 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         int radical = 0;
         int query_atom_type = QueryMolecule::QUERY_ATOM_UNKNOWN;
         std::map<int, const QueryMolecule::Atom*> query_atom_properties;
-        if (mol.isRSite(i))
+        bool is_rSite = mol.isRSite(i);
+        if (is_rSite)
         {
             mol.getAllowedRGroups(i, rg_list);
             writer.Key("type");
@@ -810,7 +811,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         bool ecflag = mol.reaction_atom_exact_change[i];
         int hcount = MoleculeSavers::getHCount(mol, i, anum, charge);
 
-        if (_pqmol)
+        if (_pqmol && !is_rSite) // No custom query for RSite
         {
             bool needCustomQuery = query_atom_type == QueryMolecule::QUERY_ATOM_UNKNOWN;
             std::map<int, const char*> qprops{{QueryMolecule::ATOM_SSSR_RINGS, "ringMembership"},
@@ -908,7 +909,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 writer.Int(query_atom_properties[QueryMolecule::ATOM_IMPLICIT_H]->value_min);
             }
         }
-        else
+        else if (_pmol)
         {
             if (Molecule::shouldWriteHCount(mol.asMolecule(), i) && hcount > 0)
             {
