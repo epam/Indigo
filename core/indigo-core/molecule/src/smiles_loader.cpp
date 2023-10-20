@@ -1886,10 +1886,6 @@ void SmilesLoader::_loadParsedMolecule()
         _setRadicalsAndHCounts();
     }
 
-    if (smarts_mode)
-        // Forbid matching SMARTS atoms to hydrogens
-        _forbidHydrogens();
-
     if (!inside_rsmiles)
     {
         for (i = 0; i < _atoms.size(); i++)
@@ -2140,29 +2136,6 @@ void SmilesLoader::_setRadicalsAndHCounts()
             {
                 // Leave the number of hydrogens as unspecified
                 // Dearomatization algorithm can find any suitable configuration
-            }
-        }
-    }
-}
-
-void SmilesLoader::_forbidHydrogens()
-{
-    for (int i = 0; i < _atoms.size(); i++)
-    {
-        // not needed if it is a sure atom or a list without a hydrogen
-        if (_qmol->getAtomNumber(i) == -1 && _qmol->possibleAtomNumber(i, ELEM_H))
-        {
-            // not desired if it is a list with hydrogen
-            if (!_qmol->getAtom(i).hasConstraintWithValue(QueryMolecule::ATOM_NUMBER, ELEM_H))
-            {
-                std::unique_ptr<QueryMolecule::Atom> newatom;
-                std::unique_ptr<QueryMolecule::Atom> oldatom(_qmol->releaseAtom(i));
-
-                std::unique_ptr<QueryMolecule::Atom> notH(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
-                notH->artificial = true;
-                newatom.reset(QueryMolecule::Atom::und(notH.release(), oldatom.release()));
-
-                _qmol->resetAtom(i, newatom.release());
             }
         }
     }
@@ -3028,6 +3001,8 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
         }
         else if (next == '#')
         {
+            if (!smarts_mode)
+                throw Error("#num notation can be used only with smarts_mode");
             scanner.skip(1);
             if (scanner.lookNext() == 'G')
             {

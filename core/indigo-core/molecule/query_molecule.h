@@ -141,8 +141,6 @@ namespace indigo
             // otherwise: no children
             PtrArray<Node> children;
 
-            bool artificial; // if true - added by parser to comply restrictions
-
             // Check if node has any constraint of the specific type
             bool hasConstraint(int what_type);
 
