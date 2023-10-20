@@ -380,13 +380,13 @@ void SmilesLoader::_readOtherStuff()
                 if (_bmol->stereocenters.exists(idx))
                 {
                     _bmol->stereocenters.setType(idx, MoleculeStereocenters::ATOM_ABS, 0);
-                    _overtly_defined_abs.insert(idx);
                 }
                 else
                 {
                     _bmol->addStereocenters(idx, MoleculeStereocenters::ATOM_ABS, 0, false);
                     _bmol->stereocenters.setTetrahydral(idx, false);
                 }
+                _overtly_defined_abs.insert(idx);
 
                 if (_scanner.lookNext() == ',')
                     _scanner.skip(1);
