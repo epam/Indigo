@@ -333,7 +333,8 @@ namespace indigo
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
             }
             bool query = false;
-            if (options.count("query") > 0 and options["query"] == "true")
+            auto i = options.find("query");
+            if (i != options.end() and i->second == "true")
             {
                 query = true;
             }
