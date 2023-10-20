@@ -53,3 +53,5 @@ CC[C+5]CCCCC
 [#6]-;!@[#6] is ok. smarts_in==smarts_out
 [#6]-;!@[#6] is ok. json_in==json_out
 [#6]-;!@[#6] is ok. expected string found in json
+#1292 test smarts c:1-2:c(:c:c:c:c:1)-[#6](=[#8])-[#6;X4]-[#6]-2=[#8]
+smarts loaded OK
