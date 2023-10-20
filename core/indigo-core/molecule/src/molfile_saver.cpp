@@ -398,12 +398,12 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         QS_DEF(Array<int>, list);
         int query_atom_type;
 
-        if (atom_number == ELEM_H && isotope == 2)
+        if (atom_number == ELEM_H && isotope == DEUTERIUM)
         {
             out.writeChar('D');
             isotope = 0;
         }
-        else if (atom_number == ELEM_H && isotope == 3)
+        else if (atom_number == ELEM_H && isotope == TRITIUM)
         {
             out.writeChar('T');
             isotope = 0;
@@ -630,14 +630,8 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         {
             int qb = QueryMolecule::getQueryBondType(qmol->getBond(i));
 
-            if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
-                bond_order = 5;
-            else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
-                bond_order = 6;
-            else if (qb == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC)
-                bond_order = 7;
-            else if (qb == QueryMolecule::QUERY_BOND_ANY)
-                bond_order = 8;
+            if (qb == _BOND_SINGLE_OR_DOUBLE || qb == _BOND_SINGLE_OR_AROMATIC || qb == _BOND_DOUBLE_OR_AROMATIC || qb == _BOND_ANY)
+                bond_order = qb;
         }
 
         if (bond_order < 0)
@@ -645,9 +639,9 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
         if (bond_order == BOND_ZERO)
         {
-            bond_order = 9;
+            bond_order = _BOND_COORDINATION;
             if ((mol.getAtomNumber(edge.beg) == ELEM_H) || (mol.getAtomNumber(edge.end) == ELEM_H))
-                bond_order = 10;
+                bond_order = _BOND_HYDROGEN;
         }
 
         out.printf("%d %d %d %d", iw, bond_order, _atom_mapping[edge.beg], _atom_mapping[edge.end]);
@@ -1215,9 +1209,9 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 label[0] = 'A';
             // throw Error("error saving atom #%d: unsupported query atom", i);
         }
-        else if (atom_number == ELEM_H && atom_isotope == 2)
+        else if (atom_number == ELEM_H && atom_isotope == DEUTERIUM)
             label[0] = 'D';
-        else if (atom_number == ELEM_H && atom_isotope == 3)
+        else if (atom_number == ELEM_H && atom_isotope == TRITIUM)
             label[0] = 'T';
         else
         {
@@ -1344,14 +1338,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         {
             int qb = QueryMolecule::getQueryBondType(qmol->getBond(i));
 
-            if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
-                bond_order = 5;
-            else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
-                bond_order = 6;
-            else if (qb == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC)
-                bond_order = 7;
-            else if (qb == QueryMolecule::QUERY_BOND_ANY)
-                bond_order = 8;
+            if (qb == _BOND_SINGLE_OR_DOUBLE || qb == _BOND_SINGLE_OR_AROMATIC || qb == _BOND_DOUBLE_OR_AROMATIC || qb == _BOND_ANY)
+                bond_order = qb;
         }
 
         if (bond_order < 0)

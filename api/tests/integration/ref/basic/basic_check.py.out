@@ -716,3 +716,5 @@ Check result = {"valence":"Structure contains atoms with unusual valence: (2)","
 Check result = {"LOAD":{"message":"Error at loading structure"}}
 Check result = {"LOAD":{"message":"Error at loading structure"}}
 Check result = {"coord":"Structure has no atoms coordinates"}
+****** Check query features ket with custom query bond ********
+Check result = {"valence":"Structure contains query features, so valency could not be checked","stereo":"Structure contains stereocenters with undefined stereo configuration","query":"Structure contains query features","charge":"Structure has non-zero charge","ambiguous_h":"Structure contains query features, so ambiguous H could not be checked"}

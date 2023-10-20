@@ -1643,6 +1643,9 @@ void SmilesLoader::_parseMolecule()
                         // Without this shift the 9th bond in the second structure is not double
                         _bonds.top() = pending_bond;
                         _bonds.remove(pending_bond_idx);
+                        for (int i = 0; i < _cycles.size(); i++)
+                            if (_cycles[i].pending_bond >= pending_bond_idx)
+                                --_cycles[i].pending_bond;
 
                         _cycles[number].clear();
                         continue;
@@ -2549,6 +2552,7 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         int next = scanner.lookNext();
         int order = -1;
         int topology = -1;
+        int direction = BOND_ZERO;
 
         if (next == '!')
         {
@@ -2582,23 +2586,41 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         {
             scanner.skip(1);
             if (smarts_mode)
-                order = BOND_SMARTS_UP;
-            else
-                order = BOND_SINGLE;
-            if (bond.dir == 2)
+            {
+                if (scanner.lookNext() == '?')
+                {
+                    direction = BOND_UP_OR_UNSPECIFIED;
+                    scanner.skip(1);
+                }
+                else
+                {
+                    direction = BOND_UP;
+                }
+            }
+            order = BOND_SINGLE;
+            if (bond.dir == BOND_DOWN && !smarts_mode)
                 throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");
-            bond.dir = 1;
+            bond.dir = BOND_UP;
         }
         else if (next == '\\')
         {
             scanner.skip(1);
             if (smarts_mode)
-                order = BOND_SMARTS_DOWN;
-            else
-                order = BOND_SINGLE;
-            if (bond.dir == 1)
+            {
+                if (scanner.lookNext() == '?')
+                {
+                    direction = BOND_DOWN_OR_UNSPECIFIED;
+                    scanner.skip(1);
+                }
+                else
+                {
+                    direction = BOND_DOWN;
+                }
+            }
+            order = BOND_SINGLE;
+            if (bond.dir == BOND_UP && !smarts_mode)
                 throw Error("Specificiation of both cis- and trans- bond restriction is not supported yet.");
-            bond.dir = 2;
+            bond.dir = BOND_DOWN;
         }
         else if (next == '~')
         {
@@ -2612,7 +2634,15 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
             scanner.skip(1);
             if (qbond.get() == 0)
                 throw Error("'@' ring bond is allowed only for queries");
-            topology = TOPOLOGY_RING;
+            if (neg)
+            {
+                topology = TOPOLOGY_CHAIN;
+                neg = false;
+            }
+            else
+            {
+                topology = TOPOLOGY_RING;
+            }
         }
         else
             throw Error("Character #%d is unexpected during bond parsing", next);
@@ -2625,9 +2655,9 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
             if (qbond.get() != 0)
             {
                 if (subqbond.get() == 0)
-                    subqbond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
+                    subqbond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order, direction);
                 else
-                    subqbond.reset(QueryMolecule::Bond::und(subqbond.release(), new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order)));
+                    subqbond.reset(QueryMolecule::Bond::und(subqbond.release(), new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order, direction)));
             }
         }
         else if (order == _ANY_BOND)
@@ -3196,39 +3226,57 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
         }
         else if (next == '@')
         {
-            atom.chirality = 1;
+            int chirality_type = QueryMolecule::CHIRALITY_GENERAL;
+            int chirality_value = QueryMolecule::CHIRALITY_ANTICLOCKWISE;
+            if (!smarts_mode)
+                atom.chirality = chirality_value;
             scanner.skip(1);
             if (scanner.lookNext() == '@')
             {
-                atom.chirality = 2;
+                chirality_value = QueryMolecule::CHIRALITY_CLOCKWISE;
+                if (!smarts_mode)
+                    atom.chirality = chirality_value;
                 scanner.skip(1);
             }
             else
             {
-                std::string current((const char*)scanner.curptr(), scanner.length() - scanner.tell());
+                std::string current(static_cast<const char*>(scanner.curptr()), scanner.length() - scanner.tell());
                 std::smatch match;
                 if (std::regex_search(current, match, std::regex("^(TH|AL)([1-2])")))
                 {
-                    atom.chirality = std::stoi(match[2]);
+                    int value = std::stoi(match[2]);
+                    if (!smarts_mode)
+                        atom.chirality = value;
                     scanner.skip(3);
+                    if (match[1] == "TH")
+                        chirality_type = QueryMolecule::CHIRALITY_TETRAHEDRAL;
+                    else if (match[1] == "AL")
+                        chirality_type = QueryMolecule::CHIRALITY_ALLENE_LIKE;
+                    chirality_value = value;
                 }
-                else if (std::regex_search(current, match, std::regex("^SP[1-3]")))
+                else if (std::regex_search(current, match, std::regex("^SP([1-3])")))
                 {
                     // this type of chirality not supported. just skip it.
                     scanner.skip(3);
+                    chirality_type = QueryMolecule::CHIRALITY_SQUARE_PLANAR;
+                    chirality_value = std::stoi(match[1]);
                 }
                 else if (std::regex_search(current, match, std::regex(R"((TB([1-9]|1[0-9]|20)|OH([1-9]|1\d|2\d|30))(?!\d))")))
                 {
-                    const int TB_GROUP = 2;
-                    const int OH_GROUP = 3;
+                    constexpr int TB_GROUP = 2;
+                    constexpr int OH_GROUP = 3;
                     int value = std::stoi(match.str(TB_GROUP).empty() ? match.str(OH_GROUP) : match.str(TB_GROUP));
-                    if (value <= 2)
+                    if (value <= 2 && !smarts_mode)
                         atom.chirality = value;
                     scanner.skip(3);
                     if (value >= 10)
                         scanner.skip(1);
+                    chirality_type = match.str(TB_GROUP).empty() ? QueryMolecule::CHIRALITY_OCTAHEDRAL : QueryMolecule::CHIRALITY_TRIGONAL_BIPYRAMIDAL;
+                    chirality_value = value;
                 }
             }
+            if (smarts_mode)
+                subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_CHIRALITY, chirality_type, chirality_value);
         }
         else if (next == '+' || next == '-')
         {

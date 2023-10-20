@@ -6,14 +6,6 @@ Cannot load query molecules from SMARTS
   C[C@?H](Cl)Br 
 
   Error: SMILES loader: invalid character within atom description: '?'
-Cannot load query molecules from SMARTS
-  */,\[R]=;@[R]/,\* 
-
-  Error: SMILES loader: Specificiation of both cis- and trans- bond restriction is not supported yet.
-Cannot load query molecules from SMARTS
-  */,\[R]=,:;@[R]/,\* 
-
-  Error: SMILES loader: Specificiation of both cis- and trans- bond restriction is not supported yet.
 119914 #1
   cnt=551
 119914 #2
@@ -58649,6 +58641,8 @@ Results per query:
 #193: 30
 #194: 0
 #195: 0
+#196: 0
+#197: 0
 #198: 354
 #199: 150
 #200: 0

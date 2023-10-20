@@ -778,6 +778,7 @@ jobs:
   build_indigo_ketcher:
     runs-on: ubuntu-latest
     needs: static_analysis
+    container: emscripten/emsdk:1.40.1
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -788,8 +789,6 @@ jobs:
         run: |
              git config --global --add safe.directory '*'
              git fetch --tags -f
-      - name: Install Emcripten SDK
-        uses: mymindstorm/setup-emsdk@v7
       - name: Update version
         run: |
           cd api/wasm/indigo-ketcher
@@ -811,6 +810,7 @@ jobs:
   build_indigo_ketcher_cjk:
     runs-on: ubuntu-latest
     needs: static_analysis
+    container: emscripten/emsdk:1.40.1
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -821,8 +821,6 @@ jobs:
         run: |
              git config --global --add safe.directory '*'
              git fetch --tags -f
-      - name: Install Emcripten SDK
-        uses: mymindstorm/setup-emsdk@v7
       - name: Update version
         run: |
           cd api/wasm/indigo-ketcher
@@ -1254,7 +1252,7 @@ jobs:
           echo //registry.npmjs.org/:_authToken=${NPM_TOKEN} >> ~/.npmrc
           echo email=${NPM_EMAIL} >> ~/.npmrc
           echo always-auth=true >> ~/.npmrc
-          npm publish ./dist/indigo-ketcher-*.tgz
+          bash .ci/publish_npm.sh
 
   publish_indigo_to_maven:
     if: startsWith(github.ref, 'refs/tags/indigo-')

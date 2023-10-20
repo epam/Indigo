@@ -73,15 +73,24 @@ namespace indigo
         _BOND_ANY = 8,
         _BOND_COORDINATION = 9,
         _BOND_HYDROGEN = 10,
-        BOND_SMARTS_UP = 11,
-        BOND_SMARTS_DOWN = 12,
     };
 
     enum
     {
         BOND_UP = 1,
         BOND_DOWN = 2,
-        BOND_EITHER = 3
+        BOND_EITHER = 3,
+        BOND_UP_OR_UNSPECIFIED = 4,
+        BOND_DOWN_OR_UNSPECIFIED = 5,
+    };
+
+    enum
+    {
+        BIOVIA_STEREO_NO = 0,
+        BIOVIA_STEREO_UP = 1,
+        BIOVIA_STEREO_DOUBLE_CISTRANS = 3,
+        BIOVIA_STEREO_ETHER = 4,
+        BIOVIA_STEREO_DOWN = 6,
     };
 
     enum layout_orientation_value

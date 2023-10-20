@@ -32,6 +32,7 @@
 
 namespace indigo
 {
+    constexpr int VALUE_UNKNOWN = -1;
 
     enum
     {
@@ -97,12 +98,34 @@ namespace indigo
             ATOM_TEMPLATE_SEQID,
             ATOM_TEMPLATE_CLASS,
             ATOM_PI_BONDED,
-            ATOM_CHILARITY,
+            ATOM_CHIRALITY,
 
             BOND_ORDER,
             BOND_TOPOLOGY,
 
             HIGHLIGHTING
+        };
+
+        enum
+        {
+            CHIRALITY_GENERAL,
+            CHIRALITY_TETRAHEDRAL,
+            CHIRALITY_ALLENE_LIKE,
+            CHIRALITY_SQUARE_PLANAR,
+            CHIRALITY_TRIGONAL_BIPYRAMIDAL,
+            CHIRALITY_OCTAHEDRAL,
+        };
+
+        static constexpr int CHIRALITY_TETRAHEDRAL_MAX = 2;
+        static constexpr int CHIRALITY_ALLENE_LIKE_MAX = 2;
+        static constexpr int CHIRALITY_SQUARE_PLANAR_MAX = 3;
+        static constexpr int CHIRALITY_TRIGONAL_BIPYRAMIDAL_MAX = 20;
+        static constexpr int CHIRALITY_OCTAHEDRAL_MAX = 30;
+
+        enum
+        {
+            CHIRALITY_ANTICLOCKWISE = 1,
+            CHIRALITY_CLOCKWISE = 2,
         };
 
         class DLLEXPORT Node
@@ -177,8 +200,8 @@ namespace indigo
 
             ~Atom() override;
 
-            Atom* clone();
-            void copy(Atom& other);
+            Atom* clone() const;
+            void copy(const Atom& other);
 
             Atom* child(int idx);
 
@@ -228,9 +251,11 @@ namespace indigo
         public:
             Bond();
             Bond(int type_, int value_);
+            Bond(int type_, int value_, int direction_);
             ~Bond() override;
 
             int value;
+            int direction;
 
             Bond* clone();
 
@@ -309,9 +334,15 @@ namespace indigo
 
         bool possibleNitrogenV5(int idx);
 
+        static std::string getSmartsBondStr(QueryMolecule::Bond* bond);
+        static void writeSmartsBond(Output& output, QueryMolecule::Bond* bond, bool has_or_parent);
+        static std::string getSmartsAtomStr(QueryMolecule::Atom* atom);
+        static void writeSmartsAtom(Output& output, Atom* atom, int aam, int chirality, int depth, bool has_or_parent, bool has_not_parent);
+
         enum QUERY_ATOM
         {
-            QUERY_ATOM_A,
+            QUERY_ATOM_UNKNOWN = -1,
+            QUERY_ATOM_A = 0,
             QUERY_ATOM_X,
             QUERY_ATOM_Q,
             QUERY_ATOM_M,
@@ -320,14 +351,8 @@ namespace indigo
             QUERY_ATOM_QH,
             QUERY_ATOM_MH,
             QUERY_ATOM_LIST,
-            QUERY_ATOM_NOTLIST
-        };
-        enum QUERY_BOND
-        {
-            QUERY_BOND_DOUBLE_OR_AROMATIC = 0,
-            QUERY_BOND_SINGLE_OR_AROMATIC,
-            QUERY_BOND_SINGLE_OR_DOUBLE,
-            QUERY_BOND_ANY
+            QUERY_ATOM_NOTLIST,
+            QUERY_ATOM_SINGLE
         };
 
         static bool isKnownAttr(QueryMolecule::Atom& qa);
@@ -338,12 +363,15 @@ namespace indigo
         static int parseQueryAtom(QueryMolecule& qm, int aid, Array<int>& list);
         static bool queryAtomIsRegular(QueryMolecule& qm, int aid);
         static bool queryAtomIsSpecial(QueryMolecule& qm, int aid);
+        static bool queryAtomIsSpecial(int query_atom_type);
         static Bond* getBondOrderTerm(Bond& qb, bool& complex);
         static bool isOrBond(Bond& qb, int type1, int type2);
         static bool isSingleOrDouble(Bond& qb);
         static int getQueryBondType(Bond& qb);
+        static int getQueryBondType(Bond& qb, int& direction, bool& negative);
         static int getAtomType(const char* label);
         static void getQueryAtomLabel(int qa, Array<char>& result);
+        static QueryMolecule::Bond* createQueryMoleculeBond(int order, int topology, int direction);
 
         bool bondStereoCare(int idx) override;
         void setBondStereoCare(int idx, bool stereo_care);
@@ -387,6 +415,8 @@ namespace indigo
 
         bool standardize(const StandardizeOptions& options);
 
+        static int parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<int>& list, std::map<int, const Atom*>& properties);
+
     protected:
         void _getAtomDescription(Atom* atom, Output& out, int depth);
         void _getBondDescription(Bond* bond, Output& out);
@@ -398,6 +428,11 @@ namespace indigo
                                        int skip_flags) override;
         void _removeAtoms(const Array<int>& indices, const int* mapping) override;
         void _removeBonds(const Array<int>& indices) override;
+
+        using AtomList = std::pair<bool, std::set<int>>;
+        static bool _isAtomListOr(const Atom* pqa, std::set<int>& list);
+        static bool _isAtomOrListAndProps(const Atom* pqa, std::set<int>& list, bool& neg, std::map<int, const Atom*>& properties);
+        static bool _isAtomList(const Atom* qa, AtomList list);
 
         Array<int> _min_h;
 

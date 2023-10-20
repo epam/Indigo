@@ -29,7 +29,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     Value& nodes = root["nodes"];
 
     // rewind to first molecule node
-    for (int i = 0; i < nodes.Size(); ++i)
+    for (rapidjson::SizeType i = 0; i < nodes.Size(); ++i)
     {
         if (nodes[i].HasMember("$ref"))
         {
@@ -78,32 +78,9 @@ MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
 {
 }
 
-int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int topology)
+int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int topology, int direction)
 {
-    std::unique_ptr<QueryMolecule::Bond> bond;
-    if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_COORDINATION ||
-        order == _BOND_HYDROGEN)
-        bond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ORDER, order);
-    else if (order == _BOND_SINGLE_OR_DOUBLE)
-        bond.reset(QueryMolecule::Bond::und(QueryMolecule::Bond::nicht(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)),
-                                            QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
-                                                                      new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE))));
-    else if (order == _BOND_SINGLE_OR_AROMATIC)
-        bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_SINGLE),
-                                             new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
-    else if (order == _BOND_DOUBLE_OR_AROMATIC)
-        bond.reset(QueryMolecule::Bond::oder(new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_DOUBLE),
-                                             new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_AROMATIC)));
-    else if (order == _BOND_ANY)
-        bond = std::make_unique<QueryMolecule::Bond>();
-    else
-        throw Error("unknown bond type: %d", order);
-    if (topology != 0)
-    {
-        bond.reset(
-            QueryMolecule::Bond::und(bond.release(), new QueryMolecule::Bond(QueryMolecule::BOND_TOPOLOGY, topology == 1 ? TOPOLOGY_RING : TOPOLOGY_CHAIN)));
-    }
-    return _pqmol->addBond(beg, end, bond.release());
+    return _pqmol->addBond(beg, end, QueryMolecule::createQueryMoleculeBond(order, topology, direction));
 }
 
 int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope)
@@ -298,7 +275,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                 const Value& elements = a["elements"];
                 int pseudo_count = 0;
                 elem = ELEM_ATOMLIST;
-                for (int j = 0; j < elements.Size(); ++j)
+                for (rapidjson::SizeType j = 0; j < elements.Size(); ++j)
                 {
                     auto elem_label = elements[j].GetString();
                     int list_elem = Element::fromString2(elem_label);
@@ -333,12 +310,12 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             if (label == "D")
             {
                 elem = ELEM_H;
-                isotope = 2;
+                isotope = DEUTERIUM;
             }
             else if (label == "T")
             {
                 elem = ELEM_H;
-                isotope = 3;
+                isotope = TRITIUM;
             }
             else
             {
@@ -455,7 +432,13 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             if (_pmol)
                 _pmol->setImplicitH(atom_idx, a["implicitHCount"].GetInt());
             else
-                throw Error("implicitHCount is allowed only for molecules");
+            {
+                int count = a["implicitHCount"].GetInt();
+                if (count < 1)
+                    throw Error("Wrong value for implicitHCount: %d", count);
+                _pqmol->resetAtom(atom_idx,
+                                  QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_IMPLICIT_H, count)));
+            }
         }
 
         if (a.HasMember("invRet"))
@@ -581,15 +564,17 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                     }
                     if (qProps.HasMember("chirality"))
                     {
-                        std::string arom = qProps["chirality"].GetString();
+                        std::string chirality_value = qProps["chirality"].GetString();
                         int chirality;
-                        if (arom == "clockwise")
-                            chirality = 1;
-                        else if (arom == "anticlockwise")
-                            chirality = 2;
+                        if (chirality_value == "clockwise")
+                            chirality = QueryMolecule::CHIRALITY_CLOCKWISE;
+                        else if (chirality_value == "anticlockwise")
+                            chirality = QueryMolecule::CHIRALITY_ANTICLOCKWISE;
                         else
                             throw Error("Wrong value for chirality.");
-                        // 2do - add hirality to atom
+                        _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(
+                                                        _pqmol->releaseAtom(atom_idx),
+                                                        new QueryMolecule::Atom(QueryMolecule::ATOM_CHIRALITY, QueryMolecule::CHIRALITY_GENERAL, chirality)));
                     }
                 }
             }
@@ -639,91 +624,109 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
     {
         const Value& b = bonds[i];
         const Value& refs = b["atoms"];
-
-        int stereo = 0;
-        if (b.HasMember("stereo"))
+        if (b.HasMember("customQuery"))
         {
-            stereo = b["stereo"].GetInt();
-        }
-
-        int topology = 0;
-        if (b.HasMember("topology"))
-        {
-            topology = b["topology"].GetInt();
-            if (topology != 0 && _pmol)
-                if (!ignore_noncritical_query_features)
-                    throw Error("bond topology is allowed only for queries");
-        }
-
-        int rcenter = 0;
-        if (b.HasMember("center"))
-        {
-            rcenter = b["center"].GetInt();
-        }
-
-        int order = b["type"].GetInt();
-        if (_pmol)
-            validateMoleculeBond(order);
-        if (refs.Size() > 1)
-        {
-            int a1 = refs[0].GetInt();
-            int a2 = refs[1].GetInt();
-            int bond_idx = 0;
-            bond_idx = _pmol ? _pmol->addBond_Silent(a1, a2, order) : addBondToMoleculeQuery(a1, a2, order, topology);
-            if (stereo)
+            if (!_pqmol)
+                throw Error("customQuery is allowed only for queries");
+            std::string customQuery = b["customQuery"].GetString();
+            std::unique_ptr<QueryMolecule::Bond> bond = make_unique<QueryMolecule::Bond>();
+            SmilesLoader::readSmartsBondStr(customQuery, bond);
+            if (refs.Size() == 2)
             {
-                switch (stereo)
-                {
-                case 1:
-                    mol.setBondDirection(bond_idx, BOND_UP);
-                    break;
-                case 3:
-                    mol.cis_trans.ignore(bond_idx);
-                    break;
-                case 4:
-                    mol.setBondDirection(bond_idx, BOND_EITHER);
-                    break;
-                case 6:
-                    mol.setBondDirection(bond_idx, BOND_DOWN);
-                    break;
-                    break;
-
-                default:
-                    break;
-                }
+                int begin = refs[0].GetInt();
+                int end = refs[1].GetInt();
+                _pqmol->addBond(begin, end, bond.release());
             }
-
-            if (b.HasMember("customQuery"))
+            else
             {
-                std::string customQuery = b["customQuery"].GetString();
-                std::unique_ptr<QueryMolecule::Bond> bond = make_unique<QueryMolecule::Bond>();
-                SmilesLoader::readSmartsBondStr(customQuery, bond);
-                _pqmol->resetBond(bond_idx, bond.release());
-            }
-
-            if (b.HasMember("cip"))
-            {
-                std::string cip = b["cip"].GetString();
-                auto cip_it = KStringToCIP.find(cip);
-                if (cip_it != KStringToCIP.end())
-                    mol.setBondCIP(bond_idx, cip_it->second);
-            }
-
-            if (rcenter)
-            {
-                mol.reaction_bond_reacting_center[i] = rcenter;
+                throw Error("Wrong bond atoms count");
             }
         }
         else
         {
-            // TODO:
+            int stereo = 0;
+            if (b.HasMember("stereo"))
+            {
+                stereo = b["stereo"].GetInt();
+            }
+
+            int topology = 0;
+            if (b.HasMember("topology"))
+            {
+                topology = b["topology"].GetInt();
+                if (topology != 0 && _pmol)
+                    if (!ignore_noncritical_query_features)
+                        throw Error("bond topology is allowed only for queries");
+            }
+
+            int rcenter = 0;
+            if (b.HasMember("center"))
+            {
+                rcenter = b["center"].GetInt();
+            }
+
+            int order = b["type"].GetInt();
+            if (_pmol)
+                validateMoleculeBond(order);
+            if (refs.Size() > 1)
+            {
+                int a1 = refs[0].GetInt();
+                int a2 = refs[1].GetInt();
+                int bond_idx = 0;
+                int direction = BOND_ZERO;
+                if (_pqmol && stereo && order == BOND_SINGLE)
+                {
+                    if (stereo == BIOVIA_STEREO_UP)
+                        direction = BOND_UP;
+                    else if (stereo == BIOVIA_STEREO_DOWN)
+                        direction = BOND_DOWN;
+                }
+                bond_idx = _pmol ? _pmol->addBond_Silent(a1, a2, order) : addBondToMoleculeQuery(a1, a2, order, topology, direction);
+                if (stereo)
+                {
+                    switch (stereo)
+                    {
+                    case BIOVIA_STEREO_UP:
+                        mol.setBondDirection(bond_idx, BOND_UP);
+                        break;
+                    case BIOVIA_STEREO_DOUBLE_CISTRANS:
+                        mol.cis_trans.ignore(bond_idx);
+                        break;
+                    case BIOVIA_STEREO_ETHER:
+                        mol.setBondDirection(bond_idx, BOND_EITHER);
+                        break;
+                    case BIOVIA_STEREO_DOWN:
+                        mol.setBondDirection(bond_idx, BOND_DOWN);
+                        break;
+                    default:
+                        break;
+                    }
+                }
+
+                if (b.HasMember("cip"))
+                {
+                    std::string cip = b["cip"].GetString();
+                    auto cip_it = KStringToCIP.find(cip);
+                    if (cip_it != KStringToCIP.end())
+                        mol.setBondCIP(bond_idx, cip_it->second);
+                }
+
+                if (rcenter)
+                {
+                    mol.reaction_bond_reacting_center[i] = rcenter;
+                }
+            }
+            else
+            {
+                // TODO:
+            }
         }
     }
 }
 
 void indigo::MoleculeJsonLoader::parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol)
 {
-    for (int i = 0; i < highlight.Size(); ++i)
+    for (rapidjson::SizeType i = 0; i < highlight.Size(); ++i)
     {
         const rapidjson::Value& val = highlight[i];
         if (val.HasMember("entityType") && val.HasMember("items"))
@@ -732,12 +735,12 @@ void indigo::MoleculeJsonLoader::parseHighlight(const rapidjson::Value& highligh
             std::string et = val["entityType"].GetString();
             if (et == "atoms")
             {
-                for (int j = 0; i < items.Size(); ++i)
+                for (rapidjson::SizeType j = 0; i < items.Size(); ++i)
                     mol.highlightAtom(items[i].GetInt());
             }
             else if (et == "bonds")
             {
-                for (int j = 0; i < items.Size(); ++i)
+                for (rapidjson::SizeType j = 0; i < items.Size(); ++i)
                     mol.highlightBond(items[i].GetInt());
             }
         }
@@ -746,7 +749,7 @@ void indigo::MoleculeJsonLoader::parseHighlight(const rapidjson::Value& highligh
 
 void indigo::MoleculeJsonLoader::parseSelection(const rapidjson::Value& selection, BaseMolecule& mol)
 {
-    for (int i = 0; i < selection.Size(); ++i)
+    for (rapidjson::SizeType i = 0; i < selection.Size(); ++i)
     {
         const rapidjson::Value& val = selection[i];
         if (val.HasMember("entityType") && val.HasMember("items"))
@@ -755,12 +758,12 @@ void indigo::MoleculeJsonLoader::parseSelection(const rapidjson::Value& selectio
             std::string et = val["entityType"].GetString();
             if (et == "atoms")
             {
-                for (int j = 0; i < items.Size(); ++i)
+                for (rapidjson::SizeType j = 0; i < items.Size(); ++i)
                     mol.selectAtom(items[i].GetInt());
             }
             else if (et == "bonds")
             {
-                for (int j = 0; i < items.Size(); ++i)
+                for (rapidjson::SizeType j = 0; i < items.Size(); ++i)
                     mol.selectBond(items[i].GetInt());
             }
         }
@@ -881,7 +884,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             {
                 _pqmol->components.expandFill(_pqmol->components.size() + atoms.Size(), 0);
                 components_count++;
-                for (int j = 0; j < atoms.Size(); ++j)
+                for (rapidjson::SizeType j = 0; j < atoms.Size(); ++j)
                 {
                     int atom_idx = atoms[j].GetInt();
                     _pqmol->components[atom_idx] = components_count;
@@ -896,7 +899,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         SGroup& sgroup = mol.sgroups.getSGroup(grp_idx);
         // add atoms
         std::unordered_set<int> sgroup_atoms;
-        for (int j = 0; j < atoms.Size(); ++j)
+        for (rapidjson::SizeType j = 0; j < atoms.Size(); ++j)
         {
             int atom_idx = atoms[j].GetInt();
             sgroup.atoms.push(atom_idx);
@@ -1042,7 +1045,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         if (s.HasMember("bonds"))
         {
             const Value& bonds = s["bonds"];
-            for (int j = 0; j < bonds.Size(); ++j)
+            for (rapidjson::SizeType j = 0; j < bonds.Size(); ++j)
             {
                 sgroup.bonds.push(bonds[j].GetInt());
             }
@@ -1262,12 +1265,12 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
 
 void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 {
-    for (int node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
+    for (rapidjson::SizeType node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
     {
         std::vector<EnhancedStereoCenter> stereo_centers;
         std::unique_ptr<BaseMolecule> pmol(mol.neu());
-        _pmol = NULL;
-        _pqmol = NULL;
+        _pmol = nullptr;
+        _pqmol = nullptr;
         if (pmol->isQueryMolecule())
         {
             _pqmol = &pmol->asQueryMolecule();
@@ -1423,7 +1426,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         {
             if (stereochemistry_options.ignore_errors)
                 mol.addStereocentersIgnoreBad(sc._atom_idx, sc._type, sc._group, false); // add non-valid stereocenters
-            else
+            else if (!_pqmol)
                 throw Error("stereo type specified for atom #%d, but the bond "
                             "directions does not say that it is a stereocenter",
                             sc._atom_idx);
@@ -1436,7 +1439,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     {
         if (mol.getBondDirection(i) > 0 && !sensible_bond_directions[i])
         {
-            if (!stereochemistry_options.ignore_errors)
+            if (!stereochemistry_options.ignore_errors && !_pqmol)
                 throw Error("direction of bond #%d makes no sense", i);
         }
     }
@@ -1473,7 +1476,7 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
 
     if (meta_objects.IsArray())
     {
-        for (int obj_idx = 0; obj_idx < meta_objects.Size(); ++obj_idx)
+        for (rapidjson::SizeType obj_idx = 0; obj_idx < meta_objects.Size(); ++obj_idx)
         {
             std::string node_type = meta_objects[obj_idx]["type"].GetString();
             auto& mobj = meta_objects[obj_idx];
