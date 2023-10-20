@@ -1864,6 +1864,7 @@ void QueryMolecule::Atom::copy(const Atom& other)
     type = other.type;
     value_max = other.value_max;
     value_min = other.value_min;
+    artificial = other.artificial;
 
     fragment.reset(nullptr);
     if (other.fragment.get() != 0)
@@ -2408,6 +2409,8 @@ bool QueryMolecule::_isAtomOrListAndProps(const Atom* p_query_atom, std::set<int
     for (auto i = 0; i < p_query_atom->children.size(); i++)
     {
         Atom* p_query_atom_child = const_cast<Atom*>(p_query_atom)->child(i);
+        if (p_query_atom_child->type == OP_NOT && p_query_atom_child->artificial)
+            continue; // !H added by SmilesLoader::_forbidHydrogens
         bool is_neg = false;
         if (_isAtomOrListAndProps(p_query_atom_child, collected, is_neg, collected_properties))
         {
@@ -2427,7 +2430,7 @@ int QueryMolecule::parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<
 {
     std::set<int> atom_list;
     std::map<int, const Atom*> atom_pros;
-    bool negative;
+    bool negative = false;
     QueryMolecule::Atom& qa = qm.getAtom(aid);
     if (qa.type == QueryMolecule::OP_NONE)
         return QUERY_ATOM_AH;

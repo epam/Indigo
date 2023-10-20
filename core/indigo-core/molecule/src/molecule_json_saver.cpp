@@ -734,45 +734,52 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                     }
                 }
             }
-            else if (_pqmol && query_atom_type != QueryMolecule::QUERY_ATOM_UNKNOWN)
+            else if (_pqmol)
             {
-                if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+                if (query_atom_type != QueryMolecule::QUERY_ATOM_UNKNOWN)
                 {
-                    is_qatom_list = true;
-                    writer.Key("type");
-                    writer.String("atom-list");
-                    if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+                    if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
                     {
-                        writer.Key("notList");
-                        writer.Bool(true);
+                        is_qatom_list = true;
+                        writer.Key("type");
+                        writer.String("atom-list");
+                        if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+                        {
+                            writer.Key("notList");
+                            writer.Bool(true);
+                        }
+                        writer.Key("elements");
+                        writer.StartArray();
+                        for (auto atom : atoms)
+                            writer.String(Element::toString(atom));
+                        writer.EndArray();
                     }
-                    writer.Key("elements");
-                    writer.StartArray();
-                    for (auto atom : atoms)
-                        writer.String(Element::toString(atom));
-                    writer.EndArray();
+                    else if (query_atom_type == QueryMolecule::QUERY_ATOM_SINGLE)
+                    {
+                        anum = *atoms.begin();
+                        buf.readString(Element::toString(anum), true);
+                        if (anum == ELEM_H && query_atom_properties.count(QueryMolecule::ATOM_ISOTOPE) > 0)
+                        {
+                            int isotope = query_atom_properties[QueryMolecule::ATOM_ISOTOPE]->value_min;
+                            if (isotope == DEUTERIUM)
+                            {
+                                buf.clear();
+                                buf.appendString("D", true);
+                            }
+                            else if (isotope == TRITIUM)
+                            {
+                                buf.clear();
+                                buf.appendString("T", true);
+                            }
+                        }
+                    }
+                    else
+                        QueryMolecule::getQueryAtomLabel(query_atom_type, buf);
                 }
-                else if (query_atom_type == QueryMolecule::QUERY_ATOM_SINGLE)
+                else // query_atom_type == QueryMolecule::QUERY_ATOM_UNKNOWN
                 {
-                    anum = *atoms.begin();
-                    buf.readString(Element::toString(anum), true);
-                    if (anum == ELEM_H && query_atom_properties.count(QueryMolecule::ATOM_ISOTOPE) > 0)
-                    {
-                        int isotope = query_atom_properties[QueryMolecule::ATOM_ISOTOPE]->value_min;
-                        if (isotope == DEUTERIUM)
-                        {
-                            buf.clear();
-                            buf.appendString("D", true);
-                        }
-                        else if (isotope == TRITIUM)
-                        {
-                            buf.clear();
-                            buf.appendString("T", true);
-                        }
-                    }
+                    QueryMolecule::getQueryAtomLabel(QueryMolecule::QUERY_ATOM_A, buf);
                 }
-                else
-                    QueryMolecule::getQueryAtomLabel(query_atom_type, buf);
             }
 
             if (!is_qatom_list)
