@@ -778,7 +778,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 }
                 else // query_atom_type == QueryMolecule::QUERY_ATOM_UNKNOWN
                 {
-                    QueryMolecule::getQueryAtomLabel(QueryMolecule::QUERY_ATOM_A, buf);
+                    buf.push(0); // Set label to empty string
                 }
             }
 
