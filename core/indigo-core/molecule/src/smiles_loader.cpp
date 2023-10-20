@@ -3001,8 +3001,6 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
         }
         else if (next == '#')
         {
-            if (!smarts_mode)
-                throw Error("#num notation can be used only with smarts_mode");
             scanner.skip(1);
             if (scanner.lookNext() == 'G')
             {
@@ -3129,6 +3127,8 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                 element = scanner.readUnsigned();
                 if (qatom.get() == 0)
                     throw Error("'#%d' atom representation allowed only for query molecules", element);
+                if (!smarts_mode)
+                    throw Error("#num notation can be used only with smarts_mode");
             }
         }
         // Now we check that we have here an element from the periodic table.
