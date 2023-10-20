@@ -874,6 +874,11 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 writer.EndObject();
             }
 
+            if (query_atom_properties.count(QueryMolecule::ATOM_VALENCE))
+            {
+                evalence = query_atom_properties[QueryMolecule::ATOM_VALENCE]->value_min;
+            }
+
             int subst = 0, rbc = 0;
             if (MoleculeSavers::getRingBondCountFlagValue(*_pqmol, i, rbc))
             {

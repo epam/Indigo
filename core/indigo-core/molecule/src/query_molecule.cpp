@@ -322,6 +322,7 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
         out.printf("r%d", atom->value_min);
         return;
     case ATOM_VALENCE:
+        out.printf("v%d", atom->value_min);
         return;
     default:
         throw new Error("Unrecognized constraint type %d", atom->type);
@@ -492,9 +493,13 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
             {
                 continue;
             }
-            if (atom->children[i]->type == ATOM_RADICAL || atom->children[i]->type == ATOM_VALENCE)
+            if (atom->children[i]->type == ATOM_RADICAL)
             {
                 continue;
+            }
+            if (atom->children[i]->type == ATOM_VALENCE)
+            {
+                output.printf("v%d", atom->child(i)->value_min);
             }
             if (atom->children[i]->type == OP_NOT && atom->children[i]->artificial)
             {
