@@ -177,3 +177,10 @@ test_smarts_load_save_through_ket(
 print("#1292 test smarts c:1-2:c(:c:c:c:c:1)-[#6](=[#8])-[#6;X4]-[#6]-2=[#8]")
 indigo.loadSmarts("c:1-2:c(:c:c:c:c:1)-[#6](=[#8])-[#6;X4]-[#6]-2=[#8]")
 print("smarts loaded OK")
+test_smarts_load_save_through_ket(
+    "[!#6,!#7,!#8]", '"queryProperties":{"customQuery":"!#6,!#7,!#8"}}]'
+)
+test_smarts_load_save_through_ket(
+    "[!#6!#7!#8]",
+    '"atoms":[{"type":"atom-list","notList":true,"elements":["C","N","O"],"location":[0.0,0.0,0.0]}]',
+)
