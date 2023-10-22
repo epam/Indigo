@@ -433,7 +433,7 @@ namespace indigo
         static bool _isAtomListOr(Atom* pqa, std::set<int>& list);
         static bool _isAtomOrListAndProps(Atom* pqa, std::set<int>& list, bool& neg, std::map<int, const Atom*>& properties);
         static bool _isAtomList(Atom* qa, AtomList list);
-        static bool QueryMolecule::_tryToConvertToList(Atom* p_query_atom, std::set<int>& atoms, std::map<int, const Atom*>& properties);
+        static bool _tryToConvertToList(Atom* p_query_atom, std::set<int>& atoms, std::map<int, const Atom*>& properties);
 
         Array<int> _min_h;
 
