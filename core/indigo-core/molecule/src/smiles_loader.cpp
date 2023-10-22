@@ -3398,13 +3398,13 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             if (isdigit(scanner.lookNext()))
                 val = scanner.readUnsigned();
 
-            subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_TOTAL_BOND_ORDER, val);
+            subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_VALENCE, val);
         }
         else if (next == 'w')
         {
             scanner.skip(1);
             if (qatom.get() == 0)
-                throw Error("'v' specifier is allowed only for query molecules");
+                throw Error("'w' specifier is allowed only for query molecules");
 
             int val = 1;
 

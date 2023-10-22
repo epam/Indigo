@@ -82,7 +82,6 @@ namespace indigo
             ATOM_VALENCE,
             // ATOM_DEGREE,
             ATOM_CONNECTIVITY,
-            ATOM_TOTAL_BOND_ORDER,
             ATOM_TOTAL_H,
             ATOM_IMPLICIT_H,
             ATOM_SUBSTITUENTS,

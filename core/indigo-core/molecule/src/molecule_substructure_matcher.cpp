@@ -437,13 +437,6 @@ bool MoleculeSubstructureMatcher::matchQueryAtom(QueryMolecule::Atom* query, Bas
             conn += target.asMolecule().getImplicitH_NoThrow(super_idx, 0);
         return query->valueWithinRange(conn);
     }
-    case QueryMolecule::ATOM_TOTAL_BOND_ORDER: {
-        // TODO: target.isPseudoAtom(super_idx) || target.isRSite(super_idx)
-        int conn = target.asMolecule().getAtomConnectivity_NoThrow(super_idx, -1);
-        if (conn == -1)
-            return false;
-        return query->valueWithinRange(conn);
-    }
     case QueryMolecule::ATOM_TOTAL_H: {
         if (target.isPseudoAtom(super_idx) || target.isRSite(super_idx) || target.isTemplateAtom(super_idx))
             return false;

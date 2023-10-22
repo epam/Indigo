@@ -184,3 +184,6 @@ test_smarts_load_save_through_ket(
     "[!#6!#7!#8]",
     '"atoms":[{"type":"atom-list","notList":true,"elements":["C","N","O"],"location":[0.0,0.0,0.0]}]',
 )
+smarts = "[#7]-[#6;v4]"
+expected = '"atoms":[{"label":"N","location":[0.0,0.0,0.0]},{"label":"C","location":[1.0,0.0,0.0],"explicitValence":4}'
+test_smarts_load_save_through_ket(smarts, expected)

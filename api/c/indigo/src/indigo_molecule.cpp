@@ -159,19 +159,12 @@ void IndigoQueryMolecule::parseAtomConstraint(const char* type, const char* valu
     };
 
     static Mapping mappingForKeys[] = {
-        {"atomic-number", QueryMolecule::ATOM_NUMBER, Int},
-        {"charge", QueryMolecule::ATOM_CHARGE, Int},
-        {"isotope", QueryMolecule::ATOM_ISOTOPE, Int},
-        {"radical", QueryMolecule::ATOM_RADICAL, Int},
-        {"valence", QueryMolecule::ATOM_VALENCE, Int},
-        {"connectivity", QueryMolecule::ATOM_CONNECTIVITY, Int},
-        {"total-bond-order", QueryMolecule::ATOM_TOTAL_BOND_ORDER, Int},
-        {"hydrogens", QueryMolecule::ATOM_TOTAL_H, Int},
-        {"substituents", QueryMolecule::ATOM_SUBSTITUENTS, Int},
-        {"ring", QueryMolecule::ATOM_SSSR_RINGS, Int},
-        {"smallest-ring-size", QueryMolecule::ATOM_SMALLEST_RING_SIZE, Int},
-        {"ring-bonds", QueryMolecule::ATOM_RING_BONDS, Int},
-        {"rsite-mask", QueryMolecule::ATOM_RSITE, Int},
+        {"atomic-number", QueryMolecule::ATOM_NUMBER, Int},  {"charge", QueryMolecule::ATOM_CHARGE, Int},
+        {"isotope", QueryMolecule::ATOM_ISOTOPE, Int},       {"radical", QueryMolecule::ATOM_RADICAL, Int},
+        {"valence", QueryMolecule::ATOM_VALENCE, Int},       {"connectivity", QueryMolecule::ATOM_CONNECTIVITY, Int},
+        {"hydrogens", QueryMolecule::ATOM_TOTAL_H, Int},     {"substituents", QueryMolecule::ATOM_SUBSTITUENTS, Int},
+        {"ring", QueryMolecule::ATOM_SSSR_RINGS, Int},       {"smallest-ring-size", QueryMolecule::ATOM_SMALLEST_RING_SIZE, Int},
+        {"ring-bonds", QueryMolecule::ATOM_RING_BONDS, Int}, {"rsite-mask", QueryMolecule::ATOM_RSITE, Int},
         {"highlighting", QueryMolecule::HIGHLIGHTING, Bool},
     };
 

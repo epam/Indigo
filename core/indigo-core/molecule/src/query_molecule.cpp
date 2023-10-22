@@ -312,7 +312,7 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
     case ATOM_UNSATURATION:
         out.printf("u");
         return;
-    case ATOM_TOTAL_BOND_ORDER:
+    case ATOM_VALENCE:
         out.printf("v%d", atom->value_min);
         return;
     case ATOM_SSSR_RINGS:
@@ -320,9 +320,6 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
         return;
     case ATOM_SMALLEST_RING_SIZE:
         out.printf("r%d", atom->value_min);
-        return;
-    case ATOM_VALENCE:
-        out.printf("v%d", atom->value_min);
         return;
     default:
         throw new Error("Unrecognized constraint type %d", atom->type);
@@ -497,10 +494,6 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
             {
                 continue;
             }
-            if (atom->children[i]->type == ATOM_VALENCE)
-            {
-                output.printf("v%d", atom->child(i)->value_min);
-            }
             if (atom->children[i]->type == OP_NOT && atom->children[i]->artificial)
             {
                 continue;
@@ -630,7 +623,7 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
         break;
     }
 
-    case ATOM_TOTAL_BOND_ORDER: {
+    case ATOM_VALENCE: {
         _write_num(output, 'v', atom->value_min);
         break;
     }
@@ -893,9 +886,8 @@ QueryMolecule::Atom::Atom(int type_, int value) : Node(type_)
 {
     if (type_ == ATOM_NUMBER || type_ == ATOM_CHARGE || type_ == ATOM_ISOTOPE || type_ == ATOM_RADICAL || type_ == ATOM_AROMATICITY || type_ == ATOM_VALENCE ||
         type_ == ATOM_RING_BONDS || type_ == ATOM_RING_BONDS_AS_DRAWN || type_ == ATOM_SUBSTITUENTS || type_ == ATOM_SUBSTITUENTS_AS_DRAWN ||
-        type_ == ATOM_TOTAL_H || type_ == ATOM_CONNECTIVITY || type_ == ATOM_TOTAL_BOND_ORDER || type_ == ATOM_UNSATURATION || type == ATOM_SSSR_RINGS ||
-        type == ATOM_SMALLEST_RING_SIZE || type == ATOM_RSITE || type == HIGHLIGHTING || type == ATOM_TEMPLATE_SEQID || type == ATOM_PI_BONDED ||
-        type == ATOM_IMPLICIT_H)
+        type_ == ATOM_TOTAL_H || type_ == ATOM_CONNECTIVITY || type_ == ATOM_UNSATURATION || type == ATOM_SSSR_RINGS || type == ATOM_SMALLEST_RING_SIZE ||
+        type == ATOM_RSITE || type == HIGHLIGHTING || type == ATOM_TEMPLATE_SEQID || type == ATOM_PI_BONDED || type == ATOM_IMPLICIT_H)
 
         value_min = value_max = value;
     else
