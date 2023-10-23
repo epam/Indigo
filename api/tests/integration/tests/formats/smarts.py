@@ -200,6 +200,8 @@ smarts = "[!#40!#79!#30]-[#6]-[#6]"
 expected = '"atoms":[{"type":"atom-list","notList":true,"elements":["Zr","Au","Zn"],'
 test_smarts_load_save_through_ket(smarts, expected)
 smarts = "[#40,#79,#30]-[#6]-[#6]"
-expected = '"atoms":[{"type":"atom-list","elements":["Zr","Au","Zn"],'
+expected = (
+    '"atoms":[{"type":"atom-list","elements":["Zr","Au","Zn"],'
+)
 test_smarts_load_save_through_ket(smarts, expected)
 
