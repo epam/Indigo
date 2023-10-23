@@ -2301,8 +2301,6 @@ void MolfileLoader::_readCtab3000()
                 strscan.seek(cur_pos, SEEK_SET);
                 if (fw_res != -1)
                     atom_type = _ATOM_TEMPLATE;
-                else if (label == -1)
-                    atom_type = _ATOM_PSEUDO;
                 else if (buf.size() == 2 && buf[0] == 'D')
                 {
                     label = ELEM_H;
@@ -2374,6 +2372,8 @@ void MolfileLoader::_readCtab3000()
                     atom_type = _ATOM_R;
                     label = ELEM_RSITE;
                 }
+                else if (label == -1)
+                    atom_type = _ATOM_PSEUDO;
             }
 
             strscan.skipSpace();
