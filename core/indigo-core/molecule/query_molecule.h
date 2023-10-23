@@ -428,8 +428,8 @@ namespace indigo
         void _removeBonds(const Array<int>& indices) override;
 
         using AtomList = std::pair<bool, std::set<int>>;
-        static bool _isAtomListOr(const Atom* pqa, std::set<int>& list);
-        static bool _isAtomOrListAndProps(const Atom* pqa, std::set<int>& list, bool& neg, std::map<int, const Atom*>& properties);
+        static bool _isAtomListOr(const Atom* pqa, std::vector<int>& list);
+        static bool _isAtomOrListAndProps(const Atom* pqa, std::vector<int>& list, bool& neg, std::map<int, const Atom*>& properties);
         static bool _isAtomList(const Atom* qa, AtomList list);
 
         Array<int> _min_h;
