@@ -332,30 +332,31 @@ namespace indigo
                 if (objectId >= 0)
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
             }
-
-            // Let's try a simple molecule
-            print_js("try as molecule");
-            objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
-            if (objectId >= 0)
+            bool query = false;
+            auto i = options.find("query");
+            if (i != options.end() and i->second == "true")
             {
-                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+                query = true;
             }
-            exceptionMessages.emplace_back(indigoGetLastError());
+            if (!query)
+            {
+                // Let's try a simple molecule
+                print_js("try as molecule");
+                objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
+                if (objectId >= 0)
+                {
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+                }
+                exceptionMessages.emplace_back(indigoGetLastError());
 
-            // Let's try reaction
-            print_js("try as reaction");
-            objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
-            if (objectId >= 0)
-            {
-                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
-            }
-            exceptionMessages.emplace_back(indigoGetLastError());
-            // Let's try query reaction
-            print_js("try as query reaction");
-            objectId = indigoLoadQueryReactionFromBuffer(data.c_str(), data.size());
-            if (objectId >= 0)
-            {
-                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReactionQuery);
+                // Let's try reaction
+                print_js("try as reaction");
+                objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
+                if (objectId >= 0)
+                {
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
+                }
+                exceptionMessages.emplace_back(indigoGetLastError());
             }
             exceptionMessages.emplace_back(indigoGetLastError());
             // Let's try query molecule
@@ -366,6 +367,13 @@ namespace indigo
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
             }
             exceptionMessages.emplace_back(indigoGetLastError());
+            // Let's try query reaction
+            print_js("try as query reaction");
+            objectId = indigoLoadQueryReactionFromBuffer(data.c_str(), data.size());
+            if (objectId >= 0)
+            {
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReactionQuery);
+            }
         }
         // It's not anything we can load, let's throw an exception
         std::stringstream ss;
@@ -394,7 +402,12 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        IndigoKetcherObject iko = loadMoleculeOrReaction(data, options);
+        std::map<std::string, std::string> options_copy = options;
+        if (outputFormat.find("smarts") != std::string::npos)
+        {
+            options_copy["query"] = "true";
+        }
+        IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy);
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
 
@@ -420,7 +433,12 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        std::map<std::string, std::string> options_copy = options;
+        if (outputFormat.find("smarts") != std::string::npos)
+        {
+            options_copy["query"] = "true";
+        }
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options_copy);
         _checkResult(indigoLayout(iko.id()));
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }

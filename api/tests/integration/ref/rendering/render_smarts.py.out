@@ -680,7 +680,7 @@ smarts/0227.png rendering status: OK
 228: [c,C]
 
 smarts/0228.png rendering status: OK
-229: [#0]
+229: [!#1;#0]
 
 smarts/0229.png rendering status: OK
 230: [OX2,OX1-][OX2,OX1-]

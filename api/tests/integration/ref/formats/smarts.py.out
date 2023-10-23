@@ -61,6 +61,8 @@ smarts loaded OK
 [!#6!#7!#8] is ok. smarts_in==smarts_out
 [!#6!#7!#8] is ok. json_in==json_out
 [!#6!#7!#8] is ok. expected string found in json
+#1355 Error appeared at save query molecule with RSite as smarts
+Ok expected smarts generated
 [#6,#7;a]:[o] is ok. smarts_in==smarts_out
 [#6,#7;a]:[o] is ok. json_in==json_out
 [#6,#7;a]:[o] is ok. expected string found in json

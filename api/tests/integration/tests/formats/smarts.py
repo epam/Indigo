@@ -187,6 +187,18 @@ test_smarts_load_save_through_ket(
     "[!#6!#7!#8]",
     '"atoms":[{"type":"atom-list","notList":true,"elements":["C","N","O"],"location":[0.0,0.0,0.0]}]',
 )
+print("#1355 Error appeared at save query molecule with RSite as smarts")
+m = indigo.loadQueryMolecule(
+    "S=CC(F)CCCCC[C@@](CCO)/C=C/[C@@](N)CCC[C]C([13C]CC([C+2]CC(CC%91)CC(C)CCC)CCC)CC%92.[*:2]%92.[*:1]%91 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_R2;_R1$,rb:32:*,u:3|"
+)
+smarts = m.smarts()
+expected = "[#16]=[#6]-[#6](-[#6]-[#6]-[#6]-[#6]-[#6]-[#6@](-[#6]=[#6]-[#6@](-[#6]-[#6]-[#6]-[#6]-[#6](-[#6]-[#6]%91)-[13;#6]-[#6]-[#6](-[#6]-[#6]-[#6])-[#6;+2]-[#6]-[#6](-[#6]-[#6](-[#6]-[#6]-[#6])-[#6;x0])-[#6]-[#6]%92)-[#7])-[#6]-[#6]-[#8])-[#9;$([*,#1]=,#,:[*,#1])].[*:2]-%91.[*:1]-%92"
+if smarts == expected:
+    print("Ok expected smarts generated")
+else:
+    print(
+        "Fail. Expected smarts is\n%s\nbut generated\n%s" % (expected, smarts)
+    )
 smarts = "[#6,#7;a]:[o]"
 expected = '"atoms":[{"type":"atom-list","elements":["C","N"],"location":[0.0,0.0,0.0],"queryProperties":{"aromaticity":"aromatic"}}'
 test_smarts_load_save_through_ket(smarts, expected)
