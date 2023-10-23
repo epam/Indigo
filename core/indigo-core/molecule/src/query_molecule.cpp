@@ -2424,7 +2424,7 @@ bool QueryMolecule::_tryToConvertToList(Atom* p_query_atom, std::set<int>& atoms
     atoms.insert(atoms_list.begin(), atoms_list.end());
     for (auto& prop : atoms_properties)
     {
-        properties[prop->type] = prop.release();
+        properties.emplace(std::make_pair<int, const Atom*>(prop->type, prop.release()));
     }
     return true;
 }
@@ -2440,7 +2440,7 @@ bool QueryMolecule::_isAtomListOr(Atom* p_query_atom, std::set<int>& list)
     for (auto i = 0; i < p_query_atom->children.size(); i++)
     {
         Atom* p_query_atom_child = p_query_atom->child(i);
-        if (p_query_atom_child->type == ATOM_NUMBER && p_query_atom_child->value_max == p_query_atom_child->value_max)
+        if (p_query_atom_child->type == ATOM_NUMBER && p_query_atom_child->value_min == p_query_atom_child->value_max)
         {
             collected.insert(p_query_atom_child->value_min);
         }
