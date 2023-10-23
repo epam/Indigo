@@ -33,7 +33,7 @@ SMILES saver: atom list can be used only with smarts_mode
 [c,n,o]c1nc2ccccc2n1
 SMILES saver: undefined atom number
 C1=CC=CC2=C1N=C(N2)[*;#6,#7,#8]
-SMILES saver: atom list can be used only with smarts_mode
+SMILES saver: undefined atom number
 C1=CC=CC2=C1N=C(N2)[*;C,N,O]
 SMILES saver: atom list can be used only with smarts_mode
 C1=CC=CC2=C1N=C(N2)[*;c,n,o]

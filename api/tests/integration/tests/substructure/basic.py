@@ -64,7 +64,7 @@ print("***** Check specific SMILES/SMARTS behaviour *****")
 indigo = Indigo()
 queries_sm = [
     "[#6,#7,#8]c1nc2ccccc2n1",
-    "C1=CC=CC2=C1N=C(N2)[*;#6,#7,#8]",
+    "[#6]1=[#6][#6]=[#6][#6]2=[#6]1[#7]=[#6]([#7]2)[#6,#7,#8]",
     "c1cccc2c1nc(n2)C",
     "C1=CC=CC2=C1N=C(N2)C",
     "[$([#6,#7,#8]c1nc2ccccc2n1)]",

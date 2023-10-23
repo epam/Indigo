@@ -448,11 +448,7 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
     switch (atom->type)
     {
     case OP_NOT: {
-        if (atom->artificial) // Skip atoms added by loader (!#1)
-        {
-            break;
-        }
-        else if (isNotAtom(*atom, ELEM_H))
+        if (isNotAtom(*atom, ELEM_H))
         {
             output.printf("*");
             break;
@@ -493,10 +489,6 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
                 continue;
             }
             if (atom->children[i]->type == ATOM_RADICAL || atom->children[i]->type == ATOM_VALENCE)
-            {
-                continue;
-            }
-            if (atom->children[i]->type == OP_NOT && atom->children[i]->artificial)
             {
                 continue;
             }
@@ -870,7 +862,7 @@ bool QueryMolecule::isSaturatedAtom(int idx)
     throw Error("not implemented");
 }
 
-QueryMolecule::Node::Node(int type_) : artificial(false)
+QueryMolecule::Node::Node(int type_)
 {
     type = (OpType)type_;
 }
@@ -1867,7 +1859,6 @@ void QueryMolecule::Atom::copy(const Atom& other)
     type = other.type;
     value_max = other.value_max;
     value_min = other.value_min;
-    artificial = other.artificial;
 
     fragment.reset(nullptr);
     if (other.fragment.get() != 0)
@@ -2412,8 +2403,6 @@ bool QueryMolecule::_isAtomOrListAndProps(const Atom* p_query_atom, std::set<int
     for (auto i = 0; i < p_query_atom->children.size(); i++)
     {
         Atom* p_query_atom_child = const_cast<Atom*>(p_query_atom)->child(i);
-        if (p_query_atom_child->type == OP_NOT && p_query_atom_child->artificial)
-            continue; // !H added by SmilesLoader::_forbidHydrogens
         bool is_neg = false;
         if (_isAtomOrListAndProps(p_query_atom_child, collected, is_neg, collected_properties))
         {
