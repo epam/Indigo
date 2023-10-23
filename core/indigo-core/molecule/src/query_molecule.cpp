@@ -678,6 +678,9 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
         }
         break;
     }
+    case ATOM_RSITE:
+        output.printf("*:%d", atom->value_min);
+        break;
 
     default: {
         throw Error("Unknown atom attribute %d", atom->type);
