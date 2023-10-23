@@ -832,11 +832,15 @@ def convert():
             data["options"],
         )
         indigo = indigo_init(data["options"])
+        query = False
+        if "smarts" in data["output_format"]:
+            query = True
         md = load_moldata(
             data["struct"],
             mime_type=data["input_format"],
             options=data["options"],
             indigo=indigo,
+            query=query,
         )
         return get_response(
             md,
@@ -943,11 +947,15 @@ def layout():
         data["options"],
     )
     indigo = indigo_init(data["options"])
+    query = False
+    if "smarts" in data["output_format"]:
+        query = True
     md = load_moldata(
         data["struct"],
         mime_type=data["input_format"],
         options=data["options"],
         indigo=indigo,
+        query=query,
     )
     md.struct.layout()
     return get_response(

@@ -1210,7 +1210,7 @@ class IndigoObject:
         for target_fragment in self.iterateComponents():
             target_fragment = target_fragment.clone()
             for salt in SALTS:
-                query_salt = self.session.loadQueryMolecule(salt)
+                query_salt = self.session.loadSmarts(salt)
                 matcher = self.session.substructureMatcher(target_fragment)
                 if matcher.match(query_salt):
                     return True
