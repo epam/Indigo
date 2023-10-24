@@ -2472,7 +2472,7 @@ bool QueryMolecule::_isAtomOrListAndProps(Atom* p_query_atom, std::vector<int>& 
         }
         else if (!is_neg && p_query_atom_child->type > ATOM_NUMBER && p_query_atom_child->type <= ATOM_CHIRALITY) // atom property, no negative props here
         {
-            properties.emplace(p_query_atom_child->type, p_query_atom_child->clone());
+            properties[p_query_atom_child->type] = std::unique_ptr<Atom>(p_query_atom_child->clone());
             return true;
         }
         else
