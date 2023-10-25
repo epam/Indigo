@@ -74,3 +74,9 @@ Ok expected smarts generated
 [#6,#7;a]:[o] is ok. expected string found in json
 [c,n,o]:[o] is ok. json_in==json_out
 [c,n,o]:[o] is ok. expected string found in json
+[c,C,c] is ok. json_in==json_out
+[c,C,c] is ok. expected string found in json
+[C,c] is ok. json_in==json_out
+[C,c] is ok. expected string found in json
+[C,c,n,o] is ok. json_in==json_out
+[C,c,n,o] is ok. expected string found in json
