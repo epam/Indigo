@@ -413,7 +413,7 @@ namespace indigo
 
         bool standardize(const StandardizeOptions& options);
 
-        static int parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<int>& list, std::map<int, const Atom*>& properties);
+        static int parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<int>& list, std::map<int, std::unique_ptr<Atom>>& properties);
 
     protected:
         void _getAtomDescription(Atom* atom, Output& out, int depth);
@@ -428,9 +428,10 @@ namespace indigo
         void _removeBonds(const Array<int>& indices) override;
 
         using AtomList = std::pair<bool, std::set<int>>;
-        static bool _isAtomListOr(const Atom* pqa, std::vector<int>& list);
-        static bool _isAtomOrListAndProps(const Atom* pqa, std::vector<int>& list, bool& neg, std::map<int, const Atom*>& properties);
-        static bool _isAtomList(const Atom* qa, AtomList list);
+        static bool _isAtomListOr(Atom* pqa, std::vector<int>& list);
+        static bool _isAtomOrListAndProps(Atom* pqa, std::vector<int>& list, bool& neg, std::map<int, std::unique_ptr<Atom>>& properties);
+        static bool _isAtomList(Atom* qa, AtomList list);
+        static bool _tryToConvertToList(Atom* p_query_atom, std::vector<int>& atoms, std::map<int, std::unique_ptr<Atom>>& properties);
 
         Array<int> _min_h;
 

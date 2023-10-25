@@ -685,7 +685,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         QS_DEF(Array<int>, rg_list);
         int radical = 0;
         int query_atom_type = QueryMolecule::QUERY_ATOM_UNKNOWN;
-        std::map<int, const QueryMolecule::Atom*> query_atom_properties;
+        std::map<int, std::unique_ptr<QueryMolecule::Atom>> query_atom_properties;
         bool is_rSite = mol.isRSite(i);
         if (is_rSite)
         {

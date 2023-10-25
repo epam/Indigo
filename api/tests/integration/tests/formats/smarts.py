@@ -28,19 +28,22 @@ def test_smarts_load_save(smarts_in):
         print("smarts_out=%s" % smarts_out)
 
 
-def test_smarts_load_save_through_ket(smarts_in, expected_str):
+def test_smarts_load_save_through_ket(
+    smarts_in, expected_str, check_smarts_eq=True
+):
     m1 = indigo.loadSmarts(smarts_in)
     json1 = m1.json()
     m2 = indigo.loadQueryMolecule(json1)
     smarts_out = m2.smarts()
     m3 = indigo.loadSmarts(smarts_out)
     json2 = m3.json()
-    if smarts_in == smarts_out:
-        print("%s is ok. smarts_in==smarts_out" % smarts_in)
-    else:
-        print("smarts_in!=smarts_out")
-        print(" smarts_in=%s" % smarts_in)
-        print("smarts_out=%s" % smarts_out)
+    if check_smarts_eq:
+        if smarts_in == smarts_out:
+            print("%s is ok. smarts_in==smarts_out" % smarts_in)
+        else:
+            print("smarts_in!=smarts_out")
+            print(" smarts_in=%s" % smarts_in)
+            print("smarts_out=%s" % smarts_out)
     if json1 == json2:
         print("%s is ok. json_in==json_out" % smarts_in)
     else:
@@ -204,3 +207,18 @@ test_smarts_load_save_through_ket(smarts, expected)
 smarts = "[#40,#79,#30]-[#6]-[#6]"
 expected = '"atoms":[{"type":"atom-list","elements":["Zr","Au","Zn"],'
 test_smarts_load_save_through_ket(smarts, expected)
+smarts = "[#6,#7;a]:[o]"
+expected = '"atoms":[{"type":"atom-list","elements":["C","N"],"location":[0.0,0.0,0.0],"queryProperties":{"aromaticity":"aromatic"}}'
+test_smarts_load_save_through_ket(smarts, expected)
+smarts = "[c,n,o]:[o]"
+expected = '"atoms":[{"type":"atom-list","elements":["C","N","O"],"location":[0.0,0.0,0.0],"queryProperties":{"aromaticity":"aromatic"}}'
+test_smarts_load_save_through_ket(smarts, expected, False)
+smarts = "[c,C,c]"
+expected = '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"c,C,c"}}]'
+test_smarts_load_save_through_ket(smarts, expected, False)
+smarts = "[C,c]"
+expected = '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C,c"}}]'
+test_smarts_load_save_through_ket(smarts, expected, False)
+smarts = "[C,c,n,o]"
+expected = '"atoms":[{"label":"","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C,c,n,o"}}]'
+test_smarts_load_save_through_ket(smarts, expected, False)
