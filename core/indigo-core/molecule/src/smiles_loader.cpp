@@ -2442,8 +2442,8 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique
         std::unique_ptr<QueryMolecule::Bond> subqbond;
         int i;
 
-        if (qbond == nullptr)
-            throw Error("';' is allowed only within queries");
+        if (qbond == nullptr || !smarts_mode)
+            throw Error("';' is allowed only with smarts_mode queries");
 
         substring.clear();
         for (i = 0; i <= bond_str.size(); i++)
@@ -2466,8 +2466,8 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique
         std::unique_ptr<QueryMolecule::Bond> subqbond;
         int i;
 
-        if (qbond == nullptr)
-            throw Error("',' is allowed only within queries");
+        if (qbond == nullptr || !smarts_mode)
+            throw Error("',' is allowed only with smarts_mode queries");
 
         substring.clear();
         for (i = 0; i <= bond_str.size(); i++)
@@ -2493,8 +2493,8 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique
         std::unique_ptr<QueryMolecule::Bond> subqbond;
         int i;
 
-        if (qbond == nullptr)
-            throw Error("'&' is allowed only within queries");
+        if (qbond == nullptr || !smarts_mode)
+            throw Error("'&' is allowed only with smarts_mode queries");
 
         substring.clear();
         for (i = 0; i <= bond_str.size(); i++)
@@ -2531,8 +2531,8 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         {
             scanner.skip(1);
             neg = !neg;
-            if (qbond.get() == 0)
-                throw Error("'!' is allowed only within queries");
+            if (qbond.get() == 0 || !smarts_mode)
+                throw Error("'!' is allowed only with smarts_mode queries");
             continue;
         }
         if (next == '-')
@@ -2693,8 +2693,8 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
         std::unique_ptr<QueryMolecule::Atom> subqatom;
         int i, k = 0;
 
-        if (qatom.get() == 0)
-            throw Error("';' is allowed only for query molecules");
+        if (qatom.get() == 0 || !smarts_mode)
+            throw Error("';' is allowed only for query molecules with smarts_mode");
 
         substring.clear();
         for (i = 0; i <= atom_str_copy.size(); i++)
@@ -2719,8 +2719,8 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
         std::unique_ptr<QueryMolecule::Atom> subqatom;
         int i, k = 0;
 
-        if (qatom.get() == 0)
-            throw Error("',' is allowed only for query molecules");
+        if (qatom.get() == 0 || !smarts_mode)
+            throw Error("',' is allowed only for query molecules with smarts_mode");
 
         substring.clear();
         for (i = 0; i <= atom_str.size(); i++)
@@ -2748,8 +2748,8 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
         std::unique_ptr<QueryMolecule::Atom> subqatom;
         int i, k = 0;
 
-        if (qatom.get() == 0)
-            throw Error("'&' is allowed only for query molecules");
+        if (qatom.get() == 0 || !smarts_mode)
+            throw Error("'&' is allowed only for query molecules with smarts_mode");
 
         substring.clear();
         for (i = 0; i <= atom_str.size(); i++)
@@ -2799,8 +2799,8 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
 
         if (next == '!')
         {
-            if (qatom.get() == 0)
-                throw Error("'!' is allowed only within queries");
+            if (qatom.get() == 0 || !smarts_mode)
+                throw Error("'!' is allowed only with smarts_mode queries");
 
             scanner.skip(1);
             neg = !neg;
@@ -2812,6 +2812,8 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             scanner.skip(1);
             if (scanner.readChar() != '(')
                 throw Error("'$' must be followed by '('");
+            if (!smarts_mode)
+                throw Error("$( notation can be used only with smarts_mode");
 
             QS_DEF(Array<char>, subexp);
 
