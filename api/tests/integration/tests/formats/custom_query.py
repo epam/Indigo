@@ -45,3 +45,8 @@ test_smarts_to_ket(
 )
 print("**** #1331 wrong smarts for ring bond count as drawn ****")
 test_ket_to_smarts("ket_with_rb_as_drawn.ket", "[#6](-[#6])(-[#6;x0])-[#6]")
+
+print("**** #1337 wrong smarts for ring bond count as drawn ****")
+fname = "ket_with_custom_query_with_list.ket"
+expected = "[#6]1-[#6]=[Cl,Br,I,Na,O]-[#6]=[#6]-[#6]=1"
+test_ket_to_smarts(fname, expected)
