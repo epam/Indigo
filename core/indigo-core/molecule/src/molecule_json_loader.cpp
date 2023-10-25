@@ -178,7 +178,7 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
     {
         if (valence == 15)
             valence = 0;
-        atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_VALENCE, valence)));
+        atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_BOND_ORDER, valence)));
     }
 
     if (isotope != 0)
