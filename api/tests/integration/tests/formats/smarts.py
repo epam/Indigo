@@ -215,13 +215,16 @@ expected = '"atoms":[{"type":"atom-list","elements":["C","N","O"],"location":[0.
 test_smarts_load_save_through_ket(smarts, expected, False)
 smarts = "[c,C,c]"
 expected = '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"c,C,c"}}]'
-test_smarts_load_save_through_ket(smarts, expected, False)
+test_smarts_load_save_through_ket(smarts, expected)
 smarts = "[C,c]"
 expected = '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C,c"}}]'
-test_smarts_load_save_through_ket(smarts, expected, False)
+test_smarts_load_save_through_ket(smarts, expected)
 smarts = "[C,c,n,o]"
 expected = '"atoms":[{"label":"","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C,c,n,o"}}]'
-test_smarts_load_save_through_ket(smarts, expected, False)
+test_smarts_load_save_through_ket(smarts, expected)
+smarts = "[#7;v4]-[#6]"
+expected = '"atoms":[{"label":"N","location":[0.0,0.0,0.0],"explicitValence":4},{"label":"C","location":[1.0,0.0,0.0]}]'
+test_smarts_load_save_through_ket(smarts, expected)
 print(" *** SMARTS specific ***")
 smarts_list = [
     "[C,N]",

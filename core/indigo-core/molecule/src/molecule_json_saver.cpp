@@ -930,7 +930,13 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             writer.Int(charge);
         }
 
-        if (evalence > 0)
+        int total_bond_count = 0;
+        if (_pqmol && _pqmol->getAtom(i).sureValue(QueryMolecule::ATOM_TOTAL_BOND_ORDER, total_bond_count))
+        {
+            writer.Key("explicitValence");
+            writer.Int(total_bond_count);
+        }
+        else if (evalence > 0)
         {
             writer.Key("explicitValence");
             writer.Int(evalence);
