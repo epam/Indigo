@@ -3484,9 +3484,13 @@ void MolfileLoader::_readSGroup3000(const char* str)
                     break;
                 if (sup != 0)
                     sup->sa_natreplace.push(c);
+                if (dsg != 0)
+                    dsg->sa_natreplace.push(c);
             }
             if (sup != 0)
                 sup->sa_natreplace.push(0);
+            if (dsg != 0)
+                dsg->sa_natreplace.push(0);
         }
         else if (strcmp(entity.ptr(), "ESTATE") == 0)
         {

@@ -185,7 +185,7 @@ namespace indigo
 
         static std::string monomerKETClass(const std::string& class_name);
         static std::string monomerHELMClass(const std::string& class_name);
-        static std::string naturalAnalog(const TGroup& tg);
+        static std::string naturalAnalog(const std::string& natreplace);
 
         bool add_stereo_desc;
         bool pretty_json;
@@ -203,9 +203,11 @@ namespace indigo
         void saveFragment(BaseMolecule& fragment, JsonWriter& writer);
         void saveMonomerTemplate(TGroup& tg, JsonWriter& writer);
         void saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writer);
+        void saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter& writer);
+
         void saveSGroups(BaseMolecule& mol, JsonWriter& writer);
         void saveSGroup(SGroup& sgroup, JsonWriter& writer);
-        void saveSuperAtomAsTemplate(BaseMolecule& mol, Superatom& sa, JsonWriter& writer);
+        void saveSuperAtomAsTemplate(BaseMolecule& mol, int sa_index, int template_number, JsonWriter& writer);
 
         void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
         void saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWriter& writer);

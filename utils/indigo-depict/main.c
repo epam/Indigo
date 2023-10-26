@@ -900,7 +900,6 @@ int main(int argc, char* argv[])
 
     if (p.mode == MODE_SINGLE_MOLECULE)
     {
-
         if (p.id != NULL)
             ERROR("on single input, setting '-id' is not allowed\n");
 

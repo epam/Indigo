@@ -30,8 +30,9 @@ namespace indigo
         {"A", "Ala"}, {"R", "Arg"}, {"N", "Asn"}, {"D", "Asp"}, {"C", "Cys"}, {"Q", "Gln"}, {"E", "Glu"}, {"G", "Gly"}, {"H", "His"}, {"I", "Ile"},
         {"L", "Leu"}, {"K", "Lys"}, {"M", "Met"}, {"F", "Phe"}, {"P", "Pro"}, {"S", "Ser"}, {"T", "Thr"}, {"W", "Trp"}, {"Y", "Tyr"}, {"V", "Val"}};
 
-    const std::unordered_map<std::string, std::string> kNucleicToAlias = {{"Ade", "A"}, {"Cyt", "C"},  {"Gua", "G"},  {"Ura", "U"}, {"Thy", "T"},
-                                                                          {"Rib", "r"}, {"dRib", "d"}, {"mRib", "m"}, {"Pi", "p"}};
+    const std::unordered_map<std::string, std::string> kNucleicToAlias = {{"Ade", "A"},   {"Cyt", "C"},   {"Gua", "G"},   {"Ura", "U"},   {"Thy", "T"},
+                                                                          {"dAde", "dA"}, {"dCyt", "dC"}, {"dGua", "dG"}, {"dUra", "dU"}, {"dThy", "dT"},
+                                                                          {"Rib", "r"},   {"dRib", "d"},  {"mRib", "m"},  {"Pi", "p"}};
 
     const std::unordered_map<std::string, std::string> kAliasToNucleic = {{"A", "Ade"}, {"C", "Cyt"},  {"G", "Gua"},  {"U", "Ura"}, {"T", "Thy"},
                                                                           {"r", "Rib"}, {"d", "dRib"}, {"m", "mRib"}, {"p", "Pi"}};
@@ -88,8 +89,9 @@ namespace indigo
                 for (auto it = res.begin(); it < res.end(); ++it)
                     *it = it > res.begin() ? std::tolower(*it) : std::toupper(*it);
         }
+        // do not add prefix
         auto prefix = classToPrefix(monomer_class);
-        if (prefix.size())
+        if (prefix.size() && res.size() <= kStdMonomerDef)
             res = prefix + res;
         return res;
     }
