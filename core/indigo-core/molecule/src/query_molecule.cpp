@@ -528,9 +528,9 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
             // SMARTS and ket save chirality in ATOM_CHIRALITY for query molecule
             break;
         default:
-            if (chirality == 1)
+            if (chirality == CHIRALITY_ANTICLOCKWISE)
                 output.printf("@");
-            else if (chirality == 2)
+            else if (chirality == CHIRALITY_CLOCKWISE)
                 output.printf("@@");
             break;
         }
