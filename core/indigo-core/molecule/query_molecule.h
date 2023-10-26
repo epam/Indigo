@@ -334,8 +334,9 @@ namespace indigo
 
         static std::string getSmartsBondStr(QueryMolecule::Bond* bond);
         static void writeSmartsBond(Output& output, QueryMolecule::Bond* bond, bool has_or_parent);
-        static std::string getSmartsAtomStr(QueryMolecule::Atom* atom);
-        static void writeSmartsAtom(Output& output, Atom* atom, int aam, int chirality, int depth, bool has_or_parent, bool has_not_parent);
+        static std::string getSmartsAtomStr(QueryMolecule::Atom* atom, int original_format);
+        static void writeSmartsAtom(Output& output, Atom* atom, int aam, int chirality, int depth, bool has_or_parent, bool has_not_parent,
+                                    int original_format);
 
         enum QUERY_ATOM
         {

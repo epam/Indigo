@@ -601,7 +601,7 @@ void SmilesSaver::_saveMolecule()
             else if (_qmol != 0)
             {
                 int aam = _bmol->reaction_atom_mapping[v_idx];
-                QueryMolecule::writeSmartsAtom(_output, &_qmol->getAtom(v_idx), aam, _atoms[v_idx].chirality, 0, false, false);
+                QueryMolecule::writeSmartsAtom(_output, &_qmol->getAtom(v_idx), aam, _atoms[v_idx].chirality, 0, false, false, _qmol->original_format);
             }
             else
                 throw Error("SMARTS format available for query only!");

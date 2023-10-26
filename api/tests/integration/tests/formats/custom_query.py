@@ -50,3 +50,12 @@ print("**** #1337 wrong smarts for ring bond count as drawn ****")
 fname = "ket_with_custom_query_with_list.ket"
 expected = "[#6]1-[#6]=[Cl,Br,I,Na,O]-[#6]=[#6]-[#6]=1"
 test_ket_to_smarts(fname, expected)
+
+print(
+    "**** #1371 Chirality symbol is added to the SMARTS when "
+    "'single up/down' or 'double cis/trans' bond type is set up"
+    " wrong smarts for ring bond count as drawn ****"
+)
+fname = "ket_with_bond_stereo_ether.ket"
+expected = "[#6]1-[#6]=[#6]-[#6]=[#6]\[#6]=1"
+test_ket_to_smarts(fname, expected)
