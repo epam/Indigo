@@ -183,8 +183,8 @@ namespace indigo
         static std::string monomerId(const TGroup& tg);
         static std::string monomerAlias(const TGroup& tg);
 
-        static std::string monomerKETClass(const TGroup& tg);
-        static std::string monomerHELMClass(const TGroup& tg);
+        static std::string monomerKETClass(const std::string& class_name);
+        static std::string monomerHELMClass(const std::string& class_name);
         static std::string naturalAnalog(const TGroup& tg);
 
         bool add_stereo_desc;
@@ -193,7 +193,9 @@ namespace indigo
     protected:
         void saveRoot(BaseMolecule& mol, JsonWriter& writer);
         void saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer);
+        int getMonomerNumber(int mon_idx);
         void collectTemplates(BaseMolecule& mol);
+        void collectSCSRSuperAtoms(BaseMolecule& mol);
 
         void saveAtoms(BaseMolecule& mol, JsonWriter& writer);
         void saveBonds(BaseMolecule& mol, JsonWriter& writer);
@@ -203,6 +205,8 @@ namespace indigo
         void saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writer);
         void saveSGroups(BaseMolecule& mol, JsonWriter& writer);
         void saveSGroup(SGroup& sgroup, JsonWriter& writer);
+        void saveSuperAtomAsTemplate(BaseMolecule& mol, Superatom& sa, JsonWriter& writer);
+
         void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
         void saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
         void saveHighlights(BaseMolecule& mol, JsonWriter& writer);
@@ -222,6 +226,9 @@ namespace indigo
         std::list<std::unordered_set<int>> _s_neighbors;
         std::unordered_map<std::string, std::reference_wrapper<TGroup>> _templates;
         std::unordered_map<std::pair<int, int>, std::string> _monomer_connections;
+        std::unordered_map<int, int> _scsr_atom_superatoms;
+        std::map<int, int> _monomers_enum;
+        std::map<int, int> _scsr_superatoms;
 
     private:
         MoleculeJsonSaver(const MoleculeJsonSaver&); // no implicit copy

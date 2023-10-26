@@ -4,9 +4,11 @@
 SgroupDifferent.ket:SUCCEED
 atropisomer.ket:SUCCEED
 chem.ket:SUCCEED
+conjugate.ket:SUCCEED
 cysteine.ket:SUCCEED
 dcysteine.ket:SUCCEED
 dthymine.ket:SUCCEED
 non_atrop.ket:SUCCEED
+rna_mod.ket:SUCCEED
 suplabel.ket:SUCCEED
 thymine.ket:SUCCEED

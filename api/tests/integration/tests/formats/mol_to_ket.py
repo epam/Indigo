@@ -35,6 +35,8 @@ files = [
     "thymine",
     "dthymine",
     "chem",
+    "rna_mod",
+    "conjugate"
 ]
 
 files.sort()

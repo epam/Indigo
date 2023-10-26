@@ -1,15 +1,16 @@
 {
     "root": {
         "nodes": [],
+        "connections": [],
         "templates": [
             {
-                "$ref": "monomerTemplate-cys_3"
+                "$ref": "monomerTemplate-cys_2"
             }
         ]
     },
-    "monomerTemplate-cys_3": {
+    "monomerTemplate-cys_2": {
         "type": "monomerTemplate",
-        "id": "cys_3",
+        "id": "cys_2",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "C",
