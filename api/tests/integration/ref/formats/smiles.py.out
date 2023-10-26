@@ -27,17 +27,17 @@ CCSc1nc2OC=Nc3c(-c2nn1)cccc3
 CCSc1nc2OC=Nc3c(-c2nn1)cccc3
 *** Atom lists ***
 [#6,#7,#8]c1nc2ccccc2n1
-SMILES saver: atom list can be used only with smarts_mode
+%s loaded as SMARTS
 [C,N,O]c1nc2ccccc2n1
-SMILES saver: atom list can be used only with smarts_mode
+%s loaded as SMARTS
 [c,n,o]c1nc2ccccc2n1
-SMILES saver: undefined atom number
+%s loaded as SMARTS
 C1=CC=CC2=C1N=C(N2)[*;#6,#7,#8]
-SMILES saver: undefined atom number
+%s loaded as SMARTS
 C1=CC=CC2=C1N=C(N2)[*;C,N,O]
-SMILES saver: atom list can be used only with smarts_mode
+%s loaded as SMARTS
 C1=CC=CC2=C1N=C(N2)[*;c,n,o]
-SMILES saver: undefined atom number
+%s loaded as SMARTS
 *** S-Groups ***
 default smiles:
 CCCC |Sg:gen:0,1,2:|

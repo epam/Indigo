@@ -86,3 +86,13 @@ Ok expected smarts generated
 [#7;v4]-[#6] is ok. smarts_in==smarts_out
 [#7;v4]-[#6] is ok. json_in==json_out
 [#7;v4]-[#6] is ok. expected string found in json
+ *** SMARTS specific ***
+Smarts [C,N] loaded as smarts - OK.
+Smarts [C;N] loaded as smarts - OK.
+Smarts [C&N] loaded as smarts - OK.
+Smarts [!C] loaded as smarts - OK.
+Smarts [$(C)] loaded as smarts - OK.
+Smarts [C]!-[C] loaded as smarts - OK.
+Smarts [C]-,=[C] loaded as smarts - OK.
+Smarts [C]-;=[C] loaded as smarts - OK.
+Smarts [C]-&=[C] loaded as smarts - OK.

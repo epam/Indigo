@@ -58,7 +58,7 @@ TEST_F(IndigoCoreSmartsTest, NotSharpX)
     EXPECT_TRUE(substructureMatch("[H]", "[!#X]"));
     EXPECT_TRUE(substructureMatch("C", "[!#X]"));
     EXPECT_FALSE(substructureMatch("O=O", "[!#X]"));
-    EXPECT_FALSE(substructureMatch("c(O)1c(O)c(O)c(O)c(O)c1O", "a[!#X]"));
+    EXPECT_TRUE(substructureMatch("c(O)1c(O)c(O)c(O)c(O)c1O", "a[!#X]"));
 }
 
 TEST_F(IndigoCoreSmartsTest, SharpN)
