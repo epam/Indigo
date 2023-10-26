@@ -80,3 +80,13 @@ Ok expected smarts generated
 [C,c] is ok. expected string found in json
 [C,c,n,o] is ok. json_in==json_out
 [C,c,n,o] is ok. expected string found in json
+ *** SMARTS specific ***
+Smarts [C,N] loaded as smarts - OK.
+Smarts [C;N] loaded as smarts - OK.
+Smarts [C&N] loaded as smarts - OK.
+Smarts [!C] loaded as smarts - OK.
+Smarts [$(C)] loaded as smarts - OK.
+Smarts [C]!-[C] loaded as smarts - OK.
+Smarts [C]-,=[C] loaded as smarts - OK.
+Smarts [C]-;=[C] loaded as smarts - OK.
+Smarts [C]-&=[C] loaded as smarts - OK.

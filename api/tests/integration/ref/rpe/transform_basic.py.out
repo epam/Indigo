@@ -70,8 +70,8 @@ Method: loadReactionSmarts
   Transformed: C1(N=C(C)[N-]C=1C)OS([O-])(=O)=O.[H+]
 Method: loadQueryReaction
   Original:    C1(N=C(C)[N-]C=1C)OS([O-])(=O)=O.[H+]
-  Transformed: [H]N1C(C)=C(OS([O-])(=O)=O)N=C1C
-  Transformed: [H]N1C(C)=C(OS([O-])(=O)=O)N=C1C
+  Transformed: C1(N=C(C)[N-]C=1C)OS([O-])(=O)=O.[H+]
+  Transformed: C1(N=C(C)[N-]C=1C)OS([O-])(=O)=O.[H+]
 Method: loadReactionSmarts
   Original:    C1(N=C(C)[N-]C=1C)OS([O-])(=O)=O.[H+]
   Transformed: [H]N1C(C)=C(OS([O-])(=O)=O)N=C1C
