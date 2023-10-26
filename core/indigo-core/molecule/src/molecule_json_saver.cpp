@@ -1423,8 +1423,8 @@ void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, i
         writer.Key("attachmentPointId");
         writer.String(convertAPToHELM(dst_ap_it->second).c_str());
     }
-    //else
-    //    printf("no attachment point\n");
+    // else
+    //     printf("no attachment point\n");
     writer.EndObject();
 }
 
@@ -1582,46 +1582,46 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 
     // save monomers
     if (mol->tgroups.getTGroupCount())
-    for (auto i : mol->vertices())
-    {
-        if (mol->isTemplateAtom(i))
+        for (auto i : mol->vertices())
         {
-            int mon_id = getMonomerNumber(i);
-            writer.Key((std::string("monomer") + std::to_string(mon_id)).c_str());
-            writer.StartObject();
-            writer.Key("type");
-            writer.String("monomer");
-            writer.Key("id");
-            writer.String(std::to_string(mon_id).c_str());
-            auto seqid = mol->getTemplateAtomSeqid(i);
-            if (seqid != VALUE_UNKNOWN)
+            if (mol->isTemplateAtom(i))
             {
-                writer.Key("seqid");
-                writer.Int(seqid);
-            }
-            // location
-            writer.Key("position");
-            writer.StartObject();
-            const auto& pos = mol->getAtomXyz(i);
-            writer.Key("x");
-            writer.Double(pos.x);
-            writer.Key("y");
-            writer.Double(pos.y);
-            writer.EndObject(); // pos
+                int mon_id = getMonomerNumber(i);
+                writer.Key((std::string("monomer") + std::to_string(mon_id)).c_str());
+                writer.StartObject();
+                writer.Key("type");
+                writer.String("monomer");
+                writer.Key("id");
+                writer.String(std::to_string(mon_id).c_str());
+                auto seqid = mol->getTemplateAtomSeqid(i);
+                if (seqid != VALUE_UNKNOWN)
+                {
+                    writer.Key("seqid");
+                    writer.Int(seqid);
+                }
+                // location
+                writer.Key("position");
+                writer.StartObject();
+                const auto& pos = mol->getAtomXyz(i);
+                writer.Key("x");
+                writer.Double(pos.x);
+                writer.Key("y");
+                writer.Double(pos.y);
+                writer.EndObject(); // pos
 
-            // find template
-            writer.Key("alias");
-            auto alias = mol->getTemplateAtom(i);
-            writer.String(alias);
-            auto tg_it = _templates.find(alias);
-            if (tg_it != _templates.end())
-            {
-                writer.Key("templateId");
-                writer.String(monomerId(tg_it->second.get()).c_str());
+                // find template
+                writer.Key("alias");
+                auto alias = mol->getTemplateAtom(i);
+                writer.String(alias);
+                auto tg_it = _templates.find(alias);
+                if (tg_it != _templates.end())
+                {
+                    writer.Key("templateId");
+                    writer.String(monomerId(tg_it->second.get()).c_str());
+                }
+                writer.EndObject(); // monomer
             }
-            writer.EndObject(); // monomer
         }
-    }
 
     for (const auto& kvp : _scsr_superatoms)
     {
