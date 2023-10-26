@@ -222,3 +222,22 @@ test_smarts_load_save_through_ket(smarts, expected, False)
 smarts = "[C,c,n,o]"
 expected = '"atoms":[{"label":"","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C,c,n,o"}}]'
 test_smarts_load_save_through_ket(smarts, expected, False)
+print(" *** SMARTS specific ***")
+smarts_list = [
+    "[C,N]",
+    "[C;N]",
+    "[C&N]",
+    "[!C]",
+    "[$(C)]",
+    "[C]!-[C]",
+    "[C]-,=[C]",
+    "[C]-;=[C]",
+    "[C]-&=[C]",
+]
+for smarts in smarts_list:
+    qm = indigo.loadQueryMolecule(smarts)
+    format = qm.getOriginalFormat()
+    if format == "chemical/x-daylight-smarts":
+        print("Smarts %s loaded as smarts - OK." % smarts)
+    else:
+        print("Smarts %s loaded as %s - FAILED" % (smarts, format))

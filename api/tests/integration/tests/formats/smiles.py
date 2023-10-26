@@ -78,14 +78,18 @@ mols_qsmiles = [
 for idx, sm in enumerate(mols_qsmiles):
     print(sm)
     q = indigo.loadQueryMolecule(sm)
-    try:
-        sm2 = q.smiles()
-        print("  -> " + sm2)
-        q2 = indigo.loadQueryMolecule(sm2)
-        sm3 = q2.smiles()
-        print("  -> " + sm3)
-    except IndigoException as e:
-        print(getIndigoExceptionText(e))
+    if q.getOriginalFormat() == "chemical/x-daylight-smarts":
+        print("%s loaded as SMARTS")
+    else:
+        try:
+            sm2 = q.smiles()
+            print("  -> " + sm2)
+            q2 = indigo.loadQueryMolecule(sm2)
+            print("q2=%s", q2.smarts())
+            sm3 = q2.smiles()
+            print("  -> " + sm3)
+        except IndigoException as e:
+            print(getIndigoExceptionText(e))
 
 print("*** S-Groups ***")
 mols_smiles = [
