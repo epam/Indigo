@@ -4,3 +4,5 @@
 ket_with_rb_as_drawn.ket OK. Smarts equals expected string '[#6](-[#6])(-[#6;x0])-[#6]'
 **** #1337 wrong smarts for ring bond count as drawn ****
 ket_with_custom_query_with_list.ket OK. Smarts equals expected string '[#6]1-[#6]=[Cl,Br,I,Na,O]-[#6]=[#6]-[#6]=1'
+**** #1371 Chirality symbol is added to the SMARTS when 'single up/down' or 'double cis/trans' bond type is set up wrong smarts for ring bond count as drawn ****
+ket_with_bond_stereo_ether.ket OK. Smarts equals expected string '[#6]1-[#6]=[#6]-[#6]=[#6]\[#6]=1'

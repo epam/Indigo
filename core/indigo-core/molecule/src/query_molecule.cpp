@@ -404,11 +404,11 @@ void QueryMolecule::writeSmartsBond(Output& output, Bond* bond, bool has_or_pare
     }
 }
 
-std::string QueryMolecule::getSmartsAtomStr(QueryMolecule::Atom* atom)
+std::string QueryMolecule::getSmartsAtomStr(QueryMolecule::Atom* atom, int original_format)
 {
     Array<char> out;
     ArrayOutput output(out);
-    writeSmartsAtom(output, atom, -1, -1, 1, false, false);
+    writeSmartsAtom(output, atom, -1, -1, 1, false, false, original_format);
     std::string result{out.ptr(), static_cast<std::size_t>(out.size())};
     return result;
 }
@@ -438,7 +438,7 @@ static void writeAnd(Output& _output, QueryMolecule::Node* node, bool has_or_par
         _output.writeChar(';');
 }
 
-void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chirality, int depth, bool has_or_parent, bool has_not_parent)
+void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chirality, int depth, bool has_or_parent, bool has_not_parent, int original_format)
 {
     int i;
 
@@ -454,7 +454,7 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
             break;
         }
         output.writeChar('!');
-        writeSmartsAtom(output, atom->child(0), aam, chirality, depth + 1, has_or_parent, true);
+        writeSmartsAtom(output, atom->child(0), aam, chirality, depth + 1, has_or_parent, true, original_format);
         break;
     }
     case OP_AND: {
@@ -498,7 +498,7 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
                 output.writeChar(has_or_parent ? '&' : ';');
                 cur_pos = output.tell();
             }
-            writeSmartsAtom(output, atom->child(i), aam, chirality, depth + 1, has_or_parent, has_not_parent);
+            writeSmartsAtom(output, atom->child(i), aam, chirality, depth + 1, has_or_parent, has_not_parent, original_format);
         }
         break;
     }
@@ -512,7 +512,7 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
 
             if (i > 0)
                 output.printf(has_not_parent ? "!" : ",");
-            writeSmartsAtom(output, atom->child(i), aam, chirality, depth + 1, true, has_not_parent);
+            writeSmartsAtom(output, atom->child(i), aam, chirality, depth + 1, true, has_not_parent, original_format);
         }
         break;
     }
@@ -521,10 +521,19 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
         break;
     case ATOM_NUMBER: {
         output.printf("#%d", atom->value_max);
-        if (chirality == 1)
-            output.printf("@");
-        else if (chirality == 2)
-            output.printf("@@");
+        switch (original_format)
+        {
+        case SMARTS:
+        case KET:
+            // SMARTS and ket save chirality in ATOM_CHIRALITY for query molecule
+            break;
+        default:
+            if (chirality == CHIRALITY_ANTICLOCKWISE)
+                output.printf("@");
+            else if (chirality == CHIRALITY_CLOCKWISE)
+                output.printf("@@");
+            break;
+        }
 
         if (aam > 0)
             output.printf(":%d", aam);
