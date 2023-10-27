@@ -39,7 +39,7 @@ files = [
     "conjugate",
     "dna_mod",
     "pepchem",
-    "fmoc"
+    "fmoc",
 ]
 
 files.sort()
