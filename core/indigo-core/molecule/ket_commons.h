@@ -20,6 +20,7 @@
 #define __ket_commons_h__
 
 #include <exception>
+#include <functional>
 #include <rapidjson/document.h>
 #include <string>
 #include <unordered_map>
