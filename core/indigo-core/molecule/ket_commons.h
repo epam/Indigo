@@ -31,6 +31,26 @@
 #include "molecule/query_molecule.h"
 #include "reaction/base_reaction.h"
 
+// hash for pairs taken from boost library
+template <typename a, typename b>
+struct std::hash<std::pair<a, b>>
+{
+private:
+    const hash<a> ah;
+    const hash<b> bh;
+
+public:
+    hash() : ah(), bh()
+    {
+    }
+
+    size_t operator()(const std::pair<a, b>& p) const
+    {
+        size_t seed = ah(p.first);
+        return bh(p.second) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    }
+};
+
 namespace indigo
 {
     const double KETDefaultFontSize = 13;
@@ -371,26 +391,6 @@ namespace indigo
         int summ_block_idx;
         std::vector<Vec2f> coordinates;
         int index;
-    };
-
-    // hash for pairs taken from boost library
-    template <typename a, typename b>
-    struct std::hash<std::pair<a, b>>
-    {
-    private:
-        const hash<a> ah;
-        const hash<b> bh;
-
-    public:
-        hash() : ah(), bh()
-        {
-        }
-
-        size_t operator()(const std::pair<a, b>& p) const
-        {
-            size_t seed = ah(p.first);
-            return bh(p.second) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        }
     };
 }
 #endif
