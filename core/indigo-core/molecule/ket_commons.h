@@ -381,6 +381,9 @@ namespace indigo
         const std::hash<int> bh;
 
     public:
+        pair_int_hash() : ah(), bh()
+        {
+        }
         size_t operator()(const std::pair<int, int>& p) const
         {
             size_t seed = ah(p.first);
