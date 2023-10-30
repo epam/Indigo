@@ -148,6 +148,7 @@ namespace indigo
             // Check if there is no other constraint, except specified ones
             bool hasNoConstraintExcept(int what_type);
             bool hasNoConstraintExcept(int what_type1, int what_type2);
+            bool hasNoConstraintExcept(std::vector<int> what_types);
 
             // Remove all constraints of the given type
             void removeConstraints(int what_type);
