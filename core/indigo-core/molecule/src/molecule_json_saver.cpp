@@ -1202,7 +1202,7 @@ void MoleculeJsonSaver::saveSuperAtomAsTemplate(BaseMolecule& mol, int sa_index,
         }
     }
 
-    saveSuperatomAttachmentPoints(sa, writer);
+    saveSuperatomAttachmentPoints(sa, map_out, writer);
     saveFragment(*sub_mol, writer);
     writer.EndObject(); // monomer template
 }
@@ -1255,7 +1255,7 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter& writer)
+void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, Array<int>& mapping, JsonWriter& writer)
 {
     std::map<std::string, int> sorted_attachment_points;
     if (sa.attachment_points.size())
@@ -1291,15 +1291,19 @@ void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter&
                     writer.String(convertAPToHELM(atp_id_str).c_str());
                 }
                 writer.Key("attachmentAtom");
-                writer.Int(atp.aidx);
-                writer.Key("leavingGroup");
-                writer.StartObject();
-                writer.Key("atoms");
-                writer.StartArray();
-                writer.Int(atp.lvidx);
-                writer.EndArray();
-                writer.EndObject();
-                writer.EndObject();
+                writer.Int(mapping.size() > atp.aidx ? mapping[atp.aidx] : atp.aidx);
+                // if lvidx is outside of sgroup then lvidx is a destination atom
+                if (mapping.size() > atp.lvidx && mapping[atp.lvidx] != -1)
+                {
+                    writer.Key("leavingGroup");
+                    writer.StartObject();
+                    writer.Key("atoms");
+                    writer.StartArray();
+                    writer.Int(atp.lvidx);
+                    writer.EndArray();
+                    writer.EndObject(); //leavingGroup
+                }
+                writer.EndObject(); //attachmentAtom
             }
             writer.EndArray();
         }
@@ -1308,13 +1312,14 @@ void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter&
 
 void MoleculeJsonSaver::saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writer)
 {
+    Array<int> dummy_mapping;
     auto& sgroups = tg.fragment->sgroups;
     for (int j = sgroups.begin(); j != sgroups.end(); j = sgroups.next(j))
     {
         SGroup& sg = sgroups.getSGroup(j);
         if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
-            saveSuperatomAttachmentPoints((Superatom&)sg, writer);
+            saveSuperatomAttachmentPoints((Superatom&)sg, dummy_mapping, writer);
             sgroups.remove(j);
         }
     }
@@ -1392,6 +1397,7 @@ void MoleculeJsonSaver::collectTemplates(BaseMolecule& mol)
 void MoleculeJsonSaver::collectSCSRSuperAtoms(BaseMolecule& mol)
 {
     _scsr_atom_superatoms.clear();
+    _scsr_orphaned_atoms.clear();
     int super_idx = 0;
     for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
     {
@@ -1429,6 +1435,12 @@ void MoleculeJsonSaver::collectSCSRSuperAtoms(BaseMolecule& mol)
                 }
             }
         }
+    }
+
+    for (int atom_idx = mol.vertexBegin(); atom_idx != mol.vertexEnd(); atom_idx = mol.vertexNext(atom_idx))
+    {
+        if ( !mol.isTemplateAtom(atom_idx) && _scsr_atom_superatoms.find(atom_idx) == _scsr_atom_superatoms.end())
+            _scsr_orphaned_atoms.push( atom_idx );
     }
 }
 
@@ -1504,6 +1516,16 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
             writer.String(mol_node.c_str());
             writer.EndObject();
         }
+    else if (_scsr_orphaned_atoms.size())
+    {
+        // TODO: handle orphaned atoms
+        /*
+        writer.StartObject();
+        writer.Key("$ref");
+        std::string mol_node = std::string("mol0");
+        writer.String(mol_node.c_str());
+        writer.EndObject();*/
+    }
 
     saveMetaData(writer, mol.meta());
 

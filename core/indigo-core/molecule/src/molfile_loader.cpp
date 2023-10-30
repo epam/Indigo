@@ -2071,6 +2071,13 @@ void MolfileLoader::_postLoad()
     _bmol->have_xyz = true;
     MoleculeCIPCalculator cip;
     cip.convertSGroupsToCIP(*_bmol);
+    if (_bmol->tgroups.getTGroupCount())
+        _convertSuperatomsToTemplates();
+}
+
+void MolfileLoader::_convertSuperatomsToTemplates()
+{
+
 }
 
 void MolfileLoader::_readRGroups2000()
