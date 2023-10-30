@@ -399,6 +399,10 @@ void QueryMolecule::writeSmartsBond(Output& output, Bond* bond, bool has_or_pare
             output.writeString("!@");
         break;
     }
+    case BOND_ANY: {
+        output.writeChar('~');
+        break;
+    }
     default:
         throw Error("Unexpected bond type: %d", bond->type);
     }
@@ -743,6 +747,9 @@ void QueryMolecule::_getBondDescription(Bond* bond, Output& out)
     case BOND_TOPOLOGY:
         out.printf("%s", bond->value == TOPOLOGY_RING ? "ring" : "chain");
         return;
+    case BOND_ANY:
+        out.writeChar('~');
+        return;
     default:
         out.printf("<constraint of type %d>", bond->type);
     }
@@ -928,6 +935,10 @@ QueryMolecule::Atom::~Atom()
 }
 
 QueryMolecule::Bond::Bond() : Node(OP_NONE), value(0), direction(0)
+{
+}
+
+QueryMolecule::Bond::Bond(int type_) : Node(type_), value(0), direction(0)
 {
 }
 

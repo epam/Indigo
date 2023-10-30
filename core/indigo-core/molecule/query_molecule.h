@@ -102,6 +102,7 @@ namespace indigo
 
             BOND_ORDER,
             BOND_TOPOLOGY,
+            BOND_ANY,
 
             HIGHLIGHTING
         };
@@ -248,6 +249,7 @@ namespace indigo
         {
         public:
             Bond();
+            Bond(int type_);
             Bond(int type_, int value_);
             Bond(int type_, int value_, int direction_);
             ~Bond() override;
