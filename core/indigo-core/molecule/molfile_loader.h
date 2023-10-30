@@ -143,6 +143,8 @@ namespace indigo
         Molecule* _mol;
         BaseMolecule* _bmol;
         QueryMolecule* _qmol;
+        std::unordered_map<int, int> _scsr_atom_superatoms;
+        std::map<int, int> _scsr_superatoms;
 
     private:
         MolfileLoader(const MolfileLoader&); // no implicit copy

@@ -14,11 +14,16 @@ namespace indigo
     const std::string kMonomerClassdAA = "dAA";
     const std::string kMonomerClassDNA = "DNA";
     const std::string kMonomerClassRNA = "RNA";
+    const std::string kMonomerClassPEPTIDE = "PEPTIDE";
+    const std::string kMonomerClassCHEM = "CHEM";
+
     const std::string kMonomerClassSUGAR = "SUGAR";
     const std::string kMonomerClassBASE = "BASE";
     const std::string kMonomerClassPHOSPHATE = "PHOSPHATE";
     const std::string kMonomerClassAminoAcid = "AminoAcid";
     const std::string kMonomerClassDAminoAcid = "D-AminoAcid";
+    const std::string kMonomerClassMOD = "MOD";
+    const std::string kMonomerClassXLINK = "XLINK";
 
     const std::string kPrefix_d("d");
     const std::string kPrefix_r("r");

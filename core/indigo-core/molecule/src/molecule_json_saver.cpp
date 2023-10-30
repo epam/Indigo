@@ -1075,22 +1075,22 @@ std::string MoleculeJsonSaver::monomerId(const TGroup& tg)
 std::string MoleculeJsonSaver::monomerHELMClass(const std::string& class_name)
 {
     if (kAminoClasses.find(class_name) != kAminoClasses.end())
-        return "PEPTIDE";
+        return kMonomerClassPEPTIDE;
     if (kNucleicClasses.find(class_name) != kNucleicClasses.end())
-        return "RNA";
-    return "CHEM";
+        return kMonomerClassRNA;
+    return kMonomerClassCHEM;
 }
 
 std::string MoleculeJsonSaver::monomerKETClass(const std::string& class_name)
 {
     auto mclass = class_name;
-    if (class_name == "AA")
-        return "AminoAcid";
+    if (class_name == kMonomerClassAA)
+        return kMonomerClassAminoAcid;
 
-    if (mclass == "dAA")
-        return "D-AminoAcid";
+    if (mclass == kMonomerClassdAA)
+        return kMonomerClassDAminoAcid;
 
-    if (mclass == "RNA" || mclass == "DNA" || mclass.find("MOD") == 0 || mclass.find("XLINK") == 0)
+    if (mclass == kMonomerClassRNA || mclass == kMonomerClassDNA || mclass.find(kMonomerClassMOD) == 0 || mclass.find(kMonomerClassXLINK) == 0)
         return mclass;
 
     for (auto it = mclass.begin(); it < mclass.end(); ++it)
@@ -1293,7 +1293,7 @@ void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, Array<int>&
                 writer.Key("attachmentAtom");
                 writer.Int(mapping.size() > atp.aidx ? mapping[atp.aidx] : atp.aidx);
                 // if lvidx is outside of sgroup then lvidx is a destination atom
-                if (mapping.size() > atp.lvidx && mapping[atp.lvidx] != -1)
+                if (atp.lvidx >= 0 && mapping.size() > atp.lvidx && mapping[atp.lvidx] != -1)
                 {
                     writer.Key("leavingGroup");
                     writer.StartObject();
@@ -1483,12 +1483,12 @@ void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, i
         //     throw Error("No connection for atom index %d\n", beg_idx);
     }
 
-    // find backward connection
-    auto dst_ap_it = _monomer_connections.find(std::make_pair(end_idx, beg_idx));
-    if (dst_ap_it != _monomer_connections.end())
+    // find connection
+    auto conn_it = _monomer_connections.find(std::make_pair(beg_idx, end_idx));
+    if (conn_it != _monomer_connections.end())
     {
         writer.Key("attachmentPointId");
-        writer.String(convertAPToHELM(dst_ap_it->second).c_str());
+        writer.String(convertAPToHELM(conn_it->second).c_str());
     }
     // else
     //     throw Error("no attachment point\n");
@@ -1572,7 +1572,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
 
     if (mol.tgroups.getTGroupCount())
     {
-        // collect attachment points into unordered map <key, val>. keu - pair of from and destination atom. val - attachment point name.
+        // collect attachment points into unordered map <key, val>. key - pair of from and destination atom. val - attachment point name.
         _monomer_connections.clear();
         for (int i = mol.template_attachment_points.begin(); i != mol.template_attachment_points.end(); i = mol.template_attachment_points.next(i))
         {
@@ -1596,7 +1596,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
         for (auto i : mol.edges())
         {
             auto& e = mol.getEdge(i);
-            // save connections between templates or supeatoms
+            // save connections between templates or superatoms
 
             // check superatom's connection
             auto sa_beg_it = _scsr_atom_superatoms.find(e.beg);
@@ -1718,7 +1718,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
         writer.Key("type");
         writer.String("monomer");
         writer.Key("id");
-        writer.String(std::to_string(kvp.first).c_str());
+        writer.String(std::to_string(mon_id).c_str());
         auto& sa = (Superatom&)mol->sgroups.getSGroup(kvp.first);
         if (sa.seqid > 0)
         {
