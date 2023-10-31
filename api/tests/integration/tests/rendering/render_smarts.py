@@ -41,9 +41,7 @@ for line in open(joinPathPy("molecules/smarts.sma", __file__)):
         print(checkImageSimilarity("smarts/%04d.svg" % idx))
         indigo.setOption("render-output-format", "png")
         renderer.renderToFile(mol, "%s/%04d.png" % (out_dir, idx))
-        # Temporary disable UT
         print(checkImageSimilarity("smarts/%04d.png" % idx))
-        print("smarts/%04d.png rendering status: OK" % idx)
 
     except IndigoException as e:
         print("  %s" % (getIndigoExceptionText(e)))
