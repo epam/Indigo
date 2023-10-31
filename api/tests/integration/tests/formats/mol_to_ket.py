@@ -39,6 +39,7 @@ files = [
     "conjugate",
     "dna_mod",
     "pepchem",
+    "peptides",
     "fmoc",
 ]
 

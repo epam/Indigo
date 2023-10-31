@@ -12,6 +12,7 @@ dthymine.ket:SUCCEED
 fmoc.ket:SUCCEED
 non_atrop.ket:SUCCEED
 pepchem.ket:SUCCEED
+peptides.ket:SUCCEED
 rna_mod.ket:SUCCEED
 suplabel.ket:SUCCEED
 thymine.ket:SUCCEED
