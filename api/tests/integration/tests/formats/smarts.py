@@ -244,3 +244,7 @@ for smarts in smarts_list:
         print("Smarts %s loaded as smarts - OK." % smarts)
     else:
         print("Smarts %s loaded as %s - FAILED" % (smarts, format))
+print("*******  Any wildcard '~' in bond custom query *******")
+smarts = "[#7]~,-[#6]"
+expected = '"bonds":[{"customQuery":"~,-","atoms":[0,1]}]}}'
+test_smarts_load_save_through_ket(smarts, expected)

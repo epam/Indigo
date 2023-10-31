@@ -102,6 +102,7 @@ namespace indigo
 
             BOND_ORDER,
             BOND_TOPOLOGY,
+            BOND_ANY,
 
             HIGHLIGHTING
         };
@@ -147,6 +148,7 @@ namespace indigo
             // Check if there is no other constraint, except specified ones
             bool hasNoConstraintExcept(int what_type);
             bool hasNoConstraintExcept(int what_type1, int what_type2);
+            bool hasNoConstraintExcept(std::vector<int> what_types);
 
             // Remove all constraints of the given type
             void removeConstraints(int what_type);
@@ -248,6 +250,7 @@ namespace indigo
         {
         public:
             Bond();
+            Bond(int type_);
             Bond(int type_, int value_);
             Bond(int type_, int value_, int direction_);
             ~Bond() override;
