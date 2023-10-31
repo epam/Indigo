@@ -27,6 +27,7 @@
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_exact_substructure_matcher.h"
 #include "molecule/molecule_substructure_matcher.h"
+#include "molecule/monomer_commons.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
 
@@ -158,6 +159,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                 dg.detached = superdg.detached;
                 dg.display_pos = superdg.display_pos;
                 dg.data.copy(superdg.data);
+                dg.sa_natreplace.copy(superdg.sa_natreplace);
                 dg.dasp_pos = superdg.dasp_pos;
                 dg.relative = superdg.relative;
                 dg.display_units = superdg.display_units;
@@ -3113,6 +3115,9 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
         return -1;
 
     Superatom& su = (Superatom&)sgroups.getSGroup(sg_idx);
+    // TODO: special handling needed for LGRP
+    if (su.sa_class.size() && std::string(su.sa_class.ptr()) == "LGRP")
+        return -1;
 
     ap_points_atoms.clear();
     ap_points_ids.clear();
@@ -3171,9 +3176,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
     }
 
     if (su.sa_class.size() == 0)
-        return -1;
-    else if (strncmp(su.sa_class.ptr(), "AA", 2) != 0)
-        return -1;
+        su.sa_class.appendString(kMonomerClassCHEM.c_str(), true);
 
     tg_idx = this->tgroups.addTGroup();
     TGroup& tg = this->tgroups.getTGroup(tg_idx);
@@ -4078,6 +4081,16 @@ int BaseMolecule::atomCode(int vertex_idx)
 int BaseMolecule::bondCode(int edge_idx)
 {
     return getBondOrder(edge_idx);
+}
+
+void BaseMolecule::transformSuperatomsToTemplates()
+{
+    int tg_idx;
+    for (auto sg_idx = sgroups.begin(); sg_idx != sgroups.end(); sg_idx = sgroups.next(sg_idx))
+    {
+        if (sgroups.getSGroup(sg_idx).sgroup_type == SGroup::SG_TYPE_SUP)
+            _transformSGroupToTGroup(sg_idx, tg_idx);
+    }
 }
 
 int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& name, Array<char>& code, Array<char>& natreplace, StringPool& r_names)

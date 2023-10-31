@@ -135,15 +135,16 @@ namespace indigo
         DataSGroup();
         ~DataSGroup() override;
 
-        Array<char> description; // SDT in Molfile format (filed units or format)
-        Array<char> name;        // SDT in Molfile format (field name)
-        Array<char> type;        // SDT in Molfile format (field type)
-        Array<char> querycode;   // SDT in Molfile format (query code)
-        Array<char> queryoper;   // SDT in Molfile format (query operator)
-        Array<char> data;        // SCD/SED in Molfile format (field data)
-        Vec2f display_pos;       // SDD in Molfile format
-        bool detached;           // or attached
-        bool relative;           // or absolute
+        Array<char> description;   // SDT in Molfile format (filed units or format)
+        Array<char> name;          // SDT in Molfile format (field name)
+        Array<char> type;          // SDT in Molfile format (field type)
+        Array<char> querycode;     // SDT in Molfile format (query code)
+        Array<char> queryoper;     // SDT in Molfile format (query operator)
+        Array<char> data;          // SCD/SED in Molfile format (field data)
+        Array<char> sa_natreplace; // NATREPLACE (V3000 - 2017)
+        Vec2f display_pos;         // SDD in Molfile format
+        bool detached;             // or attached
+        bool relative;             // or absolute
         bool display_units;
         int num_chars; // number of characters
         int dasp_pos;

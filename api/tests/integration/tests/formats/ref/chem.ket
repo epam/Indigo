@@ -1,15 +1,16 @@
 {
     "root": {
         "nodes": [],
+        "connections": [],
         "templates": [
             {
-                "$ref": "monomerTemplate-cch_3"
+                "$ref": "monomerTemplate-cch_2"
             }
         ]
     },
-    "monomerTemplate-cch_3": {
+    "monomerTemplate-cch_2": {
         "type": "monomerTemplate",
-        "id": "cch_3",
+        "id": "cch_2",
         "class": "Chem",
         "classHELM": "CHEM",
         "alias": "cch",

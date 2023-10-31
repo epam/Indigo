@@ -1,15 +1,16 @@
 {
     "root": {
         "nodes": [],
+        "connections": [],
         "templates": [
             {
-                "$ref": "monomerTemplate-Thy_45"
+                "$ref": "monomerTemplate-Thy_44"
             }
         ]
     },
-    "monomerTemplate-Thy_45": {
+    "monomerTemplate-Thy_44": {
         "type": "monomerTemplate",
-        "id": "Thy_45",
+        "id": "Thy_44",
         "class": "DNA",
         "classHELM": "RNA",
         "alias": "T",

@@ -10,21 +10,42 @@ namespace indigo
 {
     const int kStdMonomerDef = 3;
 
+    // amino acids
     const std::string kMonomerClassAA = "AA";
     const std::string kMonomerClassdAA = "dAA";
+    const std::string kMonomerClassMODAA = "MODAA";
+    const std::string kMonomerClassMODDAA = "MODdAA";
+    const std::string kMonomerClassXLINKAA = "XLINKAA";
+    const std::string kMonomerClassXLINKDAA = "XLINKdAA";
+    const std::string kMonomerClassAminoAcid = "AminoAcid";
+    const std::string kMonomerClassDAminoAcid = "D-AminoAcid";
+    const std::string kMonomerClassPEPTIDE = "PEPTIDE";
+
+    // nucleic classes
     const std::string kMonomerClassDNA = "DNA";
     const std::string kMonomerClassRNA = "RNA";
+    const std::string kMonomerClassMODDNA = "MODDNA";
+    const std::string kMonomerClassMODRNA = "MODRNA";
+    const std::string kMonomerClassXLINKDNA = "XLINKDNA";
+    const std::string kMonomerClassXLINKRNA = "XLINKRNA";
+
+    const std::string kMonomerClassCHEM = "CHEM";
     const std::string kMonomerClassSUGAR = "SUGAR";
     const std::string kMonomerClassBASE = "BASE";
     const std::string kMonomerClassPHOSPHATE = "PHOSPHATE";
-    const std::string kMonomerClassAminoAcid = "AminoAcid";
-    const std::string kMonomerClassDAminoAcid = "D-AminoAcid";
+
+    const std::string kMonomerClassMOD = "MOD";
+    const std::string kMonomerClassXLINK = "XLINK";
 
     const std::string kPrefix_d("d");
     const std::string kPrefix_r("r");
 
-    const std::unordered_set<std::string> kNucleicClasses = {kMonomerClassDNA, kMonomerClassRNA, kMonomerClassSUGAR, kMonomerClassBASE, kMonomerClassPHOSPHATE};
-    const std::unordered_set<std::string> kAminoClasses = {kMonomerClassAA, kMonomerClassdAA, kMonomerClassAminoAcid, kMonomerClassDAminoAcid};
+    const std::unordered_set<std::string> kNucleicClasses = {kMonomerClassDNA,    kMonomerClassRNA,      kMonomerClassMODRNA,
+                                                             kMonomerClassMODDNA, kMonomerClassXLINKRNA, kMonomerClassXLINKDNA,
+                                                             kMonomerClassSUGAR,  kMonomerClassBASE,     kMonomerClassPHOSPHATE};
+
+    const std::unordered_set<std::string> kAminoClasses = {kMonomerClassAA,    kMonomerClassdAA,    kMonomerClassAminoAcid, kMonomerClassDAminoAcid,
+                                                           kMonomerClassMODAA, kMonomerClassMODDAA, kMonomerClassXLINKAA,   kMonomerClassXLINKDAA};
 
     inline bool isNucleicClass(const std::string& monomer_class)
     {

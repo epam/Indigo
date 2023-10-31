@@ -20,6 +20,7 @@
 #define __ket_commons_h__
 
 #include <exception>
+#include <functional>
 #include <rapidjson/document.h>
 #include <string>
 #include <unordered_map>
@@ -117,6 +118,20 @@ namespace indigo
             QueryMolecule& qmol = static_cast<QueryMolecule&>(mol);
             qmol.getComponentNeighbors(neighbors);
         }
+    }
+
+    inline std::string convertAPToHELM(const std::string& atp_id_str)
+    {
+        if (::isupper(atp_id_str[0]) && atp_id_str.size() == 2)
+        {
+            if (atp_id_str == "Al")
+                return "R1";
+            else if (atp_id_str == "Br")
+                return "R2";
+            else if (atp_id_str[1] == 'x')
+                return std::string("R") + std::to_string(atp_id_str[0] - 'A' + 1);
+        }
+        return atp_id_str;
     }
 
     class KETSimpleObject : public MetaObject
@@ -358,5 +373,22 @@ namespace indigo
         int index;
     };
 
+    // hash for pairs taken from boost library
+    struct pair_int_hash
+    {
+    private:
+        const std::hash<int> ah;
+        const std::hash<int> bh;
+
+    public:
+        pair_int_hash() : ah(), bh()
+        {
+        }
+        size_t operator()(const std::pair<int, int>& p) const
+        {
+            size_t seed = ah(p.first);
+            return bh(p.second) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        }
+    };
 }
 #endif

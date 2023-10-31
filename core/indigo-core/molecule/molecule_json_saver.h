@@ -29,6 +29,7 @@
 #include "base_cpp/output.h"
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
+#include "molecule/ket_commons.h"
 #include "molecule/query_molecule.h"
 
 namespace indigo
@@ -178,26 +179,35 @@ namespace indigo
         explicit MoleculeJsonSaver(Output& output);
         void saveMolecule(BaseMolecule& bmol);
         void saveMolecule(BaseMolecule& bmol, JsonWriter& writer);
+
         static void saveMetaData(JsonWriter& writer, MetaDataStorage& meta);
         static std::string monomerId(const TGroup& tg);
         static std::string monomerAlias(const TGroup& tg);
 
-        static std::string monomerKETClass(const TGroup& tg);
-        static std::string monomerHELMClass(const TGroup& tg);
-        static std::string naturalAnalog(const TGroup& tg);
+        static std::string monomerKETClass(const std::string& class_name);
+        static std::string monomerHELMClass(const std::string& class_name);
+        static std::string naturalAnalog(const std::string& natreplace);
 
         bool add_stereo_desc;
         bool pretty_json;
 
     protected:
+        void saveRoot(BaseMolecule& mol, JsonWriter& writer);
+        void saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer);
+        int getMonomerNumber(int mon_idx);
+        void collectTemplates(BaseMolecule& mol);
+
         void saveAtoms(BaseMolecule& mol, JsonWriter& writer);
         void saveBonds(BaseMolecule& mol, JsonWriter& writer);
         void saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, JsonWriter& writer);
         void saveFragment(BaseMolecule& fragment, JsonWriter& writer);
         void saveMonomerTemplate(TGroup& tg, JsonWriter& writer);
         void saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writer);
+        void saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter& writer);
+
         void saveSGroups(BaseMolecule& mol, JsonWriter& writer);
         void saveSGroup(SGroup& sgroup, JsonWriter& writer);
+
         void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
         void saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
         void saveHighlights(BaseMolecule& mol, JsonWriter& writer);
@@ -214,6 +224,10 @@ namespace indigo
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         Output& _output;
+        std::list<std::unordered_set<int>> _s_neighbors;
+        std::unordered_map<std::string, std::reference_wrapper<TGroup>> _templates;
+        std::unordered_map<std::pair<int, int>, std::string, pair_int_hash> _monomer_connections;
+        std::map<int, int> _monomers_enum;
 
     private:
         MoleculeJsonSaver(const MoleculeJsonSaver&); // no implicit copy

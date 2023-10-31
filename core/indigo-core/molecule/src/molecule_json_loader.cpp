@@ -1,5 +1,3 @@
-#include "molecule/molecule_json_loader.h"
-
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -10,6 +8,7 @@
 #include "molecule/elements.h"
 #include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_sgroups.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/query_molecule.h"

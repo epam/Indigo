@@ -35,6 +35,12 @@ files = [
     "thymine",
     "dthymine",
     "chem",
+    "rna_mod",
+    "conjugate",
+    "dna_mod",
+    "pepchem",
+    "peptides",
+    "fmoc",
 ]
 
 files.sort()
@@ -42,7 +48,7 @@ for filename in files:
     mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".mol"))
 
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #    file.write(mol.json())
+    #     file.write(mol.json())
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
         ket_ref = file.read()
     ket = mol.json()
