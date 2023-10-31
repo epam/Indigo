@@ -2090,35 +2090,6 @@ void MolfileLoader::_postLoad()
         _bmol->transformSuperatomsToTemplates();
 }
 
-void MolfileLoader::_convertSuperatomsToTemplates()
-{
-    for (const auto& kvp : _scsr_superatoms)
-    {
-        Superatom& sa = (Superatom&)_bmol->sgroups.getSGroup(kvp.first);
-        std::unordered_set<int> sg_atoms(sa.atoms.ptr(), sa.atoms.ptr() + sa.atoms.size());
-        Array<int> map_out;
-        int tg_idx = _bmol->tgroups.addTGroup();
-        TGroup& tgroup = _bmol->tgroups.getTGroup(tg_idx);
-        tgroup.tgroup_id = tg_idx;
-        tgroup.fragment.reset(_bmol->neu());
-        tgroup.fragment->makeSubmolecule(*_bmol, sa.atoms, &map_out);
-        tgroup.fragment->clearSGroups();
-
-        if (sa.subscript.size())
-            tgroup.tgroup_alias.copy(sa.subscript);
-
-        if (sa.sa_class.ptr())
-            tgroup.tgroup_class.copy(sa.sa_class);
-
-        if (sa.sa_natreplace.size())
-            tgroup.tgroup_natreplace.copy(sa.sa_natreplace);
-        auto ta_idx = _bmol->addVertex();
-        _bmol->isTemplateAtom(ta_idx);
-
-        auto seqid = sa.seqid;
-    }
-}
-
 void MolfileLoader::_readRGroups2000()
 {
     MoleculeRGroups* rgroups = &_bmol->rgroups;

@@ -113,7 +113,6 @@ namespace indigo
         void _readCtabHeader();
         void _readCtab2000();
         void _convertCharge(int value, int& charge, int& radical);
-        void _convertSuperatomsToTemplates();
         void _read3dFeature2000();
         void _readRGroupOccurrenceRanges(const char* str, Array<int>& ranges);
         void _readRGroups2000();
