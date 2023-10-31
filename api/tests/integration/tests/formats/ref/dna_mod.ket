@@ -576,10 +576,20 @@
         "alias": "T",
         "attachmentPoints": [
             {
-                "attachmentAtom": 9
+                "attachmentAtom": 9,
+                "leavingGroup": {
+                    "atoms": [
+                        20
+                    ]
+                }
             },
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        21
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -938,10 +948,20 @@
         "alias": "G",
         "attachmentPoints": [
             {
-                "attachmentAtom": 9
+                "attachmentAtom": 9,
+                "leavingGroup": {
+                    "atoms": [
+                        22
+                    ]
+                }
             },
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        23
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -1337,10 +1357,20 @@
         "alias": "C",
         "attachmentPoints": [
             {
-                "attachmentAtom": 9
+                "attachmentAtom": 9,
+                "leavingGroup": {
+                    "atoms": [
+                        19
+                    ]
+                }
             },
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        20
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -1684,10 +1714,20 @@
         "alias": "A",
         "attachmentPoints": [
             {
-                "attachmentAtom": 9
+                "attachmentAtom": 9,
+                "leavingGroup": {
+                    "atoms": [
+                        21
+                    ]
+                }
             },
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        22
+                    ]
+                }
             }
         ],
         "atoms": [

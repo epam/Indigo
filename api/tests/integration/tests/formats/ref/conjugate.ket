@@ -1127,10 +1127,20 @@
         "alias": "T",
         "attachmentPoints": [
             {
-                "attachmentAtom": 9
+                "attachmentAtom": 9,
+                "leavingGroup": {
+                    "atoms": [
+                        20
+                    ]
+                }
             },
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        21
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -1489,10 +1499,20 @@
         "alias": "G",
         "attachmentPoints": [
             {
-                "attachmentAtom": 9
+                "attachmentAtom": 9,
+                "leavingGroup": {
+                    "atoms": [
+                        22
+                    ]
+                }
             },
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        23
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -1888,10 +1908,20 @@
         "alias": "C",
         "attachmentPoints": [
             {
-                "attachmentAtom": 9
+                "attachmentAtom": 9,
+                "leavingGroup": {
+                    "atoms": [
+                        19
+                    ]
+                }
             },
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        20
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -2235,10 +2265,20 @@
         "alias": "A",
         "attachmentPoints": [
             {
-                "attachmentAtom": 9
+                "attachmentAtom": 9,
+                "leavingGroup": {
+                    "atoms": [
+                        21
+                    ]
+                }
             },
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        22
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -2619,13 +2659,28 @@
         "alias": "D",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        9
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        10
+                    ]
+                }
             },
             {
-                "attachmentAtom": 7
+                "attachmentAtom": 7,
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -2801,10 +2856,20 @@
         "alias": "F",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        12
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        11
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -3017,10 +3082,20 @@
         "alias": "G",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        5
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        4
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -3119,13 +3194,28 @@
         "alias": "H",
         "attachmentPoints": [
             {
-                "attachmentAtom": 5
+                "attachmentAtom": 5,
+                "leavingGroup": {
+                    "atoms": [
+                        1
+                    ]
+                }
             },
             {
-                "attachmentAtom": 4
+                "attachmentAtom": 4,
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
             },
             {
-                "attachmentAtom": 12
+                "attachmentAtom": 12,
+                "leavingGroup": {
+                    "atoms": [
+                        10
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -3338,10 +3428,20 @@
         "alias": "I",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        9
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -3504,13 +3604,28 @@
         "alias": "K",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        10
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        11
+                    ]
+                }
             },
             {
-                "attachmentAtom": 8
+                "attachmentAtom": 8,
+                "leavingGroup": {
+                    "atoms": [
+                        9
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -3701,13 +3816,28 @@
         "alias": "U",
         "attachmentPoints": [
             {
-                "attachmentAtom": 5
+                "attachmentAtom": 5,
+                "leavingGroup": {
+                    "atoms": [
+                        7
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
             },
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        6
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -3853,10 +3983,20 @@
         "alias": "V",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        7
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -4002,13 +4142,28 @@
         "alias": "E",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        11
+                    ]
+                }
             },
             {
-                "attachmentAtom": 8
+                "attachmentAtom": 8,
+                "leavingGroup": {
+                    "atoms": [
+                        9
+                    ]
+                }
             },
             {
-                "attachmentAtom": 6
+                "attachmentAtom": 6,
+                "leavingGroup": {
+                    "atoms": [
+                        7
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -4199,13 +4354,28 @@
         "alias": "C",
         "attachmentPoints": [
             {
-                "attachmentAtom": 8
+                "attachmentAtom": 8,
+                "leavingGroup": {
+                    "atoms": [
+                        1
+                    ]
+                }
             },
             {
-                "attachmentAtom": 6
+                "attachmentAtom": 6,
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        0
+                    ]
+                }
             }
         ],
         "atoms": [

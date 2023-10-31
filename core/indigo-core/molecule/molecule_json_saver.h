@@ -203,7 +203,7 @@ namespace indigo
         void saveFragment(BaseMolecule& fragment, JsonWriter& writer);
         void saveMonomerTemplate(TGroup& tg, JsonWriter& writer);
         void saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writer);
-        void saveSuperatomAttachmentPoints(Superatom& sa, Array<int>& mapping, JsonWriter& writer);
+        void saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter& writer);
 
         void saveSGroups(BaseMolecule& mol, JsonWriter& writer);
         void saveSGroup(SGroup& sgroup, JsonWriter& writer);

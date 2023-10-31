@@ -826,13 +826,28 @@
         "alias": "H",
         "attachmentPoints": [
             {
-                "attachmentAtom": 5
+                "attachmentAtom": 5,
+                "leavingGroup": {
+                    "atoms": [
+                        1
+                    ]
+                }
             },
             {
-                "attachmentAtom": 4
+                "attachmentAtom": 4,
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
             },
             {
-                "attachmentAtom": 12
+                "attachmentAtom": 12,
+                "leavingGroup": {
+                    "atoms": [
+                        10
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -1045,10 +1060,20 @@
         "alias": "A",
         "attachmentPoints": [
             {
-                "attachmentAtom": 2
+                "attachmentAtom": 2,
+                "leavingGroup": {
+                    "atoms": [
+                        1
+                    ]
+                }
             },
             {
-                "attachmentAtom": 4
+                "attachmentAtom": 4,
+                "leavingGroup": {
+                    "atoms": [
+                        0
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -1164,13 +1189,28 @@
         "alias": "E",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        11
+                    ]
+                }
             },
             {
-                "attachmentAtom": 8
+                "attachmentAtom": 8,
+                "leavingGroup": {
+                    "atoms": [
+                        9
+                    ]
+                }
             },
             {
-                "attachmentAtom": 6
+                "attachmentAtom": 6,
+                "leavingGroup": {
+                    "atoms": [
+                        7
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -1361,10 +1401,20 @@
         "alias": "G",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        5
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        4
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -1463,13 +1513,28 @@
         "alias": "T",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        9
+                    ]
+                }
             },
             {
-                "attachmentAtom": 5
+                "attachmentAtom": 5,
+                "leavingGroup": {
+                    "atoms": [
+                        7
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -1632,10 +1697,20 @@
         "alias": "F",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        12
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        11
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -1848,13 +1923,28 @@
         "alias": "S",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        7
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
             },
             {
-                "attachmentAtom": 5
+                "attachmentAtom": 5,
+                "leavingGroup": {
+                    "atoms": [
+                        6
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -2000,13 +2090,28 @@
         "alias": "D",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        9
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        10
+                    ]
+                }
             },
             {
-                "attachmentAtom": 7
+                "attachmentAtom": 7,
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -2182,10 +2287,20 @@
         "alias": "V",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        7
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -2331,13 +2446,28 @@
         "alias": "Y",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        13
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        14
+                    ]
+                }
             },
             {
-                "attachmentAtom": 11
+                "attachmentAtom": 11,
+                "leavingGroup": {
+                    "atoms": [
+                        12
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -2580,10 +2710,20 @@
         "alias": "L",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        9
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -2744,10 +2884,20 @@
         "alias": "I",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        9
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -2910,13 +3060,28 @@
         "alias": "W",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        15
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        16
+                    ]
+                }
             },
             {
-                "attachmentAtom": 7
+                "attachmentAtom": 7,
+                "leavingGroup": {
+                    "atoms": [
+                        14
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -3196,13 +3361,28 @@
         "alias": "R",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        13
+                    ]
+                }
             },
             {
-                "attachmentAtom": 7
+                "attachmentAtom": 7,
+                "leavingGroup": {
+                    "atoms": [
+                        11
+                    ]
+                }
             },
             {
-                "attachmentAtom": 2
+                "attachmentAtom": 2,
+                "leavingGroup": {
+                    "atoms": [
+                        12
+                    ]
+                }
             }
         ],
         "atoms": [
@@ -3423,13 +3603,28 @@
         "alias": "Q",
         "attachmentPoints": [
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
             },
             {
-                "attachmentAtom": 4
+                "attachmentAtom": 4,
+                "leavingGroup": {
+                    "atoms": [
+                        5
+                    ]
+                }
             },
             {
-                "attachmentAtom": 10
+                "attachmentAtom": 10,
+                "leavingGroup": {
+                    "atoms": [
+                        11
+                    ]
+                }
             }
         ],
         "atoms": [

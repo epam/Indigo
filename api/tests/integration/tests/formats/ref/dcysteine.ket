@@ -18,13 +18,28 @@
         "naturalAnalogShort": "C",
         "attachmentPoints": [
             {
-                "attachmentAtom": 8
+                "attachmentAtom": 8,
+                "leavingGroup": {
+                    "atoms": [
+                        1
+                    ]
+                }
             },
             {
-                "attachmentAtom": 6
+                "attachmentAtom": 6,
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
             },
             {
-                "attachmentAtom": 3
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        0
+                    ]
+                }
             }
         ],
         "atoms": [

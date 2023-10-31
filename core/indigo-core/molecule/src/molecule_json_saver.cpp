@@ -1186,7 +1186,7 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, Array<int>& mapping, JsonWriter& writer)
+void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter& writer)
 {
     std::map<std::string, int> sorted_attachment_points;
     if (sa.attachment_points.size())
@@ -1222,9 +1222,8 @@ void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, Array<int>&
                     writer.String(convertAPToHELM(atp_id_str).c_str());
                 }
                 writer.Key("attachmentAtom");
-                writer.Int(mapping.size() > atp.aidx ? mapping[atp.aidx] : atp.aidx);
-                // if lvidx is outside of sgroup then lvidx is a destination atom
-                if (atp.lvidx >= 0 && mapping.size() > atp.lvidx && mapping[atp.lvidx] != -1)
+                writer.Int(atp.aidx);
+                if (atp.lvidx >= 0)
                 {
                     writer.Key("leavingGroup");
                     writer.StartObject();
@@ -1243,14 +1242,13 @@ void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, Array<int>&
 
 void MoleculeJsonSaver::saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writer)
 {
-    Array<int> dummy_mapping;
     auto& sgroups = tg.fragment->sgroups;
     for (int j = sgroups.begin(); j != sgroups.end(); j = sgroups.next(j))
     {
         SGroup& sg = sgroups.getSGroup(j);
         if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
-            saveSuperatomAttachmentPoints((Superatom&)sg, dummy_mapping, writer);
+            saveSuperatomAttachmentPoints((Superatom&)sg, writer);
             sgroups.remove(j);
         }
     }

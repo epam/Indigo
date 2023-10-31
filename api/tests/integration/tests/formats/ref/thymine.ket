@@ -16,10 +16,20 @@
         "alias": "T",
         "attachmentPoints": [
             {
-                "attachmentAtom": 10
+                "attachmentAtom": 10,
+                "leavingGroup": {
+                    "atoms": [
+                        21
+                    ]
+                }
             },
             {
-                "attachmentAtom": 0
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        22
+                    ]
+                }
             }
         ],
         "atoms": [
