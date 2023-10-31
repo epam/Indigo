@@ -3640,56 +3640,6 @@ void MolfileLoader::_readSGroup3000(const char* str)
     }
 }
 
-void MolfileLoader::_collectSCSRSuperAtoms()
-{
-    _scsr_atom_superatoms.clear();
-    _scsr_orphaned_atoms.clear();
-    int super_idx = 0;
-    for (int i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
-    {
-        SGroup& sgroup = _bmol->sgroups.getSGroup(i);
-        if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
-        {
-            auto& sa = (Superatom&)sgroup;
-            // superatoms originated from SCSR-templates always has a seqid
-            if (sa.seqid)
-            {
-                _scsr_superatoms.emplace(i, super_idx++);
-                for (auto atom_idx : sa.atoms)
-                    _scsr_atom_superatoms.emplace(atom_idx, i);
-            }
-        }
-        else
-        {
-            if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
-            {
-                auto& dsg = (DataSGroup&)sgroup;
-                if (dsg.parent_idx > -1 && std::string(dsg.name.ptr()) == "SMMX:class" && dsg.sa_natreplace.size())
-                {
-                    SGroup& sgroup = _bmol->sgroups.getSGroup(dsg.parent_idx);
-                    if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
-                    {
-                        auto& sa = (Superatom&)sgroup;
-                        if (sa.sa_natreplace.size() == 0)
-                            sa.sa_natreplace.copy(dsg.sa_natreplace);
-                        if (sa.sa_class.size() == 0 && sa.sa_natreplace.size())
-                        {
-                            auto sa_class = split(sa.sa_natreplace.ptr(), '/').front();
-                            sa.sa_class.appendString(sa_class.c_str(), true);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    for (int atom_idx = _bmol->vertexBegin(); atom_idx != _bmol->vertexEnd(); atom_idx = _bmol->vertexNext(atom_idx))
-    {
-        if (!_bmol->isTemplateAtom(atom_idx) && _scsr_atom_superatoms.find(atom_idx) == _scsr_atom_superatoms.end())
-            _scsr_orphaned_atoms.push(atom_idx);
-    }
-}
-
 void MolfileLoader::_readTGroups3000()
 {
     QS_DEF(Array<char>, str);

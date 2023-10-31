@@ -121,7 +121,6 @@ namespace indigo
         void _readSGroup3000(const char* str);
         void _readRGroups3000();
         void _readTGroups3000();
-        void _collectSCSRSuperAtoms();
         void _readSGroupDisplay(Scanner& scanner, DataSGroup& dsg);
         void _readCollectionBlock3000();
         void _readSGroupsBlock3000();
