@@ -27,6 +27,8 @@
 #include "molecule/molfile_loader.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
+#include "molecule/parse_utils.h"
+#include "molecule/monomer_commons.h"
 
 #define STRCMP(a, b) strncmp((a), (b), strlen(b))
 
@@ -1917,6 +1919,19 @@ void MolfileLoader::_postLoad()
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& dsg = static_cast<DataSGroup&>(sgroup);
+            if (dsg.parent_idx > -1 && std::string(dsg.name.ptr()) == "SMMX:class")
+            {
+                SGroup& sgroup = _bmol->sgroups.getSGroup(dsg.parent_idx);
+                if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
+                {
+                    auto& sa = (Superatom&)sgroup;
+                    if (sa.sa_natreplace.size() == 0)
+                        sa.sa_natreplace.copy(dsg.sa_natreplace);
+                    if (sa.sa_class.size() == 0)
+                        sa.sa_class.copy(dsg.data);
+                }
+            }
+
             if (dsg.isMrv_implicit())
             {
                 BufferScanner scanner(dsg.data);
@@ -2071,13 +2086,37 @@ void MolfileLoader::_postLoad()
     _bmol->have_xyz = true;
     MoleculeCIPCalculator cip;
     cip.convertSGroupsToCIP(*_bmol);
-    if (_bmol->tgroups.getTGroupCount())
-        _convertSuperatomsToTemplates();
+    if (_bmol->tgroups.getTGroupCount() && _bmol->sgroups.getSGroupCount())
+        _bmol->transformSuperatomsToTemplates();
 }
 
 void MolfileLoader::_convertSuperatomsToTemplates()
 {
+    for (const auto& kvp : _scsr_superatoms)
+    {
+        Superatom& sa = (Superatom&)_bmol->sgroups.getSGroup(kvp.first);
+        std::unordered_set<int> sg_atoms(sa.atoms.ptr(), sa.atoms.ptr() + sa.atoms.size());
+        Array<int> map_out;
+        int tg_idx = _bmol->tgroups.addTGroup();
+        TGroup& tgroup = _bmol->tgroups.getTGroup(tg_idx);
+        tgroup.tgroup_id = tg_idx;
+        tgroup.fragment.reset(_bmol->neu());
+        tgroup.fragment->makeSubmolecule(*_bmol, sa.atoms, &map_out);
+        tgroup.fragment->clearSGroups();
 
+        if (sa.subscript.size())
+            tgroup.tgroup_alias.copy(sa.subscript);
+
+        if (sa.sa_class.ptr())
+            tgroup.tgroup_class.copy( sa.sa_class );
+
+        if (sa.sa_natreplace.size())
+            tgroup.tgroup_natreplace.copy(sa.sa_natreplace);
+        auto ta_idx = _bmol->addVertex();
+        _bmol->isTemplateAtom(ta_idx);
+
+        auto seqid = sa.seqid;
+    }
 }
 
 void MolfileLoader::_readRGroups2000()
@@ -2088,7 +2127,6 @@ void MolfileLoader::_readRGroups2000()
     while (!_scanner.isEOF())
     {
         char chars[5];
-
         chars[4] = 0;
         _scanner.readCharsFix(4, chars);
 
@@ -3601,6 +3639,57 @@ void MolfileLoader::_readSGroup3000(const char* str)
         scanner.skipSpace();
     }
 }
+
+void MolfileLoader::_collectSCSRSuperAtoms()
+{
+    _scsr_atom_superatoms.clear();
+    _scsr_orphaned_atoms.clear();
+    int super_idx = 0;
+    for (int i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
+    {
+        SGroup& sgroup = _bmol->sgroups.getSGroup(i);
+        if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
+        {
+            auto& sa = (Superatom&)sgroup;
+            // superatoms originated from SCSR-templates always has a seqid
+            if (sa.seqid)
+            {
+                _scsr_superatoms.emplace(i, super_idx++);
+                for (auto atom_idx : sa.atoms)
+                    _scsr_atom_superatoms.emplace(atom_idx, i);
+            }
+        }
+        else
+        {
+            if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+            {
+                auto& dsg = (DataSGroup&)sgroup;
+                if (dsg.parent_idx > -1 && std::string(dsg.name.ptr()) == "SMMX:class" && dsg.sa_natreplace.size())
+                {
+                    SGroup& sgroup = _bmol->sgroups.getSGroup(dsg.parent_idx);
+                    if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
+                    {
+                        auto& sa = (Superatom&)sgroup;
+                        if (sa.sa_natreplace.size() == 0)
+                            sa.sa_natreplace.copy(dsg.sa_natreplace);
+                        if (sa.sa_class.size() == 0 && sa.sa_natreplace.size())
+                        {
+                            auto sa_class = split(sa.sa_natreplace.ptr(), '/').front();
+                            sa.sa_class.appendString(sa_class.c_str(), true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for (int atom_idx = _bmol->vertexBegin(); atom_idx != _bmol->vertexEnd(); atom_idx = _bmol->vertexNext(atom_idx))
+    {
+        if (!_bmol->isTemplateAtom(atom_idx) && _scsr_atom_superatoms.find(atom_idx) == _scsr_atom_superatoms.end())
+            _scsr_orphaned_atoms.push(atom_idx);
+    }
+}
+
 
 void MolfileLoader::_readTGroups3000()
 {

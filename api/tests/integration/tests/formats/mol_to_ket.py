@@ -37,6 +37,9 @@ files = [
     "chem",
     "rna_mod",
     "conjugate",
+    "dna_mod",
+    "pepchem",
+    "fmoc"
 ]
 
 files.sort()

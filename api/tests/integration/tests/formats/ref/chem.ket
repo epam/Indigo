@@ -18,32 +18,17 @@
             {
                 "type": "right",
                 "label": "R2",
-                "attachmentAtom": 8,
-                "leavingGroup": {
-                    "atoms": [
-                        1
-                    ]
-                }
+                "attachmentAtom": 8
             },
             {
                 "type": "side",
                 "label": "R3",
-                "attachmentAtom": 6,
-                "leavingGroup": {
-                    "atoms": [
-                        2
-                    ]
-                }
+                "attachmentAtom": 6
             },
             {
                 "type": "side",
                 "label": "R5",
-                "attachmentAtom": 3,
-                "leavingGroup": {
-                    "atoms": [
-                        0
-                    ]
-                }
+                "attachmentAtom": 3
             }
         ],
         "atoms": [

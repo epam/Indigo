@@ -7,8 +7,11 @@ chem.ket:SUCCEED
 conjugate.ket:SUCCEED
 cysteine.ket:SUCCEED
 dcysteine.ket:SUCCEED
+dna_mod.ket:SUCCEED
 dthymine.ket:SUCCEED
+fmoc.ket:SUCCEED
 non_atrop.ket:SUCCEED
+pepchem.ket:SUCCEED
 rna_mod.ket:SUCCEED
 suplabel.ket:SUCCEED
 thymine.ket:SUCCEED

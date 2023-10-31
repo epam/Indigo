@@ -196,7 +196,6 @@ namespace indigo
         void saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer);
         int getMonomerNumber(int mon_idx);
         void collectTemplates(BaseMolecule& mol);
-        void collectSCSRSuperAtoms(BaseMolecule& mol);
 
         void saveAtoms(BaseMolecule& mol, JsonWriter& writer);
         void saveBonds(BaseMolecule& mol, JsonWriter& writer);
@@ -230,9 +229,6 @@ namespace indigo
         std::unordered_map<std::string, std::reference_wrapper<TGroup>> _templates;
         std::unordered_map<std::pair<int, int>, std::string, pair_int_hash> _monomer_connections;
         std::map<int, int> _monomers_enum;
-        std::unordered_map<int, int> _scsr_atom_superatoms;
-        std::map<int, int> _scsr_superatoms;
-        Array<int> _scsr_orphaned_atoms;
 
     private:
         MoleculeJsonSaver(const MoleculeJsonSaver&); // no implicit copy

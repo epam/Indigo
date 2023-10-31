@@ -1394,55 +1394,6 @@ void MoleculeJsonSaver::collectTemplates(BaseMolecule& mol)
     }
 }
 
-void MoleculeJsonSaver::collectSCSRSuperAtoms(BaseMolecule& mol)
-{
-    _scsr_atom_superatoms.clear();
-    _scsr_orphaned_atoms.clear();
-    int super_idx = 0;
-    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-    {
-        SGroup& sgroup = mol.sgroups.getSGroup(i);
-        if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
-        {
-            auto& sa = (Superatom&)sgroup;
-            // superatoms originated from SCSR-templates always has a seqid
-            if (sa.seqid)
-            {
-                _scsr_superatoms.emplace(i, super_idx++);
-                for (auto atom_idx : sa.atoms)
-                    _scsr_atom_superatoms.emplace(atom_idx, i);
-            }
-        }
-        else
-        {
-            if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
-            {
-                auto& dsg = (DataSGroup&)sgroup;
-                if (dsg.parent_idx > -1 && std::string(dsg.name.ptr()) == "SMMX:class" && dsg.sa_natreplace.size())
-                {
-                    SGroup& sgroup = mol.sgroups.getSGroup(dsg.parent_idx);
-                    if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
-                    {
-                        auto& sa = (Superatom&)sgroup;
-                        if (sa.sa_natreplace.size() == 0)
-                            sa.sa_natreplace.copy(dsg.sa_natreplace);
-                        if (sa.sa_class.size() == 0 && sa.sa_natreplace.size())
-                        {
-                            auto sa_class = split(sa.sa_natreplace.ptr(), '/').front();
-                            sa.sa_class.appendString(sa_class.c_str(), true);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    for (int atom_idx = mol.vertexBegin(); atom_idx != mol.vertexEnd(); atom_idx = mol.vertexNext(atom_idx))
-    {
-        if ( !mol.isTemplateAtom(atom_idx) && _scsr_atom_superatoms.find(atom_idx) == _scsr_atom_superatoms.end())
-            _scsr_orphaned_atoms.push( atom_idx );
-    }
-}
 
 int MoleculeJsonSaver::getMonomerNumber(int mon_idx)
 {
@@ -1463,25 +1414,6 @@ void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, i
         writer.Key("monomerId");
         writer.String((std::string("monomer") + std::to_string(getMonomerNumber(beg_idx))).c_str());
     }
-    else
-    {
-        auto sa_it = _scsr_atom_superatoms.find(beg_idx); // find corresponding superAtom
-        if (sa_it != _scsr_atom_superatoms.end())
-        {
-            auto sa_num_it = _scsr_superatoms.find(sa_it->second);
-            if (sa_num_it != _scsr_superatoms.end())
-            {
-                writer.Key("monomerId");
-                writer.String((std::string("monomer") + std::to_string(_monomers_enum.size() + sa_num_it->second)).c_str());
-            }
-            else
-            {
-                printf("No connection for superatom %d\n", sa_it->second);
-            }
-        }
-        // else
-        //     throw Error("No connection for atom index %d\n", beg_idx);
-    }
 
     // find connection
     auto conn_it = _monomer_connections.find(std::make_pair(beg_idx, end_idx));
@@ -1491,7 +1423,7 @@ void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, i
         writer.String(convertAPToHELM(conn_it->second).c_str());
     }
     // else
-    //     throw Error("no attachment point\n");
+    //     throw Error("no attachment point");
     writer.EndObject();
 }
 
@@ -1516,16 +1448,6 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
             writer.String(mol_node.c_str());
             writer.EndObject();
         }
-    else if (_scsr_orphaned_atoms.size())
-    {
-        // TODO: handle orphaned atoms
-        /*
-        writer.StartObject();
-        writer.Key("$ref");
-        std::string mol_node = std::string("mol0");
-        writer.String(mol_node.c_str());
-        writer.EndObject();*/
-    }
 
     saveMetaData(writer, mol.meta());
 
@@ -1560,14 +1482,6 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
         }
     }
 
-    for (const auto& kvp : _scsr_superatoms)
-    {
-        writer.StartObject();
-        writer.Key("$ref");
-        writer.String((std::string("monomer") + std::to_string(mon_idx + kvp.second)).c_str());
-        writer.EndObject();
-    }
-
     writer.EndArray(); // nodes
 
     if (mol.tgroups.getTGroupCount())
@@ -1580,30 +1494,14 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
             _monomer_connections.emplace(std::make_pair(sap.ap_occur_idx, sap.ap_aidx), sap.ap_id.ptr());
         }
 
-        for (const auto& kvp : _scsr_superatoms)
-        {
-            auto& sa = (Superatom&)mol.sgroups.getSGroup(kvp.first);
-            for (auto i = sa.attachment_points.begin(); i != sa.attachment_points.end(); i = sa.attachment_points.next(i))
-            {
-                auto& sap = sa.attachment_points.at(i);
-                _monomer_connections.emplace(std::make_pair(sap.aidx, sap.lvidx), sap.apid.ptr());
-            }
-        }
-
         // save connections
         writer.Key("connections");
         writer.StartArray();
         for (auto i : mol.edges())
         {
             auto& e = mol.getEdge(i);
-            // save connections between templates or superatoms
-
-            // check superatom's connection
-            auto sa_beg_it = _scsr_atom_superatoms.find(e.beg);
-            auto sa_end_it = _scsr_atom_superatoms.find(e.end);
-            bool sa_connection = sa_beg_it != _scsr_atom_superatoms.end() && sa_end_it != _scsr_atom_superatoms.end() && sa_beg_it->second != sa_end_it->second;
-
-            if (mol.isTemplateAtom(e.beg) || mol.isTemplateAtom(e.end) || sa_connection)
+            // save connections between templates
+            if (mol.isTemplateAtom(e.beg) && mol.isTemplateAtom(e.end) )
             {
                 writer.StartObject();
                 writer.Key("connectionType");
@@ -1622,19 +1520,6 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
         {
             TGroup& tg = mol.tgroups.getTGroup(i);
             auto template_name = std::string("monomerTemplate-") + monomerId(tg);
-            writer.StartObject();
-            writer.Key("$ref");
-            writer.String(template_name.c_str());
-            writer.EndObject();
-        }
-
-        for (const auto& kvp : _scsr_superatoms)
-        {
-            auto& sa = (Superatom&)mol.sgroups.getSGroup(kvp.first);
-            auto template_name = std::string("monomerTemplate-");
-            if (sa.subscript.size())
-                template_name += sa.subscript.ptr();
-            template_name += std::string("_") + std::to_string(mol.tgroups.getTGroupCount() + kvp.second);
             writer.StartObject();
             writer.Key("$ref");
             writer.String(template_name.c_str());
@@ -1663,8 +1548,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     BaseMolecule::collapse(*mol);
 
     collectTemplates(*mol);
-    if (mol->tgroups.getTGroupCount())
-        collectSCSRSuperAtoms(*mol);
     saveRoot(*mol, writer);
 
     // save monomers
@@ -1710,51 +1593,12 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
             }
         }
 
-    for (const auto& kvp : _scsr_superatoms)
-    {
-        int mon_id = _monomers_enum.size() + kvp.second;
-        writer.Key((std::string("monomer") + std::to_string(mon_id)).c_str());
-        writer.StartObject();
-        writer.Key("type");
-        writer.String("monomer");
-        writer.Key("id");
-        writer.String(std::to_string(mon_id).c_str());
-        auto& sa = (Superatom&)mol->sgroups.getSGroup(kvp.first);
-        if (sa.seqid > 0)
-        {
-            writer.Key("seqid");
-            writer.Int(sa.seqid);
-        }
-        Vec2f sa_pos;
-        mol->getSGroupAtomsCenterPoint(sa, sa_pos);
-        writer.Key("position");
-        writer.StartObject();
-        writer.Key("x");
-        writer.Double(sa_pos.x);
-        writer.Key("y");
-        writer.Double(sa_pos.y);
-        writer.EndObject(); // position
-        writer.Key("alias");
-        writer.String(sa.subscript.ptr());
-        writer.Key("templateId");
-
-        std::string template_name;
-        if (sa.subscript.size())
-            template_name += sa.subscript.ptr();
-        template_name += std::string("_") + std::to_string(mol->tgroups.getTGroupCount() + kvp.second);
-        writer.String(template_name.c_str());
-        writer.EndObject(); // monomer
-    }
-
     // save templates
     for (int i = mol->tgroups.begin(); i != mol->tgroups.end(); i = mol->tgroups.next(i))
     {
         TGroup& tg = mol->tgroups.getTGroup(i);
         saveMonomerTemplate(tg, writer);
     }
-
-    for (const auto& kvp : _scsr_superatoms)
-        saveSuperAtomAsTemplate(*mol, kvp.first, mol->tgroups.getTGroupCount() + kvp.second, writer);
 
     // save molecules
     for (int idx = 0; idx < mol->countComponents(_s_neighbors); idx++)

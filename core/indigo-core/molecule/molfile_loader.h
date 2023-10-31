@@ -121,6 +121,7 @@ namespace indigo
         void _readSGroup3000(const char* str);
         void _readRGroups3000();
         void _readTGroups3000();
+        void _collectSCSRSuperAtoms();
         void _readSGroupDisplay(Scanner& scanner, DataSGroup& dsg);
         void _readCollectionBlock3000();
         void _readSGroupsBlock3000();
@@ -145,6 +146,7 @@ namespace indigo
         QueryMolecule* _qmol;
         std::unordered_map<int, int> _scsr_atom_superatoms;
         std::map<int, int> _scsr_superatoms;
+        Array<int> _scsr_orphaned_atoms;
 
     private:
         MolfileLoader(const MolfileLoader&); // no implicit copy
