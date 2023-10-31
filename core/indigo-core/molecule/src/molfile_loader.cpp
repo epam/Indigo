@@ -25,10 +25,10 @@
 #include "molecule/molecule_3d_constraints.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molfile_loader.h"
+#include "molecule/monomer_commons.h"
+#include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
-#include "molecule/parse_utils.h"
-#include "molecule/monomer_commons.h"
 
 #define STRCMP(a, b) strncmp((a), (b), strlen(b))
 
@@ -2108,7 +2108,7 @@ void MolfileLoader::_convertSuperatomsToTemplates()
             tgroup.tgroup_alias.copy(sa.subscript);
 
         if (sa.sa_class.ptr())
-            tgroup.tgroup_class.copy( sa.sa_class );
+            tgroup.tgroup_class.copy(sa.sa_class);
 
         if (sa.sa_natreplace.size())
             tgroup.tgroup_natreplace.copy(sa.sa_natreplace);
@@ -3689,7 +3689,6 @@ void MolfileLoader::_collectSCSRSuperAtoms()
             _scsr_orphaned_atoms.push(atom_idx);
     }
 }
-
 
 void MolfileLoader::_readTGroups3000()
 {
