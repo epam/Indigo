@@ -1138,75 +1138,6 @@ std::string MoleculeJsonSaver::monomerAlias(const TGroup& tg)
     return alias;
 }
 
-void MoleculeJsonSaver::saveSuperAtomAsTemplate(BaseMolecule& mol, int sa_index, int template_number, JsonWriter& writer)
-{
-    Superatom& sa = (Superatom&)mol.sgroups.getSGroup(sa_index);
-    Array<int> map_out;
-    std::unique_ptr<BaseMolecule> sub_mol(mol.neu());
-    sub_mol->makeSubmolecule(mol, sa.atoms, &map_out);
-    sub_mol->clearSGroups();
-    auto template_name = std::string("monomerTemplate-");
-    std::string template_id;
-    std::string alias;
-    if (sa.subscript.size())
-    {
-        template_id += sa.subscript.ptr();
-        alias = sa.subscript.ptr();
-    }
-    template_id += std::string("_") + std::to_string(template_number);
-    template_name += template_id;
-    writer.Key(template_name.c_str());
-    writer.StartObject();
-    writer.Key("type");
-    writer.String("monomerTemplate");
-
-    // determine template class
-    std::string template_class;
-    if (sa.sa_class.ptr())
-        template_class = sa.sa_class.ptr();
-
-    auto temp_it = _templates.find(sa.subscript.ptr());
-    if (temp_it != _templates.end())
-    {
-        auto& tg = temp_it->second.get();
-        if (template_class.empty() && tg.tgroup_class.size())
-            template_class = tg.tgroup_class.ptr();
-        if (alias.empty())
-            alias = monomerAlias(tg);
-    }
-
-    // if failed to determine the class, fallback to CHEM
-    if (template_class.empty())
-        template_class = "CHEM";
-
-    writer.Key("class");
-    writer.String(monomerKETClass(template_class).c_str());
-    writer.Key("classHELM");
-    writer.String(monomerHELMClass(template_class).c_str());
-    if (alias.size())
-    {
-        writer.Key("alias");
-        writer.String(alias.c_str());
-    }
-
-    if (sa.sa_natreplace.size())
-    {
-        auto analog = naturalAnalog(sa.sa_natreplace.ptr());
-        writer.Key("naturalAnalog");
-        writer.String(analog.c_str());
-        auto nat_alias = monomerAliasByName(template_class, analog);
-        if (nat_alias.size() < analog.size())
-        {
-            writer.Key("naturalAnalogShort");
-            writer.String(nat_alias.c_str());
-        }
-    }
-
-    saveSuperatomAttachmentPoints(sa, map_out, writer);
-    saveFragment(*sub_mol, writer);
-    writer.EndObject(); // monomer template
-}
-
 void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
 {
     std::string template_name("monomerTemplate-");
@@ -1301,9 +1232,9 @@ void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, Array<int>&
                     writer.StartArray();
                     writer.Int(atp.lvidx);
                     writer.EndArray();
-                    writer.EndObject(); //leavingGroup
+                    writer.EndObject(); // leavingGroup
                 }
-                writer.EndObject(); //attachmentAtom
+                writer.EndObject(); // attachmentAtom
             }
             writer.EndArray();
         }
@@ -1393,7 +1324,6 @@ void MoleculeJsonSaver::collectTemplates(BaseMolecule& mol)
         _templates.emplace(tg.tgroup_name.size() ? tg.tgroup_name.ptr() : monomerAlias(tg), std::ref(tg));
     }
 }
-
 
 int MoleculeJsonSaver::getMonomerNumber(int mon_idx)
 {
@@ -1501,7 +1431,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
         {
             auto& e = mol.getEdge(i);
             // save connections between templates
-            if (mol.isTemplateAtom(e.beg) && mol.isTemplateAtom(e.end) )
+            if (mol.isTemplateAtom(e.beg) && mol.isTemplateAtom(e.end))
             {
                 writer.StartObject();
                 writer.Key("connectionType");

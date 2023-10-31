@@ -207,7 +207,6 @@ namespace indigo
 
         void saveSGroups(BaseMolecule& mol, JsonWriter& writer);
         void saveSGroup(SGroup& sgroup, JsonWriter& writer);
-        void saveSuperAtomAsTemplate(BaseMolecule& mol, int sa_index, int template_number, JsonWriter& writer);
 
         void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
         void saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
