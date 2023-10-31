@@ -2292,8 +2292,7 @@ bool QueryMolecule::isKnownAttr(QueryMolecule::Atom& qa)
     return (qa.type == QueryMolecule::ATOM_CHARGE || qa.type == QueryMolecule::ATOM_ISOTOPE || qa.type == QueryMolecule::ATOM_RADICAL ||
             qa.type == QueryMolecule::ATOM_VALENCE || qa.type == QueryMolecule::ATOM_TOTAL_H || qa.type == QueryMolecule::ATOM_SUBSTITUENTS ||
             qa.type == QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN || qa.type == QueryMolecule::ATOM_RING_BONDS ||
-            qa.type == QueryMolecule::ATOM_RING_BONDS_AS_DRAWN || qa.type == QueryMolecule::ATOM_UNSATURATION || qa.type == QueryMolecule::ATOM_AROMATICITY ||
-            qa.type == QueryMolecule::ATOM_SSSR_RINGS || qa.type == QueryMolecule::ATOM_SMALLEST_RING_SIZE || qa.type == QueryMolecule::ATOM_CONNECTIVITY) &&
+            qa.type == QueryMolecule::ATOM_RING_BONDS_AS_DRAWN || qa.type == QueryMolecule::ATOM_UNSATURATION) &&
            qa.value_max == qa.value_min;
 }
 
