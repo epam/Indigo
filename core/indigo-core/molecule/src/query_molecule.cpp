@@ -399,6 +399,10 @@ void QueryMolecule::writeSmartsBond(Output& output, Bond* bond, bool has_or_pare
             output.writeString("!@");
         break;
     }
+    case BOND_ANY: {
+        output.writeChar('~');
+        break;
+    }
     default:
         throw Error("Unexpected bond type: %d", bond->type);
     }
@@ -743,6 +747,9 @@ void QueryMolecule::_getBondDescription(Bond* bond, Output& out)
     case BOND_TOPOLOGY:
         out.printf("%s", bond->value == TOPOLOGY_RING ? "ring" : "chain");
         return;
+    case BOND_ANY:
+        out.writeChar('~');
+        return;
     default:
         out.printf("<constraint of type %d>", bond->type);
     }
@@ -928,6 +935,10 @@ QueryMolecule::Atom::~Atom()
 }
 
 QueryMolecule::Bond::Bond() : Node(OP_NONE), value(0), direction(0)
+{
+}
+
+QueryMolecule::Bond::Bond(int type_) : Node(type_), value(0), direction(0)
 {
 }
 
@@ -1768,6 +1779,8 @@ bool QueryMolecule::Bond::_possibleValuePair(int what_type1, int what_value1, in
         return what_value1 == value;
     if (type == what_type2)
         return what_value2 == value;
+    if (type == BOND_ANY)
+        return true;
     return false;
 }
 
@@ -1945,6 +1958,25 @@ bool QueryMolecule::Node::hasNoConstraintExcept(int what_type1, int what_type2)
     }
 
     return type == what_type1 || type == what_type2;
+}
+
+bool QueryMolecule::Node::hasNoConstraintExcept(std::vector<int> what_types)
+{
+    if (type == OP_NONE)
+        return true;
+
+    if (type == OP_AND || type == OP_OR || type == OP_NOT)
+    {
+        int i;
+
+        for (i = 0; i < children.size(); i++)
+            if (!children[i]->hasNoConstraintExcept(what_types))
+                return false;
+
+        return true;
+    }
+
+    return std::any_of(what_types.cbegin(), what_types.cend(), [this](int i) { return type == i; });
 }
 
 void QueryMolecule::Node::removeConstraints(int what_type)

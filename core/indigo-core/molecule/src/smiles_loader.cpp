@@ -2636,6 +2636,13 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
         else if (order == _ANY_BOND)
         {
             bond.type = order;
+            if (qbond.get() != 0)
+            {
+                if (subqbond.get() == 0)
+                    subqbond = std::make_unique<QueryMolecule::Bond>(QueryMolecule::BOND_ANY);
+                else
+                    subqbond.reset(QueryMolecule::Bond::und(subqbond.release(), new QueryMolecule::Bond(QueryMolecule::BOND_ANY)));
+            }
         }
 
         if (topology > 0)
