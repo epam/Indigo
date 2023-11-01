@@ -323,9 +323,63 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
         return;
     case ATOM_VALENCE:
         return;
+    case ATOM_CHIRALITY:
+        _getAtomChiralityDescription(atom, out);
+        break;
     default:
         throw new Error("Unrecognized constraint type %d", atom->type);
     }
+}
+
+void QueryMolecule::_getAtomChiralityDescription(Atom* atom, Output& output)
+{
+    int chirality_type = atom->value_min;
+    int chirality_value = atom->value_max & ~CHIRALITY_OR_UNSPECIFIED;
+    switch (chirality_type)
+    {
+    case CHIRALITY_GENERAL:
+        switch (chirality_value)
+        {
+        case CHIRALITY_ANTICLOCKWISE:
+            output.writeChar('@');
+            break;
+        case CHIRALITY_CLOCKWISE:
+            output.writeString("@@");
+            break;
+        default:
+            throw Error("Wrong chirality value %d.", chirality_value);
+        }
+        break;
+    case CHIRALITY_TETRAHEDRAL:
+        if (chirality_value > CHIRALITY_TETRAHEDRAL_MAX)
+            throw Error("Wrong TH chirality value %d", chirality_value);
+        output.printf("@TH%d", chirality_value);
+        break;
+    case CHIRALITY_ALLENE_LIKE:
+        if (chirality_value > CHIRALITY_ALLENE_LIKE_MAX)
+            throw Error("Wrong AL chirality value %d", chirality_value);
+        output.printf("@AL%d", chirality_value);
+        break;
+    case CHIRALITY_SQUARE_PLANAR:
+        if (chirality_value > CHIRALITY_SQUARE_PLANAR_MAX)
+            throw Error("Wrong SP chirality value %d", chirality_value);
+        output.printf("@SP%d", chirality_value);
+        break;
+    case CHIRALITY_TRIGONAL_BIPYRAMIDAL:
+        if (chirality_value > CHIRALITY_TRIGONAL_BIPYRAMIDAL_MAX)
+            throw Error("Wrong TB chirality value %d", chirality_value);
+        output.printf("@TB%d", chirality_value);
+        break;
+    case CHIRALITY_OCTAHEDRAL:
+        if (chirality_value > CHIRALITY_OCTAHEDRAL_MAX)
+            throw Error("Wrong OH chirality value %d", chirality_value);
+        output.printf("@OH%d", chirality_value);
+        break;
+    default:
+        throw Error("Wrong chirality type value %d.", chirality_type);
+    }
+    if ((atom->value_max & CHIRALITY_OR_UNSPECIFIED) == CHIRALITY_OR_UNSPECIFIED)
+        output.writeChar('?');
 }
 
 std::string QueryMolecule::getSmartsBondStr(Bond* bond)
@@ -636,51 +690,7 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
     }
 
     case ATOM_CHIRALITY: {
-        int chirality_type = atom->value_min;
-        int chirality_value = atom->value_max;
-        switch (chirality_type)
-        {
-        case CHIRALITY_GENERAL:
-            switch (chirality_value)
-            {
-            case CHIRALITY_ANTICLOCKWISE:
-                output.writeChar('@');
-                break;
-            case CHIRALITY_CLOCKWISE:
-                output.writeString("@@");
-                break;
-            default:
-                throw Error("Wrong chirality value %d.", chirality_value);
-            }
-            break;
-        case CHIRALITY_TETRAHEDRAL:
-            if (chirality_value > CHIRALITY_TETRAHEDRAL_MAX)
-                throw Error("Wrong TH chirality value %d", chirality_value);
-            output.printf("@TH%d", chirality_value);
-            break;
-        case CHIRALITY_ALLENE_LIKE:
-            if (chirality_value > CHIRALITY_ALLENE_LIKE_MAX)
-                throw Error("Wrong AL chirality value %d", chirality_value);
-            output.printf("@AL%d", chirality_value);
-            break;
-        case CHIRALITY_SQUARE_PLANAR:
-            if (chirality_value > CHIRALITY_SQUARE_PLANAR_MAX)
-                throw Error("Wrong SP chirality value %d", chirality_value);
-            output.printf("@SP%d", chirality_value);
-            break;
-        case CHIRALITY_TRIGONAL_BIPYRAMIDAL:
-            if (chirality_value > CHIRALITY_TRIGONAL_BIPYRAMIDAL_MAX)
-                throw Error("Wrong TB chirality value %d", chirality_value);
-            output.printf("@TB%d", chirality_value);
-            break;
-        case CHIRALITY_OCTAHEDRAL:
-            if (chirality_value > CHIRALITY_OCTAHEDRAL_MAX)
-                throw Error("Wrong OH chirality value %d", chirality_value);
-            output.printf("@OH%d", chirality_value);
-            break;
-        default:
-            throw Error("Wrong chirality type value %d.", chirality_type);
-        }
+        _getAtomChiralityDescription(atom, output);
         break;
     }
     case ATOM_RSITE:

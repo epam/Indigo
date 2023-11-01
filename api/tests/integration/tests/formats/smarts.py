@@ -28,9 +28,7 @@ def test_smarts_load_save(smarts_in):
         print("smarts_out=%s" % smarts_out)
 
 
-def test_smarts_load_save_through_ket(
-    smarts_in, expected_str, check_smarts_eq=True
-):
+def test_smarts_load_save_through_ket(smarts_in, expected_str, check_smarts_eq=True):
     m1 = indigo.loadSmarts(smarts_in)
     json1 = m1.json()
     m2 = indigo.loadQueryMolecule(json1)
@@ -148,17 +146,11 @@ test_smarts_load_save("([#6]1-[#6]-[#6]-1.[#6])")
 test_smarts_load_save("[#9]/[#6]=[#6]/[#6]=[#6]/[#6]")
 test_smarts_load_save("[#9]\[#6]=[#6]\[#6]=[#6]\[#6]")
 expected_str = '"bonds":[{"type":1,"atoms":[0,1],"stereo":1},{"type":2,"atoms":[1,2]},{"type":1,"atoms":[2,3],"stereo":1},{"type":2,"atoms":[3,4]},{"type":1,"atoms":[4,5],"stereo":1}]}}'
-test_smarts_load_save_through_ket(
-    "[#9]/[#6]=[#6]/[#6]=[#6]/[#6]", expected_str
-)
+test_smarts_load_save_through_ket("[#9]/[#6]=[#6]/[#6]=[#6]/[#6]", expected_str)
 expected_str = '"bonds":[{"type":1,"atoms":[0,1],"stereo":6},{"type":2,"atoms":[1,2]},{"type":1,"atoms":[2,3],"stereo":1},{"type":2,"atoms":[3,4]},{"type":1,"atoms":[4,5],"stereo":6}]}}'
-test_smarts_load_save_through_ket(
-    "[#9]\[#6]=[#6]/[#6]=[#6]\[#6]", expected_str
-)
+test_smarts_load_save_through_ket("[#9]\[#6]=[#6]/[#6]=[#6]\[#6]", expected_str)
 expected_str = '"bonds":[{"customQuery":"\\\?","atoms":[0,1]},{"type":2,"atoms":[1,2]},{"customQuery":"/?","atoms":[2,3]},{"type":2,"atoms":[3,4]},{"customQuery":"\\\?","atoms":[4,5]}]'
-test_smarts_load_save_through_ket(
-    "[#9]\?[#6]=[#6]/?[#6]=[#6]\?[#6]", expected_str
-)
+test_smarts_load_save_through_ket("[#9]\?[#6]=[#6]/?[#6]=[#6]\?[#6]", expected_str)
 test_smarts_load_save_through_ket(
     "[C;@OH2]",
     '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C;@OH2"}}]',
@@ -196,13 +188,9 @@ expected = "[#16]=[#6]-[#6](-[#6]-[#6]-[#6]-[#6]-[#6]-[#6@](-[#6]=[#6]-[#6@](-[#
 if smarts == expected:
     print("Ok expected smarts generated")
 else:
-    print(
-        "Fail. Expected smarts is\n%s\nbut generated\n%s" % (expected, smarts)
-    )
+    print("Fail. Expected smarts is\n%s\nbut generated\n%s" % (expected, smarts))
 smarts = "[!#40!#79!#30]-[#6]-[#6]"
-expected = (
-    '"atoms":[{"type":"atom-list","notList":true,"elements":["Zr","Au","Zn"],'
-)
+expected = '"atoms":[{"type":"atom-list","notList":true,"elements":["Zr","Au","Zn"],'
 test_smarts_load_save_through_ket(smarts, expected)
 smarts = "[#40,#79,#30]-[#6]-[#6]"
 expected = '"atoms":[{"type":"atom-list","elements":["Zr","Au","Zn"],'
@@ -248,3 +236,15 @@ print("*******  Any wildcard '~' in bond custom query *******")
 smarts = "[#7]~,-[#6]"
 expected = '"bonds":[{"customQuery":"~,-","atoms":[0,1]}]}}'
 test_smarts_load_save_through_ket(smarts, expected)
+test_smarts_load_save_through_ket(
+    "[C;@OH2?]",
+    '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C;@OH2?"}}]',
+)
+test_smarts_load_save_through_ket(
+    "[C;@?]",
+    '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C;@?"}}]',
+)
+test_smarts_load_save_through_ket(
+    "[C;@@?]",
+    '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C;@@?"}}]',
+)
