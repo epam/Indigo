@@ -106,11 +106,14 @@ namespace indigo
     private:
         void fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol);
         rapidjson::Value& _mol_nodes;
+
         RGroupDescriptionList _rgroups;
 
         rapidjson::Value _meta_objects;
         rapidjson::Value _mol_array;
+        rapidjson::Value _monomer_array;
         rapidjson::Value _templates;
+        std::unordered_map<std::string, std::reference_wrapper<rapidjson::Value>> _id_to_template;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;

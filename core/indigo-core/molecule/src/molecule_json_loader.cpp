@@ -21,7 +21,7 @@ using namespace std;
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
-    : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _pmol(0), _pqmol(0),
+    : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType), _pmol(0), _pqmol(0),
       ignore_noncritical_query_features(false), components_count(0)
 {
     Value& root = ket["root"];
@@ -45,6 +45,10 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
                 int rg_num = std::atoi(node_name.substr(rg.size()).c_str());
                 _rgroups.emplace_back(rg_num, node);
             }
+            else if (node_type.compare("monomer") == 0)
+            {
+                _monomer_array.PushBack(node, ket.GetAllocator());
+            }
             else
                 throw Error("Unknows node type: %s", node_type.c_str());
         }
@@ -66,14 +70,17 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
             {
                 Value& template_node = ket[template_name.c_str()];
                 _templates.PushBack(template_node, ket.GetAllocator());
+                std::string id = template_node["id"].GetString();
+                _id_to_template.emplace(id, std::ref(template_node));
             }
         }
     }
 }
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
-    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false),
-      ignore_no_chiral_flag(false), skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0), components_count(0)
+    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType), _pmol(0), _pqmol(0),
+      ignore_noncritical_query_features(false), ignore_no_chiral_flag(false), skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0),
+      components_count(0)
 {
 }
 
@@ -1372,6 +1379,35 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         int tp = mt.GetType();
         if (mt.HasMember("type") && mt["type"].GetString() == std::string("monomerTemplate"))
             parseMonomerTemplate(mt, mol);
+    }
+
+    for (SizeType i = 0; i < _monomer_array.Size(); i++)
+    {
+        auto& ma = _monomer_array[i];
+        int idx = mol.asMolecule().addAtom(-1);
+        if (ma.HasMember("alias"))
+            mol.asMolecule().setTemplateAtom(idx, ma["alias"].GetString());
+
+        if (ma.HasMember("class"))
+            mol.asMolecule().setTemplateAtomClass(idx, ma["class"].GetString());
+
+        if (ma.HasMember("seqid"))
+            mol.asMolecule().setTemplateAtomSeqid(idx, ma["seqid"].GetInt());
+
+        if (ma.HasMember("position"))
+        {
+            auto& pos_val = ma["position"];
+            mol.setAtomXyz(idx, pos_val["x"].GetDouble(), pos_val["y"].GetDouble(), 0);
+        }
+
+        std::string template_id = ma["templateId"].GetString();
+        auto temp_it = _id_to_template.find(template_id);
+        if (temp_it != _id_to_template.end())
+        {
+            auto& temp = temp_it->second.get();
+            //mol.setTemplateAtomAttachmentOrder()
+        }
+
     }
 
     std::vector<int> ignore_cistrans(mol.edgeCount());

@@ -3117,7 +3117,10 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
     Superatom& su = (Superatom&)sgroups.getSGroup(sg_idx);
     // TODO: special handling needed for LGRP
     if (su.sa_class.size() && std::string(su.sa_class.ptr()) == "LGRP")
+    {
+        removeSGroup(sg_idx);
         return -1;
+    }
 
     ap_points_atoms.clear();
     ap_points_ids.clear();
