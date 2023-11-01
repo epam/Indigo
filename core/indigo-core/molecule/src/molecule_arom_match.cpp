@@ -297,7 +297,7 @@ bool AromaticityMatcher::match(int* core_sub, int* core_super)
             return false;
         }
 
-        bool has_other = !qbond.hasNoConstraintExcept(QueryMolecule::BOND_ORDER, QueryMolecule::BOND_TOPOLOGY);
+        bool has_other = !qbond.hasNoConstraintExcept({QueryMolecule::BOND_ORDER, QueryMolecule::BOND_TOPOLOGY, QueryMolecule::BOND_ANY});
         if (has_other)
             throw Error("Only bond with order and topology constraints are supported");
 

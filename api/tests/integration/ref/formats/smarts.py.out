@@ -96,3 +96,7 @@ Smarts [C]!-[C] loaded as smarts - OK.
 Smarts [C]-,=[C] loaded as smarts - OK.
 Smarts [C]-;=[C] loaded as smarts - OK.
 Smarts [C]-&=[C] loaded as smarts - OK.
+*******  Any wildcard '~' in bond custom query *******
+[#7]~,-[#6] is ok. smarts_in==smarts_out
+[#7]~,-[#6] is ok. json_in==json_out
+[#7]~,-[#6] is ok. expected string found in json
