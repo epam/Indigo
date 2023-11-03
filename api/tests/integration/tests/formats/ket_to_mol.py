@@ -38,7 +38,6 @@ files = [
     "pepchem",
     "peptides",
     "fmoc",
-    "apamine",
     "anacyclamide",
 ]
 
