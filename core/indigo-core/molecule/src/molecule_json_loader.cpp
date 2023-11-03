@@ -22,9 +22,7 @@ IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
-      _connection_array(kArrayType), _pmol(0),
-      _pqmol(0),
-      ignore_noncritical_query_features(false), components_count(0)
+      _connection_array(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), components_count(0)
 {
     Value& root = ket["root"];
     Value& nodes = root["nodes"];
@@ -1290,7 +1288,7 @@ std::string MoleculeJsonLoader::monomerMolClass(const std::string& class_name)
     if (mclass == kMonomerClassRNA || mclass == kMonomerClassDNA || mclass.find(kMonomerClassMOD) == 0 || mclass.find(kMonomerClassXLINK) == 0)
         return mclass;
 
-    std::transform(mclass.begin(), mclass.end(), mclass.begin(), ::toupper); 
+    std::transform(mclass.begin(), mclass.end(), mclass.begin(), ::toupper);
     return mclass;
 }
 
@@ -1426,7 +1424,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         auto temp_it = _id_to_template.find(template_id);
         if (temp_it != _id_to_template.end())
         {
-            auto& temp = _templates[ temp_it->second ];
+            auto& temp = _templates[temp_it->second];
             mol.asMolecule().setTemplateAtomClass(idx, monomerMolClass(temp["class"].GetString()).c_str());
         }
     }
@@ -1501,7 +1499,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     }
 
     // handle monomer's connections after all
-    for ( int i = 0; i < _connection_array.Size(); ++i)
+    for (int i = 0; i < _connection_array.Size(); ++i)
     {
         auto& connection = _connection_array[i];
         int order = _BOND_ANY;
@@ -1516,8 +1514,8 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         auto& ep1 = connection["endpoint1"];
         auto& ep2 = connection["endpoint2"];
 
-        auto mon_id1 = extract_id( ep1["monomerId"].GetString(), "monomer");
-        auto mon_id2 = extract_id( ep2["monomerId"].GetString(), "monomer");
+        auto mon_id1 = extract_id(ep1["monomerId"].GetString(), "monomer");
+        auto mon_id2 = extract_id(ep2["monomerId"].GetString(), "monomer");
 
         std::string atp1 = convertAPFromHELM(ep1["attachmentPointId"].GetString());
         std::string atp2 = convertAPFromHELM(ep2["attachmentPointId"].GetString());
