@@ -32,6 +32,14 @@ files = [
     "dthymine",
     "dala",
     "chem",
+    "rna_mod",
+    "conjugate",
+    "dna_mod",
+    "pepchem",
+    "peptides",
+    "fmoc",
+    "apamine",
+    "anacyclamide",
 ]
 
 files.sort()
