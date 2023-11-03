@@ -521,6 +521,7 @@
     "monomer17": {
         "type": "monomer",
         "id": "17",
+        "seqid": 12,
         "position": {
             "x": 6.110340595245361,
             "y": -11.633955001831055
@@ -531,6 +532,7 @@
     "monomer18": {
         "type": "monomer",
         "id": "18",
+        "seqid": 6,
         "position": {
             "x": 4.874997615814209,
             "y": -12.258405685424805
@@ -541,6 +543,7 @@
     "monomer19": {
         "type": "monomer",
         "id": "19",
+        "seqid": 18,
         "position": {
             "x": 7.88062047958374,
             "y": -11.337328910827637
@@ -551,6 +554,7 @@
     "monomer20": {
         "type": "monomer",
         "id": "20",
+        "seqid": 9,
         "position": {
             "x": 4.927271366119385,
             "y": -11.445504188537598
@@ -561,6 +565,7 @@
     "monomer21": {
         "type": "monomer",
         "id": "21",
+        "seqid": 22,
         "position": {
             "x": 11.954094886779786,
             "y": -10.458263397216797
@@ -3429,7 +3434,7 @@
         "id": "cdaC_6",
         "class": "MODDNA",
         "classHELM": "RNA",
-        "alias": "cdaC_6",
+        "alias": "cdaC",
         "naturalAnalog": "cdaC",
         "attachmentPoints": [
             {

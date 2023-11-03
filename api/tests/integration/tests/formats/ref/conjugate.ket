@@ -1070,6 +1070,7 @@
     "monomer38": {
         "type": "monomer",
         "id": "38",
+        "seqid": 2,
         "position": {
             "x": 14.745832443237305,
             "y": -14.96572208404541
@@ -1080,6 +1081,7 @@
     "monomer39": {
         "type": "monomer",
         "id": "39",
+        "seqid": 22,
         "position": {
             "x": 11.954094886779786,
             "y": -10.458263397216797
@@ -4518,7 +4520,7 @@
         "id": "SMCC_13",
         "class": "Linker",
         "classHELM": "CHEM",
-        "alias": "SMCC_13",
+        "alias": "SMCC",
         "attachmentPoints": [
             {
                 "attachmentAtom": 2

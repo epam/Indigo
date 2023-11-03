@@ -831,6 +831,7 @@
     "monomer30": {
         "type": "monomer",
         "id": "30",
+        "seqid": 21,
         "position": {
             "x": 16.131311416625978,
             "y": -5.159056186676025
@@ -4054,7 +4055,7 @@
         "id": "Fmoc_15",
         "class": "Chem",
         "classHELM": "CHEM",
-        "alias": "Fmoc_15",
+        "alias": "Fmoc",
         "attachmentPoints": [
             {
                 "type": "side",

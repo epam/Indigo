@@ -30,6 +30,7 @@
 #include "molecule/molecule_cip_calculator.h"
 #include "molecule/query_molecule.h"
 #include "reaction/base_reaction.h"
+#include "molecule/parse_utils.h"
 
 namespace indigo
 {
@@ -133,6 +134,26 @@ namespace indigo
         }
         return atp_id_str;
     }
+
+    inline std::string convertAPFromHELM(const std::string& atp_id_str)
+    {
+        char ap_symbol = extract_id(atp_id_str, "R") + '@'; // convert number to ASCII letter
+        std::string res(1, ap_symbol);
+        switch (ap_symbol)
+        {
+        case 'A':
+            res += 'l';
+            break;
+        case 'B':
+            res += 'r';
+            break;
+        default:
+            res += 'x';
+            break;
+        }
+        return res;
+    }
+
 
     class KETSimpleObject : public MetaObject
     {

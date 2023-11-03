@@ -21,7 +21,9 @@ using namespace std;
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
-    : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType), _pmol(0), _pqmol(0),
+    : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
+      _connection_array(kArrayType), _pmol(0),
+      _pqmol(0),
       ignore_noncritical_query_features(false), components_count(0)
 {
     Value& root = ket["root"];
@@ -69,16 +71,23 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
             if (ket.HasMember(template_name.c_str()))
             {
                 Value& template_node = ket[template_name.c_str()];
-                _templates.PushBack(template_node, ket.GetAllocator());
                 std::string id = template_node["id"].GetString();
-                _id_to_template.emplace(id, std::ref(template_node));
+                _templates.PushBack(template_node, ket.GetAllocator());
+                _id_to_template.emplace(id, i);
             }
         }
+    }
+
+    if (root.HasMember("connections"))
+    {
+        Value& connections = root["connections"];
+        for (int i = 0; i < connections.Size(); ++i)
+            _connection_array.PushBack(connections[i], ket.GetAllocator());
     }
 }
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
-    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType), _pmol(0), _pqmol(0),
+    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType), _connection_array(kArrayType), _pmol(0), _pqmol(0),
       ignore_noncritical_query_features(false), ignore_no_chiral_flag(false), skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0),
       components_count(0)
 {
@@ -1249,7 +1258,7 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
                 int atp_index = sa.attachment_points.add();
                 auto& atp = sa.attachment_points[atp_index];
                 atp.aidx = att_desc.attachment_atom;
-                if (atp.lvidx >= 0)
+                if (att_desc.leaving_group >= 0)
                 {
                     auto& lgrp = (Superatom&)monomer_mol.sgroups.getSGroup(att_desc.leaving_group);
                     if (lgrp.atoms.size())
@@ -1267,6 +1276,22 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
             fillXBondsAndBrackets(sa, monomer_mol);
         }
     }
+}
+
+std::string MoleculeJsonLoader::monomerMolClass(const std::string& class_name)
+{
+    auto mclass = class_name;
+    if (class_name == kMonomerClassAminoAcid)
+        return kMonomerClassAA;
+
+    if (mclass == kMonomerClassDAminoAcid)
+        return kMonomerClassdAA;
+
+    if (mclass == kMonomerClassRNA || mclass == kMonomerClassDNA || mclass.find(kMonomerClassMOD) == 0 || mclass.find(kMonomerClassXLINK) == 0)
+        return mclass;
+
+    std::transform(mclass.begin(), mclass.end(), mclass.begin(), ::toupper); 
+    return mclass;
 }
 
 void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
@@ -1388,9 +1413,6 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         if (ma.HasMember("alias"))
             mol.asMolecule().setTemplateAtom(idx, ma["alias"].GetString());
 
-        if (ma.HasMember("class"))
-            mol.asMolecule().setTemplateAtomClass(idx, ma["class"].GetString());
-
         if (ma.HasMember("seqid"))
             mol.asMolecule().setTemplateAtomSeqid(idx, ma["seqid"].GetInt());
 
@@ -1404,10 +1426,9 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         auto temp_it = _id_to_template.find(template_id);
         if (temp_it != _id_to_template.end())
         {
-            auto& temp = temp_it->second.get();
-            //mol.setTemplateAtomAttachmentOrder()
+            auto& temp = _templates[ temp_it->second ];
+            mol.asMolecule().setTemplateAtomClass(idx, monomerMolClass(temp["class"].GetString()).c_str());
         }
-
     }
 
     std::vector<int> ignore_cistrans(mol.edgeCount());
@@ -1477,6 +1498,32 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             if (!stereochemistry_options.ignore_errors && !_pqmol)
                 throw Error("direction of bond #%d makes no sense", i);
         }
+    }
+
+    // handle monomer's connections after all
+    for ( int i = 0; i < _connection_array.Size(); ++i)
+    {
+        auto& connection = _connection_array[i];
+        int order = _BOND_ANY;
+        if (connection.HasMember("connectionType"))
+        {
+            std::string conn_type = connection["connectionType"].GetString();
+            if (conn_type == "single")
+                order = BOND_SINGLE;
+            else if (conn_type == "hydrogen")
+                order = _BOND_HYDROGEN;
+        }
+        auto& ep1 = connection["endpoint1"];
+        auto& ep2 = connection["endpoint2"];
+
+        auto mon_id1 = extract_id( ep1["monomerId"].GetString(), "monomer");
+        auto mon_id2 = extract_id( ep2["monomerId"].GetString(), "monomer");
+
+        std::string atp1 = convertAPFromHELM(ep1["attachmentPointId"].GetString());
+        std::string atp2 = convertAPFromHELM(ep2["attachmentPointId"].GetString());
+        mol.setTemplateAtomAttachmentOrder(mon_id1, mon_id2, atp1.c_str());
+        mol.setTemplateAtomAttachmentOrder(mon_id2, mon_id1, atp2.c_str());
+        mol.asMolecule().addBond_Silent(mon_id1, mon_id2, order);
     }
 
     MoleculeLayout ml(mol, false);

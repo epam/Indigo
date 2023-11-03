@@ -102,6 +102,7 @@ namespace indigo
         void setStereoFlagPosition(const rapidjson::Value& pos, int fragment_index, BaseMolecule& mol);
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
         void parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol);
+        std::string monomerMolClass(const std::string& class_name);
 
     private:
         void fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol);
@@ -112,8 +113,9 @@ namespace indigo
         rapidjson::Value _meta_objects;
         rapidjson::Value _mol_array;
         rapidjson::Value _monomer_array;
+        rapidjson::Value _connection_array;
         rapidjson::Value _templates;
-        std::unordered_map<std::string, std::reference_wrapper<rapidjson::Value>> _id_to_template;
+        std::unordered_map<std::string, int> _id_to_template;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
