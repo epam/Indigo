@@ -3117,7 +3117,10 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
     Superatom& su = (Superatom&)sgroups.getSGroup(sg_idx);
     // TODO: special handling needed for LGRP
     if (su.sa_class.size() && std::string(su.sa_class.ptr()) == "LGRP")
+    {
+        removeSGroup(sg_idx);
         return -1;
+    }
 
     ap_points_atoms.clear();
     ap_points_ids.clear();
@@ -3237,6 +3240,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
     int idx = this->asMolecule().addAtom(-1);
     this->asMolecule().setTemplateAtom(idx, tg.tgroup_name.ptr());
     this->asMolecule().setTemplateAtomClass(idx, tg.tgroup_class.ptr());
+    this->asMolecule().setTemplateAtomSeqid(idx, su.seqid);
 
     for (int j = 0; j < ap_points_atoms.size(); j++)
     {
