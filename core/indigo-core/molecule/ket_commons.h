@@ -28,9 +28,9 @@
 #include "common/math/algebra.h"
 #include "graph/graph.h"
 #include "molecule/molecule_cip_calculator.h"
+#include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "reaction/base_reaction.h"
-#include "molecule/parse_utils.h"
 
 namespace indigo
 {
@@ -153,7 +153,6 @@ namespace indigo
         }
         return res;
     }
-
 
     class KETSimpleObject : public MetaObject
     {
