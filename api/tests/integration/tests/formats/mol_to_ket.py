@@ -41,7 +41,7 @@ files = [
     "pepchem",
     "peptides",
     "fmoc",
-    "apamine"
+    "apamine",
 ]
 
 files.sort()
