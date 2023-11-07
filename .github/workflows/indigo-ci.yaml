@@ -278,7 +278,7 @@ jobs:
         if: ${{ matrix.os == 'macos' }}
         run: python3 -m pip install dist/*macosx_10_7_intel*.whl
       - name: Test
-        run: python3 -w api/tests/integration/test.py -t 1 -j junit_report.xml
+        run: python3 -w ignore api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v3
