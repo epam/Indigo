@@ -1115,6 +1115,22 @@ void MoleculeJsonLoader::fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol)
     }
 }
 
+std::string MoleculeJsonLoader::monomerTemplateClass(const rapidjson::Value& monomer_template)
+{
+    std::string result;
+    if (monomer_template.HasMember("class"))
+        result = monomer_template["class"].GetString();
+    else if (monomer_template.HasMember("classHELM"))
+    {
+        result = monomer_template["classHELM"].GetString();
+        if (result == kMonomerClassPEPTIDE)
+            result = kMonomerClassAA;
+    }
+    else
+        result = kMonomerClassCHEM;
+    return result;
+}
+
 void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol)
 {
     auto tg_idx = mol.tgroups.addTGroup();
@@ -1137,9 +1153,11 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
         std::string id = monomer_template["id"].GetString();
         auto id_vecs = split(id, '_');
         tg.tgroup_name.appendString(id_vecs.front().c_str(), true);
-        if (monomer_template.HasMember("class"))
+
+        mclass = monomerTemplateClass(monomer_template);
+
+        if (mclass.size())
         {
-            mclass = monomer_template["class"].GetString();
             if (mclass == kMonomerClassAminoAcid)
                 mclass = kMonomerClassAA;
             else if (mclass == kMonomerClassDAminoAcid)
@@ -1147,9 +1165,14 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
             else
                 std::transform(mclass.begin(), mclass.end(), mclass.begin(), ::toupper);
 
+            std::string analog_alias;
             if (monomer_template.HasMember("naturalAnalog"))
+                analog_alias = monomerAliasByName(mclass, monomer_template["naturalAnalog"].GetString());
+            else if (monomer_template.HasMember("naturalAnalogShort"))
+                analog_alias = monomer_template["naturalAnalogShort"].GetString();
+
+            if (analog_alias.size())
             {
-                std::string analog_alias = monomerAliasByName(mclass, monomer_template["naturalAnalog"].GetString());
                 std::string natrep_class = mclass == kMonomerClassdAA ? kMonomerClassAA : mclass;
                 natreplace = natrep_class + "/" + analog_alias;
                 tg.tgroup_natreplace.appendString(natreplace.c_str(), true);
@@ -1423,10 +1446,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         std::string template_id = ma["templateId"].GetString();
         auto temp_it = _id_to_template.find(template_id);
         if (temp_it != _id_to_template.end())
-        {
-            auto& temp = _templates[temp_it->second];
-            mol.asMolecule().setTemplateAtomClass(idx, monomerMolClass(temp["class"].GetString()).c_str());
-        }
+            mol.asMolecule().setTemplateAtomClass(idx, monomerMolClass(monomerTemplateClass(_templates[temp_it->second])).c_str());
     }
 
     std::vector<int> ignore_cistrans(mol.edgeCount());
