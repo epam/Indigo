@@ -1427,10 +1427,14 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             parseMonomerTemplate(mt, mol);
     }
 
+    std::unordered_map<int, int> monomer_id_mapping;
     for (SizeType i = 0; i < _monomer_array.Size(); i++)
     {
         auto& ma = _monomer_array[i];
         int idx = mol.asMolecule().addAtom(-1);
+        int monomer_id = std::stoi(std::string(ma["id"].GetString()));
+        monomer_id_mapping.emplace(monomer_id, idx);
+
         if (ma.HasMember("alias"))
             mol.asMolecule().setTemplateAtom(idx, ma["alias"].GetString());
 
@@ -1534,8 +1538,8 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         auto& ep1 = connection["endpoint1"];
         auto& ep2 = connection["endpoint2"];
 
-        auto mon_id1 = extract_id(ep1["monomerId"].GetString(), "monomer");
-        auto mon_id2 = extract_id(ep2["monomerId"].GetString(), "monomer");
+        auto mon_id1 = monomer_id_mapping.at(extract_id(ep1["monomerId"].GetString(), "monomer"));
+        auto mon_id2 = monomer_id_mapping.at(extract_id(ep2["monomerId"].GetString(), "monomer"));
 
         std::string atp1 = convertAPFromHELM(ep1["attachmentPointId"].GetString());
         std::string atp2 = convertAPFromHELM(ep2["attachmentPointId"].GetString());
