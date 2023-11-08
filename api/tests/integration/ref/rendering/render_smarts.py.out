@@ -458,9 +458,11 @@ smarts/0152.png rendering status: OK
 
 smarts/0153.png rendering status: OK
 154: C[C@?](F)(Cl)Br
-  SMILES loader: invalid character within atom description: '?'
+
+smarts/0154.png rendering status: OK
 155: C[C@?H](Cl)Br
-  SMILES loader: invalid character within atom description: '?'
+
+smarts/0155.png rendering status: OK
 156: [$([cX2+](:*):*)]
 
 smarts/0156.png rendering status: OK

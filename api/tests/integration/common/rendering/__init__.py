@@ -202,7 +202,18 @@ def checkBitmapSimilarity(filename, ref_filename):
             "%s/out/%s" % (dirname, filename),
         )
     except RenderingTestException as e:
-        return "%s rendering status: Problem: %s" % (filename, str(e))
+        b64 = ""
+        try:
+            with open("%s/out/%s" % (dirname, filename), "rb") as file:
+                binary_data = file.read()
+            b64 = base64.b64encode(binary_data)
+        except:
+            pass
+        return "%s rendering status: Problem: %s\n%s\n" % (
+            filename,
+            str(e),
+            b64,
+        )
 
     channels = ["red", "green", "blue", "alpha"]
     with open("%s/out/%s" % (dirname, filename), "rb") as file:

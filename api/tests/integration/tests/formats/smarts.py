@@ -248,3 +248,15 @@ print("*******  Any wildcard '~' in bond custom query *******")
 smarts = "[#7]~,-[#6]"
 expected = '"bonds":[{"customQuery":"~,-","atoms":[0,1]}]}}'
 test_smarts_load_save_through_ket(smarts, expected)
+test_smarts_load_save_through_ket(
+    "[C;@OH2?]",
+    '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C;@OH2?"}}]',
+)
+test_smarts_load_save_through_ket(
+    "[C;@?]",
+    '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C;@?"}}]',
+)
+test_smarts_load_save_through_ket(
+    "[C;@@?]",
+    '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C;@@?"}}]',
+)
