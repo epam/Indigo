@@ -65,6 +65,7 @@ namespace indigo_cpp
         IndigoMolecule loadMoleculeFromFile(const std::string& path);
 
         IndigoQueryMolecule loadQueryMolecule(const std::string& data);
+        IndigoQueryMolecule loadSmarts(const std::string& data);
 
         IndigoReaction loadReaction(const std::string& data);
 
