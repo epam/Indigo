@@ -37,7 +37,7 @@ def getIndigoVersion():
     for line in open(
         os.path.join(cur_dir, "../../../indigo/api/indigo-version.cmake")
     ):
-        m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
+        m = re.search(r'SET\(INDIGO_VERSION "(.*)"', line)
         if m:
             version = m.group(1)
     return version
