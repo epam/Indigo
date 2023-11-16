@@ -470,10 +470,6 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         int charge = mol.getAtomCharge(i);
         int radical = 0;
         int valence = mol.getExplicitValence(i);
-
-        if (mol.isQueryMolecule())
-            mol.asQueryMolecule().getAtom(i).sureValue(QueryMolecule::ATOM_TOTAL_BOND_ORDER, valence);
-
         int stereo_parity = _getStereocenterParity(mol, i);
 
         if (!mol.isRSite(i) && !mol.isPseudoAtom(i) && !mol.isTemplateAtom(i))
