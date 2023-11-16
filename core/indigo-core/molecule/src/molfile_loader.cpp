@@ -520,7 +520,7 @@ void MolfileLoader::_readCtab2000()
             {
                 if (valence == 15)
                     valence = 0;
-                atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_VALENCE, valence)));
+                atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_BOND_ORDER, valence)));
             }
 
             idx = _qmol->addAtom(atom.release());
@@ -2577,15 +2577,7 @@ void MolfileLoader::_readCtab3000()
                     if (valence == -1)
                         valence = 0;
 
-                    if (_mol != 0)
-                    {
-                        _mol->setExplicitValence(i, valence);
-                    }
-                    else
-                    {
-                        _qmol->resetAtom(
-                            i, QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_BOND_ORDER, valence)));
-                    }
+                    _bmol->setExplicitValence(i, valence);
                 }
                 else if (strcmp(prop, "HCOUNT") == 0)
                 {

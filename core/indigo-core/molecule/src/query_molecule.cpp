@@ -89,10 +89,17 @@ int QueryMolecule::getExplicitValence(int idx)
 {
     int res;
 
-    if (_atoms[idx]->sureValue(ATOM_VALENCE, res))
+    if (_atoms[idx]->sureValue(ATOM_TOTAL_BOND_ORDER, res))
         return res;
 
     return -1;
+}
+
+void QueryMolecule::setExplicitValence(int idx, int valence)
+{
+    std::unique_ptr<QueryMolecule::Atom> new_atom(QueryMolecule::Atom::und(_atoms[idx], new QueryMolecule::Atom(QueryMolecule::ATOM_VALENCE, valence)));
+    _atoms.reset(idx);
+    _atoms.set(idx, new_atom.release());
 }
 
 int QueryMolecule::getAtomAromaticity(int idx)
