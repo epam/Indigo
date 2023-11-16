@@ -85,10 +85,11 @@ int QueryMolecule::getAtomRadical(int idx)
     return -1;
 }
 
+// explicit valence plays role of required connectivity
+// (ATOM_TOTAL_ORDER) in QueryMolecule
 int QueryMolecule::getExplicitValence(int idx)
 {
     int res;
-
     if (_atoms[idx]->sureValue(ATOM_TOTAL_BOND_ORDER, res))
         return res;
 
@@ -97,7 +98,7 @@ int QueryMolecule::getExplicitValence(int idx)
 
 void QueryMolecule::setExplicitValence(int idx, int valence)
 {
-    resetAtom(idx, QueryMolecule::Atom::und(_atoms[idx], new QueryMolecule::Atom(QueryMolecule::ATOM_VALENCE, valence)));
+    resetAtom(idx, QueryMolecule::Atom::und(_atoms[idx], new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_BOND_ORDER, valence)));
 }
 
 int QueryMolecule::getAtomAromaticity(int idx)
