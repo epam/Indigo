@@ -1,0 +1,29 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    12.678664207458496,
+                    -6.783467769622803,
+                    0.0
+                ],
+                "ringBondCount": -2,
+                "substitutionCount": -1,
+                "unsaturatedAtom": true,
+                "charge": 2,
+                "explicitValence": 1,
+                "invRet": 2
+            }
+        ],
+        "bonds": []
+    }
+}
