@@ -2583,7 +2583,8 @@ void MolfileLoader::_readCtab3000()
                     }
                     else
                     {
-                        _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_VALENCE, valence)));
+                        _qmol->resetAtom(
+                            i, QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_BOND_ORDER, valence)));
                     }
                 }
                 else if (strcmp(prop, "HCOUNT") == 0)
