@@ -47,10 +47,12 @@ files = [
 files.sort()
 for filename in files:
     try:
+        indigo.setOption("molfile-saving-mode", "auto")
         mol = indigo.loadMoleculeFromFile(
             os.path.join(root, filename + ".ket")
         )
     except IndigoException as e:
+        indigo.setOption("molfile-saving-mode", "3000")
         mol = indigo.loadQueryMoleculeFromFile(
             os.path.join(root, filename + ".ket")
         )
