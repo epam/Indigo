@@ -41,11 +41,15 @@ files = [
     "anacyclamide",
     "accl_no_class",
     "conj_no_class",
+    "query_explicit_val",
 ]
 
 files.sort()
 for filename in files:
-    mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
+    try:
+        mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
+    except IndigoException as e:
+        mol = indigo.loadQueryMoleculeFromFile(os.path.join(root, filename + ".ket"))
     # with open(os.path.join(ref_path, filename) + ".mol", "w") as file:
     #     file.write(mol.molfile())
 
