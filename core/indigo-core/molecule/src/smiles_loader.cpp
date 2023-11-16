@@ -3278,6 +3278,13 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                     chirality_value = value;
                 }
             }
+            if (scanner.lookNext() == '?')
+            {
+                if (!smarts_mode)
+                    throw Error("@? can be used only with smarts_mode");
+                chirality_value |= QueryMolecule::CHIRALITY_OR_UNSPECIFIED;
+                scanner.skip(1);
+            }
             if (smarts_mode)
                 subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_CHIRALITY, chirality_type, chirality_value);
         }

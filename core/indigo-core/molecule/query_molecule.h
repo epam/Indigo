@@ -127,6 +127,7 @@ namespace indigo
         {
             CHIRALITY_ANTICLOCKWISE = 1,
             CHIRALITY_CLOCKWISE = 2,
+            CHIRALITY_OR_UNSPECIFIED = 0x100 // should be twice bigger tnan any of CHIRALITY_*_MAX
         };
 
         class DLLEXPORT Node
@@ -421,6 +422,7 @@ namespace indigo
 
     protected:
         void _getAtomDescription(Atom* atom, Output& out, int depth);
+        static void _getAtomChiralityDescription(Atom* atom, Output& output);
         void _getBondDescription(Bond* bond, Output& out);
         int _getAtomMinH(Atom* atom);
 
