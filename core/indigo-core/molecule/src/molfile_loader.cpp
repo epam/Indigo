@@ -2751,6 +2751,13 @@ void MolfileLoader::_readCtab3000()
                                          QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_TEMPLATE_SEQID, seq_id)));
                     }
                 }
+                else if (strcmp(prop, "SEQNAME") == 0)
+                {
+                    QS_DEF(Array<char>, seq_name);
+                    strscan.readWord(seq_name, 0);
+                    seq_name.push(0);
+                    
+                }
                 else
                 {
                     throw Error("unsupported property of CTAB3000: %s", prop);

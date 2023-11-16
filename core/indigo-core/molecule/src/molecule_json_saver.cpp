@@ -1108,7 +1108,7 @@ std::string MoleculeJsonSaver::monomerKETClass(const std::string& class_name)
 
 std::string MoleculeJsonSaver::naturalAnalog(const std::string& natreplace)
 {
-    std::string res;
+    std::string res = natreplace;
     if (natreplace.size())
     {
         auto nat_replace = split(std::string(natreplace.c_str()), '/');
