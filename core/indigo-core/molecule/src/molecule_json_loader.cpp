@@ -826,8 +826,8 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
         MultipleGroup& mg = (MultipleGroup&)sgroup;
         if (mg.multiplier > 1)
         {
-            int start_order = start_bond > 0 ? bmol.getBondOrder(start_bond) : -1;
-            int end_order = end_bond > 0 ? bmol.getBondOrder(end_bond) : -1;
+            int start_order = start_bond >= 0 ? bmol.getBondOrder(start_bond) : -1;
+            int end_order = end_bond >= 0 ? bmol.getBondOrder(end_bond) : -1;
             for (int j = 0; j < mg.multiplier - 1; j++)
             {
                 bmol.mergeWithMolecule(*rep, &mapping, 0);
