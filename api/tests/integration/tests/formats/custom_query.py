@@ -57,5 +57,5 @@ print(
     " wrong smarts for ring bond count as drawn ****"
 )
 fname = "ket_with_bond_stereo_ether.ket"
-expected = "[#6]1-[#6]=[#6]-[#6]=[#6]\[#6]=1"
+expected = r"[#6]1-[#6]=[#6]-[#6]=[#6]\[#6]=1"
 test_ket_to_smarts(fname, expected)

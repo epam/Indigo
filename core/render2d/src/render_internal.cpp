@@ -2472,16 +2472,9 @@ void MoleculeRenderInternal::_writeQueryAtomToString(Output& output, int aid)
         }
         else if (ad.queryLabel == QueryMolecule::QUERY_ATOM_LIST || ad.queryLabel == QueryMolecule::QUERY_ATOM_NOTLIST)
         {
-            if (ad.queryLabel == QueryMolecule::QUERY_ATOM_NOTLIST)
-                output.printf("!");
-            output.printf("[");
-            for (int i = 0; i < ad.list.size(); ++i)
-            {
-                if (i > 0)
-                    output.printf(",");
-                output.printf("%s", Element::toString(ad.list[i]));
-            }
-            output.printf("]");
+            QueryMolecule& qm = bm.asQueryMolecule();
+            QueryMolecule::Atom& qa = qm.getAtom(aid);
+            QueryMolecule::writeSmartsAtom(output, &qa, -1, -1, 0, false, false, bm.original_format);
         }
         else
         {

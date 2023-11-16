@@ -16,7 +16,7 @@ indigo.setOption("molfile-saving-skip-date", True)
 
 def reducePrecision(str_data):
     # Remove last digit because of float-point rounding differences between Windows and Linux
-    return re.sub("(\d.\d\d\d\d\d)\d", lambda m: "%s0" % m.group(1), str_data)
+    return re.sub(r"(\d.\d\d\d\d\d)\d", lambda m: "%s0" % m.group(1), str_data)
 
 
 def testSerializeBadMols(filename):
