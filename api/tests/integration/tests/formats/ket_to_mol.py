@@ -47,9 +47,13 @@ files = [
 files.sort()
 for filename in files:
     try:
-        mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
+        mol = indigo.loadMoleculeFromFile(
+            os.path.join(root, filename + ".ket")
+        )
     except IndigoException as e:
-        mol = indigo.loadQueryMoleculeFromFile(os.path.join(root, filename + ".ket"))
+        mol = indigo.loadQueryMoleculeFromFile(
+            os.path.join(root, filename + ".ket")
+        )
     # with open(os.path.join(ref_path, filename) + ".mol", "w") as file:
     #     file.write(mol.molfile())
 
