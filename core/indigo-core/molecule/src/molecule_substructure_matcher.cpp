@@ -541,6 +541,8 @@ bool MoleculeSubstructureMatcher::matchQueryBond(QueryMolecule::Bond* query, Bas
     case QueryMolecule::OP_NOT:
         return !matchQueryBond(query->child(0), target, sub_idx, super_idx, am, flags ^ MATCH_DISABLED_AS_TRUE);
 
+    case QueryMolecule::BOND_ANY:
+        return true;
     case QueryMolecule::BOND_ORDER: {
         if (flags & MATCH_BOND_TYPE)
         {

@@ -1124,7 +1124,6 @@
     "monomerTemplate-Thy_0": {
         "type": "monomerTemplate",
         "id": "Thy_0",
-        "class": "DNA",
         "classHELM": "RNA",
         "alias": "T",
         "attachmentPoints": [
@@ -1496,7 +1495,6 @@
     "monomerTemplate-Gua_1": {
         "type": "monomerTemplate",
         "id": "Gua_1",
-        "class": "DNA",
         "classHELM": "RNA",
         "alias": "G",
         "attachmentPoints": [
@@ -1905,7 +1903,6 @@
     "monomerTemplate-Cyt_2": {
         "type": "monomerTemplate",
         "id": "Cyt_2",
-        "class": "DNA",
         "classHELM": "RNA",
         "alias": "C",
         "attachmentPoints": [
@@ -2262,7 +2259,6 @@
     "monomerTemplate-Ade_3": {
         "type": "monomerTemplate",
         "id": "Ade_3",
-        "class": "DNA",
         "classHELM": "RNA",
         "alias": "A",
         "attachmentPoints": [
@@ -2656,7 +2652,6 @@
     "monomerTemplate-Asp_4": {
         "type": "monomerTemplate",
         "id": "Asp_4",
-        "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "D",
         "attachmentPoints": [
@@ -2853,7 +2848,6 @@
     "monomerTemplate-Phe_5": {
         "type": "monomerTemplate",
         "id": "Phe_5",
-        "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "F",
         "attachmentPoints": [
@@ -3079,7 +3073,6 @@
     "monomerTemplate-Gly_6": {
         "type": "monomerTemplate",
         "id": "Gly_6",
-        "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "G",
         "attachmentPoints": [
@@ -3191,7 +3184,6 @@
     "monomerTemplate-His_7": {
         "type": "monomerTemplate",
         "id": "His_7",
-        "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "H",
         "attachmentPoints": [
@@ -3425,7 +3417,6 @@
     "monomerTemplate-Ile_8": {
         "type": "monomerTemplate",
         "id": "Ile_8",
-        "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "I",
         "attachmentPoints": [
@@ -3601,7 +3592,6 @@
     "monomerTemplate-Lys_9": {
         "type": "monomerTemplate",
         "id": "Lys_9",
-        "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "K",
         "attachmentPoints": [
@@ -3813,7 +3803,6 @@
     "monomerTemplate-Sec_10": {
         "type": "monomerTemplate",
         "id": "Sec_10",
-        "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "U",
         "attachmentPoints": [
@@ -3980,7 +3969,6 @@
     "monomerTemplate-Val_11": {
         "type": "monomerTemplate",
         "id": "Val_11",
-        "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "V",
         "attachmentPoints": [
@@ -4139,7 +4127,6 @@
     "monomerTemplate-Glu_12": {
         "type": "monomerTemplate",
         "id": "Glu_12",
-        "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "E",
         "attachmentPoints": [
@@ -4351,7 +4338,6 @@
     "monomerTemplate-Cys_13": {
         "type": "monomerTemplate",
         "id": "Cys_13",
-        "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "C",
         "attachmentPoints": [
@@ -4518,7 +4504,6 @@
     "monomerTemplate-SMCC_13": {
         "type": "monomerTemplate",
         "id": "SMCC_13",
-        "class": "Linker",
         "classHELM": "CHEM",
         "alias": "SMCC",
         "attachmentPoints": [
@@ -4784,7 +4769,6 @@
     "monomerTemplate-Glu_14": {
         "type": "monomerTemplate",
         "id": "Glu_14",
-        "class": "XLINKAA",
         "classHELM": "PEPTIDE",
         "alias": "E",
         "attachmentPoints": [
@@ -4936,7 +4920,6 @@
     "monomerTemplate-Cyt_15": {
         "type": "monomerTemplate",
         "id": "Cyt_15",
-        "class": "XLINKDNA",
         "classHELM": "RNA",
         "alias": "C",
         "attachmentPoints": [

@@ -32,6 +32,15 @@ files = [
     "dthymine",
     "dala",
     "chem",
+    "rna_mod",
+    "conjugate",
+    "dna_mod",
+    "pepchem",
+    "peptides",
+    "fmoc",
+    "anacyclamide",
+    "accl_no_class",
+    "conj_no_class",
     "sgroups_mul",
 ]
 

@@ -52,6 +52,17 @@ namespace indigo
         return true;
     }
 
+    inline int extract_id(const std::string& str, const std::string& start)
+    {
+        if (str.find(start) == 0)
+        {
+            auto ss_id = str.substr(start.size());
+            if (ss_id.size())
+                return std::stoi(ss_id);
+        }
+        return -1;
+    }
+
 } // namespace indigo
 
 #ifdef _WIN32

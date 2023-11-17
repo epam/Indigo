@@ -1137,10 +1137,11 @@ std::string MoleculeJsonSaver::monomerAlias(const TGroup& tg)
         alias = normalizeMonomerAlias(monomer_class, alias);
     else
     {
+        alias = name;
         if (name.size() == 1)
-            alias = std::toupper(name[0]);
-        else
-            alias = monomerId(tg);
+            alias = std::toupper(name.front());
+        else if (name.empty())
+            alias = std::string("#") + std::to_string(tg.tgroup_id - 1);
     }
     return alias;
 }
