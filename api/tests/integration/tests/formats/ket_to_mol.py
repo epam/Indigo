@@ -32,6 +32,7 @@ files = [
     "dthymine",
     "dala",
     "chem",
+    "sgroups_mul",
 ]
 
 files.sort()
