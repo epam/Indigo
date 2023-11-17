@@ -228,6 +228,8 @@ def main():
             test_status = test_status | 1
         if test_result[2] == res_error:
             test_status = test_status | 2
+            for i in test_result:
+                print("%s" % i)
         if test_result[2] == res_new:
             test_status = test_status | 4
     total_time = time.time() - total_time
