@@ -166,6 +166,12 @@ IndigoQueryMolecule IndigoSession::loadQueryMolecule(const std::string& data)
     return {_checkResult(indigoLoadQueryMoleculeFromString(data.c_str())), shared_from_this()};
 }
 
+IndigoQueryMolecule IndigoSession::loadSmarts(const std::string& data)
+{
+    setSessionId();
+    return {_checkResult(indigoLoadSmartsFromString(data.c_str())), shared_from_this()};
+}
+
 IndigoWriteBuffer IndigoSession::writeBuffer()
 {
     setSessionId();

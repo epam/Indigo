@@ -207,7 +207,7 @@ void QueryMolecule::getAtomDescription(int idx, Array<char>& description)
     ArrayOutput out(description);
 
     out.writeChar('[');
-    _getAtomDescription(_atoms[idx], out, 0);
+    writeSmartsAtom(out, _atoms[idx], -1, -1, 1, false, false, original_format);
     out.writeChar(']');
     out.writeChar(0);
 }
@@ -2666,7 +2666,24 @@ bool QueryMolecule::queryAtomIsRegular(QueryMolecule& qm, int aid)
 {
     QueryMolecule::Atom& qa = qm.getAtom(aid);
     QueryMolecule::Atom* qc = stripKnownAttrs(qa);
-    return qc && qc->type == QueryMolecule::ATOM_NUMBER;
+    if (qm.original_format == SMARTS || qm.original_format == KET)
+    {
+        // Regular means 'N' or 'Cl' - that means aliphatic for smarts
+        if (qc || qa.type != OP_AND || qa.children.size() != 2)
+            return false;
+        bool aliphatic = false;
+        int atom_number = -1;
+        for (int i = 0; i < 2; i++)
+            if (qa.child(i)->type == QueryMolecule::ATOM_NUMBER)
+                atom_number = qa.child(i)->value_min;
+            else if (qa.child(i)->type == ATOM_AROMATICITY && qa.child(i)->value_min == ATOM_ALIPHATIC)
+                aliphatic = true;
+        return aliphatic && atom_number >= ELEM_MIN;
+    }
+    else
+    {
+        return qc && qc->type == QueryMolecule::ATOM_NUMBER;
+    }
 }
 
 bool QueryMolecule::queryAtomIsSpecial(QueryMolecule& qm, int aid)
