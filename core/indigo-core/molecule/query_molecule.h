@@ -295,6 +295,7 @@ namespace indigo
         int getAtomIsotope(int idx) override;
         int getAtomRadical(int idx) override;
         int getExplicitValence(int idx) override;
+        void setExplicitValence(int idx, int valence) override;
         int getAtomAromaticity(int idx) override;
         int getAtomValence(int idx) override;
         int getAtomSubstCount(int idx) override;
