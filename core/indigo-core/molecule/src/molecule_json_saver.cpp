@@ -818,7 +818,8 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                                               {QueryMolecule::ATOM_SMALLEST_RING_SIZE, "ringSize"},
                                               {QueryMolecule::ATOM_CONNECTIVITY, "connectivity"}};
             if (query_atom_properties.count(QueryMolecule::ATOM_CHIRALITY) &&
-                query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_min != QueryMolecule::CHIRALITY_GENERAL)
+                (query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_min != QueryMolecule::CHIRALITY_GENERAL ||
+                 query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_max & QueryMolecule::CHIRALITY_OR_UNSPECIFIED))
                 needCustomQuery = true;
             bool hasQueryProperties =
                 query_atom_properties.count(QueryMolecule::ATOM_AROMATICITY) > 0 ||
@@ -851,7 +852,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                     }
                     if (query_atom_properties.count(QueryMolecule::ATOM_CHIRALITY))
                     {
-                        // This is CHIRALITY_GENERAL
+                        // This is CHIRALITY_GENERAL without CHIRALITY_OR_UNSPECIFIED
                         writer.Key("chirality");
                         value = query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_max;
                         if (value == QueryMolecule::CHIRALITY_CLOCKWISE)

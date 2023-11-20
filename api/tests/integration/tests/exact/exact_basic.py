@@ -93,7 +93,7 @@ def testTautomerMatchFlags():
     testSingleMatch(mol1, mol2, "TAU R2", True)
     testSingleMatch(mol1, mol2, "TAU R1 R3", False)
     mol1 = indigo.loadMolecule("OC1=C(N=NC2=CC=CC=C2)C2=CC=CC=C2C=C1")
-    mol2 = indigo.loadMolecule("O=C1C=CC2=CC=CC=C2\C1=N/NC1=CC=CC=C1")
+    mol2 = indigo.loadMolecule(r"O=C1C=CC2=CC=CC=C2\C1=N/NC1=CC=CC=C1")
     mol2.aromatize()
     testSingleMatch(mol1, mol2, "TAU", True)
     testSingleMatch(mol1, mol2, "TAU R1", True)
