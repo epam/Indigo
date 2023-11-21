@@ -102,6 +102,7 @@ namespace indigo
         void setStereoFlagPosition(const rapidjson::Value& pos, int fragment_index, BaseMolecule& mol);
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
         void parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol);
+        std::string monomerTemplateClass(const rapidjson::Value& monomer_template);
         std::string monomerMolClass(const std::string& class_name);
 
     private:

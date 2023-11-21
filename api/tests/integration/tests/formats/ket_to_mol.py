@@ -39,11 +39,23 @@ files = [
     "peptides",
     "fmoc",
     "anacyclamide",
+    "accl_no_class",
+    "conj_no_class",
+    "query_explicit_val",
 ]
 
 files.sort()
 for filename in files:
-    mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
+    try:
+        indigo.setOption("molfile-saving-mode", "auto")
+        mol = indigo.loadMoleculeFromFile(
+            os.path.join(root, filename + ".ket")
+        )
+    except IndigoException as e:
+        indigo.setOption("molfile-saving-mode", "3000")
+        mol = indigo.loadQueryMoleculeFromFile(
+            os.path.join(root, filename + ".ket")
+        )
     # with open(os.path.join(ref_path, filename) + ".mol", "w") as file:
     #     file.write(mol.molfile())
 

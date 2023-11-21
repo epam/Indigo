@@ -85,14 +85,20 @@ int QueryMolecule::getAtomRadical(int idx)
     return -1;
 }
 
+// explicit valence plays role of required connectivity
+// (ATOM_TOTAL_ORDER) in QueryMolecule
 int QueryMolecule::getExplicitValence(int idx)
 {
     int res;
-
-    if (_atoms[idx]->sureValue(ATOM_VALENCE, res))
+    if (_atoms[idx]->sureValue(ATOM_TOTAL_BOND_ORDER, res))
         return res;
 
     return -1;
+}
+
+void QueryMolecule::setExplicitValence(int idx, int valence)
+{
+    resetAtom(idx, QueryMolecule::Atom::und(_atoms[idx], new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_BOND_ORDER, valence)));
 }
 
 int QueryMolecule::getAtomAromaticity(int idx)
@@ -207,7 +213,7 @@ void QueryMolecule::getAtomDescription(int idx, Array<char>& description)
     ArrayOutput out(description);
 
     out.writeChar('[');
-    _getAtomDescription(_atoms[idx], out, 0);
+    writeSmartsAtom(out, _atoms[idx], -1, -1, 1, false, false, original_format);
     out.writeChar(']');
     out.writeChar(0);
 }
@@ -323,9 +329,63 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
         return;
     case ATOM_VALENCE:
         return;
+    case ATOM_CHIRALITY:
+        _getAtomChiralityDescription(atom, out);
+        break;
     default:
         throw new Error("Unrecognized constraint type %d", atom->type);
     }
+}
+
+void QueryMolecule::_getAtomChiralityDescription(Atom* atom, Output& output)
+{
+    int chirality_type = atom->value_min;
+    int chirality_value = atom->value_max & ~CHIRALITY_OR_UNSPECIFIED;
+    switch (chirality_type)
+    {
+    case CHIRALITY_GENERAL:
+        switch (chirality_value)
+        {
+        case CHIRALITY_ANTICLOCKWISE:
+            output.writeChar('@');
+            break;
+        case CHIRALITY_CLOCKWISE:
+            output.writeString("@@");
+            break;
+        default:
+            throw Error("Wrong chirality value %d.", chirality_value);
+        }
+        break;
+    case CHIRALITY_TETRAHEDRAL:
+        if (chirality_value > CHIRALITY_TETRAHEDRAL_MAX)
+            throw Error("Wrong TH chirality value %d", chirality_value);
+        output.printf("@TH%d", chirality_value);
+        break;
+    case CHIRALITY_ALLENE_LIKE:
+        if (chirality_value > CHIRALITY_ALLENE_LIKE_MAX)
+            throw Error("Wrong AL chirality value %d", chirality_value);
+        output.printf("@AL%d", chirality_value);
+        break;
+    case CHIRALITY_SQUARE_PLANAR:
+        if (chirality_value > CHIRALITY_SQUARE_PLANAR_MAX)
+            throw Error("Wrong SP chirality value %d", chirality_value);
+        output.printf("@SP%d", chirality_value);
+        break;
+    case CHIRALITY_TRIGONAL_BIPYRAMIDAL:
+        if (chirality_value > CHIRALITY_TRIGONAL_BIPYRAMIDAL_MAX)
+            throw Error("Wrong TB chirality value %d", chirality_value);
+        output.printf("@TB%d", chirality_value);
+        break;
+    case CHIRALITY_OCTAHEDRAL:
+        if (chirality_value > CHIRALITY_OCTAHEDRAL_MAX)
+            throw Error("Wrong OH chirality value %d", chirality_value);
+        output.printf("@OH%d", chirality_value);
+        break;
+    default:
+        throw Error("Wrong chirality type value %d.", chirality_type);
+    }
+    if ((atom->value_max & CHIRALITY_OR_UNSPECIFIED) == CHIRALITY_OR_UNSPECIFIED)
+        output.writeChar('?');
 }
 
 std::string QueryMolecule::getSmartsBondStr(Bond* bond)
@@ -636,51 +696,7 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
     }
 
     case ATOM_CHIRALITY: {
-        int chirality_type = atom->value_min;
-        int chirality_value = atom->value_max;
-        switch (chirality_type)
-        {
-        case CHIRALITY_GENERAL:
-            switch (chirality_value)
-            {
-            case CHIRALITY_ANTICLOCKWISE:
-                output.writeChar('@');
-                break;
-            case CHIRALITY_CLOCKWISE:
-                output.writeString("@@");
-                break;
-            default:
-                throw Error("Wrong chirality value %d.", chirality_value);
-            }
-            break;
-        case CHIRALITY_TETRAHEDRAL:
-            if (chirality_value > CHIRALITY_TETRAHEDRAL_MAX)
-                throw Error("Wrong TH chirality value %d", chirality_value);
-            output.printf("@TH%d", chirality_value);
-            break;
-        case CHIRALITY_ALLENE_LIKE:
-            if (chirality_value > CHIRALITY_ALLENE_LIKE_MAX)
-                throw Error("Wrong AL chirality value %d", chirality_value);
-            output.printf("@AL%d", chirality_value);
-            break;
-        case CHIRALITY_SQUARE_PLANAR:
-            if (chirality_value > CHIRALITY_SQUARE_PLANAR_MAX)
-                throw Error("Wrong SP chirality value %d", chirality_value);
-            output.printf("@SP%d", chirality_value);
-            break;
-        case CHIRALITY_TRIGONAL_BIPYRAMIDAL:
-            if (chirality_value > CHIRALITY_TRIGONAL_BIPYRAMIDAL_MAX)
-                throw Error("Wrong TB chirality value %d", chirality_value);
-            output.printf("@TB%d", chirality_value);
-            break;
-        case CHIRALITY_OCTAHEDRAL:
-            if (chirality_value > CHIRALITY_OCTAHEDRAL_MAX)
-                throw Error("Wrong OH chirality value %d", chirality_value);
-            output.printf("@OH%d", chirality_value);
-            break;
-        default:
-            throw Error("Wrong chirality type value %d.", chirality_type);
-        }
+        _getAtomChiralityDescription(atom, output);
         break;
     }
     case ATOM_RSITE:
@@ -2292,8 +2308,7 @@ bool QueryMolecule::isKnownAttr(QueryMolecule::Atom& qa)
     return (qa.type == QueryMolecule::ATOM_CHARGE || qa.type == QueryMolecule::ATOM_ISOTOPE || qa.type == QueryMolecule::ATOM_RADICAL ||
             qa.type == QueryMolecule::ATOM_VALENCE || qa.type == QueryMolecule::ATOM_TOTAL_H || qa.type == QueryMolecule::ATOM_SUBSTITUENTS ||
             qa.type == QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN || qa.type == QueryMolecule::ATOM_RING_BONDS ||
-            qa.type == QueryMolecule::ATOM_RING_BONDS_AS_DRAWN || qa.type == QueryMolecule::ATOM_UNSATURATION || qa.type == QueryMolecule::ATOM_AROMATICITY ||
-            qa.type == QueryMolecule::ATOM_SSSR_RINGS || qa.type == QueryMolecule::ATOM_SMALLEST_RING_SIZE || qa.type == QueryMolecule::ATOM_CONNECTIVITY) &&
+            qa.type == QueryMolecule::ATOM_RING_BONDS_AS_DRAWN || qa.type == QueryMolecule::ATOM_UNSATURATION) &&
            qa.value_max == qa.value_min;
 }
 
@@ -2657,7 +2672,24 @@ bool QueryMolecule::queryAtomIsRegular(QueryMolecule& qm, int aid)
 {
     QueryMolecule::Atom& qa = qm.getAtom(aid);
     QueryMolecule::Atom* qc = stripKnownAttrs(qa);
-    return qc && qc->type == QueryMolecule::ATOM_NUMBER;
+    if (qm.original_format == SMARTS || qm.original_format == KET)
+    {
+        // Regular means 'N' or 'Cl' - that means aliphatic for smarts
+        if (qc || qa.type != OP_AND || qa.children.size() != 2)
+            return false;
+        bool aliphatic = false;
+        int atom_number = -1;
+        for (int i = 0; i < 2; i++)
+            if (qa.child(i)->type == QueryMolecule::ATOM_NUMBER)
+                atom_number = qa.child(i)->value_min;
+            else if (qa.child(i)->type == ATOM_AROMATICITY && qa.child(i)->value_min == ATOM_ALIPHATIC)
+                aliphatic = true;
+        return aliphatic && atom_number >= ELEM_MIN;
+    }
+    else
+    {
+        return qc && qc->type == QueryMolecule::ATOM_NUMBER;
+    }
 }
 
 bool QueryMolecule::queryAtomIsSpecial(QueryMolecule& qm, int aid)

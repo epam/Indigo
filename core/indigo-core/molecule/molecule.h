@@ -59,7 +59,7 @@ namespace indigo
         void setAtomIsotope(int idx, int isotope);
         void setAtomRadical(int idx, int radical);
         void setValence(int idx, int valence);
-        void setExplicitValence(int idx, int valence);
+        void setExplicitValence(int idx, int valence) override;
         void resetExplicitValence(int idx);
         bool isExplicitValenceSet(int idx);
 

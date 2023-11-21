@@ -1,6 +1,8 @@
 *** KET to MOL ***
+accl_no_class.ket:SUCCEED
 anacyclamide.ket:SUCCEED
 chem.ket:SUCCEED
+conj_no_class.ket:SUCCEED
 conjugate.ket:SUCCEED
 cysteine.ket:SUCCEED
 dala.ket:SUCCEED
@@ -10,6 +12,7 @@ dthymine.ket:SUCCEED
 fmoc.ket:SUCCEED
 pepchem.ket:SUCCEED
 peptides.ket:SUCCEED
+query_explicit_val.ket:SUCCEED
 rna_mod.ket:SUCCEED
 suplabel.ket:SUCCEED
 thymine.ket:SUCCEED

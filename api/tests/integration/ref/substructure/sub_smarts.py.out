@@ -1,11 +1,3 @@
-Cannot load query molecules from SMARTS
-  C[C@?](F)(Cl)Br 
-
-  Error: SMILES loader: invalid character within atom description: '?'
-Cannot load query molecules from SMARTS
-  C[C@?H](Cl)Br 
-
-  Error: SMILES loader: invalid character within atom description: '?'
 119914 #1
   cnt=551
 119914 #2
@@ -59021,6 +59013,8 @@ Results per query:
 #151: 12
 #152: 0
 #153: 90
+#154: 0
+#155: 0
 #156: 0
 #157: 422
 #158: 450
