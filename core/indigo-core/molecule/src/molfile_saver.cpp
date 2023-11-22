@@ -372,10 +372,6 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
     if (query)
         qmol = (QueryMolecule*)(&mol);
 
-    output.writeStringCR("M  V30 BEGIN CTAB");
-    output.printfCR("M  V30 COUNTS %d %d %d 0 0", mol.vertexCount(), mol.edgeCount(), mol.countSGroups());
-    output.writeStringCR("M  V30 BEGIN ATOM");
-
     int i;
     int iw = 1;
     QS_DEF(Array<char>, buf);
@@ -386,6 +382,27 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
     for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i), iw++)
         _atom_mapping[i] = iw;
+
+    if (add_implicit_h && qmol == 0)
+    {
+        for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
+        {
+            int atom_number = mol.getAtomNumber(i);
+            int charge = mol.getAtomCharge(i);
+            int hcount = MoleculeSavers::getHCount(mol, i, atom_number, charge);
+            if (Molecule::shouldWriteHCount(mol.asMolecule(), i) && hcount > 0)
+            {
+                int sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+                implicit_sgroups_indexes.push_front(sg_idx);
+                DataSGroup& sgroup = static_cast<DataSGroup&>(mol.sgroups.getSGroup(sg_idx));
+                sgroup.setMrv_implicit(i, hcount);
+            }
+        }
+    }
+
+    output.writeStringCR("M  V30 BEGIN CTAB");
+    output.printfCR("M  V30 COUNTS %d %d %d 0 0", mol.vertexCount(), mol.edgeCount(), mol.countSGroups());
+    output.writeStringCR("M  V30 BEGIN ATOM");
 
     std::stringstream coords;
     for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
@@ -485,23 +502,13 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         if ((mol.isQueryMolecule() && charge != CHARGE_UNKNOWN) || (!mol.isQueryMolecule() && charge != 0))
             out.printf(" CHG=%d", charge);
 
-        int hcount = MoleculeSavers::getHCount(mol, i, atom_number, charge);
-
         if (qmol != 0)
         {
+            int hcount = MoleculeSavers::getHCount(mol, i, atom_number, charge);
             if (hcount > 0)
                 out.printf(" HCOUNT=%d", hcount);
             else if (hcount == 0)
                 out.printf(" HCOUNT=-1");
-        }
-        else if (add_implicit_h && Molecule::shouldWriteHCount(mol.asMolecule(), i) && hcount > 0)
-        {
-            int sg_idx;
-
-            sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
-            implicit_sgroups_indexes.push_front(sg_idx);
-            DataSGroup& sgroup = static_cast<DataSGroup&>(mol.sgroups.getSGroup(sg_idx));
-            sgroup.setMrv_implicit(i, hcount);
         }
 
         if (radical > 0)
