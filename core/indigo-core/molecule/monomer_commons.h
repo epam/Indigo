@@ -1,10 +1,10 @@
 ﻿#ifndef __monomer_commons__
 #define __monomer_commons__
 
-#include <string>
-#include <unordered_set>
 #include "molecule/monomers_lib.h"
 #include "molecule/parse_utils.h"
+#include <string>
+#include <unordered_set>
 
 namespace indigo
 {
