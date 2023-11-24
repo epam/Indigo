@@ -47,6 +47,7 @@ namespace indigo
     };
 }
 
+/*
 namespace std
 {
     template <>
@@ -57,6 +58,6 @@ namespace std
             return size_t(t);
         }
     };
-}
+}*/
 
 #endif
