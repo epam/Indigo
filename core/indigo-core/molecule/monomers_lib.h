@@ -2,6 +2,7 @@
 #define __monomers_lib__
 
 #include <memory>
+#include <string>
 
 namespace indigo
 {
