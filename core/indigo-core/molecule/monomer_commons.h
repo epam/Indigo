@@ -3,7 +3,7 @@
 
 #include <string>
 #include <unordered_set>
-
+#include "molecule/monomers_lib.h"
 #include "molecule/parse_utils.h"
 
 namespace indigo
@@ -75,6 +75,5 @@ namespace indigo
         int leaving_group;
         std::string id;
     };
-
 }
 #endif

@@ -32,6 +32,7 @@ namespace indigo
     class Scanner;
     class Molecule;
     class QueryMolecule;
+    class MonomerTemplates;
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -73,6 +74,7 @@ namespace indigo
 
     protected:
         Scanner& _scanner;
+        const MonomerTemplates& _monomer_templates;
         bool _rgfile;
 
         CP_DECL;
@@ -108,6 +110,7 @@ namespace indigo
         int _atoms_num;
         int _bonds_num;
         bool _chiral;
+        int _max_template_id;
 
         void _readHeader();
         void _readCtabHeader();

@@ -1064,14 +1064,16 @@ std::string MoleculeJsonSaver::monomerId(const TGroup& tg)
 {
     std::string name;
     std::string monomer_class;
+    if (tg.tgroup_long_name.ptr())
+        return tg.tgroup_long_name.ptr();
     if (tg.tgroup_name.ptr())
         name = tg.tgroup_name.ptr();
     if (tg.tgroup_class.ptr())
         monomer_class = tg.tgroup_class.ptr();
     if (name.size())
-        name = monomerNameByAlias(monomer_class, name) + "_" + std::to_string(tg.tgroup_id - 1);
+        name = monomerNameByAlias(monomer_class, name) + "_" + std::to_string(tg.tgroup_id);
     else
-        name = std::string("#") + std::to_string(tg.tgroup_id - 1);
+        name = std::string("#") + std::to_string(tg.tgroup_id);
     return name;
 }
 
@@ -1515,11 +1517,21 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 writer.Key("alias");
                 auto alias = mol->getTemplateAtom(i);
                 writer.String(alias);
-                auto tg_it = _templates.find(alias);
-                if (tg_it != _templates.end())
+                int temp_idx = mol->getTemplateAtomTemplateIndex(i);
+                if (temp_idx > -1)
                 {
+                    auto& tg = bmol.tgroups.getTGroup(temp_idx);
                     writer.Key("templateId");
-                    writer.String(monomerId(tg_it->second.get()).c_str());
+                    writer.String(monomerId(tg).c_str());
+                }
+                else
+                {
+                    auto tg_it = _templates.find(alias);
+                    if (tg_it != _templates.end())
+                    {
+                        writer.Key("templateId");
+                        writer.String(monomerId(tg_it->second.get()).c_str());
+                    }
                 }
                 writer.EndObject(); // monomer
             }

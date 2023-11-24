@@ -50,6 +50,7 @@ namespace indigo
         void setTemplateAtomClass(int idx, const char* text);
         void setTemplateAtomSeqid(int idx, int seq_id);
         void setTemplateAtomDisplayOption(int idx, int contracted);
+        void setTemplateAtomTemplateIndex(int idx, int temp_idx);
 
         int addBond(int beg, int end, int order);
         int addBond_Silent(int beg, int end, int order);
@@ -98,6 +99,7 @@ namespace indigo
         const char* getTemplateAtom(int idx) override;
         const int getTemplateAtomSeqid(int idx) override;
         const char* getTemplateAtomClass(int idx) override;
+        const int getTemplateAtomTemplateIndex(int idx) override;
         const int getTemplateAtomDisplayOption(int idx) override;
 
         bool isRSite(int atom_idx) override;
@@ -210,8 +212,8 @@ namespace indigo
             int name_idx;             // index in _template_names
             int class_idx;            // index in _template_classes
             int seq_id;               // sequence id
+            int template_idx;         // template idx
             DisplayOption contracted; // display option (-1 if undefined, 0 - expanded, 1 - contracted)
-
             Array<_AttachOrder> order; // attach order info
         };
         ObjPool<_TemplateOccurrence> _template_occurrences;

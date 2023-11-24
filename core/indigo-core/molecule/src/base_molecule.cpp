@@ -3098,7 +3098,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     return result;
 }
 
-int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
+int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
 {
     QS_DEF(Array<int>, remove_atoms);
     QS_DEF(Array<int>, sg_atoms);
@@ -3181,9 +3181,9 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
     if (su.sa_class.size() == 0)
         su.sa_class.appendString(kMonomerClassCHEM.c_str(), true);
 
-    tg_idx = this->tgroups.addTGroup();
+    int tg_idx = this->tgroups.addTGroup();
     TGroup& tg = this->tgroups.getTGroup(tg_idx);
-    tg.tgroup_id = tg_idx;
+    tg.tgroup_id = ++tg_id;
 
     tg.tgroup_class.copy(su.sa_class);
 
@@ -4087,13 +4087,12 @@ int BaseMolecule::bondCode(int edge_idx)
     return getBondOrder(edge_idx);
 }
 
-void BaseMolecule::transformSuperatomsToTemplates()
+void BaseMolecule::transformSuperatomsToTemplates(int template_id)
 {
-    int tg_idx;
     for (auto sg_idx = sgroups.begin(); sg_idx != sgroups.end(); sg_idx = sgroups.next(sg_idx))
     {
         if (sgroups.getSGroup(sg_idx).sgroup_type == SGroup::SG_TYPE_SUP)
-            _transformSGroupToTGroup(sg_idx, tg_idx);
+            _transformSGroupToTGroup(sg_idx, template_id);
     }
 }
 

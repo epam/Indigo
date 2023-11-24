@@ -192,6 +192,7 @@ namespace indigo
         virtual const int getTemplateAtomSeqid(int idx) = 0;
         virtual const char* getTemplateAtomClass(int idx) = 0;
         virtual const int getTemplateAtomDisplayOption(int idx) = 0;
+        virtual const int getTemplateAtomTemplateIndex(int idx) = 0;
 
         int countRSites();
         int countSGroups();
@@ -203,7 +204,7 @@ namespace indigo
         int transformSCSRtoFullCTAB();
         int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
-        void transformSuperatomsToTemplates();
+        void transformSuperatomsToTemplates(int template_id);
 
         virtual bool isRSite(int atom_idx) = 0;
         virtual dword getRSiteBits(int atom_idx) = 0;
@@ -529,7 +530,7 @@ namespace indigo
         void _checkSgroupHierarchy(int pidx, int oidx);
 
         int _transformTGroupToSGroup(int idx, int t_idx);
-        int _transformSGroupToTGroup(int idx, int& t_idx);
+        int _transformSGroupToTGroup(int idx, int& tg_id);
         void _fillTemplateSeqIds();
         bool _isCTerminus(Superatom& su, int idx);
         bool _isNTerminus(Superatom& su, int idx);

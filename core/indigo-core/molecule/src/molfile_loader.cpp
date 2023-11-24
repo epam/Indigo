@@ -26,6 +26,7 @@
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/monomer_commons.h"
+#include "molecule/monomers_lib.h"
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
@@ -39,9 +40,10 @@ IMPL_ERROR(MolfileLoader, "molfile loader");
 CP_DEF(MolfileLoader);
 
 MolfileLoader::MolfileLoader(Scanner& scanner)
-    : _scanner(scanner), CP_INIT, TL_CP_GET(_stereo_care_atoms), TL_CP_GET(_stereo_care_bonds), TL_CP_GET(_stereocenter_types), TL_CP_GET(_stereocenter_groups),
-      TL_CP_GET(_sensible_bond_directions), TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount), TL_CP_GET(_sgroup_types),
-      TL_CP_GET(_sgroup_mapping)
+    : _scanner(scanner), _monomer_templates(MonomerTemplates::_instance()), _max_template_id(0), CP_INIT, TL_CP_GET(_stereo_care_atoms), TL_CP_GET(_stereo_care_bonds),
+      TL_CP_GET(_stereocenter_types),
+      TL_CP_GET(_stereocenter_groups), TL_CP_GET(_sensible_bond_directions), TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount),
+      TL_CP_GET(_sgroup_types), TL_CP_GET(_sgroup_mapping)
 {
     _rgfile = false;
     treat_x_as_pseudoatom = false;
@@ -58,6 +60,7 @@ void MolfileLoader::loadMolecule(Molecule& mol)
     _bmol = &mol;
     _mol = &mol;
     _qmol = 0;
+    _max_template_id = 0;
     _loadMolecule();
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
     if (mol.stereocenters.size() == 0 && !skip_3d_chirality)
@@ -70,8 +73,8 @@ void MolfileLoader::loadQueryMolecule(QueryMolecule& mol)
     _bmol = &mol;
     _qmol = &mol;
     _mol = 0;
+    _max_template_id = 0;
     _loadMolecule();
-
     if (mol.stereocenters.size() == 0)
         mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
 }
@@ -2087,7 +2090,7 @@ void MolfileLoader::_postLoad()
     MoleculeCIPCalculator cip;
     cip.convertSGroupsToCIP(*_bmol);
     if (_bmol->tgroups.getTGroupCount() && _bmol->sgroups.getSGroupCount())
-        _bmol->transformSuperatomsToTemplates();
+        _bmol->transformSuperatomsToTemplates(_max_template_id);
 }
 
 void MolfileLoader::_readRGroups2000()
@@ -2651,7 +2654,6 @@ void MolfileLoader::_readCtab3000()
                     else
                     {
                         int rb = strscan.readInt1();
-
                         if (rb != 0)
                         {
                             if (rb == -1)
@@ -2749,7 +2751,6 @@ void MolfileLoader::_readCtab3000()
                     QS_DEF(Array<char>, seq_name);
                     strscan.readWord(seq_name, 0);
                     seq_name.push(0);
-                    
                 }
                 else
                 {
@@ -3645,6 +3646,7 @@ void MolfileLoader::_readTGroups3000()
                 int idx = tgroups->addTGroup();
                 TGroup& tgroup = tgroups->getTGroup(idx);
                 tgroup.tgroup_id = tg_idx;
+                _max_template_id = std::max(_max_template_id, tg_idx);
 
                 QS_DEF(Array<char>, word);
                 strscan.skipSpace();

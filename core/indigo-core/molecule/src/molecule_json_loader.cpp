@@ -1147,8 +1147,7 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
     if (monomer_template.HasMember("id"))
     {
         std::string id = monomer_template["id"].GetString();
-        auto id_vecs = split(id, '_');
-        tg.tgroup_name.appendString(id_vecs.front().c_str(), true);
+        tg.tgroup_long_name.appendString(id.c_str(), true);
 
         mclass = monomerTemplateClass(monomer_template);
 
@@ -1184,6 +1183,7 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
                     mclass = kMonomerClassAA;
                 }
                 tg.tgroup_alias.appendString(alias.c_str(), true);
+                tg.tgroup_name.appendString(monomerNameByAlias(mclass, alias).c_str(), true);
             }
         }
 
@@ -1446,7 +1446,10 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         std::string template_id = ma["templateId"].GetString();
         auto temp_it = _id_to_template.find(template_id);
         if (temp_it != _id_to_template.end())
+        {
             mol.asMolecule().setTemplateAtomClass(idx, monomerMolClass(monomerTemplateClass(_templates[temp_it->second])).c_str());
+            mol.asMolecule().setTemplateAtomTemplateIndex(idx, temp_it->second);
+        }
     }
 
     std::vector<int> ignore_cistrans(mol.edgeCount());
