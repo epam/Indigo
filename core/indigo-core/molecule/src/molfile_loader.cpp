@@ -40,10 +40,9 @@ IMPL_ERROR(MolfileLoader, "molfile loader");
 CP_DEF(MolfileLoader);
 
 MolfileLoader::MolfileLoader(Scanner& scanner)
-    : _scanner(scanner), _monomer_templates(MonomerTemplates::_instance()), _max_template_id(0), CP_INIT, TL_CP_GET(_stereo_care_atoms), TL_CP_GET(_stereo_care_bonds),
-      TL_CP_GET(_stereocenter_types),
-      TL_CP_GET(_stereocenter_groups), TL_CP_GET(_sensible_bond_directions), TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount),
-      TL_CP_GET(_sgroup_types), TL_CP_GET(_sgroup_mapping)
+    : _scanner(scanner), _monomer_templates(MonomerTemplates::_instance()), _max_template_id(0), CP_INIT, TL_CP_GET(_stereo_care_atoms),
+      TL_CP_GET(_stereo_care_bonds), TL_CP_GET(_stereocenter_types), TL_CP_GET(_stereocenter_groups), TL_CP_GET(_sensible_bond_directions),
+      TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount), TL_CP_GET(_sgroup_types), TL_CP_GET(_sgroup_mapping)
 {
     _rgfile = false;
     treat_x_as_pseudoatom = false;

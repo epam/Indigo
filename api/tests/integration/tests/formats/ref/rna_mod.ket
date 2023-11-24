@@ -219,25 +219,25 @@
         ],
         "templates": [
             {
-                "$ref": "monomerTemplate-Cyt_0"
-            },
-            {
-                "$ref": "monomerTemplate-Gua_1"
-            },
-            {
-                "$ref": "monomerTemplate-Ade_2"
+                "$ref": "monomerTemplate-Cyt_1"
             },
             {
                 "$ref": "monomerTemplate-Gua_2"
             },
             {
-                "$ref": "monomerTemplate-Cyt_3"
+                "$ref": "monomerTemplate-Ade_3"
             },
             {
-                "$ref": "monomerTemplate-dabA_4"
+                "$ref": "monomerTemplate-Gua_4"
             },
             {
-                "$ref": "monomerTemplate-5fU_5"
+                "$ref": "monomerTemplate-Cyt_5"
+            },
+            {
+                "$ref": "monomerTemplate-dabA_6"
+            },
+            {
+                "$ref": "monomerTemplate-5fU_7"
             }
         ]
     },
@@ -250,7 +250,7 @@
             "y": -6.3125
         },
         "alias": "C",
-        "templateId": "Cyt_0"
+        "templateId": "Cyt_1"
     },
     "monomer1": {
         "type": "monomer",
@@ -261,7 +261,7 @@
             "y": -6.3125
         },
         "alias": "C",
-        "templateId": "Cyt_0"
+        "templateId": "Cyt_1"
     },
     "monomer2": {
         "type": "monomer",
@@ -272,7 +272,7 @@
             "y": -6.3125
         },
         "alias": "G",
-        "templateId": "Gua_1"
+        "templateId": "Gua_2"
     },
     "monomer3": {
         "type": "monomer",
@@ -283,7 +283,7 @@
             "y": -6.3125
         },
         "alias": "G",
-        "templateId": "Gua_1"
+        "templateId": "Gua_2"
     },
     "monomer4": {
         "type": "monomer",
@@ -294,7 +294,7 @@
             "y": -6.3125
         },
         "alias": "C",
-        "templateId": "Cyt_0"
+        "templateId": "Cyt_1"
     },
     "monomer5": {
         "type": "monomer",
@@ -305,7 +305,7 @@
             "y": -6.3125
         },
         "alias": "G",
-        "templateId": "Gua_1"
+        "templateId": "Gua_2"
     },
     "monomer6": {
         "type": "monomer",
@@ -316,7 +316,7 @@
             "y": -6.3125
         },
         "alias": "A",
-        "templateId": "Ade_2"
+        "templateId": "Ade_3"
     },
     "monomer7": {
         "type": "monomer",
@@ -327,7 +327,7 @@
             "y": -6.3125
         },
         "alias": "A",
-        "templateId": "Ade_2"
+        "templateId": "Ade_3"
     },
     "monomer8": {
         "type": "monomer",
@@ -338,7 +338,7 @@
             "y": -6.3125
         },
         "alias": "C",
-        "templateId": "Cyt_0"
+        "templateId": "Cyt_1"
     },
     "monomer9": {
         "type": "monomer",
@@ -349,7 +349,7 @@
             "y": -6.3125
         },
         "alias": "A",
-        "templateId": "Ade_2"
+        "templateId": "Ade_3"
     },
     "monomer10": {
         "type": "monomer",
@@ -360,7 +360,7 @@
             "y": -6.3125
         },
         "alias": "C",
-        "templateId": "Cyt_0"
+        "templateId": "Cyt_1"
     },
     "monomer11": {
         "type": "monomer",
@@ -371,7 +371,7 @@
             "y": -6.3125
         },
         "alias": "A",
-        "templateId": "Ade_2"
+        "templateId": "Ade_3"
     },
     "monomer12": {
         "type": "monomer",
@@ -382,7 +382,7 @@
             "y": -5.917850017547607
         },
         "alias": "C",
-        "templateId": "Cyt_0"
+        "templateId": "Cyt_1"
     },
     "monomer13": {
         "type": "monomer",
@@ -393,7 +393,7 @@
             "y": -5.742058753967285
         },
         "alias": "dabA",
-        "templateId": "dabA_4"
+        "templateId": "dabA_6"
     },
     "monomer14": {
         "type": "monomer",
@@ -404,7 +404,7 @@
             "y": -5.907927989959717
         },
         "alias": "5fU",
-        "templateId": "5fU_5"
+        "templateId": "5fU_7"
     },
     "monomer15": {
         "type": "monomer",
@@ -415,11 +415,11 @@
             "y": -5.913022518157959
         },
         "alias": "G",
-        "templateId": "Gua_1"
+        "templateId": "Gua_2"
     },
-    "monomerTemplate-Cyt_0": {
+    "monomerTemplate-Cyt_1": {
         "type": "monomerTemplate",
-        "id": "Cyt_0",
+        "id": "Cyt_1",
         "class": "RNA",
         "classHELM": "RNA",
         "alias": "C",
@@ -791,9 +791,9 @@
             }
         ]
     },
-    "monomerTemplate-Gua_1": {
+    "monomerTemplate-Gua_2": {
         "type": "monomerTemplate",
-        "id": "Gua_1",
+        "id": "Gua_2",
         "class": "RNA",
         "classHELM": "RNA",
         "alias": "G",
@@ -1217,9 +1217,9 @@
             }
         ]
     },
-    "monomerTemplate-Ade_2": {
+    "monomerTemplate-Ade_3": {
         "type": "monomerTemplate",
-        "id": "Ade_2",
+        "id": "Ade_3",
         "class": "RNA",
         "classHELM": "RNA",
         "alias": "A",
@@ -1628,9 +1628,9 @@
             }
         ]
     },
-    "monomerTemplate-Gua_2": {
+    "monomerTemplate-Gua_4": {
         "type": "monomerTemplate",
-        "id": "Gua_2",
+        "id": "Gua_4",
         "class": "MODRNA",
         "classHELM": "RNA",
         "alias": "G",
@@ -2039,9 +2039,9 @@
             }
         ]
     },
-    "monomerTemplate-Cyt_3": {
+    "monomerTemplate-Cyt_5": {
         "type": "monomerTemplate",
-        "id": "Cyt_3",
+        "id": "Cyt_5",
         "class": "MODRNA",
         "classHELM": "RNA",
         "alias": "C",
@@ -2395,9 +2395,9 @@
             }
         ]
     },
-    "monomerTemplate-dabA_4": {
+    "monomerTemplate-dabA_6": {
         "type": "monomerTemplate",
-        "id": "dabA_4",
+        "id": "dabA_6",
         "class": "MODRNA",
         "classHELM": "RNA",
         "alias": "dabA",
@@ -2821,9 +2821,9 @@
             }
         ]
     },
-    "monomerTemplate-5fU_5": {
+    "monomerTemplate-5fU_7": {
         "type": "monomerTemplate",
-        "id": "5fU_5",
+        "id": "5fU_7",
         "class": "MODRNA",
         "classHELM": "RNA",
         "alias": "5fU",

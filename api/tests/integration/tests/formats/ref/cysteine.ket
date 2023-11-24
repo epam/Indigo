@@ -4,13 +4,13 @@
         "connections": [],
         "templates": [
             {
-                "$ref": "monomerTemplate-cys_2"
+                "$ref": "monomerTemplate-cys_3"
             }
         ]
     },
-    "monomerTemplate-cys_2": {
+    "monomerTemplate-cys_3": {
         "type": "monomerTemplate",
-        "id": "cys_2",
+        "id": "cys_3",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "C",

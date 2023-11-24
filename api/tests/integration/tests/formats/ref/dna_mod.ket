@@ -303,31 +303,31 @@
         ],
         "templates": [
             {
-                "$ref": "monomerTemplate-Thy_0"
+                "$ref": "monomerTemplate-Thy_1"
             },
             {
-                "$ref": "monomerTemplate-Gua_1"
-            },
-            {
-                "$ref": "monomerTemplate-Cyt_2"
-            },
-            {
-                "$ref": "monomerTemplate-Ade_3"
+                "$ref": "monomerTemplate-Gua_2"
             },
             {
                 "$ref": "monomerTemplate-Cyt_3"
             },
             {
-                "$ref": "monomerTemplate-Cyt_4"
+                "$ref": "monomerTemplate-Ade_4"
             },
             {
-                "$ref": "monomerTemplate-Ade_5"
+                "$ref": "monomerTemplate-Cyt_5"
             },
             {
-                "$ref": "monomerTemplate-cdaC_6"
+                "$ref": "monomerTemplate-Cyt_6"
             },
             {
-                "$ref": "monomerTemplate-Thy_7"
+                "$ref": "monomerTemplate-Ade_7"
+            },
+            {
+                "$ref": "monomerTemplate-cdaC_8"
+            },
+            {
+                "$ref": "monomerTemplate-Thy_9"
             }
         ]
     },
@@ -340,7 +340,7 @@
             "y": -11.979000091552735
         },
         "alias": "T",
-        "templateId": "Thy_0"
+        "templateId": "Thy_1"
     },
     "monomer1": {
         "type": "monomer",
@@ -351,7 +351,7 @@
             "y": -11.979000091552735
         },
         "alias": "G",
-        "templateId": "Gua_1"
+        "templateId": "Gua_2"
     },
     "monomer2": {
         "type": "monomer",
@@ -362,7 +362,7 @@
             "y": -11.979000091552735
         },
         "alias": "G",
-        "templateId": "Gua_1"
+        "templateId": "Gua_2"
     },
     "monomer3": {
         "type": "monomer",
@@ -373,7 +373,7 @@
             "y": -11.979000091552735
         },
         "alias": "C",
-        "templateId": "Cyt_2"
+        "templateId": "Cyt_3"
     },
     "monomer4": {
         "type": "monomer",
@@ -384,7 +384,7 @@
             "y": -11.979000091552735
         },
         "alias": "G",
-        "templateId": "Gua_1"
+        "templateId": "Gua_2"
     },
     "monomer5": {
         "type": "monomer",
@@ -395,7 +395,7 @@
             "y": -11.979000091552735
         },
         "alias": "A",
-        "templateId": "Ade_3"
+        "templateId": "Ade_4"
     },
     "monomer6": {
         "type": "monomer",
@@ -406,7 +406,7 @@
             "y": -11.979000091552735
         },
         "alias": "C",
-        "templateId": "Cyt_2"
+        "templateId": "Cyt_3"
     },
     "monomer7": {
         "type": "monomer",
@@ -417,7 +417,7 @@
             "y": -11.979000091552735
         },
         "alias": "C",
-        "templateId": "Cyt_2"
+        "templateId": "Cyt_3"
     },
     "monomer8": {
         "type": "monomer",
@@ -428,7 +428,7 @@
             "y": -11.979000091552735
         },
         "alias": "A",
-        "templateId": "Ade_3"
+        "templateId": "Ade_4"
     },
     "monomer9": {
         "type": "monomer",
@@ -439,7 +439,7 @@
             "y": -11.979000091552735
         },
         "alias": "C",
-        "templateId": "Cyt_2"
+        "templateId": "Cyt_3"
     },
     "monomer10": {
         "type": "monomer",
@@ -450,7 +450,7 @@
             "y": -11.979000091552735
         },
         "alias": "A",
-        "templateId": "Ade_3"
+        "templateId": "Ade_4"
     },
     "monomer11": {
         "type": "monomer",
@@ -461,7 +461,7 @@
             "y": -11.979000091552735
         },
         "alias": "G",
-        "templateId": "Gua_1"
+        "templateId": "Gua_2"
     },
     "monomer12": {
         "type": "monomer",
@@ -472,7 +472,7 @@
             "y": -11.979000091552735
         },
         "alias": "T",
-        "templateId": "Thy_0"
+        "templateId": "Thy_1"
     },
     "monomer13": {
         "type": "monomer",
@@ -483,7 +483,7 @@
             "y": -11.979000091552735
         },
         "alias": "C",
-        "templateId": "Cyt_2"
+        "templateId": "Cyt_3"
     },
     "monomer14": {
         "type": "monomer",
@@ -494,7 +494,7 @@
             "y": -11.979000091552735
         },
         "alias": "C",
-        "templateId": "Cyt_2"
+        "templateId": "Cyt_3"
     },
     "monomer15": {
         "type": "monomer",
@@ -505,7 +505,7 @@
             "y": -11.979000091552735
         },
         "alias": "C",
-        "templateId": "Cyt_2"
+        "templateId": "Cyt_3"
     },
     "monomer16": {
         "type": "monomer",
@@ -516,7 +516,7 @@
             "y": -11.979000091552735
         },
         "alias": "G",
-        "templateId": "Gua_1"
+        "templateId": "Gua_2"
     },
     "monomer17": {
         "type": "monomer",
@@ -527,7 +527,7 @@
             "y": -11.633955001831055
         },
         "alias": "C",
-        "templateId": "Cyt_2"
+        "templateId": "Cyt_3"
     },
     "monomer18": {
         "type": "monomer",
@@ -538,7 +538,7 @@
             "y": -12.258405685424805
         },
         "alias": "A",
-        "templateId": "Ade_3"
+        "templateId": "Ade_4"
     },
     "monomer19": {
         "type": "monomer",
@@ -549,7 +549,7 @@
             "y": -11.337328910827637
         },
         "alias": "cdaC",
-        "templateId": "cdaC_6"
+        "templateId": "cdaC_8"
     },
     "monomer20": {
         "type": "monomer",
@@ -560,7 +560,7 @@
             "y": -11.445504188537598
         },
         "alias": "T",
-        "templateId": "Thy_0"
+        "templateId": "Thy_1"
     },
     "monomer21": {
         "type": "monomer",
@@ -571,11 +571,11 @@
             "y": -10.458263397216797
         },
         "alias": "C",
-        "templateId": "Cyt_2"
+        "templateId": "Cyt_3"
     },
-    "monomerTemplate-Thy_0": {
+    "monomerTemplate-Thy_1": {
         "type": "monomerTemplate",
-        "id": "Thy_0",
+        "id": "Thy_1",
         "class": "DNA",
         "classHELM": "RNA",
         "alias": "T",
@@ -945,9 +945,9 @@
             }
         ]
     },
-    "monomerTemplate-Gua_1": {
+    "monomerTemplate-Gua_2": {
         "type": "monomerTemplate",
-        "id": "Gua_1",
+        "id": "Gua_2",
         "class": "DNA",
         "classHELM": "RNA",
         "alias": "G",
@@ -1354,9 +1354,9 @@
             }
         ]
     },
-    "monomerTemplate-Cyt_2": {
+    "monomerTemplate-Cyt_3": {
         "type": "monomerTemplate",
-        "id": "Cyt_2",
+        "id": "Cyt_3",
         "class": "DNA",
         "classHELM": "RNA",
         "alias": "C",
@@ -1711,9 +1711,9 @@
             }
         ]
     },
-    "monomerTemplate-Ade_3": {
+    "monomerTemplate-Ade_4": {
         "type": "monomerTemplate",
-        "id": "Ade_3",
+        "id": "Ade_4",
         "class": "DNA",
         "classHELM": "RNA",
         "alias": "A",
@@ -2105,9 +2105,9 @@
             }
         ]
     },
-    "monomerTemplate-Cyt_3": {
+    "monomerTemplate-Cyt_5": {
         "type": "monomerTemplate",
-        "id": "Cyt_3",
+        "id": "Cyt_5",
         "class": "XLINKDNA",
         "classHELM": "RNA",
         "alias": "C",
@@ -2422,9 +2422,9 @@
             }
         ]
     },
-    "monomerTemplate-Cyt_4": {
+    "monomerTemplate-Cyt_6": {
         "type": "monomerTemplate",
-        "id": "Cyt_4",
+        "id": "Cyt_6",
         "class": "MODDNA",
         "classHELM": "RNA",
         "alias": "C",
@@ -2778,9 +2778,9 @@
             }
         ]
     },
-    "monomerTemplate-Ade_5": {
+    "monomerTemplate-Ade_7": {
         "type": "monomerTemplate",
-        "id": "Ade_5",
+        "id": "Ade_7",
         "class": "MODDNA",
         "classHELM": "RNA",
         "alias": "A",
@@ -3429,9 +3429,9 @@
             }
         ]
     },
-    "monomerTemplate-cdaC_6": {
+    "monomerTemplate-cdaC_8": {
         "type": "monomerTemplate",
-        "id": "cdaC_6",
+        "id": "cdaC_8",
         "class": "MODDNA",
         "classHELM": "RNA",
         "alias": "cdaC",
@@ -3853,9 +3853,9 @@
             }
         ]
     },
-    "monomerTemplate-Thy_7": {
+    "monomerTemplate-Thy_9": {
         "type": "monomerTemplate",
-        "id": "Thy_7",
+        "id": "Thy_9",
         "class": "MODDNA",
         "classHELM": "RNA",
         "alias": "T",

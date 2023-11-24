@@ -23,9 +23,9 @@
 
 #include "common/base_cpp/scanner.h"
 #include "molecule/molecule.h"
-#include "molecule/smiles_loader.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_lib.h"
+#include "molecule/smiles_loader.h"
 
 namespace indigo
 {

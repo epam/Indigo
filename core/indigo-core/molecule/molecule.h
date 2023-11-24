@@ -209,11 +209,11 @@ namespace indigo
 
         struct _TemplateOccurrence
         {
-            int name_idx;             // index in _template_names
-            int class_idx;            // index in _template_classes
-            int seq_id;               // sequence id
-            int template_idx;         // template idx
-            DisplayOption contracted; // display option (-1 if undefined, 0 - expanded, 1 - contracted)
+            int name_idx;              // index in _template_names
+            int class_idx;             // index in _template_classes
+            int seq_id;                // sequence id
+            int template_idx;          // template idx
+            DisplayOption contracted;  // display option (-1 if undefined, 0 - expanded, 1 - contracted)
             Array<_AttachOrder> order; // attach order info
         };
         ObjPool<_TemplateOccurrence> _template_occurrences;
