@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 RUN apt update && \
     apt upgrade -y && \
     apt install -y --no-install-recommends \

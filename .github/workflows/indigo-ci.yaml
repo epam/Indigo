@@ -317,7 +317,7 @@ jobs:
         uses: uraimo/run-on-arch-action@v2.0.5
         with:
           arch: aarch64
-          distro: ubuntu22.04
+          distro: ubuntu20.04
           githubToken: ${{ github.token }}
           run: |
             apt update
@@ -449,7 +449,7 @@ jobs:
         uses: uraimo/run-on-arch-action@v2.0.5
         with:
           arch: aarch64
-          distro: ubuntu22.04
+          distro: ubuntu20.04
           githubToken: ${{ github.token }}
           run: |
             apt update
