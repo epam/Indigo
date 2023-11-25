@@ -179,7 +179,7 @@ TEST_F(IndigoApiFormatsTest, loadAssert)
 
 TEST_F(IndigoApiFormatsTest, fromBuffer)
 {
-    const byte mStr[] = "[CX4H3][#6]";
+    const uint8_t mStr[] = "[CX4H3][#6]";
     const int buffSize = sizeof(mStr);
 
     try
@@ -190,11 +190,11 @@ TEST_F(IndigoApiFormatsTest, fromBuffer)
         EXPECT_EQ(2, indigoCountAtoms(obj));
         EXPECT_EQ(1, indigoCountBonds(obj));
 
-        const byte react2[] = "C1CC[NH:2]CC1.C1CC[S:1]CC1>>C1CC2CC[S:2]CC2C[NH:1]1";
+        const uint8_t react2[] = "C1CC[NH:2]CC1.C1CC[S:1]CC1>>C1CC2CC[S:2]CC2C[NH:1]1";
         obj = indigoLoadStructureFromBuffer(react2, sizeof(react2), "");
         EXPECT_EQ(3, indigoCountMolecules(obj));
 
-        const byte react[] = "C[12CH2:1]C(CCCC)[CH]CCCCCCC>>C[13CH2:1]C(CCCC)[C]CCCCCCCC |^1:7,^4:22|";
+        const uint8_t react[] = "C[12CH2:1]C(CCCC)[CH]CCCCCCC>>C[13CH2:1]C(CCCC)[C]CCCCCCCC |^1:7,^4:22|";
         obj = indigoLoadStructureFromBuffer(react, sizeof(react), "query");
         EXPECT_EQ(2, indigoCountMolecules(obj));
     }
