@@ -42,7 +42,7 @@ if (EMSCRIPTEN)
 endif()
 
 if (APPLE)
-    string(APPEND CMAKE_CXX_FLAGS " -Wdeprecated-register")
+    string(APPEND CMAKE_CXX_FLAGS " -Wno-register")
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
