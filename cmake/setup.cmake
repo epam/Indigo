@@ -41,6 +41,10 @@ if (EMSCRIPTEN)
     set(CMAKE_C_FLAGS_DEBUG   "-g3")
 endif()
 
+if (APPLE)
+    string(APPEND CMAKE_CXX_FLAGS " -Wdeprecated-register")
+endif()
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Compile flags
