@@ -21,13 +21,6 @@ namespace indigo
         DNA
     };
 
-    // implicit conversion to underlying_type
-    template <typename NucleotideComponentType>
-    constexpr typename std::underlying_type<NucleotideComponentType>::type to_underlying(NucleotideComponentType e) noexcept
-    {
-        return static_cast<typename std::underlying_type<NucleotideComponentType>::type>(e);
-    }
-
     class MonomerTemplates
     {
     public:
