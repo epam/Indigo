@@ -8,7 +8,7 @@ namespace indigo
 {
     class BaseMolecule;
 
-    enum class NucleotideComponentType
+    enum NucleotideComponentType
     {
         Sugar,
         Phosphate,
@@ -20,6 +20,13 @@ namespace indigo
         RNA,
         DNA
     };
+
+    // implicit conversion to underlying_type
+    template <typename NucleotideComponentType>
+    constexpr typename std::underlying_type<NucleotideComponentType>::type to_underlying(NucleotideComponentType e) noexcept
+    {
+        return static_cast<typename std::underlying_type<NucleotideComponentType>::type>(e);
+    }
 
     class MonomerTemplates
     {
@@ -46,18 +53,5 @@ namespace indigo
         std::unordered_map<std::string, std::unordered_map<NucleotideComponentType, std::shared_ptr<BaseMolecule>>> _nucleotides_lib;
     };
 }
-
-/*
-namespace std
-{
-    template <>
-    struct hash<indigo::NucleotideComponentType>
-    {
-        size_t operator()(const indigo::NucleotideComponentType& t) const
-        {
-            return size_t(t);
-        }
-    };
-}*/
 
 #endif
