@@ -73,7 +73,7 @@ RUN cd /indigo && \
     cd build && \
     cmake .. && \
     cmake --build . --target indigo-python --config Release -- -j $(nproc) && \
-    python3 -m pip install ../dist/*.whl
+    python3 -m pip install ../dist/*.whl --break-system-packages
 
 COPY ./api/http/requirements.txt ./api_requirements.txt
 COPY ./api/http/requirements_dev.txt ./api_requirements_dev.txt
