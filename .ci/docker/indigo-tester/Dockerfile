@@ -64,7 +64,8 @@ RUN set -eux && \
     ln -fs /opt/ironpython/net${DOTNET_VERSION}/ipy.sh /opt/ironpython/ipy && \
     rm IronPython.${IRONPYTHON_VERSION}.zip && \
     # Python 3 packages
-    apt install -y python3-pip python3-setuptools python3-wheel twine && \
+    python3 -m pip install wheel && \
+    apt install -y python3-pip python3-setuptools twine && \
     apt autoremove -y
 
 COPY ./ /indigo
