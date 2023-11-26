@@ -84,11 +84,11 @@ RUN python3 -m pip install  \
       -r api_requirements.txt  \
       -r api_requirements_dev.txt  \
       -r service_requirements.txt  \
-      -r service_requirements_dev.txt && \
+      -r service_requirements_dev.txt --break-system-packages && \
     rm ./api_requirements.txt ./api_requirements_dev.txt ./service_requirements.txt ./service_requirements_dev.txt
 
 COPY ./bingo/bingo-elastic/python/ ./bingo-elastic
-RUN cd ./bingo-elastic && python3 -m pip install -e . && cd .. && rm -rf ./bingo-elastic
+RUN cd ./bingo-elastic && python3 -m pip install -e . --break-system-packages && cd .. && rm -rf ./bingo-elastic
 
 ENV JAVA_HOME=/opt/jdk
 ENV PATH=${PATH}:${JAVA_HOME}/bin:/opt/jython/bin:/opt/maven/bin:/opt/ironpython
