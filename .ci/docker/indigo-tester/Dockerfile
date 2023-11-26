@@ -64,8 +64,7 @@ RUN set -eux && \
     ln -fs /opt/ironpython/net${DOTNET_VERSION}/ipy.sh /opt/ironpython/ipy && \
     rm IronPython.${IRONPYTHON_VERSION}.zip && \
     # Python 3 packages
-    python3 -m pip install --upgrade pip && \
-    python3 -m pip install --upgrade setuptools wheel twine && \
+    apt install -y python3-pip python3-setuptools python3-wheel twine && \
     apt autoremove -y
 
 COPY ./ /indigo
@@ -76,10 +75,10 @@ RUN cd /indigo && \
     cmake --build . --target indigo-python --config Release -- -j $(nproc) && \
     python3 -m pip install ../dist/*.whl
 
-COPY /api/http/requirements.txt ./api_requirements.txt
-COPY /api/http/requirements_dev.txt ./api_requirements_dev.txt
-COPY /utils/indigo-service/backend/service/requirements.txt ./service_requirements.txt
-COPY /utils/indigo-service/backend/service/requirements.dev.txt ./service_requirements_dev.txt
+COPY ./api/http/requirements.txt ./api_requirements.txt
+COPY ./api/http/requirements_dev.txt ./api_requirements_dev.txt
+COPY ./utils/indigo-service/backend/service/requirements.txt ./service_requirements.txt
+COPY ./utils/indigo-service/backend/service/requirements.dev.txt ./service_requirements_dev.txt
 
 RUN python3 -m pip install  \
       -r api_requirements.txt  \
@@ -88,7 +87,7 @@ RUN python3 -m pip install  \
       -r service_requirements_dev.txt && \
     rm ./api_requirements.txt ./api_requirements_dev.txt ./service_requirements.txt ./service_requirements_dev.txt
 
-COPY /bingo/bingo-elastic/python/ ./bingo-elastic
+COPY ./bingo/bingo-elastic/python/ ./bingo-elastic
 RUN cd ./bingo-elastic && python3 -m pip install -e . && cd .. && rm -rf ./bingo-elastic
 
 ENV JAVA_HOME=/opt/jdk
