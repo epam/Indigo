@@ -3241,6 +3241,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
     this->asMolecule().setTemplateAtom(idx, tg.tgroup_name.ptr());
     this->asMolecule().setTemplateAtomClass(idx, tg.tgroup_class.ptr());
     this->asMolecule().setTemplateAtomSeqid(idx, su.seqid);
+    this->asMolecule().setTemplateAtomTemplateIndex(idx, tg_idx);
 
     for (int j = 0; j < ap_points_atoms.size(); j++)
     {
