@@ -916,6 +916,18 @@ Vec3f& BaseMolecule::getAtomXyz(int idx)
     return _xyz[idx];
 }
 
+bool BaseMolecule::getMiddlePoint(int idx1, int idx2, Vec3f& vec)
+{
+    if (idx1 == std::clamp(idx1, 0, vertexCount() - 1) && idx2 == std::clamp(idx2, 0, vertexCount() - 1))
+    {
+        vec = _xyz[idx1];
+        vec.add(_xyz[idx2]);
+        vec.scale(0.5);
+        return true;
+    }
+    return false;
+}
+
 void BaseMolecule::setAtomXyz(int idx, float x, float y, float z)
 {
     _xyz[idx].set(x, y, z);
@@ -1137,6 +1149,22 @@ int BaseMolecule::getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& 
         }
     }
     return aidx;
+}
+
+void BaseMolecule::setTemplateAtomAttachmentDestination(int atom_idx, int new_dest_atom_idx, Array<char>& att_id)
+{
+    QS_DEF(Array<char>, tmp);
+    int aidx = -1;
+    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+    {
+        BaseMolecule::TemplateAttPoint& ap = template_attachment_points.at(j);
+        if ((ap.ap_occur_idx == atom_idx) && (ap.ap_id.memcmp(att_id) == 0))
+        {
+            ap.ap_aidx = new_dest_atom_idx;
+            return;
+        }
+    }
+    setTemplateAtomAttachmentOrder(atom_idx, new_dest_atom_idx, att_id.ptr());
 }
 
 int BaseMolecule::getTemplateAtomAttachmentPointsCount(int atom_idx)
@@ -4086,6 +4114,16 @@ int BaseMolecule::atomCode(int vertex_idx)
 int BaseMolecule::bondCode(int edge_idx)
 {
     return getBondOrder(edge_idx);
+}
+
+bool BaseMolecule::expandNucleotide(int atom_idx)
+{
+    std::string atom_class = getTemplateAtomClass(atom_idx);
+    int tg_idx = getTemplateAtomTemplateIndex(atom_idx);
+    if (tg_idx == -1)
+    {
+    }
+    return false;
 }
 
 void BaseMolecule::transformSuperatomsToTemplates(int template_id)

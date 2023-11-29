@@ -205,6 +205,7 @@ namespace indigo
         int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
         void transformSuperatomsToTemplates(int template_id);
+        bool expandNucleotide(int atom_idx);
 
         virtual bool isRSite(int atom_idx) = 0;
         virtual dword getRSiteBits(int atom_idx) = 0;
@@ -216,6 +217,7 @@ namespace indigo
         void setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int order);
 
         void setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx, const char* att_id);
+        void setTemplateAtomAttachmentDestination(int atom_idx, int new_dest_atom_idx, Array<char>& att_id);
 
         int getTemplateAtomAttachmentPoint(int atom_idx, int order);
         void getTemplateAtomAttachmentPointId(int atom_idx, int order, Array<char>& apid);
@@ -284,6 +286,8 @@ namespace indigo
         void setBondCIP(int bond_idx, CIPDesc cip);
 
         Vec3f& getAtomXyz(int idx);
+        bool getMiddlePoint(int idx1, int idx2, Vec3f& vec);
+
         void setAtomXyz(int idx, float x, float y, float z);
         void setAtomXyz(int idx, const Vec3f& v);
 

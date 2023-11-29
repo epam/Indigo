@@ -2,13 +2,17 @@
 #define __monomers_lib__
 
 #include <memory>
+#include <map>
+#include <unordered_map>
 #include <string>
+
+#include "base_cpp/exception.h"
 
 namespace indigo
 {
     class BaseMolecule;
 
-    enum NucleotideComponentType
+    enum class NucleotideComponentType
     {
         Sugar,
         Phosphate,
@@ -21,8 +25,21 @@ namespace indigo
         DNA
     };
 
+    struct NucleotideComponent
+    {
+        NucleotideComponentType comp_type;
+        std::string natreplace;
+        std::shared_ptr<BaseMolecule> monomer;
+    };
+
+    using MonomersLib = std::unordered_map<std::string, NucleotideComponent>;
+    using GranularNucleotide = std::unordered_map<NucleotideComponentType, std::reference_wrapper<MonomersLib::value_type>>;
+
+    // singleton MonomerTemplates class
+
     class MonomerTemplates
     {
+        DECL_ERROR;
     public:
         MonomerTemplates(const MonomerTemplates&) = delete;
         MonomerTemplates(MonomerTemplates&&) = delete;
@@ -31,8 +48,8 @@ namespace indigo
         static const MonomerTemplates& _instance();
         static bool getNucleotideMonomer(NucleotideComponentType comp_type, std::string alias, BaseMolecule& bmol);
         static bool getNucleotideMonomer(std::string comp_type, std::string alias, BaseMolecule& bmol);
-        static bool splitNucleotide(NucleotideType nucleo_type, std::string alias,
-                                    std::unordered_map<NucleotideComponentType, std::shared_ptr<BaseMolecule>>& splitted_nucleotide);
+        static bool splitNucleotide(NucleotideType nucleo_type, std::string alias, GranularNucleotide& splitted_nucleotide);
+        static bool splitNucleotide(std::string nucleo_type, std::string alias, GranularNucleotide& splitted_nucleotide);
 
     private:
         MonomerTemplates();
@@ -41,9 +58,9 @@ namespace indigo
         static std::string _getNucleotideMonomerId(NucleotideComponentType comp_type, std::string alias);
         static std::string _getNucleotideId(NucleotideType nucleo_type, std::string alias);
 
-        std::unordered_map<std::string, std::pair<NucleotideComponentType, std::shared_ptr<BaseMolecule>>> _monomers_lib;
+        MonomersLib _monomers_lib;
         std::unordered_map<std::string, NucleotideComponentType> _component_types;
-        std::unordered_map<std::string, std::unordered_map<NucleotideComponentType, std::shared_ptr<BaseMolecule>>> _nucleotides_lib;
+        std::unordered_map<std::string, std::unordered_map<NucleotideComponentType, std::reference_wrapper<MonomersLib::value_type> >> _nucleotides_lib;
     };
 }
 

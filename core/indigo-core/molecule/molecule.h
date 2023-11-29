@@ -45,6 +45,7 @@ namespace indigo
 
         void setPseudoAtom(int idx, const char* text);
 
+        void renameTemplateAtom(int idx, const char* text);
         void setTemplateAtom(int idx, const char* text);
         void setTemplateAtomName(int idx, const char* text);
         void setTemplateAtomClass(int idx, const char* text);

@@ -337,6 +337,17 @@ void Molecule::setPseudoAtom(int idx, const char* text)
     updateEditRevision();
 }
 
+void Molecule::renameTemplateAtom(int idx, const char* text)
+{
+    auto occur_idx = _atoms[idx].template_occur_idx;
+    if (_atoms[idx].number == ELEM_TEMPLATE)
+    {
+        _TemplateOccurrence& occur = _template_occurrences.at(occur_idx);
+        _template_names.set(occur.name_idx, text);
+        updateEditRevision();
+    }
+}
+
 void Molecule::setTemplateAtom(int idx, const char* text)
 {
     _atoms[idx].number = ELEM_TEMPLATE;

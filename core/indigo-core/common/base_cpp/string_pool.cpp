@@ -53,6 +53,15 @@ int StringPool::_add(const char* str, int size)
     return idx;
 }
 
+void StringPool::set(int idx, const char* str)
+{
+    int size = strlen(str);
+    _storage.at(idx).resize(size + 1);
+    if (str != 0 && size != 0)
+        memcpy(at(idx), str, size);
+    at(idx)[size] = 0;
+}
+
 int StringPool::add(const char* str)
 {
     return _add(str, -1);

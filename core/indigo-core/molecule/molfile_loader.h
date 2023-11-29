@@ -25,6 +25,7 @@
 #include "molecule/base_molecule.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
+#include "molecule/monomers_lib.h"
 
 namespace indigo
 {
@@ -131,7 +132,6 @@ namespace indigo
         void _readStringInQuotes(Scanner& scanner, Array<char>* str);
         void _init();
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
-
         void _fillSGroupsParentIndices();
 
         int _getElement(const char* buf);
@@ -139,6 +139,8 @@ namespace indigo
 
         static int _asc_cmp_cb(int& v1, int& v2, void* context);
         void _postLoad();
+        bool _expandNucleotide(int atom_idx, int tg_idx, std::unordered_map<std::string, int>& new_templates);
+        int _insertTemplate(MonomersLib::value_type& nuc, std::unordered_map<std::string, int>& new_templates);
 
         void _loadMolecule();
 
