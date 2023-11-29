@@ -1,10 +1,10 @@
 #ifndef __monomers_lib__
 #define __monomers_lib__
 
-#include <memory>
 #include <map>
-#include <unordered_map>
+#include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "base_cpp/exception.h"
 
@@ -40,6 +40,7 @@ namespace indigo
     class MonomerTemplates
     {
         DECL_ERROR;
+
     public:
         MonomerTemplates(const MonomerTemplates&) = delete;
         MonomerTemplates(MonomerTemplates&&) = delete;
@@ -60,7 +61,7 @@ namespace indigo
 
         MonomersLib _monomers_lib;
         std::unordered_map<std::string, NucleotideComponentType> _component_types;
-        std::unordered_map<std::string, std::unordered_map<NucleotideComponentType, std::reference_wrapper<MonomersLib::value_type> >> _nucleotides_lib;
+        std::unordered_map<std::string, std::unordered_map<NucleotideComponentType, std::reference_wrapper<MonomersLib::value_type>>> _nucleotides_lib;
     };
 }
 

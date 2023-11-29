@@ -6,7 +6,6 @@
 
 #include "molecule/monomers_lib.h"
 #include "molecule/parse_utils.h"
-#include "molecule/monomers_lib.h"
 
 namespace indigo
 {
@@ -80,7 +79,6 @@ namespace indigo
     {
         return kDNAClasses.find(monomer_class) != kDNAClasses.end();
     }
-
 
     std::string classToPrefix(const std::string& monomer_class);
 

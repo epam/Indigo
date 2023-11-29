@@ -22,12 +22,12 @@
 #include <vector>
 
 #include "common/base_cpp/scanner.h"
+#include "layout/molecule_layout.h"
+#include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_lib.h"
 #include "molecule/smiles_loader.h"
-#include "molecule/elements.h"
-#include "layout/molecule_layout.h"
 
 namespace indigo
 {
@@ -211,7 +211,7 @@ namespace indigo
                         ap.apid.readString(getAttachmentLabel(aam - 1).c_str(), true);
                         int lgrp_idx = bmol_ptr->sgroups.addSGroup(SGroup::SG_TYPE_SUP);
                         auto& lgrp = (Superatom&)bmol_ptr->sgroups.getSGroup(lgrp_idx);
-                        lgrp.atoms.push( atom_idx );
+                        lgrp.atoms.push(atom_idx);
                         lgrp.sa_class.readString("LGRP", true);
                         int leaving_element = bmol_ptr->getAtomNumber(atom_idx);
                         if (leaving_element == ELEM_H)

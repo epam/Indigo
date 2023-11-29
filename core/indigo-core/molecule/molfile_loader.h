@@ -24,8 +24,8 @@
 #include "base_cpp/tlscont.h"
 #include "molecule/base_molecule.h"
 #include "molecule/molecule_stereocenter_options.h"
-#include "molecule/query_molecule.h"
 #include "molecule/monomers_lib.h"
+#include "molecule/query_molecule.h"
 
 namespace indigo
 {

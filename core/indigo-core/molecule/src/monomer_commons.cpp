@@ -112,7 +112,7 @@ namespace indigo
             label += second_chars.back();
         else
             label += second_chars[order];
-        return label;            
+        return label;
     }
 
     int getAttachmentOrder(const std::string& label)
