@@ -187,9 +187,9 @@ namespace indigo
             std::shared_ptr<BaseMolecule> bmol_ptr(new Molecule());
             loader.loadMolecule(bmol_ptr->asMolecule());
             bmol_ptr->asMolecule().setIgnoreBadValenceFlag(true);
-            MoleculeLayout ml(*bmol_ptr, false);
-            ml.layout_orientation = UNCPECIFIED;
-            ml.make();
+            // MoleculeLayout ml(*bmol_ptr, false);
+            // ml.layout_orientation = UNCPECIFIED;
+            // ml.make();
 
             std::map<int, int> attachment_points;
             int res_idx = bmol_ptr->sgroups.addSGroup(SGroup::SG_TYPE_SUP);
