@@ -10,6 +10,27 @@
 
 namespace indigo
 {
+    // composite unordered_map key for pair
+    const auto kCompositeKeyHashMagicNumber = 0x9e3779b9;
+    template <class T>
+    inline void hash_combine(size_t& seed, T const& v)
+    {
+        seed ^= std::hash<T>()(v) + kCompositeKeyHashMagicNumber + (seed << 6) + (seed >> 2);
+    }
+
+    // universal fuctor for pair hash calculation
+    struct pair_hash
+    {
+        template <class T1, class T2>
+        size_t operator()(const std::pair<T1, T2>& p) const
+        {
+            size_t seed = 0;
+            hash_combine(seed, p.first);
+            hash_combine(seed, p.second);
+            return seed;
+        }
+    };
+
     class BaseMolecule;
 
     enum class NucleotideComponentType
@@ -32,7 +53,9 @@ namespace indigo
         std::shared_ptr<BaseMolecule> monomer;
     };
 
-    using MonomersLib = std::unordered_map<std::string, NucleotideComponent>;
+    using NucleotideComponentKey = std::pair<NucleotideComponentType, std::string>;
+    using NucleotideKey = std::pair<NucleotideType, std::string>;
+    using MonomersLib = std::unordered_map< NucleotideComponentKey, NucleotideComponent, pair_hash>;
     using GranularNucleotide = std::unordered_map<NucleotideComponentType, std::reference_wrapper<MonomersLib::value_type>>;
 
     // singleton MonomerTemplates class
@@ -51,12 +74,13 @@ namespace indigo
         static bool getNucleotideMonomer(std::string comp_type, std::string alias, BaseMolecule& bmol);
         static bool splitNucleotide(NucleotideType nucleo_type, std::string alias, GranularNucleotide& splitted_nucleotide);
         static bool splitNucleotide(std::string nucleo_type, std::string alias, GranularNucleotide& splitted_nucleotide);
+        static const std::string& classToStr(NucleotideComponentType comp_type);
+        static const std::unordered_map<NucleotideComponentType, std::string> kNucleotideComponentTypeStr;
 
     private:
         MonomerTemplates();
         void initializeMonomers();
         ~MonomerTemplates() = default;
-        static std::string _getNucleotideMonomerId(NucleotideComponentType comp_type, std::string alias);
         static std::string _getNucleotideId(NucleotideType nucleo_type, std::string alias);
 
         MonomersLib _monomers_lib;

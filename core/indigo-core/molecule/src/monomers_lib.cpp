@@ -41,11 +41,6 @@ namespace indigo
     const auto KBaseGuanine = "Nc1nc2n([H:1])cnc2c(=O)[nH]1";
     const auto KBaseThymine = "Cc1cn([H:1])c(=O)[nH]c1=O";
     const auto kBaseUracil = "[H:1]n1ccc(=O)[nH]c1=O";
-    const std::unordered_map<NucleotideComponentType, std::string> kNucleotideComponentTypeStr = {
-        {NucleotideComponentType::Phosphate, kMonomerClassPHOSPHATE},
-        {NucleotideComponentType::Sugar, kMonomerClassSUGAR},
-        {NucleotideComponentType::Base, kMonomerClassBASE},
-    };
 
     struct NucleotidePartDescriptor
     {
@@ -103,10 +98,21 @@ namespace indigo
          {"U", "dU", "dUMP"},
          {{NucleotideComponentType::Base, "U"}, {NucleotideComponentType::Sugar, "dR"}, {NucleotideComponentType::Phosphate, "P"}}}};
 
+    const std::unordered_map<NucleotideComponentType, std::string> MonomerTemplates::kNucleotideComponentTypeStr = {
+        {NucleotideComponentType::Phosphate, kMonomerClassPHOSPHATE},
+        {NucleotideComponentType::Sugar, kMonomerClassSUGAR},
+        {NucleotideComponentType::Base, kMonomerClassBASE},
+    };
+
     const MonomerTemplates& MonomerTemplates::_instance()
     {
         static MonomerTemplates instance;
         return instance;
+    }
+
+    const std::string& MonomerTemplates::classToStr(NucleotideComponentType comp_type)
+    {
+        return kNucleotideComponentTypeStr.at(comp_type);
     }
 
     std::string MonomerTemplates::_getNucleotideId(NucleotideType nucleo_type, std::string alias)
@@ -122,11 +128,6 @@ namespace indigo
             break;
         }
         return res + ":" + alias;
-    }
-
-    std::string MonomerTemplates::_getNucleotideMonomerId(NucleotideComponentType comp_type, std::string alias)
-    {
-        return kNucleotideComponentTypeStr.at(comp_type) + ":" + alias;
     }
 
     bool MonomerTemplates::splitNucleotide(std::string nucleo_type, std::string alias, GranularNucleotide& splitted_nucleotide)
@@ -152,7 +153,7 @@ namespace indigo
 
     bool MonomerTemplates::getNucleotideMonomer(NucleotideComponentType comp_type, std::string alias, BaseMolecule& bmol)
     {
-        auto it = _instance()._monomers_lib.find(_getNucleotideMonomerId(comp_type, alias));
+        auto it = _instance()._monomers_lib.find(std::make_pair(comp_type, alias));
         if (it != _instance()._monomers_lib.end())
         {
             bmol.clone(*it->second.monomer);
@@ -234,7 +235,7 @@ namespace indigo
             residue.sa_natreplace.readString(desc.natreplace.c_str(), true);
             // USE PHOSHPHATE:P, SUGAR:R, BASE:A, etc as a key.
             for (const auto& alias : desc.aliases)
-                _monomers_lib.emplace(_getNucleotideMonomerId(desc.component_type, alias), NucleotideComponent{desc.component_type, desc.natreplace, bmol_ptr});
+                _monomers_lib.emplace(std::make_pair(desc.component_type, alias), NucleotideComponent{desc.component_type, desc.natreplace, bmol_ptr});
         }
 
         // create nucleotides' mappings
@@ -245,7 +246,7 @@ namespace indigo
             for (auto& kvp : desc.components)
             {
                 // find nucleotide component
-                auto comp_it = _monomers_lib.find(_getNucleotideMonomerId(kvp.first, kvp.second));
+                auto comp_it = _monomers_lib.find(std::make_pair(kvp.first, kvp.second));
                 if (comp_it != _monomers_lib.end())
                     nucleotide_triplet.emplace(kvp.first, std::ref(*comp_it));
             }
