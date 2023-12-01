@@ -2166,7 +2166,7 @@ bool MolfileLoader::_expandNucleotide(int atom_idx, int tg_idx, std::unordered_m
             auto& base = nuc.at(NucleotideComponentType::Base).get();
             int seq_id = _mol->getTemplateAtomSeqid(atom_idx);
             // patch existing nucleotide atom with phosphate
-            
+
             _mol->renameTemplateAtom(atom_idx, ph.first.second.c_str());
             _mol->setTemplateAtomClass(atom_idx, MonomerTemplates::classToStr(ph.first.first).c_str());
             // add sugar

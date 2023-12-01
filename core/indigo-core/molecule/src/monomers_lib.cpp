@@ -115,21 +115,6 @@ namespace indigo
         return kNucleotideComponentTypeStr.at(comp_type);
     }
 
-    std::string MonomerTemplates::_getNucleotideId(NucleotideType nucleo_type, std::string alias)
-    {
-        std::string res;
-        switch (nucleo_type)
-        {
-        case NucleotideType::RNA:
-            res = kMonomerClassRNA;
-            break;
-        case NucleotideType::DNA:
-            res = kMonomerClassDNA;
-            break;
-        }
-        return res + ":" + alias;
-    }
-
     bool MonomerTemplates::splitNucleotide(std::string nucleo_type, std::string alias, GranularNucleotide& splitted_nucleotide)
     {
         NucleotideType nt = NucleotideType::RNA;
@@ -142,7 +127,7 @@ namespace indigo
 
     bool MonomerTemplates::splitNucleotide(NucleotideType nucleo_type, std::string alias, GranularNucleotide& splitted_nucleotide)
     {
-        auto it = _instance()._nucleotides_lib.find(_getNucleotideId(nucleo_type, alias));
+        auto it = _instance()._nucleotides_lib.find(std::make_pair(nucleo_type, alias));
         if (it != _instance()._nucleotides_lib.end())
         {
             splitted_nucleotide = it->second;
@@ -252,7 +237,7 @@ namespace indigo
             }
 
             for (const auto& alias : desc.aliases)
-                _nucleotides_lib.emplace(_getNucleotideId(desc.nucleo_type, alias), nucleotide_triplet);
+                _nucleotides_lib.emplace(std::make_pair(desc.nucleo_type, alias), nucleotide_triplet);
         }
     }
 }

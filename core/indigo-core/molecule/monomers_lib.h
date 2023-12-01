@@ -55,7 +55,7 @@ namespace indigo
 
     using NucleotideComponentKey = std::pair<NucleotideComponentType, std::string>;
     using NucleotideKey = std::pair<NucleotideType, std::string>;
-    using MonomersLib = std::unordered_map< NucleotideComponentKey, NucleotideComponent, pair_hash>;
+    using MonomersLib = std::unordered_map<NucleotideComponentKey, NucleotideComponent, pair_hash>;
     using GranularNucleotide = std::unordered_map<NucleotideComponentType, std::reference_wrapper<MonomersLib::value_type>>;
 
     // singleton MonomerTemplates class
@@ -81,11 +81,9 @@ namespace indigo
         MonomerTemplates();
         void initializeMonomers();
         ~MonomerTemplates() = default;
-        static std::string _getNucleotideId(NucleotideType nucleo_type, std::string alias);
-
         MonomersLib _monomers_lib;
         std::unordered_map<std::string, NucleotideComponentType> _component_types;
-        std::unordered_map<std::string, std::unordered_map<NucleotideComponentType, std::reference_wrapper<MonomersLib::value_type>>> _nucleotides_lib;
+        std::unordered_map<NucleotideKey, GranularNucleotide, pair_hash> _nucleotides_lib;
     };
 }
 
