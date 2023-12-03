@@ -52,7 +52,7 @@ namespace indigo
     };
 
     const std::vector<NucleotidePartDescriptor> monomer_descriptors = {
-        {NucleotideComponentType::Phosphate, "P", {"P", "p"}, "P"},       {NucleotideComponentType::Sugar, "Rib", {"R", "Rib", "r"}, "R"},
+        {NucleotideComponentType::Phosphate, "P", {"P", "p"}, "P"},         {NucleotideComponentType::Sugar, "Rib", {"R", "Rib", "r"}, "R"},
         {NucleotideComponentType::Sugar, "dRib", {"d", "dR", "dRib"}, "R"}, {NucleotideComponentType::Base, "Ade", {"A", "Ade"}, "A"},
         {NucleotideComponentType::Base, "Cyt", {"C", "Cyt"}, "C"},          {NucleotideComponentType::Base, "Gua", {"G", "Gua"}, "G"},
         {NucleotideComponentType::Base, "Thy", {"T", "Thy"}, "T"},          {NucleotideComponentType::Base, "Ura", {"U", "Ura"}, "U"}};
