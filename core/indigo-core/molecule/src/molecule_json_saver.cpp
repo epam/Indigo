@@ -1064,8 +1064,8 @@ std::string MoleculeJsonSaver::monomerId(const TGroup& tg)
 {
     std::string name;
     std::string monomer_class;
-    if (tg.tgroup_long_name.ptr())
-        return tg.tgroup_long_name.ptr();
+    if (tg.tgroup_text_id.ptr())
+        return tg.tgroup_text_id.ptr();
     if (tg.tgroup_name.ptr())
         name = tg.tgroup_name.ptr();
     if (tg.tgroup_class.ptr())

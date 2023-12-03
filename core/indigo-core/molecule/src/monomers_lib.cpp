@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include <functional>
+#include <rapidjson/document.h>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -25,7 +26,9 @@
 #include "layout/molecule_layout.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_json_loader.h"
 #include "molecule/monomer_commons.h"
+#include "molecule/monomers_basic_templates.h"
 #include "molecule/monomers_lib.h"
 #include "molecule/smiles_loader.h"
 
@@ -33,19 +36,10 @@ namespace indigo
 {
     IMPL_ERROR(MonomerTemplates, "monomers library");
 
-    const auto KPhosphate = "OP([OH:1])([OH:2])=O";
-    const auto KSugarRibose = "O[C@H]1[C@H]([OH:3])O[C@H](CO[H:1])[C@H]1O[H:2]";
-    const auto KSugarDeoxyribose = "[H:1]OC[C@H]1O[C@@H]([OH:3])C[C@@H]1O[H:2]";
-    const auto KBaseAdenine = "Nc1ncnc2n([H:1])cnc12";
-    const auto KBaseCytosine = "Nc1ccn([H:1])c(=O)n1";
-    const auto KBaseGuanine = "Nc1nc2n([H:1])cnc2c(=O)[nH]1";
-    const auto KBaseThymine = "Cc1cn([H:1])c(=O)[nH]c1=O";
-    const auto kBaseUracil = "[H:1]n1ccc(=O)[nH]c1=O";
-
     struct NucleotidePartDescriptor
     {
         NucleotideComponentType component_type;
-        std::string molecule_str;
+        std::string template_id;
         std::vector<std::string> aliases;
         std::string natreplace;
     };
@@ -57,14 +51,11 @@ namespace indigo
         std::unordered_map<NucleotideComponentType, std::string> components;
     };
 
-    const std::vector<NucleotidePartDescriptor> monomer_descriptors = {{NucleotideComponentType::Phosphate, KPhosphate, {"P", "p"}, "P"},
-                                                                       {NucleotideComponentType::Sugar, KSugarRibose, {"R", "Rib", "r"}, "R"},
-                                                                       {NucleotideComponentType::Sugar, KSugarDeoxyribose, {"d", "dR", "dRib"}, "R"},
-                                                                       {NucleotideComponentType::Base, KBaseAdenine, {"A", "Ade"}, "A"},
-                                                                       {NucleotideComponentType::Base, KBaseCytosine, {"C", "Cyt"}, "C"},
-                                                                       {NucleotideComponentType::Base, KBaseGuanine, {"G", "Gua"}, "G"},
-                                                                       {NucleotideComponentType::Base, KBaseThymine, {"T", "Thy"}, "T"},
-                                                                       {NucleotideComponentType::Base, kBaseUracil, {"U", "Ura"}, "U"}};
+    const std::vector<NucleotidePartDescriptor> monomer_descriptors = {
+        {NucleotideComponentType::Phosphate, "P", {"P", "p"}, "P"},       {NucleotideComponentType::Sugar, "Rib", {"R", "Rib", "r"}, "R"},
+        {NucleotideComponentType::Sugar, "dRib", {"d", "dR", "dRib"}, "R"}, {NucleotideComponentType::Base, "Ade", {"A", "Ade"}, "A"},
+        {NucleotideComponentType::Base, "Cyt", {"C", "Cyt"}, "C"},          {NucleotideComponentType::Base, "Gua", {"G", "Gua"}, "G"},
+        {NucleotideComponentType::Base, "Thy", {"T", "Thy"}, "T"},          {NucleotideComponentType::Base, "Ura", {"U", "Ura"}, "U"}};
 
     const std::vector<NucleotideDescriptor> nucleotide_descriptors = {
         {NucleotideType::RNA,
@@ -166,61 +157,29 @@ namespace indigo
     void MonomerTemplates::initializeMonomers()
     {
         // collect basic monomers
+        using namespace rapidjson;
+        Document data;
+        std::unordered_map<std::string, std::shared_ptr<BaseMolecule>> mol_map;
+        if (!data.Parse(kMonomersBasicTemplates).HasParseError())
+        {
+            std::unique_ptr<BaseMolecule> monomers_mol(new Molecule());
+            MoleculeJsonLoader loader(data);
+            loader.loadMolecule(monomers_mol->asMolecule());
+            for (auto i = monomers_mol->tgroups.begin(); i != monomers_mol->tgroups.end(); i = monomers_mol->tgroups.next(i))
+            {
+                std::shared_ptr<BaseMolecule> mon_mol(new Molecule());
+                auto& tg = monomers_mol->tgroups.getTGroup(i);
+                mon_mol->clone_KeepIndices(*tg.fragment);
+                mon_mol->asMolecule().setIgnoreBadValenceFlag(true);
+                mol_map.emplace(tg.tgroup_text_id.ptr(), mon_mol);
+            }
+        }
+
         for (const auto& desc : monomer_descriptors)
         {
-            BufferScanner scan(desc.molecule_str.c_str());
-            SmilesLoader loader(scan);
-            std::shared_ptr<BaseMolecule> bmol_ptr(new Molecule());
-            loader.loadMolecule(bmol_ptr->asMolecule());
-            bmol_ptr->asMolecule().setIgnoreBadValenceFlag(true);
-            // MoleculeLayout ml(*bmol_ptr, false);
-            // ml.layout_orientation = UNCPECIFIED;
-            // ml.make();
-
-            std::map<int, int> attachment_points;
-            int res_idx = bmol_ptr->sgroups.addSGroup(SGroup::SG_TYPE_SUP);
-            auto& residue = (Superatom&)bmol_ptr->sgroups.getSGroup(res_idx);
-            for (int atom_idx = bmol_ptr->vertexBegin(); atom_idx != bmol_ptr->vertexEnd(); atom_idx = bmol_ptr->vertexNext(atom_idx))
-            {
-                int aam = bmol_ptr->reaction_atom_mapping[atom_idx];
-                if (aam > 0)
-                {
-                    // atom_idx - leaving atom
-                    attachment_points.emplace(aam, atom_idx);
-                    int idap = residue.attachment_points.add();
-                    Superatom::_AttachmentPoint& ap = residue.attachment_points.at(idap);
-                    auto& v = bmol_ptr->getVertex(atom_idx);
-                    if (v.neighbors_list.size() == 1)
-                    {
-                        ap.aidx = v.neiVertex(v.neiBegin()); // set attachment atom
-                        ap.lvidx = atom_idx;                 // set leaving group
-                        ap.apid.readString(getAttachmentLabel(aam - 1).c_str(), true);
-                        int lgrp_idx = bmol_ptr->sgroups.addSGroup(SGroup::SG_TYPE_SUP);
-                        auto& lgrp = (Superatom&)bmol_ptr->sgroups.getSGroup(lgrp_idx);
-                        lgrp.atoms.push(atom_idx);
-                        lgrp.sa_class.readString("LGRP", true);
-                        int leaving_element = bmol_ptr->getAtomNumber(atom_idx);
-                        if (leaving_element == ELEM_H)
-                            lgrp.subscript.readString("H", true);
-                        else if (leaving_element == ELEM_O)
-                            lgrp.subscript.readString("OH", true);
-                    }
-                    else
-                        throw Error("Bad leaving atom: %d", atom_idx);
-                    bmol_ptr->reaction_atom_mapping[atom_idx] = 0; // reset mapping
-                }
-                else
-                {
-                    residue.atoms.push(atom_idx);
-                }
-            }
-
-            residue.subscript.readString(desc.aliases.front().c_str(), true);
-            residue.sa_class.readString(kNucleotideComponentTypeStr.at(desc.component_type).c_str(), true);
-            residue.sa_natreplace.readString(desc.natreplace.c_str(), true);
-            // USE PHOSHPHATE:P, SUGAR:R, BASE:A, etc as a key.
             for (const auto& alias : desc.aliases)
-                _monomers_lib.emplace(std::make_pair(desc.component_type, alias), NucleotideComponent{desc.component_type, desc.natreplace, bmol_ptr});
+                _monomers_lib.emplace(std::make_pair(desc.component_type, alias),
+                                      NucleotideComponent{desc.component_type, desc.natreplace, mol_map.at(desc.template_id)});
         }
 
         // create nucleotides' mappings

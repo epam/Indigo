@@ -1147,7 +1147,7 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
     if (monomer_template.HasMember("id"))
     {
         std::string id = monomer_template["id"].GetString();
-        tg.tgroup_long_name.appendString(id.c_str(), true);
+        tg.tgroup_text_id.appendString(id.c_str(), true);
 
         mclass = monomerTemplateClass(monomer_template);
 
