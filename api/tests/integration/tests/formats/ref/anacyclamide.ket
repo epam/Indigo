@@ -287,6 +287,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "Q",
+        "name": "Gln",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -499,6 +500,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "S",
+        "name": "Ser",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -666,6 +668,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "T",
+        "name": "Thr",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -850,6 +853,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "P",
+        "name": "Pro",
         "attachmentPoints": [
             {
                 "attachmentAtom": 7,
@@ -1016,6 +1020,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "V",
+        "name": "Val",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1175,6 +1180,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "G",
+        "name": "Gly",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1287,6 +1293,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "W",
+        "name": "Trp",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1588,6 +1595,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "I",
+        "name": "Ile",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,

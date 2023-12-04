@@ -14,6 +14,7 @@
         "class": "DNA",
         "classHELM": "RNA",
         "alias": "T",
+        "name": "T",
         "attachmentPoints": [
             {
                 "attachmentAtom": 9,

@@ -855,6 +855,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "H",
+        "name": "His",
         "attachmentPoints": [
             {
                 "attachmentAtom": 5,
@@ -1089,6 +1090,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "A",
+        "name": "Ala",
         "attachmentPoints": [
             {
                 "attachmentAtom": 2,
@@ -1218,6 +1220,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "E",
+        "name": "Glu",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1430,6 +1433,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "G",
+        "name": "Gly",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1542,6 +1546,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "T",
+        "name": "Thr",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1726,6 +1731,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "F",
+        "name": "Phe",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1952,6 +1958,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "S",
+        "name": "Ser",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2119,6 +2126,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "D",
+        "name": "Asp",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2316,6 +2324,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "V",
+        "name": "Val",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2475,6 +2484,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "Y",
+        "name": "Tyr",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2739,6 +2749,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "L",
+        "name": "Leu",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2913,6 +2924,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "Q",
+        "name": "Gln",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3125,6 +3137,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "K",
+        "name": "Lys",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3337,6 +3350,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "I",
+        "name": "Ile",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3513,6 +3527,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "W",
+        "name": "Trp",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3814,6 +3829,7 @@
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "R",
+        "name": "Arg",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -4056,6 +4072,7 @@
         "class": "Chem",
         "classHELM": "CHEM",
         "alias": "Fmoc",
+        "name": "Fmoc",
         "attachmentPoints": [
             {
                 "type": "side",
@@ -4343,6 +4360,7 @@
         "class": "MODAA",
         "classHELM": "PEPTIDE",
         "alias": "E",
+        "name": "E",
         "naturalAnalog": "Glu",
         "naturalAnalogShort": "E",
         "attachmentPoints": [

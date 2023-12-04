@@ -1623,6 +1623,7 @@
         "class": "MODDNA",
         "classHELM": "RNA",
         "alias": "cdaC",
+        "name": "cdaC",
         "naturalAnalog": "cdaC",
         "attachmentPoints": [
             {
@@ -2047,6 +2048,7 @@
         "class": "Phosphate",
         "classHELM": "RNA",
         "alias": "P",
+        "name": "P",
         "naturalAnalog": "P",
         "attachmentPoints": [
             {
@@ -2145,6 +2147,7 @@
         "class": "Sugar",
         "classHELM": "RNA",
         "alias": "dR",
+        "name": "dR",
         "naturalAnalog": "R",
         "attachmentPoints": [
             {
@@ -2354,6 +2357,7 @@
         "class": "Base",
         "classHELM": "RNA",
         "alias": "T",
+        "name": "T",
         "naturalAnalog": "T",
         "attachmentPoints": [
             {
@@ -2526,6 +2530,7 @@
         "class": "Base",
         "classHELM": "RNA",
         "alias": "G",
+        "name": "G",
         "naturalAnalog": "G",
         "attachmentPoints": [
             {
@@ -2735,6 +2740,7 @@
         "class": "Base",
         "classHELM": "RNA",
         "alias": "C",
+        "name": "C",
         "naturalAnalog": "C",
         "attachmentPoints": [
             {
@@ -2892,6 +2898,7 @@
         "class": "Base",
         "classHELM": "RNA",
         "alias": "A",
+        "name": "A",
         "naturalAnalog": "A",
         "attachmentPoints": [
             {

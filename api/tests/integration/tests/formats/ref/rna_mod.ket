@@ -1123,6 +1123,7 @@
         "class": "MODRNA",
         "classHELM": "RNA",
         "alias": "dabA",
+        "name": "dabA",
         "naturalAnalog": "dabA",
         "attachmentPoints": [
             {
@@ -1549,6 +1550,7 @@
         "class": "MODRNA",
         "classHELM": "RNA",
         "alias": "5fU",
+        "name": "5fU",
         "naturalAnalog": "5fU",
         "attachmentPoints": [
             {
@@ -1920,6 +1922,7 @@
         "class": "Phosphate",
         "classHELM": "RNA",
         "alias": "P",
+        "name": "P",
         "naturalAnalog": "P",
         "attachmentPoints": [
             {
@@ -2018,6 +2021,7 @@
         "class": "Sugar",
         "classHELM": "RNA",
         "alias": "R",
+        "name": "R",
         "naturalAnalog": "R",
         "attachmentPoints": [
             {
@@ -2244,6 +2248,7 @@
         "class": "Base",
         "classHELM": "RNA",
         "alias": "C",
+        "name": "C",
         "naturalAnalog": "C",
         "attachmentPoints": [
             {
@@ -2401,6 +2406,7 @@
         "class": "Base",
         "classHELM": "RNA",
         "alias": "G",
+        "name": "G",
         "naturalAnalog": "G",
         "attachmentPoints": [
             {
@@ -2610,6 +2616,7 @@
         "class": "Base",
         "classHELM": "RNA",
         "alias": "A",
+        "name": "A",
         "naturalAnalog": "A",
         "attachmentPoints": [
             {
