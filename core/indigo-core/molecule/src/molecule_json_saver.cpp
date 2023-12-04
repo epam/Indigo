@@ -1362,8 +1362,8 @@ void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, i
         writer.Key("attachmentPointId");
         writer.String(convertAPToHELM(conn_it->second).c_str());
     }
-    // else
-    //     throw Error("no attachment point");
+    else
+        throw Error("no attachment point");
     writer.EndObject();
 }
 
