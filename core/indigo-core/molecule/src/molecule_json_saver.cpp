@@ -1146,17 +1146,17 @@ std::string MoleculeJsonSaver::monomerAlias(const TGroup& tg)
 
 void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
 {
-    std::string template_name("monomerTemplate-");
-    std::string tg_name(monomerId(tg));
+    std::string template_id("monomerTemplate-");
+    std::string tg_id(monomerId(tg));
     std::string template_class(monomerKETClass(tg.tgroup_class.ptr()));
     std::string helm_class(monomerHELMClass(tg.tgroup_class.ptr()));
-    template_name += tg_name;
-    writer.Key(template_name.c_str());
+    template_id += tg_id;
+    writer.Key(template_id.c_str());
     writer.StartObject();
     writer.Key("type");
     writer.String("monomerTemplate");
     writer.Key("id");
-    writer.String(tg_name.c_str());
+    writer.String(tg_id.c_str());
     if (tg.tgroup_class.size())
     {
         writer.Key("class");
@@ -1167,6 +1167,12 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
 
     writer.Key("alias");
     writer.String(monomerAlias(tg).c_str());
+
+    if (tg.tgroup_name.size())
+    {
+        writer.Key("name");
+        writer.String(tg.tgroup_name.ptr());
+    }
 
     if (tg.tgroup_natreplace.size())
     {

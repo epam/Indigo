@@ -65,10 +65,10 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
         Value& templates = root["templates"];
         for (int i = 0; i < templates.Size(); ++i)
         {
-            std::string template_name = templates[i]["$ref"].GetString();
-            if (ket.HasMember(template_name.c_str()))
+            std::string template_id = templates[i]["$ref"].GetString();
+            if (ket.HasMember(template_id.c_str()))
             {
-                Value& template_node = ket[template_name.c_str()];
+                Value& template_node = ket[template_id.c_str()];
                 std::string id = template_node["id"].GetString();
                 _templates.PushBack(template_node, ket.GetAllocator());
                 _id_to_template.emplace(id, i);
@@ -1183,8 +1183,11 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
                     mclass = kMonomerClassAA;
                 }
                 tg.tgroup_alias.appendString(alias.c_str(), true);
-                tg.tgroup_name.appendString(monomerNameByAlias(mclass, alias).c_str(), true);
             }
+            if (monomer_template.HasMember("name"))
+                tg.tgroup_name.readString(monomer_template["name"].GetString(), true);
+            else
+                tg.tgroup_name.appendString(monomerNameByAlias(mclass, alias).c_str(), true);
         }
 
         if (monomer_template.HasMember("attachmentPoints"))
