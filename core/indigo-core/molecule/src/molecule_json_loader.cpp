@@ -1543,7 +1543,6 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         auto mon_id1 = monomer_id_mapping.at(extract_id(ep1["monomerId"].GetString(), "monomer"));
         auto mon_id2 = monomer_id_mapping.at(extract_id(ep2["monomerId"].GetString(), "monomer"));
 
-
         std::string atp1 = convertAPFromHELM(ep1["attachmentPointId"].GetString());
         std::string atp2 = convertAPFromHELM(ep2["attachmentPointId"].GetString());
 

@@ -12,6 +12,7 @@
         "id": "cys_27",
         "class": "D-AminoAcid",
         "classHELM": "PEPTIDE",
+        "name": "dcys",
         "alias": "dc",
         "naturalAnalog": "Cys",
         "naturalAnalogShort": "C",
