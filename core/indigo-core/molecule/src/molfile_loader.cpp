@@ -2151,10 +2151,9 @@ bool MolfileLoader::_expandNucleotide(int atom_idx, int tg_idx, std::unordered_m
     QS_DEF(Array<char>, left_apid);
     QS_DEF(Array<char>, right_apid);
     QS_DEF(Array<char>, xlink_apid);
-    left_apid.readString("Al", true);
-    right_apid.readString("Br", true);
-    xlink_apid.readString("Cx", true);
-
+    left_apid.readString(kLeftAttachmentPoint, true);
+    right_apid.readString(kRightAttachmentPoint, true);
+    xlink_apid.readString(kBranchAttachmentPoint, true);
     auto& tg = _bmol->tgroups.getTGroup(tg_idx);
     GranularNucleotide nuc;
     if (MonomerTemplates::splitNucleotide(tg.tgroup_class.ptr(), tg.tgroup_name.ptr(), nuc))
@@ -2165,38 +2164,61 @@ bool MolfileLoader::_expandNucleotide(int atom_idx, int tg_idx, std::unordered_m
             auto& sugar = nuc.at(NucleotideComponentType::Sugar).get();
             auto& base = nuc.at(NucleotideComponentType::Base).get();
             int seq_id = _mol->getTemplateAtomSeqid(atom_idx);
-            std::vector<int> destination_atoms;
-
-            for (int atp_idx = 0; atp_idx < _mol->getTemplateAtomAttachmentPointsCount(atom_idx); ++atp_idx)
+            // collect attachment points. only left attachment remains untouched.
+            std::unordered_map<std::string, int> atp_map;
+            for (int j = _mol->template_attachment_points.begin(); j != _mol->template_attachment_points.end(); j = _mol->template_attachment_points.next(j))
             {
-                int dest_atom = _mol->getTemplateAtomAttachmentPoint(atom_idx, atp_idx);
-                destination_atoms.push_back(dest_atom);
+                auto& ap = _mol->template_attachment_points.at(j);
+                if (ap.ap_occur_idx == atom_idx && std::string(ap.ap_id.ptr()) > kLeftAttachmentPoint)
+                {
+                    atp_map.emplace(ap.ap_id.ptr(), ap.ap_aidx);
+                    _mol->template_attachment_points.remove(j);
+                }
             }
 
             // patch existing nucleotide atom with phosphate
             _mol->renameTemplateAtom(atom_idx, ph.first.second.c_str());
             _mol->setTemplateAtomClass(atom_idx, MonomerTemplates::classToStr(ph.first.first).c_str());
+
             // add sugar
             int sugar_idx = _mol->addAtom(-1);
             _mol->setTemplateAtom(sugar_idx, sugar.first.second.c_str());
             _mol->setTemplateAtomClass(sugar_idx, MonomerTemplates::classToStr(sugar.first.first).c_str());
+
             // add base
             int base_idx = _mol->addAtom(-1);
             _mol->setTemplateAtom(base_idx, base.first.second.c_str());
             _mol->setTemplateAtomClass(base_idx, MonomerTemplates::classToStr(base.first.first).c_str());
 
             // modify connections
-            int right_atom_idx = _mol->getTemplateAtomAttachmentPointById(atom_idx, right_apid);
-            if (right_atom_idx != -1)
+            auto right_it = atp_map.find(std::string(kRightAttachmentPoint));
+            int right_idx = -1;
+            if (right_it != atp_map.end())
             {
-                // disconnect right nucleotide
-                _mol->removeEdge(_mol->findEdgeIndex(atom_idx, right_atom_idx));
+                // nucleotide had Br attachment point. Now it should be moved to sugar.
+                //   disconnect right nucleotide
+                right_idx = right_it->second;
+                _mol->removeEdge(_mol->findEdgeIndex(atom_idx, right_idx));
                 // connect right nucleotide to the sugar
-                _mol->addBond_Silent(sugar_idx, right_atom_idx, BOND_SINGLE);
+                _mol->addBond_Silent(sugar_idx, right_it->second, BOND_SINGLE);
                 // [sugar <- (Al) right nucleotide]
-                _mol->setTemplateAtomAttachmentDestination(right_atom_idx, sugar_idx, left_apid);
+                _mol->updateTemplateAtomAttachmentDestination(right_idx, atom_idx, sugar_idx);
                 // [sugar (Br) -> right nucleotide]
-                _mol->setTemplateAtomAttachmentDestination(sugar_idx, right_atom_idx, right_apid);
+                _mol->setTemplateAtomAttachmentDestination(sugar_idx, right_idx, right_apid);
+                atp_map.erase(right_it);
+            }
+
+            for (auto& atp : atp_map)
+            {
+                _mol->removeEdge(_mol->findEdgeIndex(atom_idx, atp.second));
+                // connect branch to base. which is incorrect!!! TODO: use substructure matcher to determine right monomer!!!
+                _mol->addBond_Silent(base_idx, atp.second, BOND_SINGLE);
+                // [sugar <- (Al) right nucleotide]
+                _mol->updateTemplateAtomAttachmentDestination(atp.second, atom_idx, base_idx);
+                // [sugar (Br) -> right nucleotide]
+                Array<char> att;
+                att.readString(atp.first.c_str(), true);
+                _mol->setTemplateAtomAttachmentDestination(base_idx, right_it->second, att);
             }
 
             // connect phosphate to the sugar
@@ -2213,7 +2235,7 @@ bool MolfileLoader::_expandNucleotide(int atom_idx, int tg_idx, std::unordered_m
             _mol->setTemplateAtomAttachmentDestination(base_idx, sugar_idx, left_apid);
             // fix coordinates
             Vec3f sugar_pos, base_pos;
-            if (!_bmol->getMiddlePoint(atom_idx, right_atom_idx, sugar_pos))
+            if (!_bmol->getMiddlePoint(atom_idx, right_idx, sugar_pos))
             {
                 sugar_pos.copy(_bmol->getAtomXyz(atom_idx));
                 sugar_pos.x += MoleculeLayout::DEFAULT_BOND_LENGTH;

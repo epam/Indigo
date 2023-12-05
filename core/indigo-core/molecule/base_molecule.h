@@ -124,6 +124,13 @@ namespace indigo
         friend class MoleculeCIPCalculator;
         typedef std::map<int, int> Mapping;
 
+        struct TemplateAttPoint
+        {
+            int ap_occur_idx;
+            int ap_aidx;
+            Array<char> ap_id;
+        };
+
         BaseMolecule();
         ~BaseMolecule() override;
         MetaDataStorage& meta()
@@ -218,6 +225,7 @@ namespace indigo
 
         void setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx, const char* att_id);
         void setTemplateAtomAttachmentDestination(int atom_idx, int new_dest_atom_idx, Array<char>& att_id);
+        bool updateTemplateAtomAttachmentDestination(int atom_idx, int old_dest_atom_idx, int new_dest_atom_idx);
 
         int getTemplateAtomAttachmentPoint(int atom_idx, int order);
         void getTemplateAtomAttachmentPointId(int atom_idx, int order, Array<char>& apid);
@@ -322,12 +330,6 @@ namespace indigo
             return reaction_atom_exact_change;
         }
 
-        struct TemplateAttPoint
-        {
-            int ap_occur_idx;
-            int ap_aidx;
-            Array<char> ap_id;
-        };
         ObjPool<TemplateAttPoint> template_attachment_points;
 
         MoleculeSGroups sgroups;

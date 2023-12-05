@@ -94,6 +94,10 @@ namespace indigo
     int getAttachmentOrder(const std::string& label);
     std::string getAttachmentLabel(int order);
 
+    const auto kLeftAttachmentPoint = "Al";
+    const auto kRightAttachmentPoint = "Br";
+    const auto kBranchAttachmentPoint = "Cx";
+
     struct MonomerAttachmentPoint
     {
         int attachment_atom;

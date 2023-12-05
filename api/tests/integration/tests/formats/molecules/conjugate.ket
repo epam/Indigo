@@ -492,13 +492,14 @@
                 },
                 "endpoint2": {
                     "monomerId": "monomer84",
-                    "attachmentPointId": "R1"
+                    "attachmentPointId": "R2"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer84"
+                    "monomerId": "monomer84",
+                    "attachmentPointId": "R1"
                 },
                 "endpoint2": {
                     "monomerId": "monomer52",

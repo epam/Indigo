@@ -117,9 +117,9 @@ namespace indigo
 
     int getAttachmentOrder(const std::string& label)
     {
-        if (label == "Al" || label == "R1")
+        if (label == kLeftAttachmentPoint)
             return 0;
-        if (label == "Br" || label == "R2")
+        if (label == kRightAttachmentPoint)
             return 1;
         if (label.size() > 1 || isupper(label[0]))
         {
@@ -139,11 +139,11 @@ namespace indigo
         switch (order)
         {
         case 0:
-            if (label == "Al" || label == "R1")
+            if (label == kLeftAttachmentPoint || label == "R1")
                 return true;
             break;
         case 1:
-            if (label == "Br" || label == "R2")
+            if (label == kRightAttachmentPoint || label == "R2")
                 return true;
             break;
         default:

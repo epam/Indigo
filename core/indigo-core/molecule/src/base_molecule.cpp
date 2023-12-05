@@ -1092,7 +1092,7 @@ void BaseMolecule::setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int o
 void BaseMolecule::setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx, const char* att_id)
 {
     int att_idx = template_attachment_points.add();
-    TemplateAttPoint& ap = template_attachment_points.at(att_idx);
+    auto& ap = template_attachment_points.at(att_idx);
     ap.ap_occur_idx = atom_idx;
     ap.ap_aidx = att_atom_idx;
     ap.ap_id.readString(att_id, false);
@@ -1105,12 +1105,11 @@ int BaseMolecule::getTemplateAtomAttachmentPoint(int atom_idx, int order)
     int ap_count = 0;
     for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
     {
-        BaseMolecule::TemplateAttPoint& ap = template_attachment_points.at(j);
+        auto& ap = template_attachment_points.at(j);
         if (ap.ap_occur_idx == atom_idx)
         {
             if (ap_count == order)
                 return ap.ap_aidx;
-
             ap_count++;
         }
     }
@@ -1122,7 +1121,7 @@ void BaseMolecule::getTemplateAtomAttachmentPointId(int atom_idx, int order, Arr
     int ap_count = 0;
     for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
     {
-        BaseMolecule::TemplateAttPoint& ap = template_attachment_points.at(j);
+        auto& ap = template_attachment_points.at(j);
         if (ap.ap_occur_idx == atom_idx)
         {
             if (ap_count == order)
@@ -1151,13 +1150,26 @@ int BaseMolecule::getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& 
     return aidx;
 }
 
+bool BaseMolecule::updateTemplateAtomAttachmentDestination(int atom_idx, int old_dest_atom_idx, int new_dest_atom_idx)
+{
+    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+    {
+        auto& ap = template_attachment_points.at(j);
+        if ((ap.ap_occur_idx == atom_idx) && (ap.ap_aidx == old_dest_atom_idx))
+        {
+            ap.ap_aidx = new_dest_atom_idx;
+            return true;
+        }
+    }
+    return false;
+}
+
 void BaseMolecule::setTemplateAtomAttachmentDestination(int atom_idx, int new_dest_atom_idx, Array<char>& att_id)
 {
-    QS_DEF(Array<char>, tmp);
     int aidx = -1;
     for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
     {
-        BaseMolecule::TemplateAttPoint& ap = template_attachment_points.at(j);
+        auto& ap = template_attachment_points.at(j);
         if ((ap.ap_occur_idx == atom_idx) && (ap.ap_id.memcmp(att_id) == 0))
         {
             ap.ap_aidx = new_dest_atom_idx;
@@ -1172,7 +1184,7 @@ int BaseMolecule::getTemplateAtomAttachmentPointsCount(int atom_idx)
     int count = 0;
     for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
     {
-        BaseMolecule::TemplateAttPoint& ap = template_attachment_points.at(j);
+        auto& ap = template_attachment_points.at(j);
         if (ap.ap_occur_idx == atom_idx)
         {
             count++;
