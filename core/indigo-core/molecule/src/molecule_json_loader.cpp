@@ -1182,12 +1182,20 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
                     alias.erase(0, 1);
                     mclass = kMonomerClassAA;
                 }
-                tg.tgroup_alias.appendString(alias.c_str(), true);
+                tg.tgroup_alias.readString(alias.c_str(), true);
+                tg.tgroup_name.readString(monomerNameByAlias(mclass, alias).c_str(), true);
             }
+
             if (monomer_template.HasMember("name"))
-                tg.tgroup_name.readString(monomer_template["name"].GetString(), true);
-            else
-                tg.tgroup_name.appendString(monomerNameByAlias(mclass, alias).c_str(), true);
+            {
+                std::string tg_name = monomer_template["name"].GetString();
+                if (mclass == kMonomerClassdAA && tg_name.find(kPrefix_d) == 0)
+                {
+                    tg_name.erase(0, 1);
+                    mclass = kMonomerClassAA;
+                }
+                tg.tgroup_name.readString(tg_name.c_str(), true);
+            }
         }
 
         if (monomer_template.HasMember("attachmentPoints"))
