@@ -18,9 +18,12 @@ if __name__ == '__main__':
         os.makedirs(os.path.dirname(newName), exist_ok=True)
         with open(newName, "w") as f:
             sdf = indigo.iterateSDFile(fileName)
+            i = 0
             for mol in sdf:
                 if indigo.check(mol.rawData()) == "{}":
                     f.write(mol.rawData())
                     f.write("\n$$$$\n")
+                    print(i)
+                    i += 1
     else:
         raise Exception("Cannot retrieve file name.")
