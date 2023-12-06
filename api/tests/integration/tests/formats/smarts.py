@@ -127,7 +127,7 @@ print("**** Load and Save as Query with component-level grouping ****")
 test_smarts_load_save("([#8].[#6])")
 test_smarts_load_save("([#8].[#6]).([#8].[#6])")
 
-test_smarts_load_save("[!C;!b]")
+test_smarts_load_save("[!C;!B]")
 test_smarts_load_save("[*]")
 test_smarts_load_save("[*;R1]")
 test_smarts_load_save("[*;R3]")
@@ -140,24 +140,20 @@ test_smarts_load_save("[v0]")
 test_smarts_load_save("[v3]")
 test_smarts_load_save("[+0]")
 test_smarts_load_save("[#6]@[#6]")
-test_smarts_load_save("[#9]/[#6]")
-test_smarts_load_save("[#9]/[#6]=[C]/[#17]")
+test_smarts_load_save("F/[#6]")
+test_smarts_load_save("F/[#6]=C/Cl")
 test_smarts_load_save("[O;H]")
 test_smarts_load_save("[!O;H]")
 test_smarts_load_save("([#6]1-[#6]-[#6]-1.[#6])")
-test_smarts_load_save("[#9]/[#6]=[#6]/[#6]=[#6]/[#6]")
-test_smarts_load_save(r"[#9]\[#6]=[#6]\[#6]=[#6]\[#6]")
+test_smarts_load_save("F/[#6]=[#6]/[#6]=[#6]/[#6]")
+test_smarts_load_save(r"F\[#6]=[#6]\[#6]=[#6]\[#6]")
 expected_str = '"bonds":[{"type":1,"atoms":[0,1],"stereo":1},{"type":2,"atoms":[1,2]},{"type":1,"atoms":[2,3],"stereo":1},{"type":2,"atoms":[3,4]},{"type":1,"atoms":[4,5],"stereo":1}]}}'
-test_smarts_load_save_through_ket(
-    "[#9]/[#6]=[#6]/[#6]=[#6]/[#6]", expected_str
-)
+test_smarts_load_save_through_ket("F/[#6]=[#6]/[#6]=[#6]/[#6]", expected_str)
 expected_str = '"bonds":[{"type":1,"atoms":[0,1],"stereo":6},{"type":2,"atoms":[1,2]},{"type":1,"atoms":[2,3],"stereo":1},{"type":2,"atoms":[3,4]},{"type":1,"atoms":[4,5],"stereo":6}]}}'
-test_smarts_load_save_through_ket(
-    r"[#9]\[#6]=[#6]/[#6]=[#6]\[#6]", expected_str
-)
+test_smarts_load_save_through_ket(r"F\[#6]=[#6]/[#6]=[#6]\[#6]", expected_str)
 expected_str = r'"bonds":[{"customQuery":"\\?","atoms":[0,1]},{"type":2,"atoms":[1,2]},{"customQuery":"/?","atoms":[2,3]},{"type":2,"atoms":[3,4]},{"customQuery":"\\?","atoms":[4,5]}]'
 test_smarts_load_save_through_ket(
-    r"[#9]\?[#6]=[#6]/?[#6]=[#6]\?[#6]", expected_str
+    r"F\?[#6]=[#6]/?[#6]=[#6]\?[#6]", expected_str
 )
 test_smarts_load_save_through_ket(
     "[C;@OH2]",
@@ -192,25 +188,29 @@ m = indigo.loadQueryMolecule(
     "S=CC(F)CCCCC[C@@](CCO)/C=C/[C@@](N)CCC[C]C([13C]CC([C+2]CC(CC%91)CC(C)CCC)CCC)CC%92.[*:2]%92.[*:1]%91 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_R2;_R1$,rb:32:*,u:3|"
 )
 smarts = m.smarts()
-expected = "[#16]=[#6]-[#6](-[#6]-[#6]-[#6]-[#6]-[#6]-[#6@](-[#6]=[#6]-[#6@](-[#6]-[#6]-[#6]-[#6]-[#6](-[#6]-[#6]%91)-[13;#6]-[#6]-[#6](-[#6]-[#6]-[#6])-[#6;+2]-[#6]-[#6](-[#6]-[#6](-[#6]-[#6]-[#6])-[#6;x0])-[#6]-[#6]%92)-[#7])-[#6]-[#6]-[#8])-[#9;$([*,#1]=,#,:[*,#1])].[*:2]-%91.[*:1]-%92"
+expected = "[#16]=[#6]-[#6](-[#6]-[#6]-[#6]-[#6]-[#6]-[#6@](-[#6]=[#6]-[#6@](-[#6]-[#6]-[#6]-[#6]-[#6](-[#6]-[#6]%91)-[13;#6]-[#6]-[#6](-[#6]-[#6]-[#6])-[#6;+2]-[#6]-[#6](-[#6]-[#6](-[#6]-[#6]-[#6])-[#6;x0])-[#6]-[#6]%92)-[#7])-[#6]-[#6]-[#8])-[F;$([*,#1]=,#,:[*,#1])].[*:2]-%91.[*:1]-%92"
 if smarts == expected:
     print("Ok expected smarts generated")
 else:
     print(
         "Fail. Expected smarts is\n%s\nbut generated\n%s" % (expected, smarts)
     )
-smarts = "[!#40!#79!#30]-[#6]-[#6]"
+smarts = "[!Zr!Au!Zn]-[#6]-[#6]"
 expected = (
     '"atoms":[{"type":"atom-list","notList":true,"elements":["Zr","Au","Zn"],'
 )
 test_smarts_load_save_through_ket(smarts, expected)
-smarts = "[#40,#79,#30]-[#6]-[#6]"
+smarts = "[!#40!#79!#30]-[#6]-[#6]"
+test_smarts_load_save_through_ket(smarts, expected, False)
+smarts = "[Zr,Au,Zn]-[#6]-[#6]"
 expected = '"atoms":[{"type":"atom-list","elements":["Zr","Au","Zn"],'
 test_smarts_load_save_through_ket(smarts, expected)
-smarts = "[#6,#7;a]:[o]"
+smarts = "[#40#79#30]-[#6]-[#6]"
+test_smarts_load_save_through_ket(smarts, expected, False)
+smarts = "[#6,#7;a]:o"
 expected = '"atoms":[{"type":"atom-list","elements":["C","N"],"location":[0.0,0.0,0.0],"queryProperties":{"aromaticity":"aromatic"}}'
 test_smarts_load_save_through_ket(smarts, expected)
-smarts = "[c,n,o]:[o]"
+smarts = "[c,n,o]:o"
 expected = '"atoms":[{"type":"atom-list","elements":["C","N","O"],"location":[0.0,0.0,0.0],"queryProperties":{"aromaticity":"aromatic"}}'
 test_smarts_load_save_through_ket(smarts, expected, False)
 smarts = "[c,C,c]"

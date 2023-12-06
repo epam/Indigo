@@ -291,6 +291,12 @@ namespace indigo
         QueryMolecule& asQueryMolecule() override;
         bool isQueryMolecule() override;
 
+        static bool isAromaticByCaseAtom(QueryMolecule::Node* atom);
+        static bool isAromaticByCaseAtom(int num);
+
+        static bool isOrganicSubset(QueryMolecule::Atom* atom);
+        static bool isOrganicSubset(int num);
+
         int getAtomNumber(int idx) override;
         int getAtomCharge(int idx) override;
         int getAtomIsotope(int idx) override;

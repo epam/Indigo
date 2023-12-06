@@ -163,6 +163,36 @@ int QueryMolecule::getAtomRingBondsCount(int idx)
     return -1;
 }
 
+bool QueryMolecule::isAromaticByCaseAtom(int num)
+{
+    if (num == ELEM_C || num == ELEM_N || num == ELEM_O || num == ELEM_P || num == ELEM_S || num == ELEM_Si || num == ELEM_Se || num == ELEM_As ||
+        num == ELEM_Te)
+        return true;
+    return false;
+}
+
+bool QueryMolecule::isAromaticByCaseAtom(QueryMolecule::Node* atom)
+{
+    if (atom->type != ATOM_NUMBER)
+        return false;
+    return QueryMolecule::isAromaticByCaseAtom(static_cast<QueryMolecule::Atom*>(atom)->value_max);
+}
+
+bool QueryMolecule::isOrganicSubset(int num)
+{
+    if (num == ELEM_B || num == ELEM_C || num == ELEM_N || num == ELEM_O || num == ELEM_P || num == ELEM_S || num == ELEM_F || num == ELEM_Cl ||
+        num == ELEM_Br || num == ELEM_I)
+        return true;
+    return false;
+}
+
+bool QueryMolecule::isOrganicSubset(QueryMolecule::Atom* atom)
+{
+    if (atom->type != ATOM_NUMBER)
+        return false;
+    return QueryMolecule::isOrganicSubset(atom->value_max);
+}
+
 int QueryMolecule::getAtomConnectivity(int idx)
 {
     return 0;
@@ -212,9 +242,9 @@ void QueryMolecule::getAtomDescription(int idx, Array<char>& description)
 {
     ArrayOutput out(description);
 
-    out.writeChar('[');
-    writeSmartsAtom(out, _atoms[idx], -1, -1, 1, false, false, original_format);
-    out.writeChar(']');
+    // out.writeChar('[');
+    writeSmartsAtom(out, _atoms[idx], -1, -1, 0, false, false, original_format);
+    // out.writeChar(']');
     out.writeChar(0);
 }
 
@@ -505,9 +535,24 @@ static void writeAnd(Output& _output, QueryMolecule::Node* node, bool has_or_par
 void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chirality, int depth, bool has_or_parent, bool has_not_parent, int original_format)
 {
     int i;
+    bool brackets_used = false;
 
-    if (depth == 0)
-        output.printf("[");
+    if (depth == 0) // "organic" subset can be used without [], but CNOPS need explicit aromatic to use letter
+        if (!isOrganicSubset(atom) || isAromaticByCaseAtom(atom))
+        {
+            bool atom_by_case = false;
+            bool aromaticity = false;
+            if (atom->type == OP_AND && atom->children.size() == 2)
+            {
+                atom_by_case = isAromaticByCaseAtom(atom->child(0)) || isAromaticByCaseAtom(atom->child(1));
+                aromaticity = (atom->child(0)->type == ATOM_AROMATICITY || atom->child(1)->type == ATOM_AROMATICITY);
+            }
+            if (!atom_by_case || !aromaticity)
+            {
+                output.writeChar('[');
+                brackets_used = true;
+            }
+        }
 
     switch (atom->type)
     {
@@ -529,7 +574,7 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
         long long cur_pos = output.tell();
         for (i = 0; i < atom->children.size(); i++)
         {
-            if (atom->children[i]->type == ATOM_NUMBER)
+            if (isAromaticByCaseAtom(atom->children[i]))
             {
                 has_number = true;
                 strncpy(atom_name, Element::toString(atom->child(i)->value_max), sizeof(atom_name));
@@ -584,7 +629,10 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
         output.printf("%d", atom->value_max);
         break;
     case ATOM_NUMBER: {
-        output.printf("#%d", atom->value_max);
+        if (isAromaticByCaseAtom(atom))
+            output.printf("#%d", atom->value_max);
+        else
+            output.printf("%s", Element::toString(atom->value_max));
         switch (original_format)
         {
         case SMARTS:
@@ -709,7 +757,7 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
     }
     }
 
-    if (depth == 0)
+    if (brackets_used)
         output.writeChar(']');
 }
 
@@ -2674,13 +2722,17 @@ bool QueryMolecule::queryAtomIsRegular(QueryMolecule& qm, int aid)
     QueryMolecule::Atom* qc = stripKnownAttrs(qa);
     if (qm.original_format == SMARTS || qm.original_format == KET)
     {
-        // Regular means 'N' or 'Cl' - that means aliphatic for smarts
+        // Regular means that atom name will be used as label - Cl, Br, C, N
+        // only "organic" subset atoms and aliphatic atoms should be rendered as "regular"
+        // aromatic atoms should be rendered in lowercase, other - in backets [Au]
+        if (isOrganicSubset(&qa) && !isAromaticByCaseAtom(&qa))
+            return true;
         if (qc || qa.type != OP_AND || qa.children.size() != 2)
             return false;
         bool aliphatic = false;
         int atom_number = -1;
         for (int i = 0; i < 2; i++)
-            if (qa.child(i)->type == QueryMolecule::ATOM_NUMBER)
+            if (isAromaticByCaseAtom(qa.child(i)))
                 atom_number = qa.child(i)->value_min;
             else if (qa.child(i)->type == ATOM_AROMATICITY && qa.child(i)->value_min == ATOM_ALIPHATIC)
                 aliphatic = true;

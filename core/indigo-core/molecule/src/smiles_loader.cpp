@@ -2883,7 +2883,6 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                 if (first_in_brackets)
                 {
                     element = ELEM_H;
-                    aromatic = ATOM_ALIPHATIC;
                 }
                 else
                 {
@@ -2897,7 +2896,6 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             else
             {
                 element = Element::fromTwoChars('H', scanner.readChar());
-                aromatic = ATOM_ALIPHATIC;
             }
         }
         // The 'A' symbol is weird too. It can be the 'aliphatic' atomic primitive,
@@ -2916,7 +2914,6 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             else
             {
                 element = Element::fromTwoChars('A', scanner.readChar());
-                aromatic = ATOM_ALIPHATIC;
             }
         }
         // Similarly, 'R' can start Rb, Ru, Rh, Re, Rn, Ra, Rf, Rg
@@ -2954,7 +2951,6 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             else
             {
                 element = Element::fromTwoChars('R', scanner.readChar());
-                aromatic = ATOM_ALIPHATIC;
             }
         }
         // Yet 'D' can start Db, Ds, Dy
@@ -2977,7 +2973,6 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             else
             {
                 element = Element::fromTwoChars('D', scanner.readChar());
-                aromatic = ATOM_ALIPHATIC;
             }
         }
         // ... and 'X' can start Xe
@@ -3000,7 +2995,6 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             else
             {
                 element = Element::fromTwoChars('X', scanner.readChar());
-                aromatic = ATOM_ALIPHATIC;
             }
         }
         else if (next == '*')
@@ -3166,12 +3160,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
         {
             scanner.skip(1);
 
-            if (next == 'b')
-            {
-                element = ELEM_B;
-                aromatic = ATOM_AROMATIC;
-            }
-            else if (next == 'c')
+            if (next == 'c')
             {
                 element = ELEM_C;
                 aromatic = ATOM_AROMATIC;
@@ -3208,14 +3197,13 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                 element = Element::fromTwoChars2(next, scanner.lookNext());
                 scanner.skip(1);
                 if (smarts_mode)
-                    // if (element == ELEM_As || element == ELEM_Se)
-                    aromatic = ATOM_ALIPHATIC;
+                    if (element == ELEM_As || element == ELEM_Se || element == ELEM_Si || element == ELEM_Te)
+                        aromatic = ATOM_ALIPHATIC;
             }
             else if ((next == 'C' && scanner.lookNext() == 'n') && first_in_brackets)
             {
                 scanner.skip(1);
                 element = ELEM_Cn;
-                aromatic = ATOM_ALIPHATIC;
             }
             else
             {
@@ -3223,8 +3211,8 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                 element = Element::fromChar(next);
 
                 if (smarts_mode)
-                    // if (element == ELEM_B || element == ELEM_C || element == ELEM_N || element == ELEM_O || element == ELEM_P || element == ELEM_S)
-                    aromatic = ATOM_ALIPHATIC;
+                    if (element == ELEM_C || element == ELEM_N || element == ELEM_O || element == ELEM_P || element == ELEM_S)
+                        aromatic = ATOM_ALIPHATIC;
             }
         }
         else if (next == '@')
