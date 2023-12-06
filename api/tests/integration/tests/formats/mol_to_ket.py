@@ -42,6 +42,8 @@ files = [
     "peptides",
     "fmoc",
     "anacyclamide",
+    "acgt_1412",
+    "apamine",
 ]
 
 files.sort()

@@ -1890,11 +1890,16 @@ void SmilesLoader::_loadParsedMolecule()
     {
         for (i = 0; i < _atoms.size(); i++)
         {
-            if (_atoms[i].star_atom && _atoms[i].aam != 0)
+            if (_atoms[i].aam != 0)
             {
-                if (_qmol != 0)
-                    _qmol->resetAtom(i, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
-                _bmol->allowRGroupOnRSite(i, _atoms[i].aam);
+                if (_atoms[i].star_atom)
+                {
+                    if (_qmol != 0)
+                        _qmol->resetAtom(i, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+                    _bmol->allowRGroupOnRSite(i, _atoms[i].aam);
+                }
+                else
+                    _bmol->reaction_atom_mapping[i] = _atoms[i].aam;
             }
             else if (_atoms[i].label == ELEM_RSITE)
             {
@@ -1956,10 +1961,10 @@ void SmilesLoader::_loadParsedMolecule()
             _scanner.readLine(_bmol->name, true);
     }
 
-    _bmol->reaction_atom_mapping.clear_resize(_bmol->vertexCount() + 1);
-    _bmol->reaction_atom_mapping.zerofill();
     if (inside_rsmiles)
     {
+        _bmol->reaction_atom_mapping.clear_resize(_bmol->vertexCount() + 1);
+        _bmol->reaction_atom_mapping.zerofill();
         for (i = 0; i < _atoms.size(); i++)
             _bmol->reaction_atom_mapping[i] = _atoms[i].aam;
     }

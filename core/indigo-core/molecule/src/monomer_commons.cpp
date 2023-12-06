@@ -104,16 +104,46 @@ namespace indigo
         return res;
     }
 
+    std::string getAttachmentLabel(int order)
+    {
+        std::string second_chars = "lrx";
+        std::string label(1, 'A' + order);
+        if (order > second_chars.size() - 1)
+            label += second_chars.back();
+        else
+            label += second_chars[order];
+        return label;
+    }
+
+    int getAttachmentOrder(const std::string& label)
+    {
+        if (label == kLeftAttachmentPoint)
+            return 0;
+        if (label == kRightAttachmentPoint)
+            return 1;
+        if (label.size() > 1 || isupper(label[0]))
+        {
+            if (label[0] == 'R')
+            {
+                auto rnum = label.substr(1);
+                if (std::all_of(rnum.begin(), rnum.end(), ::isdigit))
+                    return std::stol(rnum) - 1;
+            }
+            if (label[1] == 'x')
+                return label[0] - 'A';
+        }
+    }
+
     bool isAttachmentPointsInOrder(int order, const std::string& label)
     {
         switch (order)
         {
         case 0:
-            if (label == "Al" || label == "R1")
+            if (label == kLeftAttachmentPoint || label == "R1")
                 return true;
             break;
         case 1:
-            if (label == "Br" || label == "R2")
+            if (label == kRightAttachmentPoint || label == "R2")
                 return true;
             break;
         default:

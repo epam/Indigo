@@ -4,16 +4,17 @@
         "connections": [],
         "templates": [
             {
-                "$ref": "monomerTemplate-Thy_130"
+                "$ref": "monomerTemplate-Thy_131"
             }
         ]
     },
-    "monomerTemplate-Thy_130": {
+    "monomerTemplate-Thy_131": {
         "type": "monomerTemplate",
-        "id": "Thy_130",
+        "id": "Thy_131",
         "class": "RNA",
         "classHELM": "RNA",
         "alias": "T",
+        "name": "T",
         "attachmentPoints": [
             {
                 "attachmentAtom": 10,

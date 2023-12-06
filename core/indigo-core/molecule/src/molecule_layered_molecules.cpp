@@ -371,6 +371,11 @@ const int LayeredMolecules::getTemplateAtomSeqid(int idx)
     return _proto.getTemplateAtomSeqid(idx);
 }
 
+const int LayeredMolecules::getTemplateAtomTemplateIndex(int idx)
+{
+    return _proto.getTemplateAtomTemplateIndex(idx);
+}
+
 const char* LayeredMolecules::getTemplateAtomClass(int idx)
 {
     return _proto.getTemplateAtomClass(idx);

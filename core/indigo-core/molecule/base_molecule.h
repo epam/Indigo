@@ -124,6 +124,13 @@ namespace indigo
         friend class MoleculeCIPCalculator;
         typedef std::map<int, int> Mapping;
 
+        struct TemplateAttPoint
+        {
+            int ap_occur_idx;
+            int ap_aidx;
+            Array<char> ap_id;
+        };
+
         BaseMolecule();
         ~BaseMolecule() override;
         MetaDataStorage& meta()
@@ -192,6 +199,7 @@ namespace indigo
         virtual const int getTemplateAtomSeqid(int idx) = 0;
         virtual const char* getTemplateAtomClass(int idx) = 0;
         virtual const int getTemplateAtomDisplayOption(int idx) = 0;
+        virtual const int getTemplateAtomTemplateIndex(int idx) = 0;
 
         int countRSites();
         int countSGroups();
@@ -203,7 +211,8 @@ namespace indigo
         int transformSCSRtoFullCTAB();
         int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
-        void transformSuperatomsToTemplates();
+        void transformSuperatomsToTemplates(int template_id);
+        bool expandNucleotide(int atom_idx);
 
         virtual bool isRSite(int atom_idx) = 0;
         virtual dword getRSiteBits(int atom_idx) = 0;
@@ -215,6 +224,8 @@ namespace indigo
         void setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int order);
 
         void setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx, const char* att_id);
+        void setTemplateAtomAttachmentDestination(int atom_idx, int new_dest_atom_idx, Array<char>& att_id);
+        bool updateTemplateAtomAttachmentDestination(int atom_idx, int old_dest_atom_idx, int new_dest_atom_idx);
 
         int getTemplateAtomAttachmentPoint(int atom_idx, int order);
         void getTemplateAtomAttachmentPointId(int atom_idx, int order, Array<char>& apid);
@@ -283,6 +294,8 @@ namespace indigo
         void setBondCIP(int bond_idx, CIPDesc cip);
 
         Vec3f& getAtomXyz(int idx);
+        bool getMiddlePoint(int idx1, int idx2, Vec3f& vec);
+
         void setAtomXyz(int idx, float x, float y, float z);
         void setAtomXyz(int idx, const Vec3f& v);
 
@@ -317,12 +330,6 @@ namespace indigo
             return reaction_atom_exact_change;
         }
 
-        struct TemplateAttPoint
-        {
-            int ap_occur_idx;
-            int ap_aidx;
-            Array<char> ap_id;
-        };
         ObjPool<TemplateAttPoint> template_attachment_points;
 
         MoleculeSGroups sgroups;
@@ -529,7 +536,7 @@ namespace indigo
         void _checkSgroupHierarchy(int pidx, int oidx);
 
         int _transformTGroupToSGroup(int idx, int t_idx);
-        int _transformSGroupToTGroup(int idx, int& t_idx);
+        int _transformSGroupToTGroup(int idx, int& tg_id);
         void _fillTemplateSeqIds();
         bool _isCTerminus(Superatom& su, int idx);
         bool _isNTerminus(Superatom& su, int idx);

@@ -1,11 +1,11 @@
-FROM ubuntu:16.04
-
+FROM ubuntu:20.04
 RUN apt update && \
     apt upgrade -y && \
     apt install -y --no-install-recommends \
         apt-transport-https \
         curl \
         software-properties-common \
+        gpg-agent \
         lsb-release \
         && \
     export UBUNTU_VERSION=$(lsb_release -cs) && \
@@ -21,23 +21,23 @@ RUN apt update && \
     # Install tools required for building Indigo
     apt install -y --no-install-recommends \
         cmake \
-        g++-5-aarch64-linux-gnu \
+        g++-10-aarch64-linux-gnu \
         git \
         libfontconfig1-dev:arm64 \
         libfreetype6-dev:arm64 \
         make \
         qemu-user-static
 
-ENV CC=aarch64-linux-gnu-gcc-5
-ENV CXX=aarch64-linux-gnu-g++-5
+ENV CC=aarch64-linux-gnu-gcc-10
+ENV CXX=aarch64-linux-gnu-g++-10
 ENV INDIGO_QEMU_BINARY=qemu-aarch64-static
 ENV ASAN_OPTIONS=alloc_dealloc_mismatch=0
 RUN echo $'leak:libfontconfig\nleak:libc\n' >> /opt/external.supp
 ENV LSAN_OPTIONS=suppressions=/opt/external.supp
 
 RUN cmake --version && \
-    aarch64-linux-gnu-gcc-5 --version && \
-    aarch64-linux-gnu-g++-5 --version && \
+    aarch64-linux-gnu-gcc-10 --version && \
+    aarch64-linux-gnu-g++-10 --version && \
     git --version && \
     make --version
 

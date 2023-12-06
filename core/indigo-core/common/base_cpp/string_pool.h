@@ -41,6 +41,7 @@ namespace indigo
         int add(const char* str);
         int add(Array<char>& str);
         int add(int size);
+        void set(int idx, const char* str);
         void remove(int idx);
         int size() const;
         int begin() const;
