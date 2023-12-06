@@ -60,7 +60,7 @@ TEST_F(IndigoApiFormatsTest, molecule)
         EXPECT_EQ(7, indigoCountBonds(obj));
 
         // 3
-        const string expectedSmarts = "[C]1-[C]=[C]-[C]=[C]-[C]=1-[*]";
+        const string expectedSmarts = "C1-C=C-C=C-C=1-[*]";
         obj = indigoLoadStructureFromString(mStr.c_str(), "smarts");
         EXPECT_STREQ(expectedSmarts.c_str(), indigoSmarts(obj));
         EXPECT_EQ(7, indigoCountAtoms(obj));
@@ -83,7 +83,7 @@ TEST_F(IndigoApiFormatsTest, reaction)
 {
     const string react = "C1=C(*)C=CC=C1>>C1=CC=CC(*)=C1";
     const string expected = "C1C=CC=CC=1*>>C1C=C(*)C=CC=1";
-    const string expected_smarts = "[C]1-[C]=[C]-[C]=[C]-[C]=1-[*]>>[C]1-[C]=[C](-[*])-[C]=[C]-[C]=1";
+    const string expected_smarts = "C1-C=C-C=C-C=1-[*]>>C1-C=C(-[*])-C=C-C=1";
 
     try
     {
