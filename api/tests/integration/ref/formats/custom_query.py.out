@@ -1,5 +1,5 @@
 **** #1310 error at opening SMARTS with comma ****
-[#6]1-[#6]=[#6]-[#6]=[#6]-[b;r;3;s&2,X3]=1 OK. Expected string found.
+[#6]1-[#6]=[#6]-[#6]=[#6]-[B;r;3;s&2,X3]=1 OK. Expected string found.
 **** #1331 wrong smarts for ring bond count as drawn ****
 ket_with_rb_as_drawn.ket OK. Smarts equals expected string '[#6](-[#6])(-[#6;x0])-[#6]'
 **** #1337 wrong smarts for ring bond count as drawn ****

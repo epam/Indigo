@@ -442,6 +442,13 @@ void QueryMolecule::writeSmartsBond(Output& output, Bond* bond, bool has_or_pare
         break;
     }
     case OP_OR: {
+        if (bond->children.size() == 2)
+        {
+            if (((bond->child(0)->value == BOND_SINGLE && bond->child(0)->direction == BOND_ZERO) ||
+                 (bond->child(1)->value == BOND_SINGLE && bond->child(1)->direction == BOND_ZERO)) &&
+                (bond->child(0)->value == BOND_AROMATIC || bond->child(1)->value == BOND_AROMATIC))
+                return; // empty bond means single or aromatic in smarts
+        }
         for (i = 0; i < bond->children.size(); i++)
         {
             if (i > 0)
