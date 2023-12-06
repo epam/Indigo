@@ -15,8 +15,8 @@
         "classHELM": "PEPTIDE",
         "alias": "dc",
         "name": "cys",
-        "naturalAnalog": "Cys",
         "naturalAnalogShort": "C",
+        "naturalAnalog": "Cys",
         "attachmentPoints": [
             {
                 "attachmentAtom": 8,

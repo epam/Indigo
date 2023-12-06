@@ -3830,8 +3830,8 @@
         "classHELM": "PEPTIDE",
         "alias": "K",
         "name": "K",
-        "naturalAnalog": "Lys",
         "naturalAnalogShort": "K",
+        "naturalAnalog": "Lys",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0

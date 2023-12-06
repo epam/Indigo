@@ -4361,8 +4361,8 @@
         "classHELM": "PEPTIDE",
         "alias": "E",
         "name": "E",
-        "naturalAnalog": "Glu",
         "naturalAnalogShort": "E",
+        "naturalAnalog": "Glu",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0

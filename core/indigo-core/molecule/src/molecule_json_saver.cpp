@@ -1177,13 +1177,13 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     if (tg.tgroup_natreplace.size())
     {
         auto analog = naturalAnalog(tg.tgroup_natreplace.ptr());
-        writer.Key("naturalAnalog");
-        writer.String(analog.c_str());
         auto nat_alias = monomerAliasByName(template_class, analog);
-        if (nat_alias.size() < analog.size())
+        writer.Key("naturalAnalogShort");
+        writer.String(nat_alias.c_str());
+        if (analog.size() > 1)
         {
-            writer.Key("naturalAnalogShort");
-            writer.String(nat_alias.c_str());
+            writer.Key("naturalAnalog");
+            writer.String(analog.c_str());
         }
     }
 

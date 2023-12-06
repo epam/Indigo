@@ -4523,7 +4523,7 @@
         "classHELM": "RNA",
         "alias": "P",
         "name": "P",
-        "naturalAnalog": "P",
+        "naturalAnalogShort": "P",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -4622,7 +4622,7 @@
         "classHELM": "RNA",
         "alias": "dR",
         "name": "dR",
-        "naturalAnalog": "R",
+        "naturalAnalogShort": "R",
         "attachmentPoints": [
             {
                 "attachmentAtom": 7,
@@ -4832,7 +4832,7 @@
         "classHELM": "RNA",
         "alias": "T",
         "name": "T",
-        "naturalAnalog": "T",
+        "naturalAnalogShort": "T",
         "attachmentPoints": [
             {
                 "attachmentAtom": 3,
@@ -5005,7 +5005,7 @@
         "classHELM": "RNA",
         "alias": "G",
         "name": "G",
-        "naturalAnalog": "G",
+        "naturalAnalogShort": "G",
         "attachmentPoints": [
             {
                 "attachmentAtom": 6,
@@ -5215,7 +5215,7 @@
         "classHELM": "RNA",
         "alias": "C",
         "name": "C",
-        "naturalAnalog": "C",
+        "naturalAnalogShort": "C",
         "attachmentPoints": [
             {
                 "attachmentAtom": 3,
@@ -5373,7 +5373,7 @@
         "classHELM": "RNA",
         "alias": "A",
         "name": "A",
-        "naturalAnalog": "A",
+        "naturalAnalogShort": "A",
         "attachmentPoints": [
             {
                 "attachmentAtom": 6,
