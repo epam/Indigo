@@ -42,7 +42,7 @@ files = [
     "peptides",
     "fmoc",
     "anacyclamide",
-    "acgt",
+    "acgt_1412",
     "apamine",
 ]
 

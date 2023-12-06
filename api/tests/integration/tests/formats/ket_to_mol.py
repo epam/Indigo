@@ -43,7 +43,7 @@ files = [
     "conj_no_class",
     "query_explicit_val",
     "mon_long_id",
-    "acgt",
+    "acgt_1412",
 ]
 
 files.sort()
