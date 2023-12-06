@@ -46,6 +46,7 @@ services:
     env_file: ./frontend/ui/.env
     depends_on:
       - backend-postgres
+      - backend-elastic
     ports:
       - "8080:80"
     restart: always
