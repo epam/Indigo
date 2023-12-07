@@ -16,6 +16,7 @@ pepchem.ket:SUCCEED
 peptides.ket:SUCCEED
 query_explicit_val.ket:SUCCEED
 rna_mod.ket:SUCCEED
+sgroups_mul.ket:SUCCEED
 suplabel.ket:SUCCEED
 thymine.ket:SUCCEED
 empty_apid.ket:SUCCEED

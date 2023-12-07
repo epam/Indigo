@@ -41,6 +41,7 @@ files = [
     "anacyclamide",
     "accl_no_class",
     "conj_no_class",
+    "sgroups_mul",
     "query_explicit_val",
     "mon_long_id",
     "acgt_1412",
