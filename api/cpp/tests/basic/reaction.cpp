@@ -29,7 +29,7 @@ TEST(Reaction, automapReactionSmarts)
     const auto& session = IndigoSession::create();
     auto reaction = session->loadReaction("[C:1]=[C:2][C:3].[C:4]=[C:5][C:6]>>[C:3][C:2]=[C:5][C:6]");
     reaction.automap(IndigoAutomapMode::CLEAR);
-    ASSERT_STREQ("[#6]=[#6]-[#6].[#6]=[#6]-[#6]>>[#6]-[#6]=[#6]-[#6]", reaction.smarts().c_str());
+    ASSERT_STREQ("[#6]=[#6]-[#6;v].[#6]=[#6]-[#6;v]>>[#6;v]-[#6]=[#6]-[#6;v]", reaction.smarts().c_str());
 }
 
 TEST(Reaction, automapQueryReactionSmarts)

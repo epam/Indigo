@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # cython: profile=True
-"""
+r"""
 This package defines classes that simplify bit-wise creation, manipulation and
 interpretation of data.
 

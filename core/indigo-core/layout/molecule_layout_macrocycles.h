@@ -283,9 +283,9 @@ namespace indigo
     public:
         TriangleLattice();
 
-        TriangleLattice(rectangle rec, int rem, byte* data_link);
+        TriangleLattice(rectangle rec, int rem, uint8_t* data_link);
 
-        void init(rectangle rec, int rem, byte* data_link);
+        void init(rectangle rec, int rem, uint8_t* data_link);
         void init_void();
 
         unsigned short& getCell(int x, int y);
@@ -337,7 +337,7 @@ namespace indigo
 
         int length;
 
-        byte* _hidden_data_field;
+        uint8_t* _hidden_data_field;
         ObjArray<Array<rectangle>> border_array;
         Array<rectangle*> border;
 
@@ -347,7 +347,7 @@ namespace indigo
         TL_CP_DECL(Array<int>, _rotation_parity);
         TL_CP_DECL(Array<int>, _coord_diff_reminder); // (x - y) % 3
         TL_CP_DECL(ObjArray<ObjArray<ObjArray<TriangleLattice>>>, _lattices);
-        TL_CP_DECL(Array<byte>, _hidden_data_field_array);
+        TL_CP_DECL(Array<uint8_t>, _hidden_data_field_array);
 
         TriangleLattice _sink_lattice;
     };

@@ -106,6 +106,7 @@ void TGroup::copy(TGroup& other)
     tgroup_class.copy(other.tgroup_class);
     tgroup_name.copy(other.tgroup_name);
     tgroup_alias.copy(other.tgroup_alias);
+    tgroup_text_id.copy(other.tgroup_text_id);
     tgroup_comment.copy(other.tgroup_comment);
     tgroup_natreplace.copy(other.tgroup_natreplace);
     tgroup_id = other.tgroup_id;

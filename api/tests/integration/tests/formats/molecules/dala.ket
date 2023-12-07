@@ -12,6 +12,7 @@
         "id": "ala_23",
         "class": "D-AminoAcid",
         "classHELM": "PEPTIDE",
+        "name": "ala",
         "alias": "da",
         "naturalAnalog": "Ala",
         "naturalAnalogShort": "A",

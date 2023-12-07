@@ -146,28 +146,28 @@
         ],
         "templates": [
             {
-                "$ref": "monomerTemplate-Gln_0"
+                "$ref": "monomerTemplate-Gln_1"
             },
             {
-                "$ref": "monomerTemplate-Ser_1"
+                "$ref": "monomerTemplate-Ser_2"
             },
             {
-                "$ref": "monomerTemplate-Thr_2"
+                "$ref": "monomerTemplate-Thr_3"
             },
             {
-                "$ref": "monomerTemplate-Pro_3"
+                "$ref": "monomerTemplate-Pro_4"
             },
             {
-                "$ref": "monomerTemplate-Val_4"
+                "$ref": "monomerTemplate-Val_5"
             },
             {
-                "$ref": "monomerTemplate-Gly_5"
+                "$ref": "monomerTemplate-Gly_6"
             },
             {
-                "$ref": "monomerTemplate-Trp_6"
+                "$ref": "monomerTemplate-Trp_7"
             },
             {
-                "$ref": "monomerTemplate-Ile_7"
+                "$ref": "monomerTemplate-Ile_8"
             }
         ]
     },
@@ -180,7 +180,7 @@
             "y": -5.031300067901611
         },
         "alias": "Gln",
-        "templateId": "Gln_0"
+        "templateId": "Gln_1"
     },
     "monomer1": {
         "type": "monomer",
@@ -191,7 +191,7 @@
             "y": -5.031300067901611
         },
         "alias": "Ser",
-        "templateId": "Ser_1"
+        "templateId": "Ser_2"
     },
     "monomer2": {
         "type": "monomer",
@@ -202,7 +202,7 @@
             "y": -5.031300067901611
         },
         "alias": "Thr",
-        "templateId": "Thr_2"
+        "templateId": "Thr_3"
     },
     "monomer3": {
         "type": "monomer",
@@ -213,7 +213,7 @@
             "y": -5.031300067901611
         },
         "alias": "Pro",
-        "templateId": "Pro_3"
+        "templateId": "Pro_4"
     },
     "monomer4": {
         "type": "monomer",
@@ -224,7 +224,7 @@
             "y": -5.031300067901611
         },
         "alias": "Val",
-        "templateId": "Val_4"
+        "templateId": "Val_5"
     },
     "monomer5": {
         "type": "monomer",
@@ -235,7 +235,7 @@
             "y": -5.031300067901611
         },
         "alias": "Pro",
-        "templateId": "Pro_3"
+        "templateId": "Pro_4"
     },
     "monomer6": {
         "type": "monomer",
@@ -246,7 +246,7 @@
             "y": -5.031300067901611
         },
         "alias": "Ser",
-        "templateId": "Ser_1"
+        "templateId": "Ser_2"
     },
     "monomer7": {
         "type": "monomer",
@@ -257,7 +257,7 @@
             "y": -5.031300067901611
         },
         "alias": "Gly",
-        "templateId": "Gly_5"
+        "templateId": "Gly_6"
     },
     "monomer8": {
         "type": "monomer",
@@ -268,7 +268,7 @@
             "y": -5.031300067901611
         },
         "alias": "Trp",
-        "templateId": "Trp_6"
+        "templateId": "Trp_7"
     },
     "monomer9": {
         "type": "monomer",
@@ -279,14 +279,15 @@
             "y": -5.031300067901611
         },
         "alias": "Ile",
-        "templateId": "Ile_7"
+        "templateId": "Ile_8"
     },
-    "monomerTemplate-Gln_0": {
+    "monomerTemplate-Gln_1": {
         "type": "monomerTemplate",
-        "id": "Gln_0",
+        "id": "Gln_1",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "Q",
+        "name": "Gln",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -493,12 +494,13 @@
             }
         ]
     },
-    "monomerTemplate-Ser_1": {
+    "monomerTemplate-Ser_2": {
         "type": "monomerTemplate",
-        "id": "Ser_1",
+        "id": "Ser_2",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "S",
+        "name": "Ser",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -660,12 +662,13 @@
             }
         ]
     },
-    "monomerTemplate-Thr_2": {
+    "monomerTemplate-Thr_3": {
         "type": "monomerTemplate",
-        "id": "Thr_2",
+        "id": "Thr_3",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "T",
+        "name": "Thr",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -844,12 +847,13 @@
             }
         ]
     },
-    "monomerTemplate-Pro_3": {
+    "monomerTemplate-Pro_4": {
         "type": "monomerTemplate",
-        "id": "Pro_3",
+        "id": "Pro_4",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "P",
+        "name": "Pro",
         "attachmentPoints": [
             {
                 "attachmentAtom": 7,
@@ -1010,12 +1014,13 @@
             }
         ]
     },
-    "monomerTemplate-Val_4": {
+    "monomerTemplate-Val_5": {
         "type": "monomerTemplate",
-        "id": "Val_4",
+        "id": "Val_5",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "V",
+        "name": "Val",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1169,12 +1174,13 @@
             }
         ]
     },
-    "monomerTemplate-Gly_5": {
+    "monomerTemplate-Gly_6": {
         "type": "monomerTemplate",
-        "id": "Gly_5",
+        "id": "Gly_6",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "G",
+        "name": "Gly",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1281,12 +1287,13 @@
             }
         ]
     },
-    "monomerTemplate-Trp_6": {
+    "monomerTemplate-Trp_7": {
         "type": "monomerTemplate",
-        "id": "Trp_6",
+        "id": "Trp_7",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "W",
+        "name": "Trp",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1582,12 +1589,13 @@
             }
         ]
     },
-    "monomerTemplate-Ile_7": {
+    "monomerTemplate-Ile_8": {
         "type": "monomerTemplate",
-        "id": "Ile_7",
+        "id": "Ile_8",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "I",
+        "name": "Ile",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,

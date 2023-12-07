@@ -4,16 +4,17 @@
         "connections": [],
         "templates": [
             {
-                "$ref": "monomerTemplate-cch_2"
+                "$ref": "monomerTemplate-cch_3"
             }
         ]
     },
-    "monomerTemplate-cch_2": {
+    "monomerTemplate-cch_3": {
         "type": "monomerTemplate",
-        "id": "cch_2",
+        "id": "cch_3",
         "class": "Chem",
         "classHELM": "CHEM",
         "alias": "cch",
+        "name": "cch",
         "attachmentPoints": [
             {
                 "type": "right",

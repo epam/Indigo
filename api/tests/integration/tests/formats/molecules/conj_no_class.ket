@@ -3804,6 +3804,7 @@
         "type": "monomerTemplate",
         "id": "Sec_10",
         "classHELM": "PEPTIDE",
+        "name": "Sec",
         "alias": "U",
         "attachmentPoints": [
             {

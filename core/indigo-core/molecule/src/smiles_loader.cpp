@@ -1890,11 +1890,16 @@ void SmilesLoader::_loadParsedMolecule()
     {
         for (i = 0; i < _atoms.size(); i++)
         {
-            if (_atoms[i].star_atom && _atoms[i].aam != 0)
+            if (_atoms[i].aam != 0)
             {
-                if (_qmol != 0)
-                    _qmol->resetAtom(i, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
-                _bmol->allowRGroupOnRSite(i, _atoms[i].aam);
+                if (_atoms[i].star_atom)
+                {
+                    if (_qmol != 0)
+                        _qmol->resetAtom(i, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+                    _bmol->allowRGroupOnRSite(i, _atoms[i].aam);
+                }
+                else
+                    _bmol->reaction_atom_mapping[i] = _atoms[i].aam;
             }
             else if (_atoms[i].label == ELEM_RSITE)
             {
@@ -1956,10 +1961,10 @@ void SmilesLoader::_loadParsedMolecule()
             _scanner.readLine(_bmol->name, true);
     }
 
-    _bmol->reaction_atom_mapping.clear_resize(_bmol->vertexCount() + 1);
-    _bmol->reaction_atom_mapping.zerofill();
     if (inside_rsmiles)
     {
+        _bmol->reaction_atom_mapping.clear_resize(_bmol->vertexCount() + 1);
+        _bmol->reaction_atom_mapping.zerofill();
         for (i = 0; i < _atoms.size(); i++)
             _bmol->reaction_atom_mapping[i] = _atoms[i].aam;
     }
@@ -3277,6 +3282,13 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                     chirality_type = match.str(TB_GROUP).empty() ? QueryMolecule::CHIRALITY_OCTAHEDRAL : QueryMolecule::CHIRALITY_TRIGONAL_BIPYRAMIDAL;
                     chirality_value = value;
                 }
+            }
+            if (scanner.lookNext() == '?')
+            {
+                if (!smarts_mode)
+                    throw Error("@? can be used only with smarts_mode");
+                chirality_value |= QueryMolecule::CHIRALITY_OR_UNSPECIFIED;
+                scanner.skip(1);
             }
             if (smarts_mode)
                 subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_CHIRALITY, chirality_type, chirality_value);

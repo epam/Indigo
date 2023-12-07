@@ -916,6 +916,18 @@ Vec3f& BaseMolecule::getAtomXyz(int idx)
     return _xyz[idx];
 }
 
+bool BaseMolecule::getMiddlePoint(int idx1, int idx2, Vec3f& vec)
+{
+    if (idx1 == std::clamp(idx1, 0, vertexCount() - 1) && idx2 == std::clamp(idx2, 0, vertexCount() - 1))
+    {
+        vec = _xyz[idx1];
+        vec.add(_xyz[idx2]);
+        vec.scale(0.5);
+        return true;
+    }
+    return false;
+}
+
 void BaseMolecule::setAtomXyz(int idx, float x, float y, float z)
 {
     _xyz[idx].set(x, y, z);
@@ -1080,7 +1092,7 @@ void BaseMolecule::setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int o
 void BaseMolecule::setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx, const char* att_id)
 {
     int att_idx = template_attachment_points.add();
-    TemplateAttPoint& ap = template_attachment_points.at(att_idx);
+    auto& ap = template_attachment_points.at(att_idx);
     ap.ap_occur_idx = atom_idx;
     ap.ap_aidx = att_atom_idx;
     ap.ap_id.readString(att_id, false);
@@ -1093,12 +1105,11 @@ int BaseMolecule::getTemplateAtomAttachmentPoint(int atom_idx, int order)
     int ap_count = 0;
     for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
     {
-        BaseMolecule::TemplateAttPoint& ap = template_attachment_points.at(j);
+        auto& ap = template_attachment_points.at(j);
         if (ap.ap_occur_idx == atom_idx)
         {
             if (ap_count == order)
                 return ap.ap_aidx;
-
             ap_count++;
         }
     }
@@ -1110,7 +1121,7 @@ void BaseMolecule::getTemplateAtomAttachmentPointId(int atom_idx, int order, Arr
     int ap_count = 0;
     for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
     {
-        BaseMolecule::TemplateAttPoint& ap = template_attachment_points.at(j);
+        auto& ap = template_attachment_points.at(j);
         if (ap.ap_occur_idx == atom_idx)
         {
             if (ap_count == order)
@@ -1139,12 +1150,41 @@ int BaseMolecule::getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& 
     return aidx;
 }
 
+bool BaseMolecule::updateTemplateAtomAttachmentDestination(int atom_idx, int old_dest_atom_idx, int new_dest_atom_idx)
+{
+    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+    {
+        auto& ap = template_attachment_points.at(j);
+        if ((ap.ap_occur_idx == atom_idx) && (ap.ap_aidx == old_dest_atom_idx))
+        {
+            ap.ap_aidx = new_dest_atom_idx;
+            return true;
+        }
+    }
+    return false;
+}
+
+void BaseMolecule::setTemplateAtomAttachmentDestination(int atom_idx, int new_dest_atom_idx, Array<char>& att_id)
+{
+    int aidx = -1;
+    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+    {
+        auto& ap = template_attachment_points.at(j);
+        if ((ap.ap_occur_idx == atom_idx) && (ap.ap_id.memcmp(att_id) == 0))
+        {
+            ap.ap_aidx = new_dest_atom_idx;
+            return;
+        }
+    }
+    setTemplateAtomAttachmentOrder(atom_idx, new_dest_atom_idx, att_id.ptr());
+}
+
 int BaseMolecule::getTemplateAtomAttachmentPointsCount(int atom_idx)
 {
     int count = 0;
     for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
     {
-        BaseMolecule::TemplateAttPoint& ap = template_attachment_points.at(j);
+        auto& ap = template_attachment_points.at(j);
         if (ap.ap_occur_idx == atom_idx)
         {
             count++;
@@ -3098,7 +3138,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     return result;
 }
 
-int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
+int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
 {
     QS_DEF(Array<int>, remove_atoms);
     QS_DEF(Array<int>, sg_atoms);
@@ -3181,9 +3221,9 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
     if (su.sa_class.size() == 0)
         su.sa_class.appendString(kMonomerClassCHEM.c_str(), true);
 
-    tg_idx = this->tgroups.addTGroup();
+    int tg_idx = this->tgroups.addTGroup();
     TGroup& tg = this->tgroups.getTGroup(tg_idx);
-    tg.tgroup_id = tg_idx;
+    tg.tgroup_id = ++tg_id;
 
     tg.tgroup_class.copy(su.sa_class);
 
@@ -3241,6 +3281,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_idx)
     this->asMolecule().setTemplateAtom(idx, tg.tgroup_name.ptr());
     this->asMolecule().setTemplateAtomClass(idx, tg.tgroup_class.ptr());
     this->asMolecule().setTemplateAtomSeqid(idx, su.seqid);
+    this->asMolecule().setTemplateAtomTemplateIndex(idx, tg_idx);
 
     for (int j = 0; j < ap_points_atoms.size(); j++)
     {
@@ -4087,13 +4128,22 @@ int BaseMolecule::bondCode(int edge_idx)
     return getBondOrder(edge_idx);
 }
 
-void BaseMolecule::transformSuperatomsToTemplates()
+bool BaseMolecule::expandNucleotide(int atom_idx)
 {
-    int tg_idx;
+    std::string atom_class = getTemplateAtomClass(atom_idx);
+    int tg_idx = getTemplateAtomTemplateIndex(atom_idx);
+    if (tg_idx == -1)
+    {
+    }
+    return false;
+}
+
+void BaseMolecule::transformSuperatomsToTemplates(int template_id)
+{
     for (auto sg_idx = sgroups.begin(); sg_idx != sgroups.end(); sg_idx = sgroups.next(sg_idx))
     {
         if (sgroups.getSGroup(sg_idx).sgroup_type == SGroup::SG_TYPE_SUP)
-            _transformSGroupToTGroup(sg_idx, tg_idx);
+            _transformSGroupToTGroup(sg_idx, template_id);
     }
 }
 

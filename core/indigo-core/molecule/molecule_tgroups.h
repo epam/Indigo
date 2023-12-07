@@ -42,6 +42,7 @@ namespace indigo
         Array<char> tgroup_alias;
         Array<char> tgroup_comment;
         Array<char> tgroup_natreplace;
+        Array<char> tgroup_text_id;
         int tgroup_id;
 
         TGroup();

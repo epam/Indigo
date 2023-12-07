@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_set>
 
+#include "molecule/monomers_lib.h"
 #include "molecule/parse_utils.h"
 
 namespace indigo
@@ -40,9 +41,16 @@ namespace indigo
     const std::string kPrefix_d("d");
     const std::string kPrefix_r("r");
 
+    const std::unordered_set<std::string> kNucleotideClasses = {kMonomerClassDNA,    kMonomerClassRNA,      kMonomerClassMODRNA,
+                                                                kMonomerClassMODDNA, kMonomerClassXLINKRNA, kMonomerClassXLINKDNA};
+
     const std::unordered_set<std::string> kNucleicClasses = {kMonomerClassDNA,    kMonomerClassRNA,      kMonomerClassMODRNA,
                                                              kMonomerClassMODDNA, kMonomerClassXLINKRNA, kMonomerClassXLINKDNA,
                                                              kMonomerClassSUGAR,  kMonomerClassBASE,     kMonomerClassPHOSPHATE};
+
+    const std::unordered_set<std::string> kRNAClasses = {kMonomerClassRNA, kMonomerClassMODRNA, kMonomerClassXLINKRNA};
+
+    const std::unordered_set<std::string> kDNAClasses = {kMonomerClassDNA, kMonomerClassMODDNA, kMonomerClassXLINKDNA};
 
     const std::unordered_set<std::string> kAminoClasses = {kMonomerClassAA,    kMonomerClassdAA,    kMonomerClassAminoAcid, kMonomerClassDAminoAcid,
                                                            kMonomerClassMODAA, kMonomerClassMODDAA, kMonomerClassXLINKAA,   kMonomerClassXLINKDAA};
@@ -52,9 +60,24 @@ namespace indigo
         return kNucleicClasses.find(monomer_class) != kNucleicClasses.end();
     }
 
+    inline bool isNucleotideClass(const std::string& monomer_class)
+    {
+        return kNucleotideClasses.find(monomer_class) != kNucleotideClasses.end();
+    }
+
     inline bool isAminoAcidClass(const std::string& monomer_class)
     {
         return kAminoClasses.find(monomer_class) != kAminoClasses.end();
+    }
+
+    inline bool isRNAClass(const std::string& monomer_class)
+    {
+        return kRNAClasses.find(monomer_class) != kRNAClasses.end();
+    }
+
+    inline bool isDNAClass(const std::string& monomer_class)
+    {
+        return kDNAClasses.find(monomer_class) != kDNAClasses.end();
     }
 
     std::string classToPrefix(const std::string& monomer_class);
@@ -68,6 +91,12 @@ namespace indigo
     std::string normalizeMonomerAlias(const std::string& monomer_class, const std::string& alias);
 
     bool isAttachmentPointsInOrder(int order, const std::string& label);
+    int getAttachmentOrder(const std::string& label);
+    std::string getAttachmentLabel(int order);
+
+    const auto kLeftAttachmentPoint = "Al";
+    const auto kRightAttachmentPoint = "Br";
+    const auto kBranchAttachmentPoint = "Cx";
 
     struct MonomerAttachmentPoint
     {
@@ -75,6 +104,5 @@ namespace indigo
         int leaving_group;
         std::string id;
     };
-
 }
 #endif

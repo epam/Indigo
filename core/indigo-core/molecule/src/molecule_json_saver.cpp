@@ -818,7 +818,8 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                                               {QueryMolecule::ATOM_SMALLEST_RING_SIZE, "ringSize"},
                                               {QueryMolecule::ATOM_CONNECTIVITY, "connectivity"}};
             if (query_atom_properties.count(QueryMolecule::ATOM_CHIRALITY) &&
-                query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_min != QueryMolecule::CHIRALITY_GENERAL)
+                (query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_min != QueryMolecule::CHIRALITY_GENERAL ||
+                 query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_max & QueryMolecule::CHIRALITY_OR_UNSPECIFIED))
                 needCustomQuery = true;
             bool hasQueryProperties =
                 query_atom_properties.count(QueryMolecule::ATOM_AROMATICITY) > 0 ||
@@ -851,7 +852,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                     }
                     if (query_atom_properties.count(QueryMolecule::ATOM_CHIRALITY))
                     {
-                        // This is CHIRALITY_GENERAL
+                        // This is CHIRALITY_GENERAL without CHIRALITY_OR_UNSPECIFIED
                         writer.Key("chirality");
                         value = query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_max;
                         if (value == QueryMolecule::CHIRALITY_CLOCKWISE)
@@ -931,12 +932,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         }
 
         int total_bond_count = 0;
-        if (_pqmol && _pqmol->getAtom(i).sureValue(QueryMolecule::ATOM_TOTAL_BOND_ORDER, total_bond_count))
-        {
-            writer.Key("explicitValence");
-            writer.Int(total_bond_count);
-        }
-        else if (evalence > 0)
+        if (evalence > 0)
         {
             writer.Key("explicitValence");
             writer.Int(evalence);
@@ -1068,14 +1064,16 @@ std::string MoleculeJsonSaver::monomerId(const TGroup& tg)
 {
     std::string name;
     std::string monomer_class;
+    if (tg.tgroup_text_id.ptr())
+        return tg.tgroup_text_id.ptr();
     if (tg.tgroup_name.ptr())
         name = tg.tgroup_name.ptr();
     if (tg.tgroup_class.ptr())
         monomer_class = tg.tgroup_class.ptr();
     if (name.size())
-        name = monomerNameByAlias(monomer_class, name) + "_" + std::to_string(tg.tgroup_id - 1);
+        name = monomerNameByAlias(monomer_class, name) + "_" + std::to_string(tg.tgroup_id);
     else
-        name = std::string("#") + std::to_string(tg.tgroup_id - 1);
+        name = std::string("#") + std::to_string(tg.tgroup_id);
     return name;
 }
 
@@ -1108,7 +1106,7 @@ std::string MoleculeJsonSaver::monomerKETClass(const std::string& class_name)
 
 std::string MoleculeJsonSaver::naturalAnalog(const std::string& natreplace)
 {
-    std::string res;
+    std::string res = natreplace;
     if (natreplace.size())
     {
         auto nat_replace = split(std::string(natreplace.c_str()), '/');
@@ -1148,17 +1146,17 @@ std::string MoleculeJsonSaver::monomerAlias(const TGroup& tg)
 
 void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
 {
-    std::string template_name("monomerTemplate-");
-    std::string tg_name(monomerId(tg));
+    std::string template_id("monomerTemplate-");
+    std::string tg_id(monomerId(tg));
     std::string template_class(monomerKETClass(tg.tgroup_class.ptr()));
     std::string helm_class(monomerHELMClass(tg.tgroup_class.ptr()));
-    template_name += tg_name;
-    writer.Key(template_name.c_str());
+    template_id += tg_id;
+    writer.Key(template_id.c_str());
     writer.StartObject();
     writer.Key("type");
     writer.String("monomerTemplate");
     writer.Key("id");
-    writer.String(tg_name.c_str());
+    writer.String(tg_id.c_str());
     if (tg.tgroup_class.size())
     {
         writer.Key("class");
@@ -1170,16 +1168,22 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     writer.Key("alias");
     writer.String(monomerAlias(tg).c_str());
 
+    if (tg.tgroup_name.size())
+    {
+        writer.Key("name");
+        writer.String(tg.tgroup_name.ptr());
+    }
+
     if (tg.tgroup_natreplace.size())
     {
         auto analog = naturalAnalog(tg.tgroup_natreplace.ptr());
-        writer.Key("naturalAnalog");
-        writer.String(analog.c_str());
         auto nat_alias = monomerAliasByName(template_class, analog);
-        if (nat_alias.size() < analog.size())
+        writer.Key("naturalAnalogShort");
+        writer.String(nat_alias.c_str());
+        if (analog.size() > 1)
         {
-            writer.Key("naturalAnalogShort");
-            writer.String(nat_alias.c_str());
+            writer.Key("naturalAnalog");
+            writer.String(analog.c_str());
         }
     }
 
@@ -1358,8 +1362,8 @@ void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, i
         writer.Key("attachmentPointId");
         writer.String(convertAPToHELM(conn_it->second).c_str());
     }
-    // else
-    //     throw Error("no attachment point");
+    else
+        throw Error("no attachment point");
     writer.EndObject();
 }
 
@@ -1519,11 +1523,21 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 writer.Key("alias");
                 auto alias = mol->getTemplateAtom(i);
                 writer.String(alias);
-                auto tg_it = _templates.find(alias);
-                if (tg_it != _templates.end())
+                int temp_idx = mol->getTemplateAtomTemplateIndex(i);
+                if (temp_idx > -1)
                 {
+                    auto& tg = bmol.tgroups.getTGroup(temp_idx);
                     writer.Key("templateId");
-                    writer.String(monomerId(tg_it->second.get()).c_str());
+                    writer.String(monomerId(tg).c_str());
+                }
+                else
+                {
+                    auto tg_it = _templates.find(alias);
+                    if (tg_it != _templates.end())
+                    {
+                        writer.Key("templateId");
+                        writer.String(monomerId(tg_it->second.get()).c_str());
+                    }
                 }
                 writer.EndObject(); // monomer
             }

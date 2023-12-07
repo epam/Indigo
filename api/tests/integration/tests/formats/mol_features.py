@@ -169,3 +169,10 @@ mol = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/invalid_pseudo.mol", __file__)
 )
 print(mol.smiles())
+
+print("*** 1415 wrong S-Group count in molfile V3000 ***")
+smiles = "C1CCC(C1)Nc1ccc2ccn(-c3ccc4[nH]ncc4c3)c2c1"
+mol = indigo.loadMolecule(smiles)
+print(smiles)
+indigo.setOption("molfile-saving-mode", "3000")
+print(mol.molfile())

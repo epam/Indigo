@@ -395,12 +395,12 @@ TriangleLattice::TriangleLattice()
     _BORDER.set_empty();
 }
 
-TriangleLattice::TriangleLattice(rectangle rec, int rem, byte* data_link)
+TriangleLattice::TriangleLattice(rectangle rec, int rem, uint8_t* data_link)
 {
     init(rec, rem, data_link);
 }
 
-void TriangleLattice::init(rectangle rec, int rem, byte* data_link)
+void TriangleLattice::init(rectangle rec, int rem, uint8_t* data_link)
 {
     _BORDER = rec;
 
@@ -617,7 +617,7 @@ AnswerField::AnswerField(int len, int target_x, int target_y, float target_rotat
 
     _hidden_data_field_array.clear_resize(global_size);
 
-    byte* free_area = _hidden_data_field_array.ptr();
+    uint8_t* free_area = _hidden_data_field_array.ptr();
 
     _lattices.clear();
 

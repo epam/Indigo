@@ -18,6 +18,7 @@
 
 #include <memory>
 
+#include "../layout/molecule_layout.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/elements.h"
@@ -39,9 +40,9 @@ IMPL_ERROR(MolfileLoader, "molfile loader");
 CP_DEF(MolfileLoader);
 
 MolfileLoader::MolfileLoader(Scanner& scanner)
-    : _scanner(scanner), CP_INIT, TL_CP_GET(_stereo_care_atoms), TL_CP_GET(_stereo_care_bonds), TL_CP_GET(_stereocenter_types), TL_CP_GET(_stereocenter_groups),
-      TL_CP_GET(_sensible_bond_directions), TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount), TL_CP_GET(_sgroup_types),
-      TL_CP_GET(_sgroup_mapping)
+    : _scanner(scanner), _monomer_templates(MonomerTemplates::_instance()), _max_template_id(0), CP_INIT, TL_CP_GET(_stereo_care_atoms),
+      TL_CP_GET(_stereo_care_bonds), TL_CP_GET(_stereocenter_types), TL_CP_GET(_stereocenter_groups), TL_CP_GET(_sensible_bond_directions),
+      TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount), TL_CP_GET(_sgroup_types), TL_CP_GET(_sgroup_mapping)
 {
     _rgfile = false;
     treat_x_as_pseudoatom = false;
@@ -58,6 +59,7 @@ void MolfileLoader::loadMolecule(Molecule& mol)
     _bmol = &mol;
     _mol = &mol;
     _qmol = 0;
+    _max_template_id = 0;
     _loadMolecule();
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
     if (mol.stereocenters.size() == 0 && !skip_3d_chirality)
@@ -70,8 +72,8 @@ void MolfileLoader::loadQueryMolecule(QueryMolecule& mol)
     _bmol = &mol;
     _qmol = &mol;
     _mol = 0;
+    _max_template_id = 0;
     _loadMolecule();
-
     if (mol.stereocenters.size() == 0)
         mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
 }
@@ -520,7 +522,7 @@ void MolfileLoader::_readCtab2000()
             {
                 if (valence == 15)
                     valence = 0;
-                atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_VALENCE, valence)));
+                atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_BOND_ORDER, valence)));
             }
 
             idx = _qmol->addAtom(atom.release());
@@ -1864,9 +1866,7 @@ int MolfileLoader::_asc_cmp_cb(int& v1, int& v2, void* context)
 
 void MolfileLoader::_postLoad()
 {
-    int i;
-
-    for (i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
+    for (int i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
     {
         // Update attachment orders for rgroup bonds if they were not specified explicitly
         if (!_bmol->isRSite(i))
@@ -1913,7 +1913,7 @@ void MolfileLoader::_postLoad()
                 _mol->setImplicitH(k, _hcount[k] - 1);
     }
 
-    for (i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
+    for (int i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
     {
         SGroup& sgroup = _bmol->sgroups.getSGroup(i);
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
@@ -1952,7 +1952,7 @@ void MolfileLoader::_postLoad()
 
     if (_qmol != 0)
     {
-        for (i = _qmol->edgeBegin(); i < _qmol->edgeEnd(); i = _qmol->edgeNext(i))
+        for (int i = _qmol->edgeBegin(); i < _qmol->edgeEnd(); i = _qmol->edgeNext(i))
         {
             if (_ignore_cistrans[i])
                 continue;
@@ -1977,11 +1977,9 @@ void MolfileLoader::_postLoad()
             {
                 // count explicit hydrogens
                 const Vertex& vertex = _bmol->getVertex(k);
-                int i;
-
-                for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+                for (int j = vertex.neiBegin(); j != vertex.neiEnd(); j = vertex.neiNext(j))
                 {
-                    if (_bmol->getAtomNumber(vertex.neiVertex(i)) == ELEM_H)
+                    if (_bmol->getAtomNumber(vertex.neiVertex(j)) == ELEM_H)
                         expl_h++;
                 }
             }
@@ -2004,7 +2002,7 @@ void MolfileLoader::_postLoad()
     // Some "either" bonds may mean not "either stereocenter", but
     // "either cis-trans", or "connected to either cis-trans".
 
-    for (i = 0; i < _bonds_num; i++)
+    for (int i = 0; i < _bonds_num; i++)
         if (_bmol->getBondDirection(i) == BOND_EITHER)
         {
             if (MoleculeCisTrans::isGeomStereoBond(*_bmol, i, 0, true))
@@ -2033,7 +2031,7 @@ void MolfileLoader::_postLoad()
     _bmol->buildFromBondsAlleneStereo(stereochemistry_options.ignore_errors, _sensible_bond_directions.ptr());
 
     if (!_chiral && treat_stereo_as == 0)
-        for (i = 0; i < _atoms_num; i++)
+        for (int i = 0; i < _atoms_num; i++)
         {
             int type = _bmol->stereocenters.getType(i);
 
@@ -2042,7 +2040,7 @@ void MolfileLoader::_postLoad()
         }
 
     if (treat_stereo_as != 0)
-        for (i = 0; i < _atoms_num; i++)
+        for (int i = 0; i < _atoms_num; i++)
         {
             int type = _bmol->stereocenters.getType(i);
 
@@ -2050,7 +2048,7 @@ void MolfileLoader::_postLoad()
                 _bmol->stereocenters.setType(i, treat_stereo_as, 1);
         }
 
-    for (i = 0; i < _atoms_num; i++)
+    for (int i = 0; i < _atoms_num; i++)
         if (_stereocenter_types[i] > 0)
         {
             if (_bmol->stereocenters.getType(i) == 0)
@@ -2066,7 +2064,7 @@ void MolfileLoader::_postLoad()
 
     _bmol->buildCisTrans(_ignore_cistrans.ptr());
 
-    for (i = 0; i < _bonds_num; i++)
+    for (int i = 0; i < _bonds_num; i++)
     {
         if (_bmol->getBondDirection(i) && !_sensible_bond_directions[i])
         {
@@ -2086,8 +2084,178 @@ void MolfileLoader::_postLoad()
     _bmol->have_xyz = true;
     MoleculeCIPCalculator cip;
     cip.convertSGroupsToCIP(*_bmol);
+
+    // collect unique nucleotide templates
+    std::unordered_map<std::string, int> nucleo_templates;
+    for (int tg_idx = _bmol->tgroups.begin(); tg_idx != _bmol->tgroups.end(); tg_idx = _bmol->tgroups.next(tg_idx))
+    {
+        auto& tg = _bmol->tgroups.getTGroup(tg_idx);
+        if (isNucleotideClass(tg.tgroup_class.ptr()))
+            nucleo_templates.emplace(tg.tgroup_name.ptr(), tg_idx);
+    }
+
     if (_bmol->tgroups.getTGroupCount() && _bmol->sgroups.getSGroupCount())
-        _bmol->transformSuperatomsToTemplates();
+        _bmol->transformSuperatomsToTemplates(_max_template_id);
+
+    std::set<int> templates_to_remove;
+    std::unordered_map<NucleotideComponentKey, int, pair_hash> new_templates;
+
+    for (int atom_idx = _bmol->vertexBegin(); atom_idx != _bmol->vertexEnd(); atom_idx = _bmol->vertexNext(atom_idx))
+    {
+        if (_bmol->isTemplateAtom(atom_idx) && isNucleotideClass(_bmol->getTemplateAtomClass(atom_idx)))
+        {
+            int tg_idx = _bmol->getTemplateAtomTemplateIndex(atom_idx);
+            if (tg_idx == -1)
+            {
+                auto atom_name = _bmol->getTemplateAtom(atom_idx);
+                auto nt_it = nucleo_templates.find(atom_name);
+                if (nt_it != nucleo_templates.end())
+                    tg_idx = nt_it->second;
+            }
+
+            if (tg_idx != -1)
+            {
+                if (_expandNucleotide(atom_idx, tg_idx, new_templates))
+                    templates_to_remove.insert(tg_idx);
+            }
+        }
+    }
+
+    for (auto idx : templates_to_remove)
+        _bmol->tgroups.remove(idx);
+}
+
+int MolfileLoader::_insertTemplate(MonomersLib::value_type& nuc, std::unordered_map<NucleotideComponentKey, int, pair_hash>& new_templates)
+{
+    auto it = new_templates.find(nuc.first);
+    if (it != new_templates.end())
+        return it->second;
+    int tg_idx = _bmol->tgroups.addTGroup();
+    auto& tg = _bmol->tgroups.getTGroup(tg_idx);
+    // handle tgroup
+    const auto& class_str = MonomerTemplates::kNucleotideComponentTypeStr.at(nuc.first.first);
+    tg.tgroup_class.appendString(class_str.c_str(), true);
+    tg.tgroup_name.appendString(nuc.first.second.c_str(), true);
+    tg.tgroup_alias.appendString(monomerAliasByName(class_str, nuc.first.second).c_str(), true);
+    tg.tgroup_id = tg_idx;
+    tg.tgroup_natreplace.appendString(nuc.second.natreplace.c_str(), true);
+    tg.fragment.reset(nuc.second.monomer->neu());
+    tg.fragment->clone(*nuc.second.monomer);
+    new_templates.emplace(nuc.first, tg_idx);
+    return tg_idx;
+}
+
+bool MolfileLoader::_expandNucleotide(int atom_idx, int tg_idx, std::unordered_map<NucleotideComponentKey, int, pair_hash>& new_templates)
+{
+    // get tgroup associated with atom_idx
+    QS_DEF(Array<char>, left_apid);
+    QS_DEF(Array<char>, right_apid);
+    QS_DEF(Array<char>, xlink_apid);
+    left_apid.readString(kLeftAttachmentPoint, true);
+    right_apid.readString(kRightAttachmentPoint, true);
+    xlink_apid.readString(kBranchAttachmentPoint, true);
+    auto& tg = _bmol->tgroups.getTGroup(tg_idx);
+    GranularNucleotide nuc;
+    if (MonomerTemplates::splitNucleotide(tg.tgroup_class.ptr(), tg.tgroup_name.ptr(), nuc))
+    {
+        if (_mol)
+        {
+            auto& ph = nuc.at(NucleotideComponentType::Phosphate).get();
+            auto& sugar = nuc.at(NucleotideComponentType::Sugar).get();
+            auto& base = nuc.at(NucleotideComponentType::Base).get();
+            int seq_id = _mol->getTemplateAtomSeqid(atom_idx);
+            // collect attachment points. only left attachment remains untouched.
+            std::unordered_map<std::string, int> atp_map;
+            for (int j = _mol->template_attachment_points.begin(); j != _mol->template_attachment_points.end(); j = _mol->template_attachment_points.next(j))
+            {
+                auto& ap = _mol->template_attachment_points.at(j);
+                if (ap.ap_occur_idx == atom_idx && std::string(ap.ap_id.ptr()) > kLeftAttachmentPoint)
+                {
+                    atp_map.emplace(ap.ap_id.ptr(), ap.ap_aidx);
+                    _mol->template_attachment_points.remove(j);
+                }
+            }
+
+            // patch existing nucleotide atom with phosphate
+            _mol->renameTemplateAtom(atom_idx, ph.first.second.c_str());
+            _mol->setTemplateAtomClass(atom_idx, MonomerTemplates::classToStr(ph.first.first).c_str());
+
+            // add sugar
+            int sugar_idx = _mol->addAtom(-1);
+            _mol->setTemplateAtom(sugar_idx, sugar.first.second.c_str());
+            _mol->setTemplateAtomClass(sugar_idx, MonomerTemplates::classToStr(sugar.first.first).c_str());
+
+            // add base
+            int base_idx = _mol->addAtom(-1);
+            _mol->setTemplateAtom(base_idx, base.first.second.c_str());
+            _mol->setTemplateAtomClass(base_idx, MonomerTemplates::classToStr(base.first.first).c_str());
+
+            // modify connections
+            auto right_it = atp_map.find(std::string(kRightAttachmentPoint));
+            int right_idx = -1;
+            if (right_it != atp_map.end())
+            {
+                // nucleotide had Br attachment point. Now it should be moved to sugar.
+                //   disconnect right nucleotide
+                right_idx = right_it->second;
+                _mol->removeEdge(_mol->findEdgeIndex(atom_idx, right_idx));
+                // connect right nucleotide to the sugar
+                _mol->addBond_Silent(sugar_idx, right_it->second, BOND_SINGLE);
+                // [sugar <- (Al) right nucleotide]
+                _mol->updateTemplateAtomAttachmentDestination(right_idx, atom_idx, sugar_idx);
+                // [sugar (Br) -> right nucleotide]
+                _mol->setTemplateAtomAttachmentDestination(sugar_idx, right_idx, right_apid);
+                atp_map.erase(right_it);
+            }
+
+            for (auto& atp : atp_map)
+            {
+                _mol->removeEdge(_mol->findEdgeIndex(atom_idx, atp.second));
+                // connect branch to base. which is incorrect!!! TODO: use substructure matcher to determine right monomer!!!
+                _mol->addBond_Silent(base_idx, atp.second, BOND_SINGLE);
+                // [sugar <- (Al) right nucleotide]
+                _mol->updateTemplateAtomAttachmentDestination(atp.second, atom_idx, base_idx);
+                // [sugar (Br) -> right nucleotide]
+                Array<char> att;
+                att.readString(atp.first.c_str(), true);
+                _mol->setTemplateAtomAttachmentDestination(base_idx, right_it->second, att);
+            }
+
+            // connect phosphate to the sugar
+            _mol->addBond_Silent(atom_idx, sugar_idx, BOND_SINGLE);
+            // [phosphate (Br) -> sugar]
+            _mol->setTemplateAtomAttachmentDestination(atom_idx, sugar_idx, right_apid);
+            // [phosphate <- (Al) sugar]
+            _mol->setTemplateAtomAttachmentDestination(sugar_idx, atom_idx, left_apid);
+            // connect base to sugar
+            _mol->addBond_Silent(sugar_idx, base_idx, BOND_SINGLE);
+            // [sugar (Cx) -> base]
+            _mol->setTemplateAtomAttachmentDestination(sugar_idx, base_idx, xlink_apid);
+            // [sugar <- (Al) base]
+            _mol->setTemplateAtomAttachmentDestination(base_idx, sugar_idx, left_apid);
+            // fix coordinates
+            Vec3f sugar_pos, base_pos;
+            if (!_bmol->getMiddlePoint(atom_idx, right_idx, sugar_pos))
+            {
+                sugar_pos.copy(_bmol->getAtomXyz(atom_idx));
+                sugar_pos.x += MoleculeLayout::DEFAULT_BOND_LENGTH;
+            }
+            base_pos.copy(sugar_pos);
+            base_pos.y -= MoleculeLayout::DEFAULT_BOND_LENGTH;
+            _bmol->setAtomXyz(sugar_idx, sugar_pos);
+            _bmol->setAtomXyz(base_idx, base_pos);
+            // set seqid
+            _mol->setTemplateAtomSeqid(atom_idx, seq_id++); // increment seq_id after phosphate
+            _mol->setTemplateAtomSeqid(sugar_idx, seq_id);
+            _mol->setTemplateAtomSeqid(base_idx, seq_id);
+            // handle templates
+            _mol->setTemplateAtomTemplateIndex(atom_idx, _insertTemplate(ph, new_templates));
+            _mol->setTemplateAtomTemplateIndex(sugar_idx, _insertTemplate(sugar, new_templates));
+            _mol->setTemplateAtomTemplateIndex(base_idx, _insertTemplate(base, new_templates));
+            return true;
+        }
+    }
+    return false;
 }
 
 void MolfileLoader::_readRGroups2000()
@@ -2577,14 +2745,7 @@ void MolfileLoader::_readCtab3000()
                     if (valence == -1)
                         valence = 0;
 
-                    if (_mol != 0)
-                    {
-                        _mol->setExplicitValence(i, valence);
-                    }
-                    else
-                    {
-                        _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_VALENCE, valence)));
-                    }
+                    _bmol->setExplicitValence(i, valence);
                 }
                 else if (strcmp(prop, "HCOUNT") == 0)
                 {
@@ -2658,7 +2819,6 @@ void MolfileLoader::_readCtab3000()
                     else
                     {
                         int rb = strscan.readInt1();
-
                         if (rb != 0)
                         {
                             if (rb == -1)
@@ -2750,6 +2910,12 @@ void MolfileLoader::_readCtab3000()
                         _qmol->resetAtom(i,
                                          QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_TEMPLATE_SEQID, seq_id)));
                     }
+                }
+                else if (strcmp(prop, "SEQNAME") == 0)
+                {
+                    QS_DEF(Array<char>, seq_name);
+                    strscan.readWord(seq_name, 0);
+                    seq_name.push(0);
                 }
                 else
                 {
@@ -3645,6 +3811,7 @@ void MolfileLoader::_readTGroups3000()
                 int idx = tgroups->addTGroup();
                 TGroup& tgroup = tgroups->getTGroup(idx);
                 tgroup.tgroup_id = tg_idx;
+                _max_template_id = std::max(_max_template_id, tg_idx);
 
                 QS_DEF(Array<char>, word);
                 strscan.skipSpace();
