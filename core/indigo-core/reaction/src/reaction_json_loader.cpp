@@ -351,10 +351,10 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
             case LI_SECOND_ONLY: {
                 // connect first to the existing second block
                 auto& block = *rc_connection.second.summ_block_it;
-                block.indexes.push_back(plus_connection.first);                        // add second component
-                merge_bbox(block.bbox, rc_connection.first.bbox);                      // merge second box with block box
-                rc_connection.first.summ_block_it = rc_connection.first.summ_block_it; // bind second to the first block
-                rc_connection.first.summ_block_idx = ReactionComponent::CONNECTED;     // mark second as connected
+                block.indexes.push_back(plus_connection.first);                         // add second component
+                merge_bbox(block.bbox, rc_connection.first.bbox);                       // merge second box with block box
+                rc_connection.first.summ_block_it = rc_connection.second.summ_block_it; // bind second to the first block
+                rc_connection.first.summ_block_idx = ReactionComponent::CONNECTED;      // mark second as connected
             }
             break;
             }
