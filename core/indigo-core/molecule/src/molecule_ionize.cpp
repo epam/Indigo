@@ -249,11 +249,10 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
             if (pka_dev > max_deviation)
                 max_deviation = pka_dev;
 
-            if (_model.adv_a_pkas.find(fp))
-                _model.adv_a_pkas.remove(fp);
-            _model.adv_a_pkas.insert(fp);
-            _model.adv_a_pkas.at(fp).push(pka_sum / pkas.size());
-            _model.adv_a_pkas.at(fp).push(pka_dev);
+            const auto it = _model.adv_a_pkas.find(fp);
+            if (it != _model.adv_a_pkas.end())
+                _model.adv_a_pkas.erase(it);
+            _model.adv_a_pkas.emplace(std::make_pair(fp, std::vector<float>{pka_sum / pkas.size(), pka_dev}));
 
             if (pka_dev > threshold)
                 model_ready = false;
@@ -285,11 +284,10 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
             if (pka_dev > max_deviation)
                 max_deviation = pka_dev;
 
-            if (_model.adv_b_pkas.find(fp))
-                _model.adv_b_pkas.remove(fp);
-            _model.adv_b_pkas.insert(fp);
-            _model.adv_b_pkas.at(fp).push(pka_sum / pkas.size());
-            _model.adv_b_pkas.at(fp).push(pka_dev);
+            const auto it = _model.adv_b_pkas.find(fp);
+            if (it != _model.adv_b_pkas.end())
+                _model.adv_b_pkas.erase(it);
+            _model.adv_b_pkas.emplace(std::make_pair(fp, std::vector<float>{pka_sum / pkas.size(), pka_dev}));
 
             if (pka_dev > threshold)
                 model_ready = false;
@@ -309,7 +307,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
             else
             {
                 level++;
-                _model.max_deviations.push(max_deviation);
+                _model.max_deviations.push_back(max_deviation);
             }
         }
     }
@@ -401,22 +399,28 @@ void MoleculePkaModel::_loadSimplePkaModel()
     _model.a_pkas.clear();
     _model.b_pkas.clear();
 
+    _model.acids.reserve(NELEM(simple_pka_model));
+    _model.a_pkas.reserve(NELEM(simple_pka_model));
     for (auto i = 0; i < NELEM(simple_pka_model); i++)
     {
         BufferScanner scanner(simple_pka_model[i].acid);
         SmilesLoader loader(scanner);
-        QueryMolecule& acid = _model.acids.push();
+        _model.acids.push_back(std::make_unique<QueryMolecule>());
+        QueryMolecule& acid = *(_model.acids.back());
         loader.loadSMARTS(acid);
-        _model.a_pkas.push(simple_pka_model[i].pka);
+        _model.a_pkas.push_back(simple_pka_model[i].pka);
     }
 
+    _model.basics.reserve(NELEM(simple_pka_model));
+    _model.b_pkas.reserve(NELEM(simple_pka_model));
     for (auto i = 0; i < NELEM(simple_pka_model); i++)
     {
         BufferScanner scanner(simple_pka_model[i].basic);
         SmilesLoader loader(scanner);
-        QueryMolecule& basic = _model.basics.push();
+        _model.basics.push_back(std::make_unique<QueryMolecule>());
+        QueryMolecule& basic = *(_model.basics.back());
         loader.loadSMARTS(basic);
-        _model.b_pkas.push(simple_pka_model[i].pka);
+        _model.b_pkas.push_back(simple_pka_model[i].pka);
     }
 
     _model.simple_model_ready = true;
@@ -816,17 +820,16 @@ namespace // data of internal purpose
         {"7300021320000|64000204210006400020421000|73000213110007300021320000820002220100064000204210008200022201000", 9.69f, 0.00f},
         {"82-10023110000|6400020421000|640002042100082-100231100008200022201000", 3.20f, 0.00f}};
 
-    void LoadPkaDefToModel(RedBlackStringObjMap<Array<float>>& adv_model, const AdvancedPkaDef* from, const AdvancedPkaDef* const end)
+    void LoadPkaDefToModel(std::map<std::string, std::vector<float>, std::less<>>& adv_model, const AdvancedPkaDef* from, const AdvancedPkaDef* const end)
     {
         adv_model.clear();
         for (; from < end; ++from)
         {
-            if (adv_model.find(from->a_fp))
-                adv_model.remove(from->a_fp);
+            const auto it = adv_model.find(from->a_fp);
+            if (it != adv_model.end())
+                adv_model.erase(it);
 
-            adv_model.insert(from->a_fp);
-            adv_model.at(from->a_fp).push(from->pka);
-            adv_model.at(from->a_fp).push(from->deviation);
+            adv_model.emplace(std::make_pair(std::string{from->a_fp}, std::vector<float>{from->pka, from->deviation}));
         }
     }
 } // namespace
@@ -860,7 +863,7 @@ void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& 
     ignore_atoms.clear();
     for (auto i = 0; i < _model.acids.size(); ++i)
     {
-        matcher.setQuery(_model.acids[i]);
+        matcher.setQuery(*(_model.acids[i]));
 
         for (int j = 0; j < ignore_atoms.size(); ++j)
             matcher.ignoreTargetAtom(ignore_atoms[j]);
@@ -868,7 +871,7 @@ void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& 
         for (bool flag = matcher.find(); flag; flag = matcher.findNext())
         {
             mapping.clear();
-            mapping.copy(matcher.getQueryMapping(), _model.acids[i].vertexEnd());
+            mapping.copy(matcher.getQueryMapping(), _model.acids[i]->vertexEnd());
             for (int j = 0; j < mapping.size(); ++j)
             {
                 if (mapping[j] > -1)
@@ -884,7 +887,7 @@ void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& 
     ignore_atoms.clear();
     for (auto i = 0; i < _model.basics.size(); ++i)
     {
-        matcher.setQuery(_model.basics[i]);
+        matcher.setQuery(*_model.basics[i]);
 
         for (int j = 0; j < ignore_atoms.size(); ++j)
             matcher.ignoreTargetAtom(ignore_atoms[j]);
@@ -892,7 +895,7 @@ void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& 
         for (bool flag = matcher.find(); flag; flag = matcher.findNext())
         {
             mapping.clear();
-            mapping.copy(matcher.getQueryMapping(), _model.basics[i].vertexEnd());
+            mapping.copy(matcher.getQueryMapping(), _model.basics[i]->vertexEnd());
             for (int j = 0; j < mapping.size(); ++j)
             {
                 if (mapping[j] > -1)
@@ -1229,9 +1232,10 @@ float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int m
     getAtomLocalFingerprint(mol, idx, fp, level);
     //   printf("Acid site: atom index = %d, fp = %s\n",  idx, fp.ptr());
 
-    if (_model.adv_a_pkas.find(fp.ptr()))
+    const auto it = _model.adv_a_pkas.find(fp.ptr());
+    if (it != _model.adv_a_pkas.end())
     {
-        pka = _model.adv_a_pkas.at(fp.ptr())[0];
+        pka = it->second[0];
         //      printf("Acid site found: fp = %s  level = %d pka = %4.2f, dev = %4.2f\n",  fp.ptr(), level, pka,
         //             _model.adv_a_pkas.at(fp.ptr())[1]);
     }
@@ -1255,9 +1259,10 @@ float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int m
 
             //         printf("Try FP = %s level = %d\n", fp.ptr(), level_pos.size() - i);
 
-            if (_model.adv_a_pkas.find(fp.ptr()))
+            const auto it = _model.adv_a_pkas.find(fp.ptr());
+            if (it != _model.adv_a_pkas.end())
             {
-                pka = _model.adv_a_pkas.at(fp.ptr())[0];
+                pka = it->second[0];
                 //            printf("Acid site found: fp = %s level = %d pka = %4.2f, dev = %4.2f\n", fp.ptr(), level_pos.size() - i, pka,
                 //                   _model.adv_a_pkas.at(fp.ptr())[1]);
                 break;
@@ -1283,9 +1288,10 @@ float MoleculePkaModel::getBasicPkaValue(Molecule& mol, int idx, int level, int 
     getAtomLocalFingerprint(mol, idx, fp, level);
     //   printf("Basic site: atom index = %d, fp = %s\n",  idx, fp.ptr());
 
-    if (_model.adv_b_pkas.find(fp.ptr()))
+    const auto it = _model.adv_b_pkas.find(fp.ptr());
+    if (it != _model.adv_b_pkas.end())
     {
-        pka = (_model.adv_b_pkas.at(fp.ptr())[0]);
+        pka = it->second[0];
         //      printf("Basic site found: fp = %s  pka = %4.2f, dev = %4.2f\n",  fp.ptr(), pka,
         //              _model.adv_b_pkas.at(fp.ptr())[1]);
     }
@@ -1306,7 +1312,8 @@ float MoleculePkaModel::getBasicPkaValue(Molecule& mol, int idx, int level, int 
                 break;
             int next_layer = level_pos[level_pos.size() - i - 1];
             fp.remove(next_layer, fp.size() - next_layer - 1);
-            if (_model.adv_b_pkas.find(fp.ptr()))
+            const auto it = _model.adv_b_pkas.find(fp.ptr());
+            if (it != _model.adv_b_pkas.end())
             {
                 pka = _model.adv_b_pkas.at(fp.ptr())[0];
                 //            printf("Basic site found: fp = %s  level = %d pka = %4.2f, dev = %4.2f\n",  fp.ptr(), level_pos.size() - i, pka,
