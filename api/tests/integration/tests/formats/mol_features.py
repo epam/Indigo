@@ -176,3 +176,10 @@ mol = indigo.loadMolecule(smiles)
 print(smiles)
 indigo.setOption("molfile-saving-mode", "3000")
 print(mol.molfile())
+
+print("*** 1431 Query explicit valency crash ***")
+qmol = indigo.loadQueryMoleculeFromFile(
+    joinPathPy("molecules/query_crash_1431.mol", __file__)
+)
+
+print(qmol.smarts())
