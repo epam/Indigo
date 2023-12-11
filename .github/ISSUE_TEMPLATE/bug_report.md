@@ -1,10 +1,19 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
+title: "[Severity] Title"
 labels: Bug
 
 ---
+
+**Environment details  (please complete the following information):**
+ - Front-end version
+ - Back-end version
+- [Optional] Chrome version
+- [Optional] OS version
+
+**Describe the bug**
+A clear and concise description of what the bug is.
 
 **Steps to Reproduce**
 1. Use Indigo library (Bingo cartridge). Describe environment
