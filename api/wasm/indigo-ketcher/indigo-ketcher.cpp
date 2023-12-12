@@ -411,6 +411,48 @@ namespace indigo
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
 
+    std::string convert_explicit_hydrogens(const std::string& data, const std::string& mode, const std::string& outputFormat,
+                                           const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        indigoSetOptions(options);
+        std::map<std::string, std::string> options_copy = options;
+        if (outputFormat.find("smarts") != std::string::npos)
+        {
+            options_copy["query"] = "true";
+        }
+        IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy);
+        bool fold = false;
+        if (mode == "fold")
+        {
+            fold = true;
+        }
+        else if (mode == "unfold")
+        {
+            fold = false;
+        }
+        else if (mode == "auto")
+        {
+            IndigoObject iatoms(indigoIterateAtoms(iko.id()));
+            while (_checkResult(indigoHasNext(iatoms)))
+            {
+                IndigoObject atom = _checkResult(indigoNext(iatoms));
+                // indigoAtomicNumber can return -1 for non-standard atoms
+                // just skip these atoms
+                if (indigoAtomicNumber(atom) == 1) // hydrogen
+                {
+                    fold = true;
+                    break;
+                }
+            }
+        }
+        if (fold)
+            _checkResult(indigoFoldHydrogens(iko.id()));
+        else
+            _checkResult(indigoUnfoldHydrogens(iko.id()));
+        return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
+    }
+
     std::string aromatize(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
     {
         const IndigoSession session;

@@ -888,6 +888,115 @@ def convert():
         )
 
 
+@indigo_api.route("/convert_explicit_hydrogens", methods=["POST"])
+@check_exceptions
+def convert_explicit_hydrogens():
+    """
+    Convert hydrogens from implicit to explicit and vice versa
+    ---
+    tags:
+      - indigo
+    parameters:
+      - name: json_request
+        in: body
+        required: true
+        schema:
+          id: IndigoConvertExplicitHydrogensRequest
+          properties:
+            struct:
+              type: string
+              required: true
+              examples: C1=CC=CC=C1
+            mode:
+              type: string
+              default: auto
+              enum:
+                auto
+                fold
+                unfold
+            output_format:
+              type: string
+              default: chemical/x-mdl-molfile
+              enum:
+                - chemical/x-mdl-rxnfile
+                - chemical/x-mdl-molfile
+                - chemical/x-indigo-ket
+                - chemical/x-daylight-smiles
+                - chemical/x-chemaxon-cxsmiles
+                - chemical/x-cml
+                - chemical/x-inchi
+                - chemical/x-iupac
+                - chemical/x-daylight-smarts
+                - chemical/x-inchi-aux
+          example:
+            struct: C1=CC=CC=C1
+            output_format: chemical/x-mdl-molfile
+    responses:
+      200:
+        description: Chemical structure with converted explicit hydrogens
+        schema:
+          $ref: "#/definitions/IndigoResponse"
+      400:
+        description: 'A problem with supplied client data'
+        schema:
+          $ref: "#/definitions/ClientError"
+      500:
+        description: 'A problem on server side'
+        schema:
+          $ref: "#/definitions/ServerError"
+    """
+    data = IndigoRequestSchema().load(get_request_data(request))
+
+    LOG_DATA(
+        "[REQUEST] /convert_explicit_hydrogens",
+        data["input_format"],
+        data["output_format"],
+        data["struct"].encode("utf-8"),
+        data.get("mode", "mode undefined"),
+    )
+    indigo = indigo_init(data["options"])
+    query = False
+    if "smarts" in data["output_format"]:
+        query = True
+    md = load_moldata(
+        data["struct"],
+        mime_type=data["input_format"],
+        options=data["options"],
+        indigo=indigo,
+        query=query,
+    )
+    fold = False
+    mode = data.get("mode", "auto")
+    if mode == "fold":
+        fold = True
+        md.foldHydrogens()
+    elif mode == "unfold":
+        fold = False
+    else:
+        iatoms = md.struct.iterateAtoms()
+        while iatoms.hasNext():
+            atom = iatoms.next()
+            try:
+                if atom.atomicNumber() == 1:  # Hydrogen
+                    fold = True
+                    break
+            except IndigoException:
+                # atom.atomicNumber can raise exception for non-standard atoms
+                # just skip these atoms
+                continue
+    if fold:
+        md.struct.foldHydrogens()
+    else:
+        md.struct.unfoldHydrogens()
+    return get_response(
+        md,
+        data["output_format"],
+        data["json_output"],
+        data["options"],
+        indigo=indigo,
+    )
+
+
 @indigo_api.route("/layout", methods=["POST"])
 @check_exceptions
 def layout():
