@@ -538,7 +538,7 @@ M  END
             options.set("output-content-type", "application/json");
             const unfold_smiles = indigo.convert_explicit_hydrogens("CC", "auto", "smiles", options);
             assert.equal(unfold_smiles, '{"struct":"C([H])([H])([H])C([H])([H])[H]","format":"smiles","original_format":"chemical/x-daylight-smiles"}');
-            const fold_smiles = indigo.convert_explicit_hydrogens(unfold_smiles, "auto", "smiles", options);
+            const fold_smiles = indigo.convert_explicit_hydrogens("C([H])([H])([H])C([H])([H])[H]", "auto", "smiles", options);
             assert.equal(fold_smiles, '{"struct":"CC","format":"smiles","original_format":"chemical/x-daylight-smiles"}');
             options.delete();
         });
