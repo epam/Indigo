@@ -434,12 +434,12 @@ namespace indigo
         else if (mode == "auto")
         {
             IndigoObject iatoms(indigoIterateAtoms(iko.id()));
-            while (_checkResult(indigoHasNext(iatoms)))
+            while (_checkResult(indigoHasNext(iatoms.id)))
             {
-                IndigoObject atom = _checkResult(indigoNext(iatoms));
+                IndigoObject atom = _checkResult(indigoNext(iatoms.id));
                 // indigoAtomicNumber can return -1 for non-standard atoms
                 // just skip these atoms
-                if (indigoAtomicNumber(atom) == 1) // hydrogen
+                if (indigoAtomicNumber(atom.id) == 1) // hydrogen
                 {
                     fold = true;
                     break;
