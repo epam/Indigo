@@ -2946,6 +2946,75 @@ M  END
         self.assertEqual("chemical/x-cdxml", result_data["format"])
         self.assertIn("CDXML", result_data["struct"])
 
+    def test_convert_explicit_hydrogens_auto(self):
+        params = {
+            "struct": "CC",
+            "mode": "auto",
+            "output_format": "chemical/x-daylight-smiles",
+            "input_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert_explicit_hydrogens",
+            headers=headers,
+            data=data,
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual(
+            "C([H])([H])([H])C([H])([H])[H]", result_data["struct"]
+        )
+        params = {
+            "struct": result_data["struct"],
+            "output_format": "chemical/x-daylight-smiles",
+            "input_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert_explicit_hydrogens",
+            headers=headers,
+            data=data,
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual("CC", result_data["struct"])
+
+    def test_convert_explicit_hydrogens_fold(self):
+        params = {
+            "struct": "C([H])([H])([H])C([H])([H])[H]",
+            "mode": "fold",
+            "output_format": "chemical/x-daylight-smiles",
+            "input_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert_explicit_hydrogens",
+            headers=headers,
+            data=data,
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual("CC", result_data["struct"])
+
+    def test_convert_explicit_hydrogens_unfold(self):
+        params = {
+            "struct": "CC",
+            "mode": "unfold",
+            "output_format": "chemical/x-daylight-smiles",
+            "input_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert_explicit_hydrogens",
+            headers=headers,
+            data=data,
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual(
+            "C([H])([H])([H])C([H])([H])[H]", result_data["struct"]
+        )
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2, warnings="ignore")

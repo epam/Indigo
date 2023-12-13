@@ -23,6 +23,7 @@ from .validation import (
     IndigoCheckSchema,
     IndigoRendererSchema,
     IndigoRequestSchema,
+    IndigoConvertExplicitHydrogensSchema,
 )
 
 tls = local()
@@ -204,7 +205,7 @@ def do_calc(m, func_name, precision):
         value = getattr(m, func_name)()
     except IndigoException as e:
         value = "calculation error: {0}".format(e.value.split(": ")[-1])
-    if type(value) == float:
+    if isinstance(value, float):
         value = round(value, precision)
     return str(value)
 
@@ -945,7 +946,9 @@ def convert_explicit_hydrogens():
         schema:
           $ref: "#/definitions/ServerError"
     """
-    data = IndigoRequestSchema().load(get_request_data(request))
+    data = IndigoConvertExplicitHydrogensSchema().load(
+        get_request_data(request)
+    )
 
     LOG_DATA(
         "[REQUEST] /convert_explicit_hydrogens",
@@ -969,7 +972,6 @@ def convert_explicit_hydrogens():
     mode = data.get("mode", "auto")
     if mode == "fold":
         fold = True
-        md.foldHydrogens()
     elif mode == "unfold":
         fold = False
     else:
