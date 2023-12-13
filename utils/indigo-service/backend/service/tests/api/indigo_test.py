@@ -468,8 +468,8 @@ M  END\n",
         self.assertEqual(400, result.status_code)
         expected_text = "ValidationError: {'input_format': ['Must be one of: chemical/x-mdl-rxnfile, \
 chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
-chemical/x-cml, chemical/x-inchi, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml.']}"
+chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, chemical/x-iupac, chemical/x-daylight-smarts, \
+chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf.']}"
         self.assertEquals(
             expected_text,
             result.text,
@@ -486,8 +486,8 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml.']}"
         self.assertEqual(400, result.status_code)
         expected_text = "ValidationError: {'output_format': ['Must be one of: chemical/x-mdl-rxnfile, \
 chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
-chemical/x-cml, chemical/x-inchi, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml.']}"
+chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, chemical/x-iupac, chemical/x-daylight-smarts, \
+chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf.']}"
         self.assertEquals(
             expected_text,
             result.text,
@@ -645,10 +645,10 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml.']}"
 
     def test_convert_smarts(self):
         smarts = [
-            "[#8;A]-[!#1]-[#6;A](-[#9])(-[#9])-[#9]",
+            "[O]-[*]-[C](-[#9])(-[#9])-[#9]",
             "[#6,#1]",
             "[#1,#1]",
-            "[#9,#17,#35,#53,#7&A&+,$([OH]-*=[!#6]),+;!#1]",
+            "[#9,#17,#35,#53,N&+,$([OH]-*=[!#6]),+;*]",
         ]
         results = []
         # results_get = []
@@ -935,12 +935,12 @@ M  END""",
             {
                 "struct": """$RXN
 
-
+ -INDIGO- 0100000000
 
   2  1  0
 $MOL
 
-  Ketcher 10071615322D 1   1.00000     0.00000     0
+  -INDIGO-01000000002D
 
   6  6  0     0  0            999 V2000
     0.5450    0.6292    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
@@ -958,7 +958,7 @@ $MOL
 M  END
 $MOL
 
-  Ketcher 10071615322D 1   1.00000     0.00000     0
+  -INDIGO-01000000002D
 
  12 13  0     0  0            999 V2000
     3.0898   -0.0001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
@@ -989,7 +989,7 @@ $MOL
 M  END
 $MOL
 
-  Ketcher 10071615322D 1   1.00000     0.00000     0
+  -INDIGO-01000000002D
 
   6  6  0     0  0            999 V2000
    16.4754    0.9017    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
@@ -1008,7 +1008,10 @@ M  END
 """,
                 "selected": [5, 6],
                 "output_format": "chemical/x-mdl-rxnfile",
-                "options": {"molfile-saving-skip-date": "1"},
+                "options": {
+                    "molfile-saving-skip-date": "1",
+                    "molfile-saving-mode": "2000",
+                },
             }
         )
         result = requests.post(
@@ -1027,12 +1030,12 @@ $MOL
   -INDIGO-01000000002D
 
   6  6  0  0  0  0  0  0  0  0999 V2000
-    1.3856    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000   -2.4000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    1.3856   -3.2000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    2.7713   -2.4000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    2.7713   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.6856    1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.3000    0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.3000   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.6856   -1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    4.0713   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    4.0713    0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
   1  2  1  0  0  0  0
   2  3  2  0  0  0  0
   3  4  1  0  0  0  0
@@ -1045,18 +1048,18 @@ $MOL
   -INDIGO-01000000002D
 
  12 13  0  0  0  0  0  0  0  0999 V2000
-    8.2513   -1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    9.0513   -0.2144    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   10.6513   -0.2144    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   11.4513   -1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   10.6513   -2.9856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    9.0513   -2.9856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   13.0513   -1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   13.8513   -0.2144    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   15.4513   -0.2144    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   16.2513   -1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   15.4513   -2.9856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   13.8513   -2.9856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    7.6713    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    8.4713    1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   10.0713    1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   10.8713    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   10.0713   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    8.4713   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   12.4713    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   13.2713    1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   14.8713    1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   15.6713    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   14.8713   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   13.2713   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
   1  2  1  0  0  0  0
   2  3  2  0  0  0  0
   3  4  1  0  0  0  0
@@ -1076,12 +1079,12 @@ $MOL
   -INDIGO-01000000002D
 
   6  6  0  0  0  0  0  0  0  0999 V2000
-   23.1169    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   21.7313   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   21.7313   -2.4000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   23.1169   -3.2000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   24.5026   -2.4000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   24.5026   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   23.2569    1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   21.8713    0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   21.8713   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   23.2569   -1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   24.6426   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   24.6426    0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
   1  2  1  0  0  0  0
   2  3  2  0  0  0  0
   3  4  1  0  0  0  0
@@ -1253,13 +1256,9 @@ M  END""",
         )
 
     def test_calculate_cip_correct(self):
-        result = requests.post(
-            self.url_prefix + "/calculate_cip",
-            headers={
-                "Content-Type": "chemical/x-mdl-molfile",
-                "Accept": "chemical/x-mdl-molfile",
-            },
-            data="""
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 07261618302D 1   1.00000     0.00000     0
 
  12 12  0     0  0            999 V2000
@@ -1289,9 +1288,19 @@ M  END""",
   3 12  1  0     0  0
 M  END
 """,
+                "input_format": "chemical/x-mdl-molfile",
+                "output_format": "chemical/x-mdl-molfile",
+                "options": {"molfile-saving-mode": "2000"},
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate_cip",
+            headers=headers,
+            data=data,
         )
         self.assertEqual(200, result.status_code)
-        # print(result.text)
+        res = json.loads(result.text)
+        # print(res["struct"])
         self.assertEqual(
             """
  12 12  0  0  0  0  0  0  0  0999 V2000
@@ -1330,7 +1339,7 @@ M  SDT   2 INDIGO_CIP_DESC
 M  SDD   2     0.0000    0.0000    DR    ALL  1       1
 M  SED   2 (R)
 M  END""",
-            "\n".join([s.rstrip() for s in result.text.splitlines()[2:]]),
+            "\n".join([s.rstrip() for s in res["struct"].splitlines()[2:]]),
         )
 
     def test_render(self):
