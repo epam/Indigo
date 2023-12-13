@@ -1840,7 +1840,8 @@ QueryMolecule::Atom* QueryMolecule::releaseAtom(int idx)
 
 void QueryMolecule::resetAtom(int idx, QueryMolecule::Atom* atom)
 {
-    _atoms.reset(idx);
+    if (atom != _atoms[idx])
+        _atoms.reset(idx);
     _atoms[idx] = atom;
     updateEditRevision();
 }
