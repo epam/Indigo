@@ -884,6 +884,7 @@ namespace indigo
         emscripten::function("version", &version);
         emscripten::function("versionInfo", &versionInfo);
         emscripten::function("convert", &convert);
+        emscripten::function("convert_explicit_hydrogens", &convert_explicit_hydrogens);
         emscripten::function("aromatize", &aromatize);
         emscripten::function("dearomatize", &dearomatize);
         emscripten::function("layout", &layout);
