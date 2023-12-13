@@ -13004,3 +13004,76 @@ M  END
 
 *** 2-digit pseudoatom index ***
 C1(CCCCCC1)CCCC(=O)CC1CSC(C(C(C)CC)N)=N1 |$Lys;;;;His;Asp;Asn;;Glu;;;;;;;;;;;;;;;$|
+*** 1415 wrong S-Group count in molfile V3000 ***
+C1CCC(C1)Nc1ccc2ccn(-c3ccc4[nH]ncc4c3)c2c1
+
+  -INDIGO-01000000002D
+
+  0  0  0  0  0  0  0  0  0  0  0 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 24 28 1 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C 0.0 0.0 0.0 0
+M  V30 2 C 0.0 0.0 0.0 0
+M  V30 3 C 0.0 0.0 0.0 0
+M  V30 4 C 0.0 0.0 0.0 0
+M  V30 5 C 0.0 0.0 0.0 0
+M  V30 6 N 0.0 0.0 0.0 0
+M  V30 7 C 0.0 0.0 0.0 0
+M  V30 8 C 0.0 0.0 0.0 0
+M  V30 9 C 0.0 0.0 0.0 0
+M  V30 10 C 0.0 0.0 0.0 0
+M  V30 11 C 0.0 0.0 0.0 0
+M  V30 12 C 0.0 0.0 0.0 0
+M  V30 13 N 0.0 0.0 0.0 0
+M  V30 14 C 0.0 0.0 0.0 0
+M  V30 15 C 0.0 0.0 0.0 0
+M  V30 16 C 0.0 0.0 0.0 0
+M  V30 17 C 0.0 0.0 0.0 0
+M  V30 18 N 0.0 0.0 0.0 0
+M  V30 19 N 0.0 0.0 0.0 0
+M  V30 20 C 0.0 0.0 0.0 0
+M  V30 21 C 0.0 0.0 0.0 0
+M  V30 22 C 0.0 0.0 0.0 0
+M  V30 23 C 0.0 0.0 0.0 0
+M  V30 24 C 0.0 0.0 0.0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 2 3
+M  V30 3 1 3 4
+M  V30 4 1 4 5
+M  V30 5 1 5 1
+M  V30 6 1 4 6
+M  V30 7 1 6 7
+M  V30 8 4 7 8
+M  V30 9 4 8 9
+M  V30 10 4 9 10
+M  V30 11 4 10 11
+M  V30 12 4 11 12
+M  V30 13 4 12 13
+M  V30 14 1 13 14
+M  V30 15 4 14 15
+M  V30 16 4 15 16
+M  V30 17 4 16 17
+M  V30 18 4 17 18
+M  V30 19 4 18 19
+M  V30 20 4 19 20
+M  V30 21 4 20 21
+M  V30 22 4 21 17
+M  V30 23 4 21 22
+M  V30 24 4 22 14
+M  V30 25 4 13 23
+M  V30 26 4 23 10
+M  V30 27 4 23 24
+M  V30 28 4 24 7
+M  V30 END BOND
+M  V30 BEGIN SGROUP
+M  V30 1 DAT 1 ATOMS=(1 18) FIELDNAME=MRV_IMPLICIT_H FIELDDISP="    0.0000   -
+M  V30  0.0000    DA    ALL  1       1  " FIELDDATA="IMPL_H1"
+M  V30 END SGROUP
+M  V30 END CTAB
+M  END
+
+*** 1431 Query explicit valency crash ***
+[#6;+2;v;D0;$([*,#1]=,#,:[*,#1]);x0]1=[#6]-[#6]=[#6]-[#6]=[#6]-1.[#6]-[#6]-[#6@@](-[#6])-[#6]-[#6]
