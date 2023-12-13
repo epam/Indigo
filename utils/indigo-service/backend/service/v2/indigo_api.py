@@ -21,9 +21,9 @@ from .validation import (
     IndigoAutomapSchema,
     IndigoCalculateSchema,
     IndigoCheckSchema,
+    IndigoConvertExplicitHydrogensSchema,
     IndigoRendererSchema,
     IndigoRequestSchema,
-    IndigoConvertExplicitHydrogensSchema,
 )
 
 tls = local()
