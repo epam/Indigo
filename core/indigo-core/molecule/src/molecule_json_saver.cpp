@@ -1331,7 +1331,8 @@ void MoleculeJsonSaver::collectTemplates(BaseMolecule& mol)
     for (int i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
     {
         auto& tg = mol.tgroups.getTGroup(i);
-        _templates.emplace(tg.tgroup_name.size() ? tg.tgroup_name.ptr() : monomerAlias(tg), std::ref(tg));
+        std::string tname = tg.tgroup_name.size() ? tg.tgroup_name.ptr() : monomerAlias(tg);
+        _templates.emplace(std::make_pair(tname, tg.tgroup_class.ptr()), std::ref(tg));
     }
 }
 
@@ -1523,6 +1524,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 writer.Key("alias");
                 auto alias = mol->getTemplateAtom(i);
                 writer.String(alias);
+                auto mon_class = mol->getTemplateAtomClass(i);
                 int temp_idx = mol->getTemplateAtomTemplateIndex(i);
                 if (temp_idx > -1)
                 {
@@ -1532,7 +1534,12 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 }
                 else
                 {
-                    auto tg_it = _templates.find(alias);
+                    auto tg_it = _templates.find(std::make_pair(alias, mon_class));
+                    if (tg_it == _templates.end())
+                    {
+                        auto mname = monomerNameByAlias(mon_class, alias);
+                        tg_it = _templates.find(std::make_pair(mname, mon_class));
+                    }
                     if (tg_it != _templates.end())
                     {
                         writer.Key("templateId");
