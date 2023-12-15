@@ -45,6 +45,7 @@ files = [
     "query_explicit_val",
     "mon_long_id",
     "acgt_1412",
+    "leaving_rgroup_1439",
 ]
 
 files.sort()
