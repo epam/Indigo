@@ -27,7 +27,7 @@
 #include <algorithm>
 #include <vector>
 
-CEXPORT int indigoLayout(int object)
+static int _indigoLayout(int object, bool respect_old)
 {
     INDIGO_BEGIN
     {
@@ -124,6 +124,16 @@ CEXPORT int indigoLayout(int object)
         return 0;
     }
     INDIGO_END(-1);
+}
+
+CEXPORT int indigoLayout(int object)
+{
+    return _indigoLayout(object, false);
+}
+
+CEXPORT int indigoLayoutRespectOld(int object)
+{
+    return _indigoLayout(object, true);
 }
 
 CEXPORT int indigoClean2d(int object)

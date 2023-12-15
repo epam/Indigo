@@ -3367,14 +3367,18 @@ class IndigoObject:
             self._lib().indigoUnfoldHydrogens(self.id)
         )
 
-    def layout(self):
+    def layout(self, respect_old=False):
         """Molecule or reaction method calculates layout for the structure
 
         Returns:
             int: 1 if there are no errors
         """
-
-        return IndigoLib.checkResult(self._lib().indigoLayout(self.id))
+        if respect_old:
+            return IndigoLib.checkResult(self._lib().indigoLayout(self.id))
+        else:
+            return IndigoLib.checkResult(
+                self._lib().indigoLayoutRespectOld(self.id)
+            )
 
     def smiles(self):
         """Molecule or reaction method calculates SMILES for the structure

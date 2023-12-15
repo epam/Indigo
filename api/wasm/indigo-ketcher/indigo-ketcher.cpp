@@ -447,9 +447,14 @@ namespace indigo
             }
         }
         if (fold)
+        {
             _checkResult(indigoFoldHydrogens(iko.id()));
+        }
         else
+        {
             _checkResult(indigoUnfoldHydrogens(iko.id()));
+            _checkResult(indigoLayoutRespectOld(iko.id()));
+        }
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
 

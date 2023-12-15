@@ -990,6 +990,7 @@ def convert_explicit_hydrogens():
         md.struct.foldHydrogens()
     else:
         md.struct.unfoldHydrogens()
+        md.struct.layout(respect_old=True)
     return get_response(
         md,
         data["output_format"],

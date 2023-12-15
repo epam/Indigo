@@ -740,6 +740,7 @@ CEXPORT int indigoFoldHydrogens(int item);
 CEXPORT int indigoUnfoldHydrogens(int item);
 
 CEXPORT int indigoLayout(int object);
+CEXPORT int indigoLayoutRespectOld(int object);
 CEXPORT int indigoClean2d(int object);
 
 CEXPORT const char* indigoSmiles(int item);
