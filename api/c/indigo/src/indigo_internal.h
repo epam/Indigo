@@ -332,6 +332,7 @@ public:
     int layout_max_iterations; // default is zero -- no limit
     bool smart_layout = false;
     float layout_horintervalfactor = ReactionLayout::DEFAULT_HOR_INTERVAL_FACTOR;
+    bool layout_preserve_existing = false;
 
     int layout_orientation = 0;
 

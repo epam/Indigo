@@ -452,8 +452,9 @@ namespace indigo
         }
         else
         {
+            indigoSetOptionBool("layout-preserve-existing", true);
             _checkResult(indigoUnfoldHydrogens(iko.id()));
-            _checkResult(indigoLayoutRespectOld(iko.id()));
+            indigoSetOptionBool("layout-preserve-existing", false);
         }
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }

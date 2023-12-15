@@ -310,7 +310,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerInt("max-embeddings", indigoSetMaxEmbeddings, indigoGetMaxEmbeddings);
 
     mgr->setOptionHandlerInt("layout-max-iterations", SETTER_GETTER_INT_OPTION(indigo.layout_max_iterations));
-
+    mgr->setOptionHandlerInt("layout-preserve-existing", SETTER_GETTER_BOOL_OPTION(indigo.layout_preserve_existing));
     mgr->setOptionHandlerFloat("layout-horintervalfactor", indigoSetLayoutHorIntervalFactor, indigoGetLayoutHorIntervalFactor);
 
     mgr->setOptionHandlerInt("aam-timeout", SETTER_GETTER_INT_OPTION(indigo.aam_cancellation_timeout));

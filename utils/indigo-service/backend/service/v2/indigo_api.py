@@ -990,7 +990,9 @@ def convert_explicit_hydrogens():
         md.struct.foldHydrogens()
     else:
         md.struct.unfoldHydrogens()
-        md.struct.layout(respect_old=True)
+        indigo.setOption("layout-preserve-existing", True)
+        md.struct.layout()
+        indigo.setOption("layout-preserve-existing", False)
     return get_response(
         md,
         data["output_format"],

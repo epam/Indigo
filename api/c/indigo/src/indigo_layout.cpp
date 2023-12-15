@@ -27,7 +27,7 @@
 #include <algorithm>
 #include <vector>
 
-static int _indigoLayout(int object, bool respect_old)
+CEXPORT int indigoLayout(int object)
 {
     INDIGO_BEGIN
     {
@@ -58,7 +58,7 @@ static int _indigoLayout(int object, bool respect_old)
             ml.max_iterations = self.layout_max_iterations;
             ml.bond_length = MoleculeLayout::DEFAULT_BOND_LENGTH;
             ml.layout_orientation = (layout_orientation_value)self.layout_orientation;
-            if (respect_old || mol->hasAtropoStereoBonds())
+            if (self.layout_preserve_existing || mol->hasAtropoStereoBonds())
                 ml.respect_existing_layout = true;
 
             TimeoutCancellationHandler cancellation(self.cancellation_timeout);
@@ -107,7 +107,7 @@ static int _indigoLayout(int object, bool respect_old)
                 rl.layout_orientation = (layout_orientation_value)self.layout_orientation;
                 rl.bond_length = MoleculeLayout::DEFAULT_BOND_LENGTH;
                 rl.horizontal_interval_factor = self.layout_horintervalfactor;
-                if (respect_old)
+                if (self.layout_preserve_existing)
                     rl.preserve_molecule_layout = true;
                 rl.make();
                 try
@@ -126,16 +126,6 @@ static int _indigoLayout(int object, bool respect_old)
         return 0;
     }
     INDIGO_END(-1);
-}
-
-CEXPORT int indigoLayout(int object)
-{
-    return _indigoLayout(object, false);
-}
-
-CEXPORT int indigoLayoutRespectOld(int object)
-{
-    return _indigoLayout(object, true);
 }
 
 CEXPORT int indigoClean2d(int object)

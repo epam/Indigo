@@ -847,8 +847,6 @@ class IndigoLib:
         IndigoLib.lib.indigoUnfoldHydrogens.argtypes = [c_int]
         IndigoLib.lib.indigoLayout.restype = c_int
         IndigoLib.lib.indigoLayout.argtypes = [c_int]
-        IndigoLib.lib.indigoLayoutRespectOld.restype = c_int
-        IndigoLib.lib.indigoLayoutRespectOld.argtypes = [c_int]
         IndigoLib.lib.indigoClean2d.restype = c_int
         IndigoLib.lib.indigoClean2d.argtypes = [c_int]
         IndigoLib.lib.indigoSmiles.restype = c_char_p
