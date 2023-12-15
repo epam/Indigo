@@ -411,6 +411,54 @@ namespace indigo
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
 
+    std::string convert_explicit_hydrogens(const std::string& data, const std::string& mode, const std::string& outputFormat,
+                                           const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        indigoSetOptions(options);
+        std::map<std::string, std::string> options_copy = options;
+        if (outputFormat.find("smarts") != std::string::npos)
+        {
+            options_copy["query"] = "true";
+        }
+        IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy);
+        bool fold = false;
+        if (mode == "fold")
+        {
+            fold = true;
+        }
+        else if (mode == "unfold")
+        {
+            fold = false;
+        }
+        else if (mode == "auto")
+        {
+            IndigoObject iatoms(_checkResult(indigoIterateAtoms(iko.id())));
+            while (_checkResult(indigoHasNext(iatoms.id)))
+            {
+                IndigoObject atom(_checkResult(indigoNext(iatoms.id)));
+                // indigoAtomicNumber can return -1 for non-standard atoms
+                // just skip these atoms
+                if (indigoAtomicNumber(atom.id) == 1) // hydrogen
+                {
+                    fold = true;
+                    break;
+                }
+            }
+        }
+        if (fold)
+        {
+            _checkResult(indigoFoldHydrogens(iko.id()));
+        }
+        else
+        {
+            indigoSetOptionBool("layout-preserve-existing", true);
+            _checkResult(indigoUnfoldHydrogens(iko.id()));
+            indigoSetOptionBool("layout-preserve-existing", false);
+        }
+        return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
+    }
+
     std::string aromatize(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
     {
         const IndigoSession session;
@@ -842,6 +890,7 @@ namespace indigo
         emscripten::function("version", &version);
         emscripten::function("versionInfo", &versionInfo);
         emscripten::function("convert", &convert);
+        emscripten::function("convert_explicit_hydrogens", &convert_explicit_hydrogens);
         emscripten::function("aromatize", &aromatize);
         emscripten::function("dearomatize", &dearomatize);
         emscripten::function("layout", &layout);

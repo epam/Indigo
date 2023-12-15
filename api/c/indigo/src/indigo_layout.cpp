@@ -58,7 +58,7 @@ CEXPORT int indigoLayout(int object)
             ml.max_iterations = self.layout_max_iterations;
             ml.bond_length = MoleculeLayout::DEFAULT_BOND_LENGTH;
             ml.layout_orientation = (layout_orientation_value)self.layout_orientation;
-            if (mol->hasAtropoStereoBonds())
+            if (self.layout_preserve_existing || mol->hasAtropoStereoBonds())
                 ml.respect_existing_layout = true;
 
             TimeoutCancellationHandler cancellation(self.cancellation_timeout);
@@ -107,6 +107,8 @@ CEXPORT int indigoLayout(int object)
                 rl.layout_orientation = (layout_orientation_value)self.layout_orientation;
                 rl.bond_length = MoleculeLayout::DEFAULT_BOND_LENGTH;
                 rl.horizontal_interval_factor = self.layout_horintervalfactor;
+                if (self.layout_preserve_existing)
+                    rl.preserve_molecule_layout = true;
                 rl.make();
                 try
                 {

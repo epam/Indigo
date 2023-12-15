@@ -168,6 +168,13 @@ class IndigoAutomapSchema(IndigoRequestSchema):
     )
 
 
+class IndigoConvertExplicitHydrogensSchema(IndigoRequestSchema):
+    mode = fields.Str(
+        missing="auto",
+        validate=OneOf(("auto", "fold", "unfold")),
+    )
+
+
 class SearcherSchema(Schema):
     type = fields.Str(
         load_from="type",

@@ -3373,7 +3373,6 @@ class IndigoObject:
         Returns:
             int: 1 if there are no errors
         """
-
         return IndigoLib.checkResult(self._lib().indigoLayout(self.id))
 
     def smiles(self):

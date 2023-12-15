@@ -118,6 +118,7 @@ void Indigo::init()
     max_embeddings = 10000;
 
     layout_max_iterations = 0;
+    layout_preserve_existing = false;
 
     molfile_saving_skip_date = false;
 
