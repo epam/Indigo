@@ -3363,7 +3363,9 @@ class IndigoObject:
             int: 1 if there are no errors
         """
 
-        return IndigoLib.checkResult(self._lib().indigoUnfoldHydrogens(self.id))
+        return IndigoLib.checkResult(
+            self._lib().indigoUnfoldHydrogens(self.id)
+        )
 
     def layout(self):
         """Molecule or reaction method calculates layout for the structure
