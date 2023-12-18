@@ -30,6 +30,7 @@
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
+#include "layout/sequence_layout.h"
 
 #define STRCMP(a, b) strncmp((a), (b), strlen(b))
 
@@ -2099,7 +2100,6 @@ void MolfileLoader::_postLoad()
 
     std::set<int> templates_to_remove;
     std::unordered_map<NucleotideComponentKey, int, pair_hash> new_templates;
-
     for (int atom_idx = _bmol->vertexBegin(); atom_idx != _bmol->vertexEnd(); atom_idx = _bmol->vertexNext(atom_idx))
     {
         if (_bmol->isTemplateAtom(atom_idx) && isNucleotideClass(_bmol->getTemplateAtomClass(atom_idx)))
@@ -2123,6 +2123,12 @@ void MolfileLoader::_postLoad()
 
     for (auto idx : templates_to_remove)
         _bmol->tgroups.remove(idx);
+
+    if (_bmol->tgroups.getTGroupCount())
+    {
+        // SequenceLayout sl(*_bmol);
+        // sl.make();
+    }
 }
 
 int MolfileLoader::_insertTemplate(MonomersLib::value_type& nuc, std::unordered_map<NucleotideComponentKey, int, pair_hash>& new_templates)
