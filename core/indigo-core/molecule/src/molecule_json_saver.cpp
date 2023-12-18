@@ -1174,9 +1174,19 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
         writer.String(tg.tgroup_name.ptr());
     }
 
-    if (tg.tgroup_natreplace.size())
+    std::string natreplace;
+    if (tg.tgroup_natreplace.size() == 0)
     {
-        auto analog = naturalAnalog(tg.tgroup_natreplace.ptr());
+        auto alias = monomerAlias(tg);
+        if (isBasicAminoAcid(template_class, alias))
+            natreplace = alias;
+    }
+    else
+        natreplace = tg.tgroup_natreplace.ptr();
+
+    if (natreplace.size())
+    {
+        auto analog = naturalAnalog(natreplace);
         auto nat_alias = monomerAliasByName(template_class, analog);
         writer.Key("naturalAnalogShort");
         writer.String(nat_alias.c_str());
