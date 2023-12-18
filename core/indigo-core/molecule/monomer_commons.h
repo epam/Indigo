@@ -84,6 +84,8 @@ namespace indigo
 
     std::string monomerNameByAlias(const std::string& monomer_class, const std::string& alias);
 
+    bool isBasicAminoAcid(const std::string& monomer_class, const std::string& alias);
+
     std::string monomerAliasByName(const std::string& monomer_class, const std::string& name);
 
     std::string normalizeMonomerName(const std::string& monomer_class, const std::string& name);
