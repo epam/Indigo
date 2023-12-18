@@ -2231,6 +2231,7 @@
         "classHELM": "PEPTIDE",
         "alias": "D",
         "name": "Asp",
+        "naturalAnalogShort": "D",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2429,6 +2430,7 @@
         "classHELM": "PEPTIDE",
         "alias": "F",
         "name": "Phe",
+        "naturalAnalogShort": "F",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2656,6 +2658,7 @@
         "classHELM": "PEPTIDE",
         "alias": "G",
         "name": "Gly",
+        "naturalAnalogShort": "G",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2769,6 +2772,7 @@
         "classHELM": "PEPTIDE",
         "alias": "H",
         "name": "His",
+        "naturalAnalogShort": "H",
         "attachmentPoints": [
             {
                 "attachmentAtom": 5,
@@ -3004,6 +3008,7 @@
         "classHELM": "PEPTIDE",
         "alias": "I",
         "name": "Ile",
+        "naturalAnalogShort": "I",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3181,6 +3186,7 @@
         "classHELM": "PEPTIDE",
         "alias": "K",
         "name": "Lys",
+        "naturalAnalogShort": "K",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3562,6 +3568,7 @@
         "classHELM": "PEPTIDE",
         "alias": "V",
         "name": "Val",
+        "naturalAnalogShort": "V",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3722,6 +3729,7 @@
         "classHELM": "PEPTIDE",
         "alias": "E",
         "name": "Glu",
+        "naturalAnalogShort": "E",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3935,6 +3943,7 @@
         "classHELM": "PEPTIDE",
         "alias": "C",
         "name": "Cys",
+        "naturalAnalogShort": "C",
         "attachmentPoints": [
             {
                 "attachmentAtom": 8,
@@ -4370,6 +4379,7 @@
         "classHELM": "PEPTIDE",
         "alias": "E",
         "name": "E",
+        "naturalAnalogShort": "E",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0
