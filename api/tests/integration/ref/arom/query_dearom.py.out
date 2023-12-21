@@ -1,0 +1,10 @@
+**** Dearomatize query molecules
+Aromatic: c1ccccc1
+Dearomatized: [#6]1-[#6]=[#6]-[#6]=[#6]-[#6]=1
+
+Aromatic: c1cccc[c;h0]1
+Dearomatized: [#6]1-[#6]=[#6]-[#6]=[#6]-[#6;h0]=1
+
+Aromatic: c1cccc[c;X4]1
+Dearomatized: [#6]1-[#6]=[#6]-[#6]=[#6]-[#6;X4]=1
+

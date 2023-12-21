@@ -150,6 +150,7 @@ namespace indigo
     protected:
         BaseMolecule& _molecule;
         int _aromaticGroups;
+        bool _isQueryMolecule;
 
         // Additional data stored here to prevent reallocatoins
         CP_DECL;
@@ -208,6 +209,7 @@ namespace indigo
         const AromaticityOptions& _options;
         int _connectivityGroups;
         int _activeGroup;
+        bool _isQueryMolecule;
 
         DearomatizationsGroups _aromaticGroups;
         DearomatizationsStorage* _dearomatizations;
@@ -222,10 +224,10 @@ namespace indigo
         void _initEdges(void);
         void _initVertices(void);
 
-        void _prepareGroup(int group, Molecule& submolecule);
+        void _prepareGroup(int group, BaseMolecule& submolecule);
 
         void _fixHeteratom(int atom_idx, bool toFix);
-        void _processMatching(Molecule& submolecule, int group, const byte* hetroAtomsState);
+        void _processMatching(BaseMolecule& submolecule, int group, const byte* hetroAtomsState);
         void _enumerateMatching(void);
         void _handleMatching(void);
     };
@@ -317,21 +319,22 @@ namespace indigo
     class MoleculeDearomatizer
     {
     public:
-        MoleculeDearomatizer(Molecule& mol, DearomatizationsStorage& dearomatizations);
+        MoleculeDearomatizer(BaseMolecule& mol, DearomatizationsStorage& dearomatizations);
 
         // Function dearomatizes as much as possible.
         // Returns true if all bonds were dearomatized, false overwise
-        static bool dearomatizeMolecule(Molecule& mol, const AromaticityOptions& options);
+        static bool dearomatizeMolecule(BaseMolecule& mol, const AromaticityOptions& options);
 
-        static bool restoreHydrogens(Molecule& mol, const AromaticityOptions& options);
-        static bool restoreHydrogens(Molecule& mol, bool unambiguous_only);
+        static bool restoreHydrogens(BaseMolecule& mol, const AromaticityOptions& options);
+        static bool restoreHydrogens(BaseMolecule& mol, bool unambiguous_only);
 
         void dearomatizeGroup(int group, int dearomatization_index);
         void restoreHydrogens(int group, int dearomatization_index);
 
     private:
         DearomatizationsStorage& _dearomatizations;
-        Molecule& _mol;
+        BaseMolecule& _mol;
+        bool _isQueryMolecule;
 
         int _countDoubleBonds(int group, int dearomatization_index);
         int _getBestDearomatization(int group);
