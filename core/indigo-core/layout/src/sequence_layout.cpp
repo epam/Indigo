@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include "layout/sequence_layout.h"
+#include "../layout/molecule_layout.h"
 
 using namespace indigo;
 
@@ -41,77 +42,80 @@ void SequenceLayout::make()
 
 void SequenceLayout::make(int first_atom_idx)
 {
-    std::vector<uint8_t> vertices_visited(_molecule.vertexCount(), 0);
-    std::vector<std::map<int, int>> directions_map(_molecule.vertexCount());
+    auto atoms_num = _molecule.vertexCount();
+    std::unordered_map<int, uint8_t> vertices_visited;
+    std::map<int, std::map<int, int>> directions_map;
 
     for (int i = _molecule.template_attachment_points.begin(); i != _molecule.template_attachment_points.end();
          i = _molecule.template_attachment_points.next(i))
     {
         auto& t = _molecule.template_attachment_points[i];
         if (t.ap_id.size())
-            directions_map.at(t.ap_occur_idx).emplace(t.ap_id[0] - 'A', t.ap_aidx);
+            directions_map[t.ap_occur_idx].emplace(t.ap_id[0] - 'A', t.ap_aidx);
     }
 
     // place first atom
-    int row = 0, col = 0;
-    auto comparePair = [](const auto& lhs, const auto& rhs) { return lhs.first > rhs.first; };
-    std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, decltype(comparePair)> pq(comparePair);
-    pq.emplace(0, first_atom_idx);
+    auto comparePair = [](const PriorityElement& lhs, const PriorityElement& rhs) { return lhs.dir > rhs.dir; };
+    std::priority_queue<PriorityElement, std::vector<PriorityElement>, decltype(comparePair)> pq(comparePair);
+    pq.emplace(0, first_atom_idx, 0, 0);
 
-    bool found_dead_end = false;
     int prev_atom_idx = -1;
+    // bfs algorythm for a graph
     while (pq.size())
     {
-        auto& top_element = pq.top();
-        int current_atom_idx = top_element.second;
+        const auto te = pq.top(); // top element
+        int current_atom_idx = te.atom_idx;
         vertices_visited[current_atom_idx] = 1; // mark as passed
-        auto& seq_element = _layout_sequence.at(col, row);
-        switch (top_element.first)
-        {
-        case 0:
-            seq_element.addLeft(col--, current_atom_idx);
-            break;
-        case 1:
-            seq_element.addRight(col++, current_atom_idx);
-            break;
-        default:
-            // go to next row
-            if (prev_atom_idx > -1)
-            {
-                const auto& v1 = _molecule.getAtomXyz(prev_atom_idx);
-                const auto& v2 = _molecule.getAtomXyz(current_atom_idx);
-                if (v2.y < v1.y)
-                    row--;
-                else
-                    row++;
-            }
-            _layout_sequence.at(col, row).addLeft(col, current_atom_idx);
-            break;
-        }
+        _layout_sequence[te.row][te.col] = current_atom_idx;
         prev_atom_idx = current_atom_idx;
-
         bool found_directions = false;
+        bool aready_visited = false;
         for (const auto& dir : directions_map[current_atom_idx])
         {
+            int col = te.col;
+            int row = te.row;
             // add to queue with priority. left, right, branch.
             if (vertices_visited[dir.second] == 0)
             {
-                pq.push(dir);
+                switch (dir.first)
+                {
+                case 0:
+                    col--; // go left
+                    break;
+                case 1:
+                    col++; // go right
+                    break;
+                default: // branch
+                    auto& v1 = _molecule.getAtomXyz(current_atom_idx);
+                    auto& v2 = _molecule.getAtomXyz(dir.second);
+                    row += v2.y < v1.y ? -1 : 1; // branch up or down?
+                    break;
+                }
+                pq.emplace(dir.first, dir.second, col, row);
                 found_directions = true;
             }
-            else if (!found_dead_end)
-            {
-                // cycle detected.
-            }
+            else
+                aready_visited = true;
         }
-        found_dead_end = !found_directions;
-        if (found_dead_end)
+        //if (aready_visited && !found_directions)
+        //{
+        //    std::cout << "sequence terminator" << std::endl;
+        //}
+        pq.pop();
+    }
+    auto row_it = _layout_sequence.begin();
+    auto col_it = row_it->second.begin();
+    int base_col = col_it->first;
+    int base_row = row_it->first;
+    const auto& origin = _molecule.getAtomXyz(col_it->second);
+    for (auto& row : _layout_sequence)
+    {
+        int y_int = row.first - base_row;
+        for (auto& col : row.second)
         {
-            pq.pop();
+            int x_int = col.first - base_col;
+            Vec3f v(MoleculeLayout::DEFAULT_BOND_LENGTH * x_int, MoleculeLayout::DEFAULT_BOND_LENGTH * y_int, 0);
+            _molecule.setAtomXyz(col.second, v);
         }
-    };
-}
-
-void SequenceLayout::setCancellationHandler(CancellationHandler* cancellation)
-{
+    }
 }

@@ -2124,10 +2124,11 @@ void MolfileLoader::_postLoad()
     for (auto idx : templates_to_remove)
         _bmol->tgroups.remove(idx);
 
-    if (_bmol->tgroups.getTGroupCount())
+    // fix layout
+    if (templates_to_remove.size() && _bmol->isSequence())
     {
-        // SequenceLayout sl(*_bmol);
-        // sl.make();
+        SequenceLayout sl(*_bmol);
+        //sl.make();
     }
 }
 

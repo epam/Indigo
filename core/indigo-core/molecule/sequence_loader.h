@@ -16,16 +16,12 @@
  * limitations under the License.
  ***************************************************************************/
 
-#ifndef __sequence_layout_h__
-#define __sequence_layout_h__
+#ifndef __sequence_loader__
+#define __sequence_loader__
 
-#include "base_cpp/cancellation_handler.h"
+#include "base_cpp/exception.h"
+#include "base_cpp/tlscont.h"
 #include "molecule/molecule.h"
-#include "molecule/query_molecule.h"
-
-#include <deque>
-#include <queue>
-#include <vector>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -34,31 +30,34 @@
 
 namespace indigo
 {
-    class DLLEXPORT SequenceLayout
+
+    class Scanner;
+    class BaseMolecule;
+    class Molecule;
+    class QueryMolecule;
+
+    class DLLEXPORT SequenceLoader
     {
     public:
-        struct PriorityElement
+        enum class SeqType
         {
-            PriorityElement(int dir, int atom_idx, int col, int row) : dir(dir), atom_idx(atom_idx), col(col), row(row)
-            {
-            }
-            int dir;
-            int atom_idx;
-            int col;
-            int row;
+            PEPTIDESeq,
+            RNASeq,
+            DNASeq
         };
-
-        static constexpr float DEFAULT_BOND_LENGTH = 1.6f;
-
-        explicit SequenceLayout(BaseMolecule& molecule);
-        void make();
-        void make(int first_atom_idx);
-
         DECL_ERROR;
 
-    protected:
-        BaseMolecule& _molecule;
-        std::map<int, std::map<int, int>> _layout_sequence;
+        SequenceLoader(Scanner& scanner);
+        ~SequenceLoader();
+
+        void loadSequence(Molecule& mol, SeqType sq);
+        Scanner& _scanner;
+
+    private:
+        void addAminoAcid(Molecule& mol, char ch);
+        void addRNANucleotide(Molecule& mol, char ch);
+        void addDNANucleotide(Molecule& mol, char ch);
+        SequenceLoader(const SequenceLoader&); // no implicit copy
     };
 
 } // namespace indigo

@@ -501,6 +501,7 @@ namespace indigo
         const char* getAlias(int atom_idx) const;
         void setAlias(int atom_idx, const char* alias);
         void removeAlias(int atom_idx);
+        bool isSequence();
 
         DECL_ERROR;
 

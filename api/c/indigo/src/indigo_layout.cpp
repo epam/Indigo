@@ -23,6 +23,7 @@
 #include "layout/molecule_cleaner_2d.h"
 #include "layout/molecule_layout.h"
 #include "layout/reaction_layout.h"
+#include "layout/sequence_layout.h"
 #include "reaction/base_reaction.h"
 #include <algorithm>
 #include <vector>
@@ -48,48 +49,56 @@ CEXPORT int indigoLayout(int object)
                     f.unhide(submol.vertices[i]);
                 }
             }
-            MoleculeLayout ml(*mol, self.smart_layout);
-
-            if (obj.type == IndigoObject::SUBMOLECULE)
+            if (mol->isSequence())
             {
-                ml.filter = &f;
+                SequenceLayout sl(*mol);
+                sl.make();
             }
-
-            ml.max_iterations = self.layout_max_iterations;
-            ml.bond_length = MoleculeLayout::DEFAULT_BOND_LENGTH;
-            ml.layout_orientation = (layout_orientation_value)self.layout_orientation;
-            if (mol->hasAtropoStereoBonds())
-                ml.respect_existing_layout = true;
-
-            TimeoutCancellationHandler cancellation(self.cancellation_timeout);
-            ml.setCancellationHandler(&cancellation);
-            ml.make();
-
-            if (obj.type != IndigoObject::SUBMOLECULE)
+            else
             {
-                mol->clearBondDirections();
-                try
-                {
-                    mol->markBondsStereocenters();
-                    mol->markBondsAlleneStereo();
-                }
-                catch (Exception e)
-                {
-                }
-                for (i = 1; i <= mol->rgroups.getRGroupCount(); i++)
-                {
-                    RGroup& rgp = mol->rgroups.getRGroup(i);
+                MoleculeLayout ml(*mol, self.smart_layout);
 
-                    for (int j = rgp.fragments.begin(); j != rgp.fragments.end(); j = rgp.fragments.next(j))
+                if (obj.type == IndigoObject::SUBMOLECULE)
+                {
+                    ml.filter = &f;
+                }
+
+                ml.max_iterations = self.layout_max_iterations;
+                ml.bond_length = MoleculeLayout::DEFAULT_BOND_LENGTH;
+                ml.layout_orientation = (layout_orientation_value)self.layout_orientation;
+                if (mol->hasAtropoStereoBonds())
+                    ml.respect_existing_layout = true;
+
+                TimeoutCancellationHandler cancellation(self.cancellation_timeout);
+                ml.setCancellationHandler(&cancellation);
+                ml.make();
+
+                if (obj.type != IndigoObject::SUBMOLECULE)
+                {
+                    mol->clearBondDirections();
+                    try
                     {
-                        rgp.fragments[j]->clearBondDirections();
-                        try
+                        mol->markBondsStereocenters();
+                        mol->markBondsAlleneStereo();
+                    }
+                    catch (Exception e)
+                    {
+                    }
+                    for (i = 1; i <= mol->rgroups.getRGroupCount(); i++)
+                    {
+                        RGroup& rgp = mol->rgroups.getRGroup(i);
+
+                        for (int j = rgp.fragments.begin(); j != rgp.fragments.end(); j = rgp.fragments.next(j))
                         {
-                            rgp.fragments[j]->markBondsStereocenters();
-                            rgp.fragments[j]->markBondsAlleneStereo();
-                        }
-                        catch (Exception e)
-                        {
+                            rgp.fragments[j]->clearBondDirections();
+                            try
+                            {
+                                rgp.fragments[j]->markBondsStereocenters();
+                                rgp.fragments[j]->markBondsAlleneStereo();
+                            }
+                            catch (Exception e)
+                            {
+                            }
                         }
                     }
                 }
