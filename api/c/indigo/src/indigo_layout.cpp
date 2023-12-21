@@ -116,6 +116,8 @@ CEXPORT int indigoLayout(int object)
                 rl.layout_orientation = (layout_orientation_value)self.layout_orientation;
                 rl.bond_length = MoleculeLayout::DEFAULT_BOND_LENGTH;
                 rl.horizontal_interval_factor = self.layout_horintervalfactor;
+                if (self.layout_preserve_existing)
+                    rl.preserve_molecule_layout = true;
                 rl.make();
                 try
                 {

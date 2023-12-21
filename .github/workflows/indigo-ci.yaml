@@ -1318,7 +1318,7 @@ jobs:
           path: utils/indigo-service/backend/lib/
       - name: Build
         run: docker build -f ./utils/indigo-service/backend/Dockerfile -t epmlsop/indigo-service:latest ./utils/indigo-service/backend
-      - name: Test Imago
+      - name: Test Imago & Indigo
         run: |
           docker run  --rm=true -d -p 8080:80 --name=indigo_service epmlsop/indigo-service:latest
           sleep 10
@@ -1326,6 +1326,7 @@ jobs:
           docker ps
           export INDIGO_SERVICE_URL=http://localhost:8080/v2
           python3 utils/indigo-service/backend/service/tests/api/imago_test.py
+          python3 utils/indigo-service/backend/service/tests/api/indigo_test.py
           docker logs indigo_service
           docker stop indigo_service
 # TODO: add indigo tests

@@ -159,7 +159,7 @@ void SmilesSaver::_saveMolecule()
             // From the SMILES specification:
             // Please note that only atoms on the following list
             // can be considered aromatic: C, N, O, P, S, As, Se, and * (wildcard).
-            static int allowed_lowercase[] = {ELEM_B, ELEM_C, ELEM_N, ELEM_O, ELEM_P, ELEM_S, ELEM_Se, ELEM_As};
+            static int allowed_lowercase[] = {ELEM_C, ELEM_N, ELEM_O, ELEM_P, ELEM_S, ELEM_Se, ELEM_As};
             if (_bmol->atomNumberBelongs(i, allowed_lowercase, NELEM(allowed_lowercase)))
                 _atoms[i].lowercase = true;
         }
@@ -819,8 +819,7 @@ void SmilesSaver::_writeAtom(int idx, bool aromatic, bool lowercase, int chirali
     if (inside_rsmiles)
         aam = _bmol->reaction_atom_mapping[idx];
 
-    if (atom_number != ELEM_C && atom_number != ELEM_P && atom_number != ELEM_N && atom_number != ELEM_S && atom_number != ELEM_O && atom_number != ELEM_Cl &&
-        atom_number != ELEM_F && atom_number != ELEM_Br && atom_number != ELEM_B && atom_number != ELEM_I)
+    if (!QueryMolecule::isOrganicSubset(atom_number))
         need_brackets = true;
 
     if (chirality > 0 || charge != 0 || isotope > 0 || aam > 0)

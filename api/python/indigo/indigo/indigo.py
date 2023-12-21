@@ -129,68 +129,41 @@ class Indigo:
             IndigoException: if option does not exist
         """
 
+        opt = option.encode()
         if (
-            (
-                type(value1).__name__ == "str"
-                or type(value1).__name__ == "unicode"
+            isinstance(value1, float)
+            and isinstance(value2, float)
+            and isinstance(value3, float)
+        ):
+            IndigoLib.checkResult(
+                self._lib().indigoSetOptionColor(opt, value1, value2, value3)
             )
-            and value2 is None
+        elif (
+            isinstance(value1, int)
+            and isinstance(value2, int)
             and value3 is None
         ):
             IndigoLib.checkResult(
-                self._lib().indigoSetOption(
-                    option.encode(),
-                    value1.encode(),
-                )
+                self._lib().indigoSetOptionXY(opt, value1, value2)
             )
-        elif (
-            type(value1).__name__ == "int"
-            and value2 is None
-            and value3 is None
-        ):
-            IndigoLib.checkResult(
-                self._lib().indigoSetOptionInt(option.encode(), value1)
-            )
-        elif (
-            type(value1).__name__ == "float"
-            and value2 is None
-            and value3 is None
-        ):
-            IndigoLib.checkResult(
-                self._lib().indigoSetOptionFloat(option.encode(), value1)
-            )
-        elif (
-            type(value1).__name__ == "bool"
-            and value2 is None
-            and value3 is None
-        ):
-            value1_b = 0
-            if value1:
-                value1_b = 1
-            IndigoLib.checkResult(
-                self._lib().indigoSetOptionBool(option.encode(), value1_b)
-            )
-        elif (
-            type(value1).__name__ == "int"
-            and value2
-            and type(value2).__name__ == "int"
-            and value3 is None
-        ):
-            IndigoLib.checkResult(
-                self._lib().indigoSetOptionXY(option.encode(), value1, value2)
-            )
-        elif (
-            type(value1).__name__ == "float"
-            and value2
-            and type(value2).__name__ == "float"
-            and value3
-            and type(value3).__name__ == "float"
-        ):
-            IndigoLib.checkResult(
-                self._lib().indigoSetOptionColor(
-                    option.encode(), value1, value2, value3
-                )
-            )
+        elif value2 is None and value3 is None:
+            if isinstance(value1, str):
+                setOpt = self._lib().indigoSetOption
+                value = value1.encode()
+            elif isinstance(value1, int):
+                setOpt = self._lib().indigoSetOptionInt
+                value = value1
+            elif isinstance(value1, float):
+                setOpt = self._lib().indigoSetOptionFloat
+                value = value1
+            elif isinstance(value1, bool):
+                value1 = 0
+                if value1:
+                    value1 = 1
+                setOpt = self._lib().indigoSetOptionBool
+            else:
+                raise IndigoException("bad option")
+            IndigoLib.checkResult(setOpt(opt, value))
         else:
             raise IndigoException("bad option")
 

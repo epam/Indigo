@@ -24777,7 +24777,7 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 	8 CN(C)[N] |^3:3| CN(C)[N] |^3:3|
 	1249 CN(C)[N] |^4:3| CN(C)[N] |^4:3|
 ** searchExact(N1(N=CC2=CC=CC=C2B1O)S(=O)(=O)C1SN=CC=1, '') **
-	9 [n]1(S(c2cc[n][s]2)(=O)=O)[b](O)c2c(cccc2)c[n]1 [n]1(S(c2cc[n][s]2)(=O)=O)[b](O)c2c(cccc2)c[n]1
+	9 [n]1(S(c2cc[n][s]2)(=O)=O):[B](O):c2c(cccc2)c[n]1 [n]1(S(c2cc[n][s]2)(=O)=O):[B](O):c2c(cccc2)c[n]1
 ** searchExact([C@]([H])(C)(I)F |&1:0,r|, '') **
 	10 [C@](F)(I)(C)[H] |&1:0,r| [C@](F)(I)(C)[H] |&1:0,r|
 	243 [C@@H](F)(I)C [C@@H](F)(I)C
@@ -24820,7 +24820,7 @@ Finished indexing 2026 structures. 304 wrong structures excluded
 	22 C[C+](C)O[C-](C)C C[C+](C)O[C-](C)C
 	893 CC(C)=[O+][C-](C)C CC(C)=[O+][C-](C)C
 ** searchExact(B1(OC)OB(OC)OB(OC)O1, '') **
-	23 [b]1(o[b](OC)o[b](OC)o1)OC [b]1(o[b](OC)o[b](OC)o1)OC
+	23 [B]1(:o:[B](OC):o:[B](OC):o:1)OC [B]1(:o:[B](OC):o:[B](OC):o:1)OC
 ** searchExact(N/C(/N)=N/N=C(\C)/C=N/NC(=N)N, '') **
 	24 N/C(=N/N=C(/C=N/NC(N)=N)\C)/N N/C(=N/N=C(/C=N/NC(N)=N)\C)/N
 	347 N=C(/N=N/C(=C/N/N=C(/N)\N)/C)N N=C(/N=N/C(=C/N/N=C(/N)\N)/C)N
