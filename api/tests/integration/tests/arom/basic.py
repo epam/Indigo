@@ -48,8 +48,8 @@ print("***** SMILES with special aromatic atoms *****")
 mols = [
     "[si]1(c(OC)c(c(C)cc1)c2ccccc2)OC",  # Cactvs: [si]
     "c1ccc2[as]c3ccccc3[siH]c2c1",
-    "c1ccc2[te]c3ccccc3[bH]c2c1",  # RDKit: [te]
-    "C[b]1o[b](C)o[b](C)o1",
+    "c1ccc2[te]c3ccccc3[BH]c2c1",  # RDKit: [te]
+    "C[B]1o[B](C)o[B](C)o1",
 ]
 for smiles in mols:
     print("***\n%s: " % (smiles))

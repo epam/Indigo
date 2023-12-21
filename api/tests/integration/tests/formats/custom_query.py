@@ -40,8 +40,8 @@ def test_ket_to_smarts(filename, expected_str):
 
 print("**** #1310 error at opening SMARTS with comma ****")
 test_smarts_to_ket(
-    "[#6]1-[#6]=[#6]-[#6]=[#6]-[b;r;3;s&2,X3]=1",
-    '"queryProperties":{"customQuery":"b;r;3;s&2,X3"}',
+    "[#6]1-[#6]=[#6]-[#6]=[#6]-[B;r;3;s&2,X3]=1",
+    '"queryProperties":{"customQuery":"B;r;3;s&2,X3"}',
 )
 print("**** #1331 wrong smarts for ring bond count as drawn ****")
 test_ket_to_smarts("ket_with_rb_as_drawn.ket", "[#6](-[#6])(-[#6;x0])-[#6]")

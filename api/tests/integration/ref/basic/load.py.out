@@ -45,7 +45,7 @@ scanner: appendLine(): end of stream
 ** 11 **
 molecule auto loader: SMILES loader: invalid character within atom description: '"'
 ** 12 **
-molecule auto loader: SMILES loader: unrecognized lowercase symbol: e
+molecule auto loader: SMILES loader: unrecognized lowercase symbol: b
 ** 13 **
 C1C=CC=CC=1
 ** 14 **
