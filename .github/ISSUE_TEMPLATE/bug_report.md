@@ -7,10 +7,10 @@ labels: Bug
 ---
 
 **Environment details  (please complete the following information):**
- - [Optional] Front-end version
  - Back-end version
-- [Optional] Chrome version
-- [Optional] OS version
+ - [Optional] Front-end version
+ - [Optional] Chrome version
+ - [Optional] OS version
 
 **Describe the bug**
 A clear and concise description of what the bug is.
