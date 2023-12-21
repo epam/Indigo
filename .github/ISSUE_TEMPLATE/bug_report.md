@@ -1,13 +1,13 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: "[Severity] Title"
+title: "Title"
 labels: Bug
 
 ---
 
 **Environment details  (please complete the following information):**
- - Front-end version
+ - [Optional] Front-end version
  - Back-end version
 - [Optional] Chrome version
 - [Optional] OS version
