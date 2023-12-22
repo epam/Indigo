@@ -755,12 +755,6 @@ def dearomatize():
         indigo=indigo,
     )
 
-    if md.is_query:
-        return get_error_response(
-            "Structures with query features cannot be dearomatized yet",
-            400,
-            data["json_output"],
-        )
     md.struct.dearomatize()
     return get_response(
         md,
