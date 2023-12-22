@@ -2167,9 +2167,9 @@ bool MolfileLoader::_expandNucleotide(int atom_idx, int tg_idx, std::unordered_m
     {
         if (_mol)
         {
-            auto& ph = nuc.at(NucleotideComponentType::Phosphate).get();
-            auto& sugar = nuc.at(NucleotideComponentType::Sugar).get();
-            auto& base = nuc.at(NucleotideComponentType::Base).get();
+            auto& ph = nuc.at(MonomerType::Phosphate).get();
+            auto& sugar = nuc.at(MonomerType::Sugar).get();
+            auto& base = nuc.at(MonomerType::Base).get();
             int seq_id = _mol->getTemplateAtomSeqid(atom_idx);
             // collect attachment points. only left attachment remains untouched.
             std::unordered_map<std::string, int> atp_map;

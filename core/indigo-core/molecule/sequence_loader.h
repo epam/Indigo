@@ -22,6 +22,7 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/molecule.h"
+#include "molecule/monomers_lib.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -50,14 +51,18 @@ namespace indigo
         SequenceLoader(Scanner& scanner);
         ~SequenceLoader();
 
-        void loadSequence(Molecule& mol, SeqType sq);
-        Scanner& _scanner;
+        void loadSequence(Molecule& mol, SeqType sqtype);
 
     private:
+        void addMonomer(Molecule& mol, char ch, SeqType sqtype);
+        void addTemplate(Molecule& mol, char ch, SeqType sqtype);
+
         void addAminoAcid(Molecule& mol, char ch);
         void addRNANucleotide(Molecule& mol, char ch);
         void addDNANucleotide(Molecule& mol, char ch);
         SequenceLoader(const SequenceLoader&); // no implicit copy
+        Scanner& _scanner;
+        std::unordered_set<std::pair<SeqType, char>, pair_hash> _added_templates;
     };
 
 } // namespace indigo
