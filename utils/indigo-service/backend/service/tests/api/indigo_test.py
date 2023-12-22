@@ -645,10 +645,10 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x
 
     def test_convert_smarts(self):
         smarts = [
-            "[#8]-[*]-C(-F)(-F)-F",
-            "[#6,H]",
-            "[H,H]",
-            "[F,Cl,Br,I,N&+,$([OH]-*=[!#6]),+;*]",
+            "[O]-[*]-[C](-[#9])(-[#9])-[#9]",
+            "[#6,#1]",
+            "[#1,#1]",
+            "[#9,#17,#35,#53,N&+,$([OH]-*=[!#6]),+;*]",
         ]
         results = []
         # results_get = []
