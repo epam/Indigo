@@ -856,6 +856,7 @@
         "classHELM": "PEPTIDE",
         "alias": "H",
         "name": "His",
+        "naturalAnalogShort": "H",
         "attachmentPoints": [
             {
                 "attachmentAtom": 5,
@@ -1091,6 +1092,7 @@
         "classHELM": "PEPTIDE",
         "alias": "A",
         "name": "Ala",
+        "naturalAnalogShort": "A",
         "attachmentPoints": [
             {
                 "attachmentAtom": 2,
@@ -1221,6 +1223,7 @@
         "classHELM": "PEPTIDE",
         "alias": "E",
         "name": "Glu",
+        "naturalAnalogShort": "E",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1434,6 +1437,7 @@
         "classHELM": "PEPTIDE",
         "alias": "G",
         "name": "Gly",
+        "naturalAnalogShort": "G",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1547,6 +1551,7 @@
         "classHELM": "PEPTIDE",
         "alias": "T",
         "name": "Thr",
+        "naturalAnalogShort": "T",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1732,6 +1737,7 @@
         "classHELM": "PEPTIDE",
         "alias": "F",
         "name": "Phe",
+        "naturalAnalogShort": "F",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1959,6 +1965,7 @@
         "classHELM": "PEPTIDE",
         "alias": "S",
         "name": "Ser",
+        "naturalAnalogShort": "S",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2127,6 +2134,7 @@
         "classHELM": "PEPTIDE",
         "alias": "D",
         "name": "Asp",
+        "naturalAnalogShort": "D",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2325,6 +2333,7 @@
         "classHELM": "PEPTIDE",
         "alias": "V",
         "name": "Val",
+        "naturalAnalogShort": "V",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2485,6 +2494,7 @@
         "classHELM": "PEPTIDE",
         "alias": "Y",
         "name": "Tyr",
+        "naturalAnalogShort": "Y",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2750,6 +2760,7 @@
         "classHELM": "PEPTIDE",
         "alias": "L",
         "name": "Leu",
+        "naturalAnalogShort": "L",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2925,6 +2936,7 @@
         "classHELM": "PEPTIDE",
         "alias": "Q",
         "name": "Gln",
+        "naturalAnalogShort": "Q",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3138,6 +3150,7 @@
         "classHELM": "PEPTIDE",
         "alias": "K",
         "name": "Lys",
+        "naturalAnalogShort": "K",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3351,6 +3364,7 @@
         "classHELM": "PEPTIDE",
         "alias": "I",
         "name": "Ile",
+        "naturalAnalogShort": "I",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3528,6 +3542,7 @@
         "classHELM": "PEPTIDE",
         "alias": "W",
         "name": "Trp",
+        "naturalAnalogShort": "W",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3830,6 +3845,7 @@
         "classHELM": "PEPTIDE",
         "alias": "R",
         "name": "Arg",
+        "naturalAnalogShort": "R",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
