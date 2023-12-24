@@ -2099,7 +2099,7 @@ void MolfileLoader::_postLoad()
         _bmol->transformSuperatomsToTemplates(_max_template_id);
 
     std::set<int> templates_to_remove;
-    std::unordered_map<NucleotideComponentKey, int, pair_hash> new_templates;
+    std::unordered_map<MonomerKey, int, pair_hash> new_templates;
     for (int atom_idx = _bmol->vertexBegin(); atom_idx != _bmol->vertexEnd(); atom_idx = _bmol->vertexNext(atom_idx))
     {
         if (_bmol->isTemplateAtom(atom_idx) && isNucleotideClass(_bmol->getTemplateAtomClass(atom_idx)))
@@ -2132,7 +2132,7 @@ void MolfileLoader::_postLoad()
     }
 }
 
-int MolfileLoader::_insertTemplate(MonomersLib::value_type& nuc, std::unordered_map<NucleotideComponentKey, int, pair_hash>& new_templates)
+int MolfileLoader::_insertTemplate(MonomersLib::value_type& nuc, std::unordered_map<MonomerKey, int, pair_hash>& new_templates)
 {
     auto it = new_templates.find(nuc.first);
     if (it != new_templates.end())
@@ -2140,19 +2140,13 @@ int MolfileLoader::_insertTemplate(MonomersLib::value_type& nuc, std::unordered_
     int tg_idx = _bmol->tgroups.addTGroup();
     auto& tg = _bmol->tgroups.getTGroup(tg_idx);
     // handle tgroup
-    const auto& class_str = MonomerTemplates::kNucleotideComponentTypeStr.at(nuc.first.first);
-    tg.tgroup_class.appendString(class_str.c_str(), true);
-    tg.tgroup_name.appendString(nuc.first.second.c_str(), true);
-    tg.tgroup_alias.appendString(monomerAliasByName(class_str, nuc.first.second).c_str(), true);
+    tg.copy( nuc.second );
     tg.tgroup_id = tg_idx;
-    tg.tgroup_natreplace.appendString(nuc.second.natreplace.c_str(), true);
-    tg.fragment.reset(nuc.second.monomer->neu());
-    tg.fragment->clone(*nuc.second.monomer);
     new_templates.emplace(nuc.first, tg_idx);
     return tg_idx;
 }
 
-bool MolfileLoader::_expandNucleotide(int atom_idx, int tg_idx, std::unordered_map<NucleotideComponentKey, int, pair_hash>& new_templates)
+bool MolfileLoader::_expandNucleotide(int nuc_atom_idx, int tg_idx, std::unordered_map<MonomerKey, int, pair_hash>& new_templates)
 {
     // get tgroup associated with atom_idx
     QS_DEF(Array<char>, left_apid);
@@ -2170,13 +2164,13 @@ bool MolfileLoader::_expandNucleotide(int atom_idx, int tg_idx, std::unordered_m
             auto& ph = nuc.at(MonomerType::Phosphate).get();
             auto& sugar = nuc.at(MonomerType::Sugar).get();
             auto& base = nuc.at(MonomerType::Base).get();
-            int seq_id = _mol->getTemplateAtomSeqid(atom_idx);
+            int seq_id = _mol->getTemplateAtomSeqid(nuc_atom_idx);
             // collect attachment points. only left attachment remains untouched.
             std::unordered_map<std::string, int> atp_map;
             for (int j = _mol->template_attachment_points.begin(); j != _mol->template_attachment_points.end(); j = _mol->template_attachment_points.next(j))
             {
                 auto& ap = _mol->template_attachment_points.at(j);
-                if (ap.ap_occur_idx == atom_idx && std::string(ap.ap_id.ptr()) > kLeftAttachmentPoint)
+                if (ap.ap_occur_idx == nuc_atom_idx && std::string(ap.ap_id.ptr()) > kLeftAttachmentPoint)
                 {
                     atp_map.emplace(ap.ap_id.ptr(), ap.ap_aidx);
                     _mol->template_attachment_points.remove(j);
@@ -2184,8 +2178,8 @@ bool MolfileLoader::_expandNucleotide(int atom_idx, int tg_idx, std::unordered_m
             }
 
             // patch existing nucleotide atom with phosphate
-            _mol->renameTemplateAtom(atom_idx, ph.first.second.c_str());
-            _mol->setTemplateAtomClass(atom_idx, MonomerTemplates::classToStr(ph.first.first).c_str());
+            _mol->renameTemplateAtom(nuc_atom_idx, ph.first.second.c_str());
+            _mol->setTemplateAtomClass(nuc_atom_idx, MonomerTemplates::classToStr(ph.first.first).c_str());
 
             // add sugar
             int sugar_idx = _mol->addAtom(-1);
@@ -2205,11 +2199,11 @@ bool MolfileLoader::_expandNucleotide(int atom_idx, int tg_idx, std::unordered_m
                 // nucleotide had Br attachment point. Now it should be moved to sugar.
                 //   disconnect right nucleotide
                 right_idx = right_it->second;
-                _mol->removeEdge(_mol->findEdgeIndex(atom_idx, right_idx));
+                _mol->removeEdge(_mol->findEdgeIndex(nuc_atom_idx, right_idx));
                 // connect right nucleotide to the sugar
                 _mol->addBond_Silent(sugar_idx, right_it->second, BOND_SINGLE);
                 // [sugar <- (Al) right nucleotide]
-                _mol->updateTemplateAtomAttachmentDestination(right_idx, atom_idx, sugar_idx);
+                _mol->updateTemplateAtomAttachmentDestination(right_idx, nuc_atom_idx, sugar_idx);
                 // [sugar (Br) -> right nucleotide]
                 _mol->setTemplateAtomAttachmentDestination(sugar_idx, right_idx, right_apid);
                 atp_map.erase(right_it);
@@ -2217,11 +2211,11 @@ bool MolfileLoader::_expandNucleotide(int atom_idx, int tg_idx, std::unordered_m
 
             for (auto& atp : atp_map)
             {
-                _mol->removeEdge(_mol->findEdgeIndex(atom_idx, atp.second));
+                _mol->removeEdge(_mol->findEdgeIndex(nuc_atom_idx, atp.second));
                 // connect branch to base. which is incorrect!!! TODO: use substructure matcher to determine right monomer!!!
                 _mol->addBond_Silent(base_idx, atp.second, BOND_SINGLE);
                 // [sugar <- (Al) right nucleotide]
-                _mol->updateTemplateAtomAttachmentDestination(atp.second, atom_idx, base_idx);
+                _mol->updateTemplateAtomAttachmentDestination(atp.second, nuc_atom_idx, base_idx);
                 // [sugar (Br) -> right nucleotide]
                 Array<char> att;
                 att.readString(atp.first.c_str(), true);
@@ -2229,11 +2223,11 @@ bool MolfileLoader::_expandNucleotide(int atom_idx, int tg_idx, std::unordered_m
             }
 
             // connect phosphate to the sugar
-            _mol->addBond_Silent(atom_idx, sugar_idx, BOND_SINGLE);
+            _mol->addBond_Silent(nuc_atom_idx, sugar_idx, BOND_SINGLE);
             // [phosphate (Br) -> sugar]
-            _mol->setTemplateAtomAttachmentDestination(atom_idx, sugar_idx, right_apid);
+            _mol->setTemplateAtomAttachmentDestination(nuc_atom_idx, sugar_idx, right_apid);
             // [phosphate <- (Al) sugar]
-            _mol->setTemplateAtomAttachmentDestination(sugar_idx, atom_idx, left_apid);
+            _mol->setTemplateAtomAttachmentDestination(sugar_idx, nuc_atom_idx, left_apid);
             // connect base to sugar
             _mol->addBond_Silent(sugar_idx, base_idx, BOND_SINGLE);
             // [sugar (Cx) -> base]
@@ -2242,9 +2236,9 @@ bool MolfileLoader::_expandNucleotide(int atom_idx, int tg_idx, std::unordered_m
             _mol->setTemplateAtomAttachmentDestination(base_idx, sugar_idx, left_apid);
             // fix coordinates
             Vec3f sugar_pos, base_pos;
-            if (!_bmol->getMiddlePoint(atom_idx, right_idx, sugar_pos))
+            if (!_bmol->getMiddlePoint(nuc_atom_idx, right_idx, sugar_pos))
             {
-                sugar_pos.copy(_bmol->getAtomXyz(atom_idx));
+                sugar_pos.copy(_bmol->getAtomXyz(nuc_atom_idx));
                 sugar_pos.x += MoleculeLayout::DEFAULT_BOND_LENGTH;
             }
             base_pos.copy(sugar_pos);
@@ -2252,11 +2246,11 @@ bool MolfileLoader::_expandNucleotide(int atom_idx, int tg_idx, std::unordered_m
             _bmol->setAtomXyz(sugar_idx, sugar_pos);
             _bmol->setAtomXyz(base_idx, base_pos);
             // set seqid
-            _mol->setTemplateAtomSeqid(atom_idx, seq_id++); // increment seq_id after phosphate
+            _mol->setTemplateAtomSeqid(nuc_atom_idx, seq_id++); // increment seq_id after phosphate
             _mol->setTemplateAtomSeqid(sugar_idx, seq_id);
             _mol->setTemplateAtomSeqid(base_idx, seq_id);
             // handle templates
-            _mol->setTemplateAtomTemplateIndex(atom_idx, _insertTemplate(ph, new_templates));
+            _mol->setTemplateAtomTemplateIndex(nuc_atom_idx, _insertTemplate(ph, new_templates));
             _mol->setTemplateAtomTemplateIndex(sugar_idx, _insertTemplate(sugar, new_templates));
             _mol->setTemplateAtomTemplateIndex(base_idx, _insertTemplate(base, new_templates));
             return true;

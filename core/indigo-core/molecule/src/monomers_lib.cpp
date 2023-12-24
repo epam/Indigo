@@ -89,13 +89,19 @@ namespace indigo
          {"U", "dU", "dUMP"},
          {{MonomerType::Base, "U"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}}};
 
-    const std::unordered_map<MonomerType, std::string> MonomerTemplates::kNucleotideComponentTypeStr = {
+    const std::unordered_map<MonomerType, std::string> MonomerTemplates::kMonomerTypeStr = {
         {MonomerType::Phosphate, kMonomerClassPHOSPHATE},
         {MonomerType::Sugar, kMonomerClassSUGAR},
         {MonomerType::Base, kMonomerClassBASE}, 
-        {MonomerType::AminoAcid, kMonomerClassAminoAcid},
+        {MonomerType::AminoAcid, kMonomerClassAA},
         {MonomerType::CHEM, kMonomerClassCHEM}
     };
+
+    const std::unordered_map<std::string, MonomerType> MonomerTemplates::kStrMonomerType = {{kMonomerClassSUGAR, MonomerType::Sugar},
+                                                                                            {kMonomerClassPHOSPHATE, MonomerType::Phosphate},
+                                                                                            {kMonomerClassBASE, MonomerType::Base},
+                                                                                            {kMonomerClassAA, MonomerType::AminoAcid},
+                                                                                            {kMonomerClassCHEM, MonomerType::CHEM}};
 
     const MonomerTemplates& MonomerTemplates::_instance()
     {
@@ -105,7 +111,7 @@ namespace indigo
 
     const std::string& MonomerTemplates::classToStr(MonomerType mon_type)
     {
-        return kNucleotideComponentTypeStr.at(mon_type);
+        return kMonomerTypeStr.at(mon_type);
     }
 
     bool MonomerTemplates::splitNucleotide(std::string nucleo_type, std::string alias, GranularNucleotide& splitted_nucleotide)
@@ -129,29 +135,27 @@ namespace indigo
         return false;
     }
 
-    bool MonomerTemplates::getNucleotideMonomer(MonomerType mon_type, std::string alias, BaseMolecule& bmol)
+    bool MonomerTemplates::getMonomerTemplate(MonomerType mon_type, std::string alias, TGroup& tgroup)
     {
         auto it = _instance()._monomers_lib.find(std::make_pair(mon_type, alias));
         if (it != _instance()._monomers_lib.end())
         {
-            bmol.clone(*it->second.monomer);
+            tgroup.copy(it->second.get());
             return true;
         }
         return false;
     }
 
-    bool MonomerTemplates::getNucleotideMonomer(std::string mon_type, std::string alias, BaseMolecule& bmol)
+    bool MonomerTemplates::getMonomerTemplate(std::string mon_type, std::string alias, TGroup& tgroup)
     {
-        auto ct_it = _instance()._component_types.find(mon_type);
-        if (ct_it != _instance()._component_types.end())
-            return getNucleotideMonomer(ct_it->first, alias, bmol);
+        auto ct_it = kStrMonomerType.find(mon_type);
+        if (ct_it != _instance().kStrMonomerType.end())
+            return getMonomerTemplate(ct_it->first, alias, tgroup);
         return false;
     }
 
     MonomerTemplates::MonomerTemplates()
-        : _component_types{{kMonomerClassSUGAR, MonomerType::Sugar},
-                           {kMonomerClassPHOSPHATE, MonomerType::Phosphate},
-                           {kMonomerClassBASE, MonomerType::Base}}
+        : _templates_mol(new Molecule())
     {
         initializeMonomers();
     }
@@ -161,27 +165,17 @@ namespace indigo
         // collect basic monomers
         using namespace rapidjson;
         Document data;
-        std::unordered_map<std::string, std::shared_ptr<BaseMolecule>> mol_map;
         if (!data.Parse(kMonomersBasicTemplates).HasParseError())
         {
-            std::unique_ptr<BaseMolecule> monomers_mol(new Molecule());
             MoleculeJsonLoader loader(data);
-            loader.loadMolecule(monomers_mol->asMolecule());
-            for (auto i = monomers_mol->tgroups.begin(); i != monomers_mol->tgroups.end(); i = monomers_mol->tgroups.next(i))
+            loader.loadMolecule(_templates_mol->asMolecule());
+            for (auto i = _templates_mol->tgroups.begin(); i != _templates_mol->tgroups.end(); i = _templates_mol->tgroups.next(i))
             {
-                std::shared_ptr<BaseMolecule> mon_mol(new Molecule());
-                auto& tg = monomers_mol->tgroups.getTGroup(i);
-                mon_mol->clone_KeepIndices(*tg.fragment);
-                mon_mol->asMolecule().setIgnoreBadValenceFlag(true);
-                //mol_map.emplace(tg.tgroup_text_id.ptr(), mon_mol);
+                auto& tg = _templates_mol->tgroups.getTGroup(i);
+                
+                _monomers_lib.emplace(MonomerKey(kStrMonomerType.at(tg.tgroup_class.ptr()), tg.tgroup_alias.ptr()),
+                                      std::ref(tg));
             }
-        }
-
-        for (const auto& desc : monomer_descriptors)
-        {
-            for (const auto& alias : desc.aliases)
-                _monomers_lib.emplace(std::make_pair(desc.monomer_type, alias),
-                                      MonomerTemplate{desc.monomer_type, desc.natreplace, mol_map.at(desc.template_id)});
         }
 
         // create nucleotides' mappings

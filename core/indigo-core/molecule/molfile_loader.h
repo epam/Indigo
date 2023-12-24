@@ -139,8 +139,8 @@ namespace indigo
 
         static int _asc_cmp_cb(int& v1, int& v2, void* context);
         void _postLoad();
-        bool _expandNucleotide(int atom_idx, int tg_idx, std::unordered_map<NucleotideComponentKey, int, pair_hash>& new_templates);
-        int _insertTemplate(MonomersLib::value_type& nuc, std::unordered_map<NucleotideComponentKey, int, pair_hash>& new_templates);
+        bool _expandNucleotide(int nuc_atom_idx, int tg_idx, std::unordered_map<MonomerKey, int, pair_hash>& new_templates);
+        int _insertTemplate(MonomersLib::value_type& nuc, std::unordered_map<MonomerKey, int, pair_hash>& new_templates);
 
         void _loadMolecule();
 

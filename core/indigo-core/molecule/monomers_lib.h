@@ -5,8 +5,8 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-
 #include "base_cpp/exception.h"
+#include "molecule/molecule.h"
 
 namespace indigo
 {
@@ -48,16 +48,16 @@ namespace indigo
         DNA
     };
 
-    struct MonomerTemplate
-    {
-        MonomerType comp_type;
-        std::string natreplace;
-        std::shared_ptr<BaseMolecule> monomer;
-    };
+    //struct MonomerTemplate
+    //{
+    //    MonomerType comp_type;
+    //    std::string natreplace;
+    //    std::shared_ptr<BaseMolecule> monomer;
+    //};
 
     using MonomerKey = std::pair<MonomerType, std::string>;
     using NucleotideKey = std::pair<NucleotideType, std::string>;
-    using MonomersLib = std::unordered_map<MonomerKey, MonomerTemplate, pair_hash>;
+    using MonomersLib = std::unordered_map<MonomerKey, std::reference_wrapper<TGroup>, pair_hash>;
     using GranularNucleotide = std::unordered_map<MonomerType, std::reference_wrapper<MonomersLib::value_type>>;
 
     // singleton MonomerTemplates class
@@ -72,19 +72,20 @@ namespace indigo
         MonomerTemplates& operator=(const MonomerTemplates&) = delete;
         MonomerTemplates& operator=(MonomerTemplates&&) = delete;
         static const MonomerTemplates& _instance();
-        static bool getNucleotideMonomer(MonomerType mon_type, std::string alias, BaseMolecule& bmol);
-        static bool getNucleotideMonomer(std::string mon_type, std::string alias, BaseMolecule& bmol);
+        static bool getMonomerTemplate(MonomerType mon_type, std::string alias, TGroup& tgroup);
+        static bool getMonomerTemplate(std::string mon_type, std::string alias, TGroup& tgroup);
         static bool splitNucleotide(NucleotideType nucleo_type, std::string alias, GranularNucleotide& splitted_nucleotide);
         static bool splitNucleotide(std::string nucleo_type, std::string alias, GranularNucleotide& splitted_nucleotide);
         static const std::string& classToStr(MonomerType mon_type);
-        static const std::unordered_map<MonomerType, std::string> kNucleotideComponentTypeStr;
+        static const std::unordered_map<MonomerType, std::string> kMonomerTypeStr;
+        static const std::unordered_map<std::string, MonomerType> kStrMonomerType;
 
     private:
         MonomerTemplates();
         void initializeMonomers();
         ~MonomerTemplates() = default;
         MonomersLib _monomers_lib;
-        std::unordered_map<std::string, MonomerType> _component_types;
+        std::unique_ptr<BaseMolecule> _templates_mol;
         std::unordered_map<NucleotideKey, GranularNucleotide, pair_hash> _nucleotides_lib;
         std::unordered_map<std::string, std::shared_ptr<BaseMolecule>> _aminoacids_lib;
     };
