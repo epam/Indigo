@@ -525,7 +525,7 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadSmartsFromString(
+                self._lib().indigoLoadSequenceFromString(
                     string.encode(), seq_type.encode()
                 )
             ),

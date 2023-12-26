@@ -1,0 +1,4 @@
+*** SEQUENCE to KET ***
+all_aminoacids.ket:SUCCEED
+rna_acgtu.ket:SUCCEED
+dna_acgtu.ket:SUCCEED
