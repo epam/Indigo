@@ -52,6 +52,9 @@ MolfileLoader::MolfileLoader(Scanner& scanner)
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
     treat_stereo_as = 0;
+    _left_apid.readString(kLeftAttachmentPoint, true);
+    _right_apid.readString(kRightAttachmentPoint, true);
+    _xlink_apid.readString(kBranchAttachmentPoint, true);
 }
 
 void MolfileLoader::loadMolecule(Molecule& mol)
@@ -2149,12 +2152,6 @@ int MolfileLoader::_insertTemplate(MonomersLib::value_type& nuc, std::unordered_
 bool MolfileLoader::_expandNucleotide(int nuc_atom_idx, int tg_idx, std::unordered_map<MonomerKey, int, pair_hash>& new_templates)
 {
     // get tgroup associated with atom_idx
-    QS_DEF(Array<char>, left_apid);
-    QS_DEF(Array<char>, right_apid);
-    QS_DEF(Array<char>, xlink_apid);
-    left_apid.readString(kLeftAttachmentPoint, true);
-    right_apid.readString(kRightAttachmentPoint, true);
-    xlink_apid.readString(kBranchAttachmentPoint, true);
     auto& tg = _bmol->tgroups.getTGroup(tg_idx);
     GranularNucleotide nuc;
     if (MonomerTemplates::splitNucleotide(tg.tgroup_class.ptr(), tg.tgroup_name.ptr(), nuc))
@@ -2205,7 +2202,7 @@ bool MolfileLoader::_expandNucleotide(int nuc_atom_idx, int tg_idx, std::unorder
                 // [sugar <- (Al) right nucleotide]
                 _mol->updateTemplateAtomAttachmentDestination(right_idx, nuc_atom_idx, sugar_idx);
                 // [sugar (Br) -> right nucleotide]
-                _mol->setTemplateAtomAttachmentDestination(sugar_idx, right_idx, right_apid);
+                _mol->setTemplateAtomAttachmentDestination(sugar_idx, right_idx, _right_apid);
                 atp_map.erase(right_it);
             }
 
@@ -2225,15 +2222,15 @@ bool MolfileLoader::_expandNucleotide(int nuc_atom_idx, int tg_idx, std::unorder
             // connect phosphate to the sugar
             _mol->addBond_Silent(nuc_atom_idx, sugar_idx, BOND_SINGLE);
             // [phosphate (Br) -> sugar]
-            _mol->setTemplateAtomAttachmentDestination(nuc_atom_idx, sugar_idx, right_apid);
+            _mol->setTemplateAtomAttachmentDestination(nuc_atom_idx, sugar_idx, _right_apid);
             // [phosphate <- (Al) sugar]
-            _mol->setTemplateAtomAttachmentDestination(sugar_idx, nuc_atom_idx, left_apid);
+            _mol->setTemplateAtomAttachmentDestination(sugar_idx, nuc_atom_idx, _left_apid);
             // connect base to sugar
             _mol->addBond_Silent(sugar_idx, base_idx, BOND_SINGLE);
             // [sugar (Cx) -> base]
-            _mol->setTemplateAtomAttachmentDestination(sugar_idx, base_idx, xlink_apid);
+            _mol->setTemplateAtomAttachmentDestination(sugar_idx, base_idx, _xlink_apid);
             // [sugar <- (Al) base]
-            _mol->setTemplateAtomAttachmentDestination(base_idx, sugar_idx, left_apid);
+            _mol->setTemplateAtomAttachmentDestination(base_idx, sugar_idx, _left_apid);
             // fix coordinates
             Vec3f sugar_pos, base_pos;
             if (!_bmol->getMiddlePoint(nuc_atom_idx, right_idx, sugar_pos))

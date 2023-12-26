@@ -1079,9 +1079,9 @@ std::string MoleculeJsonSaver::monomerId(const TGroup& tg)
 
 std::string MoleculeJsonSaver::monomerHELMClass(const std::string& class_name)
 {
-    if (kAminoClasses.find(class_name) != kAminoClasses.end())
+    if (isAminoAcidClass(class_name))
         return kMonomerClassPEPTIDE;
-    if (kNucleicClasses.find(class_name) != kNucleicClasses.end())
+    if (isNucleicClass(class_name))
         return kMonomerClassRNA;
     return kMonomerClassCHEM;
 }
@@ -1178,7 +1178,7 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     if (tg.tgroup_natreplace.size() == 0)
     {
         auto alias = monomerAlias(tg);
-        if (isBasicAminoAcid(template_class, alias))
+        if (isBasicAminoAcid(tg.tgroup_class.ptr(), alias))
             natreplace = alias;
     }
     else
@@ -1187,7 +1187,7 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     if (natreplace.size())
     {
         auto analog = naturalAnalog(natreplace);
-        auto nat_alias = monomerAliasByName(template_class, analog);
+        auto nat_alias = monomerAliasByName(tg.tgroup_class.ptr(), analog);
         writer.Key("naturalAnalogShort");
         writer.String(nat_alias.c_str());
         if (analog.size() > 1)

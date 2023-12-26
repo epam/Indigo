@@ -3219,7 +3219,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
     }
 
     if (su.sa_class.size() == 0)
-        su.sa_class.appendString(kMonomerClassCHEM.c_str(), true);
+        su.sa_class.appendString(kMonomerClassCHEM, true);
 
     int tg_idx = this->tgroups.addTGroup();
     TGroup& tg = this->tgroups.getTGroup(tg_idx);

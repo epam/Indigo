@@ -37,6 +37,7 @@ namespace indigo
     class DLLEXPORT SequenceLayout
     {
     public:
+        const int kRowSpacing = 4;
         struct PriorityElement
         {
             PriorityElement(int dir, int atom_idx, int col, int row) : dir(dir), atom_idx(atom_idx), col(col), row(row)
@@ -56,7 +57,8 @@ namespace indigo
 
         DECL_ERROR;
 
-    protected:
+    private:
+        bool preferBranch(TGroup& tg);
         BaseMolecule& _molecule;
         std::map<int, std::map<int, int>> _layout_sequence;
     };

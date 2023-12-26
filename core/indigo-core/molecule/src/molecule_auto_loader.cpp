@@ -37,6 +37,8 @@
 #include "molecule/query_molecule.h"
 #include "molecule/sdf_loader.h"
 #include "molecule/smiles_loader.h"
+#include "molecule/sequence_loader.h"
+#include "molecule/monomer_commons.h"
 
 using namespace indigo;
 
@@ -381,8 +383,47 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
     }
 
     // check for single line formats
+
     if (Scanner::isSingleLine(*_scanner))
     {
+        //for debug purposes: check for sequence
+        {
+            const std::string kPeptide = "PEPTIDE:";
+            const std::string kRNA = "RNA:";
+            const std::string kDNA = "DNA:";
+
+            long long start_pos = _scanner->tell();
+            if (_scanner->length() > kRNA.size())
+            {
+                std::vector<char> tag(kPeptide.size() + 1, 0);
+                _scanner->readCharsFix(kRNA.size(), tag.data());
+                SequenceLoader sl(*_scanner);
+                if (kRNA == tag.data())
+                {
+                    sl.loadSequence(mol, SequenceLoader::SeqType::RNASeq);
+                    return;
+                }
+                else if (kDNA == tag.data())
+                {
+                    sl.loadSequence(mol, SequenceLoader::SeqType::RNASeq);
+                    return;
+                }
+                else
+                {
+                    _scanner->seek(start_pos, SEEK_SET);
+                    if (_scanner->length() > kPeptide.size())
+                    {
+                        _scanner->readCharsFix(kPeptide.size(), tag.data());
+                        if (kPeptide == tag.data())
+                        {
+                            sl.loadSequence(mol, SequenceLoader::SeqType::PEPTIDESeq);
+                            return;
+                        }
+                    }
+                }
+            }
+            _scanner->seek(start_pos, SEEK_SET);
+        }
         // check for InChI format
         {
             char prefix[6] = {'\0'};

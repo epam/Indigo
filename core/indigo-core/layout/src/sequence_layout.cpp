@@ -18,6 +18,7 @@
 
 #include "layout/sequence_layout.h"
 #include "../layout/molecule_layout.h"
+#include "../molecule/monomer_commons.h"
 
 using namespace indigo;
 
@@ -40,6 +41,13 @@ void SequenceLayout::make()
     }
 }
 
+bool SequenceLayout::preferBranch(TGroup& tg)
+{
+    std::string tg_class(tg.tgroup_class.ptr());
+    bool res = isAminoAcidClass(tg_class) || tg_class == kMonomerClassSUGAR || tg_class == kMonomerClassPHOSPHATE;
+    return !res;
+}
+
 void SequenceLayout::make(int first_atom_idx)
 {
     auto atoms_num = _molecule.vertexCount();
@@ -51,7 +59,19 @@ void SequenceLayout::make(int first_atom_idx)
     {
         auto& t = _molecule.template_attachment_points[i];
         if (t.ap_id.size())
-            directions_map[t.ap_occur_idx].emplace(t.ap_id[0] - 'A', t.ap_aidx);
+        {
+            Array<char> atom_label;
+            _molecule.getAtomSymbol(t.ap_occur_idx, atom_label);
+            auto tg_idx = _molecule.tgroups.findTGroup(atom_label.ptr());
+            if (tg_idx != -1)
+            {
+                auto& tg = _molecule.tgroups.getTGroup(tg_idx);
+                int ap_id = t.ap_id[0] - 'A';
+                if (preferBranch(tg))
+                    ap_id += kBranchAttachmentPointIdx + 1;
+                directions_map[t.ap_occur_idx].emplace(ap_id, t.ap_aidx);
+            }
+        }
     }
 
     // place first atom
@@ -59,15 +79,14 @@ void SequenceLayout::make(int first_atom_idx)
     std::priority_queue<PriorityElement, std::vector<PriorityElement>, decltype(comparePair)> pq(comparePair);
     pq.emplace(0, first_atom_idx, 0, 0);
 
-    int prev_atom_idx = -1;
     // bfs algorythm for a graph
     while (pq.size())
     {
         const auto te = pq.top(); // top element
+        pq.pop();
         int current_atom_idx = te.atom_idx;
         vertices_visited[current_atom_idx] = 1; // mark as passed
         _layout_sequence[te.row][te.col] = current_atom_idx;
-        prev_atom_idx = current_atom_idx;
         bool found_directions = false;
         bool aready_visited = false;
         for (const auto& dir : directions_map[current_atom_idx])
@@ -75,20 +94,24 @@ void SequenceLayout::make(int first_atom_idx)
             int col = te.col;
             int row = te.row;
             // add to queue with priority. left, right, branch.
+            int row_spacing = kRowSpacing;
             if (vertices_visited[dir.second] == 0)
             {
                 switch (dir.first)
                 {
-                case 0:
+                case kLeftAttachmentPointIdx:
                     col--; // go left
                     break;
-                case 1:
+                case kRightAttachmentPointIdx:
                     col++; // go right
                     break;
+                case kBranchAttachmentPointIdx:
+                    row_spacing = 1;
+                    [[fallthrough]];
                 default: // branch
                     auto& v1 = _molecule.getAtomXyz(current_atom_idx);
                     auto& v2 = _molecule.getAtomXyz(dir.second);
-                    row += v2.y < v1.y ? -1 : 1; // branch up or down?
+                    row += v2.y < v1.y ? -row_spacing : row_spacing; // branch up or down?
                     break;
                 }
                 pq.emplace(dir.first, dir.second, col, row);
@@ -97,11 +120,6 @@ void SequenceLayout::make(int first_atom_idx)
             else
                 aready_visited = true;
         }
-        //if (aready_visited && !found_directions)
-        //{
-        //    std::cout << "sequence terminator" << std::endl;
-        //}
-        pq.pop();
     }
     auto row_it = _layout_sequence.begin();
     auto col_it = row_it->second.begin();

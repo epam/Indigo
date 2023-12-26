@@ -49,20 +49,27 @@ namespace indigo
         DECL_ERROR;
 
         SequenceLoader(Scanner& scanner);
+
         ~SequenceLoader();
 
-        void loadSequence(Molecule& mol, SeqType sqtype);
+        void loadSequence(BaseMolecule& mol, SeqType sqtype);
 
     private:
-        void addMonomer(Molecule& mol, char ch, SeqType sqtype);
-        void addTemplate(Molecule& mol, char ch, SeqType sqtype);
+        void addMonomer(BaseMolecule& mol, char ch, SeqType sqtype);
+        void addTemplate(BaseMolecule& mol, char ch, SeqType sqtype);
 
-        void addAminoAcid(Molecule& mol, char ch);
-        void addRNANucleotide(Molecule& mol, char ch);
-        void addDNANucleotide(Molecule& mol, char ch);
+        void addAminoAcid(BaseMolecule& mol, char ch);
+        void addNucleotide(BaseMolecule& mol, char ch, const std::string& sugar_alias);
+        bool addMonomerTemplate(BaseMolecule& mol, MonomerType mt, const std::string& alias);
         SequenceLoader(const SequenceLoader&); // no implicit copy
         Scanner& _scanner;
         std::unordered_set<std::pair<SeqType, char>, pair_hash> _added_templates;
+        const MonomerTemplates& _mon_lib;
+        Array<char> _left_apid;
+        Array<char> _right_apid;
+        Array<char> _xlink_apid;
+        int _seq_id;
+        int _last_sugar_idx;
     };
 
 } // namespace indigo

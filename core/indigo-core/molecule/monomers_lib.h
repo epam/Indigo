@@ -62,7 +62,7 @@ namespace indigo
 
     // singleton MonomerTemplates class
 
-    class MonomerTemplates
+    class DLLEXPORT MonomerTemplates
     {
         DECL_ERROR;
 
@@ -77,8 +77,7 @@ namespace indigo
         static bool splitNucleotide(NucleotideType nucleo_type, std::string alias, GranularNucleotide& splitted_nucleotide);
         static bool splitNucleotide(std::string nucleo_type, std::string alias, GranularNucleotide& splitted_nucleotide);
         static const std::string& classToStr(MonomerType mon_type);
-        static const std::unordered_map<MonomerType, std::string> kMonomerTypeStr;
-        static const std::unordered_map<std::string, MonomerType> kStrMonomerType;
+        static const std::unordered_map<std::string, MonomerType>& getStrToMonomerType();
 
     private:
         MonomerTemplates();

@@ -51,58 +51,6 @@ namespace indigo
         std::unordered_map<MonomerType, std::string> components;
     };
 
-    const std::vector<MonomerDescriptor> monomer_descriptors = {
-        {MonomerType::Phosphate, "P", {"P", "p"}, "P"},         {MonomerType::Sugar, "Rib", {"R", "Rib", "r"}, "R"},
-        {MonomerType::Sugar, "dRib", {"d", "dR", "dRib"}, "R"}, {MonomerType::Base, "Ade", {"A", "Ade"}, "A"},
-        {MonomerType::Base, "Cyt", {"C", "Cyt"}, "C"},          {MonomerType::Base, "Gua", {"G", "Gua"}, "G"},
-        {MonomerType::Base, "Thy", {"T", "Thy"}, "T"},          {MonomerType::Base, "Ura", {"U", "Ura"}, "U"}};
-
-    const std::vector<NucleotideDescriptor> nucleotide_descriptors = {
-        {NucleotideType::RNA,
-         {"A", "AMP"},
-         {{MonomerType::Base, "A"}, {MonomerType::Sugar, "R"}, {MonomerType::Phosphate, "P"}}},
-        {NucleotideType::RNA,
-         {"C", "CMP"},
-         {{MonomerType::Base, "C"}, {MonomerType::Sugar, "R"}, {MonomerType::Phosphate, "P"}}},
-        {NucleotideType::RNA,
-         {"G", "GMP"},
-         {{MonomerType::Base, "G"}, {MonomerType::Sugar, "R"}, {MonomerType::Phosphate, "P"}}},
-        {NucleotideType::RNA,
-         {"T", "TMP"},
-         {{MonomerType::Base, "T"}, {MonomerType::Sugar, "R"}, {MonomerType::Phosphate, "P"}}},
-        {NucleotideType::RNA,
-         {"U", "UMP"},
-         {{MonomerType::Base, "U"}, {MonomerType::Sugar, "R"}, {MonomerType::Phosphate, "P"}}},
-        {NucleotideType::DNA,
-         {"A", "dA", "dAMP"},
-         {{MonomerType::Base, "A"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}},
-        {NucleotideType::DNA,
-         {"C", "dC", "dCMP"},
-         {{MonomerType::Base, "C"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}},
-        {NucleotideType::DNA,
-         {"G", "dG", "dGMP"},
-         {{MonomerType::Base, "G"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}},
-        {NucleotideType::DNA,
-         {"T", "dT", "dTMP"},
-         {{MonomerType::Base, "T"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}},
-        {NucleotideType::DNA,
-         {"U", "dU", "dUMP"},
-         {{MonomerType::Base, "U"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}}};
-
-    const std::unordered_map<MonomerType, std::string> MonomerTemplates::kMonomerTypeStr = {
-        {MonomerType::Phosphate, kMonomerClassPHOSPHATE},
-        {MonomerType::Sugar, kMonomerClassSUGAR},
-        {MonomerType::Base, kMonomerClassBASE}, 
-        {MonomerType::AminoAcid, kMonomerClassAA},
-        {MonomerType::CHEM, kMonomerClassCHEM}
-    };
-
-    const std::unordered_map<std::string, MonomerType> MonomerTemplates::kStrMonomerType = {{kMonomerClassSUGAR, MonomerType::Sugar},
-                                                                                            {kMonomerClassPHOSPHATE, MonomerType::Phosphate},
-                                                                                            {kMonomerClassBASE, MonomerType::Base},
-                                                                                            {kMonomerClassAA, MonomerType::AminoAcid},
-                                                                                            {kMonomerClassCHEM, MonomerType::CHEM}};
-
     const MonomerTemplates& MonomerTemplates::_instance()
     {
         static MonomerTemplates instance;
@@ -111,6 +59,12 @@ namespace indigo
 
     const std::string& MonomerTemplates::classToStr(MonomerType mon_type)
     {
+        static const std::unordered_map<MonomerType, std::string> kMonomerTypeStr = {{MonomerType::Phosphate, kMonomerClassPHOSPHATE},
+                                                                                                {MonomerType::Sugar, kMonomerClassSUGAR},
+                                                                                                {MonomerType::Base, kMonomerClassBASE},
+                                                                                                {MonomerType::AminoAcid, kMonomerClassAA},
+                                                                                                {MonomerType::CHEM, kMonomerClassCHEM}};
+
         return kMonomerTypeStr.at(mon_type);
     }
 
@@ -135,6 +89,17 @@ namespace indigo
         return false;
     }
 
+    const std::unordered_map<std::string, MonomerType>& MonomerTemplates::getStrToMonomerType()
+    {
+        static const std::unordered_map<std::string, MonomerType> kStrMonomerType = {{kMonomerClassSUGAR, MonomerType::Sugar},
+                                                                                                {kMonomerClassPHOSPHATE, MonomerType::Phosphate},
+                                                                                                {kMonomerClassBASE, MonomerType::Base},
+                                                                                                {kMonomerClassAA, MonomerType::AminoAcid},
+                                                                                                {kMonomerClassCHEM, MonomerType::CHEM}};
+        return kStrMonomerType;
+    }
+
+
     bool MonomerTemplates::getMonomerTemplate(MonomerType mon_type, std::string alias, TGroup& tgroup)
     {
         auto it = _instance()._monomers_lib.find(std::make_pair(mon_type, alias));
@@ -148,8 +113,8 @@ namespace indigo
 
     bool MonomerTemplates::getMonomerTemplate(std::string mon_type, std::string alias, TGroup& tgroup)
     {
-        auto ct_it = kStrMonomerType.find(mon_type);
-        if (ct_it != _instance().kStrMonomerType.end())
+        auto ct_it = getStrToMonomerType().find(mon_type);
+        if (ct_it != _instance().getStrToMonomerType().end())
             return getMonomerTemplate(ct_it->first, alias, tgroup);
         return false;
     }
@@ -162,6 +127,18 @@ namespace indigo
 
     void MonomerTemplates::initializeMonomers()
     {
+        static const std::vector<NucleotideDescriptor> nucleotide_presets = {
+            {NucleotideType::RNA, {"A", "AMP"}, {{MonomerType::Base, "A"}, {MonomerType::Sugar, "R"}, {MonomerType::Phosphate, "P"}}},
+            {NucleotideType::RNA, {"C", "CMP"}, {{MonomerType::Base, "C"}, {MonomerType::Sugar, "R"}, {MonomerType::Phosphate, "P"}}},
+            {NucleotideType::RNA, {"G", "GMP"}, {{MonomerType::Base, "G"}, {MonomerType::Sugar, "R"}, {MonomerType::Phosphate, "P"}}},
+            {NucleotideType::RNA, {"T", "TMP"}, {{MonomerType::Base, "T"}, {MonomerType::Sugar, "R"}, {MonomerType::Phosphate, "P"}}},
+            {NucleotideType::RNA, {"U", "UMP"}, {{MonomerType::Base, "U"}, {MonomerType::Sugar, "R"}, {MonomerType::Phosphate, "P"}}},
+            {NucleotideType::DNA, {"A", "dA", "dAMP"}, {{MonomerType::Base, "A"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}},
+            {NucleotideType::DNA, {"C", "dC", "dCMP"}, {{MonomerType::Base, "C"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}},
+            {NucleotideType::DNA, {"G", "dG", "dGMP"}, {{MonomerType::Base, "G"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}},
+            {NucleotideType::DNA, {"T", "dT", "dTMP"}, {{MonomerType::Base, "T"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}},
+            {NucleotideType::DNA, {"U", "dU", "dUMP"}, {{MonomerType::Base, "U"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}}};
+
         // collect basic monomers
         using namespace rapidjson;
         Document data;
@@ -173,13 +150,13 @@ namespace indigo
             {
                 auto& tg = _templates_mol->tgroups.getTGroup(i);
                 
-                _monomers_lib.emplace(MonomerKey(kStrMonomerType.at(tg.tgroup_class.ptr()), tg.tgroup_alias.ptr()),
+                _monomers_lib.emplace(MonomerKey(getStrToMonomerType().at(tg.tgroup_class.ptr()), tg.tgroup_alias.ptr()),
                                       std::ref(tg));
             }
         }
 
         // create nucleotides' mappings
-        for (const auto& desc : nucleotide_descriptors)
+        for (const auto& desc : nucleotide_presets)
         {
             std::unordered_map<MonomerType, std::reference_wrapper<MonomersLib::value_type>> nucleotide_triplet;
             // iterate nucleotide components
