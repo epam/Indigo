@@ -525,7 +525,9 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadSmartsFromString(string.encode(), seq_type.encode())
+                self._lib().indigoLoadSmartsFromString(
+                    string.encode(), seq_type.encode()
+                )
             ),
         )
 
@@ -546,10 +548,11 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadSequenceFromFile(filename.encode(), seq_type.encode())
+                self._lib().indigoLoadSequenceFromFile(
+                    filename.encode(), seq_type.encode()
+                )
             ),
         )
-
 
     def loadReaction(self, string):
         """Loads reaction from string. Format will be automatically recognized.
