@@ -195,6 +195,10 @@ CEXPORT int indigoLoadSmartsFromString(const char* string);
 CEXPORT int indigoLoadSmartsFromFile(const char* filename);
 CEXPORT int indigoLoadSmartsFromBuffer(const char* buffer, int size);
 
+CEXPORT int indigoLoadSequence(int source, const char* seq_type);
+CEXPORT int indigoLoadSequenceFromString(const char* string, const char* seq_type);
+CEXPORT int indigoLoadSequenceFromFile(const char* filename, const char* seq_type);
+
 CEXPORT int indigoSaveMolfile(int molecule, int output);
 CEXPORT int indigoSaveMolfileToFile(int molecule, const char* filename);
 CEXPORT const char* indigoMolfile(int molecule);

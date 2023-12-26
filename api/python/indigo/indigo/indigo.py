@@ -508,6 +508,49 @@ class Indigo:
             ),
         )
 
+    def loadSequence(self, string, seq_type):
+        """Loads molecule from DNA/RNA/PEPTIDE sequence string
+
+        Args:
+            string (str): sequence string
+            seq_type (str): sequence type (RNA/DNA/PEPTIDE)
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadSmartsFromString(string.encode(), seq_type.encode())
+            ),
+        )
+
+    def loadSequenceFromFile(self, filename, seq_type):
+        """Loads query molecule from file in sequence format
+
+        Args:
+            filename (str): full path to the file with sequence string
+            seq_type (str): sequence type (RNA/DNA/PEPTIDE)
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadSequenceFromFile(filename.encode(), seq_type.encode())
+            ),
+        )
+
+
     def loadReaction(self, string):
         """Loads reaction from string. Format will be automatically recognized.
 

@@ -52,11 +52,12 @@ namespace indigo
 
         ~SequenceLoader();
 
-        void loadSequence(BaseMolecule& mol, SeqType sqtype);
+        void loadSequence(BaseMolecule& mol, SeqType seq_type);
+        void loadSequence(BaseMolecule& mol, const std::string& seq_type_str);
 
     private:
-        void addMonomer(BaseMolecule& mol, char ch, SeqType sqtype);
-        void addTemplate(BaseMolecule& mol, char ch, SeqType sqtype);
+        void addMonomer(BaseMolecule& mol, char ch, SeqType seq_type);
+        void addTemplate(BaseMolecule& mol, char ch, SeqType seq_type);
 
         void addAminoAcid(BaseMolecule& mol, char ch);
         void addNucleotide(BaseMolecule& mol, char ch, const std::string& sugar_alias);

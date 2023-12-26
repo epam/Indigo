@@ -77,6 +77,7 @@ void SequenceLayout::make(int first_atom_idx)
     // place first atom
     auto comparePair = [](const PriorityElement& lhs, const PriorityElement& rhs) { return lhs.dir > rhs.dir; };
     std::priority_queue<PriorityElement, std::vector<PriorityElement>, decltype(comparePair)> pq(comparePair);
+
     pq.emplace(0, first_atom_idx, 0, 0);
 
     // bfs algorythm for a graph

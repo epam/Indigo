@@ -37,6 +37,7 @@
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
 #include "molecule/smiles_saver.h"
+#include "molecule/sequence_loader.h"
 
 IndigoBaseMolecule::IndigoBaseMolecule(int type_) : IndigoObject(type_)
 {
@@ -521,6 +522,56 @@ CEXPORT int indigoLoadQueryMolecule(int source)
         molptr->copyProperties(loader.properties);
 
         return self.addObject(molptr.release());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadSequence(int source, const char* seq_type)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(source);
+        SequenceLoader loader(IndigoScanner::get(obj));
+
+        std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
+
+        Molecule& mol = molptr->mol;
+        loader.loadSequence(mol, seq_type);
+        return self.addObject(molptr.release());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadSequenceFromString(const char* string, const char* seq_type)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadString(string);
+        int result;
+
+        if (source <= 0)
+            return -1;
+
+        result = indigoLoadSequence(source, seq_type);
+        indigoFree(source);
+        return result;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadSequenceFromFile(const char* filename, const char* seq_type)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadFile(filename);
+        int result;
+
+        if (source < 0)
+            return -1;
+
+        result = indigoLoadSequence(source, seq_type);
+        indigoFree(source);
+        return result;
     }
     INDIGO_END(-1);
 }

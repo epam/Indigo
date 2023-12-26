@@ -23,6 +23,7 @@
 
 #include "base_cpp/scanner.h"
 #include "layout/sequence_layout.h"
+#include "layout/molecule_layout.h"
 #include "molecule/molecule.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/sequence_loader.h"
@@ -42,7 +43,19 @@ SequenceLoader::~SequenceLoader()
 {
 }
 
-void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType sqtype)
+void SequenceLoader::loadSequence(BaseMolecule& mol, const std::string& seq_type_str)
+{
+    if (seq_type_str == kMonomerClassDNA)
+        loadSequence(mol, SeqType::DNASeq);
+    else if (seq_type_str == kMonomerClassRNA)
+        loadSequence(mol, SeqType::RNASeq);
+    else if (seq_type_str == kMonomerClassPEPTIDE)
+        loadSequence(mol, SeqType::PEPTIDESeq);
+    else
+        throw Error("Bad sequence type: %s", seq_type_str.c_str());
+}
+
+void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
 {
     _seq_id = 0;
     _last_sugar_idx = -1;
@@ -50,37 +63,37 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType sqtype)
     while (!_scanner.isEOF())
     {
         auto ch = _scanner.readChar();
-        addMonomer(mol, ch, sqtype);
+        addMonomer(mol, ch, seq_type);
     }
     SequenceLayout sl(mol);
     sl.make();
 }
 
-void SequenceLoader::addTemplate(BaseMolecule& mol, char ch, SeqType sqtype)
+void SequenceLoader::addTemplate(BaseMolecule& mol, char ch, SeqType seq_type)
 {
     int tg_idx = mol.tgroups.addTGroup();
     auto& tg = mol.tgroups.getTGroup(tg_idx);
 
-    if (_mon_lib.getMonomerTemplate(sqtype == SeqType::PEPTIDESeq ? MonomerType::AminoAcid : MonomerType::Base, std::string(1, ch), tg))
+    if (_mon_lib.getMonomerTemplate(seq_type == SeqType::PEPTIDESeq ? MonomerType::AminoAcid : MonomerType::Base, std::string(1, ch), tg))
     {
         tg.tgroup_id = tg_idx;
-        _added_templates.emplace(sqtype, ch);
+        _added_templates.emplace(seq_type, ch);
     }
     else
         throw Error("Unknown sequence element: %c", ch);
 }
 
-void SequenceLoader::addMonomer(BaseMolecule& mol, char ch, SeqType sqtype)
+void SequenceLoader::addMonomer(BaseMolecule& mol, char ch, SeqType seq_type)
 {
-    if (_added_templates.find(std::make_pair(sqtype, ch)) == _added_templates.end())
-        addTemplate(mol, ch, sqtype);
+    if (_added_templates.find(std::make_pair(seq_type, ch)) == _added_templates.end())
+        addTemplate(mol, ch, seq_type);
 
     // add phosphate template
-    if (_seq_id == 1 && sqtype != SeqType::PEPTIDESeq)
+    if (_seq_id == 1 && seq_type != SeqType::PEPTIDESeq)
         addMonomerTemplate(mol, MonomerType::Phosphate, "P");
 
     _seq_id++;
-    switch (sqtype)
+    switch (seq_type)
     {
     case SeqType::PEPTIDESeq:
         addAminoAcid(mol, ch);
@@ -115,18 +128,20 @@ void SequenceLoader::addNucleotide(BaseMolecule& mol, char ch, const std::string
     if (_seq_id == 1)
         addMonomerTemplate(mol, MonomerType::Sugar, sugar_alias);
 
+    // add sugar
+    int sugar_idx = mol.asMolecule().addAtom(-1);
+    mol.asMolecule().setTemplateAtom(sugar_idx, sugar_alias.c_str());
+    mol.asMolecule().setTemplateAtomClass(sugar_idx, kMonomerClassSUGAR);
+    mol.asMolecule().setTemplateAtomSeqid(sugar_idx, _seq_id);
+
     // add base
     std::string nuc_base(1, ch);
     int nuc_base_idx = mol.asMolecule().addAtom(-1);
     mol.asMolecule().setTemplateAtom(nuc_base_idx, nuc_base.c_str());
     mol.asMolecule().setTemplateAtomClass(nuc_base_idx, kMonomerClassBASE);
     mol.asMolecule().setTemplateAtomSeqid(nuc_base_idx, _seq_id);
-
-    // add sugar
-    int sugar_idx = mol.asMolecule().addAtom(-1);
-    mol.asMolecule().setTemplateAtom(sugar_idx, sugar_alias.c_str());
-    mol.asMolecule().setTemplateAtomClass(sugar_idx, kMonomerClassSUGAR);
-    mol.asMolecule().setTemplateAtomSeqid(sugar_idx, _seq_id);
+    Vec3f base_coord(0, -MoleculeLayout::DEFAULT_BOND_LENGTH, 0);
+    mol.asMolecule().setAtomXyz(nuc_base_idx, base_coord);
 
     // connect sugar to nucleobase
     mol.asMolecule().addBond_Silent(sugar_idx, nuc_base_idx, BOND_SINGLE);

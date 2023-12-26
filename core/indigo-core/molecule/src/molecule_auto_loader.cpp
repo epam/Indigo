@@ -405,7 +405,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
                 }
                 else if (kDNA == tag.data())
                 {
-                    sl.loadSequence(mol, SequenceLoader::SeqType::RNASeq);
+                    sl.loadSequence(mol, SequenceLoader::SeqType::DNASeq);
                     return;
                 }
                 else
