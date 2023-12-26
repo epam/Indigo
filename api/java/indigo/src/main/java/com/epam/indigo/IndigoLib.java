@@ -117,6 +117,12 @@ public interface IndigoLib extends Library {
 
     int indigoLoadSmartsFromBuffer(byte[] buffer, int size);
 
+    int indigoLoadSequence(int source, String seq_type);
+
+    int indigoLoadSequenceFromString(String str, String seq_type);
+
+    int indigoLoadSequenceFromFile(String filename, String seq_type);
+
     int indigoLoadStructureFromString(String str, String params);
 
     int indigoLoadStructureFromFile(String filename, String params);
