@@ -33,12 +33,12 @@
 #include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_name_parser.h"
 #include "molecule/molfile_loader.h"
+#include "molecule/monomer_commons.h"
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "molecule/sdf_loader.h"
-#include "molecule/smiles_loader.h"
 #include "molecule/sequence_loader.h"
-#include "molecule/monomer_commons.h"
+#include "molecule/smiles_loader.h"
 
 using namespace indigo;
 
@@ -386,7 +386,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
 
     if (Scanner::isSingleLine(*_scanner))
     {
-        //for debug purposes: check for sequence
+        // for debug purposes: check for sequence
         {
             const std::string kPeptide = "PEPTIDE:";
             const std::string kRNA = "RNA:";

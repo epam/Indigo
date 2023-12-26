@@ -60,10 +60,10 @@ namespace indigo
     const std::string& MonomerTemplates::classToStr(MonomerType mon_type)
     {
         static const std::unordered_map<MonomerType, std::string> kMonomerTypeStr = {{MonomerType::Phosphate, kMonomerClassPHOSPHATE},
-                                                                                                {MonomerType::Sugar, kMonomerClassSUGAR},
-                                                                                                {MonomerType::Base, kMonomerClassBASE},
-                                                                                                {MonomerType::AminoAcid, kMonomerClassAA},
-                                                                                                {MonomerType::CHEM, kMonomerClassCHEM}};
+                                                                                     {MonomerType::Sugar, kMonomerClassSUGAR},
+                                                                                     {MonomerType::Base, kMonomerClassBASE},
+                                                                                     {MonomerType::AminoAcid, kMonomerClassAA},
+                                                                                     {MonomerType::CHEM, kMonomerClassCHEM}};
 
         return kMonomerTypeStr.at(mon_type);
     }
@@ -92,13 +92,12 @@ namespace indigo
     const std::unordered_map<std::string, MonomerType>& MonomerTemplates::getStrToMonomerType()
     {
         static const std::unordered_map<std::string, MonomerType> kStrMonomerType = {{kMonomerClassSUGAR, MonomerType::Sugar},
-                                                                                                {kMonomerClassPHOSPHATE, MonomerType::Phosphate},
-                                                                                                {kMonomerClassBASE, MonomerType::Base},
-                                                                                                {kMonomerClassAA, MonomerType::AminoAcid},
-                                                                                                {kMonomerClassCHEM, MonomerType::CHEM}};
+                                                                                     {kMonomerClassPHOSPHATE, MonomerType::Phosphate},
+                                                                                     {kMonomerClassBASE, MonomerType::Base},
+                                                                                     {kMonomerClassAA, MonomerType::AminoAcid},
+                                                                                     {kMonomerClassCHEM, MonomerType::CHEM}};
         return kStrMonomerType;
     }
-
 
     bool MonomerTemplates::getMonomerTemplate(MonomerType mon_type, std::string alias, TGroup& tgroup)
     {
@@ -119,8 +118,7 @@ namespace indigo
         return false;
     }
 
-    MonomerTemplates::MonomerTemplates()
-        : _templates_mol(new Molecule())
+    MonomerTemplates::MonomerTemplates() : _templates_mol(new Molecule())
     {
         initializeMonomers();
     }
@@ -149,9 +147,8 @@ namespace indigo
             for (auto i = _templates_mol->tgroups.begin(); i != _templates_mol->tgroups.end(); i = _templates_mol->tgroups.next(i))
             {
                 auto& tg = _templates_mol->tgroups.getTGroup(i);
-                
-                _monomers_lib.emplace(MonomerKey(getStrToMonomerType().at(tg.tgroup_class.ptr()), tg.tgroup_alias.ptr()),
-                                      std::ref(tg));
+
+                _monomers_lib.emplace(MonomerKey(getStrToMonomerType().at(tg.tgroup_class.ptr()), tg.tgroup_alias.ptr()), std::ref(tg));
             }
         }
 

@@ -30,8 +30,8 @@
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/ket_commons.h"
-#include "molecule/query_molecule.h"
 #include "molecule/monomers_lib.h"
+#include "molecule/query_molecule.h"
 
 namespace indigo
 {

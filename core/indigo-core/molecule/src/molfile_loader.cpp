@@ -21,6 +21,7 @@
 #include "../layout/molecule_layout.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
+#include "layout/sequence_layout.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_3d_constraints.h"
@@ -30,7 +31,6 @@
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
-#include "layout/sequence_layout.h"
 
 #define STRCMP(a, b) strncmp((a), (b), strlen(b))
 
@@ -2131,7 +2131,7 @@ void MolfileLoader::_postLoad()
     if (templates_to_remove.size() && _bmol->isSequence())
     {
         SequenceLayout sl(*_bmol);
-        //sl.make();
+        // sl.make();
     }
 }
 
@@ -2143,7 +2143,7 @@ int MolfileLoader::_insertTemplate(MonomersLib::value_type& nuc, std::unordered_
     int tg_idx = _bmol->tgroups.addTGroup();
     auto& tg = _bmol->tgroups.getTGroup(tg_idx);
     // handle tgroup
-    tg.copy( nuc.second );
+    tg.copy(nuc.second);
     tg.tgroup_id = tg_idx;
     new_templates.emplace(nuc.first, tg_idx);
     return tg_idx;

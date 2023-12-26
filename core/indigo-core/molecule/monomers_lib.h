@@ -1,12 +1,12 @@
 #ifndef __monomers_lib__
 #define __monomers_lib__
 
+#include "base_cpp/exception.h"
+#include "molecule/molecule.h"
 #include <map>
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include "base_cpp/exception.h"
-#include "molecule/molecule.h"
 
 namespace indigo
 {
@@ -48,12 +48,12 @@ namespace indigo
         DNA
     };
 
-    //struct MonomerTemplate
+    // struct MonomerTemplate
     //{
-    //    MonomerType comp_type;
-    //    std::string natreplace;
-    //    std::shared_ptr<BaseMolecule> monomer;
-    //};
+    //     MonomerType comp_type;
+    //     std::string natreplace;
+    //     std::shared_ptr<BaseMolecule> monomer;
+    // };
 
     using MonomerKey = std::pair<MonomerType, std::string>;
     using NucleotideKey = std::pair<NucleotideType, std::string>;

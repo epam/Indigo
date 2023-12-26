@@ -22,8 +22,8 @@
 #include <unordered_set>
 
 #include "base_cpp/scanner.h"
-#include "layout/sequence_layout.h"
 #include "layout/molecule_layout.h"
+#include "layout/sequence_layout.h"
 #include "molecule/molecule.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/sequence_loader.h"

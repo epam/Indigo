@@ -35,9 +35,9 @@
 #include "molecule/molecule_name_parser.h"
 #include "molecule/molecule_savers.h"
 #include "molecule/query_molecule.h"
+#include "molecule/sequence_loader.h"
 #include "molecule/smiles_loader.h"
 #include "molecule/smiles_saver.h"
-#include "molecule/sequence_loader.h"
 
 IndigoBaseMolecule::IndigoBaseMolecule(int type_) : IndigoObject(type_)
 {

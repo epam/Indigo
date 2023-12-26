@@ -81,7 +81,6 @@ namespace indigo
         Array<char> _right_apid;
         Array<char> _xlink_apid;
 
-
         CP_DECL;
         TL_CP_DECL(Array<int>, _stereo_care_atoms);
         TL_CP_DECL(Array<int>, _stereo_care_bonds);
