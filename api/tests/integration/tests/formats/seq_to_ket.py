@@ -23,13 +23,17 @@ print("*** SEQUENCE to KET ***")
 ref_path = joinPathPy("ref/", __file__)
 
 seq_tests = [
-    {"seq_type": "PEPTIDE", "seq_data": "ACDEFGHIKLMNOPQRSRUVWY", "ref": "all_aminoacids"},
+    {
+        "seq_type": "PEPTIDE",
+        "seq_data": "ACDEFGHIKLMNOPQRSRUVWY",
+        "ref": "all_aminoacids",
+    },
     {"seq_type": "RNA", "seq_data": "ACGTU", "ref": "rna_acgtu"},
     {"seq_type": "DNA", "seq_data": "ACGTU", "ref": "dna_acgtu"},
 ]
 
 for seq in seq_tests:
-    mol = indigo.loadSequence( seq["seq_data"], seq["seq_type"] )
+    mol = indigo.loadSequence(seq["seq_data"], seq["seq_type"])
     filename = seq["ref"]
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
     #     file.write(mol.json())
