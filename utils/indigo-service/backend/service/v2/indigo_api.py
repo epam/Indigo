@@ -317,10 +317,10 @@ def load_moldata(
             )
     md = MolData()
 
-    if "input-format" in options and options["input-format"] in (
-        "smarts",
-        "chemical/x-daylight-smarts",
-    ):
+    input_format = mime_type
+    if "input-format" in options:
+        input_format = options["input-format"]
+    if input_format in ("smarts", "chemical/x-daylight-smarts"):
         md.struct = indigo.loadSmarts(molstr)
         md.is_query = True
     elif molstr.startswith("InChI"):
