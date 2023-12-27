@@ -24,6 +24,9 @@ class InputFormatSchema(Schema):
         "chemical/x-cdxml",
         "chemical/x-cdx",
         "chemical/x-sdf",
+        "chemical/x-peptide-sequence",
+        "chemical/x-rna-sequence",
+        "chemical/x-dna-sequence",
     )
     input_format = fields.Str(missing=None, validate=OneOf(struct_mime_types))
 
