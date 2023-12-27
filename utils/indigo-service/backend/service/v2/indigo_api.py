@@ -323,15 +323,15 @@ def load_moldata(
     if input_format in ("smarts", "chemical/x-daylight-smarts"):
         md.struct = indigo.loadSmarts(molstr)
         md.is_query = True
-    elif input_format in ("chemical/x-peptide-sequence"):
+    elif input_format == "chemical/x-peptide-sequence":
         md.struct = indigo.loadSequence(molstr, "PEPTIDE")
         md.is_rxn = False
         md.is_query = False
-    elif input_format in ("chemical/x-rna-sequence"):
+    elif input_format == "chemical/x-rna-sequence":
         md.struct = indigo.loadSequence(molstr, "RNA")
         md.is_rxn = False
         md.is_query = False
-    elif input_format in ("chemical/x-dna-sequence"):
+    elif input_format == "chemical/x-dna-sequence":
         md.struct = indigo.loadSequence(molstr, "DNA")
         md.is_rxn = False
         md.is_query = False
