@@ -3015,6 +3015,30 @@ M  END
             "C([H])([H])([H])C([H])([H])[H]", result_data["struct"]
         )
 
+    def test_convert_peptide(self):
+        peptide = ""
+        results = []
+        # results_get = []
+        for mol in smarts:
+            params = {
+                "struct": mol,
+                "input_format": "chemical/x-daylight-smarts",
+                "output_format": "chemical/x-daylight-smarts",
+            }
+            headers, data = self.get_headers(params)
+            result = requests.post(
+                self.url_prefix + "/convert", headers=headers, data=data
+            )
+            self.assertEqual(200, result.status_code)
+            result_data = json.loads(result.text)
+            results.append(result_data["struct"])
+
+            # result = requests.get(self.url_prefix + "/convert", params=params)
+            # self.assertEqual(200, result.status_code)
+            # results_get.append(result.text)
+
+        self.assertEqual(smarts, results)
+        # self.assertEqual(smarts, results_get)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2, warnings="ignore")

@@ -117,8 +117,8 @@ void SequenceLoader::addAminoAcid(BaseMolecule& mol, char ch)
     if (_seq_id > 1)
     {
         mol.asMolecule().addBond_Silent(amino_idx - 1, amino_idx, BOND_SINGLE);
-        mol.setTemplateAtomAttachmentDestination(amino_idx - 1, amino_idx, _left_apid);
-        mol.setTemplateAtomAttachmentDestination(amino_idx, amino_idx - 1, _right_apid);
+        mol.setTemplateAtomAttachmentDestination(amino_idx - 1, amino_idx, _right_apid);
+        mol.setTemplateAtomAttachmentDestination(amino_idx, amino_idx - 1, _left_apid);
     }
 }
 
