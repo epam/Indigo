@@ -777,6 +777,54 @@ M  END
         });
     }
 
+    // RNA/DNA/PEPTIDE
+    {
+        test("PEPTIDE", "basic", () => {
+            let options = new indigo.MapStringString();
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-peptide-sequence");
+            const peptide_seq = "ACDEFGHIKLMNOPQRSRUVWY";
+            const peptide_ket = indigo.convert(peptide_seq, "ket", options);
+            var fs = require('fs');
+            // fs.writeFileSync("peptide_ref.ket", peptide_ket);
+            const peptide_ket_ref = fs.readFileSync("peptide_ref.ket");
+            assert.equal(peptide_ket, peptide_ket_ref.toString());
+            options.delete();
+        });
+    }
+
+    {
+        test("RNA", "basic", () => {
+            let options = new indigo.MapStringString();
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-rna-sequence");
+            const rna_seq = "ACGTU";
+            const rna_ket = indigo.convert(rna_seq, "ket", options);
+            var fs = require('fs');
+            // fs.writeFileSync("rna_ref.ket", rna_ket);
+            const rna_ket_ref = fs.readFileSync("rna_ref.ket");
+            assert.equal(rna_ket, rna_ket_ref.toString());
+            options.delete();
+        });
+
+    }
+
+    {
+        test("DNA", "basic", () => {
+            let options = new indigo.MapStringString();
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-dna-sequence");
+            const dna_seq = "ACGTU";
+            const dna_ket = indigo.convert(dna_seq, "ket", options);
+            var fs = require('fs');
+            // fs.writeFileSync("dna_ref.ket", dna_ket);
+            const dna_ket_ref = fs.readFileSync("dna_ref.ket");
+            assert.equal(dna_ket, dna_ket_ref.toString());
+            options.delete();
+        });
+
+    }
+
     // Run tests
     run();
 });
