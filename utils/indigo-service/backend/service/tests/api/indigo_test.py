@@ -3040,5 +3040,6 @@ M  END
         self.assertEqual(smarts, results)
         # self.assertEqual(smarts, results_get)
 
+
 if __name__ == "__main__":
     unittest.main(verbosity=2, warnings="ignore")
