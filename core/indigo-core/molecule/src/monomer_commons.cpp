@@ -44,6 +44,16 @@ namespace indigo
         return "";
     }
 
+    bool isBasicAminoAcid(const std::string& monomer_class, const std::string& alias)
+    {
+        if (isAminoAcidClass(monomer_class))
+        {
+            auto it = kAliasToAminoAcid.find(alias);
+            return it != kAliasToAminoAcid.end();
+        }
+        return false;
+    }
+
     std::string monomerNameByAlias(const std::string& monomer_class, const std::string& alias)
     {
         if (isAminoAcidClass(monomer_class))
