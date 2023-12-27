@@ -543,19 +543,19 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x
         self.assertEqual("C1C=CC=CC=1.C1C=CC=CC=1", result_data["struct"])
 
     def test_dearomatize_query_molecule(self):
+        headers, data = self.get_headers(
+            {
+                "struct": "c1ccccc1.c1ccccc1",
+                "input_format": "chemical/x-daylight-smiles",
+                "output_format": "chemical/x-daylight-smiles",
+            }
+        )
         result = requests.post(
-            self.url_prefix + "/dearomatize",
-            headers={
-                "Content-Type": "chemical/x-daylight-smiles",
-                "Accept": "chemical/x-daylight-smiles",
-            },
-            data="CX",
+            self.url_prefix + "/dearomatize", headers=headers, data=data
         )
-        self.assertEqual(400, result.status_code)
-        self.assertEqual(
-            "Structures with query features cannot be dearomatized yet",
-            result.text,
-        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual("C1C=CC=CC=1.C1C=CC=CC=1", result_data["struct"])
 
     def test_convert_correct(self):
         formats = (

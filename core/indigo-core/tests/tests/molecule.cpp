@@ -19,11 +19,13 @@
 #include <gtest/gtest.h>
 
 #include <base_cpp/output.h>
+#include <base_cpp/scanner.h>
 #include <molecule/crippen.h>
 #include <molecule/hybridization.h>
 #include <molecule/lipinski.h>
 #include <molecule/molecule_mass.h>
 #include <molecule/smiles_loader.h>
+#include <molecule/smiles_saver.h>
 #include <molecule/tpsa.h>
 
 #include "common.h"
@@ -318,4 +320,35 @@ TEST_F(IndigoCoreMoleculeTest, atom_reorder_nonquery)
     Molecule molecule;
     loadMolecule("SC(=N)O |$R1;;;OH$|", molecule);
     EXPECT_STREQ("SC(O)=N |$R1;;OH;$|", smiles(molecule).c_str());
+}
+
+TEST_F(IndigoCoreMoleculeTest, dearomatize_query)
+{
+    QueryMolecule molecule;
+    AromaticityOptions opts;
+    loadQueryMolecule("c1ccccc1", molecule);
+    bool res = molecule.dearomatize(opts);
+    EXPECT_EQ(res, true);
+    std::string sm = smiles(molecule);
+    // printf("%s", sm.c_str());
+    EXPECT_STREQ("C1C=CC=CC=1", sm.c_str());
+}
+
+TEST_F(IndigoCoreMoleculeTest, dearomatize_smarts)
+{
+    QueryMolecule molecule;
+    AromaticityOptions opts;
+    std::string mol = "c1ccccc1";
+    BufferScanner scanner(mol.c_str());
+    SmilesLoader loader(scanner);
+    loader.loadSMARTS(molecule);
+    bool res = molecule.dearomatize(opts);
+    EXPECT_EQ(res, true);
+    std::string sm;
+    StringOutput out(sm);
+    SmilesSaver saver(out);
+    saver.smarts_mode = true;
+    saver.saveQueryMolecule(molecule);
+    // printf("%s", sm.c_str());
+    EXPECT_STREQ("[#6]1-[#6]=[#6]-[#6]=[#6]-[#6]=1", sm.c_str());
 }

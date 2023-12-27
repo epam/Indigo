@@ -342,6 +342,7 @@ namespace indigo
         void getBondDescription(int idx, Array<char>& description) override;
         bool possibleBondOrder(int idx, int order) override;
 
+        bool possibleAromaticBond(int idx);
         bool possibleNitrogenV5(int idx);
 
         static std::string getSmartsBondStr(QueryMolecule::Bond* bond);
@@ -378,6 +379,7 @@ namespace indigo
         static Bond* getBondOrderTerm(Bond& qb, bool& complex);
         static bool isOrBond(Bond& qb, int type1, int type2);
         static bool isSingleOrDouble(Bond& qb);
+        static bool isSmartsEmptyBond(Bond& qb);
         static int getQueryBondType(Bond& qb);
         static int getQueryBondType(Bond& qb, int& direction, bool& negative);
         static int getAtomType(const char* label);
