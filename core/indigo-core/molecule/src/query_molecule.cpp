@@ -794,7 +794,8 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
     }
 
     case ATOM_PSEUDO: {
-        output.writeString(atom->alias.ptr());
+        // output.writeString(atom->alias.ptr());
+        output.writeChar('*');
         break;
     }
 
