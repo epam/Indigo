@@ -3015,13 +3015,6 @@ M  END
             "C([H])([H])([H])C([H])([H])[H]", result_data["struct"]
         )
 
-    def joinPathPy(args, file_py):
-        return os.path.normpath(
-            os.path.abspath(
-                os.path.join(os.path.abspath(os.path.dirname(file_py)), args)
-            )
-        ).replace("\\", "/")
-
     def test_convert_sequences(self):
         headers, data = self.get_headers(
             {
@@ -3053,6 +3046,14 @@ M  END
         result_peptide = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
+
+        def joinPathPy(args, file_py):
+            return os.path.normpath(
+                os.path.abspath(
+                    os.path.join(os.path.abspath(os.path.dirname(file_py)), args)
+                )
+            ).replace("\\", "/")
+
         ref_path = joinPathPy("ref/", __file__)
         with open(os.path.join(ref_path, "rna_ref") + ".ket", "r") as file:
             rna_ref = file.read()
