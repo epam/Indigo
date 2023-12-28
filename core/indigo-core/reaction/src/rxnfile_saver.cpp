@@ -28,7 +28,7 @@ using namespace indigo;
 
 IMPL_ERROR(RxnfileSaver, "Rxnfile saver");
 
-RxnfileSaver::RxnfileSaver(Output& output) : _output(output)
+RxnfileSaver::RxnfileSaver(Output& output) : _output(output), add_mrv_sma(true)
 {
     molfile_saving_mode = MolfileSaver::MODE_AUTO;
     skip_date = false;
@@ -95,6 +95,7 @@ void RxnfileSaver::_saveReaction()
     molfileSaver.mode = _v2000 ? MolfileSaver::MODE_2000 : MolfileSaver::MODE_3000;
     molfileSaver.add_stereo_desc = add_stereo_desc;
     molfileSaver.add_implicit_h = add_implicit_h;
+    molfileSaver.add_mrv_sma = add_mrv_sma;
 
     _writeRxnHeader(*_brxn);
 

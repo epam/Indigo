@@ -41,7 +41,7 @@ IMPL_ERROR(MolfileSaver, "molfile saver");
 
 CP_DEF(MolfileSaver);
 
-MolfileSaver::MolfileSaver(Output& output) : _output(output), CP_INIT, TL_CP_GET(_atom_mapping), TL_CP_GET(_bond_mapping)
+MolfileSaver::MolfileSaver(Output& output) : _output(output), CP_INIT, TL_CP_GET(_atom_mapping), TL_CP_GET(_bond_mapping), add_mrv_sma(true)
 {
     mode = MODE_AUTO;
     no_chiral = false;
@@ -1549,7 +1549,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         output.writeCR();
     }
 
-    if (qmol)
+    if (qmol && add_mrv_sma)
     {
         for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
         {

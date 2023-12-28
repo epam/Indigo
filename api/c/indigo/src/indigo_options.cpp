@@ -290,6 +290,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerBool("json-saving-add-stereo-desc", SETTER_GETTER_BOOL_OPTION(indigo.json_saving_add_stereo_desc));
     mgr->setOptionHandlerBool("json-saving-pretty", SETTER_GETTER_BOOL_OPTION(indigo.json_saving_pretty));
     mgr->setOptionHandlerBool("molfile-saving-add-implicit-h", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_implicit_h));
+    mgr->setOptionHandlerBool("molfile-saving-add-mrv-sma", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_mrv_sma));
     mgr->setOptionHandlerBool("smiles-saving-write-name", SETTER_GETTER_BOOL_OPTION(indigo.smiles_saving_write_name));
     mgr->setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding, indigoGetFilenameEncoding);
     mgr->setOptionHandlerInt("fp-ord-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.ord_qwords));
