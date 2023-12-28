@@ -1178,7 +1178,7 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     if (tg.tgroup_natreplace.size() == 0)
     {
         auto alias = monomerAlias(tg);
-        if (isBasicAminoAcid(tg.tgroup_class.ptr(), alias))
+        if (isBasicAminoAcid(template_class, alias))
             natreplace = alias;
     }
     else
@@ -1187,7 +1187,7 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     if (natreplace.size())
     {
         auto analog = naturalAnalog(natreplace);
-        auto nat_alias = monomerAliasByName(tg.tgroup_class.ptr(), analog);
+        auto nat_alias = monomerAliasByName(template_class, analog);
         writer.Key("naturalAnalogShort");
         writer.String(nat_alias.c_str());
         if (analog.size() > 1)

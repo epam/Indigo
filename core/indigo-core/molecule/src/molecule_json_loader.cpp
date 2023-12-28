@@ -443,7 +443,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             else
             {
                 int count = a["implicitHCount"].GetInt();
-                if (count < 1)
+                if (count < 0)
                     throw Error("Wrong value for implicitHCount: %d", count);
                 _pqmol->resetAtom(atom_idx,
                                   QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_IMPLICIT_H, count)));

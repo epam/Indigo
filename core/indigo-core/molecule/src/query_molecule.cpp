@@ -20,6 +20,7 @@
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_arom.h"
+#include "molecule/molecule_dearom.h"
 #include "molecule/molecule_standardize.h"
 #include <string>
 #include <unordered_map>
@@ -824,6 +825,22 @@ void QueryMolecule::_getBondDescription(Bond* bond, Output& out)
     default:
         out.printf("<constraint of type %d>", bond->type);
     }
+}
+
+bool QueryMolecule::possibleAromaticBond(int idx)
+{
+    // If bond can be aromatic or any by definition
+    if (possibleBondOrder(idx, BOND_AROMATIC) || possibleBondOrder(idx, BOND_ANY))
+    {
+        Edge ed = getEdge(idx);
+        // and atoms at both ends can be aromatic
+        if (getAtomAromaticity(ed.beg) == ATOM_AROMATIC && getAtomAromaticity(ed.end) == ATOM_AROMATIC)
+        {
+            // Then bond can be aromatic
+            return true;
+        }
+    }
+    return false;
 }
 
 bool QueryMolecule::possibleBondOrder(int idx, int order)
@@ -2129,7 +2146,8 @@ bool QueryMolecule::aromatize(const AromaticityOptions& options)
 
 bool QueryMolecule::dearomatize(const AromaticityOptions& options)
 {
-    throw Error("Dearomatization of query molecules is not implemented");
+    updateEditRevision();
+    return MoleculeDearomatizer::dearomatizeMolecule(*this, options);
 }
 
 int QueryMolecule::getAtomMaxH(int idx)
