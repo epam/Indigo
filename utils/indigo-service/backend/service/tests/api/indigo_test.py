@@ -3015,30 +3015,57 @@ M  END
             "C([H])([H])([H])C([H])([H])[H]", result_data["struct"]
         )
 
-    def test_convert_peptide(self):
-        peptide = ""
-        results = []
-        # results_get = []
-        for mol in smarts:
-            params = {
-                "struct": mol,
-                "input_format": "chemical/x-daylight-smarts",
-                "output_format": "chemical/x-daylight-smarts",
-            }
-            headers, data = self.get_headers(params)
-            result = requests.post(
-                self.url_prefix + "/convert", headers=headers, data=data
+    def joinPathPy(args, file_py):
+        return os.path.normpath(
+            os.path.abspath(
+                os.path.join(os.path.abspath(os.path.dirname(file_py)), args)
             )
-            self.assertEqual(200, result.status_code)
-            result_data = json.loads(result.text)
-            results.append(result_data["struct"])
+        ).replace("\\", "/")
 
-            # result = requests.get(self.url_prefix + "/convert", params=params)
-            # self.assertEqual(200, result.status_code)
-            # results_get.append(result.text)
+    def test_convert_sequences(self):
+        headers, data = self.get_headers(
+            {
+                "struct": "ACGTU",
+                "input_format": "chemical/x-rna-sequence",
+                "output_format": "chemical/x-indigo-ket"
+            }
+        )
+        result_rna = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        headers, data = self.get_headers(
+            {
+                "struct": "ACGTU",
+                "input_format": "chemical/x-dna-sequence",
+                "output_format": "chemical/x-indigo-ket"
+            }
+        )
+        result_dna = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        headers, data = self.get_headers(
+            {
+                "struct": "ACGTU",
+                "input_format": "chemical/x-peptide-sequence",
+                "output_format": "chemical/x-indigo-ket"
+            }
+        )
+        result_peptide = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        ref_path = joinPathPy("ref/", __file__)
+        with open(os.path.join(ref_path, "rna_ref") + ".ket", "r") as file:
+            rna_ref = file.read()
+            self.assertEqual(result_rna, rna_ref)
 
-        self.assertEqual(smarts, results)
-        # self.assertEqual(smarts, results_get)
+        with open(os.path.join(ref_path, "dna_ref") + ".ket", "r") as file:
+            dna_ref = file.read()
+            self.assertEqual(result_dna, dna_ref)
+
+        with open(os.path.join(ref_path, "peptide_ref") + ".ket", "r") as file:
+            peptide_ref = file.read()
+            self.assertEqual(result_peptide, peptide_ref)
+
 
 
 if __name__ == "__main__":
