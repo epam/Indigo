@@ -26,6 +26,11 @@
 
 using namespace indigo;
 
+bool QueryMolecule::isAtomProperty(OpType type)
+{
+    return (type > ATOM_PSEUDO && type <= ATOM_CHIRALITY);
+}
+
 QueryMolecule::QueryMolecule() : spatial_constraints(*this)
 {
 }
@@ -2654,7 +2659,7 @@ bool QueryMolecule::_isAtomOrListAndProps(Atom* p_query_atom, std::vector<std::u
             neg = is_neg;
             return true;
         }
-        else if (!is_neg && p_query_atom_child->type > ATOM_NUMBER && p_query_atom_child->type <= ATOM_CHIRALITY) // atom property, no negative props here
+        else if (!is_neg && isAtomProperty(p_query_atom_child->type)) // atom property, no negative props here
         {
             properties[p_query_atom_child->type] = std::unique_ptr<Atom>(p_query_atom_child->clone());
             return true;
@@ -2686,6 +2691,11 @@ bool QueryMolecule::_isAtomOrListAndProps(Atom* p_query_atom, std::vector<std::u
         std::map<int, std::unique_ptr<Atom>> collected_properties;
         if (_isAtomOrListAndProps(p_query_atom_child, collected, is_neg, collected_properties))
         {
+            if (isAtomProperty(p_query_atom_child->type))
+            {
+                properties[p_query_atom_child->type] = std::unique_ptr<Atom>(p_query_atom_child->clone());
+                continue;
+            }
             if (list.size() > 0 && is_neg != neg) // allowed only one list type in set - positive or negative
                 return false;
             neg = is_neg;

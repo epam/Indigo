@@ -396,6 +396,8 @@ namespace indigo
         Atom* releaseAtom(int idx);
         void resetAtom(int idx, Atom* atom);
 
+        static bool isAtomProperty(OpType type);
+
         Bond& getBond(int idx);
         Bond* releaseBond(int idx);
         void resetBond(int idx, Bond* bond);
