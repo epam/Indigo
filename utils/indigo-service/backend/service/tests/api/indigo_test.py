@@ -3027,7 +3027,7 @@ M  END
             {
                 "struct": "ACGTU",
                 "input_format": "chemical/x-rna-sequence",
-                "output_format": "chemical/x-indigo-ket"
+                "output_format": "chemical/x-indigo-ket",
             }
         )
         result_rna = requests.post(
@@ -3037,7 +3037,7 @@ M  END
             {
                 "struct": "ACGTU",
                 "input_format": "chemical/x-dna-sequence",
-                "output_format": "chemical/x-indigo-ket"
+                "output_format": "chemical/x-indigo-ket",
             }
         )
         result_dna = requests.post(
@@ -3047,7 +3047,7 @@ M  END
             {
                 "struct": "ACGTU",
                 "input_format": "chemical/x-peptide-sequence",
-                "output_format": "chemical/x-indigo-ket"
+                "output_format": "chemical/x-indigo-ket",
             }
         )
         result_peptide = requests.post(
@@ -3065,7 +3065,6 @@ M  END
         with open(os.path.join(ref_path, "peptide_ref") + ".ket", "r") as file:
             peptide_ref = file.read()
             self.assertEqual(result_peptide, peptide_ref)
-
 
 
 if __name__ == "__main__":
