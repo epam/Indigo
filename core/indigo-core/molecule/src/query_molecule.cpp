@@ -514,6 +514,64 @@ std::string QueryMolecule::getSmartsAtomStr(QueryMolecule::Atom* atom, int origi
     return result;
 }
 
+std::string QueryMolecule::getMolMrvSmaExtension(QueryMolecule& qm, int aid)
+{
+    Array<char> out;
+    ArrayOutput output(out);
+    std::vector<std::unique_ptr<Atom>> atom_list;
+    std::map<int, std::unique_ptr<Atom>> atom_props;
+    bool negative = false;
+    QueryMolecule::Atom& qa = qm.getAtom(aid);
+    if (_isAtomOrListAndProps(&qa, atom_list, negative, atom_props))
+    {
+        // Just atom or list and list of properties.
+        bool atoms_writed = false;
+        bool not_first_property = false;
+        for (int property : {ATOM_TOTAL_H, ATOM_IMPLICIT_H, ATOM_CONNECTIVITY, ATOM_SSSR_RINGS, ATOM_SMALLEST_RING_SIZE, ATOM_AROMATICITY})
+        {
+            if (atom_props.count(property) < 1)
+                continue;
+            if (!atoms_writed)
+            {
+                // negative list Will be !a1;!a2...;!a3;props
+                // positive list will be "a1,a2,..an;props"
+                bool not_first_atom = false;
+                for (auto& qatom : atom_list)
+                {
+                    if (not_first_atom)
+                        if (negative)
+                            output.writeChar(';');
+                        else
+                            output.writeChar(',');
+                    else
+                        not_first_atom = true;
+                    if (negative)
+                        output.writeChar('!');
+                    if (qatom->type == ATOM_NUMBER)
+                        output.printf("#%d", qatom->value_max);
+                    else if (qatom->type == ATOM_PSEUDO)
+                        output.writeString(qatom->alias.ptr());
+                }
+                output.writeChar(';');
+                atoms_writed = true;
+            }
+            if (not_first_property)
+                output.writeChar('&');
+            else
+                bool not_first_property = true;
+            writeSmartsAtom(output, atom_props[property].get(), -1, -1, 1, false, false, qm.original_format);
+        }
+    }
+    else
+    {
+        if (qa.type != OP_NONE)
+            //  Complex tree - just write SMARTS
+            return getSmartsAtomStr(&qa, qm.original_format);
+    }
+    std::string result{out.ptr(), static_cast<std::size_t>(out.size())};
+    return result;
+}
+
 static void _write_num(indigo::Output& output, unsigned char ch, int num)
 {
     output.writeChar(ch);
@@ -736,7 +794,7 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
     }
 
     case ATOM_PSEUDO: {
-        output.printf("*", atom->alias.ptr());
+        output.writeString(atom->alias.ptr());
         break;
     }
 
@@ -2451,7 +2509,7 @@ QueryMolecule::Atom* QueryMolecule::stripKnownAttrs(QueryMolecule::Atom& qa)
 }
 
 // TODO: develop function to convert tree to CNF to simplify checks
-bool QueryMolecule::_tryToConvertToList(Atom* p_query_atom, std::vector<int>& atoms, std::map<int, std::unique_ptr<Atom>>& properties)
+bool QueryMolecule::_tryToConvertToList(Atom* p_query_atom, std::vector<std::unique_ptr<Atom>>& atoms, std::map<int, std::unique_ptr<Atom>>& properties)
 {
     // Try to convert a1p1p2..pn, a2p1p2..pn, .. , akp1p2..pn to (a1, a2, .. an)p1p2..pn
     if (!p_query_atom)
@@ -2462,7 +2520,7 @@ bool QueryMolecule::_tryToConvertToList(Atom* p_query_atom, std::vector<int>& at
     if (size < 2)
         return false;
     std::vector<std::unique_ptr<Atom>> atoms_properties;
-    std::vector<int> atoms_list;
+    std::vector<std::unique_ptr<Atom>> atoms_list;
     int list_element_child_count = -1;
     for (int i = 0; i < size; i++)
     {
@@ -2494,9 +2552,10 @@ bool QueryMolecule::_tryToConvertToList(Atom* p_query_atom, std::vector<int>& at
                 return false;
                 break;
             case ATOM_NUMBER:
+            case ATOM_PSEUDO:
                 if (child_prop->value_min != child_prop->value_max)
                     return false;
-                atoms_list.emplace_back(child_prop->value_min);
+                atoms_list.emplace_back(std::move(child_prop));
                 atom_not_found = false;
                 break;
             default:
@@ -2528,28 +2587,32 @@ bool QueryMolecule::_tryToConvertToList(Atom* p_query_atom, std::vector<int>& at
             }
         }
     }
-    atoms = atoms_list;
+
+    atoms.clear();
+    for (auto& qa : atoms_list)
+        atoms.emplace_back(std::move(qa));
+
     for (auto& prop : atoms_properties)
-    {
         properties[prop->type] = std::move(prop);
-    }
+
     return true;
 }
 
-bool QueryMolecule::_isAtomListOr(Atom* p_query_atom, std::vector<int>& list)
+bool QueryMolecule::_isAtomListOr(Atom* p_query_atom, std::vector<std::unique_ptr<Atom>>& list)
 {
     // Check if p_query_atom atom list like or(a1,a2,a3, or(a4,a5,a6), a7)
     if (!p_query_atom)
         return false;
     if (p_query_atom->type != OP_OR)
         return false;
-    std::vector<int> collected;
+    std::vector<std::unique_ptr<Atom>> collected;
     for (auto i = 0; i < p_query_atom->children.size(); i++)
     {
         Atom* p_query_atom_child = p_query_atom->child(i);
-        if (p_query_atom_child->type == ATOM_NUMBER && p_query_atom_child->value_min == p_query_atom_child->value_max)
+        if ((p_query_atom_child->type == ATOM_PSEUDO) ||
+            (p_query_atom_child->type == ATOM_NUMBER && p_query_atom_child->value_min == p_query_atom_child->value_max))
         {
-            collected.emplace_back(p_query_atom_child->value_min);
+            collected.emplace_back(p_query_atom_child->clone());
         }
         else if (p_query_atom_child->type == OP_OR)
         {
@@ -2561,11 +2624,13 @@ bool QueryMolecule::_isAtomListOr(Atom* p_query_atom, std::vector<int>& list)
     }
     if (collected.size() < 1)
         return false;
-    list = collected;
+    for (auto& qa : collected)
+        list.emplace_back(std::move(qa));
     return true;
 }
 
-bool QueryMolecule::_isAtomOrListAndProps(Atom* p_query_atom, std::vector<int>& list, bool& neg, std::map<int, std::unique_ptr<Atom>>& properties)
+bool QueryMolecule::_isAtomOrListAndProps(Atom* p_query_atom, std::vector<std::unique_ptr<Atom>>& list, bool& neg,
+                                          std::map<int, std::unique_ptr<Atom>>& properties)
 {
     // Check if p_query_atom contains only atom or atom list and atom properties connected by "and"
     // atom list is positive i.e. or(a1,a2,a3,or(a4,a5),a6) or negative
@@ -2581,9 +2646,10 @@ bool QueryMolecule::_isAtomOrListAndProps(Atom* p_query_atom, std::vector<int>& 
             p_query_atom_child = p_query_atom->child(0);
             is_neg = true;
         }
-        if (p_query_atom_child->type == ATOM_NUMBER && p_query_atom_child->value_min == p_query_atom_child->value_max)
+        if ((p_query_atom_child->type == ATOM_PSEUDO) ||
+            (p_query_atom_child->type == ATOM_NUMBER && p_query_atom_child->value_min == p_query_atom_child->value_max))
         {
-            list.emplace_back(p_query_atom_child->value_min);
+            list.emplace_back(p_query_atom_child->clone());
             neg = is_neg;
             return true;
         }
@@ -2598,12 +2664,12 @@ bool QueryMolecule::_isAtomOrListAndProps(Atom* p_query_atom, std::vector<int>& 
             {
                 return true;
             }
-            std::vector<int> collected;
+            std::vector<std::unique_ptr<Atom>> collected;
             if (_isAtomListOr(p_query_atom_child, collected))
             {
                 neg = is_neg;
-                for (auto item : collected)
-                    list.emplace_back(item);
+                for (auto& item : collected)
+                    list.emplace_back(std::move(item));
                 return true;
             }
         }
@@ -2615,15 +2681,15 @@ bool QueryMolecule::_isAtomOrListAndProps(Atom* p_query_atom, std::vector<int>& 
     {
         Atom* p_query_atom_child = const_cast<Atom*>(p_query_atom)->child(i);
         bool is_neg = false;
-        std::vector<int> collected;
+        std::vector<std::unique_ptr<Atom>> collected;
         std::map<int, std::unique_ptr<Atom>> collected_properties;
         if (_isAtomOrListAndProps(p_query_atom_child, collected, is_neg, collected_properties))
         {
             if (list.size() > 0 && is_neg != neg) // allowed only one list type in set - positive or negative
                 return false;
             neg = is_neg;
-            for (auto item : collected)
-                list.emplace_back(item);
+            for (auto& item : collected)
+                list.emplace_back(std::move(item));
             for (auto& prop : collected_properties)
                 properties[prop.first] = std::move(prop.second);
         }
@@ -2633,42 +2699,56 @@ bool QueryMolecule::_isAtomOrListAndProps(Atom* p_query_atom, std::vector<int>& 
     return true;
 }
 
-int QueryMolecule::parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<int>& list, std::map<int, std::unique_ptr<Atom>>& properties)
+int QueryMolecule::parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<std::unique_ptr<Atom>>& list, std::map<int, std::unique_ptr<Atom>>& properties)
 {
-    std::vector<int> atom_list;
+    std::vector<std::unique_ptr<Atom>> query_atom_list;
     std::map<int, std::unique_ptr<Atom>> atom_props;
     bool negative = false;
     QueryMolecule::Atom& qa = qm.getAtom(aid);
     if (qa.type == QueryMolecule::OP_NONE)
         return QUERY_ATOM_AH;
-    if (_isAtomOrListAndProps(&qa, atom_list, negative, atom_props))
+    if (_isAtomOrListAndProps(&qa, query_atom_list, negative, atom_props))
     {
-        list = atom_list;
-        std::sort(atom_list.begin(), atom_list.end());
+        bool can_be_query_atom = true;
+        std::vector<int> atom_list;
         for (auto& prop : atom_props)
             properties[prop.first] = std::move(prop.second);
-
-        if (negative)
+        for (auto& qatom : query_atom_list)
         {
-            if (atom_list.size() == 1 && atom_list[0] == ELEM_H)
-                return QUERY_ATOM_A; // !H
-            else if (atom_list == std::vector<int>{ELEM_H, ELEM_C})
-                return QUERY_ATOM_Q;
-            else if (atom_list == std::vector<int>{ELEM_C})
-                return QUERY_ATOM_QH;
-            else if (atom_list == std::vector<int>{ELEM_H, ELEM_He, ELEM_C, ELEM_N, ELEM_O, ELEM_F, ELEM_Ne, ELEM_P, ELEM_S, ELEM_Cl, ELEM_Ar, ELEM_Se, ELEM_Br,
-                                                   ELEM_Kr, ELEM_I, ELEM_Xe, ELEM_At, ELEM_Rn})
-                return QUERY_ATOM_M;
-            else if (atom_list == std::vector<int>{ELEM_He, ELEM_C, ELEM_N, ELEM_O, ELEM_F, ELEM_Ne, ELEM_P, ELEM_S, ELEM_Cl, ELEM_Ar, ELEM_Se, ELEM_Br,
-                                                   ELEM_Kr, ELEM_I, ELEM_Xe, ELEM_At, ELEM_Rn})
-                return QUERY_ATOM_MH;
+            if (qatom->type == ATOM_PSEUDO)
+                can_be_query_atom = false;
+            else if (qatom->type == ATOM_NUMBER)
+                atom_list.emplace_back(qatom->value_max);
+            else
+                throw Error("Wrong atom type %d", qatom->type);
+            list.emplace_back(std::move(qatom));
         }
-        else
+
+        if (can_be_query_atom)
         {
-            if (atom_list == std::vector<int>{ELEM_F, ELEM_Cl, ELEM_Br, ELEM_I, ELEM_At})
-                return QUERY_ATOM_X;
-            else if (atom_list == std::vector<int>{ELEM_H, ELEM_F, ELEM_Cl, ELEM_Br, ELEM_I, ELEM_At})
-                return QUERY_ATOM_XH;
+            std::sort(atom_list.begin(), atom_list.end());
+            if (negative)
+            {
+                if (atom_list.size() == 1 && atom_list[0] == ELEM_H)
+                    return QUERY_ATOM_A; // !H
+                else if (atom_list == std::vector<int>{ELEM_H, ELEM_C})
+                    return QUERY_ATOM_Q;
+                else if (atom_list == std::vector<int>{ELEM_C})
+                    return QUERY_ATOM_QH;
+                else if (atom_list == std::vector<int>{ELEM_H, ELEM_He, ELEM_C, ELEM_N, ELEM_O, ELEM_F, ELEM_Ne, ELEM_P, ELEM_S, ELEM_Cl, ELEM_Ar, ELEM_Se,
+                                                       ELEM_Br, ELEM_Kr, ELEM_I, ELEM_Xe, ELEM_At, ELEM_Rn})
+                    return QUERY_ATOM_M;
+                else if (atom_list == std::vector<int>{ELEM_He, ELEM_C, ELEM_N, ELEM_O, ELEM_F, ELEM_Ne, ELEM_P, ELEM_S, ELEM_Cl, ELEM_Ar, ELEM_Se, ELEM_Br,
+                                                       ELEM_Kr, ELEM_I, ELEM_Xe, ELEM_At, ELEM_Rn})
+                    return QUERY_ATOM_MH;
+            }
+            else
+            {
+                if (atom_list == std::vector<int>{ELEM_F, ELEM_Cl, ELEM_Br, ELEM_I, ELEM_At})
+                    return QUERY_ATOM_X;
+                else if (atom_list == std::vector<int>{ELEM_H, ELEM_F, ELEM_Cl, ELEM_Br, ELEM_I, ELEM_At})
+                    return QUERY_ATOM_XH;
+            }
         }
         if (negative)
         {
@@ -2676,9 +2756,9 @@ int QueryMolecule::parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<
         }
         else
         {
-            if (atom_list.size() == 0)
+            if (query_atom_list.size() == 0)
                 return QUERY_ATOM_A;
-            else if (atom_list.size() == 1)
+            else if (query_atom_list.size() == 1)
                 return QUERY_ATOM_SINGLE;
             else
                 return QUERY_ATOM_LIST;

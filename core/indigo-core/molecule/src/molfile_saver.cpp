@@ -412,7 +412,8 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         ArrayOutput out(buf);
 
         out.printf("%d ", _atom_mapping[i]);
-        QS_DEF(Array<int>, list);
+        std::vector<std::unique_ptr<QueryMolecule::Atom>> list;
+        std::map<int, std::unique_ptr<QueryMolecule::Atom>> properties;
         int query_atom_type;
 
         if (atom_number == ELEM_H && isotope == DEUTERIUM)
@@ -435,7 +436,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         {
             _writeAtomLabel(out, atom_number);
         }
-        else if (qmol != 0 && (query_atom_type = QueryMolecule::parseQueryAtom(*qmol, i, list)) != -1)
+        else if (qmol != 0 && (query_atom_type = QueryMolecule::parseQueryAtomSmarts(*qmol, i, list, properties)) != -1)
         {
             if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
                 out.writeChar('A');
@@ -455,17 +456,23 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 out.writeString("MH");
             else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
             {
-                int k;
-
                 if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
                     out.writeString("NOT");
 
                 out.writeChar('[');
-                for (k = 0; k < list.size(); k++)
+
+                bool not_first = false;
+                for (auto& qatom : list)
                 {
-                    if (k > 0)
+                    if (not_first)
                         out.writeChar(',');
-                    _writeAtomLabel(out, list[k]);
+                    else
+                        not_first = true;
+
+                    if (qatom->type == QueryMolecule::ATOM_NUMBER)
+                        _writeAtomLabel(out, qatom->value_max);
+                    else if (qatom->type == QueryMolecule::ATOM_PSEUDO)
+                        out.writeString(qatom->alias.ptr());
                 }
                 out.writeChar(']');
             }
@@ -1097,7 +1104,7 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
 void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 {
     _handleCIP(mol);
-    QueryMolecule* qmol = 0;
+    QueryMolecule* qmol = nullptr;
 
     if (query)
         qmol = (QueryMolecule*)(&mol);
@@ -1175,9 +1182,9 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             if (qmol == 0)
                 throw Error("internal: atom number = -1, but qmol == 0");
 
-            QS_DEF(Array<int>, list);
-
-            int query_atom_type = QueryMolecule::parseQueryAtom(*qmol, i, list);
+            std::vector<std::unique_ptr<QueryMolecule::Atom>> list;
+            std::map<int, std::unique_ptr<QueryMolecule::Atom>> properties;
+            int query_atom_type = QueryMolecule::parseQueryAtomSmarts(*qmol, i, list, properties);
 
             if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
                 label[0] = 'A';
@@ -1481,9 +1488,9 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
     for (i = 0; i < atom_lists.size(); i++)
     {
         int atom_idx = atom_lists[i];
-        QS_DEF(Array<int>, list);
-
-        int query_atom_type = QueryMolecule::parseQueryAtom(*qmol, atom_idx, list);
+        std::vector<std::unique_ptr<QueryMolecule::Atom>> list;
+        std::map<int, std::unique_ptr<QueryMolecule::Atom>> properties;
+        int query_atom_type = QueryMolecule::parseQueryAtomSmarts(*qmol, atom_idx, list, properties);
 
         if (query_atom_type != QueryMolecule::QUERY_ATOM_LIST && query_atom_type != QueryMolecule::QUERY_ATOM_NOTLIST)
             throw Error("internal: atom list not recognized");
@@ -1495,16 +1502,35 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
         int j;
 
-        for (j = 0; j < list.size(); j++)
+        for (auto& qatom : list)
         {
-            char c1 = ' ', c2 = ' ';
-            const char* str = Element::toString(list[j]);
+            if (qatom->type == QueryMolecule::ATOM_NUMBER)
+            {
+                char c1 = ' ', c2 = ' ';
+                const char* str = Element::toString(qatom->value_max);
 
-            c1 = str[0];
-            if (str[1] != 0)
-                c2 = str[1];
+                c1 = str[0];
+                if (str[1] != 0)
+                    c2 = str[1];
 
-            output.printf("%c%c  ", c1, c2);
+                output.printf("%c%c  ", c1, c2);
+            }
+            else if (qatom->type == QueryMolecule::ATOM_PSEUDO)
+            {
+                const char* str = qatom->alias.ptr();
+                constexpr int SYMBOL_WIDTH = 4;
+                if (strlen(str) > 4)
+                {
+                    for (int i = 0; i < SYMBOL_WIDTH; i++)
+                        output.writeChar(str[i]);
+                }
+                else
+                {
+                    output.writeString(str);
+                    for (int i = strlen(str); i < SYMBOL_WIDTH; i++)
+                        output.writeChar(' ');
+                }
+            }
         }
         output.writeCR();
     }
@@ -1521,6 +1547,18 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         output.printfCR("A  %3d", _atom_mapping[aliases[i]]);
         output.writeString(mol.getAlias(aliases[i]));
         output.writeCR();
+    }
+
+    if (qmol)
+    {
+        for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
+        {
+            std::string mrv_sma = QueryMolecule::getMolMrvSmaExtension(*qmol, i);
+            if (mrv_sma.length() > 0)
+            {
+                output.printfCR("M  MRV SMA %3u [%s]", i + 1, mrv_sma.c_str());
+            }
+        }
     }
 
     QS_DEF(Array<int>, sgroup_ids);

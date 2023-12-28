@@ -402,6 +402,7 @@ M  UNS  1   4   1
 M  RBC  1  33  -2
 A   59
 CYC
+M  MRV SMA  16 [#6;H2]
 M  STY  2   1 DAT   2 DAT
 M  SPL  1   2   1
 M  SLB  2   1   1   2   2
@@ -636,3 +637,25 @@ Check query for bond 18 returns 0
 Check query for bond 19 returns 0
 Check query for bond 20 returns 0
 Check query for bond 21 returns 0
+[#6]1[#6][#6,#7,F;a;r6;R1;h1;H][!Cl;!Br;!I;a;R1;h1;H][#6][c;r6;R1;X3;v3;h1;H]1
+
+  -INDIGO-01000000002D
+
+  6  6  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 C   0  0  0  2  0  3  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 A   0  0  0  2  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 A   0  0  0  2  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  6  0  0  0  0
+  2  3  6  0  0  0  0
+  3  4  6  0  0  0  0
+  4  5  6  0  0  0  0
+  5  6  6  0  0  0  0
+  6  1  6  0  0  0  0
+M  MRV SMA   2 [#6;Hh1X3R1r6a]
+M  MRV SMA   4 [!Cl;!Br;!I;a;R1;h1;H]
+M  MRV SMA   5 [#6,#7,#9;Hh1R1r6a]
+M  END
+

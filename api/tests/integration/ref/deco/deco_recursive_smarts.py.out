@@ -13,6 +13,9 @@ full scaffold:
   3  4  2  0  0  0  0
   5  2  1  0  0  0  0
   6  4  1  0  0  0  0
+M  MRV SMA   2 [#7;A]
+M  MRV SMA   3 [#6;A]
+M  MRV SMA   4 [#8;A]
 M  RGP  2   5   1   6   2
 M  END
 

@@ -706,7 +706,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         else
         {
             bool is_qatom_list = false;
-            std::vector<int> atoms;
+            std::vector<std::unique_ptr<QueryMolecule::Atom>> atoms;
             if (_pqmol)
                 query_atom_type = QueryMolecule::parseQueryAtomSmarts(*_pqmol, i, atoms, query_atom_properties);
             if (mol.isPseudoAtom(i))
@@ -751,13 +751,18 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                         }
                         writer.Key("elements");
                         writer.StartArray();
-                        for (auto atom : atoms)
-                            writer.String(Element::toString(atom));
+                        for (auto& atom : atoms)
+                            if (atom->type == QueryMolecule::ATOM_NUMBER)
+                                writer.String(Element::toString(atom->value_max));
+                            else if (atom->type == QueryMolecule::ATOM_PSEUDO)
+                                writer.String(atom->alias.ptr());
+                            else
+                                throw Error("Wrong atom type %d", atom->type);
                         writer.EndArray();
                     }
                     else if (query_atom_type == QueryMolecule::QUERY_ATOM_SINGLE)
                     {
-                        anum = *atoms.begin();
+                        anum = (*atoms.begin()).get()->value_max;
                         buf.readString(Element::toString(anum), true);
                         if (anum == ELEM_H && query_atom_properties.count(QueryMolecule::ATOM_ISOTOPE) > 0)
                         {
