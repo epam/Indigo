@@ -3026,6 +3026,7 @@ M  END
         result_rna = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
+
         headers, data = self.get_headers(
             {
                 "struct": "ACGTU",
@@ -3057,17 +3058,25 @@ M  END
             ).replace("\\", "/")
 
         ref_path = joinPathPy("ref/", __file__)
+
+        # with open(os.path.join(ref_path, "rna_ref") + ".ket", "w") as file:
+        #     file.write(result_rna.text)
+        # with open(os.path.join(ref_path, "dna_ref") + ".ket", "w") as file:
+        #     file.write(result_dna.text)
+        # with open(os.path.join(ref_path, "peptide_ref") + ".ket", "w") as file:
+        #     file.write(result_peptide.text)
+
         with open(os.path.join(ref_path, "rna_ref") + ".ket", "r") as file:
             rna_ref = file.read()
-            self.assertEqual(result_rna, rna_ref)
+            self.assertEqual(result_rna.text, rna_ref)
 
         with open(os.path.join(ref_path, "dna_ref") + ".ket", "r") as file:
             dna_ref = file.read()
-            self.assertEqual(result_dna, dna_ref)
+            self.assertEqual(result_dna.text, dna_ref)
 
         with open(os.path.join(ref_path, "peptide_ref") + ".ket", "r") as file:
             peptide_ref = file.read()
-            self.assertEqual(result_peptide, peptide_ref)
+            self.assertEqual(result_peptide.text, peptide_ref)
 
 
 if __name__ == "__main__":
