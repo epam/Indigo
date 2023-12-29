@@ -571,9 +571,8 @@ M  END
 
         test("dearomatize", "query_mol", () => {
             let options = new indigo.MapStringString();
-            assert.throws(() => {
-                indigo.dearomatize(qmol_smarts, "molfile", options);
-            });
+            const dearomatized_smiles = indigo.convert(indigo.dearomatize(mol_smiles_aromatized, "molfile", options), "smiles", options);
+            assert.equal(dearomatized_smiles, "C1C=CC=CC=1");
             options.delete();
         });
     }

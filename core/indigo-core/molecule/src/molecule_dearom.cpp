@@ -54,6 +54,7 @@ Dearomatizer::Dearomatizer(BaseMolecule& molecule, const int* atom_external_conn
       // TL_CP_GET(_verticesFixed),
       TL_CP_GET(_submoleculeMapping)
 {
+    _isQueryMolecule = _molecule.isQueryMolecule();
     _edgesFixed.resize(_molecule.edgeEnd());
     _verticesFixed.resize(_molecule.vertexEnd());
     _verticesFixed.zeroFill();
@@ -83,7 +84,8 @@ void Dearomatizer::enumerateDearomatizations(DearomatizationsStorage& dearomatiz
         return;
     _dearomatizations = &dearomatizations;
 
-    QS_DEF(Molecule, submolecule);
+    Molecule submolecule;
+    QueryMolecule qsubmolecule;
 
     dearomatizations.setGroupsCount(_connectivityGroups);
     dearomatizations.setDearomatizationParams(_dearomatizationParams);
@@ -93,13 +95,19 @@ void Dearomatizer::enumerateDearomatizations(DearomatizationsStorage& dearomatiz
     for (int group = 0; group < _connectivityGroups; group++)
     {
         _activeGroup = group;
-        _prepareGroup(group, submolecule);
+        if (_isQueryMolecule)
+            _prepareGroup(group, qsubmolecule);
+        else
+            _prepareGroup(group, submolecule);
 
         GrayCodesEnumerator grayCodes(_aromaticGroupData.heteroAtoms.size(), true);
         do
         {
             if (_graphMatching.findMatching())
-                _processMatching(submolecule, group, grayCodes.getCode());
+                if (_isQueryMolecule)
+                    _processMatching(qsubmolecule, group, grayCodes.getCode());
+                else
+                    _processMatching(submolecule, group, grayCodes.getCode());
 
             grayCodes.next();
 
@@ -141,7 +149,10 @@ void Dearomatizer::_initEdges(void)
 {
     for (int e_idx = _molecule.edgeBegin(); e_idx < _molecule.edgeEnd(); e_idx = _molecule.edgeNext(e_idx))
     {
-        _edgesFixed.set(e_idx, _molecule.getBondOrder(e_idx) != BOND_AROMATIC);
+        bool non_aromatic = _molecule.getBondOrder(e_idx) != BOND_AROMATIC;
+        if (non_aromatic && _isQueryMolecule)
+            non_aromatic = !_molecule.asQueryMolecule().possibleAromaticBond(e_idx);
+        _edgesFixed.set(e_idx, non_aromatic);
     }
 }
 
@@ -204,8 +215,19 @@ void Dearomatizer::_handleMatching(void)
     _dearomatizations->addGroupDearomatization(_activeGroup, _graphMatching.getEdgesState());
 }
 
-void Dearomatizer::_processMatching(Molecule& submolecule, int group, const byte* hetroAtomsState)
+static void dearomatizeQueryBond(QueryMolecule& qmol, int idx, int order)
 {
+    qmol.resetBond(idx, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order));
+    Edge edg = qmol.getEdge(idx);
+    if (qmol.getAtom(edg.beg).hasConstraintWithValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC))
+        qmol.getAtom(edg.beg).removeConstraints(QueryMolecule::ATOM_AROMATICITY);
+    if (qmol.getAtom(edg.end).hasConstraintWithValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC))
+        qmol.getAtom(edg.end).removeConstraints(QueryMolecule::ATOM_AROMATICITY);
+}
+
+void Dearomatizer::_processMatching(BaseMolecule& submolecule, int group, const byte* hetroAtomsState)
+{
+    bool isQuery = submolecule.isQueryMolecule();
     // Copy bonds
     for (int e_idx = submolecule.edgeBegin(); e_idx < submolecule.edgeEnd(); e_idx = submolecule.edgeNext(e_idx))
     {
@@ -216,9 +238,14 @@ void Dearomatizer::_processMatching(Molecule& submolecule, int group, const byte
         int supIdx = _molecule.findEdgeIndex(_submoleculeMapping[edge.beg], _submoleculeMapping[edge.end]);
 
         if (_graphMatching.isEdgeMatching(supIdx))
-            submolecule.setBondOrder(e_idx, BOND_DOUBLE);
+            if (isQuery)
+                dearomatizeQueryBond(submolecule.asQueryMolecule(), e_idx, BOND_DOUBLE);
+            else
+                submolecule.asMolecule().setBondOrder(e_idx, BOND_DOUBLE);
+        else if (isQuery)
+            dearomatizeQueryBond(submolecule.asQueryMolecule(), e_idx, BOND_SINGLE);
         else
-            submolecule.setBondOrder(e_idx, BOND_SINGLE);
+            submolecule.asMolecule().setBondOrder(e_idx, BOND_SINGLE);
     }
 
     // Check aromaticity
@@ -230,7 +257,10 @@ void Dearomatizer::_processMatching(Molecule& submolecule, int group, const byte
         // kekulized form is C1=CC=C1
         // Dearomatization without verification can be used for finding kekulized form
         // that is not necessary aromatic
-        MoleculeAromatizer::aromatizeBonds(submolecule, _options);
+        if (isQuery)
+            QueryMoleculeAromatizer::aromatizeBonds(submolecule.asQueryMolecule(), _options);
+        else
+            MoleculeAromatizer::aromatizeBonds(submolecule.asMolecule(), _options);
         for (int e_idx = submolecule.edgeBegin(); e_idx < submolecule.edgeEnd(); e_idx = submolecule.edgeNext(e_idx))
         {
             if (submolecule.getBondTopology(e_idx) == TOPOLOGY_RING && submolecule.getBondOrder(e_idx) != BOND_AROMATIC)
@@ -253,7 +283,7 @@ void Dearomatizer::_processMatching(Molecule& submolecule, int group, const byte
     }
 }
 
-void Dearomatizer::_prepareGroup(int group, Molecule& submolecule)
+void Dearomatizer::_prepareGroup(int group, BaseMolecule& submolecule)
 {
     _aromaticGroups.getGroupData(group, DearomatizationsGroups::GET_VERTICES_FILTER | DearomatizationsGroups::GET_HETERATOMS_INDICES, &_aromaticGroupData);
 
@@ -555,6 +585,7 @@ DearomatizationsGroups::DearomatizationsGroups(BaseMolecule& molecule, bool skip
     : _molecule(molecule), CP_INIT, TL_CP_GET(_vertexAromaticGroupIndex), TL_CP_GET(_vertexIsAcceptDoubleEdge), TL_CP_GET(_vertexIsAcceptSingleEdge),
       TL_CP_GET(_vertexProcessed), TL_CP_GET(_groupVertices), TL_CP_GET(_groupEdges), TL_CP_GET(_groupHeteroAtoms), TL_CP_GET(_groupData)
 {
+    _isQueryMolecule = _molecule.isQueryMolecule();
     // collect superatoms
     if (skip_superatoms)
         for (int i = molecule.sgroups.begin(); i != molecule.sgroups.end(); i = molecule.sgroups.next(i))
@@ -625,6 +656,9 @@ void DearomatizationsGroups::getGroupData(int group, int flags, Dearomatizations
         const Edge& edge = _molecule.getEdge(e_idx);
         int bond_order = _molecule.getBondOrder(e_idx);
 
+        if (bond_order < 0 && _isQueryMolecule && _molecule.asQueryMolecule().possibleAromaticBond(e_idx))
+            bond_order = BOND_AROMATIC;
+
         if (bond_order == BOND_AROMATIC && _vertexAromaticGroupIndex[edge.beg] == group)
         {
             data->bonds.push(e_idx);
@@ -683,9 +717,9 @@ int DearomatizationsGroups::detectAromaticGroups(const int* atom_external_conn)
 
     int currentAromaticGroup = 0;
 
-    QueryMolecule* qmol = 0;
+    QueryMolecule* qmol = nullptr;
 
-    if (_molecule.isQueryMolecule())
+    if (_isQueryMolecule)
         qmol = &_molecule.asQueryMolecule();
 
     for (int v_idx = _molecule.vertexBegin(); v_idx < _molecule.vertexEnd(); v_idx = _molecule.vertexNext(v_idx))
@@ -820,7 +854,7 @@ int DearomatizationsGroups::_getFixedConnectivitySpecific(int elem, int charge, 
 void DearomatizationsGroups::_detectAromaticGroups(int v_idx, const int* atom_external_conn)
 {
     int non_aromatic_conn = 0;
-    if (atom_external_conn != 0)
+    if (atom_external_conn != nullptr)
         non_aromatic_conn = atom_external_conn[v_idx];
 
     const Vertex& vertex = _molecule.getVertex(v_idx);
@@ -831,9 +865,12 @@ void DearomatizationsGroups::_detectAromaticGroups(int v_idx, const int* atom_ex
         int bond_order = _molecule.getBondOrder(e_idx);
 
         if (bond_order == -1)
-            // Ignore such bonds.
-            // It may be zero bonds from TautomerSuperStructure
-            continue;
+            if (!_isQueryMolecule)
+                // Ignore such bonds.
+                // It may be zero bonds from TautomerSuperStructure
+                continue;
+            else if (_molecule.asQueryMolecule().possibleAromaticBond(e_idx))
+                bond_order = BOND_AROMATIC;
         if (bond_order != BOND_AROMATIC)
         {
             non_aromatic_conn += bond_order;
@@ -851,11 +888,24 @@ void DearomatizationsGroups::_detectAromaticGroups(int v_idx, const int* atom_ex
     }
 
     bool impl_h_fixed = false;
-    if (!_molecule.isQueryMolecule())
+    if (_isQueryMolecule)
+    {
+        QueryMolecule& qm = _molecule.asQueryMolecule();
+        if (atom_external_conn == nullptr)
+        {
+            int impl_h = -1;
+            if (qm.getAtom(v_idx).sureValue(QueryMolecule::ATOM_IMPLICIT_H, impl_h))
+            {
+                non_aromatic_conn += impl_h;
+                impl_h_fixed = true;
+            }
+        }
+    }
+    else
     {
         Molecule& m = _molecule.asMolecule();
         // Check if number of hydrogens are fixed
-        if (atom_external_conn == 0)
+        if (atom_external_conn == nullptr)
         {
             int impl_h = m.getImplicitH_NoThrow(v_idx, -1);
             if (impl_h != -1)
@@ -868,12 +918,25 @@ void DearomatizationsGroups::_detectAromaticGroups(int v_idx, const int* atom_ex
 
     int label = _molecule.getAtomNumber(v_idx);
     int charge = _molecule.getAtomCharge(v_idx);
+    if (_isQueryMolecule && charge == CHARGE_UNKNOWN)
+    {
+        charge = 0;
+    }
     // If radical is undefined then treat it as there are not radical
     // Because if there were a radical it should have been explicitly marked
     int radical = _molecule.getAtomRadical_NoThrow(v_idx, 0);
+    if (_isQueryMolecule && radical < 0)
+    {
+        radical = 0;
+    }
 
     int max_connectivity = -1;
-    if (!_molecule.isQueryMolecule())
+    if (_isQueryMolecule)
+    {
+        if (_molecule.asQueryMolecule().possibleNitrogenV5(v_idx))
+            max_connectivity = 5;
+    }
+    else
     {
         Molecule& m = _molecule.asMolecule();
         if (atom_external_conn == 0)
@@ -903,7 +966,7 @@ void DearomatizationsGroups::_detectAromaticGroups(int v_idx, const int* atom_ex
         max_connectivity = Element::getMaximumConnectivity(label, charge, radical, false);
 
     int atom_aromatic_connectivity = max_connectivity - non_aromatic_conn;
-    if (atom_aromatic_connectivity < 0)
+    if (atom_aromatic_connectivity < 0) // recalc with use_d_orbital=true
         max_connectivity = Element::getMaximumConnectivity(label, charge, radical, true);
 
     atom_aromatic_connectivity = max_connectivity - non_aromatic_conn;
@@ -1370,9 +1433,10 @@ DearomatizationMatcher::GraphMatchingVerticesFixed::GraphMatchingVerticesFixed(B
 
 CP_DEF(MoleculeDearomatizer);
 
-MoleculeDearomatizer::MoleculeDearomatizer(Molecule& mol, DearomatizationsStorage& dearom)
+MoleculeDearomatizer::MoleculeDearomatizer(BaseMolecule& mol, DearomatizationsStorage& dearom)
     : _dearomatizations(dearom), _mol(mol), CP_INIT, TL_CP_GET(vertex_connectivity)
 {
+    _isQueryMolecule = _mol.isQueryMolecule();
 }
 
 void MoleculeDearomatizer::dearomatizeGroup(int group, int dearomatization_index)
@@ -1384,9 +1448,14 @@ void MoleculeDearomatizer::dearomatizeGroup(int group, int dearomatization_index
     for (int i = 0; i < bondsCount; i++)
     {
         if (bitGetBit(bondsState, i))
-            _mol.setBondOrder(bondsMap[i], BOND_DOUBLE, true);
+            if (_isQueryMolecule)
+                dearomatizeQueryBond(_mol.asQueryMolecule(), bondsMap[i], BOND_DOUBLE);
+            else
+                _mol.asMolecule().setBondOrder(bondsMap[i], BOND_DOUBLE, true);
+        else if (_isQueryMolecule)
+            dearomatizeQueryBond(_mol.asQueryMolecule(), bondsMap[i], BOND_SINGLE);
         else
-            _mol.setBondOrder(bondsMap[i], BOND_SINGLE, true);
+            _mol.asMolecule().setBondOrder(bondsMap[i], BOND_SINGLE, true);
     }
 }
 
@@ -1454,7 +1523,7 @@ void MoleculeDearomatizer::restoreHydrogens(int group, int dearomatization_index
     }
 }
 
-bool MoleculeDearomatizer::dearomatizeMolecule(Molecule& mol, const AromaticityOptions& options)
+bool MoleculeDearomatizer::dearomatizeMolecule(BaseMolecule& mol, const AromaticityOptions& options)
 {
     DearomatizationsStorage dst;
     Dearomatizer dearomatizer(mol, 0, options);
@@ -1489,15 +1558,20 @@ bool MoleculeDearomatizer::dearomatizeMolecule(Molecule& mol, const AromaticityO
     return all_dearomatzied;
 }
 
-bool MoleculeDearomatizer::restoreHydrogens(Molecule& mol, const AromaticityOptions& options)
+bool MoleculeDearomatizer::restoreHydrogens(BaseMolecule& mol, const AromaticityOptions& options)
 {
     bool found_invalid_aromatic_h = false;
+    bool _isQueryMolecule = mol.isQueryMolecule();
     for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
     {
         if (mol.isRSite(i) || mol.isPseudoAtom(i) || mol.isTemplateAtom(i))
             continue;
 
-        if (mol.getImplicitH_NoThrow(i, -1) == -1 && mol.getAtomAromaticity(i) == ATOM_AROMATIC)
+        if (_isQueryMolecule)
+        {
+            // TODO QDEAROM
+        }
+        else if (mol.asMolecule().getImplicitH_NoThrow(i, -1) == -1 && mol.getAtomAromaticity(i) == ATOM_AROMATIC)
             found_invalid_aromatic_h = true;
     }
     if (!found_invalid_aromatic_h)
@@ -1530,16 +1604,16 @@ bool MoleculeDearomatizer::restoreHydrogens(Molecule& mol, const AromaticityOpti
         if (mol.isRSite(i) || mol.isPseudoAtom(i) || mol.isTemplateAtom(i))
             continue;
 
-        if (mol.getImplicitH_NoThrow(i, -1) == -1 && conn > 0)
+        if (!_isQueryMolecule && (mol.asMolecule().getImplicitH_NoThrow(i, -1) == -1 && conn > 0))
         {
-            int h = mol.calcImplicitHForConnectivity(i, conn);
-            mol.setImplicitH(i, h);
+            int h = mol.asMolecule().calcImplicitHForConnectivity(i, conn);
+            mol.asMolecule().setImplicitH(i, h);
         }
     }
     return all_dearomatzied;
 }
 
-bool MoleculeDearomatizer::restoreHydrogens(Molecule& mol, bool unambiguous_only)
+bool MoleculeDearomatizer::restoreHydrogens(BaseMolecule& mol, bool unambiguous_only)
 {
     AromaticityOptions options;
     options.method = AromaticityOptions::GENERIC;
