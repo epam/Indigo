@@ -2438,6 +2438,9 @@ M  END
                 "selected": [
                     2,
                 ],
+                "options": {
+                    "molfile-saving-add-mrv-sma": False,
+                },
             }
         )
         result = requests.post(
@@ -2602,6 +2605,9 @@ M  END
                 "selected": [
                     2,
                 ],
+                "options": {
+                    "molfile-saving-add-mrv-sma": False,
+                },
             }
         )
         result = requests.post(
@@ -2625,6 +2631,9 @@ M  END
                     "mass-composition",
                 ],
                 "selected": [2, 3, 4, 5],
+                "options": {
+                    "molfile-saving-add-mrv-sma": False,
+                },
             }
         )
         result = requests.post(
