@@ -99,9 +99,8 @@ namespace indigo
             {"Ala", "A"}, {"Arg", "R"}, {"Asn", "N"}, {"Asp", "D"}, {"Cys", "C"}, {"Gln", "Q"}, {"Glu", "E"}, {"Gly", "G"}, {"His", "H"}, {"Ile", "I"},
             {"Leu", "L"}, {"Lys", "K"}, {"Met", "M"}, {"Phe", "F"}, {"Pro", "P"}, {"Ser", "S"}, {"Thr", "T"}, {"Trp", "W"}, {"Tyr", "Y"}, {"Val", "V"}};
 
-        static const std::unordered_map<std::string, std::string> kNucleicToAlias = {
-            {"Ade", "A"},   {"Cyt", "C"},   {"Gua", "G"},   {"Ura", "U"}, {"Thy", "T"},  {"dAde", "dA"}, {"dCyt", "dC"},
-            {"dGua", "dG"}, {"dUra", "dU"}, {"dThy", "dT"}, {"Rib", "r"}, {"dRib", "d"}, {"mRib", "m"},  {"Pi", "p"}};
+        static const std::unordered_map<std::string, std::string> kNucleicToAlias = {{"Ade", "A"}, {"Cyt", "C"},  {"Gua", "G"},  {"Ura", "U"}, {"Thy", "T"},
+                                                                                     {"Rib", "r"}, {"dRib", "d"}, {"mRib", "m"}, {"Pi", "p"}};
 
         if (isAminoAcidClass(monomer_class))
         {
