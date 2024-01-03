@@ -319,6 +319,7 @@ public:
     bool molfile_saving_skip_date;
     bool molfile_saving_add_stereo_desc;
     bool molfile_saving_add_implicit_h;
+    bool molfile_saving_add_mrv_sma;
     bool json_saving_add_stereo_desc;
     bool json_saving_pretty;
     bool smiles_saving_write_name;

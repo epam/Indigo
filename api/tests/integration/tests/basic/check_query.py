@@ -69,3 +69,10 @@ for bond in mol.iterateBonds():
         "Check query for bond %d returns %d"
         % (bond.index(), bond.checkQuery())
     )
+
+mol = indigo.loadSmarts(
+    "[#6]1[#6;a;H1h1v3X3R1r6][#6][!#17!#35!#53;a;H1h1R1][#6,#7,#9;a;H1h1R1r6][#6]1"
+)
+
+print(mol.smarts())
+print(mol.molfile())

@@ -44,6 +44,7 @@ namespace indigo
         bool skip_date;
         bool add_stereo_desc;
         bool add_implicit_h;
+        bool add_mrv_sma;
 
         DECL_ERROR;
 

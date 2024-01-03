@@ -59,6 +59,7 @@ namespace indigo
         bool add_implicit_h;  // If true then MRV_IMPLICIT_H Data S-groups will be added for saving
                               // the number of implicit H for aromatic atoms
                               // (if it is required for correct de-aromatization) (default value is true)
+        bool add_mrv_sma;     // If true then "MRV SMA" extension will be added for query molecules (default value is true)
         static int parseFormatMode(const char* mode);
         static void saveFormatMode(int mode, Array<char>& output);
 
