@@ -1051,7 +1051,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ "11", "12", "13", "14", "15" ]
+        postgres_major_version: [ "12", "13", "14", "15" ]
     runs-on: windows-latest
     needs: static_analysis
     steps:
