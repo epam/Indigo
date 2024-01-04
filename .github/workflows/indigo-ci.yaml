@@ -1001,8 +1001,8 @@ jobs:
             /bin/sh -c "
             set -eux &&
             yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils &&
-            curl -OL https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG &&
-            rpm --import RPM-GPG-KEY-PGDG &&
+            curl -OL https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-RHEL &&
+            rpm --import PGDG-RPM-GPG-KEY-RHEL &&
             yumdownloader -y postgresql${{ matrix.postgres_major_version }}-devel &&
             rpm -i --nodeps postgresql${{ matrix.postgres_major_version }}*.rpm &&
             ls -alh /usr &&

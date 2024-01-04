@@ -1,6 +1,7 @@
 *** MOL to KET ***
 1032-quadra.ket:SUCCEED
 1046-imp_hydrogen.ket:SUCCEED
+1465-lr_sugar.ket:SUCCEED
 SgroupDifferent.ket:SUCCEED
 acgt_1412.ket:SUCCEED
 anacyclamide.ket:SUCCEED
