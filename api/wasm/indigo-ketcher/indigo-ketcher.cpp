@@ -3,6 +3,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -299,6 +300,9 @@ namespace indigo
 
     IndigoKetcherObject loadMoleculeOrReaction(const std::string& data, const std::map<std::string, std::string>& options)
     {
+        static std::unordered_map<std::string, std::string> seq_formats = {
+            {"chemical/x-peptide-sequence", "PEPTIDE"}, {"chemical/x-rna-sequence", "RNA"}, {"chemical/x-dna-sequence", "DNA"}};
+
         print_js("loadMoleculeOrReaction:");
         std::vector<std::string> exceptionMessages;
         exceptionMessages.reserve(4);
@@ -323,9 +327,18 @@ namespace indigo
             }
             exceptionMessages.emplace_back(indigoGetLastError());
         }
+        else if (input_format != options.end())
+        {
+            auto seq_it = seq_formats.find(input_format->second);
+            if (seq_it != seq_formats.end())
+            {
+                objectId = indigoLoadSequenceFromString(data.c_str(), seq_it->second.c_str());
+                if (objectId >= 0)
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            }
+        }
         else
         {
-
             if (data.find("InChI") == 0)
             {
                 objectId = indigoInchiLoadMolecule(data.c_str());

@@ -360,6 +360,16 @@ public class Indigo {
         return new IndigoObject(this, checkResult(this, lib.indigoLoadSmartsFromFile(path)));
     }
 
+    public IndigoObject loadSequence(String str, String seq_type) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadSequenceFromString(str, seq_type)));
+    }
+
+    public IndigoObject loadSequenceFromFile(String path, String seq_type) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadSequenceFromFile(path, seq_type)));
+    }
+
     public IndigoObject loadReaction(String str) {
         setSessionID();
         return new IndigoObject(this, checkResult(this, lib.indigoLoadReactionFromString(str)));

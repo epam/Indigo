@@ -469,7 +469,7 @@ M  END\n",
         expected_text = "ValidationError: {'input_format': ['Must be one of: chemical/x-mdl-rxnfile, \
 chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
 chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf.']}"
+chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence.']}"
         self.assertEquals(
             expected_text,
             result.text,
@@ -487,7 +487,7 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x
         expected_text = "ValidationError: {'output_format': ['Must be one of: chemical/x-mdl-rxnfile, \
 chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
 chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf.']}"
+chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence.']}"
         self.assertEquals(
             expected_text,
             result.text,
@@ -3023,6 +3023,69 @@ M  END
         self.assertEqual(
             "C([H])([H])([H])C([H])([H])[H]", result_data["struct"]
         )
+
+    def test_convert_sequences(self):
+        headers, data = self.get_headers(
+            {
+                "struct": "ACGTU",
+                "input_format": "chemical/x-rna-sequence",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result_rna = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
+                "struct": "ACGTU",
+                "input_format": "chemical/x-dna-sequence",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result_dna = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        headers, data = self.get_headers(
+            {
+                "struct": "ACGTU",
+                "input_format": "chemical/x-peptide-sequence",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result_peptide = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        def joinPathPy(args, file_py):
+            return os.path.normpath(
+                os.path.abspath(
+                    os.path.join(
+                        os.path.abspath(os.path.dirname(file_py)), args
+                    )
+                )
+            ).replace("\\", "/")
+
+        ref_path = joinPathPy("ref/", __file__)
+
+        # with open(os.path.join(ref_path, "rna_ref") + ".ket", "w") as file:
+        #     file.write(result_rna.text)
+        # with open(os.path.join(ref_path, "dna_ref") + ".ket", "w") as file:
+        #     file.write(result_dna.text)
+        # with open(os.path.join(ref_path, "peptide_ref") + ".ket", "w") as file:
+        #     file.write(result_peptide.text)
+
+        with open(os.path.join(ref_path, "rna_ref") + ".ket", "r") as file:
+            rna_ref = file.read()
+            self.assertEqual(result_rna.text, rna_ref)
+
+        with open(os.path.join(ref_path, "dna_ref") + ".ket", "r") as file:
+            dna_ref = file.read()
+            self.assertEqual(result_dna.text, dna_ref)
+
+        with open(os.path.join(ref_path, "peptide_ref") + ".ket", "r") as file:
+            peptide_ref = file.read()
+            self.assertEqual(result_peptide.text, peptide_ref)
 
 
 if __name__ == "__main__":

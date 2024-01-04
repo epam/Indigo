@@ -3219,7 +3219,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
     }
 
     if (su.sa_class.size() == 0)
-        su.sa_class.appendString(kMonomerClassCHEM.c_str(), true);
+        su.sa_class.appendString(kMonomerClassCHEM, true);
 
     int tg_idx = this->tgroups.addTGroup();
     TGroup& tg = this->tgroups.getTGroup(tg_idx);
@@ -4493,4 +4493,15 @@ void BaseMolecule::setAlias(int atom_idx, const char* alias)
 void BaseMolecule::removeAlias(int atom_idx)
 {
     aliases.remove(atom_idx);
+}
+
+bool BaseMolecule::isSequence()
+{
+    int mon_count = 0;
+    for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+    {
+        if (isTemplateAtom(i))
+            mon_count++;
+    }
+    return mon_count == vertexCount();
 }

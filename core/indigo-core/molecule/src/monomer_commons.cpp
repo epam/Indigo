@@ -22,20 +22,6 @@
 
 namespace indigo
 {
-    const std::unordered_map<std::string, std::string> kAminoAcidToAlias = {
-        {"Ala", "A"}, {"Arg", "R"}, {"Asn", "N"}, {"Asp", "D"}, {"Cys", "C"}, {"Gln", "Q"}, {"Glu", "E"}, {"Gly", "G"}, {"His", "H"}, {"Ile", "I"},
-        {"Leu", "L"}, {"Lys", "K"}, {"Met", "M"}, {"Phe", "F"}, {"Pro", "P"}, {"Ser", "S"}, {"Thr", "T"}, {"Trp", "W"}, {"Tyr", "Y"}, {"Val", "V"}};
-
-    const std::unordered_map<std::string, std::string> kAliasToAminoAcid = {
-        {"A", "Ala"}, {"R", "Arg"}, {"N", "Asn"}, {"D", "Asp"}, {"C", "Cys"}, {"Q", "Gln"}, {"E", "Glu"}, {"G", "Gly"}, {"H", "His"}, {"I", "Ile"},
-        {"L", "Leu"}, {"K", "Lys"}, {"M", "Met"}, {"F", "Phe"}, {"P", "Pro"}, {"S", "Ser"}, {"T", "Thr"}, {"W", "Trp"}, {"Y", "Tyr"}, {"V", "Val"}};
-
-    const std::unordered_map<std::string, std::string> kNucleicToAlias = {{"Ade", "A"},   {"Cyt", "C"},   {"Gua", "G"},   {"Ura", "U"},   {"Thy", "T"},
-                                                                          {"dAde", "dA"}, {"dCyt", "dC"}, {"dGua", "dG"}, {"dUra", "dU"}, {"dThy", "dT"},
-                                                                          {"Rib", "r"},   {"dRib", "d"},  {"mRib", "m"},  {"Pi", "p"}};
-
-    const std::unordered_map<std::string, std::string> kAliasToNucleic = {{"A", "Ade"}, {"C", "Cyt"},  {"G", "Gua"},  {"U", "Ura"}, {"T", "Thy"},
-                                                                          {"r", "Rib"}, {"d", "dRib"}, {"m", "mRib"}, {"p", "Pi"}};
 
     std::string classToPrefix(const std::string& monomer_class)
     {
@@ -44,18 +30,54 @@ namespace indigo
         return "";
     }
 
+    bool isNucleicClass(const std::string& monomer_class)
+    {
+        const std::unordered_set<std::string> kNucleicClasses = {kMonomerClassDNA,    kMonomerClassRNA,      kMonomerClassMODRNA,
+                                                                 kMonomerClassMODDNA, kMonomerClassXLINKRNA, kMonomerClassXLINKDNA,
+                                                                 kMonomerClassSUGAR,  kMonomerClassBASE,     kMonomerClassPHOSPHATE};
+        return kNucleicClasses.find(monomer_class) != kNucleicClasses.end();
+    }
+
+    bool isNucleotideClass(const std::string& monomer_class)
+    {
+        static const std::unordered_set<std::string> kNucleotideClasses = {kMonomerClassDNA,    kMonomerClassRNA,      kMonomerClassMODRNA,
+                                                                           kMonomerClassMODDNA, kMonomerClassXLINKRNA, kMonomerClassXLINKDNA};
+        return kNucleotideClasses.find(monomer_class) != kNucleotideClasses.end();
+    }
+
+    bool isRNAClass(const std::string& monomer_class)
+    {
+        static const std::unordered_set<std::string> kRNAClasses = {kMonomerClassRNA, kMonomerClassMODRNA, kMonomerClassXLINKRNA};
+        return kRNAClasses.find(monomer_class) != kRNAClasses.end();
+    }
+
+    bool isDNAClass(const std::string& monomer_class)
+    {
+        static const std::unordered_set<std::string> kDNAClasses = {kMonomerClassDNA, kMonomerClassMODDNA, kMonomerClassXLINKDNA};
+        return kDNAClasses.find(monomer_class) != kDNAClasses.end();
+    }
+
+    bool isAminoAcidClass(const std::string& monomer_class)
+    {
+        static const std::unordered_set<std::string> kAminoClasses = {kMonomerClassAA,    kMonomerClassdAA,    kMonomerClassAminoAcid, kMonomerClassDAminoAcid,
+                                                                      kMonomerClassMODAA, kMonomerClassMODDAA, kMonomerClassXLINKAA,   kMonomerClassXLINKDAA};
+        return kAminoClasses.find(monomer_class) != kAminoClasses.end();
+    }
+
     bool isBasicAminoAcid(const std::string& monomer_class, const std::string& alias)
     {
-        if (isAminoAcidClass(monomer_class))
-        {
-            auto it = kAliasToAminoAcid.find(alias);
-            return it != kAliasToAminoAcid.end();
-        }
-        return false;
+        return isAminoAcidClass(monomer_class) && monomerNameByAlias(monomer_class, alias).size() != alias.size();
     }
 
     std::string monomerNameByAlias(const std::string& monomer_class, const std::string& alias)
     {
+        static const std::unordered_map<std::string, std::string> kAliasToNucleic = {{"A", "Ade"}, {"C", "Cyt"},  {"G", "Gua"},  {"U", "Ura"}, {"T", "Thy"},
+                                                                                     {"r", "Rib"}, {"d", "dRib"}, {"m", "mRib"}, {"p", "Pi"}};
+
+        static const std::unordered_map<std::string, std::string> kAliasToAminoAcid = {
+            {"A", "Ala"}, {"R", "Arg"}, {"N", "Asn"}, {"D", "Asp"}, {"C", "Cys"}, {"Q", "Gln"}, {"E", "Glu"}, {"G", "Gly"}, {"H", "His"}, {"I", "Ile"},
+            {"L", "Leu"}, {"K", "Lys"}, {"M", "Met"}, {"F", "Phe"}, {"P", "Pro"}, {"S", "Ser"}, {"T", "Thr"}, {"W", "Trp"}, {"Y", "Tyr"}, {"V", "Val"}};
+
         if (isAminoAcidClass(monomer_class))
         {
             auto it = kAliasToAminoAcid.find(alias);
@@ -73,6 +95,13 @@ namespace indigo
 
     std::string monomerAliasByName(const std::string& monomer_class, const std::string& name)
     {
+        static const std::unordered_map<std::string, std::string> kAminoAcidToAlias = {
+            {"Ala", "A"}, {"Arg", "R"}, {"Asn", "N"}, {"Asp", "D"}, {"Cys", "C"}, {"Gln", "Q"}, {"Glu", "E"}, {"Gly", "G"}, {"His", "H"}, {"Ile", "I"},
+            {"Leu", "L"}, {"Lys", "K"}, {"Met", "M"}, {"Phe", "F"}, {"Pro", "P"}, {"Ser", "S"}, {"Thr", "T"}, {"Trp", "W"}, {"Tyr", "Y"}, {"Val", "V"}};
+
+        static const std::unordered_map<std::string, std::string> kNucleicToAlias = {{"Ade", "A"}, {"Cyt", "C"},  {"Gua", "G"},  {"Ura", "U"}, {"Thy", "T"},
+                                                                                     {"Rib", "r"}, {"dRib", "d"}, {"mRib", "m"}, {"Pi", "p"}};
+
         if (isAminoAcidClass(monomer_class))
         {
             auto it = kAminoAcidToAlias.find(name);

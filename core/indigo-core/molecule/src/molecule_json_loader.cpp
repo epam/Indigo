@@ -1218,7 +1218,9 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
                         auto la = atoms[j].GetInt();
                         sa.atoms.push(la);
                         leaving_atoms.insert(la);
-                        auto total_h = monomer_mol.getAtomTotalH(la);
+                        int total_h = 0;
+                        if (!monomer_mol.isRSite(la) && !monomer_mol.isPseudoAtom(la) && !monomer_mol.isTemplateAtom(la))
+                            total_h = monomer_mol.getAtomTotalH(la);
                         Array<char> label;
                         monomer_mol.getAtomSymbol(la, label);
                         if (label.size())

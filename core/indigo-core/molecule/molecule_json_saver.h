@@ -30,6 +30,7 @@
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/ket_commons.h"
+#include "molecule/monomers_lib.h"
 #include "molecule/query_molecule.h"
 
 namespace indigo
@@ -225,7 +226,7 @@ namespace indigo
         QueryMolecule* _pqmol;
         Output& _output;
         std::list<std::unordered_set<int>> _s_neighbors;
-        std::unordered_map<std::string, std::reference_wrapper<TGroup>> _templates;
+        std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> _templates;
         std::unordered_map<std::pair<int, int>, std::string, pair_int_hash> _monomer_connections;
         std::map<int, int> _monomers_enum;
 
