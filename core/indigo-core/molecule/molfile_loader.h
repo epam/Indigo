@@ -49,6 +49,7 @@ namespace indigo
 
         void loadMolecule(Molecule& mol);
         void loadQueryMolecule(QueryMolecule& mol);
+        void copyProperties(const MolfileLoader& loader);
 
         // for Rxnfiles v3000
         void loadCtab3000(Molecule& mol);

@@ -66,6 +66,16 @@ void MolfileLoader::loadMolecule(Molecule& mol)
         mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
 }
 
+void MolfileLoader::copyProperties(const MolfileLoader& loader)
+{
+    stereochemistry_options = loader.stereochemistry_options;
+    ignore_bad_valence = loader.ignore_bad_valence;
+    ignore_no_chiral_flag = loader.ignore_no_chiral_flag;
+    skip_3d_chirality = loader.skip_3d_chirality;
+    treat_stereo_as = loader.treat_stereo_as;
+    treat_x_as_pseudoatom = loader.treat_x_as_pseudoatom;
+}
+
 void MolfileLoader::loadQueryMolecule(QueryMolecule& mol)
 {
     mol.clear();
@@ -3869,6 +3879,7 @@ void MolfileLoader::_readTGroups3000()
                     //               tgroup.fragment = _bmol->neu();
 
                     MolfileLoader loader(_scanner);
+                    loader.copyProperties(*this);
                     loader._bmol = tgroup.fragment.get();
                     if (_bmol->isQueryMolecule())
                     {
