@@ -48,13 +48,6 @@ namespace indigo
         DNA
     };
 
-    // struct MonomerTemplate
-    //{
-    //     MonomerType comp_type;
-    //     std::string natreplace;
-    //     std::shared_ptr<BaseMolecule> monomer;
-    // };
-
     using MonomerKey = std::pair<MonomerType, std::string>;
     using NucleotideKey = std::pair<NucleotideType, std::string>;
     using MonomersLib = std::unordered_map<MonomerKey, std::reference_wrapper<TGroup>, pair_hash>;

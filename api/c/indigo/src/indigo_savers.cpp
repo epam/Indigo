@@ -28,6 +28,7 @@
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/molfile_saver.h"
+#include "molecule/sequence_saver.h"
 #include "molecule/smiles_saver.h"
 #include "reaction/canonical_rsmiles_saver.h"
 #include "reaction/reaction_cdxml_saver.h"
@@ -577,6 +578,25 @@ CEXPORT int indigoSaveMolfile(int molecule, int output)
         IndigoSdfSaver::appendMolfile(out, obj);
         out.flush();
         return 1;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoSaveSequence(int item, int output)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        Output& out = IndigoOutput::get(self.getObject(output));
+        if (IndigoBaseMolecule::is(obj))
+        {
+            SequenceSaver saver(out);
+            BaseMolecule& mol = obj.getBaseMolecule();
+            saver.saveMolecule(mol);
+            out.flush();
+            return 1;
+        }
+        throw IndigoError("indigoSaveSequence(): expected molecule, got %s", obj.debugInfo());
     }
     INDIGO_END(-1);
 }

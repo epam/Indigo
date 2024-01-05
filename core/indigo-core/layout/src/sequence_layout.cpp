@@ -35,7 +35,7 @@ void SequenceLayout::make()
     {
         if (_molecule.isTemplateAtom(i))
         {
-            make(i);
+            make(41);
             break;
         }
     }
@@ -62,6 +62,8 @@ void SequenceLayout::make(int first_atom_idx)
         {
             Array<char> atom_label;
             _molecule.getAtomSymbol(t.ap_occur_idx, atom_label);
+            if (t.ap_occur_idx == 41)
+                printf("here!!!");
             auto tg_idx = _molecule.tgroups.findTGroup(atom_label.ptr());
             if (tg_idx != -1)
             {
@@ -78,7 +80,13 @@ void SequenceLayout::make(int first_atom_idx)
     auto comparePair = [](const PriorityElement& lhs, const PriorityElement& rhs) { return lhs.dir > rhs.dir; };
     std::priority_queue<PriorityElement, std::vector<PriorityElement>, decltype(comparePair)> pq(comparePair);
 
-    pq.emplace(0, first_atom_idx, 0, 0);
+    
+    auto dirs_it = directions_map.find(first_atom_idx);
+    if (dirs_it != directions_map.end() && dirs_it->second.size())
+    {
+        auto first_dir = dirs_it->second.begin()->first;
+        pq.emplace(first_dir, first_atom_idx, 0, 0);
+    }
 
     // bfs algorythm for a graph
     while (pq.size())

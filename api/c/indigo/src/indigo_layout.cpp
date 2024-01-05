@@ -49,10 +49,12 @@ CEXPORT int indigoLayout(int object)
                     f.unhide(submol.vertices[i]);
                 }
             }
-            //    experimantal layout for sequences
-            //    SequenceLayout sl(*mol);
-            //    sl.make();
-            if (mol->tgroups.getTGroupCount() == 0)
+            if (mol->isSequence())
+            {
+                SequenceLayout sl(*mol);
+                sl.make();
+            }
+            else if (mol->tgroups.getTGroupCount() == 0)
             {
                 MoleculeLayout ml(*mol, self.smart_layout);
 
