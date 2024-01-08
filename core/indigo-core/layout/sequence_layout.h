@@ -58,7 +58,7 @@ namespace indigo
         DECL_ERROR;
 
     private:
-        bool preferBranch(TGroup& tg);
+        int getAttachmentPointId(BaseMolecule::TemplateAttPoint& tap);
         BaseMolecule& _molecule;
         std::map<int, std::map<int, int>> _layout_sequence;
     };

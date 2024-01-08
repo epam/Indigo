@@ -18,11 +18,11 @@
 
 #include <unordered_map>
 
+#include "molecule/base_molecule.h"
 #include "molecule/monomer_commons.h"
 
 namespace indigo
 {
-
     std::string classToPrefix(const std::string& monomer_class)
     {
         if (monomer_class == kMonomerClassdAA || monomer_class == kMonomerClassDNA)
@@ -62,6 +62,11 @@ namespace indigo
         static const std::unordered_set<std::string> kAminoClasses = {kMonomerClassAA,    kMonomerClassdAA,    kMonomerClassAminoAcid, kMonomerClassDAminoAcid,
                                                                       kMonomerClassMODAA, kMonomerClassMODDAA, kMonomerClassXLINKAA,   kMonomerClassXLINKDAA};
         return kAminoClasses.find(monomer_class) != kAminoClasses.end();
+    }
+
+    bool isBackboneClass(const std::string& monomer_class)
+    {
+        return isAminoAcidClass(monomer_class) || monomer_class == kMonomerClassSUGAR || monomer_class == kMonomerClassPHOSPHATE;
     }
 
     bool isBasicAminoAcid(const std::string& monomer_class, const std::string& alias)
@@ -200,5 +205,46 @@ namespace indigo
             break;
         }
         return false;
+    }
+
+    std::string monomerAlias(const TGroup& tg)
+    {
+        std::string monomer_class;
+        std::string alias;
+        std::string name;
+
+        if (tg.tgroup_class.ptr())
+            monomer_class = tg.tgroup_class.ptr();
+
+        if (tg.tgroup_alias.ptr())
+            alias = tg.tgroup_alias.ptr();
+
+        if (tg.tgroup_name.ptr())
+            name = tg.tgroup_name.ptr();
+
+        if (alias.size())
+            alias = normalizeMonomerAlias(monomer_class, alias);
+        else
+        {
+            alias = name;
+            if (name.size() == 1)
+                alias = std::toupper(name.front());
+            else if (name.empty())
+                alias = std::string("#") + std::to_string(tg.tgroup_id - 1);
+        }
+        return alias;
+    }
+
+    std::optional<std::reference_wrapper<TGroup>> findTemplateInMap(
+        const std::string& name, const std::string& class_name,
+        std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map)
+    {
+        auto tg_it = templates_map.find(std::make_pair(name, class_name));
+        if (tg_it == templates_map.end())
+        {
+            auto mname = monomerNameByAlias(class_name, name);
+            tg_it = templates_map.find(std::make_pair(mname, class_name));
+        }
+        return tg_it == templates_map.end() ? std::nullopt : std::optional<std::reference_wrapper<TGroup>>(std::ref(tg_it->second));
     }
 }

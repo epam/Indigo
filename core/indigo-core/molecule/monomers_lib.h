@@ -2,7 +2,7 @@
 #define __monomers_lib__
 
 #include "base_cpp/exception.h"
-#include "molecule/molecule.h"
+#include "molecule/molecule_tgroups.h"
 #include <map>
 #include <memory>
 #include <string>

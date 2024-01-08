@@ -41,15 +41,22 @@ void SequenceLayout::make()
     }
 }
 
-bool SequenceLayout::preferBranch(TGroup& tg)
+int SequenceLayout::getAttachmentPointId(BaseMolecule::TemplateAttPoint& tap, TGroup& tg)
 {
     std::string tg_class(tg.tgroup_class.ptr());
-    bool res = isAminoAcidClass(tg_class) || tg_class == kMonomerClassSUGAR || tg_class == kMonomerClassPHOSPHATE;
-    return !res;
+    int ap_id = tap.ap_id[0] - 'A';
+    if (isAminoAcidClass(tg_class) || tg_class == kMonomerClassSUGAR || tg_class == kMonomerClassPHOSPHATE)
+        return ap_id;
+    if (tg_class == kMonomerClassBASE && ap_id == kLeftAttachmentPointIdx)
+        return kBaseBranchAttachmentPointIdx;
+    return ap_id + kBranchAttachmentPointIdx + 1;
 }
 
 void SequenceLayout::make(int first_atom_idx)
 {
+    std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
+    _molecule.getTemplatesMap(templates);
+
     auto atoms_num = _molecule.vertexCount();
     std::unordered_map<int, uint8_t> vertices_visited;
     std::map<int, std::map<int, int>> directions_map;
@@ -57,18 +64,21 @@ void SequenceLayout::make(int first_atom_idx)
     for (int i = _molecule.template_attachment_points.begin(); i != _molecule.template_attachment_points.end();
          i = _molecule.template_attachment_points.next(i))
     {
-        auto& t = _molecule.template_attachment_points[i];
-        if (t.ap_id.size())
+        auto& tap = _molecule.template_attachment_points[i];
+        if (tap.ap_id.size())
         {
             Array<char> atom_label;
-            _molecule.getAtomSymbol(t.ap_occur_idx, atom_label);
-            if (t.ap_occur_idx == 41)
-                printf("here!!!");
-            auto tg_idx = _molecule.tgroups.findTGroup(atom_label.ptr());
-            if (tg_idx != -1)
+            _molecule.getAtomSymbol(tap.ap_occur_idx, atom_label);
+            if (tap.ap_occur_idx == 41)
+                printf("test");
+            auto tg_ref = findTemplateInMap(atom_label.ptr(), _molecule.getTemplateAtomClass(t.ap_occur_idx), templates);
+            if (tg_ref.has_value())
             {
-                auto& tg = _molecule.tgroups.getTGroup(tg_idx);
-                int ap_id = t.ap_id[0] - 'A';
+                auto& tg = tg_ref.value().get();
+                int ap_id = tap.ap_id[0] - 'A';
+                auto bt = getBranchingType(tg);
+
+                switch (bt)
                 if (preferBranch(tg))
                     ap_id += kBranchAttachmentPointIdx + 1;
                 directions_map[t.ap_occur_idx].emplace(ap_id, t.ap_aidx);
@@ -80,7 +90,6 @@ void SequenceLayout::make(int first_atom_idx)
     auto comparePair = [](const PriorityElement& lhs, const PriorityElement& rhs) { return lhs.dir > rhs.dir; };
     std::priority_queue<PriorityElement, std::vector<PriorityElement>, decltype(comparePair)> pq(comparePair);
 
-    
     auto dirs_it = directions_map.find(first_atom_idx);
     if (dirs_it != directions_map.end() && dirs_it->second.size())
     {
@@ -130,19 +139,22 @@ void SequenceLayout::make(int first_atom_idx)
                 aready_visited = true;
         }
     }
-    auto row_it = _layout_sequence.begin();
-    auto col_it = row_it->second.begin();
-    int base_col = col_it->first;
-    int base_row = row_it->first;
-    const auto& origin = _molecule.getAtomXyz(col_it->second);
-    for (auto& row : _layout_sequence)
+    if (_layout_sequence.size())
     {
-        int y_int = row.first - base_row;
-        for (auto& col : row.second)
+        auto row_it = _layout_sequence.begin();
+        auto col_it = row_it->second.begin();
+        int base_col = col_it->first;
+        int base_row = row_it->first;
+        const auto& origin = _molecule.getAtomXyz(col_it->second);
+        for (auto& row : _layout_sequence)
         {
-            int x_int = col.first - base_col;
-            Vec3f v(MoleculeLayout::DEFAULT_BOND_LENGTH * x_int, MoleculeLayout::DEFAULT_BOND_LENGTH * y_int, 0);
-            _molecule.setAtomXyz(col.second, v);
+            int y_int = row.first - base_row;
+            for (auto& col : row.second)
+            {
+                int x_int = col.first - base_col;
+                Vec3f v(MoleculeLayout::DEFAULT_BOND_LENGTH * x_int, MoleculeLayout::DEFAULT_BOND_LENGTH * y_int, 0);
+                _molecule.setAtomXyz(col.second, v);
+            }
         }
     }
 }

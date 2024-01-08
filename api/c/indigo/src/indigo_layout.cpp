@@ -49,7 +49,8 @@ CEXPORT int indigoLayout(int object)
                     f.unhide(submol.vertices[i]);
                 }
             }
-            if (mol->isSequence())
+            // experimental layout
+            if (mol->countTemplateAtoms())
             {
                 SequenceLayout sl(*mol);
                 sl.make();

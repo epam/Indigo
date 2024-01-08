@@ -4495,7 +4495,7 @@ void BaseMolecule::removeAlias(int atom_idx)
     aliases.remove(atom_idx);
 }
 
-bool BaseMolecule::isSequence()
+int BaseMolecule::countTemplateAtoms()
 {
     int mon_count = 0;
     for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
@@ -4503,5 +4503,5 @@ bool BaseMolecule::isSequence()
         if (isTemplateAtom(i))
             mon_count++;
     }
-    return mon_count == vertexCount();
+    return mon_count;
 }

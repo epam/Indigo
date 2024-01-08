@@ -3,12 +3,14 @@
 
 #include <string>
 #include <unordered_set>
+#include <optional>
 
 #include "molecule/monomers_lib.h"
 #include "molecule/parse_utils.h"
 
 namespace indigo
 {
+    class TGroup;
     const int kStdMonomerDef = 3;
 
     // amino acids
@@ -47,6 +49,8 @@ namespace indigo
 
     bool isAminoAcidClass(const std::string& monomer_class);
 
+    bool isBackboneClass(const std::string& monomer_class);
+
     bool isRNAClass(const std::string& monomer_class);
 
     bool isDNAClass(const std::string& monomer_class);
@@ -66,10 +70,15 @@ namespace indigo
     bool isAttachmentPointsInOrder(int order, const std::string& label);
     int getAttachmentOrder(const std::string& label);
     std::string getAttachmentLabel(int order);
+    std::string monomerAlias(const TGroup& tg);
+    std::optional<std::reference_wrapper<TGroup>> findTemplateInMap(
+        const std::string& name, const std::string& class_name,
+        std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map);
 
     const auto kLeftAttachmentPoint = "Al";
     const auto kRightAttachmentPoint = "Br";
     const auto kBranchAttachmentPoint = "Cx";
+    const int kBaseBranchAttachmentPointIdx = -1;
     const int kLeftAttachmentPointIdx = 0;
     const int kRightAttachmentPointIdx = 1;
     const int kBranchAttachmentPointIdx = 2;
