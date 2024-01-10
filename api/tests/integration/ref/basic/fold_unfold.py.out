@@ -1294,3 +1294,25 @@ N#CC(C#N)=C1C([H])=C([H])C(=C(C#N)C#N)C([H])=C1[H] |t:4,10|
 N#CC(C#N)=C1C([H])=C([H])C(=C(C#N)C#N)C([H])=C1[H] |t:4,10|
 N#CC(C#N)=C1C=CC(=C(C#N)C#N)C=C1 |t:4,8|
 
+testing query CC[H]
+8
+2
+testing query rection [H]CC>>CC
+CC>>CC
+2
+2
+[H]C([H])([H])C([H])([H])[H]>>C([H])([H])([H])C([H])([H])[H]
+8
+8
+CC>>CC
+2
+2
+testing query [H][H]
+2
+2
+testing query [2H]C
+5
+2
+testing query N#CC(C#N)=C1C([H])=C([H])C(=C(C#N)C#N)C([H])=C1[H] |t:4,10|
+20
+16

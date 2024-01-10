@@ -476,6 +476,26 @@ bool LayeredMolecules::dearomatize(const AromaticityOptions& options)
     return _proto.dearomatize(options);
 }
 
+int LayeredMolecules::addAtom(int label)
+{
+    return _proto.addAtom(label);
+}
+
+int LayeredMolecules::addBond(int beg, int end, int order)
+{
+    return _proto.addBond(beg, end, order);
+}
+
+int LayeredMolecules::getImplicitH(int idx, bool impl_h_no_throw)
+{
+    return _proto.getImplicitH(idx, impl_h_no_throw);
+}
+
+void LayeredMolecules::setImplicitH(int idx, int impl_h)
+{
+    return _proto.setImplicitH(idx, impl_h);
+}
+
 void LayeredMolecules::_mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags)
 {
     throw Error("_mergeWithSubmolecule method is not implemented in LayeredMolecules class");

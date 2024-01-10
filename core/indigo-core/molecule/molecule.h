@@ -40,7 +40,7 @@ namespace indigo
 
         BaseMolecule* neu() override;
 
-        int addAtom(int label);
+        int addAtom(int label) override;
         int resetAtom(int idx, int label);
 
         void setPseudoAtom(int idx, const char* text);
@@ -53,7 +53,7 @@ namespace indigo
         void setTemplateAtomDisplayOption(int idx, int contracted);
         void setTemplateAtomTemplateIndex(int idx, int temp_idx);
 
-        int addBond(int beg, int end, int order);
+        int addBond(int beg, int end, int order) override;
         int addBond_Silent(int beg, int end, int order);
 
         void setAtomCharge(int idx, int charge);
@@ -65,7 +65,7 @@ namespace indigo
         void resetExplicitValence(int idx);
         bool isExplicitValenceSet(int idx);
 
-        void setImplicitH(int idx, int impl_h);
+        void setImplicitH(int idx, int impl_h) override;
         bool isImplicitHSet(int idx);
 
         // Set bond order method.
@@ -113,6 +113,7 @@ namespace indigo
         bool aromatize(const AromaticityOptions& options) override;
         bool dearomatize(const AromaticityOptions& options) override;
 
+        int getImplicitH(int idx, bool impl_h_no_throw) override;
         int getImplicitH(int idx);
         int getImplicitH_NoThrow(int idx, int fallback);
         int calcImplicitHForConnectivity(int idx, int conn);
@@ -140,12 +141,8 @@ namespace indigo
 
         static int matchAtomsCmp(Graph& g1, Graph& g2, int idx1, int idx2, void* userdata);
 
-        void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false);
-
         static void saveBondOrders(Molecule& mol, Array<int>& orders);
         static void loadBondOrders(Molecule& mol, Array<int>& orders);
-
-        bool convertableToImplicitHydrogen(int idx);
 
         void invalidateHCounters();
 

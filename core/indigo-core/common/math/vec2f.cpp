@@ -103,7 +103,7 @@ float Vec2f::tiltAngle()
     float l = length();
 
     if (l < EPSILON)
-        throw Error("zero length");
+        return 0;
 
     if (y >= 0)
         return acos(x / l);
@@ -115,7 +115,7 @@ float Vec2f::tiltAngle2()
     float l = length();
 
     if (l < EPSILON)
-        throw Error("zero length");
+        return 0;
 
     if (y >= 0)
         return acos(x / l);

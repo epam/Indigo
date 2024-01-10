@@ -452,16 +452,19 @@ CEXPORT int indigoUnfoldHydrogens(int item)
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(item);
+        QS_DEF(Array<int>, markers);
 
         if (IndigoBaseMolecule::is(obj))
         {
-            QS_DEF(Array<int>, markers);
-            obj.getMolecule().unfoldHydrogens(&markers, -1);
+            obj.getBaseMolecule().unfoldHydrogens(&markers, -1);
         }
         else if (IndigoBaseReaction::is(obj))
         {
-            Reaction& rxn = obj.getReaction();
-            rxn.unfoldHydrogens();
+            BaseReaction& rxn = obj.getBaseReaction();
+            for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+            {
+                rxn.getBaseMolecule(i).unfoldHydrogens(&markers, -1);
+            }
         }
         else
             throw IndigoError("indigoUnfoldHydrogens(): %s given", obj.debugInfo());
@@ -471,7 +474,7 @@ CEXPORT int indigoUnfoldHydrogens(int item)
     INDIGO_END(-1);
 }
 
-static bool _removeHydrogens(Molecule& mol)
+static bool _removeHydrogens(BaseMolecule& mol)
 {
     QS_DEF(Array<int>, to_remove);
     QS_DEF(Array<int>, sterecenters_to_validate);
@@ -506,14 +509,14 @@ CEXPORT int indigoFoldHydrogens(int item)
         IndigoObject& obj = self.getObject(item);
 
         if (IndigoBaseMolecule::is(obj))
-            _removeHydrogens(obj.getMolecule());
+            _removeHydrogens(obj.getBaseMolecule());
         else if (IndigoBaseReaction::is(obj))
         {
             int i;
-            Reaction& rxn = obj.getReaction();
+            BaseReaction& rxn = obj.getBaseReaction();
 
             for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-                _removeHydrogens(rxn.getMolecule(i));
+                _removeHydrogens(rxn.getBaseMolecule(i));
         }
         else
             throw IndigoError("indigoFoldHydrogens(): %s given", obj.debugInfo());
