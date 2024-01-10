@@ -4505,3 +4505,82 @@ bool BaseMolecule::isSequence()
     }
     return mon_count == vertexCount();
 }
+
+void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool impl_h_no_throw)
+{
+    int v_end = vertexEnd();
+
+    QS_DEF(Array<int>, imp_h_count);
+    imp_h_count.clear_resize(vertexEnd());
+    imp_h_count.zerofill();
+
+    // getImplicitH can throw an exception, and we need to get the number of hydrogens
+    // before unfolding them
+    for (int i = vertexBegin(); i < v_end; i = vertexNext(i))
+    {
+        if (isPseudoAtom(i) || isRSite(i) || isTemplateAtom(i))
+            continue;
+
+        imp_h_count[i] = getImplicitH(i, impl_h_no_throw);
+    }
+
+    if (markers_out != 0)
+    {
+        markers_out->clear_resize(vertexEnd());
+        markers_out->zerofill();
+    }
+
+    for (int i = vertexBegin(); i < v_end; i = vertexNext(i))
+    {
+        int impl_h = imp_h_count[i];
+        if (impl_h == 0)
+            continue;
+
+        int h_cnt;
+        if ((max_h_cnt == -1) || (max_h_cnt > impl_h))
+            h_cnt = impl_h;
+        else
+            h_cnt = max_h_cnt;
+
+        for (int j = 0; j < h_cnt; j++)
+        {
+            int new_h_idx = addAtom(ELEM_H);
+
+            addBond(i, new_h_idx, BOND_SINGLE);
+            if (markers_out != 0)
+            {
+                markers_out->expandFill(new_h_idx + 1, 0);
+                markers_out->at(new_h_idx) = 1;
+            }
+
+            stereocenters.registerUnfoldedHydrogen(i, new_h_idx);
+            cis_trans.registerUnfoldedHydrogen(*this, i, new_h_idx);
+            allene_stereo.registerUnfoldedHydrogen(i, new_h_idx);
+            sgroups.registerUnfoldedHydrogen(i, new_h_idx);
+        }
+
+        setImplicitH(i, impl_h - h_cnt);
+    }
+
+    updateEditRevision();
+}
+
+bool BaseMolecule::convertableToImplicitHydrogen(int idx)
+{
+    if (getAtomNumber(idx) == ELEM_H && getAtomIsotope(idx) <= 0 && getVertex(idx).degree() == 1)
+    {
+        int nei = getVertex(idx).neiVertex(getVertex(idx).neiBegin());
+        if (getAtomNumber(nei) != ELEM_H || getAtomIsotope(nei) > 0)
+        {
+            if (stereocenters.getType(nei) > 0)
+                if (getVertex(nei).degree() == 3)
+                    return false; // not ignoring hydrogens around stereocenters with lone pair
+
+            if (!cis_trans.convertableToImplicitHydrogen(*this, idx))
+                return false;
+
+            return true;
+        }
+    }
+    return false;
+}

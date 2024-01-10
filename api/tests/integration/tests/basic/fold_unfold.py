@@ -41,6 +41,16 @@ def testFoldUnfoldSingleMol(smiles):
     print(mol2.countAtoms())
 
 
+def testFoldUnfoldSingleQueryMol(smiles):
+    print("testing query " + smiles)
+    mol = indigo.loadQueryMolecule(smiles)
+    mol2 = mol.clone()
+    mol2.unfoldHydrogens()
+    print(mol2.countAtoms())
+    mol2.foldHydrogens()
+    print(mol2.countAtoms())
+
+
 def testFoldUnfoldSingleReaction(smiles):
     print("testing " + smiles)
     rxn = indigo.loadReaction(smiles)
@@ -59,6 +69,23 @@ def testFoldUnfoldSingleReaction(smiles):
         print(mol.countAtoms())
 
 
+def testFoldUnfoldQueryReaction(smiles):
+    print("testing query rection " + smiles)
+    rxn = indigo.loadQueryReaction(smiles)
+    rxn.foldHydrogens()
+    print(rxn.smiles())
+    for mol in rxn.iterateMolecules():
+        print(mol.countAtoms())
+    rxn.unfoldHydrogens()
+    print(rxn.smiles())
+    for mol in rxn.iterateMolecules():
+        print(mol.countAtoms())
+    rxn.foldHydrogens()
+    print(rxn.smiles())
+    for mol in rxn.iterateMolecules():
+        print(mol.countAtoms())
+
+
 testFoldUnfoldSDF(
     joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__)
 )
@@ -68,4 +95,11 @@ testFoldUnfoldSingleMol("[H][H]")
 testFoldUnfoldSingleMol("[2H]C")
 testFoldUnfoldSDF(
     joinPathPy("molecules/cis_trans_hydrogens_cycle.sdf", __file__)
+)
+testFoldUnfoldSingleQueryMol("CC[H]")
+testFoldUnfoldQueryReaction("[H]CC>>CC")
+testFoldUnfoldSingleQueryMol("[H][H]")
+testFoldUnfoldSingleQueryMol("[2H]C")
+testFoldUnfoldSingleQueryMol(
+    "N#CC(C#N)=C1C([H])=C([H])C(=C(C#N)C#N)C([H])=C1[H] |t:4,10|"
 )
