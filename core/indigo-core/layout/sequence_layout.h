@@ -58,7 +58,7 @@ namespace indigo
         DECL_ERROR;
 
     private:
-        int getAttachmentPointId(BaseMolecule::TemplateAttPoint& tap);
+        void processPosition(int& row, int& col, int atom_from_idx, const std::pair<int, int>& dir);
         BaseMolecule& _molecule;
         std::map<int, std::map<int, int>> _layout_sequence;
     };

@@ -35,21 +35,39 @@ void SequenceLayout::make()
     {
         if (_molecule.isTemplateAtom(i))
         {
-            make(41);
+            make(i);
             break;
         }
     }
 }
 
-int SequenceLayout::getAttachmentPointId(BaseMolecule::TemplateAttPoint& tap, TGroup& tg)
+void SequenceLayout::processPosition(int& row, int& col, int atom_from_idx, const std::pair<int,int>& dir)
 {
-    std::string tg_class(tg.tgroup_class.ptr());
-    int ap_id = tap.ap_id[0] - 'A';
-    if (isAminoAcidClass(tg_class) || tg_class == kMonomerClassSUGAR || tg_class == kMonomerClassPHOSPHATE)
-        return ap_id;
-    if (tg_class == kMonomerClassBASE && ap_id == kLeftAttachmentPointIdx)
-        return kBaseBranchAttachmentPointIdx;
-    return ap_id + kBranchAttachmentPointIdx + 1;
+    int row_spacing = kRowSpacing;
+    int ap_id = dir.first;
+    std::string from_class = _molecule.getTemplateAtomClass(atom_from_idx);
+    std::string to_class = _molecule.getTemplateAtomClass(dir.second);
+
+    if (!isBackboneClass(from_class))
+        ap_id += kBranchAttachmentPointIdx + 1;
+
+    switch (dir.first)
+    {
+    case kLeftAttachmentPointIdx:
+        col--; // go left
+        break;
+    case kRightAttachmentPointIdx:
+        col++; // go right
+        break;
+    case kBranchAttachmentPointIdx:
+        row_spacing = 1;
+        [[fallthrough]];
+    default: // branch
+        auto& v1 = _molecule.getAtomXyz(atom_from_idx);
+        auto& v2 = _molecule.getAtomXyz(dir.second);
+        row += v2.y < v1.y ? -row_spacing : row_spacing; // branch up or down?
+        break;
+    }
 }
 
 void SequenceLayout::make(int first_atom_idx)
@@ -69,20 +87,8 @@ void SequenceLayout::make(int first_atom_idx)
         {
             Array<char> atom_label;
             _molecule.getAtomSymbol(tap.ap_occur_idx, atom_label);
-            if (tap.ap_occur_idx == 41)
-                printf("test");
-            auto tg_ref = findTemplateInMap(atom_label.ptr(), _molecule.getTemplateAtomClass(t.ap_occur_idx), templates);
-            if (tg_ref.has_value())
-            {
-                auto& tg = tg_ref.value().get();
-                int ap_id = tap.ap_id[0] - 'A';
-                auto bt = getBranchingType(tg);
-
-                switch (bt)
-                if (preferBranch(tg))
-                    ap_id += kBranchAttachmentPointIdx + 1;
-                directions_map[t.ap_occur_idx].emplace(ap_id, t.ap_aidx);
-            }
+            int ap_id = tap.ap_id[0] - 'A';
+            directions_map[tap.ap_occur_idx].emplace(ap_id, tap.ap_aidx);
         }
     }
 
@@ -104,34 +110,17 @@ void SequenceLayout::make(int first_atom_idx)
         pq.pop();
         int current_atom_idx = te.atom_idx;
         vertices_visited[current_atom_idx] = 1; // mark as passed
-        _layout_sequence[te.row][te.col] = current_atom_idx;
         bool found_directions = false;
         bool aready_visited = false;
+        _layout_sequence[te.row][te.col] = current_atom_idx;
         for (const auto& dir : directions_map[current_atom_idx])
         {
             int col = te.col;
             int row = te.row;
             // add to queue with priority. left, right, branch.
-            int row_spacing = kRowSpacing;
             if (vertices_visited[dir.second] == 0)
             {
-                switch (dir.first)
-                {
-                case kLeftAttachmentPointIdx:
-                    col--; // go left
-                    break;
-                case kRightAttachmentPointIdx:
-                    col++; // go right
-                    break;
-                case kBranchAttachmentPointIdx:
-                    row_spacing = 1;
-                    [[fallthrough]];
-                default: // branch
-                    auto& v1 = _molecule.getAtomXyz(current_atom_idx);
-                    auto& v2 = _molecule.getAtomXyz(dir.second);
-                    row += v2.y < v1.y ? -row_spacing : row_spacing; // branch up or down?
-                    break;
-                }
+                processPosition(row, col, current_atom_idx, dir);
                 pq.emplace(dir.first, dir.second, col, row);
                 found_directions = true;
             }

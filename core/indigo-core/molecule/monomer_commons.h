@@ -78,10 +78,9 @@ namespace indigo
     const auto kLeftAttachmentPoint = "Al";
     const auto kRightAttachmentPoint = "Br";
     const auto kBranchAttachmentPoint = "Cx";
-    const int kBaseBranchAttachmentPointIdx = -1;
     const int kLeftAttachmentPointIdx = 0;
     const int kRightAttachmentPointIdx = 1;
-    const int kBranchAttachmentPointIdx = 2;
+    const int kBranchAttachmentPointIdx = 2; // branch without a direction
 
     struct MonomerAttachmentPoint
     {
