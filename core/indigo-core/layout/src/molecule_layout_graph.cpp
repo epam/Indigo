@@ -462,11 +462,13 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
             // position fixed - shift all rectangle with atoms to point left down corner to (0, 0)
             if (n_fixed > 0)
             {
+                Vec2f shift = fixed_comps_bbox.leftBottom();
+                shift.negate();
                 for (i = 0; i < n_components; i++)
                 {
                     MoleculeLayoutGraph& component = *components[i];
                     if (component._n_fixed > 0)
-                        copyCoordsFromComponent(component, fixed_comps_bbox.leftBottom(), true);
+                        copyCoordsFromComponent(component, shift);
                 }
 
                 row_bottom += fixed_comps_bbox.height() + 2 * bond_length;
@@ -517,10 +519,8 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
     }
 }
 
-void MoleculeLayoutGraph::copyCoordsFromComponent(MoleculeLayoutGraph& component, Vec2f shift, bool negative)
+void MoleculeLayoutGraph::copyCoordsFromComponent(MoleculeLayoutGraph& component, Vec2f shift)
 {
-    if (negative)
-        shift.negate();
     for (int i = component.vertexBegin(); i < component.vertexEnd(); i = component.vertexNext(i))
     {
         _layout_vertices[component.getVertexExtIdx(i)].pos.sum(component.getPos(i), shift);

@@ -299,7 +299,7 @@ namespace indigo
 
         void getBoundingBox(Rect2f& bbox) const;
         void getBoundingBox(Vec2f& left_bottom, Vec2f& right_top) const;
-        void copyCoordsFromComponent(MoleculeLayoutGraph& component, Vec2f shift = {0, 0}, bool negative = false);
+        void copyCoordsFromComponent(MoleculeLayoutGraph& component, Vec2f shift = {0, 0});
 
         // for components
         virtual void _calcMorganCodes();
