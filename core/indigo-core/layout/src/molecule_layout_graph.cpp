@@ -577,7 +577,7 @@ void MoleculeLayoutGraph::getBoundingBox(Vec2f& left_bottom, Vec2f& right_top) c
     for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
     {
         const Vec2f& pos = getPos(i);
-        if (i == 0)
+        if (first)
         {
             left_bottom = right_top = pos;
             first = false;
