@@ -586,6 +586,25 @@ M  END
         });
     }
 
+    {
+        test("layout", "smiles-ket", () => {
+            const input_str = "CCC";
+            let options = new indigo.MapStringString();
+            options.set('aromatize-skip-superatoms', 'true');
+            options.set('dearomatize-on-load', 'false');
+            options.set('gross-formula-add-rsites', 'true');
+            options.set('ignore-no-chiral-flag', 'false');
+            options.set('ignore-stereochemistry-errors', 'true');
+            options.set('input-format', "chemical/x-unknown");
+            options.set('mass-skip-error-on-pseudoatoms', 'false');
+            options.set('output-content-type', "application/json");
+            options.set('smart-layout', 'true');
+            let ket = indigo.layout(input_str, "ket", options);
+            options.delete();
+            assert(true);
+        });
+    }
+
     // Render
     {
         test("render", "svg", () => {

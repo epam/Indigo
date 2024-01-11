@@ -327,15 +327,12 @@ namespace indigo
             }
             exceptionMessages.emplace_back(indigoGetLastError());
         }
-        else if (input_format != options.end())
+        else if (input_format != options.end() && seq_formats.count(input_format->second))
         {
             auto seq_it = seq_formats.find(input_format->second);
-            if (seq_it != seq_formats.end())
-            {
-                objectId = indigoLoadSequenceFromString(data.c_str(), seq_it->second.c_str());
-                if (objectId >= 0)
-                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
-            }
+            objectId = indigoLoadSequenceFromString(data.c_str(), seq_it->second.c_str());
+            if (objectId >= 0)
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
         }
         else
         {
