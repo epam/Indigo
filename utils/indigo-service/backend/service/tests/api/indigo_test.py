@@ -876,6 +876,29 @@ $END MOL
         # )
         # self.assertEqual(200, result.status_code)
 
+    def test_layout_ccc(self):
+        headers, data = self.get_headers(
+            {
+                "struct": "CCC",
+                "output_format": "chemical/x-indigo-ket",
+                "options": {
+                    "input-format": "chemical/x-unknown",
+                    "aromatize-skip-superatoms": True,
+                    "dearomatize-on-load": False,
+                    "gross-formula-add-rsites": True,
+                    "ignore-no-chiral-flag": True,
+                    "ignore-stereochemistry-errors": True,
+                    "mass-skip-error-on-pseudoatoms": False,
+                    "smart-layout": True,
+                },
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/layout", headers=headers, data=data
+        )
+        result_data = json.loads(result.text)
+        self.assertEqual(200, result.status_code)
+
     def test_layout(self):
         result = requests.post(
             self.url_prefix + "/layout",
