@@ -209,6 +209,7 @@ namespace indigo
             bool valueWithinRange(int value);
 
             bool hasConstraintWithValue(int what_type, int what_value);
+            bool updateConstraintWithValue(int what_type, int new_value);
 
             Atom* sureConstraint(int what_type);
 
@@ -309,9 +310,11 @@ namespace indigo
         int getAtomRingBondsCount(int idx) override;
         int getAtomConnectivity(int idx) override;
 
+        int calcAtomMaxH(int idx, int conn);
         int getAtomMaxH(int idx) override;
         int getAtomMinH(int idx) override;
         int getAtomTotalH(int idx) override;
+        int getAtomConnectedH(int idx);
 
         bool isPseudoAtom(int idx) override;
         const char* getPseudoAtom(int idx) override;
@@ -406,6 +409,12 @@ namespace indigo
         Bond* releaseBond(int idx);
         void resetBond(int idx, Bond* bond);
         int addBond(int beg, int end, Bond* bond);
+
+        int addAtom(int label) override;
+        int addBond(int beg, int end, int order) override;
+
+        int getImplicitH(int idx, bool impl_h_no_throw) override;
+        void setImplicitH(int idx, int impl_h) override;
 
         void optimize();
 

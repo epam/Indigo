@@ -281,6 +281,17 @@ namespace indigo
         // Returns true if all bonds were dearomatized
         virtual bool dearomatize(const AromaticityOptions& options) = 0;
 
+        bool convertableToImplicitHydrogen(int idx);
+
+        virtual int addAtom(int label) = 0;
+
+        virtual int addBond(int beg, int end, int order) = 0;
+
+        void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false);
+
+        virtual int getImplicitH(int idx, bool impl_h_no_throw) = 0;
+        virtual void setImplicitH(int idx, int impl_h) = 0;
+
         enum
         {
             CHANGED_ATOM_NUMBER = 0x01,

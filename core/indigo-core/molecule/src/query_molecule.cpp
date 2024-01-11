@@ -236,12 +236,16 @@ bool QueryMolecule::possibleAtomIsotope(int idx, int isotope)
 
 bool QueryMolecule::possibleAtomCharge(int idx, int charge)
 {
-    return _atoms[idx]->possibleValue(ATOM_CHARGE, charge);
+    if (_atoms[idx]->hasConstraint(ATOM_CHARGE))
+        return _atoms[idx]->possibleValue(ATOM_CHARGE, charge);
+    return 0 == charge; // No charge set - means charge 0
 }
 
 bool QueryMolecule::possibleAtomRadical(int idx, int radical)
 {
-    return _atoms[idx]->possibleValue(ATOM_RADICAL, radical);
+    if (_atoms[idx]->hasConstraint(ATOM_RADICAL))
+        return _atoms[idx]->possibleValue(ATOM_RADICAL, radical);
+    return 0 == radical; // No radical set - means radical 0
 }
 
 void QueryMolecule::getAtomDescription(int idx, Array<char>& description)
@@ -1249,6 +1253,30 @@ bool QueryMolecule::Atom::hasConstraintWithValue(int what_type, int what_value)
     return false;
 }
 
+bool QueryMolecule::Atom::updateConstraintWithValue(int what_type, int new_value)
+{
+    if (type == what_type)
+    {
+        value_max = new_value;
+        value_min = new_value;
+        return true;
+    }
+
+    if (type == OP_NONE)
+        return false;
+
+    if (type == OP_AND || type == OP_OR || type == OP_NOT)
+    {
+        int i;
+
+        for (i = 0; i < children.size(); i++)
+            if (((Atom*)children[i])->updateConstraintWithValue(what_type, new_value))
+                return true;
+    }
+
+    return false;
+}
+
 QueryMolecule::Bond* QueryMolecule::Bond::und(Bond* bond1, Bond* bond2)
 {
     return (Bond*)_und(bond1, bond2);
@@ -2219,19 +2247,12 @@ bool QueryMolecule::dearomatize(const AromaticityOptions& options)
     return MoleculeDearomatizer::dearomatizeMolecule(*this, options);
 }
 
-int QueryMolecule::getAtomMaxH(int idx)
+int QueryMolecule::calcAtomMaxH(int idx, int conn)
 {
-    int total;
-
-    if (_atoms[idx]->sureValue(ATOM_TOTAL_H, total))
-        return total;
-
     int number = getAtomNumber(idx);
 
     if (number == -1)
         return -1;
-
-    int conn = _calcAtomConnectivity(idx);
 
     if (conn == -1)
         return -1;
@@ -2269,17 +2290,36 @@ int QueryMolecule::getAtomMaxH(int idx)
             }
         }
     }
+    return max_h;
+}
 
-    const Vertex& vertex = getVertex(idx);
-    int i;
+int QueryMolecule::getAtomMaxH(int idx)
+{
+    int total;
 
-    for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
-    {
-        if (possibleAtomNumber(vertex.neiVertex(i), ELEM_H))
-            max_h++;
-    }
+    if (_atoms[idx]->sureValue(ATOM_TOTAL_H, total))
+        return total;
+
+    int max_h = calcAtomMaxH(idx, _calcAtomConnectivity(idx));
+    if (max_h < 0)
+        return -1;
+
+    max_h += getAtomConnectedH(idx);
 
     return max_h;
+}
+
+int QueryMolecule::getAtomConnectedH(int idx)
+{
+    const Vertex& vertex = getVertex(idx);
+    int connected_h = 0;
+
+    for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+    {
+        if (possibleAtomNumber(vertex.neiVertex(i), ELEM_H))
+            connected_h++;
+    }
+    return connected_h;
 }
 
 int QueryMolecule::getAtomMinH(int idx)
@@ -3124,4 +3164,55 @@ void QueryMolecule::getComponentNeighbors(std::list<std::unordered_set<int>>& co
         if (atoms.size() > 1)
             componentNeighbors.emplace_back(atoms);
     }
+}
+
+int QueryMolecule::addAtom(int label)
+{
+    return addAtom(new Atom(ATOM_NUMBER, label));
+}
+
+int QueryMolecule::addBond(int beg, int end, int order)
+{
+    return addBond(beg, end, QueryMolecule::createQueryMoleculeBond(order, BOND_ZERO, BOND_ZERO));
+}
+
+int QueryMolecule::getImplicitH(int idx, bool impl_h_no_throw)
+{
+    Atom& atom = getAtom(idx);
+    std::vector<std::unique_ptr<Atom>> atoms;
+    std::map<int, std::unique_ptr<Atom>> properties;
+
+    int query_atom_type = QueryMolecule::parseQueryAtomSmarts(*this, idx, atoms, properties);
+
+    if (query_atom_type == QUERY_ATOM_UNKNOWN)
+        return 0; // Complex query cannot calculate implicit H
+
+    if (properties.count(ATOM_IMPLICIT_H) > 0)
+        return properties[ATOM_IMPLICIT_H]->value_min; // Implicit H set in properties
+
+    // If implicit h is not set - calculate it
+    int max_h = 0;
+    int conn = _calcAtomConnectivity(idx);
+    if (properties.count(ATOM_TOTAL_H) > 0)
+        max_h = properties[ATOM_TOTAL_H]->value_min - getAtomConnectedH(idx);
+    else
+        max_h = calcAtomMaxH(idx, conn); // count of H that can be added ( valence - conn )
+
+    if (properties.count(ATOM_TOTAL_BOND_ORDER) > 0)
+    {
+        int max_conn = max_h + conn;
+        int valence = properties[ATOM_TOTAL_BOND_ORDER]->value_min;
+        if (max_conn > valence)
+            max_h -= max_conn - valence;
+    }
+
+    if (max_h < 0)
+        max_h = 0;
+
+    return max_h;
+}
+
+void QueryMolecule::setImplicitH(int idx, int impl_h)
+{
+    getAtom(idx).updateConstraintWithValue(ATOM_IMPLICIT_H, impl_h);
 }
