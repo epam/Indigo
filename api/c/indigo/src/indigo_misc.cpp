@@ -18,6 +18,7 @@
 
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
+#include "layout/molecule_layout.h"
 #include "molecule/elements.h"
 #include "molecule/icm_loader.h"
 #include "molecule/icm_saver.h"
@@ -456,7 +457,24 @@ CEXPORT int indigoUnfoldHydrogens(int item)
 
         if (IndigoBaseMolecule::is(obj))
         {
-            obj.getBaseMolecule().unfoldHydrogens(&markers, -1);
+            BaseMolecule& bmol = obj.getBaseMolecule();
+            bmol.unfoldHydrogens(&markers, -1);
+            // Layout hydrogens
+            MoleculeLayoutGraphSimple layout;
+            layout.hard_respect_existing = true;
+            layout.makeOnGraph(bmol);
+            for (int i = layout.vertexBegin(); i < layout.vertexEnd(); i = layout.vertexNext(i))
+            {
+                const Vec3f& pos = bmol.getAtomXyz(layout.getVertexExtIdx(i));
+                layout.getPos(i).set(pos.x, pos.y);
+            }
+            Filter new_filter(markers.ptr(), Filter::EQ, 1);
+            layout.layout(bmol, 1, &new_filter, true);
+            for (int i = layout.vertexBegin(); i < layout.vertexEnd(); i = layout.vertexNext(i))
+            {
+                const LayoutVertex& vert = layout.getLayoutVertex(i);
+                bmol.setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
+            }
         }
         else if (IndigoBaseReaction::is(obj))
         {
