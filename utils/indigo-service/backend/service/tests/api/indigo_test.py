@@ -896,7 +896,6 @@ $END MOL
         result = requests.post(
             self.url_prefix + "/layout", headers=headers, data=data
         )
-        result_data = json.loads(result.text)
         self.assertEqual(200, result.status_code)
 
     def test_layout(self):
