@@ -76,7 +76,7 @@ namespace indigo
         {
             return _dearomParams;
         }
-        void setDearomatizationParams(int params)
+        void setDearomatizationParams(byte params)
         {
             _dearomParams = params;
         }
