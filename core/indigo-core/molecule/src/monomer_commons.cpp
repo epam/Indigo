@@ -157,9 +157,9 @@ namespace indigo
     int getAttachmentOrder(const std::string& label)
     {
         if (label == kLeftAttachmentPoint)
-            return 0;
+            return kLeftAttachmentPointIdx;
         if (label == kRightAttachmentPoint)
-            return 1;
+            return kRightAttachmentPointIdx;
         if (label.size() > 1 || isupper(label[0]))
         {
             if (label[0] == 'R')
@@ -171,6 +171,9 @@ namespace indigo
             if (label[1] == 'x')
                 return label[0] - 'A';
         }
+        // TODO: return right value at this point
+        //       this value returned just to avoid warnings
+        return kBranchAttachmentPointIdx;
     }
 
     bool isAttachmentPointsInOrder(int order, const std::string& label)

@@ -641,7 +641,7 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel(int v_idx)
         }
     }
 
-    if (_options.aromatize_skip_superatoms && _inside_superatoms.size() && _inside_superatoms.find(v_idx) != _inside_superatoms.end())
+    if (_options.aromatize_skip_superatoms && _inside_superatoms.size() && _inside_superatoms.find(v_idx))
         return PiValue(-1, -1);
 
     if (query.isRSite(v_idx))

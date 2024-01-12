@@ -470,7 +470,7 @@ void MoleculeCleaner2d::_uniteBondsOnLine()
     for (int i = 0; i < valid_list.size(); i++)
         valid_index[valid_list[i]] = i;
 
-    QS_DEF(ObjArray<Array<int>>, new_in);
+    QS_DEF(ObjArray<Array<bool>>, new_in);
     new_in.clear();
 
     for (int i = 0; i < new_component_count; i++)

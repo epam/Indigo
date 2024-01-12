@@ -160,7 +160,7 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
     std::vector<int> atoms;
     for (auto& node : nodes)
     {
-        int node_idx = _id_to_node_index.at(node.id);
+        int node_idx = static_cast<int>(_id_to_node_index.at(node.id));
         switch (node.type)
         {
         case kCDXNodeType_NamedAlternativeGroup:
@@ -328,7 +328,7 @@ void MoleculeCdxmlLoader::_parseCDXMLPage(CDXElement elem)
 
 void MoleculeCdxmlLoader::_parseCDXMLElements(CDXElement elem, bool no_siblings, bool inside_fragment_node)
 {
-    int fragment_start_idx = -1;
+    size_t fragment_start_idx = -1;
 
     auto node_lambda = [this](CDXElement elem) {
         CdxmlNode node;
@@ -336,11 +336,11 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(CDXElement elem, bool no_siblings,
         _addNode(node);
         if (node.has_fragment)
         {
-            int inner_idx_start = nodes.size();
+            auto inner_idx_start = nodes.size();
             this->_parseCDXMLElements(elem.firstChildElement(), false, true);
-            int inner_idx_end = nodes.size();
+            auto inner_idx_end = nodes.size();
             CdxmlNode& fragment_node = nodes[inner_idx_start - 1];
-            for (int i = inner_idx_start; i < inner_idx_end; ++i)
+            for (auto i = inner_idx_start; i < inner_idx_end; ++i)
             {
                 auto it = std::upper_bound(fragment_node.inner_nodes.cbegin(), fragment_node.inner_nodes.cend(), fragment_node.id,
                                            [](int a, int b) { return a > b; });
@@ -374,7 +374,7 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(CDXElement elem, bool no_siblings,
         {
             CdxmlBracket bracket;
             bracket.is_superatom = true;
-            for (int node_idx = fragment_start_idx; node_idx < this->nodes.size(); ++node_idx)
+            for (auto node_idx = fragment_start_idx; node_idx < this->nodes.size(); ++node_idx)
             {
                 auto& node = this->nodes[node_idx];
                 if (node.type == kCDXNodeType_Element || node.type == kCDXNodeType_ElementList)
@@ -431,11 +431,11 @@ void MoleculeCdxmlLoader::_updateConnection(const CdxmlNode& node, int atom_idx)
 void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& bonds)
 {
     _id_to_atom_idx.clear();
-    mol.reaction_atom_mapping.clear_resize(atoms.size());
+    mol.reaction_atom_mapping.clear_resize(static_cast<int>(atoms.size()));
     mol.reaction_atom_mapping.zerofill();
-    mol.reaction_atom_inversion.clear_resize(atoms.size());
+    mol.reaction_atom_inversion.clear_resize(static_cast<int>(atoms.size()));
     mol.reaction_atom_inversion.zerofill();
-    mol.reaction_atom_exact_change.clear_resize(atoms.size());
+    mol.reaction_atom_exact_change.clear_resize(static_cast<int>(atoms.size()));
     mol.reaction_atom_exact_change.zerofill();
 
     int atom_idx;
@@ -739,7 +739,7 @@ void MoleculeCdxmlLoader::_handleSGroup(SGroup& sgroup, const std::unordered_set
 
 void MoleculeCdxmlLoader::_parseFragmentAttributes(CDXProperty prop)
 {
-    for (prop; prop.hasContent(); prop = prop.next())
+    for (; prop.hasContent(); prop = prop.next())
     {
         // it means that we are inside of NodeType=Fragment
         // let's check it
@@ -767,7 +767,7 @@ void MoleculeCdxmlLoader::_parseFragmentAttributes(CDXProperty prop)
 
 void MoleculeCdxmlLoader::applyDispatcher(CDXProperty prop, const std::unordered_map<std::string, std::function<void(const std::string&)>>& dispatcher)
 {
-    for (prop; prop.hasContent(); prop = prop.next())
+    for (; prop.hasContent(); prop = prop.next())
     {
         auto it = dispatcher.find(prop.name());
         if (it != dispatcher.end())

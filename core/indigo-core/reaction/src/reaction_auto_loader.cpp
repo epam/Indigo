@@ -109,7 +109,7 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
         base64_str.erase(std::remove_if(base64_str.begin(), base64_str.end(), [](char c) { return c == '\n' || c == '\r'; }), base64_str.end());
         if (validate_base64(base64_str))
         {
-            base64_data.copy(base64_str.data(), base64_str.size());
+            base64_data.copy(base64_str.data(), static_cast<int>(base64_str.size()));
             base64_scanner = std::make_unique<BufferScanner>(base64_data, true);
             local_scanner = base64_scanner.get();
         }

@@ -623,8 +623,7 @@ namespace indigo
 
         CDXProperty findBinaryProperty(int16_t tag)
         {
-            auto prop = firstBinaryProperty();
-            for (prop; prop.hasContent(); prop = prop.getNextProp())
+            for (auto prop = firstBinaryProperty(); prop.hasContent(); prop = prop.getNextProp())
             {
                 if (prop.tag() == tag)
                     return prop;
@@ -662,7 +661,7 @@ namespace indigo
                 {
                     ptr = (uint8_t*)ptr16;
                     auto sz = skipObject(ptr) - ptr;
-                    return CDXElement(ptr, sz);
+                    return CDXElement(ptr, static_cast<int>(sz));
                 }
             }
             return CDXElement();
@@ -697,7 +696,7 @@ namespace indigo
             {
                 ptr = (uint8_t*)ptr16;
                 auto sz = skipObject(ptr) - ptr;
-                return CDXElement(ptr, sz);
+                return CDXElement(ptr, static_cast<int>(sz));
             }
             return CDXElement();
         }
@@ -810,7 +809,7 @@ namespace indigo
         CDXReader(Scanner& scanner);
         virtual CDXElement rootElement()
         {
-            return CDXElement(_buffer.data(), _buffer.size());
+            return CDXElement(_buffer.data(), static_cast<int>(_buffer.size()));
         }
 
         virtual void process()

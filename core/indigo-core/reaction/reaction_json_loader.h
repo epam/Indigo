@@ -67,8 +67,8 @@ namespace indigo
         bool treat_x_as_pseudoatom;
         bool ignore_no_chiral_flag;
 
-        const Vec2f PLUS_BBOX_SHIFT = {0.9, 0.9};
-        const Vec2f ARROW_BBOX_SHIFT = {0.0, 0.9};
+        const Vec2f PLUS_BBOX_SHIFT = {0.9f, 0.9f};
+        const Vec2f ARROW_BBOX_SHIFT = {0.0f, 0.9f};
 
     private:
         ReactionJsonLoader(const ReactionJsonLoader&); // no implicit copy

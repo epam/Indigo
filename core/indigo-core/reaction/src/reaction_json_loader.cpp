@@ -250,7 +250,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         Rect2f bbox(plus_pos - PLUS_BBOX_SHIFT, plus_pos + PLUS_BBOX_SHIFT);
         _reaction_components.emplace_back(ReactionComponent::PLUS, bbox, i, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(plus_pos);
-        int index = _reaction_components.size() - 1;
+        int index = static_cast<int>(_reaction_components.size() - 1);
         mol_tops.emplace_back(bbox.top(), index);
         mol_bottoms.emplace_back(bbox.bottom(), index);
         mol_lefts.emplace_back(bbox.left(), index);
@@ -267,7 +267,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         _reaction_components.emplace_back(arrow_type, bbox, i, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(arr_begin);
         _reaction_components.back().coordinates.push_back(arr_end);
-        int index = _reaction_components.size() - 1;
+        int index = static_cast<int>(_reaction_components.size() - 1);
         mol_tops.emplace_back(bbox.top(), index);
         mol_bottoms.emplace_back(bbox.bottom(), index);
         mol_lefts.emplace_back(bbox.left(), index);
@@ -365,7 +365,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
     for (auto& csb : _component_summ_blocks_list)
     {
         for (int v : csb.indexes)
-            _reaction_components[v].summ_block_idx = _component_summ_blocks.size();
+            _reaction_components[v].summ_block_idx = static_cast<int>(_component_summ_blocks.size());
         _component_summ_blocks.push_back(csb);
     }
 
@@ -377,7 +377,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
             break;
         if (rc.summ_block_idx == ReactionComponent::NOT_CONNECTED)
         {
-            rc.summ_block_idx = _component_summ_blocks.size();
+            rc.summ_block_idx = static_cast<int>(_component_summ_blocks.size());
             _component_summ_blocks.push_back(_reaction_components[i].bbox);
             _component_summ_blocks.back().indexes.push_back(i);
         }
@@ -390,14 +390,14 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         int arrow_type = arrow._arrow_type;
         const Vec2f& arr_begin = arrow._begin;
         const Vec2f& arr_end = arrow._end;
-        float min_dist_prod = -1, min_dist_reac = -1;
+        double min_dist_prod = -1, min_dist_reac = -1;
         int idx_cs_min_prod = -1, idx_cs_min_reac = -1;
         for (int index_cs = 0; index_cs < _component_summ_blocks.size(); ++index_cs)
         {
             auto& csb = _component_summ_blocks[index_cs];
             if (csb.bbox.rayIntersectsRect(arr_end, arr_begin))
             {
-                float dist = csb.bbox.pointDistance(arr_end);
+                double dist = csb.bbox.pointDistance(arr_end);
                 if (min_dist_prod < 0 || dist < min_dist_prod)
                 {
                     min_dist_prod = dist;
@@ -406,7 +406,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
             }
             else if (csb.bbox.rayIntersectsRect(arr_begin, arr_end))
             {
-                float dist = csb.bbox.pointDistance(arr_begin);
+                double dist = csb.bbox.pointDistance(arr_begin);
                 if (min_dist_reac < 0 || dist < min_dist_reac)
                 {
                     min_dist_reac = dist;
