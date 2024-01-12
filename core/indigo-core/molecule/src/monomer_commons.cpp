@@ -32,7 +32,7 @@ namespace indigo
 
     bool isNucleicClass(const std::string& monomer_class)
     {
-        const std::unordered_set<std::string> kNucleicClasses = {kMonomerClassDNA,    kMonomerClassRNA,      kMonomerClassMODRNA,
+        static const std::unordered_set<std::string> kNucleicClasses = {kMonomerClassDNA,    kMonomerClassRNA,      kMonomerClassMODRNA,
                                                                  kMonomerClassMODDNA, kMonomerClassXLINKRNA, kMonomerClassXLINKDNA,
                                                                  kMonomerClassSUGAR,  kMonomerClassBASE,     kMonomerClassPHOSPHATE};
         return kNucleicClasses.find(monomer_class) != kNucleicClasses.end();
@@ -77,7 +77,7 @@ namespace indigo
     std::string monomerNameByAlias(const std::string& monomer_class, const std::string& alias)
     {
         static const std::unordered_map<std::string, std::string> kAliasToNucleic = {{"A", "Ade"}, {"C", "Cyt"},  {"G", "Gua"},  {"U", "Ura"}, {"T", "Thy"},
-                                                                                     {"r", "Rib"}, {"d", "dRib"}, {"m", "mRib"}, {"p", "Pi"}};
+                                                                                     {"R", "Rib"}, {"dR", "dRib"}, {"m", "mRib"}, {"p", "Pi"}};
 
         static const std::unordered_map<std::string, std::string> kAliasToAminoAcid = {
             {"A", "Ala"}, {"R", "Arg"}, {"N", "Asn"}, {"D", "Asp"}, {"C", "Cys"}, {"Q", "Gln"}, {"E", "Glu"}, {"G", "Gly"}, {"H", "His"}, {"I", "Ile"},
@@ -105,7 +105,7 @@ namespace indigo
             {"Leu", "L"}, {"Lys", "K"}, {"Met", "M"}, {"Phe", "F"}, {"Pro", "P"}, {"Ser", "S"}, {"Thr", "T"}, {"Trp", "W"}, {"Tyr", "Y"}, {"Val", "V"}};
 
         static const std::unordered_map<std::string, std::string> kNucleicToAlias = {{"Ade", "A"}, {"Cyt", "C"},  {"Gua", "G"},  {"Ura", "U"}, {"Thy", "T"},
-                                                                                     {"Rib", "r"}, {"dRib", "d"}, {"mRib", "m"}, {"Pi", "p"}};
+                                                                                     {"Rib", "R"}, {"dRib", "dR"}, {"mRib", "m"}, {"Pi", "p"}};
 
         if (isAminoAcidClass(monomer_class))
         {

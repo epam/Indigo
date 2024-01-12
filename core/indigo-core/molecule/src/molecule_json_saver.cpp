@@ -1164,7 +1164,7 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     if (natreplace.size())
     {
         auto analog = naturalAnalog(natreplace);
-        auto nat_alias = monomerAliasByName(template_class, analog);
+        auto nat_alias = monomerAliasByName(tg.tgroup_class.ptr(), analog);
         writer.Key("naturalAnalogShort");
         writer.String(nat_alias.c_str());
         if (analog.size() > 1)
