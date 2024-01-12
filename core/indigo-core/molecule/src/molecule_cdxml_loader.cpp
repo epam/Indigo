@@ -328,7 +328,7 @@ void MoleculeCdxmlLoader::_parseCDXMLPage(CDXElement elem)
 
 void MoleculeCdxmlLoader::_parseCDXMLElements(CDXElement elem, bool no_siblings, bool inside_fragment_node)
 {
-    size_t fragment_start_idx = -1;
+    int fragment_start_idx = -1;
 
     auto node_lambda = [this](CDXElement elem) {
         CdxmlNode node;
@@ -356,7 +356,7 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(CDXElement elem, bool no_siblings,
     };
 
     auto fragment_lambda = [this, &fragment_start_idx](CDXElement elem) {
-        fragment_start_idx = nodes.size();
+        fragment_start_idx = static_cast<int>(nodes.size());
         this->_parseFragmentAttributes(elem.firstProperty());
         this->_parseCDXMLElements(elem.firstChildElement());
     };
