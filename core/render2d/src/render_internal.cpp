@@ -2297,7 +2297,7 @@ void MoleculeRenderInternal::_initBondData()
 
         d.stereodir = _mol->getBondDirection(i);
         d.cistrans = _mol->cis_trans.isIgnored(i);
-        int ubid = _bondMappingInv.size() > i ? _bondMappingInv.at(i) : i;
+        int ubid = static_cast<long>(_bondMappingInv.size()) > i ? _bondMappingInv.at(i) : i;
         if (_data.reactingCenters.size() > ubid)
             d.reactingCenter = _data.reactingCenters[ubid];
     }
