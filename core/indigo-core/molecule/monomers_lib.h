@@ -1,6 +1,11 @@
 #ifndef __monomers_lib__
 #define __monomers_lib__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include "base_cpp/exception.h"
 #include "molecule/molecule.h"
 #include <map>
@@ -89,5 +94,9 @@ namespace indigo
         std::unordered_map<std::string, std::shared_ptr<BaseMolecule>> _aminoacids_lib;
     };
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

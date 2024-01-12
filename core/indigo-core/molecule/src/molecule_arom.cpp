@@ -174,13 +174,13 @@ bool AromatizerBase::handleUnsureCycles()
     return is_all_aromatic;
 }
 
-bool AromatizerBase::_cb_check_vertex(Graph& graph, int v_idx, void* context)
+bool AromatizerBase::_cb_check_vertex(Graph& /*graph*/, int v_idx, void* context)
 {
     AromatizerBase* arom = (AromatizerBase*)context;
     return arom->_checkVertex(v_idx);
 }
 
-bool AromatizerBase::_cb_handle_cycle(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context)
+bool AromatizerBase::_cb_handle_cycle(Graph& /*graph*/, const Array<int>& vertices, const Array<int>& /*edges*/, void* context)
 {
     AromatizerBase* arom = (AromatizerBase*)context;
     arom->_handleCycle(vertices);
@@ -268,12 +268,12 @@ void AromatizerBase::removeAromaticCycle(int id, const int* cycle, int cycle_len
     }
 }
 
-bool AromatizerBase::_checkVertex(int v_idx)
+bool AromatizerBase::_checkVertex(int /*v_idx*/)
 {
     return true;
 }
 
-void AromatizerBase::_handleAromaticCycle(const int* cycle, int cycle_len)
+void AromatizerBase::_handleAromaticCycle(const int* /*cycle*/, int /*cycle_len*/)
 {
 }
 

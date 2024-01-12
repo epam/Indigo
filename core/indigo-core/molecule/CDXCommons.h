@@ -33,7 +33,8 @@ namespace indigo
 
     struct CDXColor
     {
-        CDXColor(float red, float green, float blue) : r(red * kColorMult), g(green * kColorMult), b(blue * kColorMult)
+        CDXColor(float red, float green, float blue)
+            : r(static_cast<int>(red * kColorMult)), g(static_cast<int>(green * kColorMult)), b(static_cast<int>(blue * kColorMult))
         {
         }
         uint16_t r;

@@ -912,7 +912,7 @@ namespace indigo
         void _parseArrow(CDXElement elem);
         void _parseAltGroup(CDXElement elem);
 
-        void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& bonds);
+        void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& new_bonds);
         void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket);
         void _handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
         void _processEnhancedStereo(BaseMolecule& mol);

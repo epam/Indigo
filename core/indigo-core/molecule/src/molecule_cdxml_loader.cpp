@@ -428,7 +428,7 @@ void MoleculeCdxmlLoader::_updateConnection(const CdxmlNode& node, int atom_idx)
     }
 }
 
-void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& bonds)
+void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& new_bonds)
 {
     _id_to_atom_idx.clear();
     mol.reaction_atom_mapping.clear_resize(static_cast<int>(atoms.size()));
@@ -438,7 +438,6 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
     mol.reaction_atom_exact_change.clear_resize(static_cast<int>(atoms.size()));
     mol.reaction_atom_exact_change.zerofill();
 
-    int atom_idx;
     for (auto atom_idx : atoms)
     {
         auto& atom = nodes[atom_idx];
@@ -481,7 +480,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
         }
     }
 
-    for (const auto& bond : bonds)
+    for (const auto& bond : new_bonds)
     {
         int bond_idx;
         if (_pmol)

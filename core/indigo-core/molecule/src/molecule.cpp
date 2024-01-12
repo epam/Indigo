@@ -25,6 +25,11 @@
 #include "molecule/molecule_dearom.h"
 #include "molecule/molecule_standardize.h"
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#pragma warning(error : 4100 4101 4189 4244 4456 4458 4715)
+#endif
+
 using namespace indigo;
 
 Molecule::Molecule()
@@ -69,7 +74,7 @@ void Molecule::_flipBond(int atom_parent, int atom_from, int atom_to)
     updateEditRevision();
 }
 
-void Molecule::_mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags)
+void Molecule::_mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int /*skip_flags*/)
 {
     Molecule& mol = bmol.asMolecule();
     _ignore_bad_valence = mol.getIgnoreBadValenceFlag();
@@ -535,7 +540,7 @@ int Molecule::totalHydrogensCount()
     return total_h;
 }
 
-int Molecule::matchAtomsCmp(Graph& g1, Graph& g2, int idx1, int idx2, void* userdata)
+int Molecule::matchAtomsCmp(Graph& g1, Graph& g2, int idx1, int idx2, void* /*userdata*/)
 {
     Molecule& m1 = ((BaseMolecule&)g1).asMolecule();
     Molecule& m2 = ((BaseMolecule&)g2).asMolecule();
@@ -845,7 +850,7 @@ int Molecule::_getImplicitHForConnectivity(int idx, int conn, bool use_cache)
         }
         else
         {
-            int radical = -1;
+            radical = -1;
 
             if (_radicals.size() > idx)
                 radical = _radicals[idx];
@@ -1689,7 +1694,7 @@ bool Molecule::ionize(float ph, float ph_toll, const IonizeOptions& options)
     return MoleculeIonizer::ionize(*this, ph, ph_toll, options);
 }
 
-bool Molecule::isPossibleFischerProjection(const char* options)
+bool Molecule::isPossibleFischerProjection(const char* /*options*/)
 {
     if (!BaseMolecule::hasCoord(*this) || BaseMolecule::hasZCoord(*this))
         return false;
@@ -1760,3 +1765,7 @@ bool Molecule::isPiBonded(const int atom_index) const
     }
     return false;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

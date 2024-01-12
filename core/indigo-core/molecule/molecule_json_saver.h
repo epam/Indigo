@@ -19,6 +19,11 @@
 #ifndef __molecule_json_saver_h__
 #define __molecule_json_saver_h__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include <sstream>
 
 #include <rapidjson/prettywriter.h>
@@ -235,5 +240,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

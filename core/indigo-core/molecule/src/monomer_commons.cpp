@@ -16,6 +16,11 @@
  * limitations under the License.
  ***************************************************************************/
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#pragma warning(error : 4100 4101 4189 4244 4456 4458 4715)
+#endif
+
 #include <unordered_map>
 
 #include "molecule/monomer_commons.h"
@@ -126,7 +131,7 @@ namespace indigo
         {
             if (is_lower_case(name) || is_upper_case(name))
                 for (auto it = res.begin(); it < res.end(); ++it)
-                    *it = it > res.begin() ? std::tolower(*it) : std::toupper(*it);
+                    *it = it > res.begin() ? std::tolower(*it, std::locale()) : std::toupper(*it, std::locale());
         }
         // do not add prefix
         auto prefix = classToPrefix(monomer_class);
@@ -146,7 +151,7 @@ namespace indigo
     std::string getAttachmentLabel(int order)
     {
         std::string second_chars = "lrx";
-        std::string label(1, 'A' + order);
+        std::string label(1, static_cast<char>('A' + order));
         if (order > second_chars.size() - 1)
             label += second_chars.back();
         else
@@ -205,3 +210,7 @@ namespace indigo
         return false;
     }
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

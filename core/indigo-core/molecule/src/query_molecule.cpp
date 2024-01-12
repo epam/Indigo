@@ -25,6 +25,11 @@
 #include <string>
 #include <unordered_map>
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#pragma warning(error : 4100 4100 4189 4244 4456 4458 4715)
+#endif
+
 using namespace indigo;
 
 bool QueryMolecule::isAtomProperty(OpType type)
@@ -140,7 +145,7 @@ int QueryMolecule::getBondTopology(int idx)
     return -1;
 }
 
-int QueryMolecule::getAtomValence(int idx)
+int QueryMolecule::getAtomValence(int /*idx*/)
 {
     throw Error("not implemented");
 }
@@ -199,7 +204,7 @@ bool QueryMolecule::isOrganicSubset(QueryMolecule::Atom* atom)
     return QueryMolecule::isOrganicSubset(atom->value_max);
 }
 
-int QueryMolecule::getAtomConnectivity(int idx)
+int QueryMolecule::getAtomConnectivity(int /*idx*/)
 {
     return 0;
 }
@@ -536,7 +541,6 @@ std::string QueryMolecule::getMolMrvSmaExtension(QueryMolecule& qm, int aid)
     {
         // Just atom or list and list of properties.
         bool atoms_writed = false;
-        bool not_first_property = false;
         for (int property : {ATOM_TOTAL_H, ATOM_IMPLICIT_H, ATOM_CONNECTIVITY, ATOM_SSSR_RINGS, ATOM_SMALLEST_RING_SIZE, ATOM_AROMATICITY})
         {
             if (atom_props.count(property) < 1)
@@ -565,10 +569,6 @@ std::string QueryMolecule::getMolMrvSmaExtension(QueryMolecule& qm, int aid)
                 output.writeChar(';');
                 atoms_writed = true;
             }
-            if (not_first_property)
-                output.writeChar('&');
-            else
-                bool not_first_property = true;
             writeSmartsAtom(output, atom_props[property].get(), -1, -1, 1, false, false, qm.original_format);
         }
     }
@@ -663,7 +663,7 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
         if (has_aromatic && has_number)
         { // Convert a & #6 -> c,  A & #6 -> C
             if (aromatic)
-                atom_name[0] = tolower(atom_name[0]);
+                atom_name[0] = static_cast<char>(tolower(atom_name[0]));
             output.printf("%s", atom_name);
         }
         for (i = 0; i < atom->children.size(); i++)
@@ -1014,27 +1014,27 @@ const char* QueryMolecule::getTemplateAtom(int idx)
     throw Error("getTemplateAtom() applied to something that is not a template atom");
 }
 
-const char* QueryMolecule::getTemplateAtomClass(int idx)
+const char* QueryMolecule::getTemplateAtomClass(int /*idx*/)
 {
     return 0;
 }
 
-const int QueryMolecule::getTemplateAtomSeqid(int idx)
+const int QueryMolecule::getTemplateAtomSeqid(int /*idx*/)
 {
     return -1;
 }
 
-const int QueryMolecule::getTemplateAtomTemplateIndex(int idx)
+const int QueryMolecule::getTemplateAtomTemplateIndex(int /*idx*/)
 {
     return -1;
 }
 
-const int QueryMolecule::getTemplateAtomDisplayOption(int idx)
+const int QueryMolecule::getTemplateAtomDisplayOption(int /*idx*/)
 {
     return -1;
 }
 
-bool QueryMolecule::isSaturatedAtom(int idx)
+bool QueryMolecule::isSaturatedAtom(int /*idx*/)
 {
     throw Error("not implemented");
 }
@@ -1391,8 +1391,8 @@ void QueryMolecule::_mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& 
     updateEditRevision();
 }
 
-void QueryMolecule::_postMergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping,
-                                              int skip_flags)
+void QueryMolecule::_postMergeWithSubmolecule(BaseMolecule& /*bmol*/, const Array<int>& /*vertices*/, const Array<int>* /*edges*/,
+                                              const Array<int>& /*mapping*/, int /*skip_flags*/)
 {
     // Remove stereocare flags for bonds that are not cis-trans
     for (int i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
@@ -1945,7 +1945,7 @@ bool QueryMolecule::Bond::_sureValue(int what_type, int& value_out) const
     return false;
 }
 
-bool QueryMolecule::Bond::_sureValueBelongs(int what_type, const int* arr, int count)
+bool QueryMolecule::Bond::_sureValueBelongs(int /*what_type*/, const int* /*arr*/, int /*count*/)
 {
     throw QueryMolecule::Error("not implemented");
 }
@@ -3171,9 +3171,8 @@ int QueryMolecule::addBond(int beg, int end, int order)
     return addBond(beg, end, QueryMolecule::createQueryMoleculeBond(order, BOND_ZERO, BOND_ZERO));
 }
 
-int QueryMolecule::getImplicitH(int idx, bool impl_h_no_throw)
+int QueryMolecule::getImplicitH(int idx, bool /*impl_h_no_throw*/)
 {
-    Atom& atom = getAtom(idx);
     std::vector<std::unique_ptr<Atom>> atoms;
     std::map<int, std::unique_ptr<Atom>> properties;
 
@@ -3211,3 +3210,7 @@ void QueryMolecule::setImplicitH(int idx, int impl_h)
 {
     getAtom(idx).updateConstraintWithValue(ATOM_IMPLICIT_H, impl_h);
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

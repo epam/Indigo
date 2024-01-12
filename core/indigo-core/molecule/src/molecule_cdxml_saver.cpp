@@ -50,7 +50,7 @@ void MoleculeCdxmlSaver::writeBinaryTextValue(const tinyxml2::XMLElement* pTextE
                 if (attr_name == "font")
                     ts.font_index = pAttr->IntValue();
                 else if (attr_name == "size")
-                    ts.font_size = pAttr->FloatValue() * kCDXMLSizeMultiplier;
+                    ts.font_size = static_cast<uint16_t>(pAttr->FloatValue() * kCDXMLSizeMultiplier);
                 else if (attr_name == "color")
                     ts.font_color = pAttr->IntValue();
                 else if (attr_name == "face")
@@ -203,14 +203,14 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
 
         for (const auto& v : vec_strs)
         {
-            int32_t coord = std::stof(v) * (1 << 16);
+            int32_t coord = static_cast<int32_t>(std::stof(v) * (1 << 16));
             _output.writeBinaryInt(coord);
         }
     }
     break;
 
     case ECDXType::CDXCoordinate: {
-        int32_t coord = pAttr->FloatValue() * (1 << 16);
+        int32_t coord = static_cast<int32_t>(pAttr->FloatValue() * (1 << 16));
         _output.writeBinaryUInt16(sizeof(coord));
         _output.writeBinaryInt(coord);
     }
@@ -1376,7 +1376,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
     case KETTextObject::CID: {
         const KETTextObject& ko = static_cast<const KETTextObject&>(obj);
         double text_offset_y = 0;
-        int font_size = KETDefaultFontSize;
+        int font_size = static_cast<int>(KETDefaultFontSize);
         CDXMLFontStyle font_face(0);
         for (auto& text_item : ko._block)
         {
@@ -1426,7 +1426,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
                         font_face.is_subscript = text_style.second;
                         break;
                     default:
-                        font_size = text_style.second ? text_style.first : KETDefaultFontSize;
+                        font_size = text_style.second ? text_style.first : static_cast<int>(KETDefaultFontSize);
                         break;
                     }
                 }

@@ -19,6 +19,11 @@
 #ifndef __structure_checker__
 #define __structure_checker__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include "base_cpp/exception.h"
 #include <string>
 #include <vector>
@@ -136,5 +141,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

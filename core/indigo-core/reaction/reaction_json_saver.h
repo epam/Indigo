@@ -31,7 +31,7 @@ namespace indigo
     class Output;
     class BaseReaction;
     class BaseMolecule;
-    class Vec2f;
+    struct Vec2f;
     class MoleculeJsonSaver;
 
     class ReactionJsonSaver

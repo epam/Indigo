@@ -63,7 +63,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     if (root.HasMember("templates"))
     {
         Value& templates = root["templates"];
-        for (int i = 0; i < templates.Size(); ++i)
+        for (rapidjson::SizeType i = 0; i < templates.Size(); ++i)
         {
             std::string template_id = templates[i]["$ref"].GetString();
             if (ket.HasMember(template_id.c_str()))
@@ -79,7 +79,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     if (root.HasMember("connections"))
     {
         Value& connections = root["connections"];
-        for (int i = 0; i < connections.Size(); ++i)
+        for (rapidjson::SizeType i = 0; i < connections.Size(); ++i)
             _connection_array.PushBack(connections[i], ket.GetAllocator());
     }
 }
@@ -1260,7 +1260,7 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
                                 auto rnum = label.substr(1);
                                 if (std::all_of(rnum.begin(), rnum.end(), ::isdigit))
                                 {
-                                    label = 'A' + std::stol(rnum);
+                                    label = static_cast<char>('A' + std::stol(rnum));
                                     label += 'x';
                                 }
                             }
@@ -1453,7 +1453,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         if (ma.HasMember("position"))
         {
             auto& pos_val = ma["position"];
-            mol.setAtomXyz(idx, pos_val["x"].GetDouble(), pos_val["y"].GetDouble(), 0);
+            mol.setAtomXyz(idx, static_cast<float>(pos_val["x"].GetDouble()), static_cast<float>(pos_val["y"].GetDouble()), 0);
         }
 
         std::string template_id = ma["templateId"].GetString();
@@ -1535,7 +1535,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     }
 
     // handle monomer's connections after all
-    for (int i = 0; i < _connection_array.Size(); ++i)
+    for (rapidjson::SizeType i = 0; i < _connection_array.Size(); ++i)
     {
         auto& connection = _connection_array[i];
         int order = _BOND_ANY;
