@@ -35,7 +35,7 @@ MoleculeLayoutGraph::MoleculeLayoutGraph() : Graph()
     _molecule_edge_mapping = 0;
     cancellation = 0;
     _flipped = false;
-    hard_respect_existing = false;
+    preserve_existing_layout = false;
 }
 
 MoleculeLayoutGraph::~MoleculeLayoutGraph()
@@ -418,7 +418,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
         component._assignFinalCoordinates(bond_length, src_layout);
     }
 
-    if (respect_existing && hard_respect_existing)
+    if (respect_existing && preserve_existing_layout) // TODO:
     {
         for (int i = 0; i < n_components; i++)
         {

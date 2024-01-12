@@ -169,7 +169,7 @@ namespace indigo
         int max_iterations;
         layout_orientation_value layout_orientation;
 
-        bool hard_respect_existing;
+        bool preserve_existing_layout;
 
         CancellationHandler* cancellation;
 

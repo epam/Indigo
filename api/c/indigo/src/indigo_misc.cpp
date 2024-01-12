@@ -461,7 +461,7 @@ CEXPORT int indigoUnfoldHydrogens(int item)
             bmol.unfoldHydrogens(&markers, -1);
             // Layout hydrogens
             MoleculeLayoutGraphSimple layout;
-            layout.hard_respect_existing = true;
+            layout.preserve_existing_layout = true;
             layout.makeOnGraph(bmol);
             for (int i = layout.vertexBegin(); i < layout.vertexEnd(); i = layout.vertexNext(i))
             {
