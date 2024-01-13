@@ -152,7 +152,7 @@ namespace indigo
     {
         std::string second_chars = "lrx";
         std::string label(1, static_cast<char>('A' + order));
-        if (order > second_chars.size() - 1)
+        if (static_cast<long long>(order) > second_chars.size() - 1)
             label += second_chars.back();
         else
             label += second_chars[order];

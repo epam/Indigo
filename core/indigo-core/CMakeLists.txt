@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.6)
 project(indigo-core LANGUAGES C CXX)
 
 if (MSVC)
-    string(APPEND CMAKE_C_FLAGS " -W3 -WX")
-    string(APPEND CMAKE_CXX_FLAGS " -W3 -WX")
+    string(APPEND CMAKE_C_FLAGS " -WX")
+    string(APPEND CMAKE_CXX_FLAGS " -WX")
 endif ()
 
 file(GLOB_RECURSE ${PROJECT_NAME}_SOURCES CONFIUGURE_DEPENDS

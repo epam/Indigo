@@ -292,7 +292,7 @@ namespace indigo
                 auto ptr32 = (int32_t*)ptr;
                 std::stringstream ss;
                 ss << std::setprecision(2) << std::fixed;
-                for (auto i = 0; i < value_size / sizeof(int32_t); ++i)
+                for (uint16_t i = 0; i < value_size / sizeof(int32_t); ++i)
                 {
                     if (i)
                         ss << " ";
@@ -308,7 +308,7 @@ namespace indigo
                 auto ptr32 = (int32_t*)ptr;
                 std::stringstream ss;
                 ss << std::setprecision(2) << std::fixed;
-                for (auto i = 0; i < value_size / sizeof(int32_t); ++i)
+                for (uint16_t i = 0; i < value_size / sizeof(int32_t); ++i)
                 {
                     if (i)
                         ss << " ";
@@ -358,7 +358,7 @@ namespace indigo
             break;
             case ECDXType::CDXObjectIDArray: {
                 auto ptr32 = (uint32_t*)ptr;
-                for (auto i = 0; i < value_size / sizeof(uint32_t); ++i)
+                for (uint16_t i = 0; i < value_size / sizeof(uint32_t); ++i)
                 {
                     if (i)
                         result += " ";

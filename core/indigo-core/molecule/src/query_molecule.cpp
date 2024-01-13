@@ -2643,7 +2643,7 @@ bool QueryMolecule::_tryToConvertToList(Atom* p_query_atom, std::vector<std::uni
             std::sort(props.begin(), props.end(), compare);
             if (props.size() != atoms_properties.size())
                 return false;
-            for (int j = 0; j < props.size(); j++)
+            for (auto j = 0; j < props.size(); j++)
             {
                 if (props[j]->type != atoms_properties[j]->type || props[j]->value_min != atoms_properties[j]->value_min ||
                     props[j]->value_max != atoms_properties[j]->value_max)

@@ -1512,7 +1512,7 @@ void MoleculeNameParser::SmilesBuilder::_calcHydrogens(const Element& element, i
     int connections = indigo::Element::getMaximumConnectivity(number, 0, 0, false);
     int valence = indigo::Element::calcValenceMinusHyd(number, 0, 0, connections);
 
-    if ((pos - 1) < root.nodes.size())
+    if ((pos - 1) < static_cast<long long>(root.nodes.size()))
     {
         SmilesNode& sn = root.nodes.at(pos - 1);
 
