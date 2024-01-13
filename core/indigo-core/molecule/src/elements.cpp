@@ -1310,7 +1310,7 @@ int Element::getNumOuterElectrons(int element)
         4 // Ce
     };
     // clang-format on
-    if (element > outerElements.size())
+    if (element > static_cast<int>(outerElements.size()))
     {
         throw Error("outerElements are currently filled only for elements up to lantanoids");
     }
