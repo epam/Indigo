@@ -117,7 +117,7 @@ void CanonicalSmilesSaver::saveMolecule(Molecule& mol_)
     _actual_atom_atom_mapping.clear_resize(mol.vertexCount());
     _actual_atom_atom_mapping.zerofill();
 
-    for (int i = 0; i < order.size(); ++i)
+    for (i = 0; i < order.size(); ++i)
     {
         int aam = mol.reaction_atom_mapping[order[i]];
         if (aam)

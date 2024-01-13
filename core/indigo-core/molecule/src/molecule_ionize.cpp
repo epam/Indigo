@@ -87,8 +87,8 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
 
     for (;;)
     {
-        FileScanner scanner(filename);
-        SdfLoader loader(scanner);
+        FileScanner fscanner(filename);
+        SdfLoader loader(fscanner);
 
         int a_count = 0;
         int b_count = 0;
@@ -102,8 +102,8 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
         {
             mol_count++;
             loader.readNext();
-            BufferScanner scanner(loader.data);
-            MolfileLoader mol_loader(scanner);
+            BufferScanner bscanner(loader.data);
+            MolfileLoader mol_loader(bscanner);
             mol_loader.stereochemistry_options.ignore_errors = true;
             mol_loader.loadMolecule(mol);
 
@@ -225,7 +225,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
 
         for (int i = 0; i < acid_pkas.size(); i++)
         {
-            const char* fp = acid_pkas.key(i);
+            const char* fpkey = acid_pkas.key(i);
             Array<float>& pkas = acid_pkas.value(i);
             float pka_sum = 0.f;
             float pka_dev = 0.f;
@@ -249,11 +249,11 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
             if (pka_dev > max_deviation)
                 max_deviation = pka_dev;
 
-            if (_model.adv_a_pkas.find(fp))
-                _model.adv_a_pkas.remove(fp);
-            _model.adv_a_pkas.insert(fp);
-            _model.adv_a_pkas.at(fp).push(pka_sum / pkas.size());
-            _model.adv_a_pkas.at(fp).push(pka_dev);
+            if (_model.adv_a_pkas.find(fpkey))
+                _model.adv_a_pkas.remove(fpkey);
+            _model.adv_a_pkas.insert(fpkey);
+            _model.adv_a_pkas.at(fpkey).push(pka_sum / pkas.size());
+            _model.adv_a_pkas.at(fpkey).push(pka_dev);
 
             if (pka_dev > threshold)
                 model_ready = false;
@@ -261,7 +261,7 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
 
         for (int i = 0; i < basic_pkas.size(); i++)
         {
-            const char* fp = basic_pkas.key(i);
+            const char* fpkey = basic_pkas.key(i);
             Array<float>& pkas = basic_pkas.value(i);
             float pka_sum = 0.f;
             float pka_dev = 0.f;
@@ -285,11 +285,11 @@ int MoleculePkaModel::buildPkaModel(int max_level, float threshold, const char* 
             if (pka_dev > max_deviation)
                 max_deviation = pka_dev;
 
-            if (_model.adv_b_pkas.find(fp))
-                _model.adv_b_pkas.remove(fp);
-            _model.adv_b_pkas.insert(fp);
-            _model.adv_b_pkas.at(fp).push(pka_sum / pkas.size());
-            _model.adv_b_pkas.at(fp).push(pka_dev);
+            if (_model.adv_b_pkas.find(fpkey))
+                _model.adv_b_pkas.remove(fpkey);
+            _model.adv_b_pkas.insert(fpkey);
+            _model.adv_b_pkas.at(fpkey).push(pka_sum / pkas.size());
+            _model.adv_b_pkas.at(fpkey).push(pka_dev);
 
             if (pka_dev > threshold)
                 model_ready = false;
@@ -838,7 +838,7 @@ void MoleculePkaModel::_loadAdvancedPkaModel()
     _model.advanced_model_ready = true;
 }
 
-void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites,
+void MoleculePkaModel::_estimate_pKa_Simple(Molecule& mol, const IonizeOptions& /* options */, Array<int>& acid_sites, Array<int>& basic_sites,
                                             Array<float>& acid_pkas, Array<float>& basic_pkas)
 {
     //   QS_DEF(Array<int>, can_order);
@@ -1346,7 +1346,7 @@ bool MoleculeIonizer::ionize(Molecule& mol, float ph, float ph_toll, const Ioniz
     return true;
 }
 
-void MoleculeIonizer::_setCharges(Molecule& mol, float pH, float pH_toll, const IonizeOptions& options, Array<int>& acid_sites, Array<int>& basic_sites,
+void MoleculeIonizer::_setCharges(Molecule& mol, float pH, float pH_toll, const IonizeOptions& /* options */, Array<int>& acid_sites, Array<int>& basic_sites,
                                   Array<float>& acid_pkas, Array<float>& basic_pkas)
 {
     for (auto i = 0; i < acid_sites.size(); i++)

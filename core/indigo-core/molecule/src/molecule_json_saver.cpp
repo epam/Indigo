@@ -171,7 +171,7 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
     {
         writer.Key("sgroups");
         writer.StartArray();
-        int idx = 1;
+        // int idx = 1;
         for (int i = 0; i < sgs_sorted.size(); i++)
         {
             int sg_idx = sgs_sorted[i];
@@ -766,13 +766,13 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                         buf.readString(Element::toString(anum), true);
                         if (anum == ELEM_H && query_atom_properties.count(QueryMolecule::ATOM_ISOTOPE) > 0)
                         {
-                            int isotope = query_atom_properties[QueryMolecule::ATOM_ISOTOPE]->value_min;
-                            if (isotope == DEUTERIUM)
+                            int h_isotope = query_atom_properties[QueryMolecule::ATOM_ISOTOPE]->value_min;
+                            if (h_isotope == DEUTERIUM)
                             {
                                 buf.clear();
                                 buf.appendString("D", true);
                             }
-                            else if (isotope == TRITIUM)
+                            else if (h_isotope == TRITIUM)
                             {
                                 buf.clear();
                                 buf.appendString("T", true);
@@ -936,7 +936,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             writer.Int(charge);
         }
 
-        int total_bond_count = 0;
+        // int total_bond_count = 0;
         if (evalence > 0)
         {
             writer.Key("explicitValence");
@@ -1104,7 +1104,7 @@ std::string MoleculeJsonSaver::monomerKETClass(const std::string& class_name)
         return mclass;
 
     for (auto it = mclass.begin(); it < mclass.end(); ++it)
-        *it = it > mclass.begin() ? std::tolower(*it) : std::toupper(*it);
+        *it = static_cast<char>(it > mclass.begin() ? std::tolower(*it) : std::toupper(*it));
 
     return mclass;
 }
@@ -1142,7 +1142,7 @@ std::string MoleculeJsonSaver::monomerAlias(const TGroup& tg)
     {
         alias = name;
         if (name.size() == 1)
-            alias = std::toupper(name.front());
+            alias = static_cast<char>(std::toupper(name.front()));
         else if (name.empty())
             alias = std::string("#") + std::to_string(tg.tgroup_id - 1);
     }
@@ -1342,7 +1342,7 @@ bool MoleculeJsonSaver::_checkAttPointOrder(BaseMolecule& mol, int rsite)
 void MoleculeJsonSaver::collectTemplates(BaseMolecule& mol)
 {
     _templates.clear();
-    int temp_idx = 0;
+    // int temp_idx = 0;
     for (int i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
     {
         auto& tg = mol.tgroups.getTGroup(i);

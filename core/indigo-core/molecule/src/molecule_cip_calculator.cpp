@@ -154,7 +154,7 @@ bool MoleculeCIPCalculator::addCIPStereoDescriptors(BaseMolecule& mol)
     mol._cip_atoms.clear();
     mol._cip_bonds.clear();
 
-    for (auto atom_idx = 0; atom_idx < atom_cip_desc.size(); ++atom_idx)
+    for (atom_idx = 0; atom_idx < atom_cip_desc.size(); ++atom_idx)
     {
         if (atom_cip_desc[atom_idx] > CIPDesc::UNKNOWN)
             mol._cip_atoms.insert(atom_idx, atom_cip_desc[atom_idx]);
@@ -861,7 +861,7 @@ bool MoleculeCIPCalculator::_checkLigandsEquivalence(Array<int>& ligands, Array<
     return neq != 0;
 }
 
-bool MoleculeCIPCalculator::_isPseudoAssymCenter(BaseMolecule& mol, int idx, Array<CIPDesc>& atom_cip_desc, Array<int>& ligands,
+bool MoleculeCIPCalculator::_isPseudoAssymCenter(BaseMolecule& /* mol */, int /* idx */, Array<CIPDesc>& atom_cip_desc, Array<int>& ligands,
                                                  Array<EquivLigand>& equiv_ligands)
 {
     int neq = 0;

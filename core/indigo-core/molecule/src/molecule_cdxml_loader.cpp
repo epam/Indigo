@@ -37,6 +37,7 @@ bool is_fragment(int node_type)
     return node_type == kCDXNodeType_Nickname || node_type == kCDXNodeType_Fragment;
 }
 
+/*/
 static float readFloat(const char* point_str)
 {
     float res = 0;
@@ -47,6 +48,7 @@ static float readFloat(const char* point_str)
     }
     return res;
 }
+//*/
 
 IMPL_ERROR(MoleculeCdxmlLoader, "CDXML loader");
 IMPL_ERROR(CDXMLReader, "CDXML reader");
@@ -869,9 +871,9 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
             }
             if (node.element == ELEM_C) // overridable
             {
-                auto elem = Element::fromString2(label.c_str());
-                if (elem > 0)
-                    node.element = elem;
+                auto element = Element::fromString2(label.c_str());
+                if (element > 0)
+                    node.element = element;
                 else if (node.label.empty())
                 {
                     node.label = label;

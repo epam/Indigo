@@ -189,6 +189,7 @@ namespace indigo
         static int fromChar(char c);
         static int fromTwoChars(char c1, char c2);
         static int fromTwoChars2(char c1, char c2);
+        static int fromTwoChars2(char c1, int c2);
 
         static int radicalElectrons(int radical);
         static int radicalOrbitals(int radical);

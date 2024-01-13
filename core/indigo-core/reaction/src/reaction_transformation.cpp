@@ -134,7 +134,7 @@ bool ReactionTransformation::transform(ReusableObjArray<Molecule>& molecules, Qu
     return true;
 }
 
-void ReactionTransformation::_product_proc(Molecule& product, Array<int>& monomers_indices, Array<int>& mapping, void* userdata)
+void ReactionTransformation::_product_proc(Molecule& product, Array<int>& /*monomers_indices*/, Array<int>& mapping, void* userdata)
 {
     ReactionTransformation* rt = (ReactionTransformation*)userdata;
 

@@ -36,7 +36,7 @@ void TGroup::clear()
 {
 }
 
-int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* context)
+int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* /*context*/)
 {
     QS_DEF(Array<int>, lgrps)
     QS_DEF(Array<int>, bgrps)

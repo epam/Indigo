@@ -18,7 +18,6 @@
 
 #ifdef _MSC_VER
 #pragma warning(push, 4)
-#pragma warning(error : 4100 4101 4189 4244 4456 4458 4715)
 #endif
 
 #include <unordered_map>
@@ -152,7 +151,7 @@ namespace indigo
     {
         std::string second_chars = "lrx";
         std::string label(1, static_cast<char>('A' + order));
-        if (static_cast<long long>(order) > second_chars.size() - 1)
+        if (order > static_cast<long>(second_chars.size()) - 1)
             label += second_chars.back();
         else
             label += second_chars[order];

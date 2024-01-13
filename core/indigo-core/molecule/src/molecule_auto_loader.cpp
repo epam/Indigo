@@ -131,8 +131,7 @@ bool MoleculeAutoLoader::tryMDLCT(Scanner& scanner, Array<char>& outbuf)
                 scanner.seek(pos, SEEK_SET);
                 return false;
             }
-            int c = scanner.readChar();
-            curline.push(c);
+            curline.push(scanner.readChar());
         }
 
         curline.push(0);
@@ -448,11 +447,11 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
                     throw Error("InChI input doesn't support query molecules");
                 }
 
-                Array<char> inchi;
-                _scanner->readWord(inchi, " ");
+                Array<char> inchi_data;
+                _scanner->readWord(inchi_data, " ");
 
                 InchiWrapper loader;
-                loader.loadMoleculeFromInchi(inchi.ptr(), (Molecule&)mol);
+                loader.loadMoleculeFromInchi(inchi_data.ptr(), (Molecule&)mol);
                 return;
             }
         }

@@ -176,6 +176,6 @@ void CrfSaver::_writeAam(const int* aam, const Array<int>& sequence)
         if (_encoder.get() != 0)
             _encoder->send(value);
         else
-            _output.writeByte(value);
+            _output.writeByte(static_cast<byte>(value));
     }
 }

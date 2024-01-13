@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.6)
 project(render2d LANGUAGES C CXX)
 
 if (MSVC)
-    string(APPEND CMAKE_C_FLAGS " -WX")
-    string(APPEND CMAKE_CXX_FLAGS " -WX")
+    string(APPEND CMAKE_C_FLAGS " -W4 -WX")
+    string(APPEND CMAKE_CXX_FLAGS " -W4 -WX")
 endif ()
 
 file(GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS

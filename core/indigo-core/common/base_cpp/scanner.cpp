@@ -449,12 +449,12 @@ void Scanner::readCharsFix(int n, char* chars_out)
 
 int Scanner::readCharsFlexible(int n, char* chars_out)
 {
-    size_t i = 0;
+    int i = 0;
     while ((i < n) && !isEOF())
     {
         chars_out[i++] = readChar();
     }
-    return (int)i;
+    return i;
 }
 
 word Scanner::readBinaryWord()
@@ -532,7 +532,7 @@ void Scanner::readAll(std::string& str)
     {
         throw Error("Cannot read more than %d into memory", max_int);
     }
-    str.resize(size);
+    str.resize(static_cast<size_t>(size));
     read(static_cast<int>(str.size()), &str[0]);
 }
 

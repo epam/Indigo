@@ -825,10 +825,10 @@ void MoleculeCisTrans::flipBond(BaseMolecule& baseMolecule, int atom_parent, int
 
         _Bond& bond = _bonds[edge];
 
-        for (int i = 0; i < 4; i++)
-            if (bond.substituents[i] == atom_from)
+        for (int j = 0; j < 4; j++)
+            if (bond.substituents[j] == atom_from)
             {
-                bond.substituents[i] = atom_to;
+                bond.substituents[j] = atom_to;
                 break;
             }
     }
@@ -842,10 +842,10 @@ void MoleculeCisTrans::flipBond(BaseMolecule& baseMolecule, int atom_parent, int
 
         _Bond& bond = _bonds[edge];
 
-        for (int i = 0; i < 4; i++)
-            if (bond.substituents[i] == atom_parent)
+        for (int j = 0; j < 4; j++)
+            if (bond.substituents[j] == atom_parent)
             {
-                bond.substituents[i] = atom_to;
+                bond.substituents[j] = atom_to;
                 break;
             }
     }

@@ -191,7 +191,7 @@ bool QueryReaction::aromatize(const AromaticityOptions& options)
     return arom_found;
 }
 
-bool QueryReaction::dearomatize(const AromaticityOptions& options)
+bool QueryReaction::dearomatize(const AromaticityOptions& /*options*/)
 {
     throw Error("Dearomatization of query reactions is not implemented");
 }

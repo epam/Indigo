@@ -229,7 +229,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
     for (SizeType i = 0; i < atoms.Size(); i++)
     {
         std::string label;
-        int atom_idx = 0, charge = 0, valence = 0, radical = 0, isotope = 0, elem = 0, rsite_idx = 0, mapping = 0, atom_type = 0;
+        int atom_idx = 0, charge = 0, valence = 0, radical = 0, isotope = 0, elem = 0, rsite_idx = 0;
         bool is_not_list = false;
         std::unique_ptr<QueryMolecule::Atom> atomlist;
         const Value& a = atoms[i];
@@ -744,13 +744,13 @@ void indigo::MoleculeJsonLoader::parseHighlight(const rapidjson::Value& highligh
             std::string et = val["entityType"].GetString();
             if (et == "atoms")
             {
-                for (rapidjson::SizeType j = 0; i < items.Size(); ++i)
-                    mol.highlightAtom(items[i].GetInt());
+                for (rapidjson::SizeType j = 0; j < items.Size(); ++j)
+                    mol.highlightAtom(items[j].GetInt());
             }
             else if (et == "bonds")
             {
-                for (rapidjson::SizeType j = 0; i < items.Size(); ++i)
-                    mol.highlightBond(items[i].GetInt());
+                for (rapidjson::SizeType j = 0; j < items.Size(); ++j)
+                    mol.highlightBond(items[j].GetInt());
             }
         }
     }
@@ -767,13 +767,13 @@ void indigo::MoleculeJsonLoader::parseSelection(const rapidjson::Value& selectio
             std::string et = val["entityType"].GetString();
             if (et == "atoms")
             {
-                for (rapidjson::SizeType j = 0; i < items.Size(); ++i)
-                    mol.selectAtom(items[i].GetInt());
+                for (rapidjson::SizeType j = 0; j < items.Size(); ++j)
+                    mol.selectAtom(items[j].GetInt());
             }
             else if (et == "bonds")
             {
-                for (rapidjson::SizeType j = 0; i < items.Size(); ++i)
-                    mol.selectBond(items[i].GetInt());
+                for (rapidjson::SizeType j = 0; j < items.Size(); ++j)
+                    mol.selectBond(items[j].GetInt());
             }
         }
     }
@@ -1205,7 +1205,7 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
             for (SizeType i = 0; i < att_points.Size(); i++)
             {
                 auto& ap = att_points[i];
-                std::string att_label(1, 'A' + i);
+                std::string att_label(1, 'A' + static_cast<char>(i));
                 MonomerAttachmentPoint att_desc = {-1, -1, att_label + (i > 0 ? (i > 1 ? 'x' : 'r') : 'l')};
                 if (ap.HasMember("leavingGroup"))
                 {
@@ -1431,7 +1431,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     for (SizeType i = 0; i < _templates.Size(); i++)
     {
         auto& mt = _templates[i];
-        int tp = mt.GetType();
+        // int tp = mt.GetType();
         if (mt.HasMember("type") && mt["type"].GetString() == std::string("monomerTemplate"))
             parseMonomerTemplate(mt, mol);
     }

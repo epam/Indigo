@@ -49,8 +49,8 @@ AromatizerBase::AromatizerBase(BaseMolecule& molecule)
         SGroup& sgroup = molecule.sgroups.getSGroup(i);
         if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
         {
-            for (int i = 0; i < sgroup.atoms.size(); i++)
-                _inside_superatoms.find_or_insert(sgroup.atoms[i]);
+            for (int j = 0; j < sgroup.atoms.size(); j++)
+                _inside_superatoms.find_or_insert(sgroup.atoms[j]);
         }
     }
 }

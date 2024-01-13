@@ -223,7 +223,7 @@ void MoleculeStereocenters::_buildOneFrom3dCoordinates(BaseMolecule& baseMolecul
         add(baseMolecule, idx, ATOM_ABS, 0, false);
 }
 
-bool MoleculeStereocenters::hasAtropoStereoBonds(BaseMolecule& baseMolecule, int atom_idx)
+bool MoleculeStereocenters::hasAtropoStereoBonds(BaseMolecule& /* baseMolecule */, int atom_idx)
 {
     return _atropocenters.find(atom_idx) && _atropocenters.at(atom_idx).bond_directions.size();
 }
@@ -232,12 +232,12 @@ bool MoleculeStereocenters::isPossibleAtropocenter(BaseMolecule& baseMolecule, i
 {
     if (baseMolecule.vertexInRing(atom_idx)) // check if the atom belongs to ring
     {
-        bool has_stereo = false;
+        // bool has_stereo = false;
         const Vertex& v = baseMolecule.getVertex(atom_idx);
         // check if the atom has at least one stereo-bond
-        for (int i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
+        for (int vi = v.neiBegin(); vi != v.neiEnd(); vi = v.neiNext(vi))
         {
-            if (baseMolecule.getBondDirection(v.neiEdge(i)))
+            if (baseMolecule.getBondDirection(v.neiEdge(vi)))
             {
                 for (int i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
                 {
@@ -1264,7 +1264,7 @@ bool MoleculeStereocenters::isPyramidMappingRigid(const int* pyramid, int size, 
 }
 
 void MoleculeStereocenters::getPyramidMapping(BaseMolecule& query, BaseMolecule& target, int query_atom, const int* mapping, int* mapping_out,
-                                              bool reset_h_isotopes)
+                                              bool /* reset_h_isotopes */)
 {
     int i, j;
 
@@ -1473,7 +1473,7 @@ void MoleculeStereocenters::add(BaseMolecule& baseMolecule, int atom_idx, int ty
     add(baseMolecule, atom_idx, type, group, pyramid);
 }
 
-void MoleculeStereocenters::add(BaseMolecule& baseMolecule, int atom_idx, int type, int group, const int pyramid[4])
+void MoleculeStereocenters::add(BaseMolecule& /* baseMolecule */, int atom_idx, int type, int group, const int pyramid[4])
 {
     if (atom_idx < 0)
         throw Error("stereocenter index is invalid");
@@ -1496,7 +1496,7 @@ void MoleculeStereocenters::add_ignore(BaseMolecule& baseMolecule, int atom_idx,
     add_ignore(baseMolecule, atom_idx, type, group, pyramid);
 }
 
-void MoleculeStereocenters::add_ignore(BaseMolecule& baseMolecule, int atom_idx, int type, int group, const int pyramid[4])
+void MoleculeStereocenters::add_ignore(BaseMolecule& /* baseMolecule */, int atom_idx, int type, int group, const int pyramid[4])
 {
     if (atom_idx < 0)
         throw Error("stereocenter index is invalid");

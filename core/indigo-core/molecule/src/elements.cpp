@@ -236,6 +236,13 @@ int Element::fromTwoChars2(char c1, char c2)
     return fromString2(str);
 }
 
+int Element::fromTwoChars2(char c1, int c2)
+{
+    if (c2 < 0)
+        return -1;
+    return fromTwoChars2(c1, static_cast<char>(c2));
+}
+
 bool Element::isHalogen(int element)
 {
     return element == ELEM_F || element == ELEM_Cl || element == ELEM_Br || element == ELEM_I || element == ELEM_At;

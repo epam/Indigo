@@ -27,7 +27,6 @@
 
 #ifdef _MSC_VER
 #pragma warning(push, 4)
-#pragma warning(error : 4100 4100 4189 4244 4456 4458 4715)
 #endif
 
 using namespace indigo;
@@ -599,6 +598,7 @@ static void _write_num_if_set(indigo::Output& output, unsigned char ch, int min,
     }
 }
 
+/*/
 static void writeAnd(Output& _output, QueryMolecule::Node* node, bool has_or_parent)
 {
     if (has_or_parent)
@@ -606,6 +606,7 @@ static void writeAnd(Output& _output, QueryMolecule::Node* node, bool has_or_par
     else if (node->hasOP_OR())
         _output.writeChar(';');
 }
+//*/
 
 void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chirality, int depth, bool has_or_parent, bool has_not_parent, int original_format)
 {
@@ -1705,10 +1706,12 @@ bool QueryMolecule::Node::possibleValuePairInv(int what_type1, int what_value1, 
         int val1, val2;
         bool sure1, sure2;
 
-        if ((sure1 = _sureValue(what_type1, val1)) && !hasConstraint(what_type2) && val1 == what_value1)
+        sure1 = _sureValue(what_type1, val1);
+        if (sure1 && !hasConstraint(what_type2) && val1 == what_value1)
             return false;
 
-        if ((sure2 = _sureValue(what_type2, val2)) && !hasConstraint(what_type1) && val2 == what_value2)
+        sure2 = _sureValue(what_type2, val2);
+        if (sure2 && !hasConstraint(what_type1) && val2 == what_value2)
             return false;
 
         if (sure1 && sure2 && val1 == what_value1 && val2 == what_value2)

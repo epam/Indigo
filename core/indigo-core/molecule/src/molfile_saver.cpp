@@ -1519,13 +1519,13 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 constexpr int SYMBOL_WIDTH = 4;
                 if (strlen(str) > 4)
                 {
-                    for (int i = 0; i < SYMBOL_WIDTH; i++)
-                        output.writeChar(str[i]);
+                    for (int k = 0; k < SYMBOL_WIDTH; k++)
+                        output.writeChar(str[k]);
                 }
                 else
                 {
                     output.writeString(str);
-                    for (auto i = strlen(str); i < SYMBOL_WIDTH; i++)
+                    for (auto k = strlen(str); k < SYMBOL_WIDTH; k++)
                         output.writeChar(' ');
                 }
             }
@@ -1569,7 +1569,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
     for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
     {
-        SGroup& sgroup = mol.sgroups.getSGroup(i);
+        /*SGroup& sgroup =*/std::ignore = mol.sgroups.getSGroup(i);
         sgroup_ids.push(i);
     }
 
@@ -1688,7 +1688,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                     bool next_line = true;
                     int nrem = superatom.attachment_points.size();
                     int k = 0;
-                    for (int j = superatom.attachment_points.begin(); j < superatom.attachment_points.end(); j = superatom.attachment_points.next(j))
+                    for (j = superatom.attachment_points.begin(); j < superatom.attachment_points.end(); j = superatom.attachment_points.next(j))
                     {
                         if (next_line)
                         {
@@ -1756,7 +1756,6 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 char* ptr = datasgroup.data.ptr();
                 while (k > 0)
                 {
-                    int j;
                     for (j = 0; j < 69 && j < k; j++)
                         if (ptr[j] == '\n')
                             break;

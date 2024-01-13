@@ -38,7 +38,7 @@ bool TimeoutCancellationHandler::isCancelled()
     if (_mseconds > 0)
     {
         qword dif_time = nanoClock() - _currentTime;
-        if (static_cast<size_t>(nanoHowManySeconds(dif_time)) * 1000 > _mseconds)
+        if (static_cast<long>(nanoHowManySeconds(dif_time)) * 1000 > _mseconds)
         {
             StringOutput mes_out(_message);
             mes_out.printf("The operation timed out: %d ms", _mseconds);

@@ -121,12 +121,12 @@ static bool hasPseudoAtoms(BaseMolecule& mol)
 
 //
 
-static void check_none(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
-                       StructureChecker::CheckResult& result)
+static void check_none(BaseMolecule& /*mol*/, const std::unordered_set<int>& /*selected_atoms*/, const std::unordered_set<int>& /*selected_bonds*/,
+                       StructureChecker::CheckResult& /*result*/)
 {
 }
 
-static void check_load(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_load(BaseMolecule& mol, const std::unordered_set<int>& /*selected_atoms*/, const std::unordered_set<int>& /*selected_bonds*/,
                        StructureChecker::CheckResult& result)
 {
     if (mol.vertexCount() == 0)
@@ -138,7 +138,7 @@ static void check_load(BaseMolecule& mol, const std::unordered_set<int>& selecte
 #define FILTER_ATOMS(MSG, FILTER) filter_atoms(mol, selected_atoms, result, MSG, FILTER, false);
 #define FILTER_ATOMS_DEFAULT(MSG, FILTER) filter_atoms(mol, selected_atoms, result, MSG, FILTER);
 
-static void check_valence(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_valence(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
                           StructureChecker::CheckResult& result)
 {
 
@@ -164,7 +164,7 @@ static void check_valence(BaseMolecule& mol, const std::unordered_set<int>& sele
     }
 }
 
-static void check_radical(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_radical(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
                           StructureChecker::CheckResult& result)
 {
     if (hasPseudoAtoms(mol))
@@ -177,12 +177,12 @@ static void check_radical(BaseMolecule& mol, const std::unordered_set<int>& sele
                              [](BaseMolecule& mol, int idx) { return mol.getAtomRadical_NoThrow(idx, -1) > 0; });
     }
 }
-static void check_pseudoatom(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_pseudoatom(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
                              StructureChecker::CheckResult& result)
 {
     FILTER_ATOMS(StructureChecker::CheckMessageCode::CHECK_MSG_PSEUDOATOM, [](BaseMolecule& mol, int idx) { return mol.isPseudoAtom(idx); });
 }
-static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
                          StructureChecker::CheckResult& result)
 {
     if (!isQueryMolecule(mol))
@@ -249,7 +249,7 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
         message(result, StructureChecker::CheckMessageCode::CHECK_MSG_UNDEFINED_STEREO);
     }
 }
-static void check_query(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_query(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
                         StructureChecker::CheckResult& result)
 {
     if (isQueryMolecule(mol))
@@ -283,7 +283,7 @@ static float calc_mean_dist(BaseMolecule& mol)
     return mean_dist;
 }
 
-static void check_overlap_atom(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_overlap_atom(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
                                StructureChecker::CheckResult& result)
 {
     auto mean_dist = calc_mean_dist(mol);
@@ -308,7 +308,7 @@ static void check_overlap_atom(BaseMolecule& mol, const std::unordered_set<int>&
         message(result, StructureChecker::CheckMessageCode::CHECK_MSG_OVERLAP_ATOM, ids);
     }
 }
-static void check_overlap_bond(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_overlap_bond(BaseMolecule& mol, const std::unordered_set<int>& /*selected_atoms*/, const std::unordered_set<int>& selected_bonds,
                                StructureChecker::CheckResult& result)
 {
     if (BaseMolecule::hasCoord(mol))
@@ -347,7 +347,7 @@ static void check_overlap_bond(BaseMolecule& mol, const std::unordered_set<int>&
     }
 }
 
-static void check_rgroup(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_rgroup(BaseMolecule& mol, const std::unordered_set<int>& /*selected_atoms*/, const std::unordered_set<int>& /*selected_bonds*/,
                          StructureChecker::CheckResult& result)
 {
     if (!isQueryMolecule(mol) && hasRGroups(mol))
@@ -356,7 +356,7 @@ static void check_rgroup(BaseMolecule& mol, const std::unordered_set<int>& selec
     }
 }
 
-static void check_sgroup(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_sgroup(BaseMolecule& mol, const std::unordered_set<int>& /*selected_atoms*/, const std::unordered_set<int>& /*selected_bonds*/,
                          StructureChecker::CheckResult& result)
 {
     if (mol.sgroups.getSGroupCount() > 0)
@@ -365,7 +365,7 @@ static void check_sgroup(BaseMolecule& mol, const std::unordered_set<int>& selec
     }
 }
 
-static void check_tgroup(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_tgroup(BaseMolecule& mol, const std::unordered_set<int>& /*selected_atoms*/, const std::unordered_set<int>& /*selected_bonds*/,
                          StructureChecker::CheckResult& result)
 {
     if (mol.tgroups.getTGroupCount() > 0)
@@ -374,7 +374,7 @@ static void check_tgroup(BaseMolecule& mol, const std::unordered_set<int>& selec
     }
 }
 
-static void check_chirality(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_chirality(BaseMolecule& mol, const std::unordered_set<int>& /*selected_atoms*/, const std::unordered_set<int>& /*selected_bonds*/,
                             StructureChecker::CheckResult& result)
 {
     if (mol.isChiral())
@@ -383,7 +383,7 @@ static void check_chirality(BaseMolecule& mol, const std::unordered_set<int>& se
     }
 }
 
-static void check_chiral_flag(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_chiral_flag(BaseMolecule& mol, const std::unordered_set<int>& /*selected_atoms*/, const std::unordered_set<int>& /*selected_bonds*/,
                               StructureChecker::CheckResult& result)
 {
     if (mol.getChiralFlag() > 0 && mol.stereocenters.size() == 0)
@@ -392,13 +392,13 @@ static void check_chiral_flag(BaseMolecule& mol, const std::unordered_set<int>& 
     }
 }
 
-static void check_3d_coord(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_3d_coord(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
                            StructureChecker::CheckResult& result)
 {
     FILTER_ATOMS(StructureChecker::CheckMessageCode::CHECK_MSG_3D_COORD, [](BaseMolecule& mol, int idx) { return fabs(mol.getAtomXyz(idx).z) > 0.001; });
 }
 
-static void check_charge(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_charge(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
                          StructureChecker::CheckResult& result)
 {
     if (std::accumulate(selected_atoms.begin(), selected_atoms.end(), 0, [&mol](int sum, int idx) { return sum + mol.getAtomCharge(idx); }))
@@ -407,14 +407,16 @@ static void check_charge(BaseMolecule& mol, const std::unordered_set<int>& selec
     }
 }
 
+/*
 static void check_salt(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
                        StructureChecker::CheckResult& result)
 {
     // not impl
     message(result, StructureChecker::CheckMessageCode::CHECK_MSG_SALT_NOT_IMPL);
 }
+*/
 
-static void check_ambiguous_h(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_ambiguous_h(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
                               StructureChecker::CheckResult& result)
 {
     if (isQueryMolecule(mol))
@@ -429,7 +431,7 @@ static void check_ambiguous_h(BaseMolecule& mol, const std::unordered_set<int>& 
     }
 }
 
-static void check_coord(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_coord(BaseMolecule& mol, const std::unordered_set<int>& /*selected_atoms*/, const std::unordered_set<int>& /*selected_bonds*/,
                         StructureChecker::CheckResult& result)
 {
     if (mol.vertexCount() > 1 && !BaseMolecule::hasCoord(mol))
@@ -438,7 +440,7 @@ static void check_coord(BaseMolecule& mol, const std::unordered_set<int>& select
     }
 }
 
-static void check_v3000(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& selected_bonds,
+static void check_v3000(BaseMolecule& mol, const std::unordered_set<int>& /*selected_atoms*/, const std::unordered_set<int>& /*selected_bonds*/,
                         StructureChecker::CheckResult& result)
 {
     if (mol.hasHighlighting() || (!mol.stereocenters.haveAllAbsAny() && !mol.stereocenters.haveAllAndAny()) || mol.vertexCount() > 999 || mol.edgeCount() > 999)

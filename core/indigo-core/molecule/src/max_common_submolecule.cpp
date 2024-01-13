@@ -45,7 +45,7 @@ bool MaxCommonSubmolecule::matchBonds(Graph& g1, Graph& g2, int i, int j, void* 
     return MoleculeExactMatcher::matchBonds(mol1, mol2, i, j, flags);
 }
 
-bool MaxCommonSubmolecule::matchAtoms(Graph& g1, Graph& g2, const int* core_sub, int i, int j, void* userdata)
+bool MaxCommonSubmolecule::matchAtoms(Graph& g1, Graph& g2, const int* /* core_sub */, int i, int j, void* userdata)
 {
     BaseMolecule& mol1 = (BaseMolecule&)g1;
     BaseMolecule& mol2 = (BaseMolecule&)g2;

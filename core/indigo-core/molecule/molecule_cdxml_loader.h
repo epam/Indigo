@@ -40,6 +40,11 @@ typedef int INT32;
 typedef unsigned int UINT32;
 #include "CDXCommons.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201)
+#endif
+
 namespace tinyxml2
 {
     class XMLHandle;
@@ -434,7 +439,7 @@ namespace indigo
             return result;
         }
 
-        std::string parseCDXUINT16(uint16_t val, uint16_t tag)
+        std::string parseCDXUINT16(uint16_t val, uint16_t /*tag*/)
         {
             return std::to_string(val);
         }
@@ -945,5 +950,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

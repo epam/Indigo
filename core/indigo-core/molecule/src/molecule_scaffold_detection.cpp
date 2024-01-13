@@ -140,7 +140,7 @@ bool MoleculeScaffoldDetection::matchBonds(Graph& g1, Graph& g2, int i, int j, v
     return MoleculeSubstructureMatcher::matchQueryBond(q_bond, *target, sub_idx, super_idx, 0, 0xFFFFFFFF);
 }
 
-bool MoleculeScaffoldDetection::matchAtoms(Graph& g1, Graph& g2, const int*, int i, int j, void* userdata)
+bool MoleculeScaffoldDetection::matchAtoms(Graph& g1, Graph& g2, const int*, int i, int j, void* /*userdata*/)
 {
     BaseMolecule& mol1 = (BaseMolecule&)g1;
     BaseMolecule& mol2 = (BaseMolecule&)g2;

@@ -16,6 +16,11 @@
  * limitations under the License.
  ***************************************************************************/
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4315) // TODO: Fix CDXFont allign issue
+#endif
+
 #include "molecule/molecule_cdxml_saver.h"
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
@@ -48,13 +53,13 @@ void MoleculeCdxmlSaver::writeBinaryTextValue(const tinyxml2::XMLElement* pTextE
             {
                 std::string attr_name = pAttr->Name();
                 if (attr_name == "font")
-                    ts.font_index = pAttr->IntValue();
+                    ts.font_index = static_cast<uint16_t>(pAttr->IntValue());
                 else if (attr_name == "size")
                     ts.font_size = static_cast<uint16_t>(pAttr->FloatValue() * kCDXMLSizeMultiplier);
                 else if (attr_name == "color")
-                    ts.font_color = pAttr->IntValue();
+                    ts.font_color = static_cast<uint16_t>(pAttr->IntValue());
                 else if (attr_name == "face")
-                    ts.font_face = pAttr->IntValue();
+                    ts.font_face = static_cast<uint16_t>(pAttr->IntValue());
             }
             ts.offset = static_cast<uint16_t>(text.size());
             styled_strings.push_back(ts);
@@ -91,7 +96,7 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
     case ECDXType::CDXString: {
         std::string val = pAttr->Value();
         uint16_t styles = 0;
-        _output.writeBinaryUInt16(static_cast<int>(val.size() + sizeof(styles)));
+        _output.writeBinaryUInt16(static_cast<uint16_t>(val.size() + sizeof(styles)));
         _output.writeBinaryUInt16(styles);
         _output.write(val.data(), static_cast<int>(val.size()));
     }
@@ -112,7 +117,7 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
             val = kLabelAlignmentStrToInt.at(pAttr->Value());
             break;
         case kCDXProp_Atom_Radical:
-            val = kRadicalStrToId.at(pAttr->Value());
+            val = static_cast<int8_t>(kRadicalStrToId.at(pAttr->Value()));
             break;
         case kCDXProp_Bond_CIPStereochemistry:
             val = kCIPBondStereochemistryIndexToChar.at(pAttr->Value()[0]);
@@ -121,16 +126,16 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
             val = kCIPStereochemistryCharToIndex.at(pAttr->Value()[0]);
             break;
         case kCDXProp_Arrow_Type:
-            val = kCDXProp_Arrow_TypeStrToID.at(pAttr->Value());
+            val = static_cast<int8_t>(kCDXProp_Arrow_TypeStrToID.at(pAttr->Value()));
             break;
         case kCDXProp_Atom_Geometry:
-            val = KGeometryTypeNameToInt.at(pAttr->Value());
+            val = static_cast<int8_t>(KGeometryTypeNameToInt.at(pAttr->Value()));
             break;
         case kCDXProp_Atom_EnhancedStereoType:
-            val = (int)kCDXEnhancedStereoStrToID.at(pAttr->Value());
+            val = static_cast<int8_t>(kCDXEnhancedStereoStrToID.at(pAttr->Value()));
             break;
         default:
-            val = pAttr->IntValue();
+            val = static_cast<int8_t>(pAttr->IntValue());
             break;
         }
         _output.writeBinaryUInt16(sizeof(val));
@@ -140,14 +145,14 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
 
     case ECDXType::CDXINT16:
     case ECDXType::CDXUINT16: {
-        int16_t val = pAttr->IntValue();
+        int16_t val = static_cast<int16_t>(pAttr->IntValue());
         switch (tag)
         {
         case kCDXProp_Node_Type:
-            val = KNodeTypeNameToInt.at(pAttr->Value());
+            val = static_cast<int16_t>(KNodeTypeNameToInt.at(pAttr->Value()));
             break;
         case kCDXProp_Graphic_Type:
-            val = kCDXPropGraphicTypeStrToID.at(pAttr->Value());
+            val = static_cast<int16_t>(kCDXPropGraphicTypeStrToID.at(pAttr->Value()));
             break;
         case kCDXProp_Rectangle_Type: {
             auto vecs = split(pAttr->Value(), ' ');
@@ -159,17 +164,17 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
             val *= kBondSpacingMultiplier;
             break;
         case kCDXProp_Line_Type:
-            val = kLineTypeStrToInt.at(pAttr->Value());
+            val = static_cast<int16_t>(kLineTypeStrToInt.at(pAttr->Value()));
             break;
         case kCDXProp_Arrow_Type:
-            val = kCDXProp_Arrow_TypeStrToID.at(pAttr->Value());
+            val = static_cast<int16_t>(kCDXProp_Arrow_TypeStrToID.at(pAttr->Value()));
             break;
         case kCDXProp_Arrow_ArrowHead_Head:
         case kCDXProp_Arrow_ArrowHead_Tail:
             val = kCDXProp_Arrow_ArrowHeadStrToInt.at(pAttr->Value());
             break;
         case kCDXProp_Bond_Display:
-            val = kCDXProp_Bond_DisplayStrToID.at(pAttr->Value());
+            val = static_cast<int16_t>(kCDXProp_Bond_DisplayStrToID.at(pAttr->Value()));
             break;
         }
 
@@ -240,7 +245,7 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
             std::stringstream converter;
             converter << std::hex << hex_str;
             converter >> val;
-            bytes_vector.push_back(val);
+            bytes_vector.push_back(static_cast<uint8_t>(val));
         }
         _output.writeBinaryUInt16(static_cast<uint16_t>(bytes_vector.size()));
         _output.write(bytes_vector.data(), static_cast<int>(bytes_vector.size()));
@@ -380,7 +385,7 @@ void MoleculeCdxmlSaver::beginDocument(Bounds* bounds)
     _current = _root;
 }
 
-void MoleculeCdxmlSaver::beginPage(Bounds* bounds)
+void MoleculeCdxmlSaver::beginPage(Bounds* /* bounds */)
 {
     _page = _doc->NewElement("page");
     _root->LinkEndChild(_page);
@@ -817,17 +822,16 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
         s->LinkEndChild(txt);
         if (hcount > 1)
         {
-            XMLElement* s = _doc->NewElement("s");
-            t->LinkEndChild(s);
-            s->SetAttribute("font", 3);
-            s->SetAttribute("size", 10);
-            s->SetAttribute("face", 32);
+            XMLElement* ss = _doc->NewElement("s");
+            t->LinkEndChild(ss);
+            ss->SetAttribute("font", 3);
+            ss->SetAttribute("size", 10);
+            ss->SetAttribute("face", 32);
 
             out.clear();
             out.printf("%d", hcount);
             buf.push(0);
-            XMLText* txt = _doc->NewText(buf.ptr());
-            s->LinkEndChild(txt);
+            ss->LinkEndChild(_doc->NewText(buf.ptr()));
         }
     }
     else if (atom_number < 0 && mol.isQueryMolecule())
@@ -1088,7 +1092,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
 
 void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum)
 {
-    XMLElement* parent = _current;
+    // XMLElement* parent = _current;
     XMLElement* fragment = _doc->NewElement("altgroup");
     _current->LinkEndChild(fragment);
     _current = fragment;
@@ -1375,14 +1379,15 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
     break;
     case KETTextObject::CID: {
         const KETTextObject& ko = static_cast<const KETTextObject&>(obj);
-        double text_offset_y = 0;
+        // double text_offset_y = 0;
         int font_size = static_cast<int>(KETDefaultFontSize);
         CDXMLFontStyle font_face(0);
         for (auto& text_item : ko._block)
         {
-            size_t first_index = -1;
-            size_t second_index = -1;
-            double text_offset_x = 0;
+            bool is_first_index = true;
+            size_t first_index = 0;
+            size_t second_index = 0;
+            // double text_offset_x = 0;
             FONT_STYLE_SET current_styles;
             Vec2f text_origin(ko._pos.x, ko._pos.y);
             std::string pos_str = std::to_string(_bond_length * text_origin.x) + " " + std::to_string(-_bond_length * text_origin.y);
@@ -1394,10 +1399,11 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
             t->SetAttribute("InterpretChemically", "no");
             for (auto& kvp : text_item.styles)
             {
-                if (first_index == -1)
+                if (is_first_index)
                 {
                     first_index = kvp.first;
                     current_styles = kvp.second;
+                    is_first_index = false;
                     continue;
                 }
                 second_index = kvp.first;
@@ -1630,6 +1636,7 @@ void MoleculeCdxmlSaver::writeIrregularElement(tinyxml2::XMLElement* pElement, i
     {
     case kCDXProp_FontTable: {
         std::vector<CDXFont> font_table;
+
         uint16_t total_size = sizeof(uint16_t) * 2; // platform type + fonts counter
         for (auto pElem = pElement->FirstChildElement(); pElem; pElem = pElem->NextSiblingElement())
         {
@@ -1640,10 +1647,10 @@ void MoleculeCdxmlSaver::writeIrregularElement(tinyxml2::XMLElement* pElement, i
                 {
                     std::string attr_name = pAttr->Name();
                     if (attr_name == "id")
-                        font.font_id = pAttr->IntValue();
+                        font.font_id = static_cast<uint16_t>(pAttr->IntValue());
                     else if (attr_name == "charset")
                     {
-                        font.char_set = kCharsetStrToInt.at(pAttr->Value());
+                        font.char_set = static_cast<uint16_t>(kCharsetStrToInt.at(pAttr->Value()));
                     }
                     else if (attr_name == "name")
                         font.name = pAttr->Value();
@@ -1732,17 +1739,17 @@ void MoleculeCdxmlSaver::writeBinaryElement(tinyxml2::XMLElement* element)
 {
     std::string objname = element->Value();
     int id = 0, tag = 0;
-    bool is_object = false;
+    // bool is_object = false;
     if (objname != "CDXML")
     {
         auto it = KCDXNameToObjID.find(objname);
         if (it != KCDXNameToObjID.end())
         {
             tag = it->second;
-            _output.writeBinaryUInt16(tag);
+            _output.writeBinaryUInt16(static_cast<uint16_t>(tag));
             if (tag < kCDXTag_Object)
             {
-                writeIrregularElement(element, tag);
+                writeIrregularElement(element, static_cast<uint16_t>(tag));
                 return;
             }
         }
@@ -1877,3 +1884,7 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& mol)
     endPage();
     endDocument();
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

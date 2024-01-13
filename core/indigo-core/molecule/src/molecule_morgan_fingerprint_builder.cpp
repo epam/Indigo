@@ -219,16 +219,18 @@ dword MoleculeMorganFingerprintBuilder::initialStateCallback_ECFP(BaseMolecule& 
     return key;
 }
 
-dword MoleculeMorganFingerprintBuilder::initialStateCallback_FCFP(BaseMolecule& mol, int idx)
+dword MoleculeMorganFingerprintBuilder::initialStateCallback_FCFP(BaseMolecule& /* mol */, int /* idx */)
 {
     throw Exception("FCFP is not implemented"); // TODO: implement ionizability
 
+    /*
     dword key = 0;
 
     key |= (mol.getAtomAromaticity(0) == ATOM_AROMATIC) << 4;
     key |= Element::isHalogen(mol.getAtomNumber(idx)) << 5;
 
     return key;
+    //*/
 }
 
 int MoleculeMorganFingerprintBuilder::bondDescriptorCmp(const BondDescriptor& bd1, const BondDescriptor& bd2)
