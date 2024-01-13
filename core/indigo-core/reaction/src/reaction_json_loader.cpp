@@ -379,7 +379,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         {
             rc.summ_block_idx = static_cast<int>(_component_summ_blocks.size());
             _component_summ_blocks.push_back(_reaction_components[i].bbox);
-            _component_summ_blocks.back().indexes.push_back(i);
+            _component_summ_blocks.back().indexes.push_back(static_cast<int>(i));
         }
     }
 
