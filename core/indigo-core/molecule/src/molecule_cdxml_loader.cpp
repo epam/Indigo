@@ -65,7 +65,7 @@ CDXProperty CDXProperty::getNextProp()
         auto ptr16 = (uint16_t*)_data;
         if (*ptr16 == kCDXProp_Text && _style_index >= 0 && _style_prop >= 0)
         {
-            if (++_style_prop < KStyleProperties.size())
+            if (++_style_prop < static_cast<int>(KStyleProperties.size()))
                 return CDXProperty(_data, _data_limit, _size, 0, _style_index, _style_prop);
             else
                 return CDXProperty();
@@ -376,7 +376,7 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(CDXElement elem, bool no_siblings,
         {
             CdxmlBracket bracket;
             bracket.is_superatom = true;
-            for (auto node_idx = fragment_start_idx; node_idx < this->nodes.size(); ++node_idx)
+            for (size_t node_idx = fragment_start_idx; node_idx < this->nodes.size(); ++node_idx)
             {
                 auto& node = this->nodes[node_idx];
                 if (node.type == kCDXNodeType_Element || node.type == kCDXNodeType_ElementList)
@@ -752,7 +752,7 @@ void MoleculeCdxmlLoader::_parseFragmentAttributes(CDXProperty prop)
                 auto vec_str = split(prop.value(), ' ');
                 if (fn.connections.size() == vec_str.size())
                 {
-                    for (int i = 0; i < vec_str.size(); ++i)
+                    for (size_t i = 0; i < vec_str.size(); ++i)
                     {
                         auto pid = std::stoi(vec_str[i]);
                         fn.connections[i].point_id = pid;

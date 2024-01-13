@@ -370,7 +370,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
     }
 
     // add all single molecules to _component_summ_blocks
-    for (int i = 0; i < _reaction_components.size(); ++i)
+    for (size_t i = 0; i < _reaction_components.size(); ++i)
     {
         auto& rc = _reaction_components[i];
         if (rc.component_type != ReactionComponent::MOLECULE)
@@ -392,7 +392,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         const Vec2f& arr_end = arrow._end;
         double min_dist_prod = -1, min_dist_reac = -1;
         int idx_cs_min_prod = -1, idx_cs_min_reac = -1;
-        for (int index_cs = 0; index_cs < _component_summ_blocks.size(); ++index_cs)
+        for (int index_cs = 0; index_cs < static_cast<int>(_component_summ_blocks.size()); ++index_cs)
         {
             auto& csb = _component_summ_blocks[index_cs];
             if (csb.bbox.rayIntersectsRect(arr_end, arr_begin))

@@ -200,7 +200,7 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
         auto vec_strs = split(values, ' ');
         if (vec_strs.size() % 2 == 0)
         {
-            for (int i = 0; i < vec_strs.size(); i += 2)
+            for (size_t i = 0; i < vec_strs.size(); i += 2)
                 std::swap(vec_strs[i], vec_strs[i + 1]);
         }
 
@@ -238,7 +238,7 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
     case ECDXType::CDXUnformatted: {
         std::string values = pAttr->Value();
         std::vector<uint8_t> bytes_vector;
-        for (int i = 0; i < values.size(); i += 2)
+        for (size_t i = 0; i < values.size(); i += 2)
         {
             uint32_t val;
             std::string hex_str = values.substr(i, 2);
@@ -1050,7 +1050,7 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
         if (connection_order.size() > 1)
         {
             std::string order;
-            for (int i = 0; i < connection_order.size(); ++i)
+            for (size_t i = 0; i < connection_order.size(); ++i)
             {
                 if (i)
                     order += " ";
@@ -1062,7 +1062,7 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
         if (bond_ordering.size() > 1)
         {
             std::string order;
-            for (int i = 0; i < bond_ordering.size(); ++i)
+            for (size_t i = 0; i < bond_ordering.size(); ++i)
             {
                 if (i)
                     order += " ";

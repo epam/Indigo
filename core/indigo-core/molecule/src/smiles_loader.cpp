@@ -3234,7 +3234,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             }
             else
             {
-                std::string current(static_cast<const char*>(scanner.curptr()), scanner.length() - scanner.tell());
+                std::string current(static_cast<const char*>(scanner.curptr()), static_cast<size_t>(scanner.length() - scanner.tell()));
                 std::smatch match;
                 if (std::regex_search(current, match, std::regex("^(TH|AL)([1-2])")))
                 {

@@ -1043,12 +1043,12 @@ float MoleculeLayoutMacrocyclesLattice::rating(CycleLayout& cl)
         }
 
     size_t size = pp.size();
-    for (auto i = 0; i < size; i++)
-        for (auto j = 0; j < size; j++)
+    for (size_t i = 0; i < size; i++)
+        for (size_t j = 0; j < size; j++)
             if (i != j && (i + 1) % size != j && i != (j + 1) % size)
             {
-                int nexti = (i + 1) % size;
-                int nextj = (j + 1) % size;
+                size_t nexti = (i + 1) % size;
+                size_t nextj = (j + 1) % size;
                 float dist = Vec2f::distSegmentSegment(pp[i], pp[nexti], pp[j], pp[nextj]);
 
                 if (fabs(dist) < eps)

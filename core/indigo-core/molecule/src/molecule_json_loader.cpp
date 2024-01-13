@@ -593,7 +593,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
     }
 
     if (_pqmol)
-        for (int k = 0; k < hcounts.size(); k++)
+        for (int k = 0; k < static_cast<int>(hcounts.size()); k++)
         {
             int expl_h = 0;
 
@@ -1100,7 +1100,7 @@ void MoleculeJsonLoader::fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol)
 
     // fill brackets
 
-    for (int i = 0; i < brackets.size(); i += 2)
+    for (size_t i = 0; i < brackets.size(); i += 2)
     {
         Vec2f* brk_pos = sa.brackets.push();
         brk_pos[0].copy(brackets[i]);

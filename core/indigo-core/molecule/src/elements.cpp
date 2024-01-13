@@ -1078,7 +1078,7 @@ void Element::_initDefaultIsotopes()
     std::vector<double> most_abundant_isotope_fraction;
     most_abundant_isotope_fraction.resize(_element_parameters.size());
 
-    for (int i = ELEM_MIN; i < _element_parameters.size(); i++)
+    for (unsigned int i = ELEM_MIN; i < _element_parameters.size(); i++)
     {
         _element_parameters.at(i).default_isotope = IsotopeKey::NATURAL;
         _element_parameters.at(i).most_abundant_isotope = IsotopeKey::NATURAL;
@@ -1139,7 +1139,7 @@ void Element::_initDefaultIsotopes()
         }
     }
 
-    for (int i = ELEM_MIN; i < _element_parameters.size(); i++)
+    for (unsigned int i = ELEM_MIN; i < _element_parameters.size(); i++)
     {
         ElementParameters& element = _element_parameters.at(i);
 
@@ -1154,7 +1154,7 @@ void Element::_initDefaultIsotopes()
     }
 
     // Post-condition
-    for (int i = ELEM_MIN; i < _element_parameters.size(); i++)
+    for (unsigned int i = ELEM_MIN; i < _element_parameters.size(); i++)
         if (_element_parameters.at(i).default_isotope == IsotopeKey::NATURAL)
             // usually you can't catch this as it's being thrown before main()
             throw Error("default isotope is not set on element #%d", i);
