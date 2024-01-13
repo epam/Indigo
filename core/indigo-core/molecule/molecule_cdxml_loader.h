@@ -926,7 +926,7 @@ namespace indigo
 
         Molecule* _pmol;
         QueryMolecule* _pqmol;
-        std::unordered_map<int, std::size_t> _id_to_atom_idx;
+        std::unordered_map<int, int> _id_to_atom_idx;
         std::unordered_map<int, std::size_t> _id_to_node_index;
         std::unordered_map<int, std::size_t> _id_to_bond_index;
         std::vector<int> _fragment_nodes;

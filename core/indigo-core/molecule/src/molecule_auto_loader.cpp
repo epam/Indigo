@@ -219,7 +219,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
         base64_str.erase(std::remove_if(base64_str.begin(), base64_str.end(), [](char c) { return c == '\n' || c == '\r'; }), base64_str.end());
         if (validate_base64(base64_str))
         {
-            base64_data.copy(base64_str.data(), base64_str.size());
+            base64_data.copy(base64_str.data(), static_cast<int>(base64_str.size()));
             base64_scanner = std::make_unique<BufferScanner>(base64_data, true);
             local_scanner = base64_scanner.get();
         }
@@ -393,10 +393,10 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
             const std::string kDNA = "DNA:";
 
             long long start_pos = _scanner->tell();
-            if (_scanner->length() > kRNA.size())
+            if (_scanner->length() > static_cast<long long>(kRNA.size()))
             {
                 std::vector<char> tag(kPeptide.size() + 1, 0);
-                _scanner->readCharsFix(kRNA.size(), tag.data());
+                _scanner->readCharsFix(static_cast<int>(kRNA.size()), tag.data());
                 SequenceLoader sl(*_scanner);
                 if (kRNA == tag.data())
                 {
@@ -411,9 +411,9 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
                 else
                 {
                     _scanner->seek(start_pos, SEEK_SET);
-                    if (_scanner->length() > kPeptide.size())
+                    if (_scanner->length() > static_cast<long long>(kPeptide.size()))
                     {
-                        _scanner->readCharsFix(kPeptide.size(), tag.data());
+                        _scanner->readCharsFix(static_cast<int>(kPeptide.size()), tag.data());
                         if (kPeptide == tag.data())
                         {
                             sl.loadSequence(mol, SequenceLoader::SeqType::PEPTIDESeq);
@@ -480,7 +480,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
                 {
                     loader.loadQueryMolecule(static_cast<QueryMolecule&>(mol));
                 }
-                catch (Exception& e)
+                catch (Exception&)
                 {
                     _scanner->seek(start, SEEK_SET);
                     loader.loadSMARTS(static_cast<QueryMolecule&>(mol));
@@ -507,7 +507,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
             parser.parseMolecule(name.ptr(), static_cast<Molecule&>(mol));
             return;
         }
-        catch (Exception& e)
+        catch (Exception&)
         {
         }
 

@@ -2435,7 +2435,7 @@ void SmilesLoader::readSmartsBondStr(const std::string& bond_str, std::unique_pt
 {
     _BondDesc bond;
     Array<char> ac_str;
-    ac_str.copy(bond_str.c_str(), bond_str.size());
+    ac_str.copy(bond_str.c_str(), static_cast<int>(bond_str.size()));
     _readBond(ac_str, bond, qbond, true);
 }
 
@@ -2787,7 +2787,7 @@ void SmilesLoader::readSmartsAtomStr(const std::string& atom_str, std::unique_pt
     Pool<List<int>::Elem> neipool;
     _AtomDesc atom{neipool};
     Array<char> ac_str;
-    ac_str.copy(atom_str.c_str(), atom_str.size());
+    ac_str.copy(atom_str.c_str(), static_cast<int>(atom_str.size()));
     _readAtom(ac_str, true, atom, qatom, true, false);
 }
 

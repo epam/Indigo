@@ -116,7 +116,7 @@ void Reaction::checkForConsistency(Reaction& rxn)
 void Reaction::unfoldHydrogens()
 {
     QS_DEF(Array<int>, markers);
-    int i, j;
+    int i;
 
     for (i = begin(); i != end(); i = next(i))
     {

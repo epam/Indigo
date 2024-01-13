@@ -1500,8 +1500,6 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
         output.printf("M  ALS %3d%3d %c ", _atom_mapping[atom_idx], list.size(), query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST ? 'T' : 'F');
 
-        int j;
-
         for (auto& qatom : list)
         {
             if (qatom->type == QueryMolecule::ATOM_NUMBER)
@@ -1527,7 +1525,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 else
                 {
                     output.writeString(str);
-                    for (int i = strlen(str); i < SYMBOL_WIDTH; i++)
+                    for (auto i = strlen(str); i < SYMBOL_WIDTH; i++)
                         output.writeChar(' ');
                 }
             }

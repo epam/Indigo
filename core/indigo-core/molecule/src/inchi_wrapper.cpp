@@ -623,7 +623,7 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
             arom_options.unique_dearomatization = true;
             dearom->dearomatize(arom_options);
         }
-        catch (NonUniqueDearomatizationException& ex)
+        catch (NonUniqueDearomatizationException&)
         {
             // Do not allow non-unique dearomatizations
             throw;

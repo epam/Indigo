@@ -723,7 +723,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint_calcChem(BaseMolecule& mol)
     {
         mol.asMolecule().invalidateHCounters();
     }
-    catch (indigo::Exception& e)
+    catch (indigo::Exception&)
     {
         // Since `mol` is (probably) `QueryMolecule`,
         // connectivity doesn't matter anyway
@@ -741,7 +741,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint_calcChem(BaseMolecule& mol)
             if (!res)
                 continue; // skippable atom
         }
-        catch (indigo::Exception& e)
+        catch (indigo::Exception&)
         {
             continue;
         }
@@ -770,7 +770,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint_calcChem(BaseMolecule& mol)
             if (!res1 || !res2)
                 continue; // skippable atoms
         }
-        catch (indigo::Exception& e)
+        catch (indigo::Exception&)
         {
             continue;
         }

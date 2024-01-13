@@ -1041,7 +1041,7 @@ float MoleculeLayoutMacrocyclesLattice::rating(CycleLayout& cl)
             pp.push_back((cl.point[i] * _2FLOAT(cl.edge_length[i] - t) + cl.point[(i + 1) % cl.vertex_count] * _2FLOAT(t)) / _2FLOAT(cl.edge_length[i]));
         }
 
-    int size = pp.size();
+    size_t size = pp.size();
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++)
             if (i != j && (i + 1) % size != j && i != (j + 1) % size)

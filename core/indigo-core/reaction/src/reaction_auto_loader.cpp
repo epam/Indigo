@@ -300,7 +300,7 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
             {
                 loader.loadQueryReaction(static_cast<QueryReaction&>(reaction));
             }
-            catch (Exception& e)
+            catch (Exception&)
             {
                 loader.smarts_mode = true;
                 _scanner->seek(pos, SEEK_SET);

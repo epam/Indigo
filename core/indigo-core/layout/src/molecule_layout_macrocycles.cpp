@@ -598,7 +598,7 @@ float MoleculeLayoutMacrocycles::badness(int ind, int molSize, int* rotateAngle,
             pp.push_back((p[i] * _2FLOAT(edgeLenght[i] - t) + p[(i + 1) % ind] * _2FLOAT(t)) / _2FLOAT(edgeLenght[i]));
         }
 
-    int size = pp.size();
+    int size = static_cast<int>(pp.size());
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++)
             if (i != j && (i + 1) % size != j && i != (j + 1) % size)

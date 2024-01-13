@@ -1133,8 +1133,8 @@ bool MoleculeCleaner2d::_isZero()
     bool is_zero = true;
     for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v))
     {
-        is_zero = is_zero & _mol.getAtomXyz(v).x == 0;
-        is_zero = is_zero & _mol.getAtomXyz(v).y == 0;
+        is_zero = is_zero && _mol.getAtomXyz(v).x == 0;
+        is_zero = is_zero && _mol.getAtomXyz(v).y == 0;
     }
     return is_zero;
 }

@@ -862,7 +862,7 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, CDXElement elem)
                     node.type = kCDXNodeType_NamedAlternativeGroup;
                     node.element = ELEM_RSITE;
                 }
-                catch (const std::exception& ex)
+                catch (const std::exception&)
                 {
                     // not a R-Group
                 }
@@ -1243,9 +1243,9 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec3
             {
                 writer.StartObject();
                 writer.Key("offset");
-                writer.Int(ts.offset);
+                writer.Int(static_cast<int>(ts.offset));
                 writer.Key("length");
-                writer.Int(ts.size);
+                writer.Int(static_cast<int>(ts.size));
                 writer.Key("style");
                 writer.String(style_str.c_str());
                 writer.EndObject();

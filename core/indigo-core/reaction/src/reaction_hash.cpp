@@ -26,9 +26,9 @@ namespace indigo
             catalystHash += MoleculeHash::calculate(rxn.getMolecule(j));
         }
         dword hash = 0;
-        hash = (hash + (324723947 + reactantHash)) ^ 93485734985;
-        hash = (hash + (324723947 + productHash)) ^ 93485734985;
-        hash = (hash + (324723947 + catalystHash)) ^ 93485734985;
+        hash = static_cast<dword>((hash + (324723947 + reactantHash)) ^ 93485734985);
+        hash = static_cast<dword>((hash + (324723947 + productHash)) ^ 93485734985);
+        hash = static_cast<dword>((hash + (324723947 + catalystHash)) ^ 93485734985);
         return hash;
     }
 }

@@ -423,7 +423,7 @@ int MoleculeGrossFormula::_isotopeCount(BaseMolecule& mol)
             *val += 1;
     }
 
-    return isotopes.size();
+    return static_cast<int>(isotopes.size());
 }
 
 void MoleculeGrossFormula::fromString(Scanner& scanner, Array<int>& gross)

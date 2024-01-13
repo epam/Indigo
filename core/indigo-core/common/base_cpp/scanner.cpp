@@ -533,7 +533,7 @@ void Scanner::readAll(std::string& str)
         throw Error("Cannot read more than %d into memory", max_int);
     }
     str.resize(size);
-    read(str.size(), &str[0]);
+    read(static_cast<int>(str.size()), &str[0]);
 }
 
 void Scanner::readAll(Array<char>& arr)
@@ -737,7 +737,7 @@ void BufferScanner::_init(const char* buffer, int size)
     {
         std::string encoded(buffer, size);
         auto decoded = base64::decode(encoded.c_str(), encoded.size());
-        _base64_buffer.copy((char*)decoded.data(), decoded.size());
+        _base64_buffer.copy(reinterpret_cast<const char*>(decoded.data()), static_cast<int>(decoded.size()));
         _buffer = _base64_buffer.ptr();
         _size = _base64_buffer.size();
     }
