@@ -238,7 +238,7 @@ int MainLayerConnections::compareComponentsConnectionTables(MainLayerConnections
         int value1 = comp1._connection_table[i];
         int value2 = comp2._connection_table[i];
 
-        int diff = value1 - value2;
+        diff = value1 - value2;
         if (diff != 0)
             return -diff;
     }
@@ -698,7 +698,7 @@ void CisTransStereochemistryLayer::_construct()
     }
 }
 
-int CisTransStereochemistryLayer::compareComponents(CisTransStereochemistryLayer& comp1, CisTransStereochemistryLayer& comp2)
+int CisTransStereochemistryLayer::compareComponents(CisTransStereochemistryLayer& /*comp1*/, CisTransStereochemistryLayer& /*comp2*/)
 {
     // TODO
     return 0;
@@ -831,7 +831,7 @@ int TetrahedralStereochemistryLayer::compareComponentsEnantiomers(TetrahedralSte
     return s2 - s1;
 }
 
-int TetrahedralStereochemistryLayer::compareComponents(TetrahedralStereochemistryLayer& comp1, TetrahedralStereochemistryLayer& comp2)
+int TetrahedralStereochemistryLayer::compareComponents(TetrahedralStereochemistryLayer& /*comp1*/, TetrahedralStereochemistryLayer& /*comp2*/)
 {
     return 0;
 }

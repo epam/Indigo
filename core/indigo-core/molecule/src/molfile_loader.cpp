@@ -1119,8 +1119,7 @@ void MolfileLoader::_readCtab2000()
                     {
                         if (strscan.isEOF())
                             break;
-                        int c = strscan.readChar();
-                        sgroup.name.push(c);
+                        sgroup.name.push(strscan.readChar());
                     }
                     // Remove last spaces because name can have multiple words
                     while (sgroup.name.size() > 0)
@@ -1139,8 +1138,7 @@ void MolfileLoader::_readCtab2000()
                     {
                         if (strscan.isEOF())
                             break;
-                        int c = strscan.readChar();
-                        sgroup.type.push(c);
+                        sgroup.type.push(strscan.readChar());
                     }
                     sgroup.type.push(0);
 
@@ -1150,8 +1148,7 @@ void MolfileLoader::_readCtab2000()
                     {
                         if (strscan.isEOF())
                             break;
-                        int c = strscan.readChar();
-                        sgroup.description.push(c);
+                        sgroup.description.push(strscan.readChar());
                     }
                     // Remove last spaces because dscription can have multiple words?
                     while (sgroup.description.size() > 0)
@@ -1169,8 +1166,7 @@ void MolfileLoader::_readCtab2000()
                     {
                         if (strscan.isEOF())
                             break;
-                        int c = strscan.readChar();
-                        sgroup.querycode.push(c);
+                        sgroup.querycode.push(strscan.readChar());
                     }
                     while (sgroup.querycode.size() > 0)
                     {
@@ -1187,8 +1183,7 @@ void MolfileLoader::_readCtab2000()
                     {
                         if (strscan.isEOF())
                             break;
-                        int c = strscan.readChar();
-                        sgroup.queryoper.push(c);
+                        sgroup.queryoper.push(strscan.readChar());
                     }
                     while (sgroup.queryoper.size() > 0)
                     {
@@ -1360,10 +1355,8 @@ void MolfileLoader::_readCtab2000()
                         _scanner.skip(1);
                         ap.lvidx = _scanner.readIntFix(3) - 1;
                         _scanner.skip(1);
-                        char c = _scanner.readChar();
-                        ap.apid.push(c);
-                        c = _scanner.readChar();
-                        ap.apid.push(c);
+                        ap.apid.push(_scanner.readChar());
+                        ap.apid.push(_scanner.readChar());
                         ap.apid.push(0);
                     }
                 }
@@ -1873,7 +1866,7 @@ void MolfileLoader::_readRGroupOccurrenceRanges(const char* str, Array<int>& ran
     ranges.push((beg << 16) | end);
 }
 
-int MolfileLoader::_asc_cmp_cb(int& v1, int& v2, void* context)
+int MolfileLoader::_asc_cmp_cb(int& v1, int& v2, void* /*context*/)
 {
     return v2 - v1;
 }
@@ -1935,10 +1928,10 @@ void MolfileLoader::_postLoad()
             DataSGroup& dsg = static_cast<DataSGroup&>(sgroup);
             if (dsg.parent_idx > -1 && std::string(dsg.name.ptr()) == "SMMX:class")
             {
-                SGroup& sgroup = _bmol->sgroups.getSGroup(dsg.parent_idx);
-                if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
+                SGroup& parent_sgroup = _bmol->sgroups.getSGroup(dsg.parent_idx);
+                if (parent_sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
                 {
-                    auto& sa = (Superatom&)sgroup;
+                    auto& sa = static_cast<Superatom&>(parent_sgroup);
                     if (sa.sa_natreplace.size() == 0)
                         sa.sa_natreplace.copy(dsg.sa_natreplace);
                     if (sa.sa_class.size() == 0)
@@ -3502,7 +3495,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
             n = scanner.readInt1();
             while (n-- > 0)
             {
-                int idx = scanner.readInt() - 1;
+                idx = scanner.readInt() - 1;
 
                 if (sgroup->sgroup_type == SGroup::SG_TYPE_MUL)
                     ((MultipleGroup*)sgroup)->parent_atoms.push(idx);
@@ -3711,7 +3704,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
                     throw Error("CSTATE number is %d (must be 4)", n);
                 scanner.skipSpace();
                 Superatom::_BondConnection& bond = sup->bond_connections.push();
-                int idx = scanner.readInt() - 1;
+                idx = scanner.readInt() - 1;
                 bond.bond_idx = idx;
                 scanner.skipSpace();
                 bond.bond_dir.x = scanner.readFloat();
@@ -3737,7 +3730,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 if (n != 3)
                     throw Error("SAP number is %d (must be 3)", n);
                 scanner.skipSpace();
-                int idx = scanner.readInt() - 1;
+                idx = scanner.readInt() - 1;
                 int idap = sup->attachment_points.add();
                 Superatom::_AttachmentPoint& ap = sup->attachment_points.at(idap);
                 ap.aidx = idx;

@@ -40,6 +40,11 @@ typedef int INT32;
 typedef unsigned int UINT32;
 #include "CDXCommons.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4201)
+#endif
+
 namespace tinyxml2
 {
     class XMLHandle;
@@ -292,7 +297,7 @@ namespace indigo
                 auto ptr32 = (int32_t*)ptr;
                 std::stringstream ss;
                 ss << std::setprecision(2) << std::fixed;
-                for (int i = 0; i < value_size / sizeof(int32_t); ++i)
+                for (uint16_t i = 0; i < value_size / sizeof(int32_t); ++i)
                 {
                     if (i)
                         ss << " ";
@@ -308,7 +313,7 @@ namespace indigo
                 auto ptr32 = (int32_t*)ptr;
                 std::stringstream ss;
                 ss << std::setprecision(2) << std::fixed;
-                for (int i = 0; i < value_size / sizeof(int32_t); ++i)
+                for (uint16_t i = 0; i < value_size / sizeof(int32_t); ++i)
                 {
                     if (i)
                         ss << " ";
@@ -358,7 +363,7 @@ namespace indigo
             break;
             case ECDXType::CDXObjectIDArray: {
                 auto ptr32 = (uint32_t*)ptr;
-                for (int i = 0; i < value_size / sizeof(uint32_t); ++i)
+                for (uint16_t i = 0; i < value_size / sizeof(uint32_t); ++i)
                 {
                     if (i)
                         result += " ";
@@ -434,7 +439,7 @@ namespace indigo
             return result;
         }
 
-        std::string parseCDXUINT16(uint16_t val, uint16_t tag)
+        std::string parseCDXUINT16(uint16_t val, uint16_t /*tag*/)
         {
             return std::to_string(val);
         }
@@ -623,8 +628,7 @@ namespace indigo
 
         CDXProperty findBinaryProperty(int16_t tag)
         {
-            auto prop = firstBinaryProperty();
-            for (prop; prop.hasContent(); prop = prop.getNextProp())
+            for (auto prop = firstBinaryProperty(); prop.hasContent(); prop = prop.getNextProp())
             {
                 if (prop.tag() == tag)
                     return prop;
@@ -662,7 +666,7 @@ namespace indigo
                 {
                     ptr = (uint8_t*)ptr16;
                     auto sz = skipObject(ptr) - ptr;
-                    return CDXElement(ptr, sz);
+                    return CDXElement(ptr, static_cast<int>(sz));
                 }
             }
             return CDXElement();
@@ -697,7 +701,7 @@ namespace indigo
             {
                 ptr = (uint8_t*)ptr16;
                 auto sz = skipObject(ptr) - ptr;
-                return CDXElement(ptr, sz);
+                return CDXElement(ptr, static_cast<int>(sz));
             }
             return CDXElement();
         }
@@ -810,7 +814,7 @@ namespace indigo
         CDXReader(Scanner& scanner);
         virtual CDXElement rootElement()
         {
-            return CDXElement(_buffer.data(), _buffer.size());
+            return CDXElement(_buffer.data(), static_cast<int>(_buffer.size()));
         }
 
         virtual void process()
@@ -913,7 +917,7 @@ namespace indigo
         void _parseArrow(CDXElement elem);
         void _parseAltGroup(CDXElement elem);
 
-        void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& bonds);
+        void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& new_bonds);
         void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket);
         void _handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
         void _processEnhancedStereo(BaseMolecule& mol);
@@ -927,7 +931,7 @@ namespace indigo
 
         Molecule* _pmol;
         QueryMolecule* _pqmol;
-        std::unordered_map<int, std::size_t> _id_to_atom_idx;
+        std::unordered_map<int, int> _id_to_atom_idx;
         std::unordered_map<int, std::size_t> _id_to_node_index;
         std::unordered_map<int, std::size_t> _id_to_bond_index;
         std::vector<int> _fragment_nodes;
@@ -946,5 +950,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

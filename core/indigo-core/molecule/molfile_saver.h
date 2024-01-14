@@ -19,6 +19,11 @@
 #ifndef __molfile_saver__
 #define __molfile_saver__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/base_molecule.h"
@@ -112,5 +117,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

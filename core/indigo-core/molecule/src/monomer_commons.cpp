@@ -16,6 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
+
 #include <unordered_map>
 
 #include "molecule/monomer_commons.h"
@@ -126,7 +130,7 @@ namespace indigo
         {
             if (is_lower_case(name) || is_upper_case(name))
                 for (auto it = res.begin(); it < res.end(); ++it)
-                    *it = it > res.begin() ? std::tolower(*it) : std::toupper(*it);
+                    *it = it > res.begin() ? std::tolower(*it, std::locale()) : std::toupper(*it, std::locale());
         }
         // do not add prefix
         auto prefix = classToPrefix(monomer_class);
@@ -146,8 +150,8 @@ namespace indigo
     std::string getAttachmentLabel(int order)
     {
         std::string second_chars = "lrx";
-        std::string label(1, 'A' + order);
-        if (order > second_chars.size() - 1)
+        std::string label(1, static_cast<char>('A' + order));
+        if (order > static_cast<long>(second_chars.size()) - 1)
             label += second_chars.back();
         else
             label += second_chars[order];
@@ -157,9 +161,9 @@ namespace indigo
     int getAttachmentOrder(const std::string& label)
     {
         if (label == kLeftAttachmentPoint)
-            return 0;
+            return kLeftAttachmentPointIdx;
         if (label == kRightAttachmentPoint)
-            return 1;
+            return kRightAttachmentPointIdx;
         if (label.size() > 1 || isupper(label[0]))
         {
             if (label[0] == 'R')
@@ -171,6 +175,9 @@ namespace indigo
             if (label[1] == 'x')
                 return label[0] - 'A';
         }
+        // TODO: return right value at this point
+        //       this value returned just to avoid warnings
+        return kBranchAttachmentPointIdx;
     }
 
     bool isAttachmentPointsInOrder(int order, const std::string& label)
@@ -202,3 +209,7 @@ namespace indigo
         return false;
     }
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

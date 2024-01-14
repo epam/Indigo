@@ -919,15 +919,15 @@ void CmlLoader::_loadMoleculeElement(XMLHandle& handle)
             else
                 throw Error("unknown bond type: %d", order);
 
-            const char* topology = elem->Attribute("topology");
-            if (topology != 0)
+            const char* bond_topology = elem->Attribute("topology");
+            if (bond_topology != 0)
             {
-                if (strncmp(topology, "ring", 4) == 0)
+                if (strncmp(bond_topology, "ring", 4) == 0)
                     bond.reset(QueryMolecule::Bond::und(bond.release(), new QueryMolecule::Bond(QueryMolecule::BOND_TOPOLOGY, TOPOLOGY_RING)));
-                else if (strncmp(topology, "chain", 5) == 0)
+                else if (strncmp(bond_topology, "chain", 5) == 0)
                     bond.reset(QueryMolecule::Bond::und(bond.release(), new QueryMolecule::Bond(QueryMolecule::BOND_TOPOLOGY, TOPOLOGY_CHAIN)));
                 else
-                    throw Error("unknown topology: %s", topology);
+                    throw Error("unknown topology: %s", bond_topology);
             }
 
             idx = _qmol->addBond(beg, end, bond.release());
@@ -1059,14 +1059,14 @@ void CmlLoader::_loadMoleculeElement(XMLHandle& handle)
         if (refs4 != 0)
         {
             BufferScanner strscan(refs4);
-            QS_DEF(Array<char>, id);
+            QS_DEF(Array<char>, a_id);
             int pyramid[4];
 
             for (int k = 0; k < 4; k++)
             {
                 strscan.skipSpace();
-                strscan.readWord(id, 0);
-                pyramid[k] = getAtomIdx(id.ptr());
+                strscan.readWord(a_id, 0);
+                pyramid[k] = getAtomIdx(a_id.ptr());
                 if (pyramid[k] == idx)
                     pyramid[k] = -1;
             }
@@ -1303,8 +1303,8 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                 }
 
                 int point_idx = 0;
-                Vec2f* pbrackets;
-                XMLElement* pPoint;
+                Vec2f* pbrackets = nullptr;
+                XMLElement* pPoint = nullptr;
                 for (pPoint = brackets->FirstChildElement(); pPoint; pPoint = pPoint->NextSiblingElement())
                 {
                     if (strncmp(pPoint->Value(), "MPoint", 6) != 0)
@@ -1459,8 +1459,8 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                 }
 
                 int point_idx = 0;
-                Vec2f* pbrackets;
-                XMLElement* pPoint;
+                Vec2f* pbrackets = nullptr;
+                XMLElement* pPoint = nullptr;
                 for (pPoint = brackets->FirstChildElement(); pPoint; pPoint = pPoint->NextSiblingElement())
                 {
                     if (strncmp(pPoint->Value(), "MPoint", 6) != 0)
@@ -1537,8 +1537,8 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                 }
 
                 int point_idx = 0;
-                Vec2f* pbrackets;
-                XMLElement* pPoint;
+                Vec2f* pbrackets = nullptr;
+                XMLElement* pPoint = nullptr;
                 for (pPoint = brackets->FirstChildElement(); pPoint; pPoint = pPoint->NextSiblingElement())
                 {
                     if (strncmp(pPoint->Value(), "MPoint", 6) != 0)
@@ -1646,8 +1646,8 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                 }
 
                 int point_idx = 0;
-                Vec2f* pbrackets;
-                XMLElement* pPoint;
+                Vec2f* pbrackets = nullptr;
+                XMLElement* pPoint = nullptr;
                 for (pPoint = brackets->FirstChildElement(); pPoint; pPoint = pPoint->NextSiblingElement())
                 {
                     if (strncmp(pPoint->Value(), "MPoint", 6) != 0)
@@ -1731,8 +1731,8 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                 }
 
                 int point_idx = 0;
-                Vec2f* pbrackets;
-                XMLElement* pPoint;
+                Vec2f* pbrackets = nullptr;
+                XMLElement* pPoint = nullptr;
                 for (pPoint = brackets->FirstChildElement(); pPoint; pPoint = pPoint->NextSiblingElement())
                 {
                     if (strncmp(pPoint->Value(), "MPoint", 6) != 0)
@@ -1832,8 +1832,8 @@ void CmlLoader::_loadRgroupElement(XMLHandle& handle)
         const char* rgroup_then = elem->Attribute("thenR");
         if (rgroup_then != 0)
         {
-            BufferScanner strscan(rgroup_then);
-            rgroup.if_then = strscan.readInt1();
+            BufferScanner rstrscan(rgroup_then);
+            rgroup.if_then = rstrscan.readInt1();
         }
 
         rgroup.rest_h = 0;

@@ -64,11 +64,11 @@ TEST(Basic, MolecularWeight)
     auto session = IndigoSession::create();
     {
         const auto plainAtom = session->loadMolecule("[C]");
-        ASSERT_FLOAT_EQ(plainAtom.molecularWeight(), 12.0107);
+        ASSERT_FLOAT_EQ(plainAtom.molecularWeight(), 12.0107f);
     }
     {
         const auto correctIsotope = session->loadMolecule("[13C]");
-        ASSERT_FLOAT_EQ(correctIsotope.molecularWeight(), 13.003355);
+        ASSERT_FLOAT_EQ(correctIsotope.molecularWeight(), 13.003355f);
     }
     {
         const auto incorrectIsotope = session->loadMolecule("[60C]");

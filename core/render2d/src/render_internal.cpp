@@ -222,11 +222,11 @@ void MoleculeRenderInternal::setMolecule(BaseMolecule* mol)
     auto isThereAtLeastOneContracted = false;
     if (superatoms || mulsgroups)
     {
-        auto count = _mol->sgroups.getSGroupCount(SGroup::SG_TYPE_SUP);
-        BaseMolecule& mol = *_mol;
-        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+        // auto count = _mol->sgroups.getSGroupCount(SGroup::SG_TYPE_SUP);
+        BaseMolecule& bmol = *_mol;
+        for (int i = bmol.sgroups.begin(); i != bmol.sgroups.end(); i = bmol.sgroups.next(i))
         {
-            SGroup& sgroup = mol.sgroups.getSGroup(i);
+            SGroup& sgroup = bmol.sgroups.getSGroup(i);
             if (sgroup.contracted == DisplayOption::Contracted || sgroup.contracted == DisplayOption::Undefined)
             {
                 isThereAtLeastOneContracted = true;
@@ -254,9 +254,9 @@ void MoleculeRenderInternal::setMolecule(BaseMolecule* mol)
     }
 }
 
-void MoleculeRenderInternal::setIsRFragment(bool isRFragment)
+void MoleculeRenderInternal::setIsRFragment(bool new_isRFragment)
 {
-    this->isRFragment = isRFragment;
+    this->isRFragment = new_isRFragment;
 }
 
 void MoleculeRenderInternal::setScaleFactor(const float scaleFactor, const Vec2f& min, const Vec2f& max)
@@ -836,7 +836,7 @@ void MoleculeRenderInternal::_positionIndex(Sgroup& sg, int ti, bool lower)
     index.bbp.addScaled(bracket.d, lower ? -yShift : yShift);
 }
 
-void MoleculeRenderInternal::_placeBrackets(Sgroup& sg, const Array<int>& atoms, Array<Vec2f[2]>& brackets)
+void MoleculeRenderInternal::_placeBrackets(Sgroup& /*sg*/, const Array<int>& atoms, Array<Vec2f[2]>& brackets)
 {
     auto left = brackets.push();
     auto right = brackets.push();
@@ -898,9 +898,9 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                 {
                     const Superatom& group = (Superatom&)sgroup;
                     Vec3f centre;
-                    for (int i = 0; i < group.atoms.size(); ++i)
+                    for (int j = 0; j < group.atoms.size(); ++j)
                     {
-                        int atomID = group.atoms[i];
+                        int atomID = group.atoms[j];
                         centre.add(mol.getAtomXyz(atomID));
                     }
                     centre.scale(1.0f / group.atoms.size());
@@ -985,7 +985,7 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
     }
 }
 
-int dblcmp(double a, double b, void* context)
+int dblcmp(double a, double b, void* /*context*/)
 {
     return a > b ? 1 : (a < b ? -1 : 0);
 }
@@ -1005,7 +1005,7 @@ struct Event
     bool begin;
 };
 
-int evcmp(const Event& a, const Event& b, void* context)
+int evcmp(const Event& a, const Event& b, void* /*context*/)
 {
     if (a.p.x > b.p.x)
         return 1;
@@ -1266,8 +1266,8 @@ void MoleculeRenderInternal::_findRings()
         }
         if (i != j || ring.bondEnds.size() < 3)
         {
-            for (int j = 0; j < ring.bondEnds.size(); ++j)
-                _be(ring.bondEnds[j]).lRing = -2;
+            for (int k = 0; k < ring.bondEnds.size(); ++k)
+                _be(ring.bondEnds[k]).lRing = -2;
             _data.rings.pop();
             continue;
         }
@@ -1275,8 +1275,8 @@ void MoleculeRenderInternal::_findRings()
         bool selfIntersection = _ringHasSelfIntersections(ring);
         if (selfIntersection)
         {
-            for (int j = 0; j < ring.bondEnds.size(); ++j)
-                _be(ring.bondEnds[j]).lRing = -2;
+            for (int k = 0; k < ring.bondEnds.size(); ++k)
+                _be(ring.bondEnds[k]).lRing = -2;
             _data.rings.pop();
             continue;
         }
@@ -1284,10 +1284,10 @@ void MoleculeRenderInternal::_findRings()
         // for the inner loops, sum of the angles should be (n-2)*pi,
         // for the outer ones (n+2)*pi
         float angleSum = 0;
-        for (int j = 0; j < ring.bondEnds.size(); ++j)
+        for (int k = 0; k < ring.bondEnds.size(); ++k)
         {
-            int j1 = (j + 1) % ring.bondEnds.size();
-            const Vec2f& da = _be(ring.bondEnds[j]).dir;
+            int j1 = (k + 1) % ring.bondEnds.size();
+            const Vec2f& da = _be(ring.bondEnds[k]).dir;
             const Vec2f& db = _be(ring.bondEnds[j1]).dir;
             float angle = (float)M_PI - atan2(-Vec2f::cross(da, db), Vec2f::dot(da, db));
             angleSum += angle;
@@ -1298,27 +1298,27 @@ void MoleculeRenderInternal::_findRings()
 
         if (!inner)
         {
-            for (int j = 0; j < ring.bondEnds.size(); ++j)
-                _be(ring.bondEnds[j]).lRing = -2;
+            for (int k = 0; k < ring.bondEnds.size(); ++k)
+                _be(ring.bondEnds[k]).lRing = -2;
             _data.rings.pop();
             continue;
         }
 
-        for (int j = 0; j < ring.bondEnds.size(); ++j)
-            _be(ring.bondEnds[j]).lRing = rid;
+        for (int k = 0; k < ring.bondEnds.size(); ++k)
+            _be(ring.bondEnds[k]).lRing = rid;
 
         if (_opt.showCycles)
         {
             float cycleLineOffset = _settings.unit * 9;
             QS_DEF(Array<Vec2f>, vv);
             vv.clear();
-            for (int j = 0; j < ring.bondEnds.size() + 1; ++j)
+            for (int k = 0; k < ring.bondEnds.size() + 1; ++k)
             {
-                const BondEnd& be = _be(ring.bondEnds[j % ring.bondEnds.size()]);
-                Vec2f v = be.dir;
-                v.rotateL(be.lang / 2);
+                const BondEnd& be1 = _be(ring.bondEnds[k % ring.bondEnds.size()]);
+                Vec2f v = be1.dir;
+                v.rotateL(be1.lang / 2);
                 v.scale(cycleLineOffset);
-                v.add(_ad(be.aid).pos);
+                v.add(_ad(be1.aid).pos);
                 vv.push(v);
             }
             _cw.setSingleSource(CWC_BLUE);
@@ -1363,9 +1363,9 @@ void MoleculeRenderInternal::_findRings()
 
         ring.aromatic = true;
         int dblBondCount = 0;
-        for (int i = 0; i < ring.bondEnds.size(); ++i)
+        for (int j = 0; j < ring.bondEnds.size(); ++j)
         {
-            int type = _bd(_be(ring.bondEnds[i]).bid).type;
+            int type = _bd(_be(ring.bondEnds[j]).bid).type;
             if (type != BOND_AROMATIC)
                 ring.aromatic = false;
             if (type == BOND_DOUBLE)
@@ -1946,9 +1946,9 @@ void MoleculeRenderInternal::_renderAtomIds()
         for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
         {
             const AtomDesc& desc = _ad(i);
-            for (int i = 0; i < desc.ticount; ++i)
+            for (int j = 0; j < desc.ticount; ++j)
             {
-                const TextItem& ti = _data.textitems[i + desc.tibegin];
+                const TextItem& ti = _data.textitems[j + desc.tibegin];
                 if (ti.ritype == RenderItem::RIT_ATOMID)
                 {
                     _cw.drawItemBackground(ti);
@@ -2054,9 +2054,9 @@ void MoleculeRenderInternal::_renderSGroups()
         for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
         {
             const AtomDesc& desc = _ad(i);
-            for (int i = 0; i < desc.ticount; ++i)
+            for (int j = 0; j < desc.ticount; ++j)
             {
-                const TextItem& ti = _data.textitems[i + desc.tibegin];
+                const TextItem& ti = _data.textitems[j + desc.tibegin];
                 _cw.drawItemBackground(ti);
             }
         }
@@ -2297,7 +2297,7 @@ void MoleculeRenderInternal::_initBondData()
 
         d.stereodir = _mol->getBondDirection(i);
         d.cistrans = _mol->cis_trans.isIgnored(i);
-        int ubid = _bondMappingInv.size() > i ? _bondMappingInv.at(i) : i;
+        int ubid = static_cast<long>(_bondMappingInv.size()) > i ? _bondMappingInv.at(i) : i;
         if (_data.reactingCenters.size() > ubid)
             d.reactingCenter = _data.reactingCenters[ubid];
     }
@@ -2848,7 +2848,7 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
     int i0 = 0, i1;
     SCRIPT script = MAIN, newscript = MAIN;
     int len = (int)strlen(str);
-    GraphItem::TYPE signType;
+    GraphItem::TYPE signType = GraphItem::DOT;
     // TODO: replace remembering item ids and shifting each of them with single offset value for an atom
     Array<int> tis, gis;
 
@@ -3057,7 +3057,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
     int color = ad.color;
     bool highlighted = _vertexIsHighlighted(aid);
 
-    int tilabel = -1, tihydro = -1, tiHydroIndex = -1, tiChargeValue = -1, tiValence = -1, tiIsotope = -1, tiindex = -1;
+    int tilabel = -1, tihydro = -1, tiHydroIndex = -1, tiValence = -1, tiIsotope = -1, tiindex = -1;
     int giChargeSign = -1, giRadical = -1, giRadical1 = -1, giRadical2 = -1;
     ad.rightMargin = ad.leftMargin = ad.ypos = ad.height = 0;
     int isotope = bm.getAtomIsotope(aid);
@@ -3818,7 +3818,7 @@ void MoleculeRenderInternal::_drawReactingCenter(BondDescr& bd, int rc)
     }
 }
 
-double MoleculeRenderInternal::_getAdjustmentFactor(const int aid, const int anei, const double acos, const double asin, const double tgb, const double csb,
+double MoleculeRenderInternal::_getAdjustmentFactor(const int aid, const int anei, const double acos, const double asin, const double /*tgb*/, const double csb,
                                                     const double snb, const double len, const double w, double& csg, double& sng)
 {
     csg = csb;
@@ -3890,7 +3890,7 @@ void MoleculeRenderInternal::_bondBoldStereo(BondDescr& bd, const BondEnd& be1, 
 void MoleculeRenderInternal::_bondHydrogen(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
 {
     _cw.setDash(_settings.bondDashHydro, Vec2f::dist(be1.p, be2.p));
-    double len = Vec2f::dist(be2.p, be1.p);
+    // double len = Vec2f::dist(be2.p, be1.p);
     Vec2f l(be2.p), r(be2.p);
     float w = _settings.bondSpace;
     l.addScaled(bd.norm, -w);
@@ -3924,10 +3924,10 @@ void MoleculeRenderInternal::_bondCoordination(BondDescr& bd, const BondEnd& be1
 
     double arrow_length = lw * 5;
     double shorten = len - arrow_length;
-    Vec2f reduced = (be2.p - be1.p) * (1 - shorten / len);
-    Vec2f slope_right(-reduced.y * 0.25, reduced.x * 0.25);
+    Vec2f reduced = (be2.p - be1.p) * static_cast<float>((1 - shorten / len));
+    Vec2f slope_right(-reduced.y * 0.25f, reduced.x * 0.25f);
     _cw.drawLine(be2.p, (be2.p - reduced) + slope_right);
-    Vec2f slope_left(reduced.y * 0.25, -reduced.x * 0.25);
+    Vec2f slope_left(reduced.y * 0.25f, -reduced.x * 0.25f);
     _cw.drawLine(be2.p, (be2.p - reduced) + slope_left);
 }
 
@@ -4083,7 +4083,7 @@ void MoleculeRenderInternal::_prepareDoubleBondCoords(Vec2f* coord, BondDescr& b
     }
 }
 
-void MoleculeRenderInternal::_drawStereoCareBox(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
+void MoleculeRenderInternal::_drawStereoCareBox(BondDescr& bd, const BondEnd& be1, const BondEnd& /*be2*/)
 {
     Vec2f ns;
     ns.scaled(bd.norm, _settings.bondSpace);

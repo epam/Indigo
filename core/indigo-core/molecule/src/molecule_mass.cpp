@@ -294,7 +294,7 @@ int MoleculeMass::nominalMass(Molecule& mol)
     return molmass;
 }
 
-int MoleculeMass::_cmp(_ElemCounter& ec1, _ElemCounter& ec2, void* context)
+int MoleculeMass::_cmp(_ElemCounter& ec1, _ElemCounter& ec2, void* /*context*/)
 {
     if (ec1.weight == 0)
         return 1;

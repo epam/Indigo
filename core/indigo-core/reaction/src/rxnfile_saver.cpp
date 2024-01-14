@@ -66,8 +66,6 @@ void RxnfileSaver::saveQueryReaction(QueryReaction& reaction)
 
 void RxnfileSaver::_saveReaction()
 {
-    int i;
-
     if (molfile_saving_mode == MolfileSaver::MODE_3000)
         _v2000 = false;
     else if (molfile_saving_mode == MolfileSaver::MODE_2000)
@@ -76,7 +74,7 @@ void RxnfileSaver::_saveReaction()
     {
         _v2000 = true;
 
-        for (i = _brxn->begin(); i != _brxn->end(); i = _brxn->next(i))
+        for (int i = _brxn->begin(); i != _brxn->end(); i = _brxn->next(i))
         {
             if (_brxn->getBaseMolecule(i).hasHighlighting())
             {
@@ -101,7 +99,7 @@ void RxnfileSaver::_saveReaction()
 
     _writeReactantsHeader();
 
-    for (i = _brxn->reactantBegin(); i < _brxn->reactantEnd(); i = _brxn->reactantNext(i))
+    for (int i = _brxn->reactantBegin(); i < _brxn->reactantEnd(); i = _brxn->reactantNext(i))
     {
         _writeMolHeader();
         _writeMol(molfileSaver, i);

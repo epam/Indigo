@@ -852,7 +852,7 @@ int main(int argc, char* argv[])
     indigoSetOption("ignore-stereochemistry-errors", "on");
     indigoSetOption("ignore-bad-valence", "on");
     indigoSetOption("molfile-saving-mode", "3000");
-    indigoSetOptionBool("json-saving-pretty", "on");
+    indigoSetOptionBool("json-saving-pretty", 1);
 
     if (parseParams(&p, argc, argv) < 0)
         return -1;
@@ -923,7 +923,7 @@ int main(int argc, char* argv[])
                 indigoSaveJsonToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_SMI)
             {
-                char* pMol;
+                const char* pMol;
                 if (p.query_set)
                     pMol = indigoSmarts(obj);
                 else
@@ -950,7 +950,7 @@ int main(int argc, char* argv[])
             }
             else if (p.out_ext == OEXT_CDX64)
             {
-                char* pMol = indigoCdxBase64(obj);
+                const char* pMol = indigoCdxBase64(obj);
                 FILE* fp = fopen(p.outfile, "w+");
                 if (fp)
                 {
@@ -976,7 +976,7 @@ int main(int argc, char* argv[])
                     indigoFree(frag_id);
                 }
                 indigoFree(comp_it);
-                char* pSdf = indigoToString(buffer);
+                const char* pSdf = indigoToString(buffer);
                 FILE* fp = fopen(p.outfile, "w+");
                 if (fp)
                 {
@@ -1028,7 +1028,7 @@ int main(int argc, char* argv[])
             }
             else if (p.out_ext == OEXT_SMI)
             {
-                char* pReaction;
+                const char* pReaction;
                 if (p.query_set)
                     pReaction = indigoSmarts(obj);
                 else

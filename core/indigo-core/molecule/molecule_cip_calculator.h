@@ -18,6 +18,11 @@
 
 #pragma once
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include <array>
 #include <string>
 #include <unordered_map>
@@ -97,3 +102,7 @@ namespace indigo
         static void cipSort(Array<int>& ligands, CIPContext* context);
     };
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

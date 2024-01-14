@@ -19,6 +19,11 @@
 #ifndef __canonical_smiles_saver__
 #define __canonical_smiles_saver__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include <map>
 
 #include "base_cpp/exception.h"
@@ -48,5 +53,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

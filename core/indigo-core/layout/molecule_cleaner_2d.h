@@ -19,6 +19,11 @@
 #ifndef __molecule_cleaner_2d__
 #define __molecule_cleaner_2d__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include "base_cpp/array.h"
 #include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_array.h"
@@ -109,5 +114,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif // __molecule_cleaner_2d__

@@ -300,7 +300,7 @@ int LayeredMolecules::getAtomRadical(int idx)
     return _proto.getAtomRadical(idx);
 }
 
-int LayeredMolecules::getAtomAromaticity(int idx)
+int LayeredMolecules::getAtomAromaticity(int /* idx */)
 {
     //   return _proto.getAtomAromaticity(idx);
     return true;
@@ -326,7 +326,7 @@ int LayeredMolecules::getAtomRingBondsCount(int idx)
     return _proto.getAtomSubstCount(idx);
 }
 
-int LayeredMolecules::getAtomConnectivity(int idx)
+int LayeredMolecules::getAtomConnectivity(int /* idx */)
 {
     return 0;
 }
@@ -341,7 +341,7 @@ int LayeredMolecules::getAtomMinH(int idx)
     return getAtomTotalH(idx);
 }
 
-int LayeredMolecules::getAtomTotalH(int idx)
+int LayeredMolecules::getAtomTotalH(int /* idx */)
 {
     throw Error("getAtomTotalH method has no sense for LayeredMolecules");
 }
@@ -396,17 +396,17 @@ dword LayeredMolecules::getRSiteBits(int idx)
     return _proto.getRSiteBits(idx);
 }
 
-void LayeredMolecules::allowRGroupOnRSite(int atom_idx, int rg_idx)
+void LayeredMolecules::allowRGroupOnRSite(int /* atom_idx */, int /* rg_idx */)
 {
     throw Error("allowRGroupOnRSite method is not implemented in LayeredMolecules class");
 }
 
-int LayeredMolecules::getBondOrder(int idx) const
+int LayeredMolecules::getBondOrder(int /* idx */) const
 {
     throw Error("getBondOrder method has no sense for LayeredMolecules");
 }
 
-int LayeredMolecules::getBondTopology(int idx)
+int LayeredMolecules::getBondTopology(int /* idx */)
 {
     throw Error("getBondTopology method is not implemented in LayeredMolecules class");
 }
@@ -446,22 +446,22 @@ void LayeredMolecules::getAtomDescription(int idx, Array<char>& description)
     return _proto.getAtomDescription(idx, description);
 }
 
-void LayeredMolecules::getBondDescription(int idx, Array<char>& description)
+void LayeredMolecules::getBondDescription(int /* idx */, Array<char>& /* description */)
 {
     throw Error("getBondDescription method is not implemented in LayeredMolecules class");
 }
 
-bool LayeredMolecules::possibleBondOrder(int idx, int order)
+bool LayeredMolecules::possibleBondOrder(int /* idx */, int /* order */)
 {
     throw Error("possibleBondOrder method has no sense for LayeredMolecules");
 }
 
-bool LayeredMolecules::isSaturatedAtom(int idx)
+bool LayeredMolecules::isSaturatedAtom(int /* idx */)
 {
     throw Error("isSaturatedAtom method is not implemented in LayeredMolecules class");
 }
 
-bool LayeredMolecules::bondStereoCare(int idx)
+bool LayeredMolecules::bondStereoCare(int /* idx */)
 {
     throw Error("bondStereoCare method is not implemented in LayeredMolecules class");
 }
@@ -496,7 +496,8 @@ void LayeredMolecules::setImplicitH(int idx, int impl_h)
     return _proto.setImplicitH(idx, impl_h);
 }
 
-void LayeredMolecules::_mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags)
+void LayeredMolecules::_mergeWithSubmolecule(BaseMolecule& /* bmol */, const Array<int>& /* vertices */, const Array<int>* /* edges */,
+                                             const Array<int>& /* mapping */, int /* skip_flags */)
 {
     throw Error("_mergeWithSubmolecule method is not implemented in LayeredMolecules class");
 }
@@ -681,7 +682,7 @@ void LayeredMolecules::_calcPiLabels(int layerFrom, int layerTo)
     }
 }
 
-bool LayeredMolecules::_cb_handle_cycle(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context)
+bool LayeredMolecules::_cb_handle_cycle(Graph& /* graph */, const Array<int>& vertices, const Array<int>& /* edges */, void* context)
 {
     AromatizationContext* aromatizationContext = (AromatizationContext*)context;
     LayeredMolecules* self = aromatizationContext->self;
@@ -788,7 +789,7 @@ void LayeredMolecules::_registerAromatizedLayers(int layerFrom, int layerTo)
     }
 }
 
-bool LayeredMolecules::aromatize(int layerFrom, int layerTo, const AromaticityOptions& options)
+bool LayeredMolecules::aromatize(int layerFrom, int layerTo, const AromaticityOptions& /* options */)
 {
     if (layerFrom == layerTo)
         return false;

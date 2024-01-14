@@ -29,7 +29,7 @@
 
 using namespace indigo;
 
-int MoleculeGrossFormula::_cmp(_ElemCounter& ec1, _ElemCounter& ec2, void* context)
+int MoleculeGrossFormula::_cmp(_ElemCounter& ec1, _ElemCounter& ec2, void* /* context */)
 {
     if (ec1.counter == 0)
         return 1;
@@ -58,7 +58,7 @@ int MoleculeGrossFormula::_cmp(_ElemCounter& ec1, _ElemCounter& ec2, void* conte
 
 // comparator implementing the Hill system without carbon:
 // <all atoms in alphabetical order>
-int MoleculeGrossFormula::_cmp_hill_no_carbon(_ElemCounter& ec1, _ElemCounter& ec2, void* context)
+int MoleculeGrossFormula::_cmp_hill_no_carbon(_ElemCounter& ec1, _ElemCounter& ec2, void* /* context */)
 {
     if (ec1.counter == 0)
         return 1;
@@ -219,8 +219,8 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
                 if (implicit_h >= 0)
                 {
                     key = ELEM_H;
-                    auto it = unit.isotopes.find(key);
-                    val = it != unit.isotopes.end() ? &(it->second) : nullptr;
+                    auto h_it = unit.isotopes.find(key);
+                    val = h_it != unit.isotopes.end() ? &(h_it->second) : nullptr;
 
                     if (!val)
                         unit.isotopes.emplace(key, implicit_h);
@@ -259,8 +259,7 @@ void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, Array<char>& str, b
         return;
 
     // First base molecule
-    auto it = gross[0].isotopes.find(ELEM_C);
-    if (it == gross[0].isotopes.end())
+    if (gross[0].isotopes.find(ELEM_C) == gross[0].isotopes.end())
         _toString(gross[0].isotopes, output, _cmp_hill_no_carbon, add_rsites);
     else
         _toString(gross[0].isotopes, output, _cmp_hill, add_rsites);
@@ -269,8 +268,7 @@ void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, Array<char>& str, b
     for (int i = 1; i < gross.size(); i++)
     {
         output.writeChar('(');
-        auto it = gross[0].isotopes.find(ELEM_C);
-        if (it == gross[0].isotopes.end())
+        if (gross[0].isotopes.find(ELEM_C) == gross[0].isotopes.end())
             _toString(gross[i].isotopes, output, _cmp_hill_no_carbon, add_rsites);
         else
             _toString(gross[i].isotopes, output, _cmp_hill, add_rsites);
@@ -423,7 +421,7 @@ int MoleculeGrossFormula::_isotopeCount(BaseMolecule& mol)
             *val += 1;
     }
 
-    return isotopes.size();
+    return static_cast<int>(isotopes.size());
 }
 
 void MoleculeGrossFormula::fromString(Scanner& scanner, Array<int>& gross)

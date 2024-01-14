@@ -36,7 +36,7 @@ namespace indigo
     static const int WEIGHT_FACTOR = 12;
     static const int SIX = 6;
 
-    static int get_weight(int weight, int rotate)
+    inline int get_weight(int weight, int rotate)
     {
         if (abs(weight) <= WEIGHT_FACTOR)
             return 0;

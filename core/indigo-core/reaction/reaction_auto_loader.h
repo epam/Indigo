@@ -19,6 +19,11 @@
 #ifndef __reaction_auto_loader__
 #define __reaction_auto_loader__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251 4275)
+#endif
+
 #include "base_cpp/array.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_stereocenter_options.h"
@@ -69,5 +74,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

@@ -449,12 +449,12 @@ void Scanner::readCharsFix(int n, char* chars_out)
 
 int Scanner::readCharsFlexible(int n, char* chars_out)
 {
-    size_t i = 0;
+    int i = 0;
     while ((i < n) && !isEOF())
     {
         chars_out[i++] = readChar();
     }
-    return (int)i;
+    return i;
 }
 
 word Scanner::readBinaryWord()
@@ -532,8 +532,8 @@ void Scanner::readAll(std::string& str)
     {
         throw Error("Cannot read more than %d into memory", max_int);
     }
-    str.resize(size);
-    read(str.size(), &str[0]);
+    str.resize(static_cast<size_t>(size));
+    read(static_cast<int>(str.size()), &str[0]);
 }
 
 void Scanner::readAll(Array<char>& arr)
@@ -737,7 +737,7 @@ void BufferScanner::_init(const char* buffer, int size)
     {
         std::string encoded(buffer, size);
         auto decoded = base64::decode(encoded.c_str(), encoded.size());
-        _base64_buffer.copy((char*)decoded.data(), decoded.size());
+        _base64_buffer.copy(reinterpret_cast<const char*>(decoded.data()), static_cast<int>(decoded.size()));
         _buffer = _base64_buffer.ptr();
         _size = _base64_buffer.size();
     }

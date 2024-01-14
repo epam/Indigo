@@ -19,6 +19,11 @@
 #ifndef __molecule_cdxml_saver_h__
 #define __molecule_cdxml_saver_h__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include <memory>
 
 #include "base_cpp/properties_map.h"
@@ -154,5 +159,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

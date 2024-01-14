@@ -117,7 +117,7 @@ static void _processSideBoxes(std::unique_ptr<BaseReaction>& reaction, BaseMolec
     // For REACTANT and PRODUCT insert pluses between boxes
     if (side != BaseReaction::CATALYST && boxes.size() > 1)
     {
-        std::accumulate(std::next(boxes.begin()), boxes.end(), boxes[0], [&pluses](Rect2f left, Rect2f right) {
+        std::ignore = std::accumulate(std::next(boxes.begin()), boxes.end(), boxes[0], [&pluses](Rect2f left, Rect2f right) {
             pluses.emplace_back(right.between_left_box(left), left.middleY());
             return right;
         });

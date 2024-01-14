@@ -380,8 +380,8 @@ namespace
             for (const auto& rawLine : pkaDecisionTree)
             {
                 const auto& line = CSVReader::readCSVRow(rawLine);
-                const size_t id = stoull(line[0]);
-                const size_t parentId = stoull(line[1]);
+                const size_t id = static_cast<size_t>(stoull(line[0]));
+                const size_t parentId = static_cast<size_t>(stoull(line[1]));
                 const bool isLeaf = !static_cast<bool>(stoi(line[2]));
                 const string& smarts = line[4];
                 const bool yes = static_cast<bool>(stoi(line[5]));

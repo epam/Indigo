@@ -567,7 +567,7 @@ void RSmilesLoader::_loadReaction()
                 }
             }
 
-            int idx;
+            int idx = 0; // TODO: investigate right value for default idx
             if (v == 0)
                 idx = _brxn->addReactantCopy(*mol, 0, 0);
             else if (v == 1)

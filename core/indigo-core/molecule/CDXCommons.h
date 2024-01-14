@@ -6,6 +6,11 @@
 #include <unordered_map>
 #include <utility>
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable : 4200)
+#endif
+
 namespace indigo
 {
 
@@ -33,7 +38,8 @@ namespace indigo
 
     struct CDXColor
     {
-        CDXColor(float red, float green, float blue) : r(red * kColorMult), g(green * kColorMult), b(blue * kColorMult)
+        CDXColor(float red, float green, float blue)
+            : r(static_cast<uint16_t>(red * kColorMult)), g(static_cast<uint16_t>(green * kColorMult)), b(static_cast<uint16_t>(blue * kColorMult))
         {
         }
         uint16_t r;
@@ -50,7 +56,7 @@ namespace indigo
 
     struct CDXTextStyle
     {
-        CDXTextStyle() : offset(0), font_index(-1), font_face(0), font_size(0), font_color(0){};
+        CDXTextStyle() : offset(0), font_index(static_cast<uint16_t>(-1)), font_face(0), font_size(0), font_color(0){};
         uint16_t offset;
         uint16_t font_index;
         uint16_t font_face;
@@ -1244,5 +1250,9 @@ namespace indigo
     const std::vector<std::string> KStyleProperties = {"font", "face", "size", "color"};
 
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif // _H_CDXCommons

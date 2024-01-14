@@ -384,7 +384,7 @@ void MultipleCdxLoader::_getString(int size, Array<char>& buf, bool no_style)
             style_count = _scanner.readBinaryWord();
             auto styles_size = sizeof(style_count) + sizeof(CDXTextStyle) * style_count;
             _scanner.seek(style_count * sizeof(CDXTextStyle), SEEK_CUR);
-            _scanner.read(size - styles_size, buf);
+            _scanner.read(static_cast<int>(size - styles_size), buf);
         }
     }
     return;

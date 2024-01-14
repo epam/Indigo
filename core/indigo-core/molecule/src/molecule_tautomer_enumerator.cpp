@@ -142,9 +142,9 @@ TautomerEnumerator::TautomerEnumerator(Molecule& molecule, TautomerMethod method
             {
                 occupied = false;
                 const Vertex& v = molecule.getVertex(i);
-                for (auto i = v.neiBegin(); i != v.neiEnd(); i = v.neiNext(i))
+                for (auto k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
                 {
-                    int e_inx = v.neiEdge(i);
+                    int e_inx = v.neiEdge(k);
                     if (molecule.getBondOrder(e_inx) == 1 || molecule.getBondOrder(e_inx) == 4)
                     {
                         occupied = true;
@@ -268,7 +268,7 @@ void TautomerEnumerator::constructMolecule(Molecule& molecule, int n) const
         ; // error!
 }
 
-bool TautomerEnumerator::refine_proc(const Molecule& uncleaned_fragments, Molecule& product, Array<int>& mapping, void* userdata)
+bool TautomerEnumerator::refine_proc(const Molecule& uncleaned_fragments, Molecule& product, Array<int>& mapping, void* /* userdata */)
 {
     bool changed = true;
     while (changed)
@@ -354,7 +354,7 @@ bool TautomerEnumerator::refine_proc(const Molecule& uncleaned_fragments, Molecu
     return true;
 }
 
-void TautomerEnumerator::product_proc(Molecule& product, Array<int>& monomers_indices, Array<int>& mapping, void* userdata)
+void TautomerEnumerator::product_proc(Molecule& product, Array<int>& /* monomers_indices */, Array<int>& mapping, void* userdata)
 {
     LayeredMolecules* lm = (LayeredMolecules*)userdata;
     lm->addLayerFromMolecule(product, mapping);
@@ -514,7 +514,7 @@ bool TautomerEnumerator::_aromatize(int from, int to)
 }
 
 #ifdef USE_DEPRECATED_INCHI
-bool TautomerEnumerator::matchEdge(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* userdata)
+bool TautomerEnumerator::matchEdge(Graph& /* subgraph */, Graph& supergraph, int /* sub_idx */, int super_idx, void* userdata)
 {
     LayeredMolecules& layeredMolecules = (LayeredMolecules&)supergraph;
     Breadcrumps& breadcrumps = *(Breadcrumps*)userdata;
@@ -527,7 +527,7 @@ bool TautomerEnumerator::matchEdge(Graph& subgraph, Graph& supergraph, int sub_i
     return breadcrumps.forwardMask.intersects(forwardMask) || breadcrumps.backwardMask.intersects(backwardMask);
 }
 
-bool TautomerEnumerator::matchVertex(Graph& subgraph, Graph& supergraph, const int* core_sub, int sub_idx, int super_idx, void* userdata)
+bool TautomerEnumerator::matchVertex(Graph& /* subgraph */, Graph& supergraph, const int* /* core_sub */, int /* sub_idx */, int super_idx, void* userdata)
 {
     // The first vertice matched shall be the mobile hydrogen position.
     Breadcrumps& breadcrumps = *(Breadcrumps*)userdata;
@@ -537,7 +537,7 @@ bool TautomerEnumerator::matchVertex(Graph& subgraph, Graph& supergraph, const i
     return true;
 }
 
-void TautomerEnumerator::edgeAdd(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* userdata)
+void TautomerEnumerator::edgeAdd(Graph& /* subgraph */, Graph& supergraph, int /* sub_idx */, int super_idx, void* userdata)
 {
     LayeredMolecules& layeredMolecules = (LayeredMolecules&)supergraph;
     Breadcrumps& breadcrumps = *(Breadcrumps*)userdata;
@@ -557,7 +557,7 @@ void TautomerEnumerator::edgeAdd(Graph& subgraph, Graph& supergraph, int sub_idx
     breadcrumps.backwardMask.andWith(backwardMask);
 }
 
-void TautomerEnumerator::vertexAdd(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* userdata)
+void TautomerEnumerator::vertexAdd(Graph& /* subgraph */, Graph& supergraph, int /* sub_idx */, int super_idx, void* userdata)
 {
     LayeredMolecules& layeredMolecules = (LayeredMolecules&)supergraph;
     Breadcrumps& breadcrumps = *(Breadcrumps*)userdata;
@@ -586,7 +586,7 @@ void TautomerEnumerator::vertexAdd(Graph& subgraph, Graph& supergraph, int sub_i
     }
 }
 
-void TautomerEnumerator::vertexRemove(Graph& subgraph, int sub_idx, void* userdata)
+void TautomerEnumerator::vertexRemove(Graph& /* subgraph */, int /* sub_idx */, void* userdata)
 {
     Breadcrumps& breadcrumps = *(Breadcrumps*)userdata;
 

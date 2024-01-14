@@ -196,7 +196,7 @@ void SmilesSaver::_saveMolecule()
             return; // No atoms to save
         std::set<int> components;
         int cur_component = -1;
-        for (int i = 0; i < v_seq.size(); ++i && _qmol->components.size() > 0)
+        for (i = 0; i < v_seq.size(); ++i && _qmol->components.size() > 0)
         {
             // In v_seq each fragment started with vertex which parent == -1
             // In SMARTS some fragments could be grouped (component-level grouping)
@@ -245,7 +245,6 @@ void SmilesSaver::_saveMolecule()
         {
             if (walk.isClosure(e_idx))
             {
-                int k;
                 for (k = atom.neighbors.begin(); k != atom.neighbors.end(); k = atom.neighbors.next(k))
                 {
                     if (atom.neighbors[k] == -1)
@@ -415,10 +414,9 @@ void SmilesSaver::_saveMolecule()
 
     if (canonize_chiralities)
     {
-        int i, j;
         QS_DEF(Array<int>, marked);
         QS_DEF(Array<int>, ids);
-        const MoleculeStereocenters& stereocenters = _bmol->stereocenters;
+        stereocenters = _bmol->stereocenters;
 
         marked.clear_resize(_bmol->vertexEnd());
         marked.zerofill();
@@ -729,7 +727,7 @@ void SmilesSaver::_writeCycleNumber(int n) const
         throw Error("bad cycle number: %d", n);
 }
 
-void SmilesSaver::_writeAtom(int idx, bool aromatic, bool lowercase, int chirality) const
+void SmilesSaver::_writeAtom(int idx, bool /*aromatic*/, bool lowercase, int chirality) const
 {
     int i;
     bool need_brackets = false;
@@ -1701,7 +1699,7 @@ void SmilesSaver::_writeWedges()
         for (int i = 0; i < _written_bonds.size(); ++i)
         {
             auto bond_idx = _written_bonds[i];
-            auto& e = _bmol->getEdge(bond_idx);
+            // auto& e = _bmol->getEdge(bond_idx);
             auto bdir = _bmol->getBondDirection(bond_idx);
             if (bdir)
             {

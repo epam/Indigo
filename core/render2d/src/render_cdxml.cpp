@@ -169,7 +169,6 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
     else if (params.mol.get() != 0)
         mols.push(params.mol.get());
 
-    Vec2f offset(0, 0);
     Array<float> column_widths;
     column_widths.resize(params.cnvOpt.gridColumnNumber);
     column_widths.fill(0);

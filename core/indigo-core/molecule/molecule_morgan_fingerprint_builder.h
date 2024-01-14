@@ -19,6 +19,11 @@
 #ifndef PROJECT_MOLECULE_MORGAN_FINGERPRINT_H
 #define PROJECT_MOLECULE_MORGAN_FINGERPRINT_H
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include <set>
 #include <vector>
 
@@ -109,5 +114,9 @@ namespace indigo
     };
 
 }; // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif // PROJECT_MOLECULE_MORGAN_FINGERPRINT_H

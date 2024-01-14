@@ -302,8 +302,8 @@ void MoleculeNameParser::Parse::scan()
         size_t pos = separators.find(ch);
         if (pos != separators.npos)
         {
-            const auto& it = sd.find({ch});
-            if (it != sd.end())
+            const auto& sdit = sd.find({ch});
+            if (sdit != sd.end())
             {
                 // For locants, we need additional check if the number is multi-digit
                 if (std::isdigit(ch))
@@ -318,7 +318,7 @@ void MoleculeNameParser::Parse::scan()
                     locant.clear();
                     continue;
                 }
-                lexemes.push_back(Lexeme(ch, it->second));
+                lexemes.push_back(Lexeme(ch, sdit->second));
             }
             continue;
         }
@@ -1067,7 +1067,7 @@ bool MoleculeNameParser::TreeBuilder::_processBasicMultiplier(const Lexeme& lexe
 
 bool MoleculeNameParser::TreeBuilder::_processFactorMultiplier(const Lexeme& lexeme)
 {
-    const int value = _strToInt(lexeme.token.value);
+    int value = _strToInt(lexeme.token.value);
 
     if (_current->classType == FragmentClassType::SUBSTITUENT)
     {
@@ -1093,7 +1093,7 @@ bool MoleculeNameParser::TreeBuilder::_processFactorMultiplier(const Lexeme& lex
     else
     {
         const Multiplier& prev = multipliers.top();
-        int value = _strToInt(lexeme.token.value);
+        value = _strToInt(lexeme.token.value);
         value *= prev.first;
         multipliers.pop();
         multipliers.push({value, TokenType::BASIC});
@@ -1471,8 +1471,8 @@ bool MoleculeNameParser::SmilesBuilder::_processBaseNode(FragmentNodeBase* base,
 
         for (int i = 1; i < multipliers; i++)
         {
-            SmilesNode node(symbol, BOND_SINGLE, &root);
-            root.nodes.push_back(std::move(node));
+            SmilesNode node1(symbol, BOND_SINGLE, &root);
+            root.nodes.push_back(std::move(node1));
         }
     }
 
@@ -1512,7 +1512,7 @@ void MoleculeNameParser::SmilesBuilder::_calcHydrogens(const Element& element, i
     int connections = indigo::Element::getMaximumConnectivity(number, 0, 0, false);
     int valence = indigo::Element::calcValenceMinusHyd(number, 0, 0, connections);
 
-    if ((pos - 1) < root.nodes.size())
+    if ((pos - 1) < static_cast<long long>(root.nodes.size()))
     {
         SmilesNode& sn = root.nodes.at(pos - 1);
 

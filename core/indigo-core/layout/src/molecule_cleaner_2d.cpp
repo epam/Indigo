@@ -470,7 +470,7 @@ void MoleculeCleaner2d::_uniteBondsOnLine()
     for (int i = 0; i < valid_list.size(); i++)
         valid_index[valid_list[i]] = i;
 
-    QS_DEF(ObjArray<Array<int>>, new_in);
+    QS_DEF(ObjArray<Array<bool>>, new_in);
     new_in.clear();
 
     for (int i = 0; i < new_component_count; i++)
@@ -1133,8 +1133,8 @@ bool MoleculeCleaner2d::_isZero()
     bool is_zero = true;
     for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v))
     {
-        is_zero = is_zero & _mol.getAtomXyz(v).x == 0;
-        is_zero = is_zero & _mol.getAtomXyz(v).y == 0;
+        is_zero = is_zero && _mol.getAtomXyz(v).x == 0;
+        is_zero = is_zero && _mol.getAtomXyz(v).y == 0;
     }
     return is_zero;
 }

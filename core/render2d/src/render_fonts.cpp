@@ -128,7 +128,7 @@ void RenderContext::fontsSetFont(const TextItem& ti)
 }
 #endif
 
-void RenderContext::fontsGetTextExtents(cairo_t* cr, const char* text, int size, float& dx, float& dy, float& rx, float& ry)
+void RenderContext::fontsGetTextExtents(cairo_t* cr, const char* text, int /*size*/, float& dx, float& dy, float& rx, float& ry)
 {
     std::lock_guard<std::mutex> _lock(_cairo_mutex);
     cairo_text_extents_t te;

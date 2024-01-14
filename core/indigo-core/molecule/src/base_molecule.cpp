@@ -31,6 +31,11 @@
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#pragma warning(error : 4100 4101 4189 4244 4456 4458 4715)
+#endif
+
 using namespace indigo;
 
 IMPL_ERROR(BaseMolecule, "molecule");
@@ -276,7 +281,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
         {
             _cip_atoms.insert(mapping[mol._cip_atoms.key(i)], mol._cip_atoms.value(i));
         }
-        catch (Exception& e)
+        catch (Exception&)
         {
         }
     }
@@ -287,7 +292,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
         {
             _cip_bonds.insert(mapping[mol._cip_bonds.key(i)], mol._cip_bonds.value(i));
         }
-        catch (Exception& e)
+        catch (Exception&)
         {
         }
     }
@@ -825,7 +830,7 @@ void BaseMolecule::removeBonds(const Array<int>& indices)
     removeBondsStereocenters(indices);
     removeBondsAlleneStereo(indices);
 
-    for (int i = 0; i < indices.size(); i++)
+    for (i = 0; i < indices.size(); i++)
     {
         unhighlightBond(indices[i]);
         if (getBondDirection(indices[i]) > 0)
@@ -895,19 +900,20 @@ int BaseMolecule::getVacantPiOrbitals(int group, int charge, int radical, int co
     return vacant;
 }
 
-void BaseMolecule::_postMergeWithSubmolecule(BaseMolecule& mol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags)
+void BaseMolecule::_postMergeWithSubmolecule(BaseMolecule& /*mol*/, const Array<int>& /*vertices*/, const Array<int>* /*edges*/, const Array<int>& /*mapping*/,
+                                             int /*skip_flags*/)
 {
 }
 
-void BaseMolecule::_flipBond(int atom_parent, int atom_from, int atom_to)
+void BaseMolecule::_flipBond(int /*atom_parent*/, int /*atom_from*/, int /*atom_to*/)
 {
 }
 
-void BaseMolecule::_removeAtoms(const Array<int>& indices, const int* mapping)
+void BaseMolecule::_removeAtoms(const Array<int>& /*indices*/, const int* /*mapping*/)
 {
 }
 
-void BaseMolecule::_removeBonds(const Array<int>& indices)
+void BaseMolecule::_removeBonds(const Array<int>& /*indices*/)
 {
 }
 
@@ -984,7 +990,7 @@ int BaseMolecule::getAtomRadical_NoThrow(int idx, int fallback)
     {
         return getAtomRadical(idx);
     }
-    catch (Exception& ex)
+    catch (Exception&)
     {
         return fallback;
     }
@@ -996,7 +1002,7 @@ int BaseMolecule::getAtomValence_NoThrow(int idx, int fallback)
     {
         return getAtomValence(idx);
     }
-    catch (Exception& ex)
+    catch (Exception&)
     {
         return fallback;
     }
@@ -1166,7 +1172,6 @@ bool BaseMolecule::updateTemplateAtomAttachmentDestination(int atom_idx, int old
 
 void BaseMolecule::setTemplateAtomAttachmentDestination(int atom_idx, int new_dest_atom_idx, Array<char>& att_id)
 {
-    int aidx = -1;
     for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
     {
         auto& ap = template_attachment_points.at(j);
@@ -2979,19 +2984,19 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     if (base_sgs.size() > 1)
         throw Error("transformTGroupToSGroup(): wrong template structure found (more then one base SGroup detected)");
 
-    SGroup& sg = fragment.sgroups.getSGroup(base_sgs[0]);
-    if (sg.sgroup_type != SGroup::SG_TYPE_SUP)
+    SGroup& sgu = fragment.sgroups.getSGroup(base_sgs[0]);
+    if (sgu.sgroup_type != SGroup::SG_TYPE_SUP)
         throw Error("transformTGroupToSGroup(): wrong template structure found (base SGroup is not Superatom type)");
 
-    Superatom& su = (Superatom&)sg;
+    Superatom& super_atom = (Superatom&)sgu;
 
     // printf("Template = %s (%d)\n", tgroup.tgroup_name.ptr(), idx);
 
-    if (su.attachment_points.size() > 0)
+    if (super_atom.attachment_points.size() > 0)
     {
-        for (int j = su.attachment_points.begin(); j < su.attachment_points.end(); j = su.attachment_points.next(j))
+        for (int j = super_atom.attachment_points.begin(); j < super_atom.attachment_points.end(); j = super_atom.attachment_points.next(j))
         {
-            Superatom::_AttachmentPoint& ap = su.attachment_points.at(j);
+            Superatom::_AttachmentPoint& ap = super_atom.attachment_points.at(j);
 
             int att_atom_idx = getTemplateAtomAttachmentPointById(idx, ap.apid);
             if (att_atom_idx > -1)
@@ -3036,9 +3041,9 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     QS_DEF(Array<int>, added_atoms);
 
     added_atoms.clear();
-    for (auto i = 0; i < su.atoms.size(); i++)
+    for (auto i = 0; i < super_atom.atoms.size(); i++)
     {
-        int aidx = mapping[su.atoms[i]];
+        int aidx = mapping[super_atom.atoms[i]];
         if (aidx > -1)
         {
             added_atoms.push(aidx);
@@ -4049,22 +4054,22 @@ void BaseMolecule::getAtomSymbol(int v, Array<char>& result)
     }
     else if (isRSite(v))
     {
-        QS_DEF(Array<int>, rgroups);
+        QS_DEF(Array<int>, r_groups);
         int i;
-        getAllowedRGroups(v, rgroups);
+        getAllowedRGroups(v, r_groups);
 
-        if (rgroups.size() == 0)
+        if (r_groups.size() == 0)
         {
             result.readString("R", true);
             return;
         }
 
         ArrayOutput output(result);
-        for (i = 0; i < rgroups.size(); i++)
+        for (i = 0; i < r_groups.size(); i++)
         {
             if (i > 0)
                 output.writeChar(',');
-            output.printf("R%d", rgroups[i]);
+            output.printf("R%d", r_groups[i]);
         }
         output.writeChar(0);
     }
@@ -4147,7 +4152,7 @@ void BaseMolecule::transformSuperatomsToTemplates(int template_id)
     }
 }
 
-int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& name, Array<char>& code, Array<char>& natreplace, StringPool& r_names)
+int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& helm_name, Array<char>& /*code*/, Array<char>& natreplace, StringPool& r_names)
 {
     QS_DEF(Array<int>, sg_atoms);
     sg_atoms.clear();
@@ -4169,7 +4174,7 @@ int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& n
     int idx = sgroups.addSGroup("SUP");
     Superatom& sg = (Superatom&)sgroups.getSGroup(idx);
     sg.atoms.copy(sg_atoms);
-    sg.subscript.copy(name);
+    sg.subscript.copy(helm_name);
     if (helm_class.size() > 6 && strncmp(helm_class.ptr(), "PEPTIDE", 7) == 0)
         sg.sa_class.readString("AA", true);
     else
@@ -4239,7 +4244,7 @@ void BaseMolecule::setStereoFlagPosition(int frag_index, const Vec3f& pos)
     {
         _stereo_flag_positions.insert(frag_index, pos);
     }
-    catch (Exception& ex)
+    catch (Exception&)
     {
     }
 }
@@ -4584,3 +4589,7 @@ bool BaseMolecule::convertableToImplicitHydrogen(int idx)
     }
     return false;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

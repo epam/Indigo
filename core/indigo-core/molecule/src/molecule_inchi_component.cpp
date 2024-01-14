@@ -112,7 +112,7 @@ void MoleculeInChICompoment::_getCanonicalMolecule(Molecule& source_mol, Molecul
         dbg_handle_canonical_component_cb(cano_mol);
 }
 
-int MoleculeInChICompoment::_cmpVertex(Graph& graph, int v1, int v2, const void* context)
+int MoleculeInChICompoment::_cmpVertex(Graph& graph, int v1, int v2, const void* /* context */)
 {
     Molecule& mol = (Molecule&)graph;
 
@@ -133,7 +133,7 @@ int MoleculeInChICompoment::_cmpVertex(Graph& graph, int v1, int v2, const void*
     return 0;
 }
 
-int MoleculeInChICompoment::_cmpVertexStereo(Molecule& mol, int v1, int v2, const void* context)
+int MoleculeInChICompoment::_cmpVertexStereo(Molecule& mol, int v1, int v2, const void* /* context */)
 {
     // TODO: Implement as in InChI
     int diff = mol.stereocenters.getType(v1) - mol.stereocenters.getType(v2);

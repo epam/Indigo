@@ -92,10 +92,10 @@ static char readSgChar(Scanner& scanner)
         {
             std::string sgroup_field_sep = ",;:|{}";
             // Decode only ,;:|{}
-            if (sgroup_field_sep.find(code) != std::string::npos)
+            if (sgroup_field_sep.find(static_cast<char>(code)) != std::string::npos)
             {
-                scanner.skip(1); // skip ';'
-                return code;     // return decoded character
+                scanner.skip(1);                // skip ';'
+                return static_cast<char>(code); // return decoded character
             }
         }
         // no decoded char returned - restore position and return '&' as is.
@@ -875,7 +875,7 @@ void SmilesLoader::_readOtherStuff()
             //     The brackets are written between parentheses and separated with semicolons.
             if (sg_type == -1)
             {
-                char sg = _scanner.lookNext();
+                int sg = _scanner.lookNext();
                 constexpr size_t sg_type_max_len = 3;
                 char pchar_sg_type[sg_type_max_len];
                 std::string sg_type_str;
@@ -932,7 +932,6 @@ void SmilesLoader::_readOtherStuff()
 
             if (sg_type == SGroup::SG_TYPE_DAT)
             {
-                char c;
                 DataSGroup& dsg = static_cast<DataSGroup&>(sgroup);
                 // field_name
                 _scanner.readWord(dsg.name, word_delimiter);
@@ -955,18 +954,17 @@ void SmilesLoader::_readOtherStuff()
                     continue;
                 _scanner.skip(1); // Skip :
                 // tag
-                c = _scanner.lookNext();
-                if (c != ':' && c != ',')
+                int next = _scanner.lookNext();
+                if (next > 0 && next != ':' && next != ',')
                 {
-                    dsg.tag = c;
+                    dsg.tag = static_cast<char>(next);
                     _scanner.skip(1); // Skip tag
                 }
                 if (_scanner.lookNext() != ':') // No more fields
                     continue;
                 _scanner.skip(1); // Skip :
                 // (coords)
-                c = _scanner.lookNext();
-                if (c != '(') // No more fields
+                if (_scanner.lookNext() != '(') // No more fields
                     continue;
                 long long pos = _scanner.tell();
                 constexpr char minus1[] = "(-1)";
@@ -1042,7 +1040,7 @@ void SmilesLoader::_readOtherStuff()
                 // head_bond_indexes - Head crossing bond indexes. This field can be empty.
                 while (isdigit(_scanner.lookNext()))
                 {
-                    auto atom_idx = _scanner.readUnsigned();
+                    /*auto atom_idx =*/std::ignore = _scanner.readUnsigned();
                     // no support for now
                     if (_scanner.lookNext() == ',')
                         _scanner.skip(1);
@@ -1053,7 +1051,7 @@ void SmilesLoader::_readOtherStuff()
                 // tail_bond_indexes - Tail crossing bond indexes. This field can be empty.
                 while (isdigit(_scanner.lookNext()))
                 {
-                    auto atom_idx = _scanner.readUnsigned();
+                    /*auto atom_idx =*/std::ignore = _scanner.readUnsigned();
                     // no support for now
                     if (_scanner.lookNext() == ',')
                         _scanner.skip(1);
@@ -1065,17 +1063,17 @@ void SmilesLoader::_readOtherStuff()
                 if (_scanner.lookNext() != '(')
                     continue;
                 _scanner.skip(1); // skip (
-                char br_orient = _scanner.readChar();
+                /*char br_orient = */ std::ignore = _scanner.readChar();
                 c = _scanner.readChar();
                 if (c != ',')
                     throw Error("S-group bracket orientation format error");
-                char br_type = _scanner.readChar();
+                /*char br_type =*/std::ignore = _scanner.readChar();
                 c = _scanner.readChar();
                 int count = 0;
                 constexpr int bracket_coord_count = 8;
                 while (c == ',' && count < bracket_coord_count)
                 {
-                    float tmp = _scanner.readFloat();
+                    std::ignore = _scanner.readFloat();
                     c = _scanner.readChar();
                     ++count;
                 }
@@ -1205,7 +1203,6 @@ void SmilesLoader::_readOtherStuff()
                             if (label.size() > 0)
                             {
                                 label.push(0);
-                                int rnum;
 
                                 if (label.size() > 3 && strncmp(label.ptr(), "_R", 2) == 0 && sscanf(label.ptr() + 2, "%d", &rnum) == 1)
                                 {
@@ -1222,7 +1219,7 @@ void SmilesLoader::_readOtherStuff()
                                         {
                                             if (_scanner.isEOF())
                                                 throw Error("end of input while reading LOG block");
-                                            c = _scanner.lookNext();
+                                            c = static_cast<char>(_scanner.lookNext());
                                             if (c == ';')
                                                 break;
                                             label.push(c);
@@ -1709,7 +1706,7 @@ void SmilesLoader::_parseMolecule()
         else
         {
             _scanner.skip(1);
-            atom_str.push(next);
+            atom_str.push(static_cast<char>(next));
             if (next == 'B' && _scanner.lookNext() == 'r')
                 atom_str.push(_scanner.readChar());
             else if (next == 'C' && _scanner.lookNext() == 'l')
@@ -2435,7 +2432,7 @@ void SmilesLoader::readSmartsBondStr(const std::string& bond_str, std::unique_pt
 {
     _BondDesc bond;
     Array<char> ac_str;
-    ac_str.copy(bond_str.c_str(), bond_str.size());
+    ac_str.copy(bond_str.c_str(), static_cast<int>(bond_str.size()));
     _readBond(ac_str, bond, qbond, true);
 }
 
@@ -2703,7 +2700,7 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
     {
         QS_DEF(Array<char>, substring);
         std::unique_ptr<QueryMolecule::Atom> subqatom;
-        int i, k = 0;
+        k = 0;
 
         if (qatom.get() == 0 || !smarts_mode)
             throw Error("';' is allowed only for query molecules with smarts_mode");
@@ -2729,7 +2726,7 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
     {
         QS_DEF(Array<char>, substring);
         std::unique_ptr<QueryMolecule::Atom> subqatom;
-        int i, k = 0;
+        k = 0;
 
         if (qatom.get() == 0 || !smarts_mode)
             throw Error("',' is allowed only for query molecules with smarts_mode");
@@ -2758,7 +2755,7 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
     {
         QS_DEF(Array<char>, substring);
         std::unique_ptr<QueryMolecule::Atom> subqatom;
-        int i, k = 0;
+        k = 0;
 
         if (qatom.get() == 0 || !smarts_mode)
             throw Error("'&' is allowed only for query molecules with smarts_mode");
@@ -2787,7 +2784,7 @@ void SmilesLoader::readSmartsAtomStr(const std::string& atom_str, std::unique_pt
     Pool<List<int>::Elem> neipool;
     _AtomDesc atom{neipool};
     Array<char> ac_str;
-    ac_str.copy(atom_str.c_str(), atom_str.size());
+    ac_str.copy(atom_str.c_str(), static_cast<int>(atom_str.size()));
     _readAtom(ac_str, true, atom, qatom, true, false);
 }
 
@@ -3197,9 +3194,10 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                      // They can possibly not form an element: for example,
                      // [Nr] is formally a nitrogen in a ring (although nobody would
                      // write it that way: [N;r] is much more clear).
-                     (Element::fromTwoChars2(next, scanner.lookNext())) > 0 && (Element::fromTwoChars2(next, scanner.lookNext()) != ELEM_Cn))
+                     (Element::fromTwoChars2(static_cast<char>(next), scanner.lookNext())) > 0 &&
+                     (Element::fromTwoChars2(static_cast<char>(next), scanner.lookNext()) != ELEM_Cn))
             {
-                element = Element::fromTwoChars2(next, scanner.lookNext());
+                element = Element::fromTwoChars2(static_cast<char>(next), scanner.lookNext());
                 scanner.skip(1);
                 if (smarts_mode)
                     if (element == ELEM_As || element == ELEM_Se || element == ELEM_Si || element == ELEM_Te)
@@ -3213,7 +3211,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             else
             {
                 // It is a single-char uppercase element identifier then
-                element = Element::fromChar(next);
+                element = Element::fromChar(static_cast<char>(next));
 
                 if (smarts_mode)
                     if (element == ELEM_C || element == ELEM_N || element == ELEM_O || element == ELEM_P || element == ELEM_S)
@@ -3236,7 +3234,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
             }
             else
             {
-                std::string current(static_cast<const char*>(scanner.curptr()), scanner.length() - scanner.tell());
+                std::string current(static_cast<const char*>(scanner.curptr()), static_cast<size_t>(scanner.length() - scanner.tell()));
                 std::smatch match;
                 if (std::regex_search(current, match, std::regex("^(TH|AL)([1-2])")))
                 {
