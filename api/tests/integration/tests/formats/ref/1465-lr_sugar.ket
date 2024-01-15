@@ -30,6 +30,7 @@
         "alias": "LR",
         "name": "LR",
         "naturalAnalogShort": "R",
+        "naturalAnalog": "Rib",
         "attachmentPoints": [
             {
                 "attachmentAtom": 8,

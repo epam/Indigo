@@ -188,8 +188,6 @@ namespace indigo
 
         static void saveMetaData(JsonWriter& writer, MetaDataStorage& meta);
         static std::string monomerId(const TGroup& tg);
-        static std::string monomerAlias(const TGroup& tg);
-
         static std::string monomerKETClass(const std::string& class_name);
         static std::string monomerHELMClass(const std::string& class_name);
         static std::string naturalAnalog(const std::string& natreplace);
@@ -201,7 +199,6 @@ namespace indigo
         void saveRoot(BaseMolecule& mol, JsonWriter& writer);
         void saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer);
         int getMonomerNumber(int mon_idx);
-        void collectTemplates(BaseMolecule& mol);
 
         void saveAtoms(BaseMolecule& mol, JsonWriter& writer);
         void saveBonds(BaseMolecule& mol, JsonWriter& writer);
@@ -234,6 +231,7 @@ namespace indigo
         std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> _templates;
         std::unordered_map<std::pair<int, int>, std::string, pair_int_hash> _monomer_connections;
         std::map<int, int> _monomers_enum;
+        std::vector<std::unique_ptr<BaseMolecule>> _no_template_molecules;
 
     private:
         MoleculeJsonSaver(const MoleculeJsonSaver&); // no implicit copy
