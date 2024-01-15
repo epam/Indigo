@@ -93,8 +93,7 @@ void SequenceLayout::getLayout(BaseMolecule& mol, int first_atom_idx, std::map<i
     std::unordered_map<int, uint8_t> vertices_visited;
     std::map<int, std::map<int, int>> directions_map;
 
-    for (int i = mol.template_attachment_points.begin(); i != mol.template_attachment_points.end();
-         i = mol.template_attachment_points.next(i))
+    for (int i = mol.template_attachment_points.begin(); i != mol.template_attachment_points.end(); i = mol.template_attachment_points.next(i))
     {
         auto& tap = mol.template_attachment_points[i];
         if (tap.ap_id.size())
