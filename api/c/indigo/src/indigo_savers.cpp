@@ -28,7 +28,6 @@
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/molfile_saver.h"
-#include "molecule/sequence_saver.h"
 #include "molecule/smiles_saver.h"
 #include "reaction/canonical_rsmiles_saver.h"
 #include "reaction/reaction_cdxml_saver.h"
