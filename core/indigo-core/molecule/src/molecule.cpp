@@ -24,6 +24,7 @@
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_dearom.h"
 #include "molecule/molecule_standardize.h"
+#include "molecule/monomer_commons.h"
 
 #ifdef _MSC_VER
 #pragma warning(push, 4)
@@ -1459,6 +1460,18 @@ const int Molecule::getTemplateAtomDisplayOption(int idx)
     // const int res = occur.contracted;
 
     return res;
+}
+
+void Molecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map)
+{
+    templates_map.clear();
+    int temp_idx = 0;
+    for (int i = tgroups.begin(); i != tgroups.end(); i = tgroups.next(i))
+    {
+        auto& tg = tgroups.getTGroup(i);
+        std::string tname = tg.tgroup_name.size() ? tg.tgroup_name.ptr() : monomerAlias(tg);
+        templates_map.emplace(std::make_pair(tname, tg.tgroup_class.ptr()), std::ref(tg));
+    }
 }
 
 BaseMolecule* Molecule::neu()

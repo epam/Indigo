@@ -38,6 +38,7 @@
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_tgroups.h"
+#include "molecule/monomers_lib.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -200,8 +201,10 @@ namespace indigo
         virtual const char* getTemplateAtomClass(int idx) = 0;
         virtual const int getTemplateAtomDisplayOption(int idx) = 0;
         virtual const int getTemplateAtomTemplateIndex(int idx) = 0;
+        virtual void getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map) = 0;
 
         int countRSites();
+        int countTemplateAtoms();
         int countSGroups();
 
         static void collapse(BaseMolecule& bm, int id, Mapping& mapAtom, Mapping& mapBondInv);
@@ -512,7 +515,6 @@ namespace indigo
         const char* getAlias(int atom_idx) const;
         void setAlias(int atom_idx, const char* alias);
         void removeAlias(int atom_idx);
-        bool isSequence();
 
         DECL_ERROR;
 

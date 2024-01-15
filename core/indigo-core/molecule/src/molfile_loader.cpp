@@ -2131,11 +2131,11 @@ void MolfileLoader::_postLoad()
         _bmol->tgroups.remove(idx);
 
     // fix layout
-    if (templates_to_remove.size() && _bmol->isSequence())
-    {
-        SequenceLayout sl(*_bmol);
-        // sl.make();
-    }
+    // if (templates_to_remove.size() && _bmol->countComponents())
+    //{
+    //    SequenceLayout sl(*_bmol);
+    //    sl.make();
+    //}
 }
 
 int MolfileLoader::_insertTemplate(MonomersLib::value_type& nuc, std::unordered_map<MonomerKey, int, pair_hash>& new_templates)
