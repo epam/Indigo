@@ -150,7 +150,7 @@ namespace indigo
         void cloneLayoutGraph(MoleculeLayoutGraph& other, Array<int>* mapping);
         void copyLayoutTo(MoleculeLayoutGraph& other, const Array<int>& mapping) const;
 
-        virtual void layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing) = 0;
+        virtual void layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing);
 
         const BaseMolecule* getMolecule(const int** molecule_edge_mapping) const
         {
@@ -168,6 +168,8 @@ namespace indigo
 
         int max_iterations;
         layout_orientation_value layout_orientation;
+
+        bool preserve_existing_layout;
 
         CancellationHandler* cancellation;
 
@@ -295,8 +297,12 @@ namespace indigo
         bool _isPointOutsideCycleEx(const Cycle& cycle, const Vec2f& p, const Array<int>& mapping) const;
         static bool _border_cb(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context);
 
+        void getBoundingBox(Rect2f& bbox) const;
+        void getBoundingBox(Vec2f& left_bottom, Vec2f& right_top) const;
+        void copyCoordsFromComponent(MoleculeLayoutGraph& component, Vec2f shift = {0, 0});
+
         // for components
-        virtual void _calcMorganCodes() = 0;
+        virtual void _calcMorganCodes();
 
         // for whole graph
         virtual void _assignAbsoluteCoordinates(float bond_length) = 0;
@@ -336,6 +342,12 @@ namespace indigo
         void _attachCrossingEdges();
 
         void _buildOutline(void);
+
+        // make tree of biconnected components (tree[i] - component incoming to vertex i or -1)
+        static void _makeComponentsTree(BiconnectedDecomposer& decon, PtrArray<MoleculeLayoutGraph>& components, Array<int>& tree);
+
+        void _layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
+        void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
     };
 
     class DLLEXPORT MoleculeLayoutGraphSimple : public MoleculeLayoutGraph
@@ -351,8 +363,6 @@ namespace indigo
         float calculateAngle(int v, int& v1, int& v2) const override;
 
         void makeLayoutSubgraph(MoleculeLayoutGraph& graph, Filter& filter) override;
-
-        void layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing) override;
 
         void flipped() override
         {
@@ -378,9 +388,6 @@ namespace indigo
         // for whole graph
         void _assignAbsoluteCoordinates(float bond_length) override;
 
-        // for components
-        void _calcMorganCodes() override;
-
         // assigning coordinates
         void _assignRelativeCoordinates(int& fixed_component, const MoleculeLayoutGraph& supergraph) override;
         bool _tryToFindPattern(int& fixed_component);
@@ -404,12 +411,6 @@ namespace indigo
         bool _isPointOutsideCycle(const Cycle& cycle, const Vec2f& p) const override;
 
         static bool _edge_check(Graph& graph, int e_idx, void* context);
-
-        // make tree of biconnected components (tree[i] - component incoming to vertex i or -1)
-        static void _makeComponentsTree(BiconnectedDecomposer& decon, PtrArray<MoleculeLayoutGraph>& components, Array<int>& tree);
-
-        void _layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
-        void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
     };
 
     struct local_pair_ii
@@ -571,7 +572,6 @@ namespace indigo
 
         void makeLayoutSubgraph(MoleculeLayoutGraph& graph, Filter& vertex_filter) override;
         void makeLayoutSubgraph(MoleculeLayoutGraph& graph, Filter& vertex_filter, Filter* edge_filter);
-        void layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing) override;
 
         void calcMorganCode();
         long getMorganCode();
@@ -607,9 +607,6 @@ namespace indigo
 
         // for whole graph
         void _assignAbsoluteCoordinates(float bond_length) override;
-
-        // for components
-        void _calcMorganCodes() override;
 
         // assigning coordinates
         struct interval
@@ -673,12 +670,6 @@ namespace indigo
         // geometry functions
         const float _energyOfPoint(Vec2f p) const;
         int _isCisConfiguratuin(Vec2f p1, Vec2f p2, Vec2f p3, Vec2f p4);
-
-        // make tree of biconnected components (tree[i] - -1 or component incoming to vertex i)
-        static void _makeComponentsTree(BiconnectedDecomposer& decon, PtrArray<MoleculeLayoutGraph>& components, Array<int>& tree);
-
-        void _layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
-        void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
 
         Array<int> _layout_component_number; // number of layout component of certain edge
         int _layout_component_count;
