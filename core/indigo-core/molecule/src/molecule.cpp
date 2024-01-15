@@ -1465,7 +1465,6 @@ const int Molecule::getTemplateAtomDisplayOption(int idx)
 void Molecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map)
 {
     templates_map.clear();
-    int temp_idx = 0;
     for (int i = tgroups.begin(); i != tgroups.end(); i = tgroups.next(i))
     {
         auto& tg = tgroups.getTGroup(i);
