@@ -235,7 +235,7 @@ namespace indigo
         {
             alias = name;
             if (name.size() == 1)
-                alias = std::toupper(name.front());
+                std::transform(alias.begin(), alias.end(), alias.begin(), ::toupper);
             else if (name.empty())
                 alias = std::string("#") + std::to_string(tg.tgroup_id - 1);
         }
