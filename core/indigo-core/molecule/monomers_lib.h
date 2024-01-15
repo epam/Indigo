@@ -2,7 +2,7 @@
 #define __monomers_lib__
 
 #include "base_cpp/exception.h"
-#include "molecule/molecule.h"
+#include "molecule/molecule_tgroups.h"
 #include <map>
 #include <memory>
 #include <string>
@@ -47,13 +47,6 @@ namespace indigo
         RNA,
         DNA
     };
-
-    // struct MonomerTemplate
-    //{
-    //     MonomerType comp_type;
-    //     std::string natreplace;
-    //     std::shared_ptr<BaseMolecule> monomer;
-    // };
 
     using MonomerKey = std::pair<MonomerType, std::string>;
     using NucleotideKey = std::pair<NucleotideType, std::string>;

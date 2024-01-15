@@ -18,11 +18,11 @@
 
 #include <unordered_map>
 
+#include "molecule/base_molecule.h"
 #include "molecule/monomer_commons.h"
 
 namespace indigo
 {
-
     std::string classToPrefix(const std::string& monomer_class)
     {
         if (monomer_class == kMonomerClassdAA || monomer_class == kMonomerClassDNA)
@@ -32,9 +32,9 @@ namespace indigo
 
     bool isNucleicClass(const std::string& monomer_class)
     {
-        const std::unordered_set<std::string> kNucleicClasses = {kMonomerClassDNA,    kMonomerClassRNA,      kMonomerClassMODRNA,
-                                                                 kMonomerClassMODDNA, kMonomerClassXLINKRNA, kMonomerClassXLINKDNA,
-                                                                 kMonomerClassSUGAR,  kMonomerClassBASE,     kMonomerClassPHOSPHATE};
+        static const std::unordered_set<std::string> kNucleicClasses = {kMonomerClassDNA,    kMonomerClassRNA,      kMonomerClassMODRNA,
+                                                                        kMonomerClassMODDNA, kMonomerClassXLINKRNA, kMonomerClassXLINKDNA,
+                                                                        kMonomerClassSUGAR,  kMonomerClassBASE,     kMonomerClassPHOSPHATE};
         return kNucleicClasses.find(monomer_class) != kNucleicClasses.end();
     }
 
@@ -64,6 +64,11 @@ namespace indigo
         return kAminoClasses.find(monomer_class) != kAminoClasses.end();
     }
 
+    bool isBackboneClass(const std::string& monomer_class)
+    {
+        return isAminoAcidClass(monomer_class) || monomer_class == kMonomerClassSUGAR || monomer_class == kMonomerClassPHOSPHATE;
+    }
+
     bool isBasicAminoAcid(const std::string& monomer_class, const std::string& alias)
     {
         return isAminoAcidClass(monomer_class) && monomerNameByAlias(monomer_class, alias).size() != alias.size();
@@ -71,8 +76,8 @@ namespace indigo
 
     std::string monomerNameByAlias(const std::string& monomer_class, const std::string& alias)
     {
-        static const std::unordered_map<std::string, std::string> kAliasToNucleic = {{"A", "Ade"}, {"C", "Cyt"},  {"G", "Gua"},  {"U", "Ura"}, {"T", "Thy"},
-                                                                                     {"r", "Rib"}, {"d", "dRib"}, {"m", "mRib"}, {"p", "Pi"}};
+        static const std::unordered_map<std::string, std::string> kAliasToNucleic = {{"A", "Ade"}, {"C", "Cyt"},   {"G", "Gua"},  {"U", "Ura"}, {"T", "Thy"},
+                                                                                     {"R", "Rib"}, {"dR", "dRib"}, {"m", "mRib"}, {"p", "Pi"}};
 
         static const std::unordered_map<std::string, std::string> kAliasToAminoAcid = {
             {"A", "Ala"}, {"R", "Arg"}, {"N", "Asn"}, {"D", "Asp"}, {"C", "Cys"}, {"Q", "Gln"}, {"E", "Glu"}, {"G", "Gly"}, {"H", "His"}, {"I", "Ile"},
@@ -99,8 +104,8 @@ namespace indigo
             {"Ala", "A"}, {"Arg", "R"}, {"Asn", "N"}, {"Asp", "D"}, {"Cys", "C"}, {"Gln", "Q"}, {"Glu", "E"}, {"Gly", "G"}, {"His", "H"}, {"Ile", "I"},
             {"Leu", "L"}, {"Lys", "K"}, {"Met", "M"}, {"Phe", "F"}, {"Pro", "P"}, {"Ser", "S"}, {"Thr", "T"}, {"Trp", "W"}, {"Tyr", "Y"}, {"Val", "V"}};
 
-        static const std::unordered_map<std::string, std::string> kNucleicToAlias = {{"Ade", "A"}, {"Cyt", "C"},  {"Gua", "G"},  {"Ura", "U"}, {"Thy", "T"},
-                                                                                     {"Rib", "r"}, {"dRib", "d"}, {"mRib", "m"}, {"Pi", "p"}};
+        static const std::unordered_map<std::string, std::string> kNucleicToAlias = {{"Ade", "A"}, {"Cyt", "C"},   {"Gua", "G"},  {"Ura", "U"}, {"Thy", "T"},
+                                                                                     {"Rib", "R"}, {"dRib", "dR"}, {"mRib", "m"}, {"Pi", "p"}};
 
         if (isAminoAcidClass(monomer_class))
         {
@@ -200,5 +205,46 @@ namespace indigo
             break;
         }
         return false;
+    }
+
+    std::string monomerAlias(const TGroup& tg)
+    {
+        std::string monomer_class;
+        std::string alias;
+        std::string name;
+
+        if (tg.tgroup_class.ptr())
+            monomer_class = tg.tgroup_class.ptr();
+
+        if (tg.tgroup_alias.ptr())
+            alias = tg.tgroup_alias.ptr();
+
+        if (tg.tgroup_name.ptr())
+            name = tg.tgroup_name.ptr();
+
+        if (alias.size())
+            alias = normalizeMonomerAlias(monomer_class, alias);
+        else
+        {
+            alias = name;
+            if (name.size() == 1)
+                alias = std::toupper(name.front());
+            else if (name.empty())
+                alias = std::string("#") + std::to_string(tg.tgroup_id - 1);
+        }
+        return alias;
+    }
+
+    std::optional<std::reference_wrapper<TGroup>> findTemplateInMap(
+        const std::string& name, const std::string& class_name,
+        std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map)
+    {
+        auto tg_it = templates_map.find(std::make_pair(name, class_name));
+        if (tg_it == templates_map.end())
+        {
+            auto mname = monomerNameByAlias(class_name, name);
+            tg_it = templates_map.find(std::make_pair(mname, class_name));
+        }
+        return tg_it == templates_map.end() ? std::nullopt : std::optional<std::reference_wrapper<TGroup>>(std::ref(tg_it->second));
     }
 }
