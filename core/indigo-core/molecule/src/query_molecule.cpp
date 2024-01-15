@@ -1030,7 +1030,7 @@ const int QueryMolecule::getTemplateAtomTemplateIndex(int /*idx*/)
     return -1;
 }
 
-void QueryMolecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map)
+void QueryMolecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& /*templates_map*/)
 {
     throw Error("QueryMolecule::getTemplatesMap not implemented");
 }
