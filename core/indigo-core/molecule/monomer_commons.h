@@ -1,9 +1,9 @@
 ﻿#ifndef __monomer_commons__
 #define __monomer_commons__
 
+#include <optional>
 #include <string>
 #include <unordered_set>
-#include <optional>
 
 #include "molecule/monomers_lib.h"
 #include "molecule/parse_utils.h"

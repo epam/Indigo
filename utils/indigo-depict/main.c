@@ -252,7 +252,6 @@ enum
     OEXT_CDXMLR,
     OEXT_SMI,
     OEXT_SD1,
-    OEXT_SEQ,
     OEXT_OTHER
 };
 
@@ -887,8 +886,6 @@ int main(int argc, char* argv[])
         p.out_ext = OEXT_CDR;
     else if (strcmp(p.outfile_ext, "sd1") == 0)
         p.out_ext = OEXT_SD1;
-    else if (strcmp(p.outfile_ext, "seq") == 0)
-        p.out_ext = OEXT_SEQ;
 
     // guess whether to layout or render by extension
     p.action = ACTION_LAYOUT;
@@ -924,8 +921,6 @@ int main(int argc, char* argv[])
                 indigoSaveMolfileToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_KET)
                 indigoSaveJsonToFile(obj, p.outfile);
-            else if (p.out_ext == OEXT_SEQ)
-                indigoSaveSequenceToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_SMI)
             {
                 char* pMol;
