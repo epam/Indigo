@@ -41,52 +41,66 @@ void SequenceLayout::make()
     }
 }
 
-void SequenceLayout::processPosition(int& row, int& col, int atom_from_idx, const std::pair<int,int>& dir)
+void SequenceLayout::processPosition(BaseMolecule& mol, int& row, int& col, int atom_from_idx, const std::pair<int, int>& dir)
 {
     int row_spacing = kRowSpacing;
-    int ap_id = dir.first;
-    std::string from_class = _molecule.getTemplateAtomClass(atom_from_idx);
-    std::string to_class = _molecule.getTemplateAtomClass(dir.second);
+    int row_sign = 1;
+    std::string from_class = mol.getTemplateAtomClass(atom_from_idx);
+    std::string to_class = mol.getTemplateAtomClass(dir.second);
 
-    if (!isBackboneClass(from_class))
-        ap_id += kBranchAttachmentPointIdx + 1;
-
-    switch (dir.first)
+    if (isBackboneClass(from_class))
     {
-    case kLeftAttachmentPointIdx:
-        col--; // go left
-        break;
-    case kRightAttachmentPointIdx:
-        col++; // go right
-        break;
-    case kBranchAttachmentPointIdx:
-        row_spacing = 1;
-        [[fallthrough]];
-    default: // branch
-        auto& v1 = _molecule.getAtomXyz(atom_from_idx);
-        auto& v2 = _molecule.getAtomXyz(dir.second);
-        row += v2.y < v1.y ? -row_spacing : row_spacing; // branch up or down?
-        break;
+        if (isBackboneClass(to_class))
+        {
+            if (dir.first == kLeftAttachmentPointIdx)
+            {
+                col--;
+                return;
+            }
+            else if (dir.first == kRightAttachmentPointIdx)
+            {
+                col++;
+                return;
+            }
+        }
+        else if (to_class == kMonomerClassBASE) // from backbone to base
+            row_spacing = 1;
     }
+    else if (isBackboneClass(to_class))
+    {
+        if (from_class == kMonomerClassBASE) // from base to backbone
+        {
+            row_sign = -1;
+            row_spacing = 1;
+        }
+    }
+
+    if (BaseMolecule::hasCoord(mol))
+    {
+        auto& v1 = mol.getAtomXyz(atom_from_idx);
+        auto& v2 = mol.getAtomXyz(dir.second);
+        row_sign = v2.y < v1.y ? -1 : 1; // redefine row_sign if coordinates are available
+    }
+    row += row_sign * row_spacing;
 }
 
-void SequenceLayout::make(int first_atom_idx)
+void SequenceLayout::getLayout(BaseMolecule& mol, int first_atom_idx, std::map<int, std::map<int, int>>& layout_sequence)
 {
     std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
-    _molecule.getTemplatesMap(templates);
+    mol.getTemplatesMap(templates);
 
-    auto atoms_num = _molecule.vertexCount();
+    auto atoms_num = mol.vertexCount();
     std::unordered_map<int, uint8_t> vertices_visited;
     std::map<int, std::map<int, int>> directions_map;
 
-    for (int i = _molecule.template_attachment_points.begin(); i != _molecule.template_attachment_points.end();
-         i = _molecule.template_attachment_points.next(i))
+    for (int i = mol.template_attachment_points.begin(); i != mol.template_attachment_points.end();
+         i = mol.template_attachment_points.next(i))
     {
-        auto& tap = _molecule.template_attachment_points[i];
+        auto& tap = mol.template_attachment_points[i];
         if (tap.ap_id.size())
         {
             Array<char> atom_label;
-            _molecule.getAtomSymbol(tap.ap_occur_idx, atom_label);
+            mol.getAtomSymbol(tap.ap_occur_idx, atom_label);
             int ap_id = tap.ap_id[0] - 'A';
             directions_map[tap.ap_occur_idx].emplace(ap_id, tap.ap_aidx);
         }
@@ -110,9 +124,7 @@ void SequenceLayout::make(int first_atom_idx)
         pq.pop();
         int current_atom_idx = te.atom_idx;
         vertices_visited[current_atom_idx] = 1; // mark as passed
-        bool found_directions = false;
-        bool aready_visited = false;
-        _layout_sequence[te.row][te.col] = current_atom_idx;
+        layout_sequence[te.row][te.col] = current_atom_idx;
         for (const auto& dir : directions_map[current_atom_idx])
         {
             int col = te.col;
@@ -120,14 +132,16 @@ void SequenceLayout::make(int first_atom_idx)
             // add to queue with priority. left, right, branch.
             if (vertices_visited[dir.second] == 0)
             {
-                processPosition(row, col, current_atom_idx, dir);
+                processPosition(mol, row, col, current_atom_idx, dir);
                 pq.emplace(dir.first, dir.second, col, row);
-                found_directions = true;
             }
-            else
-                aready_visited = true;
         }
     }
+}
+
+void SequenceLayout::make(int first_atom_idx)
+{
+    getLayout(_molecule, first_atom_idx, _layout_sequence);
     if (_layout_sequence.size())
     {
         auto row_it = _layout_sequence.begin();

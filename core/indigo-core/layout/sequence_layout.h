@@ -34,10 +34,10 @@
 
 namespace indigo
 {
+    const int kRowSpacing = 4;
     class DLLEXPORT SequenceLayout
     {
     public:
-        const int kRowSpacing = 4;
         struct PriorityElement
         {
             PriorityElement(int dir, int atom_idx, int col, int row) : dir(dir), atom_idx(atom_idx), col(col), row(row)
@@ -54,11 +54,12 @@ namespace indigo
         explicit SequenceLayout(BaseMolecule& molecule);
         void make();
         void make(int first_atom_idx);
+        static void getLayout(BaseMolecule& mol, int first_atom_idx, std::map<int, std::map<int, int>>& layout_sequence);
 
         DECL_ERROR;
 
     private:
-        void processPosition(int& row, int& col, int atom_from_idx, const std::pair<int, int>& dir);
+        static void processPosition(BaseMolecule& mol, int& row, int& col, int atom_from_idx, const std::pair<int, int>& dir);
         BaseMolecule& _molecule;
         std::map<int, std::map<int, int>> _layout_sequence;
     };
