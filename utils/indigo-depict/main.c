@@ -252,6 +252,7 @@ enum
     OEXT_CDXMLR,
     OEXT_SMI,
     OEXT_SD1,
+    OEXT_SEQ,
     OEXT_OTHER
 };
 
@@ -852,7 +853,7 @@ int main(int argc, char* argv[])
     indigoSetOption("ignore-stereochemistry-errors", "on");
     indigoSetOption("ignore-bad-valence", "on");
     indigoSetOption("molfile-saving-mode", "3000");
-    indigoSetOptionBool("json-saving-pretty", 1);
+    indigoSetOptionBool("json-saving-pretty", "on");
 
     if (parseParams(&p, argc, argv) < 0)
         return -1;
@@ -886,6 +887,8 @@ int main(int argc, char* argv[])
         p.out_ext = OEXT_CDR;
     else if (strcmp(p.outfile_ext, "sd1") == 0)
         p.out_ext = OEXT_SD1;
+    else if (strcmp(p.outfile_ext, "seq") == 0)
+        p.out_ext = OEXT_SEQ;
 
     // guess whether to layout or render by extension
     p.action = ACTION_LAYOUT;
@@ -921,9 +924,11 @@ int main(int argc, char* argv[])
                 indigoSaveMolfileToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_KET)
                 indigoSaveJsonToFile(obj, p.outfile);
+            else if (p.out_ext == OEXT_SEQ)
+                indigoSaveSequenceToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_SMI)
             {
-                const char* pMol;
+                char* pMol;
                 if (p.query_set)
                     pMol = indigoSmarts(obj);
                 else
@@ -950,7 +955,7 @@ int main(int argc, char* argv[])
             }
             else if (p.out_ext == OEXT_CDX64)
             {
-                const char* pMol = indigoCdxBase64(obj);
+                char* pMol = indigoCdxBase64(obj);
                 FILE* fp = fopen(p.outfile, "w+");
                 if (fp)
                 {
@@ -976,7 +981,7 @@ int main(int argc, char* argv[])
                     indigoFree(frag_id);
                 }
                 indigoFree(comp_it);
-                const char* pSdf = indigoToString(buffer);
+                char* pSdf = indigoToString(buffer);
                 FILE* fp = fopen(p.outfile, "w+");
                 if (fp)
                 {
@@ -1028,7 +1033,7 @@ int main(int argc, char* argv[])
             }
             else if (p.out_ext == OEXT_SMI)
             {
-                const char* pReaction;
+                char* pReaction;
                 if (p.query_set)
                     pReaction = indigoSmarts(obj);
                 else
