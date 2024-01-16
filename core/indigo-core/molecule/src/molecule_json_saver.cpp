@@ -1366,7 +1366,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
             _no_template_molecules.emplace_back(std::move(component));
             writer.StartObject();
             writer.Key("$ref");
-            std::string mol_node = std::string("mol") + std::to_string(idx);
+            std::string mol_node = std::string("mol") + std::to_string(_no_template_molecules.size() - 1);
             writer.String(mol_node.c_str());
             writer.EndObject();
         }
