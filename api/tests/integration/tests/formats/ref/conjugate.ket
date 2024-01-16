@@ -3400,6 +3400,7 @@
         "classHELM": "PEPTIDE",
         "alias": "U",
         "name": "Sec",
+        "naturalAnalogShort": "U",
         "attachmentPoints": [
             {
                 "attachmentAtom": 5,
