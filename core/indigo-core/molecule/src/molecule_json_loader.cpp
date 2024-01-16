@@ -393,9 +393,8 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                                                                          new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbonds)));
                 }
                 else if (rbcount > 1)
-                    _pqmol->resetAtom(
-                        atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
-                                                           new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rbcount, (rbcount < 4 ? rbcount : 100))));
+                    _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx),
+                                                                         new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rbcount, rbcount)));
                 else
                     throw Error("ring bond count = %d makes no sense", rbcount);
             }

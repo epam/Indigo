@@ -11,6 +11,7 @@ dcysteine.ket:SUCCEED
 dna_mod.ket:SUCCEED
 dthymine.ket:SUCCEED
 fmoc.ket:SUCCEED
+issue_1476.ket:SUCCEED
 mon_long_id.ket:SUCCEED
 pepchem.ket:SUCCEED
 peptides.ket:SUCCEED

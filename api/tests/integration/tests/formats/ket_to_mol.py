@@ -45,6 +45,7 @@ files = [
     "query_explicit_val",
     "mon_long_id",
     "acgt_1412",
+    "issue_1476",
 ]
 
 files.sort()
