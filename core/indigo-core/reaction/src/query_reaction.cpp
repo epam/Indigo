@@ -191,11 +191,6 @@ bool QueryReaction::aromatize(const AromaticityOptions& options)
     return arom_found;
 }
 
-bool QueryReaction::dearomatize(const AromaticityOptions& options)
-{
-    throw Error("Dearomatization of query reactions is not implemented");
-}
-
 void QueryReaction::_clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings)
 {
     BaseMolecule& rmol = other.getBaseMolecule(i);

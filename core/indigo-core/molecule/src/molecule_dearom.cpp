@@ -637,13 +637,13 @@ void DearomatizationsGroups::getGroupData(int group, int flags, Dearomatizations
                 radical = 0;
 
             if (label == -1)
-                throw DearomatizationMatcher::Error("internal error");
+                continue;
 
             int max_conn = Element::getMaximumConnectivity(label, charge, radical, false);
 
-            int group = Element::group(_molecule.getAtomNumber(v_idx));
+            int atom_group = Element::group(_molecule.getAtomNumber(v_idx));
 
-            int vac = _molecule.getVacantPiOrbitals(group, charge, radical, max_conn, &lonepairs);
+            int vac = _molecule.getVacantPiOrbitals(atom_group, charge, radical, max_conn, &lonepairs);
 
             if (_vertexIsAcceptDoubleEdge[v_idx] && _vertexIsAcceptSingleEdge[v_idx] && (vac > 0 || lonepairs > 0))
                 data->heteroAtoms.push(v_idx);
