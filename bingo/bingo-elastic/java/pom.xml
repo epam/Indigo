@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.epam.indigo</groupId>
     <artifactId>bingo-elastic</artifactId>
-    <version>1.18.0-rc.2</version>
+    <version>1.18.0-rc.3</version>
     <packaging>jar</packaging>
 
     <name>Bingo Elastic</name>
