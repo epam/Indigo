@@ -85,16 +85,6 @@ bool Reaction::aromatize(const AromaticityOptions& options)
     return arom_found;
 }
 
-bool Reaction::dearomatize(const AromaticityOptions& options)
-{
-    bool all_dearomatized = true;
-    for (int i = begin(); i < end(); i = next(i))
-    {
-        all_dearomatized &= MoleculeDearomatizer::dearomatizeMolecule(*(Molecule*)_allMolecules[i], options);
-    }
-    return all_dearomatized;
-}
-
 Reaction& Reaction::asReaction()
 {
     return *this;
@@ -111,16 +101,4 @@ void Reaction::checkForConsistency(Reaction& rxn)
 
     for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
         Molecule::checkForConsistency(rxn.getMolecule(i));
-}
-
-void Reaction::unfoldHydrogens()
-{
-    QS_DEF(Array<int>, markers);
-    int i, j;
-
-    for (i = begin(); i != end(); i = next(i))
-    {
-        Molecule& mol = getMolecule(i);
-        mol.unfoldHydrogens(&markers, -1);
-    }
 }

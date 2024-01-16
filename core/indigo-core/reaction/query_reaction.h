@@ -50,7 +50,6 @@ namespace indigo
         int _addedQueryMolecule(int side, QueryMolecule& mol);
 
         bool aromatize(const AromaticityOptions& options) override;
-        bool dearomatize(const AromaticityOptions& options) override;
 
         BaseReaction* neu() override;
 

@@ -60,7 +60,6 @@ namespace indigo
         Molecule& getMolecule(int index);
 
         bool aromatize(const AromaticityOptions& options) override;
-        bool dearomatize(const AromaticityOptions& options) override;
 
         Reaction& asReaction() override;
 
@@ -73,8 +72,6 @@ namespace indigo
         static void loadBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_types);
 
         static void checkForConsistency(Reaction& rxn);
-
-        void unfoldHydrogens();
 
         DECL_ERROR;
 
