@@ -359,3 +359,12 @@ m = indigo.loadQueryMoleculeFromFile(
 )
 m.dearomatize()
 print(m.smarts())
+
+print(
+    "***** Dearomatize molecule with atom_aromatic_connectivity < 0 should not cause exception  *****"
+)
+m = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/issue_1478.ket", __file__)
+)
+m.dearomatize()
+print(m.smiles())
