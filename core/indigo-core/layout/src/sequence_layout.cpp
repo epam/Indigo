@@ -81,12 +81,12 @@ void SequenceLayout::processPosition(BaseMolecule& mol, int& row, int& col, int 
         }
     }
 
-    //if (BaseMolecule::hasCoord(mol))
+    // if (BaseMolecule::hasCoord(mol))
     //{
-    //    auto& v1 = mol.getAtomXyz(atom_from_idx);
-    //    auto& v2 = mol.getAtomXyz(dir.second);
-    //    row_sign = v2.y < v1.y ? 1 : -1; // redefine row_sign if coordinates are available
-    //}
+    //     auto& v1 = mol.getAtomXyz(atom_from_idx);
+    //     auto& v2 = mol.getAtomXyz(dir.second);
+    //     row_sign = v2.y < v1.y ? 1 : -1; // redefine row_sign if coordinates are available
+    // }
     row += row_sign * row_spacing;
 }
 
