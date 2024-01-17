@@ -75,7 +75,11 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol)
             }
         }
         if (seq_string.size())
-            seq_text += seq_string + "\n";
+        {
+            if (seq_text.size())
+                seq_text += "\n";
+            seq_text += seq_string;
+        }
     }
     if (seq_text.size())
         _output.write(seq_text.data(), static_cast<int>(seq_text.size()));

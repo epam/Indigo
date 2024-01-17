@@ -3070,7 +3070,7 @@ M  END
             self.url_prefix + "/convert", headers=headers, data=data
         )
 
-        self.assertEqual(json.loads(result_rna_1.text)["struct"], "ACGTU\n")
+        self.assertEqual(json.loads(result_rna_1.text)["struct"], "ACGTU")
 
         headers, data = self.get_headers(
             {
@@ -3094,7 +3094,7 @@ M  END
             self.url_prefix + "/convert", headers=headers, data=data
         )
 
-        self.assertEqual(json.loads(result_dna_1.text)["struct"], "ACGTU\n")
+        self.assertEqual(json.loads(result_dna_1.text)["struct"], "ACGTU")
 
         headers, data = self.get_headers(
             {
@@ -3120,7 +3120,7 @@ M  END
 
         self.assertEqual(
             json.loads(result_peptide_1.text)["struct"],
-            "ACDEFGHIKLMNOPQRSRUVWY\n",
+            "ACDEFGHIKLMNOPQRSRUVWY",
         )
 
         def joinPathPy(args, file_py):
