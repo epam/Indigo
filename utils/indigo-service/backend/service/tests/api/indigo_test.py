@@ -469,7 +469,7 @@ M  END\n",
         expected_text = "ValidationError: {'input_format': ['Must be one of: chemical/x-mdl-rxnfile, \
 chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
 chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/sequence.']}"
+chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence.']}"
         self.assertEquals(
             expected_text,
             result.text,
@@ -487,7 +487,7 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x
         expected_text = "ValidationError: {'output_format': ['Must be one of: chemical/x-mdl-rxnfile, \
 chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
 chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/sequence.']}"
+chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical-x/sequence.']}"
         self.assertEquals(
             expected_text,
             result.text,
@@ -3062,7 +3062,7 @@ M  END
             {
                 "struct": "ACGTU",
                 "input_format": "chemical/x-rna-sequence",
-                "output_format": "chemical/sequence",
+                "output_format": "chemical/x-sequence",
             }
         )
 
@@ -3087,7 +3087,7 @@ M  END
             {
                 "struct": "ACGTU",
                 "input_format": "chemical/x-dna-sequence",
-                "output_format": "chemical/sequence",
+                "output_format": "chemical/x-sequence",
             }
         )
         result_dna_1 = requests.post(
@@ -3111,7 +3111,7 @@ M  END
             {
                 "struct": "ACDEFGHIKLMNOPQRSRUVWY",
                 "input_format": "chemical/x-peptide-sequence",
-                "output_format": "chemical/sequence",
+                "output_format": "chemical/x-sequence",
             }
         )
         result_peptide_1 = requests.post(

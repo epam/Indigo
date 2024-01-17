@@ -136,7 +136,7 @@ namespace indigo
                     result = _checkResultString(indigoSmiles(id()));
                 }
             }
-            else if (outputFormat == "sequence" || outputFormat == "chemical/sequence")
+            else if (outputFormat == "sequence" || outputFormat == "chemical/x-sequence")
             {
                 result = _checkResultString(indigoSequence(id()));
             }
