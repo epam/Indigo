@@ -459,21 +459,24 @@ CEXPORT int indigoUnfoldHydrogens(int item)
         {
             BaseMolecule& bmol = obj.getBaseMolecule();
             bmol.unfoldHydrogens(&markers, -1);
-            // Layout hydrogens
-            MoleculeLayoutGraphSimple layout;
-            layout.preserve_existing_layout = true;
-            layout.makeOnGraph(bmol);
-            for (int i = layout.vertexBegin(); i < layout.vertexEnd(); i = layout.vertexNext(i))
+            if (markers.count(1) > 0) // If some hydrogens found - layout it
             {
-                const Vec3f& pos = bmol.getAtomXyz(layout.getVertexExtIdx(i));
-                layout.getPos(i).set(pos.x, pos.y);
-            }
-            Filter new_filter(markers.ptr(), Filter::EQ, 1);
-            layout.layout(bmol, 1, &new_filter, true);
-            for (int i = layout.vertexBegin(); i < layout.vertexEnd(); i = layout.vertexNext(i))
-            {
-                const LayoutVertex& vert = layout.getLayoutVertex(i);
-                bmol.setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
+                // Layout hydrogens
+                MoleculeLayoutGraphSimple layout;
+                layout.preserve_existing_layout = true;
+                layout.makeOnGraph(bmol);
+                for (int i = layout.vertexBegin(); i < layout.vertexEnd(); i = layout.vertexNext(i))
+                {
+                    const Vec3f& pos = bmol.getAtomXyz(layout.getVertexExtIdx(i));
+                    layout.getPos(i).set(pos.x, pos.y);
+                }
+                Filter new_filter(markers.ptr(), Filter::EQ, 1);
+                layout.layout(bmol, 1, &new_filter, true);
+                for (int i = layout.vertexBegin(); i < layout.vertexEnd(); i = layout.vertexNext(i))
+                {
+                    const LayoutVertex& vert = layout.getLayoutVertex(i);
+                    bmol.setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
+                }
             }
         }
         else if (IndigoBaseReaction::is(obj))
