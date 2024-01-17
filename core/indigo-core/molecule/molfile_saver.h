@@ -45,6 +45,7 @@ namespace indigo
             MODE_2000,     // force saving to v2000 format
             MODE_3000      // force saving to v3000 format
         };
+        constexpr static int MAX_RING_BOND_COUNT = 4;
 
         MolfileSaver(Output& output);
 
