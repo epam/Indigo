@@ -478,7 +478,7 @@ bool BaseReaction::dearomatize(const AromaticityOptions& options)
 void BaseReaction::unfoldHydrogens()
 {
     QS_DEF(Array<int>, markers);
-    int i, j;
+    int i;
 
     for (i = begin(); i != end(); i = next(i))
     {
