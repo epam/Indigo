@@ -269,7 +269,8 @@ namespace indigo
         // Returns true if some bonds were changed
         virtual bool aromatize(const AromaticityOptions& options) = 0;
         // Returns true if all bonds were dearomatized
-        virtual bool dearomatize(const AromaticityOptions& options) = 0;
+        bool dearomatize(const AromaticityOptions& options);
+        void unfoldHydrogens();
 
         // poor man's dynamic casting
         virtual Reaction& asReaction();
