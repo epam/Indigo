@@ -131,9 +131,13 @@ public interface IndigoLib extends Library {
 
     int indigoSaveMolfile(int molecule, int output);
 
+    int indigoSaveSequenceToFile(int molecule, String filename);
+
     int indigoSaveMolfileToFile(int molecule, String filename);
 
     Pointer indigoMolfile(int molecule);
+
+    Pointer indigoSequence(int molecule);
 
     int indigoSaveCml(int object, int output);
 

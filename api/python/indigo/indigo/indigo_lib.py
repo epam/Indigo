@@ -861,6 +861,10 @@ class IndigoLib:
         IndigoLib.lib.indigoClean2d.argtypes = [c_int]
         IndigoLib.lib.indigoSmiles.restype = c_char_p
         IndigoLib.lib.indigoSmiles.argtypes = [c_int]
+        IndigoLib.lib.indigoSequence.restype = c_char_p
+        IndigoLib.lib.indigoSequence.argtypes = [c_int]
+        IndigoLib.lib.indigoSaveSequenceToFile.restype = c_int
+        IndigoLib.lib.indigoSaveSequenceToFile.argtypes = [c_int, c_char_p]
         IndigoLib.lib.indigoSmarts.restype = c_char_p
         IndigoLib.lib.indigoSmarts.argtypes = [c_int]
         IndigoLib.lib.indigoName.restype = c_char_p

@@ -44,9 +44,15 @@ void SequenceLayout::make()
 void SequenceLayout::processPosition(BaseMolecule& mol, int& row, int& col, int atom_from_idx, const std::pair<int, int>& dir)
 {
     int row_spacing = kRowSpacing;
-    int row_sign = 1;
-    std::string from_class = mol.getTemplateAtomClass(atom_from_idx);
-    std::string to_class = mol.getTemplateAtomClass(dir.second);
+    int row_sign = -1; // down
+    std::string from_class;
+    std::string to_class;
+
+    if (mol.isTemplateAtom(atom_from_idx))
+        from_class = mol.getTemplateAtomClass(atom_from_idx);
+
+    if (mol.isTemplateAtom(dir.second))
+        to_class = mol.getTemplateAtomClass(dir.second);
 
     if (isBackboneClass(from_class))
     {
@@ -70,17 +76,17 @@ void SequenceLayout::processPosition(BaseMolecule& mol, int& row, int& col, int 
     {
         if (from_class == kMonomerClassBASE) // from base to backbone
         {
-            row_sign = -1;
+            row_sign = 1;
             row_spacing = 1;
         }
     }
 
-    if (BaseMolecule::hasCoord(mol))
-    {
-        auto& v1 = mol.getAtomXyz(atom_from_idx);
-        auto& v2 = mol.getAtomXyz(dir.second);
-        row_sign = v2.y < v1.y ? -1 : 1; // redefine row_sign if coordinates are available
-    }
+    // if (BaseMolecule::hasCoord(mol))
+    //{
+    //     auto& v1 = mol.getAtomXyz(atom_from_idx);
+    //     auto& v2 = mol.getAtomXyz(dir.second);
+    //     row_sign = v2.y < v1.y ? 1 : -1; // redefine row_sign if coordinates are available
+    // }
     row += row_sign * row_spacing;
 }
 
@@ -122,17 +128,20 @@ void SequenceLayout::getLayout(BaseMolecule& mol, int first_atom_idx, std::map<i
         const auto te = pq.top(); // top element
         pq.pop();
         int current_atom_idx = te.atom_idx;
-        vertices_visited[current_atom_idx] = 1; // mark as passed
-        layout_sequence[te.row][te.col] = current_atom_idx;
-        for (const auto& dir : directions_map[current_atom_idx])
+        if (vertices_visited[current_atom_idx] == 0)
         {
-            int col = te.col;
-            int row = te.row;
-            // add to queue with priority. left, right, branch.
-            if (vertices_visited[dir.second] == 0)
+            vertices_visited[current_atom_idx] = 1; // mark as passed
+            layout_sequence[te.row][te.col] = current_atom_idx;
+            for (const auto& dir : directions_map[current_atom_idx])
             {
-                processPosition(mol, row, col, current_atom_idx, dir);
-                pq.emplace(dir.first, dir.second, col, row);
+                int col = te.col;
+                int row = te.row;
+                // add to queue with priority. left, right, branch.
+                if (vertices_visited[dir.second] == 0)
+                {
+                    processPosition(mol, row, col, current_atom_idx, dir);
+                    pq.emplace(dir.first, dir.second, col, row);
+                }
             }
         }
     }
