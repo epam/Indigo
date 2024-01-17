@@ -2427,6 +2427,7 @@ int QueryMolecule::_calcAtomConnectivity(int idx)
 {
     const Vertex& vertex = getVertex(idx);
     int i, conn = 0;
+    bool was_aromatic = false;
 
     for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
     {
@@ -2434,10 +2435,24 @@ int QueryMolecule::_calcAtomConnectivity(int idx)
 
         if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE)
             conn += order;
+        else if (order == BOND_AROMATIC || order == _BOND_SINGLE_OR_AROMATIC || order == _BOND_DOUBLE_OR_AROMATIC)
+        {
+            conn += 1;
+            if (was_aromatic)
+            {
+                conn += 1;
+                was_aromatic = false; // +1 connection for 2 aromatic bonds
+            }
+            else
+            {
+                was_aromatic = true;
+            }
+        }
         else
             conn += 1;
     }
-
+    if (was_aromatic)
+        conn += 1;
     return conn;
 }
 

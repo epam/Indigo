@@ -1,0 +1,5 @@
+******* Test unfold aromatic ring *******
+
+testing filename:
+issue_1525.ket
+Unfolded KET equal to expected
