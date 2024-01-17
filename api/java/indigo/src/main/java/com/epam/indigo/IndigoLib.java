@@ -137,7 +137,7 @@ public interface IndigoLib extends Library {
 
     Pointer indigoMolfile(int molecule);
 
-    Pointer indigoSequenceFile(int molecule);
+    Pointer indigoSequence(int molecule);
 
     int indigoSaveCml(int object, int output);
 
