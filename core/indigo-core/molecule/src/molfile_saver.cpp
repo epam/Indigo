@@ -621,7 +621,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 out.printf(" SUBST=%d", subst);
             int rbc;
             if (MoleculeSavers::getRingBondCountFlagValue(*qmol, i, rbc))
-                out.printf(" RBCNT=%d", rbc);
+                out.printf(" RBCNT=%d", rbc > MAX_RING_BOND_COUNT ? MAX_RING_BOND_COUNT : rbc);
         }
 
         _writeMultiString(output, buf.ptr(), buf.size());
@@ -1285,7 +1285,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             {
                 int* r = ring_bonds.push();
                 r[0] = i;
-                r[1] = rbc;
+                r[1] = rbc > MAX_RING_BOND_COUNT ? MAX_RING_BOND_COUNT : rbc;
             }
             int subst;
             if (MoleculeSavers::getSubstitutionCountFlagValue(*qmol, i, subst))
