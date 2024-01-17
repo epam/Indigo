@@ -801,12 +801,17 @@ M  END
             let options = new indigo.MapStringString();
             options.set("output-content-type", "application/json");
             options.set("input-format", "chemical/x-peptide-sequence");
-            const peptide_seq = "ACDEFGHIKLMNOPQRSRUVWY";
-            const peptide_ket = indigo.convert(peptide_seq, "ket", options);
+            const peptide_seq_ref = "ACDEFGHIKLMNOPQRSRUVWY";
+            const peptide_ket = indigo.convert(peptide_seq_ref, "ket", options);
             var fs = require('fs');
             // fs.writeFileSync("peptide_ref.ket", peptide_ket);
             const peptide_ket_ref = fs.readFileSync("peptide_ref.ket");
             assert.equal(peptide_ket, peptide_ket_ref.toString());
+
+            const peptide_seq = indigo.convert(peptide_seq_ref, "sequence", options);
+            // fs.writeFileSync("peptide_ref.seq", peptide_seq);
+            const peptide_seq_ref1= fs.readFileSync("peptide_ref.seq");
+            assert.equal(peptide_seq, peptide_seq_ref1.toString());
             options.delete();
         });
     }
@@ -816,12 +821,17 @@ M  END
             let options = new indigo.MapStringString();
             options.set("output-content-type", "application/json");
             options.set("input-format", "chemical/x-rna-sequence");
-            const rna_seq = "ACGTU";
-            const rna_ket = indigo.convert(rna_seq, "ket", options);
+            const rna_seq_ref = "ACGTU";
+            const rna_ket = indigo.convert(rna_seq_ref, "ket", options);
             var fs = require('fs');
             // fs.writeFileSync("rna_ref.ket", rna_ket);
             const rna_ket_ref = fs.readFileSync("rna_ref.ket");
             assert.equal(rna_ket, rna_ket_ref.toString());
+
+            const rna_seq = indigo.convert(rna_seq_ref, "sequence", options);
+            // fs.writeFileSync("rna_ref.seq", rna_seq);
+            const rna_seq_ref1= fs.readFileSync("rna_ref.seq");
+            assert.equal(rna_seq, rna_seq_ref1.toString());
             options.delete();
         });
 
@@ -832,12 +842,17 @@ M  END
             let options = new indigo.MapStringString();
             options.set("output-content-type", "application/json");
             options.set("input-format", "chemical/x-dna-sequence");
-            const dna_seq = "ACGTU";
-            const dna_ket = indigo.convert(dna_seq, "ket", options);
+            const dna_seq_ref = "ACGTU";
+            const dna_ket = indigo.convert(dna_seq_ref, "ket", options);
             var fs = require('fs');
             // fs.writeFileSync("dna_ref.ket", dna_ket);
             const dna_ket_ref = fs.readFileSync("dna_ref.ket");
             assert.equal(dna_ket, dna_ket_ref.toString());
+
+            const dna_seq = indigo.convert(dna_seq_ref, "sequence", options);
+            // fs.writeFileSync("dna_ref.seq", dna_seq);
+            const dna_seq_ref1= fs.readFileSync("dna_ref.seq");
+            assert.equal(dna_seq, dna_seq_ref1.toString());
             options.delete();
         });
 

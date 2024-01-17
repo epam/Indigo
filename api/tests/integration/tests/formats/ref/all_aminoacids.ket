@@ -507,7 +507,8 @@
             "x": 19.200000762939454,
             "y": 0.0
         },
-        "alias": "O"
+        "alias": "Pyl",
+        "templateId": "Pyl"
     },
     "monomer13": {
         "type": "monomer",
@@ -572,7 +573,8 @@
             "x": 28.80000114440918,
             "y": 0.0
         },
-        "alias": "U"
+        "alias": "Sec",
+        "templateId": "Sec"
     },
     "monomer19": {
         "type": "monomer",
@@ -2860,6 +2862,7 @@
         "classHELM": "PEPTIDE",
         "alias": "O",
         "name": "Pyl",
+        "naturalAnalogShort": "O",
         "attachmentPoints": [
             {
                 "attachmentAtom": 1,
