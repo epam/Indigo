@@ -24,15 +24,16 @@ def test_qmol_unfold(filename):
     molecule = indigo.loadQueryMoleculeFromFile(ket_path + filename)
     molecule.unfoldHydrogens()
     unfolded = molecule.json()
-    # with open(ref_path + filename, "w") as ref_file:
-    #    ref_file.write(unfolded)
+    out_path = joinPathPy("out", __file__) + "/"
+    with open(out_path + filename, "w") as out_file:
+        out_file.write(unfolded)
     with open(ref_path + filename) as ref_file:
         ref_json = ref_file.read()
-    unfolded_list = sorted(unfolded.split("\n"))
-    expected_unfolded_list = sorted(ref_json.split("\n"))
-    diff = "".join(difflib.context_diff(unfolded_list, expected_unfolded_list))
+    unfolded_list = unfolded.split("\n")
+    expected_list = ref_json.split("\n")
+    diff = "\n".join(difflib.context_diff(unfolded_list, expected_list))
     if diff:
-        print("\nDiff between expected and after unfold molfile:\n%s" % diff)
+        print("Diff between expected and after unfold:\n%s" % diff)
     else:
         print("Unfolded KET equal to expected")
 
