@@ -136,6 +136,10 @@ namespace indigo
                     result = _checkResultString(indigoSmiles(id()));
                 }
             }
+            else if (outputFormat == "sequence")
+            {
+                result = _checkResultString(indigoSequence(id()));
+            }
             else if (outputFormat == "smarts" || outputFormat == "chemical/x-daylight-smarts")
             {
                 if (options.count("smarts") > 0 && options.at("smarts") == "canonical")
