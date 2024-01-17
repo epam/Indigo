@@ -1,0 +1,149 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ],
+        "connections": [],
+        "templates": []
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    22.61594124729773,
+                    -9.626352140690974,
+                    0
+                ],
+                "queryProperties": {
+                    "aromaticity": "aromatic"
+                }
+            },
+            {
+                "label": "C",
+                "location": [
+                    22.273921254352572,
+                    -10.566044522976501,
+                    0
+                ],
+                "queryProperties": {
+                    "aromaticity": "aromatic"
+                }
+            },
+            {
+                "label": "C",
+                "location": [
+                    21.289113406700526,
+                    -10.739692382285526,
+                    0
+                ],
+                "queryProperties": {
+                    "aromaticity": "aromatic"
+                }
+            },
+            {
+                "label": "C",
+                "location": [
+                    20.646325551993638,
+                    -9.973647859309024,
+                    0
+                ],
+                "queryProperties": {
+                    "aromaticity": "aromatic"
+                }
+            },
+            {
+                "label": "C",
+                "location": [
+                    20.988345544938795,
+                    -9.033955477023499,
+                    0
+                ],
+                "queryProperties": {
+                    "aromaticity": "aromatic"
+                }
+            },
+            {
+                "label": "C",
+                "location": [
+                    21.97315339259084,
+                    -8.860307617714474,
+                    0
+                ],
+                "queryProperties": {
+                    "aromaticity": "aromatic"
+                }
+            },
+            {
+                "label": "",
+                "location": [
+                    19.66151770434159,
+                    -10.14729571861805,
+                    0
+                ],
+                "queryProperties": {
+                    "customQuery": "$([#1]),$([#17])"
+                }
+            }
+        ],
+        "bonds": [
+            {
+                "type": 4,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    4,
+                    5
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    0,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    6
+                ]
+            }
+        ],
+        "stereoFlagPosition": {
+            "x": 22.61594124729773,
+            "y": 7.860307617714474,
+            "z": 0
+        }
+    }
+}
