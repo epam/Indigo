@@ -150,10 +150,16 @@ namespace com.epam.indigo
         public static extern int indigoSaveMolfile(int molecule, int output);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoSaveSequenceToFile(int molecule, int output);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoSaveMolfileToFile(int molecule, string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoMolfile(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern byte* indigoSequence(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoSaveCml(int molecule, int output);
