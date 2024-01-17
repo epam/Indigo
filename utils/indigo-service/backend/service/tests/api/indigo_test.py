@@ -3061,6 +3061,19 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": "ACGTU",
+                "input_format": "chemical/x-rna-sequence",
+                "output_format": "sequence",
+            }
+        )
+        result_rna_1 = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        self.assertEqual(result_rna_1, "ACGTU")
+
+        headers, data = self.get_headers(
+            {
+                "struct": "ACGTU",
                 "input_format": "chemical/x-dna-sequence",
                 "output_format": "chemical/x-indigo-ket",
             }
@@ -3068,6 +3081,20 @@ M  END
         result_dna = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
+
+        headers, data = self.get_headers(
+            {
+                "struct": "ACGTU",
+                "input_format": "chemical/x-dna-sequence",
+                "output_format": "sequence",
+            }
+        )
+        result_dna_1 = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        self.assertEqual(result_dna_1, "ACGTU")
+
         headers, data = self.get_headers(
             {
                 "struct": "ACGTU",
@@ -3078,6 +3105,19 @@ M  END
         result_peptide = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
+
+        headers, data = self.get_headers(
+            {
+                "struct": "ACDEFGHIKLMNOPQRSRUVWY",
+                "input_format": "chemical/x-peptide-sequence",
+                "output_format": "sequence",
+            }
+        )
+        result_peptide_1 = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        self.assertEqual(result_peptide_1, "ACGTU")
 
         def joinPathPy(args, file_py):
             return os.path.normpath(
