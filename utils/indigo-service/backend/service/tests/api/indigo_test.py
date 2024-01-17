@@ -10,7 +10,7 @@ import requests
 # @unittest.skip("Skip libraries test case")
 class IndigoTestCase(unittest.TestCase):
     def setUp(self):
-        service_url = "http://localhost/v2"
+        service_url = "http://localhost:8080/v2"
         if (
             "INDIGO_SERVICE_URL" in os.environ
             and len(os.environ["INDIGO_SERVICE_URL"]) > 0
@@ -469,7 +469,7 @@ M  END\n",
         expected_text = "ValidationError: {'input_format': ['Must be one of: chemical/x-mdl-rxnfile, \
 chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
 chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence.']}"
+chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/sequence.']}"
         self.assertEquals(
             expected_text,
             result.text,
@@ -487,7 +487,7 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x
         expected_text = "ValidationError: {'output_format': ['Must be one of: chemical/x-mdl-rxnfile, \
 chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
 chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence.']}"
+chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/sequence.']}"
         self.assertEquals(
             expected_text,
             result.text,
@@ -3062,14 +3062,15 @@ M  END
             {
                 "struct": "ACGTU",
                 "input_format": "chemical/x-rna-sequence",
-                "output_format": "sequence",
+                "output_format": "chemical/sequence",
             }
         )
+
         result_rna_1 = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
 
-        self.assertEqual(result_rna_1, "ACGTU")
+        self.assertEqual(json.loads(result_rna_1.text)["struct"], "ACGTU\n")
 
         headers, data = self.get_headers(
             {
@@ -3086,14 +3087,14 @@ M  END
             {
                 "struct": "ACGTU",
                 "input_format": "chemical/x-dna-sequence",
-                "output_format": "sequence",
+                "output_format": "chemical/sequence",
             }
         )
         result_dna_1 = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
 
-        self.assertEqual(result_dna_1, "ACGTU")
+        self.assertEqual(json.loads(result_dna_1.text)["struct"], "ACGTU\n")
 
         headers, data = self.get_headers(
             {
@@ -3110,14 +3111,17 @@ M  END
             {
                 "struct": "ACDEFGHIKLMNOPQRSRUVWY",
                 "input_format": "chemical/x-peptide-sequence",
-                "output_format": "sequence",
+                "output_format": "chemical/sequence",
             }
         )
         result_peptide_1 = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
 
-        self.assertEqual(result_peptide_1, "ACGTU")
+        self.assertEqual(
+            json.loads(result_peptide_1.text)["struct"],
+            "ACDEFGHIKLMNOPQRSRUVWY\n",
+        )
 
         def joinPathPy(args, file_py):
             return os.path.normpath(

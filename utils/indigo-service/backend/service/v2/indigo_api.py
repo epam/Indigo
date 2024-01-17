@@ -377,7 +377,7 @@ def save_moldata(md, output_format=None, options={}, indigo=None):
         return md.struct.rxnfile() if md.is_rxn else md.struct.molfile()
     elif output_format == "chemical/x-indigo-ket":
         return md.struct.json()
-    elif output_format == "sequence":
+    elif output_format == "chemical/sequence":
         return md.struct.sequence()
     elif output_format == "chemical/x-daylight-smiles":
         if options.get("smiles") == "canonical":
