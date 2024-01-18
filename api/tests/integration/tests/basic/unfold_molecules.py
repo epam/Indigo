@@ -19,30 +19,51 @@ indigo.setOption("molfile-saving-skip-date", "1")
 indigo.setOption("json-saving-pretty", "1")
 
 
-def test_qmol_unfold(filename):
-    print("testing filename: %s" % filename)
-    molecule = indigo.loadQueryMoleculeFromFile(ket_path + filename)
+def test_unfold(filename, load_function):
+    print("testing filename:\n%s" % filename)
+    molecule = load_function(ket_path + filename)
+    ket_json = molecule.json()
+    ket_list = ket_json.split("\n")
     molecule.unfoldHydrogens()
     unfolded = molecule.json()
+    unfolded_list = unfolded.split("\n")
     out_path = joinPathPy("out", __file__) + "/"
     with open(out_path + filename, "w") as out_file:
         out_file.write(unfolded)
     with open(ref_path + filename) as ref_file:
         ref_json = ref_file.read()
-    unfolded_list = unfolded.split("\n")
     expected_list = ref_json.split("\n")
     diff = "\n".join(difflib.context_diff(unfolded_list, expected_list))
     if diff:
         print("Diff between expected and after unfold:\n%s" % diff)
     else:
         print("Unfolded KET equal to expected")
+    molecule.foldHydrogens()
+    folded = molecule.json()
+    folded_list = folded.split("\n")
+    diff = "\n".join(difflib.context_diff(folded_list, ket_list))
+    if diff:
+        print("Diff between original ket and after fold:\n%s" % diff)
+    else:
+        print("Folded KET equal to original")
 
 
-print("******* Test unfold aromatic ring *******")
+def test_qmol_unfold(filename):
+    test_unfold(filename, indigo.loadQueryMoleculeFromFile)
+
+
+def test_mol_unfold(filename):
+    test_unfold(filename, indigo.loadMoleculeFromFile)
+
+
+print("\n******* Test unfold aromatic ring *******")
 test_qmol_unfold("issue_1525.ket")
 
-print("******* Test unfold fullerene *******")
+print("\n******* Test unfold fullerene *******")
 test_qmol_unfold("issue_1573.ket")
 
-print("******* Test unfold fullerene with second component *******")
+print("\n******* Test unfold fullerene with second component *******")
 test_qmol_unfold("issue_1573_2.ket")
+
+print("\n******* Test unfold selected atoms *******")
+test_mol_unfold("issue_1589.ket")

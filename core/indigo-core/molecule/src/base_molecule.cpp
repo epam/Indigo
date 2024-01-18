@@ -297,7 +297,12 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     reaction_atom_exact_change.expandFill(vertexEnd(), 0);
     reaction_bond_reacting_center.expandFill(edgeEnd(), 0);
     _bond_directions.expandFill(edgeEnd(), -1);
+    _hl_atoms.clear();
+    _hl_bonds.clear();
+    _sl_atoms.clear();
+    _sl_bonds.clear();
 
+    // Copy atom properties
     for (auto i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
     {
         if (mapping[i] < 0)
@@ -306,6 +311,14 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
         reaction_atom_mapping[mapping[i]] = mol.reaction_atom_mapping[i];
         reaction_atom_inversion[mapping[i]] = mol.reaction_atom_inversion[i];
         reaction_atom_exact_change[mapping[i]] = mol.reaction_atom_exact_change[i];
+        if (mol.isAtomHighlighted(i))
+            highlightAtom(mapping[i]);
+        if (mol.isBondHighlighted(i))
+            highlightBond(mapping[i]);
+        if (mol.isAtomSelected(i))
+            selectAtom(mapping[i]);
+        if (mol.isBondSelected(i))
+            selectBond(mapping[i]);
     }
 
     for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
@@ -760,13 +773,12 @@ void BaseMolecule::removeAtoms(const Array<int>& indices)
         }
     }
 
-    // aliases
+    // aliases && selection
     for (i = 0; i < indices.size(); i++)
     {
+        unselectAtom(indices[i]);
         if (isAlias(indices[i]))
-        {
             removeAlias(indices[i]);
-        }
     }
 
     // subclass (Molecule or QueryMolecule) removes its data
@@ -4514,14 +4526,19 @@ void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool 
     imp_h_count.clear_resize(vertexEnd());
     imp_h_count.zerofill();
 
+    bool no_selected_atoms = countSelectedAtoms() == 0; // If no atom selected - process all atoms
+
     // getImplicitH can throw an exception, and we need to get the number of hydrogens
     // before unfolding them
     for (int i = vertexBegin(); i < v_end; i = vertexNext(i))
     {
-        if (isPseudoAtom(i) || isRSite(i) || isTemplateAtom(i))
-            continue;
+        if (no_selected_atoms || isAtomSelected(i))
+        {
+            if (isPseudoAtom(i) || isRSite(i) || isTemplateAtom(i))
+                continue;
 
-        imp_h_count[i] = getImplicitH(i, impl_h_no_throw);
+            imp_h_count[i] = getImplicitH(i, impl_h_no_throw);
+        }
     }
 
     if (markers_out != 0)
@@ -4532,34 +4549,39 @@ void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool 
 
     for (int i = vertexBegin(); i < v_end; i = vertexNext(i))
     {
-        int impl_h = imp_h_count[i];
-        if (impl_h == 0)
-            continue;
-
-        int h_cnt;
-        if ((max_h_cnt == -1) || (max_h_cnt > impl_h))
-            h_cnt = impl_h;
-        else
-            h_cnt = max_h_cnt;
-
-        for (int j = 0; j < h_cnt; j++)
+        if (no_selected_atoms || isAtomSelected(i))
         {
-            int new_h_idx = addAtom(ELEM_H);
+            int impl_h = imp_h_count[i];
+            if (impl_h == 0)
+                continue;
 
-            addBond(i, new_h_idx, BOND_SINGLE);
-            if (markers_out != 0)
+            int h_cnt;
+            if ((max_h_cnt == -1) || (max_h_cnt > impl_h))
+                h_cnt = impl_h;
+            else
+                h_cnt = max_h_cnt;
+
+            for (int j = 0; j < h_cnt; j++)
             {
-                markers_out->expandFill(new_h_idx + 1, 0);
-                markers_out->at(new_h_idx) = 1;
+                int new_h_idx = addAtom(ELEM_H);
+                if (!no_selected_atoms) // if has selected atoms - select new H too
+                    selectAtom(new_h_idx);
+
+                addBond(i, new_h_idx, BOND_SINGLE);
+                if (markers_out != 0)
+                {
+                    markers_out->expandFill(new_h_idx + 1, 0);
+                    markers_out->at(new_h_idx) = 1;
+                }
+
+                stereocenters.registerUnfoldedHydrogen(i, new_h_idx);
+                cis_trans.registerUnfoldedHydrogen(*this, i, new_h_idx);
+                allene_stereo.registerUnfoldedHydrogen(i, new_h_idx);
+                sgroups.registerUnfoldedHydrogen(i, new_h_idx);
             }
 
-            stereocenters.registerUnfoldedHydrogen(i, new_h_idx);
-            cis_trans.registerUnfoldedHydrogen(*this, i, new_h_idx);
-            allene_stereo.registerUnfoldedHydrogen(i, new_h_idx);
-            sgroups.registerUnfoldedHydrogen(i, new_h_idx);
+            setImplicitH(i, impl_h - h_cnt);
         }
-
-        setImplicitH(i, impl_h - h_cnt);
     }
 
     updateEditRevision();

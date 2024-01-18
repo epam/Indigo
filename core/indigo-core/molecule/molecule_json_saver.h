@@ -209,7 +209,6 @@ namespace indigo
         void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
         void saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
         void saveHighlights(BaseMolecule& mol, JsonWriter& writer);
-        void saveSelection(BaseMolecule& mol, JsonWriter& writer);
 
         DECL_ERROR;
 

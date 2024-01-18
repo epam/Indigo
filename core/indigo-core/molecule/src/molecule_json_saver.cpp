@@ -487,6 +487,12 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                 }
             }
 
+            if (mol.isBondSelected(i))
+            {
+                writer.Key("selected");
+                writer.Bool(true);
+            }
+
             const Edge& e1 = mol.getEdge(i);
             writer.Key("atoms");
             writer.StartArray();
@@ -623,53 +629,6 @@ void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, JsonWriter& writer)
     }
 }
 
-void MoleculeJsonSaver::saveSelection(BaseMolecule& mol, JsonWriter& writer)
-{
-    int ca = mol.countSelectedAtoms();
-    int cb = mol.countSelectedBonds();
-    if (ca || cb)
-    {
-        writer.Key("selection");
-        writer.StartArray();
-        if (ca)
-        {
-            writer.Key("entityType");
-            writer.String("atom");
-            writer.StartObject();
-            writer.Key("items");
-            writer.StartArray();
-            for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-            {
-                if (mol.isAtomSelected(i))
-                {
-                    writer.Int(i);
-                }
-            }
-            writer.EndArray();
-            writer.EndObject();
-        }
-
-        if (cb)
-        {
-            writer.Key("entityType");
-            writer.String("bond");
-            writer.StartObject();
-            writer.Key("items");
-            writer.StartArray();
-            for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-            {
-                if (mol.isBondSelected(i))
-                {
-                    writer.Int(i);
-                }
-            }
-            writer.EndArray();
-            writer.EndObject();
-        }
-        writer.EndArray();
-    }
-}
-
 void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<char>, buf);
@@ -799,6 +758,12 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 writer.Key("alias");
                 writer.String(mol.getAlias(i));
             }
+        }
+
+        if (mol.isAtomSelected(i))
+        {
+            writer.Key("selected");
+            writer.Bool(true);
         }
 
         const Vec3f& coord = mol.getAtomXyz(i);
@@ -1606,7 +1571,6 @@ void MoleculeJsonSaver::saveFragment(BaseMolecule& fragment, JsonWriter& writer)
 
     saveSGroups(fragment, writer);
     saveHighlights(fragment, writer);
-    saveSelection(fragment, writer);
     if (fragment.properties().size())
     {
         auto& props = fragment.properties().value(0);
