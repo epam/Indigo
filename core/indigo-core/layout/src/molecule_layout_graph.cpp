@@ -410,12 +410,15 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
                 }
         }
 
-        if (component.vertexCount() > 1)
+        if (!respect_existing || !preserve_existing_layout || component.vertexCount() > component._n_fixed)
         {
-            component._calcMorganCodes();
-            component._assignAbsoluteCoordinates(bond_length);
+            if (component.vertexCount() > 1)
+            {
+                component._calcMorganCodes();
+                component._assignAbsoluteCoordinates(bond_length);
+            }
+            component._assignFinalCoordinates(bond_length, src_layout);
         }
-        component._assignFinalCoordinates(bond_length, src_layout);
     }
 
     if (respect_existing && preserve_existing_layout) // TODO:
@@ -563,12 +566,15 @@ void MoleculeLayoutGraph::_layoutSingleComponent(BaseMolecule& molecule, bool re
             }
     }
 
-    if (vertexCount() > 1)
+    if (!respect_existing || !preserve_existing_layout || vertexCount() > _n_fixed)
     {
-        _calcMorganCodes();
-        _assignAbsoluteCoordinates(bond_length);
+        if (vertexCount() > 1)
+        {
+            _calcMorganCodes();
+            _assignAbsoluteCoordinates(bond_length);
+        }
+        _assignFinalCoordinates(bond_length, src_layout);
     }
-    _assignFinalCoordinates(bond_length, src_layout);
 }
 
 void MoleculeLayoutGraph::getBoundingBox(Vec2f& left_bottom, Vec2f& right_top) const
