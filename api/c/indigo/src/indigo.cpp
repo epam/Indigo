@@ -126,6 +126,7 @@ void Indigo::init()
 
     json_saving_add_stereo_desc = false;
     json_saving_pretty = false;
+    json_use_native_precision = false;
 
     molfile_saving_add_implicit_h = true;
     molfile_saving_add_mrv_sma = true;
@@ -198,6 +199,7 @@ void Indigo::initMoleculeJsonSaver(MoleculeJsonSaver& saver)
 {
     saver.add_stereo_desc = json_saving_add_stereo_desc;
     saver.pretty_json = json_saving_pretty;
+    saver.use_native_precision = json_use_native_precision;
 }
 
 void Indigo::initReactionJsonSaver(ReactionJsonSaver& saver)

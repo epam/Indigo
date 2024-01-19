@@ -189,6 +189,7 @@ namespace indigo
 
         bool add_stereo_desc;
         bool pretty_json;
+        bool use_native_precision; // TODO: Remove option and use_native_precision allways - have to fix a lot of UTs
 
     protected:
         void saveRoot(BaseMolecule& mol, JsonWriter& writer);

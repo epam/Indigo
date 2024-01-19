@@ -49,7 +49,8 @@ void dumpAtoms(BaseMolecule& mol)
     printf("\n");
 }
 
-MoleculeJsonSaver::MoleculeJsonSaver(Output& output) : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false)
+MoleculeJsonSaver::MoleculeJsonSaver(Output& output)
+    : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false), use_native_precision(false)
 {
 }
 
@@ -769,9 +770,18 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         const Vec3f& coord = mol.getAtomXyz(i);
         writer.Key("location");
         writer.StartArray();
-        writer.Double(coord.x);
-        writer.Double(coord.y);
-        writer.Double(coord.z);
+        if (use_native_precision)
+        {
+            writer.String(std::to_string(coord.x).c_str());
+            writer.String(std::to_string(coord.y).c_str());
+            writer.String(std::to_string(coord.z).c_str());
+        }
+        else
+        {
+            writer.Double(coord.x);
+            writer.Double(coord.y);
+            writer.Double(coord.z);
+        }
         writer.EndArray();
 
         int charge = mol.getAtomCharge(i);
