@@ -352,3 +352,12 @@ print(styr.molfile())
 indigo.setOption("dearomatize-on-load", "true")
 q = indigo.loadQueryMolecule("[#6]=,:[#6]")
 print(q.json())
+
+print(
+    "***** Dearomatize molecule with atom_aromatic_connectivity < 0 should not cause exception  *****"
+)
+m = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/issue_1478.ket", __file__)
+)
+m.dearomatize()
+print(m.smiles())
