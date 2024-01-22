@@ -353,6 +353,15 @@ indigo.setOption("dearomatize-on-load", "true")
 q = indigo.loadQueryMolecule("[#6]=,:[#6]")
 print(q.json())
 
+print(
+    "***** Dearomatize molecule with atom_aromatic_connectivity < 0 should not cause exception  *****"
+)
+m = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/issue_1478.ket", __file__)
+)
+m.dearomatize()
+print(m.smiles())
+
 print("***** Dearomatize molecule with custom query without label  *****")
 m = indigo.loadQueryMoleculeFromFile(
     joinPathPy("molecules/issue_1524.ket", __file__)

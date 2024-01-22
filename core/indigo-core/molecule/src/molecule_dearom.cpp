@@ -971,20 +971,24 @@ void DearomatizationsGroups::_detectAromaticGroups(int v_idx, const int* atom_ex
 
     atom_aromatic_connectivity = max_connectivity - non_aromatic_conn;
     if (atom_aromatic_connectivity < 0)
-        throw Error("atom_aromatic_connectivity < 0 on %s having %d drawn bonds, charge %d, and %d radical electrons", Element::toString(label),
-                    non_aromatic_conn, charge, radical);
-
-    _vertexIsAcceptSingleEdge[v_idx] = true;
-    if (atom_aromatic_connectivity > 0)
     {
-        _vertexIsAcceptDoubleEdge[v_idx] = true;
-        // If number of implicit hydrogens are fixed and double bond is possible then
-        // double bond must exist
-        if (impl_h_fixed)
-            _vertexIsAcceptSingleEdge[v_idx] = false;
+        _vertexIsAcceptSingleEdge[v_idx] = false;
+        _vertexIsAcceptDoubleEdge[v_idx] = false;
     }
     else
-        _vertexIsAcceptDoubleEdge[v_idx] = false;
+    {
+        _vertexIsAcceptSingleEdge[v_idx] = true;
+        if (atom_aromatic_connectivity > 0)
+        {
+            _vertexIsAcceptDoubleEdge[v_idx] = true;
+            // If number of implicit hydrogens are fixed and double bond is possible then
+            // double bond must exist
+            if (impl_h_fixed)
+                _vertexIsAcceptSingleEdge[v_idx] = false;
+        }
+        else
+            _vertexIsAcceptDoubleEdge[v_idx] = false;
+    }
 }
 
 bool* DearomatizationsGroups::getAcceptDoubleBonds(void)
