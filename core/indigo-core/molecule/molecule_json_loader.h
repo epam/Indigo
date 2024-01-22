@@ -96,7 +96,6 @@ namespace indigo
         void parseAtoms(const rapidjson::Value& atoms, BaseMolecule& mol, std::vector<EnhancedStereoCenter>& stereo_centers);
         void parseBonds(const rapidjson::Value& bonds, BaseMolecule& mol);
         void parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol);
-        void parseSelection(const rapidjson::Value& selection, BaseMolecule& mol);
         void parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol);
         void parseProperties(const rapidjson::Value& props, BaseMolecule& mol);
         void setStereoFlagPosition(const rapidjson::Value& pos, int fragment_index, BaseMolecule& mol);

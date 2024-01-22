@@ -49,7 +49,8 @@ void dumpAtoms(BaseMolecule& mol)
     printf("\n");
 }
 
-MoleculeJsonSaver::MoleculeJsonSaver(Output& output) : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false)
+MoleculeJsonSaver::MoleculeJsonSaver(Output& output)
+    : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false), use_native_precision(false)
 {
 }
 
@@ -487,6 +488,12 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                 }
             }
 
+            if (mol.isBondSelected(i))
+            {
+                writer.Key("selected");
+                writer.Bool(true);
+            }
+
             const Edge& e1 = mol.getEdge(i);
             writer.Key("atoms");
             writer.StartArray();
@@ -623,53 +630,6 @@ void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, JsonWriter& writer)
     }
 }
 
-void MoleculeJsonSaver::saveSelection(BaseMolecule& mol, JsonWriter& writer)
-{
-    int ca = mol.countSelectedAtoms();
-    int cb = mol.countSelectedBonds();
-    if (ca || cb)
-    {
-        writer.Key("selection");
-        writer.StartArray();
-        if (ca)
-        {
-            writer.Key("entityType");
-            writer.String("atom");
-            writer.StartObject();
-            writer.Key("items");
-            writer.StartArray();
-            for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-            {
-                if (mol.isAtomSelected(i))
-                {
-                    writer.Int(i);
-                }
-            }
-            writer.EndArray();
-            writer.EndObject();
-        }
-
-        if (cb)
-        {
-            writer.Key("entityType");
-            writer.String("bond");
-            writer.StartObject();
-            writer.Key("items");
-            writer.StartArray();
-            for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-            {
-                if (mol.isBondSelected(i))
-                {
-                    writer.Int(i);
-                }
-            }
-            writer.EndArray();
-            writer.EndObject();
-        }
-        writer.EndArray();
-    }
-}
-
 void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<char>, buf);
@@ -801,12 +761,27 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             }
         }
 
+        if (mol.isAtomSelected(i))
+        {
+            writer.Key("selected");
+            writer.Bool(true);
+        }
+
         const Vec3f& coord = mol.getAtomXyz(i);
         writer.Key("location");
         writer.StartArray();
-        writer.Double(coord.x);
-        writer.Double(coord.y);
-        writer.Double(coord.z);
+        if (use_native_precision)
+        {
+            writer.String(std::to_string(coord.x).c_str());
+            writer.String(std::to_string(coord.y).c_str());
+            writer.String(std::to_string(coord.z).c_str());
+        }
+        else
+        {
+            writer.Double(coord.x);
+            writer.Double(coord.y);
+            writer.Double(coord.z);
+        }
         writer.EndArray();
 
         int charge = mol.getAtomCharge(i);
@@ -1606,7 +1581,6 @@ void MoleculeJsonSaver::saveFragment(BaseMolecule& fragment, JsonWriter& writer)
 
     saveSGroups(fragment, writer);
     saveHighlights(fragment, writer);
-    saveSelection(fragment, writer);
     if (fragment.properties().size())
     {
         auto& props = fragment.properties().value(0);
