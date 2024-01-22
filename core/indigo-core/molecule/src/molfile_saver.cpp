@@ -1556,7 +1556,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             std::string mrv_sma = QueryMolecule::getMolMrvSmaExtension(*qmol, i);
             if (mrv_sma.length() > 0)
             {
-                output.printfCR("M  MRV SMA %3u [%s]", i + 1, mrv_sma.c_str());
+                output.printfCR("M  MRV SMA %3u %s", i + 1, mrv_sma.c_str());
             }
         }
     }

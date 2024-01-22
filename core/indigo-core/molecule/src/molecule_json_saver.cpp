@@ -682,7 +682,14 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             bool is_qatom_list = false;
             std::vector<std::unique_ptr<QueryMolecule::Atom>> atoms;
             if (_pqmol)
+            {
                 query_atom_type = QueryMolecule::parseQueryAtomSmarts(*_pqmol, i, atoms, query_atom_properties);
+                needCustomQuery = query_atom_type == QueryMolecule::QUERY_ATOM_UNKNOWN;
+                if (query_atom_properties.count(QueryMolecule::ATOM_CHIRALITY) &&
+                    (query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_min != QueryMolecule::CHIRALITY_GENERAL ||
+                     query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_max & QueryMolecule::CHIRALITY_OR_UNSPECIFIED))
+                    needCustomQuery = true;
+            }
             if (mol.isPseudoAtom(i))
             {
                 buf.readString(mol.getPseudoAtom(i), true);
@@ -713,11 +720,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             {
                 if (query_atom_type != QueryMolecule::QUERY_ATOM_UNKNOWN)
                 {
-                    if (query_atom_properties.count(QueryMolecule::ATOM_CHIRALITY) &&
-                        (query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_min != QueryMolecule::CHIRALITY_GENERAL ||
-                         query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_max & QueryMolecule::CHIRALITY_OR_UNSPECIFIED))
-                        needCustomQuery = true;
-                    else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
+                    if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
                     {
                         is_qatom_list = true;
                         writer.Key("type");
