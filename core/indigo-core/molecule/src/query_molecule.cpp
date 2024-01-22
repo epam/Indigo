@@ -519,7 +519,7 @@ std::string QueryMolecule::getSmartsAtomStr(QueryMolecule::Atom* atom, int origi
 {
     Array<char> out;
     ArrayOutput output(out);
-    writeSmartsAtom(output, atom, -1, -1, 1, false, false, original_format);
+    writeSmartsAtom(output, atom, -1, -1, 0, false, false, original_format);
     std::string result{out.ptr(), static_cast<std::size_t>(out.size())};
     return result;
 }
