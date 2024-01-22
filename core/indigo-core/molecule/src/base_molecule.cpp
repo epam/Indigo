@@ -4589,20 +4589,30 @@ void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool 
 
 bool BaseMolecule::convertableToImplicitHydrogen(int idx)
 {
+    // TODO: add check for query features defined for H, do not remove such hydrogens
     if (getAtomNumber(idx) == ELEM_H && getAtomIsotope(idx) <= 0 && getVertex(idx).degree() == 1)
     {
         int nei = getVertex(idx).neiVertex(getVertex(idx).neiBegin());
-        if (getAtomNumber(nei) != ELEM_H || getAtomIsotope(nei) > 0)
+        if (getAtomNumber(nei) == ELEM_H && getAtomIsotope(nei) <= 0)
         {
-            if (stereocenters.getType(nei) > 0)
-                if (getVertex(nei).degree() == 3)
-                    return false; // not ignoring hydrogens around stereocenters with lone pair
-
-            if (!cis_trans.convertableToImplicitHydrogen(*this, idx))
+            // This is H-H connection
+            int edge_idx = findEdgeIndex(idx, nei);
+            if (edge_idx < 0)
                 return false;
-
-            return true;
+            const Edge& edge = getEdge(edge_idx);
+            if (idx == edge.end) // if this is second H - remove it
+                return true;
+            else
+                return false;
         }
+        if (stereocenters.getType(nei) > 0)
+            if (getVertex(nei).degree() == 3)
+                return false; // not ignoring hydrogens around stereocenters with lone pair
+
+        if (!cis_trans.convertableToImplicitHydrogen(*this, idx))
+            return false;
+
+        return true;
     }
     return false;
 }
