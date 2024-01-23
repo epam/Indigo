@@ -3,6 +3,8 @@ from pathlib import Path
 from typing import Callable
 
 import pytest
+from indigo import Indigo  # type: ignore
+
 from bingo_elastic.elastic import (
     AsyncElasticRepository,
     ElasticRepository,
@@ -21,7 +23,6 @@ from bingo_elastic.queries import (
     TverskySimilarityMatch,
     WildcardQuery,
 )
-from indigo import Indigo  # type: ignore
 
 AsyncRepositoryT = Callable[[], AsyncElasticRepository]
 
