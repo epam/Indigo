@@ -3,8 +3,6 @@ from pathlib import Path
 from typing import Callable
 
 import pytest
-from indigo import Indigo  # type: ignore
-
 from bingo_elastic.elastic import (
     AsyncElasticRepository,
     ElasticRepository,
@@ -23,6 +21,7 @@ from bingo_elastic.queries import (
     TverskySimilarityMatch,
     WildcardQuery,
 )
+from indigo import Indigo  # type: ignore
 
 AsyncRepositoryT = Callable[[], AsyncElasticRepository]
 
@@ -391,7 +390,7 @@ def test_search_empty_fingerprint(
     )
 
     assert (
-        "[H][H]"
+        "[HH]"
         == next(result).as_indigo_object(indigo_fixture).canonicalSmiles()
     )
     with pytest.raises(StopIteration):
@@ -422,7 +421,7 @@ async def test_a_search_empty_fingerprint(
 
         async for mol in result:
             assert (
-                "[H][H]"
+                "[HH]"
                 == mol.as_indigo_object(indigo_fixture).canonicalSmiles()
             )
 
