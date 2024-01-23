@@ -823,7 +823,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 if (needCustomQuery)
                 {
                     QueryMolecule::Atom& atom = _pqmol->getAtom(i);
-                    std::string customQuery = QueryMolecule::getSmartsAtomStr(&atom, _pqmol->original_format);
+                    std::string customQuery = QueryMolecule::getSmartsAtomStr(&atom, _pqmol->original_format, false);
                     writer.Key("customQuery");
                     writer.String(customQuery.c_str());
                 }
