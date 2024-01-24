@@ -565,14 +565,14 @@ M  END
         test("dearomatize", "basic", () => {
             let options = new indigo.MapStringString();
             const dearomatized_smiles = indigo.convert(indigo.dearomatize(mol_smiles_aromatized, "molfile", options), "smiles", options);
-            assert.equal(dearomatized_smiles, "c1c=cc=cc=1");
+            assert.equal(dearomatized_smiles, "C1C=CC=CC=1");
             options.delete();
         });
 
         test("dearomatize", "query_mol", () => {
             let options = new indigo.MapStringString();
             const dearomatized_smiles = indigo.convert(indigo.dearomatize(mol_smiles_aromatized, "molfile", options), "smiles", options);
-            assert.equal(dearomatized_smiles, "c1c=cc=cc=1");
+            assert.equal(dearomatized_smiles, "C1C=CC=CC=1");
             options.delete();
         });
     }
