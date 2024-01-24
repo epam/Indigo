@@ -1445,7 +1445,8 @@ void MolfileLoader::_readCtab2000()
                             if (smartsmol.vertexCount() != 1)
                                 throw Error("expected 1 atom in SMARTS expression, got %d", smartsmol.vertexCount());
 
-                            _qmol->resetAtom(idx, smartsmol.releaseAtom(smartsmol.vertexBegin()));
+                            _qmol->getAtom(idx).removeConstraints(QueryMolecule::ATOM_NUMBER);
+                            _qmol->resetAtom(idx, QueryMolecule::Atom::und(_qmol->releaseAtom(idx), smartsmol.releaseAtom(smartsmol.vertexBegin())));
                         }
                     }
                 }

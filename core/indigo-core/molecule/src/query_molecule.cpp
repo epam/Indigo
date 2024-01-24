@@ -575,8 +575,8 @@ std::string QueryMolecule::getMolMrvSmaExtension(QueryMolecule& qm, int aid)
     else
     {
         if (qa.type != OP_NONE)
-            //  Complex tree - just write SMARTS
-            return getSmartsAtomStr(&qa, qm.original_format);
+            //  Complex tree - just write nothing
+            return "";
     }
     std::string result{out.ptr(), static_cast<std::size_t>(out.size())};
     return result;
