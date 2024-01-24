@@ -8,3 +8,5 @@ ket_with_custom_query.ket:SUCCEED
 ket_with_implicit_h_count.ket:SUCCEED
 *** KET with lists ***
 ket_with_lists.ket:SUCCEED
+*** KET with chirality only ***
+ket_with_chirality_only.ket:SUCCEED

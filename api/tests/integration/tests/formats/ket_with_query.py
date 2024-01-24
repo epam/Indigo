@@ -49,3 +49,6 @@ check_ket_file("ket_with_implicit_h_count.ket")
 
 print("*** KET with lists ***")
 check_ket_file("ket_with_lists.ket")
+
+print("*** KET with chirality only ***")
+check_ket_file("ket_with_chirality_only.ket")
