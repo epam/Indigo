@@ -555,7 +555,7 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x
         )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual("C1C=CC=CC=1.C1C=CC=CC=1", result_data["struct"])
+        self.assertEqual("c1c=cc=cc=1.c1c=cc=cc=1", result_data["struct"])
 
     def test_convert_correct(self):
         formats = (
