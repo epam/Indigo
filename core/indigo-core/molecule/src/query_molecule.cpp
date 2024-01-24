@@ -537,7 +537,7 @@ std::string QueryMolecule::getMolMrvSmaExtension(QueryMolecule& qm, int aid)
         // Just atom or list and list of properties.
         bool atoms_writed = false;
         bool not_first_property = false;
-        for (int property : {ATOM_TOTAL_H, ATOM_IMPLICIT_H, ATOM_CONNECTIVITY, ATOM_SSSR_RINGS, ATOM_SMALLEST_RING_SIZE, ATOM_AROMATICITY})
+        for (int property : {ATOM_IMPLICIT_H, ATOM_CONNECTIVITY, ATOM_SSSR_RINGS, ATOM_SMALLEST_RING_SIZE, ATOM_AROMATICITY})
         {
             if (atom_props.count(property) < 1)
                 continue;
