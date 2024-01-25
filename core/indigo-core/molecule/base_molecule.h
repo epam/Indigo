@@ -19,6 +19,10 @@
 #ifndef __base_molecule__
 #define __base_molecule__
 
+#include <functional>
+#include <map>
+#include <set>
+
 #include "base_cpp/obj_array.h"
 #include "base_cpp/properties_map.h"
 #include "base_cpp/red_black.h"
@@ -36,9 +40,6 @@
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_tgroups.h"
 #include "molecule/monomers_lib.h"
-
-#include <map>
-#include <set>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -122,6 +123,7 @@ namespace indigo
     class DLLEXPORT BaseMolecule : public Graph
     {
     public:
+        using MonomerFilterType = bool (*)(int);
         friend class MoleculeCIPCalculator;
         typedef std::map<int, int> Mapping;
 
@@ -216,6 +218,7 @@ namespace indigo
         int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
         void transformSuperatomsToTemplates(int template_id);
+        void transformTemplatesToSuperatoms(std::function<bool(int)> filter);
 
         virtual bool isRSite(int atom_idx) = 0;
         virtual dword getRSiteBits(int atom_idx) = 0;

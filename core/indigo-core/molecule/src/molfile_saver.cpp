@@ -163,6 +163,24 @@ void MolfileSaver::_handleMonomers(BaseMolecule& mol)
             }
         }
     }
+    auto filterLambda = [&mol, &directions_map](int atom_idx) -> bool {
+        std::string mon_class = mol.getTemplateAtomClass(atom_idx);
+        mol.getTemplateAtomAttachmentPointsCount(atom_idx);
+        if (isAminoAcidClass(mon_class))
+        {
+            auto it = directions_map.find(atom_idx);
+            if (it != directions_map.end())
+            {
+                auto& dirs_map = it->second;
+                // if R3 is in use, convert the template to S-Group
+                if (dirs_map.find(kBranchAttachmentPointIdx) != dirs_map.end())
+                    return true;
+            }
+        }
+        return false;
+    };
+
+    mol.transformTemplatesToSuperatoms(filterLambda);
 }
 
 void MolfileSaver::_handleCIP(BaseMolecule& mol)
