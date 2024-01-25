@@ -19,10 +19,6 @@
 #ifndef __base_molecule__
 #define __base_molecule__
 
-#include <functional>
-#include <map>
-#include <set>
-
 #include "base_cpp/obj_array.h"
 #include "base_cpp/properties_map.h"
 #include "base_cpp/red_black.h"
@@ -40,6 +36,9 @@
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_tgroups.h"
 #include "molecule/monomers_lib.h"
+
+#include <map>
+#include <set>
 
 #ifdef _WIN32
 #pragma warning(push)
