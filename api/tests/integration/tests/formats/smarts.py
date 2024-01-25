@@ -53,7 +53,7 @@ def test_smarts_load_save_through_ket(
     if expected_str in json1:
         print("%s is ok. expected string found in json" % smarts_in)
     else:
-        print("%s: expected string not found in json" % smarts_in)
+        print("FAILED: expected string '%s' not found in json" % expected_str)
         print(json1)
 
 
@@ -157,7 +157,7 @@ test_smarts_load_save_through_ket(
 )
 test_smarts_load_save_through_ket(
     "[C;@OH2]",
-    '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C;@OH2"}}]',
+    '"atoms":[{"label":"A","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"[C;@OH2]"}}]',
 )
 test_smarts_load_save_through_ket(
     "[C;@]",
@@ -177,7 +177,7 @@ print("#1292 test smarts c:1-2:c(:c:c:c:c:1)-[#6](=[#8])-[#6;X4]-[#6]-2=[#8]")
 indigo.loadSmarts("c:1-2:c(:c:c:c:c:1)-[#6](=[#8])-[#6;X4]-[#6]-2=[#8]")
 print("smarts loaded OK")
 test_smarts_load_save_through_ket(
-    "[!#6,!#7,!#8]", '"queryProperties":{"customQuery":"!#6,!#7,!#8"}}]'
+    "[!#6,!#7,!#8]", '"queryProperties":{"customQuery":"[!#6,!#7,!#8]"}}]'
 )
 test_smarts_load_save_through_ket(
     "[!#6!#7!#8]",
@@ -214,13 +214,13 @@ smarts = "[c,n,o]:o"
 expected = '"atoms":[{"type":"atom-list","elements":["C","N","O"],"location":[0.0,0.0,0.0],"queryProperties":{"aromaticity":"aromatic"}}'
 test_smarts_load_save_through_ket(smarts, expected, False)
 smarts = "[c,C,c]"
-expected = '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"c,C,c"}}]'
+expected = '"atoms":[{"label":"A","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"[c,C,c]"}}]'
 test_smarts_load_save_through_ket(smarts, expected)
 smarts = "[C,c]"
-expected = '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C,c"}}]'
+expected = '"atoms":[{"label":"A","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"[C,c]"}}]'
 test_smarts_load_save_through_ket(smarts, expected)
 smarts = "[C,c,n,o]"
-expected = '"atoms":[{"label":"","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C,c,n,o"}}]'
+expected = '"atoms":[{"label":"A","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"[C,c,n,o]"}}]'
 test_smarts_load_save_through_ket(smarts, expected)
 smarts = "[#7;v4]-[#6]"
 expected = '"atoms":[{"label":"N","location":[0.0,0.0,0.0],"explicitValence":4},{"label":"C","location":[1.0,0.0,0.0]}]'
@@ -250,13 +250,13 @@ expected = '"bonds":[{"customQuery":"~,-","atoms":[0,1]}]}}'
 test_smarts_load_save_through_ket(smarts, expected)
 test_smarts_load_save_through_ket(
     "[C;@OH2?]",
-    '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C;@OH2?"}}]',
+    '"atoms":[{"label":"A","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"[C;@OH2?]"}}]',
 )
 test_smarts_load_save_through_ket(
     "[C;@?]",
-    '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C;@?"}}]',
+    '"atoms":[{"label":"A","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"[C;@?]"}}]',
 )
 test_smarts_load_save_through_ket(
     "[C;@@?]",
-    '"atoms":[{"label":"C","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"C;@@?"}}]',
+    '"atoms":[{"label":"A","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"[C;@@?]"}}]',
 )

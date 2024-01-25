@@ -515,11 +515,11 @@ void QueryMolecule::writeSmartsBond(Output& output, Bond* bond, bool has_or_pare
     }
 }
 
-std::string QueryMolecule::getSmartsAtomStr(QueryMolecule::Atom* atom, int original_format)
+std::string QueryMolecule::getSmartsAtomStr(QueryMolecule::Atom* atom, int original_format, bool is_substr)
 {
     Array<char> out;
     ArrayOutput output(out);
-    writeSmartsAtom(output, atom, -1, -1, 1, false, false, original_format);
+    writeSmartsAtom(output, atom, -1, -1, is_substr ? 1 : 0, false, false, original_format);
     std::string result{out.ptr(), static_cast<std::size_t>(out.size())};
     return result;
 }

@@ -630,6 +630,19 @@ void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, JsonWriter& writer)
     }
 }
 
+void MoleculeJsonSaver::writeFloat(JsonWriter& writer, float f_value)
+{
+    if (use_native_precision)
+    {
+        std::string val = std::to_string(f_value);
+        writer.RawValue(val.c_str(), val.length(), kStringType);
+    }
+    else
+    {
+        writer.Double(f_value);
+    }
+}
+
 void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<char>, buf);
@@ -645,6 +658,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         QS_DEF(Array<int>, rg_list);
         int radical = 0;
         int query_atom_type = QueryMolecule::QUERY_ATOM_UNKNOWN;
+        bool needCustomQuery = false;
         std::map<int, std::unique_ptr<QueryMolecule::Atom>> query_atom_properties;
         bool is_rSite = mol.isRSite(i);
         if (is_rSite)
@@ -668,7 +682,14 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             bool is_qatom_list = false;
             std::vector<std::unique_ptr<QueryMolecule::Atom>> atoms;
             if (_pqmol)
+            {
                 query_atom_type = QueryMolecule::parseQueryAtomSmarts(*_pqmol, i, atoms, query_atom_properties);
+                needCustomQuery = query_atom_type == QueryMolecule::QUERY_ATOM_UNKNOWN;
+                if (query_atom_properties.count(QueryMolecule::ATOM_CHIRALITY) &&
+                    (query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_min != QueryMolecule::CHIRALITY_GENERAL ||
+                     query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_max & QueryMolecule::CHIRALITY_OR_UNSPECIFIED))
+                    needCustomQuery = true;
+            }
             if (mol.isPseudoAtom(i))
             {
                 buf.readString(mol.getPseudoAtom(i), true);
@@ -744,11 +765,16 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 }
                 else // query_atom_type == QueryMolecule::QUERY_ATOM_UNKNOWN
                 {
-                    buf.push(0); // Set label to empty string
+                    needCustomQuery = true;
                 }
             }
 
-            if (!is_qatom_list)
+            if (needCustomQuery)
+            {
+                writer.Key("label");
+                writer.String("A"); // Set label any atom
+            }
+            else if (!is_qatom_list)
             {
                 writer.Key("label");
                 writer.String(buf.ptr());
@@ -767,21 +793,12 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             writer.Bool(true);
         }
 
-        const Vec3f& coord = mol.getAtomXyz(i);
+        Vec3f coord = mol.getAtomXyz(i);
         writer.Key("location");
         writer.StartArray();
-        if (use_native_precision)
-        {
-            writer.String(std::to_string(coord.x).c_str());
-            writer.String(std::to_string(coord.y).c_str());
-            writer.String(std::to_string(coord.z).c_str());
-        }
-        else
-        {
-            writer.Double(coord.x);
-            writer.Double(coord.y);
-            writer.Double(coord.z);
-        }
+        writeFloat(writer, coord.x);
+        writeFloat(writer, coord.y);
+        writeFloat(writer, coord.z);
         writer.EndArray();
 
         int charge = mol.getAtomCharge(i);
@@ -793,14 +810,9 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
 
         if (_pqmol && !is_rSite) // No custom query for RSite
         {
-            bool needCustomQuery = query_atom_type == QueryMolecule::QUERY_ATOM_UNKNOWN;
             std::map<int, const char*> qprops{{QueryMolecule::ATOM_SSSR_RINGS, "ringMembership"},
                                               {QueryMolecule::ATOM_SMALLEST_RING_SIZE, "ringSize"},
                                               {QueryMolecule::ATOM_CONNECTIVITY, "connectivity"}};
-            if (query_atom_properties.count(QueryMolecule::ATOM_CHIRALITY) &&
-                (query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_min != QueryMolecule::CHIRALITY_GENERAL ||
-                 query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_max & QueryMolecule::CHIRALITY_OR_UNSPECIFIED))
-                needCustomQuery = true;
             bool hasQueryProperties =
                 query_atom_properties.count(QueryMolecule::ATOM_AROMATICITY) > 0 ||
                 std::any_of(qprops.cbegin(), qprops.cend(), [&query_atom_properties](auto p) { return query_atom_properties.count(p.first) > 0; });
@@ -811,7 +823,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 if (needCustomQuery)
                 {
                     QueryMolecule::Atom& atom = _pqmol->getAtom(i);
-                    std::string customQuery = QueryMolecule::getSmartsAtomStr(&atom, _pqmol->original_format);
+                    std::string customQuery = QueryMolecule::getSmartsAtomStr(&atom, _pqmol->original_format, false);
                     writer.Key("customQuery");
                     writer.String(customQuery.c_str());
                 }
