@@ -19,9 +19,9 @@
 #ifndef __base_molecule__
 #define __base_molecule__
 
+#include <functional>
 #include <map>
 #include <set>
-#include <functional>
 
 #include "base_cpp/obj_array.h"
 #include "base_cpp/properties_map.h"
