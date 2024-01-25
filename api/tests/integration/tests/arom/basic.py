@@ -361,3 +361,10 @@ m = indigo.loadMoleculeFromFile(
 )
 m.dearomatize()
 print(m.smiles())
+
+print("***** Dearomatize molecule with custom query without label  *****")
+m = indigo.loadQueryMoleculeFromFile(
+    joinPathPy("molecules/issue_1524.ket", __file__)
+)
+m.dearomatize()
+print(m.smarts())

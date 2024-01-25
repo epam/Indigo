@@ -637,7 +637,7 @@ void DearomatizationsGroups::getGroupData(int group, int flags, Dearomatizations
                 radical = 0;
 
             if (label == -1)
-                throw DearomatizationMatcher::Error("internal error");
+                continue;
 
             int max_conn = Element::getMaximumConnectivity(label, charge, radical, false);
 
