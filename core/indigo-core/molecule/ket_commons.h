@@ -47,11 +47,6 @@ namespace indigo
     const uint8_t KETProductArea = 3;
     const Vec2f MIN_MOL_SIZE = {0.5, 0.5};
 
-    const std::unordered_map<std::string, CIPDesc> KStringToCIP = {{"R", CIPDesc::R}, {"S", CIPDesc::S}, {"r", CIPDesc::r},
-                                                                   {"s", CIPDesc::s}, {"E", CIPDesc::E}, {"Z", CIPDesc::Z}};
-    const std::unordered_map<int, std::string> KCIPToString = {{(int)CIPDesc::R, "R"}, {(int)CIPDesc::S, "S"}, {(int)CIPDesc::r, "r"},
-                                                               {(int)CIPDesc::s, "s"}, {(int)CIPDesc::E, "E"}, {(int)CIPDesc::Z, "Z"}};
-
     struct compareFunction
     {
         bool operator()(const std::pair<int, bool>& a, const std::pair<int, bool>& b) const
@@ -72,87 +67,19 @@ namespace indigo
         return string_hash(s, count);
     }
 
-    inline uint8_t getPointSide(const Vec2f& point, const Vec2f& beg, const Vec2f& end)
-    {
-        uint8_t bit_mask = 0;
-        Vec2f arrow_vec(beg);
-        arrow_vec.sub(end);
+    uint8_t getPointSide(const Vec2f& point, const Vec2f& beg, const Vec2f& end);
 
-        Vec2f slope1(point.x, point.y);
-        Vec2f slope2(slope1);
-        slope1.sub(beg);
-        slope2.sub(end);
-        auto dt1 = Vec2f::dot(slope1, arrow_vec);
-        auto dt2 = Vec2f::dot(slope2, arrow_vec);
+    CIPDesc stringToCIP(const std::string& cip_str);
 
-        if (std::signbit(dt1))
-            bit_mask |= KETReagentUpArea;
+    std::string CIPToString(CIPDesc cip);
 
-        if (std::signbit(dt2))
-            bit_mask |= KETReagentDownArea;
+    bool isCIPSGroup(SGroup& sgroup);
 
-        return bit_mask;
-    }
+    void getSGroupAtoms(BaseMolecule& mol, std::list<std::unordered_set<int>>& neighbors);
 
-    inline bool isCIPSGroup(SGroup& sgroup)
-    {
-        if (sgroup.sgroup_type == SGroup::SG_DATA)
-        {
-            auto& dsg = (DataSGroup&)sgroup;
-            return std::string(dsg.name.ptr()) == "INDIGO_CIP_DESC";
-        }
-        return false;
-    }
+    std::string convertAPToHELM(const std::string& atp_id_str);
 
-    inline void getSGroupAtoms(BaseMolecule& mol, std::list<std::unordered_set<int>>& neighbors)
-    {
-        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-        {
-            SGroup& sgroup = mol.sgroups.getSGroup(i);
-            neighbors.push_back({});
-            auto& sg_set = neighbors.back();
-            for (auto atom_idx : sgroup.atoms)
-                sg_set.insert(atom_idx);
-        }
-        if (mol.isQueryMolecule())
-        {
-            QueryMolecule& qmol = static_cast<QueryMolecule&>(mol);
-            qmol.getComponentNeighbors(neighbors);
-        }
-    }
-
-    inline std::string convertAPToHELM(const std::string& atp_id_str)
-    {
-        if (::isupper(atp_id_str[0]) && atp_id_str.size() == 2)
-        {
-            if (atp_id_str == "Al")
-                return "R1";
-            else if (atp_id_str == "Br")
-                return "R2";
-            else if (atp_id_str[1] == 'x')
-                return std::string("R") + std::to_string(atp_id_str[0] - 'A' + 1);
-        }
-        return atp_id_str;
-    }
-
-    inline std::string convertAPFromHELM(const std::string& atp_id_str)
-    {
-        char ap_symbol = extract_id(atp_id_str, "R") + '@'; // convert number to ASCII letter
-        std::string res(1, ap_symbol);
-        switch (ap_symbol)
-        {
-        case 'A':
-            res += 'l';
-            break;
-        case 'B':
-            res += 'r';
-            break;
-        default:
-            res += 'x';
-            break;
-        }
-        return res;
-    }
+    std::string convertAPFromHELM(const std::string& atp_id_str);
 
     class KETSimpleObject : public MetaObject
     {

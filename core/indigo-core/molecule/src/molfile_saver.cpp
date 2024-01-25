@@ -24,6 +24,7 @@
 
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
+#include "layout/sequence_layout.h"
 #include "math/algebra.h"
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
@@ -33,6 +34,7 @@
 #include "molecule/molecule_savers.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_stereocenters.h"
+#include "molecule/monomer_commons.h"
 #include "molecule/query_molecule.h"
 
 using namespace indigo;
@@ -119,6 +121,48 @@ void MolfileSaver::saveMolecule(Molecule& mol)
 void MolfileSaver::saveQueryMolecule(QueryMolecule& mol)
 {
     _saveMolecule(mol, true);
+}
+
+void MolfileSaver::_handleMonomers(BaseMolecule& mol)
+{
+    SequenceLayout sl(mol);
+    std::map<int, std::map<int, int>> layout_sequence;
+    sl.calculateLayout(0, layout_sequence);
+    const auto& directions_map = sl.directionsMap();
+    for (auto& row : layout_sequence)
+    {
+        int seq_id = 1;
+        for (auto& col : row.second)
+        {
+            int atom_idx = col.second;
+            if (mol.isTemplateAtom(atom_idx))
+            {
+                std::string mon_class = mol.getTemplateAtomClass(atom_idx);
+                if (isBackboneClass(mon_class))
+                {
+                    mol.asMolecule().setTemplateAtomSeqid(atom_idx, seq_id);
+                    if (mon_class == kMonomerClassSUGAR)
+                    {
+                        // set seq_id for base
+                        auto dirs_it = directions_map.find(atom_idx);
+                        if (dirs_it != directions_map.end() && dirs_it->second.size())
+                        {
+                            auto& atom_dirs = dirs_it->second;
+                            auto br_it = atom_dirs.find(kBranchAttachmentPointIdx);
+                            if (br_it != atom_dirs.end())
+                            {
+                                std::string br_class = mol.getTemplateAtomClass(br_it->second);
+                                if (br_class == kMonomerClassBASE)
+                                    mol.asMolecule().setTemplateAtomSeqid(br_it->second, seq_id);
+                            }
+                        }
+                    }
+                    else if (isAminoAcidClass(mon_class) || mon_class == kMonomerClassPHOSPHATE)
+                        seq_id++;
+                }
+            }
+        }
+    }
 }
 
 void MolfileSaver::_handleCIP(BaseMolecule& mol)
@@ -367,6 +411,9 @@ void MolfileSaver::_writeMultiString(Output& output, const char* string, int len
 void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 {
     _handleCIP(mol);
+    if (mol.tgroups.getTGroupCount())
+        _handleMonomers(mol);
+
     QueryMolecule* qmol = 0;
 
     if (query)

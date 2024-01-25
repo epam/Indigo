@@ -531,11 +531,11 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
             auto cip = mol.getBondCIP(i);
             if (cip != CIPDesc::NONE)
             {
-                auto cip_it = KCIPToString.find((int)cip);
-                if (cip_it != KCIPToString.end())
+                auto cip_str = CIPToString(cip);
+                if (cip_str.size())
                 {
                     writer.Key("cip");
-                    writer.String(cip_it->second.c_str());
+                    writer.String(cip_str.c_str());
                 }
             }
 
@@ -965,11 +965,11 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         auto cip = mol.getAtomCIP(i);
         if (cip != CIPDesc::NONE)
         {
-            auto cip_it = KCIPToString.find((int)cip);
-            if (cip_it != KCIPToString.end())
+            auto cip_str = CIPToString(cip);
+            if (cip_str.size())
             {
                 writer.Key("cip");
-                writer.String(cip_it->second.c_str());
+                writer.String(cip_str.c_str());
             }
         }
 
@@ -1492,12 +1492,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 }
                 else
                 {
-                    auto tg_it = _templates.find(std::make_pair(alias, mon_class));
-                    if (tg_it == _templates.end())
-                    {
-                        auto mname = monomerNameByAlias(mon_class, alias);
-                        tg_it = _templates.find(std::make_pair(mname, mon_class));
-                    }
                     auto tg_ref = findTemplateInMap(alias, mon_class, _templates);
                     if (tg_ref.has_value())
                     {

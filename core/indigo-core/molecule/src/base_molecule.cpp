@@ -4140,22 +4140,38 @@ int BaseMolecule::bondCode(int edge_idx)
     return getBondOrder(edge_idx);
 }
 
-bool BaseMolecule::expandNucleotide(int atom_idx)
-{
-    std::string atom_class = getTemplateAtomClass(atom_idx);
-    int tg_idx = getTemplateAtomTemplateIndex(atom_idx);
-    if (tg_idx == -1)
-    {
-    }
-    return false;
-}
-
 void BaseMolecule::transformSuperatomsToTemplates(int template_id)
 {
     for (auto sg_idx = sgroups.begin(); sg_idx != sgroups.end(); sg_idx = sgroups.next(sg_idx))
     {
         if (sgroups.getSGroup(sg_idx).sgroup_type == SGroup::SG_TYPE_SUP)
             _transformSGroupToTGroup(sg_idx, template_id);
+    }
+}
+
+void BaseMolecule::transformTemplatesToSuperatoms(std::function<bool(int)> filter)
+{
+    std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
+    getTemplatesMap(templates);
+    for (auto atom_idx = vertexBegin(); atom_idx < vertexEnd(); atom_idx = vertexNext(atom_idx))
+    {
+        if (isTemplateAtom(atom_idx) && filter(atom_idx))
+        {
+            auto tg_idx = getTemplateAtomTemplateIndex(atom_idx);
+            if (tg_idx < 0)
+            {
+                std::string alias = getTemplateAtomClass(atom_idx);
+                std::string mon_class = getTemplateAtom(atom_idx);
+                auto tg_ref = findTemplateInMap(alias, mon_class, templates);
+                if (tg_ref.has_value())
+                {
+                    auto& tg = tg_ref.value().get();
+                    tg_idx = tg.tgroup_id;
+                }
+            }
+            if (tg_idx != -1)
+                _transformTGroupToSGroup(atom_idx, tg_idx);
+        }
     }
 }
 

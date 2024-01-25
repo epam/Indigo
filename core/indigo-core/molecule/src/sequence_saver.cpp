@@ -40,7 +40,8 @@ SequenceSaver::~SequenceSaver()
 void SequenceSaver::saveMolecule(BaseMolecule& mol)
 {
     std::map<int, std::map<int, int>> layout_sequence;
-    SequenceLayout::getLayout(mol, 0, layout_sequence);
+    SequenceLayout sl(mol);
+    sl.calculateLayout(0, layout_sequence);
     std::string seq_text;
     for (auto& row : layout_sequence)
     {
