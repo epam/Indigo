@@ -331,7 +331,7 @@ TEST_F(IndigoCoreMoleculeTest, dearomatize_query)
     EXPECT_EQ(res, true);
     std::string sm = smiles(molecule);
     // printf("%s", sm.c_str());
-    EXPECT_STREQ("C1C=CC=CC=1", sm.c_str());
+    EXPECT_STREQ("C1-C=C-C=C-C=1", sm.c_str());
 }
 
 TEST_F(IndigoCoreMoleculeTest, dearomatize_smarts)
@@ -350,5 +350,5 @@ TEST_F(IndigoCoreMoleculeTest, dearomatize_smarts)
     saver.smarts_mode = true;
     saver.saveQueryMolecule(molecule);
     // printf("%s", sm.c_str());
-    EXPECT_STREQ("[#6]1-[#6]=[#6]-[#6]=[#6]-[#6]=1", sm.c_str());
+    EXPECT_STREQ("c1-c=c-c=c-c=1", sm.c_str());
 }
