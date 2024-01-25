@@ -1316,3 +1316,62 @@ testing query [2H]C
 testing query N#CC(C#N)=C1C([H])=C([H])C(=C(C#N)C#N)C([H])=C1[H] |t:4,10|
 20
 16
+testing query c1ccccc1
+12
+6
+testing query CCC
+11
+3
+testing smarts c1ccccc1
+12
+6
+testing smarts CCC
+11
+3
+testing smarts C-C-C
+11
+3
+testing query 
+  Bond Single or Double   1252422 22D 1   1.00000     0.00000     0
+
+  2  1  0  0  0  0  0  0  0  0999 V2000
+    2.9920   -1.4500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.8580   -0.9500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  5  0     0  0
+M  END
+
+2
+2
+testing query 
+  Bond Single or Aromatic   1252422 22D 1   1.00000     0.00000     0
+
+  2  1  0  0  0  0  0  0  0  0999 V2000
+    2.9920   -1.4500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.8580   -0.9500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  6  0     0  0
+M  END
+
+2
+2
+testing query 
+  Bond Double or Aromatic  1252422 22D 1   1.00000     0.00000     0
+
+  2  1  0  0  0  0  0  0  0  0999 V2000
+    2.9920   -1.4500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.8580   -0.9500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  7  0     0  0
+M  END
+
+2
+2
+testing query 
+  Bond Any  1252422 22D 1   1.00000     0.00000     0
+
+  2  1  0  0  0  0  0  0  0  0999 V2000
+    2.9920   -1.4500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.8580   -0.9500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  8  0     0  0
+M  END
+
+2
+2
