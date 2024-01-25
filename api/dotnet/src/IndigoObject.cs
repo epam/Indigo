@@ -86,6 +86,20 @@ namespace com.epam.indigo
             dispatcher.checkResult(IndigoLib.indigoFree(s));
         }
 
+        public string sequence()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoSequence(self));
+        }
+
+        public void saveSequenceToFile(string filename)
+        {
+            dispatcher.setSessionID();
+            int s = dispatcher.checkResult(IndigoLib.indigoWriteFile(filename));
+            dispatcher.checkResult(IndigoLib.indigoSaveSequenceToFile(self, s));
+            dispatcher.checkResult(IndigoLib.indigoFree(s));
+        }
+
         public string cml()
         {
             dispatcher.setSessionID();

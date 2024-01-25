@@ -77,6 +77,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoMolfile(self));
     }
 
+    public String sequence() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoSequence(self));
+    }
+
     public String getOriginalFormat() {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoGetOriginalFormat(self));
@@ -85,6 +90,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public void saveMolfile(String filename) {
         dispatcher.setSessionID();
         Indigo.checkResult(this, lib.indigoSaveMolfileToFile(self, filename));
+    }
+
+    public void saveSequenceToFile(String filename) {
+        dispatcher.setSessionID();
+        Indigo.checkResult(this, lib.indigoSaveSequenceToFile(self, filename));
     }
 
     public String cml() {

@@ -203,6 +203,10 @@ CEXPORT int indigoSaveMolfile(int molecule, int output);
 CEXPORT int indigoSaveMolfileToFile(int molecule, const char* filename);
 CEXPORT const char* indigoMolfile(int molecule);
 
+CEXPORT int indigoSaveSequence(int molecule, int output);
+CEXPORT int indigoSaveSequenceToFile(int molecule, const char* filename);
+CEXPORT const char* indigoSequence(int molecule);
+
 CEXPORT int indigoSaveJsonToFile(int item, const char* filename);
 CEXPORT int indigoSaveJson(int item, int output);
 

@@ -528,10 +528,10 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
 
         if (a.HasMember("cip"))
         {
-            std::string cip = a["cip"].GetString();
-            auto cip_it = KStringToCIP.find(cip);
-            if (cip_it != KStringToCIP.end())
-                mol.setAtomCIP(atom_idx, cip_it->second);
+            std::string cip_str = a["cip"].GetString();
+            auto cip = stringToCIP(cip_str);
+            if (cip != CIPDesc::NONE)
+                mol.setAtomCIP(atom_idx, cip);
         }
 
         if (a.HasMember("queryProperties"))
@@ -722,10 +722,10 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
 
                 if (b.HasMember("cip"))
                 {
-                    std::string cip = b["cip"].GetString();
-                    auto cip_it = KStringToCIP.find(cip);
-                    if (cip_it != KStringToCIP.end())
-                        mol.setBondCIP(bond_idx, cip_it->second);
+                    std::string cip_str = b["cip"].GetString();
+                    auto cip = stringToCIP(cip_str);
+                    if (cip != CIPDesc::NONE)
+                        mol.setBondCIP(bond_idx, cip);
                 }
 
                 if (rcenter)
@@ -1243,26 +1243,18 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
                 {
                     std::string label = ap["label"].GetString();
                     if (label.size() > 1)
-                    {
-                        if (label == "R1")
-                            att_desc.id = "Al";
-                        else if (label == "R2")
-                            att_desc.id = "Br";
-                        else
-                        {
-                            if (label[0] == 'R')
-                            {
-                                auto rnum = label.substr(1);
-                                if (std::all_of(rnum.begin(), rnum.end(), ::isdigit))
-                                {
-                                    label = 'A' + std::stol(rnum);
-                                    label += 'x';
-                                }
-                            }
-                        }
-                    }
-                    att_desc.id = label;
+                        att_desc.id = convertAPFromHELM(label);
                 }
+
+                if (ap.HasMember("type"))
+                {
+                    std::string label_type = ap["type"].GetString();
+                    if (label_type == "left")
+                        att_desc.id = kLeftAttachmentPoint;
+                    else if (label_type == "right")
+                        att_desc.id = kRightAttachmentPoint;
+                }
+
                 attachment_descs.push_back(att_desc);
             }
 

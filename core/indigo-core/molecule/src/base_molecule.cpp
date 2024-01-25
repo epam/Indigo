@@ -4140,16 +4140,6 @@ int BaseMolecule::bondCode(int edge_idx)
     return getBondOrder(edge_idx);
 }
 
-bool BaseMolecule::expandNucleotide(int atom_idx)
-{
-    std::string atom_class = getTemplateAtomClass(atom_idx);
-    int tg_idx = getTemplateAtomTemplateIndex(atom_idx);
-    if (tg_idx == -1)
-    {
-    }
-    return false;
-}
-
 void BaseMolecule::transformSuperatomsToTemplates(int template_id)
 {
     for (auto sg_idx = sgroups.begin(); sg_idx != sgroups.end(); sg_idx = sgroups.next(sg_idx))

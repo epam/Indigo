@@ -54,7 +54,8 @@ namespace indigo
         explicit SequenceLayout(BaseMolecule& molecule);
         void make();
         void make(int first_atom_idx);
-        static void getLayout(BaseMolecule& mol, int first_atom_idx, std::map<int, std::map<int, int>>& layout_sequence);
+        void calculateLayout(int first_atom_idx, std::map<int, std::map<int, int>>& layout_sequence);
+        const std::unordered_map<int, std::map<int, int>>& directionsMap();
 
         DECL_ERROR;
 
@@ -62,6 +63,7 @@ namespace indigo
         static void processPosition(BaseMolecule& mol, int& row, int& col, int atom_from_idx, const std::pair<int, int>& dir);
         BaseMolecule& _molecule;
         std::map<int, std::map<int, int>> _layout_sequence;
+        std::unordered_map<int, std::map<int, int>> _directions_map;
     };
 
 } // namespace indigo

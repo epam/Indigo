@@ -140,7 +140,7 @@ void SequenceLoader::addNucleotide(BaseMolecule& mol, char ch, const std::string
     mol.asMolecule().setTemplateAtom(nuc_base_idx, nuc_base.c_str());
     mol.asMolecule().setTemplateAtomClass(nuc_base_idx, kMonomerClassBASE);
     mol.asMolecule().setTemplateAtomSeqid(nuc_base_idx, _seq_id);
-    Vec3f base_coord(0, -MoleculeLayout::DEFAULT_BOND_LENGTH, 0);
+    Vec3f base_coord(0, MoleculeLayout::DEFAULT_BOND_LENGTH, 0);
     mol.asMolecule().setAtomXyz(nuc_base_idx, base_coord);
 
     // connect sugar to nucleobase
