@@ -2787,8 +2787,19 @@ void SmilesLoader::readSmartsAtomStr(const std::string& atom_str, std::unique_pt
     Pool<List<int>::Elem> neipool;
     _AtomDesc atom{neipool};
     Array<char> ac_str;
-    ac_str.copy(atom_str.c_str(), atom_str.size());
-    _readAtom(ac_str, true, atom, qatom, true, false);
+    bool in_bracket = false;
+    if (atom_str[0] == '[')
+    {
+        if (*atom_str.crbegin() != ']')
+            throw "Error: '[' without corrsponding ']'";
+        in_bracket = true;
+        ac_str.copy(atom_str.c_str() + 1, atom_str.size() - 2); // Skip [ and ]
+    }
+    else
+    {
+        ac_str.copy(atom_str.c_str(), atom_str.size());
+    }
+    _readAtom(ac_str, in_bracket, atom, qatom, true, false);
 }
 
 void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom, bool smarts_mode,
@@ -2933,11 +2944,7 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                     if (isdigit(scanner.lookNext()))
                     {
                         int rc = scanner.readUnsigned();
-
-                        if (rc == 0)
-                            subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RING_BONDS, 0);
-                        else
-                            subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SSSR_RINGS, rc);
+                        subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_SSSR_RINGS, rc);
                     }
                     else
                         subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RING_BONDS, 1, 100);

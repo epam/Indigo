@@ -196,6 +196,7 @@ namespace indigo
         void saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer);
         int getMonomerNumber(int mon_idx);
 
+        void writeFloat(JsonWriter& writer, float f_value);
         void saveAtoms(BaseMolecule& mol, JsonWriter& writer);
         void saveBonds(BaseMolecule& mol, JsonWriter& writer);
         void saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, JsonWriter& writer);

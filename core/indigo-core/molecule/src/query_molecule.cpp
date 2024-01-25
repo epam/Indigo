@@ -515,11 +515,11 @@ void QueryMolecule::writeSmartsBond(Output& output, Bond* bond, bool has_or_pare
     }
 }
 
-std::string QueryMolecule::getSmartsAtomStr(QueryMolecule::Atom* atom, int original_format)
+std::string QueryMolecule::getSmartsAtomStr(QueryMolecule::Atom* atom, int original_format, bool is_substr)
 {
     Array<char> out;
     ArrayOutput output(out);
-    writeSmartsAtom(output, atom, -1, -1, 1, false, false, original_format);
+    writeSmartsAtom(output, atom, -1, -1, is_substr ? 1 : 0, false, false, original_format);
     std::string result{out.ptr(), static_cast<std::size_t>(out.size())};
     return result;
 }
@@ -537,7 +537,7 @@ std::string QueryMolecule::getMolMrvSmaExtension(QueryMolecule& qm, int aid)
         // Just atom or list and list of properties.
         bool atoms_writed = false;
         bool not_first_property = false;
-        for (int property : {ATOM_TOTAL_H, ATOM_IMPLICIT_H, ATOM_CONNECTIVITY, ATOM_SSSR_RINGS, ATOM_SMALLEST_RING_SIZE, ATOM_AROMATICITY})
+        for (int property : {ATOM_IMPLICIT_H, ATOM_CONNECTIVITY, ATOM_SSSR_RINGS, ATOM_SMALLEST_RING_SIZE, ATOM_AROMATICITY})
         {
             if (atom_props.count(property) < 1)
                 continue;
@@ -575,8 +575,8 @@ std::string QueryMolecule::getMolMrvSmaExtension(QueryMolecule& qm, int aid)
     else
     {
         if (qa.type != OP_NONE)
-            //  Complex tree - just write SMARTS
-            return getSmartsAtomStr(&qa, qm.original_format);
+            //  Complex tree - just write nothing
+            return "";
     }
     std::string result{out.ptr(), static_cast<std::size_t>(out.size())};
     return result;
