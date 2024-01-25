@@ -113,7 +113,7 @@ namespace indigo
     {
         int id = extract_id(atp_id_str, "R");
         if (id < 0)
-            throw std::invalid_argument("convertAPFromHELM: prefix 'R' not found in 'atp_id_str'.");
+            throw std::invalid_argument(std::string("convertAPFromHELM: prefix 'R' not found in :") + atp_id_str);
         char ap_symbol = static_cast<char>(id) + '@'; // convert number to ASCII letter
         std::string res(1, ap_symbol);
         switch (ap_symbol)
