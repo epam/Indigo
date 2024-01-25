@@ -19,6 +19,11 @@
 #ifndef __exception_h__
 #define __exception_h__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4275)
+#endif
+
 #include <cstdarg>
 #include <cstdio>
 #include <cstring>
@@ -99,5 +104,9 @@ public                                                                          
 #define IMPL_TIMEOUT_EXCEPTION(Namespace, prefix) IMPL_EXCEPTION(Namespace, TimeoutException, prefix " timeout")
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif // __exception_h__

@@ -19,7 +19,6 @@
 #ifndef __base_molecule__
 #define __base_molecule__
 
-#include <functional>
 #include <map>
 #include <set>
 
@@ -123,9 +122,17 @@ namespace indigo
     class DLLEXPORT BaseMolecule : public Graph
     {
     public:
-        using MonomerFilterType = bool (*)(int);
         friend class MoleculeCIPCalculator;
         typedef std::map<int, int> Mapping;
+
+        class MonomerFilterType
+        {
+        public:
+            bool operator()(int x) const
+            {
+                return x > 0;
+            }
+        };
 
         struct TemplateAttPoint
         {
@@ -218,7 +225,7 @@ namespace indigo
         int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
         void transformSuperatomsToTemplates(int template_id);
-        void transformTemplatesToSuperatoms(std::function<bool(int)> filter);
+        // void transformTemplatesToSuperatoms(std::function<bool(int)> filter);
 
         virtual bool isRSite(int atom_idx) = 0;
         virtual dword getRSiteBits(int atom_idx) = 0;

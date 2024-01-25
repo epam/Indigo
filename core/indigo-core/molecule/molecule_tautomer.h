@@ -23,9 +23,8 @@
 #include "base_cpp/obj.h"
 #include "base_cpp/tlscont.h"
 #include "graph/graph_decomposer.h"
-#include "molecule/base_molecule.h"
-#include "molecule/molecule.h"
 #include "molecule/molecule_dearom.h"
+#include "molecule/molecule.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -34,8 +33,6 @@
 
 namespace indigo
 {
-
-    class Molecule;
     class AromaticityMatcher;
     class Dearomatizer;
     class DearomatizationMatcher;
