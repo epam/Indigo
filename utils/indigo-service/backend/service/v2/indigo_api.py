@@ -985,7 +985,8 @@ def convert_explicit_hydrogens():
         while iatoms.hasNext():
             atom = iatoms.next()
             try:
-                if atom.atomicNumber() == 1:  # Hydrogen
+                if atom.atomicNumber() == 1 and atom.degree() > 0:
+                    # Hydrogen connected to something - fold
                     fold = True
                     break
             except IndigoException:
