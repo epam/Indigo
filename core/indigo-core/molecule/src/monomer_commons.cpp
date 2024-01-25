@@ -185,11 +185,11 @@ namespace indigo
         switch (order)
         {
         case 0:
-            if (label == kLeftAttachmentPoint || label == "R1")
+            if (label == kLeftAttachmentPoint || label == kAttachmentPointR1)
                 return true;
             break;
         case 1:
-            if (label == kRightAttachmentPoint || label == "R2")
+            if (label == kRightAttachmentPoint || label == kAttachmentPointR2)
                 return true;
             break;
         default:

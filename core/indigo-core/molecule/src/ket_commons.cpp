@@ -21,6 +21,7 @@
 #endif
 
 #include "molecule/ket_commons.h"
+#include "molecule/monomer_commons.h"
 
 namespace indigo
 {
@@ -98,10 +99,10 @@ namespace indigo
     {
         if (::isupper(atp_id_str[0]) && atp_id_str.size() == 2)
         {
-            if (atp_id_str == "Al")
-                return "R1";
-            else if (atp_id_str == "Br")
-                return "R2";
+            if (atp_id_str == kLeftAttachmentPoint)
+                return kAttachmentPointR1;
+            else if (atp_id_str == kRightAttachmentPoint)
+                return kAttachmentPointR2;
             else if (atp_id_str[1] == 'x')
                 return std::string("R") + std::to_string(atp_id_str[0] - 'A' + 1);
         }

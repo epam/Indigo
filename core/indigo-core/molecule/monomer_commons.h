@@ -78,6 +78,9 @@ namespace indigo
     const auto kLeftAttachmentPoint = "Al";
     const auto kRightAttachmentPoint = "Br";
     const auto kBranchAttachmentPoint = "Cx";
+    const auto kAttachmentPointR1 = "R1";
+    const auto kAttachmentPointR2 = "R2";
+
     const int kLeftAttachmentPointIdx = 0;
     const int kRightAttachmentPointIdx = 1;
     const int kBranchAttachmentPointIdx = 2; // branch without a direction

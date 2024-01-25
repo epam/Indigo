@@ -1186,9 +1186,9 @@ void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter&
                 if (!isAttachmentPointsInOrder(order++, atp_id_str))
                 {
                     writer.Key("type");
-                    if (atp_id_str == "Al" || atp_id_str == "R1")
+                    if (atp_id_str == kLeftAttachmentPoint || atp_id_str == kAttachmentPointR1)
                         writer.String("left");
-                    else if (atp_id_str == "Br" || atp_id_str == "R2")
+                    else if (atp_id_str == kRightAttachmentPoint || atp_id_str == kAttachmentPointR2)
                         writer.String("right");
                     else
                         writer.String("side");
