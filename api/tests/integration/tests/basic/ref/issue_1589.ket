@@ -154,18 +154,6 @@
                     8
                 ]
             }
-        ],
-        "highlight": [
-            "entityType",
-            "atom",
-            {
-                "items": []
-            },
-            "entityType",
-            "bond",
-            {
-                "items": []
-            }
         ]
     }
 }
