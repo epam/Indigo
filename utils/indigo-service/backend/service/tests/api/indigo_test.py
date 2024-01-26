@@ -567,7 +567,7 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x
 
     def test_convert_cdx(self):
         ref_path = joinPathPy("ref/", __file__)
-        with open(ref_path + "large.cdx.base64") as f:
+        with open(ref_path + "/large.cdx.base64") as f:
             cdx = f.read()
         cdx = "base64::" + cdx
         headers, data = self.get_headers(
