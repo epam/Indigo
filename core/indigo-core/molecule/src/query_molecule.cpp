@@ -2256,13 +2256,13 @@ int QueryMolecule::calcAtomMaxH(int idx, int conn)
 {
     int number = getAtomNumber(idx);
 
-    if (number == -1)
-        return -1;
-
     if (conn == -1)
         return -1;
 
     int explicit_val = getExplicitValence(idx);
+
+    if (number == -1 && explicit_val < 0)
+        return -1;
 
     int max_h = 0;
 
@@ -2280,7 +2280,7 @@ int QueryMolecule::calcAtomMaxH(int idx, int conn)
 
             if (explicit_val != -1)
             {
-                int h = explicit_val - Element::calcValenceMinusHyd(number, charge, radical, conn);
+                int h = number < 0 ? explicit_val - conn : explicit_val - Element::calcValenceMinusHyd(number, charge, radical, conn);
                 if (h > max_h)
                     max_h = h;
             }
