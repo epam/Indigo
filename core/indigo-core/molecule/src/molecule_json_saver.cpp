@@ -484,7 +484,7 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                 if (rcenter)
                 {
                     writer.Key("center");
-                    writer.Uint(rcenter);
+                    writer.Int(rcenter);
                 }
             }
 
