@@ -1027,7 +1027,7 @@
     {
         "query_id": 206,
         "query_type": "checkreaction",
-        "expected": "element: can not calculate implicit hydrogens on aromatic C, charge 0, degree 1, 0 radical electrons"
+        "expected": "element: cannot calculate implicit hydrogens on aromatic C, charge 0, degree 1, 0 radical electrons"
     },
     {
         "query_id": 207,
