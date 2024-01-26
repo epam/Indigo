@@ -19,6 +19,11 @@
 #ifndef __properties_map_h__
 #define __properties_map_h__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include "base_cpp/array.h"
 #include "base_cpp/auto_iter.h"
 #include "base_cpp/exception.h"
@@ -93,5 +98,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif // __auto_iter_h__

@@ -580,11 +580,4 @@ namespace indigo
 
 } // namespace indigo
 
-// operators defined here for use with ObjArray<> and ObjPool<>
-template <typename T>
-void* operator new(size_t size, T* allocated_area)
-{
-    return allocated_area;
-}
-
 #endif

@@ -19,6 +19,11 @@
 #ifndef __os_sync_wrapper_h__
 #define __os_sync_wrapper_h__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include <condition_variable>
 #include <mutex>
 
@@ -70,5 +75,9 @@ namespace indigo
         void* volatile _localParam;
     };
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif // __os_sync_wrapper_h__
