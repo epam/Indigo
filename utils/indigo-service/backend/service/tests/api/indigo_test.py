@@ -7,6 +7,14 @@ import unittest
 import requests
 
 
+def joinPathPy(args, file_py):
+    return os.path.normpath(
+        os.path.abspath(
+            os.path.join(os.path.abspath(os.path.dirname(file_py)), args)
+        )
+    ).replace("\\", "/")
+
+
 # @unittest.skip("Skip libraries test case")
 class IndigoTestCase(unittest.TestCase):
     def setUp(self):
@@ -556,6 +564,33 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual("C1C=CC=CC=1.C1C=CC=CC=1", result_data["struct"])
+
+    def test_convert_cdx(self):
+        ref_path = joinPathPy("ref/", __file__)
+        with open(ref_path + "large.cdx.base64") as f:
+            cdx = f.read()
+        cdx = "base64::" + cdx
+        headers, data = self.get_headers(
+            {
+                "struct": cdx,
+                "output_format": "chemical/x-indigo-ket",
+                "options": {
+                    "input-format": "chemical/x-unknown",
+                    "aromatize-skip-superatoms": True,
+                    "dearomatize-on-load": False,
+                    "gross-formula-add-rsites": True,
+                    "ignore-no-chiral-flag": True,
+                    "ignore-stereochemistry-errors": True,
+                    "mass-skip-error-on-pseudoatoms": False,
+                    "smart-layout": True,
+                },
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        self.assertEqual(200, result.status_code)
+        print(result.text)
 
     def test_convert_correct(self):
         formats = (
@@ -3153,15 +3188,6 @@ M  END
             json.loads(result_peptide_1.text)["struct"],
             "ACDEFGHIKLMNOPQRSRUVWY",
         )
-
-        def joinPathPy(args, file_py):
-            return os.path.normpath(
-                os.path.abspath(
-                    os.path.join(
-                        os.path.abspath(os.path.dirname(file_py)), args
-                    )
-                )
-            ).replace("\\", "/")
 
         ref_path = joinPathPy("ref/", __file__)
 
