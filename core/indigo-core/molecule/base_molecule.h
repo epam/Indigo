@@ -19,9 +19,6 @@
 #ifndef __base_molecule__
 #define __base_molecule__
 
-#include <map>
-#include <set>
-
 #include "base_cpp/obj_array.h"
 #include "base_cpp/properties_map.h"
 #include "base_cpp/red_black.h"
@@ -39,6 +36,9 @@
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_tgroups.h"
 #include "molecule/monomers_lib.h"
+
+#include <map>
+#include <set>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -202,6 +202,7 @@ namespace indigo
         virtual const int getTemplateAtomDisplayOption(int idx) = 0;
         virtual const int getTemplateAtomTemplateIndex(int idx) = 0;
         virtual void getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map) = 0;
+        virtual void getTemplateAtomDirectionsMap(std::unordered_map<int, std::map<int, int>>& directions_map) = 0;
 
         int countRSites();
         int countTemplateAtoms();
@@ -215,7 +216,6 @@ namespace indigo
         int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& helm_name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
         void transformSuperatomsToTemplates(int template_id);
-        bool expandNucleotide(int atom_idx);
 
         virtual bool isRSite(int atom_idx) = 0;
         virtual dword getRSiteBits(int atom_idx) = 0;

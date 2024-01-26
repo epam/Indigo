@@ -58,15 +58,18 @@ void SequenceLayout::processPosition(BaseMolecule& mol, int& row, int& col, int 
     {
         if (isBackboneClass(to_class))
         {
-            if (dir.first == kLeftAttachmentPointIdx)
+            if ((isNucleicClass(from_class) && isNucleicClass(to_class)) || (isAminoAcidClass(from_class) && isAminoAcidClass(to_class)))
             {
-                col--;
-                return;
-            }
-            else if (dir.first == kRightAttachmentPointIdx)
-            {
-                col++;
-                return;
+                if (dir.first == kLeftAttachmentPointIdx)
+                {
+                    col--;
+                    return;
+                }
+                else if (dir.first == kRightAttachmentPointIdx)
+                {
+                    col++;
+                    return;
+                }
             }
         }
         else if (to_class == kMonomerClassBASE) // from backbone to base
@@ -83,40 +86,30 @@ void SequenceLayout::processPosition(BaseMolecule& mol, int& row, int& col, int 
 
     // if (BaseMolecule::hasCoord(mol))
     //{
-    //     auto& v1 = mol.getAtomXyz(atom_from_idx);
-    //     auto& v2 = mol.getAtomXyz(dir.second);
-    //     row_sign = v2.y < v1.y ? 1 : -1; // redefine row_sign if coordinates are available
+    //      auto& v1 = mol.getAtomXyz(atom_from_idx);
+    //      auto& v2 = mol.getAtomXyz(dir.second);
+    //      row_sign = v2.y < v1.y ? 1 : -1; // redefine row_sign if coordinates are available
     // }
     row += row_sign * row_spacing;
 }
 
-void SequenceLayout::getLayout(BaseMolecule& mol, int first_atom_idx, std::map<int, std::map<int, int>>& layout_sequence)
+const std::unordered_map<int, std::map<int, int>>& SequenceLayout::directionsMap()
 {
-    std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
-    mol.getTemplatesMap(templates);
+    return _directions_map;
+}
 
-    auto atoms_num = mol.vertexCount();
+void SequenceLayout::calculateLayout(int first_atom_idx, std::map<int, std::map<int, int>>& layout_sequence)
+{
+    auto atoms_num = _molecule.vertexCount();
     std::unordered_map<int, uint8_t> vertices_visited;
-    std::map<int, std::map<int, int>> directions_map;
-
-    for (int i = mol.template_attachment_points.begin(); i != mol.template_attachment_points.end(); i = mol.template_attachment_points.next(i))
-    {
-        auto& tap = mol.template_attachment_points[i];
-        if (tap.ap_id.size())
-        {
-            Array<char> atom_label;
-            mol.getAtomSymbol(tap.ap_occur_idx, atom_label);
-            int ap_id = tap.ap_id[0] - 'A';
-            directions_map[tap.ap_occur_idx].emplace(ap_id, tap.ap_aidx);
-        }
-    }
+    _molecule.getTemplateAtomDirectionsMap(_directions_map);
 
     // place first atom
     auto comparePair = [](const PriorityElement& lhs, const PriorityElement& rhs) { return lhs.dir > rhs.dir; };
     std::priority_queue<PriorityElement, std::vector<PriorityElement>, decltype(comparePair)> pq(comparePair);
 
-    auto dirs_it = directions_map.find(first_atom_idx);
-    if (dirs_it != directions_map.end() && dirs_it->second.size())
+    auto dirs_it = _directions_map.find(first_atom_idx);
+    if (dirs_it != _directions_map.end() && dirs_it->second.size())
     {
         auto first_dir = dirs_it->second.begin()->first;
         pq.emplace(first_dir, first_atom_idx, 0, 0);
@@ -132,14 +125,14 @@ void SequenceLayout::getLayout(BaseMolecule& mol, int first_atom_idx, std::map<i
         {
             vertices_visited[current_atom_idx] = 1; // mark as passed
             layout_sequence[te.row][te.col] = current_atom_idx;
-            for (const auto& dir : directions_map[current_atom_idx])
+            for (const auto& dir : _directions_map[current_atom_idx])
             {
                 int col = te.col;
                 int row = te.row;
                 // add to queue with priority. left, right, branch.
                 if (vertices_visited[dir.second] == 0)
                 {
-                    processPosition(mol, row, col, current_atom_idx, dir);
+                    processPosition(_molecule, row, col, current_atom_idx, dir);
                     pq.emplace(dir.first, dir.second, col, row);
                 }
             }
@@ -149,7 +142,7 @@ void SequenceLayout::getLayout(BaseMolecule& mol, int first_atom_idx, std::map<i
 
 void SequenceLayout::make(int first_atom_idx)
 {
-    getLayout(_molecule, first_atom_idx, _layout_sequence);
+    calculateLayout(first_atom_idx, _layout_sequence);
     if (_layout_sequence.size())
     {
         auto row_it = _layout_sequence.begin();
