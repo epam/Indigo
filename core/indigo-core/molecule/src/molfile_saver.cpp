@@ -157,7 +157,7 @@ void MolfileSaver::_handleMonomers(BaseMolecule& mol)
                             }
                         }
                     }
-                    else if (isAminoAcidClass(mon_class) || mon_class == kMonomerClassPHOSPHATE)
+                    else if (isAminoAcidClass(mon_class) || isNucleotideClass(mon_class) || mon_class == kMonomerClassPHOSPHATE)
                         seq_id++;
                 }
             }
