@@ -58,7 +58,10 @@ void SequenceLayout::processPosition(BaseMolecule& mol, int& row, int& col, int 
     {
         if (isBackboneClass(to_class))
         {
-            if ((isNucleicClass(from_class) && isNucleicClass(to_class)) || (isAminoAcidClass(from_class) && isAminoAcidClass(to_class)))
+            bool isNucleoFrom = isNucleicClass(from_class) || isNucleotideClass(from_class);
+            bool isNucleoTo = isNucleicClass(to_class) || isNucleotideClass(to_class);
+
+            if ((isNucleoFrom && isNucleoTo) || (isAminoAcidClass(from_class) && isAminoAcidClass(to_class)))
             {
                 if (dir.first == kLeftAttachmentPointIdx)
                 {

@@ -66,7 +66,7 @@ namespace indigo
 
     bool isBackboneClass(const std::string& monomer_class)
     {
-        return isAminoAcidClass(monomer_class) || monomer_class == kMonomerClassSUGAR || monomer_class == kMonomerClassPHOSPHATE;
+        return isAminoAcidClass(monomer_class) || monomer_class == kMonomerClassSUGAR || monomer_class == kMonomerClassPHOSPHATE || isNucleotideClass(monomer_class);
     }
 
     bool isBasicAminoAcid(const std::string& monomer_class, const std::string& alias)

@@ -125,13 +125,17 @@ namespace indigo
         friend class MoleculeCIPCalculator;
         typedef std::map<int, int> Mapping;
 
-        class MonomerFilterType
+        class MonomerFilterBase
         {
         public:
-            bool operator()(int x) const
-            {
-                return x > 0;
-            }
+            MonomerFilterBase(BaseMolecule& mol, const std::unordered_map<int, std::map<int, int>>& directions_map) 
+                : _mol(mol), _directions_map(directions_map)
+            {}
+            virtual bool operator()(int atom_idx) const = 0;
+            virtual ~MonomerFilterBase() {}
+        protected:
+            const std::unordered_map<int, std::map<int, int>>& _directions_map;
+            BaseMolecule& _mol;
         };
 
         struct TemplateAttPoint
@@ -225,7 +229,7 @@ namespace indigo
         int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
         void transformSuperatomsToTemplates(int template_id);
-        // void transformTemplatesToSuperatoms(std::function<bool(int)> filter);
+        void transformTemplatesToSuperatoms(MonomerFilterBase& filter);
 
         virtual bool isRSite(int atom_idx) = 0;
         virtual dword getRSiteBits(int atom_idx) = 0;
@@ -561,6 +565,7 @@ namespace indigo
 
         int _transformTGroupToSGroup(int idx, int t_idx);
         int _transformSGroupToTGroup(int idx, int& tg_id);
+
         void _fillTemplateSeqIds();
         bool _isCTerminus(Superatom& su, int idx);
         bool _isNTerminus(Superatom& su, int idx);
