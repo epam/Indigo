@@ -36,8 +36,8 @@ namespace indigo
         class MonomersToSgroupFilter : public BaseMolecule::MonomerFilterBase
         {
         public:
-            MonomersToSgroupFilter(BaseMolecule& mol, const std::unordered_map<int, std::map<int, int>>& directions_map) :
-                MonomerFilterBase(mol, directions_map)
+            MonomersToSgroupFilter(BaseMolecule& mol, const std::unordered_map<int, std::map<int, int>>& directions_map)
+                : MonomerFilterBase(mol, directions_map)
             {
             }
             bool operator()(int atom_idx) const override;

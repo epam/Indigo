@@ -128,11 +128,14 @@ namespace indigo
         class MonomerFilterBase
         {
         public:
-            MonomerFilterBase(BaseMolecule& mol, const std::unordered_map<int, std::map<int, int>>& directions_map) 
-                : _mol(mol), _directions_map(directions_map)
-            {}
+            MonomerFilterBase(BaseMolecule& mol, const std::unordered_map<int, std::map<int, int>>& directions_map) : _mol(mol), _directions_map(directions_map)
+            {
+            }
             virtual bool operator()(int atom_idx) const = 0;
-            virtual ~MonomerFilterBase() {}
+            virtual ~MonomerFilterBase()
+            {
+            }
+
         protected:
             const std::unordered_map<int, std::map<int, int>>& _directions_map;
             BaseMolecule& _mol;
