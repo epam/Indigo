@@ -242,8 +242,8 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
 
         _output.printf("%s", s.GetString());
     }
-    //else
-    //    throw Error("Empty reaction");
+    else
+        throw Error("Empty reaction");
 }
 
 void ReactionJsonSaver::saveReaction(BaseReaction& rxn)

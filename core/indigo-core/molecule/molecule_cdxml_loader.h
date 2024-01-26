@@ -617,7 +617,7 @@ namespace indigo
             auto it = KCDXNameToProp.find(name);
             if (it != KCDXNameToProp.end())
                 return findBinaryProperty(it->second.first);
-            //throw Error("Property %s not found", name.c_str());
+            throw Error("Property %s not found", name.c_str());
             return CDXProperty();
         }
 
@@ -940,6 +940,7 @@ namespace indigo
         bool _is_binary;
         bool _is_fragment;
         bool _has_bounding_box;
+        bool _has_scheme;
 
     private:
         MoleculeCdxmlLoader(const MoleculeCdxmlLoader&); // no implicit copy
