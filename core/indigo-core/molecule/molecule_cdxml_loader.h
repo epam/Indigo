@@ -617,7 +617,7 @@ namespace indigo
             auto it = KCDXNameToProp.find(name);
             if (it != KCDXNameToProp.end())
                 return findBinaryProperty(it->second.first);
-            throw Error("Property %s not found", name.c_str());
+            //throw Error("Property %s not found", name.c_str());
             return CDXProperty();
         }
 
