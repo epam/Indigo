@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "axios": "^1.4.0",
+    "axios": "^1.6.0",
     "ketcher-react": "^2.12.0",
     "ketcher-standalone": "^2.12.0",
     "normalize.css": "^8.0.1",
