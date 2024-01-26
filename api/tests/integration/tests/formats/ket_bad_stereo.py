@@ -42,4 +42,4 @@ save_ket = reaction.json()
 if ref_ket == save_ket:
     print("SUCCESS")
 else:
-    print(f"FAILED: expected\n{ref_ket}\ngenerated\n{save_ket}")
+    print("FAILED: expected\n%s\ngenerated\n%s" % (ref_ket, save_ket))
