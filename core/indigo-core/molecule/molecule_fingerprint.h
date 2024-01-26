@@ -26,7 +26,6 @@
 #include "base_cpp/obj.h"
 #include "base_cpp/tlscont.h"
 #include "graph/subgraph_hash.h"
-#include "molecule/base_molecule.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -37,6 +36,7 @@ namespace indigo
 {
 
     class TautomerSuperStructure;
+    class BaseMolecule;
 
     // Fingerprint consists of 5 parts: EXT + ORD + ANY + TAU + SIM.
     // EXT is always 3 bytes long, other parts' sizes are configured.
