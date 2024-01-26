@@ -23,8 +23,8 @@
 #include "base_cpp/obj.h"
 #include "base_cpp/tlscont.h"
 #include "graph/graph_decomposer.h"
-#include "molecule/molecule_dearom.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_dearom.h"
 
 #ifdef _WIN32
 #pragma warning(push)

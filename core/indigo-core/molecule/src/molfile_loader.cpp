@@ -2133,7 +2133,7 @@ void MolfileLoader::_postLoad()
                     // TODO: handle missing template case
                 }
             }
-            else //tg_idx != -1 means the template is converted from S-Group
+            else // tg_idx != -1 means the template is converted from S-Group
             {
                 // TODO: handle modified monomer. Currently it leaves as is.
             }
