@@ -34,3 +34,9 @@ testing filename:
 issue_1550.ket
 Unfolded KET equal to expected
 Folded KET equal to original
+
+******* Test unfold selected with unselected explicit H *******
+testing filename:
+issue_1632.ket
+Unfolded KET equal to expected
+Folded KET equal to original

@@ -31,6 +31,34 @@ def testFoldUnfoldSDF(sdfile):
             print("ERROR")
 
 
+def testAutoFoldUnfoldSingleMol(smiles):
+    print("testing auto mode for " + smiles)
+    mol = indigo.loadMolecule(smiles)
+    mol2 = mol.clone()
+    mol2.foldUnfoldHydrogens()
+    print(mol2.countAtoms())
+    mol2.foldUnfoldHydrogens()
+    print(mol2.countAtoms())
+
+
+def testAutoFoldUnfoldSingleReaction(smiles):
+    print("testing auto mode for reaction " + smiles)
+    rxn = indigo.loadReaction(smiles)
+    rxn.foldUnfoldHydrogens()
+    for mol in rxn.iterateMolecules():
+        print(mol.countAtoms())
+    rxn2 = rxn.clone()
+    rxn.foldUnfoldHydrogens()
+    for mol in rxn.iterateMolecules():
+        print(mol.countAtoms())
+    rxn2.foldUnfoldHydrogens()
+    for mol in rxn2.iterateMolecules():
+        print(mol.countAtoms())
+    rxn2.foldUnfoldHydrogens()
+    for mol in rxn2.iterateMolecules():
+        print(mol.countAtoms())
+
+
 def testFoldUnfoldSingleMol(smiles):
     print("testing " + smiles)
     mol = indigo.loadMolecule(smiles)
@@ -159,3 +187,8 @@ mol = """
 M  END
 """
 testFoldUnfoldSingleQueryMol(mol)
+
+testAutoFoldUnfoldSingleMol("CC[H]")
+testAutoFoldUnfoldSingleReaction("[H]CC>>CC")
+testAutoFoldUnfoldSingleMol("[H][H]")
+testAutoFoldUnfoldSingleMol("[2H]C")
