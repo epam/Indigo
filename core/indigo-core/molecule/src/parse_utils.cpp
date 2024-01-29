@@ -86,8 +86,14 @@ namespace indigo
     {
         if (str.size() & 3) // check for padding
             return false;
-        std::regex base64reg_exp("^[a-zA-Z0-9\\+/]*={0,3}$");
-        return std::regex_match(str, base64reg_exp);
+        for (int i = 0; i < str.size(); ++i)
+        {
+            auto ch = str[i];
+            if ((ch >= 'a' && ch <= 'z') || ((ch >= 'A' && ch <= 'Z')) || ((ch >= '0' && ch <= '9')) || ((i < str.size() - 1) && ch == '='))
+                continue;
+            return false;
+        }
+        return true;
     }
 
     std::vector<std::string> split(const std::string& str, char delim)
