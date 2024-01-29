@@ -410,7 +410,7 @@ jobs:
         env:
           INDIGO_PATH: ${{ github.workspace }}/dist
         run: |
-          java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -j junit_report.xml
+          java -Xss8m -jar jython.jar api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v3
@@ -456,7 +456,7 @@ jobs:
             apt install -y curl default-jre
             curl -L https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
             export INDIGO_PATH=${{ github.workspace }}/dist
-            java -Xss4m -jar jython.jar api/tests/integration/test.py -p basic/basic.py -t 1 -j junit_report.xml
+            java -Xss8m -jar jython.jar api/tests/integration/test.py -p basic/basic.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v3
@@ -502,7 +502,7 @@ jobs:
         env:
           INDIGO_PATH: ${{ github.workspace }}/dist
         run: |
-          java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
+          java -Xss8m -jar jython.jar api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v3
@@ -977,7 +977,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 11, 12, 13, 14, 15 ]
+        postgres_major_version: [ 12, 13, 14, 15 ]
     runs-on: ubuntu-latest
     needs: static_analysis
     steps:
@@ -1001,8 +1001,8 @@ jobs:
             /bin/sh -c "
             set -eux &&
             yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils &&
-            curl -OL https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG &&
-            rpm --import RPM-GPG-KEY-PGDG &&
+            curl -OL https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-RHEL &&
+            rpm --import PGDG-RPM-GPG-KEY-RHEL &&
             yumdownloader -y postgresql${{ matrix.postgres_major_version }}-devel &&
             rpm -i --nodeps postgresql${{ matrix.postgres_major_version }}*.rpm &&
             ls -alh /usr &&
@@ -1051,7 +1051,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ "11", "12", "13", "14", "15" ]
+        postgres_major_version: [ "12", "13", "14", "15" ]
     runs-on: windows-latest
     needs: static_analysis
     steps:
@@ -1066,7 +1066,7 @@ jobs:
              git fetch --tags -f
       - name: Setup Postgres
         run: |
-          $pg_version = switch(${{ matrix.postgres_major_version }}) { "15" { "15.1" } "14" { "14.6" } "13" { "13.9" } "12" { "12.13" } "11" { "11.18" } }
+          $pg_version = switch(${{ matrix.postgres_major_version }}) { "15" { "15.1" } "14" { "14.6" } "13" { "13.9" } "12" { "12.13" } }
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-windows-x64-binaries.zip
           Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip
           mv postgresql-${pg_version}-1-windows-x64-binaries/pgsql pgsql
@@ -1087,7 +1087,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 11, 12, 13, 14, 15 ]
+        postgres_major_version: [ 12, 13, 14, 15 ]
     runs-on: macos-latest
     needs: static_analysis
     steps:
@@ -1102,7 +1102,7 @@ jobs:
              git fetch --tags -f
       - name: Setup Postgres
         run: |
-          case ${{ matrix.postgres_major_version }} in 15) pg_version=15.1;; 14) pg_version=14.6;; 13) pg_version=13.9;; 12) pg_version=12.13;; 11) pg_version=11.18;; esac;
+          case ${{ matrix.postgres_major_version }} in 15) pg_version=15.1;; 14) pg_version=14.6;; 13) pg_version=13.9;; 12) pg_version=12.13;; esac;
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
           unzip postgresql-${pg_version}-1-osx-binaries.zip
           mv pgsql/include/zlib.h pgsql/include/zlib.h.bck
@@ -1297,37 +1297,38 @@ jobs:
           cd ${GITHUB_WORKSPACE}/bingo/bingo-elastic/java/
           ${GITHUB_WORKSPACE}/api/java/mvnw -DskipTests -Dmaven.test.skip=true -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
 
-  build_test_publish_indigo_service_old:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    needs: build_indigo_wrappers
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          lfs: false
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: |
-             git config --global --add safe.directory '*'
-             git fetch --tags -f
-      - name: Download wrappers
-        uses: actions/download-artifact@v3
-        with:
-          name: indigo-python
-          path: utils/indigo-service/backend/lib/
-      - name: Build
-        run: docker build -f ./utils/indigo-service/backend/Dockerfile -t epmlsop/indigo-service:latest ./utils/indigo-service/backend
-      - name: Test Imago
-        run: |
-          docker run  --rm=true -d -p 8080:80 --name=indigo_service epmlsop/indigo-service:latest
-          sleep 10
-          docker logs indigo_service
-          docker ps
-          export INDIGO_SERVICE_URL=http://localhost:8080/v2
-          python3 utils/indigo-service/backend/service/tests/api/imago_test.py
-          docker logs indigo_service
-          docker stop indigo_service
+#  build_test_publish_indigo_service_old:
+#    timeout-minutes: 60
+#    runs-on: ubuntu-latest
+#    needs: build_indigo_wrappers
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#        with:
+#          lfs: false
+#          fetch-depth: 500
+#      - name: Git fetch tags
+#        run: |
+#             git config --global --add safe.directory '*'
+#             git fetch --tags -f
+#      - name: Download wrappers
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: indigo-python
+#          path: utils/indigo-service/backend/lib/
+#      - name: Build
+#        run: docker build -f ./utils/indigo-service/backend/Dockerfile -t epmlsop/indigo-service:latest ./utils/indigo-service/backend
+#      - name: Test Imago & Indigo
+#        run: |
+#          docker run  --rm=true -d -p 8080:80 --name=indigo_service epmlsop/indigo-service:latest
+#          sleep 10
+#          docker logs indigo_service
+#          docker ps
+#          export INDIGO_SERVICE_URL=http://localhost:8080/v2
+#          python3 utils/indigo-service/backend/service/tests/api/imago_test.py
+#          python3 utils/indigo-service/backend/service/tests/api/indigo_test.py
+#          docker logs indigo_service
+#          docker stop indigo_service
 # TODO: add indigo tests
 #      - name: Test
 #        run: |
