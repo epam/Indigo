@@ -565,7 +565,7 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x
         result_data = json.loads(result.text)
         self.assertEqual("C1C=CC=CC=1.C1C=CC=CC=1", result_data["struct"])
 
-    def test_convert_cdx(self):
+    def test_convert_large_cdx(self):
         ref_path = joinPathPy("ref/", __file__)
         with open(ref_path + "/large.cdx.base64") as f:
             cdx = f.read()
