@@ -1297,38 +1297,38 @@ jobs:
           cd ${GITHUB_WORKSPACE}/bingo/bingo-elastic/java/
           ${GITHUB_WORKSPACE}/api/java/mvnw -DskipTests -Dmaven.test.skip=true -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
 
-  build_test_publish_indigo_service_old:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    needs: build_indigo_wrappers
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          lfs: false
-          fetch-depth: 500
-      - name: Git fetch tags
-        run: |
-             git config --global --add safe.directory '*'
-             git fetch --tags -f
-      - name: Download wrappers
-        uses: actions/download-artifact@v3
-        with:
-          name: indigo-python
-          path: utils/indigo-service/backend/lib/
-      - name: Build
-        run: docker build -f ./utils/indigo-service/backend/Dockerfile -t epmlsop/indigo-service:latest ./utils/indigo-service/backend
-      - name: Test Imago & Indigo
-        run: |
-          docker run  --rm=true -d -p 8080:80 --name=indigo_service epmlsop/indigo-service:latest
-          sleep 10
-          docker logs indigo_service
-          docker ps
-          export INDIGO_SERVICE_URL=http://localhost:8080/v2
-          python3 utils/indigo-service/backend/service/tests/api/imago_test.py
-          python3 utils/indigo-service/backend/service/tests/api/indigo_test.py
-          docker logs indigo_service
-          docker stop indigo_service
+#  build_test_publish_indigo_service_old:
+#    timeout-minutes: 60
+#    runs-on: ubuntu-latest
+#    needs: build_indigo_wrappers
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#        with:
+#          lfs: false
+#          fetch-depth: 500
+#      - name: Git fetch tags
+#        run: |
+#             git config --global --add safe.directory '*'
+#             git fetch --tags -f
+#      - name: Download wrappers
+#        uses: actions/download-artifact@v3
+#        with:
+#          name: indigo-python
+#          path: utils/indigo-service/backend/lib/
+#      - name: Build
+#        run: docker build -f ./utils/indigo-service/backend/Dockerfile -t epmlsop/indigo-service:latest ./utils/indigo-service/backend
+#      - name: Test Imago & Indigo
+#        run: |
+#          docker run  --rm=true -d -p 8080:80 --name=indigo_service epmlsop/indigo-service:latest
+#          sleep 10
+#          docker logs indigo_service
+#          docker ps
+#          export INDIGO_SERVICE_URL=http://localhost:8080/v2
+#          python3 utils/indigo-service/backend/service/tests/api/imago_test.py
+#          python3 utils/indigo-service/backend/service/tests/api/indigo_test.py
+#          docker logs indigo_service
+#          docker stop indigo_service
 # TODO: add indigo tests
 #      - name: Test
 #        run: |
