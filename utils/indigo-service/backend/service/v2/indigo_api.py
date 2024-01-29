@@ -907,7 +907,7 @@ def has_explicit_hydrogens(molecule):
             # atom.atomicNumber can raise exception for non-standard atoms
             # just skip these atoms
             continue
-        return False
+    return False
 
 
 class ExplicitHCalcExpection(IndigoException):
