@@ -442,7 +442,7 @@ namespace indigo
         }
         else if (mode == "unfold")
         {
-            _checkResult(indigoUnoldHydrogens(iko.id()));
+            _checkResult(indigoUnfoldHydrogens(iko.id()));
         }
         else if (mode == "auto")
         {
