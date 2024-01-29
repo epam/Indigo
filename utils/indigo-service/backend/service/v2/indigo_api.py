@@ -1001,9 +1001,9 @@ def convert_explicit_hydrogens():
         fold = False
     else:
         try:
-            fold = has_explicit_hydrogens(data.struct)
+            fold = has_explicit_hydrogens(md.struct)
         except IndigoException:  # Looks like this is reaction
-            for molecule in data.struct.iterateMolecules():
+            for molecule in md.struct.iterateMolecules():
                 if has_explicit_hydrogens(molecule):
                     fold = True
                     break
