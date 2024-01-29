@@ -344,7 +344,7 @@ int parseParams(Params* p, int argc, char* argv[])
             strcasecmp(p->infile_ext, "ket") == 0 || strcasecmp(p->infile_ext, "xml") == 0 || strcasecmp(p->infile_ext, "sd1") == 0)
             p->mode = MODE_SINGLE_MOLECULE;
         else if (strcasecmp(p->infile_ext, "rxn") == 0 || strcasecmp(p->infile_ext, "ker") == 0 || strcasecmp(p->infile_ext, "cdr") == 0 ||
-                 strcasecmp(p->infile_ext, "xmr") == 0)
+                 strcasecmp(p->infile_ext, "xmr") == 0 || strcasecmp(p->infile_ext, "r64") == 0)
         {
             p->mode = MODE_SINGLE_REACTION;
         }
