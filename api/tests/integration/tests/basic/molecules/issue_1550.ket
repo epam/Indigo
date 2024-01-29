@@ -14,11 +14,11 @@
             {
                 "label": "A",
                 "location": [
-                    0.0,
-                    0.0,
+                    2.0,
+                    2.0,
                     0.0
                 ],
-                "explicitValence": 4
+                "explicitValence": 2
             }
         ]
     }
