@@ -897,6 +897,23 @@ def convert():
         )
 
 
+def has_explicit_hydrogens(molecule):
+    for atom in molecule.iterateAtoms():
+        try:
+            if atom.atomicNumber() == 1 and atom.degree() > 0:
+                # Hydrogen connected to something - fold
+                return True
+        except IndigoException:
+            # atom.atomicNumber can raise exception for non-standard atoms
+            # just skip these atoms
+            continue
+        return False
+
+
+class ExplicitHCalcExpection(IndigoException):
+    pass
+
+
 @indigo_api.route("/convert_explicit_hydrogens", methods=["POST"])
 @check_exceptions
 def convert_explicit_hydrogens():
@@ -983,18 +1000,13 @@ def convert_explicit_hydrogens():
     elif mode == "unfold":
         fold = False
     else:
-        iatoms = md.struct.iterateAtoms()
-        while iatoms.hasNext():
-            atom = iatoms.next()
-            try:
-                if atom.atomicNumber() == 1 and atom.degree() > 0:
-                    # Hydrogen connected to something - fold
+        try:
+            fold = has_explicit_hydrogens(data.struct)
+        except IndigoException:  # Looks like this is reaction
+            for molecule in data.struct.iterateMolecules():
+                if has_explicit_hydrogens(molecule):
                     fold = True
                     break
-            except IndigoException:
-                # atom.atomicNumber can raise exception for non-standard atoms
-                # just skip these atoms
-                continue
     if fold:
         md.struct.foldHydrogens()
     else:
