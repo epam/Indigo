@@ -940,6 +940,7 @@ namespace indigo
         bool _is_binary;
         bool _is_fragment;
         bool _has_bounding_box;
+        bool _has_scheme;
 
     private:
         MoleculeCdxmlLoader(const MoleculeCdxmlLoader&); // no implicit copy

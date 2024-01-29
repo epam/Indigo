@@ -68,3 +68,9 @@ test_qmol_unfold("issue_1573_2.ket")
 
 print("\n******* Test unfold selected atoms *******")
 test_mol_unfold("issue_1589.ket")
+
+print("\n******* Test unfold bad valence *******")
+test_mol_unfold("issue_1538.ket")
+
+print("\n******* Test unfold any atom with valence *******")
+test_qmol_unfold("issue_1550.ket")

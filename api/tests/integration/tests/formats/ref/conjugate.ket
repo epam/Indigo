@@ -255,12 +255,6 @@
             },
             {
                 "$ref": "monomer84"
-            },
-            {
-                "$ref": "monomer85"
-            },
-            {
-                "$ref": "monomer86"
             }
         ],
         "connections": [
@@ -487,11 +481,11 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer85",
+                    "monomerId": "monomer84",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer84",
+                    "monomerId": "monomer62",
                     "attachmentPointId": "R2"
                 }
             },
@@ -839,17 +833,6 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer85",
-                    "attachmentPointId": "R3"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer86",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
                     "monomerId": "monomer40",
                     "attachmentPointId": "R3"
                 },
@@ -866,17 +849,6 @@
                 },
                 "endpoint2": {
                     "monomerId": "monomer39",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer62",
-                    "attachmentPointId": "R2"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer85",
                     "attachmentPointId": "R1"
                 }
             },
@@ -1247,6 +1219,9 @@
             },
             {
                 "$ref": "monomerTemplate-Glu_16"
+            },
+            {
+                "$ref": "monomerTemplate-Cyt_17"
             },
             {
                 "$ref": "monomerTemplate-P"
@@ -1958,8 +1933,8 @@
             "x": 11.954094886779786,
             "y": -10.458263397216797
         },
-        "alias": "P",
-        "templateId": "P"
+        "alias": "C",
+        "templateId": "Cyt_17"
     },
     "monomer63": {
         "type": "monomer",
@@ -2201,28 +2176,6 @@
         },
         "alias": "SMCC",
         "templateId": "SMCC_15"
-    },
-    "monomer85": {
-        "type": "monomer",
-        "id": "85",
-        "seqid": 23,
-        "position": {
-            "x": 13.071296691894532,
-            "y": -6.384556770324707
-        },
-        "alias": "dR",
-        "templateId": "dRib"
-    },
-    "monomer86": {
-        "type": "monomer",
-        "id": "86",
-        "seqid": 23,
-        "position": {
-            "x": 13.071296691894532,
-            "y": -7.984556674957275
-        },
-        "alias": "C",
-        "templateId": "Cyt"
     },
     "monomerTemplate-Asp_5": {
         "type": "monomerTemplate",
@@ -4523,6 +4476,324 @@
                 "atoms": [
                     0,
                     1
+                ]
+            }
+        ]
+    },
+    "monomerTemplate-Cyt_17": {
+        "type": "monomerTemplate",
+        "id": "Cyt_17",
+        "class": "XLINKDNA",
+        "classHELM": "RNA",
+        "alias": "C",
+        "name": "C",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 9
+            },
+            {
+                "attachmentAtom": 1
+            }
+        ],
+        "atoms": [
+            {
+                "label": "N",
+                "location": [
+                    13.263099670410157,
+                    -10.526300430297852,
+                    0.0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    11.545900344848633,
+                    -14.174300193786621,
+                    0.0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    12.07960033416748,
+                    -11.033300399780274,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    12.97189998626709,
+                    -11.688899993896485,
+                    0.0
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    12.640399932861329,
+                    -12.703300476074219,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    11.545900344848633,
+                    -12.703300476074219,
+                    0.0
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    11.20009994506836,
+                    -11.674400329589844,
+                    0.0
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    10.172300338745118,
+                    -11.351200103759766,
+                    0.0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    9.844599723815918,
+                    -10.309599876403809,
+                    0.0
+                ]
+            },
+            {
+                "label": "P",
+                "location": [
+                    8.496299743652344,
+                    -9.783599853515625,
+                    0.0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    8.496299743652344,
+                    -8.698599815368653,
+                    0.0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    8.496299743652344,
+                    -10.868499755859375,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    14.327899932861329,
+                    -10.079299926757813,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    12.26140022277832,
+                    -9.72659969329834,
+                    0.0
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    14.579899787902832,
+                    -8.89579963684082,
+                    0.0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    15.26609992980957,
+                    -10.84000015258789,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    12.522899627685547,
+                    -8.56980037689209,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    13.583200454711914,
+                    -8.128600120544434,
+                    0.0
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    13.833700180053711,
+                    -6.951600074768066,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    16,
+                    17
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    17,
+                    18
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    14,
+                    17
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    13,
+                    16
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    12,
+                    15
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    12,
+                    14
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    13
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    12
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    7,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    5,
+                    1
+                ],
+                "stereo": 6
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    0
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    7
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    5,
+                    4
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    9,
+                    11
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    9,
+                    10
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    8,
+                    9
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    2
                 ]
             }
         ]

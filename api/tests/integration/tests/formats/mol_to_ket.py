@@ -45,6 +45,7 @@ files = [
     "acgt_1412",
     "apamine",
     "1465-lr_sugar",
+    "removed_phosphate",
 ]
 
 files.sort()

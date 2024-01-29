@@ -55,7 +55,7 @@ void ChunkStorage::add(const Array<char>& data)
 
 void ChunkStorage::add(const char* str)
 {
-    add((const byte*)str, strlen(str) + 1);
+    add(reinterpret_cast<const byte*>(str), static_cast<int>(strlen(str) + 1));
 }
 
 byte* ChunkStorage::get(int i)

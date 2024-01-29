@@ -484,7 +484,7 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                 if (rcenter)
                 {
                     writer.Key("center");
-                    writer.Uint(rcenter);
+                    writer.Int(rcenter);
                 }
             }
 
@@ -583,8 +583,8 @@ void MoleculeJsonSaver::saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWr
 
 void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, JsonWriter& writer)
 {
-    int ca = mol.countSelectedAtoms();
-    int cb = mol.countSelectedBonds();
+    int ca = mol.countHighlightedAtoms();
+    int cb = mol.countHighlightedBonds();
     if (ca || cb)
     {
         writer.Key("highlight");

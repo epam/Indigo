@@ -19,6 +19,11 @@
 #ifndef __scanner_h__
 #define __scanner_h__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include "base_cpp/array.h"
 #include "base_cpp/io_base.h"
 #include "base_cpp/obj_array.h"
@@ -157,5 +162,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

@@ -19,6 +19,9 @@
 #ifndef __base_molecule__
 #define __base_molecule__
 
+#include <map>
+#include <set>
+
 #include "base_cpp/obj_array.h"
 #include "base_cpp/properties_map.h"
 #include "base_cpp/red_black.h"
@@ -36,9 +39,6 @@
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_tgroups.h"
 #include "molecule/monomers_lib.h"
-
-#include <map>
-#include <set>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -124,6 +124,22 @@ namespace indigo
     public:
         friend class MoleculeCIPCalculator;
         typedef std::map<int, int> Mapping;
+
+        class MonomerFilterBase
+        {
+        public:
+            MonomerFilterBase(BaseMolecule& mol, const std::unordered_map<int, std::map<int, int>>& directions_map) : _mol(mol), _directions_map(directions_map)
+            {
+            }
+            virtual bool operator()(int atom_idx) const = 0;
+            virtual ~MonomerFilterBase()
+            {
+            }
+
+        protected:
+            const std::unordered_map<int, std::map<int, int>>& _directions_map;
+            BaseMolecule& _mol;
+        };
 
         struct TemplateAttPoint
         {
@@ -216,6 +232,7 @@ namespace indigo
         int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
         void transformSuperatomsToTemplates(int template_id);
+        void transformTemplatesToSuperatoms(MonomerFilterBase& filter);
 
         virtual bool isRSite(int atom_idx) = 0;
         virtual dword getRSiteBits(int atom_idx) = 0;
@@ -551,6 +568,7 @@ namespace indigo
 
         int _transformTGroupToSGroup(int idx, int t_idx);
         int _transformSGroupToTGroup(int idx, int& tg_id);
+
         void _fillTemplateSeqIds();
         bool _isCTerminus(Superatom& su, int idx);
         bool _isNTerminus(Superatom& su, int idx);

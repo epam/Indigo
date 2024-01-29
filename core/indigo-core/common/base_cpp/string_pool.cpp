@@ -45,7 +45,7 @@ int StringPool::_add(const char* str, int size)
         throw Error("Internal error: size == -1 && str == 0");
 
     if (size == -1)
-        size = strlen(str);
+        size = static_cast<int>(strlen(str));
     _storage.at(idx).resize(size + 1);
     if (str != 0 && size != 0)
         memcpy(at(idx), str, size);
@@ -55,7 +55,7 @@ int StringPool::_add(const char* str, int size)
 
 void StringPool::set(int idx, const char* str)
 {
-    int size = strlen(str);
+    int size = static_cast<int>(strlen(str));
     _storage.at(idx).resize(size + 1);
     if (str != 0 && size != 0)
         memcpy(at(idx), str, size);

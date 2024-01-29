@@ -28,31 +28,31 @@ namespace indigo
     class Tree : public NonCopyable
     {
     public:
-        explicit Tree(int label)
+        explicit Tree(int nlabel)
         {
-            this->label = label;
+            this->label = nlabel;
         }
 
         Tree() : Tree(-1)
         {
         }
 
-        void insert(int label, int parent)
+        void insert(int nlabel, int parent)
         {
             Tree* present = _find(parent);
             if (present != nullptr)
             {
-                present->_insert(label);
+                present->_insert(nlabel);
             }
             else
             {
-                _insert(parent)._insert(label);
+                _insert(parent)._insert(nlabel);
             }
         }
 
-        void insert(int label)
+        void insert(int nlabel)
         {
-            insert(label, -1);
+            insert(nlabel, -1);
         }
 
         ObjArray<Tree>& children()
@@ -67,31 +67,31 @@ namespace indigo
 
         int label;
 
-        inline Tree* find(int label)
+        inline Tree* find(int nlabel)
         {
-            return _find(label);
+            return _find(nlabel);
         }
 
     protected:
-        Tree& _insert(int label)
+        Tree& _insert(int nlabel)
         {
-            return _children.push(label);
+            return _children.push(nlabel);
         }
 
-        Tree* _find(int label)
+        Tree* _find(int nlabel)
         {
-            if (this->label == label)
+            if (this->label == nlabel)
             {
                 return this;
             }
             for (auto i = 0; i < _children.size(); i++)
             {
                 Tree& child = _children[i];
-                if (child.label == label)
+                if (child.label == nlabel)
                 {
                     return &child;
                 }
-                Tree* deeper = child._find(label);
+                Tree* deeper = child._find(nlabel);
                 if (deeper != nullptr)
                 {
                     return deeper;
