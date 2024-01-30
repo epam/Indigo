@@ -92,8 +92,8 @@ namespace indigo
             auto ch = str[i];
             if ((ch >= 'a' && ch <= 'z') || ((ch >= 'A' && ch <= 'Z')) || ((ch >= '0' && ch <= '9')) || ch == '+' || ch == '/')
                 continue;
-            if (i++ > (str.size() - kPadding) && ch == '=')
-                return i < str.size() ? str[i] == '=' : true;
+            if (i > (str.size() - kPadding) && ch == '=')
+                return ++i < str.size() ? str[i] == '=' : true;
             return false;
         }
         return true;
