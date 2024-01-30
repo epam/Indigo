@@ -84,10 +84,19 @@ namespace indigo
 
     bool validate_base64(const std::string& str)
     {
-        if (str.size() & 3) // check for padding
+        const int kPadding = 3;
+        if (str.size() & kPadding) // check for padding
             return false;
-        std::regex base64reg_exp("^[a-zA-Z0-9\\+/]*={0,3}$");
-        return std::regex_match(str, base64reg_exp);
+        for (int i = 0; i < str.size(); ++i)
+        {
+            auto ch = str[i];
+            if ((ch >= 'a' && ch <= 'z') || ((ch >= 'A' && ch <= 'Z')) || ((ch >= '0' && ch <= '9')) || ch == '+' || ch == '/')
+                continue;
+            if (i > (str.size() - kPadding) && ch == '=')
+                return ++i < str.size() ? str[i] == '=' : true; // check for 2nd '='
+            return false;
+        }
+        return true;
     }
 
     std::vector<std::string> split(const std::string& str, char delim)
