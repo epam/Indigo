@@ -93,7 +93,7 @@ namespace indigo
             if ((ch >= 'a' && ch <= 'z') || ((ch >= 'A' && ch <= 'Z')) || ((ch >= '0' && ch <= '9')) || ch == '+' || ch == '/')
                 continue;
             if (i > (str.size() - kPadding) && ch == '=')
-                return ++i < str.size() ? str[i] == '=' : true;
+                return ++i < str.size() ? str[i] == '=' : true; // check for 2nd '='
             return false;
         }
         return true;
