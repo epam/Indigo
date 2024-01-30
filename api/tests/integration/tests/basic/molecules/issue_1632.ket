@@ -13,7 +13,6 @@
         "atoms": [
             {
                 "label": "C",
-                "selected": true,
                 "location": [
                     12.6,
                     -10.6,
@@ -22,6 +21,7 @@
             },
             {
                 "label": "C",
+                "selected": true,
                 "location": [
                     13.5,
                     -10.1,
