@@ -322,6 +322,7 @@ public:
     bool molfile_saving_add_mrv_sma;
     bool json_saving_add_stereo_desc;
     bool json_saving_pretty;
+    bool json_use_native_precision;
     bool smiles_saving_write_name;
     bool smiles_saving_smarts_mode;
 
