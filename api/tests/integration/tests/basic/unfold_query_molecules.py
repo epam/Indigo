@@ -20,7 +20,7 @@ indigo.setOption("json-saving-pretty", "1")
 
 
 def test_qmol_unfold(filename):
-    print("\ntesting filename:\n%s" % filename)
+    print("testing filename: %s" % filename)
     molecule = indigo.loadQueryMoleculeFromFile(ket_path + filename)
     molecule.unfoldHydrogens()
     unfolded = molecule.json()
@@ -40,3 +40,9 @@ def test_qmol_unfold(filename):
 
 print("******* Test unfold aromatic ring *******")
 test_qmol_unfold("issue_1525.ket")
+
+print("******* Test unfold fullerene *******")
+test_qmol_unfold("issue_1573.ket")
+
+print("******* Test unfold fullerene with second component *******")
+test_qmol_unfold("issue_1573_2.ket")

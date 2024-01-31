@@ -1,5 +1,9 @@
 ******* Test unfold aromatic ring *******
-
-testing filename:
-issue_1525.ket
+testing filename: issue_1525.ket
+Unfolded KET equal to expected
+******* Test unfold fullerene *******
+testing filename: issue_1573.ket
+Unfolded KET equal to expected
+******* Test unfold fullerene with second component *******
+testing filename: issue_1573_2.ket
 Unfolded KET equal to expected
