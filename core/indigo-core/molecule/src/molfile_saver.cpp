@@ -163,6 +163,7 @@ void MolfileSaver::_handleMonomers(BaseMolecule& mol)
             }
         }
     }
+
 }
 
 void MolfileSaver::_handleCIP(BaseMolecule& mol)
@@ -1137,7 +1138,7 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
     if (tgroup.tgroup_name.size() > 0)
         out.printf("%s", tgroup.tgroup_name.ptr());
     if (tgroup.tgroup_alias.size() > 0)
-        out.printf("/%s", tgroup.tgroup_alias.ptr());
+        out.printf(isAminoAcidClass(tgroup.tgroup_class.ptr()) ? "/%s/" : "/%s", tgroup.tgroup_alias.ptr());
     if (tgroup.tgroup_natreplace.size() > 0)
         out.printf(" NATREPLACE=%s", tgroup.tgroup_natreplace.ptr());
     if (tgroup.tgroup_comment.size() > 0)
