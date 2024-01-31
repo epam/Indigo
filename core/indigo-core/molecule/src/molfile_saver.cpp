@@ -129,6 +129,14 @@ void MolfileSaver::_handleMonomers(BaseMolecule& mol)
     std::map<int, std::map<int, int>> layout_sequence;
     sl.calculateLayout(0, layout_sequence);
     const auto& directions_map = sl.directionsMap();
+    _calculateSEQIDs(mol, directions_map, layout_sequence);
+    MonomersToSgroupFilter mon_filter(mol, directions_map);
+    mol.transformTemplatesToSuperatoms(mon_filter);
+}
+
+void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::unordered_map<int, std::map<int, int>>& directions_map,
+                                    const std::map<int, std::map<int, int>>& layout_sequence)
+{
     for (auto& row : layout_sequence)
     {
         int seq_id = 1;
@@ -163,7 +171,6 @@ void MolfileSaver::_handleMonomers(BaseMolecule& mol)
             }
         }
     }
-
 }
 
 void MolfileSaver::_handleCIP(BaseMolecule& mol)

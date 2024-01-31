@@ -86,6 +86,7 @@ namespace indigo
         void _saveMolecule(BaseMolecule& mol, bool query);
         void _handleCIP(BaseMolecule& mol);
         void _handleMonomers(BaseMolecule& mol);
+        void _calculateSEQIDs(BaseMolecule& mol, const std::unordered_map<int, std::map<int, int>>& directions_map, const std::map<int, std::map<int, int>>& layout_sequence);
 
         void _writeHeader(BaseMolecule& mol, Output& output, bool zcoord);
         void _writeCtabHeader(Output& output);
