@@ -4609,4 +4609,3 @@ void BaseMolecule::transformTemplatesToSuperatoms(MonomerFilterBase& filter)
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
-
