@@ -87,13 +87,14 @@ namespace indigo
         const int kPadding = 3;
         if (str.size() & kPadding) // check for padding
             return false;
-        for (int i = 0; i < str.size(); ++i)
+        int sz = static_cast<int>(str.size());
+        for (int i = 0; i < sz; ++i)
         {
             auto ch = str[i];
             if ((ch >= 'a' && ch <= 'z') || ((ch >= 'A' && ch <= 'Z')) || ((ch >= '0' && ch <= '9')) || ch == '+' || ch == '/')
                 continue;
-            if (i > (str.size() - kPadding) && ch == '=')
-                return ++i < str.size() ? str[i] == '=' : true; // check for 2nd '='
+            if (i > (sz - kPadding) && ch == '=')
+                return ++i < sz ? str[i] == '=' : true; // check for 2nd '='
             return false;
         }
         return true;
