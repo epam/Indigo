@@ -40,3 +40,9 @@ testing filename:
 issue_1632.ket
 Unfolded KET equal to expected
 Folded KET equal to original
+
+******* Test unfold two selected with one unselected molecules *******
+testing filename:
+issue_1640.ket
+Unfolded KET equal to expected
+Folded KET equal to original
