@@ -38,6 +38,15 @@ namespace indigo
     class DLLEXPORT MolfileSaver
     {
     public:
+        class MonomersToSgroupFilter : public BaseMolecule::MonomerFilterBase
+        {
+        public:
+            MonomersToSgroupFilter(BaseMolecule& mol, const std::unordered_map<int, std::map<int, int>>& directions_map)
+                : MonomerFilterBase(mol, directions_map)
+            {
+            }
+            bool operator()(int atom_idx) const override;
+        };
         enum
         {
             MODE_AUTO = 0, // save to v3000 only if the given molecule has any

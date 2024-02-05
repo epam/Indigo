@@ -157,7 +157,7 @@ void MolfileSaver::_handleMonomers(BaseMolecule& mol)
                             }
                         }
                     }
-                    else if (isAminoAcidClass(mon_class) || mon_class == kMonomerClassPHOSPHATE)
+                    else if (isAminoAcidClass(mon_class) || isNucleotideClass(mon_class) || mon_class == kMonomerClassPHOSPHATE)
                         seq_id++;
                 }
             }
@@ -2168,5 +2168,23 @@ bool MolfileSaver::_hasNeighborEitherBond(BaseMolecule& mol, int edge_idx)
     for (k = end.neiBegin(); k != end.neiEnd(); k = end.neiNext(k))
         if (mol.getBondDirection2(edge.end, end.neiVertex(k)) == BOND_EITHER)
             return true;
+    return false;
+}
+
+bool MolfileSaver::MonomersToSgroupFilter::operator()(int atom_idx) const
+{
+    std::string mon_class = _mol.getTemplateAtomClass(atom_idx);
+    _mol.getTemplateAtomAttachmentPointsCount(atom_idx);
+    if (isAminoAcidClass(mon_class))
+    {
+        auto it = _directions_map.find(atom_idx);
+        if (it != _directions_map.end())
+        {
+            auto& dirs_map = it->second;
+            // if R3 is in use, convert the template to S-Group
+            if (dirs_map.find(kBranchAttachmentPointIdx) != dirs_map.end())
+                return true;
+        }
+    }
     return false;
 }

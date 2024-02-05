@@ -2116,13 +2116,18 @@ void MolfileLoader::_postLoad()
                 auto atom_name = _bmol->getTemplateAtom(atom_idx);
                 auto nt_it = nucleo_templates.find(atom_name);
                 if (nt_it != nucleo_templates.end())
-                    tg_idx = nt_it->second;
+                {
+                    if (_expandNucleotide(atom_idx, nt_it->second, new_templates))
+                        templates_to_remove.insert(nt_it->second);
+                }
+                else
+                {
+                    // TODO: handle missing template case
+                }
             }
-
-            if (tg_idx != -1)
+            else // tg_idx != -1 means the template is converted from S-Group
             {
-                if (_expandNucleotide(atom_idx, tg_idx, new_templates))
-                    templates_to_remove.insert(tg_idx);
+                // TODO: handle modified monomer. Currently it leaves as is.
             }
         }
     }
