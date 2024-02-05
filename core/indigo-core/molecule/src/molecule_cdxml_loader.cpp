@@ -121,6 +121,7 @@ void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
 void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 {
     _initMolecule(mol);
+    _has_scheme = false;
     std::unique_ptr<CDXReader> cdx_reader = _is_binary ? std::make_unique<CDXReader>(_scanner) : std::make_unique<CDXMLReader>(_scanner);
     cdx_reader->process();
     auto root = cdx_reader->rootElement();
@@ -136,7 +137,7 @@ void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 
     _parseCollections(mol);
     int arrows_count = mol.meta().getMetaCount(KETReactionArrow::CID);
-    if (arrows_count && !load_arrows)
+    if (arrows_count && !load_arrows && _has_scheme)
         throw Error("Not a molecule. Found %d arrows.", arrows_count);
 }
 
@@ -324,6 +325,11 @@ void MoleculeCdxmlLoader::_parseCDXMLPage(CDXElement elem)
         if (page_elem.value() == "page")
         {
             _parseCDXMLElements(page_elem.firstChildElement());
+            for (auto cdxml_elem = page_elem.firstChildElement(); cdxml_elem.hasContent(); cdxml_elem = cdxml_elem.nextSiblingElement())
+            {
+                if (cdxml_elem.value() == "scheme")
+                    _has_scheme = true;
+            }
         }
     }
 }
