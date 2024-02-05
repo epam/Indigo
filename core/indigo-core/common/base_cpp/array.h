@@ -185,6 +185,11 @@ namespace indigo
             }
         }
 
+        void copy(const T* other, std::size_t count)
+        {
+            copy(other, static_cast<int>(count));
+        }
+
         void concat(const Array<T>& other)
         {
             concat(other._array, other.size());

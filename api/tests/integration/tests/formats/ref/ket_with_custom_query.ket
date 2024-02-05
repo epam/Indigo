@@ -50,14 +50,14 @@
                 ]
             },
             {
-                "label": "",
+                "label": "A",
                 "location": [
                     7.203820705413818,
                     -7.050033092498779,
                     0.0
                 ],
                 "queryProperties": {
-                    "customQuery": "C&X3,N&X2"
+                    "customQuery": "[C&X3,N&X2]"
                 }
             }
         ],
