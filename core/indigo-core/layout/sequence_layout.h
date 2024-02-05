@@ -40,10 +40,10 @@ namespace indigo
     public:
         struct PriorityElement
         {
-            PriorityElement(int dir, int atom_idx, int col, int row) : dir(dir), atom_idx(atom_idx), col(col), row(row)
+            PriorityElement(int priority, int atom_idx, int col, int row) : priority(priority), atom_idx(atom_idx), col(col), row(row)
             {
             }
-            int dir;
+            int priority;
             int atom_idx;
             int col;
             int row;

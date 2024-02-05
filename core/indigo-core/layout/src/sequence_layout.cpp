@@ -108,8 +108,12 @@ void SequenceLayout::calculateLayout(int first_atom_idx, std::map<int, std::map<
     _molecule.getTemplateAtomDirectionsMap(_directions_map);
 
     // place first atom
-    auto comparePair = [](const PriorityElement& lhs, const PriorityElement& rhs) { return lhs.dir > rhs.dir; };
+    auto comparePair = [](const PriorityElement& lhs, const PriorityElement& rhs) { return lhs.priority > rhs.priority; };
     std::priority_queue<PriorityElement, std::vector<PriorityElement>, decltype(comparePair)> pq(comparePair);
+
+    int col = 0;
+    int row = 0;
+
 
     auto dirs_it = _directions_map.find(first_atom_idx);
     if (dirs_it != _directions_map.end() && dirs_it->second.size())
@@ -127,7 +131,8 @@ void SequenceLayout::calculateLayout(int first_atom_idx, std::map<int, std::map<
         if (vertices_visited[current_atom_idx] == 0)
         {
             vertices_visited[current_atom_idx] = 1; // mark as passed
-            layout_sequence[te.row][te.col] = current_atom_idx;
+            if (isBackboneClass(_molecule.getTemplateAtomClass(current_atom_idx)))
+                layout_sequence[te.row][te.col] = current_atom_idx; // store only backbones
             for (const auto& dir : _directions_map[current_atom_idx])
             {
                 int col = te.col;

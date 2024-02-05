@@ -130,8 +130,8 @@ void MolfileSaver::_handleMonomers(BaseMolecule& mol)
     sl.calculateLayout(0, layout_sequence);
     const auto& directions_map = sl.directionsMap();
     _calculateSEQIDs(mol, directions_map, layout_sequence);
-    MonomersToSgroupFilter mon_filter(mol, directions_map);
-    mol.transformTemplatesToSuperatoms(mon_filter);
+    // MonomersToSgroupFilter mon_filter(mol, directions_map);
+    // mol.transformTemplatesToSuperatoms(mon_filter);
 }
 
 void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::unordered_map<int, std::map<int, int>>& directions_map,
