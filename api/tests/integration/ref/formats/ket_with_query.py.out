@@ -8,3 +8,5 @@ ket_with_custom_query.ket:SUCCEED
 ket_with_implicit_h_count.ket:SUCCEED
 *** KET with lists ***
 ket_with_lists.ket:SUCCEED
+*** Issue 1567 ***
+ket_with_custom_query_issue1567.ket:SUCCEED
