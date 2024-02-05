@@ -453,7 +453,7 @@ namespace indigo
                 IndigoObject atom(_checkResult(indigoNext(iatoms.id)));
                 // indigoAtomicNumber can return -1 for non-standard atoms
                 // just skip these atoms
-                if (indigoAtomicNumber(atom.id) == 1) // hydrogen
+                if (indigoAtomicNumber(atom.id) == 1 && indigoDegree(atom.id) > 0) // hydrogen
                 {
                     fold = true;
                     break;
