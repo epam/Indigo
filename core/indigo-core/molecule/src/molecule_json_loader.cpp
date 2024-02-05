@@ -372,6 +372,15 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                 _pqmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), atomlist.release()));
         }
 
+        if (a.HasMember("selected"))
+        {
+            if (a["selected"].GetBool())
+                if (_pmol)
+                    _pmol->selectAtom(atom_idx);
+                else
+                    _pqmol->selectAtom(atom_idx);
+        }
+
         if (a.HasMember("ringBondCount"))
         {
             if (_pqmol)
@@ -632,6 +641,7 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
     {
         const Value& b = bonds[i];
         const Value& refs = b["atoms"];
+        int bond_idx = 0;
         if (b.HasMember("customQuery"))
         {
             if (!_pqmol)
@@ -643,7 +653,7 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
             {
                 int begin = refs[0].GetInt();
                 int end = refs[1].GetInt();
-                _pqmol->addBond(begin, end, bond.release());
+                bond_idx = _pqmol->addBond(begin, end, bond.release());
             }
             else
             {
@@ -680,7 +690,6 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
             {
                 int a1 = refs[0].GetInt();
                 int a2 = refs[1].GetInt();
-                int bond_idx = 0;
                 int direction = BOND_ZERO;
                 if (_pqmol && stereo && order == BOND_SINGLE)
                 {
@@ -729,6 +738,16 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
                 // TODO:
             }
         }
+        if (b.HasMember("selected"))
+        {
+            if (b["selected"].GetBool())
+            {
+                if (_pmol)
+                    _pmol->selectBond(bond_idx);
+                else
+                    _pqmol->selectBond(bond_idx);
+            }
+        }
     }
 }
 
@@ -750,29 +769,6 @@ void indigo::MoleculeJsonLoader::parseHighlight(const rapidjson::Value& highligh
             {
                 for (rapidjson::SizeType j = 0; j < items.Size(); ++j)
                     mol.highlightBond(items[j].GetInt());
-            }
-        }
-    }
-}
-
-void indigo::MoleculeJsonLoader::parseSelection(const rapidjson::Value& selection, BaseMolecule& mol)
-{
-    for (rapidjson::SizeType i = 0; i < selection.Size(); ++i)
-    {
-        const rapidjson::Value& val = selection[i];
-        if (val.HasMember("entityType") && val.HasMember("items"))
-        {
-            const rapidjson::Value& items = val["items"];
-            std::string et = val["entityType"].GetString();
-            if (et == "atoms")
-            {
-                for (rapidjson::SizeType j = 0; j < items.Size(); ++j)
-                    mol.selectAtom(items[j].GetInt());
-            }
-            else if (et == "bonds")
-            {
-                for (rapidjson::SizeType j = 0; j < items.Size(); ++j)
-                    mol.selectBond(items[j].GetInt());
             }
         }
     }
@@ -1349,11 +1345,6 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             if (mol_node.HasMember("highlight"))
             {
                 parseHighlight(mol_node["highlight"], *pmol);
-            }
-
-            if (mol_node.HasMember("selection"))
-            {
-                parseSelection(mol_node["selection"], *pmol);
             }
 
             // parse SGroups

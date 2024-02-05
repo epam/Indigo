@@ -500,21 +500,23 @@ static bool _removeHydrogens(BaseMolecule& mol)
     QS_DEF(Array<int>, to_remove);
     QS_DEF(Array<int>, sterecenters_to_validate);
     int i;
+    bool no_selected_atoms = mol.countSelectedAtoms() == 0; // If no atom selected - process all atoms
 
     sterecenters_to_validate.clear();
     to_remove.clear();
     for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-        if (mol.convertableToImplicitHydrogen(i))
-        {
-            const Vertex& v = mol.getVertex(i);
-            int nei = v.neiBegin();
-            if (nei != v.neiEnd())
+        if (no_selected_atoms || mol.isAtomSelected(i))
+            if (mol.convertableToImplicitHydrogen(i))
             {
-                if (mol.getBondDirection(v.neiEdge(nei)))
-                    sterecenters_to_validate.push(v.neiVertex(nei));
+                const Vertex& v = mol.getVertex(i);
+                int nei = v.neiBegin();
+                if (nei != v.neiEnd())
+                {
+                    if (mol.getBondDirection(v.neiEdge(nei)))
+                        sterecenters_to_validate.push(v.neiVertex(nei));
+                }
+                to_remove.push(i);
             }
-            to_remove.push(i);
-        }
 
     if (to_remove.size() > 0)
         mol.removeAtoms(to_remove);

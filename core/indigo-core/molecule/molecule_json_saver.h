@@ -194,6 +194,7 @@ namespace indigo
 
         bool add_stereo_desc;
         bool pretty_json;
+        bool use_native_precision; // TODO: Remove option and use_native_precision allways - have to fix a lot of UTs
 
     protected:
         void saveRoot(BaseMolecule& mol, JsonWriter& writer);
@@ -214,7 +215,6 @@ namespace indigo
         void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
         void saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
         void saveHighlights(BaseMolecule& mol, JsonWriter& writer);
-        void saveSelection(BaseMolecule& mol, JsonWriter& writer);
 
         DECL_ERROR;
 

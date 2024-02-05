@@ -4,9 +4,7 @@
             {
                 "$ref": "mol0"
             }
-        ],
-        "connections": [],
-        "templates": []
+        ]
     },
     "mol0": {
         "type": "molecule",
