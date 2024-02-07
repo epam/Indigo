@@ -31,9 +31,9 @@ def test_unfold(filename, load_function, auto=False):
         molecule.unfoldHydrogens()
     unfolded = molecule.json()
     unfolded_list = unfolded.split("\n")
-    out_path = joinPathPy("out", __file__) + "/"
-    with open(out_path + filename, "w") as out_file:
-        out_file.write(unfolded)
+    # out_path = joinPathPy("out", __file__) + "/"
+    # with open(out_path + filename, "w") as out_file:
+    #     out_file.write(unfolded)
     with open(ref_path + filename) as ref_file:
         ref_json = ref_file.read()
     expected_list = ref_json.split("\n")
