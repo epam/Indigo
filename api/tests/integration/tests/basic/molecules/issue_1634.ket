@@ -25,12 +25,13 @@
                 "radical": 2
             },
             {
-                "label": "C",
+                "label": "N",
                 "location": [
                     2.000000,
                     -1.000000,
                     0.000000
                 ],
+                "explicitValence": 5,
                 "radical": 1
             }
         ],
@@ -48,12 +49,13 @@
         "type": "molecule",
         "atoms": [
             {
-                "label": "C",
+                "label": "N",
                 "location": [
                     4.000000,
                     -1.000000,
                     0.000000
                 ],
+                "explicitValence": 5,
                 "radical": 3
             },
             {
