@@ -46,3 +46,9 @@ testing filename:
 issue_1640.ket
 Unfolded KET equal to expected
 Folded KET equal to original
+
+******* Test unfold radicals in query molecules *******
+testing filename:
+issue_1634.ket
+Unfolded KET equal to expected
+Folded KET equal to original
