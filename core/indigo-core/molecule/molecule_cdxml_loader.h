@@ -182,12 +182,16 @@ namespace indigo
     {
     public:
         DECL_ERROR;
+
+        static constexpr int tag_size = sizeof(uint16_t);
+        static constexpr int tag_id_size = tag_size + sizeof(uint32_t);
+
         CDXProperty() : CDXProperty(nullptr)
         {
         }
 
-        CDXProperty(const void* data, const void* data_limit = nullptr, int size = 0, int first_id = 0, int style_index = -1, int style_prop = -1)
-            : _data(data), _data_limit(data_limit), _size(size), _first_id(first_id), _style_index(style_index), _style_prop(style_prop)
+        CDXProperty(const void* data, const void* data_limit = nullptr, int size = 0, bool is_object = false, int style_index = -1, int style_prop = -1)
+            : _data(data), _data_limit(data_limit), _size(size), _is_object(is_object), _style_index(style_index), _style_prop(style_prop)
         {
         }
 
@@ -203,14 +207,14 @@ namespace indigo
 
         CDXProperty next()
         {
-            return _size || _first_id ? getNextProp() : CDXProperty(attribute().Next());
+            return _size || _is_object ? getNextProp() : CDXProperty(attribute().Next());
         }
 
         CDXProperty getNextProp();
 
         std::string name()
         {
-            if (_first_id)
+            if (_is_object)
                 return "id";
 
             if (_style_prop >= 0)
@@ -234,8 +238,8 @@ namespace indigo
 
         std::string value()
         {
-            if (_first_id)
-                return formatValue((uint8_t*)&_first_id, sizeof(_first_id), 0, ECDXType::CDXObjectID);
+            if (_is_object)
+                return formatValue(reinterpret_cast<const uint8_t*>(_data) + tag_size, sizeof(_is_object), 0, ECDXType::CDXObjectID);
             return _size ? getValue() : std::string(attribute().Value());
         }
 
@@ -282,7 +286,7 @@ namespace indigo
             return ss.str();
         }
 
-        std::string formatValue(uint8_t* ptr, uint16_t value_size, uint16_t tag, ECDXType cdx_type)
+        std::string formatValue(const uint8_t* ptr, uint16_t value_size, uint16_t tag, ECDXType cdx_type)
         {
             std::string result;
             switch (cdx_type)
@@ -524,14 +528,14 @@ namespace indigo
 
         bool hasContent()
         {
-            return _data || _first_id;
+            return _data || _is_object;
         }
 
     protected:
         const void* _data;
         const void* _data_limit;
         int _size;
-        int _first_id;
+        bool _is_object;
         int _style_index;
         int _style_prop;
     };
@@ -557,23 +561,14 @@ namespace indigo
         {
             if (_data && _size)
             {
-                auto ptr = (uint8_t*)_data;
-                auto ptr16 = (uint16_t*)_data;
-                uint32_t tag = 0;
+                auto ptr = reinterpret_cast<const uint8_t*>(_data);
+                auto ptr16 = reinterpret_cast<const uint16_t*>(_data);
 
-                if (*ptr16 >= kCDXTag_Object)
-                {
-                    ptr += sizeof(uint16_t);
-                    tag = *(uint32_t*)(ptr);
-                    ptr += sizeof(uint32_t); // skip tag and id to enter inside the current object
-                    ptr16 = (uint16_t*)ptr;
-                }
-
-                if (*ptr16 && *ptr16 < kCDXTag_Object)
-                    return CDXProperty(ptr16, (uint8_t*)_data + _size, *(ptr16 + 1) + sizeof(uint16_t) * 2, tag, _style_index,
+                if (ptr16[0] >= kCDXTag_Object) // if object tag
+                    return CDXProperty(_data, ptr + _size, _size, true, _style_index, _style_index < 0 ? -1 : 0);
+                else // property tag
+                    return CDXProperty(_data, ptr + _size, ptr16[1] + sizeof(uint16_t) * 2, false, _style_index,
                                        _style_index < 0 ? -1 : 0); // total chunk size = property size + tag + size
-                else if (tag)
-                    return CDXProperty(nullptr, nullptr, 0, tag); // return fake tag property
             }
             return CDXProperty();
         }

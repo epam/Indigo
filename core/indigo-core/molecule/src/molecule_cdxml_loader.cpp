@@ -55,8 +55,8 @@ IMPL_ERROR(CDXProperty, "CDXML property");
 
 CDXProperty CDXProperty::getNextProp()
 {
-    if (_first_id)
-        return CDXProperty(_data, _data_limit, _size, 0, _style_index, _style_prop);
+    if (_is_object)
+        return CDXProperty(reinterpret_cast<const uint8_t*>(_data) + tag_id_size, _data_limit, _size - tag_id_size, false, _style_index, _style_prop);
 
     if (_data)
     {
