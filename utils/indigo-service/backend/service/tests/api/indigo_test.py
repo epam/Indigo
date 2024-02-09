@@ -3014,7 +3014,7 @@ M  END
 
     def test_convert_explicit_hydrogens_auto(self):
         params = {
-            "struct": "CC",
+            "struct": "CC.[HH]",
             "mode": "auto",
             "output_format": "chemical/x-daylight-smiles",
             "input_format": "chemical/x-daylight-smiles",
@@ -3028,7 +3028,7 @@ M  END
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual(
-            "C([H])([H])([H])C([H])([H])[H]", result_data["struct"]
+            "C([H])([H])([H])C([H])([H])[H].[H][H]", result_data["struct"]
         )
         params = {
             "struct": result_data["struct"],
@@ -3043,7 +3043,7 @@ M  END
         )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual("CC", result_data["struct"])
+        self.assertEqual("CC.[HH]", result_data["struct"])
 
     def test_convert_explicit_hydrogens_fold(self):
         params = {
@@ -3080,6 +3080,37 @@ M  END
         self.assertEqual(
             "C([H])([H])([H])C([H])([H])[H]", result_data["struct"]
         )
+
+    def test_convert_explicit_hydrogens_auto_h(self):
+        params = {
+            "struct": "[HH]",
+            "mode": "auto",
+            "output_format": "chemical/x-daylight-smiles",
+            "input_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert_explicit_hydrogens",
+            headers=headers,
+            data=data,
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual("[H][H]", result_data["struct"])
+        params = {
+            "struct": result_data["struct"],
+            "output_format": "chemical/x-daylight-smiles",
+            "input_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert_explicit_hydrogens",
+            headers=headers,
+            data=data,
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual("[HH]", result_data["struct"])
 
     def test_convert_sequences(self):
         headers, data = self.get_headers(
