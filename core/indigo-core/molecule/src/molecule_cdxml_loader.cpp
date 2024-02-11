@@ -72,8 +72,9 @@ CDXProperty CDXProperty::getNextProp()
         ptr16 = (uint16_t*)CDXElement::skipProperty((uint8_t*)ptr16);
         if (ptr16 < _data_limit && *ptr16 && *ptr16 < kCDXTag_Object)
         {
-            auto sz = *(ptr16 + 1);
-            return CDXProperty(ptr16, _data_limit, sz + sizeof(uint16_t) * 2);
+            uint32_t sz = 0;
+            const uint8_t* data = get_size(ptr16 + 1, sz);
+            return CDXProperty(ptr16, _data_limit, sz + (data - reinterpret_cast<const uint8_t*>(ptr16)));
         }
     }
     return CDXProperty();

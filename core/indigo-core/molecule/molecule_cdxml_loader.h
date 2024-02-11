@@ -184,15 +184,37 @@ namespace indigo
         DECL_ERROR;
 
         static constexpr int tag_size = sizeof(uint16_t);
-        static constexpr int tag_id_size = tag_size + sizeof(uint32_t);
+        static constexpr int id_size = sizeof(uint32_t);
+        static constexpr int tag_id_size = tag_size + id_size;
 
         CDXProperty() : CDXProperty(nullptr)
         {
         }
 
-        CDXProperty(const void* data, const void* data_limit = nullptr, int size = 0, bool is_object = false, int style_index = -1, int style_prop = -1)
+        CDXProperty(const void* data, const void* data_limit = nullptr, uint32_t size = 0, bool is_object = false, int style_index = -1, int style_prop = -1)
             : _data(data), _data_limit(data_limit), _size(size), _is_object(is_object), _style_index(style_index), _style_prop(style_prop)
         {
+        }
+
+        static const uint8_t* get_size(const void* data, uint32_t& size)
+        {
+            const uint16_t* p16 = reinterpret_cast<const uint16_t*>(data);
+            const uint8_t* p8 = reinterpret_cast<const uint8_t*>(data);
+            size = *p16;
+            p8 += sizeof(uint16_t);
+            if (0xFFFF == size)
+            {
+                size = *reinterpret_cast<const uint32_t*>(p8);
+                p8 += sizeof(uint32_t);
+            }
+            return p8;
+        }
+
+        static const uint8_t* get_tag_and_size(const void* data, uint16_t& tag, uint32_t& size)
+        {
+            const uint16_t* p16 = reinterpret_cast<const uint16_t*>(data);
+            tag = *p16;
+            return get_size(p16 + 1, size);
         }
 
         const tinyxml2::XMLAttribute& attribute()
@@ -239,16 +261,15 @@ namespace indigo
         std::string value()
         {
             if (_is_object)
-                return formatValue(reinterpret_cast<const uint8_t*>(_data) + tag_size, sizeof(_is_object), 0, ECDXType::CDXObjectID);
+                return formatValue(reinterpret_cast<const uint8_t*>(_data) + tag_size, id_size, 0, ECDXType::CDXObjectID);
             return _size ? getValue() : std::string(attribute().Value());
         }
 
         std::string getValue()
         {
-            auto ptr16 = (uint16_t*)_data;
             if (_style_prop >= 0 && _style_index >= 0)
             {
-                auto tsp = (CDXTextStyleProperty*)ptr16;
+                auto tsp = (CDXTextStyleProperty*)_data;
                 if (tsp->style_count)
                 {
                     auto& style = tsp->styles[_style_index];
@@ -261,12 +282,10 @@ namespace indigo
                 else
                     return std::string();
             }
-            auto tag = *ptr16;
+            uint16_t tag = 0;
+            uint32_t sz = 0;
+            auto ptr = get_tag_and_size(_data, tag, sz);
             auto it = KCDXPropToName.find(tag);
-            ptr16++;
-            auto sz = *ptr16;
-            ptr16++;
-            auto ptr = (uint8_t*)ptr16;
             if (it != KCDXPropToName.end())
             {
                 if (sz)
@@ -534,7 +553,7 @@ namespace indigo
     protected:
         const void* _data;
         const void* _data_limit;
-        int _size;
+        uint32_t _size;
         bool _is_object;
         int _style_index;
         int _style_prop;
@@ -548,7 +567,7 @@ namespace indigo
         {
         }
 
-        CDXElement(const void* data, int size = 0, int style_index = -1) : _data(data), _size(size), _style_index(style_index)
+        CDXElement(const void* data, uint32_t size = 0, int style_index = -1) : _data(data), _size(size), _style_index(style_index)
         {
         }
 
@@ -573,12 +592,13 @@ namespace indigo
             return CDXProperty();
         }
 
-        static uint8_t* skipProperty(uint8_t* ptr)
+        static const uint8_t* skipProperty(const uint8_t* ptr)
         {
             ptr += sizeof(uint16_t); // skip tag
-            auto psize = (uint16_t*)ptr;
-            ptr += sizeof(uint16_t) + *psize; // skip size and content
-            return ptr;                       // points to the next property or object
+            uint32_t size = 0;
+            ptr = CDXProperty::get_size(ptr, size); // skip size
+            ptr += size;                            // skip content
+            return ptr;                             // points to the next property or object
         }
 
         static uint8_t* skipObject(uint8_t* ptr)
@@ -772,7 +792,9 @@ namespace indigo
             }
             case kCDXProp_Text: {
                 auto ptr = (char*)_data;
-                ptr += sizeof(uint16_t) * 2; // skip tag and size
+                ptr += sizeof(uint16_t); // skip tag
+                uint32_t sz = 0;
+                ptr = (char*)CDXProperty::get_size(ptr, sz); // skip size
                 auto pstyles = (uint16_t*)ptr;
                 ptr += sizeof(uint16_t) + *pstyles * sizeof(CDXTextStyle);
                 auto ptext_style = (CDXTextStyle*)(pstyles + 1);
@@ -795,7 +817,7 @@ namespace indigo
 
     protected:
         const void* _data;
-        int _size;
+        uint32_t _size;
         int _style_index;
     };
 
