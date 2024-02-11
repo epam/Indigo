@@ -218,11 +218,12 @@ void Dearomatizer::_handleMatching(void)
 static void dearomatizeQueryBond(QueryMolecule& qmol, int idx, int order)
 {
     qmol.resetBond(idx, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, order));
-    Edge edg = qmol.getEdge(idx);
-    if (qmol.getAtom(edg.beg).hasConstraintWithValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC))
-        qmol.getAtom(edg.beg).removeConstraints(QueryMolecule::ATOM_AROMATICITY);
-    if (qmol.getAtom(edg.end).hasConstraintWithValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC))
-        qmol.getAtom(edg.end).removeConstraints(QueryMolecule::ATOM_AROMATICITY);
+    // Clear 'Aromatic' at bond vertex. Disabled for #1472.
+    // Edge edg = qmol.getEdge(idx);
+    // if (qmol.getAtom(edg.beg).hasConstraintWithValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC))
+    //     qmol.getAtom(edg.beg).removeConstraints(QueryMolecule::ATOM_AROMATICITY);
+    // if (qmol.getAtom(edg.end).hasConstraintWithValue(QueryMolecule::ATOM_AROMATICITY, ATOM_AROMATIC))
+    //     qmol.getAtom(edg.end).removeConstraints(QueryMolecule::ATOM_AROMATICITY);
 }
 
 void Dearomatizer::_processMatching(BaseMolecule& submolecule, int group, const byte* hetroAtomsState)
