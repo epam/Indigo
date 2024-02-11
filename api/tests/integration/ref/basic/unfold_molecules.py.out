@@ -52,3 +52,9 @@ testing filename:
 issue_1634.ket
 Unfolded molecule equal to expected
 Folded KET equal to original
+
+******* Test query with attachemnt points *******
+testing filename:
+issue_1629.ket
+Unfolded molecule equal to expected
+Folded KET equal to original

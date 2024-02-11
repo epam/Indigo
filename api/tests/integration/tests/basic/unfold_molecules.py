@@ -89,6 +89,8 @@ print(
 )
 test_mol_unfold("issue_1640.ket")
 
-
 print("\n******* Test unfold radicals in query molecules *******")
 test_qmol_unfold("issue_1634.ket")
+
+print("\n******* Test query with attachemnt points *******")
+test_qmol_unfold("issue_1629.ket")
