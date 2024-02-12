@@ -82,6 +82,7 @@ static void saveProperty(uint16_t tag, uint32_t len, Array<byte>& buf, indigo::J
     json.Uint(len);
     json.Key("hex");
     json.String(toHex(buf, len).c_str());
+    uint16_t* p16 = reinterpret_cast<uint16_t*>(buf.ptr());
     auto it = KCDXPropToName.find(tag);
     if (it != KCDXPropToName.end() || tag == 0x1500 || tag == 0x1501)
     {
@@ -96,55 +97,35 @@ static void saveProperty(uint16_t tag, uint32_t len, Array<byte>& buf, indigo::J
         switch (type)
         {
         case ECDXType::CDXCoordinate: {
-            uint16_t x_lo = (buf[1] << 8) | buf[0];
-            uint16_t x_hi = (buf[3] << 8) | buf[2];
             json.Key("coord");
-            json.String(coordToStr(x_lo, x_hi).c_str());
+            json.String(coordToStr(p16[0], p16[1]).c_str());
             break;
         }
         case ECDXType::CDXPoint2D: {
-            uint16_t y_lo = (buf[1] << 8) | buf[0];
-            uint16_t y_hi = (buf[3] << 8) | buf[2];
-            uint16_t x_lo = (buf[5] << 8) | buf[4];
-            uint16_t x_hi = (buf[7] << 8) | buf[6];
             json.Key("x");
-            json.String(coordToStr(x_lo, x_hi).c_str());
+            json.String(coordToStr(p16[2], p16[3]).c_str());
             json.Key("y");
-            json.String(coordToStr(y_lo, y_hi).c_str());
+            json.String(coordToStr(p16[0], p16[1]).c_str());
             break;
         }
         case ECDXType::CDXPoint3D: {
-            uint16_t z_lo = (buf[1] << 8) | buf[0];
-            uint16_t z_hi = (buf[3] << 8) | buf[2];
-            uint16_t y_lo = (buf[5] << 8) | buf[4];
-            uint16_t y_hi = (buf[7] << 8) | buf[6];
-            uint16_t x_lo = (buf[9] << 8) | buf[8];
-            uint16_t x_hi = (buf[11] << 8) | buf[10];
             json.Key("x");
-            json.String(coordToStr(x_lo, x_hi).c_str());
+            json.String(coordToStr(p16[4], p16[5]).c_str());
             json.Key("y");
-            json.String(coordToStr(y_lo, y_hi).c_str());
+            json.String(coordToStr(p16[2], p16[3]).c_str());
             json.Key("z");
-            json.String(coordToStr(z_lo, z_hi).c_str());
+            json.String(coordToStr(p16[0], p16[1]).c_str());
             break;
         }
         case ECDXType::CDXRectangle: {
-            uint16_t top_lo = (buf[1] << 8) | buf[0];
-            uint16_t top_hi = (buf[3] << 8) | buf[2];
-            uint16_t left_lo = (buf[5] << 8) | buf[4];
-            uint16_t left_hi = (buf[7] << 8) | buf[6];
-            uint16_t bottom_lo = (buf[9] << 8) | buf[8];
-            uint16_t bottom_hi = (buf[11] << 8) | buf[10];
-            uint16_t right_lo = (buf[13] << 8) | buf[12];
-            uint16_t right_hi = (buf[15] << 8) | buf[14];
             json.Key("top");
-            json.String(coordToStr(top_lo, top_hi).c_str());
+            json.String(coordToStr(p16[0], p16[1]).c_str());
             json.Key("left");
-            json.String(coordToStr(left_lo, left_hi).c_str());
+            json.String(coordToStr(p16[2], p16[3]).c_str());
             json.Key("bottom");
-            json.String(coordToStr(bottom_lo, bottom_hi).c_str());
+            json.String(coordToStr(p16[4], p16[5]).c_str());
             json.Key("right");
-            json.String(coordToStr(right_lo, right_hi).c_str());
+            json.String(coordToStr(p16[6], p16[7]).c_str());
             break;
         }
         case ECDXType::CDXUINT8:
@@ -204,7 +185,7 @@ void readProperty(uint16_t tag, Scanner& scan, indigo::JsonWriter& json)
     Array<byte> buf;
     if (len > 0)
     {
-        if (0xFFFF == len)
+        if (UINT16_MAX == len)
         {
             scan.read(4, &len);
         }
@@ -296,11 +277,11 @@ void save_nodes(std::ofstream& cdx, rapidjson::Value& nodes)
         auto& node = nodes[node_idx];
         if (node.HasMember("tag"))
         {
-            uint16_t tag = 0xFFFF & std::stol(node["tag"].GetString(), nullptr, 0);
+            uint16_t tag = UINT16_MAX & std::stol(node["tag"].GetString(), nullptr, 0);
             write(cdx, tag);
             if (tag >= kCDXTag_Object)
             {
-                uint32_t id = 0xFFFFFFFF & std::stol(node["id"].GetString(), nullptr, 0);
+                uint32_t id = UINT32_MAX & std::stol(node["id"].GetString(), nullptr, 0);
                 write(cdx, id);
                 if (node.HasMember("content"))
                 {
@@ -311,7 +292,7 @@ void save_nodes(std::ofstream& cdx, rapidjson::Value& nodes)
             else // save property
             {
                 uint32_t llen = node["len"].GetUint();
-                uint16_t slen = 0xFFFF;
+                uint16_t slen = UINT16_MAX;
                 if (llen >= slen)
                 {
                     write(cdx, slen);
@@ -326,7 +307,7 @@ void save_nodes(std::ofstream& cdx, rapidjson::Value& nodes)
                 std::string sbyte;
                 while (getline(hex, sbyte, ' '))
                 {
-                    uint8_t b = 0xFF & std::stoi(sbyte, nullptr, 16);
+                    uint8_t b = UINT8_MAX & std::stoi(sbyte, nullptr, 16);
                     write(cdx, b);
                 }
             }
@@ -343,7 +324,7 @@ void json_to_cdx(const char* json_file_name, const char* cdx_filename)
     if (!data.Parse(json.str().c_str()).HasParseError())
     {
         std::ofstream cdx(cdx_filename, std::ios::binary);
-        cdx << "VjCD0100";
+        cdx << kCDX_HeaderString;
         write(cdx, kCDXMagicNumber);
         cdx.write(kCDXReserved, sizeof(kCDXReserved));
         save_nodes(cdx, data);
