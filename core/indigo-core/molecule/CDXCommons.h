@@ -29,7 +29,7 @@ namespace indigo
     const int kBondSpacingMultiplier = 10;
     const int kCDXMLStyleSizeIndex = 2;
     const uint32_t kCDXMagicNumber = 0x01020304;
-    const char kCDXReserved[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    const char kCDXReserved[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     const float kColorMult = ((1 << 16) - 1);
     const float kCDXMLFonsSizeMultiplier = 1.5;
     const std::uint16_t KCDXMLFontStyleSubscript = 0x20;

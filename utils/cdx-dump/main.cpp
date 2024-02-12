@@ -330,7 +330,7 @@ void json_to_cdx(const char* json_file_name, const char* cdx_filename)
         std::ofstream cdx(cdx_filename, std::ios::binary);
         cdx << kCDX_HeaderString;
         write(cdx, kCDXMagicNumber);
-        cdx.write(kCDXReserved, sizeof(kCDXReserved));
+        cdx.write(kCDXReserved, 10); // sizeof(kCDXReserved)); // TODO: fix size of kCDXReserved and corresponding issues
         save_nodes(cdx, data);
         write<uint16_t>(cdx, 0);
         cdx.close();
