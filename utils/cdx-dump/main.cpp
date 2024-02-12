@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include "base_cpp/scanner.h"
+#include <fstream>
 #include <iostream>
 #include <molecule/CDXCommons.h>
 #include <molecule/molecule_json_saver.h>
@@ -42,10 +43,16 @@ std::string toHex(Array<byte>& arr, int count)
     {
         if (i > 0)
             oss << ' ';
-        // oss << std::setw(2) << std::setfill('0') << std::hex << static_cast<unsigned short>(arr[i]);
-        oss << std::setw(2) << std::setfill('0') << std::hex << arr[i];
+        oss << std::setw(2) << std::setfill('0') << std::hex << static_cast<unsigned short>(arr[i]);
     }
     return oss.str().c_str();
+}
+
+template <typename T>
+void save_hex(indigo::JsonWriter& json, T val)
+{
+    std::string hex = toHex(val);
+    json.RawNumber(hex.c_str(), static_cast<rapidjson::SizeType>(hex.size()));
 }
 
 std::string coordToStr(uint16_t lo, uint16_t hi)
@@ -56,7 +63,7 @@ std::string coordToStr(uint16_t lo, uint16_t hi)
 }
 
 template <typename T>
-static T read(byte*& ptr, int& size)
+static T read(byte*& ptr, uint32_t& size)
 {
     T res = *reinterpret_cast<T*>(ptr);
     unsigned int shift = sizeof(T);
@@ -64,18 +71,18 @@ static T read(byte*& ptr, int& size)
     size -= shift;
     return res;
 }
-template uint16_t read(byte*&, int&);
+template uint16_t read(byte*&, uint32_t&);
 
-static void saveProperty(uint16_t tag, int len, Array<byte>& buf, indigo::JsonWriter& json)
+static void saveProperty(uint16_t tag, uint32_t len, Array<byte>& buf, indigo::JsonWriter& json)
 {
     json.StartObject();
     json.Key("tag");
-    json.String(toHex(tag).c_str());
-    auto it = KCDXPropToName.find(tag);
+    save_hex(json, tag);
     json.Key("len");
-    json.Int(len);
+    json.Uint(len);
     json.Key("hex");
     json.String(toHex(buf, len).c_str());
+    auto it = KCDXPropToName.find(tag);
     if (it != KCDXPropToName.end() || tag == 0x1500 || tag == 0x1501)
     {
         ECDXType type = ECDXType::CDXString;
@@ -171,7 +178,7 @@ static void saveProperty(uint16_t tag, int len, Array<byte>& buf, indigo::JsonWr
                     json.Key("font");
                     json.Uint(read<uint16_t>(ptr, len));
                     json.Key("style");
-                    json.String(toHex(read<uint16_t>(ptr, len)).c_str());
+                    save_hex(json, len);
                     json.Key("size");
                     json.Double(read<uint16_t>(ptr, len) / 20.0);
                     json.Key("color");
@@ -190,11 +197,17 @@ static void saveProperty(uint16_t tag, int len, Array<byte>& buf, indigo::JsonWr
 
 void readProperty(uint16_t tag, Scanner& scan, indigo::JsonWriter& json)
 {
-    uint16_t len = 0;
-    scan.read(2, &len);
+    int len = 0;
+    uint16_t size;
+    scan.read(2, &size);
+    len = size;
     Array<byte> buf;
     if (len > 0)
     {
+        if (0xFFFF == len)
+        {
+            scan.read(4, &len);
+        }
         buf.expandFill(len, 0);
         scan.read(len, buf.ptr());
     }
@@ -205,7 +218,7 @@ static void readObject(uint16_t tag, Scanner& scan, indigo::JsonWriter& json);
 
 static void readObjOrProp(uint16_t tag, Scanner& scan, indigo::JsonWriter& json)
 {
-    if (tag & 0x8000)
+    if (tag >= kCDXTag_Object)
     {
         readObject(tag, scan, json);
     }
@@ -219,7 +232,7 @@ static void readObject(uint16_t tag, Scanner& scan, indigo::JsonWriter& json)
 {
     json.StartObject();
     json.Key("tag");
-    json.String(toHex(tag).c_str());
+    save_hex(json, tag);
     auto it = KCDXObjToName.find(tag);
     if (it != KCDXObjToName.end())
     {
@@ -229,7 +242,7 @@ static void readObject(uint16_t tag, Scanner& scan, indigo::JsonWriter& json)
     uint32_t id;
     scan.read(4, &id);
     json.Key("id");
-    json.String(toHex(id).c_str());
+    save_hex(json, id);
     json.Key("content");
     json.StartArray();
     while (1)
@@ -245,23 +258,17 @@ static void readObject(uint16_t tag, Scanner& scan, indigo::JsonWriter& json)
 
 void print_usage()
 {
-    printf("Usage: cdx-dump file.cdx");
+    printf("Usage: cdx-dump [-p] file.cdx\ncdx-dump [-r] file.json file.cdx\n-p for pretty json\n-r for reverse mode - from json to cdx");
 }
 
-int main(int argc, char** argv)
+void parse_cdx(const char* filename, bool pretty_json)
 {
-    if (argc < 2)
-    {
-        print_usage();
-        return 0;
-    }
-    FileScanner sc(argv[1]);
+    FileScanner sc(filename);
     // Skip header
-    sc.seek(8 + 4 + 0x10, SEEK_CUR); // VcjD0100 + 0x01020304 + 0x10 zero bytes
-    Array<byte> vbuf;
+    sc.seek(22, SEEK_CUR); // VcjD0100 + 0x01020304 + 10 zero bytes
 
     rapidjson::StringBuffer s;
-    indigo::JsonWriter json;
+    indigo::JsonWriter json(pretty_json);
     json.Reset(s);
     uint16_t tag;
     json.StartArray();
@@ -273,7 +280,119 @@ int main(int argc, char** argv)
         readObjOrProp(tag, sc, json);
     }
     json.EndArray();
-    std::stringstream result;
-    result << s.GetString();
-    printf("\n\n%s\n\n", result.str().c_str());
+    printf("\n%s\n", s.GetString());
+}
+
+template <typename T>
+void write(std::ofstream& ofs, T val)
+{
+    ofs.write(reinterpret_cast<char*>(&val), sizeof T);
+}
+
+void save_nodes(std::ofstream& cdx, rapidjson::Value& nodes)
+{
+    for (rapidjson::SizeType node_idx = 0; node_idx < nodes.Size(); ++node_idx)
+    {
+        auto& node = nodes[node_idx];
+        if (node.HasMember("tag"))
+        {
+            uint16_t tag = 0xFFFF & std::stol(node["tag"].GetString(), nullptr, 0);
+            write(cdx, tag);
+            if (tag >= kCDXTag_Object)
+            {
+                uint32_t id = 0xFFFFFFFF & std::stol(node["id"].GetString(), nullptr, 0);
+                write(cdx, id);
+                if (node.HasMember("content"))
+                {
+                    save_nodes(cdx, node["content"]);
+                }
+                write<uint16_t>(cdx, 0);
+            }
+            else // save property
+            {
+                uint32_t llen = node["len"].GetUint();
+                uint16_t slen = 0xFFFF;
+                if (llen >= slen)
+                {
+                    write(cdx, slen);
+                    write(cdx, llen);
+                }
+                else
+                {
+                    slen = slen & llen;
+                    write(cdx, slen);
+                }
+                std::istringstream hex(node["hex"].GetString());
+                std::string sbyte;
+                while (getline(hex, sbyte, ' '))
+                {
+                    uint8_t b = 0xFF & std::stoi(sbyte, nullptr, 16);
+                    write(cdx, b);
+                }
+            }
+        }
+    }
+}
+
+void json_to_cdx(const char* json_file_name, const char* cdx_filename)
+{
+    std::ifstream json_file(json_file_name);
+    std::stringstream json;
+    json << json_file.rdbuf();
+    rapidjson::Document data;
+    if (!data.Parse(json.str().c_str()).HasParseError())
+    {
+        std::ofstream cdx(cdx_filename, std::ios::binary);
+        cdx << "VjCD0100";
+        write(cdx, kCDXMagicNumber);
+        cdx.write(kCDXReserved, sizeof(kCDXReserved));
+        save_nodes(cdx, data);
+        write<uint16_t>(cdx, 0);
+        cdx.close();
+    }
+    else
+    {
+        printf("Parse error %d at offset %zu.", data.GetParseError(), data.GetErrorOffset());
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    std::vector<std::string_view> input_files;
+    const std::vector<std::string_view> args(argv + 1, argv + argc);
+    bool pretty_json = false;
+    bool reverse = false;
+    for (const auto& arg : args)
+    {
+        if (arg == "-p")
+        {
+            pretty_json = true;
+            continue;
+        }
+        if (arg == "-r")
+        {
+            reverse = true;
+            continue;
+        }
+        input_files.push_back(arg);
+    }
+    if (input_files.empty())
+    {
+        print_usage();
+        return 0;
+    }
+    if (pretty_json && reverse)
+    {
+        printf("-p has no sense in reverse mode.\n");
+        print_usage();
+        return 0;
+    }
+    if (reverse)
+    {
+        json_to_cdx(input_files[0].data(), input_files[1].data());
+    }
+    else
+    {
+        parse_cdx(input_files[0].data(), pretty_json);
+    }
 }
