@@ -135,7 +135,7 @@ static void saveProperty(uint16_t tag, uint32_t len, Array<byte>& buf, indigo::J
             break;
         case ECDXType::CDXUINT16:
             json.Key("val");
-            json.Uint(*reinterpret_cast<uint16_t*>(buf.ptr()));
+            json.Uint(*p16);
             break;
         case ECDXType::CDXINT8:
             json.Key("val");
@@ -145,6 +145,19 @@ static void saveProperty(uint16_t tag, uint32_t len, Array<byte>& buf, indigo::J
             json.Key("val");
             json.Int(*reinterpret_cast<int16_t*>(buf.ptr()));
             break;
+        case ECDXType::CDXObjectID: {
+            json.Key("ids");
+            std::string ids;
+            uint32_t* p32 = reinterpret_cast<uint32_t*>(buf.ptr());
+            for (int i = 0; i < len / sizeof(uint32_t); i++)
+            {
+                if (ids.size())
+                    ids += " ";
+                ids += toHex(p32[i]);
+            }
+            json.String(ids.c_str());
+            break;
+        }
         case ECDXType::CDXString: {
             byte* ptr = buf.ptr();
             auto style_runs = read<uint16_t>(ptr, len);
