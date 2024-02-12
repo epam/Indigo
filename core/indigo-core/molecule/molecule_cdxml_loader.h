@@ -586,8 +586,12 @@ namespace indigo
                 if (ptr16[0] >= kCDXTag_Object) // if object tag
                     return CDXProperty(_data, ptr + _size, _size, true, _style_index, _style_index < 0 ? -1 : 0);
                 else // property tag
-                    return CDXProperty(_data, ptr + _size, ptr16[1] + sizeof(uint16_t) * 2, false, _style_index,
+                {
+                    uint32_t sz = 0;
+                    const uint8_t* pdata = CDXProperty::get_size(ptr16 + 1, sz);
+                    return CDXProperty(_data, ptr + _size, sz + (pdata - ptr), false, _style_index,
                                        _style_index < 0 ? -1 : 0); // total chunk size = property size + tag + size
+                }
             }
             return CDXProperty();
         }
