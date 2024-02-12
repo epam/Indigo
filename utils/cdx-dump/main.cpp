@@ -160,7 +160,7 @@ static void saveProperty(uint16_t tag, uint32_t len, Array<byte>& buf, indigo::J
                     json.Key("font");
                     json.Uint(read<uint16_t>(ptr, len));
                     json.Key("style");
-                    save_hex(json, len);
+                    save_hex(json, read<uint16_t>(ptr, len));
                     json.Key("size");
                     json.Double(read<uint16_t>(ptr, len) / 20.0);
                     json.Key("color");
