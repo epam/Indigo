@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include "base_cpp/scanner.h"
+#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <molecule/CDXCommons.h>
@@ -144,7 +145,7 @@ static void saveProperty(uint16_t tag, uint32_t len, Array<byte>& buf, indigo::J
             json.Key("val");
             json.Int(*reinterpret_cast<int16_t*>(buf.ptr()));
             break;
-        case ECDXType::CDXString:
+        case ECDXType::CDXString: {
             byte* ptr = buf.ptr();
             auto style_runs = read<uint16_t>(ptr, len);
             if (style_runs > 0)
@@ -170,6 +171,9 @@ static void saveProperty(uint16_t tag, uint32_t len, Array<byte>& buf, indigo::J
             }
             json.Key("str");
             json.String(reinterpret_cast<char*>(ptr), len);
+            break;
+        }
+        default:
             break;
         }
     }
@@ -267,7 +271,7 @@ void parse_cdx(const char* filename, bool pretty_json)
 template <typename T>
 void write(std::ofstream& ofs, T val)
 {
-    ofs.write(reinterpret_cast<char*>(&val), sizeof T);
+    ofs.write(reinterpret_cast<char*>(&val), sizeof(T));
 }
 
 void save_nodes(std::ofstream& cdx, rapidjson::Value& nodes)
