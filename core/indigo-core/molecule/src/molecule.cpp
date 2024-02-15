@@ -821,7 +821,7 @@ int Molecule::_getImplicitHForConnectivity(int idx, int conn, bool use_cache)
             if (_ignore_bad_valence)
                 impl_h = 0;
             else
-                throw Element::Error("can not calculate implicit hydrogens on aromatic %s, charge %d, degree %d, %d radical electrons",
+                throw Element::Error("cannot calculate implicit hydrogens on aromatic %s, charge %d, degree %d, %d radical electrons",
                                      Element::toString(atom.number), atom.charge, getVertex(idx).degree(), Element::radicalElectrons(radical));
         }
     }

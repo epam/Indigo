@@ -2434,16 +2434,25 @@ int QueryMolecule::getAtomTotalH(int idx)
 int QueryMolecule::_calcAtomConnectivity(int idx)
 {
     const Vertex& vertex = getVertex(idx);
-    int i, conn = 0;
+    int i = 0, conn = 0;
     bool was_aromatic = false;
+    int atom_aromaticy = -1;
+    // Smarts treat default bond as SINGLE_OR_AROMATIC so for this bonds look to atom aromaticy
+    if (original_format == SMARTS)
+    {
+        std::ignore = getAtom(idx).sureValue(ATOM_AROMATICITY, atom_aromaticy);
+    }
 
     for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
     {
         int order = getBondOrder(vertex.neiEdge(i));
+        if (order < 0)
+            order = getQueryBondType(getBond(vertex.neiEdge(i)));
 
-        if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE)
+        if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE ||
+            (original_format == SMARTS && order == _BOND_SINGLE_OR_AROMATIC && atom_aromaticy == ATOM_ALIPHATIC))
             conn += order;
-        else if (order == BOND_AROMATIC || order == _BOND_SINGLE_OR_AROMATIC || order == _BOND_DOUBLE_OR_AROMATIC)
+        else if (order == BOND_AROMATIC || (original_format == SMARTS && order == _BOND_SINGLE_OR_AROMATIC && atom_aromaticy == ATOM_AROMATIC))
         {
             conn += 1;
             if (was_aromatic)
@@ -2457,9 +2466,9 @@ int QueryMolecule::_calcAtomConnectivity(int idx)
             }
         }
         else
-            conn += 1;
+            return -1;
     }
-    if (was_aromatic)
+    if (was_aromatic) // +1 connection for odd aromatic bond
         conn += 1;
     return conn;
 }
@@ -3215,6 +3224,8 @@ int QueryMolecule::getImplicitH(int idx, bool /*impl_h_no_throw*/)
     // If implicit h is not set - calculate it
     int max_h = 0;
     int conn = _calcAtomConnectivity(idx);
+    if (conn < 0) // can't calculate - no implicit H
+        return 0;
     if (properties.count(ATOM_TOTAL_H) > 0)
         max_h = properties[ATOM_TOTAL_H]->value_min - getAtomConnectedH(idx);
     else
