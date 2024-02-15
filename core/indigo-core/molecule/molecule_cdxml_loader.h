@@ -807,7 +807,7 @@ namespace indigo
                 ptr += sizeof(uint16_t) + *pstyles * sizeof(CDXTextStyle);
                 auto ptext_style = (CDXTextStyle*)(pstyles + 1);
                 ptr += ptext_style[_style_index].offset;
-                if ((ptr - (char*)_data) < _size)
+                if (static_cast<uint32_t>(ptr - (char*)_data) < _size)
                 {
                     if ((_style_index + 1) < *pstyles)
                         return std::string(ptr, ptext_style[_style_index + 1].offset - ptext_style[_style_index].offset);
