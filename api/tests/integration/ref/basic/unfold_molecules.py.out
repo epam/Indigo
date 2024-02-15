@@ -22,3 +22,9 @@ testing filename:
 issue_1589.ket
 Unfolded KET equal to expected
 Folded KET equal to original
+
+******* Test unfold bad valence *******
+testing filename:
+issue_1538.ket
+Unfolded KET equal to expected
+Folded KET equal to original

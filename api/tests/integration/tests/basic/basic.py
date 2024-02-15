@@ -71,15 +71,8 @@ m = indigo.loadMolecule("C\\C=C(/N(O)=O)N(O)=O")
 sm = m.smiles()
 print(m.smiles())
 print(m.canonicalSmiles())
-try:
-    m.unfoldHydrogens()
-except IndigoException as e:
-    print("%s" % (getIndigoExceptionText(e)))
-
-# If there was an exception in unfoldHydrogens then molecule should not be changed
-sm2 = m.smiles()
-if sm2 != sm:
-    sys.stderr.write("Error: %s != %s" % (sm, sm2))
+m.unfoldHydrogens()  # should be no exception
+print(m.canonicalSmiles())
 
 print("****** Serialize and atom changing ********")
 m = indigo.loadMolecule("CC[C@@H](N)\\C=C/C")
