@@ -402,7 +402,6 @@ M  UNS  1   4   1
 M  RBC  1  33  -2
 A   59
 CYC
-M  MRV SMA  16 [#6;H2]
 M  STY  2   1 DAT   2 DAT
 M  SPL  1   2   1
 M  SLB  2   1   1   2   2
@@ -656,8 +655,8 @@ Check query for bond 21 returns 0
   6  1  6  0  0  0  0
 M  ALS   4  3 T Cl  Br  I   
 M  ALS   5  3 F C   N   F   
-M  MRV SMA   2 [#6;Hh1X3R1r6a]
-M  MRV SMA   4 [!#17;!#35;!#53;Hh1R1a]
-M  MRV SMA   5 [#6,#7,#9;Hh1R1r6a]
+M  MRV SMA   2 [#6;h1X3R1r6a]
+M  MRV SMA   4 [!#17;!#35;!#53;h1R1a]
+M  MRV SMA   5 [#6,#7,#9;h1R1r6a]
 M  END
 
