@@ -458,7 +458,7 @@ CEXPORT int indigoUnfoldHydrogens(int item)
         if (IndigoBaseMolecule::is(obj))
         {
             BaseMolecule& bmol = obj.getBaseMolecule();
-            bmol.unfoldHydrogens(&markers, -1);
+            bmol.unfoldHydrogens(&markers, -1, true);
             if (markers.count(1) > 0) // If some hydrogens found - layout it
             {
                 // Layout hydrogens
