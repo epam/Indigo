@@ -1,0 +1,76 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "$ref": "mol1"
+            },
+            {
+                "type": "arrow",
+                "data": {
+                    "mode": "open-angle",
+                    "pos": [
+                        {
+                            "x": 8.0,
+                            "y": -9.0,
+                            "z": 0.0
+                        },
+                        {
+                            "x": 10.0,
+                            "y": -9.0,
+                            "z": 0.0
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    6.0,
+                    -9.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    7.0,
+                    -9.0,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 10,
+                "topology": 2,
+                "center": -1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            }
+        ]
+    },
+    "mol1": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    11.0,
+                    -9.0,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": []
+    }
+}
