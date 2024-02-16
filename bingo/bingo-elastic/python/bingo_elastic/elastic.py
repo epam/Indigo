@@ -10,7 +10,10 @@ from typing import (
     Tuple,
     Type,
     TypeVar,
-    Union, Awaitable, Iterable, Iterator,
+    Union,
+    Awaitable,
+    Iterable,
+    Iterator,
 )
 
 from elasticsearch import Elasticsearch
@@ -40,6 +43,7 @@ class BingoElasticPageCriteria:
     """
     Captures the criteria to make a paged query in Bingo
     """
+
     _pit_id: Optional[str]
     _page_size: int
     _pit_stay_alive_minutes: int
@@ -58,7 +62,7 @@ class BingoElasticPageCriteria:
             "stay_alive_minutes": self._pit_stay_alive_minutes,
             "sort": self._sort,
             "search_after": self._search_after,
-            "query": self._query
+            "query": self._query,
         }
 
     @staticmethod
@@ -72,9 +76,14 @@ class BingoElasticPageCriteria:
         _sort: List[Dict[str, str]] = json_dct.get("sort")
         _search_after: List[Any] = json_dct.get("search_after")
         _query: Dict[str, Any] = json_dct.get("query")
-        return BingoElasticPageCriteria(page_size=_page_size, pit_id=_pit_id,
-                                        sort=_sort, pit_stay_alive_minutes=_pit_stay_alive_minutes,
-                                        search_after=_search_after, query=_query)
+        return BingoElasticPageCriteria(
+            page_size=_page_size,
+            pit_id=_pit_id,
+            sort=_sort,
+            pit_stay_alive_minutes=_pit_stay_alive_minutes,
+            search_after=_search_after,
+            query=_query,
+        )
 
     @property
     def query(self) -> Optional[Dict[str, Any]]:
@@ -122,12 +131,15 @@ class BingoElasticPageCriteria:
         """
         return self._search_after
 
-    def __init__(self, page_size: int = 10,
-                 pit_id: Optional[str] = None,
-                 sort: Optional[List[Dict[str, str]]] = None,
-                 pit_stay_alive_minutes: int = 30,
-                 search_after: Optional[List[Any]] = None,
-                 query: Optional[Dict[str, Any]] = None):
+    def __init__(
+        self,
+        page_size: int = 10,
+        pit_id: Optional[str] = None,
+        sort: Optional[List[Dict[str, str]]] = None,
+        pit_stay_alive_minutes: int = 30,
+        search_after: Optional[List[Any]] = None,
+        query: Optional[Dict[str, Any]] = None,
+    ):
         """
         Create custom page criteria to query any particular page with particular number of records to skip.
         Note: in order to continue the query, the sort order must not be changed.
@@ -142,9 +154,7 @@ class BingoElasticPageCriteria:
         :param search_after To continue querying, obtain the last record's sort result and append it in this parameter.
         """
         if not sort:
-            sort = [
-                {"_score": "desc"}
-            ]
+            sort = [{"_score": "desc"}]
         # shard_doc in sort is implicit
         self._page_size = page_size
         self._pit_id = pit_id
@@ -167,7 +177,9 @@ class BingoElasticPageResult(Awaitable, Iterable):
     _gen: Generator[IndigoRecord, None, None]
     _completed_processing: bool
 
-    def get_records(self, filter_false_positives: bool = True) -> Tuple[Optional[IndigoRecord], ...]:
+    def get_records(
+        self, filter_false_positives: bool = True
+    ) -> Tuple[Optional[IndigoRecord], ...]:
         """
         Get records in this page.
         :param filter_false_positives: If true, the hits in elastic that are filtered out by post-processor will
@@ -206,21 +218,30 @@ class BingoElasticPageResult(Awaitable, Iterable):
         """
         # If there isn't any hit in ELASTIC page at all for some reason (i.e. first page no result) then no next page.
         if not self._completed_processing:
-            raise AssertionError("Cannot test next page availability using async I/O "
-                                 "without fully retrieving current page result first..")
+            raise AssertionError(
+                "Cannot test next page availability using async I/O "
+                "without fully retrieving current page result first.."
+            )
         if not self._last_hit_sort_object:
             return False
-        return self._num_hits_in_elastic >= self._current_page_criteria.page_size + 1
+        return (
+            self._num_hits_in_elastic
+            >= self._current_page_criteria.page_size + 1
+        )
 
     @property
     def next_page_criteria(self) -> Optional[BingoElasticPageCriteria]:
         if not self.has_next_page:
             return None
         cur = self.current_page
-        return BingoElasticPageCriteria(page_size=cur.page_size, pit_id=cur.pit_id,
-                                        sort=cur.sort_criteria, pit_stay_alive_minutes=cur.pit_stay_alive_minutes,
-                                        query=cur.query,
-                                        search_after=self._last_hit_sort_object)
+        return BingoElasticPageCriteria(
+            page_size=cur.page_size,
+            pit_id=cur.pit_id,
+            sort=cur.sort_criteria,
+            pit_stay_alive_minutes=cur.pit_stay_alive_minutes,
+            query=cur.query,
+            search_after=self._last_hit_sort_object,
+        )
 
     def synchronized(self) -> None:
         """
@@ -231,8 +252,11 @@ class BingoElasticPageResult(Awaitable, Iterable):
         for record in self.__await__():
             pass
 
-    def __init__(self, gen: Generator[IndigoRecord, None, None],
-                 current_page_criteria: BingoElasticPageCriteria):
+    def __init__(
+        self,
+        gen: Generator[IndigoRecord, None, None],
+        current_page_criteria: BingoElasticPageCriteria,
+    ):
         self._current_page_criteria = current_page_criteria
         self._gen = gen
         self._records_of_page = list()
@@ -253,11 +277,16 @@ class BingoElasticPageResult(Awaitable, Iterable):
         for record in self._gen:
             self._num_hits_in_elastic += 1
             # Avoid returning the canary in the page.
-            if self._num_hits_in_elastic > self._current_page_criteria.page_size:
+            if (
+                self._num_hits_in_elastic
+                > self._current_page_criteria.page_size
+            ):
                 break
             # make sure we get canary of the last hit of actual last page instead of canary (must be after break)
             # noinspection PyProtectedMember
-            self._last_hit_sort_object = self._current_page_criteria._next_page_search_after
+            self._last_hit_sort_object = (
+                self._current_page_criteria._next_page_search_after
+            )
             self._records_of_page.append(record)
             # If post-processing filtered it out then it's not an actual hit.
             if record is not None:
@@ -280,7 +309,7 @@ def get_index_type(record: IndigoRecord) -> IndexType:
 
 
 def get_record_by_index(
-        response: Dict, index_type: IndexType
+    response: Dict, index_type: IndexType
 ) -> Union[IndigoRecordMolecule, IndigoRecordReaction]:
     if index_type == IndexType.BINGO_MOLECULE:
         return IndigoRecordMolecule(elastic_response=response)
@@ -290,31 +319,35 @@ def get_record_by_index(
 
 
 def elastic_repository_molecule(index_name: str, *args, **kwargs):
-    return ElasticRepository(IndexType.BINGO_MOLECULE, index_name, *args, **kwargs)
+    return ElasticRepository(
+        IndexType.BINGO_MOLECULE, index_name, *args, **kwargs
+    )
 
 
 def elastic_repository_reaction(index_name: str, *args, **kwargs):
-    return ElasticRepository(IndexType.BINGO_REACTION, index_name, *args, **kwargs)
+    return ElasticRepository(
+        IndexType.BINGO_REACTION, index_name, *args, **kwargs
+    )
 
 
 def get_client(
-        *,
-        client_type: Type[ElasticRepositoryT],
-        host: Union[str, List[str]] = "localhost",
-        port: int = 9200,
-        scheme: str = "",
-        http_auth: Optional[List[str]] = None,
-        ssl_context: Any = None,
-        request_timeout: int = 60,
-        timeout: int = 60,
-        retry_on_timeout: bool = True,
+    *,
+    client_type: Type[ElasticRepositoryT],
+    host: Union[str, List[str]] = "localhost",
+    port: int = 9200,
+    scheme: str = "",
+    http_auth: Optional[List[str]] = None,
+    ssl_context: Any = None,
+    request_timeout: int = 60,
+    timeout: int = 60,
+    retry_on_timeout: bool = True,
 ) -> ElasticRepositoryT:
     arguments = {
         "port": port,
         "scheme": "https" if scheme == "https" else "http",
         "request_timeout": request_timeout,
         "retry_on_timeout": retry_on_timeout,
-        "timeout": timeout
+        "timeout": timeout,
     }
     if isinstance(host, str):
         arguments["host"] = host
@@ -350,8 +383,8 @@ def check_index_exception(err_: RequestError) -> None:
         raise err_
     cause = err_.info.get("error", {}).get("root_cause", [])
     if (
-            len(cause) == 1
-            and cause[0].get("type") == "resource_already_exists_exception"
+        len(cause) == 1
+        and cause[0].get("type") == "resource_already_exists_exception"
     ):
         return
     raise err_
@@ -365,7 +398,7 @@ def create_index(index_name: str, el_client: Elasticsearch) -> None:
 
 
 async def a_create_index(
-        index_name: str, el_client: "AsyncElasticsearch"
+    index_name: str, el_client: "AsyncElasticsearch"
 ) -> None:
     try:
         await el_client.indices.create(index=index_name, body=index_body)
@@ -374,7 +407,7 @@ async def a_create_index(
 
 
 def prepare(
-        index_type: IndexType, records: Generator[IndigoRecord, None, None]
+    index_type: IndexType, records: Generator[IndigoRecord, None, None]
 ) -> Generator[Dict, None, None]:
     for record in records:
         if index_type != get_index_type(record):
@@ -386,39 +419,43 @@ def prepare(
 
 
 def get_page_result(
-        res: dict,
-        index_type: IndexType,
-        page_criteria: BingoElasticPageCriteria,
-        postprocess_actions: PostprocessType = None,
-        indigo_session: Indigo = None,
-        options: str = "",
+    res: dict,
+    index_type: IndexType,
+    page_criteria: BingoElasticPageCriteria,
+    postprocess_actions: PostprocessType = None,
+    indigo_session: Indigo = None,
+    options: str = "",
 ) -> BingoElasticPageResult:
     def page_result_gen() -> Generator[IndigoRecord, None, None]:
         for el_response in res.get("hits", {}).get("hits", []):
             record = get_record_by_index(el_response, index_type)
             for action_fn in postprocess_actions:  # type: ignore
-                record = action_fn(record, indigo_session, options)  # type: ignore
+                record = action_fn(
+                    record, indigo_session, options
+                )  # type: ignore
                 if not record:
                     continue
             yield record
 
-    return BingoElasticPageResult(gen=page_result_gen(), current_page_criteria=page_criteria)
+    return BingoElasticPageResult(
+        gen=page_result_gen(), current_page_criteria=page_criteria
+    )
 
 
 class AsyncElasticRepository:
     def __init__(
-            self,
-            index_type: IndexType,
-            index_name: str,
-            *,
-            host: Union[str, List[str]] = "localhost",
-            port: int = 9200,
-            scheme: str = "",
-            http_auth: Optional[List[str]] = None,
-            ssl_context: Any = None,
-            request_timeout: int = 60,
-            timeout: int = 60,
-            retry_on_timeout: bool = True,
+        self,
+        index_type: IndexType,
+        index_name: str,
+        *,
+        host: Union[str, List[str]] = "localhost",
+        port: int = 9200,
+        scheme: str = "",
+        http_auth: Optional[List[str]] = None,
+        ssl_context: Any = None,
+        request_timeout: int = 60,
+        timeout: int = 60,
+        retry_on_timeout: bool = True,
     ) -> None:
         """
         :param index_type: use function  get_index_name for setting this argument
@@ -458,20 +495,20 @@ class AsyncElasticRepository:
         await a_create_index(self.index_name, self.el_client)
         # pylint: disable=unused-variable
         async for is_ok, action in async_streaming_bulk(
-                self.el_client,
-                prepare(self.index_type, records),
-                index=self.index_name,
-                chunk_size=chunk_size,
+            self.el_client,
+            prepare(self.index_type, records),
+            index=self.index_name,
+            chunk_size=chunk_size,
         ):
             pass
 
     async def filter(
-            self,
-            query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-            indigo_session: Indigo = None,
-            page_criteria: Optional[BingoElasticPageCriteria] = None,
-            options: str = "",
-            **kwargs,
+        self,
+        query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+        indigo_session: Indigo = None,
+        page_criteria: Optional[BingoElasticPageCriteria] = None,
+        options: str = "",
+        **kwargs,
     ) -> BingoElasticPageResult:
         """
         Return async page result without waiting for page's full post-processing to complete.
@@ -491,12 +528,21 @@ class AsyncElasticRepository:
         # We must NOT specify an index name as this is inherited by PIT.
         res = await self.el_client.search(body=page_criteria.query)
         ret = get_page_result(
-            res, self.index_type, page_criteria, postprocess_actions, indigo_session, options
+            res,
+            self.index_type,
+            page_criteria,
+            postprocess_actions,
+            indigo_session,
+            options,
         )
         return ret
 
-    async def delete(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-                     limit: int = 1000, **kwargs, ) -> Dict[str, Any]:
+    async def delete(
+        self,
+        query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+        limit: int = 1000,
+        **kwargs,
+    ) -> Dict[str, Any]:
         """
         Delete documents in index by a query filter.
         """
@@ -504,11 +550,13 @@ class AsyncElasticRepository:
             return dict()
         page_criteria = self.compile_query(
             query_subject=query_subject,
-            page_criteria=BingoElasticPageCriteria(page_size=limit-1),
+            page_criteria=BingoElasticPageCriteria(page_size=limit - 1),
             is_delete_query=True,
             **kwargs,
         )
-        return await self.el_client.delete_by_query(index=self.index_name, body=page_criteria.query, slices="auto")
+        return await self.el_client.delete_by_query(
+            index=self.index_name, body=page_criteria.query, slices="auto"
+        )
 
     async def close(self) -> None:
         await self.el_client.close()
@@ -519,28 +567,39 @@ class AsyncElasticRepository:
     async def __aexit__(self, *args, **kwargs) -> None:
         await self.close()
 
-    def compile_query(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-                      page_criteria: Optional[BingoElasticPageCriteria] = None,
-                      postprocess_actions: PostprocessType = None,
-                      is_delete_query: bool = True, **kwargs, ) -> BingoElasticPageCriteria:
-        return _compile_query(self.index_name, self.el_client,
-                              query_subject, page_criteria, postprocess_actions, is_delete_query, **kwargs)
+    def compile_query(
+        self,
+        query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+        page_criteria: Optional[BingoElasticPageCriteria] = None,
+        postprocess_actions: PostprocessType = None,
+        is_delete_query: bool = True,
+        **kwargs,
+    ) -> BingoElasticPageCriteria:
+        return _compile_query(
+            self.index_name,
+            self.el_client,
+            query_subject,
+            page_criteria,
+            postprocess_actions,
+            is_delete_query,
+            **kwargs,
+        )
 
 
 class ElasticRepository:
     def __init__(
-            self,
-            index_type: IndexType,
-            index_name: str,
-            *,
-            host: Union[str, List[str]] = "localhost",
-            port: int = 9200,
-            scheme: str = "",
-            http_auth: Optional[List[str]] = None,
-            ssl_context: Any = None,
-            request_timeout: int = 60,
-            timeout: int = 60,
-            retry_on_timeout: bool = True,
+        self,
+        index_type: IndexType,
+        index_name: str,
+        *,
+        host: Union[str, List[str]] = "localhost",
+        port: int = 9200,
+        scheme: str = "",
+        http_auth: Optional[List[str]] = None,
+        ssl_context: Any = None,
+        request_timeout: int = 60,
+        timeout: int = 60,
+        retry_on_timeout: bool = True,
     ) -> None:
         """
         :param index_type: use function  get_index_name for setting this argument
@@ -580,10 +639,10 @@ class ElasticRepository:
         create_index(self.index_name, self.el_client)
         # pylint: disable=unused-variable
         for is_ok, action in streaming_bulk(
-                self.el_client,
-                prepare(self.index_type, records),
-                index=self.index_name,
-                chunk_size=chunk_size,
+            self.el_client,
+            prepare(self.index_type, records),
+            index=self.index_name,
+            chunk_size=chunk_size,
         ):
             pass
 
@@ -594,12 +653,12 @@ class ElasticRepository:
             pass
 
     def filter(
-            self,
-            query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-            indigo_session: Indigo = None,
-            page_criteria: Optional[BingoElasticPageCriteria] = None,
-            options: str = "",
-            **kwargs,
+        self,
+        query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+        indigo_session: Indigo = None,
+        page_criteria: Optional[BingoElasticPageCriteria] = None,
+        options: str = "",
+        **kwargs,
     ) -> BingoElasticPageResult:
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
@@ -612,15 +671,22 @@ class ElasticRepository:
         # We must NOT specify an index name as this is inherited by PIT.
         res = self.el_client.search(body=page_criteria.query)
         ret = get_page_result(
-            res, self.index_type, page_criteria, postprocess_actions, indigo_session, options
+            res,
+            self.index_type,
+            page_criteria,
+            postprocess_actions,
+            indigo_session,
+            options,
         )
         ret.synchronized()
         return ret
 
-    def delete(self,
-               query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-               limit: int = 1000,
-               **kwargs, ) -> Dict[str, Any]:
+    def delete(
+        self,
+        query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+        limit: int = 1000,
+        **kwargs,
+    ) -> Dict[str, Any]:
         """
         Delete documents in index by a query filter.
         """
@@ -628,40 +694,58 @@ class ElasticRepository:
             return dict()
         page_criteria = self.compile_query(
             query_subject=query_subject,
-            page_criteria=BingoElasticPageCriteria(page_size=limit-1),
+            page_criteria=BingoElasticPageCriteria(page_size=limit - 1),
             is_delete_query=True,
             **kwargs,
         )
-        return self.el_client.delete_by_query(index=self.index_name, body=page_criteria.query,
-                                              slices="auto")
+        return self.el_client.delete_by_query(
+            index=self.index_name, body=page_criteria.query, slices="auto"
+        )
 
-    def compile_query(self, query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-                      page_criteria: Optional[BingoElasticPageCriteria] = None,
-                      postprocess_actions: PostprocessType = None,
-                      is_delete_query: bool = False, **kwargs, ) -> BingoElasticPageCriteria:
-        return _compile_query(self.index_name, self.el_client,
-                              query_subject, page_criteria, postprocess_actions, is_delete_query, **kwargs)
+    def compile_query(
+        self,
+        query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+        page_criteria: Optional[BingoElasticPageCriteria] = None,
+        postprocess_actions: PostprocessType = None,
+        is_delete_query: bool = False,
+        **kwargs,
+    ) -> BingoElasticPageCriteria:
+        return _compile_query(
+            self.index_name,
+            self.el_client,
+            query_subject,
+            page_criteria,
+            postprocess_actions,
+            is_delete_query,
+            **kwargs,
+        )
 
 
-def _compile_query(index_name: str, el_client: ElasticRepositoryT,
-                   query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
-                   page_criteria: Optional[BingoElasticPageCriteria] = None,
-                   postprocess_actions: PostprocessType = None,
-                   is_delete_query: bool = False,
-                   **kwargs,
-                   ) -> BingoElasticPageCriteria:
+def _compile_query(
+    index_name: str,
+    el_client: ElasticRepositoryT,
+    query_subject: Union[BaseMatch, IndigoObject, IndigoRecord] = None,
+    page_criteria: Optional[BingoElasticPageCriteria] = None,
+    postprocess_actions: PostprocessType = None,
+    is_delete_query: bool = False,
+    **kwargs,
+) -> BingoElasticPageCriteria:
     # record last elastic hit's sort object, regardless of its post-process filtering status.
     if postprocess_actions is None:
         postprocess_actions = []
     if page_criteria is None:
         page_criteria = BingoElasticPageCriteria()
     if not page_criteria.pit_id and not is_delete_query:
-        pit_result = el_client.open_point_in_time(index=index_name,
-                                                  keep_alive=str(page_criteria.pit_stay_alive_minutes) + "m")
+        pit_result = el_client.open_point_in_time(
+            index=index_name,
+            keep_alive=str(page_criteria.pit_stay_alive_minutes) + "m",
+        )
         pit_id: str = pit_result["id"]
         page_criteria._pit_id = pit_id
 
-    def page_processing_routine(record: IndigoRecord, indigo: Indigo, options: str) -> Optional[IndigoRecord]:
+    def page_processing_routine(
+        record: IndigoRecord, indigo: Indigo, options: str
+    ) -> Optional[IndigoRecord]:
         # This is the first post-processing action always, so it shouldn't return None
         assert record is not None
         page_criteria._next_page_search_after = record.sort
@@ -684,12 +768,12 @@ def _compile_query(index_name: str, el_client: ElasticRepositoryT,
                 ],
             },
             # Sort is necessary for paging.
-            "sort": page_criteria.sort_criteria
+            "sort": page_criteria.sort_criteria,
         }
         if not is_delete_query:
             query["pit"] = {
                 "id": page_criteria.pit_id,
-                "keep_alive": str(page_criteria.pit_stay_alive_minutes) + "m"
+                "keep_alive": str(page_criteria.pit_stay_alive_minutes) + "m",
             }
 
         if isinstance(query_subject, BaseMatch):
