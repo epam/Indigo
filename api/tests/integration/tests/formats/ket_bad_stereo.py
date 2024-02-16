@@ -30,3 +30,16 @@ reaction = indigo.loadReactionFromFile(
     os.path.join(root_rea, "bad_stereo.ket")
 )
 print(reaction.smiles())
+
+
+print("Test load/save 'reaction not center' bond:")
+indigo.setOption("json-saving-pretty", "1")
+filename = os.path.join(root_rea, "stereo_not_center.ket")
+reaction = indigo.loadQueryReactionFromFile(filename)
+with open(filename) as f:
+    ref_ket = f.read()
+save_ket = reaction.json()
+if ref_ket == save_ket:
+    print("SUCCESS")
+else:
+    print("FAILED: expected\n%s\ngenerated\n%s" % (ref_ket, save_ket))
