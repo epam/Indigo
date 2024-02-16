@@ -1,5 +1,5 @@
 ** 0 **
-Exception: element: can not calculate implicit hydrogens on aromatic N, charge 0, degree 2, 0 radical electrons
+Exception: element: cannot calculate implicit hydrogens on aromatic N, charge 0, degree 2, 0 radical electrons
 
 False
 Cc1cccc[n]1
@@ -29,11 +29,11 @@ False
 CC1NC=C(O)N=1
 False
 ** 5 **
-Exception: element: can not calculate implicit hydrogens on aromatic N, charge 0, degree 2, 0 radical electrons
+Exception: element: cannot calculate implicit hydrogens on aromatic N, charge 0, degree 2, 0 radical electrons
 dearomatization: non-unique dearomatization: Dearomatization is not unique. Cannot restore hydrogens.
-Exception: element: can not calculate implicit hydrogens on aromatic N, charge 0, degree 2, 0 radical electrons
+Exception: element: cannot calculate implicit hydrogens on aromatic N, charge 0, degree 2, 0 radical electrons
 Exception: dearomatization: non-unique dearomatization: Dearomatization is not unique. Cannot restore hydrogens.
-Exception: element: can not calculate implicit hydrogens on aromatic N, charge 0, degree 2, 0 radical electrons
+Exception: element: cannot calculate implicit hydrogens on aromatic N, charge 0, degree 2, 0 radical electrons
 ** 6 **
 True
 element: bad valence on H having 1 drawn bonds, charge 1, and 0 radical electrons
