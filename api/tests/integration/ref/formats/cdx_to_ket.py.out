@@ -2198,24 +2198,6 @@ arrow64.cdx
                         }
                     ]
                 }
-            },
-            {
-                "type": "arrow",
-                "data": {
-                    "mode": "open-angle",
-                    "pos": [
-                        {
-                            "x": 0.0,
-                            "y": -0.0833333358168602,
-                            "z": 0.0
-                        },
-                        {
-                            "x": 4.89900016784668,
-                            "y": -0.0833333358168602,
-                            "z": 0.0
-                        }
-                    ]
-                }
             }
         ]
     }
@@ -3551,7 +3533,7 @@ simple_rgrp64.cdx
     }
 }
 test_zero_id.cdx
-CDXML loader: Not a molecule. Found 28 arrows.
+CDXML loader: Not a molecule. Found 14 arrows.
 *** Try as Reaction ***
 {
     "root": {

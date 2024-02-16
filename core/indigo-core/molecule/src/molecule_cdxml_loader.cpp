@@ -98,6 +98,7 @@ void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
     nodes.clear();
     bonds.clear();
     _arrows.clear();
+    _graphic_arrows.clear();
     _primitives.clear();
     _id_to_atom_idx.clear();
     _id_to_node_index.clear();
@@ -221,6 +222,27 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
 
     for (const auto& plus : _pluses)
         mol.meta().addMetaObject(new KETReactionPlus(plus));
+
+    // CDX contains draphic arrow wich id dublicate arrow/
+    // Search arrows for arrow with coords same as in grapic arrow and if found - remove tis arrow gecause graphic arrow contains more specific type
+    for (const auto& g_arrow : _graphic_arrows)
+    {
+        const auto& g_arr_info = g_arrow.first;
+        Vec2f p1(g_arr_info.first.x, g_arr_info.first.y);
+        Vec2f p2(g_arr_info.second.x, g_arr_info.second.y);
+        for (auto it = _arrows.begin(); it != _arrows.end(); it++)
+        {
+            const auto& arr_info = (*it).first;
+            Vec2f ap1(arr_info.first.x, arr_info.first.y);
+            Vec2f ap2(arr_info.second.x, arr_info.second.y);
+            if (fabsf(p1.x - ap1.x) < EPSILON && fabsf(p1.y - ap1.y) < EPSILON && fabsf(p2.x - ap2.x) < EPSILON && fabsf(p2.y - ap2.y) < EPSILON)
+            {
+                _arrows.erase(it);
+                break;
+            }
+        }
+        mol.meta().addMetaObject(new KETReactionArrow(g_arrow.second, p1, p2));
+    }
 
     for (const auto& arrow : _arrows)
     {
@@ -1091,7 +1113,7 @@ void MoleculeCdxmlLoader::_parseGraphic(CDXElement elem)
             default:
                 break;
             }
-            _arrows.push_back(std::make_pair(std::make_pair(Vec3f(tail.x, tail.y, 0), Vec3f(head.x, head.y, 0)), ar_type));
+            _graphic_arrows.push_back(std::make_pair(std::make_pair(Vec3f(tail.x, tail.y, 0), Vec3f(head.x, head.y, 0)), ar_type));
         }
     }
     break;
