@@ -4557,10 +4557,14 @@ void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool 
             for (int j = 0; j < h_cnt; j++)
             {
                 int new_h_idx = addAtom(ELEM_H);
-                if (only_selected) // if only selected atoms - select new H too
-                    selectAtom(new_h_idx);
+                int new_bond_idx = addBond(i, new_h_idx, BOND_SINGLE);
 
-                addBond(i, new_h_idx, BOND_SINGLE);
+                if (only_selected) // if only selected atoms - select new H too
+                {
+                    selectAtom(new_h_idx);
+                    selectBond(new_bond_idx);
+                }
+
                 if (markers_out != 0)
                 {
                     markers_out->expandFill(new_h_idx + 1, 0);
