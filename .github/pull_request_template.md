@@ -26,4 +26,5 @@
 ## Bump request
 - [ ] PR name follows the pattern `Bump version to ...`
 - [ ] add brackets \[ \] for 'skip ci' and put it into the body
+- [ ] all tickets are closed inside the relevant milestone
 
