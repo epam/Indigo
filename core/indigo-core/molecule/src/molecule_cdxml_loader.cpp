@@ -32,9 +32,9 @@ using namespace indigo;
 using namespace tinyxml2;
 using namespace rapidjson;
 
-bool is_fragment(int node_type)
+bool is_fragment(CdxmlNode& node)
 {
-    return node_type == kCDXNodeType_Nickname || node_type == kCDXNodeType_Fragment;
+    return node.has_fragment || node.type == kCDXNodeType_Nickname || node.type == kCDXNodeType_Fragment;
 }
 
 /*/
@@ -147,7 +147,7 @@ void MoleculeCdxmlLoader::_checkFragmentConnection(int node_id, int bond_id)
     auto& fn = nodes[_id_to_node_index.at(node_id)];
     if (fn.ext_connections.size())
     {
-        if (is_fragment(fn.type) && fn.ext_connections.size() == 1)
+        if (is_fragment(fn) && fn.ext_connections.size() == 1)
         {
             fn.bond_id_to_connection_idx.emplace(bond_id, fn.connections.size());
             int pid = fn.ext_connections.back();
@@ -171,15 +171,22 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         case kCDXNodeType_Element:
         case kCDXNodeType_ElementList:
         case kCDXNodeType_GenericNickname:
-        case kCDXNodeType_Unspecified:
             atoms.push_back(node_idx);
+            break;
+        case kCDXNodeType_Unspecified:
+            if (node.has_fragment)
+                _fragment_nodes.push_back(node_idx);
+            else
+                atoms.push_back(node_idx);
             break;
         case kCDXNodeType_ExternalConnectionPoint: {
             if (_fragment_nodes.size())
             {
                 auto& fn = nodes[_fragment_nodes.back()];
                 if (fn.connections.size() == 0)
+                {
                     fn.ext_connections.push_back(node.id);
+                }
             }
             else
             {
@@ -515,7 +522,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
             {
                 _updateConnection(sn, bond_first_it->second);
             }
-            else if (is_fragment(fn.type) && bond_second_it != _id_to_atom_idx.end())
+            else if (is_fragment(fn) && bond_second_it != _id_to_atom_idx.end())
             {
                 auto bit_beg = fn.bond_id_to_connection_idx.find(bond.id);
                 int a1 = -1;
@@ -549,7 +556,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                         _pmol->setBondDirection(bi, bond.dir);
                 }
             }
-            else if (is_fragment(sn.type) && bond_first_it != _id_to_atom_idx.end())
+            else if (is_fragment(sn) && bond_first_it != _id_to_atom_idx.end())
             {
                 auto bit_beg = sn.bond_id_to_connection_idx.find(bond.id);
                 int a1 = bond_first_it->second;
@@ -579,7 +586,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                         _pmol->setBondDirection(bi, bond.dir);
                 }
             }
-            else if (is_fragment(fn.type) && is_fragment(sn.type))
+            else if (is_fragment(fn) && is_fragment(sn))
             {
                 auto bit_beg = fn.bond_id_to_connection_idx.find(bond.id);
                 auto bit_end = sn.bond_id_to_connection_idx.find(bond.id);
@@ -751,7 +758,7 @@ void MoleculeCdxmlLoader::_parseFragmentAttributes(CDXProperty prop)
     {
         // it means that we are inside of NodeType=Fragment
         // let's check it
-        if (nodes.size() && is_fragment(nodes.back().type))
+        if (nodes.size() && is_fragment(nodes.back()))
         {
             if (std::string(prop.name()) == "ConnectionOrder")
             {
