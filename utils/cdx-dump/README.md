@@ -18,15 +18,15 @@ TODO: Add available CDX documentation as folder with html files.
 
 ## Available options ##
 
-To convert CDX to JSON simply call
+To convert CDX to JSON just call
 ```
 cdx-dump file.cdx
 ```
-Result JSON will be writed to STDOUT, if you whant to save it in file use output redirection to file
+Result JSON will be writed to STDOUT, if you whant to save it in file - use output redirection:
 ```
 cdx-dump file.cdx > out_file.json
 ```
-It will generate json compact JSON form. If you want pretty-formated JSON use "-p"  option:
+It will generate compact JSON without new lines and justify. If you want pretty-formated JSON use "-p"  option:
 ```
 cdx-dump -p file.cdx > out_file.json
 ```
