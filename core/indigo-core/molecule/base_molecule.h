@@ -304,7 +304,7 @@ namespace indigo
 
         virtual int addBond(int beg, int end, int order) = 0;
 
-        void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false);
+        void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false, bool only_selected = false);
 
         virtual int getImplicitH(int idx, bool impl_h_no_throw) = 0;
         virtual void setImplicitH(int idx, int impl_h) = 0;

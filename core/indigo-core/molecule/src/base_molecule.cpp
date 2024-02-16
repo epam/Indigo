@@ -4513,7 +4513,7 @@ int BaseMolecule::countTemplateAtoms()
     return mon_count;
 }
 
-void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool impl_h_no_throw)
+void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool impl_h_no_throw, bool only_selected)
 {
     int v_end = vertexEnd();
 
@@ -4521,13 +4521,11 @@ void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool 
     imp_h_count.clear_resize(vertexEnd());
     imp_h_count.zerofill();
 
-    bool no_selected_atoms = countSelectedAtoms() == 0; // If no atom selected - process all atoms
-
     // getImplicitH can throw an exception, and we need to get the number of hydrogens
     // before unfolding them
     for (int i = vertexBegin(); i < v_end; i = vertexNext(i))
     {
-        if (no_selected_atoms || isAtomSelected(i))
+        if (!only_selected || isAtomSelected(i))
         {
             if (isPseudoAtom(i) || isRSite(i) || isTemplateAtom(i))
                 continue;
@@ -4544,7 +4542,7 @@ void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool 
 
     for (int i = vertexBegin(); i < v_end; i = vertexNext(i))
     {
-        if (no_selected_atoms || isAtomSelected(i))
+        if (!only_selected || isAtomSelected(i))
         {
             int impl_h = imp_h_count[i];
             if (impl_h == 0)
@@ -4559,7 +4557,7 @@ void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool 
             for (int j = 0; j < h_cnt; j++)
             {
                 int new_h_idx = addAtom(ELEM_H);
-                if (!no_selected_atoms) // if has selected atoms - select new H too
+                if (only_selected) // if only selected atoms - select new H too
                     selectAtom(new_h_idx);
 
                 addBond(i, new_h_idx, BOND_SINGLE);

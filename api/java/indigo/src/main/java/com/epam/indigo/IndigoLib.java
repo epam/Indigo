@@ -666,6 +666,8 @@ public interface IndigoLib extends Library {
 
     int indigoUnfoldHydrogens(int item);
 
+    int indigoFoldUnfoldHydrogens(int item);
+
     int indigoLayout(int object);
 
     int indigoClean2d(int object);
