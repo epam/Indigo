@@ -4,21 +4,36 @@
             {
                 "$ref": "mol0"
             }
-        ],
-        "connections": [],
-        "templates": []
+        ]
     },
     "mol0": {
         "type": "molecule",
         "atoms": [
             {
+                "label": "C",
+                "location": [
+                    4.16698,
+                    -2.95,
+                    0
+                ]
+            },
+            {
                 "label": "A",
                 "location": [
-                    11.275,
-                    -8.025,
+                    5.0330127,
+                    -2.45,
                     0
                 ],
                 "explicitValence": 3
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
             }
         ]
     }

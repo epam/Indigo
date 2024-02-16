@@ -3367,6 +3367,17 @@ class IndigoObject:
             self._lib().indigoUnfoldHydrogens(self.id)
         )
 
+    def foldUnfoldHydrogens(self):
+        """Molecule or reaction method unfold hydrogens if no explicit hydrogens, otherwise - fold
+
+        Returns:
+            int: 1 if there are no errors
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoFoldUnfoldHydrogens(self.id)
+        )
+
     def layout(self):
         """Molecule or reaction method calculates layout for the structure
 

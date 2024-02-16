@@ -976,29 +976,13 @@ def convert_explicit_hydrogens():
         indigo=indigo,
         query=query,
     )
-    fold = False
     mode = data.get("mode", "auto")
     if mode == "fold":
-        fold = True
-    elif mode == "unfold":
-        fold = False
-    else:
-        iatoms = md.struct.iterateAtoms()
-        while iatoms.hasNext():
-            atom = iatoms.next()
-            try:
-                if atom.atomicNumber() == 1 and atom.degree() > 0:
-                    # Hydrogen connected to something - fold
-                    fold = True
-                    break
-            except IndigoException:
-                # atom.atomicNumber can raise exception for non-standard atoms
-                # just skip these atoms
-                continue
-    if fold:
         md.struct.foldHydrogens()
-    else:
+    elif mode == "unfold":
         md.struct.unfoldHydrogens()
+    else:
+        md.struct.foldUnfoldHydrogens()
     return get_response(
         md,
         data["output_format"],
