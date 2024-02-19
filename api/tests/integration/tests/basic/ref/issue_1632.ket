@@ -79,6 +79,7 @@
             },
             {
                 "type": 1,
+                "selected": true,
                 "atoms": [
                     1,
                     3
@@ -86,6 +87,7 @@
             },
             {
                 "type": 1,
+                "selected": true,
                 "atoms": [
                     1,
                     4
@@ -93,6 +95,7 @@
             },
             {
                 "type": 1,
+                "selected": true,
                 "atoms": [
                     1,
                     5
