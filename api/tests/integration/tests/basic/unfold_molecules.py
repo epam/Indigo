@@ -51,7 +51,7 @@ def test_unfold(filename, load_function, auto=False):
     else:
         print(
             "Diff between origin and after fold.\nOrigin:%s\nFolded:%s\n"
-            % (expected, unfolded)
+            % (init_smarts, folded)
         )
 
 
@@ -61,6 +61,10 @@ def test_qmol_unfold(filename, auto=False):
 
 def test_mol_unfold(filename, auto=False):
     test_unfold(filename, indigo.loadMoleculeFromFile, auto)
+
+
+def test_rxn_fold(filename):
+    test_unfold(filename, indigo.loadReactionFromFile, True)
 
 
 print("\n******* Test unfold aromatic ring *******")
@@ -94,3 +98,6 @@ test_qmol_unfold("issue_1634.ket")
 
 print("\n******* Test query with attachemnt points *******")
 test_qmol_unfold("issue_1629.ket")
+
+print("\n******* Test selection in reaction *******")
+test_rxn_fold("issue_1724.ket")
