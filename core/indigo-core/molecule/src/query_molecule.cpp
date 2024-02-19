@@ -2470,6 +2470,12 @@ int QueryMolecule::_calcAtomConnectivity(int idx)
     }
     if (was_aromatic) // +1 connection for odd aromatic bond
         conn += 1;
+    // Add atachment points
+    Array<int> ap_indices;
+    ap_indices.clear();
+    getAttachmentIndicesForAtom(idx, ap_indices);
+    conn += ap_indices.size();
+
     return conn;
 }
 
