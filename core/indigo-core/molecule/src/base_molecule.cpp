@@ -302,10 +302,6 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     reaction_atom_exact_change.expandFill(vertexEnd(), 0);
     reaction_bond_reacting_center.expandFill(edgeEnd(), 0);
     _bond_directions.expandFill(edgeEnd(), -1);
-    _hl_atoms.clear();
-    _hl_bonds.clear();
-    _sl_atoms.clear();
-    _sl_bonds.clear();
 
     // Copy atom properties
     for (auto i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
@@ -316,14 +312,10 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
         reaction_atom_mapping[mapping[i]] = mol.reaction_atom_mapping[i];
         reaction_atom_inversion[mapping[i]] = mol.reaction_atom_inversion[i];
         reaction_atom_exact_change[mapping[i]] = mol.reaction_atom_exact_change[i];
-        if (mol.isAtomHighlighted(i))
-            highlightAtom(mapping[i]);
-        if (mol.isBondHighlighted(i))
-            highlightBond(mapping[i]);
         if (mol.isAtomSelected(i))
             selectAtom(mapping[i]);
-        if (mol.isBondSelected(i))
-            selectBond(mapping[i]);
+        if (mol.isAtomHighlighted(i))
+            highlightAtom(mapping[i]);
     }
 
     for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
@@ -333,6 +325,10 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
             continue;
         reaction_bond_reacting_center[edge_idx] = mol.reaction_bond_reacting_center[j];
         _bond_directions[edge_idx] = mol.getBondDirection(j);
+        if (mol.isBondSelected(j))
+            selectBond(edge_idx);
+        if (mol.isBondHighlighted(j))
+            highlightBond(edge_idx);
     }
 
     // RGroups

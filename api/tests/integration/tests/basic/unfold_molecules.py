@@ -83,3 +83,8 @@ test_qmol_unfold("issue_1550.ket")
 
 print("\n******* Test unfold selected with unselected explicit H *******")
 test_mol_unfold("issue_1632.ket", auto=True)
+
+print(
+    "\n******* Test unfold two selected with one unselected molecules *******"
+)
+test_mol_unfold("issue_1640.ket")
