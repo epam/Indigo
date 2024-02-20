@@ -588,17 +588,16 @@ CEXPORT int indigoFoldUnfoldHydrogens(int item)
     INDIGO_END(-1);
 }
 
-static bool _removeHydrogens(BaseMolecule& mol)
+static bool _removeHydrogens(BaseMolecule& mol, bool selected_only)
 {
     QS_DEF(Array<int>, to_remove);
     QS_DEF(Array<int>, sterecenters_to_validate);
     int i;
-    bool no_selected_atoms = mol.countSelectedAtoms() == 0; // If no atom selected - process all atoms
 
     sterecenters_to_validate.clear();
     to_remove.clear();
     for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-        if (no_selected_atoms || mol.isAtomSelected(i))
+        if (!selected_only || mol.isAtomSelected(i))
             if (mol.convertableToImplicitHydrogen(i))
             {
                 const Vertex& v = mol.getVertex(i);
@@ -625,14 +624,24 @@ CEXPORT int indigoFoldHydrogens(int item)
         IndigoObject& obj = self.getObject(item);
 
         if (IndigoBaseMolecule::is(obj))
-            _removeHydrogens(obj.getBaseMolecule());
+        {
+            BaseMolecule& bmol = obj.getBaseMolecule();
+            _removeHydrogens(bmol, bmol.countSelectedAtoms() > 0);
+        }
         else if (IndigoBaseReaction::is(obj))
         {
             int i;
             BaseReaction& rxn = obj.getBaseReaction();
+            bool selected_only = false;
+            for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+                if (rxn.getBaseMolecule(i).countSelectedAtoms() > 0)
+                {
+                    selected_only = true;
+                    break;
+                }
 
             for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-                _removeHydrogens(rxn.getBaseMolecule(i));
+                _removeHydrogens(rxn.getBaseMolecule(i), selected_only);
         }
         else
             throw IndigoError("indigoFoldHydrogens(): %s given", obj.debugInfo());
@@ -1135,7 +1144,7 @@ CEXPORT int indigoNormalize(int structure, const char* options)
         bool changed = false;
 
         // Fold hydrogens
-        changed |= _removeHydrogens(mol);
+        changed |= _removeHydrogens(mol, false);
 
         // Neutralize charges
         for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
