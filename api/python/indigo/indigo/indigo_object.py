@@ -4123,7 +4123,7 @@ class IndigoObject:
             self._lib().indigoDbgInternalType(self.id)
         )
 
-    def clearXyz(self):
+    def clearXYZ(self):
         """Molecule method clear coordinates of atoms
 
         Raises:

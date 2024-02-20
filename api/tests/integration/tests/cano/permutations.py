@@ -75,7 +75,7 @@ def random_permutation(iterable, r=None):
 
 
 def testMol(mol):
-    mol.clearXyz()
+    mol.clearXYZ()
     mol_for_test = mol.clone()
     base_smiles = mol_for_test.canonicalSmiles()
     print(base_smiles)

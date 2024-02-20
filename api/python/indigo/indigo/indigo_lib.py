@@ -857,6 +857,8 @@ class IndigoLib:
         IndigoLib.lib.indigoUnfoldHydrogens.argtypes = [c_int]
         IndigoLib.lib.indigoFoldUnfoldHydrogens.restype = c_int
         IndigoLib.lib.indigoFoldUnfoldHydrogens.argtypes = [c_int]
+        IndigoLib.lib.indigoClearXYZ.restype = c_int
+        IndigoLib.lib.indigoClearXYZ.argtypes = [c_int]
         IndigoLib.lib.indigoLayout.restype = c_int
         IndigoLib.lib.indigoLayout.argtypes = [c_int]
         IndigoLib.lib.indigoClean2d.restype = c_int
@@ -1011,8 +1013,6 @@ class IndigoLib:
         IndigoLib.lib.indigoNameToStructure.argtypes = [c_char_p, c_char_p]
         IndigoLib.lib.indigoResetOptions.restype = c_int
         IndigoLib.lib.indigoResetOptions.argtypes = []
-        IndigoLib.lib.indigoClearXYZ.restype = c_int
-        IndigoLib.lib.indigoClearXYZ.argtypes = [c_int]
 
     @staticmethod
     def checkResult(
