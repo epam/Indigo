@@ -4122,3 +4122,15 @@ class IndigoObject:
         return IndigoLib.checkResultString(
             self._lib().indigoDbgInternalType(self.id)
         )
+
+    def clearXyz(self):
+        """Molecule method clear coordinates of atoms
+
+        Raises:
+            IndigoException: on error
+
+        Returns:
+            list: molecule ID
+        """
+        self._lib().indigoClearXYZ(self.id)
+        return

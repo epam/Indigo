@@ -468,6 +468,7 @@ CEXPORT float* indigoXYZ(int atom);
 
 CEXPORT int indigoSetXYZ(int atom, float x, float y, float z);
 
+CEXPORT int indigoClearXYZ(int molecule);
 CEXPORT int indigoCountSuperatoms(int molecule);
 CEXPORT int indigoCountDataSGroups(int molecule);
 CEXPORT int indigoCountRepeatingUnits(int molecule);
