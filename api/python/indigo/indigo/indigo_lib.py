@@ -1011,6 +1011,8 @@ class IndigoLib:
         IndigoLib.lib.indigoNameToStructure.argtypes = [c_char_p, c_char_p]
         IndigoLib.lib.indigoResetOptions.restype = c_int
         IndigoLib.lib.indigoResetOptions.argtypes = []
+        IndigoLib.lib.indigoClearXYZ.restype = c_int
+        IndigoLib.lib.indigoClearXYZ.argtypes = [c_int]
 
     @staticmethod
     def checkResult(
