@@ -58,3 +58,9 @@ testing filename:
 issue_1629.ket
 Unfolded molecule equal to expected
 Folded KET equal to original
+
+******* Test selection in reaction *******
+testing filename:
+issue_1724.ket
+Unfolded molecule equal to expected
+Folded KET equal to original
