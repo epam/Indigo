@@ -1284,7 +1284,7 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec3
     if (!is_valid_utf8(txt))
         txt = latin1_to_utf8(txt);
 
-    text_parsed.emplace_back(text_pos, txt.c_str());
+    text_parsed.emplace_back(tpos, txt.c_str());
 }
 
 void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, CDXProperty prop)

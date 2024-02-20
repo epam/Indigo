@@ -2093,6 +2093,7 @@ void MolfileLoader::_postLoad()
     cip.convertSGroupsToCIP(*_bmol);
 
     // collect unique nucleotide templates
+
     std::unordered_map<std::string, int> nucleo_templates;
     for (int tg_idx = _bmol->tgroups.begin(); tg_idx != _bmol->tgroups.end(); tg_idx = _bmol->tgroups.next(tg_idx))
     {

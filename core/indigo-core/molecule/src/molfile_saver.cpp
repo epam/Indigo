@@ -127,7 +127,7 @@ void MolfileSaver::_handleMonomers(BaseMolecule& mol)
 {
     SequenceLayout sl(mol);
     std::map<int, std::map<int, int>> layout_sequence;
-    sl.calculateLayout(0, layout_sequence);
+    sl.calculateLayout(layout_sequence);
     const auto& directions_map = sl.directionsMap();
     _calculateSEQIDs(mol, directions_map, layout_sequence);
     // MonomersToSgroupFilter mon_filter(mol, directions_map);
@@ -1145,7 +1145,7 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
     if (tgroup.tgroup_name.size() > 0)
         out.printf("%s", tgroup.tgroup_name.ptr());
     if (tgroup.tgroup_alias.size() > 0)
-        out.printf(isAminoAcidClass(tgroup.tgroup_class.ptr()) ? "/%s/" : "/%s", tgroup.tgroup_alias.ptr());
+        out.printf(isAminoAcidClass(tgroup.tgroup_class.ptr()) ? "/%s" : "/%s", tgroup.tgroup_alias.ptr());
     if (tgroup.tgroup_natreplace.size() > 0)
         out.printf(" NATREPLACE=%s", tgroup.tgroup_natreplace.ptr());
     if (tgroup.tgroup_comment.size() > 0)

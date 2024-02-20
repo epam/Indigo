@@ -93,6 +93,7 @@ void MoleculeAutoLoader::loadQueryMolecule(QueryMolecule& qmol)
 void MoleculeAutoLoader::loadMolecule(BaseMolecule& mol)
 {
     _loadMolecule(mol);
+
     if (!mol.isQueryMolecule())
     {
         mol.asMolecule().setIgnoreBadValenceFlag(ignore_bad_valence);

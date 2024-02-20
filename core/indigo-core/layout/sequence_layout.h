@@ -24,6 +24,7 @@
 #include "molecule/query_molecule.h"
 
 #include <deque>
+#include <optional>
 #include <queue>
 #include <vector>
 
@@ -34,17 +35,20 @@
 
 namespace indigo
 {
-    const int kRowSpacing = 4;
+    using SequenceLayoutMap = std::map<int, std::map<int, int>>;
+    using OptionalDir = std::optional< const std::pair<int, int>& >;
+
     class DLLEXPORT SequenceLayout
     {
     public:
         struct PriorityElement
         {
-            PriorityElement(int priority, int atom_idx, int col, int row) : priority(priority), atom_idx(atom_idx), col(col), row(row)
+            PriorityElement(const std::pair<int, int>& dir, const std::pair<int, int>& back_dir, int col, int row)
+                : dir(dir), back_dir(back_dir), col(col), row(row)
             {
             }
-            int priority;
-            int atom_idx;
+            std::pair<int, int> dir;
+            std::pair<int, int> back_dir;
             int col;
             int row;
         };
@@ -53,16 +57,17 @@ namespace indigo
 
         explicit SequenceLayout(BaseMolecule& molecule);
         void make();
-        void make(int first_atom_idx);
-        void calculateLayout(int first_atom_idx, std::map<int, std::map<int, int>>& layout_sequence);
+        void calculateLayout(SequenceLayoutMap& layout_sequence);
         const std::unordered_map<int, std::map<int, int>>& directionsMap();
 
         DECL_ERROR;
 
     private:
-        static void processPosition(BaseMolecule& mol, int& row, int& col, int atom_from_idx, const std::pair<int, int>& dir);
+        bool _isMonomerBackbone(int atom_idx);
+        void processPosition(BaseMolecule& mol, PriorityElement& pel, SequenceLayoutMap& layout_sequence);
+        const std::pair<int, int> _getBackDir( int src_idx, int dst_idx );
         BaseMolecule& _molecule;
-        std::map<int, std::map<int, int>> _layout_sequence;
+        SequenceLayoutMap _layout_sequence;
         std::unordered_map<int, std::map<int, int>> _directions_map;
     };
 
