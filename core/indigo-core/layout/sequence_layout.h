@@ -24,7 +24,6 @@
 #include "molecule/query_molecule.h"
 
 #include <deque>
-#include <optional>
 #include <queue>
 #include <vector>
 
@@ -36,7 +35,7 @@
 namespace indigo
 {
     using SequenceLayoutMap = std::map<int, std::map<int, int>>;
-    using OptionalDir = std::optional< const std::pair<int, int>& >;
+    using OptionalDir = std::optional<const std::pair<int, int>&>;
 
     class DLLEXPORT SequenceLayout
     {
@@ -65,7 +64,7 @@ namespace indigo
     private:
         bool _isMonomerBackbone(int atom_idx);
         void processPosition(BaseMolecule& mol, PriorityElement& pel, SequenceLayoutMap& layout_sequence);
-        const std::pair<int, int> _getBackDir( int src_idx, int dst_idx );
+        const std::pair<int, int> _getBackDir(int src_idx, int dst_idx);
         BaseMolecule& _molecule;
         SequenceLayoutMap _layout_sequence;
         std::unordered_map<int, std::map<int, int>> _directions_map;
