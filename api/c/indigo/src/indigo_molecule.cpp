@@ -2145,6 +2145,16 @@ CEXPORT float indigoAlignAtoms(int molecule, int natoms, int* atom_ids, float* d
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoClearXYZ(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        self.getObject(molecule).getBaseMolecule().clearXyz();
+        return molecule;
+    }
+    INDIGO_END(-1);
+}
+
 CEXPORT int indigoCountSuperatoms(int molecule)
 {
     INDIGO_BEGIN
