@@ -70,7 +70,8 @@ void SequenceLayout::processPosition(BaseMolecule& mol, PriorityElement& pel, Se
         }
         pel.row++;
         // check if we have this row already
-        for (auto row_it = layout_sequence.find(pel.row); row_it != layout_sequence.end(); row_it = layout_sequence.find(pel.row))
+        auto row_it = layout_sequence.find(pel.row);
+        if (row_it != layout_sequence.end())
         {
             auto& col_map = row_it->second;
             if (col_map.find(pel.col) != col_map.end()) // check if we have a collision
@@ -90,8 +91,6 @@ void SequenceLayout::processPosition(BaseMolecule& mol, PriorityElement& pel, Se
                     layout_sequence.insert(std::move(nh));
                 }
             }
-            else
-                pel.row++;
         }
     }
 }
@@ -132,7 +131,7 @@ void SequenceLayout::calculateLayout(SequenceLayoutMap& layout_sequence)
         if (first_atom_idx < 0)
             break;
 
-        std::pair<int, int> first_dir(-1, -1), back_dir(-1, -1);
+        std::pair<int, int> first_dir(-1, first_atom_idx), back_dir(-1, -1);
         auto dirs_it = _directions_map.find(first_atom_idx);
         if (dirs_it != _directions_map.end() && dirs_it->second.size())
             first_dir = *dirs_it->second.begin();

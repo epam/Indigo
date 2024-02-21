@@ -373,7 +373,7 @@
         "seqid": 1,
         "position": {
             "x": 0.0,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Ala",
         "templateId": "Ala"
@@ -384,7 +384,7 @@
         "seqid": 2,
         "position": {
             "x": 1.600000023841858,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Cys",
         "templateId": "Cys"
@@ -395,7 +395,7 @@
         "seqid": 3,
         "position": {
             "x": 3.200000047683716,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Asp",
         "templateId": "Asp"
@@ -406,7 +406,7 @@
         "seqid": 4,
         "position": {
             "x": 4.800000190734863,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Glu",
         "templateId": "Glu"
@@ -417,7 +417,7 @@
         "seqid": 5,
         "position": {
             "x": 6.400000095367432,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Phe",
         "templateId": "Phe"
@@ -428,7 +428,7 @@
         "seqid": 6,
         "position": {
             "x": 8.0,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Gly",
         "templateId": "Gly"
@@ -439,7 +439,7 @@
         "seqid": 7,
         "position": {
             "x": 9.600000381469727,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "His",
         "templateId": "His"
@@ -450,7 +450,7 @@
         "seqid": 8,
         "position": {
             "x": 11.199999809265137,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Ile",
         "templateId": "Ile"
@@ -461,7 +461,7 @@
         "seqid": 9,
         "position": {
             "x": 12.800000190734864,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Lys",
         "templateId": "Lys"
@@ -472,7 +472,7 @@
         "seqid": 10,
         "position": {
             "x": 14.40000057220459,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Leu",
         "templateId": "Leu"
@@ -483,7 +483,7 @@
         "seqid": 11,
         "position": {
             "x": 16.0,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Met",
         "templateId": "Met"
@@ -494,7 +494,7 @@
         "seqid": 12,
         "position": {
             "x": 17.600000381469728,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Asn",
         "templateId": "Asn"
@@ -505,7 +505,7 @@
         "seqid": 13,
         "position": {
             "x": 19.200000762939454,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Pyl",
         "templateId": "Pyl"
@@ -516,7 +516,7 @@
         "seqid": 14,
         "position": {
             "x": 20.80000114440918,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Pro",
         "templateId": "Pro"
@@ -527,7 +527,7 @@
         "seqid": 15,
         "position": {
             "x": 22.399999618530275,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Gln",
         "templateId": "Gln"
@@ -538,7 +538,7 @@
         "seqid": 16,
         "position": {
             "x": 24.0,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Arg",
         "templateId": "Arg"
@@ -549,7 +549,7 @@
         "seqid": 17,
         "position": {
             "x": 25.600000381469728,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Ser",
         "templateId": "Ser"
@@ -560,7 +560,7 @@
         "seqid": 18,
         "position": {
             "x": 27.200000762939454,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Arg",
         "templateId": "Arg"
@@ -571,7 +571,7 @@
         "seqid": 19,
         "position": {
             "x": 28.80000114440918,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Sec",
         "templateId": "Sec"
@@ -582,7 +582,7 @@
         "seqid": 20,
         "position": {
             "x": 30.399999618530275,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Val",
         "templateId": "Val"
@@ -593,7 +593,7 @@
         "seqid": 21,
         "position": {
             "x": 32.0,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Trp",
         "templateId": "Trp"
@@ -604,7 +604,7 @@
         "seqid": 22,
         "position": {
             "x": 33.60000228881836,
-            "y": 0.0
+            "y": -0.0
         },
         "alias": "Tyr",
         "templateId": "Tyr"
