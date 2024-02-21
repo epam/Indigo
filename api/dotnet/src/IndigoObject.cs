@@ -1628,6 +1628,12 @@ namespace com.epam.indigo
             dispatcher.checkResult(IndigoLib.indigoFoldUnfoldHydrogens(self));
         }
 
+        public void clearXYZ()
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(IndigoLib.indigoClearXYZ(self));
+        }
+
         public void layout()
         {
             dispatcher.setSessionID();
