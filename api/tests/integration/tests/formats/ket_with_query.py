@@ -53,3 +53,6 @@ check_ket_file("ket_with_lists.ket")
 indigo.setOption("json-use-native-precision", "1")
 print("*** Issue 1567 ***")
 check_ket_file("ket_with_custom_query_issue1567.ket")
+
+print("*** KET with chirality only ***")
+check_ket_file("ket_with_chirality_only.ket")

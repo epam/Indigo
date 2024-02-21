@@ -1,3 +1,4 @@
+import difflib
 import os
 import sys
 
@@ -183,3 +184,15 @@ qmol = indigo.loadQueryMoleculeFromFile(
 )
 
 print(qmol.smarts())
+
+print("\n*** 1468 MRV SMA overrite valence ***")
+filename = joinPathPy("molecules/issue_1468.mol", __file__)
+qmol = indigo.loadQueryMoleculeFromFile(filename)
+with open(filename) as f:
+    mol_origin = f.read()
+indigo.setOption("molfile-saving-mode", "2000")
+mol_save = qmol.molfile()
+if mol_save == mol_origin:
+    print("Succes.\n")
+else:
+    print("Failure. \n%s\ndifferent from\n%s\n" % (mol_origin, mol_save))

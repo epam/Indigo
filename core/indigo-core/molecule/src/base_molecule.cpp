@@ -302,10 +302,6 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     reaction_atom_exact_change.expandFill(vertexEnd(), 0);
     reaction_bond_reacting_center.expandFill(edgeEnd(), 0);
     _bond_directions.expandFill(edgeEnd(), -1);
-    _hl_atoms.clear();
-    _hl_bonds.clear();
-    _sl_atoms.clear();
-    _sl_bonds.clear();
 
     // Copy atom properties
     for (auto i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
@@ -316,14 +312,10 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
         reaction_atom_mapping[mapping[i]] = mol.reaction_atom_mapping[i];
         reaction_atom_inversion[mapping[i]] = mol.reaction_atom_inversion[i];
         reaction_atom_exact_change[mapping[i]] = mol.reaction_atom_exact_change[i];
-        if (mol.isAtomHighlighted(i))
-            highlightAtom(mapping[i]);
-        if (mol.isBondHighlighted(i))
-            highlightBond(mapping[i]);
         if (mol.isAtomSelected(i))
             selectAtom(mapping[i]);
-        if (mol.isBondSelected(i))
-            selectBond(mapping[i]);
+        if (mol.isAtomHighlighted(i))
+            highlightAtom(mapping[i]);
     }
 
     for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
@@ -333,6 +325,10 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
             continue;
         reaction_bond_reacting_center[edge_idx] = mol.reaction_bond_reacting_center[j];
         _bond_directions[edge_idx] = mol.getBondDirection(j);
+        if (mol.isBondSelected(j))
+            selectBond(edge_idx);
+        if (mol.isBondHighlighted(j))
+            highlightBond(edge_idx);
     }
 
     // RGroups
@@ -4513,7 +4509,7 @@ int BaseMolecule::countTemplateAtoms()
     return mon_count;
 }
 
-void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool impl_h_no_throw)
+void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool impl_h_no_throw, bool only_selected)
 {
     int v_end = vertexEnd();
 
@@ -4521,13 +4517,11 @@ void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool 
     imp_h_count.clear_resize(vertexEnd());
     imp_h_count.zerofill();
 
-    bool no_selected_atoms = countSelectedAtoms() == 0; // If no atom selected - process all atoms
-
     // getImplicitH can throw an exception, and we need to get the number of hydrogens
     // before unfolding them
     for (int i = vertexBegin(); i < v_end; i = vertexNext(i))
     {
-        if (no_selected_atoms || isAtomSelected(i))
+        if (!only_selected || isAtomSelected(i))
         {
             if (isPseudoAtom(i) || isRSite(i) || isTemplateAtom(i))
                 continue;
@@ -4544,7 +4538,7 @@ void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool 
 
     for (int i = vertexBegin(); i < v_end; i = vertexNext(i))
     {
-        if (no_selected_atoms || isAtomSelected(i))
+        if (!only_selected || isAtomSelected(i))
         {
             int impl_h = imp_h_count[i];
             if (impl_h == 0)
@@ -4559,10 +4553,14 @@ void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool 
             for (int j = 0; j < h_cnt; j++)
             {
                 int new_h_idx = addAtom(ELEM_H);
-                if (!no_selected_atoms) // if has selected atoms - select new H too
-                    selectAtom(new_h_idx);
+                int new_bond_idx = addBond(i, new_h_idx, BOND_SINGLE);
 
-                addBond(i, new_h_idx, BOND_SINGLE);
+                if (only_selected) // if only selected atoms - select new H too
+                {
+                    selectAtom(new_h_idx);
+                    selectBond(new_bond_idx);
+                }
+
                 if (markers_out != 0)
                 {
                     markers_out->expandFill(new_h_idx + 1, 0);
@@ -4584,20 +4582,30 @@ void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool 
 
 bool BaseMolecule::convertableToImplicitHydrogen(int idx)
 {
+    // TODO: add check for query features defined for H, do not remove such hydrogens
     if (getAtomNumber(idx) == ELEM_H && getAtomIsotope(idx) <= 0 && getVertex(idx).degree() == 1)
     {
         int nei = getVertex(idx).neiVertex(getVertex(idx).neiBegin());
-        if (getAtomNumber(nei) != ELEM_H || getAtomIsotope(nei) > 0)
+        if (getAtomNumber(nei) == ELEM_H && getAtomIsotope(nei) <= 0)
         {
-            if (stereocenters.getType(nei) > 0)
-                if (getVertex(nei).degree() == 3)
-                    return false; // not ignoring hydrogens around stereocenters with lone pair
-
-            if (!cis_trans.convertableToImplicitHydrogen(*this, idx))
+            // This is H-H connection
+            int edge_idx = findEdgeIndex(idx, nei);
+            if (edge_idx < 0)
                 return false;
-
-            return true;
+            const Edge& edge = getEdge(edge_idx);
+            if (idx == edge.end) // if this is second H - remove it
+                return true;
+            else
+                return false;
         }
+        if (stereocenters.getType(nei) > 0)
+            if (getVertex(nei).degree() == 3)
+                return false; // not ignoring hydrogens around stereocenters with lone pair
+
+        if (!cis_trans.convertableToImplicitHydrogen(*this, idx))
+            return false;
+
+        return true;
     }
     return false;
 }

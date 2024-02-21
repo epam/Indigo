@@ -540,7 +540,7 @@ std::string QueryMolecule::getMolMrvSmaExtension(QueryMolecule& qm, int aid)
     {
         // Just atom or list and list of properties.
         bool atoms_writed = false;
-        for (int property : {ATOM_TOTAL_H, ATOM_IMPLICIT_H, ATOM_CONNECTIVITY, ATOM_SSSR_RINGS, ATOM_SMALLEST_RING_SIZE, ATOM_AROMATICITY})
+        for (int property : {ATOM_IMPLICIT_H, ATOM_CONNECTIVITY, ATOM_SSSR_RINGS, ATOM_SMALLEST_RING_SIZE, ATOM_AROMATICITY})
         {
             if (atom_props.count(property) < 1)
                 continue;
@@ -574,8 +574,8 @@ std::string QueryMolecule::getMolMrvSmaExtension(QueryMolecule& qm, int aid)
     else
     {
         if (qa.type != OP_NONE)
-            //  Complex tree - just write SMARTS
-            return getSmartsAtomStr(&qa, qm.original_format);
+            //  Complex tree - just write nothing
+            return "";
     }
     std::string result{out.ptr(), static_cast<std::size_t>(out.size())};
     return result;
@@ -2259,13 +2259,13 @@ int QueryMolecule::calcAtomMaxH(int idx, int conn)
 {
     int number = getAtomNumber(idx);
 
-    if (number == -1)
-        return -1;
-
     if (conn == -1)
         return -1;
 
     int explicit_val = getExplicitValence(idx);
+
+    if (number == -1 && explicit_val < 0)
+        return -1;
 
     int max_h = 0;
 
@@ -2276,14 +2276,14 @@ int QueryMolecule::calcAtomMaxH(int idx, int conn)
         if (!possibleAtomCharge(idx, charge))
             continue;
 
-        for (radical = 0; radical <= RADICAL_DOUBLET; radical++)
+        for (radical = 0; radical <= RADICAL_TRIPLET; radical++)
         {
             if (!possibleAtomRadical(idx, radical))
                 continue;
 
             if (explicit_val != -1)
             {
-                int h = explicit_val - Element::calcValenceMinusHyd(number, charge, radical, conn);
+                int h = number < 0 ? explicit_val - conn : explicit_val - Element::calcValenceMinusHyd(number, charge, radical, conn);
                 if (h > max_h)
                     max_h = h;
             }
@@ -2434,16 +2434,25 @@ int QueryMolecule::getAtomTotalH(int idx)
 int QueryMolecule::_calcAtomConnectivity(int idx)
 {
     const Vertex& vertex = getVertex(idx);
-    int i, conn = 0;
+    int i = 0, conn = 0;
     bool was_aromatic = false;
+    int atom_aromaticy = -1;
+    // Smarts treat default bond as SINGLE_OR_AROMATIC so for this bonds look to atom aromaticy
+    if (original_format == SMARTS)
+    {
+        std::ignore = getAtom(idx).sureValue(ATOM_AROMATICITY, atom_aromaticy);
+    }
 
     for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
     {
         int order = getBondOrder(vertex.neiEdge(i));
+        if (order < 0)
+            order = getQueryBondType(getBond(vertex.neiEdge(i)));
 
-        if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE)
+        if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE ||
+            (original_format == SMARTS && order == _BOND_SINGLE_OR_AROMATIC && atom_aromaticy == ATOM_ALIPHATIC))
             conn += order;
-        else if (order == BOND_AROMATIC || order == _BOND_SINGLE_OR_AROMATIC || order == _BOND_DOUBLE_OR_AROMATIC)
+        else if (order == BOND_AROMATIC || (original_format == SMARTS && order == _BOND_SINGLE_OR_AROMATIC && atom_aromaticy == ATOM_AROMATIC))
         {
             conn += 1;
             if (was_aromatic)
@@ -2457,10 +2466,16 @@ int QueryMolecule::_calcAtomConnectivity(int idx)
             }
         }
         else
-            conn += 1;
+            return -1;
     }
-    if (was_aromatic)
+    if (was_aromatic) // +1 connection for odd aromatic bond
         conn += 1;
+    // Add atachment points
+    Array<int> ap_indices;
+    ap_indices.clear();
+    getAttachmentIndicesForAtom(idx, ap_indices);
+    conn += ap_indices.size();
+
     return conn;
 }
 
@@ -3215,6 +3230,8 @@ int QueryMolecule::getImplicitH(int idx, bool /*impl_h_no_throw*/)
     // If implicit h is not set - calculate it
     int max_h = 0;
     int conn = _calcAtomConnectivity(idx);
+    if (conn < 0) // can't calculate - no implicit H
+        return 0;
     if (properties.count(ATOM_TOTAL_H) > 0)
         max_h = properties[ATOM_TOTAL_H]->value_min - getAtomConnectedH(idx);
     else

@@ -484,7 +484,7 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
                 if (rcenter)
                 {
                     writer.Key("center");
-                    writer.Uint(rcenter);
+                    writer.Int(rcenter);
                 }
             }
 
@@ -583,8 +583,8 @@ void MoleculeJsonSaver::saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWr
 
 void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, JsonWriter& writer)
 {
-    int ca = mol.countSelectedAtoms();
-    int cb = mol.countSelectedBonds();
+    int ca = mol.countHighlightedAtoms();
+    int cb = mol.countHighlightedBonds();
     if (ca || cb)
     {
         writer.Key("highlight");
@@ -814,7 +814,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                                               {QueryMolecule::ATOM_SMALLEST_RING_SIZE, "ringSize"},
                                               {QueryMolecule::ATOM_CONNECTIVITY, "connectivity"}};
             bool hasQueryProperties =
-                query_atom_properties.count(QueryMolecule::ATOM_AROMATICITY) > 0 ||
+                query_atom_properties.count(QueryMolecule::ATOM_AROMATICITY) > 0 || query_atom_properties.count(QueryMolecule::ATOM_CHIRALITY) > 0 ||
                 std::any_of(qprops.cbegin(), qprops.cend(), [&query_atom_properties](auto p) { return query_atom_properties.count(p.first) > 0; });
             if (needCustomQuery || hasQueryProperties)
             {

@@ -28,7 +28,7 @@ False
 ****** Bad valence, smiles and unfold ********
 C/C=C(/N(=O)O)\N(=O)O
 CC=C(N(O)=O)N(O)=O
-element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+CC=C(N(O)=O)N(O)=O
 ****** Serialize and atom changing ********
 CC[C@H](/C=C\C)N
 C/C=C\[C@H](N)CC

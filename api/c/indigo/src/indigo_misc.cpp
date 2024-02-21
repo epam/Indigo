@@ -448,43 +448,79 @@ CEXPORT const char* indigoCanonicalSmarts(int item)
     INDIGO_END(0);
 }
 
+static void UnfoldAndLayoutHydrogens(BaseMolecule& bmol, bool only_selected, bool layout_hydrogens)
+{
+    Array<int> markers;
+    bmol.unfoldHydrogens(&markers, -1, true, only_selected);
+    if (layout_hydrogens && markers.count(1) > 0) // If some hydrogens found - layout it
+    {
+        // Layout hydrogens
+        MoleculeLayoutGraphSimple layout;
+        layout.preserve_existing_layout = true;
+        layout.makeOnGraph(bmol);
+        for (int i = layout.vertexBegin(); i < layout.vertexEnd(); i = layout.vertexNext(i))
+        {
+            const Vec3f& pos = bmol.getAtomXyz(layout.getVertexExtIdx(i));
+            layout.getPos(i).set(pos.x, pos.y);
+        }
+        Filter new_filter(markers.ptr(), Filter::EQ, 1);
+        layout.layout(bmol, 1, &new_filter, true);
+        for (int i = layout.vertexBegin(); i < layout.vertexEnd(); i = layout.vertexNext(i))
+        {
+            const LayoutVertex& vert = layout.getLayoutVertex(i);
+            bmol.setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
+        }
+    }
+}
+
+static bool MoleculeHasCoords(BaseMolecule& bmol)
+{
+    if (bmol.vertexCount() < 2) // If only one atom - treat as has coords
+        return true;
+    for (int i = bmol.vertexBegin(); i != bmol.vertexEnd(); i = bmol.vertexNext(i))
+    {
+        Vec3f& coords = bmol.getAtomXyz(i);
+        if (coords.x != 0.0 || coords.y != 0.0 || coords.z != 0.0)
+            return true;
+    }
+    return false;
+}
+
 CEXPORT int indigoUnfoldHydrogens(int item)
 {
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(item);
         QS_DEF(Array<int>, markers);
+        bool layout_hydrogens = false;
 
         if (IndigoBaseMolecule::is(obj))
         {
             BaseMolecule& bmol = obj.getBaseMolecule();
-            bmol.unfoldHydrogens(&markers, -1);
-            if (markers.count(1) > 0) // If some hydrogens found - layout it
-            {
-                // Layout hydrogens
-                MoleculeLayoutGraphSimple layout;
-                layout.preserve_existing_layout = true;
-                layout.makeOnGraph(bmol);
-                for (int i = layout.vertexBegin(); i < layout.vertexEnd(); i = layout.vertexNext(i))
-                {
-                    const Vec3f& pos = bmol.getAtomXyz(layout.getVertexExtIdx(i));
-                    layout.getPos(i).set(pos.x, pos.y);
-                }
-                Filter new_filter(markers.ptr(), Filter::EQ, 1);
-                layout.layout(bmol, 1, &new_filter, true);
-                for (int i = layout.vertexBegin(); i < layout.vertexEnd(); i = layout.vertexNext(i))
-                {
-                    const LayoutVertex& vert = layout.getLayoutVertex(i);
-                    bmol.setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
-                }
-            }
+            UnfoldAndLayoutHydrogens(bmol, bmol.countSelectedAtoms() > 0, MoleculeHasCoords(bmol));
         }
         else if (IndigoBaseReaction::is(obj))
         {
             BaseReaction& rxn = obj.getBaseReaction();
+            bool has_coords = false;
+            bool only_selected = false;
+            for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+                if (MoleculeHasCoords(rxn.getBaseMolecule(i)))
+                {
+                    has_coords = true;
+                    break;
+                }
+
+            for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+                if (rxn.getBaseMolecule(i).countSelectedAtoms() > 0)
+                {
+                    only_selected = true;
+                    break;
+                }
+
             for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
             {
-                rxn.getBaseMolecule(i).unfoldHydrogens(&markers, -1);
+                UnfoldAndLayoutHydrogens(rxn.getBaseMolecule(i), only_selected, has_coords);
             }
         }
         else
@@ -495,17 +531,73 @@ CEXPORT int indigoUnfoldHydrogens(int item)
     INDIGO_END(-1);
 }
 
-static bool _removeHydrogens(BaseMolecule& mol)
+static bool hasConvertableToImplicitHydrogen(BaseMolecule& bmol, bool selected_only)
+{
+    for (int i = bmol.vertexBegin(); i != bmol.vertexEnd(); i = bmol.vertexNext(i))
+    {
+        if (bmol.convertableToImplicitHydrogen(i))
+            if (!selected_only)
+                return true;
+            else if (bmol.isAtomSelected(i))
+                return true;
+    }
+    return false;
+}
+
+CEXPORT int indigoFoldUnfoldHydrogens(int item)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        bool selected_only = false;
+        bool fold = false;
+        if (IndigoBaseMolecule::is(obj))
+        {
+            BaseMolecule& bmol = obj.getBaseMolecule();
+            if (bmol.countSelectedAtoms() > 0)
+                selected_only = true;
+            if (hasConvertableToImplicitHydrogen(bmol, selected_only))
+                fold = true;
+        }
+        else if (IndigoBaseReaction::is(obj))
+        {
+            BaseReaction& brxn = obj.getBaseReaction();
+            for (int i = brxn.begin(); i != brxn.end(); i = brxn.next(i))
+                if (brxn.getBaseMolecule(i).countSelectedAtoms() > 0)
+                {
+                    selected_only = true;
+                    break;
+                }
+            for (int i = brxn.begin(); i != brxn.end(); i = brxn.next(i))
+                if (hasConvertableToImplicitHydrogen(brxn.getBaseMolecule(i), selected_only))
+                {
+                    fold = true;
+                    break;
+                }
+        }
+        else
+        {
+            throw IndigoError("Unexpected object type.");
+        }
+
+        if (fold)
+            return indigoFoldHydrogens(item);
+        else
+            return indigoUnfoldHydrogens(item);
+    }
+    INDIGO_END(-1);
+}
+
+static bool _removeHydrogens(BaseMolecule& mol, bool selected_only)
 {
     QS_DEF(Array<int>, to_remove);
     QS_DEF(Array<int>, sterecenters_to_validate);
     int i;
-    bool no_selected_atoms = mol.countSelectedAtoms() == 0; // If no atom selected - process all atoms
 
     sterecenters_to_validate.clear();
     to_remove.clear();
     for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-        if (no_selected_atoms || mol.isAtomSelected(i))
+        if (!selected_only || mol.isAtomSelected(i))
             if (mol.convertableToImplicitHydrogen(i))
             {
                 const Vertex& v = mol.getVertex(i);
@@ -532,14 +624,24 @@ CEXPORT int indigoFoldHydrogens(int item)
         IndigoObject& obj = self.getObject(item);
 
         if (IndigoBaseMolecule::is(obj))
-            _removeHydrogens(obj.getBaseMolecule());
+        {
+            BaseMolecule& bmol = obj.getBaseMolecule();
+            _removeHydrogens(bmol, bmol.countSelectedAtoms() > 0);
+        }
         else if (IndigoBaseReaction::is(obj))
         {
             int i;
             BaseReaction& rxn = obj.getBaseReaction();
+            bool selected_only = false;
+            for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+                if (rxn.getBaseMolecule(i).countSelectedAtoms() > 0)
+                {
+                    selected_only = true;
+                    break;
+                }
 
             for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-                _removeHydrogens(rxn.getBaseMolecule(i));
+                _removeHydrogens(rxn.getBaseMolecule(i), selected_only);
         }
         else
             throw IndigoError("indigoFoldHydrogens(): %s given", obj.debugInfo());
@@ -1042,7 +1144,7 @@ CEXPORT int indigoNormalize(int structure, const char* options)
         bool changed = false;
 
         // Fold hydrogens
-        changed |= _removeHydrogens(mol);
+        changed |= _removeHydrogens(mol, false);
 
         // Neutralize charges
         for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))

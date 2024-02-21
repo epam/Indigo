@@ -558,6 +558,27 @@ M  END
             assert.equal(unfold_smiles, '{"struct":"C([H])([H])([H])C([H])([H])[H]","format":"smiles","original_format":"chemical/x-daylight-smiles"}');
             options.delete();
         });
+
+        test("convert_explicit_hydrogens", "auto_with_single_h", () => {
+            let options = new indigo.MapStringString();
+            options.set("output-content-type", "application/json");
+            const unfold_smiles = indigo.convert_explicit_hydrogens("CC.[HH]", "auto", "smiles", options);
+            assert.equal(unfold_smiles, '{"struct":"C([H])([H])([H])C([H])([H])[H].[H][H]","format":"smiles","original_format":"chemical/x-daylight-smiles"}');
+            const fold_smiles = indigo.convert_explicit_hydrogens("C([H])([H])([H])C([H])([H])[H].[H][H]", "auto", "smiles", options);
+            assert.equal(fold_smiles, '{"struct":"CC.[HH]","format":"smiles","original_format":"chemical/x-daylight-smiles"}');
+            options.delete();
+        });
+
+        test("convert_explicit_hydrogens", "auto_single_h", () => {
+            let options = new indigo.MapStringString();
+            options.set("output-content-type", "application/json");
+            const unfold_smiles = indigo.convert_explicit_hydrogens("[HH]", "auto", "smiles", options);
+            assert.equal(unfold_smiles, '{"struct":"[H][H]","format":"smiles","original_format":"chemical/x-daylight-smiles"}');
+            const fold_smiles = indigo.convert_explicit_hydrogens("[H][H]", "auto", "smiles", options);
+            assert.equal(fold_smiles, '{"struct":"[HH]","format":"smiles","original_format":"chemical/x-daylight-smiles"}');
+            options.delete();
+        });
+
     }
     
     // Dearomatize

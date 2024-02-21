@@ -3524,10 +3524,8 @@ CC(=O)O[C@H]1[C@H](O[C@@H]2O[C@H](COC(C)=O)[C@@H](OC(C)=O)[C@H](OC(C)=O)[C@H]2OC
 Database: ../../../../../data/molecules/basic/helma.smi
  (#0)
 ON(=O)c1ccc(Cl)cc1
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#1)
 Nc1ccc(cc1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#2)
 C=CC1CC=CCC1
  (#3)
@@ -3638,7 +3636,6 @@ O=S1(=O)OCCO1
 CN(C)CCO
  (#56)
 CCCN(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#57)
 CC(=O)OC=C
  (#58)
@@ -3681,7 +3678,6 @@ O=S1(=O)CCCO1
 CC(=O)NNc1ccccc1
  (#77)
 [N-]=N=CC(=O)OCC(N)C(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#78)
 CC=C
  (#79)
@@ -3714,7 +3710,6 @@ Clc1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
 Nc1ccccc1C(O)=O
  (#93)
 Nc1ccc(O)c(c1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#94)
 OC(C(=O)c1ccccc1)c1ccccc1
  (#95)
@@ -3737,10 +3732,8 @@ Oc1ccccc1O
 Oc1ccc(Cl)cc1Cl
  (#104)
 Cc1ccc(cc1N(O)=O)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#105)
 Nc1[n]cc([s]1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#106)
 CN(C)c1ccccc1
  (#107)
@@ -3749,7 +3742,6 @@ CCOC(=O)C(CC(=O)OCC)SP(=S)(OC)OC
 CCCOC(=O)c1cc(O)c(O)c(O)c1
  (#109)
 Nc1ccc(cc1O)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#110)
 S=C(NC1CCCCC1)NC1CCCCC1
  (#111)
@@ -3788,7 +3780,6 @@ O=C1NS(=O)(=O)c2ccccc12
 O=c1c2ccccc2c2ccc3c4c2c1ccc4c1ccccc1c3=O
  (#128)
 Cc1ccc2c(c1N(O)=O)C(=O)c1ccccc1C2=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#129)
 CCCN(N=O)C(=N)NN(O)O
  (#130)
@@ -3849,7 +3840,6 @@ OC(=O)CN(CC(O)=O)CC(O)=O
 Nc1ccc(cc1)Sc1ccc(N)cc1
  (#158)
 CCNC(=O)Nc1[n]cc([s]1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#159)
 CC(=O)OCc1ccccc1
  (#160)
@@ -3912,7 +3902,6 @@ N#CN=[Ca]
 Nc1cc(Cl)c(cc1Cl)-c1cc(Cl)c(N)cc1Cl
  (#189)
 CCCN(CCC)c1c(cc(cc1N(O)=O)C(F)(F)F)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#190)
 CN(C)NC(=O)CCC(O)=O
  (#191)
@@ -3927,28 +3916,24 @@ CN(N=O)c1cc[n]cc1
 CCOC(=O)C(CC(=O)OCC)SP(=O)(OC)OC
  (#196)
 Oc1c(I)c2=Oc3c(cc(I)c(O)c3I)C(=c2cc1I)c1ccccc1C(O)=O
-unfoldHydrogens: element: bad valence on O having 3 drawn bonds, charge 0, and 0 radical electrons
  (#197)
 CC=NN(C)C=O
  (#198)
 O=C1CCN(N=O)C(=O)N1
  (#199)
 CN(C)c1ccc(cc1)C(c1ccc(cc1)N(Cc1cc(ccc1)S(=O)(=O)O[Na])CC)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#200)
 CC(=O)Nc1cc(N)c(cc1)OCC
  (#201)
 Clc1cc2Oc3cc(Cl)c(Cl)cc3Oc2cc1Cl
  (#202)
 CC(=O)Nc1cc(c(cc1)OCC)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#203)
 CC1CCCC(=O)CCCC=Cc2cc(O)cc(O)c2C(=O)O1
  (#204)
 COc1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
  (#205)
 ON(=O)c1ccc(cc1)Oc1ccc(Cl)cc1Cl
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#206)
 O=C(CN(CC(=O)O[Na])CC(=O)O[Na])O[Na]
  (#207)
@@ -3989,7 +3974,6 @@ Nc1ccc(cc1)-c1ccccc1
 Cc1cc(N)c(C)cc1C
  (#225)
 CC1CN(N=Cc2ccc(o2)N(O)=O)C(=O)N1
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#226)
 CN(C)C(=O)Nc1cc(ccc1)C(F)(F)F
  (#227)
@@ -4008,28 +3992,24 @@ CC(C)N(C(C)C)C(=O)SCC(Cl)=CCl
 CC12C(OC(C)=O)C(O)C(OC3C=C(C)C(=O)C(O)C13CO)C12CO1
  (#234)
 CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(O)cc1S(O)(=O)=O)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#235)
 ClC1(Cl)C2(Cl)C3(Cl)C4(Cl)C2(Cl)C2(Cl)C(Cl)(C3(Cl)C12Cl)C4(Cl)Cl
  (#236)
 O=C1C2CC=CCC2C(=O)N1SC(Cl)(Cl)C(Cl)Cl
  (#237)
 Cc1cc(c(cc1)N=Nc1c2ccccc2ccc1O)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#238)
 COc1cc(ccc1N=Nc1c(cc2cc(cc(N)c2c1O)S(=O)(=O)O[Na])S(=O)(=O)O[Na])-c1cc(OC)c(cc1)N=Nc1c(cc2cc(cc(N)c2c1O)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
  (#239)
 NCCCCCCCCCCC(O)=O
  (#240)
 COc1c(Cl)c(Cl)c(c(Cl)c1Cl)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#241)
 O=CC=CO[Na]
  (#242)
 c1[n]ccc2c1[nH]c1ccccc21
  (#243)
 ON(=O)c1ccc(o1)-c1c[s]c(NC=O)[n]1
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#244)
 CN(C)c1ccc(cc1)C(=N)c1ccc(cc1)N(C)C
  (#245)
@@ -4040,18 +4020,14 @@ CNC(=S)N(C)C
 CC(C)CCCCCOC(=O)COc1ccc(Cl)cc1Cl
  (#248)
 Cc1ccc(cc1N(O)=O)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#249)
 CC(=O)Nc1[n][n]c([s]1)-c1ccc(o1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#250)
 CN=N(C)O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#251)
 Nc1cc(cc2cc(c(N=Nc3ccc(cc3)-c3ccc(cc3)N=Nc3c(cc4cc(cc(N)c4c3O)S(=O)(=O)O[Na])S(=O)(=O)O[Na])c(O)c12)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
  (#252)
 CN(C)Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#253)
 Nc1ccc2c([nH]c3ccccc23)[n]1
  (#254)
@@ -4060,7 +4036,6 @@ c1cccc2Oc3ccccc3Oc21
 O=NN1CCSCC1
  (#256)
 [N-]=N=N[Na]
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#257)
 FC(F)OC(Cl)C(F)(F)F
  (#258)
@@ -4071,7 +4046,6 @@ c1cccc2occc21
 Oc1ccc2cc(ccc2c1N=Nc1ccc(cc1)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
  (#261)
 CNc1ccc(cc1N(O)=O)N(CCO)CCO
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#262)
 Cc1cc(N=Nc2ccc(cc2)NC(C)=O)c(O)cc1
  (#263)
@@ -4082,14 +4056,12 @@ CC(C)CC(=O)OCC=C
 Nc1cc(cc2cc(c3N=Nc4ccc(cc4O[Cu]Oc3c12)-c1cc2O[Cu]Oc3c4c(cc(cc4N)S(=O)(=O)O[Na])cc(c3N=Nc2cc1)S(=O)(=O)O[Na])S(=O)(=O)O[Na])S(=O)(=O)O[Na]
  (#266)
 Nc1cc(c(cc1)NCCO)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#267)
 CCOP(=S)(Oc1[n]c(Cl)c(Cl)cc1Cl)OCC
  (#268)
 COc1cc2OC3OC=CC3c2c2oc(=O)c3C(O)CCc3c12
  (#269)
 COP(=S)(Oc1ccc(cc1)N(O)=O)OC
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#270)
 C1OC1C1CO1
  (#271)
@@ -4128,15 +4100,12 @@ OCC(CBr)(CBr)CO
 OC(=O)C=Cc1cc(O)c(O)cc1
  (#288)
 ON(=O)c1cc(ccc1NCCO)N(CCO)CCO
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#289)
 Cc1cc([n]c([n]1)C(C)C)OP(=S)(OCC)OCC
  (#290)
 ON(=O)c1ccc([s]1)C1NC(=O)c2ccccc2N1
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#291)
 OCCNc1[n]c([n]c2ccccc21)-c1ccc([s]1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#292)
 Clc1cc2Oc3ccc(Cl)cc3Oc2cc1
  (#293)
@@ -4153,15 +4122,12 @@ Cc1cc(C)c(C)cc1N=Nc1c2ccc(cc2cc(c1O)S(O)(=O)=O)S(O)(=O)=O
 Oc1c2ccccc2c(cc1N=Nc1ccc(c2ccccc12)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
  (#299)
 ON(=O)c1ccc(o1)-c1c[s]c(NNC=O)[n]1
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#300)
 CC(=O)NCc1[n]c([n]o1)-c1ccc(o1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#301)
 CNNCc1ccc(cc1)C(=O)NC(C)C
  (#302)
 NC(=O)C(=Cc1ccc(o1)N(O)=O)c1ccco1
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#303)
 Cc1cc(C)c(cc1)N=Nc1c2ccc(cc2cc(c1O)S(O)(=O)=O)S(O)(=O)=O
  (#304)
@@ -4174,7 +4140,6 @@ CCCCN(CCCCO)N=O
 CCN(C#N)N=O
  (#308)
 Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#309)
 CN(N=O)C(=O)Oc1ccccc1OC(C)C
  (#310)
@@ -4189,7 +4154,6 @@ O=NN1CCCCCCCCCCCC1
 CC(N)(Cc1cc(O)c(O)cc1)C(O)=O
  (#315)
 ON(=O)c1ccc(o1)-c1c[s]c(NC(=O)C(F)(F)F)[n]1
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#316)
 O=C1NC(=O)CN1N=O
  (#317)
@@ -4200,10 +4164,8 @@ CN(C)N=Nc1[n]c[nH]c1C(N)=O
 CN1C(=O)CN=C(c2cc(Cl)ccc12)c1ccccc1
  (#320)
 Cc1[n]cc(N(O)=O)[n]1CCO
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#321)
 C[n]1c[n]c(c1Sc1[n]c[n]c2[nH]c[n]c12)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#322)
 Cc1cc(c(N=Nc2cc(c3ccccc3c2O)S(O)(=O)=O)c(C)c1)S(O)(=O)=O
  (#323)
@@ -4240,13 +4202,10 @@ CC(=O)Oc1ccccc1C(O)=O
 OC(CO)C1OC(=O)C(O)=C1O
  (#339)
 OCCN1CCN(N=Cc2ccc(o2)N(O)=O)C1=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#340)
 OC(=O)CCN(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#341)
 ON(=O)C(N(O)=O)(N(O)=O)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#342)
 CC(C)NCC(O)c1ccc2ccccc2c1
  (#343)
@@ -4255,7 +4214,6 @@ CCCc1cc2OCOc2cc1COCCOCCOCCCC
 Oc1[n]cc(F)c(O)[n]1
  (#345)
 Oc1ccc(cc1N(O)=O)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#346)
 CN(CCCl)CCCl
  (#347)
@@ -4270,10 +4228,8 @@ CC(C)=CCl
 Nc1cc(N)c(Cl)cc1
  (#352)
 CC(=O)Nc1[n]c([n]c(NC(C)=O)[n]1)-c1ccc(o1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#353)
 CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(cc1)S(O)(=O)=O)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#354)
 COc1ccc(cc1)C(O)C=C
  (#355)
@@ -4298,10 +4254,8 @@ CC(=O)N(O)c1cc2Cc3ccccc3-c2cc1
 CC(=O)Nc1cc2Cc3ccccc3-c2cc1
  (#365)
 Nc1cc(c(N)cc1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#366)
 CC(=O)Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#367)
 Nc1ccc(cc1)-c1ccc(N)cc1
  (#368)
@@ -4310,7 +4264,6 @@ O=C(CCl)c1ccccc1
 CCc1cc(cc[n]1)C(N)=S
  (#370)
 ON(=O)c1ccc(o1)-c1c[s]c[n]1
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#371)
 CN1CCCC1c1c[n]ccc1
  (#372)
@@ -4335,7 +4288,6 @@ CC(C)CN(N=O)C(=N)NN(O)O
 OCC(O)C(O)C(O)C(C=O)NC(=O)N(CCCl)N=O
  (#382)
 CN(C)=C1C=CC(C=C1)=C(c1ccc(cc1)N(C)C)c1ccc(cc1)N(C)C
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#383)
 CCN(CC)N=O
  (#384)
@@ -4348,7 +4300,6 @@ CS(=O)(=O)OCCCCOS(C)(=O)=O
 CCCCCCCCCCCCN(C)N=O
  (#388)
 Cc1[n]cc(N(O)=O)[n]1C
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#389)
 O=C(C1CCCCC1)N1CC2c3ccccc3CCN2C(=O)C1
  (#390)
@@ -4361,7 +4312,6 @@ COC(=O)C1CN(CCC=1)N=O
 OCC1CO1
  (#394)
 CN(C)CN=c1[nH][n]c(C=Cc2ccc(o2)N(O)=O)o1
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#395)
 Cc1cc(O)[n]c(S)[n]1
  (#396)
@@ -4370,7 +4320,6 @@ ClC(Cl)(Cl)Cl
 CCCC[Sn](CCCC)(CCCC)O[Sn](CCCC)(CCCC)CCCC
  (#398)
 CCOP(=S)(Oc1ccc(cc1)N(O)=O)OCC
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#399)
 Cc1ccc2cc3c(ccc4ccccc43)c3CCc1c32
  (#400)
@@ -4379,7 +4328,6 @@ CCC(c1ccc(O)cc1)=C(CC)c1ccc(O)cc1
 Cc1c(Cl)c(=O)oc2cc(ccc12)OP(=S)(OCC)OCC
  (#402)
 OC(C(CO)NC(=O)C(Cl)Cl)c1ccc(cc1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#403)
 NC(CCC(O)=O)C(O)=O
  (#404)
@@ -4434,7 +4382,6 @@ CC(C)CCCC(C)CCCC(C)CCCC1(C)CCc2c(O1)c(C)c(C)c(OC(C)=O)c2C
 OCCN(CCO)c1[n]c([n]c2ccccc21)-c1ccc[s]1
  (#429)
 ON(=O)c1ccc([s]1)-c1[n]c2ccccc2c([n]1)N1CCOCC1
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#430)
 CN(Cc1c[n]c2[n]c(N)[n]c(N)c2[n]1)c1ccc(cc1)C(=O)NC(CCC(O)=O)C(O)=O
  (#431)
@@ -4443,7 +4390,6 @@ CSCCC(N)C(O)=O
 OC(=O)c1ccc[n]c1
  (#433)
 NC(=O)NN=Cc1ccc(o1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#434)
 NNc1ccccc1
  (#435)
@@ -4454,7 +4400,6 @@ COP(=O)(OC)N1CCOCC1
 COC(N)=O
  (#438)
 Oc1cc(ccc1N(CCO)CCO)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#439)
 CC1CCC(CC=1)C(C)=C
  (#440)
@@ -4475,12 +4420,10 @@ ClC1(Cl)C2(Cl)C3C4CC(C5OC54)C3C1(Cl)C(Cl)=C2Cl
 C[n]1c(C)cc(=O)[n]1-c1ccccc1
  (#448)
 ON(=O)c1ccc2CCc3cccc1c32
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#449)
 NC(=O)N(CC(O)=O)N=O
  (#450)
 ON(=O)c1cccc2ccc[n]c21
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#451)
 Nc1cc(Cl)c(N)c(Cl)c1
  (#452)
@@ -4497,17 +4440,14 @@ Cc1cccc2ccc[n]c21
 Cc1cc(ccc1N)-c1cc(C)c(N)cc1
  (#458)
 ON(=O)c1cc2ccc[n]c2cc1
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#459)
 CCN(N=O)C(=O)OCC
  (#460)
 Nc1ccc(cc1Cl)NOS(O)(=O)=O
  (#461)
 Nc1cc(ccc1C(O)=O)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#462)
 OC(=O)c1ccc(cc1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#463)
 NCCc1cc(O)c(O)cc1
  (#464)
@@ -4558,7 +4498,6 @@ Cc1ccc(N)cc1N
 Cc1cc(ccc1N)NOS(O)(=O)=O
  (#487)
 ON(=O)c1cc(ccc1Nc1cc(c(cc1)Nc1ccccc1)S(=O)(=O)O[Na])N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#488)
 Cc1cc(N)ccc1
  (#489)
@@ -4573,19 +4512,16 @@ Nc1ccc(Cc2cc(Cl)c(N)cc2)cc1Cl
 Cc1ccc(cc1)S(=O)(=O)Oc1ccc(cc1)N=Nc1ccc(cc1C)-c1cc(C)c(cc1)N=Nc1c(O)ccc2cc(cc(c21)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
  (#494)
 COc1ccc(cc1N=Nc1c2ccccc2cc(C(=O)Nc2cccc(c2)N(O)=O)c1O)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#495)
 Oc1cc[n]c(O)[n]1
  (#496)
 COS(C)(=O)=O
  (#497)
 ON(=O)c1ccc(C=NN2CC(=O)NC2=O)o1
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#498)
 CCSCCC(N)C(O)=O
  (#499)
 CN(C)(C)CCO
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#500)
 ClC(Cl)Cl
  (#501)
@@ -4634,7 +4570,6 @@ ClC(Cl)(Cl)C(c1ccc(Cl)cc1)c1ccc(Cl)cc1
 CCc1ccc(cc1)C(C(Cl)Cl)c1ccc(CC)cc1
  (#523)
 Nc1[n]c([n]c(N)[n]1)-c1ccc(o1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#524)
 Cc1[n]c(N)cc2[nH]c3ccccc3c21
  (#525)
@@ -4691,7 +4626,6 @@ CCN(N=O)C(N)=O
 ClC(Cl)C(Cl)(Cl)Cl
  (#551)
 ON(=O)C(Cl)(Cl)Cl
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#552)
 ClC1(Cl)C2(Cl)C3C=CC(Cl)C3C1(Cl)C(Cl)=C2Cl
  (#553)
@@ -4724,7 +4658,6 @@ Cl[Fe](Cl)Cl
 Cc1cc2[n]cccc2c2[n]c(N)[n](C)c12
  (#567)
 NC(=NO)c1ccc(o1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#568)
 OO
  (#569)
@@ -4737,7 +4670,6 @@ Cl[Sn]Cl
 ClCl
  (#573)
 ON(=O)OCC(CON(O)=O)(CON(O)=O)CON(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#574)
 CCOP(=S)(OCC)SC1OCCOC1SP(=S)(OCC)OCC
  (#575)
@@ -4760,7 +4692,6 @@ ClC(Cl)C(Cl)Cl
 CN(C)C(=O)Cl
  (#584)
 CC(C)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#585)
 CCCCCCCCCCCCCCCC(=O)OCC=C(C)C=CC=C(C)C=CC1=C(C)CCCC1(C)C
  (#586)
@@ -4779,7 +4710,6 @@ CCCN(N=O)C(N)=O
 Cc1ccc2c(c1N)C(=O)c1ccccc1C2=O
  (#593)
 ON(=O)c1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#594)
 CC1OC(CC(C)O1)OC(C)=O
  (#595)
@@ -4802,7 +4732,6 @@ O=NN(c1ccccc1)c1ccccc1
 COP(=S)(OC)SC[n]1[n][n]c2ccccc2c1=O
  (#604)
 ON(=O)c1cccc2ccccc21
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#605)
 c1cccc2[nH]c3ccccc3c21
  (#606)
@@ -4835,10 +4764,8 @@ Oc1c(Cl)cc(Cl)cc1Cl
 Cc1ccccc1S(N)(=O)=O
  (#620)
 ON(=O)c1ccccc1Cl
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#621)
 CC(CC)c1cc(cc(c1O)N(O)=O)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#622)
 NC(=O)c1ccccc1C(N)=O
  (#623)
@@ -4851,7 +4778,6 @@ CN(C)c1ccc(cc1)C(=O)c1ccc(cc1)N(C)C
 c1cccc2ccccc21
  (#627)
 COc1ccccc1N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#628)
 CC1=CC(C)(C)Nc2ccc(cc12)OCC
  (#629)
@@ -4870,7 +4796,6 @@ Oc1c(N=Nc2ccc(c3ccccc23)S(O)(=O)=O)c2ccc(cc2cc1S(O)(=O)=O)S(O)(=O)=O
 c1ccccc1-c1ccccc1
  (#636)
 CC(=O)OC(OC(C)=O)c1ccc(o1)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#637)
 Nc1ccc(cc1)-c1ccccc1
  (#638)
@@ -4895,7 +4820,6 @@ CCCNC(=O)NS(=O)(=O)c1ccc(Cl)cc1
 O=C(OOC(=O)c1ccccc1)c1ccccc1
  (#648)
 ON(=O)c1cc2[nH]c[n]c2cc1
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#649)
 CCCc1cc2OCOc2cc1
  (#650)
@@ -4956,22 +4880,16 @@ NC(=O)c1c[n]cc[n]1
 Cc1cc2c(c3cc(C)c(cc3oc2cc1=NCC)NCC)-c1ccccc1C(=O)OCC
  (#678)
 Nc1c(Cl)cc(cc1Cl)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#679)
 Cc1ccc(cc1N)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#680)
 Nc1cc(ccc1N)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#681)
 Nc1cc(ccc1O)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#682)
 COc1ccc(cc1N)N(O)=O
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
  (#683)
 CN(C)(C)CCCl
-unfoldHydrogens: element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
 Database: molecules/cis_trans.smi
  (#0)
 CN1C=C(/C=C2/SC(=S)N(CC([O-])=O)C/2=O)C2=CC=CC=C12

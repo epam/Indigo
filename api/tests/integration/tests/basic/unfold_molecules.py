@@ -20,41 +20,51 @@ indigo.setOption("json-saving-pretty", "1")
 indigo.setOption("json-use-native-precision", "1")
 
 
-def test_unfold(filename, load_function):
+def test_unfold(filename, load_function, auto=False):
     print("testing filename:\n%s" % filename)
     molecule = load_function(ket_path + filename)
-    ket_json = molecule.json()
-    ket_list = ket_json.split("\n")
-    molecule.unfoldHydrogens()
-    unfolded = molecule.json()
-    unfolded_list = unfolded.split("\n")
+    init_smarts = molecule.smarts()
+    if auto:
+        molecule.foldUnfoldHydrogens()
+    else:
+        molecule.unfoldHydrogens()
+    unfolded = molecule.smarts()
     # out_path = joinPathPy("out", __file__) + "/"
     # with open(out_path + filename, "w") as out_file:
-    #     out_file.write(unfolded)
-    with open(ref_path + filename) as ref_file:
-        ref_json = ref_file.read()
-    expected_list = ref_json.split("\n")
-    diff = "\n".join(difflib.context_diff(unfolded_list, expected_list))
-    if diff:
-        print("Diff between expected and after unfold:\n%s" % diff)
+    #     out_file.write(molecule.json())
+    expected_mol = load_function(ref_path + filename)
+    expected = expected_mol.smarts()
+    if expected == unfolded:
+        print("Unfolded molecule equal to expected")
     else:
-        print("Unfolded KET equal to expected")
-    molecule.foldHydrogens()
-    folded = molecule.json()
-    folded_list = folded.split("\n")
-    diff = "\n".join(difflib.context_diff(folded_list, ket_list))
-    if diff:
-        print("Diff between original ket and after fold:\n%s" % diff)
+        print(
+            "Diff between expected and after unfold.\nExpected:%s\nUnfolded:%s\n"
+            % (expected, unfolded)
+        )
+    if auto:
+        molecule.foldUnfoldHydrogens()
     else:
+        molecule.foldHydrogens()
+    folded = molecule.smarts()
+    if folded == init_smarts:
         print("Folded KET equal to original")
+    else:
+        print(
+            "Diff between origin and after fold.\nOrigin:%s\nFolded:%s\n"
+            % (init_smarts, folded)
+        )
 
 
-def test_qmol_unfold(filename):
-    test_unfold(filename, indigo.loadQueryMoleculeFromFile)
+def test_qmol_unfold(filename, auto=False):
+    test_unfold(filename, indigo.loadQueryMoleculeFromFile, auto)
 
 
-def test_mol_unfold(filename):
-    test_unfold(filename, indigo.loadMoleculeFromFile)
+def test_mol_unfold(filename, auto=False):
+    test_unfold(filename, indigo.loadMoleculeFromFile, auto)
+
+
+def test_rxn_fold(filename):
+    test_unfold(filename, indigo.loadReactionFromFile, True)
 
 
 print("\n******* Test unfold aromatic ring *******")
@@ -68,3 +78,26 @@ test_qmol_unfold("issue_1573_2.ket")
 
 print("\n******* Test unfold selected atoms *******")
 test_mol_unfold("issue_1589.ket")
+
+print("\n******* Test unfold bad valence *******")
+test_mol_unfold("issue_1538.ket")
+
+print("\n******* Test unfold any atom with valence *******")
+test_qmol_unfold("issue_1550.ket")
+
+print("\n******* Test unfold selected with unselected explicit H *******")
+test_mol_unfold("issue_1632.ket", auto=True)
+
+print(
+    "\n******* Test unfold two selected with one unselected molecules *******"
+)
+test_mol_unfold("issue_1640.ket")
+
+print("\n******* Test unfold radicals in query molecules *******")
+test_qmol_unfold("issue_1634.ket")
+
+print("\n******* Test query with attachemnt points *******")
+test_qmol_unfold("issue_1629.ket")
+
+print("\n******* Test selection in reaction *******")
+test_rxn_fold("issue_1724.ket")

@@ -436,37 +436,17 @@ namespace indigo
             options_copy["query"] = "true";
         }
         IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy);
-        bool fold = false;
         if (mode == "fold")
-        {
-            fold = true;
-        }
-        else if (mode == "unfold")
-        {
-            fold = false;
-        }
-        else if (mode == "auto")
-        {
-            IndigoObject iatoms(_checkResult(indigoIterateAtoms(iko.id())));
-            while (_checkResult(indigoHasNext(iatoms.id)))
-            {
-                IndigoObject atom(_checkResult(indigoNext(iatoms.id)));
-                // indigoAtomicNumber can return -1 for non-standard atoms
-                // just skip these atoms
-                if (indigoAtomicNumber(atom.id) == 1) // hydrogen
-                {
-                    fold = true;
-                    break;
-                }
-            }
-        }
-        if (fold)
         {
             _checkResult(indigoFoldHydrogens(iko.id()));
         }
-        else
+        else if (mode == "unfold")
         {
             _checkResult(indigoUnfoldHydrogens(iko.id()));
+        }
+        else if (mode == "auto")
+        {
+            _checkResult(indigoFoldUnfoldHydrogens(iko.id()));
         }
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }

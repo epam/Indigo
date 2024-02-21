@@ -746,6 +746,7 @@ CEXPORT int indigoDearomatize(int item);
 
 CEXPORT int indigoFoldHydrogens(int item);
 CEXPORT int indigoUnfoldHydrogens(int item);
+CEXPORT int indigoFoldUnfoldHydrogens(int item);
 
 CEXPORT int indigoLayout(int object);
 CEXPORT int indigoClean2d(int object);
