@@ -35,7 +35,6 @@
 namespace indigo
 {
     using SequenceLayoutMap = std::map<int, std::map<int, int>>;
-    using OptionalDir = std::optional<const std::pair<int, int>&>;
 
     class DLLEXPORT SequenceLayout
     {
