@@ -1462,7 +1462,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         Indigo.checkResult(this, lib.indigoFoldUnfoldHydrogens(self));
     }
 
-    public void сlearXYZ() {
+    public void clearXYZ() {
         dispatcher.setSessionID();
         Indigo.checkResult(this, lib.indigoClearXYZ(self));
     }
