@@ -21,7 +21,7 @@ indigo.setOption("json-use-native-precision", "1")
 
 
 def test_unfold(filename, load_function, auto=False):
-    print("testing filename:\n%s" % filename)
+    print("testing filename: %s" % filename)
     molecule = load_function(ket_path + filename)
     init_smarts = molecule.smarts()
     if auto:
@@ -52,6 +52,25 @@ def test_unfold(filename, load_function, auto=False):
         print(
             "Diff between origin and after fold.\nOrigin:%s\nFolded:%s\n"
             % (init_smarts, folded)
+        )
+
+
+def test_unfold_layout(filename):
+    print("testing filename: %s" % filename)
+    molecule = indigo.loadMoleculeFromFile(ket_path + filename)
+    molecule.unfoldHydrogens()
+    unfolded_json = molecule.json()
+    # out_path = joinPathPy("out", __file__) + "/"
+    # with open(out_path + filename, "w") as out_file:
+    #     out_file.write(unfolded_json)
+    with open(ref_path + filename) as file:
+        expected_json = file.read()
+    if expected_json == unfolded_json:
+        print("Unfolded KET equal to expected")
+    else:
+        print(
+            "Diff between expected and after unfold.\nExpected:%s\nUnfolded:%s\n"
+            % (expected_json, unfolded_json)
         )
 
 
@@ -101,3 +120,6 @@ test_qmol_unfold("issue_1629.ket")
 
 print("\n******* Test selection in reaction *******")
 test_rxn_fold("issue_1724.ket")
+
+print("\n******* Test unfold layout *******")
+test_unfold_layout("issue_1576.ket")
