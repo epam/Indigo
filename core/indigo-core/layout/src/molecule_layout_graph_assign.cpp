@@ -169,7 +169,7 @@ void MoleculeLayoutGraphSimple::_assignAbsoluteCoordinates(float bond_length)
                 // ( 3.iii] Look over all possible orders of component layouts
                 //         (vertex itself is already drawn means one component is already drawn)
                 // ( 3.iv]  Choose layout with minimal energy
-                LayoutChooser layout_chooser(att_layout);
+                LayoutChooser layout_chooser(att_layout, fixed_components);
 
                 layout_chooser.perform();
 
