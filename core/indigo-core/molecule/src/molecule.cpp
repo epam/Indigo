@@ -1473,7 +1473,7 @@ void Molecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std::st
     }
 }
 
-void Molecule::getTemplateAtomDirectionsMap(std::unordered_map<int, std::map<int, int>>& directions_map)
+void Molecule::getTemplateAtomDirectionsMap(std::map<int, std::map<int, int>>& directions_map)
 {
     directions_map.clear();
     for (int i = template_attachment_points.begin(); i != template_attachment_points.end(); i = template_attachment_points.next(i))

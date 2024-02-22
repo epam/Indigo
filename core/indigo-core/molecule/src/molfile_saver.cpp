@@ -134,7 +134,7 @@ void MolfileSaver::_handleMonomers(BaseMolecule& mol)
     // mol.transformTemplatesToSuperatoms(mon_filter);
 }
 
-void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::unordered_map<int, std::map<int, int>>& directions_map,
+void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::map<int, std::map<int, int>>& directions_map,
                                     const std::map<int, std::map<int, int>>& layout_sequence)
 {
     for (auto& row : layout_sequence)
@@ -1138,14 +1138,17 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     TGroup& tgroup = mol.tgroups.getTGroup(tg_idx);
+    std::string natreplace;
+    if (tgroup.tgroup_natreplace.size() > 0)
+        natreplace = tgroup.tgroup_natreplace.ptr();
 
     out.printf("TEMPLATE %d ", tgroup.tgroup_id);
     if (tgroup.tgroup_class.size() > 0)
         out.printf("%s/", tgroup.tgroup_class.ptr());
     if (tgroup.tgroup_name.size() > 0)
         out.printf("%s", tgroup.tgroup_name.ptr());
-    if (tgroup.tgroup_alias.size() > 0)
-        out.printf(isAminoAcidClass(tgroup.tgroup_class.ptr()) ? "/%s" : "/%s", tgroup.tgroup_alias.ptr());
+    if (tgroup.tgroup_alias.size() > 0 && natreplace != "AA/X")
+        out.printf(isAminoAcidClass(tgroup.tgroup_class.ptr()) ? "/%s/" : "/%s", tgroup.tgroup_alias.ptr());
     if (tgroup.tgroup_natreplace.size() > 0)
         out.printf(" NATREPLACE=%s", tgroup.tgroup_natreplace.ptr());
     if (tgroup.tgroup_comment.size() > 0)

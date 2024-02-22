@@ -128,7 +128,7 @@ namespace indigo
         class MonomerFilterBase
         {
         public:
-            MonomerFilterBase(BaseMolecule& mol, const std::unordered_map<int, std::map<int, int>>& directions_map) : _mol(mol), _directions_map(directions_map)
+            MonomerFilterBase(BaseMolecule& mol, const std::map<int, std::map<int, int>>& directions_map) : _mol(mol), _directions_map(directions_map)
             {
             }
             virtual bool operator()(int atom_idx) const = 0;
@@ -137,7 +137,7 @@ namespace indigo
             }
 
         protected:
-            const std::unordered_map<int, std::map<int, int>>& _directions_map;
+            const std::map<int, std::map<int, int>>& _directions_map;
             BaseMolecule& _mol;
         };
 
@@ -218,7 +218,7 @@ namespace indigo
         virtual const int getTemplateAtomDisplayOption(int idx) = 0;
         virtual const int getTemplateAtomTemplateIndex(int idx) = 0;
         virtual void getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map) = 0;
-        virtual void getTemplateAtomDirectionsMap(std::unordered_map<int, std::map<int, int>>& directions_map) = 0;
+        virtual void getTemplateAtomDirectionsMap(std::map<int, std::map<int, int>>& directions_map) = 0;
 
         int countRSites();
         int countTemplateAtoms();

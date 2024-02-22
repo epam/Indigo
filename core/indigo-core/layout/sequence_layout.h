@@ -56,7 +56,7 @@ namespace indigo
         explicit SequenceLayout(BaseMolecule& molecule);
         void make();
         void calculateLayout(SequenceLayoutMap& layout_sequence);
-        const std::unordered_map<int, std::map<int, int>>& directionsMap();
+        const std::map<int, std::map<int, int>>& directionsMap();
 
         DECL_ERROR;
 
@@ -66,7 +66,7 @@ namespace indigo
         const std::pair<int, int> _getBackDir(int src_idx, int dst_idx);
         BaseMolecule& _molecule;
         SequenceLayoutMap _layout_sequence;
-        std::unordered_map<int, std::map<int, int>> _directions_map;
+        std::map<int, std::map<int, int>> _directions_map; // TODO: change to std::vector
     };
 
 } // namespace indigo

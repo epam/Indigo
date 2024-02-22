@@ -95,7 +95,7 @@ void SequenceLayout::processPosition(BaseMolecule& mol, PriorityElement& pel, Se
     }
 }
 
-const std::unordered_map<int, std::map<int, int>>& SequenceLayout::directionsMap()
+const std::map<int, std::map<int, int>>& SequenceLayout::directionsMap()
 {
     return _directions_map;
 }
