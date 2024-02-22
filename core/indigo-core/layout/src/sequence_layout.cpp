@@ -110,7 +110,7 @@ void SequenceLayout::calculateLayout(SequenceLayoutMap& layout_sequence)
     std::priority_queue<PriorityElement, std::vector<PriorityElement>, decltype(comparePair)> pq(comparePair);
 
     // collect all atoms
-    std::unordered_set<int> atoms;
+    std::set<int> atoms;
     for (int i = _molecule.vertexBegin(); i < _molecule.vertexEnd(); i = _molecule.vertexNext(i))
         atoms.emplace(i);
 
