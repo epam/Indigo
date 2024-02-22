@@ -1035,7 +1035,7 @@ void QueryMolecule::getTemplatesMap(std::unordered_map<std::pair<std::string, st
     throw Error("QueryMolecule::getTemplatesMap not implemented");
 }
 
-void QueryMolecule::getTemplateAtomDirectionsMap(std::map<int, std::map<int, int>>& /*directions_map*/)
+void QueryMolecule::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& /*directions_map*/)
 {
     throw Error("QueryMolecule::getTemplateAtomDirectionsMap not implemented");
 }

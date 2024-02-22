@@ -391,7 +391,7 @@ void LayeredMolecules::getTemplatesMap(std::unordered_map<std::pair<std::string,
     return _proto.getTemplatesMap(templates_map);
 }
 
-void LayeredMolecules::getTemplateAtomDirectionsMap(std::map<int, std::map<int, int>>& directions_map)
+void LayeredMolecules::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map)
 {
     return _proto.getTemplateAtomDirectionsMap(directions_map);
 }

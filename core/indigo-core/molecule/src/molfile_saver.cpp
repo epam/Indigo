@@ -134,7 +134,7 @@ void MolfileSaver::_handleMonomers(BaseMolecule& mol)
     // mol.transformTemplatesToSuperatoms(mon_filter);
 }
 
-void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::map<int, std::map<int, int>>& directions_map,
+void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::map<int, int>>& directions_map,
                                     const std::map<int, std::map<int, int>>& layout_sequence)
 {
     for (auto& row : layout_sequence)
@@ -152,12 +152,11 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::map<int, std::
                     if (mon_class == kMonomerClassSUGAR)
                     {
                         // set seq_id for base
-                        auto dirs_it = directions_map.find(atom_idx);
-                        if (dirs_it != directions_map.end() && dirs_it->second.size())
+                        auto& dirs = directions_map[atom_idx];
+                        if (dirs.size())
                         {
-                            auto& atom_dirs = dirs_it->second;
-                            auto br_it = atom_dirs.find(kBranchAttachmentPointIdx);
-                            if (br_it != atom_dirs.end())
+                            auto br_it = dirs.find(kBranchAttachmentPointIdx);
+                            if (br_it != dirs.end())
                             {
                                 std::string br_class = mol.getTemplateAtomClass(br_it->second);
                                 if (br_class == kMonomerClassBASE)
@@ -2188,12 +2187,11 @@ bool MolfileSaver::MonomersToSgroupFilter::operator()(int atom_idx) const
     _mol.getTemplateAtomAttachmentPointsCount(atom_idx);
     if (isAminoAcidClass(mon_class))
     {
-        auto it = _directions_map.find(atom_idx);
-        if (it != _directions_map.end())
+        auto& dirs = _directions_map[atom_idx];
+        if (dirs.size())
         {
-            auto& dirs_map = it->second;
             // if R3 is in use, convert the template to S-Group
-            if (dirs_map.find(kBranchAttachmentPointIdx) != dirs_map.end())
+            if (dirs.find(kBranchAttachmentPointIdx) != dirs.end())
                 return true;
         }
     }

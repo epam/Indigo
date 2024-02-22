@@ -95,7 +95,7 @@ void SequenceLayout::processPosition(BaseMolecule& mol, PriorityElement& pel, Se
     }
 }
 
-const std::map<int, std::map<int, int>>& SequenceLayout::directionsMap()
+const std::vector<std::map<int, int>>& SequenceLayout::directionsMap()
 {
     return _directions_map;
 }
@@ -132,9 +132,9 @@ void SequenceLayout::calculateLayout(SequenceLayoutMap& layout_sequence)
             break;
 
         std::pair<int, int> to_dir(-1, -1);
-        auto dirs_it = _directions_map.find(first_atom_idx);
-        if (dirs_it != _directions_map.end() && dirs_it->second.size())
-            to_dir = *dirs_it->second.begin();
+        auto& dirs = _directions_map[first_atom_idx];
+        if (dirs.size())
+            to_dir = *dirs.begin();
 
         pq.emplace(to_dir, _getBackDir(first_atom_idx, to_dir.second), col, row);
 

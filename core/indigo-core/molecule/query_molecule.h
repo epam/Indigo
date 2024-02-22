@@ -326,7 +326,7 @@ namespace indigo
         const int getTemplateAtomDisplayOption(int idx) override;
         const int getTemplateAtomTemplateIndex(int idx) override;
         void getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map) override;
-        void getTemplateAtomDirectionsMap(std::map<int, std::map<int, int>>& directions_map) override;
+        void getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map) override;
 
         bool isRSite(int atom_idx) override;
         dword getRSiteBits(int atom_idx) override;

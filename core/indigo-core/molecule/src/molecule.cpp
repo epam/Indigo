@@ -1473,18 +1473,22 @@ void Molecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std::st
     }
 }
 
-void Molecule::getTemplateAtomDirectionsMap(std::map<int, std::map<int, int>>& directions_map)
+void Molecule::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map)
 {
     directions_map.clear();
-    for (int i = template_attachment_points.begin(); i != template_attachment_points.end(); i = template_attachment_points.next(i))
+    if (vertexCount())
     {
-        auto& tap = template_attachment_points[i];
-        if (tap.ap_id.size())
+        directions_map.resize(vertexEnd());
+        for (int i = template_attachment_points.begin(); i != template_attachment_points.end(); i = template_attachment_points.next(i))
         {
-            Array<char> atom_label;
-            getAtomSymbol(tap.ap_occur_idx, atom_label);
-            int ap_id = tap.ap_id[0] - 'A';
-            directions_map[tap.ap_occur_idx].emplace(ap_id, tap.ap_aidx);
+            auto& tap = template_attachment_points[i];
+            if (tap.ap_id.size())
+            {
+                Array<char> atom_label;
+                getAtomSymbol(tap.ap_occur_idx, atom_label);
+                int ap_id = tap.ap_id[0] - 'A';
+                directions_map[tap.ap_occur_idx].emplace(ap_id, tap.ap_aidx);
+            }
         }
     }
 }
