@@ -40,7 +40,7 @@ const std::pair<int, int> SequenceLayout::_getBackDir(int src_idx, int dst_idx)
         if (back_dir.second == src_idx)
             return back_dir;
     }
-    return std::make_pair(-1, -1);
+    return std::make_pair(-1, src_idx);
 }
 
 void SequenceLayout::processPosition(BaseMolecule& mol, PriorityElement& pel, SequenceLayoutMap& layout_sequence)
@@ -131,33 +131,33 @@ void SequenceLayout::calculateLayout(SequenceLayoutMap& layout_sequence)
         if (first_atom_idx < 0)
             break;
 
-        std::pair<int, int> first_dir(-1, first_atom_idx), back_dir(-1, -1);
+        std::pair<int, int> to_dir(-1, -1);
         auto dirs_it = _directions_map.find(first_atom_idx);
         if (dirs_it != _directions_map.end() && dirs_it->second.size())
-            first_dir = *dirs_it->second.begin();
+            to_dir = *dirs_it->second.begin();
 
-        pq.emplace(first_dir, _getBackDir(first_atom_idx, first_dir.second), col, row);
+        pq.emplace(to_dir, _getBackDir(first_atom_idx, to_dir.second), col, row);
 
         // bfs algorythm for a graph
         while (pq.size())
         {
             auto te = pq.top(); // top element
             pq.pop();
-            int current_atom_idx = te.dir.second;
-            if (vertices_visited[current_atom_idx] == 0)
+            int to_atom_idx = te.dir.second;
+            atoms.erase(te.back_dir.second);
+            if (vertices_visited[to_atom_idx] == 0)
             {
-                atoms.erase(current_atom_idx);
-                vertices_visited[current_atom_idx] = 1; // mark as passed
-                if (_molecule.isTemplateAtom(current_atom_idx))
+                vertices_visited[to_atom_idx] = 1; // mark as passed
+                if (_molecule.isTemplateAtom(to_atom_idx))
                 {
                     processPosition(_molecule, te, layout_sequence);
-                    layout_sequence[te.row][te.col] = current_atom_idx;
+                    layout_sequence[te.row][te.col] = to_atom_idx;
                 }
-                for (const auto& dir : _directions_map[current_atom_idx])
+                for (const auto& dir : _directions_map[to_atom_idx])
                 {
                     // add to queue with priority. left, right, branch.
                     if (vertices_visited[dir.second] == 0)
-                        pq.emplace(dir, _getBackDir(current_atom_idx, dir.second), te.col, te.row);
+                        pq.emplace(dir, _getBackDir(to_atom_idx, dir.second), te.col, te.row);
                 }
             }
         }
