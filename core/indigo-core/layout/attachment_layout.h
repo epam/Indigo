@@ -74,7 +74,7 @@ namespace indigo
     class LayoutChooser
     {
     public:
-        LayoutChooser(AttachmentLayout& layout);
+        LayoutChooser(AttachmentLayout& layout, Array<int>& fixed_components);
 
         void perform()
         {
@@ -90,6 +90,7 @@ namespace indigo
         CP_DECL;
         TL_CP_DECL(Array<int>, _comp_permutation);
         TL_CP_DECL(Array<int>, _rest_numbers);
+        Array<int> _fixed_components;
         AttachmentLayout& _layout;
     };
 
