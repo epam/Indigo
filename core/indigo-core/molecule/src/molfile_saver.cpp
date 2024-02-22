@@ -617,7 +617,11 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         if (mol.isTemplateAtom(i))
         {
             if (mol.getTemplateAtomClass(i) != 0 && strlen(mol.getTemplateAtomClass(i)) > 0)
-                out.printf(" CLASS=%s", mol.getTemplateAtomClass(i));
+            {
+                std::string tclass = mol.getTemplateAtomClass(i);
+                // convert CHEM to LINKER for BIOVIA
+                out.printf(" CLASS=%s", tclass == kMonomerClassCHEM ? kMonomerClassLINKER : tclass.c_str());
+            }
 
             if (mol.getTemplateAtomSeqid(i) != -1)
                 out.printf(" SEQID=%d", mol.getTemplateAtomSeqid(i));
@@ -883,8 +887,9 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     else
                         out.printf(" LABEL=%s", sup.subscript.ptr());
                 }
+                // convert CHEM to LINKER for BIOVIA
                 if (sup.sa_class.size() > 1)
-                    out.printf(" CLASS=%s", sup.sa_class.ptr());
+                    out.printf(" CLASS=%s", sup.sa_class.ptr() == std::string(kMonomerClassCHEM) ? kMonomerClassLINKER : sup.sa_class.ptr());
                 if (sup.contracted == DisplayOption::Expanded)
                     out.printf(" ESTATE=E");
                 if (sup.attachment_points.size() > 0)
@@ -1142,12 +1147,18 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
         natreplace = tgroup.tgroup_natreplace.ptr();
 
     out.printf("TEMPLATE %d ", tgroup.tgroup_id);
+    // convert CHEM to LINKER for BIOVIA
     if (tgroup.tgroup_class.size() > 0)
-        out.printf("%s/", tgroup.tgroup_class.ptr());
+        out.printf("%s/", tgroup.tgroup_class.ptr() == std::string(kMonomerClassCHEM) ? kMonomerClassLINKER : tgroup.tgroup_class.ptr());
     if (tgroup.tgroup_name.size() > 0)
         out.printf("%s", tgroup.tgroup_name.ptr());
-    if (tgroup.tgroup_alias.size() > 0 && natreplace != "AA/X")
-        out.printf(isAminoAcidClass(tgroup.tgroup_class.ptr()) ? "/%s/" : "/%s", tgroup.tgroup_alias.ptr());
+    if (tgroup.tgroup_alias.size() > 0)
+    {
+        if( natreplace == "AA/X" )
+            out.printf("/");
+        else
+            out.printf(isAminoAcidClass(tgroup.tgroup_class.ptr()) ? "/%s/" : "/%s", tgroup.tgroup_alias.ptr());
+    }
     if (tgroup.tgroup_natreplace.size() > 0)
         out.printf(" NATREPLACE=%s", tgroup.tgroup_natreplace.ptr());
     if (tgroup.tgroup_comment.size() > 0)
@@ -2185,6 +2196,9 @@ bool MolfileSaver::MonomersToSgroupFilter::operator()(int atom_idx) const
 {
     std::string mon_class = _mol.getTemplateAtomClass(atom_idx);
     _mol.getTemplateAtomAttachmentPointsCount(atom_idx);
+    if (mon_class == kMonomerClassCHEM)
+        return true;
+
     if (isAminoAcidClass(mon_class))
     {
         auto& dirs = _directions_map[atom_idx];

@@ -46,6 +46,23 @@ files = [
     "mon_long_id",
     "acgt_1412",
     "issue_1476",
+    "macro/conjugates/pep-chem-rna",
+    "macro/conjugates/peptide_rna",
+    "macro/dendromers/dendro-peptide",
+    "macro/disulfide/disulfide_peptide_cycle",
+    "macro/left_phosphate/left_phosphate",
+    "macro/linear/linear_dna",
+    "macro/linear/linear_rna",
+    "macro/linear/linear_peptide",
+    "macro/linear/linear_multi",
+    "macro/modified/mod_dna",
+    "macro/modified/mod_peptide",
+    "macro/modified/mod_rna",
+    "macro/modified/mod_rna_peptide",
+    "macro/peptide-rna/peptide-rna",
+    "macro/peptide-rna/peptide-rna-ac",
+    "macro/polyphosphate/polyphosphate_rna",
+    "macro/terminators/terms_peptide",
 ]
 
 files.sort()
