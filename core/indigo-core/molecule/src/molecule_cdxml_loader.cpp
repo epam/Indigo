@@ -1230,7 +1230,7 @@ void MoleculeCdxmlLoader::_parseText(CDXElement elem, std::vector<std::pair<Vec3
             }
 
             auto lines = split(style_text, '\n');
-            for (int i = 0; i < lines.size(); ++i)
+            for (auto i = 0; i < lines.size(); ++i)
             {
                 const auto& label_part = lines[i];
                 auto& ket_text_line = ket_text_lines.back();
