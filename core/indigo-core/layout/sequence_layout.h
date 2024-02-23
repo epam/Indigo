@@ -56,6 +56,8 @@ namespace indigo
         explicit SequenceLayout(BaseMolecule& molecule);
         void make();
         void calculateLayout(SequenceLayoutMap& layout_sequence);
+        void calculateCoordinates(SequenceLayoutMap& layout_sequence);
+
         const std::vector<std::map<int, int>>& directionsMap();
 
         DECL_ERROR;

@@ -104,7 +104,6 @@ void SequenceLayout::calculateLayout(SequenceLayoutMap& layout_sequence)
 {
     std::unordered_map<int, uint8_t> vertices_visited;
     _molecule.getTemplateAtomDirectionsMap(_directions_map);
-    int row = -1;
     // place first atom
     auto comparePair = [](const PriorityElement& lhs, const PriorityElement& rhs) { return lhs.dir.first > rhs.dir.first; };
     std::priority_queue<PriorityElement, std::vector<PriorityElement>, decltype(comparePair)> pq(comparePair);
@@ -116,8 +115,8 @@ void SequenceLayout::calculateLayout(SequenceLayoutMap& layout_sequence)
 
     while (atoms.size())
     {
-        row++;       // increase row for next fragment
-        int col = 0; // every fragment starts from column = 0
+        int row = static_cast<int>(layout_sequence.size()); // increase row for next fragment
+        int col = 0;                                        // every fragment starts from column = 0
         int first_atom_idx = -1;
         for (auto atom_idx : atoms)
         {
@@ -164,17 +163,16 @@ void SequenceLayout::calculateLayout(SequenceLayoutMap& layout_sequence)
     }
 }
 
-void SequenceLayout::make()
+void SequenceLayout::calculateCoordinates(SequenceLayoutMap& layout_sequence)
 {
-    calculateLayout(_layout_sequence);
-    if (_layout_sequence.size())
+    if (layout_sequence.size())
     {
-        auto row_it = _layout_sequence.begin();
+        auto row_it = layout_sequence.begin();
         auto col_it = row_it->second.begin();
         int base_col = col_it->first;
         int base_row = row_it->first;
         const auto& origin = _molecule.getAtomXyz(col_it->second);
-        for (auto& row : _layout_sequence)
+        for (auto& row : layout_sequence)
         {
             int y_int = row.first - base_row;
             for (auto& col : row.second)
@@ -185,4 +183,10 @@ void SequenceLayout::make()
             }
         }
     }
+}
+
+void SequenceLayout::make()
+{
+    calculateLayout(_layout_sequence);
+    calculateCoordinates(_layout_sequence);
 }

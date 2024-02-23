@@ -214,6 +214,7 @@ namespace indigo
         virtual bool isTemplateAtom(int idx) = 0;
         virtual const char* getTemplateAtom(int idx) = 0;
         virtual const int getTemplateAtomSeqid(int idx) = 0;
+        virtual const char* getTemplateAtomSeqName(int idx) = 0;
         virtual const char* getTemplateAtomClass(int idx) = 0;
         virtual const int getTemplateAtomDisplayOption(int idx) = 0;
         virtual const int getTemplateAtomTemplateIndex(int idx) = 0;

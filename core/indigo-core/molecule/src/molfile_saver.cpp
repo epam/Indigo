@@ -128,6 +128,7 @@ void MolfileSaver::_handleMonomers(BaseMolecule& mol)
     SequenceLayout sl(mol);
     std::map<int, std::map<int, int>> layout_sequence;
     sl.calculateLayout(layout_sequence);
+    // sl.calculateCoordinates(layout_sequence);
     const auto& directions_map = sl.directionsMap();
     _calculateSEQIDs(mol, directions_map, layout_sequence);
     // MonomersToSgroupFilter mon_filter(mol, directions_map);
@@ -152,6 +153,7 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
                     if (mon_class == kMonomerClassSUGAR)
                     {
                         // set seq_id for base
+                        std::string seq_name;
                         auto& dirs = directions_map[atom_idx];
                         if (dirs.size())
                         {
@@ -159,8 +161,23 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
                             if (br_it != dirs.end())
                             {
                                 std::string br_class = mol.getTemplateAtomClass(br_it->second);
+                                seq_name = mol.getTemplateAtom(br_it->second);
                                 if (br_class == kMonomerClassBASE)
+                                {
                                     mol.asMolecule().setTemplateAtomSeqid(br_it->second, seq_id);
+                                    mol.asMolecule().setTemplateAtomSeqName(br_it->second, seq_name.c_str());
+                                    mol.asMolecule().setTemplateAtomSeqName(atom_idx, seq_name.c_str());
+                                }
+                            }
+                            if (seq_name.size())
+                            {
+                                br_it = dirs.find(kRightAttachmentPointIdx);
+                                if (br_it != dirs.end())
+                                {
+                                    std::string br_class = mol.getTemplateAtomClass(br_it->second);
+                                    if (br_class == kMonomerClassPHOSPHATE)
+                                        mol.asMolecule().setTemplateAtomSeqName(br_it->second, seq_name.c_str());
+                                }
                             }
                         }
                     }
@@ -625,6 +642,9 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
             if (mol.getTemplateAtomSeqid(i) != -1)
                 out.printf(" SEQID=%d", mol.getTemplateAtomSeqid(i));
+
+            // if (mol.getTemplateAtomSeqName(i) && strlen(mol.getTemplateAtomSeqName(i)))
+            //    out.printf(" SEQNAME=%s", mol.getTemplateAtomSeqName(i));
 
             if (mol.template_attachment_points.size() > 0)
             {

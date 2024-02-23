@@ -395,6 +395,16 @@ void Molecule::setTemplateAtomSeqid(int idx, int seq_id)
     updateEditRevision();
 }
 
+void Molecule::setTemplateAtomSeqName(int idx, const char* seq_name)
+{
+    if (_atoms[idx].number != ELEM_TEMPLATE)
+        throw Error("setTemplateAtomSeqName(): atom #%d is not a template atom", idx);
+
+    _TemplateOccurrence& occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
+    occur.seq_name.readString(seq_name, true);
+    updateEditRevision();
+}
+
 void Molecule::setTemplateAtomTemplateIndex(int idx, int temp_idx)
 {
     if (_atoms[idx].number != ELEM_TEMPLATE)
@@ -1421,6 +1431,17 @@ const char* Molecule::getTemplateAtomClass(int idx)
     const char* res = _template_classes.at(occur.class_idx);
 
     return res;
+}
+
+const char* Molecule::getTemplateAtomSeqName(int idx)
+{
+    const _Atom& atom = _atoms[idx];
+
+    if (atom.number != ELEM_TEMPLATE)
+        throw Error("getTemplateAtomClass(): atom #%d is not a template atom", idx);
+
+    _TemplateOccurrence& occur = _template_occurrences.at(atom.template_occur_idx);
+    return occur.seq_name.ptr();
 }
 
 const int Molecule::getTemplateAtomTemplateIndex(int idx)

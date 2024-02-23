@@ -1025,6 +1025,11 @@ const int QueryMolecule::getTemplateAtomSeqid(int /*idx*/)
     return -1;
 }
 
+const char* QueryMolecule::getTemplateAtomSeqName(int /*idx*/)
+{
+    return nullptr;
+}
+
 const int QueryMolecule::getTemplateAtomTemplateIndex(int /*idx*/)
 {
     return -1;
