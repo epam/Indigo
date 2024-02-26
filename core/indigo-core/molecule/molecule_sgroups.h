@@ -173,6 +173,13 @@ namespace indigo
 
         struct _AttachmentPoint
         {
+            _AttachmentPoint() : aidx(-1), lvidx(-1)
+            {
+            }
+            _AttachmentPoint(int atom_id) : aidx(atom_id), lvidx(-1)
+            {
+                apid.push(0);
+            }
             int aidx;
             int lvidx;
             Array<char> apid;
