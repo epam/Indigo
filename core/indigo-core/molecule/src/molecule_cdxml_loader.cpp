@@ -730,7 +730,14 @@ void MoleculeCdxmlLoader::_handleSGroup(SGroup& sgroup, const std::unordered_set
         }
     }
 
-    if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
+    if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP && start >= 0)
+    {
+        Superatom& sa = static_cast<Superatom&>(sgroup);
+        sa.attachment_points.add(start);
+        if (end >= 0)
+            sa.attachment_points.add(end);
+    }
+    else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
     {
         QS_DEF(Array<int>, mapping);
         std::unique_ptr<BaseMolecule> rep(bmol.neu());
