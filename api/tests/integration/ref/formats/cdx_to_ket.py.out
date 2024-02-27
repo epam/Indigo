@@ -4666,7 +4666,12 @@ CDXML loader: Not a molecule. Found 14 arrows.
                     6,
                     7
                 ],
-                "name": "SEM"
+                "name": "SEM",
+                "attachmentPoints": [
+                    {
+                        "attachmentAtom": 7
+                    }
+                ]
             }
         ]
     },
@@ -4922,7 +4927,12 @@ CDXML loader: Not a molecule. Found 14 arrows.
                     9,
                     10
                 ],
-                "name": "SEM"
+                "name": "SEM",
+                "attachmentPoints": [
+                    {
+                        "attachmentAtom": 10
+                    }
+                ]
             }
         ]
     },
@@ -5140,7 +5150,12 @@ CDXML loader: Not a molecule. Found 14 arrows.
                     11,
                     12
                 ],
-                "name": "SEM"
+                "name": "SEM",
+                "attachmentPoints": [
+                    {
+                        "attachmentAtom": 12
+                    }
+                ]
             }
         ]
     },
@@ -5321,7 +5336,12 @@ CDXML loader: Not a molecule. Found 14 arrows.
                     9,
                     10
                 ],
-                "name": "SEM"
+                "name": "SEM",
+                "attachmentPoints": [
+                    {
+                        "attachmentAtom": 10
+                    }
+                ]
             }
         ]
     },
@@ -5764,7 +5784,12 @@ unspecified_with_abbreviation.cdx
                     6,
                     7
                 ],
-                "name": "NO2"
+                "name": "NO2",
+                "attachmentPoints": [
+                    {
+                        "attachmentAtom": 5
+                    }
+                ]
             },
             {
                 "type": "SUP",
@@ -5777,7 +5802,12 @@ unspecified_with_abbreviation.cdx
                     14,
                     15
                 ],
-                "name": "Boc"
+                "name": "Boc",
+                "attachmentPoints": [
+                    {
+                        "attachmentAtom": 14
+                    }
+                ]
             }
         ]
     }

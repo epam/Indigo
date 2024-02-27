@@ -83,6 +83,7 @@ AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer& bc_decom, const 
         n_new_vert += _bc_components[_attached_bc[i]]->vertexCount() - 1;
 
     _new_vertices.clear_resize(n_new_vert);
+    _new_vertices.fill(-1);
     _layout.clear_resize(n_new_vert);
     _layout.zerofill();
 }
@@ -221,11 +222,12 @@ void AttachmentLayout::markDrawnVertices()
 
 CP_DEF(LayoutChooser);
 
-LayoutChooser::LayoutChooser(AttachmentLayout& layout)
+LayoutChooser::LayoutChooser(AttachmentLayout& layout, Array<int>& fixed_components)
     : _n_components(layout._attached_bc.size() - 1), _cur_energy(1E+20f), CP_INIT, TL_CP_GET(_comp_permutation), TL_CP_GET(_rest_numbers), _layout(layout)
 {
     _comp_permutation.clear_resize(_n_components);
     _rest_numbers.clear_resize(_n_components);
+    _fixed_components.copy(fixed_components);
 
     for (int i = 0; i < _n_components; i++)
         _rest_numbers[i] = i;
@@ -287,7 +289,8 @@ void LayoutChooser::_makeLayout()
 
         // Shift and rotate component so cur_angle is the angle between [v1C,v2C] and drawn edge [v,v2]
         int comp_idx = _comp_permutation[i];
-        const MoleculeLayoutGraph& comp = *_layout._bc_components[_layout._attached_bc[comp_idx]];
+        int bc_com_idx = _layout._attached_bc[comp_idx];
+        const MoleculeLayoutGraph& comp = *_layout._bc_components[bc_com_idx];
 
         v1C = _layout._src_vertex_map[comp_idx];
         v2C = _layout._vertices_l[comp_idx];
@@ -315,12 +318,20 @@ void LayoutChooser::_makeLayout()
             {
                 k = k + 1;
                 Vec2f& cur_pos = _layout._layout[k];
-                // 1. Shift
-                cur_pos.sum(comp.getPos(j), p);
-                // 2. Rotate around v
-                p1.diff(cur_pos, _layout._graph.getPos(v));
-                p1.rotate(sina, cosa);
-                cur_pos.sum(p1, _layout._graph.getPos(v));
+                if (_fixed_components[bc_com_idx] == 0) // Skip fixed components
+                {
+                    // 1. Shift
+                    cur_pos.sum(comp.getPos(j), p);
+                    // 2. Rotate around v
+                    p1.diff(cur_pos, _layout._graph.getPos(v));
+                    p1.rotate(sina, cosa);
+                    cur_pos.sum(p1, _layout._graph.getPos(v));
+                }
+                else // fixed components
+                {
+                    cur_pos.copy(comp.getPos(j));
+                }
+
                 _layout._new_vertices[k] = comp.getVertexExtIdx(j);
             }
 
