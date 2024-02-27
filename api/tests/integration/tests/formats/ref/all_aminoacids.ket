@@ -2865,7 +2865,12 @@
         "naturalAnalogShort": "O",
         "attachmentPoints": [
             {
-                "attachmentAtom": 1
+                "attachmentAtom": 1,
+                "leavingGroup": {
+                    "atoms": [
+                        0
+                    ]
+                }
             },
             {
                 "attachmentAtom": 3,
