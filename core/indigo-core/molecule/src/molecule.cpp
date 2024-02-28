@@ -395,6 +395,16 @@ void Molecule::setTemplateAtomSeqid(int idx, int seq_id)
     updateEditRevision();
 }
 
+void Molecule::setTemplateAtomSeqName(int idx, const char* seq_name)
+{
+    if (_atoms[idx].number != ELEM_TEMPLATE)
+        throw Error("setTemplateAtomSeqName(): atom #%d is not a template atom", idx);
+
+    _TemplateOccurrence& occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
+    occur.seq_name.readString(seq_name, true);
+    updateEditRevision();
+}
+
 void Molecule::setTemplateAtomTemplateIndex(int idx, int temp_idx)
 {
     if (_atoms[idx].number != ELEM_TEMPLATE)
@@ -1423,6 +1433,17 @@ const char* Molecule::getTemplateAtomClass(int idx)
     return res;
 }
 
+const char* Molecule::getTemplateAtomSeqName(int idx)
+{
+    const _Atom& atom = _atoms[idx];
+
+    if (atom.number != ELEM_TEMPLATE)
+        throw Error("getTemplateAtomClass(): atom #%d is not a template atom", idx);
+
+    _TemplateOccurrence& occur = _template_occurrences.at(atom.template_occur_idx);
+    return occur.seq_name.ptr();
+}
+
 const int Molecule::getTemplateAtomTemplateIndex(int idx)
 {
     const _Atom& atom = _atoms[idx];
@@ -1473,17 +1494,22 @@ void Molecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std::st
     }
 }
 
-void Molecule::getTemplateAtomDirectionsMap(std::unordered_map<int, std::map<int, int>>& directions_map)
+void Molecule::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map)
 {
-    for (int i = template_attachment_points.begin(); i != template_attachment_points.end(); i = template_attachment_points.next(i))
+    directions_map.clear();
+    if (vertexCount())
     {
-        auto& tap = template_attachment_points[i];
-        if (tap.ap_id.size())
+        directions_map.resize(vertexEnd());
+        for (int i = template_attachment_points.begin(); i != template_attachment_points.end(); i = template_attachment_points.next(i))
         {
-            Array<char> atom_label;
-            getAtomSymbol(tap.ap_occur_idx, atom_label);
-            int ap_id = tap.ap_id[0] - 'A';
-            directions_map[tap.ap_occur_idx].emplace(ap_id, tap.ap_aidx);
+            auto& tap = template_attachment_points[i];
+            if (tap.ap_id.size())
+            {
+                Array<char> atom_label;
+                getAtomSymbol(tap.ap_occur_idx, atom_label);
+                int ap_id = tap.ap_id[0] - 'A';
+                directions_map[tap.ap_occur_idx].emplace(ap_id, tap.ap_aidx);
+            }
         }
     }
 }

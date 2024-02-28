@@ -41,7 +41,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol)
 {
     std::map<int, std::map<int, int>> layout_sequence;
     SequenceLayout sl(mol);
-    sl.calculateLayout(0, layout_sequence);
+    sl.calculateLayout(layout_sequence);
     std::string seq_text;
     for (auto& row : layout_sequence)
     {
@@ -73,7 +73,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol)
                     else if (isNucleotideClass(mon_class))
                         label = monomerAliasByName(kMonomerClassBASE, mol.getTemplateAtom(atom_idx));
                     if (label.size())
-                        seq_string += label.size() > 1 ? "?" : label;
+                        seq_string += label.size() > 1 ? "*" : label;
                 }
             }
         }

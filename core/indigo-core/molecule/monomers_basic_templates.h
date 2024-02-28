@@ -5653,7 +5653,7 @@ namespace indigo
                                          "            {\n"
                                          "                \"attachmentAtom\": 1,\n"
                                          "                \"leavingGroup\": {\n"
-                                         "                    \"atoms\": []\n"
+                                         "                    \"atoms\": [0]\n"
                                          "                }\n"
                                          "            },\n"
                                          "            {\n"

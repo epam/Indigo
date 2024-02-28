@@ -100,12 +100,13 @@ namespace indigo
         bool isTemplateAtom(int idx) override;
         const char* getTemplateAtom(int idx) override;
         const int getTemplateAtomSeqid(int idx) override;
+        const char* getTemplateAtomSeqName(int idx) override;
         const int getTemplateAtomTemplateIndex(int idx) override;
 
         const char* getTemplateAtomClass(int idx) override;
         const int getTemplateAtomDisplayOption(int idx) override;
         void getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map) override;
-        void getTemplateAtomDirectionsMap(std::unordered_map<int, std::map<int, int>>& directions_map) override;
+        void getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map) override;
 
         bool isRSite(int atom_idx) override;
         dword getRSiteBits(int atom_idx) override;

@@ -127,8 +127,17 @@ void MolfileSaver::_handleMonomers(BaseMolecule& mol)
 {
     SequenceLayout sl(mol);
     std::map<int, std::map<int, int>> layout_sequence;
-    sl.calculateLayout(0, layout_sequence);
+    sl.calculateLayout(layout_sequence);
+    // sl.calculateCoordinates(layout_sequence);
     const auto& directions_map = sl.directionsMap();
+    _calculateSEQIDs(mol, directions_map, layout_sequence);
+    // MonomersToSgroupFilter mon_filter(mol, directions_map);
+    // mol.transformTemplatesToSuperatoms(mon_filter);
+}
+
+void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::map<int, int>>& directions_map,
+                                    const std::map<int, std::map<int, int>>& layout_sequence)
+{
     for (auto& row : layout_sequence)
     {
         int seq_id = 1;
@@ -144,16 +153,31 @@ void MolfileSaver::_handleMonomers(BaseMolecule& mol)
                     if (mon_class == kMonomerClassSUGAR)
                     {
                         // set seq_id for base
-                        auto dirs_it = directions_map.find(atom_idx);
-                        if (dirs_it != directions_map.end() && dirs_it->second.size())
+                        std::string seq_name;
+                        auto& dirs = directions_map[atom_idx];
+                        if (dirs.size())
                         {
-                            auto& atom_dirs = dirs_it->second;
-                            auto br_it = atom_dirs.find(kBranchAttachmentPointIdx);
-                            if (br_it != atom_dirs.end())
+                            auto br_it = dirs.find(kBranchAttachmentPointIdx);
+                            if (br_it != dirs.end())
                             {
                                 std::string br_class = mol.getTemplateAtomClass(br_it->second);
+                                seq_name = mol.getTemplateAtom(br_it->second);
                                 if (br_class == kMonomerClassBASE)
+                                {
                                     mol.asMolecule().setTemplateAtomSeqid(br_it->second, seq_id);
+                                    mol.asMolecule().setTemplateAtomSeqName(br_it->second, seq_name.c_str());
+                                    mol.asMolecule().setTemplateAtomSeqName(atom_idx, seq_name.c_str());
+                                }
+                            }
+                            if (seq_name.size())
+                            {
+                                br_it = dirs.find(kRightAttachmentPointIdx);
+                                if (br_it != dirs.end())
+                                {
+                                    std::string br_class = mol.getTemplateAtomClass(br_it->second);
+                                    if (br_class == kMonomerClassPHOSPHATE)
+                                        mol.asMolecule().setTemplateAtomSeqName(br_it->second, seq_name.c_str());
+                                }
                             }
                         }
                     }
@@ -610,10 +634,17 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         if (mol.isTemplateAtom(i))
         {
             if (mol.getTemplateAtomClass(i) != 0 && strlen(mol.getTemplateAtomClass(i)) > 0)
-                out.printf(" CLASS=%s", mol.getTemplateAtomClass(i));
+            {
+                std::string tclass = mol.getTemplateAtomClass(i);
+                // convert CHEM to LINKER for BIOVIA
+                out.printf(" CLASS=%s", tclass == kMonomerClassCHEM ? kMonomerClassLINKER : tclass.c_str());
+            }
 
             if (mol.getTemplateAtomSeqid(i) != -1)
                 out.printf(" SEQID=%d", mol.getTemplateAtomSeqid(i));
+
+            // if (mol.getTemplateAtomSeqName(i) && strlen(mol.getTemplateAtomSeqName(i)))
+            //    out.printf(" SEQNAME=%s", mol.getTemplateAtomSeqName(i));
 
             if (mol.template_attachment_points.size() > 0)
             {
@@ -876,8 +907,9 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     else
                         out.printf(" LABEL=%s", sup.subscript.ptr());
                 }
+                // convert CHEM to LINKER for BIOVIA
                 if (sup.sa_class.size() > 1)
-                    out.printf(" CLASS=%s", sup.sa_class.ptr());
+                    out.printf(" CLASS=%s", sup.sa_class.ptr() == std::string(kMonomerClassCHEM) ? kMonomerClassLINKER : sup.sa_class.ptr());
                 if (sup.contracted == DisplayOption::Expanded)
                     out.printf(" ESTATE=E");
                 if (sup.attachment_points.size() > 0)
@@ -1130,14 +1162,23 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     TGroup& tgroup = mol.tgroups.getTGroup(tg_idx);
+    std::string natreplace;
+    if (tgroup.tgroup_natreplace.size() > 0)
+        natreplace = tgroup.tgroup_natreplace.ptr();
 
     out.printf("TEMPLATE %d ", tgroup.tgroup_id);
+    // convert CHEM to LINKER for BIOVIA
     if (tgroup.tgroup_class.size() > 0)
-        out.printf("%s/", tgroup.tgroup_class.ptr());
+        out.printf("%s/", tgroup.tgroup_class.ptr() == std::string(kMonomerClassCHEM) ? kMonomerClassLINKER : tgroup.tgroup_class.ptr());
     if (tgroup.tgroup_name.size() > 0)
         out.printf("%s", tgroup.tgroup_name.ptr());
     if (tgroup.tgroup_alias.size() > 0)
-        out.printf("/%s", tgroup.tgroup_alias.ptr());
+    {
+        if (natreplace == "AA/X")
+            out.printf("/");
+        else
+            out.printf(isAminoAcidClass(tgroup.tgroup_class.ptr()) ? "/%s/" : "/%s", tgroup.tgroup_alias.ptr());
+    }
     if (tgroup.tgroup_natreplace.size() > 0)
         out.printf(" NATREPLACE=%s", tgroup.tgroup_natreplace.ptr());
     if (tgroup.tgroup_comment.size() > 0)
@@ -2175,14 +2216,16 @@ bool MolfileSaver::MonomersToSgroupFilter::operator()(int atom_idx) const
 {
     std::string mon_class = _mol.getTemplateAtomClass(atom_idx);
     _mol.getTemplateAtomAttachmentPointsCount(atom_idx);
+    if (mon_class == kMonomerClassCHEM)
+        return true;
+
     if (isAminoAcidClass(mon_class))
     {
-        auto it = _directions_map.find(atom_idx);
-        if (it != _directions_map.end())
+        auto& dirs = _directions_map[atom_idx];
+        if (dirs.size())
         {
-            auto& dirs_map = it->second;
             // if R3 is in use, convert the template to S-Group
-            if (dirs_map.find(kBranchAttachmentPointIdx) != dirs_map.end())
+            if (dirs.find(kBranchAttachmentPointIdx) != dirs.end())
                 return true;
         }
     }

@@ -371,6 +371,11 @@ const int LayeredMolecules::getTemplateAtomSeqid(int idx)
     return _proto.getTemplateAtomSeqid(idx);
 }
 
+const char* LayeredMolecules::getTemplateAtomSeqName(int idx)
+{
+    return _proto.getTemplateAtomSeqName(idx);
+}
+
 const int LayeredMolecules::getTemplateAtomTemplateIndex(int idx)
 {
     return _proto.getTemplateAtomTemplateIndex(idx);
@@ -391,7 +396,7 @@ void LayeredMolecules::getTemplatesMap(std::unordered_map<std::pair<std::string,
     return _proto.getTemplatesMap(templates_map);
 }
 
-void LayeredMolecules::getTemplateAtomDirectionsMap(std::unordered_map<int, std::map<int, int>>& directions_map)
+void LayeredMolecules::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map)
 {
     return _proto.getTemplateAtomDirectionsMap(directions_map);
 }

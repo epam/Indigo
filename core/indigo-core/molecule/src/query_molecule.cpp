@@ -1025,6 +1025,11 @@ const int QueryMolecule::getTemplateAtomSeqid(int /*idx*/)
     return -1;
 }
 
+const char* QueryMolecule::getTemplateAtomSeqName(int /*idx*/)
+{
+    return nullptr;
+}
+
 const int QueryMolecule::getTemplateAtomTemplateIndex(int /*idx*/)
 {
     return -1;
@@ -1035,7 +1040,7 @@ void QueryMolecule::getTemplatesMap(std::unordered_map<std::pair<std::string, st
     throw Error("QueryMolecule::getTemplatesMap not implemented");
 }
 
-void QueryMolecule::getTemplateAtomDirectionsMap(std::unordered_map<int, std::map<int, int>>& /*directions_map*/)
+void QueryMolecule::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& /*directions_map*/)
 {
     throw Error("QueryMolecule::getTemplateAtomDirectionsMap not implemented");
 }

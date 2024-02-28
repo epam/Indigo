@@ -50,6 +50,8 @@ namespace indigo
         void setTemplateAtomName(int idx, const char* text);
         void setTemplateAtomClass(int idx, const char* text);
         void setTemplateAtomSeqid(int idx, int seq_id);
+        void setTemplateAtomSeqName(int idx, const char* seq_name);
+
         void setTemplateAtomDisplayOption(int idx, int contracted);
         void setTemplateAtomTemplateIndex(int idx, int temp_idx);
 
@@ -99,11 +101,12 @@ namespace indigo
         bool isTemplateAtom(int idx) override;
         const char* getTemplateAtom(int idx) override;
         const int getTemplateAtomSeqid(int idx) override;
+        const char* getTemplateAtomSeqName(int idx) override;
         const char* getTemplateAtomClass(int idx) override;
         const int getTemplateAtomTemplateIndex(int idx) override;
         const int getTemplateAtomDisplayOption(int idx) override;
         void getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map) override;
-        void getTemplateAtomDirectionsMap(std::unordered_map<int, std::map<int, int>>& directions_map) override;
+        void getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map) override;
 
         bool isRSite(int atom_idx) override;
         dword getRSiteBits(int atom_idx) override;
@@ -213,6 +216,7 @@ namespace indigo
             int class_idx;             // index in _template_classes
             int seq_id;                // sequence id
             int template_idx;          // template idx
+            Array<char> seq_name;      // sequence name
             DisplayOption contracted;  // display option (-1 if undefined, 0 - expanded, 1 - contracted)
             Array<_AttachOrder> order; // attach order info
         };
