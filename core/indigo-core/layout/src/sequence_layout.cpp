@@ -35,11 +35,12 @@ bool indigo::SequenceLayout::_isMonomerBackbone(int atom_idx)
 
 const std::pair<int, int> SequenceLayout::_getBackDir(int src_idx, int dst_idx)
 {
-    for (const auto& back_dir : _directions_map[dst_idx])
-    {
-        if (back_dir.second == src_idx)
-            return back_dir;
-    }
+    if (dst_idx > -1)
+        for (const auto& back_dir : _directions_map[dst_idx])
+        {
+            if (back_dir.second == src_idx)
+                return back_dir;
+        }
     return std::make_pair(-1, src_idx);
 }
 

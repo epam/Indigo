@@ -36,12 +36,19 @@ namespace indigo
     class DLLEXPORT SequenceSaver
     {
     public:
+        enum class SeqFormat
+        {
+            Sequence,
+            FASTA,
+            IDT
+        };
+
         DECL_ERROR;
 
         SequenceSaver(Output& output);
         ~SequenceSaver();
 
-        void saveMolecule(BaseMolecule& mol);
+        void saveMolecule(BaseMolecule& mol, SeqFormat sf = SeqFormat::Sequence);
 
     private:
         SequenceSaver(const SequenceSaver&); // no implicit copy

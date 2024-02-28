@@ -37,7 +37,7 @@ SequenceSaver::~SequenceSaver()
 {
 }
 
-void SequenceSaver::saveMolecule(BaseMolecule& mol)
+void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
 {
     std::map<int, std::map<int, int>> layout_sequence;
     SequenceLayout sl(mol);

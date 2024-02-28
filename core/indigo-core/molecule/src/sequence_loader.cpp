@@ -43,6 +43,73 @@ SequenceLoader::~SequenceLoader()
 {
 }
 
+void SequenceLoader::loadFASTA(BaseMolecule& mol, const std::string& seq_type_str)
+{
+    if (seq_type_str == kMonomerClassDNA)
+        loadFASTA(mol, SeqType::DNASeq);
+    else if (seq_type_str == kMonomerClassRNA)
+        loadFASTA(mol, SeqType::RNASeq);
+    else if (seq_type_str == kMonomerClassPEPTIDE)
+        loadFASTA(mol, SeqType::PEPTIDESeq);
+    else
+        throw Error("Bad sequence type: %s", seq_type_str.c_str());
+}
+
+void SequenceLoader::loadFASTA(BaseMolecule& mol, SeqType seq_type)
+{
+    _seq_id = 0;
+    _last_sugar_idx = -1;
+    mol.clear();
+    std::unique_ptr<BaseMolecule> pmol(mol.neu());
+    PropertiesMap properties;
+
+    while (!_scanner.isEOF())
+    {
+        Array<char> str;
+        _scanner.readLine(str, true);
+        if (str.size())
+        {
+            std::string fasta_str = str.ptr();
+            switch (fasta_str.front())
+            {
+            case ';':
+                // handle comment
+                continue;
+                break;
+            case '>':
+                // handle header
+                properties.insert("FASTA_HEADER", fasta_str);
+                continue;
+                break;
+            default:
+                break;
+            }
+
+            Array<int> mapping;
+            if (!properties.is_empty() && pmol->vertexCount())
+                pmol->properties().insert(0).copy(properties);
+
+            for (auto ch : fasta_str)
+            {
+                if (ch == '-')
+                    continue;
+                else if (ch == '*' && pmol->vertexCount())
+                {
+                    mol.mergeWithMolecule(*pmol, &mapping, 0);
+                    pmol->clear();
+                }
+                else
+                    addMonomer(*pmol, ch, seq_type);
+            }
+
+            if (pmol->vertexCount())
+                mol.mergeWithMolecule(*pmol, &mapping, 0);
+        }
+    }
+    SequenceLayout sl(mol);
+    sl.make();
+}
+
 void SequenceLoader::loadSequence(BaseMolecule& mol, const std::string& seq_type_str)
 {
     if (seq_type_str == kMonomerClassDNA)
