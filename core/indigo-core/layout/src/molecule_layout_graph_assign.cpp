@@ -72,11 +72,10 @@ static int _vertex_cmp(int& n1, int& n2, void* context)
     return v1.morgan_code - v2.morgan_code;
 }
 
-void MoleculeLayoutGraphSimple::_assignAbsoluteCoordinates(float bond_length)
+void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
 {
     BiconnectedDecomposer bc_decom(*this);
     QS_DEF(Array<int>, bc_tree);
-    // QS_DEF(ObjArray<MoleculeLayoutGraphSimple>, bc_components);
     PtrArray<MoleculeLayoutGraph> bc_components;
     QS_DEF(Array<int>, fixed_components);
     bool all_trivial = true;
@@ -162,24 +161,30 @@ void MoleculeLayoutGraphSimple::_assignAbsoluteCoordinates(float bond_length)
             }
             else
             {
-                // Component layout in current vertex should have the same angles between components.
-                // So it depends on component order and their flipping (for nontrivial components)
-                AttachmentLayoutSimple att_layout(bc_decom, bc_components, bc_tree, *this, k);
-
                 // ( 3.iii] Look over all possible orders of component layouts
                 //         (vertex itself is already drawn means one component is already drawn)
                 // ( 3.iv]  Choose layout with minimal energy
-                LayoutChooser layout_chooser(att_layout, fixed_components);
-
-                layout_chooser.perform();
-
-                att_layout.markDrawnVertices();
+                _layout_component(bc_decom, bc_components, bc_tree, fixed_components, k);
             }
             // ( 3.v] let k = k + 1;;
             // ( 3.vi] repeat steps 3.ii-3.v until all atoms in the list have been processed;;
         }
         // ( 4] repeat steps 1-3 until all atoms have been assigned absolute coordinates.;
     }
+}
+
+void MoleculeLayoutGraphSimple::_layout_component(BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& bc_tree,
+                                                  Array<int>& fixed_components, int src_vertex)
+{
+    // Component layout in current vertex should have the same angles between components.
+    // So it depends on component order and their flipping (for nontrivial components)
+    AttachmentLayoutSimple att_layout(bc_decom, bc_components, bc_tree, *this, src_vertex);
+
+    LayoutChooser layout_chooser(att_layout, fixed_components);
+
+    layout_chooser.perform();
+
+    att_layout.markDrawnVertices();
 }
 
 bool MoleculeLayoutGraphSimple::_match_pattern_bond(Graph& subgraph, Graph& supergraph, int self_idx, int other_idx, void* userdata)

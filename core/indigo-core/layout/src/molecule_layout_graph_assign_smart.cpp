@@ -61,113 +61,18 @@ static int _vertex_cmp(int& n1, int& n2, void* context)
     return v1.morgan_code - v2.morgan_code;
 }
 
-void MoleculeLayoutGraphSmart::_assignAbsoluteCoordinates(float /* bond_length */)
+void MoleculeLayoutGraphSmart::_layout_component(BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& bc_tree,
+                                                 Array<int>& fixed_components, int src_vertex)
 {
-    BiconnectedDecomposer bc_decom(*this);
-    QS_DEF(Array<int>, bc_tree);
-    QS_DEF(PtrArray<MoleculeLayoutGraph>, bc_components);
-    QS_DEF(Array<int>, fixed_components);
-    bool all_trivial = true;
+    // Component layout in current vertex should have the same angles between components.
+    // So it depends on component order and their flipping (for nontrivial components)
+    AttachmentLayoutSmart att_layout(bc_decom, bc_components, bc_tree, *this, src_vertex);
 
-    int n_comp = bc_decom.decompose();
+    LayoutChooser layout_chooser(att_layout, fixed_components);
 
-    fixed_components.clear_resize(n_comp);
-    fixed_components.zerofill();
+    layout_chooser.perform();
 
-    bc_components.clear();
-
-    for (int i = 0; i < n_comp; i++)
-    {
-        Filter comp;
-        bc_decom.getComponent(i, comp);
-        std::unique_ptr<MoleculeLayoutGraph> current_component(getInstance());
-        current_component->makeLayoutSubgraph(*this, comp);
-        bc_components.add(current_component.release());
-    }
-
-    bc_tree.clear_resize(vertexEnd());
-    _makeComponentsTree(bc_decom, bc_components, bc_tree);
-
-    // 1. Find biconnected components forming connected subgraph from fixed vertices
-    _findFixedComponents(bc_decom, fixed_components, bc_components);
-
-    all_trivial = _assignComponentsRelativeCoordinates(bc_components, fixed_components, bc_decom);
-
-    _findFirstVertexIdx(n_comp, fixed_components, bc_components, all_trivial);
-
-    int i = -1;
-
-    // ( 1] atoms assigned absolute coordinates and adjacent to atoms not;
-    //   assigned coordinates are put on a list;
-    QS_DEF(Array<int>, assigned_list);
-    QS_DEF(Array<int>, adjacent_list);
-
-    while (true)
-    {
-        if (cancellation && cancellation->isCancelled())
-            throw Error("Molecule layout has been cancelled: %s", cancellation->cancelledRequestMessage());
-
-        if (!_prepareAssignedList(assigned_list, bc_decom, bc_components, bc_tree))
-            return;
-
-        // ( 3.i] let k = 0  ( top of the list];;
-        while (assigned_list.size() != 0)
-        {
-            int k = assigned_list.pop();
-            const Vertex& vert_k = getVertex(k);
-
-            // ( 3.ii] a list of atoms adjacent to atom Uzel and not previously;
-            //		 assigned coordinates is created and ordered with cyclic atoms;
-            //       at the top of the list with descending ATCD numbers and acyclic atoms;
-            //       at the bottom of the list with descending ATCD numbers;;
-            adjacent_list.clear();
-
-            for (i = vert_k.neiBegin(); i < vert_k.neiEnd(); i = vert_k.neiNext(i))
-                if (_layout_vertices[vert_k.neiVertex(i)].type == ELEMENT_NOT_DRAWN)
-                    adjacent_list.push(vert_k.neiVertex(i));
-
-            if (adjacent_list.size() == 0)
-                break;
-
-            // When all components outgoing from vertex are trivial (edges) then use tree algorithm
-            all_trivial = true;
-
-            for (i = 0; i < bc_decom.getIncomingCount(k); i++)
-                if (!bc_components[bc_decom.getIncomingComponents(k)[i]]->isSingleEdge())
-                {
-                    all_trivial = false;
-                    break;
-                }
-
-            if (all_trivial && bc_tree[k] != -1 && !bc_components[bc_tree[k]]->isSingleEdge())
-                all_trivial = false;
-
-            if (all_trivial)
-            {
-                adjacent_list.qsort(_vertex_cmp, this);
-
-                _attachDandlingVertices(k, adjacent_list);
-            }
-            else
-            {
-                // Component layout in current vertex should have the same angles between components.
-                // So it depends on component order and their flipping (for nontrivial components)
-                AttachmentLayoutSmart att_layout(bc_decom, bc_components, bc_tree, *this, k);
-
-                // ( 3.iii] Look over all possible orders of component layouts
-                //         (vertex itself is already drawn means one component is already drawn)
-                // ( 3.iv]  Choose layout with minimal energy
-                LayoutChooser layout_chooser(att_layout, fixed_components);
-
-                layout_chooser.perform();
-
-                att_layout.markDrawnVertices();
-            }
-            // ( 3.v] let k = k + 1;;
-            // ( 3.vi] repeat steps 3.ii-3.v until all atoms in the list have been processed;;
-        }
-        // ( 4] repeat steps 1-3 until all atoms have been assigned absolute coordinates.;
-    }
+    att_layout.markDrawnVertices();
 }
 
 void MoleculeLayoutGraphSmart::_get_toches_to_component(Cycle& cycle, int component_number, Array<interval>& interval_list)
