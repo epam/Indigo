@@ -23,15 +23,14 @@ print("*** FASTA to FASTA ***")
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
-fasta_files = [
-    {"file": "test_peptide",
-     "seq_type": "PEPTIDE"}
-]
+fasta_files = [{"file": "test_peptide", "seq_type": "PEPTIDE"}]
 
 fasta_files.sort()
 for desc in fasta_files:
     filename = desc["file"]
-    mol = indigo.loadFASTAFromFile(os.path.join(root, filename + ".fasta"), desc["seq_type"])
+    mol = indigo.loadFASTAFromFile(
+        os.path.join(root, filename + ".fasta"), desc["seq_type"]
+    )
     # with open(os.path.join(ref_path, filename) + ".fasta", "w") as file:
     #     file.write(mol.FASTA())
     with open(os.path.join(ref_path, filename) + ".fasta", "r") as file:
