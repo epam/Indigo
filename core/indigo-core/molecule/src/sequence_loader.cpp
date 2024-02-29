@@ -61,6 +61,7 @@ void SequenceLoader::loadFASTA(BaseMolecule& mol, SeqType seq_type)
     _last_sugar_idx = -1;
     mol.clear();
     std::string invalid_symbols;
+    Array<int> mapping;
     std::unique_ptr<BaseMolecule> pmol(mol.neu());
     PropertiesMap properties;
 
@@ -80,13 +81,16 @@ void SequenceLoader::loadFASTA(BaseMolecule& mol, SeqType seq_type)
             case '>':
                 // handle header
                 properties.insert(kFASTA_HEADER, fasta_str);
+                if (pmol->vertexCount())
+                {
+                    mol.mergeWithMolecule(*pmol, &mapping, 0);
+                    pmol->clear();
+                }
                 continue;
                 break;
             default:
                 break;
             }
-
-            Array<int> mapping;
 
             for (auto ch : fasta_str)
             {
@@ -108,13 +112,16 @@ void SequenceLoader::loadFASTA(BaseMolecule& mol, SeqType seq_type)
             if (invalid_symbols.size())
                 throw Error("Invalid symbols in the sequence: %s", invalid_symbols.c_str());
 
-            if (!properties.is_empty() && pmol->vertexCount())
+            if (!properties.is_empty())
+            {
                 pmol->properties().insert(0).copy(properties);
-
-            if (pmol->vertexCount())
-                mol.mergeWithMolecule(*pmol, &mapping, 0);
+                properties.clear();
+            }
         }
     }
+    if (pmol->vertexCount())
+        mol.mergeWithMolecule(*pmol, &mapping, 0);
+
     SequenceLayout sl(mol);
     sl.make();
 }
