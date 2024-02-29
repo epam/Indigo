@@ -92,6 +92,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoSequence(self));
         }
 
+        public string fasta()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoFasta(self));
+        }
+
         public void saveSequenceToFile(string filename)
         {
             dispatcher.setSessionID();
