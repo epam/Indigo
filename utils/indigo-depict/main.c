@@ -932,7 +932,8 @@ int main(int argc, char* argv[])
         else if (strcasecmp(p.infile_ext, "fst") == 0)
         {
             obj = indigoLoadFASTA(reader, p.seq_type);
-        } else
+        }
+        else
             obj = indigoLoadMolecule(reader);
 
         _prepare(obj, p.aromatization);
