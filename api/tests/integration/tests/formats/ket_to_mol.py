@@ -46,6 +46,7 @@ files = [
     "mon_long_id",
     "acgt_1412",
     "issue_1476",
+    "macro/hundred-monomers",
     "macro/conjugates/pep-chem-rna",
     "macro/conjugates/peptide_rna",
     "macro/dendromers/dendro-peptide",
