@@ -945,6 +945,8 @@ int main(int argc, char* argv[])
                 indigoSaveJsonToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_SEQ)
                 indigoSaveSequenceToFile(obj, p.outfile);
+            else if (p.out_ext == OEXT_FASTA)
+                indigoSaveFASTAToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_SMI)
             {
                 char* pMol;

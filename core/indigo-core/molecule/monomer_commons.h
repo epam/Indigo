@@ -41,6 +41,8 @@ namespace indigo
     const auto kMonomerClassXLINK = "XLINK";
     const auto kMonomerClassLINKER = "LINKER";
 
+    const auto kFASTA_HEADER = "FASTA_HEADER";
+
     const auto kPrefix_d("d");
     const auto kPrefix_r("r");
 

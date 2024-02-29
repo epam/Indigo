@@ -142,6 +142,16 @@ class IndigoLib:
             c_char_p,
             c_char_p,
         ]
+        IndigoLib.lib.indigoLoadFASTAFromString.restype = c_int
+        IndigoLib.lib.indigoLoadFASTAFromString.argtypes = [
+            c_char_p,
+            c_char_p,
+        ]
+        IndigoLib.lib.indigoLoadFASTAFromFile.restype = c_int
+        IndigoLib.lib.indigoLoadFASTAFromFile.argtypes = [
+            c_char_p,
+            c_char_p,
+        ]
         IndigoLib.lib.indigoLoadReactionFromString.restype = c_int
         IndigoLib.lib.indigoLoadReactionFromString.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadReactionFromFile.restype = c_int
@@ -869,6 +879,10 @@ class IndigoLib:
         IndigoLib.lib.indigoSequence.argtypes = [c_int]
         IndigoLib.lib.indigoSaveSequenceToFile.restype = c_int
         IndigoLib.lib.indigoSaveSequenceToFile.argtypes = [c_int, c_char_p]
+        IndigoLib.lib.indigoFASTA.restype = c_char_p
+        IndigoLib.lib.indigoFASTA.argtypes = [c_int]
+        IndigoLib.lib.indigoSaveFASTAToFile.restype = c_int
+        IndigoLib.lib.indigoSaveFASTAToFile.argtypes = [c_int, c_char_p]
         IndigoLib.lib.indigoSmarts.restype = c_char_p
         IndigoLib.lib.indigoSmarts.argtypes = [c_int]
         IndigoLib.lib.indigoName.restype = c_char_p

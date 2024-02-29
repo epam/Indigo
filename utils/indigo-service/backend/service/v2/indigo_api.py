@@ -335,6 +335,18 @@ def load_moldata(
         md.struct = indigo.loadSequence(molstr, "DNA")
         md.is_rxn = False
         md.is_query = False
+    elif input_format == "chemical/x-peptide-fasta":
+        md.struct = indigo.loadFASTA(molstr, "PEPTIDE")
+        md.is_rxn = False
+        md.is_query = False
+    elif input_format == "chemical/x-rna-fasta":
+        md.struct = indigo.loadFASTA(molstr, "RNA")
+        md.is_rxn = False
+        md.is_query = False
+    elif input_format == "chemical/x-dna-fasta":
+        md.struct = indigo.loadFASTA(molstr, "DNA")
+        md.is_rxn = False
+        md.is_query = False
     elif molstr.startswith("InChI"):
         md.struct = indigo.inchi.loadMolecule(molstr)
         md.is_rxn = False
@@ -379,6 +391,8 @@ def save_moldata(md, output_format=None, options={}, indigo=None):
         return md.struct.json()
     elif output_format == "chemical/x-sequence":
         return md.struct.sequence()
+    elif output_format == "chemical/x-fasta":
+        return md.struct.FASTA()
     elif output_format == "chemical/x-daylight-smiles":
         if options.get("smiles") == "canonical":
             return md.struct.canonicalSmiles()

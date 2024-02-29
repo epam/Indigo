@@ -140,6 +140,10 @@ namespace indigo
             {
                 result = _checkResultString(indigoSequence(id()));
             }
+            else if (outputFormat == "fasta" || outputFormat == "chemical/x-fasta")
+            {
+                result = _checkResultString(indigoFASTA(id()));
+            }
             else if (outputFormat == "smarts" || outputFormat == "chemical/x-daylight-smarts")
             {
                 if (options.count("smarts") > 0 && options.at("smarts") == "canonical")
@@ -307,6 +311,9 @@ namespace indigo
         static std::unordered_map<std::string, std::string> seq_formats = {
             {"chemical/x-peptide-sequence", "PEPTIDE"}, {"chemical/x-rna-sequence", "RNA"}, {"chemical/x-dna-sequence", "DNA"}};
 
+        static std::unordered_map<std::string, std::string> fasta_formats = {
+            {"chemical/x-peptide-fasta", "PEPTIDE"}, {"chemical/x-rna-fasta", "RNA"}, {"chemical/x-dna-fasta", "DNA"}};
+
         print_js("loadMoleculeOrReaction:");
         std::vector<std::string> exceptionMessages;
         exceptionMessages.reserve(4);
@@ -335,6 +342,13 @@ namespace indigo
         {
             auto seq_it = seq_formats.find(input_format->second);
             objectId = indigoLoadSequenceFromString(data.c_str(), seq_it->second.c_str());
+            if (objectId >= 0)
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+        }
+        else if (input_format != options.end() && fasta_formats.count(input_format->second))
+        {
+            auto fasta_it = fasta_formats.find(input_format->second);
+            objectId = indigoLoadFASTAFromString(data.c_str(), seq_it->second.c_str());
             if (objectId >= 0)
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
         }

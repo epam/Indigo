@@ -123,6 +123,12 @@ public interface IndigoLib extends Library {
 
     int indigoLoadSequenceFromFile(String filename, String seq_type);
 
+    int indigoLoadFasta(int source, String seq_type);
+
+    int indigoLoadFastaFromString(String str, String seq_type);
+
+    int indigoLoadFastaFromFile(String filename, String seq_type);
+
     int indigoLoadStructureFromString(String str, String params);
 
     int indigoLoadStructureFromFile(String filename, String params);
