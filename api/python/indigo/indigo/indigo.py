@@ -554,7 +554,7 @@ class Indigo:
             ),
         )
 
-    def loadFASTA(self, string, seq_type):
+    def loadFasta(self, string, seq_type):
         """Loads molecule from DNA/RNA/PEPTIDE sequence string
 
         Args:
@@ -571,13 +571,13 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadFASTAFromString(
+                self._lib().indigoLoadFastaFromString(
                     string.encode(), seq_type.encode()
                 )
             ),
         )
 
-    def loadFASTAFromFile(self, filename, seq_type):
+    def loadFastaFromFile(self, filename, seq_type):
         """Loads query molecule from file in sequence format
 
         Args:
@@ -594,7 +594,7 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadFASTAFromFile(
+                self._lib().indigoLoadFastaFromFile(
                     filename.encode(), seq_type.encode()
                 )
             ),

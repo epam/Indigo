@@ -28,14 +28,14 @@ fasta_files = [{"file": "test_peptide", "seq_type": "PEPTIDE"}]
 fasta_files.sort()
 for desc in fasta_files:
     filename = desc["file"]
-    mol = indigo.loadFASTAFromFile(
+    mol = indigo.loadFastaFromFile(
         os.path.join(root, filename + ".fasta"), desc["seq_type"]
     )
     # with open(os.path.join(ref_path, filename) + ".fasta", "w") as file:
-    #     file.write(mol.FASTA())
+    #     file.write(mol.fasta())
     with open(os.path.join(ref_path, filename) + ".fasta", "r") as file:
         fasta_ref = file.read()
-    fasta = mol.FASTA()
+    fasta = mol.fasta()
     diff = find_diff(fasta_ref, fasta)
     if not diff:
         print(filename + ".fasta:SUCCEED")

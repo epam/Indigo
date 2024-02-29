@@ -448,10 +448,10 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadSequenceFromString(str, seq_type)));
         }
 
-        public IndigoObject loadFASTA(string str, string seq_type)
+        public IndigoObject loadFasta(string str, string seq_type)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadFASTAFromString(str, seq_type)));
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadFastaFromString(str, seq_type)));
         }
 
         public IndigoObject loadSmarts(byte[] buf)
@@ -472,10 +472,10 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadSequenceFromFile(path, seq_type)));
         }
 
-        public IndigoObject loadFASTAFromFile(string path, string seq_type)
+        public IndigoObject loadFastaFromFile(string path, string seq_type)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadFASTAFromFile(path, seq_type)));
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadFastaFromFile(path, seq_type)));
         }
 
         public IndigoObject loadReaction(string str)

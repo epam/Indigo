@@ -43,19 +43,19 @@ SequenceLoader::~SequenceLoader()
 {
 }
 
-void SequenceLoader::loadFASTA(BaseMolecule& mol, const std::string& seq_type_str)
+void SequenceLoader::loadFasta(BaseMolecule& mol, const std::string& seq_type_str)
 {
     if (seq_type_str == kMonomerClassDNA)
-        loadFASTA(mol, SeqType::DNASeq);
+        loadFasta(mol, SeqType::DNASeq);
     else if (seq_type_str == kMonomerClassRNA)
-        loadFASTA(mol, SeqType::RNASeq);
+        loadFasta(mol, SeqType::RNASeq);
     else if (seq_type_str == kMonomerClassPEPTIDE)
-        loadFASTA(mol, SeqType::PEPTIDESeq);
+        loadFasta(mol, SeqType::PEPTIDESeq);
     else
         throw Error("Bad sequence type: %s", seq_type_str.c_str());
 }
 
-void SequenceLoader::loadFASTA(BaseMolecule& mol, SeqType seq_type)
+void SequenceLoader::loadFasta(BaseMolecule& mol, SeqType seq_type)
 {
     _seq_id = 0;
     _last_sugar_idx = -1;

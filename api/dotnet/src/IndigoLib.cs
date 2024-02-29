@@ -132,13 +132,13 @@ namespace com.epam.indigo
         public static extern int indigoLoadSequenceFromString(string str, string seq_type);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadFASTAFromString(string str, string seq_type);
+        public static extern int indigoLoadFastaFromString(string str, string seq_type);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadSequenceFromFile(string filename, string seq_type);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadFASTAFromFile(string filename, string seq_type);
+        public static extern int indigoLoadFastaFromFile(string filename, string seq_type);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadSmartsFromBuffer(byte[] buffer, int size);

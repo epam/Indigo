@@ -601,7 +601,7 @@ CEXPORT int indigoSaveSequence(int item, int output)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoSaveFASTA(int item, int output)
+CEXPORT int indigoSaveFasta(int item, int output)
 {
     INDIGO_BEGIN
     {

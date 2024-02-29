@@ -142,7 +142,7 @@ namespace indigo
             }
             else if (outputFormat == "fasta" || outputFormat == "chemical/x-fasta")
             {
-                result = _checkResultString(indigoFASTA(id()));
+                result = _checkResultString(indigoFasta(id()));
             }
             else if (outputFormat == "smarts" || outputFormat == "chemical/x-daylight-smarts")
             {
@@ -348,7 +348,7 @@ namespace indigo
         else if (input_format != options.end() && fasta_formats.count(input_format->second))
         {
             auto fasta_it = fasta_formats.find(input_format->second);
-            objectId = indigoLoadFASTAFromString(data.c_str(), fasta_it->second.c_str());
+            objectId = indigoLoadFastaFromString(data.c_str(), fasta_it->second.c_str());
             if (objectId >= 0)
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
         }

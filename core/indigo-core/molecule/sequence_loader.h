@@ -54,8 +54,8 @@ namespace indigo
 
         void loadSequence(BaseMolecule& mol, SeqType seq_type);
         void loadSequence(BaseMolecule& mol, const std::string& seq_type_str);
-        void loadFASTA(BaseMolecule& mol, const std::string& seq_type_str);
-        void loadFASTA(BaseMolecule& mol, SeqType seq_type);
+        void loadFasta(BaseMolecule& mol, const std::string& seq_type_str);
+        void loadFasta(BaseMolecule& mol, SeqType seq_type);
 
     private:
         bool addMonomer(BaseMolecule& mol, char ch, SeqType seq_type);

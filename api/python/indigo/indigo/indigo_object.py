@@ -3418,7 +3418,7 @@ class IndigoObject:
 
         return IndigoLib.checkResultString(self._lib().indigoSequence(self.id))
 
-    def saveFASTA(self, filename):
+    def saveFasta(self, filename):
         """Saves macromolecule to FASTA file
 
         Args:
@@ -3429,17 +3429,17 @@ class IndigoObject:
         """
 
         return IndigoLib.checkResult(
-            self._lib().indigoSaveFASTAToFile(self.id, filename.encode())
+            self._lib().indigoSaveFastaToFile(self.id, filename.encode())
         )
 
-    def FASTA(self):
+    def fasta(self):
         """Molecule or reaction method returns FASTA for the structure
 
         Returns:
             str: FASTA string
         """
 
-        return IndigoLib.checkResultString(self._lib().indigoFASTA(self.id))
+        return IndigoLib.checkResultString(self._lib().indigoFasta(self.id))
 
     def smarts(self):
         """Molecule or reaction method calculates SMARTS for the structure

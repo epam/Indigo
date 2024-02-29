@@ -477,7 +477,7 @@ M  END\n",
         expected_text = "ValidationError: {'input_format': ['Must be one of: chemical/x-mdl-rxnfile, \
 chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
 chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence.']}"
+chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, chemical/x-peptide-fasta, chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta.']}"
         self.assertEquals(
             expected_text,
             result.text,
@@ -495,7 +495,7 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x
         expected_text = "ValidationError: {'output_format': ['Must be one of: chemical/x-mdl-rxnfile, \
 chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
 chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence.']}"
+chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, chemical/x-peptide-fasta, chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta.']}"
         self.assertEquals(
             expected_text,
             result.text,

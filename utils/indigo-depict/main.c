@@ -931,7 +931,7 @@ int main(int argc, char* argv[])
             obj = indigoLoadQueryMolecule(reader);
         else if (strcasecmp(p.infile_ext, "fst") == 0)
         {
-            obj = indigoLoadFASTA(reader, p.seq_type);
+            obj = indigoLoadFasta(reader, p.seq_type);
         }
         else
             obj = indigoLoadMolecule(reader);
@@ -947,7 +947,7 @@ int main(int argc, char* argv[])
             else if (p.out_ext == OEXT_SEQ)
                 indigoSaveSequenceToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_FASTA)
-                indigoSaveFASTAToFile(obj, p.outfile);
+                indigoSaveFastaToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_SMI)
             {
                 char* pMol;

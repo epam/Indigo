@@ -139,7 +139,7 @@ public interface IndigoLib extends Library {
 
     int indigoSaveSequenceToFile(int molecule, String filename);
 
-    int indigoSaveFASTAToFile(int molecule, String filename);
+    int indigoSaveFastaToFile(int molecule, String filename);
 
     int indigoSaveMolfileToFile(int molecule, String filename);
 
@@ -147,7 +147,7 @@ public interface IndigoLib extends Library {
 
     Pointer indigoSequence(int molecule);
 
-    Pointer indigoFASTA(int molecule);
+    Pointer indigoFasta(int molecule);
 
     int indigoSaveCml(int object, int output);
 

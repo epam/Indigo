@@ -82,9 +82,9 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoSequence(self));
     }
 
-    public String FASTA() {
+    public String fasta() {
         dispatcher.setSessionID();
-        return Indigo.checkResultString(this, lib.indigoFASTA(self));
+        return Indigo.checkResultString(this, lib.indigoFasta(self));
     }
 
     public String getOriginalFormat() {
@@ -102,9 +102,9 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         Indigo.checkResult(this, lib.indigoSaveSequenceToFile(self, filename));
     }
 
-    public void saveFASTAToFile(String filename) {
+    public void saveFastaToFile(String filename) {
         dispatcher.setSessionID();
-        Indigo.checkResult(this, lib.indigoSaveFASTAToFile(self, filename));
+        Indigo.checkResult(this, lib.indigoSaveFastaToFile(self, filename));
     }
 
     public String cml() {
