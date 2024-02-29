@@ -626,7 +626,6 @@ CEXPORT int indigoLoadFASTAFromFile(const char* filename, const char* seq_type)
     INDIGO_END(-1);
 }
 
-
 CEXPORT int indigoLoadSmarts(int source)
 {
     INDIGO_BEGIN
