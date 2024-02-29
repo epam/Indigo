@@ -16,6 +16,7 @@ macro/conjugates/pep-chem-rna.ket:SUCCEED
 macro/conjugates/peptide_rna.ket:SUCCEED
 macro/dendromers/dendro-peptide.ket:SUCCEED
 macro/disulfide/disulfide_peptide_cycle.ket:SUCCEED
+macro/hundred-monomers.ket:SUCCEED
 macro/left_phosphate/left_phosphate.ket:SUCCEED
 macro/linear/linear_dna.ket:SUCCEED
 macro/linear/linear_multi.ket:SUCCEED
