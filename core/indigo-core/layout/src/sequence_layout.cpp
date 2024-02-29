@@ -145,21 +145,26 @@ void SequenceLayout::calculateLayout(SequenceLayoutMap& layout_sequence)
             pq.pop();
             int to_atom_idx = te.dir.second;
             atoms.erase(te.back_dir.second);
-            if (vertices_visited[to_atom_idx] == 0)
+            if (to_atom_idx > -1)
             {
-                vertices_visited[to_atom_idx] = 1; // mark as passed
-                if (_molecule.isTemplateAtom(to_atom_idx))
+                if (vertices_visited[to_atom_idx] == 0)
                 {
-                    processPosition(_molecule, te, layout_sequence);
-                    layout_sequence[te.row][te.col] = to_atom_idx;
-                }
-                for (const auto& dir : _directions_map[to_atom_idx])
-                {
-                    // add to queue with priority. left, right, branch.
-                    if (vertices_visited[dir.second] == 0)
-                        pq.emplace(dir, _getBackDir(to_atom_idx, dir.second), te.col, te.row);
+                    vertices_visited[to_atom_idx] = 1; // mark as passed
+                    if (_molecule.isTemplateAtom(to_atom_idx))
+                    {
+                        processPosition(_molecule, te, layout_sequence);
+                        layout_sequence[te.row][te.col] = to_atom_idx;
+                    }
+                    for (const auto& dir : _directions_map[to_atom_idx])
+                    {
+                        // add to queue with priority. left, right, branch.
+                        if (vertices_visited[dir.second] == 0)
+                            pq.emplace(dir, _getBackDir(to_atom_idx, dir.second), te.col, te.row);
+                    }
                 }
             }
+            else
+                layout_sequence[te.row][te.col] = te.back_dir.second;
         }
     }
 }
