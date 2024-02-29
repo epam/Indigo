@@ -97,7 +97,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
                             switch (sf)
                             {
                             case SeqFormat::FASTA:
-                                if ( label.size() > 1 )
+                                if (label.size() > 1)
                                     throw Error("Can't save '%s' to FASTA", label.c_str());
                                 seq_string += label;
                                 break;
