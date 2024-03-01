@@ -879,6 +879,74 @@ M  END
 
     }
 
+    {
+        test("PEPTIDE-FASTA", "basic", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-peptide-fasta");
+            const fasta = fs.readFileSync("test_peptide.fasta");
+            const peptide_ket = indigo.convert(fasta, "ket", options);
+            const peptide_fasta = indigo.convert(fasta, "fasta", options);
+
+            // fs.writeFileSync("test_peptide_ref.ket", peptide_ket);
+            // fs.writeFileSync("test_peptide_ref.fasta", peptide_fasta);
+
+            const peptide_ket_ref = fs.readFileSync("test_peptide_ref.ket");
+            const peptide_fasta_ref = fs.readFileSync("test_peptide_ref.fasta");
+
+            assert.equal(peptide_ket, peptide_ket_ref.toString());
+            assert.equal(peptide_fasta, peptide_fasta_ref.toString());
+
+            options.delete();
+        });
+    }
+
+    {
+        test("RNA-FASTA", "basic", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-rna-fasta");
+            const fasta = fs.readFileSync("test_rna.fasta");
+            const rna_ket = indigo.convert(fasta, "ket", options);
+            const rna_fasta = indigo.convert(fasta, "fasta", options);
+
+            // fs.writeFileSync("test_rna_ref.ket", rna_ket);
+            // fs.writeFileSync("test_rna_ref.fasta", rna_fasta);
+
+            const rna_ket_ref = fs.readFileSync("test_rna_ref.ket");
+            const rna_fasta_ref = fs.readFileSync("test_rna_ref.fasta");
+
+            assert.equal(rna_ket, rna_ket_ref.toString());
+            assert.equal(rna_fasta, rna_fasta_ref.toString());
+
+            options.delete();
+        });
+    }
+
+    {
+        test("DNA-FASTA", "basic", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-dna-fasta");
+            const fasta = fs.readFileSync("test_dna.fasta");
+            const dna_ket = indigo.convert(fasta, "ket", options);
+            const dna_fasta = indigo.convert(fasta, "fasta", options);
+
+            // fs.writeFileSync("test_dna_ref.ket", dna_ket);
+            // fs.writeFileSync("test_dna_ref.fasta", dna_fasta);
+
+            const dna_ket_ref = fs.readFileSync("test_dna_ref.ket");
+            const dna_fasta_ref = fs.readFileSync("test_dna_ref.fasta");
+
+            assert.equal(dna_ket, dna_ket_ref.toString());
+            assert.equal(dna_fasta, dna_fasta_ref.toString());
+
+            options.delete();
+        });
+    }
     // Run tests
     run();
 });
