@@ -23,7 +23,11 @@ print("*** FASTA to KET ***")
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
-fasta_files = [{"file": "test_peptide", "seq_type": "PEPTIDE"}, {"file": "test_rna", "seq_type": "RNA"}, {"file": "test_dna", "seq_type": "DNA"} ]
+fasta_files = [
+    {"file": "test_peptide", "seq_type": "PEPTIDE"},
+    {"file": "test_rna", "seq_type": "RNA"},
+    {"file": "test_dna", "seq_type": "DNA"},
+]
 
 for desc in fasta_files:
     filename = desc["file"]
