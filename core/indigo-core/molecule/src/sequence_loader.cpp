@@ -119,6 +119,10 @@ void SequenceLoader::loadFasta(BaseMolecule& mol, SeqType seq_type)
             }
         }
     }
+
+    if (!pmol->properties().size())
+        throw Error("Invalid FASTA: no '>' headers");
+
     if (pmol->vertexCount())
         mol.mergeWithMolecule(*pmol, &mapping, 0);
 

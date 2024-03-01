@@ -18,7 +18,7 @@ indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
 indigo.setOption("ignore-stereochemistry-errors", True)
 
-print("*** FASTA to FASTA ***")
+print("*** FASTA to KET ***")
 
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
@@ -30,14 +30,14 @@ for desc in fasta_files:
     mol = indigo.loadFastaFromFile(
         os.path.join(root, filename + ".fasta"), desc["seq_type"]
     )
-    # with open(os.path.join(ref_path, filename) + ".fasta", "w") as file:
-    #     file.write(mol.fasta())
-    with open(os.path.join(ref_path, filename) + ".fasta", "r") as file:
-        fasta_ref = file.read()
-    fasta = mol.fasta()
-    diff = find_diff(fasta_ref, fasta)
+    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+    #     file.write(mol.json())
+    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
+        ket_ref = file.read()
+    ket = mol.json()
+    diff = find_diff(ket_ref, ket)
     if not diff:
-        print(filename + ".fasta:SUCCEED")
+        print(filename + ".ket:SUCCEED")
     else:
-        print(filename + ".fasta:FAILED")
+        print(filename + ".ket:FAILED")
         print(diff)

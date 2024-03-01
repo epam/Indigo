@@ -1,0 +1,4 @@
+*** FASTA to KET ***
+test_peptide.ket:SUCCEED
+test_rna.ket:SUCCEED
+test_dna.ket:SUCCEED
