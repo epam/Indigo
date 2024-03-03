@@ -6,12 +6,6 @@ labels: Bug
 
 ---
 
-**Environment details  (please complete the following information):**
- - Back-end version
- - [Optional] Front-end version
- - [Optional] Chrome version
- - [Optional] OS version
-
 **Describe the bug**
 A clear and concise description of what the bug is.
 
@@ -25,11 +19,15 @@ A clear and concise description of what you expected to happen.
 **Actual behavior**
 A clear and concise description of what the bug is.
 
+**Environment details:**
+ - Back-end version
+ - [Optional] Front-end version
+ - [Optional] Chrome version
+ - [Optional] OS version
+
 **Attachments**
 If applicable, add attachment files to reproduce the issue.
 
-**Indigo/Bingo version**  
-Provide full version
 
 **Additional context**
 Add any other context about the problem here.
