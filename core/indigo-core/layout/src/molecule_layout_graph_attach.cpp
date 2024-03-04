@@ -826,57 +826,50 @@ using index_angles = std::vector<std::pair<int, float>>;
 static float calc_median_diff(float optimal_angle, const index_angles& angles, const index_angles& splits)
 {
     int count = 0;
-    float summ = 0.0;
-    for (int i = 0; i < angles.size(); i++)
+    float sum = 0.0;
+    for (auto i = 0; i < angles.size(); i++)
     {
         if (i < splits.size())
         {
             int angle_count = splits[i].first + 1; // angle count = new edge count +1
-            summ += angle_count * std::fabs(optimal_angle - splits[i].second);
+            sum += angle_count * std::fabs(optimal_angle - splits[i].second);
             count += angle_count;
         }
         else
         {
-            summ += std::fabs(optimal_angle - angles[i].second);
+            sum += std::fabs(optimal_angle - angles[i].second);
             count++;
         }
     }
     if (count > 0)
-        return summ / count;
+        return sum / count;
     return std::numeric_limits<float>::max();
 }
 
-static float find_edge_splits(float optimal_angle, const index_angles& angles, int index, int edges_to_insert, index_angles& splits)
+static float find_edge_splits(float optimal_angle, const index_angles& angles, size_t index, int edges_to_insert, index_angles& splits)
 {
-    int edges_to_try = 0;
     int angle_index = angles[index].first;
     float angle = angles[index].second;
     float best_metric = std::numeric_limits<float>::max();
-    int next_index = index + 1;
-    if (angle <= optimal_angle) // Wll not divide angle < optimal
-    {
-        splits.emplace_back(0, angles[index].second);
-        if (next_index < angles.size())
-            return find_edge_splits(optimal_angle, angles, next_index, edges_to_insert, splits);
-        else
-            return -1;
-    }
-    edges_to_try = static_cast<int>(angle / optimal_angle);
-    if (edges_to_try > edges_to_insert || next_index >= angles.size()) // if last needed edges or last angle
-        edges_to_try = edges_to_insert;
-    float divided_angle = angle / (edges_to_try + 1);
-    splits.emplace_back(edges_to_try, divided_angle);
+    size_t next_index = index + 1;
 
-    if (edges_to_try == edges_to_insert)
+    if (next_index >= angles.size())
+    { // last angle - insert all desired edges
+        splits.emplace_back(edges_to_insert, angle / (edges_to_insert + 1));
         best_metric = calc_median_diff(optimal_angle, angles, splits);
+    }
+    else
+    { // not last angle. Try to find best split.
+        int edges_to_try = 0;
 
-    if (next_index < angles.size())
-    {
-        // Not last angle. Try to find best split.
-        best_metric = find_edge_splits(optimal_angle, angles, next_index, edges_to_insert - edges_to_try, splits);
-        while (edges_to_try > 0)
+        if (angle > optimal_angle) // Wll not divide angle < optimal
+            edges_to_try = static_cast<int>(angle / optimal_angle);
+
+        if (edges_to_try > edges_to_insert)
+            edges_to_try = edges_to_insert;
+
+        while (edges_to_try >= 0)
         {
-            edges_to_try--;
             index_angles new_splits;
             new_splits.assign(splits.cbegin(), splits.cbegin() + index);
             new_splits.emplace_back(edges_to_try, angle / (edges_to_try + 1));
@@ -886,6 +879,7 @@ static float find_edge_splits(float optimal_angle, const index_angles& angles, i
                 best_metric = new_metric;
                 splits = new_splits;
             }
+            edges_to_try--;
         }
     }
     return best_metric;
@@ -916,7 +910,7 @@ void MoleculeLayoutGraph::_calculatePositionsManyNotDrawn(int vert_idx, Array<in
     std::sort(edges_angles.begin(), edges_angles.end(), [](std::pair<int, float> a, std::pair<int, float> b) { return a.second < b.second; });
 
     index_angles angles; // angles between edges
-    for (int i = 0; i + 1 < edges_angles.size(); i++)
+    for (auto i = 0; i + 1 < edges_angles.size(); i++)
     {
         angles.emplace_back(edges_angles[i].first, edges_angles[i + 1].second - edges_angles[i].second);
     }
@@ -930,7 +924,7 @@ void MoleculeLayoutGraph::_calculatePositionsManyNotDrawn(int vert_idx, Array<in
 
     // place new edge between drawn
     int calculated_positions = 0;
-    for (int i = 0; i < splits.size(); i++)
+    for (auto i = 0; i < splits.size(); i++)
     {
         if (splits[i].first > 1)
         {
