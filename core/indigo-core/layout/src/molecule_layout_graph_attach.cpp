@@ -827,7 +827,7 @@ static float calc_median_diff(float optimal_angle, const index_angles& angles, c
 {
     int count = 0;
     float sum = 0.0;
-    for (auto i = 0; i < angles.size(); i++)
+    for (size_t i = 0; i < angles.size(); i++)
     {
         if (i < splits.size())
         {
@@ -910,7 +910,7 @@ void MoleculeLayoutGraph::_calculatePositionsManyNotDrawn(int vert_idx, Array<in
     std::sort(edges_angles.begin(), edges_angles.end(), [](std::pair<int, float> a, std::pair<int, float> b) { return a.second < b.second; });
 
     index_angles angles; // angles between edges
-    for (auto i = 0; i + 1 < edges_angles.size(); i++)
+    for (size_t i = 0; i + 1 < edges_angles.size(); i++)
     {
         angles.emplace_back(edges_angles[i].first, edges_angles[i + 1].second - edges_angles[i].second);
     }
@@ -924,7 +924,7 @@ void MoleculeLayoutGraph::_calculatePositionsManyNotDrawn(int vert_idx, Array<in
 
     // place new edge between drawn
     int calculated_positions = 0;
-    for (auto i = 0; i < splits.size(); i++)
+    for (size_t i = 0; i < splits.size(); i++)
     {
         if (splits[i].first > 1)
         {
