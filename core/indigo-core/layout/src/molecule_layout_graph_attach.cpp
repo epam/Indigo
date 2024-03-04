@@ -926,13 +926,13 @@ void MoleculeLayoutGraph::_calculatePositionsManyNotDrawn(int vert_idx, Array<in
     int calculated_positions = 0;
     for (size_t i = 0; i < splits.size(); i++)
     {
-        if (splits[i].first > 1)
+        if (splits[i].first > 0) // number of new edges in this agle
         {
             Vec2f pvert = getPos(angles[i].first); // splits index correspond to anges index
-            _calculatePos(splits[i].second, pstart, pvert, positions[calculated_positions]);
+            _calculatePos(splits[i].second, pstart, pvert, positions[calculated_positions++]);
             for (int j = 1; j < splits[i].first; j++)
             {
-                _calculatePos(splits[i].second, pstart, positions[calculated_positions], positions[calculated_positions + 1]);
+                _calculatePos(splits[i].second, pstart, positions[calculated_positions - 1], positions[calculated_positions]);
                 calculated_positions++;
             }
         }
