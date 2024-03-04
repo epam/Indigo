@@ -455,7 +455,7 @@ static void UnfoldAndLayoutHydrogens(BaseMolecule& bmol, bool only_selected, boo
     if (layout_hydrogens && markers.count(1) > 0) // If some hydrogens found - layout it
     {
         // Layout hydrogens
-        MoleculeLayoutGraphSmart layout;
+        MoleculeLayoutGraphSimple layout;
         layout.preserve_existing_layout = true;
         layout.makeOnGraph(bmol);
         for (int i = layout.vertexBegin(); i < layout.vertexEnd(); i = layout.vertexNext(i))

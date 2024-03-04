@@ -328,6 +328,7 @@ namespace indigo
         void _calculatePositionsOneNotDrawn(Array<Vec2f>& positions, int n_pos, int vert_idx, int not_drawn_idx);
         void _calculatePositionsSingleDrawn(int vert_idx, Array<int>& adjacent_list, int& n_pos, int drawn_idx, bool& two_ears, Array<Vec2f>& positions,
                                             int& parity);
+        void _calculatePositionsManyNotDrawn(int vert_idx, Array<int>& adjacent_list, Array<Vec2f>& positions);
         void _orderByEnergy(Array<Vec2f>& positions);
         void _assignRelativeSingleEdge(int& fixed_component, const MoleculeLayoutGraph& supergraph);
         void _findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial);
