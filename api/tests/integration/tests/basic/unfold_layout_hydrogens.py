@@ -22,7 +22,9 @@ def test_mol_unfold(mol, expected_unfolded):
     unfolded = molecule.molfile()
     unfolded_list = sorted(unfolded.split("\n"))
     expected_unfolded_list = sorted(expected_unfolded.split("\n"))
-    diff = "".join(difflib.context_diff(unfolded_list, expected_unfolded_list))
+    diff = "\n".join(
+        difflib.context_diff(unfolded_list, expected_unfolded_list)
+    )
     if diff:
         print("\nDiff between expected and after unfold molfile:\n%s" % diff)
     else:
@@ -143,3 +145,33 @@ M  END
 """
 
 test_mol_unfold(single_component_mol, single_component_mol_unfolded)
+
+issue_1575_mol = """
+  -INDIGO-01000000002D
+
+  3  2  0  0  0  0  0  0  0  0999 V2000
+   26.1692  -10.4274    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   27.0570  -10.9400    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   27.9449  -11.0681    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  2  3  1  0  0  0  0
+M  END
+"""
+
+issue_1575_mol_unfolded = """
+  -INDIGO-01000000002D
+
+  5  4  0  0  0  0  0  0  0  0999 V2000
+   26.1692  -10.4274    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   26.7297  -11.8849    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
+   27.0570  -10.9400    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   27.3843   -9.9951    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0
+   27.9449  -11.0681    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  2  3  1  0  0  0  0
+  2  4  1  0  0  0  0
+  2  5  1  0  0  0  0
+M  END
+"""
+
+test_mol_unfold(issue_1575_mol, issue_1575_mol_unfolded)
