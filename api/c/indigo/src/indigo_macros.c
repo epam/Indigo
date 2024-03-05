@@ -126,6 +126,20 @@ CEXPORT int indigoSaveSequenceToFile(int item, const char* filename)
     return res;
 }
 
+CEXPORT int indigoSaveFastaToFile(int item, const char* filename)
+{
+    int f = indigoWriteFile(filename);
+    int res;
+
+    if (f == -1)
+        return -1;
+
+    res = indigoSaveFasta(item, f);
+
+    indigoFree(f);
+    return res;
+}
+
 CEXPORT int indigoSaveCmlToFile(int molecule, const char* filename)
 {
     int f = indigoWriteFile(filename);
@@ -165,6 +179,22 @@ CEXPORT const char* indigoSequence(int molecule)
         return 0;
 
     if (indigoSaveSequence(molecule, b) == -1)
+        return 0;
+
+    res = indigoToString(b);
+    indigoFree(b);
+    return res;
+}
+
+CEXPORT const char* indigoFasta(int molecule)
+{
+    int b = indigoWriteBuffer();
+    const char* res;
+
+    if (b == -1)
+        return 0;
+
+    if (indigoSaveFasta(molecule, b) == -1)
         return 0;
 
     res = indigoToString(b);

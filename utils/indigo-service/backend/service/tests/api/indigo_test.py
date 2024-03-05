@@ -477,7 +477,7 @@ M  END\n",
         expected_text = "ValidationError: {'input_format': ['Must be one of: chemical/x-mdl-rxnfile, \
 chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
 chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence.']}"
+chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, chemical/x-peptide-fasta, chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta.']}"
         self.assertEquals(
             expected_text,
             result.text,
@@ -495,7 +495,7 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x
         expected_text = "ValidationError: {'output_format': ['Must be one of: chemical/x-mdl-rxnfile, \
 chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
 chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence.']}"
+chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, chemical/x-peptide-fasta, chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta.']}"
         self.assertEquals(
             expected_text,
             result.text,
@@ -3243,6 +3243,175 @@ M  END
         with open(os.path.join(ref_path, "peptide_ref") + ".ket", "r") as file:
             peptide_ref = file.read()
             self.assertEqual(result_peptide.text, peptide_ref)
+
+    def test_convert_fasta(self):
+        ref_path = joinPathPy("ref/", __file__)
+        struct_path = joinPathPy("structures/", __file__)
+
+        # peptides
+        with open(
+            os.path.join(struct_path, "test_peptide") + ".fasta", "r"
+        ) as file:
+            peptide_fasta = file.read()
+
+        headers, data = self.get_headers(
+            {
+                "struct": peptide_fasta,
+                "input_format": "chemical/x-peptide-fasta",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result_peptide_ket = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
+                "struct": peptide_fasta,
+                "input_format": "chemical/x-peptide-fasta",
+                "output_format": "chemical/x-fasta",
+            }
+        )
+
+        result_peptide_fasta = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        # write references
+        with open(
+            os.path.join(ref_path, "peptide_fasta_ref") + ".fasta", "w"
+        ) as file:
+            file.write(json.loads(result_peptide_fasta.text)["struct"])
+        with open(
+            os.path.join(ref_path, "peptide_fasta_ref") + ".ket", "w"
+        ) as file:
+            file.write(json.loads(result_peptide_ket.text)["struct"])
+
+        # check
+        with open(
+            os.path.join(ref_path, "peptide_fasta_ref") + ".fasta", "r"
+        ) as file:
+            self.assertEqual(
+                json.loads(result_peptide_fasta.text)["struct"], file.read()
+            )
+
+        with open(
+            os.path.join(ref_path, "peptide_fasta_ref") + ".ket", "r"
+        ) as file:
+            self.assertEqual(
+                json.loads(result_peptide_ket.text)["struct"], file.read()
+            )
+
+        # RNA
+        with open(
+            os.path.join(struct_path, "test_rna") + ".fasta", "r"
+        ) as file:
+            rna_fasta = file.read()
+
+        headers, data = self.get_headers(
+            {
+                "struct": rna_fasta,
+                "input_format": "chemical/x-rna-fasta",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result_rna_ket = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
+                "struct": rna_fasta,
+                "input_format": "chemical/x-rna-fasta",
+                "output_format": "chemical/x-fasta",
+            }
+        )
+
+        result_rna_fasta = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        # write references
+        with open(
+            os.path.join(ref_path, "rna_fasta_ref") + ".fasta", "w"
+        ) as file:
+            file.write(json.loads(result_rna_fasta.text)["struct"])
+        with open(
+            os.path.join(ref_path, "rna_fasta_ref") + ".ket", "w"
+        ) as file:
+            file.write(json.loads(result_rna_ket.text)["struct"])
+
+        # check
+        with open(
+            os.path.join(ref_path, "rna_fasta_ref") + ".fasta", "r"
+        ) as file:
+            self.assertEqual(
+                json.loads(result_rna_fasta.text)["struct"], file.read()
+            )
+
+        with open(
+            os.path.join(ref_path, "rna_fasta_ref") + ".ket", "r"
+        ) as file:
+            self.assertEqual(
+                json.loads(result_rna_ket.text)["struct"], file.read()
+            )
+
+        # DNA
+        with open(
+            os.path.join(struct_path, "test_dna") + ".fasta", "r"
+        ) as file:
+            dna_fasta = file.read()
+
+        headers, data = self.get_headers(
+            {
+                "struct": dna_fasta,
+                "input_format": "chemical/x-dna-fasta",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result_dna_ket = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
+                "struct": dna_fasta,
+                "input_format": "chemical/x-dna-fasta",
+                "output_format": "chemical/x-fasta",
+            }
+        )
+
+        result_dna_fasta = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        # write references
+        with open(
+            os.path.join(ref_path, "dna_fasta_ref") + ".fasta", "w"
+        ) as file:
+            file.write(json.loads(result_dna_fasta.text)["struct"])
+        with open(
+            os.path.join(ref_path, "dna_fasta_ref") + ".ket", "w"
+        ) as file:
+            file.write(json.loads(result_dna_ket.text)["struct"])
+
+        # check
+        with open(
+            os.path.join(ref_path, "dna_fasta_ref") + ".fasta", "r"
+        ) as file:
+            self.assertEqual(
+                json.loads(result_dna_fasta.text)["struct"], file.read()
+            )
+
+        with open(
+            os.path.join(ref_path, "dna_fasta_ref") + ".ket", "r"
+        ) as file:
+            self.assertEqual(
+                json.loads(result_dna_ket.text)["struct"], file.read()
+            )
 
 
 if __name__ == "__main__":

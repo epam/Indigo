@@ -123,6 +123,12 @@ public interface IndigoLib extends Library {
 
     int indigoLoadSequenceFromFile(String filename, String seq_type);
 
+    int indigoLoadFasta(int source, String seq_type);
+
+    int indigoLoadFastaFromString(String str, String seq_type);
+
+    int indigoLoadFastaFromFile(String filename, String seq_type);
+
     int indigoLoadStructureFromString(String str, String params);
 
     int indigoLoadStructureFromFile(String filename, String params);
@@ -133,11 +139,15 @@ public interface IndigoLib extends Library {
 
     int indigoSaveSequenceToFile(int molecule, String filename);
 
+    int indigoSaveFastaToFile(int molecule, String filename);
+
     int indigoSaveMolfileToFile(int molecule, String filename);
 
     Pointer indigoMolfile(int molecule);
 
     Pointer indigoSequence(int molecule);
+
+    Pointer indigoFasta(int molecule);
 
     int indigoSaveCml(int object, int output);
 

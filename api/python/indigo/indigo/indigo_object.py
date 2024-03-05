@@ -3396,7 +3396,7 @@ class IndigoObject:
         return IndigoLib.checkResultString(self._lib().indigoSmiles(self.id))
 
     def saveSequence(self, filename):
-        """Saves macromolecule to monomers' sequence file
+        """Saves macromolecule to monomers sequence file
 
         Args:
             filename (str): full file path to the output file
@@ -3410,13 +3410,36 @@ class IndigoObject:
         )
 
     def sequence(self):
-        """Molecule or reaction method calculates SMILES for the structure
+        """Molecule or reaction method returns monomer sequence for the structure
 
         Returns:
             str: sequence string
         """
 
         return IndigoLib.checkResultString(self._lib().indigoSequence(self.id))
+
+    def saveFasta(self, filename):
+        """Saves macromolecule to FASTA file
+
+        Args:
+            filename (str): full file path to the output file
+
+        Returns:
+            int: 1 if file is saved successfully
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSaveFastaToFile(self.id, filename.encode())
+        )
+
+    def fasta(self):
+        """Molecule or reaction method returns FASTA for the structure
+
+        Returns:
+            str: FASTA string
+        """
+
+        return IndigoLib.checkResultString(self._lib().indigoFasta(self.id))
 
     def smarts(self):
         """Molecule or reaction method calculates SMARTS for the structure

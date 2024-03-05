@@ -43,6 +43,93 @@ SequenceLoader::~SequenceLoader()
 {
 }
 
+void SequenceLoader::loadFasta(BaseMolecule& mol, const std::string& seq_type_str)
+{
+    if (seq_type_str == kMonomerClassDNA)
+        loadFasta(mol, SeqType::DNASeq);
+    else if (seq_type_str == kMonomerClassRNA)
+        loadFasta(mol, SeqType::RNASeq);
+    else if (seq_type_str == kMonomerClassPEPTIDE)
+        loadFasta(mol, SeqType::PEPTIDESeq);
+    else
+        throw Error("Bad sequence type: %s", seq_type_str.c_str());
+}
+
+void SequenceLoader::loadFasta(BaseMolecule& mol, SeqType seq_type)
+{
+    _seq_id = 0;
+    _last_sugar_idx = -1;
+    mol.clear();
+    std::string invalid_symbols;
+    Array<int> mapping;
+    std::unique_ptr<BaseMolecule> pmol(mol.neu());
+    PropertiesMap properties;
+
+    while (!_scanner.isEOF())
+    {
+        Array<char> str;
+        _scanner.readLine(str, true);
+        if (str.size())
+        {
+            std::string fasta_str = str.ptr();
+            switch (fasta_str.front())
+            {
+            case ';':
+                // handle comment
+                continue;
+                break;
+            case '>':
+                // handle header
+                properties.insert(kFASTA_HEADER, fasta_str);
+                if (pmol->vertexCount())
+                {
+                    mol.mergeWithMolecule(*pmol, &mapping, 0);
+                    pmol->clear();
+                }
+                continue;
+                break;
+            default:
+                break;
+            }
+
+            for (auto ch : fasta_str)
+            {
+                if (ch == '-')
+                    continue;
+                else if (ch == '*' && pmol->vertexCount())
+                {
+                    mol.mergeWithMolecule(*pmol, &mapping, 0);
+                    pmol->clear();
+                }
+                else if (!addMonomer(*pmol, ch, seq_type))
+                {
+                    if (invalid_symbols.size())
+                        invalid_symbols += ',';
+                    invalid_symbols += ch;
+                }
+            }
+
+            if (invalid_symbols.size())
+                throw Error("Invalid symbols in the sequence: %s", invalid_symbols.c_str());
+
+            if (!properties.is_empty())
+            {
+                pmol->properties().insert(0).copy(properties);
+                properties.clear();
+            }
+        }
+    }
+
+    if (!pmol->properties().size())
+        throw Error("Invalid FASTA: no '>' headers");
+
+    if (pmol->vertexCount())
+        mol.mergeWithMolecule(*pmol, &mapping, 0);
+
+    SequenceLayout sl(mol);
+    sl.make();
+}
+
 void SequenceLoader::loadSequence(BaseMolecule& mol, const std::string& seq_type_str)
 {
     if (seq_type_str == kMonomerClassDNA)
@@ -60,16 +147,24 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
     _seq_id = 0;
     _last_sugar_idx = -1;
     mol.clear();
+    std::string invalid_symbols;
     while (!_scanner.isEOF())
     {
         auto ch = _scanner.readChar();
-        addMonomer(mol, ch, seq_type);
+        if (!addMonomer(mol, ch, seq_type))
+        {
+            if (invalid_symbols.size())
+                invalid_symbols += ',';
+            invalid_symbols += ch;
+        }
     }
+    if (invalid_symbols.size())
+        throw Error("Invalid symbols in the sequence: %s", invalid_symbols.c_str());
     SequenceLayout sl(mol);
     sl.make();
 }
 
-void SequenceLoader::addTemplate(BaseMolecule& mol, char ch, SeqType seq_type)
+bool SequenceLoader::addTemplate(BaseMolecule& mol, char ch, SeqType seq_type)
 {
     int tg_idx = mol.tgroups.addTGroup();
     auto& tg = mol.tgroups.getTGroup(tg_idx);
@@ -78,15 +173,15 @@ void SequenceLoader::addTemplate(BaseMolecule& mol, char ch, SeqType seq_type)
     {
         tg.tgroup_id = tg_idx;
         _added_templates.emplace(seq_type, ch);
+        return true;
     }
-    else
-        throw Error("Unknown sequence element: %c", ch);
+    return false;
 }
 
-void SequenceLoader::addMonomer(BaseMolecule& mol, char ch, SeqType seq_type)
+bool SequenceLoader::addMonomer(BaseMolecule& mol, char ch, SeqType seq_type)
 {
-    if (_added_templates.find(std::make_pair(seq_type, ch)) == _added_templates.end())
-        addTemplate(mol, ch, seq_type);
+    if (_added_templates.find(std::make_pair(seq_type, ch)) == _added_templates.end() && !addTemplate(mol, ch, seq_type))
+        return false;
 
     // add phosphate template
     if (_seq_id == 1 && seq_type != SeqType::PEPTIDESeq)
@@ -105,6 +200,7 @@ void SequenceLoader::addMonomer(BaseMolecule& mol, char ch, SeqType seq_type)
         addNucleotide(mol, ch, "dR");
         break;
     }
+    return true;
 }
 
 void SequenceLoader::addAminoAcid(BaseMolecule& mol, char ch)
