@@ -18,7 +18,7 @@ def joinPathPy(args, file_py):
 # @unittest.skip("Skip libraries test case")
 class IndigoTestCase(unittest.TestCase):
     def setUp(self):
-        service_url = "http://localhost:8080/v2"
+        service_url = "http://localhost/v2"
         if (
             "INDIGO_SERVICE_URL" in os.environ
             and len(os.environ["INDIGO_SERVICE_URL"]) > 0
