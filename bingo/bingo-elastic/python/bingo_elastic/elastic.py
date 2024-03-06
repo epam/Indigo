@@ -154,7 +154,7 @@ async def a_create_index(
 
 
 def prepare(
-    records: Generator[IndigoRecord, None, None]
+    records: Generator[IndigoRecord, None, None],
 ) -> Generator[Dict, None, None]:
     for record in records:
         # if get_index_name(record).value != index_name:
