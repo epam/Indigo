@@ -47,23 +47,60 @@ class CompilableQuery(metaclass=ABCMeta):
 
 
 class KeywordQuery(CompilableQuery):
-    def __init__(self, value: str):
+    is_substructure: bool
+
+    def __init__(self, value: str, is_substructure: bool = False):
         self._value = value
+        self.is_substructure = is_substructure
 
     def compile(
         self,
         query: Dict,
         postprocess_actions: Optional[PostprocessType] = None,
     ) -> None:
-        bool_head = head_by_path(
-            query, ("query", "script_score", "query", "bool")
-        )
-        if not bool_head.get("must"):
-            bool_head["must"] = []
-        bool_head["must"].append(
+        if self.is_substructure:
+            bool_head = head_by_path(query, ("query", "bool"))
+        else:
+            bool_head = head_by_path(query, ("query", "script_score", "query", "bool"))
+        parent_term = "must"
+        if not bool_head.get(parent_term):
+            bool_head[parent_term] = []
+        bool_head[parent_term].append(
             {"match": {self.field: {"query": self._value, "boost": 0}}}
         )
-        default_script_score(query)
+        if not self.is_substructure:
+            default_script_score(query)
+
+
+class TermQuery(CompilableQuery):
+    """
+    Result must match at least one result in the querying field.
+    """
+    def __init__(self, value_list: List[str], is_substructure: bool = False):
+        self._value = value_list
+        self.is_substructure = is_substructure
+
+    def compile(
+        self, query: Dict, postprocess_actions: PostprocessType = None
+    ) -> None:
+        if self.is_substructure:
+            bool_head = head_by_path(query, ("query", "bool"))
+        else:
+            bool_head = head_by_path(query, ("query", "script_score", "query", "bool"))
+        parent_term = "filter"
+        field_name = str(self.field) + ".keyword"
+        if not bool_head.get(parent_term):
+            bool_head[parent_term] = []
+        if len(self._value) > 1:
+            bool_head[parent_term].append({
+                "terms": {field_name: self._value}
+            })
+        else:
+            bool_head[parent_term].append({
+                "term": {field_name: self._value[0]}
+            })
+        if not self.is_substructure:
+            default_script_score(query)
 
 
 class SubstructureQuery(CompilableQuery):
@@ -79,6 +116,7 @@ class SubstructureQuery(CompilableQuery):
             return None
 
         mol = record.as_indigo_object(indigo)
+        mol.aromatize()
         matcher = indigo.substructureMatcher(mol, options)
 
         if matcher.match(self._value):

@@ -5,7 +5,7 @@ from indigo import Indigo  # type: ignore
 from bingo_elastic.model.record import IndigoRecord
 
 PostprocessType = List[
-    Callable[[IndigoRecord, Indigo], Optional[IndigoRecord]]
+    Callable[[IndigoRecord, Indigo, str], Optional[IndigoRecord]]
 ]
 
 

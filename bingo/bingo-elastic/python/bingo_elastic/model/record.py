@@ -28,6 +28,7 @@ class WithElasticResponse:
         el_src = value["_source"]
         for arg, val in el_src.items():
             setattr(instance, arg, val)
+        setattr(instance, "_sort", value.get("sort"))
 
 
 class WithIndigoObject:
@@ -108,6 +109,12 @@ class IndigoRecord:
     elastic_response = WithElasticResponse()
     record_id: Optional[str] = None
     error_handler: Optional[Callable[[object, BaseException], None]] = None
+    # Sort for page cursor
+    _sort: list
+
+    @property
+    def sort(self) -> list:
+        return self._sort
 
     def __init__(self, **kwargs) -> None:
         """
