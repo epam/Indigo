@@ -305,7 +305,7 @@ namespace indigo
         virtual void _calcMorganCodes();
 
         // for whole graph
-        virtual void _assignAbsoluteCoordinates(float bond_length) = 0;
+        void _assignAbsoluteCoordinates(float bond_length);
 
         bool _checkBadTryBorderIntersection(Array<int>& chain_ext, MoleculeLayoutGraph& next_bc, Array<int>& mapping);
         bool _checkBadTryChainOutside(Array<int>& chain_ext, MoleculeLayoutGraph& next_bc, Array<int>& mapping);
@@ -328,6 +328,7 @@ namespace indigo
         void _calculatePositionsOneNotDrawn(Array<Vec2f>& positions, int n_pos, int vert_idx, int not_drawn_idx);
         void _calculatePositionsSingleDrawn(int vert_idx, Array<int>& adjacent_list, int& n_pos, int drawn_idx, bool& two_ears, Array<Vec2f>& positions,
                                             int& parity);
+        void _calculatePositionsManyNotDrawn(int vert_idx, Array<int>& adjacent_list, Array<Vec2f>& positions);
         void _orderByEnergy(Array<Vec2f>& positions);
         void _assignRelativeSingleEdge(int& fixed_component, const MoleculeLayoutGraph& supergraph);
         void _findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial);
@@ -348,6 +349,10 @@ namespace indigo
 
         void _layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
         void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
+
+    protected:
+        virtual void _layout_component(BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& bc_tree,
+                                       Array<int>& fixed_components, int src_vertex) = 0;
     };
 
     class DLLEXPORT MoleculeLayoutGraphSimple : public MoleculeLayoutGraph
@@ -385,9 +390,6 @@ namespace indigo
 
         // THERE
 
-        // for whole graph
-        void _assignAbsoluteCoordinates(float bond_length) override;
-
         // assigning coordinates
         void _assignRelativeCoordinates(int& fixed_component, const MoleculeLayoutGraph& supergraph) override;
         bool _tryToFindPattern(int& fixed_component);
@@ -411,6 +413,9 @@ namespace indigo
         bool _isPointOutsideCycle(const Cycle& cycle, const Vec2f& p) const override;
 
         static bool _edge_check(Graph& graph, int e_idx, void* context);
+
+        virtual void _layout_component(BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& bc_tree,
+                                       Array<int>& fixed_components, int src_vertex) override;
     };
 
     struct local_pair_ii
@@ -605,9 +610,6 @@ namespace indigo
     protected:
         // THERE
 
-        // for whole graph
-        void _assignAbsoluteCoordinates(float bond_length) override;
-
         // assigning coordinates
         struct interval
         {
@@ -670,6 +672,9 @@ namespace indigo
         // geometry functions
         const float _energyOfPoint(Vec2f p) const;
         int _isCisConfiguratuin(Vec2f p1, Vec2f p2, Vec2f p3, Vec2f p4);
+
+        virtual void _layout_component(BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& bc_tree,
+                                       Array<int>& fixed_components, int src_vertex);
 
         Array<int> _layout_component_number; // number of layout component of certain edge
         int _layout_component_count;
