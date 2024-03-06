@@ -13,6 +13,7 @@ def iterate_file(
     file: Path,
     iterator: Optional[str] = None,
     error_handler: Optional[Callable[[object, BaseException], None]] = None,
+    session: Optional[Indigo] = None,
 ) -> Generator[IndigoRecordMolecule, None, None]:
     """
     :param file:
@@ -22,6 +23,7 @@ def iterate_file(
     :type iterator: str
     :param error_handler: lambda for catching exceptions
     :type error_handler: Optional[Callable[[object, BaseException], None]]
+    :type session: Optional[Indigo]
     :return:
     """
     iterators = {
@@ -30,6 +32,8 @@ def iterate_file(
         "smi": "iterateSmilesFile",
         "cml": "iterateCMLFile",
     }
+    if session is None:
+        session = Indigo()
     if not iterator:
         iterator = file.suffix[1:]
     iterator_fn = iterators.get(iterator)
@@ -37,7 +41,7 @@ def iterate_file(
         raise AttributeError(f"Unsupported iterator {iterator}")
 
     indigo_object: IndigoObject
-    for indigo_object in getattr(Indigo(), iterator_fn)(str(file)):
+    for indigo_object in getattr(session, iterator_fn)(str(file)):
         yield IndigoRecordMolecule(
             indigo_object=indigo_object, error_handler=error_handler
         )
@@ -46,33 +50,39 @@ def iterate_file(
 def iterate_sdf(
     file: Union[Path, str],
     error_handler: Optional[Callable[[object, BaseException], None]] = None,
+    session: Optional[Indigo] = None,
 ) -> Generator:
     yield from iterate_file(
         Path(file) if isinstance(file, str) else file,
         "sdf",
         error_handler=error_handler,
+        session=session,
     )
 
 
 def iterate_smiles(
     file: Union[Path, str],
     error_handler: Optional[Callable[[object, BaseException], None]] = None,
+    session: Optional[Indigo] = None,
 ) -> Generator:
     yield from iterate_file(
         Path(file) if isinstance(file, str) else file,
         "smiles",
         error_handler=error_handler,
+        session=session,
     )
 
 
 def iterate_cml(
     file: Union[Path, str],
     error_handler: Optional[Callable[[object, BaseException], None]] = None,
+    session: Optional[Indigo] = None,
 ) -> Generator:
     yield from iterate_file(
         Path(file) if isinstance(file, str) else file,
         "cml",
         error_handler=error_handler,
+        session=session,
     )
 
 
