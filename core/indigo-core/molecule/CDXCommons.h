@@ -333,7 +333,8 @@ namespace indigo
                                                                      {kCDXBondOrder_ThreeCenter, "threecenter"},
                                                                      {kCDXBondOrder_SingleOrDouble, "singleordouble"},
                                                                      {kCDXBondOrder_SingleOrAromatic, "singleoraromatic"},
-                                                                     {kCDXBondOrder_DoubleOrAromatic, "doubleoraromatic"}};
+                                                                     {kCDXBondOrder_DoubleOrAromatic, "doubleoraromatic"},
+                                                                     {kCDXBondOrder_Any, "any"}};
 
     const std::unordered_map<std::string, CDXBondOrder> kBondOrderStrToId = {{"1", kCDXBondOrder_Single},
                                                                              {"2", kCDXBondOrder_Double},
@@ -353,7 +354,8 @@ namespace indigo
                                                                              {"threecenter", kCDXBondOrder_ThreeCenter},
                                                                              {"singleordouble", kCDXBondOrder_SingleOrDouble},
                                                                              {"singleoraromatic", kCDXBondOrder_SingleOrAromatic},
-                                                                             {"doubleoraromatic", kCDXBondOrder_DoubleOrAromatic}};
+                                                                             {"doubleoraromatic", kCDXBondOrder_DoubleOrAromatic},
+                                                                             {"any", kCDXBondOrder_Any}};
 
     const std::unordered_map<std::string, CDXArrowType> kCDXProp_Arrow_TypeStrToID = {{"NoHead", kCDXArrowType_NoHead},
                                                                                       {"HalfHead", kCDXArrowType_HalfHead},
@@ -413,12 +415,6 @@ namespace indigo
                                                                              {kCDXGraphicType_Rectangle, "Rectangle"}, {kCDXGraphicType_Arc, "Arc"},
                                                                              {kCDXGraphicType_Oval, "Oval"},           {kCDXGraphicType_Orbital, "Orbital"},
                                                                              {kCDXGraphicType_Bracket, "Bracket"},     {kCDXGraphicType_Symbol, "Symbol"}};
-
-    const std::unordered_map<std::string, int> kCDXProp_Bond_OrderStrToID = {
-        {"1", kCDXBondOrder_Single},      {"2", kCDXBondOrder_Double},      {"3", kCDXBondOrder_Triple},          {"4", kCDXBondOrder_Quadruple},
-        {"5", kCDXBondOrder_Quintuple},   {"6", kCDXBondOrder_Sextuple},    {"0.5", kCDXBondOrder_Half},          {"1.5", kCDXBondOrder_OneHalf},
-        {"2.5", kCDXBondOrder_TwoHalf},   {"3.5", kCDXBondOrder_ThreeHalf}, {"4.5", kCDXBondOrder_FourHalf},      {"5.5", kCDXBondOrder_FiveHalf},
-        {"dative", kCDXBondOrder_Dative}, {"ionic", kCDXBondOrder_Ionic},   {"hydrogen", kCDXBondOrder_Hydrogen}, {"threecenter", kCDXBondOrder_ThreeCenter}};
 
     const std::unordered_map<std::string, int> kCDXProp_Bond_DisplayStrToID = {{"Solid", kCDXBondDisplay_Solid},
                                                                                {"Dash", kCDXBondDisplay_Dash},

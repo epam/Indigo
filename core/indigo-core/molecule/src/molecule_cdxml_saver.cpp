@@ -181,7 +181,7 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
             val = 0;
             for (auto& value : vals)
             {
-                val |= static_cast<int16_t>(kCDXProp_Bond_OrderStrToID.at(value));
+                val |= static_cast<int16_t>(kBondOrderStrToId.at(value));
             }
             if (val == 0)
                 val = -1;
