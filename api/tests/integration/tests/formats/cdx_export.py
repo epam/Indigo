@@ -71,6 +71,7 @@ for filename in files:
 
 print("*** KET to CDX ***")
 test_file("issue_1774", ".ket")
+test_file("issue_1775", ".ket")
 
 root = joinPathPy("reactions/", __file__)
 files = ["agents"]
