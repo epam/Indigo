@@ -6,6 +6,7 @@ rgroup:success
 stereo_either-0020:success
 two_bn:success
 *** KET to CDX ***
+issue_1774:success
 agents:success
 *** CDXML to CDX ***
 AlcoholOxidation_Rxn1:success

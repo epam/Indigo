@@ -32,10 +32,11 @@ files = [
 ref_path = joinPathPy("ref/", __file__)
 files.sort()
 
-for filename in files:
+
+def test_file(filename, suffix=".mol"):
     try:
         mol = indigo.loadMoleculeFromFile(
-            os.path.join(root, filename + ".mol")
+            os.path.join(root, filename + suffix)
         )
         resb64 = mol.b64cdx()
         # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
@@ -51,7 +52,7 @@ for filename in files:
         print(getIndigoExceptionText(e))
         print("*** Try as Query ***")
         mol = indigo.loadQueryMoleculeFromFile(
-            os.path.join(root, filename + ".mol")
+            os.path.join(root, filename + suffix)
         )
         resb64 = mol.b64cdx()
         # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
@@ -64,7 +65,12 @@ for filename in files:
             print(getIndigoExceptionText(e))
         print(filename + (":success" if refb64 == resb64 else ":failed"))
 
+
+for filename in files:
+    test_file(filename)
+
 print("*** KET to CDX ***")
+test_file("issue_1774", ".ket")
 
 root = joinPathPy("reactions/", __file__)
 files = ["agents"]

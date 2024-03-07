@@ -414,6 +414,12 @@ namespace indigo
                                                                              {kCDXGraphicType_Oval, "Oval"},           {kCDXGraphicType_Orbital, "Orbital"},
                                                                              {kCDXGraphicType_Bracket, "Bracket"},     {kCDXGraphicType_Symbol, "Symbol"}};
 
+    const std::unordered_map<std::string, int> kCDXProp_Bond_OrderStrToID = {
+        {"1", kCDXBondOrder_Single},      {"2", kCDXBondOrder_Double},      {"3", kCDXBondOrder_Triple},          {"4", kCDXBondOrder_Quadruple},
+        {"5", kCDXBondOrder_Quintuple},   {"6", kCDXBondOrder_Sextuple},    {"0.5", kCDXBondOrder_Half},          {"1.5", kCDXBondOrder_OneHalf},
+        {"2.5", kCDXBondOrder_TwoHalf},   {"3.5", kCDXBondOrder_ThreeHalf}, {"4.5", kCDXBondOrder_FourHalf},      {"5.5", kCDXBondOrder_FiveHalf},
+        {"dative", kCDXBondOrder_Dative}, {"ionic", kCDXBondOrder_Ionic},   {"hydrogen", kCDXBondOrder_Hydrogen}, {"threecenter", kCDXBondOrder_ThreeCenter}};
+
     const std::unordered_map<std::string, int> kCDXProp_Bond_DisplayStrToID = {{"Solid", kCDXBondDisplay_Solid},
                                                                                {"Dash", kCDXBondDisplay_Dash},
                                                                                {"Hash", kCDXBondDisplay_Hash},
