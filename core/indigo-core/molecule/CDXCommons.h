@@ -333,7 +333,8 @@ namespace indigo
                                                                      {kCDXBondOrder_ThreeCenter, "threecenter"},
                                                                      {kCDXBondOrder_SingleOrDouble, "singleordouble"},
                                                                      {kCDXBondOrder_SingleOrAromatic, "singleoraromatic"},
-                                                                     {kCDXBondOrder_DoubleOrAromatic, "doubleoraromatic"}};
+                                                                     {kCDXBondOrder_DoubleOrAromatic, "doubleoraromatic"},
+                                                                     {kCDXBondOrder_Any, "any"}};
 
     const std::unordered_map<std::string, CDXBondOrder> kBondOrderStrToId = {{"1", kCDXBondOrder_Single},
                                                                              {"2", kCDXBondOrder_Double},
@@ -353,7 +354,8 @@ namespace indigo
                                                                              {"threecenter", kCDXBondOrder_ThreeCenter},
                                                                              {"singleordouble", kCDXBondOrder_SingleOrDouble},
                                                                              {"singleoraromatic", kCDXBondOrder_SingleOrAromatic},
-                                                                             {"doubleoraromatic", kCDXBondOrder_DoubleOrAromatic}};
+                                                                             {"doubleoraromatic", kCDXBondOrder_DoubleOrAromatic},
+                                                                             {"any", kCDXBondOrder_Any}};
 
     const std::unordered_map<std::string, CDXArrowType> kCDXProp_Arrow_TypeStrToID = {{"NoHead", kCDXArrowType_NoHead},
                                                                                       {"HalfHead", kCDXArrowType_HalfHead},

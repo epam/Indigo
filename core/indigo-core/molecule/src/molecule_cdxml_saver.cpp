@@ -176,6 +176,17 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
         case kCDXProp_Bond_Display:
             val = static_cast<int16_t>(kCDXProp_Bond_DisplayStrToID.at(pAttr->Value()));
             break;
+        case kCDXProp_Bond_Order: {
+            auto vals = split(pAttr->Value(), ' ');
+            val = 0;
+            for (auto& value : vals)
+            {
+                val |= static_cast<int16_t>(kBondOrderStrToId.at(value));
+            }
+            if (val == 0)
+                val = -1;
+        }
+        break;
         }
 
         _output.writeBinaryUInt16(sizeof(val));
@@ -941,6 +952,26 @@ void MoleculeCdxmlSaver::addBondToFragment(BaseMolecule& mol, tinyxml2::XMLEleme
         bond->SetAttribute("Order", "1.5");
         bond->SetAttribute("Display", "Dash");
         bond->SetAttribute("Display2", "Dash");
+    }
+    else if (order == _BOND_SINGLE_OR_DOUBLE)
+    {
+        bond->SetAttribute("Order", "1 2");
+    }
+    else if (order == _BOND_SINGLE_OR_AROMATIC)
+    {
+        bond->SetAttribute("Order", "1 1.5");
+    }
+    else if (order == _BOND_DOUBLE_OR_AROMATIC)
+    {
+        bond->SetAttribute("Order", "1.5 2");
+    }
+    else if (order == _BOND_COORDINATION)
+    {
+        bond->SetAttribute("Order", "dative");
+    }
+    else if (order == _BOND_HYDROGEN)
+    {
+        bond->SetAttribute("Order", "hydrogen");
     }
     else
         ; // Do not write single bond order

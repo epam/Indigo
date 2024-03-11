@@ -1,0 +1,41 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ],
+        "connections": [],
+        "templates": []
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    6.341987298107781,
+                    -5.525,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    7.20801270189222,
+                    -5.025,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 3,
+                "atoms": [
+                    0,
+                    1
+                ]
+            }
+        ]
+    }
+}
