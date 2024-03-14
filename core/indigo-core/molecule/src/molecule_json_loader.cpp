@@ -1193,6 +1193,12 @@ void MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_te
             }
         }
 
+        if (monomer_template.HasMember("fullName"))
+        {
+            std::string tg_full_name = monomer_template["fullName"].GetString();
+            tg.tgroup_full_name.readString(tg_full_name.c_str(), true);
+        }
+
         if (monomer_template.HasMember("attachmentPoints"))
         {
             auto& att_points = monomer_template["attachmentPoints"];
