@@ -1129,7 +1129,7 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     if (tg.tgroup_full_name.size())
     {
         writer.Key("fullName");
-        writer.String(tg.tgroup_name.ptr());
+        writer.String(tg.tgroup_full_name.ptr());
     }
 
     std::string natreplace;
