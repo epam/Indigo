@@ -74,7 +74,7 @@ static T read(byte*& ptr, uint32_t& size)
 }
 template uint16_t read(byte*&, uint32_t&);
 
-static void saveProperty(uint16_t tag, uint32_t len, Array<byte>& buf, indigo::JsonWriter& json)
+static void saveProperty(uint16_t tag, uint32_t len, Array<byte>& buf, indigo::JsonWriter& json, bool is_object_tag = false)
 {
     json.StartObject();
     json.Key("tag");
@@ -160,27 +160,35 @@ static void saveProperty(uint16_t tag, uint32_t len, Array<byte>& buf, indigo::J
         }
         case ECDXType::CDXString: {
             byte* ptr = buf.ptr();
-            auto style_runs = read<uint16_t>(ptr, len);
-            if (style_runs > 0)
+            if (!(tag == kCDXProp_Name && is_object_tag))
             {
-                json.Key("style_runs");
-                json.StartArray();
-                for (int i = 0; i < style_runs; i++)
+                auto style_runs = read<uint16_t>(ptr, len);
+                if (style_runs * sizeof(CDXTextStyle) > len)
                 {
-                    json.StartObject();
-                    json.Key("start");
-                    json.Uint(read<uint16_t>(ptr, len));
-                    json.Key("font");
-                    json.Uint(read<uint16_t>(ptr, len));
-                    json.Key("style");
-                    save_hex(json, read<uint16_t>(ptr, len));
-                    json.Key("size");
-                    json.Double(read<uint16_t>(ptr, len) / 20.0);
-                    json.Key("color");
-                    json.Uint(read<uint16_t>(ptr, len));
-                    json.EndObject();
+                    ptr -= sizeof(uint16_t);
+                    len += sizeof(uint16_t);
                 }
-                json.EndArray();
+                else if (style_runs > 0)
+                {
+                    json.Key("style_runs");
+                    json.StartArray();
+                    for (int i = 0; i < style_runs; i++)
+                    {
+                        json.StartObject();
+                        json.Key("start");
+                        json.Uint(read<uint16_t>(ptr, len));
+                        json.Key("font");
+                        json.Uint(read<uint16_t>(ptr, len));
+                        json.Key("style");
+                        save_hex(json, read<uint16_t>(ptr, len));
+                        json.Key("size");
+                        json.Double(read<uint16_t>(ptr, len) / 20.0);
+                        json.Key("color");
+                        json.Uint(read<uint16_t>(ptr, len));
+                        json.EndObject();
+                    }
+                    json.EndArray();
+                }
             }
             json.Key("str");
             json.String(reinterpret_cast<char*>(ptr), len);
@@ -193,7 +201,7 @@ static void saveProperty(uint16_t tag, uint32_t len, Array<byte>& buf, indigo::J
     json.EndObject();
 }
 
-void readProperty(uint16_t tag, Scanner& scan, indigo::JsonWriter& json)
+void readProperty(uint16_t tag, Scanner& scan, indigo::JsonWriter& json, bool is_object_tag = false)
 {
     int len = 0;
     uint16_t size;
@@ -209,12 +217,12 @@ void readProperty(uint16_t tag, Scanner& scan, indigo::JsonWriter& json)
         buf.expandFill(len, 0);
         scan.read(len, buf.ptr());
     }
-    saveProperty(tag, len, buf, json);
+    saveProperty(tag, len, buf, json, is_object_tag);
 }
 
 static void readObject(uint16_t tag, Scanner& scan, indigo::JsonWriter& json);
 
-static void readObjOrProp(uint16_t tag, Scanner& scan, indigo::JsonWriter& json)
+static void readObjOrProp(uint16_t tag, Scanner& scan, indigo::JsonWriter& json, bool is_object_tag = false)
 {
     if (tag >= kCDXTag_Object)
     {
@@ -222,16 +230,16 @@ static void readObjOrProp(uint16_t tag, Scanner& scan, indigo::JsonWriter& json)
     }
     else
     {
-        readProperty(tag, scan, json);
+        readProperty(tag, scan, json, is_object_tag);
     }
 }
 
-static void readObject(uint16_t tag, Scanner& scan, indigo::JsonWriter& json)
+static void readObject(uint16_t object_tag, Scanner& scan, indigo::JsonWriter& json)
 {
     json.StartObject();
     json.Key("tag");
-    save_hex(json, tag);
-    auto it = KCDXObjToName.find(tag);
+    save_hex(json, object_tag);
+    auto it = KCDXObjToName.find(object_tag);
     if (it != KCDXObjToName.end())
     {
         json.Key("obj_name");
@@ -245,10 +253,11 @@ static void readObject(uint16_t tag, Scanner& scan, indigo::JsonWriter& json)
     json.StartArray();
     while (1)
     {
+        uint16_t tag;
         scan.read(2, &tag);
         if (tag == 0)
             break;
-        readObjOrProp(tag, scan, json);
+        readObjOrProp(tag, scan, json, object_tag == kCDXObj_ObjectTag);
     }
     json.EndArray();
     json.EndObject();
@@ -270,11 +279,18 @@ void parse_cdx(const char* filename, bool pretty_json)
     json.Reset(s);
     uint16_t tag;
     json.StartArray();
-    while (1)
+    bool first = true;
+    while (!sc.isEOF())
     {
-        sc.read(2, &tag);
-        if (tag == 0) // End of file
-            break;
+        sc.read(sizeof(tag), &tag);
+        if (first) // marvin and ketcher write 0x0000 instead of 0x8000 for first document
+        {
+            if (tag == 0)
+                tag = kCDXObj_Document;
+            first = false;
+        }
+        if (tag == 0)
+            break; // end of file
         readObjOrProp(tag, sc, json);
     }
     json.EndArray();
@@ -343,7 +359,7 @@ void json_to_cdx(const char* json_file_name, const char* cdx_filename)
         std::ofstream cdx(cdx_filename, std::ios::binary);
         cdx << kCDX_HeaderString;
         write(cdx, kCDXMagicNumber);
-        cdx.write(kCDXReserved, 10); // sizeof(kCDXReserved)); // TODO: fix size of kCDXReserved and corresponding issues
+        cdx.write(kCDXReserved, sizeof(kCDXReserved));
         save_nodes(cdx, data);
         write<uint16_t>(cdx, 0);
         cdx.close();

@@ -31,7 +31,7 @@ const CDXObjectID kCDXUndefinedId = (CDXObjectID)-1;
 const int kCDX_HeaderStringLen = 8;
 #define kCDX_HeaderString "VjCD0100"
 #define kCDX_Signature QUADCONST('V', 'j', 'C', 'D')
-#define kCDX_HeaderLength 28
+#define kCDX_HeaderLength 22
 
 #define kCDXML_HeaderString                                                                                                                                    \
     "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" << GetTextEOL() << "<!DOCTYPE CDXML SYSTEM \"http://www.cambridgesoft.com/xml/cdxml.dtd\" >" << GetTextEOL()

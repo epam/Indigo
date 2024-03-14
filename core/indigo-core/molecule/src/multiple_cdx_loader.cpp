@@ -167,7 +167,13 @@ bool MultipleCdxLoader::_findObject(long long& beg, int& length)
 
     while (!_scanner.isEOF() && ((_scanner.length() - _scanner.tell()) > 1LL))
     {
+        long long pos = _scanner.tell();
         tag = _scanner.readBinaryWord();
+
+        if (tag == 0 && pos == kCDX_HeaderLength) // Some CDX saved with 0x0000 instead of first 0x8000
+        {
+            tag = kCDXObj_Document;
+        }
 
         if (tag & kCDXTag_Object)
         {
@@ -351,12 +357,12 @@ void MultipleCdxLoader::_checkHeader()
     if ((_scanner.length() - pos_saved) < 8LL)
         return;
 
-    char id[8];
-    _scanner.readCharsFix(8, id);
+    char id[kCDX_HeaderStringLen];
+    _scanner.readCharsFix(kCDX_HeaderStringLen, id);
 
     if (strncmp(id, kCDX_HeaderString, kCDX_HeaderStringLen) == 0)
-    {
-        _scanner.seek(kCDX_HeaderLength - kCDX_HeaderStringLen, SEEK_CUR);
+    { // skip header and first kCDXObj_Document tag and id
+        _scanner.seek(kCDX_HeaderLength - kCDX_HeaderStringLen + sizeof(uint16_t) + sizeof(uint32_t), SEEK_CUR); //
     }
     else
     {

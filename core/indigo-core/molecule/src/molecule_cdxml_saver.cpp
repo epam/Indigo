@@ -1816,6 +1816,8 @@ void MoleculeCdxmlSaver::endDocument()
         _output.writeString(kCDX_HeaderString);
         _output.writeBinaryInt(kCDXMagicNumber);
         _output.write(kCDXReserved, sizeof(kCDXReserved));
+        _output.writeBinaryWord(0); // TODO: change to kCDXObj_Document); // First object is document
+        _output.writeBinaryInt(0);  // Document ID 4 bytes.
         auto cdxml = _doc->FirstChildElement();
         writeBinaryElement(cdxml);
         _output.writeBinaryUInt16(0);

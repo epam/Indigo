@@ -183,659 +183,546 @@ namespace indigo
         bool is_superatom;
     };
 
-    class CDXProperty
+    class BaseCDXProperty
+    {
+    public:
+        virtual bool hasContent() const = 0;
+        virtual std::unique_ptr<BaseCDXProperty> copy() = 0;
+        virtual std::unique_ptr<BaseCDXProperty> next() = 0;
+        virtual std::string name() const = 0;
+        virtual std::string value() const = 0;
+    };
+
+    static constexpr uint32_t tag_size = sizeof(uint16_t);
+    static constexpr uint32_t id_size = sizeof(uint32_t);
+
+    class CDXMLProperty : public BaseCDXProperty
     {
     public:
         DECL_ERROR;
 
-        static constexpr int tag_size = sizeof(uint16_t);
-        static constexpr int id_size = sizeof(uint32_t);
-        static constexpr int tag_id_size = tag_size + id_size;
+        CDXMLProperty(const tinyxml2::XMLAttribute* attribute) : _attribute(attribute){};
 
-        CDXProperty() : CDXProperty(nullptr)
+        virtual bool hasContent() const override
         {
+            return _attribute != nullptr;
         }
 
-        CDXProperty(const void* data, const void* data_limit = nullptr, uint32_t size = 0, bool is_object = false, int style_index = -1, int style_prop = -1)
-            : _data(data), _data_limit(data_limit), _size(size), _is_object(is_object), _style_index(style_index), _style_prop(style_prop)
+        virtual std::unique_ptr<BaseCDXProperty> copy() override
         {
+            return std::make_unique<CDXMLProperty>(_attribute);
         }
 
-        static const uint8_t* get_size(const void* data, uint32_t& size)
+        virtual std::unique_ptr<BaseCDXProperty> next() override
         {
-            const uint16_t* p16 = reinterpret_cast<const uint16_t*>(data);
-            const uint8_t* p8 = reinterpret_cast<const uint8_t*>(data);
-            size = *p16;
-            p8 += sizeof(uint16_t);
-            if (0xFFFF == size)
-            {
-                size = *reinterpret_cast<const uint32_t*>(p8);
-                p8 += sizeof(uint32_t);
-            }
-            return p8;
+            return std::make_unique<CDXMLProperty>(attribute()->Next());
         }
 
-        static const uint8_t* get_tag_and_size(const void* data, uint16_t& tag, uint32_t& size)
+        virtual std::string name() const override
         {
-            const uint16_t* p16 = reinterpret_cast<const uint16_t*>(data);
-            tag = *p16;
-            return get_size(p16 + 1, size);
+            return attribute()->Name();
         }
 
-        const tinyxml2::XMLAttribute& attribute()
+        virtual std::string value() const override
         {
-            if (_size)
-                throw Error("Binary data");
-            if (!_data)
+            return attribute()->Value();
+        }
+
+    protected:
+        const tinyxml2::XMLAttribute* attribute() const
+        {
+            if (_attribute == nullptr)
                 throw Error("Null property");
-            auto res = (tinyxml2::XMLAttribute*)_data;
-            return (tinyxml2::XMLAttribute&)*res;
+            return _attribute;
         }
 
-        CDXProperty next()
+    private:
+        const tinyxml2::XMLAttribute* _attribute;
+    };
+
+    class CDXElement;
+
+    class CDXProperty : public BaseCDXProperty
+    {
+    public:
+        DECL_ERROR;
+        CDXProperty(CDXElement* parent) : CDXProperty(parent, 0, nullptr)
         {
-            return _size || _is_object ? getNextProp() : CDXProperty(attribute().Next());
         }
 
-        CDXProperty getNextProp();
+        CDXProperty(CDXElement* parent, uint16_t tag, const uint8_t* data, uint32_t size = 0);
 
-        std::string name()
+        bool hasContent() const override
         {
-            if (_is_object)
-                return "id";
-
-            if (_style_prop >= 0)
-                return KStyleProperties[_style_prop];
-
-            return _size ? getName() : std::string(attribute().Name());
+            return _data != nullptr;
         }
 
-        std::string getName()
+        std::unique_ptr<BaseCDXProperty> copy() override
         {
-            auto ptag = (uint16_t*)_data;
-            auto it = KCDXPropToName.find(*ptag);
+            return std::make_unique<CDXProperty>(_parent, _tag, _data, _size);
+        }
+
+        std::unique_ptr<BaseCDXProperty> next() override
+        {
+            return nextProp();
+        }
+
+        std::unique_ptr<CDXProperty> nextProp();
+
+        std::string name() const override
+        {
+            auto it = KCDXPropToName.find(_tag);
             return it == KCDXPropToName.end() ? std::string{} : it->second.first;
         }
 
-        int tag()
+        std::string value() const override
         {
-            auto ptag = (uint16_t*)_data;
-            return *ptag;
-        }
-
-        std::string value()
-        {
-            if (_is_object)
-                return formatValue(reinterpret_cast<const uint8_t*>(_data) + tag_size, id_size, 0, ECDXType::CDXObjectID);
-            return _size ? getValue() : std::string(attribute().Value());
-        }
-
-        std::string getValue()
-        {
-            if (_style_prop >= 0 && _style_index >= 0)
-            {
-                auto tsp = (CDXTextStyleProperty*)_data;
-                if (tsp->style_count)
-                {
-                    auto& style = tsp->styles[_style_index];
-                    auto pstyle_prop = (uint16_t*)(&style.font_index + _style_prop);
-                    uint16_t style_prop = *pstyle_prop;
-                    if (_style_prop == kCDXMLStyleSizeIndex)
-                        style_prop /= kCDXMLSizeMultiplier;
-                    return formatValue((uint8_t*)&style_prop, sizeof(uint16_t), 0, ECDXType::CDXUINT16);
-                }
-                else
-                    return std::string();
-            }
-            uint16_t tag = 0;
-            uint32_t sz = 0;
-            auto ptr = get_tag_and_size(_data, tag, sz);
-            auto it = KCDXPropToName.find(tag);
+            auto it = KCDXPropToName.find(_tag);
             if (it != KCDXPropToName.end())
             {
-                if (sz)
-                {
-                    auto prop_type = it->second.second;
-                    return formatValue(ptr, sz, tag, prop_type);
-                }
-                else
+                if (_size == 0)
                     return "";
+                auto prop_type = it->second.second;
+                return formatValue(prop_type);
             }
 
             std::stringstream ss;
-            std::vector<uint8_t> val_dump(ptr, ptr + sz);
+            std::vector<uint8_t> val_dump(_data, _data + _size);
             ss << "raw value:" << std::hex;
             for (auto val : val_dump)
                 ss << std::setw(2) << std::setfill('0') << (int)val << " ";
             return ss.str();
         }
 
-        std::string formatValue(const uint8_t* ptr, uint16_t value_size, uint16_t tag, ECDXType cdx_type)
+        uint16_t tag()
         {
-            std::string result;
-            switch (cdx_type)
-            {
-            case ECDXType::CDXPoint2D:
-            case ECDXType::CDXRectangle: {
-                auto ptr32 = (int32_t*)ptr;
-                std::stringstream ss;
-                ss << std::setprecision(2) << std::fixed;
-                for (uint16_t i = 0; i < value_size / sizeof(int32_t); ++i)
-                {
-                    if (i)
-                        ss << " ";
-                    double val = ptr32[i ^ 1];
-                    val = round(val * 100 / (1 << 16)) / 100;
-                    ss << val;
-                }
-                result = ss.str();
-            }
-            break;
-
-            case ECDXType::CDXPoint3D: {
-                auto ptr32 = (int32_t*)ptr;
-                std::stringstream ss;
-                ss << std::setprecision(2) << std::fixed;
-                for (uint16_t i = 0; i < value_size / sizeof(int32_t); ++i)
-                {
-                    if (i)
-                        ss << " ";
-                    double val = ptr32[i];
-                    val = round(val * 100 / (1 << 16)) / 100;
-                    ss << val;
-                }
-                result = ss.str();
-            }
-            break;
-
-            case ECDXType::CDXCoordinate: {
-                auto ptr32 = (int32_t*)ptr;
-                std::stringstream ss;
-                double val = *ptr32;
-                val = round(val * 100 / (1 << 16)) / 100;
-                ss << std::setprecision(2) << std::fixed << val;
-                result = ss.str();
-            }
-            break;
-
-            case ECDXType::CDXUINT16: {
-                auto ptr16 = (uint16_t*)ptr;
-                result = parseCDXUINT16(*ptr16, tag);
-            }
-            break;
-            case ECDXType::CDXINT16: {
-                int16_t val16 = value_size == sizeof(int8_t) ? *((int8_t*)ptr) : *((int16_t*)ptr); // ChemDraw 8.0 bug fix
-                result = parseCDXINT16(val16, tag);
-            }
-            break;
-            case ECDXType::CDXUINT8:
-            case ECDXType::CDXINT8: {
-                result = parseCDXINT8(*ptr, tag);
-            }
-            break;
-            case ECDXType::CDXINT32: {
-                auto ptr32 = (uint32_t*)ptr;
-                result = parseCDXINT32(*ptr32, tag);
-            }
-            break;
-            case ECDXType::CDXObjectID:
-            case ECDXType::CDXUINT32: {
-                auto ptr32 = (uint32_t*)ptr;
-                result = std::to_string(*ptr32);
-            }
-            break;
-            case ECDXType::CDXObjectIDArray: {
-                auto ptr32 = (uint32_t*)ptr;
-                for (uint16_t i = 0; i < value_size / sizeof(uint32_t); ++i)
-                {
-                    if (i)
-                        result += " ";
-                    result += std::to_string(ptr32[i]);
-                }
-            }
-            break;
-            case ECDXType::CDXString: {
-                // get raw string.
-                auto ptr16 = (uint16_t*)ptr;
-                int offset = (*ptr16) * sizeof(CDXTextStyle) + sizeof(uint16_t);
-                value_size -= offset;
-                if (value_size > 0)
-                {
-                    return std::string((char*)(ptr + offset), value_size);
-                }
-                return std::string();
-            }
-            break;
-
-            case ECDXType::CDXFLOAT64: {
-                auto pflt = (double*)ptr;
-                result = std::to_string(*pflt);
-            }
-            break;
-
-            case ECDXType::CDXBooleanImplied: {
-                result = "yes";
-            }
-            break;
-
-            case ECDXType::CDXBoolean: {
-                result = *ptr ? "yes" : "no";
-            }
-            break;
-
-            case ECDXType::CDXColorTable:
-                result = "ColorTable not implemented";
-                break;
-
-            case ECDXType::CDXFontTable:
-                result = "FontTable not implemented";
-                break;
-
-            case ECDXType::CDXFontStyle:
-                result = "FontStyle not implemented";
-                break;
-
-            case ECDXType::CDXUnformatted: {
-                std::stringstream ss;
-                ss << std::hex;
-                std::vector<uint8_t> val_dump(ptr, ptr + value_size);
-                for (auto val : val_dump)
-                    ss << std::setw(2) << std::setfill('0') << (int)val;
-                return ss.str();
-            }
-            break;
-            case ECDXType::CDXINT16ListWithCounts: {
-                auto pcount = (int16_t*)ptr;
-                auto ptr16 = pcount + 1;
-                for (int i = 0; i < *pcount; ++i)
-                {
-                    if (i)
-                        result += " ";
-                    result += std::to_string(ptr16[i]);
-                }
-            }
-            break;
-            default:
-                throw Error("undefined property type: %d", cdx_type);
-                break;
-            }
-            return result;
+            return _tag;
         }
 
-        std::string parseCDXUINT16(uint16_t val, uint16_t /*tag*/)
+        // protected:
+        std::string formatValue(ECDXType cdx_type) const;
+        std::string parseCDXUINT16(uint16_t val) const;
+        std::string parseCDXINT16(int16_t val) const;
+        std::string parseCDXINT32(int32_t val) const;
+        std::string parseCDXINT8(int8_t val) const;
+
+        CDXElement* _parent;
+        uint16_t _tag;
+        const uint8_t* _data;
+        uint32_t _size;
+    };
+
+    class CDXIdProperty : public CDXProperty
+    {
+    public:
+        CDXIdProperty(CDXElement* parent, const uint8_t* data) : CDXProperty(parent, 0, data, id_size){};
+
+        std::unique_ptr<BaseCDXProperty> copy() override
         {
-            return std::to_string(val);
+            return std::make_unique<CDXIdProperty>(_parent, _data);
         }
 
-        std::string parseCDXINT16(int16_t val, int16_t tag)
+        std::string name() const override
         {
-            switch (tag)
-            {
-            case kCDXProp_Bond_Order: {
-                return kBondOrderIntToStr.at(val);
-            }
-            case kCDXProp_Node_Type: {
-                return KNodeTypeIntToName.at(val);
-            }
-            break;
-            case kCDXProp_Bond_Display: {
-                return kCDXProp_Bond_DisplayIdToStr.at((CDXBondDisplay)val);
-            }
-            break;
-            case kCDXProp_BondSpacing: {
-                val /= 10;
-            }
-            break;
-            case kCDXProp_Graphic_Type: {
-                return kCDXPropGraphicTypeIDToStr.at((CDXGraphicType)val);
-            }
-            break;
-            case kCDXProp_Symbol_Type: {
-                return kCDXPropSymbolTypeIDToStr.at((CDXSymbolType)val);
-            }
-            break;
-            case kCDXProp_Arrow_Type: {
-                return kCDXProp_Arrow_TypeIDToStr.at((CDXArrowType)val);
-            }
-            break;
-            default:
-                break;
-            }
-            return std::to_string(val);
+            return "id";
+        }
+        std::string value() const override
+        {
+            return formatValue(ECDXType::CDXObjectID);
+        }
+    };
+
+    class CDXStyleProperty : public CDXProperty
+    {
+    public:
+        CDXStyleProperty(CDXElement* parent, const uint8_t* data, uint8_t prop_index)
+            : CDXProperty(parent, 0xffff, data, sizeof(uint16_t)), _prop_index(prop_index){};
+
+        std::unique_ptr<BaseCDXProperty> copy() override
+        {
+            return std::make_unique<CDXStyleProperty>(_parent, _data, _prop_index);
         }
 
-        std::string parseCDXINT32(int32_t val, uint16_t tag)
+        std::unique_ptr<BaseCDXProperty> next()
         {
-            switch (tag)
-            {
-            case kCDXProp_ChainAngle: {
-                std::stringstream ss;
-                ss << std::setprecision(2) << std::fixed << double(val) / (1 << 16);
-                return ss.str();
-            }
-            default:
-                break;
-            }
-            return std::to_string(val);
+            uint8_t next_index = _prop_index + 1;
+            if (next_index < KStyleProperties.size())
+                return std::make_unique<CDXStyleProperty>(_parent, _data + sizeof(uint16_t), next_index);
+            else
+                return std::make_unique<CDXProperty>(_parent);
         }
 
-        std::string parseCDXINT8(int8_t val, uint16_t tag)
+        std::string name() const override
         {
-            switch (tag)
-            {
-            case kCDXProp_Atom_EnhancedStereoType:
-                return kCDXEnhancedStereoIDToStr.at(val);
-                break;
-            case kCDXProp_Bond_CIPStereochemistry:
-                return std::string{kCIPBondStereochemistryIndexToChar[val]};
-                break;
-            case kCDXProp_Atom_CIPStereochemistry:
-                return std::string{kCIPStereochemistryIndexToChar[val]};
-                break;
-            case kCDXProp_Bracket_Usage:
-                return std::string{kBracketUsageIntToName.at(val)};
-                break;
-            case kCDXProp_Justification:
-            case kCDXProp_LabelJustification:
-            case kCDXProp_CaptionJustification:
-                return std::string(kTextJustificationIntToStr.at(val));
-            case kCDXProp_Node_LabelDisplay:
-            case kCDXProp_LabelAlignment:
-                return std::string(kLabelAlignmentIntTostr.at(val));
-            case kCDXProp_Atom_Geometry:
-                return std::string(KGeometryTypeIntToName.at(val));
-            default:
-                break;
-            }
-            return std::to_string(val);
+            return KStyleProperties[_prop_index];
         }
 
-        bool hasContent()
+        std::string value() const override
         {
-            return _data || _is_object;
+            uint16_t style_prop = *reinterpret_cast<const uint16_t*>(_data);
+            if (_prop_index == kCDXMLStyleSizeIndex)
+                style_prop /= kCDXMLSizeMultiplier;
+            return parseCDXUINT16(style_prop);
         }
 
     protected:
-        const void* _data;
-        const void* _data_limit;
-        uint32_t _size;
-        bool _is_object;
-        int _style_index;
-        int _style_prop;
+        uint8_t _prop_index;
     };
 
-    class CDXElement
+    class BaseCDXElement
+    {
+    public:
+        virtual bool hasContent() = 0;
+        virtual std::unique_ptr<BaseCDXElement> copy() = 0;
+        virtual std::unique_ptr<BaseCDXProperty> firstProperty() = 0;
+        virtual std::unique_ptr<BaseCDXProperty> findProperty(const std::string& name) = 0;
+        virtual std::unique_ptr<BaseCDXElement> firstChildElement() = 0;
+        virtual std::unique_ptr<BaseCDXElement> nextSiblingElement() = 0;
+        virtual std::string name() = 0;
+        virtual std::string value() = 0;
+        virtual std::string getText() = 0;
+    };
+
+    class CDXMLElement : public BaseCDXElement
     {
     public:
         DECL_ERROR;
-        CDXElement() : CDXElement(nullptr)
+
+        CDXMLElement(const tinyxml2::XMLElement* xml) : _xml(xml){};
+
+        bool hasContent() override
         {
+            return _xml != nullptr;
         }
 
-        CDXElement(const void* data, uint32_t size = 0, int style_index = -1) : _data(data), _size(size), _style_index(style_index)
+        std::unique_ptr<BaseCDXElement> copy() override
         {
+            return std::make_unique<CDXMLElement>(_xml);
         }
 
-        CDXProperty firstProperty()
+        std::unique_ptr<BaseCDXProperty> firstProperty() override
         {
-            return _size ? firstBinaryProperty() : CDXProperty(xml().FirstAttribute());
+            return std::make_unique<CDXMLProperty>(xml()->FirstAttribute());
+        };
+
+        std::unique_ptr<BaseCDXProperty> findProperty(const std::string& name) override
+        {
+            return std::make_unique<CDXMLProperty>(xml()->FindAttribute(name.c_str()));
         }
 
-        CDXProperty firstBinaryProperty()
+        std::unique_ptr<BaseCDXElement> firstChildElement() override
         {
-            if (_data && _size)
-            {
-                auto ptr = reinterpret_cast<const uint8_t*>(_data);
-                auto ptr16 = reinterpret_cast<const uint16_t*>(_data);
-
-                if (ptr16[0] >= kCDXTag_Object) // if object tag
-                    return CDXProperty(_data, ptr + _size, _size, true, _style_index, _style_index < 0 ? -1 : 0);
-                else // property tag
-                {
-                    uint32_t sz = 0;
-                    const uint8_t* pdata = CDXProperty::get_size(ptr16 + 1, sz);
-                    return CDXProperty(_data, ptr + _size, sz + static_cast<uint32_t>(pdata - ptr), false, _style_index,
-                                       _style_index < 0 ? -1 : 0); // total chunk size = property size + tag + size
-                }
-            }
-            return CDXProperty();
+            return std::make_unique<CDXMLElement>(xml()->FirstChildElement());
         }
 
-        static const uint8_t* skipProperty(const uint8_t* ptr)
+        std::unique_ptr<BaseCDXElement> nextSiblingElement() override
         {
-            ptr += sizeof(uint16_t); // skip tag
-            uint32_t size = 0;
-            ptr = CDXProperty::get_size(ptr, size); // skip size
-            ptr += size;                            // skip content
-            return ptr;                             // points to the next property or object
+            return std::make_unique<CDXMLElement>(xml()->NextSiblingElement());
         }
 
-        static uint8_t* skipObject(uint8_t* ptr)
+        std::string name() override
         {
-            ptr += sizeof(uint16_t) + sizeof(uint32_t); // skip tag and id
-            auto ptr16 = (uint16_t*)ptr;
-            while (*ptr16)
-            {
-                if (*ptr16 < kCDXTag_Object)
-                {
-                    ptr16 = (uint16_t*)skipProperty((uint8_t*)ptr16);
-                }
-                else
-                {
-                    ptr16 = (uint16_t*)skipObject((uint8_t*)ptr16);
-                }
-            }
-            return (uint8_t*)++ptr16; // skip terminating zero
+            return std::string(xml()->Name());
         }
 
-        CDXProperty findProperty(const std::string& name)
+        std::string value() override
         {
-            return _size ? findBinaryProperty(name) : CDXProperty(xml().FindAttribute(name.c_str()));
+            return std::string(xml()->Value());
         }
 
-        CDXProperty findBinaryProperty(const std::string& name)
-        {
-            auto prop = firstBinaryProperty();
-            if (prop.name() == name)
-                return prop;
-            auto it = KCDXNameToProp.find(name);
-            if (it != KCDXNameToProp.end())
-                return findBinaryProperty(it->second.first);
-            throw Error("Property %s not found", name.c_str());
-            return CDXProperty();
-        }
-
-        CDXProperty findBinaryProperty(int16_t tag)
-        {
-            for (auto prop = firstBinaryProperty(); prop.hasContent(); prop = prop.getNextProp())
-            {
-                if (prop.tag() == tag)
-                    return prop;
-            }
-            return CDXProperty();
-        }
-
-        CDXElement firstChildElement()
-        {
-            return _size ? firstChildBinaryElement() : CDXElement(xml().FirstChildElement());
-        }
-
-        CDXElement firstChildBinaryElement()
-        {
-            if (_data && _size)
-            {
-                auto ptr = (uint8_t*)_data;
-                auto ptr16 = (uint16_t*)ptr;
-                auto tag = *ptr16;
-                if (tag >= kCDXTag_Object)
-                    ptr16 = (uint16_t*)(ptr + sizeof(uint16_t) + sizeof(uint32_t)); // fall down into the cdx object
-
-                while (*ptr16 && *ptr16 < kCDXTag_Object)
-                {
-                    if (*ptr16 == kCDXProp_Text)
-                    {
-                        ptr = (uint8_t*)ptr16;
-                        auto sz = ptr16[1];
-                        return CDXElement(ptr, sz + sizeof(uint16_t) * 2, 0); // simulated style object
-                    }
-                    ptr16 = (uint16_t*)skipProperty((uint8_t*)ptr16);
-                }
-
-                if (*ptr16)
-                {
-                    ptr = (uint8_t*)ptr16;
-                    auto sz = skipObject(ptr) - ptr;
-                    return CDXElement(ptr, static_cast<int>(sz));
-                }
-            }
-            return CDXElement();
-        }
-
-        CDXElement nextSiblingElement()
-        {
-            return _size ? nextSiblingBinaryElement() : CDXElement(xml().NextSiblingElement());
-        }
-
-        CDXElement nextSiblingBinaryElement()
-        {
-            auto ptr = (uint8_t*)_data;
-            auto ptr16 = (uint16_t*)ptr;
-            if (*ptr16 == kCDXProp_Text)
-            {
-                auto tsp = (CDXTextStyleProperty*)(ptr16);
-                if (tsp->style_count > _style_index + 1)
-                    return CDXElement(_data, _size, _style_index + 1);
-                else
-                    return CDXElement();
-            }
-
-            ptr += _size;
-            ptr16 = (uint16_t*)ptr;
-            while (*ptr16 && *ptr16 < kCDXTag_Object)
-            {
-                ptr16 = (uint16_t*)skipProperty((uint8_t*)ptr16);
-            }
-            // ptr16 points to zero or object
-            if (*ptr16)
-            {
-                ptr = (uint8_t*)ptr16;
-                auto sz = skipObject(ptr) - ptr;
-                return CDXElement(ptr, static_cast<int>(sz));
-            }
-            return CDXElement();
-        }
-
-        const tinyxml2::XMLElement& xml()
-        {
-            if (_size)
-                throw Error("Binary data");
-            if (!_data)
-                throw Error("Null element");
-            auto res = (tinyxml2::XMLElement*)_data;
-            return (tinyxml2::XMLElement&)*res;
-        }
-
-        bool hasContent()
-        {
-            return _data;
-        }
-
-        std::string name()
-        {
-            return _size ? getBinaryName() : std::string(xml().Name());
-        }
-
-        std::string value()
-        {
-            return _size ? getBinaryValue() : std::string(xml().Value());
-        }
-
-        std::string getBinaryName() const
-        {
-            auto ptag = (uint16_t*)_data;
-            if (*ptag < kCDXTag_Object && _style_index < 0)
-                return "CDXML";
-            switch (*ptag)
-            {
-            case kCDXProp_Text: // property tag as am object tag. special case for style object.
-                return "s";
-                break;
-            default: {
-                auto it = KCDXObjToName.find(*ptag);
-                if (it != KCDXObjToName.end())
-                    return it->second;
-            }
-            }
-            return std::string{};
-        }
-
-        std::string getBinaryValue() const
-        {
-            return getBinaryName();
-        }
-
-        std::string getText()
+        std::string getText() override
         {
             std::string result;
-            if (_size)
-                result = getBinaryText();
-            else
-            {
-                auto ptext = xml().GetText();
-                if (ptext)
-                    result = ptext;
-            }
+            auto ptext = xml()->GetText();
+            if (ptext)
+                result = ptext;
             return result;
         }
 
-        std::string getBinaryText()
+    protected:
+        const tinyxml2::XMLElement* xml()
         {
-            auto ptag = (uint16_t*)_data;
-            switch (*ptag)
+            if (_xml == nullptr)
+                throw Error("Null element");
+            return _xml;
+        }
+
+    private:
+        const tinyxml2::XMLElement* _xml;
+    };
+
+    class CDXElement : public BaseCDXElement
+    {
+    public:
+        DECL_ERROR;
+        CDXElement() : CDXElement(0, nullptr)
+        {
+        }
+
+        CDXElement(uint16_t tag, const uint8_t* data, uint32_t size = 0) : _tag(tag), _data(data), _data_size(size)
+        {
+        }
+
+        CDXElement(const void* data, size_t size = 0) : _data_size(static_cast<uint32_t>(size))
+        {
+            _data = get_uint16_t(static_cast<const uint8_t*>(data), _tag);
+        }
+
+        bool hasContent() override
+        {
+            return _data != nullptr;
+        }
+
+        std::unique_ptr<BaseCDXElement> copy() override
+        {
+            return std::make_unique<CDXElement>(_tag, _data, _data_size);
+        }
+
+        std::unique_ptr<BaseCDXProperty> firstProperty() override
+        {
+            return std::make_unique<CDXIdProperty>(this, _data);
+        }
+
+        static const uint8_t* get_property_size(const uint8_t* data, uint32_t& size)
+        {
+            size = *reinterpret_cast<const uint16_t*>(data);
+            data += sizeof(uint16_t);
+            if (0xFFFF == size)
+            {
+                size = *reinterpret_cast<const uint32_t*>(data);
+                data += sizeof(uint32_t);
+            }
+            return data;
+        }
+
+        static const uint8_t* get_uint16_t(const uint8_t* data, uint16_t& tag)
+        {
+            tag = *reinterpret_cast<const uint16_t*>(data);
+            return data + sizeof(uint16_t);
+        }
+
+        std::unique_ptr<CDXProperty> getProperty(const uint8_t* data)
+        {
+            uint16_t tag;
+            const uint8_t* ptr = get_uint16_t(data, tag);
+            while (tag >= kCDXTag_Object || tag == kCDXProp_Text) // skip child objects
+            {
+                if (tag == kCDXProp_Text)
+                {
+                    uint32_t size;
+                    ptr = get_property_size(ptr, size);
+                    ptr += size;
+                }
+                else
+                    ptr = skipObject(ptr);
+                ptr = get_uint16_t(ptr, tag);
+            }
+            if (tag == 0) // End of object - return empty property
+                return std::make_unique<CDXProperty>(this);
+            uint32_t size;
+            ptr = get_property_size(ptr, size);
+            return std::make_unique<CDXProperty>(this, tag, ptr, size);
+        }
+
+        std::unique_ptr<BaseCDXProperty> findProperty(const std::string& name) override
+        {
+            auto first_prop = firstProperty();
+            if (first_prop->name() == name)
+                return first_prop;
+            auto it = KCDXNameToProp.find(name);
+            if (it != KCDXNameToProp.end())
+                return findProperty(it->second.first);
+            throw Error("Property %s not found", name.c_str());
+        }
+
+        std::unique_ptr<CDXProperty> findProperty(uint16_t tag)
+        {
+            for (auto prop = getProperty(_data + id_size); prop->hasContent(); prop = prop->nextProp())
+                if (prop->tag() == tag)
+                    return prop;
+            return std::make_unique<CDXProperty>(this);
+        }
+
+        std::unique_ptr<BaseCDXElement> firstChildElement() override
+        {
+            return getChild(_data + id_size); // _data pointed to object id, object content just after id
+        }
+
+        std::unique_ptr<BaseCDXElement> nextSiblingElement() override
+        {
+            return next();
+        }
+
+        std::unique_ptr<CDXElement> next()
+        {
+            return getChild(skipObject(_data)); // return first object after this
+        }
+
+        std::unique_ptr<CDXElement> getChild(const uint8_t* ptr);
+
+        std::string name() override
+        {
+            if (_tag == 0)
+                return "CDXML";
+            auto it = KCDXObjToName.find(_tag);
+            if (it != KCDXObjToName.end())
+                return it->second;
+            return std::string{};
+        }
+
+        std::string value() override
+        {
+            return name();
+        }
+
+        std::string getText() override
+        {
+            switch (_tag)
             {
             case kCDXObj_Text: {
-                auto text_prop = findBinaryProperty(kCDXProp_Text);
-                if (text_prop.hasContent())
-                    return text_prop.getValue();
+                for (auto child = getChild(_data + id_size); child->hasContent(); child = child->next())
+                    if (child->tag() == kCDXProp_Text)
+                        return child->getText();
+                auto text_prop = findProperty(kCDXProp_Text);
+                if (text_prop->hasContent())
+                    return text_prop->value();
             }
-            case kCDXProp_Text: {
-                auto ptr = (char*)_data;
-                ptr += sizeof(uint16_t); // skip tag
-                uint32_t sz = 0;
-                ptr = (char*)CDXProperty::get_size(ptr, sz); // skip size
-                auto pstyles = (uint16_t*)ptr;
-                ptr += sizeof(uint16_t) + *pstyles * sizeof(CDXTextStyle);
-                auto ptext_style = (CDXTextStyle*)(pstyles + 1);
-                ptr += ptext_style[_style_index].offset;
-                if (static_cast<uint32_t>(ptr - (char*)_data) < _size)
-                {
-                    if ((_style_index + 1) < *pstyles)
-                        return std::string(ptr, ptext_style[_style_index + 1].offset - ptext_style[_style_index].offset);
-                    else
-                        return std::string(ptr, _size - (ptr - (char*)_data));
-                }
-            }
-            break;
             default:
-                return getBinaryName();
+                return name();
                 break;
             }
             return std::string{};
         }
 
+        uint16_t tag()
+        {
+            return _tag;
+        }
+
     protected:
-        const void* _data;
-        uint32_t _size;
+        static const uint8_t* skipProperty(const uint8_t* ptr)
+        {
+            uint32_t size = 0;
+            ptr = get_property_size(ptr, size); // skip size
+            ptr += size;                        // skip content
+            return ptr;                         // points to the next property or object
+        }
+
+        static const uint8_t* skipObject(const uint8_t* ptr)
+        {
+            ptr += id_size; // skip tag and id
+            uint16_t tag;
+            while (tag = *reinterpret_cast<const uint16_t*>(ptr))
+            {
+                if (tag < kCDXTag_Object)
+                    ptr = skipProperty(ptr + tag_size);
+                else
+                    ptr = skipObject(ptr + tag_size);
+            }
+            return ptr + tag_size; // skip terminating zero tag
+        }
+
+        uint16_t _tag;
+        const uint8_t* _data;
+        uint32_t _data_size;
+    };
+
+    class CDXTextElement : public CDXElement
+    {
+    public:
+        CDXTextElement(uint16_t tag, const uint8_t* data, uint32_t size, uint16_t style_index) : CDXElement(tag, data, size), _style_index(style_index)
+        {
+            _style_count = *reinterpret_cast<const uint16_t*>(_data);
+            _text_start = reinterpret_cast<const char*>(data);
+            _text_len = size;
+            if (_style_count > 0)
+            {
+                uint32_t styles_size = _style_count * sizeof(CDXTextStyle);
+                if (styles_size < size + sizeof(_style_count)) // Some CDXString contains no style and no style-count property
+                {
+                    _text_start += styles_size + sizeof(_style_count);
+                    _text_len -= styles_size + sizeof(_style_count);
+                }
+                else
+                    _style_count = 0;
+            }
+            else
+            {
+                _text_start += sizeof(_style_count);
+                _text_len -= sizeof(_style_count);
+            }
+        };
+
+        std::unique_ptr<BaseCDXElement> copy() override
+        {
+            return std::make_unique<CDXTextElement>(_tag, _data, _data_size, _style_index);
+        }
+
+        std::unique_ptr<BaseCDXProperty> firstProperty() override
+        {
+            if (style_count() > 0 && _style_index < style_count())
+            {
+                // offset = sizeof(style_count)+sizeof(previous styles)+sizeof(text_offset)
+                size_t offset = sizeof(uint16_t) + _style_index * sizeof(CDXTextStyle) + sizeof(uint16_t);
+                return std::make_unique<CDXStyleProperty>(this, _data + offset, 0);
+            }
+            return std::make_unique<CDXProperty>(this);
+        }
+
+        std::unique_ptr<BaseCDXElement> firstChildElement() override
+        {
+            return std::make_unique<CDXElement>(); // no child objects in
+        }
+
+        uint16_t style_count()
+        {
+            return _style_count;
+        }
+
+        std::unique_ptr<BaseCDXElement> nextSiblingElement() override
+        {
+            if (style_count() > _style_index + 1)
+                return std::make_unique<CDXTextElement>(_tag, _data, _data_size, _style_index + 1);
+            return getChild(_data + _data_size); // return first object after this
+        }
+
+        std::string name() override
+        {
+            return "s";
+        }
+
+        std::string getText() override
+        {
+            long text_len = _text_len;
+            const char* text_start = _text_start;
+
+            if (_style_count > 0)
+            {
+                const CDXTextStyle* ptext_styles = reinterpret_cast<const CDXTextStyle*>(get_uint16_t(_data, _style_count));
+                text_start += ptext_styles[_style_index].offset;
+
+                if ((_style_index + 1) < _style_count)
+                    text_len = ptext_styles[_style_index + 1].offset - ptext_styles[_style_index].offset;
+                else
+                    text_len -= ptext_styles[_style_index].offset;
+            }
+            return std::string(text_start, text_len);
+        }
+
+    protected:
         int _style_index;
+        uint16_t _style_count;
+        const char* _text_start;
+        uint32_t _text_len;
     };
 
     class CDXReader
     {
     public:
         CDXReader(Scanner& scanner);
-        virtual CDXElement rootElement()
+        virtual std::unique_ptr<BaseCDXElement> rootElement()
         {
-            return CDXElement(_buffer.data(), static_cast<int>(_buffer.size()));
+            return std::make_unique<CDXElement>(_buffer.data(), _buffer.size());
         }
 
         virtual void process()
@@ -869,9 +756,9 @@ namespace indigo
             if (_xml.Error())
                 throw Error("XML parsing error: %s", _xml.ErrorStr());
         }
-        CDXElement rootElement() override
+        std::unique_ptr<BaseCDXElement> rootElement() override
         {
-            return CDXElement{_xml.RootElement()};
+            return std::make_unique<CDXMLElement>(_xml.RootElement());
         }
 
         ~CDXMLReader()
@@ -900,10 +787,10 @@ namespace indigo
         MoleculeCdxmlLoader(Scanner& scanner, bool is_binary = false, bool is_fragment = false);
 
         void loadMolecule(BaseMolecule& mol, bool load_arrows = false);
-        void loadMoleculeFromFragment(BaseMolecule& mol, CDXElement elem);
+        void loadMoleculeFromFragment(BaseMolecule& mol, BaseCDXElement& elem);
 
-        static void applyDispatcher(CDXProperty prop, const std::unordered_map<std::string, std::function<void(const std::string&)>>& dispatcher);
-        void parseCDXMLAttributes(CDXProperty prop);
+        static void applyDispatcher(BaseCDXProperty& prop, const std::unordered_map<std::string, std::function<void(const std::string&)>>& dispatcher);
+        void parseCDXMLAttributes(BaseCDXProperty& prop);
         void parseBBox(const std::string& data, Rect2f& bbox);
         void parsePos(const std::string& data, Vec3f& bbox);
         void parseSeg(const std::string& data, Vec2f& v1, Vec2f& v2);
@@ -924,28 +811,28 @@ namespace indigo
         void _parseCollections(BaseMolecule& mol);
         void _checkFragmentConnection(int node_id, int bond_id);
 
-        void _parseNode(CdxmlNode& node, CDXElement elem);
+        void _parseNode(CdxmlNode& node, BaseCDXElement& elem);
         void _addNode(CdxmlNode& node);
 
-        void _parseBond(CdxmlBond& bond, CDXProperty prop);
+        void _parseBond(CdxmlBond& bond, BaseCDXProperty& prop);
         void _addBond(CdxmlBond& node);
 
-        void _parseBracket(CdxmlBracket& bracket, CDXProperty prop);
-        void _parseText(CDXElement elem, std::vector<std::pair<Vec3f, std::string>>& text_parsed);
-        void _parseLabel(CDXElement elem, std::string& label);
+        void _parseBracket(CdxmlBracket& bracket, BaseCDXProperty& prop);
+        void _parseText(BaseCDXElement& elem, std::vector<std::pair<Vec3f, std::string>>& text_parsed);
+        void _parseLabel(BaseCDXElement& elem, std::string& label);
 
-        void _parseGraphic(CDXElement elem);
-        void _parseArrow(CDXElement elem);
-        void _parseAltGroup(CDXElement elem);
+        void _parseGraphic(BaseCDXElement& elem);
+        void _parseArrow(BaseCDXElement& elem);
+        void _parseAltGroup(BaseCDXElement& elem);
 
         void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& new_bonds);
         void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket);
         void _handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
         void _processEnhancedStereo(BaseMolecule& mol);
 
-        void _parseCDXMLPage(CDXElement elem);
-        void _parseCDXMLElements(CDXElement elem, bool no_siblings = false, bool inside_fragment_node = false);
-        void _parseFragmentAttributes(CDXProperty prop);
+        void _parseCDXMLPage(BaseCDXElement& elem);
+        void _parseCDXMLElements(BaseCDXElement& elem, bool no_siblings = false, bool inside_fragment_node = false);
+        void _parseFragmentAttributes(BaseCDXProperty& prop);
 
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
         void _updateConnection(const CdxmlNode& node, int atom_idx);

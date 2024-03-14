@@ -66,7 +66,7 @@ void ReactionCdxmlLoader::_initReaction(BaseReaction& rxn)
         throw Error("unknown reaction type: %s", typeid(rxn).name());
 }
 
-void ReactionCdxmlLoader::_parseStep(CDXProperty prop)
+void ReactionCdxmlLoader::_parseStep(BaseCDXProperty& prop)
 {
     auto reactants_lambda = [this](const std::string& data) {
         std::vector<std::string> frag_ids = split(data, ' ');
@@ -125,26 +125,26 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
     std::unique_ptr<CDXReader> cdx_reader = _is_binary ? std::make_unique<CDXReader>(_scanner) : std::make_unique<CDXMLReader>(_scanner);
     cdx_reader->process();
     MoleculeCdxmlLoader loader(_scanner, _is_binary);
-    loader.parseCDXMLAttributes(cdx_reader->rootElement().firstProperty());
+    loader.parseCDXMLAttributes(*cdx_reader->rootElement()->firstProperty());
 
-    for (auto page_elem = cdx_reader->rootElement().firstChildElement(); page_elem.hasContent(); page_elem = page_elem.nextSiblingElement())
+    for (auto page_elem = cdx_reader->rootElement()->firstChildElement(); page_elem->hasContent(); page_elem = page_elem->nextSiblingElement())
     {
-        if (page_elem.value() == "page")
+        if (page_elem->value() == "page")
         {
-            for (auto cdxml_elem = page_elem.firstChildElement(); cdxml_elem.hasContent(); cdxml_elem = cdxml_elem.nextSiblingElement())
+            for (auto cdxml_elem = page_elem->firstChildElement(); cdxml_elem->hasContent(); cdxml_elem = cdxml_elem->nextSiblingElement())
             {
-                if (cdxml_elem.value() == "scheme")
+                if (cdxml_elem->value() == "scheme")
                 {
-                    for (auto scheme_element = cdxml_elem.firstChildElement(); scheme_element.hasContent();
-                         scheme_element = scheme_element.nextSiblingElement())
-                        if (scheme_element.value() == "step")
-                            _parseStep(scheme_element.firstProperty());
+                    for (auto scheme_element = cdxml_elem->firstChildElement(); scheme_element->hasContent();
+                         scheme_element = scheme_element->nextSiblingElement())
+                        if (scheme_element->value() == "step")
+                            _parseStep(*scheme_element->firstProperty());
                 }
                 else
                 {
-                    auto id = cdxml_elem.findProperty("id");
-                    if (id.hasContent())
-                        _cdxml_elements.emplace(std::stoi(id.value()), cdxml_elem);
+                    auto id = cdxml_elem->findProperty("id");
+                    if (id->hasContent())
+                        _cdxml_elements.emplace(std::stoi(id->value()), cdxml_elem->copy());
                 }
             }
         }
@@ -155,7 +155,7 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         auto elem_it = _cdxml_elements.find(id);
         if (elem_it != _cdxml_elements.end())
         {
-            loader.loadMoleculeFromFragment(*_pmol, elem_it->second);
+            loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
             if (_pmol->vertexCount())
                 rxn.addReactantCopy(*_pmol, 0, 0);
             else
@@ -169,7 +169,7 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         auto elem_it = _cdxml_elements.find(id);
         if (elem_it != _cdxml_elements.end())
         {
-            loader.loadMoleculeFromFragment(*_pmol, elem_it->second);
+            loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
             if (_pmol->vertexCount())
                 rxn.addProductCopy(*_pmol, 0, 0);
             else
@@ -183,7 +183,7 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         auto elem_it = _cdxml_elements.find(id);
         if (elem_it != _cdxml_elements.end())
         {
-            loader.loadMoleculeFromFragment(*_pmol, elem_it->second);
+            loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
             if (_pmol->vertexCount())
                 rxn.addIntermediateCopy(*_pmol, 0, 0);
             else
@@ -197,7 +197,7 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         auto elem_it = _cdxml_elements.find(id);
         if (elem_it != _cdxml_elements.end())
         {
-            loader.loadMoleculeFromFragment(*_pmol, elem_it->second);
+            loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
             if (_pmol->vertexCount())
                 rxn.addCatalystCopy(*_pmol, 0, 0);
             else
@@ -218,7 +218,7 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         auto elem_it = _cdxml_elements.find(id);
         if (elem_it != _cdxml_elements.end())
         {
-            loader.loadMoleculeFromFragment(*_pmol, elem_it->second);
+            loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
             rxn.meta().append(_pmol->meta());
             if (_pmol->vertexCount())
                 rxn.addUndefinedCopy(*_pmol, 0, 0);
@@ -228,7 +228,7 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
 
     for (const auto& kvp : _cdxml_elements)
     {
-        loader.loadMoleculeFromFragment(*_pmol, kvp.second);
+        loader.loadMoleculeFromFragment(*_pmol, *kvp.second);
         if (_pmol->vertexCount())
             rxn.addUndefinedCopy(*_pmol, 0, 0);
         rxn.meta().append(_pmol->meta());
