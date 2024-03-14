@@ -163,8 +163,7 @@ static void saveProperty(uint16_t tag, uint32_t len, Array<byte>& buf, indigo::J
             if (!(tag == kCDXProp_Name && is_object_tag))
             {
                 auto style_runs = read<uint16_t>(ptr, len);
-                constexpr size_t style_run_size = 5 * sizeof(uint16_t);
-                if (style_runs * style_run_size > len)
+                if (style_runs * sizeof(CDXTextStyle) > len)
                 {
                     ptr -= sizeof(uint16_t);
                     len += sizeof(uint16_t);
@@ -287,7 +286,7 @@ void parse_cdx(const char* filename, bool pretty_json)
         if (first) // marvin and ketcher write 0x0000 instead of 0x8000 for first document
         {
             if (tag == 0)
-                tag = 0x8000;
+                tag = kCDXObj_Document;
             first = false;
         }
         if (tag == 0)

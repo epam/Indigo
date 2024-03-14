@@ -34,6 +34,9 @@ namespace indigo
     const float kCDXMLFonsSizeMultiplier = 1.5;
     const std::uint16_t KCDXMLFontStyleSubscript = 0x20;
     const std::uint16_t KCDXMLFontStyleSuperscript = 0x40;
+    constexpr uint32_t kCDXUnitsPerPoint = 65536;
+    constexpr uint32_t kCDXAngleMultiplier = 65536;
+    constexpr uint32_t kCDXBondSpacingMultiplier = 10;
 
 #pragma pack(push, 1)
 

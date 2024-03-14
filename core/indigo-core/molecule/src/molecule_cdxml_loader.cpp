@@ -66,6 +66,11 @@ std::unique_ptr<CDXProperty> CDXProperty::nextProp()
     return _parent->getProperty(_data + _size);
 }
 
+static inline double unitsToPoints(double units)
+{
+    return round(units * 100 / kCDXUnitsPerPoint) / 100;
+}
+
 std::string CDXProperty::formatValue(ECDXType cdx_type) const
 {
     std::string result;
@@ -81,7 +86,7 @@ std::string CDXProperty::formatValue(ECDXType cdx_type) const
             if (i)
                 ss << " ";
             double val = ptr32[i ^ 1];
-            val = round(val * 100 / (1 << 16)) / 100;
+            val = unitsToPoints(val);
             ss << val;
         }
         result = ss.str();
@@ -97,7 +102,7 @@ std::string CDXProperty::formatValue(ECDXType cdx_type) const
             if (i)
                 ss << " ";
             double val = ptr32[i];
-            val = round(val * 100 / (1 << 16)) / 100;
+            val = unitsToPoints(val);
             ss << val;
         }
         result = ss.str();
@@ -108,7 +113,7 @@ std::string CDXProperty::formatValue(ECDXType cdx_type) const
         auto ptr32 = (int32_t*)_data;
         std::stringstream ss;
         double val = *ptr32;
-        val = round(val * 100 / (1 << 16)) / 100;
+        val = unitsToPoints(val);
         ss << std::setprecision(2) << std::fixed << val;
         result = ss.str();
     }
@@ -231,7 +236,7 @@ std::string CDXProperty::parseCDXINT16(int16_t val) const
         if (auto it = kBondOrderIntToStr.find(val); it != kBondOrderIntToStr.end())
             return kBondOrderIntToStr.at(val);
         std::string res;
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < std::numeric_limits<uint16_t>::digits; i++)
         {
             uint16_t order_bit = 1 << i;
             if (order_bit & val)
@@ -252,7 +257,7 @@ std::string CDXProperty::parseCDXINT16(int16_t val) const
     }
     break;
     case kCDXProp_BondSpacing: {
-        val /= 10;
+        val /= kCDXBondSpacingMultiplier;
     }
     break;
     case kCDXProp_Graphic_Type: {
@@ -279,7 +284,7 @@ std::string CDXProperty::parseCDXINT32(int32_t val) const
     {
     case kCDXProp_ChainAngle: {
         std::stringstream ss;
-        ss << std::setprecision(2) << std::fixed << double(val) / (1 << 16);
+        ss << std::setprecision(2) << std::fixed << double(val) / kCDXAngleMultiplier;
         return ss.str();
     }
     default:
