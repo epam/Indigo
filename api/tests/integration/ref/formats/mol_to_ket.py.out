@@ -3,21 +3,302 @@
 1046-imp_hydrogen.ket:SUCCEED
 1465-lr_sugar.ket:SUCCEED
 SgroupDifferent.ket:SUCCEED
-acgt_1412.ket:SUCCEED
+acgt_1412.ket:FAILED
+--- 
+
++++ 
+
+@@ -399,6 +399,7 @@
+
+         "classHELM": "RNA",
+         "alias": "P",
+         "name": "P",
++        "fullName": "Phosphate",
+         "naturalAnalogShort": "P",
+         "attachmentPoints": [
+             {
+@@ -498,6 +499,7 @@
+
+         "classHELM": "RNA",
+         "alias": "R",
+         "name": "Rib",
++        "fullName": "Ribose",
+         "naturalAnalogShort": "R",
+         "naturalAnalog": "Rib",
+         "attachmentPoints": [
+@@ -726,6 +728,7 @@
+
+         "classHELM": "RNA",
+         "alias": "A",
+         "name": "Ade",
++        "fullName": "Adenine",
+         "naturalAnalogShort": "A",
+         "naturalAnalog": "Ade",
+         "attachmentPoints": [
+@@ -922,6 +925,7 @@
+
+         "classHELM": "RNA",
+         "alias": "C",
+         "name": "Cyt",
++        "fullName": "Cytosine",
+         "naturalAnalogShort": "C",
+         "naturalAnalog": "Cyt",
+         "attachmentPoints": [
+@@ -1081,6 +1085,7 @@
+
+         "classHELM": "RNA",
+         "alias": "G",
+         "name": "Gua",
++        "fullName": "Guanine",
+         "naturalAnalogShort": "G",
+         "naturalAnalog": "Gua",
+         "attachmentPoints": [
+@@ -1292,6 +1297,7 @@
+
+         "classHELM": "RNA",
+         "alias": "T",
+         "name": "Thy",
++        "fullName": "Thymine",
+         "naturalAnalogShort": "T",
+         "naturalAnalog": "Thy",
+         "attachmentPoints": [
+@@ -1466,6 +1472,7 @@
+
+         "classHELM": "RNA",
+         "alias": "U",
+         "name": "Ura",
++        "fullName": "Uracil",
+         "naturalAnalogShort": "U",
+         "naturalAnalog": "Ura",
+         "attachmentPoints": [
 anacyclamide.ket:SUCCEED
 apamine.ket:SUCCEED
 atropisomer.ket:SUCCEED
 chem.ket:SUCCEED
-conjugate.ket:SUCCEED
+conjugate.ket:FAILED
+--- 
+
++++ 
+
+@@ -4805,6 +4805,7 @@
+
+         "classHELM": "RNA",
+         "alias": "P",
+         "name": "P",
++        "fullName": "Phosphate",
+         "naturalAnalogShort": "P",
+         "attachmentPoints": [
+             {
+@@ -4904,6 +4905,7 @@
+
+         "classHELM": "RNA",
+         "alias": "dR",
+         "name": "dRib",
++        "fullName": "Deoxy-Ribose",
+         "naturalAnalogShort": "R",
+         "naturalAnalog": "Rib",
+         "attachmentPoints": [
+@@ -5115,6 +5117,7 @@
+
+         "classHELM": "RNA",
+         "alias": "T",
+         "name": "Thy",
++        "fullName": "Thymine",
+         "naturalAnalogShort": "T",
+         "naturalAnalog": "Thy",
+         "attachmentPoints": [
+@@ -5289,6 +5292,7 @@
+
+         "classHELM": "RNA",
+         "alias": "G",
+         "name": "Gua",
++        "fullName": "Guanine",
+         "naturalAnalogShort": "G",
+         "naturalAnalog": "Gua",
+         "attachmentPoints": [
+@@ -5500,6 +5504,7 @@
+
+         "classHELM": "RNA",
+         "alias": "C",
+         "name": "Cyt",
++        "fullName": "Cytosine",
+         "naturalAnalogShort": "C",
+         "naturalAnalog": "Cyt",
+         "attachmentPoints": [
+@@ -5659,6 +5664,7 @@
+
+         "classHELM": "RNA",
+         "alias": "A",
+         "name": "Ade",
++        "fullName": "Adenine",
+         "naturalAnalogShort": "A",
+         "naturalAnalog": "Ade",
+         "attachmentPoints": [
 cysteine.ket:SUCCEED
 dcysteine.ket:SUCCEED
-dna_mod.ket:SUCCEED
+dna_mod.ket:FAILED
+--- 
+
++++ 
+
+@@ -3555,6 +3555,7 @@
+
+         "classHELM": "RNA",
+         "alias": "P",
+         "name": "P",
++        "fullName": "Phosphate",
+         "naturalAnalogShort": "P",
+         "attachmentPoints": [
+             {
+@@ -3654,6 +3655,7 @@
+
+         "classHELM": "RNA",
+         "alias": "dR",
+         "name": "dRib",
++        "fullName": "Deoxy-Ribose",
+         "naturalAnalogShort": "R",
+         "naturalAnalog": "Rib",
+         "attachmentPoints": [
+@@ -3865,6 +3867,7 @@
+
+         "classHELM": "RNA",
+         "alias": "T",
+         "name": "Thy",
++        "fullName": "Thymine",
+         "naturalAnalogShort": "T",
+         "naturalAnalog": "Thy",
+         "attachmentPoints": [
+@@ -4039,6 +4042,7 @@
+
+         "classHELM": "RNA",
+         "alias": "G",
+         "name": "Gua",
++        "fullName": "Guanine",
+         "naturalAnalogShort": "G",
+         "naturalAnalog": "Gua",
+         "attachmentPoints": [
+@@ -4250,6 +4254,7 @@
+
+         "classHELM": "RNA",
+         "alias": "C",
+         "name": "Cyt",
++        "fullName": "Cytosine",
+         "naturalAnalogShort": "C",
+         "naturalAnalog": "Cyt",
+         "attachmentPoints": [
+@@ -4409,6 +4414,7 @@
+
+         "classHELM": "RNA",
+         "alias": "A",
+         "name": "Ade",
++        "fullName": "Adenine",
+         "naturalAnalogShort": "A",
+         "naturalAnalog": "Ade",
+         "attachmentPoints": [
 dthymine.ket:SUCCEED
 fmoc.ket:SUCCEED
 non_atrop.ket:SUCCEED
 pepchem.ket:SUCCEED
 peptides.ket:SUCCEED
-removed_phosphate.ket:SUCCEED
-rna_mod.ket:SUCCEED
+removed_phosphate.ket:FAILED
+--- 
+
++++ 
+
+@@ -619,6 +619,7 @@
+
+         "classHELM": "RNA",
+         "alias": "P",
+         "name": "P",
++        "fullName": "Phosphate",
+         "naturalAnalogShort": "P",
+         "attachmentPoints": [
+             {
+@@ -718,6 +719,7 @@
+
+         "classHELM": "RNA",
+         "alias": "R",
+         "name": "Rib",
++        "fullName": "Ribose",
+         "naturalAnalogShort": "R",
+         "naturalAnalog": "Rib",
+         "attachmentPoints": [
+@@ -946,6 +948,7 @@
+
+         "classHELM": "RNA",
+         "alias": "C",
+         "name": "Cyt",
++        "fullName": "Cytosine",
+         "naturalAnalogShort": "C",
+         "naturalAnalog": "Cyt",
+         "attachmentPoints": [
+@@ -1105,6 +1108,7 @@
+
+         "classHELM": "RNA",
+         "alias": "G",
+         "name": "Gua",
++        "fullName": "Guanine",
+         "naturalAnalogShort": "G",
+         "naturalAnalog": "Gua",
+         "attachmentPoints": [
+@@ -1316,6 +1320,7 @@
+
+         "classHELM": "RNA",
+         "alias": "T",
+         "name": "Thy",
++        "fullName": "Thymine",
+         "naturalAnalogShort": "T",
+         "naturalAnalog": "Thy",
+         "attachmentPoints": [
+rna_mod.ket:FAILED
+--- 
+
++++ 
+
+@@ -2606,6 +2606,7 @@
+
+         "classHELM": "RNA",
+         "alias": "P",
+         "name": "P",
++        "fullName": "Phosphate",
+         "naturalAnalogShort": "P",
+         "attachmentPoints": [
+             {
+@@ -2705,6 +2706,7 @@
+
+         "classHELM": "RNA",
+         "alias": "R",
+         "name": "Rib",
++        "fullName": "Ribose",
+         "naturalAnalogShort": "R",
+         "naturalAnalog": "Rib",
+         "attachmentPoints": [
+@@ -2933,6 +2935,7 @@
+
+         "classHELM": "RNA",
+         "alias": "C",
+         "name": "Cyt",
++        "fullName": "Cytosine",
+         "naturalAnalogShort": "C",
+         "naturalAnalog": "Cyt",
+         "attachmentPoints": [
+@@ -3092,6 +3095,7 @@
+
+         "classHELM": "RNA",
+         "alias": "G",
+         "name": "Gua",
++        "fullName": "Guanine",
+         "naturalAnalogShort": "G",
+         "naturalAnalog": "Gua",
+         "attachmentPoints": [
+@@ -3303,6 +3307,7 @@
+
+         "classHELM": "RNA",
+         "alias": "A",
+         "name": "Ade",
++        "fullName": "Adenine",
+         "naturalAnalogShort": "A",
+         "naturalAnalog": "Ade",
+         "attachmentPoints": [
 suplabel.ket:SUCCEED
 thymine.ket:SUCCEED

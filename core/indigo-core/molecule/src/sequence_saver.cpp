@@ -47,7 +47,6 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         Filter filt(mol.getDecomposition().ptr(), Filter::EQ, idx);
         std::unique_ptr<BaseMolecule> component(mol.neu());
         component->makeSubmolecule(mol, filt, NULL, NULL);
-
         if (sf == SeqFormat::FASTA)
         {
             std::string fasta_header = ">";
@@ -110,10 +109,10 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
                             {
                                 // if symbol is not standard, check its natural analog
                                 const char* natrep = nullptr;
-                                int temp_idx = mol.getTemplateAtomTemplateIndex(atom_idx);
+                                int temp_idx = component->getTemplateAtomTemplateIndex(atom_idx);
                                 if (temp_idx > -1)
                                 {
-                                    auto& tg = mol.tgroups.getTGroup(temp_idx);
+                                    auto& tg = component->tgroups.getTGroup(temp_idx);
                                     natrep = tg.tgroup_natreplace.ptr();
                                 }
                                 else
