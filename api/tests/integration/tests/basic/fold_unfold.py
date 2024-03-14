@@ -18,6 +18,7 @@ def testFoldUnfoldSDF(sdfile):
     indigo.setOption("treat-x-as-pseudoatom", "true")
     indigo.setOption("ignore-stereochemistry-errors", "true")
     for mol in indigo.iterateSDFile(sdfile):
+        mol.clearXYZ()
         print(mol.smiles())
         smi1 = mol.canonicalSmiles()
         mol.unfoldHydrogens()

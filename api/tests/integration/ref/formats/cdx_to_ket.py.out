@@ -14,90 +14,6 @@ US06174985-20010116-C00003.CDX
             },
             {
                 "$ref": "mol3"
-            },
-            {
-                "$ref": "mol4"
-            },
-            {
-                "$ref": "mol5"
-            },
-            {
-                "$ref": "mol6"
-            },
-            {
-                "$ref": "mol7"
-            },
-            {
-                "$ref": "mol8"
-            },
-            {
-                "$ref": "mol9"
-            },
-            {
-                "type": "text",
-                "data": {
-                    "content": "{\"blocks\":[{\"text\":\"CH3,\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":4,\"style\":\"CUSTOM_FONT_SIZE_11px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
-                    "position": {
-                        "x": 2.820833206176758,
-                        "y": -1.6083333492279053,
-                        "z": 0.0
-                    }
-                }
-            },
-            {
-                "type": "text",
-                "data": {
-                    "content": "{\"blocks\":[{\"text\":\",\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":1,\"style\":\"CUSTOM_FONT_SIZE_11px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
-                    "position": {
-                        "x": 6.483333587646484,
-                        "y": -1.6583333015441895,
-                        "z": 0.0
-                    }
-                }
-            },
-            {
-                "type": "text",
-                "data": {
-                    "content": "{\"blocks\":[{\"text\":\"NO2\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":3,\"style\":\"CUSTOM_FONT_SIZE_11px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
-                    "position": {
-                        "x": 3.4250001907348635,
-                        "y": -2.9583332538604738,
-                        "z": 0.0
-                    }
-                }
-            },
-            {
-                "type": "text",
-                "data": {
-                    "content": "{\"blocks\":[{\"text\":\"OCH3\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":4,\"style\":\"CUSTOM_FONT_SIZE_11px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
-                    "position": {
-                        "x": 4.5625,
-                        "y": -4.800000190734863,
-                        "z": 0.0
-                    }
-                }
-            },
-            {
-                "type": "text",
-                "data": {
-                    "content": "{\"blocks\":[{\"text\":\"(CH2)16\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":3,\"style\":\"CUSTOM_FONT_SIZE_11px\"},{\"offset\":3,\"length\":1,\"style\":\"SUBSCRIPT\"},{\"offset\":3,\"length\":1,\"style\":\"CUSTOM_FONT_SIZE_11px\"},{\"offset\":4,\"length\":1,\"style\":\"CUSTOM_FONT_SIZE_11px\"},{\"offset\":5,\"length\":2,\"style\":\"SUBSCRIPT\"},{\"offset\":5,\"length\":2,\"style\":\"CUSTOM_FONT_SIZE_11px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
-                    "position": {
-                        "x": 3.6500000953674318,
-                        "y": -5.6041669845581059,
-                        "z": 0.0
-                    }
-                }
-            },
-            {
-                "type": "text",
-                "data": {
-                    "content": "{\"blocks\":[{\"text\":\"C2H5\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":4,\"style\":\"CUSTOM_FONT_SIZE_11px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
-                    "position": {
-                        "x": 3.7083332538604738,
-                        "y": -6.574999809265137,
-                        "z": 0.0
-                    }
-                }
             }
         ]
     },
@@ -217,7 +133,7 @@ US06174985-20010116-C00003.CDX
                 ]
             },
             {
-                "label": "CH3,",
+                "label": "C",
                 "location": [
                     2.6666667461395265,
                     -1.5750000476837159,
@@ -331,23 +247,23 @@ US06174985-20010116-C00003.CDX
                     14
                 ]
             }
+        ],
+        "sgroups": [
+            {
+                "type": "SUP",
+                "atoms": [
+                    14
+                ],
+                "name": "CH3,",
+                "attachmentPoints": [
+                    {
+                        "attachmentAtom": 14
+                    }
+                ]
+            }
         ]
     },
     "mol1": {
-        "type": "molecule",
-        "atoms": [
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            }
-        ],
-        "bonds": []
-    },
-    "mol2": {
         "type": "molecule",
         "atoms": [
             {
@@ -616,21 +532,7 @@ US06174985-20010116-C00003.CDX
             }
         ]
     },
-    "mol3": {
-        "type": "molecule",
-        "atoms": [
-            {
-                "label": ",",
-                "location": [
-                    6.483333110809326,
-                    -1.559999942779541,
-                    0.0
-                ]
-            }
-        ],
-        "bonds": []
-    },
-    "mol4": {
+    "mol2": {
         "type": "molecule",
         "atoms": [
             {
@@ -778,12 +680,30 @@ US06174985-20010116-C00003.CDX
                 ]
             },
             {
-                "label": "NO2",
+                "label": "N",
+                "location": [
+                    3.299999952316284,
+                    -2.919999837875366,
+                    0.0
+                ],
+                "charge": 1
+            },
+            {
+                "label": "O",
                 "location": [
                     3.299999952316284,
                     -2.919999837875366,
                     0.0
                 ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    3.299999952316284,
+                    -2.919999837875366,
+                    0.0
+                ],
+                "charge": -1
             },
             {
                 "label": "OCH3 or",
@@ -794,7 +714,15 @@ US06174985-20010116-C00003.CDX
                 ]
             },
             {
-                "label": "OCH3",
+                "label": "O",
+                "location": [
+                    4.360000133514404,
+                    -4.763333320617676,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
                 "location": [
                     4.360000133514404,
                     -4.763333320617676,
@@ -937,6 +865,20 @@ US06174985-20010116-C00003.CDX
                 ]
             },
             {
+                "type": 2,
+                "atoms": [
+                    18,
+                    19
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    18,
+                    20
+                ]
+            },
+            {
                 "type": 1,
                 "atoms": [
                     17,
@@ -947,96 +889,55 @@ US06174985-20010116-C00003.CDX
                 "type": 1,
                 "atoms": [
                     15,
-                    19
+                    21
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    22,
+                    23
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
                     14,
+                    22
+                ]
+            }
+        ],
+        "sgroups": [
+            {
+                "type": "SUP",
+                "atoms": [
+                    18,
+                    19,
                     20
-                ]
-            }
-        ]
-    },
-    "mol5": {
-        "type": "molecule",
-        "atoms": [
-            {
-                "label": "N",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
                 ],
-                "charge": 1
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
+                "name": "NO2",
+                "attachmentPoints": [
+                    {
+                        "attachmentAtom": 18
+                    }
                 ]
             },
             {
-                "label": "O",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
+                "type": "SUP",
+                "atoms": [
+                    22,
+                    23
                 ],
-                "charge": -1
-            }
-        ],
-        "bonds": [
-            {
-                "type": 2,
-                "atoms": [
-                    0,
-                    1
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    2
+                "name": "OCH3",
+                "attachmentPoints": [
+                    {
+                        "attachmentAtom": 22
+                    }
                 ]
             }
         ]
     },
-    "mol6": {
-        "type": "molecule",
-        "atoms": [
-            {
-                "label": "O",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    1
-                ]
-            }
-        ]
-    },
-    "mol7": {
+    "mol3": {
         "type": "molecule",
         "atoms": [
             {
@@ -1088,7 +989,127 @@ US06174985-20010116-C00003.CDX
                 ]
             },
             {
-                "label": "(CH2)16",
+                "label": "C",
+                "location": [
+                    3.318333387374878,
+                    -5.571666240692139,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.318333387374878,
+                    -5.571666240692139,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.318333387374878,
+                    -5.571666240692139,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.318333387374878,
+                    -5.571666240692139,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.318333387374878,
+                    -5.571666240692139,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.318333387374878,
+                    -5.571666240692139,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.318333387374878,
+                    -5.571666240692139,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.318333387374878,
+                    -5.571666240692139,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.318333387374878,
+                    -5.571666240692139,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.318333387374878,
+                    -5.571666240692139,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.318333387374878,
+                    -5.571666240692139,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.318333387374878,
+                    -5.571666240692139,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.318333387374878,
+                    -5.571666240692139,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.318333387374878,
+                    -5.571666240692139,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.318333387374878,
+                    -5.571666240692139,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
                 "location": [
                     3.318333387374878,
                     -5.571666240692139,
@@ -1120,7 +1141,15 @@ US06174985-20010116-C00003.CDX
                 ]
             },
             {
-                "label": "C2H5",
+                "label": "C",
+                "location": [
+                    3.5416667461395265,
+                    -6.5366668701171879,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
                 "location": [
                     3.5416667461395265,
                     -6.5366668701171879,
@@ -1169,218 +1198,6 @@ US06174985-20010116-C00003.CDX
                 "atoms": [
                     2,
                     5
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    6
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    6,
-                    7
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    5,
-                    8
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    5,
-                    9
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    9,
-                    10
-                ]
-            }
-        ]
-    },
-    "mol8": {
-        "type": "molecule",
-        "atoms": [
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    1
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    3
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    4
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    4,
-                    5
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    5,
-                    6
                 ]
             },
             {
@@ -1445,35 +1262,134 @@ US06174985-20010116-C00003.CDX
                     14,
                     15
                 ]
-            }
-        ]
-    },
-    "mol9": {
-        "type": "molecule",
-        "atoms": [
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
             },
-            {
-                "label": "C",
-                "location": [
-                    0.0,
-                    0.0,
-                    0.0
-                ]
-            }
-        ],
-        "bonds": [
             {
                 "type": 1,
                 "atoms": [
-                    0,
-                    1
+                    15,
+                    16
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    16,
+                    17
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    17,
+                    18
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    18,
+                    19
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    19,
+                    20
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    20,
+                    21
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    6
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    21,
+                    22
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    5,
+                    23
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    5,
+                    24
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    25,
+                    26
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    24,
+                    26
+                ]
+            }
+        ],
+        "sgroups": [
+            {
+                "type": "SUP",
+                "atoms": [
+                    6,
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12,
+                    13,
+                    14,
+                    15,
+                    16,
+                    17,
+                    18,
+                    19,
+                    20,
+                    21
+                ],
+                "name": "(CH2)16",
+                "attachmentPoints": [
+                    {
+                        "attachmentAtom": 6
+                    },
+                    {
+                        "attachmentAtom": 21
+                    }
+                ]
+            },
+            {
+                "type": "SUP",
+                "atoms": [
+                    25,
+                    26
+                ],
+                "name": "C2H5",
+                "attachmentPoints": [
+                    {
+                        "attachmentAtom": 26
+                    }
                 ]
             }
         ]
@@ -2300,7 +2216,7 @@ invalid-ascii.cdx
                 ]
             },
             {
-                "label": "OH",
+                "label": "O",
                 "location": [
                     1.2683333158493043,
                     -2.375,
