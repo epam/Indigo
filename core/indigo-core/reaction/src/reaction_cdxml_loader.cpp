@@ -142,7 +142,7 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                 }
                 else
                 {
-                    auto& id = cdxml_elem->findProperty("id");
+                    auto id = cdxml_elem->findProperty("id");
                     if (id->hasContent())
                         _cdxml_elements.emplace(std::stoi(id->value()), cdxml_elem->copy());
                 }
