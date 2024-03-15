@@ -933,6 +933,10 @@ int main(int argc, char* argv[])
         {
             obj = indigoLoadFasta(reader, p.seq_type);
         }
+        else if (strcasecmp(p.infile_ext, "seq") == 0)
+        {
+            obj = indigoLoadSequence(reader, p.seq_type);
+        }
         else
             obj = indigoLoadMolecule(reader);
 
