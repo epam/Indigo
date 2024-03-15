@@ -153,6 +153,11 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
         auto ch = _scanner.readChar();
         if (ch == '\n' || ch == '\r')
             continue;
+        if (ch == ' ')
+        {
+            _seq_id = 0;
+            continue;
+        }
         if (!addMonomer(mol, ch, seq_type))
         {
             if (invalid_symbols.size())
