@@ -21,6 +21,7 @@
 
 #include "base_cpp/exception.h"
 #include "base_cpp/tlscont.h"
+#include "molecule/monomers_lib.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -53,6 +54,8 @@ namespace indigo
     private:
         SequenceSaver(const SequenceSaver&); // no implicit copy
         Output& _output;
+        const MonomerTemplates& _mon_lib;
+        std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> _templates;
     };
 
 } // namespace indigo

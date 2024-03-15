@@ -46,6 +46,8 @@ namespace indigo
     const auto kPrefix_d("d");
     const auto kPrefix_r("r");
 
+    std::string extractMonomerName(const std::string& str);
+
     bool isNucleicClass(const std::string& monomer_class);
 
     bool isNucleotideClass(const std::string& monomer_class);

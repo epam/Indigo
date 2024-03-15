@@ -114,7 +114,7 @@ namespace indigo
     {
         auto ct_it = getStrToMonomerType().find(mon_type);
         if (ct_it != _instance().getStrToMonomerType().end())
-            return getMonomerTemplate(ct_it->first, alias, tgroup);
+            return getMonomerTemplate(ct_it->second, alias, tgroup);
         return false;
     }
 

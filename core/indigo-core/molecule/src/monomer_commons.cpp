@@ -27,6 +27,18 @@
 
 namespace indigo
 {
+    std::string extractMonomerName(const std::string& str)
+    {
+        std::string res = str;
+        if (str.size())
+        {
+            auto nat_replace = split(std::string(str.c_str()), '/');
+            if (nat_replace.size() > 1)
+                res = normalizeMonomerName(nat_replace.front(), nat_replace[1]);
+        }
+        return res;
+    }
+
     std::string classToPrefix(const std::string& monomer_class)
     {
         if (monomer_class == kMonomerClassdAA || monomer_class == kMonomerClassDNA)

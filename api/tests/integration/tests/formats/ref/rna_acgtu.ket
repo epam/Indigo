@@ -374,6 +374,7 @@
         "classHELM": "RNA",
         "alias": "A",
         "name": "Ade",
+        "fullName": "Adenine",
         "naturalAnalogShort": "A",
         "naturalAnalog": "Ade",
         "attachmentPoints": [
@@ -570,6 +571,7 @@
         "classHELM": "RNA",
         "alias": "R",
         "name": "Rib",
+        "fullName": "Ribose",
         "naturalAnalogShort": "R",
         "naturalAnalog": "Rib",
         "attachmentPoints": [
@@ -798,6 +800,7 @@
         "classHELM": "RNA",
         "alias": "C",
         "name": "Cyt",
+        "fullName": "Cytosine",
         "naturalAnalogShort": "C",
         "naturalAnalog": "Cyt",
         "attachmentPoints": [
@@ -957,6 +960,7 @@
         "classHELM": "RNA",
         "alias": "P",
         "name": "P",
+        "fullName": "Phosphate",
         "naturalAnalogShort": "P",
         "attachmentPoints": [
             {
@@ -1056,6 +1060,7 @@
         "classHELM": "RNA",
         "alias": "G",
         "name": "Gua",
+        "fullName": "Guanine",
         "naturalAnalogShort": "G",
         "naturalAnalog": "Gua",
         "attachmentPoints": [
@@ -1267,6 +1272,7 @@
         "classHELM": "RNA",
         "alias": "T",
         "name": "Thy",
+        "fullName": "Thymine",
         "naturalAnalogShort": "T",
         "naturalAnalog": "Thy",
         "attachmentPoints": [
@@ -1441,6 +1447,7 @@
         "classHELM": "RNA",
         "alias": "U",
         "name": "Ura",
+        "fullName": "Uracil",
         "naturalAnalogShort": "U",
         "naturalAnalog": "Ura",
         "attachmentPoints": [
