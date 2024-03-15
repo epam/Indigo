@@ -1096,18 +1096,6 @@ std::string MoleculeJsonSaver::monomerKETClass(const std::string& class_name)
     return mclass;
 }
 
-std::string MoleculeJsonSaver::naturalAnalog(const std::string& natreplace)
-{
-    std::string res = natreplace;
-    if (natreplace.size())
-    {
-        auto nat_replace = split(std::string(natreplace.c_str()), '/');
-        if (nat_replace.size() > 1)
-            res = normalizeMonomerName(nat_replace.front(), nat_replace[1]);
-    }
-    return res;
-}
-
 void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
 {
     std::string template_id("monomerTemplate-");
@@ -1138,6 +1126,12 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
         writer.String(tg.tgroup_name.ptr());
     }
 
+    if (tg.tgroup_full_name.size())
+    {
+        writer.Key("fullName");
+        writer.String(tg.tgroup_full_name.ptr());
+    }
+
     std::string natreplace;
     if (tg.tgroup_natreplace.size() == 0)
     {
@@ -1150,7 +1144,7 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
 
     if (natreplace.size())
     {
-        auto analog = naturalAnalog(natreplace);
+        auto analog = extractMonomerName(natreplace);
         auto nat_alias = monomerAliasByName(tg.tgroup_class.ptr(), analog);
         writer.Key("naturalAnalogShort");
         writer.String(nat_alias.c_str());

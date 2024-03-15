@@ -3279,14 +3279,14 @@ M  END
         )
 
         # write references
-        with open(
-            os.path.join(ref_path, "peptide_fasta_ref") + ".fasta", "w"
-        ) as file:
-            file.write(json.loads(result_peptide_fasta.text)["struct"])
-        with open(
-            os.path.join(ref_path, "peptide_fasta_ref") + ".ket", "w"
-        ) as file:
-            file.write(json.loads(result_peptide_ket.text)["struct"])
+        # with open(
+        #     os.path.join(ref_path, "peptide_fasta_ref") + ".fasta", "w"
+        # ) as file:
+        #     file.write(json.loads(result_peptide_fasta.text)["struct"])
+        # with open(
+        #     os.path.join(ref_path, "peptide_fasta_ref") + ".ket", "w"
+        # ) as file:
+        #     file.write(json.loads(result_peptide_ket.text)["struct"])
 
         # check
         with open(
@@ -3334,14 +3334,14 @@ M  END
         )
 
         # write references
-        with open(
-            os.path.join(ref_path, "rna_fasta_ref") + ".fasta", "w"
-        ) as file:
-            file.write(json.loads(result_rna_fasta.text)["struct"])
-        with open(
-            os.path.join(ref_path, "rna_fasta_ref") + ".ket", "w"
-        ) as file:
-            file.write(json.loads(result_rna_ket.text)["struct"])
+        # with open(
+        #    os.path.join(ref_path, "rna_fasta_ref") + ".fasta", "w"
+        # ) as file:
+        #    file.write(json.loads(result_rna_fasta.text)["struct"])
+        # with open(
+        #    os.path.join(ref_path, "rna_fasta_ref") + ".ket", "w"
+        # ) as file:
+        #     file.write(json.loads(result_rna_ket.text)["struct"])
 
         # check
         with open(
@@ -3389,14 +3389,14 @@ M  END
         )
 
         # write references
-        with open(
-            os.path.join(ref_path, "dna_fasta_ref") + ".fasta", "w"
-        ) as file:
-            file.write(json.loads(result_dna_fasta.text)["struct"])
-        with open(
-            os.path.join(ref_path, "dna_fasta_ref") + ".ket", "w"
-        ) as file:
-            file.write(json.loads(result_dna_ket.text)["struct"])
+        # with open(
+        #     os.path.join(ref_path, "dna_fasta_ref") + ".fasta", "w"
+        # ) as file:
+        #     file.write(json.loads(result_dna_fasta.text)["struct"])
+        # with open(
+        #     os.path.join(ref_path, "dna_fasta_ref") + ".ket", "w"
+        # ) as file:
+        #     file.write(json.loads(result_dna_ket.text)["struct"])
 
         # check
         with open(

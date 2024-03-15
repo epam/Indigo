@@ -3244,6 +3244,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
         tg.tgroup_name.copy(su.subscript);
     tg.tgroup_alias.clear();
     tg.tgroup_comment.clear();
+    tg.tgroup_full_name.clear();
     if (su.sa_natreplace.size() > 0)
         tg.tgroup_natreplace.copy(su.sa_natreplace);
 
