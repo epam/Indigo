@@ -187,7 +187,7 @@ public class FullUsageMoleculeTest {
                     .filter(new RangeQuery<>(fieldName, 10, 100))
                     .collect(Collectors.toList());
 
-            assertEquals(Math.min(10, cnt), similarRecords.size());
+            assertEquals(cnt, similarRecords.size());
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }
@@ -272,11 +272,11 @@ public class FullUsageMoleculeTest {
     }
 
     @Test
-    @DisplayName("Page size of 2000 should throw exception")
+    @DisplayName("Page size of Integer.MAX_VALUE should throw exception")
     public void pageSizeOverLimit() {
         assertThrows(IllegalArgumentException.class, () -> repository.stream()
                 .filter(new KeywordQuery<>("test", "test"))
-                .limit(2000)
+                .limit((long) Integer.MAX_VALUE + 1)
                 .collect(Collectors.toList()));
     }
 }
