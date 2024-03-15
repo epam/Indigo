@@ -159,7 +159,7 @@ namespace indigo
 
     struct CdxmlBond
     {
-        CdxmlBond() : order(1), stereo(0), dir(0), swap_bond(false)
+        CdxmlBond() : order(1), stereo(0), dir(0), topology(0), reaction_center(0), swap_bond(false)
         {
         }
         AutoInt id;
@@ -167,6 +167,8 @@ namespace indigo
         AutoInt order;
         AutoInt stereo;
         AutoInt dir;
+        AutoInt topology;
+        AutoInt reaction_center;
         bool swap_bond;
     };
 
@@ -815,7 +817,6 @@ namespace indigo
         void _addNode(CdxmlNode& node);
 
         void _parseBond(CdxmlBond& bond, BaseCDXProperty& prop);
-        void _addBond(CdxmlBond& node);
 
         void _parseBracket(CdxmlBracket& bracket, BaseCDXProperty& prop);
         void _parseText(BaseCDXElement& elem, std::vector<std::pair<Vec3f, std::string>>& text_parsed);
@@ -825,6 +826,7 @@ namespace indigo
         void _parseArrow(BaseCDXElement& elem);
         void _parseAltGroup(BaseCDXElement& elem);
 
+        int _addBond(Molecule& mol, const CdxmlBond& bond, int begin, int end);
         void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& new_bonds);
         void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket);
         void _handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
