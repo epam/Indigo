@@ -616,6 +616,7 @@
         "classHELM": "PEPTIDE",
         "alias": "A",
         "name": "Ala",
+        "fullName": "Alanine",
         "naturalAnalogShort": "A",
         "naturalAnalog": "Ala",
         "attachmentPoints": [
@@ -748,6 +749,7 @@
         "classHELM": "PEPTIDE",
         "alias": "C",
         "name": "Cys",
+        "fullName": "Cysteine",
         "naturalAnalogShort": "C",
         "naturalAnalog": "Cys",
         "attachmentPoints": [
@@ -918,6 +920,7 @@
         "classHELM": "PEPTIDE",
         "alias": "D",
         "name": "Asp",
+        "fullName": "Aspartic acid",
         "naturalAnalogShort": "D",
         "naturalAnalog": "Asp",
         "attachmentPoints": [
@@ -1118,6 +1121,7 @@
         "classHELM": "PEPTIDE",
         "alias": "E",
         "name": "Glu",
+        "fullName": "Glutamic acid",
         "naturalAnalogShort": "E",
         "naturalAnalog": "Glu",
         "attachmentPoints": [
@@ -1333,6 +1337,7 @@
         "classHELM": "PEPTIDE",
         "alias": "F",
         "name": "Phe",
+        "fullName": "Phenylalanine",
         "naturalAnalogShort": "F",
         "naturalAnalog": "Phe",
         "attachmentPoints": [
@@ -1562,6 +1567,7 @@
         "classHELM": "PEPTIDE",
         "alias": "G",
         "name": "Gly",
+        "fullName": "Glycine",
         "naturalAnalogShort": "G",
         "naturalAnalog": "Gly",
         "attachmentPoints": [
@@ -1677,6 +1683,7 @@
         "classHELM": "PEPTIDE",
         "alias": "H",
         "name": "His",
+        "fullName": "Histidine",
         "naturalAnalogShort": "H",
         "naturalAnalog": "His",
         "attachmentPoints": [
@@ -1914,6 +1921,7 @@
         "classHELM": "PEPTIDE",
         "alias": "I",
         "name": "Ile",
+        "fullName": "Isoleucine",
         "naturalAnalogShort": "I",
         "naturalAnalog": "Ile",
         "attachmentPoints": [
@@ -2093,6 +2101,7 @@
         "classHELM": "PEPTIDE",
         "alias": "K",
         "name": "Lys",
+        "fullName": "Lysine",
         "naturalAnalogShort": "K",
         "naturalAnalog": "Lys",
         "attachmentPoints": [
@@ -2308,6 +2317,7 @@
         "classHELM": "PEPTIDE",
         "alias": "L",
         "name": "Leu",
+        "fullName": "Leucine",
         "naturalAnalogShort": "L",
         "naturalAnalog": "Leu",
         "attachmentPoints": [
@@ -2485,6 +2495,7 @@
         "classHELM": "PEPTIDE",
         "alias": "M",
         "name": "Met",
+        "fullName": "Methionine",
         "naturalAnalogShort": "M",
         "naturalAnalog": "Met",
         "attachmentPoints": [
@@ -2662,6 +2673,7 @@
         "classHELM": "PEPTIDE",
         "alias": "N",
         "name": "Asn",
+        "fullName": "Asparagine",
         "naturalAnalogShort": "N",
         "naturalAnalog": "Asn",
         "attachmentPoints": [
@@ -2862,6 +2874,7 @@
         "classHELM": "PEPTIDE",
         "alias": "O",
         "name": "Pyl",
+        "fullName": "Pyrrolysine",
         "naturalAnalogShort": "O",
         "attachmentPoints": [
             {
@@ -3182,6 +3195,7 @@
         "classHELM": "PEPTIDE",
         "alias": "P",
         "name": "Pro",
+        "fullName": "Proline",
         "naturalAnalogShort": "P",
         "naturalAnalog": "Pro",
         "attachmentPoints": [
@@ -3351,6 +3365,7 @@
         "classHELM": "PEPTIDE",
         "alias": "Q",
         "name": "Gln",
+        "fullName": "Glutamine",
         "naturalAnalogShort": "Q",
         "naturalAnalog": "Gln",
         "attachmentPoints": [
@@ -3566,6 +3581,7 @@
         "classHELM": "PEPTIDE",
         "alias": "R",
         "name": "Arg",
+        "fullName": "Arginine",
         "naturalAnalogShort": "R",
         "naturalAnalog": "Arg",
         "attachmentPoints": [
@@ -3811,6 +3827,7 @@
         "classHELM": "PEPTIDE",
         "alias": "S",
         "name": "Ser",
+        "fullName": "Serine",
         "naturalAnalogShort": "S",
         "naturalAnalog": "Ser",
         "attachmentPoints": [
@@ -3981,6 +3998,7 @@
         "classHELM": "PEPTIDE",
         "alias": "U",
         "name": "Sec",
+        "fullName": "Selenocysteine",
         "naturalAnalogShort": "C",
         "naturalAnalog": "Cys",
         "attachmentPoints": [
@@ -4128,6 +4146,7 @@
         "classHELM": "PEPTIDE",
         "alias": "V",
         "name": "Val",
+        "fullName": "Valine",
         "naturalAnalogShort": "V",
         "naturalAnalog": "Val",
         "attachmentPoints": [
@@ -4290,6 +4309,7 @@
         "classHELM": "PEPTIDE",
         "alias": "W",
         "name": "Trp",
+        "fullName": "Tryptophan",
         "naturalAnalogShort": "W",
         "naturalAnalog": "Trp",
         "attachmentPoints": [
@@ -4594,6 +4614,7 @@
         "classHELM": "PEPTIDE",
         "alias": "Y",
         "name": "Tyr",
+        "fullName": "Tyrosine",
         "naturalAnalogShort": "Y",
         "naturalAnalog": "Tyr",
         "attachmentPoints": [
