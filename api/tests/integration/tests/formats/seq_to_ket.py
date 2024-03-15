@@ -30,6 +30,11 @@ seq_tests = [
     },
     {"seq_type": "RNA", "seq_data": "ACGTU", "ref": "rna_acgtu"},
     {"seq_type": "DNA", "seq_data": "ACGTU", "ref": "dna_acgtu"},
+    {
+        "seq_type": "PEPTIDE",
+        "seq_data": "ACD\nEFG\r\nHIKLMN OPQRSRUVWY",
+        "ref": "spaces",
+    }
 ]
 
 for seq in seq_tests:
