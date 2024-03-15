@@ -34,7 +34,7 @@ seq_tests = [
         "seq_type": "PEPTIDE",
         "seq_data": "ACD\nEFG\r\nHIKLMN OPQRSRUVWY",
         "ref": "spaces",
-    }
+    },
 ]
 
 for seq in seq_tests:
