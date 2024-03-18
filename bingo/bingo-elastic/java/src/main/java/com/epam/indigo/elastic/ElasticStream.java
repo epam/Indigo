@@ -4,7 +4,12 @@ import com.epam.indigo.BingoElasticException;
 import com.epam.indigo.model.Helpers;
 import com.epam.indigo.model.IndigoRecord;
 import com.epam.indigo.model.NamingConstants;
-import com.epam.indigo.predicate.*;
+import com.epam.indigo.predicate.BaseMatch;
+import com.epam.indigo.predicate.ExactMatch;
+import com.epam.indigo.predicate.FilterPredicate;
+import com.epam.indigo.predicate.IndigoPredicate;
+import com.epam.indigo.predicate.SubstructureMatch;
+import com.epam.indigo.sort.IndigoComparator;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -15,13 +20,29 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Spliterator;
 import java.util.function.*;
-import java.util.stream.*;
+import java.util.stream.Collector;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
-import static com.epam.indigo.model.NamingConstants.*;
+import static com.epam.indigo.model.NamingConstants.SIM_FINGERPRINT;
+import static com.epam.indigo.model.NamingConstants.SIM_FINGERPRINT_LEN;
+import static com.epam.indigo.model.NamingConstants.SUB_FINGERPRINT;
+import static com.epam.indigo.model.NamingConstants.SUB_FINGERPRINT_LEN;
 
 /**
  * Implementation of JDK Stream API
@@ -32,8 +53,10 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
     private final RestHighLevelClient elasticClient;
     private final List<IndigoPredicate<? super T>> predicates = new ArrayList<>();
     private final String indexName;
-    private int size = 10;
-    private final int MAX_ALLOWED_SIZE = 1000;
+    private int limit = Integer.MAX_VALUE;
+    private final List<IndigoComparator<? super T>> comparators = new ArrayList<>();
+
+    private static final int BATCH_SIZE = 10000;
 
     public ElasticStream(RestHighLevelClient elasticClient, String indexName) {
         this.elasticClient = elasticClient;
@@ -51,9 +74,9 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
 
     @Override
     public Stream<T> limit(long maxSize) {
-        if (maxSize > MAX_ALLOWED_SIZE)
-            throw new IllegalArgumentException(String.format("Bingo Elastic max page size should be less than or equal to %1", MAX_ALLOWED_SIZE));
-        this.size = (int) maxSize;
+        if (maxSize > Integer.MAX_VALUE)
+            throw new IllegalArgumentException(String.format("Bingo Elastic max page size should be less than or equal to %1$d", Integer.MAX_VALUE));
+        this.limit = (int) maxSize;
         return this;
     }
 
@@ -65,26 +88,51 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
     @Override
     public <R, A> R collect(Collector<? super T, A, R> collector) {
         A container = collector.supplier().get();
-        SearchRequest searchRequest = compileRequest();
-        SearchHit[] hits;
-        try {
-            SearchResponse searchResponse = this.elasticClient.search(searchRequest, RequestOptions.DEFAULT);
-            hits = searchResponse.getHits().getHits();
-            if (NamingConstants.BINGO_REACTIONS.equals(this.indexName)) {
-                for (SearchHit hit : hits) {
-                    collector.accumulator().accept(container, (T) Helpers.reactionFromElastic(hit.getId(), hit.getSourceAsMap(), hit.getScore()));
-                }
-            } else if (NamingConstants.BINGO_MOLECULES.equals(this.indexName)) {
-                for (SearchHit hit : hits) {
-                    collector.accumulator().accept(container, (T) Helpers.moleculeFromElastic(hit.getId(), hit.getSourceAsMap(), hit.getScore()));
-                }
-            } else {
-                throw new BingoElasticException("Unsupported index " + this.indexName);
+        Object[] searchAfterParameters = null;
+
+        long processedRecords = 0;
+        boolean continueSearch = true;
+
+        while (continueSearch) {
+            int currentBatchSize = (int) Math.min(BATCH_SIZE, limit - processedRecords);
+            SearchRequest searchRequest = compileRequest(searchAfterParameters, currentBatchSize);
+            SearchResponse searchResponse;
+            try {
+                searchResponse = elasticClient.search(searchRequest, RequestOptions.DEFAULT);
+            } catch (IOException e) {
+                throw new BingoElasticException("Couldn't complete search in Elasticsearch", e);
             }
-        } catch (IOException e) {
-            throw new BingoElasticException("Couldn't complete search in Elasticsearch", e.getCause());
+
+            SearchHit[] hits = searchResponse.getHits().getHits();
+            if (hits.length == 0) {
+                break;
+            }
+
+            for (SearchHit hit : hits) {
+                if (processedRecords >= limit) {
+                    break;
+                }
+                T record = convertHitToRecord(hit);
+                collector.accumulator().accept(container, record);
+                processedRecords++;
+            }
+
+            searchAfterParameters = hits[hits.length - 1].getSortValues();
+            continueSearch = !this.comparators.isEmpty() && hits.length == BATCH_SIZE;
         }
-        return (R) container;
+
+        return collector.finisher().apply(container);
+    }
+
+
+    private T convertHitToRecord(SearchHit hit) {
+        if (NamingConstants.BINGO_REACTIONS.equals(this.indexName)) {
+            return (T) Helpers.reactionFromElastic(hit.getId(), hit.getSourceAsMap(), hit.getScore());
+        } else if (NamingConstants.BINGO_MOLECULES.equals(this.indexName)) {
+            return (T) Helpers.moleculeFromElastic(hit.getId(), hit.getSourceAsMap(), hit.getScore());
+        } else {
+            throw new BingoElasticException("Unsupported index " + this.indexName);
+        }
     }
 
     private QueryBuilder[] generateClauses(List<Integer> fingerprint, String field) {
@@ -95,15 +143,26 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         return bits;
     }
 
-    private SearchRequest compileRequest() {
+    private SearchRequest compileRequest(Object[] searchAfterParameters, int batchSize) {
         SearchRequest searchRequest = new SearchRequest(this.indexName);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
         boolean similarityRequested = false;
         boolean isEmptyFingerprint = false;
+
+        searchSourceBuilder.size(batchSize);
+
+        if (!comparators.isEmpty()) {
+            comparators.stream().map(IndigoComparator::toSortBuilder).forEach(searchSourceBuilder::sort);
+            searchSourceBuilder.sort(new FieldSortBuilder("_doc").order(SortOrder.ASC));
+        }
+
+
         if (this.predicates.isEmpty()) {
             searchSourceBuilder.query(QueryBuilders.matchAllQuery());
         } else {
             BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+
             Script script = null;
             float threshold = 0.0f;
             for (IndigoPredicate<? super T> predicate : this.predicates) {
@@ -141,11 +200,24 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
             }
             searchSourceBuilder.fetchSource(new String[]{"*"}, new String[]{SIM_FINGERPRINT, SIM_FINGERPRINT_LEN, SUB_FINGERPRINT_LEN, SUB_FINGERPRINT});
             searchSourceBuilder.minScore(threshold);
-            searchSourceBuilder.size(this.size);
             searchSourceBuilder.query(QueryBuilders.scriptScoreQuery(boolQueryBuilder, script));
         }
+
+        if (searchAfterParameters != null) {
+            searchSourceBuilder.searchAfter(searchAfterParameters);
+        }
+
         searchRequest.source(searchSourceBuilder);
         return searchRequest;
+    }
+
+    @Override
+    public ElasticStream<T> sorted(Comparator<? super T> comparator) {
+        if (!(comparator instanceof IndigoComparator)) {
+            throw new IllegalArgumentException("Comparator used isn't an IndigoComparator");
+        }
+        comparators.add((IndigoComparator) comparator);
+        return this;
     }
 
     private Script generateIdentityScore() {
@@ -252,11 +324,6 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
 
     @Override
     public Stream<T> sorted() {
-        throw new BingoElasticException("sorted() operation on this stream isn't implemented");
-    }
-
-    @Override
-    public Stream<T> sorted(Comparator<? super T> comparator) {
         throw new BingoElasticException("sorted() operation on this stream isn't implemented");
     }
 
