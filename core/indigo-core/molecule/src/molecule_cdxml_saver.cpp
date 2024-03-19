@@ -186,6 +186,7 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
             break;
         }
         case kCDXProp_Bond_Display:
+        case kCDXProp_Bond_Display2:
             val = static_cast<int16_t>(kCDXProp_Bond_DisplayStrToID.at(pAttr->Value()));
             break;
         case kCDXProp_Bond_Order: {
