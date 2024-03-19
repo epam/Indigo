@@ -273,6 +273,12 @@ std::string CDXProperty::parseCDXINT16(int16_t val) const
         return kCDXProp_Arrow_TypeIDToStr.at((CDXArrowType)val);
     }
     break;
+    case kCDXProp_Arrowhead_Type: {
+        auto it = kCDXProp_Arrow_ArrowHeadTypeIntToStr.find((CDXArrowheadType)val);
+        if (it != kCDXProp_Arrow_ArrowHeadTypeIntToStr.end())
+            return it->second;
+        break;
+    }
     default:
         break;
     }
@@ -1258,10 +1264,16 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, BaseCDXProperty& prop)
     auto stereo_lambda = [&bond](const std::string& data) { bond.stereo = kCIPBondStereochemistryCharToIndex.at(data.front()); };
 
     auto bond_dir_lambda = [&bond](const std::string& data) {
-        static const std::unordered_map<std::string, std::pair<int, bool>> dir_map = {
-            {"WedgedHashBegin", {BOND_DOWN, false}}, {"WedgedHashEnd", {BOND_DOWN, true}}, {"WedgeBegin", {BOND_UP, false}},
-            {"WedgeEnd", {BOND_UP, true}},           {"Bold", {BOND_UP, false}},           {"Hash", {BOND_DOWN, false}},
-            {"Wavy", {BOND_EITHER, false}}};
+        static const std::unordered_map<std::string, std::pair<int, bool>> dir_map = {{"WedgedHashBegin", {BOND_DOWN, false}},
+                                                                                      {"WedgedHashEnd", {BOND_DOWN, true}},
+                                                                                      {"Hash", {BOND_DOWN, false}},
+                                                                                      {"Dash", {BOND_DOWN, false}},
+                                                                                      {"WedgeBegin", {BOND_UP, false}},
+                                                                                      {"WedgeEnd", {BOND_UP, true}},
+                                                                                      {"HollowWedgeBegin", {BOND_UP, false}},
+                                                                                      {"HollowWedgeEnd", {BOND_UP, true}},
+                                                                                      {"Bold", {BOND_UP, false}},
+                                                                                      {"Wavy", {BOND_EITHER, false}}};
         auto disp_it = dir_map.find(data);
         if (disp_it != dir_map.end())
         {
