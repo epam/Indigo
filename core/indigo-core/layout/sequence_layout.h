@@ -24,9 +24,9 @@
 #include "molecule/query_molecule.h"
 
 #include <deque>
+#include <functional>
 #include <queue>
 #include <vector>
-#include <functional>
 
 #ifdef _WIN32
 #pragma warning(push)

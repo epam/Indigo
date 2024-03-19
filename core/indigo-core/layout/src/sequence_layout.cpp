@@ -99,7 +99,6 @@ void SequenceLayout::addSequenceElement(BaseMolecule& mol, PriorityElement& pel,
     }
 }
 
-
 const std::vector<std::map<int, int>>& SequenceLayout::directionsMap()
 {
     return _directions_map;
@@ -124,13 +123,13 @@ void SequenceLayout::sequenceExtract(std::vector<std::deque<int>>& sequences)
     while (pq.size() || remaining_atoms.size())
     {
         if (pq.size() == 0)
-            pq.emplace(std::make_pair(-1, *remaining_atoms.begin()), std::make_pair(-1,-1));
+            pq.emplace(std::make_pair(-1, *remaining_atoms.begin()), std::make_pair(-1, -1));
         auto te = pq.top(); // top element
         pq.pop();
         if (remaining_atoms.find(te.dir.second) != remaining_atoms.end())
         {
-            addSequenceElement(_molecule, te, sequences); // add current monomer to the sequences vector
-            remaining_atoms.erase(te.dir.second);         // monomer consumed
+            addSequenceElement(_molecule, te, sequences);              // add current monomer to the sequences vector
+            remaining_atoms.erase(te.dir.second);                      // monomer consumed
             addNeigbourDirections(pq, remaining_atoms, te.dir.second); // add destination neighbours into the queue
         }
     }
