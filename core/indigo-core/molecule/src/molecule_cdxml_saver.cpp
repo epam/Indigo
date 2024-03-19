@@ -173,6 +173,18 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
         case kCDXProp_Arrow_ArrowHead_Tail:
             val = kCDXProp_Arrow_ArrowHeadStrToInt.at(pAttr->Value());
             break;
+        case kCDXProp_Arrowhead_Type: {
+            auto it = kCDXProp_Arrow_ArrowHeadTypeStrToInt.find(pAttr->Value());
+            if (it != kCDXProp_Arrow_ArrowHeadTypeStrToInt.end())
+                val = it->second;
+            break;
+        }
+        case kCDXProp_Symbol_Type: {
+            auto it = kCDXPropSymbolTypeStrToID.find(pAttr->Value());
+            if (it != kCDXPropSymbolTypeStrToID.end())
+                val = it->second;
+            break;
+        }
         case kCDXProp_Bond_Display:
             val = static_cast<int16_t>(kCDXProp_Bond_DisplayStrToID.at(pAttr->Value()));
             break;
