@@ -61,16 +61,15 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
             _output.write(fasta_header.data(), static_cast<int>(fasta_header.size()));
         }
 
-        std::map<int, std::map<int, int>> layout_sequence;
+        std::vector<std::deque<int>> sequences;
         SequenceLayout sl(*component);
-        sl.calculateLayout(layout_sequence);
+        sl.sequenceExtract(sequences);
         std::string seq_text;
-        for (auto& row : layout_sequence)
+        for (auto& sequence : sequences)
         {
             std::string seq_string;
-            for (auto& col : row.second)
+            for (auto atom_idx : sequence)
             {
-                int atom_idx = col.second;
                 if (component->isTemplateAtom(atom_idx))
                 {
                     std::string mon_class = component->getTemplateAtomClass(atom_idx);

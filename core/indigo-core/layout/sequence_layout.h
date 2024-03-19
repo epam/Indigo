@@ -26,6 +26,7 @@
 #include <deque>
 #include <queue>
 #include <vector>
+#include <functional>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -34,28 +35,27 @@
 
 namespace indigo
 {
+    struct PriorityElement
+    {
+        PriorityElement(const std::pair<int, int>& dir, const std::pair<int, int>& back_dir) : dir(dir), from_dir(back_dir)
+        {
+        }
+        std::pair<int, int> dir;      // left, right, branch -> destination atom
+        std::pair<int, int> from_dir; // left, right, branch -> source atom
+    };
+
     using SequenceLayoutMap = std::map<int, std::map<int, int>>;
+    auto compareDirectionsPair = [](const PriorityElement& lhs, const PriorityElement& rhs) { return lhs.dir.first > rhs.dir.first; };
+    using DirectionsPriorityQueue = std::priority_queue<PriorityElement, std::vector<PriorityElement>, decltype(compareDirectionsPair)>;
 
     class DLLEXPORT SequenceLayout
     {
     public:
-        struct PriorityElement
-        {
-            PriorityElement(const std::pair<int, int>& dir, const std::pair<int, int>& back_dir, int col, int row)
-                : dir(dir), back_dir(back_dir), col(col), row(row)
-            {
-            }
-            std::pair<int, int> dir;
-            std::pair<int, int> back_dir;
-            int col;
-            int row;
-        };
-
         static constexpr float DEFAULT_BOND_LENGTH = 1.6f;
 
         explicit SequenceLayout(BaseMolecule& molecule);
         void make();
-        void calculateLayout(SequenceLayoutMap& layout_sequence);
+        void sequenceExtract(std::vector<std::deque<int>>& sequences);
         void calculateCoordinates(SequenceLayoutMap& layout_sequence);
 
         const std::vector<std::map<int, int>>& directionsMap();
@@ -64,11 +64,13 @@ namespace indigo
 
     private:
         bool _isMonomerBackbone(int atom_idx);
-        void processPosition(BaseMolecule& mol, PriorityElement& pel, SequenceLayoutMap& layout_sequence);
+        void addSequenceElement(BaseMolecule& mol, PriorityElement& pel, std::vector<std::deque<int>>& sequences);
+        void addNeigbourDirections(DirectionsPriorityQueue& pq, const std::unordered_set<int>& valid_atoms, int atom_idx);
+
         const std::pair<int, int> _getBackDir(int src_idx, int dst_idx);
         BaseMolecule& _molecule;
         SequenceLayoutMap _layout_sequence;
-        std::vector<std::map<int, int>> _directions_map; // TODO: change to std::vector
+        std::vector<std::map<int, int>> _directions_map;
     };
 
 } // namespace indigo
