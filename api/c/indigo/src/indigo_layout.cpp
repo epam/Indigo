@@ -23,7 +23,6 @@
 #include "layout/molecule_cleaner_2d.h"
 #include "layout/molecule_layout.h"
 #include "layout/reaction_layout.h"
-#include "layout/sequence_layout.h"
 #include "reaction/base_reaction.h"
 #include <algorithm>
 #include <vector>
