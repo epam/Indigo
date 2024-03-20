@@ -134,8 +134,7 @@ void MolfileSaver::_handleMonomers(BaseMolecule& mol)
     // mol.transformTemplatesToSuperatoms(mon_filter);
 }
 
-void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::map<int, int>>& directions_map,
-                                    std::vector<std::deque<int>>& sequences)
+void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::map<int, int>>& directions_map, std::vector<std::deque<int>>& sequences)
 {
     for (auto& sequence : sequences)
     {
