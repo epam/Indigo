@@ -91,7 +91,10 @@ void SequenceLayout::addSequenceElement(BaseMolecule& mol, PriorityElement& pel,
                 }
                 // break sequence
                 if (seq_item.size())
+                {
                     sequences.push_back({});
+                    sequences.back().emplace_back(pel.dir.second);
+                }
             }
             else
                 seq_item.emplace_back(pel.dir.second);
@@ -116,7 +119,7 @@ void SequenceLayout::sequenceExtract(std::vector<std::deque<int>>& sequences)
     for (int i = _molecule.vertexBegin(); i < _molecule.vertexEnd(); i = _molecule.vertexNext(i))
     {
         if (_molecule.isTemplateAtom(i))
-            remaining_atoms.emplace(i);
+            remaining_atoms.insert(i);
     }
 
     // bfs algorythm for a graph
