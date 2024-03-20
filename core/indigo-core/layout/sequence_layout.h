@@ -45,8 +45,15 @@ namespace indigo
     };
 
     using SequenceLayoutMap = std::map<int, std::map<int, int>>;
-    auto compareDirectionsPair = [](const PriorityElement& lhs, const PriorityElement& rhs) { return lhs.dir.first > rhs.dir.first; };
-    using DirectionsPriorityQueue = std::priority_queue<PriorityElement, std::vector<PriorityElement>, decltype(compareDirectionsPair)>;
+    struct CompareDirectionsPair
+    {
+        bool operator()(const PriorityElement& lhs, const PriorityElement& rhs) const
+        {
+            return lhs.dir.first > rhs.dir.first;
+        }
+    };
+
+    using DirectionsPriorityQueue = std::priority_queue<PriorityElement, std::vector<PriorityElement>, CompareDirectionsPair>;
 
     class DLLEXPORT SequenceLayout
     {

@@ -110,7 +110,7 @@ void SequenceLayout::sequenceExtract(std::vector<std::deque<int>>& sequences)
     sequences.clear();
     _molecule.getTemplateAtomDirectionsMap(_directions_map);
     // place first atom
-    DirectionsPriorityQueue pq(compareDirectionsPair);
+    DirectionsPriorityQueue pq;
 
     // collect all atoms
     std::unordered_set<int> remaining_atoms;
