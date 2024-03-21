@@ -46,6 +46,7 @@ namespace indigo
 
     enum
     {
+        TOPOLOGY_ANY = -1,
         TOPOLOGY_RING = 1,
         TOPOLOGY_CHAIN = 2
     };

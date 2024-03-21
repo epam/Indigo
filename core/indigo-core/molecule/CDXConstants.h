@@ -1044,4 +1044,11 @@ enum CDXCharSet
     kCDXCharSetUTF8 = 65001
 };
 
+enum CDXArrowheadType
+{
+    kCDXArrowheadType_Solid = 1,
+    kCDXArrowheadType_Hollow,
+    kCDXArrowheadType_Angled
+};
+
 #endif // _H_CDXConstants
