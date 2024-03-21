@@ -49,7 +49,7 @@ const std::pair<int, int> SequenceLayout::_getBackDir(int src_idx, int dst_idx)
     return std::make_pair(-1, src_idx);
 }
 
-void SequenceLayout::addNeigbourDirections(BaseMolecule& mol, DirectionsPriorityQueue& pq, const std::unordered_set<int>& valid_atoms, int atom_idx)
+void SequenceLayout::addNeigbourDirections(BaseMolecule& mol, DirectionsPriorityQueue& pq, const std::set<int>& valid_atoms, int atom_idx)
 {
     auto& dirs = _directions_map[atom_idx];
     for (const auto& nei_dir : dirs)
