@@ -126,24 +126,21 @@ void MolfileSaver::saveQueryMolecule(QueryMolecule& mol)
 void MolfileSaver::_handleMonomers(BaseMolecule& mol)
 {
     SequenceLayout sl(mol);
-    std::map<int, std::map<int, int>> layout_sequence;
-    sl.calculateLayout(layout_sequence);
-    // sl.calculateCoordinates(layout_sequence);
+    std::vector<std::deque<int>> sequences;
+    sl.sequenceExtract(sequences);
     const auto& directions_map = sl.directionsMap();
-    _calculateSEQIDs(mol, directions_map, layout_sequence);
+    _calculateSEQIDs(mol, directions_map, sequences);
     // MonomersToSgroupFilter mon_filter(mol, directions_map);
     // mol.transformTemplatesToSuperatoms(mon_filter);
 }
 
-void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::map<int, int>>& directions_map,
-                                    const std::map<int, std::map<int, int>>& layout_sequence)
+void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::map<int, int>>& directions_map, std::vector<std::deque<int>>& sequences)
 {
-    for (auto& row : layout_sequence)
+    for (auto& sequence : sequences)
     {
         int seq_id = 1;
-        for (auto& col : row.second)
+        for (auto atom_idx : sequence)
         {
-            int atom_idx = col.second;
             if (mol.isTemplateAtom(atom_idx))
             {
                 std::string mon_class = mol.getTemplateAtomClass(atom_idx);
