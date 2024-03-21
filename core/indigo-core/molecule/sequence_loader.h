@@ -40,7 +40,6 @@ namespace indigo
     class DLLEXPORT SequenceLoader
     {
     public:
-        const int kRowSpacing = 4;
         enum class SeqType
         {
             PEPTIDESeq,
