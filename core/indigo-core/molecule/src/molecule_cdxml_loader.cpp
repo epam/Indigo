@@ -27,6 +27,7 @@
 #include "molecule/molecule_cdxml_loader.h"
 #include "molecule/molecule_scaffold_detection.h"
 #include "molecule/parse_utils.h"
+#include "reaction/reaction.h"
 
 using namespace indigo;
 using namespace tinyxml2;
@@ -272,6 +273,12 @@ std::string CDXProperty::parseCDXINT16(int16_t val) const
         return kCDXProp_Arrow_TypeIDToStr.at((CDXArrowType)val);
     }
     break;
+    case kCDXProp_Arrowhead_Type: {
+        auto it = kCDXProp_Arrow_ArrowHeadTypeIntToStr.find((CDXArrowheadType)val);
+        if (it != kCDXProp_Arrow_ArrowHeadTypeIntToStr.end())
+            return it->second;
+        break;
+    }
     default:
         break;
     }
@@ -318,6 +325,10 @@ std::string CDXProperty::parseCDXINT8(int8_t val) const
         return std::string(kLabelAlignmentIntTostr.at(val));
     case kCDXProp_Atom_Geometry:
         return std::string(KGeometryTypeIntToName.at(val));
+    case kCDXProp_Bond_RestrictRxnParticipation:
+        return kBondReactionParticipationIntToName.at(val);
+    case kCDXProp_Bond_RestrictTopology:
+        return kBondTopologyIntToName.at(val);
     default:
         break;
     }
@@ -550,6 +561,8 @@ void MoleculeCdxmlLoader::_processEnhancedStereo(BaseMolecule& mol)
                 }
             }
         }
+        else if (mol.cis_trans.isIgnored(i))
+            ignore_cistrans[i] = true;
 
     mol.buildFromBondsStereocenters(stereochemistry_options, sensible_bond_directions.data());
     mol.buildFromBondsAlleneStereo(stereochemistry_options.ignore_errors, sensible_bond_directions.data());
@@ -656,7 +669,8 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(BaseCDXElement& first_elem, bool n
     auto bond_lambda = [this](BaseCDXElement& elem) {
         CdxmlBond bond;
         this->_parseBond(bond, *elem.firstProperty());
-        this->_addBond(bond);
+        this->bonds.push_back(bond);
+        this->_id_to_bond_index.emplace(bond.id, bonds.size() - 1);
     };
 
     auto fragment_lambda = [this, &fragment_start_idx](BaseCDXElement& elem) {
@@ -740,6 +754,19 @@ void MoleculeCdxmlLoader::_updateConnection(const CdxmlNode& node, int atom_idx)
     }
 }
 
+int MoleculeCdxmlLoader::_addBond(Molecule& mol, const CdxmlBond& bond, int begin, int end)
+{
+    int bond_idx = mol.addBond_Silent(begin, end, bond.order);
+    if (bond.order == BOND_DOUBLE && bond.dir == BOND_EITHER)
+        mol.cis_trans.ignore(bond_idx);
+    else if (bond.dir > 0)
+        mol.setBondDirection(bond_idx, bond.dir);
+    if (bond.reaction_center > 0)
+        mol.reaction_bond_reacting_center[bond_idx] = bond.reaction_center;
+    // bond topology is allowed only for queries but queries not supported for now
+    return bond_idx;
+}
+
 void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& new_bonds)
 {
     _id_to_atom_idx.clear();
@@ -804,11 +831,9 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
             if (bond_first_it != _id_to_atom_idx.end() && bond_second_it != _id_to_atom_idx.end())
             {
                 if (bond.swap_bond)
-                    bond_idx = _pmol->addBond_Silent(bond_second_it->second, bond_first_it->second, bond.order);
+                    bond_idx = _addBond(*_pmol, bond, bond_second_it->second, bond_first_it->second);
                 else
-                    bond_idx = _pmol->addBond_Silent(bond_first_it->second, bond_second_it->second, bond.order);
-                if (bond.dir > 0)
-                    _pmol->setBondDirection(bond_idx, bond.dir);
+                    bond_idx = _addBond(*_pmol, bond, bond_first_it->second, bond_second_it->second);
             }
             else if (fn.type == kCDXNodeType_ExternalConnectionPoint && bond_second_it != _id_to_atom_idx.end())
             {
@@ -847,9 +872,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
 
                 if (a1 >= 0 && a2 >= 0)
                 {
-                    auto bi = _pmol->addBond_Silent(a1, a2, bond.order);
-                    if (bond.dir > 0)
-                        _pmol->setBondDirection(bi, bond.dir);
+                    std::ignore = _addBond(*_pmol, bond, a1, a2);
                 }
             }
             else if (is_fragment(sn) && bond_first_it != _id_to_atom_idx.end())
@@ -877,9 +900,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                     a2 = sn.connections[bit_beg->second].atom_idx;
                 if (a1 >= 0 && a2 >= 0)
                 {
-                    auto bi = _pmol->addBond_Silent(a1, a2, bond.order);
-                    if (bond.dir > 0)
-                        _pmol->setBondDirection(bi, bond.dir);
+                    std::ignore = _addBond(*_pmol, bond, a1, a2);
                 }
             }
             else if (is_fragment(fn) && is_fragment(sn))
@@ -891,9 +912,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                     int a1 = fn.connections[bit_beg->second].atom_idx;
                     int a2 = sn.connections[bit_end->second].atom_idx;
 
-                    auto bi = _pmol->addBond_Silent(a1, a2, bond.order);
-                    if (bond.dir > 0)
-                        _pmol->setBondDirection(bi, bond.dir);
+                    std::ignore = _addBond(*_pmol, bond, a1, a2);
                 }
             }
             else
@@ -1213,12 +1232,6 @@ void MoleculeCdxmlLoader::_addNode(CdxmlNode& node)
     _id_to_node_index.emplace(node.id, nodes.size() - 1);
 }
 
-void MoleculeCdxmlLoader::_addBond(CdxmlBond& bond)
-{
-    bonds.push_back(bond);
-    _id_to_bond_index.emplace(bond.id, bonds.size() - 1);
-}
-
 void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, BaseCDXProperty& prop)
 {
     auto id_lambda = [&bond](const std::string& data) { bond.id = data; };
@@ -1251,10 +1264,16 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, BaseCDXProperty& prop)
     auto stereo_lambda = [&bond](const std::string& data) { bond.stereo = kCIPBondStereochemistryCharToIndex.at(data.front()); };
 
     auto bond_dir_lambda = [&bond](const std::string& data) {
-        static const std::unordered_map<std::string, std::pair<int, bool>> dir_map = {
-            {"WedgedHashBegin", {BOND_DOWN, false}}, {"WedgedHashEnd", {BOND_DOWN, true}}, {"WedgeBegin", {BOND_UP, false}},
-            {"WedgeEnd", {BOND_UP, true}},           {"Bold", {BOND_UP, false}},           {"Hash", {BOND_DOWN, false}},
-            {"Wavy", {BOND_EITHER, false}}};
+        static const std::unordered_map<std::string, std::pair<int, bool>> dir_map = {{"WedgedHashBegin", {BOND_DOWN, false}},
+                                                                                      {"WedgedHashEnd", {BOND_DOWN, true}},
+                                                                                      {"Hash", {BOND_DOWN, false}},
+                                                                                      {"Dash", {BOND_DOWN, false}},
+                                                                                      {"WedgeBegin", {BOND_UP, false}},
+                                                                                      {"WedgeEnd", {BOND_UP, true}},
+                                                                                      {"HollowWedgeBegin", {BOND_UP, false}},
+                                                                                      {"HollowWedgeEnd", {BOND_UP, true}},
+                                                                                      {"Bold", {BOND_UP, false}},
+                                                                                      {"Wavy", {BOND_EITHER, false}}};
         auto disp_it = dir_map.find(data);
         if (disp_it != dir_map.end())
         {
@@ -1264,8 +1283,39 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, BaseCDXProperty& prop)
         }
     };
 
-    std::unordered_map<std::string, std::function<void(const std::string&)>> bond_dispatcher = {
-        {"id", id_lambda}, {"B", bond_begin_lambda}, {"E", bond_end_lambda}, {"Order", bond_order_lambda}, {"Display", bond_dir_lambda}, {"BS", stereo_lambda}};
+    auto reaction_center_lambda = [&bond](const std::string& data) {
+        uint8_t rxn_participation = kBondReactionParticipationNameToInt.at(data);
+        static const std::unordered_map<uint8_t, int> bond_rxn_participation_map = {
+            {kCDXBondReactionParticipation_Unspecified, RC_UNMARKED},
+            {kCDXBondReactionParticipation_ReactionCenter, RC_CENTER},
+            {kCDXBondReactionParticipation_MakeOrBreak, RC_MADE_OR_BROKEN},
+            {kCDXBondReactionParticipation_ChangeType, RC_ORDER_CHANGED},
+            {kCDXBondReactionParticipation_MakeAndChange, RC_MADE_OR_BROKEN | RC_ORDER_CHANGED},
+            {kCDXBondReactionParticipation_NotReactionCenter, RC_NOT_CENTER},
+            {kCDXBondReactionParticipation_NoChange, RC_UNCHANGED},
+            {kCDXBondReactionParticipation_Unmapped, RC_UNMARKED}};
+        auto it = bond_rxn_participation_map.find(rxn_participation);
+        if (it != bond_rxn_participation_map.end())
+            bond.reaction_center = it->second;
+    };
+
+    auto topology_lambda = [&bond](const std::string& data) {
+        uint8_t topology = kBondTopologyNameToInt.at(data);
+        static const std::unordered_map<uint8_t, int> topology_map = {{kCDXBondTopology_Unspecified, TOPOLOGY_ANY},
+                                                                      {kCDXBondTopology_Ring, TOPOLOGY_RING},
+                                                                      {kCDXBondTopology_Chain, TOPOLOGY_CHAIN},
+                                                                      {kCDXBondTopology_RingOrChain, TOPOLOGY_ANY}};
+        bond.topology = topology_map.at(topology);
+    };
+
+    std::unordered_map<std::string, std::function<void(const std::string&)>> bond_dispatcher = {{"id", id_lambda},
+                                                                                                {"B", bond_begin_lambda},
+                                                                                                {"E", bond_end_lambda},
+                                                                                                {"Order", bond_order_lambda},
+                                                                                                {"Display", bond_dir_lambda},
+                                                                                                {"BS", stereo_lambda},
+                                                                                                {"RxnParticipation", reaction_center_lambda},
+                                                                                                {"Topology", topology_lambda}};
 
     applyDispatcher(prop, bond_dispatcher);
 }

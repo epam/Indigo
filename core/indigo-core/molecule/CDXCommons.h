@@ -114,6 +114,10 @@ namespace indigo
 
     const std::unordered_map<std::string, int16_t> kCDXProp_Arrow_ArrowHeadStrToInt = {{"Full", 1}};
 
+    const std::unordered_map<std::string, int16_t> kCDXProp_Arrow_ArrowHeadTypeStrToInt = {{"Solid", 1}, {"Hollow", 2}, {"Angled", 3}};
+
+    const std::unordered_map<int16_t, std::string> kCDXProp_Arrow_ArrowHeadTypeIntToStr = {{1, "Solid"}, {2, "Hollow"}, {3, "Angled"}};
+
     const std::unordered_map<std::string, CDXLineType> kLineTypeStrToInt = {
         {"Solid", kCDXLineType_Solid}, {"Dashed", kCDXLineType_Dashed}, {"Bold", kCDXLineType_Bold}, {"Wavy", kCDXLineType_Wavy}};
 
@@ -1255,6 +1259,25 @@ namespace indigo
 
     const std::vector<std::string> KStyleProperties = {"font", "face", "size", "color"};
 
+    const std::unordered_map<std::string, uint8_t> kBondReactionParticipationNameToInt{
+        {"Unspecified", kCDXBondReactionParticipation_Unspecified},     {"ReactionCenter", kCDXBondReactionParticipation_ReactionCenter},
+        {"MakeOrBreak", kCDXBondReactionParticipation_MakeOrBreak},     {"ChangeType", kCDXBondReactionParticipation_ChangeType},
+        {"MakeAndChange", kCDXBondReactionParticipation_MakeAndChange}, {"NotReactionCenter", kCDXBondReactionParticipation_NotReactionCenter},
+        {"NoChange", kCDXBondReactionParticipation_NoChange},           {"Unmapped", kCDXBondReactionParticipation_Unmapped}};
+    const std::unordered_map<uint8_t, std::string> kBondReactionParticipationIntToName{
+        {kCDXBondReactionParticipation_Unspecified, "Unspecified"},     {kCDXBondReactionParticipation_ReactionCenter, "ReactionCenter"},
+        {kCDXBondReactionParticipation_MakeOrBreak, "MakeOrBreak"},     {kCDXBondReactionParticipation_ChangeType, "ChangeType"},
+        {kCDXBondReactionParticipation_MakeAndChange, "MakeAndChange"}, {kCDXBondReactionParticipation_NotReactionCenter, "NotReactionCenter"},
+        {kCDXBondReactionParticipation_NoChange, "NoChange"},           {kCDXBondReactionParticipation_Unmapped, "Unmapped"}};
+
+    const std::unordered_map<std::string, uint8_t> kBondTopologyNameToInt{{"Unspecified", kCDXBondTopology_Unspecified},
+                                                                          {"Ring", kCDXBondTopology_Ring},
+                                                                          {"Chain", kCDXBondTopology_Chain},
+                                                                          {"RingOrChain", kCDXBondTopology_RingOrChain}};
+    const std::unordered_map<uint8_t, std::string> kBondTopologyIntToName{{kCDXBondTopology_Unspecified, "Unspecified"},
+                                                                          {kCDXBondTopology_Ring, "Ring"},
+                                                                          {kCDXBondTopology_Chain, "Chain"},
+                                                                          {kCDXBondTopology_RingOrChain, "RingOrChain"}};
 }
 
 #ifdef _WIN32
