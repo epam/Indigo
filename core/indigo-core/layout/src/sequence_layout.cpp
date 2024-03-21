@@ -33,6 +33,11 @@ bool indigo::SequenceLayout::_isMonomerBackbone(int atom_idx)
     return _molecule.isTemplateAtom(atom_idx) && isBackboneClass(_molecule.getTemplateAtomClass(atom_idx));
 }
 
+bool SequenceLayout::_isValidAndBackbone(const std::pair<int, int>& dir)
+{
+    return dir.first >= 0 && dir.second >= 0 && dir.first < kBranchAttachmentPointIdx;
+}
+
 const std::pair<int, int> SequenceLayout::_getBackDir(int src_idx, int dst_idx)
 {
     if (dst_idx > -1)
@@ -44,14 +49,28 @@ const std::pair<int, int> SequenceLayout::_getBackDir(int src_idx, int dst_idx)
     return std::make_pair(-1, src_idx);
 }
 
-void SequenceLayout::addNeigbourDirections(DirectionsPriorityQueue& pq, const std::unordered_set<int>& valid_atoms, int atom_idx)
+void SequenceLayout::addNeigbourDirections(BaseMolecule& mol, DirectionsPriorityQueue& pq, const std::unordered_set<int>& valid_atoms, int atom_idx)
 {
     auto& dirs = _directions_map[atom_idx];
     for (const auto& nei_dir : dirs)
     {
         // add to queue with priority. left, right, branch.
         if (valid_atoms.find(nei_dir.second) != valid_atoms.end())
-            pq.emplace(nei_dir, _getBackDir(atom_idx, nei_dir.second));
+        {
+            auto back_dir = _getBackDir(atom_idx, nei_dir.second);
+            if (_isValidAndBackbone(nei_dir) && _isValidAndBackbone(back_dir))
+            {
+                std::string to_class = mol.getTemplateAtomClass(nei_dir.second);
+                std::string from_class = mol.getTemplateAtomClass(back_dir.second);
+                // if to_class and from_class are different backbone types, treat the connection as branch
+                if (!((isAminoAcidClass(to_class) && isAminoAcidClass(from_class)) || (isNucleicClass(to_class) && isNucleicClass(from_class))))
+                {
+                    pq.emplace(kBranchAttachmentPointIdx, nei_dir.second, kBranchAttachmentPointIdx, back_dir.second);
+                    continue;
+                }
+            }
+            pq.emplace(nei_dir, back_dir);
+        }
     }
 }
 
@@ -91,11 +110,13 @@ void SequenceLayout::addSequenceElement(BaseMolecule& mol, PriorityElement& pel,
                 }
                 // break sequence
                 if (seq_item.size())
+                {
                     sequences.push_back({});
-                sequences.back().emplace_back(pel.dir.second);
+                    sequences.back().emplace_back(pel.dir.second);
+                    return;
+                }
             }
-            else
-                seq_item.emplace_back(pel.dir.second);
+            seq_item.emplace_back(pel.dir.second);
         }
     }
 }
@@ -132,9 +153,9 @@ void SequenceLayout::sequenceExtract(std::vector<std::deque<int>>& sequences)
         pq.pop();
         if (remaining_atoms.find(te.dir.second) != remaining_atoms.end())
         {
-            addSequenceElement(_molecule, te, sequences);              // add current monomer to the sequences vector
-            remaining_atoms.erase(te.dir.second);                      // monomer consumed
-            addNeigbourDirections(pq, remaining_atoms, te.dir.second); // add destination neighbours into the queue
+            addSequenceElement(_molecule, te, sequences);                         // add current monomer to the sequences vector
+            remaining_atoms.erase(te.dir.second);                                 // monomer consumed
+            addNeigbourDirections(_molecule, pq, remaining_atoms, te.dir.second); // add destination neighbours into the queue
         }
     }
 }

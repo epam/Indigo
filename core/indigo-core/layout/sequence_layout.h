@@ -40,6 +40,11 @@ namespace indigo
         PriorityElement(const std::pair<int, int>& dir, const std::pair<int, int>& back_dir) : dir(dir), from_dir(back_dir)
         {
         }
+
+        PriorityElement(int to_dir_id, int to_atom, int back_dir_id, int back_atom) : dir(to_dir_id, to_atom), from_dir(back_dir_id, back_atom)
+        {
+        }
+
         std::pair<int, int> dir;      // left, right, branch -> destination atom
         std::pair<int, int> from_dir; // left, right, branch -> source atom
     };
@@ -72,9 +77,10 @@ namespace indigo
     private:
         bool _isMonomerBackbone(int atom_idx);
         void addSequenceElement(BaseMolecule& mol, PriorityElement& pel, std::vector<std::deque<int>>& sequences);
-        void addNeigbourDirections(DirectionsPriorityQueue& pq, const std::unordered_set<int>& valid_atoms, int atom_idx);
+        void addNeigbourDirections(BaseMolecule& mol, DirectionsPriorityQueue& pq, const std::unordered_set<int>& valid_atoms, int atom_idx);
 
         const std::pair<int, int> _getBackDir(int src_idx, int dst_idx);
+        bool _isValidAndBackbone( const std::pair<int, int>& dir );
         BaseMolecule& _molecule;
         SequenceLayoutMap _layout_sequence;
         std::vector<std::map<int, int>> _directions_map;
