@@ -81,6 +81,7 @@ void SequenceLoader::loadFasta(BaseMolecule& mol, SeqType seq_type)
                 break;
             case '>':
                 // handle header
+                _seq_id = 0;
                 properties.insert(kFASTA_HEADER, fasta_str);
                 frag_idx++;
                 continue;
