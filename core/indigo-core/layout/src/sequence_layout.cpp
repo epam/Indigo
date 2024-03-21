@@ -33,6 +33,11 @@ bool indigo::SequenceLayout::_isMonomerBackbone(int atom_idx)
     return _molecule.isTemplateAtom(atom_idx) && isBackboneClass(_molecule.getTemplateAtomClass(atom_idx));
 }
 
+bool SequenceLayout::_isValidAndBackbone(const std::pair<int, int>& dir)
+{
+    return dir.first >= 0 && dir.second >= 0 && dir.first < kBranchAttachmentPointIdx;
+}
+
 const std::pair<int, int> SequenceLayout::_getBackDir(int src_idx, int dst_idx)
 {
     if (dst_idx > -1)
@@ -44,54 +49,74 @@ const std::pair<int, int> SequenceLayout::_getBackDir(int src_idx, int dst_idx)
     return std::make_pair(-1, src_idx);
 }
 
-void SequenceLayout::processPosition(BaseMolecule& mol, PriorityElement& pel, SequenceLayoutMap& layout_sequence)
+void SequenceLayout::addNeigbourDirections(BaseMolecule& mol, DirectionsPriorityQueue& pq, const std::set<int>& valid_atoms, int atom_idx)
 {
-    if (mol.isTemplateAtom(pel.dir.second) && mol.isTemplateAtom(pel.back_dir.second))
+    auto& dirs = _directions_map[atom_idx];
+    for (const auto& nei_dir : dirs)
     {
-        std::string from_class = mol.getTemplateAtomClass(pel.back_dir.second);
-        std::string to_class = mol.getTemplateAtomClass(pel.dir.second);
-        bool isNucleoFrom = isNucleicClass(from_class) || isNucleotideClass(from_class);
-        bool isNucleoTo = isNucleicClass(to_class) || isNucleotideClass(to_class);
-        bool isAAFrom = isAminoAcidClass(from_class);
-        bool isAATo = isAminoAcidClass(to_class);
-
-        // if nucleo-nucleo or amino-amino, then change only col position
-        if ((isNucleoFrom && isNucleoTo) || (isAAFrom && isAATo))
+        // add to queue with priority. left, right, branch.
+        if (valid_atoms.find(nei_dir.second) != valid_atoms.end())
         {
-            if (pel.dir.first == kLeftAttachmentPointIdx && pel.back_dir.first == kRightAttachmentPointIdx)
+            auto back_dir = _getBackDir(atom_idx, nei_dir.second);
+            if (_isValidAndBackbone(nei_dir) && _isValidAndBackbone(back_dir))
             {
-                pel.col--;
-                return;
-            }
-            else if (pel.dir.first == kRightAttachmentPointIdx && pel.back_dir.first == kLeftAttachmentPointIdx)
-            {
-                pel.col++;
-                return;
-            }
-        }
-        pel.row++;
-        // check if we have this row already
-        auto row_it = layout_sequence.find(pel.row);
-        if (row_it != layout_sequence.end())
-        {
-            auto& col_map = row_it->second;
-            if (col_map.find(pel.col) != col_map.end()) // check if we have a collision
-            {
-                // move all rows below the row
-                auto rit = std::prev(layout_sequence.end());
-                bool last = false;
-                while (!last)
+                std::string to_class = mol.getTemplateAtomClass(nei_dir.second);
+                std::string from_class = mol.getTemplateAtomClass(back_dir.second);
+                // if to_class and from_class are different backbone types, treat the connection as branch
+                if (!((isAminoAcidClass(to_class) && isAminoAcidClass(from_class)) || (isNucleicClass(to_class) && isNucleicClass(from_class))))
                 {
-                    auto key = rit->first;
-                    if (rit != row_it)
-                        rit--;
-                    else
-                        last = true;
-                    auto nh = layout_sequence.extract(key);
-                    nh.key()++;
-                    layout_sequence.insert(std::move(nh));
+                    pq.emplace(kBranchAttachmentPointIdx, nei_dir.second, kBranchAttachmentPointIdx, back_dir.second);
+                    continue;
                 }
             }
+            pq.emplace(nei_dir, back_dir);
+        }
+    }
+}
+
+void SequenceLayout::addSequenceElement(BaseMolecule& mol, PriorityElement& pel, std::vector<std::deque<int>>& sequences)
+{
+    if (pel.dir.second >= 0 && mol.isTemplateAtom(pel.dir.second))
+    {
+        std::string to_class = mol.getTemplateAtomClass(pel.dir.second);
+        if (isBackboneClass(to_class))
+        {
+            if (sequences.size() == 0)
+                sequences.push_back({});
+
+            auto& seq_item = sequences.back();
+
+            // check if we have 'from' monomer
+            if (pel.from_dir.second >= 0 && mol.isTemplateAtom(pel.from_dir.second))
+            {
+                std::string from_class = mol.getTemplateAtomClass(pel.from_dir.second);
+                bool isNucleoFrom = isNucleicClass(from_class) || isNucleotideClass(from_class);
+                bool isNucleoTo = isNucleicClass(to_class) || isNucleotideClass(to_class);
+                bool isAAFrom = isAminoAcidClass(from_class);
+                bool isAATo = isAminoAcidClass(to_class);
+
+                if ((isNucleoFrom && isNucleoTo) || (isAAFrom && isAATo))
+                {
+                    if (pel.from_dir.first == kRightAttachmentPointIdx && pel.dir.first == kLeftAttachmentPointIdx)
+                    {
+                        seq_item.emplace_front(pel.dir.second);
+                        return;
+                    }
+                    else if (pel.from_dir.first == kLeftAttachmentPointIdx && pel.dir.first == kRightAttachmentPointIdx)
+                    {
+                        seq_item.emplace_back(pel.dir.second);
+                        return;
+                    }
+                }
+                // break sequence
+                if (seq_item.size())
+                {
+                    sequences.push_back({});
+                    sequences.back().emplace_back(pel.dir.second);
+                    return;
+                }
+            }
+            seq_item.emplace_back(pel.dir.second);
         }
     }
 }
@@ -101,70 +126,39 @@ const std::vector<std::map<int, int>>& SequenceLayout::directionsMap()
     return _directions_map;
 }
 
-void SequenceLayout::calculateLayout(SequenceLayoutMap& layout_sequence)
+void SequenceLayout::sequenceExtract(std::vector<std::deque<int>>& sequences)
 {
-    std::unordered_map<int, uint8_t> vertices_visited;
+    sequences.clear();
     _molecule.getTemplateAtomDirectionsMap(_directions_map);
     // place first atom
-    auto comparePair = [](const PriorityElement& lhs, const PriorityElement& rhs) { return lhs.dir.first > rhs.dir.first; };
-    std::priority_queue<PriorityElement, std::vector<PriorityElement>, decltype(comparePair)> pq(comparePair);
+    DirectionsPriorityQueue pq;
 
     // collect all atoms
-    std::set<int> atoms;
+    std::set<int> remaining_atoms;
     for (int i = _molecule.vertexBegin(); i < _molecule.vertexEnd(); i = _molecule.vertexNext(i))
-        atoms.emplace(i);
-
-    while (atoms.size())
     {
-        int row = static_cast<int>(layout_sequence.size()); // increase row for next fragment
-        int col = 0;                                        // every fragment starts from column = 0
-        int first_atom_idx = -1;
-        for (auto atom_idx : atoms)
+        if (_molecule.isTemplateAtom(i))
         {
-            if (_isMonomerBackbone(atom_idx))
-            {
-                first_atom_idx = atom_idx;
-                break;
-            }
+            remaining_atoms.insert(i);
+            // printf("%d:%s:%s\n", i, _molecule.getTemplateAtom(i), _molecule.getTemplateAtomClass(i));
         }
+    }
 
-        if (first_atom_idx < 0)
-            break;
-
-        std::pair<int, int> to_dir(-1, -1);
-        auto& dirs = _directions_map[first_atom_idx];
-        if (dirs.size())
-            to_dir = *dirs.begin();
-
-        pq.emplace(to_dir, _getBackDir(first_atom_idx, to_dir.second), col, row);
-
-        // bfs algorythm for a graph
-        while (pq.size())
+    // bfs algorythm for a graph
+    while (pq.size() || remaining_atoms.size())
+    {
+        if (pq.size() == 0)
         {
-            auto te = pq.top(); // top element
-            pq.pop();
-            int to_atom_idx = te.dir.second;
-            atoms.erase(te.back_dir.second);
-            if (to_atom_idx > -1)
-            {
-                if (vertices_visited[to_atom_idx] == 0)
-                {
-                    vertices_visited[to_atom_idx] = 1; // mark as passed
-                    if (_molecule.isTemplateAtom(to_atom_idx))
-                    {
-                        processPosition(_molecule, te, layout_sequence);
-                        layout_sequence[te.row][te.col] = to_atom_idx;
-                    }
-                    for (const auto& dir : _directions_map[to_atom_idx])
-                    {
-                        // add to queue with priority. left, right, branch.
-                        if (vertices_visited[dir.second] == 0)
-                            pq.emplace(dir, _getBackDir(to_atom_idx, dir.second), te.col, te.row);
-                    }
-                }
-            }
-            else
-                layout_sequence[te.row][te.col] = te.back_dir.second;
+            pq.emplace(std::make_pair(-1, *remaining_atoms.begin()), std::make_pair(-1, -1));
+            sequences.push_back({});
+        }
+        auto te = pq.top(); // top element
+        pq.pop();
+        if (remaining_atoms.find(te.dir.second) != remaining_atoms.end())
+        {
+            addSequenceElement(_molecule, te, sequences);                         // add current monomer to the sequences vector
+            remaining_atoms.erase(te.dir.second);                                 // monomer consumed
+            addNeigbourDirections(_molecule, pq, remaining_atoms, te.dir.second); // add destination neighbours into the queue
         }
     }
 }
@@ -193,6 +187,5 @@ void SequenceLayout::calculateCoordinates(SequenceLayoutMap& layout_sequence)
 
 void SequenceLayout::make()
 {
-    calculateLayout(_layout_sequence);
     calculateCoordinates(_layout_sequence);
 }
