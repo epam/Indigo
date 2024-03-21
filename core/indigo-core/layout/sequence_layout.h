@@ -80,7 +80,7 @@ namespace indigo
         void addNeigbourDirections(BaseMolecule& mol, DirectionsPriorityQueue& pq, const std::unordered_set<int>& valid_atoms, int atom_idx);
 
         const std::pair<int, int> _getBackDir(int src_idx, int dst_idx);
-        bool _isValidAndBackbone( const std::pair<int, int>& dir );
+        bool _isValidAndBackbone(const std::pair<int, int>& dir);
         BaseMolecule& _molecule;
         SequenceLayoutMap _layout_sequence;
         std::vector<std::map<int, int>> _directions_map;
