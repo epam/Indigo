@@ -148,7 +148,10 @@ void SequenceLayout::sequenceExtract(std::vector<std::deque<int>>& sequences)
     while (pq.size() || remaining_atoms.size())
     {
         if (pq.size() == 0)
+        {
             pq.emplace(std::make_pair(-1, *remaining_atoms.begin()), std::make_pair(-1, -1));
+            sequences.push_back({});
+        }
         auto te = pq.top(); // top element
         pq.pop();
         if (remaining_atoms.find(te.dir.second) != remaining_atoms.end())

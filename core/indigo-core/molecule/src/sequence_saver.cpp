@@ -42,6 +42,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
     if (!mol.isQueryMolecule())
         mol.getTemplatesMap(_templates);
 
+    std::string seq_text;
     for (int idx = 0; idx < mol.countComponents(); ++idx)
     {
         Filter filt(mol.getDecomposition().ptr(), Filter::EQ, idx);
@@ -64,7 +65,6 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         std::vector<std::deque<int>> sequences;
         SequenceLayout sl(*component);
         sl.sequenceExtract(sequences);
-        std::string seq_text;
         for (auto& sequence : sequences)
         {
             std::string seq_string;
@@ -145,11 +145,11 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
             if (seq_string.size())
             {
                 if (seq_text.size())
-                    seq_text += "\n";
+                    seq_text += " ";
                 seq_text += seq_string;
             }
         }
-        if (seq_text.size())
-            _output.write(seq_text.data(), static_cast<int>(seq_text.size()));
     }
+    if (seq_text.size())
+        _output.write(seq_text.data(), static_cast<int>(seq_text.size()));
 }
