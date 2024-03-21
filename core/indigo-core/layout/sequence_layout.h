@@ -77,7 +77,7 @@ namespace indigo
     private:
         bool _isMonomerBackbone(int atom_idx);
         void addSequenceElement(BaseMolecule& mol, PriorityElement& pel, std::vector<std::deque<int>>& sequences);
-        void addNeigbourDirections(BaseMolecule& mol, DirectionsPriorityQueue& pq, const std::unordered_set<int>& valid_atoms, int atom_idx);
+        void addNeigbourDirections(BaseMolecule& mol, DirectionsPriorityQueue& pq, const std::set<int>& valid_atoms, int atom_idx);
 
         const std::pair<int, int> _getBackDir(int src_idx, int dst_idx);
         bool _isValidAndBackbone(const std::pair<int, int>& dir);

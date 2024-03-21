@@ -134,7 +134,7 @@ void SequenceLayout::sequenceExtract(std::vector<std::deque<int>>& sequences)
     DirectionsPriorityQueue pq;
 
     // collect all atoms
-    std::unordered_set<int> remaining_atoms;
+    std::set<int> remaining_atoms;
     for (int i = _molecule.vertexBegin(); i < _molecule.vertexEnd(); i = _molecule.vertexNext(i))
     {
         if (_molecule.isTemplateAtom(i))
