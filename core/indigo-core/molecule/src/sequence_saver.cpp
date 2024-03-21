@@ -42,6 +42,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
     if (!mol.isQueryMolecule())
         mol.getTemplatesMap(_templates);
 
+    std::string seq_text;
     for (int idx = 0; idx < mol.countComponents(); ++idx)
     {
         Filter filt(mol.getDecomposition().ptr(), Filter::EQ, idx);
@@ -61,16 +62,14 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
             _output.write(fasta_header.data(), static_cast<int>(fasta_header.size()));
         }
 
-        std::map<int, std::map<int, int>> layout_sequence;
+        std::vector<std::deque<int>> sequences;
         SequenceLayout sl(*component);
-        sl.calculateLayout(layout_sequence);
-        std::string seq_text;
-        for (auto& row : layout_sequence)
+        sl.sequenceExtract(sequences);
+        for (auto& sequence : sequences)
         {
             std::string seq_string;
-            for (auto& col : row.second)
+            for (auto atom_idx : sequence)
             {
-                int atom_idx = col.second;
                 if (component->isTemplateAtom(atom_idx))
                 {
                     std::string mon_class = component->getTemplateAtomClass(atom_idx);
@@ -146,11 +145,11 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
             if (seq_string.size())
             {
                 if (seq_text.size())
-                    seq_text += "\n";
+                    seq_text += " ";
                 seq_text += seq_string;
             }
         }
-        if (seq_text.size())
-            _output.write(seq_text.data(), static_cast<int>(seq_text.size()));
     }
+    if (seq_text.size())
+        _output.write(seq_text.data(), static_cast<int>(seq_text.size()));
 }
