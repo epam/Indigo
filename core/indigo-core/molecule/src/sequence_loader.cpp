@@ -59,7 +59,7 @@ void SequenceLoader::loadFasta(BaseMolecule& mol, SeqType seq_type)
 {
     _seq_id = 0;
     _last_sugar_idx = -1;
-    _row = 0;
+    _row = -1;
     _col = 0;
     int frag_idx = 0;
     std::string invalid_symbols;
@@ -142,6 +142,8 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
 {
     _seq_id = 0;
     _last_sugar_idx = -1;
+    _row = -1;
+    _col = 0;
     mol.clear();
     std::string invalid_symbols;
     while (!_scanner.isEOF())
