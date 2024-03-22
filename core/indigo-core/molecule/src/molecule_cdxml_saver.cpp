@@ -957,44 +957,57 @@ void MoleculeCdxmlSaver::addBondToFragment(BaseMolecule& mol, tinyxml2::XMLEleme
     bond->SetAttribute("E", _atoms_ids[edge.end]);
 
     int order = mol.getBondOrder(bond_idx);
+    if (order < 0 && mol.isQueryMolecule())
+        order = QueryMolecule::getQueryBondType(mol.asQueryMolecule().getBond(bond_idx));
+
+    int dir = mol.getBondDirection(bond_idx);
+
+    if (mol.cis_trans.isIgnored(bond_idx))
+    {
+        order = BOND_DOUBLE;
+        dir = BOND_EITHER;
+    }
 
     if (order == BOND_DOUBLE || order == BOND_TRIPLE)
         bond->SetAttribute("Order", order);
     else if (order == BOND_AROMATIC)
     {
-        bond->SetAttribute("Order", "1.5");
-        bond->SetAttribute("Display", "Dash");
-        bond->SetAttribute("Display2", "Dash");
+        bond->SetAttribute("Order", kBondOrderIntToStr.at(kCDXBondOrder_OneHalf).c_str());
+        bond->SetAttribute("Display", kCDXProp_Bond_DisplayIdToStr.at(kCDXBondDisplay_Dash).c_str());
+        bond->SetAttribute("Display2", kCDXProp_Bond_DisplayIdToStr.at(kCDXBondDisplay_Dash).c_str());
     }
     else if (order == _BOND_SINGLE_OR_DOUBLE)
     {
-        bond->SetAttribute("Order", "1 2");
+        bond->SetAttribute("Order", (kBondOrderIntToStr.at(kCDXBondOrder_Single) + " " + kBondOrderIntToStr.at(kCDXBondOrder_Double)).c_str());
     }
     else if (order == _BOND_SINGLE_OR_AROMATIC)
     {
-        bond->SetAttribute("Order", "1 1.5");
+        bond->SetAttribute("Order", (kBondOrderIntToStr.at(kCDXBondOrder_Single) + " " + kBondOrderIntToStr.at(kCDXBondOrder_OneHalf)).c_str());
     }
     else if (order == _BOND_DOUBLE_OR_AROMATIC)
     {
-        bond->SetAttribute("Order", "1.5 2");
+        bond->SetAttribute("Order", (kBondOrderIntToStr.at(kCDXBondOrder_Double) + " " + kBondOrderIntToStr.at(kCDXBondOrder_OneHalf)).c_str());
+    }
+    else if (order == _BOND_ANY)
+    {
+        bond->SetAttribute("Order", kBondOrderIntToStr.at(kCDXBondOrder_Any).c_str());
     }
     else if (order == _BOND_COORDINATION)
     {
-        bond->SetAttribute("Order", "dative");
+        bond->SetAttribute("Order", kBondOrderIntToStr.at(kCDXBondOrder_Dative).c_str());
     }
     else if (order == _BOND_HYDROGEN)
     {
-        bond->SetAttribute("Order", "hydrogen");
+        bond->SetAttribute("Order", kBondOrderIntToStr.at(kCDXBondOrder_Hydrogen).c_str());
     }
     else
         ; // Do not write single bond order
 
-    int dir = mol.getBondDirection(bond_idx);
     int parity = mol.cis_trans.getParity(bond_idx);
 
     if (mol.have_xyz && (dir == BOND_UP || dir == BOND_DOWN))
     {
-        bond->SetAttribute("Display", (dir == BOND_UP) ? "WedgeBegin" : "WedgedHashBegin");
+        bond->SetAttribute("Display", kCDXProp_Bond_DisplayIdToStr.at((dir == BOND_UP) ? kCDXBondDisplay_WedgeBegin : kCDXBondDisplay_WedgedHashBegin).c_str());
     }
     else if (!mol.have_xyz && parity != 0)
     {
@@ -1012,6 +1025,25 @@ void MoleculeCdxmlSaver::addBondToFragment(BaseMolecule& mol, tinyxml2::XMLEleme
         out.printf("%d %d %d %d", s1, s2, s3, s4);
         buf.push(0);
         bond->SetAttribute("BondCircularOrdering", buf.ptr());
+    }
+    else if (dir == BOND_EITHER)
+    {
+        bond->SetAttribute("Display", kCDXProp_Bond_DisplayIdToStr.at(kCDXBondDisplay_Wavy).c_str());
+    }
+
+    if (mol.reaction_bond_reacting_center[bond_idx] != RC_UNMARKED)
+    {
+        auto it = reaction_center_to_bond_rxn_participation.find(mol.reaction_bond_reacting_center[bond_idx]);
+        if (it != reaction_center_to_bond_rxn_participation.end())
+            bond->SetAttribute("RxnParticipation", it->second);
+    }
+
+    if (mol.isQueryMolecule())
+    {
+        int topology = VALUE_UNKNOWN;
+        mol.asQueryMolecule().getBond(bond_idx).sureValue(QueryMolecule::BOND_TOPOLOGY, topology);
+        if (topology > 0)
+            bond->SetAttribute("Topology", topology_to_cdx_topology.at(topology));
     }
 }
 
