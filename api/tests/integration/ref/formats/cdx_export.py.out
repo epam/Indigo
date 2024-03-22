@@ -8,6 +8,10 @@ two_bn:success
 *** KET to CDX ***
 issue_1774:success
 issue_1775:success
+molecule json loader: 'any' bonds are allowed only for queries
+*** Try as Query ***
+CDXML loader: Queries not supported
+issue_1777:success
 agents:success
 *** CDXML to CDX ***
 AlcoholOxidation_Rxn1:success
