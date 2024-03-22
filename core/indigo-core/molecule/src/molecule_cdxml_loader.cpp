@@ -756,14 +756,18 @@ void MoleculeCdxmlLoader::_updateConnection(const CdxmlNode& node, int atom_idx)
 
 int MoleculeCdxmlLoader::_addBond(Molecule& mol, const CdxmlBond& bond, int begin, int end)
 {
-    int bond_idx = mol.addBond_Silent(begin, end, bond.order);
+    // bond topology is allowed only for queries but queries not supported for now
+    // if (bond.topology > 0 && _pqmol == nullptr)
+    //     throw Error("bond topology is allowed only for queries");
+    int bond_idx = _pmol != nullptr ? _pmol->addBond_Silent(begin, end, bond.order)
+                                    : _pqmol->addBond(begin, end, QueryMolecule::createQueryMoleculeBond(bond.order, bond.topology, bond.dir));
     if (bond.order == BOND_DOUBLE && bond.dir == BOND_EITHER)
         mol.cis_trans.ignore(bond_idx);
     else if (bond.dir > 0)
         mol.setBondDirection(bond_idx, bond.dir);
     if (bond.reaction_center > 0)
         mol.reaction_bond_reacting_center[bond_idx] = bond.reaction_center;
-    // bond topology is allowed only for queries but queries not supported for now
+
     return bond_idx;
 }
 
@@ -1285,27 +1289,14 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, BaseCDXProperty& prop)
 
     auto reaction_center_lambda = [&bond](const std::string& data) {
         uint8_t rxn_participation = kBondReactionParticipationNameToInt.at(data);
-        static const std::unordered_map<uint8_t, int> bond_rxn_participation_map = {
-            {kCDXBondReactionParticipation_Unspecified, RC_UNMARKED},
-            {kCDXBondReactionParticipation_ReactionCenter, RC_CENTER},
-            {kCDXBondReactionParticipation_MakeOrBreak, RC_MADE_OR_BROKEN},
-            {kCDXBondReactionParticipation_ChangeType, RC_ORDER_CHANGED},
-            {kCDXBondReactionParticipation_MakeAndChange, RC_MADE_OR_BROKEN | RC_ORDER_CHANGED},
-            {kCDXBondReactionParticipation_NotReactionCenter, RC_NOT_CENTER},
-            {kCDXBondReactionParticipation_NoChange, RC_UNCHANGED},
-            {kCDXBondReactionParticipation_Unmapped, RC_UNMARKED}};
-        auto it = bond_rxn_participation_map.find(rxn_participation);
-        if (it != bond_rxn_participation_map.end())
+        auto it = bond_rxn_participation_to_reaction_center.find(rxn_participation);
+        if (it != bond_rxn_participation_to_reaction_center.end())
             bond.reaction_center = it->second;
     };
 
     auto topology_lambda = [&bond](const std::string& data) {
         uint8_t topology = kBondTopologyNameToInt.at(data);
-        static const std::unordered_map<uint8_t, int> topology_map = {{kCDXBondTopology_Unspecified, TOPOLOGY_ANY},
-                                                                      {kCDXBondTopology_Ring, TOPOLOGY_RING},
-                                                                      {kCDXBondTopology_Chain, TOPOLOGY_CHAIN},
-                                                                      {kCDXBondTopology_RingOrChain, TOPOLOGY_ANY}};
-        bond.topology = topology_map.at(topology);
+        bond.topology = cdx_topology_to_topology.at(topology);
     };
 
     std::unordered_map<std::string, std::function<void(const std::string&)>> bond_dispatcher = {{"id", id_lambda},

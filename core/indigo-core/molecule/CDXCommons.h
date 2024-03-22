@@ -2,6 +2,7 @@
 #define _H_CDXCommons
 
 #include "CDXConstants.h"
+#include "reaction/reaction.h"
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -1278,6 +1279,33 @@ namespace indigo
                                                                           {kCDXBondTopology_Ring, "Ring"},
                                                                           {kCDXBondTopology_Chain, "Chain"},
                                                                           {kCDXBondTopology_RingOrChain, "RingOrChain"}};
+
+    static const std::unordered_map<uint8_t, int> bond_rxn_participation_to_reaction_center = {
+        {kCDXBondReactionParticipation_Unspecified, RC_UNMARKED},
+        {kCDXBondReactionParticipation_ReactionCenter, RC_CENTER},
+        {kCDXBondReactionParticipation_MakeOrBreak, RC_MADE_OR_BROKEN},
+        {kCDXBondReactionParticipation_ChangeType, RC_ORDER_CHANGED},
+        {kCDXBondReactionParticipation_MakeAndChange, RC_MADE_OR_BROKEN | RC_ORDER_CHANGED},
+        {kCDXBondReactionParticipation_NotReactionCenter, RC_NOT_CENTER},
+        {kCDXBondReactionParticipation_NoChange, RC_UNCHANGED},
+        {kCDXBondReactionParticipation_Unmapped, RC_UNMARKED}};
+    static const std::unordered_map<int, uint8_t> reaction_center_to_bond_rxn_participation = {
+        {RC_UNMARKED, kCDXBondReactionParticipation_Unspecified},
+        {RC_CENTER, kCDXBondReactionParticipation_ReactionCenter},
+        {RC_MADE_OR_BROKEN, kCDXBondReactionParticipation_MakeOrBreak},
+        {RC_ORDER_CHANGED, kCDXBondReactionParticipation_ChangeType},
+        {RC_MADE_OR_BROKEN | RC_ORDER_CHANGED, kCDXBondReactionParticipation_MakeAndChange},
+        {RC_NOT_CENTER, kCDXBondReactionParticipation_NotReactionCenter},
+        {RC_UNCHANGED, kCDXBondReactionParticipation_NoChange},
+        {RC_UNMARKED, kCDXBondReactionParticipation_Unmapped}};
+
+    static const std::unordered_map<uint8_t, int> cdx_topology_to_topology = {{kCDXBondTopology_Unspecified, TOPOLOGY_ANY},
+                                                                              {kCDXBondTopology_Ring, TOPOLOGY_RING},
+                                                                              {kCDXBondTopology_Chain, TOPOLOGY_CHAIN},
+                                                                              {kCDXBondTopology_RingOrChain, TOPOLOGY_ANY}};
+    static const std::unordered_map<int, uint8_t> topology_to_cdx_topology = {
+        {TOPOLOGY_ANY, kCDXBondTopology_Unspecified}, {TOPOLOGY_RING, kCDXBondTopology_Ring}, {TOPOLOGY_CHAIN, kCDXBondTopology_Chain}};
+
 }
 
 #ifdef _WIN32

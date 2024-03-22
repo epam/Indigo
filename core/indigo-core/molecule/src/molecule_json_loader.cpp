@@ -708,6 +708,7 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
                         break;
                     case BIOVIA_STEREO_DOUBLE_CISTRANS:
                         mol.cis_trans.ignore(bond_idx);
+                        mol.setBondDirection(bond_idx, BOND_EITHER);
                         break;
                     case BIOVIA_STEREO_ETHER:
                         mol.setBondDirection(bond_idx, BOND_EITHER);
@@ -1458,7 +1459,12 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     for (int i = 0; i < mol.edgeCount(); i++)
         if (mol.getBondDirection(i) == BOND_EITHER)
         {
-            if (MoleculeCisTrans::isGeomStereoBond(mol, i, 0, true))
+            if (mol.cis_trans.isIgnored(i))
+            {
+                ignore_cistrans[i] = 1;
+                sensible_bond_directions[i] = 1;
+            }
+            else if (MoleculeCisTrans::isGeomStereoBond(mol, i, 0, true))
             {
                 ignore_cistrans[i] = 1;
                 sensible_bond_directions[i] = 1;
