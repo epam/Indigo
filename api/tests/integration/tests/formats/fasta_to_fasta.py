@@ -27,6 +27,7 @@ fasta_files = [
     {"file": "test_peptide", "seq_type": "PEPTIDE"},
     {"file": "test_rna", "seq_type": "RNA"},
     {"file": "test_dna", "seq_type": "DNA"},
+    {"file": "multiseq", "seq_type": "DNA"},
 ]
 
 for desc in fasta_files:
@@ -34,8 +35,8 @@ for desc in fasta_files:
     mol = indigo.loadFastaFromFile(
         os.path.join(root, filename + ".fasta"), desc["seq_type"]
     )
-    # with open(os.path.join(ref_path, filename) + ".fasta", "w") as file:
-    #     file.write(mol.fasta())
+    with open(os.path.join(ref_path, filename) + ".fasta", "w") as file:
+        file.write(mol.fasta())
     with open(os.path.join(ref_path, filename) + ".fasta", "r") as file:
         fasta_ref = file.read()
     fasta = mol.fasta()

@@ -32,7 +32,7 @@ using namespace indigo;
 
 IMPL_ERROR(SequenceLoader, "SEQUENCE loader");
 
-SequenceLoader::SequenceLoader(Scanner& scanner) : _scanner(scanner), _mon_lib(MonomerTemplates::_instance()), _seq_id(0), _last_sugar_idx(-1), _row(0), _col(0)
+SequenceLoader::SequenceLoader(Scanner& scanner) : _scanner(scanner), _mon_lib(MonomerTemplates::_instance()), _seq_id(0), _last_sugar_idx(-1), _row(-1), _col(0)
 {
     _left_apid.readString(kLeftAttachmentPoint, true);
     _right_apid.readString(kRightAttachmentPoint, true);

@@ -50,16 +50,14 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         component->makeSubmolecule(mol, filt, NULL, NULL);
         if (sf == SeqFormat::FASTA)
         {
-            std::string fasta_header = ">";
+            std::string fasta_header = ">Sequence";
+            fasta_header += std::to_string(idx + 1);
             auto& mol_properties = component->properties();
-            for (auto it = mol_properties.begin(); it != mol_properties.end(); ++it)
-            {
-                auto& props = component->properties().value(it);
-                if (props.contains(kFASTA_HEADER))
-                    fasta_header = props.at(kFASTA_HEADER);
-            }
+            auto pmap = mol_properties.at2(idx + 1);
+            if (pmap && pmap->contains(kFASTA_HEADER))
+                fasta_header = pmap->at(kFASTA_HEADER);
             fasta_header += "\n";
-            _output.write(fasta_header.data(), static_cast<int>(fasta_header.size()));
+            seq_text += fasta_header;
         }
 
         std::vector<std::deque<int>> sequences;
@@ -144,7 +142,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
             }
             if (seq_string.size())
             {
-                if (seq_text.size())
+                if (seq_text.size() && sf == SeqFormat::FASTA)
                     seq_text += " ";
                 seq_text += seq_string;
             }
