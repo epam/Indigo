@@ -35,8 +35,8 @@ for desc in fasta_files:
     mol = indigo.loadFastaFromFile(
         os.path.join(root, filename + ".fasta"), desc["seq_type"]
     )
-    with open(os.path.join(ref_path, filename) + ".fasta", "w") as file:
-        file.write(mol.fasta())
+    # with open(os.path.join(ref_path, filename) + ".fasta", "w") as file:
+    #     file.write(mol.fasta())
     with open(os.path.join(ref_path, filename) + ".fasta", "r") as file:
         fasta_ref = file.read()
     fasta = mol.fasta()
