@@ -374,10 +374,10 @@ stereo_either-0020.mol
             <b id="52" B="17" E="18"/>
             <b id="53" B="17" E="19"/>
             <b id="54" B="17" E="20"/>
-            <b id="55" B="16" E="21" Order="2"/>
-            <b id="56" B="21" E="22"/>
-            <b id="57" B="22" E="23" Order="2"/>
-            <b id="58" B="23" E="24"/>
+            <b id="55" B="16" E="21" Order="2" Display="Wavy"/>
+            <b id="56" B="21" E="22" Display="Wavy"/>
+            <b id="57" B="22" E="23" Order="2" Display="Wavy"/>
+            <b id="58" B="23" E="24" Display="Wavy"/>
             <b id="59" B="24" E="25"/>
             <b id="60" B="25" E="26"/>
             <b id="61" B="25" E="27"/>
@@ -386,14 +386,14 @@ stereo_either-0020.mol
             <b id="64" B="29" E="30"/>
             <b id="65" B="29" E="31"/>
             <b id="66" B="29" E="32"/>
-            <b id="67" B="33" E="23"/>
+            <b id="67" B="33" E="23" Display="Wavy"/>
             <b id="68" B="33" E="34"/>
             <b id="69" B="34" E="35"/>
             <b id="70" B="34" E="36"/>
             <b id="71" B="34" E="37"/>
-            <b id="72" B="33" E="38" Order="2"/>
-            <b id="73" B="39" E="38"/>
-            <b id="74" B="5" E="39" Order="2"/>
+            <b id="72" B="33" E="38" Order="2" Display="Wavy"/>
+            <b id="73" B="39" E="38" Display="Wavy"/>
+            <b id="74" B="5" E="39" Order="2" Display="Wavy"/>
         </fragment>
     </page>
 </CDXML>
