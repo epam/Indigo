@@ -53,7 +53,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         component->makeSubmolecule(mol, filt, NULL, NULL);
         if (sf == SeqFormat::FASTA)
         {
-            if ( idx )
+            if (idx)
                 seq_text += "\n";
             std::string fasta_header = ">Sequence";
             fasta_header += std::to_string(idx + 1);
