@@ -1,5 +1,7 @@
-*** FASTA to FASTA ***
-test_peptide.fasta:SUCCEED
-test_rna.fasta:SUCCEED
-test_dna.fasta:SUCCEED
-multiseq.fasta:SUCCEED
+*** FASTA to KET ***
+test_peptide.ket:SUCCEED
+test_rna.ket:SUCCEED
+test_dna.ket:SUCCEED
+multiseq.ket:SUCCEED
+break.ket:SUCCEED
+comment.ket:SUCCEED
