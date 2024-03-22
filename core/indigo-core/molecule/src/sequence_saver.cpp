@@ -43,6 +43,9 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         mol.getTemplatesMap(_templates);
 
     std::string seq_text;
+    auto& mol_properties = mol.properties();
+    auto prop_it = mol_properties.begin();
+
     for (int idx = 0; idx < mol.countComponents(); ++idx)
     {
         Filter filt(mol.getDecomposition().ptr(), Filter::EQ, idx);
@@ -50,12 +53,17 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         component->makeSubmolecule(mol, filt, NULL, NULL);
         if (sf == SeqFormat::FASTA)
         {
+            if ( idx )
+                seq_text += "\n";
             std::string fasta_header = ">Sequence";
             fasta_header += std::to_string(idx + 1);
-            auto& mol_properties = component->properties();
-            auto pmap = mol_properties.at2(idx + 1);
-            if (pmap && pmap->contains(kFASTA_HEADER))
-                fasta_header = pmap->at(kFASTA_HEADER);
+            if (prop_it != mol_properties.end())
+            {
+                auto& props = mol_properties.value(prop_it);
+                prop_it++;
+                if (props.contains(kFASTA_HEADER))
+                    fasta_header = props.at(kFASTA_HEADER);
+            }
             fasta_header += "\n";
             seq_text += fasta_header;
         }
@@ -142,7 +150,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
             }
             if (seq_string.size())
             {
-                if (seq_text.size() && sf == SeqFormat::FASTA)
+                if (seq_text.size() && sf == SeqFormat::Sequence)
                     seq_text += " ";
                 seq_text += seq_string;
             }
