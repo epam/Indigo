@@ -44,19 +44,19 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
 
     std::string seq_text;
     auto& mol_properties = mol.properties();
+    std::vector<std::deque<int>> sequences;
+    SequenceLayout sl(mol);
+    sl.sequenceExtract(sequences);
     auto prop_it = mol_properties.begin();
-
-    for (int idx = 0; idx < mol.countComponents(); ++idx)
+    int seq_idx = 0;
+    for (auto& sequence : sequences)
     {
-        Filter filt(mol.getDecomposition().ptr(), Filter::EQ, idx);
-        std::unique_ptr<BaseMolecule> component(mol.neu());
-        component->makeSubmolecule(mol, filt, NULL, NULL);
         if (sf == SeqFormat::FASTA)
         {
-            if (idx)
+            if (seq_idx)
                 seq_text += "\n";
             std::string fasta_header = ">Sequence";
-            fasta_header += std::to_string(idx + 1);
+            fasta_header += std::to_string(seq_idx + 1);
             if (prop_it != mol_properties.end())
             {
                 auto& props = mol_properties.value(prop_it);
@@ -67,94 +67,89 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
             fasta_header += "\n";
             seq_text += fasta_header;
         }
-
-        std::vector<std::deque<int>> sequences;
-        SequenceLayout sl(*component);
-        sl.sequenceExtract(sequences);
-        for (auto& sequence : sequences)
+        std::string seq_string;
+        for (auto atom_idx : sequence)
         {
-            std::string seq_string;
-            for (auto atom_idx : sequence)
+            if (mol.isTemplateAtom(atom_idx))
             {
-                if (component->isTemplateAtom(atom_idx))
+                std::string mon_class = mol.getTemplateAtomClass(atom_idx);
+                if (isBackboneClass(mon_class))
                 {
-                    std::string mon_class = component->getTemplateAtomClass(atom_idx);
-                    if (isBackboneClass(mon_class))
+                    std::string label;
+                    if (mon_class == kMonomerClassSUGAR)
                     {
-                        std::string label;
-                        if (mon_class == kMonomerClassSUGAR)
+                        auto& v = mol.getVertex(atom_idx);
+                        for (auto nei_idx = v.neiBegin(); nei_idx < v.neiEnd(); nei_idx = v.neiNext(nei_idx))
                         {
-                            auto& v = component->getVertex(atom_idx);
-                            for (auto nei_idx = v.neiBegin(); nei_idx < v.neiEnd(); nei_idx = v.neiNext(nei_idx))
+                            int nei_atom_idx = v.neiVertex(nei_idx);
+                            if (mol.isTemplateAtom(nei_atom_idx) && std::string(mol.getTemplateAtomClass(nei_atom_idx)) == kMonomerClassBASE)
                             {
-                                int nei_atom_idx = v.neiVertex(nei_idx);
-                                if (component->isTemplateAtom(nei_atom_idx) && std::string(component->getTemplateAtomClass(nei_atom_idx)) == kMonomerClassBASE)
-                                {
-                                    mon_class = kMonomerClassBASE;
-                                    label = monomerAliasByName(mon_class, component->getTemplateAtom(nei_atom_idx));
-                                    break;
-                                }
+                                mon_class = kMonomerClassBASE;
+                                atom_idx = nei_atom_idx;
+                                label = monomerAliasByName(mon_class, mol.getTemplateAtom(nei_atom_idx));
+                                break;
                             }
                         }
-                        else if (isAminoAcidClass(mon_class))
-                        {
-                            mon_class = kMonomerClassAA;
-                            label = monomerAliasByName(kMonomerClassAA, component->getTemplateAtom(atom_idx));
-                        }
-                        else if (isNucleotideClass(mon_class))
-                        {
-                            mon_class = kMonomerClassBASE; // treat nucleotide symbol as a base
-                            label = monomerAliasByName(kMonomerClassBASE, component->getTemplateAtom(atom_idx));
-                        }
+                    }
+                    else if (isAminoAcidClass(mon_class))
+                    {
+                        mon_class = kMonomerClassAA;
+                        label = monomerAliasByName(kMonomerClassAA, mol.getTemplateAtom(atom_idx));
+                    }
+                    else if (isNucleotideClass(mon_class))
+                    {
+                        mon_class = kMonomerClassBASE; // treat nucleotide symbol as a base
+                        label = monomerAliasByName(kMonomerClassBASE, mol.getTemplateAtom(atom_idx));
+                    }
 
-                        if (label.size())
+                    if (label.size())
+                    {
+                        TGroup temp;
+                        if (!_mon_lib.getMonomerTemplate(mon_class, label, temp))
                         {
-                            TGroup temp;
-                            if (!_mon_lib.getMonomerTemplate(mon_class, label, temp))
+                            // if symbol is not standard, check its natural analog
+                            const char* natrep = nullptr;
+                            int temp_idx = mol.getTemplateAtomTemplateIndex(atom_idx);
+                            if (temp_idx > -1)
                             {
-                                // if symbol is not standard, check its natural analog
-                                const char* natrep = nullptr;
-                                int temp_idx = component->getTemplateAtomTemplateIndex(atom_idx);
-                                if (temp_idx > -1)
+                                auto& tg = mol.tgroups.getTGroup(temp_idx);
+                                natrep = tg.tgroup_natreplace.ptr();
+                            }
+                            else
+                            {
+                                auto tg_ref = findTemplateInMap(label, mon_class, _templates);
+                                if (tg_ref.has_value())
                                 {
-                                    auto& tg = component->tgroups.getTGroup(temp_idx);
+                                    auto& tg = tg_ref.value().get();
                                     natrep = tg.tgroup_natreplace.ptr();
                                 }
-                                else
-                                {
-                                    auto tg_ref = findTemplateInMap(label, mon_class, _templates);
-                                    if (tg_ref.has_value())
-                                    {
-                                        auto& tg = tg_ref.value().get();
-                                        natrep = tg.tgroup_natreplace.ptr();
-                                    }
-                                }
-                                std::string natural_analog;
-                                if (natrep)
-                                    natural_analog = monomerAliasByName(mon_class, extractMonomerName(natrep));
-
-                                if (_mon_lib.getMonomerTemplate(mon_class, natural_analog, temp))
-                                    label = natural_analog;
-                                else if (mon_class == kMonomerClassBASE)
-                                    label = "N";
-                                else if (mon_class == kMonomerClassAA)
-                                    label = "X";
                             }
+                            std::string natural_analog;
+                            if (natrep)
+                                natural_analog = monomerAliasByName(mon_class, extractMonomerName(natrep));
 
-                            if (label.size() > 1)
-                                throw Error("Can't save '%s' to sequence format", label.c_str());
-                            seq_string += label;
+                            if (_mon_lib.getMonomerTemplate(mon_class, natural_analog, temp))
+                                label = natural_analog;
+                            else if (mon_class == kMonomerClassBASE)
+                                label = "N";
+                            else if (mon_class == kMonomerClassAA)
+                                label = "X";
                         }
+
+                        if (label.size() > 1)
+                            throw Error("Can't save '%s' to sequence format", label.c_str());
+                        seq_string += label;
                     }
                 }
             }
-            if (seq_string.size())
-            {
-                if (seq_text.size() && sf == SeqFormat::Sequence)
-                    seq_text += " ";
-                seq_text += seq_string;
-            }
         }
+        if (seq_string.size())
+        {
+            if (seq_text.size() && sf == SeqFormat::Sequence)
+                seq_text += " ";
+            seq_text += seq_string;
+        }
+        seq_idx++;
     }
     if (seq_text.size())
         _output.write(seq_text.data(), static_cast<int>(seq_text.size()));
