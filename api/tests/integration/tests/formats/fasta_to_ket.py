@@ -29,6 +29,7 @@ fasta_files = [
     {"file": "test_dna", "seq_type": "DNA"},
     {"file": "multiseq", "seq_type": "DNA"},
     {"file": "break", "seq_type": "PEPTIDE"},
+    {"file": "comment", "seq_type": "PEPTIDE"},
 ]
 
 for desc in fasta_files:
