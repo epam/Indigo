@@ -29,7 +29,7 @@ option(BUILD_INDIGO_WRAPPERS_DOTNET "Build Indigo API wrappers to .NET" ON)
 option(BUILD_INDIGO_UTILS "Build indigo-cano, indigo-deco and indigo-depict utilities" ON)
 
 # Bingo options
-option(BUILD_BINGO "Build all existing Bingo cartridges" ON)
+option(BUILD_BINGO "Build all existing Bingo cartridges" OFF)
 option(BUILD_BINGO_POSTGRES "Build Bingo Postgres cartridge" ON)
 option(BUILD_BINGO_SQLSERVER "Build Bingo MS SqlServer cartridge" ON)
 option(BUILD_BINGO_ORACLE "Build Bingo Oracle cartridge" ON)
