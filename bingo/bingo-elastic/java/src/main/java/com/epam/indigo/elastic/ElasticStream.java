@@ -153,7 +153,9 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         searchSourceBuilder.size(batchSize);
 
         if (!comparators.isEmpty()) {
-            comparators.stream().map(IndigoComparator::toSortBuilder).forEach(searchSourceBuilder::sort);
+            comparators.stream()
+                    .flatMap(comparator -> comparator.toSortBuilders().stream())
+                    .forEach(searchSourceBuilder::sort);
             searchSourceBuilder.sort(new FieldSortBuilder("_doc").order(SortOrder.ASC));
         }
 
@@ -216,7 +218,8 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
         if (!(comparator instanceof IndigoComparator)) {
             throw new IllegalArgumentException("Comparator used isn't an IndigoComparator");
         }
-        comparators.add((IndigoComparator) comparator);
+        this.comparators.clear();
+        this.comparators.add((IndigoComparator<? super T>) comparator);
         return this;
     }
 
