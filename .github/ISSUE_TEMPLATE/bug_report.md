@@ -11,11 +11,11 @@ assignees: ''
 1. Use Indigo library (Bingo cartridge). Describe environment
 2. Add script or SQL to reproduce the issue
 
-**Actual behavior**
-A clear and concise description of what the bug is.
-
 **Expected behavior**
 A clear and concise description of what you expected to happen.
+
+**Actual behavior**
+A clear and concise description of what the bug is.
 
 **Environment details:**
  - Back-end version
