@@ -763,7 +763,7 @@ int MoleculeCdxmlLoader::_addBond(Molecule& mol, const CdxmlBond& bond, int begi
                                     : _pqmol->addBond(begin, end, QueryMolecule::createQueryMoleculeBond(bond.order, bond.topology, bond.dir));
     if (bond.order == BOND_DOUBLE && bond.dir == BOND_EITHER)
         mol.cis_trans.ignore(bond_idx);
-    else if (bond.dir > 0)
+    else if (bond.dir > 0 && bond.order == BOND_SINGLE)
         mol.setBondDirection(bond_idx, bond.dir);
     if (bond.reaction_center > 0)
         mol.reaction_bond_reacting_center[bond_idx] = bond.reaction_center;
