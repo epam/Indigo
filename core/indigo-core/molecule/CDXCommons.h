@@ -113,7 +113,7 @@ namespace indigo
         CDXFontStyle
     };
 
-    const std::unordered_map<std::string, int16_t> kCDXProp_Arrow_ArrowHeadStrToInt = {{"Full", 1}};
+    const std::unordered_map<std::string, int16_t> kCDXProp_Arrow_ArrowHeadStrToInt = {{"Full", 2}, {"HalfLeft", 3}, {"HalfRight", 4}};
 
     const std::unordered_map<std::string, int16_t> kCDXProp_Arrow_ArrowHeadTypeStrToInt = {{"Solid", 1}, {"Hollow", 2}, {"Angled", 3}};
 
