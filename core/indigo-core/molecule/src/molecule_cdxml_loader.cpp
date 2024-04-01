@@ -253,7 +253,8 @@ std::string CDXProperty::parseCDXINT16(int16_t val) const
         return KNodeTypeIntToName.at(val);
     }
     break;
-    case kCDXProp_Bond_Display: {
+    case kCDXProp_Bond_Display:
+    case kCDXProp_Bond_Display2: {
         return kCDXProp_Bond_DisplayIdToStr.at((CDXBondDisplay)val);
     }
     break;
@@ -759,12 +760,20 @@ int MoleculeCdxmlLoader::_addBond(Molecule& mol, const CdxmlBond& bond, int begi
     // bond topology is allowed only for queries but queries not supported for now
     // if (bond.topology > 0 && _pqmol == nullptr)
     //     throw Error("bond topology is allowed only for queries");
-    int bond_idx = _pmol != nullptr ? _pmol->addBond_Silent(begin, end, bond.order)
-                                    : _pqmol->addBond(begin, end, QueryMolecule::createQueryMoleculeBond(bond.order, bond.topology, bond.dir));
-    if (bond.order == BOND_DOUBLE && bond.dir == BOND_EITHER)
+    int order = bond.order;
+    int direction = bond.dir;
+
+    if (order == BOND_AROMATIC && bond.display == kCDXBondDisplay_Solid && bond.display2 == kCDXBondDisplay_Dash) // tautomeric bond
+    {
+        order = _BOND_SINGLE_OR_DOUBLE;
+    }
+
+    int bond_idx = _pmol != nullptr ? _pmol->addBond_Silent(begin, end, order)
+                                    : _pqmol->addBond(begin, end, QueryMolecule::createQueryMoleculeBond(order, bond.topology, direction));
+    if (order == BOND_DOUBLE && direction == BOND_EITHER)
         mol.cis_trans.ignore(bond_idx);
-    else if (bond.dir > 0 && bond.order == BOND_SINGLE)
-        mol.setBondDirection(bond_idx, bond.dir);
+    else if (direction > 0 && order == BOND_SINGLE)
+        mol.setBondDirection(bond_idx, direction);
     if (bond.reaction_center > 0)
         mol.reaction_bond_reacting_center[bond_idx] = bond.reaction_center;
 
@@ -1267,23 +1276,26 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, BaseCDXProperty& prop)
 
     auto stereo_lambda = [&bond](const std::string& data) { bond.stereo = kCIPBondStereochemistryCharToIndex.at(data.front()); };
 
-    auto bond_dir_lambda = [&bond](const std::string& data) {
-        static const std::unordered_map<std::string, std::pair<int, bool>> dir_map = {{"WedgedHashBegin", {BOND_DOWN, false}},
-                                                                                      {"WedgedHashEnd", {BOND_DOWN, true}},
-                                                                                      {"Hash", {BOND_DOWN, false}},
-                                                                                      {"Dash", {BOND_DOWN, false}},
-                                                                                      {"WedgeBegin", {BOND_UP, false}},
-                                                                                      {"WedgeEnd", {BOND_UP, true}},
-                                                                                      {"HollowWedgeBegin", {BOND_UP, false}},
-                                                                                      {"HollowWedgeEnd", {BOND_UP, true}},
-                                                                                      {"Bold", {BOND_UP, false}},
-                                                                                      {"Wavy", {BOND_EITHER, false}}};
-        auto disp_it = dir_map.find(data);
-        if (disp_it != dir_map.end())
+    auto bond_display_lambda = [&bond](const std::string& data) {
+        auto dislay_it = kCDXProp_Bond_DisplayStrToID.find(data);
+        if (dislay_it != kCDXProp_Bond_DisplayStrToID.end())
+        {
+            bond.display = dislay_it->second;
+        }
+        auto disp_it = display_to_direction.find(bond.display);
+        if (disp_it != display_to_direction.end())
         {
             auto& dir = disp_it->second;
             bond.dir = dir.first;
             bond.swap_bond = dir.second;
+        }
+    };
+
+    auto bond_display2_lambda = [&bond](const std::string& data) {
+        auto disp_it = kCDXProp_Bond_DisplayStrToID.find(data);
+        if (disp_it != kCDXProp_Bond_DisplayStrToID.end())
+        {
+            bond.display2 = disp_it->second;
         }
     };
 
@@ -1303,7 +1315,8 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, BaseCDXProperty& prop)
                                                                                                 {"B", bond_begin_lambda},
                                                                                                 {"E", bond_end_lambda},
                                                                                                 {"Order", bond_order_lambda},
-                                                                                                {"Display", bond_dir_lambda},
+                                                                                                {"Display", bond_display_lambda},
+                                                                                                {"Display2", bond_display2_lambda},
                                                                                                 {"BS", stereo_lambda},
                                                                                                 {"RxnParticipation", reaction_center_lambda},
                                                                                                 {"Topology", topology_lambda}};
