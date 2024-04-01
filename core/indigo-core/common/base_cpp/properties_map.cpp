@@ -152,5 +152,5 @@ int PropertiesMap::PrAuto::next(int k)
 }
 PropertiesMap::PrIter PropertiesMap::PrAuto::end()
 {
-    return PropertiesMap::PrIter(_owner, _owner._propertiesOrdered.size());
+    return PropertiesMap::PrIter(_owner, static_cast<int>(_owner._propertiesOrdered.size()));
 }
