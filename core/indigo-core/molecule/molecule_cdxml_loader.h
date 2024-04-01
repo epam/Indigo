@@ -159,7 +159,7 @@ namespace indigo
 
     struct CdxmlBond
     {
-        CdxmlBond() : order(1), stereo(0), dir(0), topology(0), reaction_center(0), swap_bond(false)
+        CdxmlBond() : order(1), stereo(0), dir(0), display(0), display2(0), topology(0), reaction_center(0), swap_bond(false)
         {
         }
         AutoInt id;
@@ -167,6 +167,8 @@ namespace indigo
         AutoInt order;
         AutoInt stereo;
         AutoInt dir;
+        AutoInt display;
+        AutoInt display2;
         AutoInt topology;
         AutoInt reaction_center;
         bool swap_bond;
