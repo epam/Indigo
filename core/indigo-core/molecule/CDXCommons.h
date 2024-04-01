@@ -456,6 +456,17 @@ namespace indigo
                                                                                {kCDXBondDisplay_Dot, "Dot"},
                                                                                {kCDXBondDisplay_DashDot, "DashDot"}};
 
+    static const std::unordered_map<int, std::pair<int, bool>> display_to_direction = {{kCDXBondDisplay_WedgedHashBegin, {BOND_DOWN, false}},
+                                                                                       {kCDXBondDisplay_WedgedHashEnd, {BOND_DOWN, true}},
+                                                                                       {kCDXBondDisplay_Hash, {BOND_DOWN, false}},
+                                                                                       {kCDXBondDisplay_Dash, {BOND_DOWN, false}},
+                                                                                       {kCDXBondDisplay_WedgeBegin, {BOND_UP, false}},
+                                                                                       {kCDXBondDisplay_WedgeEnd, {BOND_UP, true}},
+                                                                                       {kCDXBondDisplay_HollowWedgeBegin, {BOND_UP, false}},
+                                                                                       {kCDXBondDisplay_HollowWedgeEnd, {BOND_UP, true}},
+                                                                                       {kCDXBondDisplay_Bold, {BOND_UP, false}},
+                                                                                       {kCDXBondDisplay_Wavy, {BOND_EITHER, false}}};
+
     const std::unordered_map<std::string, EnhancedStereoType> kCDXEnhancedStereoStrToID = {{"Unspecified", EnhancedStereoType::UNSPECIFIED},
                                                                                            {"None", EnhancedStereoType::NONE},
                                                                                            {"Absolute", EnhancedStereoType::ABSOLUTE},
