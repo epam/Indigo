@@ -24,12 +24,12 @@
 #pragma warning(disable : 4251)
 #endif
 
-#include <map>
-#include <string>
-#include <vector>
 #include "base_cpp/auto_iter.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/red_black.h"
+#include <map>
+#include <string>
+#include <vector>
 
 namespace indigo
 {
