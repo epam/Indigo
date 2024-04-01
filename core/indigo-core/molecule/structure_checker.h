@@ -19,6 +19,11 @@
 #ifndef __structure_checker__
 #define __structure_checker__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include "base_cpp/exception.h"
 #include <string>
 #include <vector>
@@ -107,6 +112,7 @@ namespace indigo
             CheckMessage(CheckMessageCode _code, int _index, const std::vector<int>& _ids, const CheckResult& _subresult);
             CheckMessageCode code = StructureChecker::CheckMessageCode::CHECK_MSG_NONE;
             std::string message();
+            std::string prefix;
             int index = -1;
             std::vector<int> ids;
             CheckResult subresult;
@@ -135,5 +141,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

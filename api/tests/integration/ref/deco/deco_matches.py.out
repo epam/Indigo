@@ -2,7 +2,7 @@ should add correct disconnected match to the full scaffold**********************
 MATCH # 1
 highlighted structure: CCCCOCCCCCNCCC |ha:0,1,2,3,4,7,8,9,10,11,hb:0,1,2,3,7,8,9,10|
 molecule with rgroups: 
-Smiles: CCCCO%91.[*:2]CNCCC%92.[*:1]%91%92 |$;;;;;_R2;;;;;;_R1$,RG:_R1={C%91C%92.[*:1]%91.[*:2]%92 |$;;_AP1;_AP2$|},_R2={CC%91.[*:1]%91 |$;;_AP1$|}|
+Smiles: CCCCO%91.C%92CCNC%93.[*:1]%92%91.[*:2]%93 |$;;;;;;;;;;_R1;_R2$,RG:_R1={C%91C%92.[*:2]%91.[*:1]%92 |$;;_AP2;_AP1$|},_R2={C%91C.[*:1]%91 |$;;_AP1$|}|
 Format: auto
 $MDL  REV  1 0100000000
 $MOL
@@ -92,7 +92,7 @@ M  END
 MATCH # 2
 highlighted structure: CCCCOCCCCCNCCC |ha:0,1,2,3,4,9,10,11,12,13,hb:0,1,2,3,9,10,11,12|
 molecule with rgroups: 
-Smiles: CCCCO%91.CCCNC%92.[*:1]%91%92 |$;;;;;;;;;;_R1$,RG:_R1={C%91CCC%92.[*:1]%91.[*:2]%92 |$;;;;_AP1;_AP2$|}|
+Smiles: CCCCO%91.C%92NCCC.[*:1]%92%91 |$;;;;;;;;;;_R1$,RG:_R1={C%91CCC%92.[*:2]%91.[*:1]%92 |$;;;;_AP2;_AP1$|}|
 Format: auto
 $MDL  REV  1 0100000000
 $MOL
@@ -165,7 +165,7 @@ M  END
 MATCH # 3
 highlighted structure: CCCCOCCCCCNCCC |ha:4,5,6,7,8,9,10,11,12,13,hb:4,5,6,7,9,10,11,12|
 molecule with rgroups: 
-Smiles: CCCNC%91.[*:1]OCCCC%92.[*:2]%92%91 |$;;;;;_R1;;;;;;_R2$,RG:_R1={CCCC%91.[*:1]%91 |$;;;;_AP1$|},|
+Smiles: O%91CCCC%92.C%93NCCC.[*:1]%91.[*:2]%93%92 |$;;;;;;;;;;_R1;_R2$,RG:_R1={CCCC%91.[*:1]%91 |$;;;;_AP1$|},|
 Format: auto
 $MDL  REV  1 0100000000
 $MOL

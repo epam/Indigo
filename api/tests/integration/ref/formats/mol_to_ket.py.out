@@ -1,0 +1,23 @@
+*** MOL to KET ***
+1032-quadra.ket:SUCCEED
+1046-imp_hydrogen.ket:SUCCEED
+1465-lr_sugar.ket:SUCCEED
+SgroupDifferent.ket:SUCCEED
+acgt_1412.ket:SUCCEED
+anacyclamide.ket:SUCCEED
+apamine.ket:SUCCEED
+atropisomer.ket:SUCCEED
+chem.ket:SUCCEED
+conjugate.ket:SUCCEED
+cysteine.ket:SUCCEED
+dcysteine.ket:SUCCEED
+dna_mod.ket:SUCCEED
+dthymine.ket:SUCCEED
+fmoc.ket:SUCCEED
+non_atrop.ket:SUCCEED
+pepchem.ket:SUCCEED
+peptides.ket:SUCCEED
+removed_phosphate.ket:SUCCEED
+rna_mod.ket:SUCCEED
+suplabel.ket:SUCCEED
+thymine.ket:SUCCEED

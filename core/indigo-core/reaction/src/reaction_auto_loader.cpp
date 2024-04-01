@@ -19,14 +19,17 @@
 #include "reaction/reaction_auto_loader.h"
 #include "gzip/gzip_scanner.h"
 #include "molecule/molecule_auto_loader.h"
+#include "molecule/parse_utils.h"
 #include "reaction/icr_loader.h"
 #include "reaction/icr_saver.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
+#include "reaction/reaction_cdxml_loader.h"
 #include "reaction/reaction_cml_loader.h"
 #include "reaction/reaction_json_loader.h"
 #include "reaction/rsmiles_loader.h"
 #include "reaction/rxnfile_loader.h"
+
 #include <string>
 
 using namespace indigo;
@@ -40,6 +43,7 @@ void ReactionAutoLoader::_init()
     ignore_cistrans_errors = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
+    dearomatize_on_load = false;
 }
 
 IMPL_ERROR(ReactionAutoLoader, "reaction auto loader");
@@ -71,26 +75,56 @@ ReactionAutoLoader::~ReactionAutoLoader()
         delete _scanner;
 }
 
-void ReactionAutoLoader::loadReaction(Reaction& reaction)
+void ReactionAutoLoader::loadQueryReaction(QueryReaction& qreaction)
 {
-    _loadReaction(reaction, false);
+    loadReaction(qreaction);
 }
 
-void ReactionAutoLoader::loadQueryReaction(QueryReaction& reaction)
+void ReactionAutoLoader::loadReaction(BaseReaction& reaction)
 {
-    _loadReaction(reaction, true);
+    _loadReaction(reaction);
+    if (!reaction.isQueryReaction() && dearomatize_on_load)
+        reaction.dearomatize(arom_options);
 }
 
-void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
+void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
 {
+    bool query = reaction.isQueryReaction();
+    auto local_scanner = _scanner;
+    // chack for base64
+    uint8_t base64_id[] = "base64::";
+    std::unique_ptr<BufferScanner> base64_scanner;
+    Array<char> base64_data;
+    if (local_scanner->length() >= (sizeof(base64_id) - 1))
+    {
+        byte id[sizeof(base64_id) - 1];
+        long long pos = local_scanner->tell();
+        local_scanner->readCharsFix(sizeof(base64_id) - 1, (char*)id);
+        bool is_base64 = (std::equal(std::begin(id), std::end(id), std::begin(base64_id)));
+        if (!is_base64)
+            local_scanner->seek(pos, SEEK_SET);
+
+        std::string base64_str;
+        local_scanner->readAll(base64_str);
+        base64_str.erase(std::remove_if(base64_str.begin(), base64_str.end(), [](char c) { return c == '\n' || c == '\r'; }), base64_str.end());
+        if (validate_base64(base64_str))
+        {
+            base64_data.copy(base64_str.data(), static_cast<int>(base64_str.size()));
+            base64_scanner = std::make_unique<BufferScanner>(base64_data, true);
+            local_scanner = base64_scanner.get();
+        }
+        local_scanner->seek(pos, SEEK_SET);
+        _scanner->seek(pos, SEEK_SET);
+    }
+
     // check fir GZip format
-    if (_scanner->length() >= 2)
+    if (local_scanner->length() >= 2)
     {
         byte id[2];
-        long long pos = _scanner->tell();
+        long long pos = local_scanner->tell();
 
-        _scanner->readCharsFix(2, (char*)id);
-        _scanner->seek(pos, SEEK_SET);
+        local_scanner->readCharsFix(2, (char*)id);
+        local_scanner->seek(pos, SEEK_SET);
 
         if (id[0] == 0x1f && id[1] == 0x8b)
         {
@@ -105,10 +139,20 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
             loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
             loader2.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader2.ignore_bad_valence = ignore_bad_valence;
+            loader2.loadReaction(reaction);
+            return;
+        }
+    }
+
+    {
+        if (local_scanner->findWord(kCDX_HeaderString))
+        {
+            local_scanner->seek(kCDX_HeaderLength, SEEK_CUR);
+            ReactionCdxmlLoader loader(*local_scanner, true);
+            loader.stereochemistry_options = stereochemistry_options;
             if (query)
-                loader2.loadQueryReaction((QueryReaction&)reaction);
-            else
-                loader2.loadReaction((Reaction&)reaction);
+                throw Error("CDX queries not supported yet");
+            loader.loadReaction(reaction);
             return;
         }
     }
@@ -174,6 +218,21 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
         _scanner->seek(pos, SEEK_SET);
     }
 
+    // check for CDXML format
+    {
+        long long pos = _scanner->tell();
+        _scanner->skipSpace();
+        if (_scanner->lookNext() == '<' && _scanner->findWord("<CDXML"))
+        {
+            _scanner->seek(pos, SEEK_SET);
+            ReactionCdxmlLoader loader(*_scanner);
+            loader.stereochemistry_options = stereochemistry_options;
+            loader.loadReaction(reaction);
+            return;
+        }
+        _scanner->seek(pos, SEEK_SET);
+    }
+
     // check for JSON-KET format
 
     {
@@ -226,6 +285,7 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
     // check for SMILES format
     if (Scanner::isSingleLine(*_scanner))
     {
+        long long pos = _scanner->tell();
         RSmilesLoader loader(*_scanner);
 
         loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
@@ -234,9 +294,23 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction, bool query)
         loader.ignore_bad_valence = ignore_bad_valence;
 
         if (query)
-            loader.loadQueryReaction((QueryReaction&)reaction);
+        {
+            // Try to load query as SMILES, if error occured - try to load as SMARTS
+            try
+            {
+                loader.loadQueryReaction(static_cast<QueryReaction&>(reaction));
+            }
+            catch (Exception&)
+            {
+                loader.smarts_mode = true;
+                _scanner->seek(pos, SEEK_SET);
+                loader.loadQueryReaction(static_cast<QueryReaction&>(reaction));
+            }
+        }
         else
-            loader.loadReaction((Reaction&)reaction);
+        {
+            loader.loadReaction(static_cast<Reaction&>(reaction));
+        }
     }
 
     // default is Rxnfile format

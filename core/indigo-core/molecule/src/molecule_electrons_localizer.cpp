@@ -331,7 +331,7 @@ bool MoleculeElectronsLocalizer::_findValidSolution(int cardinality)
 
     // Check if localization is valid
     int invalid_atom = -1;
-    int ret_code;
+    int ret_code = -1;
     for (int v = _skeleton.vertexBegin(); v != _skeleton.vertexEnd(); v = _skeleton.vertexNext(v))
     {
         if ((ret_code = _isLocalizationValid(v)) != OK)

@@ -20,18 +20,32 @@
 #define __ket_commons_h__
 
 #include <exception>
+#include <functional>
 #include <rapidjson/document.h>
 #include <string>
 #include <unordered_map>
 
 #include "common/math/algebra.h"
 #include "graph/graph.h"
+#include "molecule/molecule_cip_calculator.h"
+#include "molecule/parse_utils.h"
+#include "molecule/query_molecule.h"
 #include "reaction/base_reaction.h"
 
 namespace indigo
 {
     const double KETDefaultFontSize = 13;
     const double KETFontScaleFactor = 47;
+    const auto KETFontBoldStr = "BOLD";
+    const auto KETFontItalicStr = "ITALIC";
+    const auto KETFontSuperscriptStr = "SUPERSCRIPT";
+    const auto KETFontSubscriptStr = "SUBSCRIPT";
+    const auto KETFontCustomSizeStr = "CUSTOM_FONT_SIZE";
+    const uint8_t KETReactantArea = 0;
+    const uint8_t KETReagentUpArea = 1;
+    const uint8_t KETReagentDownArea = 2;
+    const uint8_t KETProductArea = 3;
+    const Vec2f MIN_MOL_SIZE = {0.5, 0.5};
 
     struct compareFunction
     {
@@ -53,7 +67,19 @@ namespace indigo
         return string_hash(s, count);
     }
 
-    const std::unordered_map<std::string, int> KTextStylesMap{{"BOLD", 0}, {"ITALIC", 1}, {"SUPERSCRIPT", 2}, {"SUBSCRIPT", 3}};
+    uint8_t getPointSide(const Vec2f& point, const Vec2f& beg, const Vec2f& end);
+
+    CIPDesc stringToCIP(const std::string& cip_str);
+
+    std::string CIPToString(CIPDesc cip);
+
+    bool isCIPSGroup(SGroup& sgroup);
+
+    void getSGroupAtoms(BaseMolecule& mol, std::list<std::unordered_set<int>>& neighbors);
+
+    std::string convertAPToHELM(const std::string& atp_id_str);
+
+    std::string convertAPFromHELM(const std::string& atp_id_str);
 
     class KETSimpleObject : public MetaObject
     {
@@ -85,17 +111,21 @@ namespace indigo
     public:
         enum
         {
-            EBold = 0,
-            EItalic = 1,
-            ESuperScript = 2,
-            ESubScript = 3,
-            EFontSize = 4
+            EPlain = 0,
+            EBold = 1,
+            EItalic = 2,
+            ESuperScript = 3,
+            ESubScript = 4,
+            EFontSize = 5
         };
+
+        const std::unordered_map<std::string, int> KTextStylesMap{
+            {KETFontBoldStr, EBold}, {KETFontItalicStr, EItalic}, {KETFontSuperscriptStr, ESuperScript}, {KETFontSubscriptStr, ESubScript}};
 
         struct KETTextLine
         {
             std::string text;
-            std::map<int, FONT_STYLE_SET> styles;
+            std::map<std::size_t, FONT_STYLE_SET> styles;
         };
 
         static const std::uint32_t CID = "KET text object"_hash;
@@ -110,7 +140,7 @@ namespace indigo
             if (data.HasMember("blocks"))
             {
                 Value& blocks = data["blocks"];
-                for (int i = 0; i < blocks.Size(); ++i)
+                for (rapidjson::SizeType i = 0; i < blocks.Size(); ++i)
                 {
                     KETTextLine text_line;
                     if (blocks[i].HasMember("text"))
@@ -121,7 +151,7 @@ namespace indigo
                         if (blocks[i].HasMember("inlineStyleRanges"))
                         {
                             Value& style_ranges = blocks[i]["inlineStyleRanges"];
-                            for (int j = 0; j < style_ranges.Size(); ++j)
+                            for (rapidjson::SizeType j = 0; j < style_ranges.Size(); ++j)
                             {
                                 int style_begin = style_ranges[j]["offset"].GetInt();
                                 int style_end = style_begin + style_ranges[j]["length"].GetInt();
@@ -278,8 +308,8 @@ namespace indigo
             CONNECTED = -1
         };
 
-        ReactionComponent(int ctype, const Rect2f& box, std::unique_ptr<BaseMolecule> mol)
-            : component_type(ctype), bbox(box), molecule(std::move(mol)), summ_block_idx(NOT_CONNECTED){};
+        ReactionComponent(int ctype, const Rect2f& box, int idx, std::unique_ptr<BaseMolecule> mol)
+            : component_type(ctype), bbox(box), molecule(std::move(mol)), summ_block_idx(NOT_CONNECTED), index(idx){};
 
         int component_type;
         Rect2f bbox;
@@ -287,7 +317,25 @@ namespace indigo
         std::list<MolSumm>::iterator summ_block_it;
         int summ_block_idx;
         std::vector<Vec2f> coordinates;
+        int index;
     };
 
+    // hash for pairs taken from boost library
+    struct pair_int_hash
+    {
+    private:
+        const std::hash<int> ah;
+        const std::hash<int> bh;
+
+    public:
+        pair_int_hash() : ah(), bh()
+        {
+        }
+        size_t operator()(const std::pair<int, int>& p) const
+        {
+            size_t seed = ah(p.first);
+            return bh(p.second) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        }
+    };
 }
 #endif

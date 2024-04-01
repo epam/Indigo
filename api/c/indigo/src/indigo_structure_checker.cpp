@@ -123,7 +123,7 @@ StructureChecker::CheckResult IndigoStructureChecker::check(const char* item, co
     int it = indigoLoadStructureFromString(item, lp.c_str());
     if (it < 0)
     {
-        it = indigoLoadStructureFromString(item, (lp + " query").c_str()); //##!!!PATCH
+        it = indigoLoadStructureFromString(item, (lp + " query").c_str()); // ##!!!PATCH
     }
     auto r = check(it, check_types);
     indigoFree(it);
@@ -159,6 +159,8 @@ void dumpMessage(StructureChecker::CheckMessage& msg, std::string& out_str)
 {
     if (!out_str.empty())
         out_str += ", ";
+    if (!msg.prefix.empty())
+        out_str += msg.prefix + ':';
     out_str += msg.message();
     if (!msg.ids.empty())
     {

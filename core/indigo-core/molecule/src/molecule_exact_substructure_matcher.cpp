@@ -157,7 +157,7 @@ void MoleculeExactSubstructureMatcher::_collectConnectedComponentsInfo()
     _query_decomposer->decompose(&query_vertices_filter);
 }
 
-bool MoleculeExactSubstructureMatcher::_matchAtoms(Graph& subgraph, Graph& supergraph, const int* core_sub, int sub_idx, int super_idx, void* userdata)
+bool MoleculeExactSubstructureMatcher::_matchAtoms(Graph& subgraph, Graph& supergraph, const int* /* core_sub */, int sub_idx, int super_idx, void* userdata)
 {
     Molecule& query = (Molecule&)subgraph;
     Molecule& target = (Molecule&)supergraph;

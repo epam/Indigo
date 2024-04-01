@@ -16,7 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "molecule/molecule_auto_loader.h"
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
+#include <regex>
+
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "gzip/gzip_scanner.h"
@@ -25,13 +28,16 @@
 #include "molecule/icm_saver.h"
 #include "molecule/inchi_wrapper.h"
 #include "molecule/molecule.h"
-#include "molecule/molecule_cdx_loader.h"
+#include "molecule/molecule_auto_loader.h"
 #include "molecule/molecule_cdxml_loader.h"
 #include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_name_parser.h"
 #include "molecule/molfile_loader.h"
+#include "molecule/monomer_commons.h"
+#include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "molecule/sdf_loader.h"
+#include "molecule/sequence_loader.h"
 #include "molecule/smiles_loader.h"
 
 using namespace indigo;
@@ -46,6 +52,7 @@ void MoleculeAutoLoader::_init()
     ignore_cistrans_errors = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
+    dearomatize_on_load = false;
     treat_stereo_as = 0;
 }
 
@@ -78,15 +85,21 @@ MoleculeAutoLoader::~MoleculeAutoLoader()
         delete _scanner;
 }
 
-void MoleculeAutoLoader::loadMolecule(Molecule& mol)
-{
-    _loadMolecule(mol, false);
-    mol.setIgnoreBadValenceFlag(ignore_bad_valence);
-}
-
 void MoleculeAutoLoader::loadQueryMolecule(QueryMolecule& qmol)
 {
-    _loadMolecule(qmol, true);
+    loadMolecule(qmol);
+}
+
+void MoleculeAutoLoader::loadMolecule(BaseMolecule& mol)
+{
+    _loadMolecule(mol);
+
+    if (!mol.isQueryMolecule())
+    {
+        mol.asMolecule().setIgnoreBadValenceFlag(ignore_bad_valence);
+        if (dearomatize_on_load)
+            mol.dearomatize(arom_options);
+    }
 }
 
 bool MoleculeAutoLoader::tryMDLCT(Scanner& scanner, Array<char>& outbuf)
@@ -119,8 +132,7 @@ bool MoleculeAutoLoader::tryMDLCT(Scanner& scanner, Array<char>& outbuf)
                 scanner.seek(pos, SEEK_SET);
                 return false;
             }
-            int c = scanner.readChar();
-            curline.push(c);
+            curline.push(scanner.readChar());
         }
 
         curline.push(0);
@@ -175,7 +187,6 @@ void MoleculeAutoLoader::readAllDataToString(Scanner& scanner, Array<char>& data
             GZipScanner gzscanner(scanner);
             gzscanner.readAll(dataBuf);
             dataBuf.push('\0');
-
             return;
         }
     }
@@ -184,27 +195,36 @@ void MoleculeAutoLoader::readAllDataToString(Scanner& scanner, Array<char>& data
     dataBuf.push('\0');
 }
 
-void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
+void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
 {
+    bool query = mol.isQueryMolecule();
     properties.clear();
 
     auto local_scanner = _scanner; // local scanner only for binary format
     // chack for base64
     uint8_t base64_id[] = "base64::";
     std::unique_ptr<BufferScanner> base64_scanner;
+    Array<char> base64_data;
     if (local_scanner->length() >= (sizeof(base64_id) - 1))
     {
         byte id[sizeof(base64_id) - 1];
         long long pos = local_scanner->tell();
         local_scanner->readCharsFix(sizeof(base64_id) - 1, (char*)id);
-        if (std::equal(std::begin(id), std::end(id), std::begin(base64_id)))
+        bool is_base64 = (std::equal(std::begin(id), std::end(id), std::begin(base64_id)));
+        if (!is_base64)
+            local_scanner->seek(pos, SEEK_SET);
+
+        std::string base64_str;
+        local_scanner->readAll(base64_str);
+        base64_str.erase(std::remove_if(base64_str.begin(), base64_str.end(), [](char c) { return c == '\n' || c == '\r'; }), base64_str.end());
+        if (validate_base64(base64_str))
         {
-            Array<char> base64_data;
-            local_scanner->readAll(base64_data);
+            base64_data.copy(base64_str.data(), static_cast<int>(base64_str.size()));
             base64_scanner = std::make_unique<BufferScanner>(base64_data, true);
             local_scanner = base64_scanner.get();
         }
         local_scanner->seek(pos, SEEK_SET);
+        _scanner->seek(pos, SEEK_SET);
     }
 
     // check for GZip format
@@ -230,31 +250,23 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
             loader2.skip_3d_chirality = skip_3d_chirality;
             loader2.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader2.treat_stereo_as = treat_stereo_as;
-
-            if (query)
-                loader2.loadQueryMolecule((QueryMolecule&)mol);
-            else
-                loader2.loadMolecule((Molecule&)mol);
-
+            loader2.loadMolecule(mol);
             return;
         }
     }
 
-    // check for CDX format
     {
-        if (local_scanner->findWord("VjCD0100"))
+        if (local_scanner->findWord(kCDX_HeaderString))
         {
-            MoleculeCdxLoader loader(*local_scanner);
+            local_scanner->seek(kCDX_HeaderLength, SEEK_CUR);
+            MoleculeCdxmlLoader loader(*local_scanner, true);
             loader.stereochemistry_options = stereochemistry_options;
-            if (query)
-                throw Error("CDX queries not supported yet");
-            loader.loadMolecule(mol.asMolecule());
-
-            properties.copy(loader.properties);
-
+            loader.loadMolecule(mol);
             return;
         }
     }
+
+    _scanner->skipBom();
 
     // check for MDLCT format
     {
@@ -337,17 +349,6 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
     // check json format
     long long pos = _scanner->tell();
     {
-        bool hasbom = false;
-        if (_scanner->length() >= 3)
-        {
-            unsigned char bom[3];
-            _scanner->readCharsFix(3, (char*)bom);
-            if (bom[0] == 0xEF && bom[1] == 0xBB && bom[2] == 0xBF)
-                hasbom = true;
-            else
-                _scanner->seek(pos, SEEK_SET);
-        }
-
         if (_scanner->lookNext() == '{')
         {
             if (_scanner->findWord("root") && _scanner->findWord("nodes"))
@@ -359,9 +360,6 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                     _scanner->readAll(buf);
                     buf.push(0);
                     unsigned char* ptr = (unsigned char*)buf.ptr();
-                    // skip utf8 BOM
-                    if (hasbom)
-                        ptr += 3;
                     Document data;
                     if (!data.Parse((char*)ptr).HasParseError())
                     {
@@ -385,8 +383,47 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
     }
 
     // check for single line formats
+
     if (Scanner::isSingleLine(*_scanner))
     {
+        // for debug purposes: check for sequence
+        {
+            const std::string kPeptide = "PEPTIDE:";
+            const std::string kRNA = "RNA:";
+            const std::string kDNA = "DNA:";
+
+            long long start_pos = _scanner->tell();
+            if (_scanner->length() > static_cast<long long>(kRNA.size()))
+            {
+                std::vector<char> tag(kPeptide.size() + 1, 0);
+                _scanner->readCharsFix(static_cast<int>(kRNA.size()), tag.data());
+                SequenceLoader sl(*_scanner);
+                if (kRNA == tag.data())
+                {
+                    sl.loadSequence(mol, SequenceLoader::SeqType::RNASeq);
+                    return;
+                }
+                else if (kDNA == tag.data())
+                {
+                    sl.loadSequence(mol, SequenceLoader::SeqType::DNASeq);
+                    return;
+                }
+                else
+                {
+                    _scanner->seek(start_pos, SEEK_SET);
+                    if (_scanner->length() > static_cast<long long>(kPeptide.size()))
+                    {
+                        _scanner->readCharsFix(static_cast<int>(kPeptide.size()), tag.data());
+                        if (kPeptide == tag.data())
+                        {
+                            sl.loadSequence(mol, SequenceLoader::SeqType::PEPTIDESeq);
+                            return;
+                        }
+                    }
+                }
+            }
+            _scanner->seek(start_pos, SEEK_SET);
+        }
         // check for InChI format
         {
             char prefix[6] = {'\0'};
@@ -411,11 +448,11 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
                     throw Error("InChI input doesn't support query molecules");
                 }
 
-                Array<char> inchi;
-                _scanner->readWord(inchi, " ");
+                Array<char> inchi_data;
+                _scanner->readWord(inchi_data, " ");
 
                 InchiWrapper loader;
-                loader.loadMoleculeFromInchi(inchi.ptr(), (Molecule&)mol);
+                loader.loadMoleculeFromInchi(inchi_data.ptr(), (Molecule&)mol);
                 return;
             }
         }
@@ -426,19 +463,33 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
         try
         {
             SmilesLoader loader(*_scanner);
+            long long start = _scanner->tell();
 
             loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
             loader.stereochemistry_options = stereochemistry_options;
             loader.ignore_cistrans_errors = ignore_cistrans_errors;
+            loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
 
             /*
-            If exception is thrown, the string is rather an IUPAC name than a SMILES string
+            If exception is thrown, try the SMARTS, if exception thrown again - the string is rather an IUPAC name than a SMILES string
             We catch it and pass down to IUPAC name conversion
             */
             if (query)
-                loader.loadQueryMolecule((QueryMolecule&)mol);
+            {
+                try
+                {
+                    loader.loadQueryMolecule(static_cast<QueryMolecule&>(mol));
+                }
+                catch (Exception&)
+                {
+                    _scanner->seek(start, SEEK_SET);
+                    loader.loadSMARTS(static_cast<QueryMolecule&>(mol));
+                }
+            }
             else
-                loader.loadMolecule((Molecule&)mol);
+            {
+                loader.loadMolecule(static_cast<Molecule&>(mol));
+            }
             return;
         }
         catch (Exception& e)
@@ -456,7 +507,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
             parser.parseMolecule(name.ptr(), static_cast<Molecule&>(mol));
             return;
         }
-        catch (Exception& e)
+        catch (Exception&)
         {
         }
 
@@ -470,24 +521,44 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, bool query)
 
     {
         SdfLoader sdf_loader(*_scanner);
-        sdf_loader.readNext();
+        bool is_first = true;
+        while (!sdf_loader.isEOF())
+        {
+            sdf_loader.readNext();
 
-        // Copy properties
-        properties.copy(sdf_loader.properties);
+            // Copy properties
+            properties.copy(sdf_loader.properties);
 
-        BufferScanner scanner2(sdf_loader.data);
+            BufferScanner scanner2(sdf_loader.data);
 
-        MolfileLoader loader(scanner2);
-        loader.stereochemistry_options = stereochemistry_options;
-        loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-        loader.skip_3d_chirality = skip_3d_chirality;
-        loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-        loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-        loader.treat_stereo_as = treat_stereo_as;
+            MolfileLoader loader(scanner2);
+            loader.stereochemistry_options = stereochemistry_options;
+            loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+            loader.skip_3d_chirality = skip_3d_chirality;
+            loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+            loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+            loader.treat_stereo_as = treat_stereo_as;
 
-        if (query)
-            loader.loadQueryMolecule((QueryMolecule&)mol);
-        else
-            loader.loadMolecule((Molecule&)mol);
+            if (is_first && sdf_loader.isEOF())
+            {
+                if (query)
+                    loader.loadQueryMolecule((QueryMolecule&)mol);
+                else
+                    loader.loadMolecule((Molecule&)mol);
+            }
+            else
+            {
+                std::unique_ptr<BaseMolecule> mol_fragment(mol.neu());
+                if (query)
+                    loader.loadQueryMolecule((QueryMolecule&)*mol_fragment);
+                else
+                    loader.loadMolecule((Molecule&)*mol_fragment);
+                if (!properties.is_empty() && mol_fragment->vertexCount())
+                    mol_fragment->properties().insert(0).copy(properties);
+                Array<int> mapping;
+                mol.mergeWithMolecule(*mol_fragment, &mapping, 0);
+            }
+            is_first = false;
+        }
     }
 }

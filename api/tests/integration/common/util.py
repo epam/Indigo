@@ -17,7 +17,10 @@ def overridePlatform(platform):
 
 
 def isIronPython():
-    return sys.platform == "cli"
+    return sys.platform == "cli" or (
+        "implementation" in dir(sys)
+        and sys.implementation.name == "ironpython"
+    )
 
 
 def isJython():
@@ -34,7 +37,7 @@ def getIndigoVersion():
     for line in open(
         os.path.join(cur_dir, "../../../indigo/api/indigo-version.cmake")
     ):
-        m = re.search('SET\(INDIGO_VERSION "(.*)"', line)
+        m = re.search(r'SET\(INDIGO_VERSION "(.*)"', line)
         if m:
             version = m.group(1)
     return version
@@ -131,10 +134,10 @@ def file_sha1(path):
 
     sha1sum = hashlib.sha1()
     with open(path, "rb") as source:
-        block = source.read(2 ** 16)
+        block = source.read(2**16)
         while len(block) != 0:
             sha1sum.update(block)
-            block = source.read(2 ** 16)
+            block = source.read(2**16)
     return sha1sum.hexdigest()
 
 

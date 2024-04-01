@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+<entry key="node_file" type="xstring" value="settings.xml"/>
+<config key="flow_stack"/>
+<config key="internal_node_subsettings">
+<entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+</config>
+<config key="model">
+<entry key="column_name" type="xstring" value="column1"/>
+<entry key="target_type" type="xstring" value="Smiles"/>
+</config>
+<entry key="customDescription" type="xstring" isnull="true" value=""/>
+<entry key="state" type="xstring" value="EXECUTED"/>
+<entry key="factory" type="xstring" value="org.knime.chem.base.node.converter.parser.MolParserNodeFactory"/>
+<entry key="node-name" type="xstring" value="Molecule Type Cast"/>
+<entry key="node-bundle-name" type="xstring" value="KNIME Chemistry Base nodes"/>
+<entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.chem.base"/>
+<entry key="node-bundle-vendor" type="xstring" value="KNIME GmbH, Konstanz, Germany"/>
+<entry key="node-bundle-version" type="xstring" value="3.1.0.v201511191614"/>
+<entry key="node-feature-name" type="xstring" value="KNIME Base Chemistry Types &amp; Nodes"/>
+<entry key="node-feature-symbolic-name" type="xstring" value="org.knime.features.chem.types.feature.group"/>
+<entry key="node-feature-vendor" type="xstring" value="KNIME GmbH, Konstanz, Germany"/>
+<entry key="node-feature-version" type="xstring" value="3.1.0.v201512012108"/>
+<config key="factory_settings"/>
+<entry key="name" type="xstring" value="Molecule Type Cast"/>
+<entry key="hasContent" type="xboolean" value="true"/>
+<entry key="isInactive" type="xboolean" value="false"/>
+<config key="ports">
+<config key="port_1">
+<entry key="index" type="xint" value="1"/>
+<entry key="port_spec_class" type="xstring" value="org.knime.core.data.DataTableSpec"/>
+<entry key="port_object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+<entry key="port_object_summary" type="xstring" value="Rows: 14, Cols: 1"/>
+<entry key="port_dir_location" type="xstring" value="port_1"/>
+</config>
+</config>
+<config key="filestores">
+<entry key="file_store_location" type="xstring" isnull="true" value=""/>
+<entry key="file_store_id" type="xstring" value="bfc2fe5e-f894-4001-840a-9290e2b2c692"/>
+</config>
+</config>

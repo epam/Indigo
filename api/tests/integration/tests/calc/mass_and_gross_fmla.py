@@ -28,15 +28,15 @@ def handleMolecule(mol):
 
 def handleMoleculeWithExceptions(m):
     try:
-        print(round(m.molecularWeight(), 3))
+        print("{:.3f}".format(m.molecularWeight()))
     except IndigoException as e:
         print(getIndigoExceptionText(e))
     try:
-        print(round(m.mostAbundantMass(), 3))
+        print("{:.3f}".format(m.mostAbundantMass()))
     except IndigoException as e:
         print(getIndigoExceptionText(e))
     try:
-        print(round(m.monoisotopicMass(), 3))
+        print("{:.3f}".format(m.monoisotopicMass()))
     except IndigoException as e:
         print(getIndigoExceptionText(e))
     try:

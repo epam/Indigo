@@ -12,13 +12,19 @@ indigo = Indigo()
 
 print("*** Mol to CDXML ***")
 
-root = joinPathPy("molecules/cdxml", __file__)
-files = os.listdir(root)
+root = joinPathPy("molecules/", __file__)
+files = [
+    "stereo_either-0020.mol",
+    "enhanced_stereo1.mol",
+    "enhanced_stereo2.mol",
+    "enhanced_stereo3.mol",
+]
 files.sort()
 for filename in files:
     print(filename)
     try:
         mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))
+        print(filename)
         print(mol.cdxml())
     except IndigoException as e:
         print(getIndigoExceptionText(e))

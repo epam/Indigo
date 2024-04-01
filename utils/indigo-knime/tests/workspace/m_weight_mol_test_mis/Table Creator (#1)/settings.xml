@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+<entry key="node_file" type="xstring" value="settings.xml"/>
+<config key="flow_stack"/>
+<config key="internal_node_subsettings">
+<entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+</config>
+<config key="model">
+<config key="rowIndices">
+<entry key="array-size" type="xint" value="14"/>
+<entry key="0" type="xint" value="0"/>
+<entry key="1" type="xint" value="1"/>
+<entry key="2" type="xint" value="2"/>
+<entry key="3" type="xint" value="3"/>
+<entry key="4" type="xint" value="4"/>
+<entry key="5" type="xint" value="5"/>
+<entry key="6" type="xint" value="6"/>
+<entry key="7" type="xint" value="7"/>
+<entry key="8" type="xint" value="8"/>
+<entry key="9" type="xint" value="9"/>
+<entry key="10" type="xint" value="10"/>
+<entry key="11" type="xint" value="11"/>
+<entry key="12" type="xint" value="12"/>
+<entry key="13" type="xint" value="13"/>
+</config>
+<config key="columnIndices">
+<entry key="array-size" type="xint" value="14"/>
+<entry key="0" type="xint" value="0"/>
+<entry key="1" type="xint" value="0"/>
+<entry key="2" type="xint" value="0"/>
+<entry key="3" type="xint" value="0"/>
+<entry key="4" type="xint" value="0"/>
+<entry key="5" type="xint" value="0"/>
+<entry key="6" type="xint" value="0"/>
+<entry key="7" type="xint" value="0"/>
+<entry key="8" type="xint" value="0"/>
+<entry key="9" type="xint" value="0"/>
+<entry key="10" type="xint" value="0"/>
+<entry key="11" type="xint" value="0"/>
+<entry key="12" type="xint" value="0"/>
+<entry key="13" type="xint" value="0"/>
+</config>
+<config key="values">
+<entry key="array-size" type="xint" value="14"/>
+<entry key="0" type="xstring" value="CCO"/>
+<entry key="1" type="xstring" value="C=C"/>
+<entry key="2" type="xstring" value="O=C1CNCC2=CC=CC=C12"/>
+<entry key="3" type="xstring" value="[Na+].[Cl-]"/>
+<entry key="4" type="xstring" value="[CH3-].[Ti]"/>
+<entry key="5" type="xstring" value="[Na+].[Br-].C=CCI"/>
+<entry key="6" type="xstring" value="[Ni].[Br].C=CCI"/>
+<entry key="7" type="xstring" value="[C-]#[O+]"/>
+<entry key="8" type="xstring" value="O=C1OC2=C3OC(=O)C(=O)OC3=C3OC(=O)C(=O)OC3=C2OC1=O"/>
+<entry key="9" type="xstring" value="C(=O)(O)O"/>
+<entry key="10" type="xstring" value="[Na+].[Na+].[O-]C([O-])=O"/>
+<entry key="11" type="xstring" value="[Na+].OC([O-])=O"/>
+<entry key="12" type="xstring" value="[Li+].[Li+].[O-]C([O-])=O"/>
+<entry key="13" type="xstring" value="C#N"/>
+</config>
+<entry key="rowIdPrefix" type="xstring" value="Row"/>
+<entry key="rowIdSuffix" type="xstring" value=""/>
+<entry key="rowIdStartValue" type="xint" value="0"/>
+<entry key="highlightOutputTable" type="xboolean" value="false"/>
+<config key="columnProperties">
+<config key="0">
+<entry key="UserSetValues" type="xboolean" value="false"/>
+<entry key="MissValuePattern" type="xstring" value=""/>
+<entry key="FormatParameter" type="xstring" value=""/>
+<entry key="ReadPossValsFromFile" type="xboolean" value="false"/>
+<entry key="SkipThisColumn" type="xboolean" value="false"/>
+<entry key="ColumnName" type="xstring" value="column1"/>
+<config key="ColumnClass">
+<entry key="cell_class" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<entry key="is_null" type="xboolean" value="false"/>
+</config>
+</config>
+</config>
+</config>
+<entry key="customDescription" type="xstring" isnull="true" value=""/>
+<entry key="state" type="xstring" value="EXECUTED"/>
+<entry key="factory" type="xstring" value="org.knime.base.node.io.tablecreator.TableCreator2NodeFactory"/>
+<entry key="node-name" type="xstring" value="Table Creator"/>
+<entry key="node-bundle-name" type="xstring" value="KNIME Base Nodes"/>
+<entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.base"/>
+<entry key="node-bundle-vendor" type="xstring" value="KNIME GmbH, Konstanz, Germany"/>
+<entry key="node-bundle-version" type="xstring" value="2.12.0.0048096"/>
+<entry key="node-feature-name" type="xstring" isnull="true" value=""/>
+<entry key="node-feature-symbolic-name" type="xstring" isnull="true" value=""/>
+<entry key="node-feature-vendor" type="xstring" isnull="true" value=""/>
+<entry key="node-feature-version" type="xstring" value="0.0.0"/>
+<config key="factory_settings"/>
+<entry key="name" type="xstring" value="Table Creator"/>
+<entry key="hasContent" type="xboolean" value="true"/>
+<entry key="isInactive" type="xboolean" value="false"/>
+<config key="ports">
+<config key="port_1">
+<entry key="index" type="xint" value="1"/>
+<entry key="port_spec_class" type="xstring" value="org.knime.core.data.DataTableSpec"/>
+<entry key="port_object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+<entry key="port_object_summary" type="xstring" value="Rows: 14, Cols: 1"/>
+<entry key="port_dir_location" type="xstring" value="port_1"/>
+</config>
+</config>
+<config key="filestores">
+<entry key="file_store_location" type="xstring" isnull="true" value=""/>
+<entry key="file_store_id" type="xstring" isnull="true" value=""/>
+</config>
+</config>

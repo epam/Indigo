@@ -26,7 +26,7 @@ C1C=CC=CC=1*>>C1C=C(*)C=CC=1
 C1C=CC=CC=1* |$;;;;;;A$|
 
 (** #8 **): Smarts, (smarts parameter):
-[#8;A;H]-[#6;a]1-,:[#6;a]-,:[#6;a]-,:[#6;a]-,:[#6;a]-,:[#6;a]-,:1
+[O;H]-c1ccccc1
 
 (** #9 **): Smarts, (query parameter):
 [OH]C1:C:C:C:C:C:1
@@ -51,8 +51,8 @@ Atoms: 0
 Bonds: 0
 
 (** #14 **): Load from compessed binary (../../../../../data/molecules/basic/benzodiazepine.sdf.gz)
-Atoms: 33
-Bonds: 35
+Atoms: 668941
+Bonds: 707945
 
 ---- TestLoadFromFile ----
 

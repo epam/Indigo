@@ -31,10 +31,17 @@ class WithElasticResponse:
 
 
 class WithIndigoObject:
-    def __set__(self, instance: IndigoRecord, value: IndigoObject) -> None:
-        value_dup = value.clone()
-        value_dup.aromatize()
+    def __set__(  # pylint: disable=too-many-branches
+        self, instance: IndigoRecord, value: IndigoObject
+    ) -> None:
+        try:
+            value_dup = value.clone()
+        except IndigoException as err_:
+            check_error(instance, err_)
+            # Can't create IndigoObject
+            return
 
+        value_dup.aromatize()
         fingerprints = (
             "sim",
             "sub",

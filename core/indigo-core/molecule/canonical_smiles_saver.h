@@ -19,6 +19,13 @@
 #ifndef __canonical_smiles_saver__
 #define __canonical_smiles_saver__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
+#include <map>
+
 #include "base_cpp/exception.h"
 #include "molecule/smiles_saver.h"
 
@@ -38,7 +45,7 @@ namespace indigo
         DECL_ERROR;
 
     protected:
-        typedef RedBlackMap<int, int> MapIntInt;
+        typedef std::map<int, int> MapIntInt;
 
         TL_CP_DECL(Array<int>, _actual_atom_atom_mapping);
         TL_CP_DECL(MapIntInt, _initial_to_actual);
@@ -46,5 +53,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

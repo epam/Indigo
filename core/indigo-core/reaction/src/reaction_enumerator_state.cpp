@@ -503,7 +503,7 @@ void ReactionEnumeratorState::_foldHydrogens(BaseMolecule& molecule, Array<int>*
     }
 }
 
-bool ReactionEnumeratorState::_nextMatchProcess(EmbeddingEnumerator& ee, const QueryMolecule& reactant, const Molecule& monomer)
+bool ReactionEnumeratorState::_nextMatchProcess(EmbeddingEnumerator& ee, const QueryMolecule& /*reactant*/, const Molecule& /*monomer*/)
 {
     ReactionEnumeratorState rpe_state(*this);
 
@@ -688,7 +688,7 @@ void ReactionEnumeratorState::_changeQueryNode(QueryMolecule& ee_reactant, int c
     ee_reactant.clone(reactant_copy, NULL, NULL);
 }
 
-bool ReactionEnumeratorState::_matchVertexCallback(Graph& subgraph, Graph& supergraph, const int* core_sub, int sub_idx, int super_idx, void* userdata)
+bool ReactionEnumeratorState::_matchVertexCallback(Graph& subgraph, Graph& supergraph, const int* /*core_sub*/, int sub_idx, int super_idx, void* userdata)
 {
     ReactionEnumeratorState* rpe_state = (ReactionEnumeratorState*)userdata;
     Molecule& supermolecule = (Molecule&)supergraph;
@@ -720,7 +720,7 @@ bool ReactionEnumeratorState::_matchVertexCallback(Graph& subgraph, Graph& super
         }
 
         int super_free_atoms_count = 0;
-        const Vertex& super_v = supermolecule.getVertex(super_idx);
+        // const Vertex& super_v = supermolecule.getVertex(super_idx);
         int super_nei = super_v.neiVertex(super_v.neiBegin());
         const Vertex& super_nei_v = supermolecule.getVertex(super_nei);
         for (int i = super_nei_v.neiBegin(); i != super_nei_v.neiEnd(); i = super_nei_v.neiNext(i))
@@ -765,7 +765,7 @@ bool ReactionEnumeratorState::_matchEdgeCallback(Graph& subgraph, Graph& supergr
     return res;
 }
 
-void ReactionEnumeratorState::_findFragAtoms(Array<byte>& unfrag_mon_atoms, QueryMolecule& submolecule, Molecule& fragment, int* core_sub, int* core_super)
+void ReactionEnumeratorState::_findFragAtoms(Array<byte>& unfrag_mon_atoms, QueryMolecule& submolecule, Molecule& fragment, int* core_sub, int* /*core_super*/)
 {
     for (int i = submolecule.vertexBegin(); i != submolecule.vertexEnd(); i = submolecule.vertexNext(i))
     {
@@ -898,7 +898,7 @@ void ReactionEnumeratorState::_invertStereocenters(Molecule& molecule, int edge_
     }
 }
 
-void ReactionEnumeratorState::_cistransUpdate(QueryMolecule& submolecule, Molecule& supermolecule, int* frag_mapping, const Array<int>& rp_mapping,
+void ReactionEnumeratorState::_cistransUpdate(QueryMolecule& submolecule, Molecule& supermolecule, int* /*frag_mapping*/, const Array<int>& rp_mapping,
                                               int* core_sub)
 {
     QS_DEF(Array<int>, cistrans_changed_bonds);
@@ -1173,8 +1173,8 @@ void ReactionEnumeratorState::_buildMolProduct(QueryMolecule& product, Molecule&
             else
             {
                 // If there is no information about this bond in smarts
-                QueryMolecule::Atom& q_pr_beg = product.getAtom(pr_edge.beg);
-                QueryMolecule::Atom& q_pr_end = product.getAtom(pr_edge.end);
+                // QueryMolecule::Atom& q_pr_beg = product.getAtom(pr_edge.beg);
+                // QueryMolecule::Atom& q_pr_end = product.getAtom(pr_edge.end);
 
                 // int beg_value, end_value;
                 bool can_be_aromatic = product.getBond(i).possibleValue(QueryMolecule::BOND_ORDER, BOND_AROMATIC);
@@ -1500,7 +1500,7 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
                 int mon_atom = frags_mapping[_att_points[i][j]];
                 int pr_atom = mapping[i];
                 const Vertex& mon_v = mol_product.getVertex(mon_atom);
-                const Vertex& pr_v = mol_product.getVertex(pr_atom);
+                // const Vertex& pr_v = mol_product.getVertex(pr_atom);
 
                 for (int k = mon_v.neiBegin(); k != mon_v.neiEnd(); k = mon_v.neiNext(k))
                     if (MoleculeCisTrans::isGeomStereoBond(mol_product, mon_v.neiEdge(k), NULL, false))
@@ -1730,7 +1730,7 @@ void ReactionEnumeratorState::_checkFragmentNecessity(Array<int>& is_needless_at
     }
 }
 
-bool ReactionEnumeratorState::_addFragment(Molecule& fragment, QueryMolecule& submolecule, Array<int>& rp_mapping, const Array<int>& sub_rg_atoms,
+bool ReactionEnumeratorState::_addFragment(Molecule& fragment, QueryMolecule& submolecule, Array<int>& rp_mapping, const Array<int>& /*sub_rg_atoms*/,
                                            int* core_sub, int* core_super)
 {
     QS_DEF(Array<byte>, unfrag_mon_atoms);
@@ -1873,7 +1873,7 @@ bool ReactionEnumeratorState::_addFragment(Molecule& fragment, QueryMolecule& su
         }
         else
         {
-            int frag_rg_idx = frag_mapping[core_sub[i]];
+            frag_rg_idx = frag_mapping[core_sub[i]];
             _att_points[pr_i].push(frag_rg_idx);
         }
     }
@@ -1883,7 +1883,7 @@ bool ReactionEnumeratorState::_addFragment(Molecule& fragment, QueryMolecule& su
     return true;
 }
 
-bool ReactionEnumeratorState::_allowManyToOneCallback(Graph& subgraph, int sub_idx, void* userdata)
+bool ReactionEnumeratorState::_allowManyToOneCallback(Graph& subgraph, int sub_idx, void* /*userdata*/)
 {
     QueryMolecule& submolecule = (QueryMolecule&)subgraph;
 
@@ -1913,7 +1913,7 @@ void ReactionEnumeratorState::_removeAtomCallback(Graph& subgraph, int sub_idx, 
     }
 }
 
-void ReactionEnumeratorState::_addBondCallback(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* userdata)
+void ReactionEnumeratorState::_addBondCallback(Graph& /*subgraph*/, Graph& supergraph, int sub_idx, int super_idx, void* userdata)
 {
     ReactionEnumeratorState* rpe_state = (ReactionEnumeratorState*)userdata;
 

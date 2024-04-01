@@ -18,7 +18,14 @@
 
 #pragma once
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include <array>
+#include <string>
+#include <unordered_map>
 
 #include "base_c/defs.h"
 #include "base_cpp/array.h"
@@ -28,7 +35,7 @@ namespace indigo
     class BaseMolecule;
     class Molecule;
 
-    enum class CIPDesc
+    enum class CIPDesc : int
     {
         NONE = 0,
         UNKNOWN,
@@ -70,11 +77,15 @@ namespace indigo
     class DLLEXPORT MoleculeCIPCalculator
     {
     public:
-        void updateCIPStereoDescriptors(BaseMolecule& mol, bool add_stereo_desc);
+        bool addCIPStereoDescriptors(BaseMolecule& mol);
+        void addCIPSgroups(BaseMolecule& mol);
+        void removeCIPSgroups(BaseMolecule& mol);
+        void convertSGroupsToCIP(BaseMolecule& mol);
+
+        const std::unordered_map<std::string, CIPDesc> KSGroupToCIP = {{"(R)", CIPDesc::R}, {"(S)", CIPDesc::S}, {"(r)", CIPDesc::r},
+                                                                       {"(s)", CIPDesc::s}, {"(E)", CIPDesc::E}, {"(Z)", CIPDesc::Z}};
 
     private:
-        void _addCIPStereoDescriptors(BaseMolecule& mol);
-        void _addCIPSgroups(BaseMolecule& mol, Array<CIPDesc>& atom_cip_desc, Array<CIPDesc>& bond_cip_desc);
         void _calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, Array<CIPDesc>& atom_cip_desc, Array<int>& stereo_passed,
                                      bool use_stereo, Array<EquivLigand>& equiv_ligands, bool& digraph_cip_used);
         void _calcEZStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, Array<CIPDesc>& bond_cip_desc);
@@ -91,3 +102,7 @@ namespace indigo
         static void cipSort(Array<int>& ligands, CIPContext* context);
     };
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

@@ -24,6 +24,7 @@
 #include "base_cpp/tlscont.h"
 #include "molecule/base_molecule.h"
 #include "molecule/molecule_stereocenter_options.h"
+#include "molecule/monomers_lib.h"
 #include "molecule/query_molecule.h"
 
 namespace indigo
@@ -32,6 +33,7 @@ namespace indigo
     class Scanner;
     class Molecule;
     class QueryMolecule;
+    class MonomerTemplates;
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -47,6 +49,7 @@ namespace indigo
 
         void loadMolecule(Molecule& mol);
         void loadQueryMolecule(QueryMolecule& mol);
+        void copyProperties(const MolfileLoader& loader);
 
         // for Rxnfiles v3000
         void loadCtab3000(Molecule& mol);
@@ -73,7 +76,11 @@ namespace indigo
 
     protected:
         Scanner& _scanner;
+        const MonomerTemplates& _monomer_templates;
         bool _rgfile;
+        Array<char> _left_apid;
+        Array<char> _right_apid;
+        Array<char> _xlink_apid;
 
         CP_DECL;
         TL_CP_DECL(Array<int>, _stereo_care_atoms);
@@ -108,6 +115,7 @@ namespace indigo
         int _atoms_num;
         int _bonds_num;
         bool _chiral;
+        int _max_template_id;
 
         void _readHeader();
         void _readCtabHeader();
@@ -128,7 +136,6 @@ namespace indigo
         void _readStringInQuotes(Scanner& scanner, Array<char>* str);
         void _init();
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
-
         void _fillSGroupsParentIndices();
 
         int _getElement(const char* buf);
@@ -136,6 +143,8 @@ namespace indigo
 
         static int _asc_cmp_cb(int& v1, int& v2, void* context);
         void _postLoad();
+        bool _expandNucleotide(int nuc_atom_idx, int tg_idx, std::unordered_map<MonomerKey, int, pair_hash>& new_templates);
+        int _insertTemplate(MonomersLib::value_type& nuc, std::unordered_map<MonomerKey, int, pair_hash>& new_templates);
 
         void _loadMolecule();
 

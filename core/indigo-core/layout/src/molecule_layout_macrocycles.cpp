@@ -219,7 +219,7 @@ int improvement(int ind, int molSize, int* rotateAngle, int* edgeLenght, int* ve
         float coef3 = (r3 / len3 - 1);
         if (rotateAngle[worstVertex] != 0)
         {
-            float angle = acos(Vec2f::cross(p1 - p[worstVertex], p2 - p[worstVertex]) / (Vec2f::dist(p1, p[worstVertex]) * Vec2f::dist(p2, p[worstVertex])));
+            // float angle = acos(Vec2f::cross(p1 - p[worstVertex], p2 - p[worstVertex]) / (Vec2f::dist(p1, p[worstVertex]) * Vec2f::dist(p2, p[worstVertex])));
             // if (angle < 2 * M_PI / 3) coef3 /= 10;
         }
 
@@ -318,8 +318,8 @@ void soft_move_vertex(Vec2f* p, int vertex_count, int vertex_number, Vec2f move_
     float count = _2FLOAT(vertex_count);
     Vec2f shift_vector = move_vector;
     Vec2f add_vector = move_vector * (-1.0f / vertex_count);
-    float mult = 1.f;
-    float add_mult = -1.0f / vertex_count;
+    // float mult = 1.f;
+    // float add_mult = -1.0f / vertex_count;
     do
     {
         p[i++] += move_vector * (count / vertex_count);
@@ -355,8 +355,8 @@ void stright_move_chein(Vec2f* p, int vertex_count, int vertex_number, Vec2f vec
         p[i] += vector;
 }
 
-void MoleculeLayoutMacrocycles::improvement2(int index, int vertex_count, int cycle_size, int* rotate_angle, int* edge_lenght, int* vertex_number, Vec2f* p,
-                                             int base_vertex, bool fix_angle, bool fix_next, float multiplyer)
+void MoleculeLayoutMacrocycles::improvement2(int /* index */, int vertex_count, int /* cycle_size */, int* rotate_angle, int* edge_lenght, int* vertex_number,
+                                             Vec2f* p, int base_vertex, bool fix_angle, bool fix_next, float multiplyer)
 {
     profTimerStart(tt, "improvement2");
 
@@ -598,7 +598,7 @@ float MoleculeLayoutMacrocycles::badness(int ind, int molSize, int* rotateAngle,
             pp.push_back((p[i] * _2FLOAT(edgeLenght[i] - t) + p[(i + 1) % ind] * _2FLOAT(t)) / _2FLOAT(edgeLenght[i]));
         }
 
-    int size = pp.size();
+    int size = static_cast<int>(pp.size());
     for (int i = 0; i < size; i++)
         for (int j = 0; j < size; j++)
             if (i != j && (i + 1) % size != j && i != (j + 1) % size)
@@ -688,7 +688,7 @@ void rotate(float* ar, int ar_length, int shift)
     memcpy(ar, temp.ptr(), ar_length * sizeof(float));
 }
 
-float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
+float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool /* profi */)
 {
     {
         profTimerStart(tt, "answerField");
@@ -705,7 +705,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
     // fifth : y-coordinate
     // value : minimum number of vertexes sticked out + count of CIS-configurations
 
-    int infinity = 60000;
+    unsigned short infinity = 60000;
 
     int shift = -1;
     int max_value = -infinity;
@@ -764,7 +764,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
 
     minRotates[0][init_rot][1][init_x][init_y] = 0;
     minRotates[1][init_rot][1][init_x + 1][init_y] = 0;
-    int max_dist = length;
+    // int max_dist = length;
 
     {
         profTimerStart(tt, "main.for");
@@ -837,7 +837,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
                                     {
                                         if (ar1[y] > ar2[y] + add)
                                         {
-                                            ar1[y] = ar2[y] + add;
+                                            ar1[y] = static_cast<unsigned short>(ar2[y] + add);
                                         }
                                     }
                                 }
@@ -872,7 +872,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
                                     {
                                         if (ar1[y] > ar2[y] + add)
                                         {
-                                            ar1[y] = ar2[y] + add;
+                                            ar1[y] = static_cast<unsigned short>(ar2[y] + add);
                                         }
                                     }
                                 }
@@ -907,9 +907,9 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
             type = _t;
         }
 
-        bool operator<(const point& p) const
+        bool operator<(const point& pt) const
         {
-            return diff - p.diff;
+            return diff - pt.diff;
         }
     };
 
@@ -937,7 +937,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
                         if (curr_dif <= critical_diff_grid)
                         {
                             diff_set.insert(curr_dif);
-                            if (diff_set.size() > var_count)
+                            if (static_cast<long>(diff_set.size()) > var_count)
                                 diff_set.erase(*diff_set.rbegin());
                             critical_diff_grid = *diff_set.rbegin();
                         }
@@ -980,7 +980,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool profi)
                         if (curr_dif <= critical_diff_circle)
                         {
                             diff_set.insert(curr_dif);
-                            if (diff_set.size() > var_count)
+                            if (static_cast<long>(diff_set.size()) > var_count)
                                 diff_set.erase(*diff_set.rbegin());
                             critical_diff_circle = *diff_set.rbegin();
                         }
@@ -1294,7 +1294,7 @@ float MoleculeLayoutMacrocycles::depictionCircle()
     {
         int index_start = 0;
         int index_end = 0;
-        int start = 0;
+        // int start = 0;
         for (int i = 0; i < length; i++)
             if (!only_up[i] && only_up[(i + length - 1) % length])
             {

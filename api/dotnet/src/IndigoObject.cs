@@ -86,10 +86,36 @@ namespace com.epam.indigo
             dispatcher.checkResult(IndigoLib.indigoFree(s));
         }
 
+        public string sequence()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoSequence(self));
+        }
+
+        public string fasta()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoFasta(self));
+        }
+
+        public void saveSequenceToFile(string filename)
+        {
+            dispatcher.setSessionID();
+            int s = dispatcher.checkResult(IndigoLib.indigoWriteFile(filename));
+            dispatcher.checkResult(IndigoLib.indigoSaveSequenceToFile(self, s));
+            dispatcher.checkResult(IndigoLib.indigoFree(s));
+        }
+
         public string cml()
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoCml(self));
+        }
+
+        public string getOriginalFormat()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoGetOriginalFormat(self));
         }
 
         public string json()
@@ -110,6 +136,12 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoCdxml(self));
+        }
+
+        public string b64cdx()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoCdxBase64(self));
         }
 
         public void saveCdxml(string filename)
@@ -1596,6 +1628,18 @@ namespace com.epam.indigo
             dispatcher.checkResult(IndigoLib.indigoUnfoldHydrogens(self));
         }
 
+        public void foldUnfoldHydrogens()
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(IndigoLib.indigoFoldUnfoldHydrogens(self));
+        }
+
+        public void clearXYZ()
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(IndigoLib.indigoClearXYZ(self));
+        }
+
         public void layout()
         {
             dispatcher.setSessionID();
@@ -2147,6 +2191,12 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoDbgInternalType(self));
+        }
+
+        public int copyRGroups(IndigoObject other)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoCopyRGroups(other.self, self));
         }
     }
 }

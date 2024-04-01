@@ -40,6 +40,8 @@ namespace indigo_cpp
 
         std::string smiles() const;
 
+        std::string smarts() const;
+
         std::string cml() const;
 
         std::string inchi() const;

@@ -246,8 +246,14 @@ enum
     OEXT_KET,
     OEXT_KER,
     OEXT_CDX,
+    OEXT_CDX64,
+    OEXT_CDR,
     OEXT_CDXML,
+    OEXT_CDXMLR,
     OEXT_SMI,
+    OEXT_SD1,
+    OEXT_SEQ,
+    OEXT_FASTA,
     OEXT_OTHER
 };
 
@@ -283,7 +289,7 @@ void renderToFile(int obj, const char* outfile)
 typedef struct tagParams
 {
     const char* outfile;
-    char outfile_ext[4], infile_ext[7];
+    char outfile_ext[7], infile_ext[7];
     int width;
     int height;
     int bond;
@@ -298,6 +304,7 @@ typedef struct tagParams
     const char* comment;
     const char* comment_field;
     int comment_name;
+    const char* seq_type;
 } Params;
 
 int parseParams(Params* p, int argc, char* argv[])
@@ -334,11 +341,16 @@ int parseParams(Params* p, int argc, char* argv[])
         }
 
         p->file_to_load = argv[1];
-        if (strcasecmp(p->infile_ext, "cdx") == 0 || strcasecmp(p->infile_ext, "mol") == 0 || strcasecmp(p->infile_ext, "ket") == 0 ||
-            strcasecmp(p->infile_ext, "xml") == 0)
+
+        if (strcasecmp(p->infile_ext, "cdx") == 0 || strcasecmp(p->infile_ext, "b64") == 0 || strcasecmp(p->infile_ext, "mol") == 0 ||
+            strcasecmp(p->infile_ext, "ket") == 0 || strcasecmp(p->infile_ext, "xml") == 0 || strcasecmp(p->infile_ext, "sd1") == 0 ||
+            strcasecmp(p->infile_ext, "seq") == 0 || strcasecmp(p->infile_ext, "fst") == 0)
             p->mode = MODE_SINGLE_MOLECULE;
-        else if (strcasecmp(p->infile_ext, "rxn") == 0 || strcasecmp(p->infile_ext, "ker") == 0)
+        else if (strcasecmp(p->infile_ext, "rxn") == 0 || strcasecmp(p->infile_ext, "ker") == 0 || strcasecmp(p->infile_ext, "cdr") == 0 ||
+                 strcasecmp(p->infile_ext, "xmr") == 0 || strcasecmp(p->infile_ext, "r64") == 0)
+        {
             p->mode = MODE_SINGLE_REACTION;
+        }
         else if (strcasecmp(p->infile_ext, "smi") == 0)
         {
             int reaction;
@@ -379,16 +391,15 @@ int parseParams(Params* p, int argc, char* argv[])
 
     p->outfile = argv[i++];
 
-    if (strlen(p->outfile) < 5 || p->outfile[strlen(p->outfile) - 4] != '.')
+    const char* ptr_dot = strstr(p->outfile, ".");
+    if (!ptr_dot)
         USAGE();
 
-    p->outfile_ext[3] = 0;
-    strncpy(p->outfile_ext, p->outfile + strlen(p->outfile) - 3, 3);
+    strcpy(p->outfile_ext, ptr_dot + 1);
 
     indigoSetOptionBool("treat-x-as-pseudoatom", 1);
     indigoSetOptionBool("render-coloring", 1);
     indigoSetOptionBool("render-highlight-color-enabled", 1);
-
     for (; i < argc; i++)
     {
         if (strcmp(argv[i], "-w") == 0)
@@ -671,6 +682,16 @@ int parseParams(Params* p, int argc, char* argv[])
 
             p->comment = argv[i];
         }
+        else if (strcmp(argv[i], "-seqtype") == 0)
+        {
+            if (++i == argc)
+            {
+                fprintf(stderr, "expecting an sequence type (RNA, DNA, PEPTIDE) after -seqtype\n");
+                return -1;
+            }
+
+            p->seq_type = argv[i];
+        }
         else if (strcmp(argv[i], "-commentoffset") == 0)
         {
             int offset;
@@ -833,6 +854,7 @@ int main(int argc, char* argv[])
     p.comment_field = NULL;
     p.comment = NULL;
     p.comment_name = 0;
+    p.seq_type = "PEPTIDE";
 
     if (argc <= 2)
         USAGE();
@@ -843,7 +865,9 @@ int main(int argc, char* argv[])
     indigoSetErrorHandler(onError, 0);
 
     indigoSetOption("ignore-stereochemistry-errors", "on");
+    indigoSetOption("ignore-bad-valence", "on");
     indigoSetOption("molfile-saving-mode", "3000");
+    indigoSetOptionBool("json-saving-pretty", "on");
 
     if (parseParams(&p, argc, argv) < 0)
         return -1;
@@ -865,6 +889,22 @@ int main(int argc, char* argv[])
         p.out_ext = OEXT_KER;
     else if (strcmp(p.outfile_ext, "smi") == 0)
         p.out_ext = OEXT_SMI;
+    else if (strcmp(p.outfile_ext, "cdxml") == 0)
+        p.out_ext = OEXT_CDXML;
+    else if (strcmp(p.outfile_ext, "cdxmr") == 0)
+        p.out_ext = OEXT_CDXMLR;
+    else if (strcmp(p.outfile_ext, "cdx") == 0)
+        p.out_ext = OEXT_CDX;
+    else if (strcmp(p.outfile_ext, "b64") == 0)
+        p.out_ext = OEXT_CDX64;
+    else if (strcmp(p.outfile_ext, "cdr") == 0)
+        p.out_ext = OEXT_CDR;
+    else if (strcmp(p.outfile_ext, "sd1") == 0)
+        p.out_ext = OEXT_SD1;
+    else if (strcmp(p.outfile_ext, "seq") == 0)
+        p.out_ext = OEXT_SEQ;
+    else if (strcmp(p.outfile_ext, "fst") == 0)
+        p.out_ext = OEXT_FASTA;
 
     // guess whether to layout or render by extension
     p.action = ACTION_LAYOUT;
@@ -879,7 +919,6 @@ int main(int argc, char* argv[])
 
     if (p.mode == MODE_SINGLE_MOLECULE)
     {
-
         if (p.id != NULL)
             ERROR("on single input, setting '-id' is not allowed\n");
 
@@ -890,6 +929,14 @@ int main(int argc, char* argv[])
             obj = indigoLoadSmarts(reader);
         else if (p.query_set)
             obj = indigoLoadQueryMolecule(reader);
+        else if (strcasecmp(p.infile_ext, "fst") == 0)
+        {
+            obj = indigoLoadFasta(reader, p.seq_type);
+        }
+        else if (strcasecmp(p.infile_ext, "seq") == 0)
+        {
+            obj = indigoLoadSequence(reader, p.seq_type);
+        }
         else
             obj = indigoLoadMolecule(reader);
 
@@ -901,6 +948,10 @@ int main(int argc, char* argv[])
                 indigoSaveMolfileToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_KET)
                 indigoSaveJsonToFile(obj, p.outfile);
+            else if (p.out_ext == OEXT_SEQ)
+                indigoSaveSequenceToFile(obj, p.outfile);
+            else if (p.out_ext == OEXT_FASTA)
+                indigoSaveFastaToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_SMI)
             {
                 char* pMol;
@@ -912,6 +963,55 @@ int main(int argc, char* argv[])
                 if (fp)
                 {
                     fputs(pMol, fp);
+                    fclose(fp);
+                }
+                else
+                {
+                    fprintf(stderr, "can not write: %s\n", p.outfile);
+                    return -1;
+                }
+            }
+            else if (p.out_ext == OEXT_CDXML)
+            {
+                indigoSaveCdxmlToFile(obj, p.outfile);
+            }
+            else if (p.out_ext == OEXT_CDX)
+            {
+                indigoSaveCdxToFile(obj, p.outfile);
+            }
+            else if (p.out_ext == OEXT_CDX64)
+            {
+                char* pMol = indigoCdxBase64(obj);
+                FILE* fp = fopen(p.outfile, "w+");
+                if (fp)
+                {
+                    fputs(pMol, fp);
+                    fclose(fp);
+                }
+                else
+                {
+                    fprintf(stderr, "can not write: %s\n", p.outfile);
+                    return -1;
+                }
+            }
+            else if (p.out_ext == OEXT_SD1)
+            {
+                auto buffer = indigoWriteBuffer();
+                auto comp_it = indigoIterateComponents(obj);
+                while (indigoHasNext(comp_it))
+                {
+                    auto frag_id = indigoNext(comp_it);
+                    const auto mol_obj = indigoClone(frag_id);
+                    indigoSdfAppend(buffer, mol_obj);
+                    indigoFree(mol_obj);
+                    indigoFree(frag_id);
+                }
+                indigoFree(comp_it);
+                char* pSdf = indigoToString(buffer);
+                FILE* fp = fopen(p.outfile, "w+");
+                if (fp)
+                {
+                    fputs(pSdf, fp);
                     fclose(fp);
                 }
                 else
@@ -951,8 +1051,35 @@ int main(int argc, char* argv[])
                 indigoSaveCmlToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_RXN)
                 indigoSaveRxnfileToFile(obj, p.outfile);
+            else if (p.out_ext == OEXT_CDXML || p.out_ext == OEXT_CDXMLR)
+                indigoSaveCdxmlToFile(obj, p.outfile);
+            else if (p.out_ext == OEXT_CDX || p.out_ext == OEXT_CDR)
+            {
+                indigoSaveCdxToFile(obj, p.outfile);
+            }
+            else if (p.out_ext == OEXT_SMI)
+            {
+                char* pReaction;
+                if (p.query_set)
+                    pReaction = indigoSmarts(obj);
+                else
+                    pReaction = indigoSmiles(obj);
+                FILE* fp = fopen(p.outfile, "w+");
+                if (fp)
+                {
+                    fputs(pReaction, fp);
+                    fclose(fp);
+                }
+                else
+                {
+                    fprintf(stderr, "can not write: %s\n", p.outfile);
+                    return -1;
+                }
+            }
             else
+            {
                 indigoSaveJsonToFile(obj, p.outfile);
+            }
         }
         else
         {

@@ -37,7 +37,7 @@ using namespace indigo;
 
 CP_DEF(MoleculeSubstructureMatcher::MarkushContext);
 
-MoleculeSubstructureMatcher::MarkushContext::MarkushContext(QueryMolecule& query_, BaseMolecule& target_)
+MoleculeSubstructureMatcher::MarkushContext::MarkushContext(QueryMolecule& query_, BaseMolecule& /* target_ */)
     : CP_INIT, TL_CP_GET(query), TL_CP_GET(query_marking), TL_CP_GET(sites), depth(0)
 {
     int i;
@@ -506,6 +506,10 @@ bool MoleculeSubstructureMatcher::matchQueryAtom(QueryMolecule::Atom* query, Bas
         return query->valueWithinRange(target.getAtomAromaticity(super_idx));
     case QueryMolecule::HIGHLIGHTING:
         return query->valueWithinRange((int)target.isAtomHighlighted(super_idx));
+    case QueryMolecule::ATOM_IMPLICIT_H:
+        return query->valueWithinRange(target.asMolecule().getImplicitH(super_idx));
+    case QueryMolecule::ATOM_CHIRALITY:
+        return target.stereocenters.getType(super_idx) == MoleculeStereocenters::ATOM_ABS; // TODO: Investigate right way to match
     default:
         throw Error("bad query atom type: %d", query->type);
     }
@@ -537,6 +541,8 @@ bool MoleculeSubstructureMatcher::matchQueryBond(QueryMolecule::Bond* query, Bas
     case QueryMolecule::OP_NOT:
         return !matchQueryBond(query->child(0), target, sub_idx, super_idx, am, flags ^ MATCH_DISABLED_AS_TRUE);
 
+    case QueryMolecule::BOND_ANY:
+        return true;
     case QueryMolecule::BOND_ORDER: {
         if (flags & MATCH_BOND_TYPE)
         {
@@ -699,7 +705,7 @@ bool MoleculeSubstructureMatcher::_matchBonds(Graph& subgraph, Graph& supergraph
     return true;
 }
 
-void MoleculeSubstructureMatcher::removeAtom(Graph& subgraph, int sub_idx, AromaticityMatcher* am)
+void MoleculeSubstructureMatcher::removeAtom(Graph& /* subgraph */, int sub_idx, AromaticityMatcher* am)
 {
     if (am == 0)
         return;
@@ -714,7 +720,7 @@ void MoleculeSubstructureMatcher::_removeAtom(Graph& subgraph, int sub_idx, void
     removeAtom(subgraph, sub_idx, self->_am.get());
 }
 
-void MoleculeSubstructureMatcher::addBond(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, AromaticityMatcher* am)
+void MoleculeSubstructureMatcher::addBond(Graph& /* subgraph */, Graph& supergraph, int sub_idx, int super_idx, AromaticityMatcher* am)
 {
     if (am == 0)
         return;
@@ -730,7 +736,7 @@ void MoleculeSubstructureMatcher::_addBond(Graph& subgraph, Graph& supergraph, i
     addBond(subgraph, supergraph, sub_idx, super_idx, self->_am.get());
 }
 
-int MoleculeSubstructureMatcher::_embedding(Graph& subgraph, Graph& supergraph, int* core_sub, int* core_super, void* userdata)
+int MoleculeSubstructureMatcher::_embedding(Graph& /* subgraph */, Graph& /* supergraph */, int* core_sub, int* core_super, void* userdata)
 {
     MoleculeSubstructureMatcher* self = (MoleculeSubstructureMatcher*)userdata;
 
@@ -943,7 +949,7 @@ bool MoleculeSubstructureMatcher::_attachRGroupAndContinue(int* core1, int* core
 
     // Parameters for stereocenter restoration
     bool stereo_was_saved = false;
-    int saved_stereo_type, saved_stereo_group, saved_stereo_pyramid[4];
+    int saved_stereo_type = -1, saved_stereo_group = -1, saved_stereo_pyramid[4];
 
     // If some rgroup must be attached
     if (rgroup_idx != -1)
@@ -1205,7 +1211,7 @@ bool MoleculeSubstructureMatcher::_checkRGroupConditions()
         if (context.sites[i] >= 0)
             occurrences[context.sites[i]]++;
 
-    for (int i = 1; i <= n_rgroups; i++)
+    for (i = 1; i <= n_rgroups; i++)
     {
         RGroup& rgroup = rgroups.getRGroup(i);
 
@@ -1258,7 +1264,7 @@ bool MoleculeSubstructureMatcher::_checkRGroupConditions()
     }
 
     // Check if/then relations
-    for (int i = 1; i <= n_rgroups; i++)
+    for (i = 1; i <= n_rgroups; i++)
     {
         if (nontop_rgroups[i] == 1 || conditions[i] == -1)
             continue;

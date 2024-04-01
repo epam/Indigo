@@ -8,6 +8,9 @@ sys.path.append(
 )
 from env_indigo import *  # noqa
 
+db_dir1 = joinPathPy("out/mol_test_db1", __file__)
+db_dir2 = joinPathPy("out/mol_test_db2", __file__)
+
 
 def outPrint(s, pid, output):
     # output = None
@@ -90,12 +93,8 @@ indigo1 = Indigo()
 
 
 def consTest():
-    bingo1 = Bingo.createDatabaseFile(
-        indigo, joinPathPy("mol_test_db1", __file__), "molecule", ""
-    )
-    bingo2 = Bingo.createDatabaseFile(
-        indigo, joinPathPy("mol_test_db2", __file__), "molecule", ""
-    )
+    bingo1 = Bingo.createDatabaseFile(indigo, db_dir1, "molecule", "")
+    bingo2 = Bingo.createDatabaseFile(indigo, db_dir2, "molecule", "")
 
     insertProc(bingo1, 0, "sample_2000_2.smi")
     insertProc(bingo1, 0, "sample_2000_2.smi")
@@ -134,9 +133,7 @@ def insertThr(db, pid, samples, output=None):
 
 
 def paralSameTest():
-    bingo1 = Bingo.createDatabaseFile(
-        indigo, joinPathPy("mol_test_db1", __file__), "molecule", ""
-    )
+    bingo1 = Bingo.createDatabaseFile(indigo, db_dir1, "molecule", "")
 
     thrs = []
 
@@ -173,13 +170,13 @@ def paralSameTest():
 def paralBigTest():
     bingo1 = Bingo.createDatabaseFile(
         indigo,
-        joinPathPy("mol_test_db1", __file__),
+        db_dir1,
         "molecule",
         "read_only:false",
     )
     bingo2 = Bingo.createDatabaseFile(
         indigo,
-        joinPathPy("mol_test_db2", __file__),
+        db_dir2,
         "molecule",
         "read_only:false",
     )
@@ -328,12 +325,8 @@ def paralBigTest():
 def difIndigoTest():
     indigo1 = Indigo()
     indigo2 = Indigo()
-    bingo1 = Bingo.createDatabaseFile(
-        indigo1, joinPathPy("mol_test_db1", __file__), "molecule", ""
-    )
-    bingo2 = Bingo.createDatabaseFile(
-        indigo2, joinPathPy("mol_test_db2", __file__), "molecule", ""
-    )
+    bingo1 = Bingo.createDatabaseFile(indigo1, db_dir1, "molecule", "")
+    bingo2 = Bingo.createDatabaseFile(indigo2, db_dir2, "molecule", "")
 
     t1 = threading.Thread(target=insertThr, args=(bingo1, [2, 3]))
     t2 = threading.Thread(target=insertThr, args=(bingo2, [1, 4, 5]))

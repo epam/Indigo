@@ -73,7 +73,7 @@ void MoleculeInChIUtils::_initializeAtomLabels()
     }
 }
 
-int MoleculeInChIUtils::_compareAtomLabels(int& label1, int& label2, void* context)
+int MoleculeInChIUtils::_compareAtomLabels(int& label1, int& label2, void* /*context*/)
 {
     // Compare atom labels in alphabetic order with exception that
     // atom C is the first atom and H as second atom

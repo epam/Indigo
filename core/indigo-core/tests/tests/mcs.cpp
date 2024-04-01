@@ -150,7 +150,7 @@ TEST_F(IndigoCoreMcsTest, finish_on_timeout)
         mcs.findExactMCS();
         ASSERT_TRUE(false);
     }
-    catch (Exception& e)
+    catch (Exception& /*e*/)
     {
         //      ASSERT_STREQ("", e.message());
     }

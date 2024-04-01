@@ -48,48 +48,51 @@ CEXPORT int indigoLayout(int object)
                     f.unhide(submol.vertices[i]);
                 }
             }
-            MoleculeLayout ml(*mol, self.smart_layout);
-
-            if (obj.type == IndigoObject::SUBMOLECULE)
+            if (mol->tgroups.getTGroupCount() == 0)
             {
-                ml.filter = &f;
-            }
+                MoleculeLayout ml(*mol, self.smart_layout);
 
-            ml.max_iterations = self.layout_max_iterations;
-            ml.bond_length = 1.6f;
-            ml.layout_orientation = (layout_orientation_value)self.layout_orientation;
-
-            TimeoutCancellationHandler cancellation(self.cancellation_timeout);
-            ml.setCancellationHandler(&cancellation);
-
-            ml.make();
-
-            if (obj.type != IndigoObject::SUBMOLECULE)
-            {
-                // Not for submolecule yet
-                mol->clearBondDirections();
-                try
+                if (obj.type == IndigoObject::SUBMOLECULE)
                 {
-                    mol->markBondsStereocenters();
-                    mol->markBondsAlleneStereo();
+                    ml.filter = &f;
                 }
-                catch (Exception e)
-                {
-                }
-                for (i = 1; i <= mol->rgroups.getRGroupCount(); i++)
-                {
-                    RGroup& rgp = mol->rgroups.getRGroup(i);
 
-                    for (int j = rgp.fragments.begin(); j != rgp.fragments.end(); j = rgp.fragments.next(j))
+                ml.max_iterations = self.layout_max_iterations;
+                ml.bond_length = MoleculeLayout::DEFAULT_BOND_LENGTH;
+                ml.layout_orientation = (layout_orientation_value)self.layout_orientation;
+                if (self.layout_preserve_existing || mol->hasAtropoStereoBonds())
+                    ml.respect_existing_layout = true;
+
+                TimeoutCancellationHandler cancellation(self.cancellation_timeout);
+                ml.setCancellationHandler(&cancellation);
+                ml.make();
+
+                if (obj.type != IndigoObject::SUBMOLECULE)
+                {
+                    mol->clearBondDirections();
+                    try
                     {
-                        rgp.fragments[j]->clearBondDirections();
-                        try
+                        mol->markBondsStereocenters();
+                        mol->markBondsAlleneStereo();
+                    }
+                    catch (Exception e)
+                    {
+                    }
+                    for (i = 1; i <= mol->rgroups.getRGroupCount(); i++)
+                    {
+                        RGroup& rgp = mol->rgroups.getRGroup(i);
+
+                        for (int j = rgp.fragments.begin(); j != rgp.fragments.end(); j = rgp.fragments.next(j))
                         {
-                            rgp.fragments[j]->markBondsStereocenters();
-                            rgp.fragments[j]->markBondsAlleneStereo();
-                        }
-                        catch (Exception e)
-                        {
+                            rgp.fragments[j]->clearBondDirections();
+                            try
+                            {
+                                rgp.fragments[j]->markBondsStereocenters();
+                                rgp.fragments[j]->markBondsAlleneStereo();
+                            }
+                            catch (Exception e)
+                            {
+                            }
                         }
                     }
                 }
@@ -98,16 +101,17 @@ CEXPORT int indigoLayout(int object)
         else if (IndigoBaseReaction::is(obj))
         {
             BaseReaction& rxn = obj.getBaseReaction();
-            if (rxn.isMultistep())
-                throw IndigoError("Multistep layout is not implemented yet.");
-            else
+            bool no_layout = rxn.intermediateCount() || rxn.specialConditionsCount() || rxn.meta().getNonChemicalMetaCount();
+            if (!no_layout)
             {
+                rxn.meta().resetMetaData();
                 ReactionLayout rl(rxn, self.smart_layout);
                 rl.max_iterations = self.layout_max_iterations;
                 rl.layout_orientation = (layout_orientation_value)self.layout_orientation;
-                rl.bond_length = 1.6f;
+                rl.bond_length = MoleculeLayout::DEFAULT_BOND_LENGTH;
                 rl.horizontal_interval_factor = self.layout_horintervalfactor;
-
+                if (self.layout_preserve_existing)
+                    rl.preserve_molecule_layout = true;
                 rl.make();
                 try
                 {

@@ -41,18 +41,25 @@ int StringPool::_add(const char* str, int size)
 
     if (idx >= _storage.size())
         _storage.resize(idx + 1);
-    if (_storage.at(idx) == 0)
-        _storage.set(idx, new Array<char>());
     if (size == -1 && str == 0)
         throw Error("Internal error: size == -1 && str == 0");
 
     if (size == -1)
-        size = strlen(str);
-    _storage.at(idx)->resize(size + 1);
+        size = static_cast<int>(strlen(str));
+    _storage.at(idx).resize(size + 1);
     if (str != 0 && size != 0)
         memcpy(at(idx), str, size);
     at(idx)[size] = 0;
     return idx;
+}
+
+void StringPool::set(int idx, const char* str)
+{
+    int size = static_cast<int>(strlen(str));
+    _storage.at(idx).resize(size + 1);
+    if (str != 0 && size != 0)
+        memcpy(at(idx), str, size);
+    at(idx)[size] = 0;
 }
 
 int StringPool::add(const char* str)
@@ -77,12 +84,12 @@ void StringPool::remove(int idx)
 
 char* StringPool::at(int idx)
 {
-    return _storage[_pool[idx]]->ptr();
+    return _storage[_pool[idx]].ptr();
 }
 
 const char* StringPool::at(int idx) const
 {
-    return _storage[_pool[idx]]->ptr();
+    return _storage[_pool[idx]].ptr();
 }
 
 int StringPool::size() const

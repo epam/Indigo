@@ -24,7 +24,8 @@ public class FromIndigoObject {
      * @throws BingoElasticException
      */
     public static IndigoRecordMolecule buildMolecule(IndigoObject indigoObject) throws BingoElasticException {
-        return buildMolecule(indigoObject, error -> {});
+        return buildMolecule(indigoObject, error -> {
+        });
     }
 
     /**
@@ -54,16 +55,17 @@ public class FromIndigoObject {
 
     /**
      * Build InigoRecordReaction from IndigoObject. All errors on building will be ignored
+     *
      * @param indigoObject
      * @return
      * @throws BingoElasticException
      */
     public static IndigoRecordReaction buildReaction(IndigoObject indigoObject) throws BingoElasticException {
-        return buildReaction(indigoObject, error -> {});
+        return buildReaction(indigoObject, error -> {
+        });
     }
 
     /**
-     *
      * Build IndigoRecordReaction from IndigoObject. ErrorHandler called on building errors
      *
      * @param indigoObject

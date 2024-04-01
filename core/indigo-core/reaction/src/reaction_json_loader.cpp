@@ -37,11 +37,6 @@ ReactionJsonLoader::ReactionJsonLoader(Document& ket)
     : _loader(ket), _molecule(kArrayType), _prxn(nullptr), _pqrxn(nullptr), ignore_noncritical_query_features(false)
 {
     ignore_bad_valence = false;
-
-    _loader.stereochemistry_options = stereochemistry_options;
-    _loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-    _loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-    _loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
 }
 
 ReactionJsonLoader::~ReactionJsonLoader()
@@ -50,6 +45,11 @@ ReactionJsonLoader::~ReactionJsonLoader()
 
 void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
 {
+    _loader.stereochemistry_options = stereochemistry_options;
+    _loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    _loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    _loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+
     if (rxn.isQueryReaction())
         _pqrxn = &rxn.asQueryReaction();
     else
@@ -67,6 +67,8 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     }
     else
         throw Error("unknown reaction type: %s", typeid(rxn).name());
+
+    rxn.original_format = BaseMolecule::KET;
 
     rxn.meta().clone(_pmol->meta());
     _pmol->meta().resetMetaData();
@@ -206,16 +208,6 @@ void ReactionJsonLoader::constructMultipleArrowReaction(BaseReaction& rxn)
             }
         }
     }
-
-    for (auto& cb : _component_summ_blocks)
-    {
-        auto& rb = rxn.addReactionBlock();
-        rb.role = cb.role;
-        for (auto v : cb.indexes)
-            rb.indexes.push() = v;
-        for (auto v : cb.arrows_to)
-            rb.arrows_to.push() = v;
-    }
 }
 
 void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
@@ -223,8 +215,9 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
     auto pair_comp_asc = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) { return b.first > a.first; };
     auto pair_comp_des = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) { return b.first < a.first; };
     auto pair_comp_mol_asc = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) { return b.second > a.second; };
-
-    int count = _pmol->countComponents();
+    std::list<std::unordered_set<int>> s_neighbors;
+    getSGroupAtoms(*_pmol, s_neighbors);
+    int count = _pmol->countComponents(s_neighbors);
     _reaction_components.reserve(count);
     FLOAT_INT_PAIRS mol_tops, mol_bottoms, mol_lefts, mol_rights;
 
@@ -241,12 +234,13 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         BaseMolecule& mol = *component;
         mol.makeSubmolecule(*_pmol, filter, 0, 0);
         Rect2f bbox;
-        mol.getBoundingBox(bbox);
+        mol.getBoundingBox(bbox, MIN_MOL_SIZE);
+
         mol_tops.emplace_back(bbox.top(), i);
         mol_bottoms.emplace_back(bbox.bottom(), i);
         mol_lefts.emplace_back(bbox.left(), i);
         mol_rights.emplace_back(bbox.right(), i);
-        _reaction_components.emplace_back(ReactionComponent::MOLECULE, bbox, std::move(component));
+        _reaction_components.emplace_back(ReactionComponent::MOLECULE, bbox, i, std::move(component));
     }
 
     for (int i = 0; i < rxn.meta().getMetaCount(KETReactionPlus::CID); ++i)
@@ -254,9 +248,9 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         auto& plus = (const KETReactionPlus&)rxn.meta().getMetaObject(KETReactionPlus::CID, i);
         const Vec2f& plus_pos = plus._pos;
         Rect2f bbox(plus_pos - PLUS_BBOX_SHIFT, plus_pos + PLUS_BBOX_SHIFT);
-        _reaction_components.emplace_back(ReactionComponent::PLUS, bbox, std::unique_ptr<BaseMolecule>(nullptr));
+        _reaction_components.emplace_back(ReactionComponent::PLUS, bbox, i, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(plus_pos);
-        int index = _reaction_components.size() - 1;
+        int index = static_cast<int>(_reaction_components.size() - 1);
         mol_tops.emplace_back(bbox.top(), index);
         mol_bottoms.emplace_back(bbox.bottom(), index);
         mol_lefts.emplace_back(bbox.left(), index);
@@ -270,10 +264,10 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         const Vec2f& arr_begin = arrow._begin;
         const Vec2f& arr_end = arrow._end;
         Rect2f bbox(arr_begin - ARROW_BBOX_SHIFT, arr_end + ARROW_BBOX_SHIFT);
-        _reaction_components.emplace_back(arrow_type, bbox, std::unique_ptr<BaseMolecule>(nullptr));
+        _reaction_components.emplace_back(arrow_type, bbox, i, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(arr_begin);
         _reaction_components.back().coordinates.push_back(arr_end);
-        int index = _reaction_components.size() - 1;
+        int index = static_cast<int>(_reaction_components.size() - 1);
         mol_tops.emplace_back(bbox.top(), index);
         mol_bottoms.emplace_back(bbox.bottom(), index);
         mol_lefts.emplace_back(bbox.left(), index);
@@ -357,10 +351,10 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
             case LI_SECOND_ONLY: {
                 // connect first to the existing second block
                 auto& block = *rc_connection.second.summ_block_it;
-                block.indexes.push_back(plus_connection.first);                        // add second component
-                merge_bbox(block.bbox, rc_connection.first.bbox);                      // merge second box with block box
-                rc_connection.first.summ_block_it = rc_connection.first.summ_block_it; // bind second to the first block
-                rc_connection.first.summ_block_idx = ReactionComponent::CONNECTED;     // mark second as connected
+                block.indexes.push_back(plus_connection.first);                         // add second component
+                merge_bbox(block.bbox, rc_connection.first.bbox);                       // merge second box with block box
+                rc_connection.first.summ_block_it = rc_connection.second.summ_block_it; // bind second to the first block
+                rc_connection.first.summ_block_idx = ReactionComponent::CONNECTED;      // mark second as connected
             }
             break;
             }
@@ -371,21 +365,21 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
     for (auto& csb : _component_summ_blocks_list)
     {
         for (int v : csb.indexes)
-            _reaction_components[v].summ_block_idx = _component_summ_blocks.size();
+            _reaction_components[v].summ_block_idx = static_cast<int>(_component_summ_blocks.size());
         _component_summ_blocks.push_back(csb);
     }
 
     // add all single molecules to _component_summ_blocks
-    for (int i = 0; i < _reaction_components.size(); ++i)
+    for (size_t i = 0; i < _reaction_components.size(); ++i)
     {
         auto& rc = _reaction_components[i];
         if (rc.component_type != ReactionComponent::MOLECULE)
             break;
         if (rc.summ_block_idx == ReactionComponent::NOT_CONNECTED)
         {
-            rc.summ_block_idx = _component_summ_blocks.size();
+            rc.summ_block_idx = static_cast<int>(_component_summ_blocks.size());
             _component_summ_blocks.push_back(_reaction_components[i].bbox);
-            _component_summ_blocks.back().indexes.push_back(i);
+            _component_summ_blocks.back().indexes.push_back(static_cast<int>(i));
         }
     }
 
@@ -396,22 +390,23 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
         int arrow_type = arrow._arrow_type;
         const Vec2f& arr_begin = arrow._begin;
         const Vec2f& arr_end = arrow._end;
-        float min_dist_prod = -1, min_dist_reac = -1, idx_cs_min_prod = -1, idx_cs_min_reac = -1;
-        for (int index_cs = 0; index_cs < _component_summ_blocks.size(); ++index_cs)
+        double min_dist_prod = -1, min_dist_reac = -1;
+        int idx_cs_min_prod = -1, idx_cs_min_reac = -1;
+        for (int index_cs = 0; index_cs < static_cast<int>(_component_summ_blocks.size()); ++index_cs)
         {
             auto& csb = _component_summ_blocks[index_cs];
-            if (csb.bbox.rayIntersectsRect(arr_begin, arr_end))
+            if (csb.bbox.rayIntersectsRect(arr_end, arr_begin))
             {
-                float dist = csb.bbox.pointDistance(arr_end);
+                double dist = csb.bbox.pointDistance(arr_end);
                 if (min_dist_prod < 0 || dist < min_dist_prod)
                 {
                     min_dist_prod = dist;
                     idx_cs_min_prod = index_cs;
                 }
             }
-            else if (csb.bbox.rayIntersectsRect(arr_end, arr_begin))
+            else if (csb.bbox.rayIntersectsRect(arr_begin, arr_end))
             {
-                float dist = csb.bbox.pointDistance(arr_begin);
+                double dist = csb.bbox.pointDistance(arr_begin);
                 if (min_dist_reac < 0 || dist < min_dist_reac)
                 {
                     min_dist_reac = dist;
@@ -420,10 +415,13 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
             }
         }
 
+        auto& rb = rxn.addReactionBlock();
+        rb.arrow_index = i;
+
         if (min_dist_prod > 0 && min_dist_reac > 0) // if both ends present
         {
-            _reaction_components[count + rxn.meta().getMetaCount(KETReactionPlus::CID) + i].summ_block_idx =
-                ReactionComponent::CONNECTED; // mark arrow as connected
+            auto& rc_arrow = _reaction_components[count + rxn.meta().getMetaCount(KETReactionPlus::CID) + i];
+            rc_arrow.summ_block_idx = ReactionComponent::CONNECTED; // mark arrow as connected
             auto& csb_min_prod = _component_summ_blocks[idx_cs_min_prod];
             if (csb_min_prod.role == BaseReaction::UNDEFINED)
                 csb_min_prod.role = BaseReaction::PRODUCT;
@@ -438,6 +436,10 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
 
             // idx_cs_min_reac -> idx_cs_min_prod
             csb_min_reac.arrows_to.push_back(idx_cs_min_prod);
+            for (auto ri : csb_min_reac.indexes)
+                rb.reactants.push(_reaction_components[ri].index);
+            for (auto pi : csb_min_prod.indexes)
+                rb.products.push(_reaction_components[pi].index);
         }
     }
 
@@ -449,7 +451,7 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
 {
     enum RecordIndexes
     {
-        LEFT_BOUND_IDX = 0,
+        BBOX_IDX = 0,
         FRAGMENT_TYPE_IDX,
         MOLECULE_IDX
     };
@@ -458,74 +460,85 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
     {
         MOLECULE,
         PLUS,
-        ARROW
+        ARROW,
+        TEXT
     };
 
-    using ReactionComponent = std::tuple<float, ReactionFragmentType, std::unique_ptr<BaseMolecule>>;
-
-    std::unique_ptr<BaseMolecule> merged_molecule;
-
-    if (rxn.isQueryReaction())
-        merged_molecule = std::make_unique<QueryMolecule>();
-    else
-        merged_molecule = std::make_unique<Molecule>();
-
-    int count = _pmol->countComponents();
+    using ReactionComponent = std::tuple<Rect2f, ReactionFragmentType, std::unique_ptr<BaseMolecule>>;
 
     std::vector<ReactionComponent> components;
 
-    for (int index = 0; index < count; ++index)
+    std::list<std::unordered_set<int>> s_neighbors;
+    getSGroupAtoms(*_pmol, s_neighbors);
+
+    for (int index = 0; index < _pmol->countComponents(s_neighbors); ++index)
     {
+        std::unique_ptr<BaseMolecule> mol;
         if (_pmol->isQueryMolecule())
-            components.emplace_back(0, ReactionFragmentType::MOLECULE, std::make_unique<QueryMolecule>());
+            mol = std::make_unique<QueryMolecule>();
         else
-            components.emplace_back(0, ReactionFragmentType::MOLECULE, std::make_unique<Molecule>());
+            mol = std::make_unique<Molecule>();
+
         Filter filter(_pmol->getDecomposition().ptr(), Filter::EQ, index);
-        ReactionComponent& rc = components.back();
-        BaseMolecule& mol = *(std::get<MOLECULE_IDX>(rc));
-        mol.makeSubmolecule(*_pmol, filter, 0, 0);
 
+        mol->makeSubmolecule(*_pmol, filter, 0, 0);
         Rect2f bbox;
-        mol.getBoundingBox(bbox);
-
-        std::get<LEFT_BOUND_IDX>(rc) = bbox.left();
+        mol->getBoundingBox(bbox);
+        components.emplace_back(bbox, ReactionFragmentType::MOLECULE, std::move(mol));
     }
 
     auto& arrow = (const KETReactionArrow&)rxn.meta().getMetaObject(KETReactionArrow::CID, 0);
 
-    float arrow_x = arrow._begin.x;
-    components.emplace_back(arrow_x, ReactionFragmentType::ARROW, nullptr);
-    for (int i = 0; i < rxn.meta().getMetaCount(KETReactionPlus::CID); ++i)
+    for (int i = 0; i < rxn.meta().getMetaCount(KETTextObject::CID); ++i)
     {
-        auto& plus = (const KETReactionPlus&)rxn.meta().getMetaObject(KETReactionPlus::CID, i);
-        components.emplace_back(plus._pos.x, ReactionFragmentType::PLUS, nullptr);
+        auto& text = (const KETTextObject&)rxn.meta().getMetaObject(KETTextObject::CID, i);
+        Rect2f bbox(Vec2f(text._pos.x, text._pos.y), Vec2f(text._pos.x, text._pos.y)); // change to real text box later
+        components.emplace_back(bbox, ReactionFragmentType::TEXT, nullptr);
     }
 
-    std::sort(components.begin(), components.end(),
-              [](const ReactionComponent& a, const ReactionComponent& b) -> bool { return std::get<LEFT_BOUND_IDX>(a) < std::get<LEFT_BOUND_IDX>(b); });
-
-    bool is_arrow_passed = false;
-
+    int text_meta_idx = 0;
     for (const auto& comp : components)
     {
         switch (std::get<FRAGMENT_TYPE_IDX>(comp))
         {
-        case ReactionFragmentType::MOLECULE:
-            merged_molecule->mergeWithMolecule(*std::get<MOLECULE_IDX>(comp), 0, 0);
-            break;
-        case ReactionFragmentType::ARROW:
-            rxn.addReactantCopy(*merged_molecule, 0, 0);
-            is_arrow_passed = true;
-            merged_molecule->clear();
-            break;
-        case ReactionFragmentType::PLUS:
-            if (is_arrow_passed)
-                rxn.addProductCopy(*merged_molecule, 0, 0);
-            else
-                rxn.addReactantCopy(*merged_molecule, 0, 0);
-            merged_molecule->clear();
+        case ReactionFragmentType::MOLECULE: {
+            auto& cmol = *std::get<MOLECULE_IDX>(comp);
+            for (int idx = cmol.vertexBegin(); idx < cmol.vertexEnd(); idx = cmol.vertexNext(idx))
+            {
+                Vec3f& pt3d = cmol.getAtomXyz(idx);
+                Vec2f pt(pt3d.x, pt3d.y);
+                int side = getPointSide(pt, arrow._begin, arrow._end);
+                switch (side)
+                {
+                case KETReagentUpArea:
+                case KETReagentDownArea:
+                    rxn.addCatalystCopy(cmol, 0, 0);
+                    break;
+                case KETProductArea:
+                    rxn.addProductCopy(cmol, 0, 0);
+                    break;
+                default:
+                    rxn.addReactantCopy(cmol, 0, 0);
+                    break;
+                }
+                break;
+            }
+        }
+        break;
+        case ReactionFragmentType::TEXT: {
+            const auto& bbox = std::get<BBOX_IDX>(comp);
+            Vec2f pt(bbox.center());
+            int side = getPointSide(pt, arrow._begin, arrow._end);
+            if (side == KETReagentUpArea || side == KETReagentDownArea)
+            {
+                rxn.addSpecialCondition(text_meta_idx, bbox);
+                break;
+            }
+            text_meta_idx++;
+        }
+        break;
+        default:
             break;
         }
     }
-    rxn.addProductCopy(*merged_molecule, 0, 0);
 }

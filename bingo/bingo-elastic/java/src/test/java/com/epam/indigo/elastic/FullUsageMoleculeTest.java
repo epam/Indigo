@@ -13,13 +13,13 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FullUsageMoleculeTest {
 
@@ -40,7 +40,7 @@ public class FullUsageMoleculeTest {
         ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepositoryBuilder<>();
         repository = builder
                 .withIndexName(NamingConstants.BINGO_MOLECULES)
-                .withHostName(elasticsearchContainer.getHost())
+                .withHostsNames(Collections.singletonList(elasticsearchContainer.getHost()))
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
                 .withRefreshInterval("1s")
@@ -187,7 +187,7 @@ public class FullUsageMoleculeTest {
                     .filter(new RangeQuery<>(fieldName, 10, 100))
                     .collect(Collectors.toList());
 
-            assertEquals(Math.min(10, cnt), similarRecords.size());
+            assertEquals(cnt, similarRecords.size());
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }
@@ -269,5 +269,14 @@ public class FullUsageMoleculeTest {
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }
+    }
+
+    @Test
+    @DisplayName("Page size of Integer.MAX_VALUE should throw exception")
+    public void pageSizeOverLimit() {
+        assertThrows(IllegalArgumentException.class, () -> repository.stream()
+                .filter(new KeywordQuery<>("test", "test"))
+                .limit((long) Integer.MAX_VALUE + 1)
+                .collect(Collectors.toList()));
     }
 }

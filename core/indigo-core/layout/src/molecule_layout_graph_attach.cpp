@@ -635,10 +635,12 @@ void MoleculeLayoutGraph::_attachDandlingVertices(int vert_idx, Array<int>& adja
             not_drawn_idx = i;
     }
 
-    if (n_pos > 1 && adjacent_list.size() == 1)
+    if (n_pos > 1)
     {
-        // n_pos of drawn edges and one not drawn
-        _calculatePositionsOneNotDrawn(positions, n_pos, vert_idx, not_drawn_idx);
+        if (adjacent_list.size() == 1)
+            _calculatePositionsOneNotDrawn(positions, n_pos, vert_idx, not_drawn_idx); // n_pos of drawn edges and one not drawn
+        else
+            _calculatePositionsManyNotDrawn(vert_idx, adjacent_list, positions); // n_pos of drawn edges and more than one not drawn
     }
     else
     {
@@ -819,6 +821,125 @@ bool MoleculeLayoutGraph::_checkBadTryChainOutside(Array<int>& chain_ext, Molecu
     return true;
 }
 
+using index_angles = std::vector<std::pair<int, float>>;
+
+static float calc_median_diff(float optimal_angle, const index_angles& angles, const index_angles& splits)
+{
+    int count = 0;
+    float sum = 0.0;
+    for (size_t i = 0; i < angles.size(); i++)
+    {
+        if (i < splits.size())
+        {
+            int angle_count = splits[i].first + 1; // angle count = new edge count +1
+            sum += angle_count * std::fabs(optimal_angle - splits[i].second);
+            count += angle_count;
+        }
+        else
+        {
+            sum += std::fabs(optimal_angle - angles[i].second);
+            count++;
+        }
+    }
+    if (count > 0)
+        return sum / count;
+    return std::numeric_limits<float>::max();
+}
+
+static float find_edge_splits(float optimal_angle, const index_angles& angles, size_t index, int edges_to_insert, index_angles& splits)
+{
+    int angle_index = angles[index].first;
+    float angle = angles[index].second;
+    float best_metric = std::numeric_limits<float>::max();
+    size_t next_index = index + 1;
+
+    if (next_index >= angles.size())
+    { // last angle - insert all desired edges
+        splits.emplace_back(edges_to_insert, angle / (edges_to_insert + 1));
+        best_metric = calc_median_diff(optimal_angle, angles, splits);
+    }
+    else
+    { // not last angle. Try to find best split.
+        int edges_to_try = 0;
+
+        if (angle > optimal_angle) // Wll not divide angle < optimal
+            edges_to_try = static_cast<int>(angle / optimal_angle);
+
+        if (edges_to_try > edges_to_insert)
+            edges_to_try = edges_to_insert;
+
+        while (edges_to_try >= 0)
+        {
+            index_angles new_splits;
+            new_splits.assign(splits.cbegin(), splits.cbegin() + index);
+            new_splits.emplace_back(edges_to_try, angle / (edges_to_try + 1));
+            float new_metric = find_edge_splits(optimal_angle, angles, next_index, edges_to_insert - edges_to_try, new_splits);
+            if (new_metric < best_metric)
+            {
+                best_metric = new_metric;
+                splits = new_splits;
+            }
+            edges_to_try--;
+        }
+    }
+    return best_metric;
+}
+
+void MoleculeLayoutGraph::_calculatePositionsManyNotDrawn(int vert_idx, Array<int>& to_draw, Array<Vec2f>& positions)
+{
+    int to_draw_count = to_draw.size();
+    positions.clear_resize(to_draw_count);
+
+    const Vertex& vert = getVertex(vert_idx);
+    Vec2f& pstart = getPos(vert_idx);
+
+    index_angles edges_angles;
+
+    // find edge angles
+    for (int i = vert.neiBegin(); i < vert.neiEnd(); i = vert.neiNext(i))
+    {
+        int neiVert = vert.neiVertex(i);
+        if (to_draw.find(neiVert) >= 0)
+            continue;
+
+        Vec2f edge = getPos(neiVert) - pstart;
+        if (edge.x < EPSILON && edge.y < EPSILON)
+            edge.y += 0.001f; // if edge too small - add y size
+        edges_angles.emplace_back(neiVert, edge.tiltAngle2());
+    }
+    std::sort(edges_angles.begin(), edges_angles.end(), [](std::pair<int, float> a, std::pair<int, float> b) { return a.second < b.second; });
+
+    index_angles angles; // angles between edges
+    for (size_t i = 0; i + 1 < edges_angles.size(); i++)
+    {
+        angles.emplace_back(edges_angles[i].first, edges_angles[i + 1].second - edges_angles[i].second);
+    }
+    angles.emplace_back(edges_angles.back().first, _2FLOAT(edges_angles[0].second + 2.0 * M_PI - edges_angles.back().second));
+
+    auto total_edges = to_draw_count + angles.size();
+    float optimal_angle = _2FLOAT(2.0 * M_PI / total_edges); // optimal angle = 2Pi/total_edge_count
+
+    index_angles splits;
+    std::ignore = find_edge_splits(optimal_angle, angles, 0, to_draw_count, splits);
+
+    // place new edge between drawn
+    int calculated_positions = 0;
+    for (size_t i = 0; i < splits.size(); i++)
+    {
+        if (splits[i].first > 0) // number of new edges in this agle
+        {
+            Vec2f pvert = getPos(angles[i].first); // splits index correspond to anges index
+            _calculatePos(splits[i].second, pstart, pvert, positions[calculated_positions++]);
+            for (int j = 1; j < splits[i].first; j++)
+            {
+                _calculatePos(splits[i].second, pstart, positions[calculated_positions - 1], positions[calculated_positions]);
+                calculated_positions++;
+            }
+        }
+    }
+    return;
+}
+
 void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn(Array<Vec2f>& positions, int n_pos, int vert_idx, int not_drawn_idx)
 {
     positions.clear_resize(n_pos);
@@ -852,9 +973,9 @@ void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn(Array<Vec2f>& positions
         angles.push(p0.tiltAngle2());
     }
 
-    // sort
-    for (int i = 0; i < n_pos; i++)
-        for (int j = i + 1; j < n_pos; j++)
+    int size = angles.size();
+    for (int i = 0; i < size; i++)
+        for (int j = i + 1; j < size; j++)
             if (angles[i] > angles[j])
             {
                 angles.swap(i, j);

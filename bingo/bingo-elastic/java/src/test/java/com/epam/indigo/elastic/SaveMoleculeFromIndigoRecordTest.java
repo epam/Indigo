@@ -14,6 +14,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -37,7 +38,7 @@ public class SaveMoleculeFromIndigoRecordTest {
         ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepositoryBuilder<>();
         repository = builder
                 .withIndexName(NamingConstants.BINGO_MOLECULES)
-                .withHostName(elasticsearchContainer.getHost())
+                .withHostsNames(Collections.singletonList(elasticsearchContainer.getHost()))
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
                 .withRefreshInterval("1s")
@@ -76,8 +77,10 @@ public class SaveMoleculeFromIndigoRecordTest {
             Helpers.iterateSdf("src/test/resources/rand_queries_small.sdf").forEach(indigoRecordList::add);
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(5);
-            List<IndigoRecordMolecule> collect = repository.stream().collect(Collectors.toList());
-            assertEquals(10, collect.size());
+            List<IndigoRecordMolecule> fullCollection = repository.stream().collect(Collectors.toList());
+            List<IndigoRecordMolecule> limitCollection = repository.stream().limit(20).collect(Collectors.toList());
+            assertEquals(20, limitCollection.size());
+            assertEquals(371, fullCollection.size());
         } catch (Exception exception) {
             Assertions.fail(exception);
         }
@@ -92,7 +95,7 @@ public class SaveMoleculeFromIndigoRecordTest {
             repository.indexRecords(indigoRecordList, indigoRecordList.size());
             TimeUnit.SECONDS.sleep(5);
             List<IndigoRecord> collect = repository.stream().collect(Collectors.toList());
-            assertEquals(10, collect.size());
+            assertEquals(163, collect.size());
         } catch (Exception exception) {
             Assertions.fail(exception);
         }

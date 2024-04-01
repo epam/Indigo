@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE knimeNode PUBLIC "-//UNIKN//DTD KNIME Node 2.0//EN" "http://www.knime.org/Node.dtd">
+<knimeNode icon="../icons/substructure.png" type="Other">
+    <name>Formula Filter</name>
+    <shortDescription>
+        
+    </shortDescription>
+    
+    <fullDescription>
+        <intro>
+               <p>This node accepts a table with molecules and a table with a gross formula strings, and splits the first table
+               into three sets, the first one is with all rows that satisfy the specified relation, the second is with all
+               rows that do not, the last one gathers all the rows with invalid data.</p>
+               <p>Formula A is less than another formula B if A's atoms set is a subset of B's atoms set where
+	           quantity of each atom in the A's subset is less than or equal to corresponding quantity of atom 
+	           in formula B (even if the sets A and B are equal). For instance, a molecule of methan is less than 
+	           or equal to a butane molecule as [C, H] atoms set of butane contains the same set of methan's atoms and quantity of each atom 
+	           of methan is less than quantity of atom buthane molecule (1 less than 4, 4 less than 10).
+               </p>
+		        <p>
+		        <b>Supported types:</b> 
+		        <ul>
+				<li>Molecule:  String, SDF, Smiles, CML, Mol, InChI</li>
+				</ul>
+				</p>
+               <p>The node is based on the <a href="http://lifescience.opensource.epam.com/indigo">Indigo</a> cheminformatics toolkit.</p>        
+        </intro>
+        
+        <option name="Target column">The column that contains molecule structures.</option>
+        <option name="Query column">The column that contains the gross formula strings.</option>
+        <option name="Relation">Relation that needs to be satisfied for all gross formulas or at least for a specified number of them.</option>
+        <option name="Append queries row ID column">The column that contains all the meeting the conditions rows. </option>
+        <option name="Append match count column">The column that contains the appropriate molecules amount.</option>
+        <option name="Input type">Treat input as: a molecule</option>
+        <option name="Treat X as pseudoatom">Treat the "X" atoms in Molfiles as pseudoatoms, not as "any halogen" query atoms</option>
+        <option name="Ignore stereochemistry errors">Ignore incorrectly specified stereochemistry on input structures, rather than sending
+        the structures with stereochemistry errors to the "invalid molecules" table.</option>
+    </fullDescription>
+    
+    <ports>
+        <inPort index="0" name="Input data">Table containing a column with molecules</inPort>
+        <inPort index="1" name="Input data">Table containing a column with the gross formula strings</inPort>
+        <outPort index="0" name="Matched">Rows with molecules that satisfy the relation</outPort>
+        <outPort index="1" name="Unmatched">Rows with molecules that do not satisfy the relation</outPort>
+        <outPort index="2" name="Invalid data">Rows with invalid data: data cannot be translated into Indigo object</outPort>
+    </ports>    
+</knimeNode>

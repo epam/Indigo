@@ -4,6 +4,7 @@ import difflib
 import gc
 import io
 import os
+import platform
 import re
 import runpy
 import shutil
@@ -41,6 +42,12 @@ from util import overridePlatform
 stdout_thread_printer = ThreadPrinter()
 stderr_thredd_printer = ThreadPrinter()
 stdout_lock = Lock()
+
+res_failed = "[FAILED]"
+res_passed = "[PASSED]"
+res_error = "[ERROR]"
+res_new = "[NEW]"
+res_todo = "[TODO]"
 
 
 def write_difference(fn_1, fn_2, fn_3):
@@ -146,10 +153,8 @@ def main():
     print("Indigo version: " + indigo.version())
     print("Indigo library path: " + dll_full_path())
     print("Date & time: " + datetime.datetime.now().strftime("%d.%m.%Y %H:%M"))
-    if sys.platform == "cli":
-        import System.Environment
-    # print("Platform: {}".format(platform.platform() if sys.platform != 'cli' else System.Environment.OSVersion.ToString()))
-    # print("Processor: {}".format(platform.processor() if sys.platform != 'cli' else 'x86_64' if System.Environment.Is64BitProcess else 'x86'))
+    print("Platform: {}".format(platform.platform()))
+    print("Processor: {}".format(platform.processor()))
     print("Python: " + sys.version.replace("\n", "\t"))
     print("Executable: " + python_exec)
     import socket
@@ -219,10 +224,14 @@ def main():
         #     test_results.append(run_analyze_test(test_arg))
     test_status = 0
     for test_result in test_results:
-        if test_result[2] == "[FAILED]":
+        if test_result[2] == res_failed:
             test_status = test_status | 1
-        if test_result[2] == "[ERROR]":
+        if test_result[2] == res_error:
             test_status = test_status | 2
+            for i in test_result:
+                print("%s" % i)
+        if test_result[2] == res_new:
+            test_status = test_status | 4
     total_time = time.time() - total_time
     print("\nTotal time: {:.2f} sec".format(total_time))
 
@@ -230,6 +239,12 @@ def main():
         from generate_junit_report import generate_junit_report
 
         generate_junit_report(test_results, junit_report_name)
+
+    # remove output folders where no errors were found
+    for folder in os.listdir(output_dir):
+        f_path = os.path.join(output_dir, folder)
+        if not os.listdir(f_path):
+            shutil.rmtree(f_path)
 
     return test_status
 
@@ -309,20 +324,25 @@ def run_analyze_test(args):
         ndiffcnt = write_difference(new_ref_file, out_filename, diff_file)
         # remove empty diff file
         if not ndiffcnt:
-            os.remove(diff_file)
+            if os.path.exists(diff_file):
+                os.remove(diff_file)
+            if os.path.exists(diff_file + ".html"):
+                os.remove(diff_file + ".html")
+            os.remove(out_filename)
+            os.remove(new_ref_file)
         base_exists = True
     spacer = "."
     msg = ""
     if failed_stderr:
-        test_status = "[ERROR]" if root != "todo" else "[TODO]"
+        test_status = res_error if root != "todo" else res_todo
     elif not base_exists:
-        test_status = "[NEW]"
+        test_status = res_new
     elif not ndiffcnt:
-        test_status = "[PASSED]"
+        test_status = res_passed
         spacer = " "
         spacer_len += 2
     else:
-        test_status = "[FAILED]" if root != "todo" else "[TODO]"
+        test_status = res_failed if root != "todo" else res_todo
     out_message += "{}{}    {:.2f} sec".format(
         spacer * spacer_len, test_status, tspent
     )
@@ -336,6 +356,8 @@ def run_analyze_test(args):
         f.close()
     with stdout_lock:
         sys.__stdout__.write(out_message + "\n")
+        if test_status == "[FAILED]":
+            sys.__stdout__.write(msg + "\n")
     test_result = (root, filename, test_status, msg, tspent)
     return test_result
 

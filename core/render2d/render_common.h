@@ -575,7 +575,6 @@ namespace indigo
         bool centerDoubleBondWhenStereoAdjacent;
         bool showCycles; // for diagnostic purposes
         bool agentsBelowArrow;
-        bool collapseSuperatoms;
         Array<char> atomColorProp;
         std::unique_ptr<RenderCdxmlContext> cdxml_context;
 

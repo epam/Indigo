@@ -35,6 +35,7 @@
 #include "molecule/molecule_name_parser.h"
 #include "molecule/molecule_savers.h"
 #include "molecule/query_molecule.h"
+#include "molecule/sequence_loader.h"
 #include "molecule/smiles_loader.h"
 #include "molecule/smiles_saver.h"
 
@@ -486,6 +487,8 @@ CEXPORT int indigoLoadMolecule(int source)
         loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
         loader.treat_stereo_as = self.treat_stereo_as;
         loader.ignore_bad_valence = self.ignore_bad_valence;
+        loader.dearomatize_on_load = self.dearomatize_on_load;
+        loader.arom_options = self.arom_options;
 
         std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
 
@@ -508,15 +511,117 @@ CEXPORT int indigoLoadQueryMolecule(int source)
 
         loader.stereochemistry_options = self.stereochemistry_options;
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
+        loader.dearomatize_on_load = self.dearomatize_on_load;
+        loader.arom_options = self.arom_options;
 
         std::unique_ptr<IndigoQueryMolecule> molptr = std::make_unique<IndigoQueryMolecule>();
 
         QueryMolecule& qmol = molptr->qmol;
 
-        loader.loadQueryMolecule(qmol);
+        loader.loadMolecule(qmol);
         molptr->copyProperties(loader.properties);
 
         return self.addObject(molptr.release());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadSequence(int source, const char* seq_type)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(source);
+        SequenceLoader loader(IndigoScanner::get(obj));
+
+        std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
+
+        Molecule& mol = molptr->mol;
+        loader.loadSequence(mol, seq_type);
+        return self.addObject(molptr.release());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadSequenceFromString(const char* string, const char* seq_type)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadString(string);
+        int result;
+
+        if (source <= 0)
+            return -1;
+
+        result = indigoLoadSequence(source, seq_type);
+        indigoFree(source);
+        return result;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadSequenceFromFile(const char* filename, const char* seq_type)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadFile(filename);
+        int result;
+
+        if (source < 0)
+            return -1;
+
+        result = indigoLoadSequence(source, seq_type);
+        indigoFree(source);
+        return result;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadFasta(int source, const char* seq_type)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(source);
+        SequenceLoader loader(IndigoScanner::get(obj));
+
+        std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
+
+        Molecule& mol = molptr->mol;
+        loader.loadFasta(mol, seq_type);
+        return self.addObject(molptr.release());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadFastaFromString(const char* string, const char* seq_type)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadString(string);
+        int result;
+
+        if (source <= 0)
+            return -1;
+
+        result = indigoLoadFasta(source, seq_type);
+        indigoFree(source);
+        return result;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadFastaFromFile(const char* filename, const char* seq_type)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadFile(filename);
+        int result;
+
+        if (source < 0)
+            return -1;
+
+        result = indigoLoadFasta(source, seq_type);
+        indigoFree(source);
+        return result;
     }
     INDIGO_END(-1);
 }
@@ -638,7 +743,7 @@ int IndigoMoleculeComponent::getIndex()
 
 IndigoObject* IndigoMoleculeComponent::clone()
 {
-    std::unique_ptr<IndigoObject> res;
+    std::unique_ptr<IndigoBaseMolecule> res;
     BaseMolecule* newmol;
 
     if (mol.isQueryMolecule())
@@ -654,6 +759,12 @@ IndigoObject* IndigoMoleculeComponent::clone()
 
     Filter filter(mol.getDecomposition().ptr(), Filter::EQ, index);
     newmol->makeSubmolecule(mol, filter, 0, 0);
+    for (auto it = newmol->properties().begin(); it != newmol->properties().end(); ++it)
+    {
+        auto& props = newmol->properties().value(it);
+        res->getProperties().merge(props);
+    }
+
     return res.release();
 }
 
@@ -1185,6 +1296,18 @@ CEXPORT int indigoCountRGroups(int molecule)
     {
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
         return mol.rgroups.getRGroupCount();
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoCopyRGroups(int molecule_from, int molecule_to)
+{
+    INDIGO_BEGIN
+    {
+        BaseMolecule& mol_from = self.getObject(molecule_from).getBaseMolecule();
+        BaseMolecule& mol_to = self.getObject(molecule_to).getBaseMolecule();
+        mol_from.rgroups.copyRGroupsFromMolecule(mol_to.rgroups);
+        return 0;
     }
     INDIGO_END(-1);
 }
@@ -2068,6 +2191,16 @@ CEXPORT float indigoAlignAtoms(int molecule, int natoms, int* atom_ids, float* d
             mol.getAtomXyz(i).transformPoint(matr);
 
         return (float)(sqrt(sqsum / natoms));
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoClearXYZ(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        self.getObject(molecule).getBaseMolecule().clearXyz();
+        return molecule;
     }
     INDIGO_END(-1);
 }
@@ -3200,8 +3333,8 @@ CEXPORT int indigoGetSGroupDisplayOption(int sgroup)
     INDIGO_BEGIN
     {
         Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        if (sup.contracted > -1)
-            return sup.contracted;
+        if (sup.contracted > DisplayOption::Undefined)
+            return (int)sup.contracted;
 
         return 0;
     }
@@ -3213,7 +3346,7 @@ CEXPORT int indigoSetSGroupDisplayOption(int sgroup, int option)
     INDIGO_BEGIN
     {
         Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        sup.contracted = option;
+        sup.contracted = (DisplayOption)option;
 
         return 1;
     }

@@ -171,6 +171,13 @@ namespace indigo
         RADICAL_TRIPLET = 3
     };
 
+    enum
+    {
+        HYDROGEN = 1,
+        DEUTERIUM = 2,
+        TRITIUM = 3
+    };
+
     class DLLEXPORT Element
     {
     public:
@@ -182,6 +189,7 @@ namespace indigo
         static int fromChar(char c);
         static int fromTwoChars(char c1, char c2);
         static int fromTwoChars2(char c1, char c2);
+        static int fromTwoChars2(char c1, int c2);
 
         static int radicalElectrons(int radical);
         static int radicalOrbitals(int radical);

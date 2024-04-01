@@ -19,17 +19,18 @@
 #include <algorithm>
 #include <ctype.h>
 #include <errno.h>
+#include <limits>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+
+#include <array>
+#include <cppcodec/base64_default_rfc4648.hpp>
 
 #include "base_c/defs.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 #include "reusable_obj_array.h"
-
-#include <../cppcodec/cppcodec/base64_default_rfc4648.hpp>
-#include <limits>
 
 using namespace indigo;
 
@@ -128,10 +129,12 @@ int Scanner::readInt(void)
     return result;
 }
 
-int Scanner::readUnsigned()
+// Try to read unsigned int. Return readed value, on error return -1 and restore position
+int Scanner::tryReadUnsigned()
 {
     int result = 0;
     bool was_digit = false;
+    long long pos = tell();
 
     while (!isEOF())
     {
@@ -147,8 +150,19 @@ int Scanner::readUnsigned()
             break;
         }
     }
-
     if (!was_digit)
+    {
+        seek(pos, SEEK_SET);
+        return -1;
+    }
+
+    return result;
+}
+
+int Scanner::readUnsigned()
+{
+    int result = tryReadUnsigned();
+    if (result < 0)
         throw Error("readUnsigned(): no digits");
 
     return result;
@@ -370,6 +384,20 @@ void Scanner::skipSpace()
         skip(1);
 }
 
+void Scanner::skipBom()
+{
+    long long pos = tell();
+    const int kBOMSize = 3;
+    const std::array<unsigned char, kBOMSize> kBOM = {0xEF, 0xBB, 0xBF};
+    if (length() >= kBOMSize)
+    {
+        std::array<unsigned char, kBOMSize> bom;
+        readCharsFix(kBOMSize, (char*)bom.data());
+        if (bom != kBOM)
+            seek(pos, SEEK_SET);
+    }
+}
+
 void Scanner::skipUntil(const char* delimiters)
 {
     while (strchr(delimiters, lookNext()) == nullptr)
@@ -421,12 +449,12 @@ void Scanner::readCharsFix(int n, char* chars_out)
 
 int Scanner::readCharsFlexible(int n, char* chars_out)
 {
-    size_t i = 0;
+    int i = 0;
     while ((i < n) && !isEOF())
     {
         chars_out[i++] = readChar();
     }
-    return (int)i;
+    return i;
 }
 
 word Scanner::readBinaryWord()
@@ -494,6 +522,18 @@ unsigned int Scanner::readPackedUInt()
             return value;
         shift += 7;
     }
+}
+
+void Scanner::readAll(std::string& str)
+{
+    const long long size = length() - tell();
+    const int max_int = std::numeric_limits<int>::max();
+    if (size > max_int)
+    {
+        throw Error("Cannot read more than %d into memory", max_int);
+    }
+    str.resize(static_cast<size_t>(size));
+    read(static_cast<int>(str.size()), &str[0]);
 }
 
 void Scanner::readAll(Array<char>& arr)
@@ -695,8 +735,9 @@ void BufferScanner::_init(const char* buffer, int size)
         throw Error("incorrect parameters in BufferScanner constructor");
     if (_is_base64)
     {
-        auto decoded = base64::decode(buffer, size);
-        _base64_buffer.copy((char*)decoded.data(), decoded.size());
+        std::string encoded(buffer, size);
+        auto decoded = base64::decode(encoded.c_str(), encoded.size());
+        _base64_buffer.copy(reinterpret_cast<const char*>(decoded.data()), static_cast<int>(decoded.size()));
         _buffer = _base64_buffer.ptr();
         _size = _base64_buffer.size();
     }

@@ -211,7 +211,7 @@ cairo_status_t RenderContext::writer(void* closure, const unsigned char* data, u
     return CAIRO_STATUS_SUCCESS;
 }
 
-void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int width, int height)
+void RenderContext::createSurface(cairo_write_func_t writer, Output* /*output*/, int /*width*/, int /*height*/)
 {
     int mode = opt.mode;
     if (writer == NULL && (mode == MODE_HDC || mode == MODE_PRN))
@@ -965,7 +965,7 @@ void RenderContext::drawHalfEllipse(const Vec2f& v1, const Vec2f& v2, const floa
     cairo_set_matrix(_cr, &save_matrix);
 }
 
-void RenderContext::drawTriangleArrowHeader(const Vec2f& v, const Vec2f& dir, const float width, const float headwidth, const float headsize)
+void RenderContext::drawTriangleArrowHeader(const Vec2f& v, const Vec2f& dir, const float /*width*/, const float headwidth, const float headsize)
 {
     Vec2f n(dir), p(v), d(dir);
     n.rotate(1, 0);
@@ -1059,7 +1059,7 @@ void RenderContext::drawArrowHeader(const Vec2f& v, const Vec2f& dir, const floa
 void RenderContext::drawEllipticalArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const float height,
                                         int arrow_type)
 {
-    float h_sign = height > 0 ? 1 : -1;
+    float h_sign = height > 0 ? 1.f : -1.f;
     Vec2f d, n_orig, pa(p1), pb(p2);
     d.diff(p2, p1);
     d.normalize();
@@ -1071,7 +1071,7 @@ void RenderContext::drawEllipticalArrow(const Vec2f& p1, const Vec2f& p2, const 
     Vec2f n(d);
     n.rotate(-h_sign, 0);
 
-    float len = d.length();
+    // float len = d.length();
 
     n_orig.negate();
     switch (arrow_type)
@@ -1165,7 +1165,7 @@ void RenderContext::drawDashedArrow(const Vec2f& p1, const Vec2f& p2, const floa
     n.rotate(1, 0);
     double brick_size = 0.3;
     double filled_part = brick_size * 0.7;
-    int whole_bricks = floor(len / brick_size);
+    int whole_bricks = static_cast<int>(floor(len / brick_size));
     double brick_part = len - whole_bricks * brick_size;
     if (brick_part > filled_part)
         brick_part = filled_part;
@@ -1182,19 +1182,19 @@ void RenderContext::drawDashedArrow(const Vec2f& p1, const Vec2f& p2, const floa
         moveTo(p);
         p.addScaled(n, width / 2);
         lineTo(p);
-        p.addScaled(d, is_last ? brick_part : filled_part);
+        p.addScaled(d, static_cast<float>(is_last ? brick_part : filled_part));
         lineTo(p);
         n.negate();
         p.addScaled(n, width);
         lineTo(p);
         d.negate();
-        p.addScaled(d, is_last ? brick_part : filled_part);
+        p.addScaled(d, static_cast<float>(is_last ? brick_part : filled_part));
         lineTo(p);
         n.negate();
         d.negate();
         p.addScaled(n, width / 2);
         lineTo(p);
-        p.addScaled(d, brick_size);
+        p.addScaled(d, static_cast<float>(brick_size));
     }
     drawArrowHeader(p2, d, width, headwidth, headsize, false);
     checkPathNonEmpty();
@@ -1231,8 +1231,8 @@ void RenderContext::drawBar(const Vec2f& p1, const Vec2f& p2, const float width,
 void RenderContext::drawEquillibriumHalf(const Vec2f& p1, const Vec2f& p2, const float width, float headwidth, const float headsize, const ArrowType arrow_type,
                                          const bool is_large, const bool is_unbalanced)
 {
-    float margin = arrow_type == ArrowType::ETriangleArrow ? headsize : width * 1.5;
-    float width_scale = is_large ? 1.5 : 1;
+    float margin = arrow_type == ArrowType::ETriangleArrow ? headsize : static_cast<float>(width * 1.5);
+    float width_scale = is_large ? 1.5f : 1.f;
     Vec2f d, n, pa(p1);
     d.diff(p2, p1);
     float len = d.length();
@@ -1344,7 +1344,7 @@ void RenderContext::drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const floa
             p.set(p1.x, p1.y);
             p.addScaled(d, len / 2); // set to middle
             Vec2f d45(d);
-            d45.rotate((arr_ind ? 1 : -1) * sqrt(2) / 2, sqrt(2) / 2); // rotate 45 degrees clockwise
+            d45.rotate(static_cast<float>((arr_ind ? 1 : -1) * sqrt(2) / 2.), static_cast<float>(sqrt(2) / 2.)); // rotate 45 degrees clockwise
             auto len_cross = len / 10;
             p.addScaled(d45, len_cross / 2);
             Vec2f n90(d45);

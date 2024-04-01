@@ -48,8 +48,8 @@ print("***** SMILES with special aromatic atoms *****")
 mols = [
     "[si]1(c(OC)c(c(C)cc1)c2ccccc2)OC",  # Cactvs: [si]
     "c1ccc2[as]c3ccccc3[siH]c2c1",
-    "c1ccc2[te]c3ccccc3[bH]c2c1",  # RDKit: [te]
-    "C[b]1o[b](C)o[b](C)o1",
+    "c1ccc2[te]c3ccccc3[BH]c2c1",  # RDKit: [te]
+    "C[B]1o[B](C)o[B](C)o1",
 ]
 for smiles in mols:
     print("***\n%s: " % (smiles))
@@ -272,7 +272,7 @@ indigo = Indigo()
 for model in ["basic", "generic"]:
     print(model)
     indigo.setOption("aromaticity-model", model)
-    m = indigo.loadMolecule("Cn1c2ccccc2c(-c2ccccc2)n/c(=N\O)c1=O")
+    m = indigo.loadMolecule("Cn1c2ccccc2c(-c2ccccc2)n/c(=N\\O)c1=O")
     print(m.smiles())
     m.dearomatize()
     print(m.smiles())
@@ -330,3 +330,41 @@ for rgroup in mol.iterateRGroups():
     print("  Rgroup #" + str(rgroup.index()))
     for frag in rgroup.iterateRGroupFragments():
         print(frag.canonicalSmiles())
+
+print("***** dearomatize-on-load option test  *****")
+indigo.setOption("molfile-saving-skip-date", "1")
+styr = indigo.loadMolecule("c1c(C=C)cccc1")
+styr.aromatize()
+styr.layout()
+aromatized_styr = styr.molfile()
+styr = indigo.loadMolecule(aromatized_styr)
+# by default it should stay aromatized
+print(styr.molfile())
+indigo.setOption("dearomatize-on-load", "true")
+styr = indigo.loadMolecule(aromatized_styr)
+# should be dearomatized
+print(styr.molfile())
+indigo.setOption("dearomatize-on-load", "false")
+styr = indigo.loadMolecule(aromatized_styr)
+# should be aromatized
+print(styr.molfile())
+# should not dearomatize queries
+indigo.setOption("dearomatize-on-load", "true")
+q = indigo.loadQueryMolecule("[#6]=,:[#6]")
+print(q.json())
+
+print(
+    "***** Dearomatize molecule with atom_aromatic_connectivity < 0 should not cause exception  *****"
+)
+m = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/issue_1478.ket", __file__)
+)
+m.dearomatize()
+print(m.smiles())
+
+print("***** Dearomatize molecule with custom query without label  *****")
+m = indigo.loadQueryMoleculeFromFile(
+    joinPathPy("molecules/issue_1524.ket", __file__)
+)
+m.dearomatize()
+print(m.smarts())

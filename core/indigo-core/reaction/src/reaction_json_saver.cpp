@@ -17,11 +17,13 @@
  ***************************************************************************/
 
 #include <memory>
+#include <numeric>
 #include <vector>
 
 #include <rapidjson/document.h>
 
 #include "base_cpp/output.h"
+#include "layout/reaction_layout.h"
 #include "molecule/molecule_json_saver.h"
 #include "molecule/query_molecule.h"
 #include "reaction/reaction.h"
@@ -33,27 +35,44 @@ using namespace rapidjson;
 
 IMPL_ERROR(ReactionJsonSaver, "reaction KET saver");
 
-void ReactionJsonSaver::_getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max_vec, float scale)
+void ReactionJsonSaver::_fixLayout(BaseReaction& rxn)
 {
-    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+    Vec2f rmax{Vec2f::min_coord(), Vec2f::min_coord()}, pmin{Vec2f::max_coord(), Vec2f::max_coord()};
+    Rect2f bb;
+    // Calculate rightTop of reactant bounding box
+    for (int i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
     {
-        Vec3f& p = mol.getAtomXyz(i);
-        Vec2f p2(p.x, p.y);
-
-        if (i == mol.vertexBegin())
-            min_vec = max_vec = p2;
-        else
-        {
-            min_vec.min(p2);
-            max_vec.max(p2);
-        }
+        rxn.getBaseMolecule(i).getBoundingBox(bb);
+        rmax.max(bb.rightTop());
     }
 
+    // Calculate leftBottom of product bounding box
+    for (int i = rxn.productBegin(); i != rxn.productEnd(); i = rxn.productNext(i))
+    {
+        rxn.getBaseMolecule(i).getBoundingBox(bb);
+        pmin.min(bb.leftBottom());
+    }
+
+    // if left side of product bb at left of right side of reactant bb - fix layout
+    if (rmax.x > pmin.x)
+    {
+        ReactionLayout rl(rxn, true);
+        rl.preserve_molecule_layout = true;
+        rl.make();
+    }
+}
+
+void ReactionJsonSaver::_getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max_vec, float scale)
+{
+    Rect2f bbox;
+    mol.getBoundingBox(bbox);
+    min_vec.copy(bbox.leftBottom());
+    max_vec.copy(bbox.rightTop());
     min_vec.scale(scale);
     max_vec.scale(scale);
 }
 
-ReactionJsonSaver::ReactionJsonSaver(Output& output) : _output(output), _add_stereo_desc(false)
+ReactionJsonSaver::ReactionJsonSaver(Output& output) : _output(output), add_stereo_desc(false), pretty_json(false)
 {
 }
 
@@ -67,84 +86,77 @@ void ReactionJsonSaver::saveReactionWithMetaData(BaseReaction& rxn, BaseMolecule
         merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
 
     merged.meta().clone(rxn.meta());
-
     StringBuffer s;
-    Writer<StringBuffer> writer(s);
+    JsonWriter writer(pretty_json);
+    writer.Reset(s);
     json_saver.saveMolecule(merged, writer);
     _output.printf("%s", s.GetString());
+}
+
+static void _processSideBoxes(std::unique_ptr<BaseReaction>& reaction, BaseMolecule& merged, std::vector<Vec2f>& pluses, Rect2f& type_box, int side)
+{
+    int begin = reaction->sideBegin(side);
+    std::vector<Rect2f> boxes;
+
+    for (int i = begin; i != reaction->sideEnd(); i = reaction->sideNext(side, i))
+    {
+        BaseMolecule& mol = reaction->getBaseMolecule(i);
+        merged.mergeWithMolecule(mol, 0, 0);
+
+        Rect2f box;
+        mol.getBoundingBox(box);
+        if (i == begin)
+            type_box.copy(box);
+        else
+            type_box.extend(box);
+
+        if (side != BaseReaction::CATALYST)
+            boxes.emplace_back(box);
+    }
+
+    // For REACTANT and PRODUCT insert pluses between boxes
+    if (side != BaseReaction::CATALYST && boxes.size() > 1)
+    {
+        std::ignore = std::accumulate(std::next(boxes.begin()), boxes.end(), boxes[0], [&pluses](Rect2f left, Rect2f right) {
+            pluses.emplace_back(right.between_left_box(left), left.middleY());
+            return right;
+        });
+    }
 }
 
 void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
 {
     std::vector<Vec2f> pluses;
-
-    Vec2f rmin(0, 0), rmax(0, 0), pmin(0, 0), pmax(0, 0);
-
-    if (rxn.reactantsCount() > 0)
+    Rect2f react_box, product_box, catalyst_box;
+    bool last_single_reactant = false;
+    bool first_single_product = false;
+    std::unique_ptr<BaseReaction> reaction(rxn.neu());
+    reaction->clone(rxn);
+    _fixLayout(*reaction);
+    if (reaction->reactantsCount() > 0)
     {
-        int rcount = 1;
-        for (int i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
+        _processSideBoxes(reaction, merged, pluses, react_box, BaseReaction::REACTANT);
+        for (int i = reaction->reactantBegin(); i != reaction->reactantEnd(); i = reaction->reactantNext(i))
         {
-            Vec2f min1, max1;
-            _getBounds(rxn.getBaseMolecule(i), min1, max1, 1.0);
-            merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
-
-            if (i == rxn.reactantBegin())
-            {
-                rmin = min1;
-                rmax = max1;
-            }
-            else
-            {
-                rmin.min(min1);
-                rmax.max(max1);
-            }
-
-            if (rcount < rxn.reactantsCount())
-            {
-                Vec2f min2, max2;
-                _getBounds(rxn.getBaseMolecule(rxn.reactantNext(i)), min2, max2, 1.0);
-                pluses.emplace_back((max1.x + min2.x) / 2, (min1.y + max1.y) / 2);
-                rcount++;
-            }
+            last_single_reactant = reaction->getBaseMolecule(i).vertexCount() == 1;
         }
     }
 
-    if (rxn.productsCount() > 0)
+    if (reaction->productsCount() > 0)
     {
-        int rcount = 1;
-        Vec2f min1, max1;
+        _processSideBoxes(reaction, merged, pluses, product_box, BaseReaction::PRODUCT);
+        first_single_product = reaction->getBaseMolecule(reaction->productBegin()).vertexCount() == 1;
+    }
 
-        for (int i = rxn.productBegin(); i != rxn.productEnd(); i = rxn.productNext(i))
-        {
-            Vec2f min1, max1;
-            _getBounds(rxn.getBaseMolecule(i), min1, max1, 1.0);
-            merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
-
-            if (i == rxn.productBegin())
-            {
-                pmin = min1;
-                pmax = max1;
-            }
-            else
-            {
-                pmin.min(min1);
-                pmax.max(max1);
-            }
-
-            if (rcount < rxn.productsCount())
-            {
-                Vec2f min2, max2;
-                _getBounds(rxn.getBaseMolecule(rxn.productNext(i)), min2, max2, 1.0);
-                pluses.emplace_back((max1.x + min2.x) / 2, (min1.y + max1.y) / 2);
-                rcount++;
-            }
-        }
+    if (reaction->catalystCount() > 0)
+    {
+        _processSideBoxes(reaction, merged, pluses, catalyst_box, BaseReaction::CATALYST);
     }
 
     // dump molecules
     StringBuffer s;
-    Writer<StringBuffer> writer(s);
+    JsonWriter writer(pretty_json);
+    writer.Reset(s);
     json_saver.saveMolecule(merged, writer);
 
     Document ket;
@@ -167,46 +179,42 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
     }
 
     // calculate arrow
-    Vec2f p1(0, 0);
-    Vec2f p2(0, 0);
-    if (rxn.reactantsCount() || rxn.productsCount())
+    Vec2f arrow_head(0, 0);
+    Vec2f arrow_tail(0, 0);
+    if (reaction->reactantsCount() || reaction->productsCount())
     {
-        if (rxn.productsCount() == 0)
+        constexpr float shift = 1.0f;
+        if (reaction->productsCount() == 0)
         {
-            p2.x = rmax.x + 1.0f;
-            p2.y = (rmin.y + rmax.y) / 2;
-            p1.x = p2.x + 1.0f;
-            p1.y = p2.y;
+            arrow_tail.x = react_box.right() + shift;
+            arrow_tail.y = react_box.middleY();
+            arrow_head.x = arrow_tail.x + shift;
+            arrow_head.y = arrow_tail.y;
         }
-        else if (rxn.reactantsCount() == 0)
+        else if (reaction->reactantsCount() == 0)
         {
-            p1.x = pmin.x - 1.0f;
-            p1.y = (pmin.y + pmax.y) / 2;
-            p2.x = p1.x - 1.0f;
-            p2.y = p1.y;
+            arrow_head.x = product_box.left() - shift;
+            arrow_head.y = product_box.middleY();
+            arrow_tail.x = arrow_head.x - shift;
+            arrow_tail.y = arrow_head.y;
         }
         else
         {
-            if ((pmin.x - rmax.x) > 0)
-            {
-                p2.x = (rmax.x + pmin.x) / 2 - (pmin.x - rmax.x) / 8;
-                p2.y = (rmin.y + rmax.y) / 2;
-            }
-            else
-            {
-                p2.x = (rmax.x + pmin.x) / 2 - 1.0f;
-                p2.y = (rmin.y + rmax.y) / 2;
-            }
+            const float ptab = first_single_product ? 2.0f : 1.0f;
+            const float rtab = last_single_reactant ? 2.0f : 1.0f;
 
-            if ((pmin.x - rmax.x) > 0)
+            arrow_head.y = product_box.middleY();
+            arrow_tail.y = react_box.middleY();
+
+            if (product_box.left() > react_box.right())
             {
-                p1.x = (rmax.x + pmin.x) / 2.f + (pmin.x - rmax.x) / 8.f;
-                p1.y = (pmin.y + pmax.y) / 2.f;
+                arrow_head.x = product_box.left() - ptab;
+                arrow_tail.x = react_box.right() + rtab;
             }
             else
             {
-                p1.x = (rmax.x + pmin.x) / 2 + 1.0f;
-                p1.y = (pmin.y + pmax.y) / 2;
+                arrow_head.x = react_box.right() + rtab;
+                arrow_tail.x = product_box.left() - ptab;
             }
         }
 
@@ -216,11 +224,11 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
         Value pos_array(kArrayType);
         Value pos1(kObjectType);
         Value pos2(kObjectType);
-        pos1.AddMember("x", Value().SetDouble(p1.x), ket.GetAllocator());
-        pos1.AddMember("y", Value().SetDouble(p1.y), ket.GetAllocator());
+        pos1.AddMember("x", Value().SetDouble(arrow_head.x), ket.GetAllocator());
+        pos1.AddMember("y", Value().SetDouble(arrow_head.y), ket.GetAllocator());
         pos1.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
-        pos2.AddMember("x", Value().SetDouble(p2.x), ket.GetAllocator());
-        pos2.AddMember("y", Value().SetDouble(p2.y), ket.GetAllocator());
+        pos2.AddMember("x", Value().SetDouble(arrow_tail.x), ket.GetAllocator());
+        pos2.AddMember("y", Value().SetDouble(arrow_tail.y), ket.GetAllocator());
         pos2.AddMember("z", Value().SetDouble(0.0), ket.GetAllocator());
         pos_array.PushBack(pos2, ket.GetAllocator());
         pos_array.PushBack(pos1, ket.GetAllocator());
@@ -241,7 +249,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, BaseMolecule& merged, Mo
 void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 {
     MoleculeJsonSaver json_saver(_output);
-    json_saver._add_stereo_desc = _add_stereo_desc;
+    json_saver.add_stereo_desc = add_stereo_desc;
     std::unique_ptr<BaseMolecule> merged;
     if (rxn.isQueryReaction())
     {
@@ -254,9 +262,9 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 
     int arrows_count = rxn.meta().getMetaCount(KETReactionArrow::CID);
     int simple_count = rxn.meta().getMetaCount(KETSimpleObject::CID) + rxn.meta().getMetaCount(KETTextObject::CID);
-    if (arrows_count > 1 || simple_count)
+    if (arrows_count || simple_count)
     {
-        // if more than one arrow or metadata
+        // if metadata presents
         saveReactionWithMetaData(rxn, *merged, json_saver);
     }
     else

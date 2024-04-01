@@ -35,6 +35,7 @@ MoleculeLayoutGraph::MoleculeLayoutGraph() : Graph()
     _molecule_edge_mapping = 0;
     cancellation = 0;
     _flipped = false;
+    preserve_existing_layout = false;
 }
 
 MoleculeLayoutGraph::~MoleculeLayoutGraph()
@@ -263,7 +264,7 @@ void MoleculeLayoutGraphSimple::makeLayoutSubgraph(MoleculeLayoutGraph& graph, F
     }
 }
 
-void MoleculeLayoutGraphSimple::layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing)
+void MoleculeLayoutGraph::layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing)
 {
     if (molecule.vertexCount() == 0)
         return;
@@ -273,24 +274,29 @@ void MoleculeLayoutGraphSimple::layout(BaseMolecule& molecule, float bond_length
     if (fabs(bond_length) < EPSILON)
         throw Error("zero bond length");
 
+    _molecule = &molecule;
     if (n_components > 1)
         _layoutMultipleComponents(molecule, respect_existing, filter, bond_length);
     else
         _layoutSingleComponent(molecule, respect_existing, filter, bond_length);
 }
 
-void MoleculeLayoutGraphSimple::_calcMorganCodes()
+void MoleculeLayoutGraph::_calcMorganCodes()
 {
     MorganCode morgan(*this);
     QS_DEF(Array<long>, morgan_codes);
 
     morgan.calculate(morgan_codes, 3, 7);
 
+    _total_morgan_code = 0;
     for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+    {
         _layout_vertices[i].morgan_code = morgan_codes[i];
+        _total_morgan_code += morgan_codes[i];
+    }
 }
 
-void MoleculeLayoutGraphSimple::_makeComponentsTree(BiconnectedDecomposer& decon, PtrArray<MoleculeLayoutGraph>& components, Array<int>& tree)
+void MoleculeLayoutGraph::_makeComponentsTree(BiconnectedDecomposer& decon, PtrArray<MoleculeLayoutGraph>& components, Array<int>& tree)
 {
     int i, j, v, k;
     bool from;
@@ -344,7 +350,7 @@ int MoleculeLayoutGraphSimple::_pattern_cmp2(const PatternLayout& p1, int n_v, i
     return n_e - p1.edgeCount();
 }
 
-void MoleculeLayoutGraphSimple::_layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length)
+void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length)
 {
     QS_DEF(Array<Vec2f>, src_layout);
     QS_DEF(Array<int>, molecule_edge_mapping);
@@ -358,6 +364,8 @@ void MoleculeLayoutGraphSimple::_layoutMultipleComponents(BaseMolecule& molecule
 
     for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
         molecule_edge_mapping[i] = getEdgeExtIdx(i);
+
+    _molecule_edge_mapping = molecule_edge_mapping.ptr();
 
     PtrArray<MoleculeLayoutGraph> components;
 
@@ -402,127 +410,127 @@ void MoleculeLayoutGraphSimple::_layoutMultipleComponents(BaseMolecule& molecule
                 }
         }
 
-        if (component.vertexCount() > 1)
+        if (!respect_existing || !preserve_existing_layout || component.vertexCount() > component._n_fixed)
         {
-            component._calcMorganCodes();
-            component._assignAbsoluteCoordinates(bond_length);
+            if (component.vertexCount() > 1)
+            {
+                component._calcMorganCodes();
+                component._assignAbsoluteCoordinates(bond_length);
+            }
+            component._assignFinalCoordinates(bond_length, src_layout);
         }
-        component._assignFinalCoordinates(bond_length, src_layout);
     }
 
-    // position components
-    float x_min, x_max, x_start = 0.f, dx;
-    float y_min, y_max, y_start = 0.f, max_height = 0.f, dy;
-    int col_count;
-    int row, col;
-    int n_fixed = 0;
-
-    // fixed first
-    if (filter != 0)
+    if (respect_existing && preserve_existing_layout) // TODO:
     {
-        x_min = 1.0E+20f;
-        y_min = 1.0E+20f;
-
-        // find fixed components
-        for (i = 0; i < n_components; i++)
+        for (int i = 0; i < n_components; i++)
         {
-            MoleculeLayoutGraph& component = *components[i];
-
-            if (component._n_fixed > 0)
-            {
-                n_fixed++;
-
-                for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
-                {
-                    const Vec2f& pos = component.getPos(j);
-
-                    if (pos.x < x_min)
-                        x_min = pos.x;
-                    if (pos.y < y_min)
-                        y_min = pos.y;
-                    if (pos.y > y_start)
-                        y_start = pos.y;
-                }
-            }
+            copyCoordsFromComponent(*components[i]);
         }
+    }
+    else // Move fixed componets to touch (0,0), layout rest of components in grid
+    {
+        // position components
+        float row_bottom = 0.f; // where to place non-fixed components
+        int n_fixed = 0;
 
-        // position fixed
-        if (n_fixed > 0)
+        // fixed first
+        if (filter != 0)
         {
-            dy = -y_min;
-            dx = -x_min;
+            bool first_component = true;
+            Rect2f fixed_comps_bbox;
 
+            // find left bottom corner and top of fixed components
             for (i = 0; i < n_components; i++)
             {
                 MoleculeLayoutGraph& component = *components[i];
 
                 if (component._n_fixed > 0)
-                    for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
-                        _layout_vertices[component.getVertexExtIdx(j)].pos.sum(component.getPos(j), Vec2f(dx, dy));
+                {
+                    n_fixed++;
+                    Rect2f bbox;
+                    component.getBoundingBox(bbox);
+                    if (first_component)
+                    {
+                        fixed_comps_bbox.copy(bbox);
+                        first_component = false;
+                    }
+                    else
+                    {
+                        fixed_comps_bbox.extend(bbox);
+                    }
+                }
             }
 
-            y_start += dy + 2 * bond_length;
+            // position fixed - shift all rectangle with atoms to point left down corner to (0, 0)
+            if (n_fixed > 0)
+            {
+                Vec2f shift = fixed_comps_bbox.leftBottom();
+                shift.negate();
+                for (i = 0; i < n_components; i++)
+                {
+                    MoleculeLayoutGraph& component = *components[i];
+                    if (component._n_fixed > 0)
+                        copyCoordsFromComponent(component, shift);
+                }
+
+                row_bottom += fixed_comps_bbox.height() + 2 * bond_length;
+            }
         }
-    }
 
-    col_count = (int)ceil(sqrt((float)n_components - n_fixed));
+        // layout non-fixed components in square
+        int col_count = (int)ceil(sqrt((float)n_components - n_fixed));
+        float column_left = 0.f;
+        float row_height = 0.f;
 
-    for (i = 0, k = 0; i < n_components; i++)
-    {
-        MoleculeLayoutGraph& component = *components[i];
-
-        if (component._n_fixed > 0)
-            continue;
-
-        // Component shifting
-        row = k / col_count;
-        col = k % col_count;
-
-        x_min = 1.0E+20f;
-        x_max = -1.0E+20f;
-        y_min = 1.0E+20f;
-        y_max = -1.0E+20f;
-
-        for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
+        for (i = 0, k = 0; i < n_components; i++)
         {
-            const Vec2f& pos = component.getPos(j);
+            MoleculeLayoutGraph& component = *components[i];
 
-            if (pos.x < x_min)
-                x_min = pos.x;
-            if (pos.x > x_max)
-                x_max = pos.x;
-            if (pos.y < y_min)
-                y_min = pos.y;
-            if (pos.y > y_max)
-                y_max = pos.y;
+            if (component._n_fixed > 0)
+                continue;
+
+            int row = k / col_count;
+            int col = k % col_count;
+
+            // first column in row - add previous row height+space to row_bottom
+            if (col == 0 && row > 0)
+            {
+                row_bottom += row_height + 2 * bond_length;
+                row_height = 0.f;
+                column_left = 0.f;
+            }
+            // Add space between columns
+            if (col > 0)
+                column_left += 2 * bond_length;
+
+            // Component shifting
+            Rect2f bbox;
+            component.getBoundingBox(bbox);
+            Vec2f shift = bbox.leftBottom();
+            shift.negate();
+            shift.add(Vec2f(column_left, row_bottom));
+
+            copyCoordsFromComponent(component, shift);
+
+            column_left += bbox.width();
+
+            row_height = std::max(row_height, bbox.height());
+
+            k++;
         }
-
-        if (col == 0 && row > 0)
-        {
-            y_start += max_height + 2 * bond_length;
-            max_height = 0.f;
-        }
-
-        if (col > 0)
-            dx = x_start - x_min + 2 * bond_length;
-        else
-            dx = -x_min;
-
-        dy = y_start - y_min;
-
-        for (j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
-            _layout_vertices[component.getVertexExtIdx(j)].pos.sum(component.getPos(j), Vec2f(dx, dy));
-
-        x_start = x_max + dx;
-
-        if (y_max - y_min > max_height)
-            max_height = y_max - y_min;
-
-        k++;
     }
 }
 
-void MoleculeLayoutGraphSimple::_layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length)
+void MoleculeLayoutGraph::copyCoordsFromComponent(MoleculeLayoutGraph& component, Vec2f shift)
+{
+    for (int i = component.vertexBegin(); i < component.vertexEnd(); i = component.vertexNext(i))
+    {
+        _layout_vertices[component.getVertexExtIdx(i)].pos.sum(component.getPos(i), shift);
+    }
+}
+
+void MoleculeLayoutGraph::_layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length)
 {
     QS_DEF(Array<Vec2f>, src_layout);
     QS_DEF(Array<int>, molecule_edge_mapping);
@@ -558,12 +566,42 @@ void MoleculeLayoutGraphSimple::_layoutSingleComponent(BaseMolecule& molecule, b
             }
     }
 
-    if (vertexCount() > 1)
+    if (!respect_existing || !preserve_existing_layout || vertexCount() > _n_fixed)
     {
-        _calcMorganCodes();
-        _assignAbsoluteCoordinates(bond_length);
+        if (vertexCount() > 1)
+        {
+            _calcMorganCodes();
+            _assignAbsoluteCoordinates(bond_length);
+        }
+        _assignFinalCoordinates(bond_length, src_layout);
     }
-    _assignFinalCoordinates(bond_length, src_layout);
+}
+
+void MoleculeLayoutGraph::getBoundingBox(Vec2f& left_bottom, Vec2f& right_top) const
+{
+    bool first = true;
+    for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+    {
+        const Vec2f& pos = getPos(i);
+        if (first)
+        {
+            left_bottom = right_top = pos;
+            first = false;
+        }
+        else
+        {
+            left_bottom.min(pos);
+            right_top.max(pos);
+        }
+    }
+}
+
+void MoleculeLayoutGraph::getBoundingBox(Rect2f& bbox) const
+{
+    Vec2f left_bottom;
+    Vec2f right_top;
+    getBoundingBox(left_bottom, right_top);
+    bbox = Rect2f(left_bottom, right_top);
 }
 
 #ifdef M_LAYOUT_DEBUG

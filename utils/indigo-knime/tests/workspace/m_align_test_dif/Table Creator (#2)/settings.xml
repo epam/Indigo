@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+<entry key="node_file" type="xstring" value="settings.xml"/>
+<config key="flow_stack"/>
+<config key="internal_node_subsettings">
+<entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+</config>
+<config key="model">
+<config key="rowIndices">
+<entry key="array-size" type="xint" value="4"/>
+<entry key="0" type="xint" value="0"/>
+<entry key="1" type="xint" value="1"/>
+<entry key="2" type="xint" value="2"/>
+<entry key="3" type="xint" value="3"/>
+</config>
+<config key="columnIndices">
+<entry key="array-size" type="xint" value="4"/>
+<entry key="0" type="xint" value="0"/>
+<entry key="1" type="xint" value="0"/>
+<entry key="2" type="xint" value="0"/>
+<entry key="3" type="xint" value="0"/>
+</config>
+<config key="values">
+<entry key="array-size" type="xint" value="4"/>
+<entry key="0" type="xstring" value="&lt;?xml version=&quot;1.0&quot; ?&gt; &lt;cml&gt;     &lt;molecule title=&quot;&quot;&gt;         &lt;atomArray&gt;             &lt;atom id=&quot;a0&quot; elementType=&quot;C&quot; x2=&quot;7.11&quot; y2=&quot;-3.975&quot; /&gt;             &lt;atom id=&quot;a1&quot; elementType=&quot;C&quot; x2=&quot;6.2439&quot; y2=&quot;-4.475&quot; /&gt;             &lt;atom id=&quot;a2&quot; elementType=&quot;C&quot; x2=&quot;6.2439&quot; y2=&quot;-5.475&quot; /&gt;             &lt;atom id=&quot;a3&quot; elementType=&quot;C&quot; x2=&quot;7.11&quot; y2=&quot;-5.975&quot; /&gt;             &lt;atom id=&quot;a4&quot; elementType=&quot;C&quot; x2=&quot;7.976&quot; y2=&quot;-5.475&quot; /&gt;             &lt;atom id=&quot;a5&quot; elementType=&quot;C&quot; x2=&quot;7.976&quot; y2=&quot;-4.475&quot; /&gt;             &lt;atom id=&quot;a6&quot; elementType=&quot;C&quot; x2=&quot;8.842&quot; y2=&quot;-3.975&quot; /&gt;             &lt;atom id=&quot;a7&quot; elementType=&quot;C&quot; x2=&quot;8.842&quot; y2=&quot;-5.975&quot; /&gt;             &lt;atom id=&quot;a8&quot; elementType=&quot;C&quot; x2=&quot;9.7081&quot; y2=&quot;-5.975&quot; /&gt;             &lt;atom id=&quot;a9&quot; elementType=&quot;C&quot; x2=&quot;9.7081&quot; y2=&quot;-4.475&quot; /&gt;             &lt;atom id=&quot;a10&quot; elementType=&quot;C&quot; x2=&quot;10.5741&quot; y2=&quot;-3.975&quot; /&gt;             &lt;atom id=&quot;a11&quot; elementType=&quot;C&quot; x2=&quot;11.4401&quot; y2=&quot;-4.475&quot; /&gt;             &lt;atom id=&quot;a12&quot; elementType=&quot;C&quot; x2=&quot;12.3061&quot; y2=&quot;-3.975&quot; /&gt;         &lt;/atomArray&gt;         &lt;bondArray&gt;             &lt;bond atomRefs2=&quot;a0 a1&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a0 a5&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a1 a2&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a2 a3&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a3 a4&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a6 a5&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a5 a4&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a4 a7&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a6 a9&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a7 a8&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a8 a9&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a9 a10&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a10 a11&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a11 a12&quot; order=&quot;1&quot; /&gt;         &lt;/bondArray&gt;     &lt;/molecule&gt; &lt;/cml&gt; "/>
+<entry key="1" type="xstring" value="&lt;?xml version=&quot;1.0&quot; ?&gt; &lt;cml&gt;     &lt;molecule title=&quot;&quot;&gt;         &lt;atomArray&gt;             &lt;atom id=&quot;a0&quot; elementType=&quot;C&quot; x2=&quot;8.8&quot; y2=&quot;-6.175&quot; /&gt;             &lt;atom id=&quot;a1&quot; elementType=&quot;C&quot; x2=&quot;9.3&quot; y2=&quot;-5.309&quot; /&gt;             &lt;atom id=&quot;a2&quot; elementType=&quot;C&quot; x2=&quot;10.3&quot; y2=&quot;-5.309&quot; /&gt;             &lt;atom id=&quot;a3&quot; elementType=&quot;C&quot; x2=&quot;10.8&quot; y2=&quot;-6.175&quot; /&gt;             &lt;atom id=&quot;a4&quot; elementType=&quot;C&quot; x2=&quot;10.3&quot; y2=&quot;-7.041&quot; /&gt;             &lt;atom id=&quot;a5&quot; elementType=&quot;C&quot; x2=&quot;9.3&quot; y2=&quot;-7.041&quot; /&gt;             &lt;atom id=&quot;a6&quot; elementType=&quot;C&quot; x2=&quot;11.8&quot; y2=&quot;-6.175&quot; /&gt;             &lt;atom id=&quot;a7&quot; elementType=&quot;C&quot; x2=&quot;12.3&quot; y2=&quot;-5.309&quot; /&gt;             &lt;atom id=&quot;a8&quot; elementType=&quot;C&quot; x2=&quot;13.3&quot; y2=&quot;-5.309&quot; /&gt;             &lt;atom id=&quot;a9&quot; elementType=&quot;C&quot; x2=&quot;13.8&quot; y2=&quot;-6.175&quot; /&gt;             &lt;atom id=&quot;a10&quot; elementType=&quot;C&quot; x2=&quot;13.3&quot; y2=&quot;-7.041&quot; /&gt;             &lt;atom id=&quot;a11&quot; elementType=&quot;C&quot; x2=&quot;12.3&quot; y2=&quot;-7.041&quot; /&gt;         &lt;/atomArray&gt;         &lt;bondArray&gt;             &lt;bond atomRefs2=&quot;a0 a1&quot; order=&quot;2&quot;&gt;                 &lt;bondStereo atomRefs4=&quot;a5 a0 a1 a2&quot;&gt;C&lt;/bondStereo&gt;             &lt;/bond&gt;             &lt;bond atomRefs2=&quot;a1 a2&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a2 a3&quot; order=&quot;2&quot;&gt;                 &lt;bondStereo atomRefs4=&quot;a1 a2 a3 a4&quot;&gt;C&lt;/bondStereo&gt;             &lt;/bond&gt;             &lt;bond atomRefs2=&quot;a3 a4&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a4 a5&quot; order=&quot;2&quot;&gt;                 &lt;bondStereo atomRefs4=&quot;a3 a4 a5 a0&quot;&gt;C&lt;/bondStereo&gt;             &lt;/bond&gt;             &lt;bond atomRefs2=&quot;a5 a0&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a3 a6&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a6 a7&quot; order=&quot;2&quot;&gt;                 &lt;bondStereo atomRefs4=&quot;a3 a6 a7 a8&quot;&gt;T&lt;/bondStereo&gt;             &lt;/bond&gt;             &lt;bond atomRefs2=&quot;a7 a8&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a8 a9&quot; order=&quot;2&quot;&gt;                 &lt;bondStereo atomRefs4=&quot;a7 a8 a9 a10&quot;&gt;C&lt;/bondStereo&gt;             &lt;/bond&gt;             &lt;bond atomRefs2=&quot;a9 a10&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a10 a11&quot; order=&quot;2&quot;&gt;                 &lt;bondStereo atomRefs4=&quot;a9 a10 a11 a6&quot;&gt;C&lt;/bondStereo&gt;             &lt;/bond&gt;             &lt;bond atomRefs2=&quot;a11 a6&quot; order=&quot;1&quot; /&gt;         &lt;/bondArray&gt;     &lt;/molecule&gt; &lt;/cml&gt; "/>
+<entry key="2" type="xstring" value="&lt;?xml version=&quot;1.0&quot; ?&gt; &lt;cml&gt;     &lt;molecule title=&quot;&quot;&gt;         &lt;atomArray&gt;             &lt;atom id=&quot;a0&quot; elementType=&quot;C&quot; x2=&quot;9.625&quot; y2=&quot;-6.5594&quot; /&gt;             &lt;atom id=&quot;a1&quot; elementType=&quot;C&quot; x2=&quot;10.625&quot; y2=&quot;-6.5594&quot; /&gt;             &lt;atom id=&quot;a2&quot; elementType=&quot;C&quot; x2=&quot;11.125&quot; y2=&quot;-5.6934&quot; /&gt;             &lt;atom id=&quot;a3&quot; elementType=&quot;C&quot; x2=&quot;10.625&quot; y2=&quot;-4.8274&quot; /&gt;             &lt;atom id=&quot;a4&quot; elementType=&quot;C&quot; x2=&quot;9.625&quot; y2=&quot;-4.8274&quot; /&gt;             &lt;atom id=&quot;a5&quot; elementType=&quot;C&quot; x2=&quot;12.125&quot; y2=&quot;-5.6934&quot; /&gt;             &lt;atom id=&quot;a6&quot; elementType=&quot;C&quot; x2=&quot;12.625&quot; y2=&quot;-4.8274&quot; /&gt;             &lt;atom id=&quot;a7&quot; elementType=&quot;C&quot; x2=&quot;13.625&quot; y2=&quot;-4.8274&quot; /&gt;             &lt;atom id=&quot;a8&quot; elementType=&quot;N&quot; x2=&quot;14.125&quot; y2=&quot;-5.6934&quot; /&gt;             &lt;atom id=&quot;a9&quot; elementType=&quot;C&quot; x2=&quot;14.2986&quot; y2=&quot;-6.6782&quot; /&gt;             &lt;atom id=&quot;a10&quot; elementType=&quot;C&quot; x2=&quot;14.2986&quot; y2=&quot;-4.7086&quot; /&gt;             &lt;atom id=&quot;a11&quot; elementType=&quot;C&quot; x2=&quot;14.8911&quot; y2=&quot;-5.0506&quot; /&gt;             &lt;atom id=&quot;a12&quot; elementType=&quot;C&quot; x2=&quot;15.125&quot; y2=&quot;-5.6934&quot; /&gt;             &lt;atom id=&quot;a13&quot; elementType=&quot;C&quot; x2=&quot;14.8911&quot; y2=&quot;-6.3362&quot; /&gt;             &lt;atom id=&quot;a14&quot; elementType=&quot;C&quot; x2=&quot;13.625&quot; y2=&quot;-6.5594&quot; /&gt;             &lt;atom id=&quot;a15&quot; elementType=&quot;C&quot; x2=&quot;14.125&quot; y2=&quot;-7.4254&quot; /&gt;             &lt;atom id=&quot;a16&quot; elementType=&quot;C&quot; x2=&quot;13.625&quot; y2=&quot;-8.2914&quot; /&gt;             &lt;atom id=&quot;a17&quot; elementType=&quot;C&quot; x2=&quot;12.625&quot; y2=&quot;-6.5594&quot; /&gt;         &lt;/atomArray&gt;         &lt;bondArray&gt;             &lt;bond atomRefs2=&quot;a0 a1&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a1 a2&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a2 a3&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a3 a4&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a2 a5&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a5 a6&quot; order=&quot;2&quot;&gt;                 &lt;bondStereo atomRefs4=&quot;a2 a5 a6 a7&quot;&gt;T&lt;/bondStereo&gt;             &lt;/bond&gt;             &lt;bond atomRefs2=&quot;a6 a7&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a7 a8&quot; order=&quot;2&quot; /&gt;             &lt;bond atomRefs2=&quot;a8 a9&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a8 a10&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a8 a11&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a8 a12&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a8 a13&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a8 a14&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a14 a15&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a15 a16&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a14 a17&quot; order=&quot;2&quot;&gt;                 &lt;bondStereo atomRefs4=&quot;a8 a14 a17 a5&quot;&gt;C&lt;/bondStereo&gt;             &lt;/bond&gt;             &lt;bond atomRefs2=&quot;a17 a5&quot; order=&quot;1&quot; /&gt;         &lt;/bondArray&gt;     &lt;/molecule&gt; &lt;/cml&gt; "/>
+<entry key="3" type="xstring" value="&lt;?xml version=&quot;1.0&quot; ?&gt; &lt;cml&gt;     &lt;molecule title=&quot;&quot;&gt;         &lt;atomArray&gt;             &lt;atom id=&quot;a0&quot; elementType=&quot;C&quot; x2=&quot;9.275&quot; y2=&quot;-6.55&quot; /&gt;             &lt;atom id=&quot;a1&quot; elementType=&quot;C&quot; x2=&quot;8.409&quot; y2=&quot;-7.05&quot; /&gt;             &lt;atom id=&quot;a2&quot; elementType=&quot;C&quot; x2=&quot;8.409&quot; y2=&quot;-8.05&quot; /&gt;             &lt;atom id=&quot;a3&quot; elementType=&quot;C&quot; x2=&quot;9.275&quot; y2=&quot;-8.55&quot; /&gt;             &lt;atom id=&quot;a4&quot; elementType=&quot;C&quot; x2=&quot;10.141&quot; y2=&quot;-8.05&quot; /&gt;             &lt;atom id=&quot;a5&quot; elementType=&quot;C&quot; x2=&quot;10.141&quot; y2=&quot;-7.05&quot; /&gt;         &lt;/atomArray&gt;         &lt;bondArray&gt;             &lt;bond atomRefs2=&quot;a0 a1&quot; order=&quot;2&quot;&gt;                 &lt;bondStereo atomRefs4=&quot;a5 a0 a1 a2&quot;&gt;C&lt;/bondStereo&gt;             &lt;/bond&gt;             &lt;bond atomRefs2=&quot;a1 a2&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a2 a3&quot; order=&quot;2&quot;&gt;                 &lt;bondStereo atomRefs4=&quot;a1 a2 a3 a4&quot;&gt;C&lt;/bondStereo&gt;             &lt;/bond&gt;             &lt;bond atomRefs2=&quot;a3 a4&quot; order=&quot;1&quot; /&gt;             &lt;bond atomRefs2=&quot;a4 a5&quot; order=&quot;2&quot;&gt;                 &lt;bondStereo atomRefs4=&quot;a3 a4 a5 a0&quot;&gt;C&lt;/bondStereo&gt;             &lt;/bond&gt;             &lt;bond atomRefs2=&quot;a5 a0&quot; order=&quot;1&quot; /&gt;         &lt;/bondArray&gt;     &lt;/molecule&gt; &lt;/cml&gt; "/>
+</config>
+<entry key="rowIdPrefix" type="xstring" value="Row"/>
+<entry key="rowIdSuffix" type="xstring" value=""/>
+<entry key="rowIdStartValue" type="xint" value="1"/>
+<entry key="highlightOutputTable" type="xboolean" value="false"/>
+<config key="columnProperties">
+<config key="0">
+<entry key="UserSetValues" type="xboolean" value="true"/>
+<entry key="MissValuePattern" type="xstring" value=""/>
+<entry key="FormatParameter" type="xstring" isnull="true" value=""/>
+<entry key="ReadPossValsFromFile" type="xboolean" value="false"/>
+<entry key="SkipThisColumn" type="xboolean" value="false"/>
+<entry key="ColumnName" type="xstring" value="column1"/>
+<config key="ColumnClass">
+<entry key="cell_class" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<entry key="is_null" type="xboolean" value="false"/>
+</config>
+</config>
+</config>
+</config>
+<entry key="customDescription" type="xstring" isnull="true" value=""/>
+<entry key="state" type="xstring" value="EXECUTED"/>
+<entry key="factory" type="xstring" value="org.knime.base.node.io.tablecreator.TableCreator2NodeFactory"/>
+<entry key="node-name" type="xstring" value="Table Creator"/>
+<entry key="node-bundle-name" type="xstring" value="KNIME Base Nodes"/>
+<entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.base"/>
+<entry key="node-bundle-vendor" type="xstring" value="KNIME GmbH, Konstanz, Germany"/>
+<entry key="node-bundle-version" type="xstring" value="3.3.1.v201612190931"/>
+<entry key="node-feature-name" type="xstring" value="KNIME Core"/>
+<entry key="node-feature-symbolic-name" type="xstring" value="org.knime.features.base.feature.group"/>
+<entry key="node-feature-vendor" type="xstring" value="KNIME GmbH, Konstanz, Germany"/>
+<entry key="node-feature-version" type="xstring" value="3.3.1.v201612192115"/>
+<config key="factory_settings"/>
+<entry key="name" type="xstring" value="Table Creator"/>
+<entry key="hasContent" type="xboolean" value="true"/>
+<entry key="isInactive" type="xboolean" value="false"/>
+<config key="ports">
+<config key="port_1">
+<entry key="index" type="xint" value="1"/>
+<entry key="port_spec_class" type="xstring" value="org.knime.core.data.DataTableSpec"/>
+<entry key="port_object_class" type="xstring" value="org.knime.core.node.BufferedDataTable"/>
+<entry key="port_object_summary" type="xstring" value="Rows: 4, Cols: 1"/>
+<entry key="port_dir_location" type="xstring" value="port_1"/>
+</config>
+</config>
+<config key="filestores">
+<entry key="file_store_location" type="xstring" isnull="true" value=""/>
+<entry key="file_store_id" type="xstring" value="19260611-f536-4ed3-ad41-73d0ce62c40a"/>
+</config>
+</config>

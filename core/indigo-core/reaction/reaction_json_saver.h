@@ -31,7 +31,9 @@ namespace indigo
     class Output;
     class BaseReaction;
     class BaseMolecule;
-    class Vec2f;
+    struct Vec2f;
+    class MoleculeJsonSaver;
+
     class ReactionJsonSaver
     {
     public:
@@ -41,8 +43,8 @@ namespace indigo
         void saveReaction(BaseReaction& rxn);
         void saveReaction(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver);
         void saveReactionWithMetaData(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver);
-
-        bool _add_stereo_desc;
+        bool add_stereo_desc;
+        bool pretty_json;
         DECL_ERROR;
 
     protected:
@@ -51,6 +53,8 @@ namespace indigo
     private:
         ReactionJsonSaver(const ReactionJsonSaver&); // no implicit copy
         static void _getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max_vec, float scale);
+        void _fixLayout(BaseReaction& rxn);
+
         std::unordered_map<int, std::string> _arrow_type2string = {
             {ReactionComponent::ARROW_BASIC, "open-angle"},
             {ReactionComponent::ARROW_FILLED_TRIANGLE, "filled-triangle"},

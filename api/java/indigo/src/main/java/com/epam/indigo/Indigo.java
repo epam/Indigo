@@ -197,6 +197,10 @@ public class Indigo {
         return lib.indigoVersion();
     }
 
+    public String versionInfo() {
+        return lib.indigoVersionInfo();
+    }
+
     public int countReferences() {
         setSessionID();
         return checkResult(this, lib.indigoCountReferences());
@@ -354,6 +358,26 @@ public class Indigo {
     public IndigoObject loadSmartsFromFile(String path) {
         setSessionID();
         return new IndigoObject(this, checkResult(this, lib.indigoLoadSmartsFromFile(path)));
+    }
+
+    public IndigoObject loadSequence(String str, String seq_type) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadSequenceFromString(str, seq_type)));
+    }
+
+    public IndigoObject loadSequenceFromFile(String path, String seq_type) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadSequenceFromFile(path, seq_type)));
+    }
+
+    public IndigoObject loadFasta(String str, String seq_type) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadFastaFromString(str, seq_type)));
+    }
+
+    public IndigoObject loadFastaFromFile(String path, String seq_type) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadFastaFromFile(path, seq_type)));
     }
 
     public IndigoObject loadReaction(String str) {

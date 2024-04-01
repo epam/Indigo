@@ -59,6 +59,7 @@ typedef unsigned char byte;
 /* System */
 
 CEXPORT const char* indigoVersion();
+CEXPORT const char* indigoVersionInfo();
 
 // Allocate a new session. Each session has its own
 // set of objects created and options set up.
@@ -170,6 +171,8 @@ CEXPORT int indigoRemove(int item);
 
 /* Molecules, query molecules, SMARTS */
 
+CEXPORT const char* indigoGetOriginalFormat(int item);
+
 CEXPORT int indigoCreateMolecule(void);
 CEXPORT int indigoCreateQueryMolecule(void);
 
@@ -192,9 +195,25 @@ CEXPORT int indigoLoadSmartsFromString(const char* string);
 CEXPORT int indigoLoadSmartsFromFile(const char* filename);
 CEXPORT int indigoLoadSmartsFromBuffer(const char* buffer, int size);
 
+CEXPORT int indigoLoadSequence(int source, const char* seq_type);
+CEXPORT int indigoLoadSequenceFromString(const char* string, const char* seq_type);
+CEXPORT int indigoLoadSequenceFromFile(const char* filename, const char* seq_type);
+
+CEXPORT int indigoLoadFasta(int source, const char* seq_type);
+CEXPORT int indigoLoadFastaFromString(const char* string, const char* seq_type);
+CEXPORT int indigoLoadFastaFromFile(const char* filename, const char* seq_type);
+
 CEXPORT int indigoSaveMolfile(int molecule, int output);
 CEXPORT int indigoSaveMolfileToFile(int molecule, const char* filename);
 CEXPORT const char* indigoMolfile(int molecule);
+
+CEXPORT int indigoSaveSequence(int molecule, int output);
+CEXPORT int indigoSaveSequenceToFile(int molecule, const char* filename);
+CEXPORT const char* indigoSequence(int molecule);
+
+CEXPORT int indigoSaveFasta(int molecule, int output);
+CEXPORT int indigoSaveFastaToFile(int molecule, const char* filename);
+CEXPORT const char* indigoFasta(int molecule);
 
 CEXPORT int indigoSaveJsonToFile(int item, const char* filename);
 CEXPORT int indigoSaveJson(int item, int output);
@@ -203,10 +222,17 @@ CEXPORT int indigoSaveJson(int item, int output);
 CEXPORT int indigoSaveCml(int object, int output);
 CEXPORT int indigoSaveCmlToFile(int object, const char* filename);
 CEXPORT const char* indigoCml(int object);
+CEXPORT const char* indigoCdxBase64(int object);
 
 // accepts molecules and reactions
 CEXPORT int indigoSaveCdxml(int object, int output);
+CEXPORT int indigoSaveCdx(int item, int output);
+
+CEXPORT const char* indigoCdxml(int item);
+
 CEXPORT int indigoSaveCdxmlToFile(int object, const char* filename);
+CEXPORT int indigoSaveCdxToFile(int item, const char* filename);
+
 CEXPORT const char* indigoCdxml(int object);
 
 // the output must be a file or a buffer, but not a string
@@ -360,6 +386,7 @@ CEXPORT int indigoIterateAlleneCenters(int molecule);
 CEXPORT int indigoIterateRGroups(int molecule);
 
 CEXPORT int indigoCountRGroups(int molecule);
+CEXPORT int indigoCopyRGroups(int molecule_from, int molecule_to);
 
 CEXPORT int indigoIsPseudoatom(int atom);
 CEXPORT int indigoIsRSite(int atom);
@@ -449,6 +476,7 @@ CEXPORT float* indigoXYZ(int atom);
 
 CEXPORT int indigoSetXYZ(int atom, float x, float y, float z);
 
+CEXPORT int indigoClearXYZ(int molecule);
 CEXPORT int indigoCountSuperatoms(int molecule);
 CEXPORT int indigoCountDataSGroups(int molecule);
 CEXPORT int indigoCountRepeatingUnits(int molecule);
@@ -727,6 +755,7 @@ CEXPORT int indigoDearomatize(int item);
 
 CEXPORT int indigoFoldHydrogens(int item);
 CEXPORT int indigoUnfoldHydrogens(int item);
+CEXPORT int indigoFoldUnfoldHydrogens(int item);
 
 CEXPORT int indigoLayout(int object);
 CEXPORT int indigoClean2d(int object);
@@ -1015,6 +1044,7 @@ CEXPORT int indigoExpandAbbreviations(int molecule);
 /* Other */
 
 CEXPORT const char* indigoToString(int handle);
+CEXPORT const char* indigoToBase64String(int handle);
 CEXPORT int indigoToBuffer(int handle, char** buf, int* size);
 
 /* Reaction products enumeration */

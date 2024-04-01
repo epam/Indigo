@@ -23,6 +23,7 @@
 #include "base_cpp/properties_map.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
+#include "molecule/molecule_arom.h"
 #include "molecule/molecule_stereocenter_options.h"
 
 #ifdef _WIN32
@@ -47,7 +48,8 @@ namespace indigo
 
         ~MoleculeAutoLoader();
 
-        void loadMolecule(Molecule& mol);
+        void loadMolecule(BaseMolecule& mol);
+        // to keep C++ API compatible
         void loadQueryMolecule(QueryMolecule& qmol);
 
         StereocentersOptions stereochemistry_options;
@@ -59,6 +61,8 @@ namespace indigo
         bool ignore_no_chiral_flag;
         bool ignore_bad_valence;
         int treat_stereo_as;
+        bool dearomatize_on_load;
+        AromaticityOptions arom_options;
 
         // Loaded properties
         // CP_DECL;
@@ -76,7 +80,7 @@ namespace indigo
 
         void _init();
         bool _isSingleLine();
-        void _loadMolecule(BaseMolecule& mol, bool query);
+        void _loadMolecule(BaseMolecule& mol);
 
     private:
         MoleculeAutoLoader(const MoleculeAutoLoader&); // no implicit copy

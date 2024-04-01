@@ -1427,7 +1427,10 @@ namespace indigo
              BingoConfig.getInt(connection, bingo_schema, "reject-invalid-structures", id));
          BingoCore.setConfigInt("ignore-bad-valence",
              BingoConfig.getInt(connection, bingo_schema, "ignore-bad-valence", id));
-
+        BingoCore.setConfigInt("ct_format_save_date",
+            BingoConfig.getInt(connection, bingo_schema, "ct_format_save_date", id));
+        BingoCore.setConfigBin("CT_FORMAT_MODE",
+                Encoding.ASCII.GetBytes(BingoConfig.getString(connection, bingo_schema, "CT_FORMAT_MODE", id)));
          if ((flags & ContextFlags.NTHREADS) != 0)
          {
             BingoCore.setConfigInt("nthreads",
@@ -1457,6 +1460,8 @@ namespace indigo
             BingoCore.setConfigInt("FP_SIM_SIZE",
                 BingoConfig.getInt(connection, bingo_schema, "FP_SIM_SIZE", id));
 
+            BingoCore.setConfigBin("SIMILARITY_TYPE",
+                Encoding.ASCII.GetBytes(BingoConfig.getString(connection, bingo_schema, "SIMILARITY_TYPE", id)));
             BingoCore.setConfigInt("SUB_SCREENING_MAX_BITS",
                 BingoConfig.getInt(connection, bingo_schema, "SUB_SCREENING_MAX_BITS", id));
             BingoCore.setConfigInt("SIM_SCREENING_PASS_MARK",

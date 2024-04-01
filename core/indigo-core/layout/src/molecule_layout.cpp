@@ -26,7 +26,7 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeLayout, "molecule_layout");
 
-MoleculeLayout::MoleculeLayout(BaseMolecule& molecule, bool smart_layout) : _molecule(molecule), _smart_layout(smart_layout)
+MoleculeLayout::MoleculeLayout(BaseMolecule& molecule, bool smart_layout) : _molecule(molecule), _smart_layout(smart_layout), respect_existing_layout(false)
 {
     _hasMulGroups = _molecule.sgroups.getSGroupCount(SGroup::SG_TYPE_MUL) > 0;
     _init(smart_layout);
@@ -36,7 +36,6 @@ MoleculeLayout::MoleculeLayout(BaseMolecule& molecule, bool smart_layout) : _mol
 void MoleculeLayout::_init(bool smart_layout)
 {
     bond_length = 1.f;
-    respect_existing_layout = false;
     filter = 0;
     _smart_layout = smart_layout;
     if (_smart_layout)
@@ -71,7 +70,7 @@ void MoleculeLayout::_init(bool smart_layout)
 
                 // modify the atom mapping
                 for (int j = 0; j < _atomMapping.size(); ++j)
-                    if (atomMapCollapse.find(_atomMapping[j]))
+                    if (atomMapCollapse.find(_atomMapping[j]) != atomMapCollapse.end())
                         _atomMapping[j] = atomMapCollapse.at(_atomMapping[j]);
             }
         }

@@ -20,18 +20,21 @@
 #include "layout/molecule_layout.h"
 #include "molecule/molecule.h"
 #include "reaction/reaction.h"
+#include <stdio.h>
 
 using namespace indigo;
 
 ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
-    : bond_length(1), plus_interval_factor(1), arrow_interval_factor(1), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout),
-      horizontal_interval_factor(0.5f)
+    : bond_length(MoleculeLayout::DEFAULT_BOND_LENGTH), plus_interval_factor(1), arrow_interval_factor(2), preserve_molecule_layout(false), _r(r),
+      _smart_layout(smart_layout), horizontal_interval_factor(DEFAULT_HOR_INTERVAL_FACTOR), atom_label_width(1.3f)
 {
     max_iterations = 0;
 }
 
 void ReactionLayout::make()
 {
+    const auto kHalfBondLength = bond_length / 2;
+    const auto kDoubleBondLength = bond_length * 2;
     // update layout of molecules, if needed
     if (!preserve_molecule_layout)
     {
@@ -49,13 +52,32 @@ void ReactionLayout::make()
     Metalayout::LayoutLine& line = _ml.newLine();
     for (int i = _r.reactantBegin(); i < _r.reactantEnd(); i = _r.reactantNext(i))
     {
+        bool single_atom = _getMol(i).vertexCount() == 1;
         if (i != _r.reactantBegin())
             _pushSpace(line, plus_interval_factor);
         _pushMol(line, i);
     }
-    _pushSpace(line, arrow_interval_factor);
+
+    if (_r.catalystCount())
+    {
+        for (int i = _r.catalystBegin(); i < _r.catalystEnd(); i = _r.catalystNext(i))
+        {
+            auto& mol = _getMol(i);
+            Rect2f bbox;
+            mol.getBoundingBox(bbox, Vec2f(kDoubleBondLength, kDoubleBondLength));
+            _pushSpace(line, bbox.width() / 2);
+            _pushMol(line, i, true);
+        }
+        _pushSpace(line, bond_length);
+    }
+    else
+        _pushSpace(line, arrow_interval_factor);
+
+    _pushSpace(line, bond_length);
+
     for (int i = _r.productBegin(); i < _r.productEnd(); i = _r.productNext(i))
     {
+        bool single_atom = _getMol(i).vertexCount() == 1;
         if (i != _r.productBegin())
             _pushSpace(line, plus_interval_factor);
         _pushMol(line, i);
@@ -72,23 +94,34 @@ void ReactionLayout::make()
     _ml.process();
 }
 
-Metalayout::LayoutItem& ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id)
+void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_agent)
 {
+    // Molecule label alligned to atom center by non-hydrogen
+    // Hydrogen may be at left or at right H2O, PH3 - so add space before and after molecule
+    _pushSpace(line, atom_label_width);
     Metalayout::LayoutItem& item = line.items.push();
     item.type = 0;
     item.fragment = true;
     item.id = id;
-    Metalayout::getBoundRect(item.min, item.max, _getMol(id));
-    return item;
+    auto& mol = _getMol(id);
+    if (is_agent)
+    {
+        item.verticalAlign = Metalayout::LayoutItem::ItemVerticalAlign::ETop;
+    }
+
+    Rect2f bbox;
+    mol.getBoundingBox(bbox);
+    item.min.copy(bbox.leftBottom());
+    item.max.copy(bbox.rightTop());
+    _pushSpace(line, atom_label_width);
 }
 
-Metalayout::LayoutItem& ReactionLayout::_pushSpace(Metalayout::LayoutLine& line, float size)
+void ReactionLayout::_pushSpace(Metalayout::LayoutLine& line, float size)
 {
     Metalayout::LayoutItem& item = line.items.push();
     item.type = 1;
     item.fragment = false;
     item.scaledSize.set(size, 0);
-    return item;
 }
 
 BaseMolecule& ReactionLayout::_getMol(int id)

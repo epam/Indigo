@@ -12,15 +12,30 @@ if (NOT PostgreSQL_FOUND)
 else()
     project(bingo-postgres C CXX)
 
+    string(REPLACE "." ";" PostgreSQL_VERSION_LIST ${PostgreSQL_VERSION_STRING})
+    list(GET PostgreSQL_VERSION_LIST 0 PostgreSQL_VERSION_MAJOR)
+    list(GET PostgreSQL_VERSION_LIST 1 PostgreSQL_VERSION_MINOR)
+
+
     file(GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS
-            src/pg_am/*.cpp src/pg_am/*.c
-            src/pg_common/*.cpp src/pg_common/*.c
-            src/pg_core/*.cpp src/pg_core/*.c)
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_am/*.cpp 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_am/*.c
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_am/*.h
+
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_common/*.cpp 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_common/*.c
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_common/*.h
+
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_core/*.cpp 
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_core/*.c
+		${CMAKE_CURRENT_SOURCE_DIR}/src/pg_core/*.h
+    )
     add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_SOURCES})
     target_link_libraries(${PROJECT_NAME}
             PUBLIC bingo-core-c-static)
     target_include_directories(${PROJECT_NAME}
             PUBLIC ${PostgreSQL_INCLUDE_DIRS}
+            PUBLIC /usr/include/postgresql/${PostgreSQL_VERSION_MAJOR}/server
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pg_common
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pg_core)
 
@@ -49,9 +64,6 @@ else()
         string(REPLACE "-fvisibility=hidden" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
     endif ()
 
-    string(REPLACE "." ";" PostgreSQL_VERSION_LIST ${PostgreSQL_VERSION_STRING})
-    list(GET PostgreSQL_VERSION_LIST 0 PostgreSQL_VERSION_MAJOR)
-    list(GET PostgreSQL_VERSION_LIST 1 PostgreSQL_VERSION_MINOR)
     if (PostgreSQL_VERSION_MAJOR GREATER 9)
         set(PostgreSQL_VERSION ${PostgreSQL_VERSION_MAJOR})
     else ()

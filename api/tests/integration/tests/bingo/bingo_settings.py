@@ -32,7 +32,7 @@ print(
 )
 
 bingo = Bingo.createDatabaseFile(
-    indigo, joinPathPy("tempdb", __file__), "molecule", ""
+    indigo, joinPathPy("out/tempdb", __file__), "molecule", ""
 )
 
 print("*** Insert molecules ***")

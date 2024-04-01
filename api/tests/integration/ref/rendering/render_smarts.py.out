@@ -458,9 +458,11 @@ smarts/0152.png rendering status: OK
 
 smarts/0153.png rendering status: OK
 154: C[C@?](F)(Cl)Br
-  SMILES loader: invalid character within atom description: '?'
+
+smarts/0154.png rendering status: OK
 155: C[C@?H](Cl)Br
-  SMILES loader: invalid character within atom description: '?'
+
+smarts/0155.png rendering status: OK
 156: [$([cX2+](:*):*)]
 
 smarts/0156.png rendering status: OK
@@ -582,9 +584,11 @@ smarts/0194.png rendering status: OK
 
 smarts/0195.png rendering status: OK
 196: */,\[R]=;@[R]/,\*
-  SMILES loader: Specificiation of both cis- and trans- bond restriction is not supported yet.
+
+smarts/0196.png rendering status: OK
 197: */,\[R]=,:;@[R]/,\*
-  SMILES loader: Specificiation of both cis- and trans- bond restriction is not supported yet.
+
+smarts/0197.png rendering status: OK
 198: [cR1]1[cR1][cR1][cR1][cR1][cR1]1
 
 smarts/0198.png rendering status: OK
@@ -678,7 +682,7 @@ smarts/0227.png rendering status: OK
 228: [c,C]
 
 smarts/0228.png rendering status: OK
-229: [#0]
+229: [!#1;#0]
 
 smarts/0229.png rendering status: OK
 230: [OX2,OX1-][OX2,OX1-]

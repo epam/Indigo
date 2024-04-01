@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+#include <string>
 
 #include <algorithm>
 
@@ -40,6 +41,18 @@ void PropertiesMap::copy(PropertiesMap& other)
         insert(other.key(p), other.value(p));
     }
 }
+
+void PropertiesMap::merge(PropertiesMap& other)
+{
+    for (auto p : other.elements())
+        insert(other.key(p), other.value(p));
+}
+
+void PropertiesMap::insert(const char* key, const std::string& value)
+{
+    insert(key, value.c_str());
+}
+
 void PropertiesMap::insert(const char* key, const char* value)
 {
     const auto it = _properties.find(key);
@@ -78,6 +91,11 @@ void PropertiesMap::clear()
 {
     _properties.clear();
     _propertiesOrdered.clear();
+}
+
+bool PropertiesMap::is_empty()
+{
+    return _properties.size() == 0;
 }
 
 bool PropertiesMap::contains(const char* key) const

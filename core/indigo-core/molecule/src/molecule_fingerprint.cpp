@@ -166,9 +166,9 @@ void MoleculeFingerprintBuilder::process()
 /*
  * Accepted types: 'sim', 'sub', 'sub-res', 'sub-tau', 'full'
  */
-void MoleculeFingerprintBuilder::parseFingerprintType(const char* type, bool query)
+void MoleculeFingerprintBuilder::parseFingerprintType(const char* type, bool bquery)
 {
-    this->query = query;
+    this->query = bquery;
 
     if (type == 0 || *type == 0 || strcasecmp(type, "sim") == 0)
     {
@@ -208,7 +208,7 @@ void MoleculeFingerprintBuilder::parseFingerprintType(const char* type, bool que
     }
     else if (strcasecmp(type, "full") == 0)
     {
-        if (query)
+        if (bquery)
             throw Error("there can not be 'full' fingerprint of a query molecule");
         // full (non-query) fingerprint, do not skip anything
     }
@@ -357,8 +357,8 @@ int MoleculeFingerprintBuilder::_maximalSubgraphCriteriaValue(Graph& graph, cons
     return ret;
 }
 
-dword MoleculeFingerprintBuilder::_canonicalizeFragment(BaseMolecule& mol, const Array<int>& vertices, const Array<int>& edges, bool use_atoms, bool use_bonds,
-                                                        int* different_vertex_count)
+dword MoleculeFingerprintBuilder::_canonicalizeFragment(BaseMolecule& /* mol */, const Array<int>& vertices, const Array<int>& edges, bool use_atoms,
+                                                        bool use_bonds, int* different_vertex_count)
 {
     if (use_bonds)
         subgraph_hash->edge_codes = &_bond_codes;
@@ -723,7 +723,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint_calcChem(BaseMolecule& mol)
     {
         mol.asMolecule().invalidateHCounters();
     }
-    catch (indigo::Exception& e)
+    catch (indigo::Exception&)
     {
         // Since `mol` is (probably) `QueryMolecule`,
         // connectivity doesn't matter anyway
@@ -741,7 +741,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint_calcChem(BaseMolecule& mol)
             if (!res)
                 continue; // skippable atom
         }
-        catch (indigo::Exception& e)
+        catch (indigo::Exception&)
         {
             continue;
         }
@@ -770,7 +770,7 @@ void MoleculeFingerprintBuilder::_makeFingerprint_calcChem(BaseMolecule& mol)
             if (!res1 || !res2)
                 continue; // skippable atoms
         }
-        catch (indigo::Exception& e)
+        catch (indigo::Exception&)
         {
             continue;
         }

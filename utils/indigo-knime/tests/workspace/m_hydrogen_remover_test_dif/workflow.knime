@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="workflow.knime">
+<entry key="created_by" type="xstring" value="3.1.0.v201511251249"/>
+<entry key="version" type="xstring" value="3.1.0"/>
+<entry key="name" type="xstring" isnull="true" value=""/>
+<config key="authorInformation">
+<entry key="authored-by" type="xstring" value="&lt;unknown&gt;"/>
+<entry key="authored-when" type="xstring" value="1970-01-01 03:00:00 +0300"/>
+<entry key="lastEdited-by" type="xstring" value="Anton_Pikhtin"/>
+<entry key="lastEdited-when" type="xstring" value="2015-12-31 15:09:54 +0300"/>
+</config>
+<entry key="customDescription" type="xstring" isnull="true" value=""/>
+<entry key="state" type="xstring" value="CONFIGURED"/>
+<config key="workflow_credentials"/>
+<config key="nodes">
+<config key="node_1">
+<entry key="id" type="xint" value="1"/>
+<entry key="node_settings_file" type="xstring" value="Table Creator (#1)/settings.xml"/>
+<entry key="node_is_meta" type="xboolean" value="false"/>
+<entry key="node_type" type="xstring" value="NativeNode"/>
+<entry key="ui_classname" type="xstring" value="org.knime.core.node.workflow.NodeUIInformation"/>
+<config key="ui_settings">
+<config key="extrainfo.node.bounds">
+<entry key="array-size" type="xint" value="4"/>
+<entry key="0" type="xint" value="48"/>
+<entry key="1" type="xint" value="50"/>
+<entry key="2" type="xint" value="83"/>
+<entry key="3" type="xint" value="78"/>
+</config>
+</config>
+</config>
+<config key="node_13">
+<entry key="id" type="xint" value="13"/>
+<entry key="node_settings_file" type="xstring" value="Can Smiles Dif (#13)/workflow.knime"/>
+<entry key="node_is_meta" type="xboolean" value="true"/>
+<entry key="node_type" type="xstring" value="MetaNode"/>
+<entry key="ui_classname" type="xstring" value="org.knime.core.node.workflow.NodeUIInformation"/>
+<config key="ui_settings">
+<config key="extrainfo.node.bounds">
+<entry key="array-size" type="xint" value="4"/>
+<entry key="0" type="xint" value="536"/>
+<entry key="1" type="xint" value="52"/>
+<entry key="2" type="xint" value="90"/>
+<entry key="3" type="xint" value="65"/>
+</config>
+</config>
+</config>
+<config key="node_14">
+<entry key="id" type="xint" value="14"/>
+<entry key="node_settings_file" type="xstring" value="Testflow Configuration (#14)/settings.xml"/>
+<entry key="node_is_meta" type="xboolean" value="false"/>
+<entry key="node_type" type="xstring" value="NativeNode"/>
+<entry key="ui_classname" type="xstring" value="org.knime.core.node.workflow.NodeUIInformation"/>
+<config key="ui_settings">
+<config key="extrainfo.node.bounds">
+<entry key="array-size" type="xint" value="4"/>
+<entry key="0" type="xint" value="60"/>
+<entry key="1" type="xint" value="201"/>
+<entry key="2" type="xint" value="83"/>
+<entry key="3" type="xint" value="93"/>
+</config>
+</config>
+</config>
+<config key="node_15">
+<entry key="id" type="xint" value="15"/>
+<entry key="node_settings_file" type="xstring" value="Hydrogen Remover (#15)/settings.xml"/>
+<entry key="node_is_meta" type="xboolean" value="false"/>
+<entry key="node_type" type="xstring" value="NativeNode"/>
+<entry key="ui_classname" type="xstring" value="org.knime.core.node.workflow.NodeUIInformation"/>
+<config key="ui_settings">
+<config key="extrainfo.node.bounds">
+<entry key="array-size" type="xint" value="4"/>
+<entry key="0" type="xint" value="341"/>
+<entry key="1" type="xint" value="50"/>
+<entry key="2" type="xint" value="118"/>
+<entry key="3" type="xint" value="78"/>
+</config>
+</config>
+</config>
+<config key="node_16">
+<entry key="id" type="xint" value="16"/>
+<entry key="node_settings_file" type="xstring" value="Molecule Type Cast (#16)/settings.xml"/>
+<entry key="node_is_meta" type="xboolean" value="false"/>
+<entry key="node_type" type="xstring" value="NativeNode"/>
+<entry key="ui_classname" type="xstring" value="org.knime.core.node.workflow.NodeUIInformation"/>
+<config key="ui_settings">
+<config key="extrainfo.node.bounds">
+<entry key="array-size" type="xint" value="4"/>
+<entry key="0" type="xint" value="180"/>
+<entry key="1" type="xint" value="50"/>
+<entry key="2" type="xint" value="119"/>
+<entry key="3" type="xint" value="78"/>
+</config>
+</config>
+</config>
+</config>
+<config key="connections">
+<config key="connection_0">
+<entry key="sourceID" type="xint" value="1"/>
+<entry key="destID" type="xint" value="16"/>
+<entry key="sourcePort" type="xint" value="1"/>
+<entry key="destPort" type="xint" value="1"/>
+</config>
+<config key="connection_1">
+<entry key="sourceID" type="xint" value="15"/>
+<entry key="destID" type="xint" value="13"/>
+<entry key="sourcePort" type="xint" value="1"/>
+<entry key="destPort" type="xint" value="0"/>
+</config>
+<config key="connection_2">
+<entry key="sourceID" type="xint" value="16"/>
+<entry key="destID" type="xint" value="15"/>
+<entry key="sourcePort" type="xint" value="1"/>
+<entry key="destPort" type="xint" value="1"/>
+</config>
+</config>
+<config key="workflow_editor_settings">
+<entry key="workflow.editor.snapToGrid" type="xboolean" value="false"/>
+<entry key="workflow.editor.ShowGrid" type="xboolean" value="false"/>
+<entry key="workflow.editor.gridX" type="xint" value="90"/>
+<entry key="workflow.editor.gridY" type="xint" value="120"/>
+<entry key="workflow.editor.zoomLevel" type="xdouble" value="1.0"/>
+</config>
+</config>

@@ -2,10 +2,10 @@ FROM debian:stable-slim
 
 ARG JDK_VERSION_MAJOR=8u342
 ARG JDK_VERSION_MINOR=b07
-ARG MAVEN_VERSION=3.8.6
+ARG MAVEN_VERSION=3.8.8
 ARG JYTHON_VERSION=2.7.2
 ARG DOTNET_VERSION=6.0
-ARG IRONPYTHON_VERSION=3.4.0-beta1
+ARG IRONPYTHON_VERSION=3.4.0
 
 RUN set -eux && \
     apt update && \
@@ -64,8 +64,8 @@ RUN set -eux && \
     ln -fs /opt/ironpython/net${DOTNET_VERSION}/ipy.sh /opt/ironpython/ipy && \
     rm IronPython.${IRONPYTHON_VERSION}.zip && \
     # Python 3 packages
-    python3 -m pip install --upgrade pip && \
-    python3 -m pip install --upgrade setuptools wheel twine && \
+    python3 -m pip install wheel && \
+    apt install -y python3-pip python3-setuptools twine && \
     apt autoremove -y
 
 COPY ./ /indigo
@@ -74,22 +74,22 @@ RUN cd /indigo && \
     cd build && \
     cmake .. && \
     cmake --build . --target indigo-python --config Release -- -j $(nproc) && \
-    python3 -m pip install ../dist/*.whl
+    python3 -m pip install ../dist/*.whl --break-system-packages
 
-COPY /api/http/requirements.txt ./api_requirements.txt
-COPY /api/http/requirements_dev.txt ./api_requirements_dev.txt
-COPY /utils/indigo-service/backend/service/requirements.txt ./service_requirements.txt
-COPY /utils/indigo-service/backend/service/requirements.dev.txt ./service_requirements_dev.txt
+COPY ./api/http/requirements.txt ./api_requirements.txt
+COPY ./api/http/requirements_dev.txt ./api_requirements_dev.txt
+COPY ./utils/indigo-service/backend/service/requirements.txt ./service_requirements.txt
+COPY ./utils/indigo-service/backend/service/requirements.dev.txt ./service_requirements_dev.txt
 
 RUN python3 -m pip install  \
       -r api_requirements.txt  \
       -r api_requirements_dev.txt  \
       -r service_requirements.txt  \
-      -r service_requirements_dev.txt && \
+      -r service_requirements_dev.txt --break-system-packages && \
     rm ./api_requirements.txt ./api_requirements_dev.txt ./service_requirements.txt ./service_requirements_dev.txt
 
-COPY /bingo/bingo-elastic/python/ ./bingo-elastic
-RUN cd ./bingo-elastic && python3 -m pip install -e . && cd .. && rm -rf ./bingo-elastic
+COPY ./bingo/bingo-elastic/python/ ./bingo-elastic
+RUN cd ./bingo-elastic && python3 -m pip install -e . --break-system-packages && cd .. && rm -rf ./bingo-elastic
 
 ENV JAVA_HOME=/opt/jdk
 ENV PATH=${PATH}:${JAVA_HOME}/bin:/opt/jython/bin:/opt/maven/bin:/opt/ironpython

@@ -1,10 +1,10 @@
 005.sdf
 0
 [B-]1[N+]2=CC=CN2[B-]N2C=CC=[N+]21
-[b-]1[n+]2ccc[n]2[b-][n]2ccc[n+]21
+[B-]1:[n+]2ccc[n]2:[B-]:[n]2ccc[n+]2:1
 1
 BrC1=CN2[B-]N3C=C(Br)C=[N+]3[B-][N+]2=C1
-Brc1c[n+]2[b-][n+]3cc(Br)c[n]3[b-][n]2c1
+Brc1c[n+]2:[B-]:[n+]3cc(Br)c[n]3:[B-]:[n]2c1
 2
 F[B-](F)(F)F.[B-]1[N+]2=CC=CC=C2C2=CC=CC=[N+]21
 F[B-](F)(F)F.[B-]1[n+]2ccccc2-c2cccc[n+]21
@@ -13,82 +13,82 @@ F[B-](F)(F)F.[B-]1[n+]2ccccc2-c2cccc[n+]21
 [B-]1[n+]2ccccc2-c2cccc[n+]21
 4
 CC1C=C(C)N2[B-]N3C(C)=CC(C)=[N+]3[B-][N+]2=1
-Cc1cc(C)[n]2[b-][n]3c(C)cc(C)[n+]3[b-][n+]21
+Cc1cc(C)[n]2:[B-]:[n]3c(C)cc(C)[n+]3:[B-]:[n+]21
 5
 B1=NN=CC2SC=CC=21
-[b]1[n][n]cc2[s]ccc21
+[B]1:[n][n]cc2[s]ccc2:1
 6
 COC1=CC=CC=C1OC1C(NS(=O)(=O)NC2C=CC=CC=2)=NC(=NC=1CCOC1N=CC(Br)=CN=1)C1=BC=CC=N1
-COc1ccccc1Oc1c(NS(=O)(=O)Nc2ccccc2)[n]c([n]c1CCOc1[n]cc(Br)c[n]1)-c1[b]ccc[n]1
+COc1ccccc1Oc1c(NS(=O)(=O)Nc2ccccc2)[n]c([n]c1CCOc1[n]cc(Br)c[n]1)-c1:[B]:ccc[n]1
 7
 COC1=CC=CC=C1OC1=C(CCO)N=C(N=C1NS(=O)(=O)NC1C=CC=CC=1)C1=BC=CC=N1
-COc1ccccc1Oc1c(CCO)[n]c([n]c1NS(=O)(=O)Nc1ccccc1)-c1[b]ccc[n]1
+COc1ccccc1Oc1c(CCO)[n]c([n]c1NS(=O)(=O)Nc1ccccc1)-c1:[B]:ccc[n]1
 8
 B1=NN=CC2=CC=CC=C21
-[b]1[n][n]cc2ccccc21
+[B]1:[n][n]cc2ccccc2:1
 9
 CCN(CC)CC.B1C=CC=CC=1
-CCN(CC)CC.[b]1ccccc1
+CCN(CC)CC.[B]1:ccccc:1
 10
 B1C=CC=CC=1
-[b]1ccccc1
+[B]1:ccccc:1
 11
 CP(C)C.B1C=CC=CC=1
-CP(C)C.[b]1ccccc1
+CP(C)C.[B]1:ccccc:1
 12
 B1C=C(C(=C(N=1)C1C=CC=CC=1)C1C=CC=CC=1)C1C=CC=CC=1
-[b]1cc(c(c([n]1)-c1ccccc1)-c1ccccc1)-c1ccccc1
+[B]1:cc(c(c([n]:1)-c1ccccc1)-c1ccccc1)-c1ccccc1
 13
 CCCCCCC1=BC=CC=C1
-CCCCCCc1[b]cccc1
+CCCCCCc1:[B]:cccc1
 14
 B1C=CC=N[NH+]=1
-[b]1ccc[n][nH+]1
+[B]1:ccc[n][nH+]:1
 15
 B1=CC=CN=N1
-[b]1ccc[n][n]1
+[B]1:ccc[n][n]:1
 16
 B1=NC=CO1
-[b]1[n]cco1
+[B]1:[n]cco:1
 17
-CC1[B]C(C)(C)C(C)=C(C)C=1CC1=BC(C)=C(C)C(C)=C1C |^1:2|
-CC1[B]C(C)(C)C(C)=C(C)C=1Cc1[b]c(C)c(C)c(C)c1C |^1:2|
+CC1[B]C(C)(C)C(C)=C(C)C=1CC1=BC(C)=C(C)C(C)=C1C
+CC1[B]C(C)(C)C(C)=C(C)C=1Cc1:[B]:c(C)c(C)c(C)c1C
 18
 CC1=BC(CC2B=C(C)C(C)=C(C)C=2C)=C(C)C(C)=C1C
-Cc1[b]c(Cc2[b]c(C)c(C)c(C)c2C)c(C)c(C)c1C
+Cc1:[B]:c(Cc2:[B]:c(C)c(C)c(C)c2C)c(C)c(C)c1C
 19
 CC1C(CC2=C(C)C(C)=C(C)B=C2C)=C(C)B=C(C)C=1C
-Cc1[b]c(C)c(C)c(C)c1Cc1c(C)c(C)c(C)[b]c1C
+Cc1:[B]:c(C)c(C)c(C)c1Cc1c(C)c(C)c(C):[B]:c1C
 20
 CC1B=C(C)C(C)=C(CC2=C(C)C(C)=BC(C)=C2C)C=1C
-Cc1[b]c(C)c(C)c(Cc2c(C)c(C)[b]c(C)c2C)c1C
+Cc1:[B]:c(C)c(C)c(Cc2c(C)c(C):[B]:c(C)c2C)c1C
 21
 CC1C(CC2=C(C)C(C)=C(C)B=C2C)=C(C)C(C)=BC=1C
-Cc1[b]c(C)c(C)c(C)c1Cc1c(C)c(C)[b]c(C)c1C
+Cc1:[B]:c(C)c(C)c(C)c1Cc1c(C)c(C):[B]:c(C)c1C
 22
 CC1B=C(C)C(C)=C(CC2B=C(C)C(C)=C(C)C=2C)C=1C
-Cc1[b]c(Cc2c(C)c(C)[b]c(C)c2C)c(C)c(C)c1C
+Cc1:[B]:c(Cc2c(C)c(C):[B]:c(C)c2C)c(C)c(C)c1C
 23
 B1=CC=CC2=CC=CC=C21
-[b]1cccc2ccccc21
+[B]1:cccc2ccccc2:1
 24
 CC1C(C)=BC=CC=1C
-Cc1c(C)[b]ccc1C
+Cc1c(C):[B]:ccc1C
 25
 CCCCCC1C(=BC=CC=1CCCCC)CCCCC
-CCCCCc1c([b]ccc1CCCCC)CCCCC
+CCCCCc1c(:[B]:ccc1CCCCC)CCCCC
 26
 CCNC1=C(N)B=BB=C1N(CC)CC
-CCNc1c(N)[b][b][b]c1N(CC)CC
+CCNc1c(N):[B]:[B]:[B]:c1N(CC)CC
 27
 ClC1C(Cl)=BC=CC=1Cl
-Clc1c(Cl)[b]ccc1Cl
+Clc1c(Cl):[B]:ccc1Cl
 28
 CC(C)C1C(=BC=CC=1C(C)C)C(C)C
-CC(C)c1c([b]ccc1C(C)C)C(C)C
+CC(C)c1c(:[B]:ccc1C(C)C)C(C)C
 29
 CC(C)(C)C1C(=BC=CC=1C(C)(C)C)C(C)(C)C
-CC(C)(C)c1c([b]ccc1C(C)(C)C)C(C)(C)C
+CC(C)(C)c1c(:[B]:ccc1C(C)(C)C)C(C)(C)C
 006.sdf
 0
 [O-][N+](=O)C1C=C(C=CC=1Cl)[N+]([O-])=O
@@ -403,14 +403,14 @@ CCc1c(CC)c:[Si](CC):c([Si])c1CC
 CC1C=C[Si](O)=C(C)C=1C
 Cc1cc:[Si](O):c(C)c1C
 13
-C1=NC=[Si]C2=CC=CC=C21 |^1:3|
-c1[n]c:[Si]:c2ccccc21 |^1:3|
+C1=NC=[Si]C2=CC=CC=C21
+c1[n]c:[Si]:c2ccccc21
 14
 CC1C=C[Si](OCC)=C(OCC)C=1OCC
 Cc1cc:[Si](OCC):c(OCC)c1OCC
 15
-CC(C)(CC(C)(CN1C=[Si]C=[Si]1)C1C=CC(F)=CC=1)C1C=CC(F)=CC=1 |^1:9,11|
-CC(C)(CC(C)(C[n]1c:[Si]:c:[Si]:1)c1ccc(F)cc1)c1ccc(F)cc1 |^1:9,11|
+CC(C)(CC(C)(CN1C=[Si]C=[Si]1)C1C=CC(F)=CC=1)C1C=CC(F)=CC=1
+CC(C)(CC(C)(C[n]1c:[Si]:c:[Si]:1)c1ccc(F)cc1)c1ccc(F)cc1
 16
 CC1C=C[Si](Cl)=C(C)C=1C
 Cc1cc:[Si](Cl):c(C)c1C
@@ -424,8 +424,8 @@ C[Si]1:ccccc:1Cl
 CC1=C2C(OC=C1C)=[Si](CC)C(CC)=C2C
 Cc1c2c(occ1C):[Si](CC):c(CC)c2C
 20
-CC1=[Si]ON=C1C(=O)NC1C=CC(=CC=1)C(F)(F)F |^1:2|
-Cc1:[Si]:o[n]c1C(=O)Nc1ccc(cc1)C(F)(F)F |^1:2|
+CC1=[Si]ON=C1C(=O)NC1C=CC(=CC=1)C(F)(F)F
+Cc1:[Si]:o[n]c1C(=O)Nc1ccc(cc1)C(F)(F)F
 21
 CCCNC1C=C[Si](Cl)=C(Cl)C=1Cl
 CCCNc1cc:[Si](Cl):c(Cl)c1Cl
@@ -436,14 +436,14 @@ C[Si]1:[n]c(C)cc:[Si]:1-c1cccc2ccc3cc4ccccc4cc3c21
 CCOC1C(OCC)=[Si](C=CC=1C1C=CC=CC=1)OCC
 CCOc1c(OCC)c(cc:[Si]:1OCC)-c1ccccc1
 24
-C1C=CC=C2N[Si]=NC2=1 |^1:6|
-c1cccc2[nH]:[Si]:[n]c21 |^1:6|
+C1C=CC=C2N[Si]=NC2=1
+c1cccc2[nH]:[Si]:[n]c21
 25
-[Cl-].C1=C[Si]=[NH+]C2=CC=CC=C21 |^1:3|
-[Cl-].c1cccc2[nH+]:[Si]:ccc21 |^1:7|
+[Cl-].C1=C[Si]=[NH+]C2=CC=CC=C21
+[Cl-].c1cccc2[nH+]:[Si]:ccc21
 26
-C1=C[Si]=NC2=CC=CC=C21 |^1:2|
-c1cccc2[n]:[Si]:ccc21 |^1:6|
+C1=C[Si]=NC2=CC=CC=C21
+c1cccc2[n]:[Si]:ccc21
 27
 CC1=C2C(OC=C1C)=[Si](C)C(C)=C2C
 Cc1c(C)c2c(occ(C)c2C):[Si]:1C
@@ -673,11 +673,11 @@ Cc1c[asH]cc1C
 CC(C)(C)N1P2N3N(C)P(N([As]3Cl)C(C)(C)C)N(N2C)[As]1Cl
 CC(C)(C)[n]1[p]2[n]3[n](C)[p]([n]([as]3Cl)C(C)(C)C)[n]([n]2C)[as]1Cl
 12
-CC1=C[As]C=C1C |^1:3|
-CC1=C[As]C=C1C |^1:3|
+CC1=C[As]C=C1C
+CC1=C[As]C=C1C
 13
-C1=CC=C[As]1 |^1:4|
-C1=CC=C[As]1 |^1:4|
+C1=CC=C[As]1
+C1=CC=C[As]1
 14
 C[As]1C2=CC=CC=C2C=C1[Si](C)(C)C
 C[as]1c2ccccc2cc1[Si](C)(C)C
@@ -697,8 +697,8 @@ CC(C)(C)c1cc(cc2c1o[as](O[as]1oc3c(cc(cc3c3cc(cc(c3o1)C(C)(C)C)C(C)(C)C)C(C)(C)C
 C1=CC=[As]C2=CC=CC=C21
 c1cccc2[as]cccc21
 20
-[Sm].[Sm].CC1=C[AsH]C=C1C.CC1=C[As]C=C1C.CC1[C-](C)C(C)=C(C)C=1C.CC1[C-](C)C(C)=C(C)C=1C.CC1[C-](C)C(C)=C(C)C=1C.C[C-]1[C-](C)[C-](C)[C-](C)[C-]1C |^1:12|
-[Sm].[Sm].CC1=C[As]C=C1C.Cc1c[asH]cc1C.Cc1[c-](C)c(C)c(C)c1C.Cc1[c-](C)c(C)c(C)c1C.Cc1[c-](C)c(C)c(C)c1C.C[c-]1[c-](C)[c-](C)[c-](C)[c-]1C |^1:5|
+[Sm].[Sm].CC1=C[AsH]C=C1C.CC1=C[As]C=C1C.CC1[C-](C)C(C)=C(C)C=1C.CC1[C-](C)C(C)=C(C)C=1C.CC1[C-](C)C(C)=C(C)C=1C.C[C-]1[C-](C)[C-](C)[C-](C)[C-]1C
+[Sm].[Sm].CC1=C[As]C=C1C.Cc1c[asH]cc1C.Cc1[c-](C)c(C)c(C)c1C.Cc1[c-](C)c(C)c(C)c1C.Cc1[c-](C)c(C)c(C)c1C.C[c-]1[c-](C)[c-](C)[c-](C)[c-]1C
 21
 CC1=C(C)C(C)=C(C)[As]1C1C=CC=CC=1
 Cc1c(C)c(C)c(C)[as]1-c1ccccc1
@@ -712,17 +712,17 @@ Cl[as]1[n]c(c([n]1)-c1c[s]cc1)-c1c[s]cc1
 C1=CC=[As]N1
 c1cc[as][nH]1
 25
-C1=C[As]C2=CC=CC=C21 |^1:2|
-c1cccc2[As]C=Cc21 |^1:5|
+C1=C[As]C2=CC=CC=C21
+c1cccc2[As]C=Cc21
 26
-[Cl-].[Cl-].[Cl-].[Zr].[Zr].[Zr].CC1=[As][As]C(C)=C1C.CC1=[As][As]C(C)=C1C.CC1=[As][As]C(C)=C1C |^1:9,17,25|
-[Cl-].[Cl-].[Cl-].[Zr].[Zr].[Zr].CC1=[As][As]C(C)=C1C.CC1=[As][As]C(C)=C1C.CC1=[As][As]C(C)=C1C |^1:9,17,25|
+[Cl-].[Cl-].[Cl-].[Zr].[Zr].[Zr].CC1=[As][As]C(C)=C1C.CC1=[As][As]C(C)=C1C.CC1=[As][As]C(C)=C1C
+[Cl-].[Cl-].[Cl-].[Zr].[Zr].[Zr].CC1=[As][As]C(C)=C1C.CC1=[As][As]C(C)=C1C.CC1=[As][As]C(C)=C1C
 27
-CC1C(C)=[As][As]C=1C |^1:5|
-CC1C(C)=[As][As]C=1C |^1:5|
+CC1C(C)=[As][As]C=1C
+CC1C(C)=[As][As]C=1C
 28
-C1=CC=[As][As]1 |^1:4|
-C1=CC=[As][As]1 |^1:4|
+C1=CC=[As][As]1
+C1=CC=[As][As]1
 29
 C1=CC=[As]P1
 c1cc[as][pH]1

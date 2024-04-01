@@ -20,6 +20,7 @@
 #define __molecule_h__
 
 #include "molecule/base_molecule.h"
+#include "molecule/molecule_sgroups.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -33,26 +34,28 @@ namespace indigo
     {
     public:
         Molecule();
-        ~Molecule() override;
-
         Molecule& asMolecule() override;
 
         void clear() override;
 
         BaseMolecule* neu() override;
 
-        int addAtom(int label);
+        int addAtom(int label) override;
         int resetAtom(int idx, int label);
 
         void setPseudoAtom(int idx, const char* text);
 
+        void renameTemplateAtom(int idx, const char* text);
         void setTemplateAtom(int idx, const char* text);
         void setTemplateAtomName(int idx, const char* text);
         void setTemplateAtomClass(int idx, const char* text);
         void setTemplateAtomSeqid(int idx, int seq_id);
-        void setTemplateAtomDisplayOption(int idx, int contracted);
+        void setTemplateAtomSeqName(int idx, const char* seq_name);
 
-        int addBond(int beg, int end, int order);
+        void setTemplateAtomDisplayOption(int idx, int contracted);
+        void setTemplateAtomTemplateIndex(int idx, int temp_idx);
+
+        int addBond(int beg, int end, int order) override;
         int addBond_Silent(int beg, int end, int order);
 
         void setAtomCharge(int idx, int charge);
@@ -60,11 +63,11 @@ namespace indigo
         void setAtomIsotope(int idx, int isotope);
         void setAtomRadical(int idx, int radical);
         void setValence(int idx, int valence);
-        void setExplicitValence(int idx, int valence);
+        void setExplicitValence(int idx, int valence) override;
         void resetExplicitValence(int idx);
         bool isExplicitValenceSet(int idx);
 
-        void setImplicitH(int idx, int impl_h);
+        void setImplicitH(int idx, int impl_h) override;
         bool isImplicitHSet(int idx);
 
         // Set bond order method.
@@ -98,8 +101,12 @@ namespace indigo
         bool isTemplateAtom(int idx) override;
         const char* getTemplateAtom(int idx) override;
         const int getTemplateAtomSeqid(int idx) override;
+        const char* getTemplateAtomSeqName(int idx) override;
         const char* getTemplateAtomClass(int idx) override;
+        const int getTemplateAtomTemplateIndex(int idx) override;
         const int getTemplateAtomDisplayOption(int idx) override;
+        void getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map) override;
+        void getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map) override;
 
         bool isRSite(int atom_idx) override;
         dword getRSiteBits(int atom_idx) override;
@@ -111,6 +118,7 @@ namespace indigo
         bool aromatize(const AromaticityOptions& options) override;
         bool dearomatize(const AromaticityOptions& options) override;
 
+        int getImplicitH(int idx, bool impl_h_no_throw) override;
         int getImplicitH(int idx);
         int getImplicitH_NoThrow(int idx, int fallback);
         int calcImplicitHForConnectivity(int idx, int conn);
@@ -138,12 +146,8 @@ namespace indigo
 
         static int matchAtomsCmp(Graph& g1, Graph& g2, int idx1, int idx2, void* userdata);
 
-        void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false);
-
         static void saveBondOrders(Molecule& mol, Array<int>& orders);
         static void loadBondOrders(Molecule& mol, Array<int>& orders);
-
-        bool convertableToImplicitHydrogen(int idx);
 
         void invalidateHCounters();
 
@@ -208,11 +212,12 @@ namespace indigo
 
         struct _TemplateOccurrence
         {
-            int name_idx;   // index in _template_names
-            int class_idx;  // index in _template_classes
-            int seq_id;     // sequence id
-            int contracted; // display option (-1 if undefined, 0 - expanded, 1 - contracted)
-
+            int name_idx;              // index in _template_names
+            int class_idx;             // index in _template_classes
+            int seq_id;                // sequence id
+            int template_idx;          // template idx
+            Array<char> seq_name;      // sequence name
+            DisplayOption contracted;  // display option (-1 if undefined, 0 - expanded, 1 - contracted)
             Array<_AttachOrder> order; // attach order info
         };
         ObjPool<_TemplateOccurrence> _template_occurrences;

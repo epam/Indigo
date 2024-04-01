@@ -31,7 +31,7 @@ def stereo_desc_test(py_file, out_queue):
     out_queue.put(str_res)
 
 
-if isIronPython() or isJython():
+if isJython():
     from Queue import Queue
 else:
     from queue import Queue

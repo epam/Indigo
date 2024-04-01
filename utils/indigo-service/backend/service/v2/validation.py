@@ -16,10 +16,22 @@ class InputFormatSchema(Schema):
         "chemical/x-daylight-smiles",
         "chemical/x-cml",
         "chemical/x-inchi",
+        "chemical/x-inchi-key",
         "chemical/x-iupac",
         "chemical/x-daylight-smarts",
         "chemical/x-inchi-aux",
         "chemical/x-chemaxon-cxsmiles",
+        "chemical/x-cdxml",
+        "chemical/x-cdx",
+        "chemical/x-sdf",
+        "chemical/x-peptide-sequence",
+        "chemical/x-rna-sequence",
+        "chemical/x-dna-sequence",
+        "chemical/x-sequence",
+        "chemical/x-peptide-fasta",
+        "chemical/x-rna-fasta",
+        "chemical/x-dna-fasta",
+        "chemical/x-fasta",
     )
     input_format = fields.Str(missing=None, validate=OneOf(struct_mime_types))
 
@@ -36,8 +48,6 @@ class IndigoRendererSchema(InputFormatSchema):
     output_format = fields.Str(
         missing="image/svg+xml", validate=OneOf(images_formats)
     )
-    width = fields.Str(missing="200px")
-    height = fields.Str(missing="200px")
     struct = fields.Str(missing=None)
     query = fields.Str(missing=None)
     options = fields.Dict(missing={})
@@ -166,6 +176,13 @@ class IndigoAutomapSchema(IndigoRequestSchema):
     )
 
 
+class IndigoConvertExplicitHydrogensSchema(IndigoRequestSchema):
+    mode = fields.Str(
+        missing="auto",
+        validate=OneOf(("auto", "fold", "unfold")),
+    )
+
+
 class SearcherSchema(Schema):
     type = fields.Str(
         load_from="type",
@@ -227,12 +244,7 @@ class SearcherSchema(Schema):
 
     @validates_schema
     def sim_max_range(self, data, **kwargs):
-        print(
-            data,
-            data.get("type"),
-            data.get("max_sim"),
-            data.get("min_sim"),
-        )
+        print(data, data.get("type"), data.get("max_sim"), data.get("min_sim"))
         if (
             data.get("type")
             and "sim" in data.get("type")

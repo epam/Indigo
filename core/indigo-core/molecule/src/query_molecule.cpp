@@ -20,11 +20,21 @@
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
 #include "molecule/molecule_arom.h"
+#include "molecule/molecule_dearom.h"
 #include "molecule/molecule_standardize.h"
 #include <string>
 #include <unordered_map>
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
+
 using namespace indigo;
+
+bool QueryMolecule::isAtomProperty(OpType type)
+{
+    return (type > ATOM_PSEUDO && type <= ATOM_CHIRALITY);
+}
 
 QueryMolecule::QueryMolecule() : spatial_constraints(*this)
 {
@@ -85,14 +95,20 @@ int QueryMolecule::getAtomRadical(int idx)
     return -1;
 }
 
+// explicit valence plays role of required connectivity
+// (ATOM_TOTAL_ORDER) in QueryMolecule
 int QueryMolecule::getExplicitValence(int idx)
 {
     int res;
-
-    if (_atoms[idx]->sureValue(ATOM_VALENCE, res))
+    if (_atoms[idx]->sureValue(ATOM_TOTAL_BOND_ORDER, res))
         return res;
 
     return -1;
+}
+
+void QueryMolecule::setExplicitValence(int idx, int valence)
+{
+    resetAtom(idx, QueryMolecule::Atom::und(_atoms[idx], new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_BOND_ORDER, valence)));
 }
 
 int QueryMolecule::getAtomAromaticity(int idx)
@@ -128,7 +144,7 @@ int QueryMolecule::getBondTopology(int idx)
     return -1;
 }
 
-int QueryMolecule::getAtomValence(int idx)
+int QueryMolecule::getAtomValence(int /*idx*/)
 {
     throw Error("not implemented");
 }
@@ -157,7 +173,37 @@ int QueryMolecule::getAtomRingBondsCount(int idx)
     return -1;
 }
 
-int QueryMolecule::getAtomConnectivity(int idx)
+bool QueryMolecule::isAromaticByCaseAtom(int num)
+{
+    if (num == ELEM_C || num == ELEM_N || num == ELEM_O || num == ELEM_P || num == ELEM_S || num == ELEM_Si || num == ELEM_Se || num == ELEM_As ||
+        num == ELEM_Te)
+        return true;
+    return false;
+}
+
+bool QueryMolecule::isAromaticByCaseAtom(QueryMolecule::Node* atom)
+{
+    if (atom->type != ATOM_NUMBER)
+        return false;
+    return QueryMolecule::isAromaticByCaseAtom(static_cast<QueryMolecule::Atom*>(atom)->value_max);
+}
+
+bool QueryMolecule::isOrganicSubset(int num)
+{
+    if (num == ELEM_B || num == ELEM_C || num == ELEM_N || num == ELEM_O || num == ELEM_P || num == ELEM_S || num == ELEM_F || num == ELEM_Cl ||
+        num == ELEM_Br || num == ELEM_I)
+        return true;
+    return false;
+}
+
+bool QueryMolecule::isOrganicSubset(QueryMolecule::Atom* atom)
+{
+    if (atom->type != ATOM_NUMBER)
+        return false;
+    return QueryMolecule::isOrganicSubset(atom->value_max);
+}
+
+int QueryMolecule::getAtomConnectivity(int /*idx*/)
 {
     return 0;
 }
@@ -194,21 +240,25 @@ bool QueryMolecule::possibleAtomIsotope(int idx, int isotope)
 
 bool QueryMolecule::possibleAtomCharge(int idx, int charge)
 {
-    return _atoms[idx]->possibleValue(ATOM_CHARGE, charge);
+    if (_atoms[idx]->hasConstraint(ATOM_CHARGE))
+        return _atoms[idx]->possibleValue(ATOM_CHARGE, charge);
+    return 0 == charge; // No charge set - means charge 0
 }
 
 bool QueryMolecule::possibleAtomRadical(int idx, int radical)
 {
-    return _atoms[idx]->possibleValue(ATOM_RADICAL, radical);
+    if (_atoms[idx]->hasConstraint(ATOM_RADICAL))
+        return _atoms[idx]->possibleValue(ATOM_RADICAL, radical);
+    return 0 == radical; // No radical set - means radical 0
 }
 
 void QueryMolecule::getAtomDescription(int idx, Array<char>& description)
 {
     ArrayOutput out(description);
 
-    out.writeChar('[');
-    _getAtomDescription(_atoms[idx], out, 0);
-    out.writeChar(']');
+    // out.writeChar('[');
+    writeSmartsAtom(out, _atoms[idx], -1, -1, 0, false, false, original_format);
+    // out.writeChar(']');
     out.writeChar(0);
 }
 
@@ -284,6 +334,16 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
     case ATOM_TOTAL_H:
         out.printf("H%d", atom->value_min);
         return;
+    case ATOM_IMPLICIT_H:
+        if (atom->value_min == 1 && atom->value_max == 100)
+        {
+            out.printf("h");
+        }
+        else
+        {
+            out.printf("h%d", atom->value_min);
+        }
+        return;
     case ATOM_CONNECTIVITY:
         out.printf("X%d", atom->value_min);
         return;
@@ -313,9 +373,469 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
         return;
     case ATOM_VALENCE:
         return;
+    case ATOM_CHIRALITY:
+        _getAtomChiralityDescription(atom, out);
+        break;
     default:
         throw new Error("Unrecognized constraint type %d", atom->type);
     }
+}
+
+void QueryMolecule::_getAtomChiralityDescription(Atom* atom, Output& output)
+{
+    int chirality_type = atom->value_min;
+    int chirality_value = atom->value_max & ~CHIRALITY_OR_UNSPECIFIED;
+    switch (chirality_type)
+    {
+    case CHIRALITY_GENERAL:
+        switch (chirality_value)
+        {
+        case CHIRALITY_ANTICLOCKWISE:
+            output.writeChar('@');
+            break;
+        case CHIRALITY_CLOCKWISE:
+            output.writeString("@@");
+            break;
+        default:
+            throw Error("Wrong chirality value %d.", chirality_value);
+        }
+        break;
+    case CHIRALITY_TETRAHEDRAL:
+        if (chirality_value > CHIRALITY_TETRAHEDRAL_MAX)
+            throw Error("Wrong TH chirality value %d", chirality_value);
+        output.printf("@TH%d", chirality_value);
+        break;
+    case CHIRALITY_ALLENE_LIKE:
+        if (chirality_value > CHIRALITY_ALLENE_LIKE_MAX)
+            throw Error("Wrong AL chirality value %d", chirality_value);
+        output.printf("@AL%d", chirality_value);
+        break;
+    case CHIRALITY_SQUARE_PLANAR:
+        if (chirality_value > CHIRALITY_SQUARE_PLANAR_MAX)
+            throw Error("Wrong SP chirality value %d", chirality_value);
+        output.printf("@SP%d", chirality_value);
+        break;
+    case CHIRALITY_TRIGONAL_BIPYRAMIDAL:
+        if (chirality_value > CHIRALITY_TRIGONAL_BIPYRAMIDAL_MAX)
+            throw Error("Wrong TB chirality value %d", chirality_value);
+        output.printf("@TB%d", chirality_value);
+        break;
+    case CHIRALITY_OCTAHEDRAL:
+        if (chirality_value > CHIRALITY_OCTAHEDRAL_MAX)
+            throw Error("Wrong OH chirality value %d", chirality_value);
+        output.printf("@OH%d", chirality_value);
+        break;
+    default:
+        throw Error("Wrong chirality type value %d.", chirality_type);
+    }
+    if ((atom->value_max & CHIRALITY_OR_UNSPECIFIED) == CHIRALITY_OR_UNSPECIFIED)
+        output.writeChar('?');
+}
+
+std::string QueryMolecule::getSmartsBondStr(Bond* bond)
+{
+    Array<char> out;
+    ArrayOutput output(out);
+    writeSmartsBond(output, bond, false);
+    std::string result{out.ptr(), static_cast<std::size_t>(out.size())};
+    return result;
+}
+
+void QueryMolecule::writeSmartsBond(Output& output, Bond* bond, bool has_or_parent)
+{
+    int i;
+
+    switch (bond->type)
+    {
+    case OP_NONE:
+        output.writeChar('~');
+        break;
+    case OP_NOT: {
+        output.writeChar('!');
+        writeSmartsBond(output, bond->child(0), has_or_parent);
+        break;
+    }
+    case OP_OR: {
+        if (bond->children.size() == 2)
+        {
+            if (((bond->child(0)->value == BOND_SINGLE && bond->child(0)->direction == BOND_ZERO) ||
+                 (bond->child(1)->value == BOND_SINGLE && bond->child(1)->direction == BOND_ZERO)) &&
+                (bond->child(0)->value == BOND_AROMATIC || bond->child(1)->value == BOND_AROMATIC))
+                return; // empty bond means single or aromatic in smarts
+        }
+        for (i = 0; i < bond->children.size(); i++)
+        {
+            if (i > 0)
+                output.printf(",");
+            writeSmartsBond(output, bond->child(i), true);
+        }
+        break;
+    }
+    case OP_AND: {
+        for (i = 0; i < bond->children.size(); i++)
+        {
+            if (i > 0)
+                output.writeChar(has_or_parent ? '&' : ';');
+            writeSmartsBond(output, bond->child(i), has_or_parent);
+        }
+        break;
+    }
+    case BOND_ORDER: {
+        int bond_order = bond->value;
+        if (bond_order == BOND_SINGLE)
+        {
+            if (bond->direction == BOND_UP)
+                output.writeChar('/');
+            else if (bond->direction == BOND_DOWN)
+                output.writeChar('\\');
+            else if (bond->direction == BOND_UP_OR_UNSPECIFIED)
+                output.writeString("/?");
+            else if (bond->direction == BOND_DOWN_OR_UNSPECIFIED)
+                output.writeString("\\?");
+            else
+                output.writeChar('-');
+        }
+        if (bond_order == BOND_DOUBLE)
+            output.writeChar('=');
+        else if (bond_order == BOND_TRIPLE)
+            output.writeChar('#');
+        else if (bond_order == BOND_AROMATIC)
+            output.writeChar(':');
+        break;
+    }
+    case BOND_TOPOLOGY: {
+        if (bond->value == TOPOLOGY_RING)
+            output.writeChar('@');
+        else
+            output.writeString("!@");
+        break;
+    }
+    case BOND_ANY: {
+        output.writeChar('~');
+        break;
+    }
+    default:
+        throw Error("Unexpected bond type: %d", bond->type);
+    }
+}
+
+std::string QueryMolecule::getSmartsAtomStr(QueryMolecule::Atom* atom, int original_format, bool is_substr)
+{
+    Array<char> out;
+    ArrayOutput output(out);
+    writeSmartsAtom(output, atom, -1, -1, is_substr ? 1 : 0, false, false, original_format);
+    std::string result{out.ptr(), static_cast<std::size_t>(out.size())};
+    return result;
+}
+
+std::string QueryMolecule::getMolMrvSmaExtension(QueryMolecule& qm, int aid)
+{
+    Array<char> out;
+    ArrayOutput output(out);
+    std::vector<std::unique_ptr<Atom>> atom_list;
+    std::map<int, std::unique_ptr<Atom>> atom_props;
+    bool negative = false;
+    QueryMolecule::Atom& qa = qm.getAtom(aid);
+    if (_isAtomOrListAndProps(&qa, atom_list, negative, atom_props))
+    {
+        // Just atom or list and list of properties.
+        bool atoms_writed = false;
+        for (int property : {ATOM_IMPLICIT_H, ATOM_CONNECTIVITY, ATOM_SSSR_RINGS, ATOM_SMALLEST_RING_SIZE, ATOM_AROMATICITY})
+        {
+            if (atom_props.count(property) < 1)
+                continue;
+            if (!atoms_writed)
+            {
+                // negative list Will be !a1;!a2...;!a3;props
+                // positive list will be "a1,a2,..an;props"
+                bool not_first_atom = false;
+                for (auto& qatom : atom_list)
+                {
+                    if (not_first_atom)
+                        if (negative)
+                            output.writeChar(';');
+                        else
+                            output.writeChar(',');
+                    else
+                        not_first_atom = true;
+                    if (negative)
+                        output.writeChar('!');
+                    if (qatom->type == ATOM_NUMBER)
+                        output.printf("#%d", qatom->value_max);
+                    else if (qatom->type == ATOM_PSEUDO)
+                        output.writeString(qatom->alias.ptr());
+                }
+                output.writeChar(';');
+                atoms_writed = true;
+            }
+            writeSmartsAtom(output, atom_props[property].get(), -1, -1, 1, false, false, qm.original_format);
+        }
+    }
+    else
+    {
+        if (qa.type != OP_NONE)
+            //  Complex tree - just write nothing
+            return "";
+    }
+    std::string result{out.ptr(), static_cast<std::size_t>(out.size())};
+    return result;
+}
+
+static void _write_num(indigo::Output& output, unsigned char ch, int num)
+{
+    output.writeChar(ch);
+    if (num != 1)
+        output.printf("%d", num);
+}
+
+static void _write_num_if_set(indigo::Output& output, unsigned char ch, int min, int max)
+{
+    if (min == 1 && max == 100)
+        output.writeChar(ch);
+    else
+    {
+        output.printf("%c%d", ch, min);
+    }
+}
+
+/*/
+static void writeAnd(Output& _output, QueryMolecule::Node* node, bool has_or_parent)
+{
+    if (has_or_parent)
+        _output.writeChar('&');
+    else if (node->hasOP_OR())
+        _output.writeChar(';');
+}
+//*/
+
+void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chirality, int depth, bool has_or_parent, bool has_not_parent, int original_format)
+{
+    int i;
+    bool brackets_used = false;
+
+    if (depth == 0) // "organic" subset can be used without [], but CNOPS need explicit aromatic to use letter
+        if (!isOrganicSubset(atom) || isAromaticByCaseAtom(atom))
+        {
+            bool atom_by_case = false;
+            bool aromaticity = false;
+            if (atom->type == OP_AND && atom->children.size() == 2)
+            {
+                atom_by_case = isAromaticByCaseAtom(atom->child(0)) || isAromaticByCaseAtom(atom->child(1));
+                aromaticity = (atom->child(0)->type == ATOM_AROMATICITY || atom->child(1)->type == ATOM_AROMATICITY);
+            }
+            if (!atom_by_case || !aromaticity)
+            {
+                output.writeChar('[');
+                brackets_used = true;
+            }
+        }
+
+    switch (atom->type)
+    {
+    case OP_NOT: {
+        if (isNotAtom(*atom, ELEM_H))
+        {
+            output.printf("*");
+            break;
+        }
+        output.writeChar('!');
+        writeSmartsAtom(output, atom->child(0), aam, chirality, depth + 1, has_or_parent, true, original_format);
+        break;
+    }
+    case OP_AND: {
+        bool has_number = false;
+        bool has_aromatic = false;
+        bool aromatic = false;
+        char atom_name[10];
+        long long cur_pos = output.tell();
+        for (i = 0; i < atom->children.size(); i++)
+        {
+            if (isAromaticByCaseAtom(atom->children[i]))
+            {
+                has_number = true;
+                strncpy(atom_name, Element::toString(atom->child(i)->value_max), sizeof(atom_name));
+            }
+            if (atom->children[i]->type == ATOM_AROMATICITY)
+            {
+                has_aromatic = true;
+                aromatic = atom->child(i)->value_min == ATOM_AROMATIC;
+            }
+        }
+        if (has_aromatic && has_number)
+        { // Convert a & #6 -> c,  A & #6 -> C
+            if (aromatic)
+                atom_name[0] = static_cast<char>(tolower(atom_name[0]));
+            output.printf("%s", atom_name);
+        }
+        for (i = 0; i < atom->children.size(); i++)
+        {
+            if (has_aromatic && has_number && (atom->children[i]->type == ATOM_AROMATICITY || atom->children[i]->type == ATOM_NUMBER))
+            {
+                continue;
+            }
+            if (atom->children[i]->type == ATOM_RADICAL || atom->children[i]->type == ATOM_VALENCE)
+            {
+                continue;
+            }
+
+            if (output.tell() > cur_pos)
+            {
+                output.writeChar(has_or_parent ? '&' : ';');
+                cur_pos = output.tell();
+            }
+            writeSmartsAtom(output, atom->child(i), aam, chirality, depth + 1, has_or_parent, has_not_parent, original_format);
+        }
+        break;
+    }
+    case OP_OR: {
+        for (i = 0; i < atom->children.size(); i++)
+        {
+            if (atom->children[i]->type == QueryMolecule::ATOM_RADICAL || atom->children[i]->type == QueryMolecule::ATOM_VALENCE)
+            {
+                continue;
+            }
+
+            if (i > 0)
+                output.printf(has_not_parent ? "!" : ",");
+            writeSmartsAtom(output, atom->child(i), aam, chirality, depth + 1, true, has_not_parent, original_format);
+        }
+        break;
+    }
+    case ATOM_ISOTOPE:
+        output.printf("%d", atom->value_max);
+        break;
+    case ATOM_NUMBER: {
+        if (isAromaticByCaseAtom(atom))
+            output.printf("#%d", atom->value_max);
+        else
+            output.printf("%s", Element::toString(atom->value_max));
+        switch (original_format)
+        {
+        case SMARTS:
+        case KET:
+            // SMARTS and ket save chirality in ATOM_CHIRALITY for query molecule
+            break;
+        default:
+            if (chirality == CHIRALITY_ANTICLOCKWISE)
+                output.printf("@");
+            else if (chirality == CHIRALITY_CLOCKWISE)
+                output.printf("@@");
+            break;
+        }
+
+        if (aam > 0)
+            output.printf(":%d", aam);
+
+        break;
+    }
+    case ATOM_CHARGE: {
+        int charge = atom->value_max;
+
+        if (charge > 1)
+            output.printf("+%d", charge);
+        else if (charge < -1)
+            output.printf("-%d", -charge);
+        else if (charge == 1)
+            output.printf("+");
+        else if (charge == -1)
+            output.printf("-");
+        else
+            output.printf("+0");
+        break;
+    }
+    case ATOM_FRAGMENT: {
+        if (atom->fragment->fragment_smarts.ptr() == 0)
+            throw Error("fragment_smarts has unexpectedly gone");
+        output.printf("$(%s)", atom->fragment->fragment_smarts.ptr());
+        break;
+    }
+    case ATOM_AROMATICITY: {
+        if (atom->value_min == ATOM_AROMATIC)
+            output.printf("a");
+        else
+            output.printf("A");
+        break;
+    }
+    case OP_NONE:
+        output.writeChar('*');
+        break;
+    case ATOM_TOTAL_H: {
+        _write_num(output, 'H', atom->value_min);
+        break;
+    }
+
+    case ATOM_SSSR_RINGS: {
+        _write_num_if_set(output, 'R', atom->value_min, atom->value_max);
+        break;
+    }
+
+    case ATOM_RING_BONDS_AS_DRAWN: {
+        output.printf("x0"); // exact value should be writed in extended part
+        break;
+    }
+
+    case ATOM_RING_BONDS: {
+        _write_num_if_set(output, 'x', atom->value_min, atom->value_max);
+        break;
+    }
+
+    case ATOM_IMPLICIT_H: {
+        _write_num_if_set(output, 'h', atom->value_min, atom->value_max);
+        break;
+    }
+
+    case ATOM_UNSATURATION: {
+        output.printf("$([*,#1]=,#,:[*,#1])");
+        break;
+    }
+
+    case ATOM_SMALLEST_RING_SIZE: {
+        _write_num_if_set(output, 'r', atom->value_min, atom->value_max);
+        break;
+    }
+
+    case ATOM_SUBSTITUENTS: {
+        output.printf("D%d", atom->value_min);
+        break;
+    }
+
+    case ATOM_SUBSTITUENTS_AS_DRAWN: {
+        output.printf("D%d", atom->value_min);
+        break;
+    }
+
+    case ATOM_PSEUDO: {
+        // output.writeString(atom->alias.ptr());
+        output.writeChar('*');
+        break;
+    }
+
+    case ATOM_CONNECTIVITY: {
+        output.printf("X%d", atom->value_min);
+        break;
+    }
+
+    case ATOM_TOTAL_BOND_ORDER: {
+        _write_num(output, 'v', atom->value_min);
+        break;
+    }
+
+    case ATOM_CHIRALITY: {
+        _getAtomChiralityDescription(atom, output);
+        break;
+    }
+    case ATOM_RSITE:
+        output.printf("*:%d", atom->value_min);
+        break;
+
+    default: {
+        throw Error("Unknown atom attribute %d", atom->type);
+        break;
+    }
+    }
+
+    if (brackets_used)
+        output.writeChar(']');
 }
 
 void QueryMolecule::getBondDescription(int idx, Array<char>& description)
@@ -368,9 +888,28 @@ void QueryMolecule::_getBondDescription(Bond* bond, Output& out)
     case BOND_TOPOLOGY:
         out.printf("%s", bond->value == TOPOLOGY_RING ? "ring" : "chain");
         return;
+    case BOND_ANY:
+        out.writeChar('~');
+        return;
     default:
         out.printf("<constraint of type %d>", bond->type);
     }
+}
+
+bool QueryMolecule::possibleAromaticBond(int idx)
+{
+    // If bond can be aromatic or any by definition
+    if (possibleBondOrder(idx, BOND_AROMATIC) || possibleBondOrder(idx, BOND_ANY))
+    {
+        Edge ed = getEdge(idx);
+        // and atoms at both ends can be aromatic
+        if (getAtomAromaticity(ed.beg) == ATOM_AROMATIC && getAtomAromaticity(ed.end) == ATOM_AROMATIC)
+        {
+            // Then bond can be aromatic
+            return true;
+        }
+    }
+    return false;
 }
 
 bool QueryMolecule::possibleBondOrder(int idx, int order)
@@ -476,22 +1015,42 @@ const char* QueryMolecule::getTemplateAtom(int idx)
     throw Error("getTemplateAtom() applied to something that is not a template atom");
 }
 
-const char* QueryMolecule::getTemplateAtomClass(int idx)
+const char* QueryMolecule::getTemplateAtomClass(int /*idx*/)
 {
     return 0;
 }
 
-const int QueryMolecule::getTemplateAtomSeqid(int idx)
+const int QueryMolecule::getTemplateAtomSeqid(int /*idx*/)
 {
     return -1;
 }
 
-const int QueryMolecule::getTemplateAtomDisplayOption(int idx)
+const char* QueryMolecule::getTemplateAtomSeqName(int /*idx*/)
+{
+    return nullptr;
+}
+
+const int QueryMolecule::getTemplateAtomTemplateIndex(int /*idx*/)
 {
     return -1;
 }
 
-bool QueryMolecule::isSaturatedAtom(int idx)
+void QueryMolecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& /*templates_map*/)
+{
+    throw Error("QueryMolecule::getTemplatesMap not implemented");
+}
+
+void QueryMolecule::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& /*directions_map*/)
+{
+    throw Error("QueryMolecule::getTemplateAtomDirectionsMap not implemented");
+}
+
+const int QueryMolecule::getTemplateAtomDisplayOption(int /*idx*/)
+{
+    return -1;
+}
+
+bool QueryMolecule::isSaturatedAtom(int /*idx*/)
 {
     throw Error("not implemented");
 }
@@ -518,7 +1077,8 @@ QueryMolecule::Atom::Atom(int type_, int value) : Node(type_)
     if (type_ == ATOM_NUMBER || type_ == ATOM_CHARGE || type_ == ATOM_ISOTOPE || type_ == ATOM_RADICAL || type_ == ATOM_AROMATICITY || type_ == ATOM_VALENCE ||
         type_ == ATOM_RING_BONDS || type_ == ATOM_RING_BONDS_AS_DRAWN || type_ == ATOM_SUBSTITUENTS || type_ == ATOM_SUBSTITUENTS_AS_DRAWN ||
         type_ == ATOM_TOTAL_H || type_ == ATOM_CONNECTIVITY || type_ == ATOM_TOTAL_BOND_ORDER || type_ == ATOM_UNSATURATION || type == ATOM_SSSR_RINGS ||
-        type == ATOM_SMALLEST_RING_SIZE || type == ATOM_RSITE || type == HIGHLIGHTING || type == ATOM_TEMPLATE_SEQID || type == ATOM_PI_BONDED)
+        type == ATOM_SMALLEST_RING_SIZE || type == ATOM_RSITE || type == HIGHLIGHTING || type == ATOM_TEMPLATE_SEQID || type == ATOM_PI_BONDED ||
+        type == ATOM_IMPLICIT_H)
 
         value_min = value_max = value;
     else
@@ -551,13 +1111,20 @@ QueryMolecule::Atom::~Atom()
 {
 }
 
-QueryMolecule::Bond::Bond() : Node(OP_NONE)
+QueryMolecule::Bond::Bond() : Node(OP_NONE), value(0), direction(0)
 {
 }
 
-QueryMolecule::Bond::Bond(int type_, int value_) : Node(type_)
+QueryMolecule::Bond::Bond(int type_) : Node(type_), value(0), direction(0)
 {
-    value = value_;
+}
+
+QueryMolecule::Bond::Bond(int type_, int value_) : Node(type_), value(value_), direction(0)
+{
+}
+
+QueryMolecule::Bond::Bond(int type_, int value_, int direction_) : Node(type_), value(value_), direction(direction_)
+{
 }
 
 QueryMolecule::Bond::~Bond()
@@ -697,6 +1264,30 @@ bool QueryMolecule::Atom::hasConstraintWithValue(int what_type, int what_value)
     return false;
 }
 
+bool QueryMolecule::Atom::updateConstraintWithValue(int what_type, int new_value)
+{
+    if (type == what_type)
+    {
+        value_max = new_value;
+        value_min = new_value;
+        return true;
+    }
+
+    if (type == OP_NONE)
+        return false;
+
+    if (type == OP_AND || type == OP_OR || type == OP_NOT)
+    {
+        int i;
+
+        for (i = 0; i < children.size(); i++)
+            if (((Atom*)children[i])->updateConstraintWithValue(what_type, new_value))
+                return true;
+    }
+
+    return false;
+}
+
 QueryMolecule::Bond* QueryMolecule::Bond::und(Bond* bond1, Bond* bond2)
 {
     return (Bond*)_und(bond1, bond2);
@@ -816,8 +1407,8 @@ void QueryMolecule::_mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& 
     updateEditRevision();
 }
 
-void QueryMolecule::_postMergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping,
-                                              int skip_flags)
+void QueryMolecule::_postMergeWithSubmolecule(BaseMolecule& /*bmol*/, const Array<int>& /*vertices*/, const Array<int>* /*edges*/,
+                                              const Array<int>& /*mapping*/, int /*skip_flags*/)
 {
     // Remove stereocare flags for bonds that are not cis-trans
     for (int i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
@@ -1130,10 +1721,12 @@ bool QueryMolecule::Node::possibleValuePairInv(int what_type1, int what_value1, 
         int val1, val2;
         bool sure1, sure2;
 
-        if ((sure1 = _sureValue(what_type1, val1)) && !hasConstraint(what_type2) && val1 == what_value1)
+        sure1 = _sureValue(what_type1, val1);
+        if (sure1 && !hasConstraint(what_type2) && val1 == what_value1)
             return false;
 
-        if ((sure2 = _sureValue(what_type2, val2)) && !hasConstraint(what_type1) && val2 == what_value2)
+        sure2 = _sureValue(what_type2, val2);
+        if (sure2 && !hasConstraint(what_type1) && val2 == what_value2)
             return false;
 
         if (sure1 && sure2 && val1 == what_value1 && val2 == what_value2)
@@ -1172,6 +1765,29 @@ bool QueryMolecule::Node::sureValueBelongs(int what_type, const int* arr, int co
         return false;
     default:
         return _sureValueBelongs(what_type, arr, count);
+    }
+}
+
+bool QueryMolecule::Node::hasOP_OR()
+{
+    int i;
+
+    switch (type)
+    {
+    case OP_AND: {
+        for (i = 0; i < children.size(); i++)
+            if (children[i]->hasOP_OR())
+                return true;
+
+        return false;
+    }
+    case OP_OR: {
+        return true;
+    }
+    case OP_NOT:
+        return false;
+    default:
+        return false;
     }
 }
 
@@ -1347,7 +1963,7 @@ bool QueryMolecule::Bond::_sureValue(int what_type, int& value_out) const
     return false;
 }
 
-bool QueryMolecule::Bond::_sureValueBelongs(int what_type, const int* arr, int count)
+bool QueryMolecule::Bond::_sureValueBelongs(int /*what_type*/, const int* /*arr*/, int /*count*/)
 {
     throw QueryMolecule::Error("not implemented");
 }
@@ -1366,6 +1982,8 @@ bool QueryMolecule::Bond::_possibleValuePair(int what_type1, int what_value1, in
         return what_value1 == value;
     if (type == what_type2)
         return what_value2 == value;
+    if (type == BOND_ANY)
+        return true;
     return false;
 }
 
@@ -1377,12 +1995,12 @@ bool QueryMolecule::Atom::valueWithinRange(int value)
 
 QueryMolecule::Atom* QueryMolecule::Atom::child(int idx)
 {
-    return (Atom*)children[idx];
+    return static_cast<Atom*>(children[idx]);
 }
 
 QueryMolecule::Bond* QueryMolecule::Bond::child(int idx)
 {
-    return (Bond*)children[idx];
+    return static_cast<Bond*>(children[idx]);
 }
 
 QueryMolecule::Node* QueryMolecule::Atom::_neu()
@@ -1419,7 +2037,8 @@ QueryMolecule::Atom* QueryMolecule::releaseAtom(int idx)
 
 void QueryMolecule::resetAtom(int idx, QueryMolecule::Atom* atom)
 {
-    _atoms.reset(idx);
+    if (atom != _atoms[idx])
+        _atoms.reset(idx);
     _atoms[idx] = atom;
     updateEditRevision();
 }
@@ -1461,7 +2080,7 @@ void QueryMolecule::resetBond(int idx, QueryMolecule::Bond* bond)
     updateEditRevision();
 }
 
-void QueryMolecule::Atom::copy(Atom& other)
+void QueryMolecule::Atom::copy(const Atom& other)
 {
     type = other.type;
     value_max = other.value_max;
@@ -1481,7 +2100,7 @@ void QueryMolecule::Atom::copy(Atom& other)
         children.add(((Atom*)other.children[i])->clone());
 }
 
-QueryMolecule::Atom* QueryMolecule::Atom::clone()
+QueryMolecule::Atom* QueryMolecule::Atom::clone() const
 {
     std::unique_ptr<Atom> res = std::make_unique<Atom>();
     res->copy(*this);
@@ -1495,6 +2114,7 @@ QueryMolecule::Bond* QueryMolecule::Bond::clone()
 
     res->type = type;
     res->value = value;
+    res->direction = direction;
 
     for (i = 0; i < children.size(); i++)
         res->children.add(((Bond*)children[i])->clone());
@@ -1542,6 +2162,25 @@ bool QueryMolecule::Node::hasNoConstraintExcept(int what_type1, int what_type2)
     }
 
     return type == what_type1 || type == what_type2;
+}
+
+bool QueryMolecule::Node::hasNoConstraintExcept(std::vector<int> what_types)
+{
+    if (type == OP_NONE)
+        return true;
+
+    if (type == OP_AND || type == OP_OR || type == OP_NOT)
+    {
+        int i;
+
+        for (i = 0; i < children.size(); i++)
+            if (!children[i]->hasNoConstraintExcept(what_types))
+                return false;
+
+        return true;
+    }
+
+    return std::any_of(what_types.cbegin(), what_types.cend(), [this](int i) { return type == i; });
 }
 
 void QueryMolecule::Node::removeConstraints(int what_type)
@@ -1617,27 +2256,21 @@ bool QueryMolecule::aromatize(const AromaticityOptions& options)
 
 bool QueryMolecule::dearomatize(const AromaticityOptions& options)
 {
-    throw Error("Dearomatization of query molecules is not implemented");
+    updateEditRevision();
+    return MoleculeDearomatizer::dearomatizeMolecule(*this, options);
 }
 
-int QueryMolecule::getAtomMaxH(int idx)
+int QueryMolecule::calcAtomMaxH(int idx, int conn)
 {
-    int total;
-
-    if (_atoms[idx]->sureValue(ATOM_TOTAL_H, total))
-        return total;
-
     int number = getAtomNumber(idx);
-
-    if (number == -1)
-        return -1;
-
-    int conn = _calcAtomConnectivity(idx);
 
     if (conn == -1)
         return -1;
 
     int explicit_val = getExplicitValence(idx);
+
+    if (number == -1 && explicit_val < 0)
+        return -1;
 
     int max_h = 0;
 
@@ -1648,14 +2281,14 @@ int QueryMolecule::getAtomMaxH(int idx)
         if (!possibleAtomCharge(idx, charge))
             continue;
 
-        for (radical = 0; radical <= RADICAL_DOUBLET; radical++)
+        for (radical = 0; radical <= RADICAL_TRIPLET; radical++)
         {
             if (!possibleAtomRadical(idx, radical))
                 continue;
 
             if (explicit_val != -1)
             {
-                int h = explicit_val - Element::calcValenceMinusHyd(number, charge, radical, conn);
+                int h = number < 0 ? explicit_val - conn : explicit_val - Element::calcValenceMinusHyd(number, charge, radical, conn);
                 if (h > max_h)
                     max_h = h;
             }
@@ -1670,17 +2303,36 @@ int QueryMolecule::getAtomMaxH(int idx)
             }
         }
     }
+    return max_h;
+}
 
-    const Vertex& vertex = getVertex(idx);
-    int i;
+int QueryMolecule::getAtomMaxH(int idx)
+{
+    int total;
 
-    for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
-    {
-        if (possibleAtomNumber(vertex.neiVertex(i), ELEM_H))
-            max_h++;
-    }
+    if (_atoms[idx]->sureValue(ATOM_TOTAL_H, total))
+        return total;
+
+    int max_h = calcAtomMaxH(idx, _calcAtomConnectivity(idx));
+    if (max_h < 0)
+        return -1;
+
+    max_h += getAtomConnectedH(idx);
 
     return max_h;
+}
+
+int QueryMolecule::getAtomConnectedH(int idx)
+{
+    const Vertex& vertex = getVertex(idx);
+    int connected_h = 0;
+
+    for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+    {
+        if (possibleAtomNumber(vertex.neiVertex(i), ELEM_H))
+            connected_h++;
+    }
+    return connected_h;
 }
 
 int QueryMolecule::getAtomMinH(int idx)
@@ -1787,17 +2439,47 @@ int QueryMolecule::getAtomTotalH(int idx)
 int QueryMolecule::_calcAtomConnectivity(int idx)
 {
     const Vertex& vertex = getVertex(idx);
-    int i, conn = 0;
+    int i = 0, conn = 0;
+    bool was_aromatic = false;
+    int atom_aromaticy = -1;
+    // Smarts treat default bond as SINGLE_OR_AROMATIC so for this bonds look to atom aromaticy
+    if (original_format == SMARTS)
+    {
+        std::ignore = getAtom(idx).sureValue(ATOM_AROMATICITY, atom_aromaticy);
+    }
 
     for (i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
     {
         int order = getBondOrder(vertex.neiEdge(i));
+        if (order < 0)
+            order = getQueryBondType(getBond(vertex.neiEdge(i)));
 
-        if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE)
+        if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE ||
+            (original_format == SMARTS && order == _BOND_SINGLE_OR_AROMATIC && atom_aromaticy == ATOM_ALIPHATIC))
             conn += order;
-        else
+        else if (order == BOND_AROMATIC || (original_format == SMARTS && order == _BOND_SINGLE_OR_AROMATIC && atom_aromaticy == ATOM_AROMATIC))
+        {
             conn += 1;
+            if (was_aromatic)
+            {
+                conn += 1;
+                was_aromatic = false; // +1 connection for 2 aromatic bonds
+            }
+            else
+            {
+                was_aromatic = true;
+            }
+        }
+        else
+            return -1;
     }
+    if (was_aromatic) // +1 connection for odd aromatic bond
+        conn += 1;
+    // Add atachment points
+    Array<int> ap_indices;
+    ap_indices.clear();
+    getAttachmentIndicesForAtom(idx, ap_indices);
+    conn += ap_indices.size();
 
     return conn;
 }
@@ -1938,9 +2620,277 @@ QueryMolecule::Atom* QueryMolecule::stripKnownAttrs(QueryMolecule::Atom& qa)
     return qd == NULL ? &qa : qd;
 }
 
+// TODO: develop function to convert tree to CNF to simplify checks
+bool QueryMolecule::_tryToConvertToList(Atom* p_query_atom, std::vector<std::unique_ptr<Atom>>& atoms, std::map<int, std::unique_ptr<Atom>>& properties)
+{
+    // Try to convert a1p1p2..pn, a2p1p2..pn, .. , akp1p2..pn to (a1, a2, .. an)p1p2..pn
+    if (!p_query_atom)
+        return false;
+    if (p_query_atom->type != OP_OR)
+        return false;
+    int size = p_query_atom->children.size();
+    if (size < 2)
+        return false;
+    std::vector<std::unique_ptr<Atom>> atoms_properties;
+    std::vector<std::unique_ptr<Atom>> atoms_list;
+    int list_element_child_count = -1;
+    for (int i = 0; i < size; i++)
+    {
+        std::unique_ptr<Atom> child(p_query_atom->child(i)->clone());
+        if (child->type != OP_AND)
+            return false;
+        if (list_element_child_count < 0)
+        {
+            list_element_child_count = child->children.size();
+            if (list_element_child_count < 2)
+                return false;
+        }
+        else
+        {
+            if (list_element_child_count != child->children.size())
+                return false; // All list elements should have same count of properties
+        }
+        std::vector<std::unique_ptr<Atom>> props;
+        bool atom_not_found = true;
+        for (int j = 0; j < child->children.size(); j++)
+        {
+            std::unique_ptr<Atom> child_prop(child->child(j)->clone());
+            switch (child_prop->type)
+            {
+            case OP_AND:
+            case OP_OR:
+            case OP_NOT:
+            case OP_NONE:
+                return false;
+                break;
+            case ATOM_NUMBER:
+            case ATOM_PSEUDO:
+                if (child_prop->value_min != child_prop->value_max)
+                    return false;
+                atoms_list.emplace_back(std::move(child_prop));
+                atom_not_found = false;
+                break;
+            default:
+                if (i == 0) // first atom
+                    atoms_properties.emplace_back(std::move(child_prop));
+                else
+                    props.emplace_back(std::move(child_prop));
+                break;
+            }
+        }
+        if (atom_not_found)
+            return false;
+        auto compare = [](const std::unique_ptr<Atom>& a, const std::unique_ptr<Atom>& b) { return a->type > b->type; };
+        if (i == 0) // first atom
+        {
+            std::sort(atoms_properties.begin(), atoms_properties.end(), compare);
+        }
+        else
+        {
+            // check that children[i] props == chlidren[0] props
+            std::sort(props.begin(), props.end(), compare);
+            if (props.size() != atoms_properties.size())
+                return false;
+            for (size_t j = 0; j < props.size(); j++)
+            {
+                if (props[j]->type != atoms_properties[j]->type || props[j]->value_min != atoms_properties[j]->value_min ||
+                    props[j]->value_max != atoms_properties[j]->value_max)
+                    return false;
+            }
+        }
+    }
+
+    atoms.clear();
+    for (auto& qa : atoms_list)
+        atoms.emplace_back(std::move(qa));
+
+    for (auto& prop : atoms_properties)
+        properties[prop->type] = std::move(prop);
+
+    return true;
+}
+
+bool QueryMolecule::_isAtomListOr(Atom* p_query_atom, std::vector<std::unique_ptr<Atom>>& list)
+{
+    // Check if p_query_atom atom list like or(a1,a2,a3, or(a4,a5,a6), a7)
+    if (!p_query_atom)
+        return false;
+    if (p_query_atom->type != OP_OR)
+        return false;
+    std::vector<std::unique_ptr<Atom>> collected;
+    for (auto i = 0; i < p_query_atom->children.size(); i++)
+    {
+        Atom* p_query_atom_child = p_query_atom->child(i);
+        if ((p_query_atom_child->type == ATOM_PSEUDO) ||
+            (p_query_atom_child->type == ATOM_NUMBER && p_query_atom_child->value_min == p_query_atom_child->value_max))
+        {
+            collected.emplace_back(p_query_atom_child->clone());
+        }
+        else if (p_query_atom_child->type == OP_OR)
+        {
+            if (!_isAtomListOr(p_query_atom_child, collected))
+                return false;
+        }
+        else
+            return false;
+    }
+    if (collected.size() < 1)
+        return false;
+    for (auto& qa : collected)
+        list.emplace_back(std::move(qa));
+    return true;
+}
+
+bool QueryMolecule::_isAtomOrListAndProps(Atom* p_query_atom, std::vector<std::unique_ptr<Atom>>& list, bool& neg,
+                                          std::map<int, std::unique_ptr<Atom>>& properties)
+{
+    // Check if p_query_atom contains only atom or atom list and atom properties connected by "and"
+    // atom list is positive i.e. or(a1,a2,a3,or(a4,a5),a6) or negative
+    // negative list like is set of op_not(atom_number) or op_not(positevi list), this set connected by "and"
+    if (!p_query_atom)
+        return false;
+    if (p_query_atom->type != OP_AND)
+    {
+        Atom* p_query_atom_child = p_query_atom;
+        bool is_neg = false;
+        if (p_query_atom->type == OP_NOT)
+        {
+            p_query_atom_child = p_query_atom->child(0);
+            is_neg = true;
+        }
+        if ((p_query_atom_child->type == ATOM_PSEUDO) ||
+            (p_query_atom_child->type == ATOM_NUMBER && p_query_atom_child->value_min == p_query_atom_child->value_max))
+        {
+            list.emplace_back(p_query_atom_child->clone());
+            neg = is_neg;
+            return true;
+        }
+        else if (!is_neg && isAtomProperty(p_query_atom_child->type)) // atom property, no negative props here
+        {
+            properties[p_query_atom_child->type] = std::unique_ptr<Atom>(p_query_atom_child->clone());
+            return true;
+        }
+        else
+        {
+            if (!is_neg && _tryToConvertToList(p_query_atom, list, properties))
+            {
+                return true;
+            }
+            std::vector<std::unique_ptr<Atom>> collected;
+            if (_isAtomListOr(p_query_atom_child, collected))
+            {
+                neg = is_neg;
+                for (auto& item : collected)
+                    list.emplace_back(std::move(item));
+                return true;
+            }
+        }
+
+        return false;
+    }
+    // OP_AND
+    for (auto i = 0; i < p_query_atom->children.size(); i++)
+    {
+        Atom* p_query_atom_child = const_cast<Atom*>(p_query_atom)->child(i);
+        bool is_neg = false;
+        std::vector<std::unique_ptr<Atom>> collected;
+        std::map<int, std::unique_ptr<Atom>> collected_properties;
+        if (_isAtomOrListAndProps(p_query_atom_child, collected, is_neg, collected_properties))
+        {
+            if (isAtomProperty(p_query_atom_child->type))
+            {
+                properties[p_query_atom_child->type] = std::unique_ptr<Atom>(p_query_atom_child->clone());
+                continue;
+            }
+            if (list.size() > 0 && is_neg != neg) // allowed only one list type in set - positive or negative
+                return false;
+            neg = is_neg;
+            for (auto& item : collected)
+                list.emplace_back(std::move(item));
+            for (auto& prop : collected_properties)
+                properties[prop.first] = std::move(prop.second);
+        }
+        else
+            return false;
+    }
+    return true;
+}
+
+int QueryMolecule::parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<std::unique_ptr<Atom>>& list, std::map<int, std::unique_ptr<Atom>>& properties)
+{
+    std::vector<std::unique_ptr<Atom>> query_atom_list;
+    std::map<int, std::unique_ptr<Atom>> atom_props;
+    bool negative = false;
+    QueryMolecule::Atom& qa = qm.getAtom(aid);
+    if (qa.type == QueryMolecule::OP_NONE)
+        return QUERY_ATOM_AH;
+    if (_isAtomOrListAndProps(&qa, query_atom_list, negative, atom_props))
+    {
+        bool can_be_query_atom = true;
+        std::vector<int> atom_list;
+        for (auto& prop : atom_props)
+            properties[prop.first] = std::move(prop.second);
+        for (auto& qatom : query_atom_list)
+        {
+            if (qatom->type == ATOM_PSEUDO)
+                can_be_query_atom = false;
+            else if (qatom->type == ATOM_NUMBER)
+                atom_list.emplace_back(qatom->value_max);
+            else
+                throw Error("Wrong atom type %d", qatom->type);
+            list.emplace_back(std::move(qatom));
+        }
+
+        if (can_be_query_atom)
+        {
+            std::sort(atom_list.begin(), atom_list.end());
+            if (negative)
+            {
+                if (atom_list.size() == 1 && atom_list[0] == ELEM_H)
+                    return QUERY_ATOM_A; // !H
+                else if (atom_list == std::vector<int>{ELEM_H, ELEM_C})
+                    return QUERY_ATOM_Q;
+                else if (atom_list == std::vector<int>{ELEM_C})
+                    return QUERY_ATOM_QH;
+                else if (atom_list == std::vector<int>{ELEM_H, ELEM_He, ELEM_C, ELEM_N, ELEM_O, ELEM_F, ELEM_Ne, ELEM_P, ELEM_S, ELEM_Cl, ELEM_Ar, ELEM_Se,
+                                                       ELEM_Br, ELEM_Kr, ELEM_I, ELEM_Xe, ELEM_At, ELEM_Rn})
+                    return QUERY_ATOM_M;
+                else if (atom_list == std::vector<int>{ELEM_He, ELEM_C, ELEM_N, ELEM_O, ELEM_F, ELEM_Ne, ELEM_P, ELEM_S, ELEM_Cl, ELEM_Ar, ELEM_Se, ELEM_Br,
+                                                       ELEM_Kr, ELEM_I, ELEM_Xe, ELEM_At, ELEM_Rn})
+                    return QUERY_ATOM_MH;
+            }
+            else
+            {
+                if (atom_list == std::vector<int>{ELEM_F, ELEM_Cl, ELEM_Br, ELEM_I, ELEM_At})
+                    return QUERY_ATOM_X;
+                else if (atom_list == std::vector<int>{ELEM_H, ELEM_F, ELEM_Cl, ELEM_Br, ELEM_I, ELEM_At})
+                    return QUERY_ATOM_XH;
+            }
+        }
+        if (negative)
+        {
+            return QUERY_ATOM_NOTLIST;
+        }
+        else
+        {
+            if (query_atom_list.size() == 0)
+                return QUERY_ATOM_A;
+            else if (query_atom_list.size() == 1)
+                return QUERY_ATOM_SINGLE;
+            else
+                return QUERY_ATOM_LIST;
+        }
+    }
+    return QUERY_ATOM_UNKNOWN;
+}
+
 int QueryMolecule::parseQueryAtom(QueryMolecule& qm, int aid, Array<int>& list)
 {
-    QueryMolecule::Atom& qa = qm.getAtom(aid);
+    return parseQueryAtom(qm.getAtom(aid), list);
+}
+
+int QueryMolecule::parseQueryAtom(QueryMolecule::Atom& qa, Array<int>& list)
+{
     QueryMolecule::Atom* qc = stripKnownAttrs(qa);
     if (qa.type == QueryMolecule::OP_NONE)
         return QUERY_ATOM_AH;
@@ -1980,7 +2930,28 @@ bool QueryMolecule::queryAtomIsRegular(QueryMolecule& qm, int aid)
 {
     QueryMolecule::Atom& qa = qm.getAtom(aid);
     QueryMolecule::Atom* qc = stripKnownAttrs(qa);
-    return qc && qc->type == QueryMolecule::ATOM_NUMBER;
+    if (qm.original_format == SMARTS || qm.original_format == KET)
+    {
+        // Regular means that atom name will be used as label - Cl, Br, C, N
+        // only "organic" subset atoms and aliphatic atoms should be rendered as "regular"
+        // aromatic atoms should be rendered in lowercase, other - in backets [Au]
+        if (isOrganicSubset(&qa) && !isAromaticByCaseAtom(&qa))
+            return true;
+        if (qc || qa.type != OP_AND || qa.children.size() != 2)
+            return false;
+        bool aliphatic = false;
+        int atom_number = -1;
+        for (int i = 0; i < 2; i++)
+            if (isAromaticByCaseAtom(qa.child(i)))
+                atom_number = qa.child(i)->value_min;
+            else if (qa.child(i)->type == ATOM_AROMATICITY && qa.child(i)->value_min == ATOM_ALIPHATIC)
+                aliphatic = true;
+        return aliphatic && atom_number >= ELEM_MIN;
+    }
+    else
+    {
+        return qc && qc->type == QueryMolecule::ATOM_NUMBER;
+    }
 }
 
 bool QueryMolecule::queryAtomIsSpecial(QueryMolecule& qm, int aid)
@@ -1988,17 +2959,26 @@ bool QueryMolecule::queryAtomIsSpecial(QueryMolecule& qm, int aid)
     QS_DEF(Array<int>, list);
     int query_atom_type;
 
-    if ((query_atom_type = QueryMolecule::parseQueryAtom(qm, aid, list)) != -1)
+    if ((query_atom_type = QueryMolecule::parseQueryAtom(qm, aid, list)) != QUERY_ATOM_UNKNOWN)
     {
-        if ((query_atom_type == QueryMolecule::QUERY_ATOM_Q) || (query_atom_type == QueryMolecule::QUERY_ATOM_QH) ||
-            (query_atom_type == QueryMolecule::QUERY_ATOM_X) || (query_atom_type == QueryMolecule::QUERY_ATOM_XH) ||
-            (query_atom_type == QueryMolecule::QUERY_ATOM_M) || (query_atom_type == QueryMolecule::QUERY_ATOM_MH) ||
-            (query_atom_type == QueryMolecule::QUERY_ATOM_AH))
-        {
-            return true;
-        }
+        return queryAtomIsSpecial(query_atom_type);
     }
     return false;
+}
+
+bool QueryMolecule::queryAtomIsSpecial(int query_atom_type)
+{
+    if ((query_atom_type == QueryMolecule::QUERY_ATOM_Q) || (query_atom_type == QueryMolecule::QUERY_ATOM_QH) ||
+        (query_atom_type == QueryMolecule::QUERY_ATOM_X) || (query_atom_type == QueryMolecule::QUERY_ATOM_XH) ||
+        (query_atom_type == QueryMolecule::QUERY_ATOM_M) || (query_atom_type == QueryMolecule::QUERY_ATOM_MH) ||
+        (query_atom_type == QueryMolecule::QUERY_ATOM_AH))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 QueryMolecule::Bond* QueryMolecule::getBondOrderTerm(QueryMolecule::Bond& qb, bool& complex)
@@ -2066,26 +3046,106 @@ bool QueryMolecule::isSingleOrDouble(QueryMolecule::Bond& qb)
 
 int QueryMolecule::getQueryBondType(QueryMolecule::Bond& qb)
 {
-    if (!qb.hasConstraint(QueryMolecule::BOND_ORDER))
-        return QUERY_BOND_ANY;
+    if (!qb.hasConstraint(BOND_ORDER))
+        return _BOND_ANY;
 
-    QueryMolecule::Bond* qb2 = &qb;
-    std::unique_ptr<QueryMolecule::Bond> qb_modified;
+    Bond* qb2 = &qb;
+    std::unique_ptr<Bond> qb_modified;
     int topology;
-    if (qb.sureValue(QueryMolecule::BOND_TOPOLOGY, topology))
+    if (qb.sureValue(BOND_TOPOLOGY, topology))
     {
         qb_modified.reset(qb.clone());
-        qb_modified->removeConstraints(QueryMolecule::BOND_TOPOLOGY);
+        qb_modified->removeConstraints(BOND_TOPOLOGY);
         qb2 = qb_modified.get();
     }
 
     if (isSingleOrDouble(*qb2) || isOrBond(*qb2, BOND_SINGLE, BOND_DOUBLE))
-        return QUERY_BOND_SINGLE_OR_DOUBLE;
+        return _BOND_SINGLE_OR_DOUBLE;
     if (isOrBond(*qb2, BOND_SINGLE, BOND_AROMATIC))
-        return QUERY_BOND_SINGLE_OR_AROMATIC;
+        return _BOND_SINGLE_OR_AROMATIC;
     if (isOrBond(*qb2, BOND_DOUBLE, BOND_AROMATIC))
-        return QUERY_BOND_DOUBLE_OR_AROMATIC;
+        return _BOND_DOUBLE_OR_AROMATIC;
     return -1;
+}
+
+int QueryMolecule::getQueryBondType(Bond& qb, int& direction, bool& negative)
+{
+    Bond* qbond = &qb;
+    if (qbond->type == OP_NOT)
+    {
+        qbond = qbond->child(0);
+        negative = true;
+    }
+    if (qbond->type == OP_AND)
+    {
+        int idx = qbond->children.size() - 1;
+        // Skip topology if any
+        if (qbond->children[idx]->type == BOND_TOPOLOGY)
+            --idx;
+        if (idx > 0) // Looks like _BOND_SINGLE_OR_DOUBLE
+        {
+            Bond* tbond = qbond->child(0);
+            if (tbond->type != OP_NOT)
+                return -1;
+            tbond = tbond->child(0);
+            if (tbond->type != BOND_ORDER || tbond->value != BOND_AROMATIC)
+                return -1;
+            tbond = qbond->child(1);
+            if (tbond->type != OP_OR || tbond->children.size() != 2)
+                return -1;
+            if (tbond->child(0)->type != BOND_ORDER || tbond->child(0)->value != BOND_SINGLE)
+                return -1;
+            if (tbond->child(1)->type != BOND_ORDER || tbond->child(1)->value != BOND_DOUBLE)
+                return -1;
+            return _BOND_SINGLE_OR_DOUBLE;
+        }
+        qbond = qbond->child(0);
+    }
+
+    if (qbond->type == OP_NONE)
+        return _BOND_ANY;
+
+    if (qbond->type == BOND_ORDER)
+    {
+        direction = qbond->direction;
+        return qbond->value;
+    }
+
+    if (qbond->type != OP_OR || qbond->children.size() != 2)
+        return -1;
+    Bond* qb0 = qbond->child(0);
+    Bond* qb1 = qbond->child(1);
+    if (qb0->type != BOND_ORDER || qb1->type != BOND_ORDER)
+        return -1;
+    if (qb0->value == BOND_SINGLE && qb1->value == BOND_AROMATIC)
+        return _BOND_SINGLE_OR_AROMATIC;
+    if (qb0->value == BOND_DOUBLE && qb1->value == BOND_AROMATIC)
+        return _BOND_DOUBLE_OR_AROMATIC;
+    return -1;
+}
+
+QueryMolecule::Bond* QueryMolecule::createQueryMoleculeBond(int order, int topology, int direction)
+{
+    std::unique_ptr<Bond> bond;
+    if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_COORDINATION ||
+        order == _BOND_HYDROGEN)
+        bond = std::make_unique<Bond>(BOND_ORDER, order, direction);
+    else if (order == _BOND_SINGLE_OR_DOUBLE)
+        bond.reset(
+            Bond::und(Bond::nicht(new Bond(BOND_ORDER, BOND_AROMATIC)), Bond::oder(new Bond(BOND_ORDER, BOND_SINGLE), new Bond(BOND_ORDER, BOND_DOUBLE))));
+    else if (order == _BOND_SINGLE_OR_AROMATIC)
+        bond.reset(Bond::oder(new Bond(BOND_ORDER, BOND_SINGLE), new Bond(BOND_ORDER, BOND_AROMATIC)));
+    else if (order == _BOND_DOUBLE_OR_AROMATIC)
+        bond.reset(Bond::oder(new Bond(BOND_ORDER, BOND_DOUBLE), new Bond(BOND_ORDER, BOND_AROMATIC)));
+    else if (order == _BOND_ANY)
+        bond = std::make_unique<Bond>();
+    else
+        throw Error("unknown bond type: %d", order);
+    if (topology != 0)
+    {
+        bond.reset(Bond::und(bond.release(), new Bond(BOND_TOPOLOGY, topology == 1 ? TOPOLOGY_RING : TOPOLOGY_CHAIN)));
+    }
+    return bond.release();
 }
 
 void QueryMolecule::invalidateAtom(int index, int mask)
@@ -2129,3 +3189,78 @@ void QueryMolecule::getQueryAtomLabel(int qa, Array<char>& result)
     if (it != query_atom_labels.end())
         result.readString(it->second.c_str(), true);
 }
+
+void QueryMolecule::getComponentNeighbors(std::list<std::unordered_set<int>>& componentNeighbors)
+{
+    std::unordered_map<int, std::unordered_set<int>> componentAtoms;
+    for (int i = 0; i < components.size(); ++i)
+    {
+        int componentId = components[i];
+        if (componentId > 0)
+        { // vertice[i] belongs to component #Id
+            componentAtoms[componentId].insert(i);
+        }
+    }
+    for (auto elem : componentAtoms)
+    {
+        auto atoms = elem.second;
+        if (atoms.size() > 1)
+            componentNeighbors.emplace_back(atoms);
+    }
+}
+
+int QueryMolecule::addAtom(int label)
+{
+    return addAtom(new Atom(ATOM_NUMBER, label));
+}
+
+int QueryMolecule::addBond(int beg, int end, int order)
+{
+    return addBond(beg, end, QueryMolecule::createQueryMoleculeBond(order, BOND_ZERO, BOND_ZERO));
+}
+
+int QueryMolecule::getImplicitH(int idx, bool /*impl_h_no_throw*/)
+{
+    std::vector<std::unique_ptr<Atom>> atoms;
+    std::map<int, std::unique_ptr<Atom>> properties;
+
+    int query_atom_type = QueryMolecule::parseQueryAtomSmarts(*this, idx, atoms, properties);
+
+    if (query_atom_type == QUERY_ATOM_UNKNOWN)
+        return 0; // Complex query cannot calculate implicit H
+
+    if (properties.count(ATOM_IMPLICIT_H) > 0)
+        return properties[ATOM_IMPLICIT_H]->value_min; // Implicit H set in properties
+
+    // If implicit h is not set - calculate it
+    int max_h = 0;
+    int conn = _calcAtomConnectivity(idx);
+    if (conn < 0) // can't calculate - no implicit H
+        return 0;
+    if (properties.count(ATOM_TOTAL_H) > 0)
+        max_h = properties[ATOM_TOTAL_H]->value_min - getAtomConnectedH(idx);
+    else
+        max_h = calcAtomMaxH(idx, conn); // count of H that can be added ( valence - conn )
+
+    if (properties.count(ATOM_TOTAL_BOND_ORDER) > 0)
+    {
+        int max_conn = max_h + conn;
+        int valence = properties[ATOM_TOTAL_BOND_ORDER]->value_min;
+        if (max_conn > valence)
+            max_h -= max_conn - valence;
+    }
+
+    if (max_h < 0)
+        max_h = 0;
+
+    return max_h;
+}
+
+void QueryMolecule::setImplicitH(int idx, int impl_h)
+{
+    getAtom(idx).updateConstraintWithValue(ATOM_IMPLICIT_H, impl_h);
+}
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

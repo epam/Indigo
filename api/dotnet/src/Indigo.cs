@@ -246,6 +246,11 @@ namespace com.epam.indigo
             return checkResult(IndigoLib.indigoVersion());
         }
 
+        public string versionInfo()
+        {
+            return checkResult(IndigoLib.indigoVersionInfo());
+        }
+
         public Indigo(string lib_path)
         {
             init(lib_path);
@@ -301,13 +306,13 @@ namespace com.epam.indigo
         public void setOption(string name, float valuer, float valueg, float valueb)
         {
             setSessionID();
-            checkResult(IndigoLib.indigoSetOptionColor(name, valuer / 255.0f, valueg / 255.0f, valueb / 255.0f));
+            checkResult(IndigoLib.indigoSetOptionColor(name, valuer, valueg, valueb));
         }
 
         public void setOption(string name, double valuer, double valueg, double valueb)
         {
             setSessionID();
-            checkResult(IndigoLib.indigoSetOptionColor(name, (float) valuer / 255.0f, (float) valueg / 255.0f, (float) valueb / 255.0f));
+            checkResult(IndigoLib.indigoSetOptionColor(name, (float) valuer, (float) valueg, (float) valueb));
         }
 
         public void setOption(string name, Color value)
@@ -437,6 +442,18 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadSmartsFromString(str)));
         }
 
+        public IndigoObject loadSequence(string str, string seq_type)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadSequenceFromString(str, seq_type)));
+        }
+
+        public IndigoObject loadFasta(string str, string seq_type)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadFastaFromString(str, seq_type)));
+        }
+
         public IndigoObject loadSmarts(byte[] buf)
         {
             setSessionID();
@@ -447,6 +464,18 @@ namespace com.epam.indigo
         {
             setSessionID();
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadSmartsFromFile(path)));
+        }
+
+        public IndigoObject loadSequenceFromFile(string path, string seq_type)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadSequenceFromFile(path, seq_type)));
+        }
+
+        public IndigoObject loadFastaFromFile(string path, string seq_type)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadFastaFromFile(path, seq_type)));
         }
 
         public IndigoObject loadReaction(string str)

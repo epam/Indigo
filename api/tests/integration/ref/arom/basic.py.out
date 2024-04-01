@@ -21,57 +21,57 @@ Arom:
 Dearom:
 C1=CC=CC2=[SiH]C3=CC=CC=C3[As]=C21
 ***
-c1ccc2[te]c3ccccc3[bH]c2c1: 
-[bH]1c2ccccc2:[Te]:c2ccccc21
+c1ccc2[te]c3ccccc3[BH]c2c1: 
+B1c2ccccc2[Te]c2ccccc21
 Arom:
 Dearom:
 B1C2=CC=CC=C2[Te]C2=CC=CC=C21
 ***
-C[b]1o[b](C)o[b](C)o1: 
-C[b]1o[b](C)o[b](C)o1
+C[B]1o[B](C)o[B](C)o1: 
+CB1OB(C)OB(C)O1
 Arom:
 Dearom:
 CB1OB(C)OB(C)O1
 ***** Other cases *****
-C([b]1o[b](C(C)=C)o[b](C(C)=C)o1)(C)=C
- C(=C)(C)[b]1o[b](C(=C)C)o[b](C(=C)C)o1
- CC(=C)[b]1o[b](o[b](o1)C(C)=C)C(C)=C
+C([B]1o[B](C(C)=C)o[B](C(C)=C)o1)(C)=C
  C(=C)(C)B1OB(C(=C)C)OB(C(=C)C)O1
  CC(=C)B1OB(OB(O1)C(C)=C)C(C)=C
  C(=C)(C)B1OB(C(=C)C)OB(C(=C)C)O1
  CC(=C)B1OB(OB(O1)C(C)=C)C(C)=C
  C(=C)(C)B1OB(C(=C)C)OB(C(=C)C)O1
  CC(=C)B1OB(OB(O1)C(C)=C)C(C)=C
-C([b]1o[b](C(C)=C)o[b]([C]([CH3])=[CH2])o1)(C)=C
- C(=C)(C)[b]1o[b](C(=C)C)o[b](C(=C)C)o1
- CC(=C)[b]1o[b](o[b](o1)C(C)=C)C(C)=C
+ C(=C)(C)B1OB(C(=C)C)OB(C(=C)C)O1
+ CC(=C)B1OB(OB(O1)C(C)=C)C(C)=C
+C([B]1o[B](C(C)=C)o[B]([C]([CH3])=[CH2])o1)(C)=C
  C(=C)(C)B1OB(C(=C)C)OB(C(=C)C)O1
  CC(=C)B1OB(OB(O1)C(C)=C)C(C)=C
  C(=C)(C)B1OB(C(=C)C)OB(C(=C)C)O1
  CC(=C)B1OB(OB(O1)C(C)=C)C(C)=C
  C(=C)(C)B1OB(C(=C)C)OB(C(=C)C)O1
  CC(=C)B1OB(OB(O1)C(C)=C)C(C)=C
-C([b]1o[b](C=C)o[b](C=C)o1)=C
- C(=C)[b]1o[b](C=C)o[b](C=C)o1
- C=C[b]1o[b](C=C)o[b](C=C)o1
+ C(=C)(C)B1OB(C(=C)C)OB(C(=C)C)O1
+ CC(=C)B1OB(OB(O1)C(C)=C)C(C)=C
+C([B]1o[B](C=C)o[B](C=C)o1)=C
  C(=C)B1OB(C=C)OB(C=C)O1
  C=CB1OB(C=C)OB(C=C)O1
  C(=C)B1OB(C=C)OB(C=C)O1
  C=CB1OB(C=C)OB(C=C)O1
  C(=C)B1OB(C=C)OB(C=C)O1
  C=CB1OB(C=C)OB(C=C)O1
-C[b]1o[b](C)o[b](C)o1
- C[b]1o[b](C)o[b](C)o1
- C[b]1o[b](C)o[b](C)o1
+ C(=C)B1OB(C=C)OB(C=C)O1
+ C=CB1OB(C=C)OB(C=C)O1
+C[B]1o[B](C)o[B](C)o1
  CB1OB(C)OB(C)O1
  CB1OB(C)OB(C)O1
  CB1OB(C)OB(C)O1
  CB1OB(C)OB(C)O1
  CB1OB(C)OB(C)O1
  CB1OB(C)OB(C)O1
-C[b]1o[b](C)o[b]([CH3])o1
- C[b]1o[b](C)o[b](C)o1
- C[b]1o[b](C)o[b](C)o1
+ CB1OB(C)OB(C)O1
+ CB1OB(C)OB(C)O1
+C[B]1o[B](C)o[B]([CH3])o1
+ CB1OB(C)OB(C)O1
+ CB1OB(C)OB(C)O1
  CB1OB(C)OB(C)O1
  CB1OB(C)OB(C)O1
  CB1OB(C)OB(C)O1
@@ -96,72 +96,72 @@ Cl[p]1(Cl)[n]([Cl])[p](Cl)[n](Cl)[p](Cl)[n]1
  ClP1N(Cl)P(Cl)N=P(Cl)(Cl)N1Cl
  ClP1(=NP(Cl)N(Cl)P(Cl)N1Cl)Cl
  ClP1N(Cl)P(Cl)N=P(Cl)(Cl)N1Cl
-[CH2]([C]([b]1oc2ccccc2o1)=[CH][CH2][CH3])[CH3]
- C(C)C(=CCC)[b]1oc2c(cccc2)o1
- CCC=C(CC)[b]1oc2ccccc2o1
+[CH2]([C]([B]1oc2ccccc2o1)=[CH][CH2][CH3])[CH3]
+ C(C)C(=CCC)B1Oc2c(cccc2)O1
+ CCC=C(CC)B1Oc2ccccc2O1
  C(C)C(=CCC)B1OC2C(=CC=CC=2)O1
  CCC=C(CC)B1OC2=CC=CC=C2O1
  C(C)C(=CCC)B1OC2C(=CC=CC=2)O1
  CCC=C(CC)B1OC2=CC=CC=C2O1
  C(C)C(=CCC)B1OC2C(=CC=CC=2)O1
  CCC=C(CC)B1OC2=CC=CC=C2O1
-[CH2]([b]1o[b]([CH2][CH2][CH2][CH3])o[b]([CH2][CH2][CH2][CH3])o1)[CH2][CH2][CH3]
- C(CCC)[b]1o[b](CCCC)o[b](CCCC)o1
- CCCC[b]1o[b](CCCC)o[b](CCCC)o1
+[CH2]([B]1o[B]([CH2][CH2][CH2][CH3])o[B]([CH2][CH2][CH2][CH3])o1)[CH2][CH2][CH3]
  C(CCC)B1OB(CCCC)OB(CCCC)O1
  CCCCB1OB(CCCC)OB(CCCC)O1
  C(CCC)B1OB(CCCC)OB(CCCC)O1
  CCCCB1OB(CCCC)OB(CCCC)O1
  C(CCC)B1OB(CCCC)OB(CCCC)O1
  CCCCB1OB(CCCC)OB(CCCC)O1
-[CH3][C]([CH3])=[CH][b]1o[b]([CH]=[C]([CH3])[CH3])o[b]([CH]=[C]([CH3])[CH3])o1
- CC(=C[b]1o[b](C=C(C)C)o[b](C=C(C)C)o1)C
- CC(C)=C[b]1o[b](C=C(C)C)o[b](C=C(C)C)o1
+ C(CCC)B1OB(CCCC)OB(CCCC)O1
+ CCCCB1OB(CCCC)OB(CCCC)O1
+[CH3][C]([CH3])=[CH][B]1o[B]([CH]=[C]([CH3])[CH3])o[B]([CH]=[C]([CH3])[CH3])o1
  CC(=CB1OB(C=C(C)C)OB(C=C(C)C)O1)C
  CC(C)=CB1OB(C=C(C)C)OB(C=C(C)C)O1
  CC(=CB1OB(C=C(C)C)OB(C=C(C)C)O1)C
  CC(C)=CB1OB(C=C(C)C)OB(C=C(C)C)O1
  CC(=CB1OB(C=C(C)C)OB(C=C(C)C)O1)C
  CC(C)=CB1OB(C=C(C)C)OB(C=C(C)C)O1
-[CH3][b]1o[bH]o[bH]o1
- C[b]1o[bH]o[bH]o1
- C[b]1o[bH]o[bH]o1
+ CC(=CB1OB(C=C(C)C)OB(C=C(C)C)O1)C
+ CC(C)=CB1OB(C=C(C)C)OB(C=C(C)C)O1
+[CH3][B]1o[BH]o[BH]o1
  CB1OBOBO1
  CB1OBOBO1
  CB1OBOBO1
  CB1OBOBO1
  CB1OBOBO1
  CB1OBOBO1
-[CH3][b]1o[b](C)o[b](C)o1
- C[b]1o[b](C)o[b](C)o1
- C[b]1o[b](C)o[b](C)o1
+ CB1OBOBO1
+ CB1OBOBO1
+[CH3][B]1o[B](C)o[B](C)o1
  CB1OB(C)OB(C)O1
  CB1OB(C)OB(C)O1
  CB1OB(C)OB(C)O1
  CB1OB(C)OB(C)O1
  CB1OB(C)OB(C)O1
  CB1OB(C)OB(C)O1
-[CH]([Si]([CH]([CH3])[CH3])([CH]([CH3])[CH3])[O][c]1[cH][cH][c](-[b]2o[b](-[c]3[cH][cH][c]([O][Si]([CH]([CH3])[CH3])([CH]([CH3])[CH3])[CH]([CH3])[CH3])[cH][cH]3)o[b](-[c]3[cH][cH][c]([O][Si]([CH]([CH3])[CH3])([CH]([CH3])[CH3])[CH]([CH3])[CH3])[cH][cH]3)o2)[cH][cH]1)([CH3])[CH3]
- C(C)(C)[Si](Oc1ccc(-[b]2o[b](-c3ccc(O[Si](C(C)C)(C(C)C)C(C)C)cc3)o[b](-c3ccc(O[Si](C(C)C)(C(C)C)C(C)C)cc3)o2)cc1)(C(C)C)C(C)C
- CC(C)[Si](Oc1ccc(cc1)-[b]1o[b](o[b](o1)-c1ccc(cc1)O[Si](C(C)C)(C(C)C)C(C)C)-c1ccc(cc1)O[Si](C(C)C)(C(C)C)C(C)C)(C(C)C)C(C)C
+ CB1OB(C)OB(C)O1
+ CB1OB(C)OB(C)O1
+[CH]([Si]([CH]([CH3])[CH3])([CH]([CH3])[CH3])[O][c]1[cH][cH][c](-[B]2o[B](-[c]3[cH][cH][c]([O][Si]([CH]([CH3])[CH3])([CH]([CH3])[CH3])[CH]([CH3])[CH3])[cH][cH]3)o[B](-[c]3[cH][cH][c]([O][Si]([CH]([CH3])[CH3])([CH]([CH3])[CH3])[CH]([CH3])[CH3])[cH][cH]3)o2)[cH][cH]1)([CH3])[CH3]
+ C(C)(C)[Si](Oc1ccc(B2OB(c3ccc(O[Si](C(C)C)(C(C)C)C(C)C)cc3)OB(c3ccc(O[Si](C(C)C)(C(C)C)C(C)C)cc3)O2)cc1)(C(C)C)C(C)C
+ CC(C)[Si](Oc1ccc(cc1)B1OB(OB(O1)c1ccc(cc1)O[Si](C(C)C)(C(C)C)C(C)C)c1ccc(cc1)O[Si](C(C)C)(C(C)C)C(C)C)(C(C)C)C(C)C
  C(C)(C)[Si](OC1C=CC(B2OB(C3C=CC(O[Si](C(C)C)(C(C)C)C(C)C)=CC=3)OB(C3C=CC(O[Si](C(C)C)(C(C)C)C(C)C)=CC=3)O2)=CC=1)(C(C)C)C(C)C
  CC(C)[Si](OC1C=CC(=CC=1)B1OB(OB(O1)C1C=CC(=CC=1)O[Si](C(C)C)(C(C)C)C(C)C)C1C=CC(=CC=1)O[Si](C(C)C)(C(C)C)C(C)C)(C(C)C)C(C)C
  C(C)(C)[Si](OC1C=CC(B2OB(C3C=CC(O[Si](C(C)C)(C(C)C)C(C)C)=CC=3)OB(C3C=CC(O[Si](C(C)C)(C(C)C)C(C)C)=CC=3)O2)=CC=1)(C(C)C)C(C)C
  CC(C)[Si](OC1C=CC(=CC=1)B1OB(OB(O1)C1C=CC(=CC=1)O[Si](C(C)C)(C(C)C)C(C)C)C1C=CC(=CC=1)O[Si](C(C)C)(C(C)C)C(C)C)(C(C)C)C(C)C
  C(C)(C)[Si](OC1C=CC(B2OB(C3C=CC(O[Si](C(C)C)(C(C)C)C(C)C)=CC=3)OB(C3C=CC(O[Si](C(C)C)(C(C)C)C(C)C)=CC=3)O2)=CC=1)(C(C)C)C(C)C
  CC(C)[Si](OC1C=CC(=CC=1)B1OB(OB(O1)C1C=CC(=CC=1)O[Si](C(C)C)(C(C)C)C(C)C)C1C=CC(=CC=1)O[Si](C(C)C)(C(C)C)C(C)C)(C(C)C)C(C)C
-[CH]([b]1o[bH]o[bH]o1)=[CH2]
- C(=C)[b]1o[bH]o[bH]o1
- C=C[b]1o[bH]o[bH]o1
+[CH]([B]1o[BH]o[BH]o1)=[CH2]
  C(=C)B1OBOBO1
  C=CB1OBOBO1
  C(=C)B1OBOBO1
  C=CB1OBOBO1
  C(=C)B1OBOBO1
  C=CB1OBOBO1
-[CH]([b]1o[b](C=C)o[b](C=C)o1)=[CH2]
- C(=C)[b]1o[b](C=C)o[b](C=C)o1
- C=C[b]1o[b](C=C)o[b](C=C)o1
+ C(=C)B1OBOBO1
+ C=CB1OBOBO1
+[CH]([B]1o[B](C=C)o[B](C=C)o1)=[CH2]
+ C(=C)B1OB(C=C)OB(C=C)O1
+ C=CB1OB(C=C)OB(C=C)O1
  C(=C)B1OB(C=C)OB(C=C)O1
  C=CB1OB(C=C)OB(C=C)O1
  C(=C)B1OB(C=C)OB(C=C)O1
@@ -177,63 +177,63 @@ Cl[p]1(Cl)[n]([Cl])[p](Cl)[n](Cl)[p](Cl)[n]1
  O=CC1C=CC(=CC=1)OP1N=P(OC2C=CC(=CC=2)C=O)(OC2C=CC(=CC=2)C=O)N(Cl)P(OC2C=CC(=CC=2)C=O)N1OC1C=CC(=CC=1)C=O
  C(=O)C1C=CC(OP2(=NP(OC3C=CC(C=O)=CC=3)N(OC3C=CC(C=O)=CC=3)P(OC3C=CC(C=O)=CC=3)N2Cl)OC2C=CC(C=O)=CC=2)=CC=1
  O=CC1C=CC(=CC=1)OP1N=P(OC2C=CC(=CC=2)C=O)(OC2C=CC(=CC=2)C=O)N(Cl)P(OC2C=CC(=CC=2)C=O)N1OC1C=CC(=CC=1)C=O
-[CH]1(/[CH]=[CH]/[b]2[o][c]3[cH][cH][cH][cH][c]3[o]2)[CH2][CH2]1
- C1(CC1)/C=C/[b]1oc2c(cccc2)o1
- C1CC1/C=C/[b]1oc2ccccc2o1
+[CH]1(/[CH]=[CH]/[B]2[o][c]3[cH][cH][cH][cH][c]3[o]2)[CH2][CH2]1
+ C1(CC1)/C=C/B1Oc2c(cccc2)O1
+ C1CC1/C=C/B1Oc2ccccc2O1
  C1(CC1)/C=C/B1OC2C(=CC=CC=2)O1
  C1CC1/C=C/B1OC2=CC=CC=C2O1
  C1(CC1)C=CB1OC2C(=CC=CC=2)O1
  C1CC1C=CB1OC2=CC=CC=C2O1
  C1(CC1)C=CB1OC2C(=CC=CC=2)O1
  C1CC1C=CB1OC2=CC=CC=C2O1
-[CH]1(/[CH]=[CH]/[b]2oc3ccccc3o2)[CH2][CH2]1
- C1(CC1)/C=C/[b]1oc2c(cccc2)o1
- C1CC1/C=C/[b]1oc2ccccc2o1
+[CH]1(/[CH]=[CH]/[B]2oc3ccccc3o2)[CH2][CH2]1
+ C1(CC1)/C=C/B1Oc2c(cccc2)O1
+ C1CC1/C=C/B1Oc2ccccc2O1
  C1(CC1)/C=C/B1OC2C(=CC=CC=2)O1
  C1CC1/C=C/B1OC2=CC=CC=C2O1
  C1(CC1)C=CB1OC2C(=CC=CC=2)O1
  C1CC1C=CB1OC2=CC=CC=C2O1
  C1(CC1)C=CB1OC2C(=CC=CC=2)O1
  C1CC1C=CB1OC2=CC=CC=C2O1
-[C]([Si]([CH3])([CH3])[O][c]1[cH][cH][c](-[b]2o[b](-[c]3[cH][cH][c]([O][Si]([C]([CH3])([CH3])[CH3])([CH3])[CH3])[cH][cH]3)o[b](-[c]3[cH][cH][c]([O][Si]([C]([CH3])([CH3])[CH3])([CH3])[CH3])[cH][cH]3)o2)[cH][cH]1)([CH3])([CH3])[CH3]
- C(C)(C)(C)[Si](Oc1ccc(-[b]2o[b](-c3ccc(O[Si](C)(C)C(C)(C)C)cc3)o[b](-c3ccc(O[Si](C)(C)C(C)(C)C)cc3)o2)cc1)(C)C
- C[Si](C)(Oc1ccc(cc1)-[b]1o[b](o[b](o1)-c1ccc(cc1)O[Si](C)(C)C(C)(C)C)-c1ccc(cc1)O[Si](C)(C)C(C)(C)C)C(C)(C)C
+[C]([Si]([CH3])([CH3])[O][c]1[cH][cH][c](-[B]2o[B](-[c]3[cH][cH][c]([O][Si]([C]([CH3])([CH3])[CH3])([CH3])[CH3])[cH][cH]3)o[B](-[c]3[cH][cH][c]([O][Si]([C]([CH3])([CH3])[CH3])([CH3])[CH3])[cH][cH]3)o2)[cH][cH]1)([CH3])([CH3])[CH3]
+ C(C)(C)(C)[Si](Oc1ccc(B2OB(c3ccc(O[Si](C)(C)C(C)(C)C)cc3)OB(c3ccc(O[Si](C)(C)C(C)(C)C)cc3)O2)cc1)(C)C
+ C[Si](C)(Oc1ccc(cc1)B1OB(OB(O1)c1ccc(cc1)O[Si](C)(C)C(C)(C)C)c1ccc(cc1)O[Si](C)(C)C(C)(C)C)C(C)(C)C
  C(C)(C)(C)[Si](OC1C=CC(B2OB(C3C=CC(O[Si](C)(C)C(C)(C)C)=CC=3)OB(C3C=CC(O[Si](C)(C)C(C)(C)C)=CC=3)O2)=CC=1)(C)C
  C[Si](C)(OC1C=CC(=CC=1)B1OB(OB(O1)C1C=CC(=CC=1)O[Si](C)(C)C(C)(C)C)C1C=CC(=CC=1)O[Si](C)(C)C(C)(C)C)C(C)(C)C
  C(C)(C)(C)[Si](OC1C=CC(B2OB(C3C=CC(O[Si](C)(C)C(C)(C)C)=CC=3)OB(C3C=CC(O[Si](C)(C)C(C)(C)C)=CC=3)O2)=CC=1)(C)C
  C[Si](C)(OC1C=CC(=CC=1)B1OB(OB(O1)C1C=CC(=CC=1)O[Si](C)(C)C(C)(C)C)C1C=CC(=CC=1)O[Si](C)(C)C(C)(C)C)C(C)(C)C
  C(C)(C)(C)[Si](OC1C=CC(B2OB(C3C=CC(O[Si](C)(C)C(C)(C)C)=CC=3)OB(C3C=CC(O[Si](C)(C)C(C)(C)C)=CC=3)O2)=CC=1)(C)C
  C[Si](C)(OC1C=CC(=CC=1)B1OB(OB(O1)C1C=CC(=CC=1)O[Si](C)(C)C(C)(C)C)C1C=CC(=CC=1)O[Si](C)(C)C(C)(C)C)C(C)(C)C
-[C]([b]1o[b](C(C)=C)o[b](C(C)=C)o1)(C)=C
- C(=C)(C)[b]1o[b](C(=C)C)o[b](C(=C)C)o1
- CC(=C)[b]1o[b](o[b](o1)C(C)=C)C(C)=C
+[C]([B]1o[B](C(C)=C)o[B](C(C)=C)o1)(C)=C
  C(=C)(C)B1OB(C(=C)C)OB(C(=C)C)O1
  CC(=C)B1OB(OB(O1)C(C)=C)C(C)=C
  C(=C)(C)B1OB(C(=C)C)OB(C(=C)C)O1
  CC(=C)B1OB(OB(O1)C(C)=C)C(C)=C
  C(=C)(C)B1OB(C(=C)C)OB(C(=C)C)O1
  CC(=C)B1OB(OB(O1)C(C)=C)C(C)=C
-[C]12([c]3[cH][c](-[b]4[o][b](-c5ccc(OC)c(C67CC8CC(CC(C8)C6)C7)c5)o[b](-c5ccc(OC)c(C67CC8CC(CC(C8)C6)C7)c5)[o]4)[cH][cH][c]3[O][CH3])[CH2][CH]3[CH2][CH]([CH2][CH]([CH2]3)[CH2]1)[CH2]2
- C12(CC3CC(C1)CC(C3)C2)c1c(OC)ccc(-[b]2o[b](-c3cc(C45CC6CC(C4)CC(C6)C5)c(OC)cc3)o[b](-c3cc(C45CC6CC(C4)CC(C6)C5)c(OC)cc3)o2)c1
- COc1ccc(cc1C12CC3CC(C1)CC(C2)C3)-[b]1o[b](o[b](o1)-c1cc(c(cc1)OC)C12CC3CC(C1)CC(C2)C3)-c1cc(c(cc1)OC)C12CC3CC(C1)CC(C2)C3
+ C(=C)(C)B1OB(C(=C)C)OB(C(=C)C)O1
+ CC(=C)B1OB(OB(O1)C(C)=C)C(C)=C
+[C]12([c]3[cH][c](-[B]4[o][B](-c5ccc(OC)c(C67CC8CC(CC(C8)C6)C7)c5)o[B](-c5ccc(OC)c(C67CC8CC(CC(C8)C6)C7)c5)[o]4)[cH][cH][c]3[O][CH3])[CH2][CH]3[CH2][CH]([CH2][CH]([CH2]3)[CH2]1)[CH2]2
+ C12(CC3CC(C1)CC(C3)C2)c1c(OC)ccc(B2OB(c3cc(C45CC6CC(C4)CC(C6)C5)c(OC)cc3)OB(c3cc(C45CC6CC(C4)CC(C6)C5)c(OC)cc3)O2)c1
+ COc1ccc(cc1C12CC3CC(C1)CC(C2)C3)B1OB(OB(O1)c1cc(c(cc1)OC)C12CC3CC(C1)CC(C2)C3)c1cc(c(cc1)OC)C12CC3CC(C1)CC(C2)C3
  C12(CC3CC(C1)CC(C3)C2)C1C(OC)=CC=C(B2OB(C3C=C(C45CC6CC(C4)CC(C6)C5)C(OC)=CC=3)OB(C3C=C(C45CC6CC(C4)CC(C6)C5)C(OC)=CC=3)O2)C=1
  COC1=CC=C(C=C1C12CC3CC(C1)CC(C2)C3)B1OB(OB(O1)C1C=C(C(=CC=1)OC)C12CC3CC(C1)CC(C2)C3)C1C=C(C(=CC=1)OC)C12CC3CC(C1)CC(C2)C3
  C12(CC3CC(C1)CC(C3)C2)C1C(OC)=CC=C(B2OB(C3C=C(C45CC6CC(C4)CC(C6)C5)C(OC)=CC=3)OB(C3C=C(C45CC6CC(C4)CC(C6)C5)C(OC)=CC=3)O2)C=1
  COC1=CC=C(C=C1C12CC3CC(C1)CC(C2)C3)B1OB(OB(O1)C1C=C(C(=CC=1)OC)C12CC3CC(C1)CC(C2)C3)C1C=C(C(=CC=1)OC)C12CC3CC(C1)CC(C2)C3
  C12(CC3CC(C1)CC(C3)C2)C1C(OC)=CC=C(B2OB(C3C=C(C45CC6CC(C4)CC(C6)C5)C(OC)=CC=3)OB(C3C=C(C45CC6CC(C4)CC(C6)C5)C(OC)=CC=3)O2)C=1
  COC1=CC=C(C=C1C12CC3CC(C1)CC(C2)C3)B1OB(OB(O1)C1C=C(C(=CC=1)OC)C12CC3CC(C1)CC(C2)C3)C1C=C(C(=CC=1)OC)C12CC3CC(C1)CC(C2)C3
-[C]12([c]3[cH][c](-[b]4o[b](-[c]5[cH][cH][c]([O][CH3])[c]([C]67[CH2][CH]8[CH2][CH]([CH2][CH]([CH2]8)[CH2]6)[CH2]7)[cH]5)o[b](-[c]5[cH][cH][c]([O][CH3])[c]([C]67[CH2][CH]8[CH2][CH]([CH2][CH]([CH2]8)[CH2]6)[CH2]7)[cH]5)o4)[cH][cH][c]3[O][CH3])[CH2][CH]3[CH2][CH]([CH2][CH]([CH2]3)[CH2]1)[CH2]2
- C12(CC3CC(C1)CC(C3)C2)c1c(OC)ccc(-[b]2o[b](-c3cc(C45CC6CC(C4)CC(C6)C5)c(OC)cc3)o[b](-c3cc(C45CC6CC(C4)CC(C6)C5)c(OC)cc3)o2)c1
- COc1ccc(cc1C12CC3CC(C1)CC(C2)C3)-[b]1o[b](o[b](o1)-c1cc(c(cc1)OC)C12CC3CC(C1)CC(C2)C3)-c1cc(c(cc1)OC)C12CC3CC(C1)CC(C2)C3
+[C]12([c]3[cH][c](-[B]4o[B](-[c]5[cH][cH][c]([O][CH3])[c]([C]67[CH2][CH]8[CH2][CH]([CH2][CH]([CH2]8)[CH2]6)[CH2]7)[cH]5)o[B](-[c]5[cH][cH][c]([O][CH3])[c]([C]67[CH2][CH]8[CH2][CH]([CH2][CH]([CH2]8)[CH2]6)[CH2]7)[cH]5)o4)[cH][cH][c]3[O][CH3])[CH2][CH]3[CH2][CH]([CH2][CH]([CH2]3)[CH2]1)[CH2]2
+ C12(CC3CC(C1)CC(C3)C2)c1c(OC)ccc(B2OB(c3cc(C45CC6CC(C4)CC(C6)C5)c(OC)cc3)OB(c3cc(C45CC6CC(C4)CC(C6)C5)c(OC)cc3)O2)c1
+ COc1ccc(cc1C12CC3CC(C1)CC(C2)C3)B1OB(OB(O1)c1cc(c(cc1)OC)C12CC3CC(C1)CC(C2)C3)c1cc(c(cc1)OC)C12CC3CC(C1)CC(C2)C3
  C12(CC3CC(C1)CC(C3)C2)C1C(OC)=CC=C(B2OB(C3C=C(C45CC6CC(C4)CC(C6)C5)C(OC)=CC=3)OB(C3C=C(C45CC6CC(C4)CC(C6)C5)C(OC)=CC=3)O2)C=1
  COC1=CC=C(C=C1C12CC3CC(C1)CC(C2)C3)B1OB(OB(O1)C1C=C(C(=CC=1)OC)C12CC3CC(C1)CC(C2)C3)C1C=C(C(=CC=1)OC)C12CC3CC(C1)CC(C2)C3
  C12(CC3CC(C1)CC(C3)C2)C1C(OC)=CC=C(B2OB(C3C=C(C45CC6CC(C4)CC(C6)C5)C(OC)=CC=3)OB(C3C=C(C45CC6CC(C4)CC(C6)C5)C(OC)=CC=3)O2)C=1
  COC1=CC=C(C=C1C12CC3CC(C1)CC(C2)C3)B1OB(OB(O1)C1C=C(C(=CC=1)OC)C12CC3CC(C1)CC(C2)C3)C1C=C(C(=CC=1)OC)C12CC3CC(C1)CC(C2)C3
  C12(CC3CC(C1)CC(C3)C2)C1C(OC)=CC=C(B2OB(C3C=C(C45CC6CC(C4)CC(C6)C5)C(OC)=CC=3)OB(C3C=C(C45CC6CC(C4)CC(C6)C5)C(OC)=CC=3)O2)C=1
  COC1=CC=C(C=C1C12CC3CC(C1)CC(C2)C3)B1OB(OB(O1)C1C=C(C(=CC=1)OC)C12CC3CC(C1)CC(C2)C3)C1C=C(C(=CC=1)OC)C12CC3CC(C1)CC(C2)C3
-[Cl][c]1[cH][cH][c](-[b]2oc3ccccc3o2)[cH][cH]1
- Clc1ccc(-[b]2oc3c(cccc3)o2)cc1
- Clc1ccc(cc1)-[b]1oc2ccccc2o1
+[Cl][c]1[cH][cH][c](-[B]2oc3ccccc3o2)[cH][cH]1
+ Clc1ccc(B2Oc3c(cccc3)O2)cc1
+ Clc1ccc(cc1)B1Oc2ccccc2O1
  ClC1C=CC(B2OC3C(=CC=CC=3)O2)=CC=1
  ClC1C=CC(=CC=1)B1OC2=CC=CC=C2O1
  ClC1C=CC(B2OC3C(=CC=CC=3)O2)=CC=1
@@ -258,45 +258,45 @@ Cl[p]1(Cl)[n]([Cl])[p](Cl)[n](Cl)[p](Cl)[n]1
  O=CC1=CC=C(C=C1)ON1P(Cl)N(Cl)P(Cl)N=P1(Cl)Cl
  ClP1(=NP(Cl)N(Cl)P(Cl)N1OC1C=CC(C=O)=CC=1)Cl
  O=CC1=CC=C(C=C1)ON1P(Cl)N(Cl)P(Cl)N=P1(Cl)Cl
-[o]1[b]([C@@H](NC(=O)[C@@H](NC(c2c[n]cc[n]2)=O)Cc2ccccc2)CC(C)C)o[b]([C@@H](NC(=O)[C@@H](NC(c2c[n]cc[n]2)=O)Cc2ccccc2)CC(C)C)[o][b]1[C@@H]([NH][C](=[O])[C@@H]([NH][C]([c]1[cH][n][cH][cH][n]1)=[O])[CH2][c]1[cH][cH][cH][cH][cH]1)[CH2][CH]([CH3])[CH3]
- o1[b]([C@H](CC(C)C)NC([C@H](Cc2ccccc2)NC(=O)c2[n]cc[n]c2)=O)o[b]([C@H](CC(C)C)NC([C@H](Cc2ccccc2)NC(=O)c2[n]cc[n]c2)=O)o[b]1[C@H](CC(C)C)NC([C@H](Cc1ccccc1)NC(=O)c1[n]cc[n]c1)=O
- CC(C)C[C@H](NC(=O)[C@H](Cc1ccccc1)NC(=O)c1c[n]cc[n]1)[b]1o[b](o[b](o1)[C@H](CC(C)C)NC(=O)[C@H](Cc1ccccc1)NC(=O)c1c[n]cc[n]1)[C@H](CC(C)C)NC(=O)[C@H](Cc1ccccc1)NC(=O)c1c[n]cc[n]1
+[o]1[B]([C@@H](NC(=O)[C@@H](NC(c2c[n]cc[n]2)=O)Cc2ccccc2)CC(C)C)o[B]([C@@H](NC(=O)[C@@H](NC(c2c[n]cc[n]2)=O)Cc2ccccc2)CC(C)C)[o][B]1[C@@H]([NH][C](=[O])[C@@H]([NH][C]([c]1[cH][n][cH][cH][n]1)=[O])[CH2][c]1[cH][cH][cH][cH][cH]1)[CH2][CH]([CH3])[CH3]
+ O1B([C@H](CC(C)C)NC([C@H](Cc2ccccc2)NC(=O)c2[n]cc[n]c2)=O)OB([C@H](CC(C)C)NC([C@H](Cc2ccccc2)NC(=O)c2[n]cc[n]c2)=O)OB1[C@H](CC(C)C)NC([C@H](Cc1ccccc1)NC(=O)c1[n]cc[n]c1)=O
+ CC(C)C[C@H](NC(=O)[C@H](Cc1ccccc1)NC(=O)c1c[n]cc[n]1)B1OB(OB(O1)[C@H](CC(C)C)NC(=O)[C@H](Cc1ccccc1)NC(=O)c1c[n]cc[n]1)[C@H](CC(C)C)NC(=O)[C@H](Cc1ccccc1)NC(=O)c1c[n]cc[n]1
  O1B([C@H](CC(C)C)NC([C@H](CC2C=CC=CC=2)NC(=O)C2N=CC=NC=2)=O)OB([C@H](CC(C)C)NC([C@H](CC2C=CC=CC=2)NC(=O)C2N=CC=NC=2)=O)OB1[C@H](CC(C)C)NC([C@H](CC1C=CC=CC=1)NC(=O)C1N=CC=NC=1)=O
  CC(C)C[C@H](NC(=O)[C@H](CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1)B1OB(OB(O1)[C@H](CC(C)C)NC(=O)[C@H](CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1)[C@H](CC(C)C)NC(=O)[C@H](CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1
  O1B(C(CC(C)C)NC(C(CC2C=CC=CC=2)NC(=O)C2N=CC=NC=2)=O)OB(C(CC(C)C)NC(C(CC2C=CC=CC=2)NC(=O)C2N=CC=NC=2)=O)OB1C(CC(C)C)NC(C(CC1C=CC=CC=1)NC(=O)C1N=CC=NC=1)=O
  CC(C)CC(NC(=O)C(CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1)B1OB(OB(O1)C(CC(C)C)NC(=O)C(CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1)C(CC(C)C)NC(=O)C(CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1
  O1B(C(CC(C)C)NC(C(CC2C=CC=CC=2)NC(=O)C2N=CC=NC=2)=O)OB(C(CC(C)C)NC(C(CC2C=CC=CC=2)NC(=O)C2N=CC=NC=2)=O)OB1C(CC(C)C)NC(C(CC1C=CC=CC=1)NC(=O)C1N=CC=NC=1)=O
  CC(C)CC(NC(=O)C(CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1)B1OB(OB(O1)C(CC(C)C)NC(=O)C(CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1)C(CC(C)C)NC(=O)C(CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1
-[o]1[b]([C@@H]([NH][C](=[O])[CH2][NH][C](=[O])[c]2[cH][c]([Cl])[cH][cH][c]2[Cl])[CH2][CH]([CH3])[CH3])[o][b]([C@@H](NC(=O)CNC(=O)c2cc(Cl)ccc2Cl)CC(C)C)o[b]1[C@@H](NC(=O)CNC(=O)c1cc(Cl)ccc1Cl)CC(C)C
- o1[b]([C@H](CC(C)C)NC(CNC(c2c(Cl)ccc(Cl)c2)=O)=O)o[b]([C@H](CC(C)C)NC(CNC(c2c(Cl)ccc(Cl)c2)=O)=O)o[b]1[C@H](CC(C)C)NC(CNC(c1c(Cl)ccc(Cl)c1)=O)=O
- CC(C)C[C@H](NC(=O)CNC(=O)c1cc(Cl)ccc1Cl)[b]1o[b](o[b](o1)[C@H](CC(C)C)NC(=O)CNC(=O)c1cc(Cl)ccc1Cl)[C@H](CC(C)C)NC(=O)CNC(=O)c1cc(Cl)ccc1Cl
+[o]1[B]([C@@H]([NH][C](=[O])[CH2][NH][C](=[O])[c]2[cH][c]([Cl])[cH][cH][c]2[Cl])[CH2][CH]([CH3])[CH3])[o][B]([C@@H](NC(=O)CNC(=O)c2cc(Cl)ccc2Cl)CC(C)C)o[B]1[C@@H](NC(=O)CNC(=O)c1cc(Cl)ccc1Cl)CC(C)C
+ O1B([C@H](CC(C)C)NC(CNC(c2c(Cl)ccc(Cl)c2)=O)=O)OB([C@H](CC(C)C)NC(CNC(c2c(Cl)ccc(Cl)c2)=O)=O)OB1[C@H](CC(C)C)NC(CNC(c1c(Cl)ccc(Cl)c1)=O)=O
+ CC(C)C[C@H](NC(=O)CNC(=O)c1cc(Cl)ccc1Cl)B1OB(OB(O1)[C@H](CC(C)C)NC(=O)CNC(=O)c1cc(Cl)ccc1Cl)[C@H](CC(C)C)NC(=O)CNC(=O)c1cc(Cl)ccc1Cl
  O1B([C@H](CC(C)C)NC(CNC(C2C(Cl)=CC=C(Cl)C=2)=O)=O)OB([C@H](CC(C)C)NC(CNC(C2C(Cl)=CC=C(Cl)C=2)=O)=O)OB1[C@H](CC(C)C)NC(CNC(C1C(Cl)=CC=C(Cl)C=1)=O)=O
  CC(C)C[C@H](NC(=O)CNC(=O)C1=CC(Cl)=CC=C1Cl)B1OB(OB(O1)[C@H](CC(C)C)NC(=O)CNC(=O)C1=CC(Cl)=CC=C1Cl)[C@H](CC(C)C)NC(=O)CNC(=O)C1=CC(Cl)=CC=C1Cl
  O1B(C(CC(C)C)NC(CNC(C2C(Cl)=CC=C(Cl)C=2)=O)=O)OB(C(CC(C)C)NC(CNC(C2C(Cl)=CC=C(Cl)C=2)=O)=O)OB1C(CC(C)C)NC(CNC(C1C(Cl)=CC=C(Cl)C=1)=O)=O
  CC(C)CC(NC(=O)CNC(=O)C1=CC(Cl)=CC=C1Cl)B1OB(OB(O1)C(CC(C)C)NC(=O)CNC(=O)C1=CC(Cl)=CC=C1Cl)C(CC(C)C)NC(=O)CNC(=O)C1=CC(Cl)=CC=C1Cl
  O1B(C(CC(C)C)NC(CNC(C2C(Cl)=CC=C(Cl)C=2)=O)=O)OB(C(CC(C)C)NC(CNC(C2C(Cl)=CC=C(Cl)C=2)=O)=O)OB1C(CC(C)C)NC(CNC(C1C(Cl)=CC=C(Cl)C=1)=O)=O
  CC(C)CC(NC(=O)CNC(=O)C1=CC(Cl)=CC=C1Cl)B1OB(OB(O1)C(CC(C)C)NC(=O)CNC(=O)C1=CC(Cl)=CC=C1Cl)C(CC(C)C)NC(=O)CNC(=O)C1=CC(Cl)=CC=C1Cl
-[o]1[c]2[cH][cH][cH][cH][c]2[o][bH]1
- o1[bH]oc2c1cccc2
- [bH]1oc2ccccc2o1
+[o]1[c]2[cH][cH][cH][cH][c]2[o][BH]1
+ O1BOc2c1cccc2
+ B1Oc2ccccc2O1
  O1BOC2C1=CC=CC=2
  B1OC2=CC=CC=C2O1
  O1BOC2C1=CC=CC=2
  B1OC2=CC=CC=C2O1
  O1BOC2C1=CC=CC=2
  B1OC2=CC=CC=C2O1
-o1[b]([C@@H]([NH][C](=[O])[C@@H]([NH][C]([c]2[cH][n][cH][cH][n]2)=[O])[CH2][c]2[cH][cH][cH][cH][cH]2)[CH2][CH]([CH3])[CH3])o[b]([C@@H]([NH][C](=[O])[C@@H]([NH][C]([c]2[cH][n][cH][cH][n]2)=[O])[CH2][c]2[cH][cH][cH][cH][cH]2)[CH2][CH]([CH3])[CH3])o[b]1[C@@H]([NH][C](=[O])[C@@H]([NH][C]([c]1[cH][n][cH][cH][n]1)=[O])[CH2][c]1[cH][cH][cH][cH][cH]1)[CH2][CH]([CH3])[CH3]
- o1[b]([C@H](CC(C)C)NC([C@H](Cc2ccccc2)NC(=O)c2[n]cc[n]c2)=O)o[b]([C@H](CC(C)C)NC([C@H](Cc2ccccc2)NC(=O)c2[n]cc[n]c2)=O)o[b]1[C@H](CC(C)C)NC([C@H](Cc1ccccc1)NC(=O)c1[n]cc[n]c1)=O
- CC(C)C[C@H](NC(=O)[C@H](Cc1ccccc1)NC(=O)c1c[n]cc[n]1)[b]1o[b](o[b](o1)[C@H](CC(C)C)NC(=O)[C@H](Cc1ccccc1)NC(=O)c1c[n]cc[n]1)[C@H](CC(C)C)NC(=O)[C@H](Cc1ccccc1)NC(=O)c1c[n]cc[n]1
+o1[B]([C@@H]([NH][C](=[O])[C@@H]([NH][C]([c]2[cH][n][cH][cH][n]2)=[O])[CH2][c]2[cH][cH][cH][cH][cH]2)[CH2][CH]([CH3])[CH3])o[B]([C@@H]([NH][C](=[O])[C@@H]([NH][C]([c]2[cH][n][cH][cH][n]2)=[O])[CH2][c]2[cH][cH][cH][cH][cH]2)[CH2][CH]([CH3])[CH3])o[B]1[C@@H]([NH][C](=[O])[C@@H]([NH][C]([c]1[cH][n][cH][cH][n]1)=[O])[CH2][c]1[cH][cH][cH][cH][cH]1)[CH2][CH]([CH3])[CH3]
+ O1B([C@H](CC(C)C)NC([C@H](Cc2ccccc2)NC(=O)c2[n]cc[n]c2)=O)OB([C@H](CC(C)C)NC([C@H](Cc2ccccc2)NC(=O)c2[n]cc[n]c2)=O)OB1[C@H](CC(C)C)NC([C@H](Cc1ccccc1)NC(=O)c1[n]cc[n]c1)=O
+ CC(C)C[C@H](NC(=O)[C@H](Cc1ccccc1)NC(=O)c1c[n]cc[n]1)B1OB(OB(O1)[C@H](CC(C)C)NC(=O)[C@H](Cc1ccccc1)NC(=O)c1c[n]cc[n]1)[C@H](CC(C)C)NC(=O)[C@H](Cc1ccccc1)NC(=O)c1c[n]cc[n]1
  O1B([C@H](CC(C)C)NC([C@H](CC2C=CC=CC=2)NC(=O)C2N=CC=NC=2)=O)OB([C@H](CC(C)C)NC([C@H](CC2C=CC=CC=2)NC(=O)C2N=CC=NC=2)=O)OB1[C@H](CC(C)C)NC([C@H](CC1C=CC=CC=1)NC(=O)C1N=CC=NC=1)=O
  CC(C)C[C@H](NC(=O)[C@H](CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1)B1OB(OB(O1)[C@H](CC(C)C)NC(=O)[C@H](CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1)[C@H](CC(C)C)NC(=O)[C@H](CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1
  O1B(C(CC(C)C)NC(C(CC2C=CC=CC=2)NC(=O)C2N=CC=NC=2)=O)OB(C(CC(C)C)NC(C(CC2C=CC=CC=2)NC(=O)C2N=CC=NC=2)=O)OB1C(CC(C)C)NC(C(CC1C=CC=CC=1)NC(=O)C1N=CC=NC=1)=O
  CC(C)CC(NC(=O)C(CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1)B1OB(OB(O1)C(CC(C)C)NC(=O)C(CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1)C(CC(C)C)NC(=O)C(CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1
  O1B(C(CC(C)C)NC(C(CC2C=CC=CC=2)NC(=O)C2N=CC=NC=2)=O)OB(C(CC(C)C)NC(C(CC2C=CC=CC=2)NC(=O)C2N=CC=NC=2)=O)OB1C(CC(C)C)NC(C(CC1C=CC=CC=1)NC(=O)C1N=CC=NC=1)=O
  CC(C)CC(NC(=O)C(CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1)B1OB(OB(O1)C(CC(C)C)NC(=O)C(CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1)C(CC(C)C)NC(=O)C(CC1C=CC=CC=1)NC(=O)C1=CN=CC=N1
-o1[b]([C@@H]([NH][C](=[O])[CH2][NH][C](=[O])[c]2[cH][c]([Cl])[cH][cH][c]2[Cl])[CH2][CH]([CH3])[CH3])o[b]([C@@H]([NH][C](=[O])[CH2][NH][C](=[O])[c]2[cH][c]([Cl])[cH][cH][c]2[Cl])[CH2][CH]([CH3])[CH3])o[b]1[C@@H]([NH][C](=[O])[CH2][NH][C](=[O])[c]1[cH][c]([Cl])[cH][cH][c]1[Cl])[CH2][CH]([CH3])[CH3]
- o1[b]([C@H](CC(C)C)NC(CNC(c2c(Cl)ccc(Cl)c2)=O)=O)o[b]([C@H](CC(C)C)NC(CNC(c2c(Cl)ccc(Cl)c2)=O)=O)o[b]1[C@H](CC(C)C)NC(CNC(c1c(Cl)ccc(Cl)c1)=O)=O
- CC(C)C[C@H](NC(=O)CNC(=O)c1cc(Cl)ccc1Cl)[b]1o[b](o[b](o1)[C@H](CC(C)C)NC(=O)CNC(=O)c1cc(Cl)ccc1Cl)[C@H](CC(C)C)NC(=O)CNC(=O)c1cc(Cl)ccc1Cl
+o1[B]([C@@H]([NH][C](=[O])[CH2][NH][C](=[O])[c]2[cH][c]([Cl])[cH][cH][c]2[Cl])[CH2][CH]([CH3])[CH3])o[B]([C@@H]([NH][C](=[O])[CH2][NH][C](=[O])[c]2[cH][c]([Cl])[cH][cH][c]2[Cl])[CH2][CH]([CH3])[CH3])o[B]1[C@@H]([NH][C](=[O])[CH2][NH][C](=[O])[c]1[cH][c]([Cl])[cH][cH][c]1[Cl])[CH2][CH]([CH3])[CH3]
+ O1B([C@H](CC(C)C)NC(CNC(c2c(Cl)ccc(Cl)c2)=O)=O)OB([C@H](CC(C)C)NC(CNC(c2c(Cl)ccc(Cl)c2)=O)=O)OB1[C@H](CC(C)C)NC(CNC(c1c(Cl)ccc(Cl)c1)=O)=O
+ CC(C)C[C@H](NC(=O)CNC(=O)c1cc(Cl)ccc1Cl)B1OB(OB(O1)[C@H](CC(C)C)NC(=O)CNC(=O)c1cc(Cl)ccc1Cl)[C@H](CC(C)C)NC(=O)CNC(=O)c1cc(Cl)ccc1Cl
  O1B([C@H](CC(C)C)NC(CNC(C2C(Cl)=CC=C(Cl)C=2)=O)=O)OB([C@H](CC(C)C)NC(CNC(C2C(Cl)=CC=C(Cl)C=2)=O)=O)OB1[C@H](CC(C)C)NC(CNC(C1C(Cl)=CC=C(Cl)C=1)=O)=O
  CC(C)C[C@H](NC(=O)CNC(=O)C1=CC(Cl)=CC=C1Cl)B1OB(OB(O1)[C@H](CC(C)C)NC(=O)CNC(=O)C1=CC(Cl)=CC=C1Cl)[C@H](CC(C)C)NC(=O)CNC(=O)C1=CC(Cl)=CC=C1Cl
  O1B(C(CC(C)C)NC(CNC(C2C(Cl)=CC=C(Cl)C=2)=O)=O)OB(C(CC(C)C)NC(CNC(C2C(Cl)=CC=C(Cl)C=2)=O)=O)OB1C(CC(C)C)NC(CNC(C1C(Cl)=CC=C(Cl)C=1)=O)=O
@@ -388,8 +388,8 @@ C12NN=NC=1C1N=NNC=1C1N=NNC2=1
 C12=NO[N+]([O-])=C1C1=NO[N+]([O-])=C1C1NC(C)=NC2=1
 C12=NO[N+]([O-])=C1C1N=CNC=1C1=NO[N+]([O-])=C12
 ***** Process ferrocene-like structure  *****
-[Fe+2]12345678([CH]9=[CH]1[CH]2=[CH]3[CH-]49)[C-]1([C]5(=[C]6([C]7(=[C]81[H])P(c1ccccc1)c1ccccc1)[C@]([N@](P(c1ccccc1)c1ccccc1)C)(C)[H])[H])[H]
-[Fe+2]12345678(C9=C1C2=C3[C-]49)[C-]1(C5(=C6(C7(=C81[H])P(C1:C:C:C:C:C:1)C1:C:C:C:C:C:1)C(N(P(C1:C:C:C:C:C:1)C1:C:C:C:C:C:1)C)(C)[H])[H])[H]
+[Fe+2]12345678([CH]9=[CH]1[CH]2=[CH]3[CH-]49)[C-]1([C]5(=[C]6([C]7(=[C]81[H])P(c1ccccc1)c1ccccc1)[C@]([N@](P(c1ccccc1)c1ccccc1)C)(C)[H])[H])[H] |SgD:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44:MDLBG_FRAGMENT_STEREO:abs::: :,SgD:39:MDLBG_STEREO_KEY:T-4::: :,SgD:38:MDLBG_STEREO_KEY:T-4::: :,SgD:37:MDLBG_STEREO_KEY:T-4::: :,SgD:41:MDLBG_STEREO_KEY:T-4::: :,SgD:40:MDLBG_STEREO_KEY:T-4::: :,SgD:20:MDLBG_STEREO_KEY:T-4::: :|
+[Fe+2]12345678(C9=C1C2=C3[C-]49)[C-]1(C5(=C6(C7(=C81[H])P(C1:C:C:C:C:C:1)C1:C:C:C:C:C:1)C(N(P(C1:C:C:C:C:C:1)C1:C:C:C:C:C:1)C)(C)[H])[H])[H] |SgD:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44:MDLBG_FRAGMENT_STEREO:abs::: :,SgD:39:MDLBG_STEREO_KEY:T-4::: :,SgD:38:MDLBG_STEREO_KEY:T-4::: :,SgD:37:MDLBG_STEREO_KEY:T-4::: :,SgD:41:MDLBG_STEREO_KEY:T-4::: :,SgD:40:MDLBG_STEREO_KEY:T-4::: :,SgD:20:MDLBG_STEREO_KEY:T-4::: :|
 ***** Dearomatization for R-Groups  *****
 before
   Rgroup #1
@@ -397,3 +397,75 @@ Nc1[n]c[n]c2[nH]c[n]c21
 after dearom
   Rgroup #1
 NC1=NC=NC2NC=NC=21
+***** dearomatize-on-load option test  *****
+
+  -INDIGO-01000000002D
+
+  8  8  0  0  0  0  0  0  0  0999 V2000
+    0.8000    1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.6000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.4000   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.8000   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.4000   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.2000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.4000    1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  4  0  0  0  0
+  2  3  1  0  0  0  0
+  3  4  2  0  0  0  0
+  2  5  4  0  0  0  0
+  5  6  4  0  0  0  0
+  6  7  4  0  0  0  0
+  7  8  4  0  0  0  0
+  8  1  4  0  0  0  0
+M  END
+
+
+  -INDIGO-01000000002D
+
+  8  8  0  0  0  0  0  0  0  0999 V2000
+    0.8000    1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.6000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.4000   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.8000   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.4000   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.2000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.4000    1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  2  0  0  0  0
+  2  3  1  0  0  0  0
+  3  4  2  0  0  0  0
+  2  5  1  0  0  0  0
+  5  6  2  0  0  0  0
+  6  7  1  0  0  0  0
+  7  8  2  0  0  0  0
+  8  1  1  0  0  0  0
+M  END
+
+
+  -INDIGO-01000000002D
+
+  8  8  0  0  0  0  0  0  0  0999 V2000
+    0.8000    1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.6000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.4000   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.8000   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.4000   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.2000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.4000    1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  4  0  0  0  0
+  2  3  1  0  0  0  0
+  3  4  2  0  0  0  0
+  2  5  4  0  0  0  0
+  5  6  4  0  0  0  0
+  6  7  4  0  0  0  0
+  7  8  4  0  0  0  0
+  8  1  4  0  0  0  0
+M  END
+
+{"root":{"nodes":[{"$ref":"mol0"}]},"mol0":{"type":"molecule","atoms":[{"label":"C","location":[0.0,0.0,0.0]},{"label":"C","location":[1.0,0.0,0.0]}],"bonds":[{"type":7,"atoms":[0,1]}]}}
+***** Dearomatize molecule with atom_aromatic_connectivity < 0 should not cause exception  *****
+c1ccccc1
+***** Dearomatize molecule with custom query without label  *****
+[#6](=[$([#7]-[#8]-[#6](-[#1])(-[#1])-[#6](-[#1])(-[#1])-[#6](-[#1])(-[#1])-[#7](-[#6](-[#1])-[#1])-[#6](-[#1])-[#1]),$([#7]-[#8]-[#6](-[#1])(-[#1])-[#6](-[#1])(-[#1])-[#7](-[#6](-[#1])-[#1])-[#6](-[#1])-[#1]),$([#7]-[#7](-[#1])-[#6](=[#7]-[#1])-[#7](-[#1])-[#1]),$([#6](-[#1])-[#7])])(-c1-c(-[H])=c(-[H])-c(-[$([#1]),$([#17])])=c(-[H])-c=1-[H])-c1-c(-[H])=c-c(-[$([#6;X4]),$([#1])])=c(-[H])-c=1-[H]

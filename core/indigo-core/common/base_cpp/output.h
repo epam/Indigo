@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include "base_c/defs.h"
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
@@ -39,16 +41,23 @@ namespace indigo
 
         virtual void write(const void* data, int size) = 0;
         virtual void flush() = 0;
+        virtual long long tell() const noexcept
+        {
+            return 0;
+        }
 
         virtual void writeByte(byte value);
 
         void writeChar(char value);
         void writeBinaryInt(int value);
         void writeBinaryWord(word value);
+        void writeBinaryUInt16(uint16_t value);
+
         void writeBinaryFloat(float value);
         void writePackedShort(short value);
         void writePackedUInt(unsigned int value);
         void writeString(const char* string);
+
         void writeStringCR(const char* string);
         void writeCR();
         void writeArray(const Array<char>& data);
@@ -58,18 +67,13 @@ namespace indigo
         void printfCR(const char* format, ...);
     };
 
-    class DLLEXPORT OutputTell
-    {
-        virtual long long tell() const noexcept = 0;
-    };
-
     class DLLEXPORT OutputSeek
     {
         virtual void seek(long long offset, int from) = 0;
         void skip(int count);
     };
 
-    class DLLEXPORT FileOutput : public Output, public OutputSeek, public OutputTell
+    class DLLEXPORT FileOutput : public Output, public OutputSeek
     {
     public:
         FileOutput(Encoding filename_encoding, const char* filename);
@@ -91,7 +95,7 @@ namespace indigo
         FILE* _file;
     };
 
-    class DLLEXPORT ArrayOutput : public Output, public OutputTell
+    class DLLEXPORT ArrayOutput : public Output
     {
     public:
         explicit ArrayOutput(Array<char>& arr);
@@ -106,7 +110,7 @@ namespace indigo
         Array<char>& _arr;
     };
 
-    class DLLEXPORT StringOutput : public Output, public OutputTell
+    class DLLEXPORT StringOutput : public Output
     {
     public:
         StringOutput() = delete;
@@ -122,7 +126,7 @@ namespace indigo
         std::string& _str;
     };
 
-    class DLLEXPORT StandardOutput : public Output, public OutputTell
+    class DLLEXPORT StandardOutput : public Output
     {
     public:
         explicit StandardOutput();

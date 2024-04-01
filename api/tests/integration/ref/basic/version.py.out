@@ -1,0 +1,14 @@
+*** Testing string is valid json ***
+True
+*** Testing string contains 'majorVersion' key ***
+True
+*** Testing string contains 'minorVersion' key ***
+True
+*** Testing string contains 'devTag' key ***
+True
+*** Testing string contains 'commitHash' key ***
+True
+*** Testing string contains 'compilerVersion' key ***
+True
+*** Testing string contains 'compilerPlatform' key ***
+True

@@ -31,7 +31,7 @@ InChICodeParser::InChICodeParser(const char* inchi_code) : _mobileCount(0)
     size_t pos = str.find("/h");
     // assert(pos != npos)
     int num = 0, from = -1;
-    bool isValid;
+    bool isValid = false;
     int type = STATIC;
     for (pos += 2; pos < str.size() && str[pos] != '/'; ++pos)
     {

@@ -28,12 +28,14 @@
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/molfile_saver.h"
+#include "molecule/sequence_saver.h"
 #include "molecule/smiles_saver.h"
 #include "reaction/canonical_rsmiles_saver.h"
 #include "reaction/reaction_cdxml_saver.h"
 #include "reaction/reaction_cml_saver.h"
 #include "reaction/reaction_json_saver.h"
 #include "reaction/rsmiles_saver.h"
+#include "reaction/rxnfile_loader.h"
 #include "reaction/rxnfile_saver.h"
 #include <memory>
 
@@ -161,13 +163,14 @@ CEXPORT int indigoSdfAppend(int output, int molecule)
 // IndigoSmilesSaver
 //
 
-void IndigoSmilesSaver::generateSmiles(IndigoObject& obj, Array<char>& out_buffer)
+void IndigoSmilesSaver::generateSmiles(IndigoObject& obj, Array<char>& out_buffer, SmilesSaver::SMILES_MODE smiles_format)
 {
     ArrayOutput output(out_buffer);
     if (IndigoBaseMolecule::is(obj))
     {
         BaseMolecule& mol = obj.getBaseMolecule();
         SmilesSaver saver(output);
+        saver.chemaxon = (smiles_format == SmilesSaver::SMILES_MODE::SMILES_CHEMAXON);
 
         if (mol.isQueryMolecule())
             saver.saveQueryMolecule(mol.asQueryMolecule());
@@ -178,6 +181,7 @@ void IndigoSmilesSaver::generateSmiles(IndigoObject& obj, Array<char>& out_buffe
     {
         BaseReaction& rxn = obj.getBaseReaction();
         RSmilesSaver saver(output);
+        saver.chemaxon = (smiles_format == SmilesSaver::SMILES_MODE::SMILES_CHEMAXON);
 
         if (rxn.isQueryReaction())
             saver.saveQueryReaction(rxn.asQueryReaction());
@@ -227,7 +231,18 @@ void IndigoSmilesSaver::generateSmarts(IndigoObject& obj, Array<char>& out_buffe
         if (rxn.isQueryReaction())
             saver.saveQueryReaction(rxn.asQueryReaction());
         else
-            saver.saveReaction(rxn.asReaction());
+        {
+            Array<char> rxn_out_buffer;
+            ArrayOutput rxn_output(rxn_out_buffer);
+            RxnfileSaver saver_tmp(rxn_output);
+            saver_tmp.saveReaction(rxn.asReaction());
+            rxn_out_buffer.push(0);
+            BufferScanner sc(rxn_out_buffer);
+            RxnfileLoader loader_tmp(sc);
+            QueryReaction qreaction;
+            loader_tmp.loadQueryReaction(qreaction);
+            saver.saveQueryReaction(qreaction);
+        }
     }
     else
         throw IndigoError("%s can not be converted to SMARTS", obj.debugInfo());
@@ -567,6 +582,44 @@ CEXPORT int indigoSaveMolfile(int molecule, int output)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoSaveSequence(int item, int output)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        Output& out = IndigoOutput::get(self.getObject(output));
+        if (IndigoBaseMolecule::is(obj))
+        {
+            SequenceSaver saver(out);
+            BaseMolecule& mol = obj.getBaseMolecule();
+            saver.saveMolecule(mol);
+            out.flush();
+            return 1;
+        }
+        throw IndigoError("indigoSaveSequence(): expected molecule, got %s", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoSaveFasta(int item, int output)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        Output& out = IndigoOutput::get(self.getObject(output));
+        if (IndigoBaseMolecule::is(obj))
+        {
+            SequenceSaver saver(out);
+            BaseMolecule& mol = obj.getBaseMolecule();
+            saver.saveMolecule(mol, SequenceSaver::SeqFormat::FASTA);
+            out.flush();
+            return 1;
+        }
+        throw IndigoError("indigoSaveSequence(): expected molecule, got %s", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
 CEXPORT int indigoSaveJson(int item, int output)
 {
     INDIGO_BEGIN
@@ -716,6 +769,50 @@ CEXPORT int indigoSaveCdxml(int item, int output)
         if (IndigoBaseReaction::is(obj))
         {
             ReactionCdxmlSaver saver(out);
+            if (obj.type == IndigoObject::REACTION)
+            {
+                Reaction& rxn = obj.getReaction();
+                saver.saveReaction(rxn);
+            }
+            else if (obj.type == IndigoObject::QUERY_REACTION)
+            {
+                QueryReaction& rxn = obj.getQueryReaction();
+                saver.saveReaction(rxn);
+            }
+            out.flush();
+            return 1;
+        }
+        throw IndigoError("indigoSaveCdxml(): expected molecule or reaction, got %s", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoSaveCdx(int item, int output)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        Output& out = IndigoOutput::get(self.getObject(output));
+
+        if (IndigoBaseMolecule::is(obj))
+        {
+            MoleculeCdxmlSaver saver(out, true);
+            if (obj.type == IndigoObject::MOLECULE)
+            {
+                Molecule& mol = obj.getMolecule();
+                saver.saveMolecule(mol);
+            }
+            else if (obj.type == IndigoObject::QUERY_MOLECULE)
+            {
+                QueryMolecule& mol = obj.getQueryMolecule();
+                saver.saveMolecule(mol);
+            }
+            out.flush();
+            return 1;
+        }
+        if (IndigoBaseReaction::is(obj))
+        {
+            ReactionCdxmlSaver saver(out, true);
             if (obj.type == IndigoObject::REACTION)
             {
                 Reaction& rxn = obj.getReaction();

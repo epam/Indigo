@@ -23,7 +23,7 @@
 typedef unsigned short int UINT16;
 typedef int INT32;
 typedef unsigned int UINT32;
-#include "molecule/CDXConstants.h"
+#include "molecule/CDXCommons.h"
 
 using namespace indigo;
 
@@ -167,7 +167,13 @@ bool MultipleCdxLoader::_findObject(long long& beg, int& length)
 
     while (!_scanner.isEOF() && ((_scanner.length() - _scanner.tell()) > 1LL))
     {
+        long long pos = _scanner.tell();
         tag = _scanner.readBinaryWord();
+
+        if (tag == 0 && pos == kCDX_HeaderLength) // Some CDX saved with 0x0000 instead of first 0x8000
+        {
+            tag = kCDXObj_Document;
+        }
 
         if (tag & kCDXTag_Object)
         {
@@ -176,13 +182,13 @@ bool MultipleCdxLoader::_findObject(long long& beg, int& length)
             {
                 level_found = level;
                 reaction_pos = _scanner.tell() - sizeof(tag) - sizeof(id);
-                _getObject();
+                _getObject(tag);
             }
             else if (tag == kCDXObj_Fragment)
             {
                 level_found = level;
                 fragment_pos = _scanner.tell() - sizeof(tag) - sizeof(id);
-                _getObject();
+                _getObject(tag);
             }
             else
             {
@@ -227,7 +233,7 @@ bool MultipleCdxLoader::_findObject(long long& beg, int& length)
     return false;
 }
 
-void MultipleCdxLoader::_getObject()
+void MultipleCdxLoader::_getObject(int parent_tag)
 {
     UINT16 tag;
     UINT16 size;
@@ -250,15 +256,15 @@ void MultipleCdxLoader::_getObject()
             id = _scanner.readBinaryDword();
             if (tag == kCDXObj_Text)
             {
-                _getObject();
+                _getObject(tag);
             }
             else if ((tag == kCDXObj_ObjectTag))
             {
-                _getObject();
+                _getObject(tag);
             }
             else if ((tag == 0x802b))
             {
-                _getObject();
+                _getObject(tag);
             }
             else
                 _skipObject();
@@ -276,7 +282,7 @@ void MultipleCdxLoader::_getObject()
                 _getString(size, _latest_text);
                 break;
             case kCDXProp_Name:
-                _getString(size, name);
+                _getString(size, name, parent_tag == kCDXObj_ObjectTag);
                 break;
             case kCDXProp_ObjectTag_Value:
                 _getValue(type, size, value);
@@ -351,12 +357,12 @@ void MultipleCdxLoader::_checkHeader()
     if ((_scanner.length() - pos_saved) < 8LL)
         return;
 
-    char id[8];
-    _scanner.readCharsFix(8, id);
+    char id[kCDX_HeaderStringLen];
+    _scanner.readCharsFix(kCDX_HeaderStringLen, id);
 
     if (strncmp(id, kCDX_HeaderString, kCDX_HeaderStringLen) == 0)
-    {
-        _scanner.seek(kCDX_HeaderLength - kCDX_HeaderStringLen, SEEK_CUR);
+    { // skip header and first kCDXObj_Document tag and id
+        _scanner.seek(kCDX_HeaderLength - kCDX_HeaderStringLen + sizeof(uint16_t) + sizeof(uint32_t), SEEK_CUR); //
     }
     else
     {
@@ -364,9 +370,9 @@ void MultipleCdxLoader::_checkHeader()
     }
 }
 
-void MultipleCdxLoader::_getString(int size, Array<char>& buf)
+void MultipleCdxLoader::_getString(int size, Array<char>& buf, bool no_style)
 {
-    UINT16 flag = 0;
+    UINT16 style_count = 0;
 
     buf.clear_resize(size);
     buf.zerofill();
@@ -377,13 +383,14 @@ void MultipleCdxLoader::_getString(int size, Array<char>& buf)
     }
     else
     {
-        flag = _scanner.readBinaryWord();
-        if (flag == 0)
-            _scanner.read(size - sizeof(flag), buf);
+        if (no_style)
+            _scanner.read(size, buf);
         else
         {
-            _scanner.seek(flag * 10, SEEK_CUR);
-            _scanner.read(size - sizeof(flag) - flag * 10, buf);
+            style_count = _scanner.readBinaryWord();
+            auto styles_size = sizeof(style_count) + sizeof(CDXTextStyle) * style_count;
+            _scanner.seek(style_count * sizeof(CDXTextStyle), SEEK_CUR);
+            _scanner.read(static_cast<int>(size - styles_size), buf);
         }
     }
     return;

@@ -22,7 +22,7 @@ if (NOT EMSCRIPTEN AND NOT CMAKE_HOST_WIN32)
 endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -34,11 +34,15 @@ if (EMSCRIPTEN)
     string(APPEND CMAKE_CXX_FLAGS " -c -fexceptions -s DISABLE_EXCEPTION_CATCHING=0 -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0 -s")
     string(APPEND CMAKE_C_FLAGS   " -c -fexceptions -s DISABLE_EXCEPTION_CATCHING=0 -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0 -s")
 
-    set(CMAKE_CXX_FLAGS_RELEASE "-Oz -DNDEBUG -flto")
-    set(CMAKE_C_FLAGS_RELEASE   "-Oz -DNDEBUG -flto")
+    set(CMAKE_CXX_FLAGS_RELEASE "-Oz -DNDEBUG")
+    set(CMAKE_C_FLAGS_RELEASE   "-Oz -DNDEBUG")
 
     set(CMAKE_CXX_FLAGS_DEBUG "-g3")
     set(CMAKE_C_FLAGS_DEBUG   "-g3")
+endif()
+
+if (APPLE)
+    string(APPEND CMAKE_CXX_FLAGS " -Wno-register")
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -145,15 +149,12 @@ message(STATUS "ARCH=${CMAKE_SYSTEM_PROCESSOR_LOWER}")
 
 # Fix problem with CMake not supporting copy with wildcards on windows
 # Use like ${COPY_COMMAND} ${SEP}some${SEP}path${sep}file.txt ${NATIVE_DIST_DIRECTORY}${SEP}
-if (WIN32)
-    find_program(CP cp PATHS ENV{PATH})
-    if (CP)
-        set(COPY_COMMAND cp)
-    else()
-        set(COPY_COMMAND copy)
-    endif()
-else()
+find_program(CP cp PATHS ENV{PATH})
+if (CP)
     set(COPY_COMMAND cp)
+else()
+    # Are we on Windows? (Not using WIN32, cause we maybe in Emscripten toolchain)
+    set(COPY_COMMAND copy)
 endif()
 file(TO_NATIVE_PATH "/" SEP)
 file(TO_NATIVE_PATH ${DIST_DIRECTORY} NATIVE_DIST_DIRECTORY)

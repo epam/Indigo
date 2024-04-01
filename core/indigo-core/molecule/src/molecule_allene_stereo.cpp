@@ -709,7 +709,7 @@ void MoleculeAlleneStereo::removeAtoms(BaseMolecule& baseMolecule, const Array<i
         }
     }
 
-    for (int i = 0; i < centers_to_remove.size(); i++)
+    for (i = 0; i < centers_to_remove.size(); i++)
     {
         int idx = centers_to_remove[i];
         if (_centers.find(idx))

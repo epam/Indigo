@@ -1,0 +1,4 @@
+molecule json loader: stereo type specified for atom #0, but the bond directions does not say that it is a stereocenter
+C(C)CCC>>C
+Test load/save 'reaction not center' bond:
+SUCCESS

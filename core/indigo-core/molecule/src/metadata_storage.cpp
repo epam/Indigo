@@ -6,7 +6,7 @@ using namespace indigo;
 
 IMPL_ERROR(MetaDataStorage, "metadata storage");
 
-void MetaDataStorage::addMetaObject(MetaObject* pobj)
+int MetaDataStorage::addMetaObject(MetaObject* pobj)
 {
     int index = _meta_data.size();
     _meta_data.expand(index + 1);
@@ -29,36 +29,52 @@ void MetaDataStorage::addMetaObject(MetaObject* pobj)
     default:
         break;
     }
+    return index;
 }
 
-void MetaDataStorage::clone(const MetaDataStorage& other)
+void MetaDataStorage::append(const MetaDataStorage& other)
 {
-    resetMetaData();
     const auto& meta = other.metaData();
     for (int i = 0; i < meta.size(); i++)
         addMetaObject(meta[i]->clone());
 }
 
-const MetaObject& MetaDataStorage::getMetaObject(uint32_t meta_type, int index) const
+void MetaDataStorage::clone(const MetaDataStorage& other)
+{
+    resetMetaData();
+    append(other);
+}
+
+int MetaDataStorage::getMetaObjectIndex(uint32_t meta_type, int index) const
 {
     switch (meta_type)
     {
     case KETTextObject::CID:
-        return *_meta_data[_text_object_indexes[index]];
+        return _text_object_indexes[index];
         break;
     case KETSimpleObject::CID:
-        return *_meta_data[_simple_object_indexes[index]];
+        return _simple_object_indexes[index];
         break;
     case KETReactionPlus::CID:
-        return *_meta_data[_plus_indexes[index]];
+        return _plus_indexes[index];
         break;
     case KETReactionArrow::CID:
-        return *_meta_data[_arrow_indexes[index]];
+        return _arrow_indexes[index];
         break;
     default:
         throw Error("Unknown meta type");
         break;
     }
+}
+
+const MetaObject& MetaDataStorage::getMetaObject(uint32_t meta_type, int index) const
+{
+    return *_meta_data[getMetaObjectIndex(meta_type, index)];
+}
+
+int MetaDataStorage::getNonChemicalMetaCount() const
+{
+    return getMetaCount(KETTextObject::CID) + getMetaCount(KETSimpleObject::CID);
 }
 
 int MetaDataStorage::getMetaCount(uint32_t meta_type) const

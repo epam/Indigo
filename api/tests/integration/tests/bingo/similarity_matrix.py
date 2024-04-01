@@ -25,12 +25,12 @@ def getTuple(search):
 
 
 def searchSim(bingo, q, minSim, maxSim, metric, verify):
-    print("  {0}, {1}, {2}:".format(minSim, maxSim, metric))
+    print("  {:.1f}, {}, {}:".format(minSim, maxSim, metric))
     result = bingo.searchSim(q, minSim, maxSim, metric)
     rm = result.getIndigoObject()
     while result.next():
         sim = result.getCurrentSimilarityValue()
-        print("      %4d: %0.3f" % (result.getCurrentId(), sim))
+        print("      %4d" % (result.getCurrentId()))
 
         if verify:
             q.aromatize()
@@ -50,7 +50,7 @@ def testTopN(bingo, q, limit):
     ids, sims = getTuple(bingo.searchSimTopN(q, limit, 0.3, "tanimoto"))
     print("  TopN results : {0}".format(len(ids)))
     for i in range(0, len(ids)):
-        print("      %4d: %0.3f" % (ids[i], sims[i]))
+        print("      %4d" % (ids[i]))
 
 
 def testTopNWithExtFP(bingo, q, limit):
@@ -60,7 +60,7 @@ def testTopNWithExtFP(bingo, q, limit):
     )
     print("  TopN results (with external FP): {0}".format(len(ids)))
     for i in range(0, len(ids)):
-        print("      %4d: %0.3f" % (ids[i], sims[i]))
+        print("      %4d" % (ids[i]))
 
 
 indigo = Indigo()
