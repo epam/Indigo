@@ -89,7 +89,8 @@ void SequenceLoader::loadFasta(BaseMolecule& mol, SeqType seq_type)
                     _row++;
                 }
                 properties.insert(kFASTA_HEADER, fasta_str);
-                frag_idx++;
+                if (mol.vertexCount() > 0) // do not increment fragment id if first fragment
+                    frag_idx++;
                 continue;
                 break;
             default:
