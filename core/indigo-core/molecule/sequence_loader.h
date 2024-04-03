@@ -56,17 +56,18 @@ namespace indigo
         void loadSequence(BaseMolecule& mol, const std::string& seq_type_str);
         void loadFasta(BaseMolecule& mol, const std::string& seq_type_str);
         void loadFasta(BaseMolecule& mol, SeqType seq_type);
+        void loadIDT(BaseMolecule& mol);
 
     private:
         bool addMonomer(BaseMolecule& mol, char ch, SeqType seq_type);
-        bool addTemplate(BaseMolecule& mol, char ch, SeqType seq_type);
+        bool addTemplate(BaseMolecule& mol, const std::string alias, MonomerType seq_type);
 
         void addAminoAcid(BaseMolecule& mol, char ch);
-        void addNucleotide(BaseMolecule& mol, char ch, const std::string& sugar_alias);
+        void addNucleotide(BaseMolecule& mol, char ch, const std::string& sugar_alias, const std::string& phosphate_alias);
         bool addMonomerTemplate(BaseMolecule& mol, MonomerType mt, const std::string& alias);
         SequenceLoader(const SequenceLoader&); // no implicit copy
         Scanner& _scanner;
-        std::unordered_set<std::pair<SeqType, char>, pair_hash> _added_templates;
+        std::unordered_set<std::pair<MonomerType, std::string>, pair_hash> _added_templates;
         const MonomerTemplates& _mon_lib;
         Array<char> _left_apid;
         Array<char> _right_apid;

@@ -143,6 +143,7 @@ namespace indigo
         if (!data.Parse(kMonomersBasicTemplates).HasParseError())
         {
             MoleculeJsonLoader loader(data);
+            loader.stereochemistry_options.ignore_errors = true;
             loader.loadMolecule(_templates_mol->asMolecule());
             for (auto i = _templates_mol->tgroups.begin(); i != _templates_mol->tgroups.end(); i = _templates_mol->tgroups.next(i))
             {
