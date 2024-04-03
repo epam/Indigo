@@ -357,6 +357,8 @@ void SequenceLoader::loadIDT(BaseMolecule& mol)
                             else
                                 nuc_phosphate = IDT_DEF_PHOSPHATE;
                         }
+                        else
+                            nuc_phosphate = IDT_DEF_PHOSPHATE;
                     }
                     else
                         nuc_phosphate = IDT_DEF_PHOSPHATE;
