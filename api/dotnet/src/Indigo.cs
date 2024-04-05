@@ -484,7 +484,7 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadFastaFromFile(path, seq_type)));
         }
 
-        public IndigoObject loadIDTFromFile(string path, string seq_type)
+        public IndigoObject loadIDTFromFile(string path)
         {
             setSessionID();
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadIDTFromFile(path)));
