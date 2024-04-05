@@ -368,11 +368,11 @@ void SequenceLoader::loadIDT(BaseMolecule& mol)
             else
             {
                 if (!checkAddTemplate(mol, MonomerType::Base, base))
-                    throw Error("Unknown base '%s'", base);
+                    throw Error("Unknown base '%s'", base.c_str());
                 if (!checkAddTemplate(mol, MonomerType::Sugar, sugar))
-                    throw Error("Unknown sugar '%s'", sugar);
+                    throw Error("Unknown sugar '%s'", sugar.c_str());
                 if (phosphate.size() > 0 && !checkAddTemplate(mol, MonomerType::Phosphate, phosphate))
-                    throw Error("Unknown phosphate '%s'", phosphate);
+                    throw Error("Unknown phosphate '%s'", phosphate.c_str());
 
                 _seq_id++;
 
