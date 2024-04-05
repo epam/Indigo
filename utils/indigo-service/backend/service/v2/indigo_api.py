@@ -347,6 +347,10 @@ def load_moldata(
         md.struct = indigo.loadFasta(molstr, "DNA")
         md.is_rxn = False
         md.is_query = False
+    elif input_format == "chemical/x-idt":
+        md.struct = indigo.loadIDT(molstr)
+        md.is_rxn = False
+        md.is_query = False
     elif molstr.startswith("InChI"):
         md.struct = indigo.inchi.loadMolecule(molstr)
         md.is_rxn = False
@@ -875,9 +879,11 @@ def convert():
     elif request.method == "GET":
         input_dict = {
             "struct": request.args["struct"],
-            "output_format": request.args["output_format"]
-            if "output_format" in request.args
-            else "chemical/x-mdl-molfile",
+            "output_format": (
+                request.args["output_format"]
+                if "output_format" in request.args
+                else "chemical/x-mdl-molfile"
+            ),
         }
 
         data = IndigoRequestSchema().load(input_dict)

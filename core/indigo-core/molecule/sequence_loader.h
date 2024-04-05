@@ -65,6 +65,7 @@ namespace indigo
         void addAminoAcid(BaseMolecule& mol, char ch);
         void addNucleotide(BaseMolecule& mol, char ch, const std::string& sugar_alias, const std::string& phosphate_alias);
         bool addMonomerTemplate(BaseMolecule& mol, MonomerType mt, const std::string& alias);
+        bool checkAddTemplate(BaseMolecule& mol, MonomerType type, const std::string monomer);
         SequenceLoader(const SequenceLoader&); // no implicit copy
         Scanner& _scanner;
         std::unordered_set<std::pair<MonomerType, std::string>, pair_hash> _added_templates;
@@ -73,7 +74,7 @@ namespace indigo
         Array<char> _right_apid;
         Array<char> _xlink_apid;
         int _seq_id;
-        int _last_sugar_idx;
+        int _last_monomer_idx;
         int _row;
         int _col;
     };

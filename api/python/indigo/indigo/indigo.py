@@ -600,6 +600,46 @@ class Indigo:
             ),
         )
 
+    def loadIDT(self, string):
+        """Loads molecule from IDT string
+
+        Args:
+            string (str): sequence string
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadIDTFromString(string.encode())
+            ),
+        )
+
+    def loadIDTFromFile(self, filename):
+        """Loads query molecule from file in IDT sequence format
+
+        Args:
+            filename (str): full path to the file with sequence string
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadIDTFromFile(filename.encode())
+            ),
+        )
+
     def loadReaction(self, string):
         """Loads reaction from string. Format will be automatically recognized.
 

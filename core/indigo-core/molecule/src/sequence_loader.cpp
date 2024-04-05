@@ -33,7 +33,7 @@ using namespace indigo;
 IMPL_ERROR(SequenceLoader, "SEQUENCE loader");
 
 SequenceLoader::SequenceLoader(Scanner& scanner)
-    : _scanner(scanner), _mon_lib(MonomerTemplates::_instance()), _seq_id(0), _last_sugar_idx(-1), _row(-1), _col(0)
+    : _scanner(scanner), _mon_lib(MonomerTemplates::_instance()), _seq_id(0), _last_monomer_idx(-1), _row(-1), _col(0)
 {
     _left_apid.readString(kLeftAttachmentPoint, true);
     _right_apid.readString(kRightAttachmentPoint, true);
@@ -59,7 +59,7 @@ void SequenceLoader::loadFasta(BaseMolecule& mol, const std::string& seq_type_st
 void SequenceLoader::loadFasta(BaseMolecule& mol, SeqType seq_type)
 {
     _seq_id = 0;
-    _last_sugar_idx = -1;
+    _last_monomer_idx = -1;
     _row = 0;
     _col = 0;
     int frag_idx = 0;
@@ -146,7 +146,7 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, const std::string& seq_type
 void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
 {
     _seq_id = 0;
-    _last_sugar_idx = -1;
+    _last_monomer_idx = -1;
     _row = 0;
     _col = 0;
     mol.clear();
@@ -274,16 +274,23 @@ void SequenceLoader::addNucleotide(BaseMolecule& mol, char ch, const std::string
         mol.asMolecule().setAtomXyz(phosphate_idx, phosphate_coord);
 
         // connect phosphate to the last sugar
-        mol.asMolecule().addBond_Silent(_last_sugar_idx, phosphate_idx, BOND_SINGLE);
-        mol.asMolecule().setTemplateAtomAttachmentDestination(phosphate_idx, _last_sugar_idx, _left_apid);
-        mol.asMolecule().setTemplateAtomAttachmentDestination(_last_sugar_idx, phosphate_idx, _right_apid);
+        mol.asMolecule().addBond_Silent(_last_monomer_idx, phosphate_idx, BOND_SINGLE);
+        mol.asMolecule().setTemplateAtomAttachmentDestination(phosphate_idx, _last_monomer_idx, _left_apid);
+        mol.asMolecule().setTemplateAtomAttachmentDestination(_last_monomer_idx, phosphate_idx, _right_apid);
 
         // connect phosphate to the current sugar
         mol.asMolecule().addBond_Silent(phosphate_idx, sugar_idx, BOND_SINGLE);
         mol.asMolecule().setTemplateAtomAttachmentDestination(phosphate_idx, sugar_idx, _right_apid);
         mol.asMolecule().setTemplateAtomAttachmentDestination(sugar_idx, phosphate_idx, _left_apid);
     }
-    _last_sugar_idx = sugar_idx;
+    else if (_last_monomer_idx >= 0)
+    {
+        // No phosphate - connect sugar to previous monomer
+        mol.asMolecule().addBond_Silent(_last_monomer_idx, sugar_idx, BOND_SINGLE);
+        mol.asMolecule().setTemplateAtomAttachmentDestination(sugar_idx, _last_monomer_idx, _left_apid);
+        mol.asMolecule().setTemplateAtomAttachmentDestination(_last_monomer_idx, sugar_idx, _right_apid);
+    }
+    _last_monomer_idx = sugar_idx;
     _col++;
 }
 
@@ -301,19 +308,29 @@ bool SequenceLoader::addMonomerTemplate(BaseMolecule& mol, MonomerType mt, const
     return false;
 }
 
+// return true if monomer already in templates or successfuly added. otherwise - false
+bool SequenceLoader::checkAddTemplate(BaseMolecule& mol, MonomerType type, const std::string monomer)
+{
+    if (_added_templates.count(std::make_pair(type, monomer)) == 0)
+        if (!addTemplate(mol, monomer, type))
+            return false;
+    return true;
+}
+
 void SequenceLoader::loadIDT(BaseMolecule& mol)
 {
     const auto IDT_DEF_SUGAR = "dR";
     const auto IDT_DEF_PHOSPHATE = "P";
     static const std::unordered_set<char> IDT_STANDARD_BASES = {'A', 'T', 'C', 'G', 'U', 'I'};
     _seq_id = 0;
-    _last_sugar_idx = -1;
+    _last_monomer_idx = -1;
     _row = 0;
     _col = 0;
     mol.clear();
     std::string invalid_symbols;
-    std::string nuc_sugar = IDT_DEF_SUGAR;
-    std::string nuc_phosphate = IDT_DEF_PHOSPHATE;
+    std::string sugar = IDT_DEF_SUGAR;
+    std::string phosphate = "";
+    std::string base = "";
 
     while (!_scanner.isEOF())
     {
@@ -321,58 +338,50 @@ void SequenceLoader::loadIDT(BaseMolecule& mol)
         switch (ch)
         {
         case '+':
-            nuc_sugar = "LR";
+            sugar = "LR";
             break;
         case 'm':
-            nuc_sugar = "mR";
+            sugar = "mR";
             break;
         case 'r':
-            nuc_sugar = "R";
+            sugar = "R";
+            break;
+        case '*':
+            phosphate = "sP";
             break;
         default:
-            if (IDT_STANDARD_BASES.count(ch))
+            base = std::string(1, ch);
+            break;
+        };
+        if (base.size() > 0)
+        {
+            if (_col > 0 && phosphate.size() == 0)
             {
-                _seq_id++;
-                if (_added_templates.count(std::make_pair(MonomerType::Base, std::string(1, ch))) == 0 &&
-                    !addTemplate(mol, std::string(1, ch), MonomerType::Base))
-                    invalid_symbols += ch;
-                else
-                {
-                    if (_added_templates.count(std::make_pair(MonomerType::Sugar, nuc_sugar)) == 0)
-                        addTemplate(mol, nuc_sugar, MonomerType::Sugar);
-
-                    if (_added_templates.count(std::make_pair(MonomerType::Phosphate, nuc_phosphate)) == 0)
-                        addTemplate(mol, nuc_phosphate, MonomerType::Phosphate);
-
-                    addNucleotide(mol, ch, nuc_sugar, nuc_phosphate);
-                    // check for modified phosphate
-                    int next_char = _scanner.lookNext();
-                    if (next_char > 0)
-                    {
-                        if (next_char == '*')
-                        {
-                            _scanner.skip(1);
-                            if (_scanner.lookNext() > 0)
-                                nuc_phosphate = "sP";
-                            else
-                                nuc_phosphate = IDT_DEF_PHOSPHATE;
-                        }
-                        else
-                            nuc_phosphate = IDT_DEF_PHOSPHATE;
-                    }
-                    else
-                        nuc_phosphate = IDT_DEF_PHOSPHATE;
-                    _col++;
-                }
+                phosphate = IDT_DEF_PHOSPHATE;
             }
-            else
+            if (IDT_STANDARD_BASES.count(ch) == 0)
             {
                 if (invalid_symbols.size())
                     invalid_symbols += ',';
                 invalid_symbols += ch;
             }
-            nuc_sugar = IDT_DEF_SUGAR; // reset sugar to default
-            break;
+            else
+            {
+                if (!checkAddTemplate(mol, MonomerType::Base, base))
+                    throw Error("Unknown base '%s'", base);
+                if (!checkAddTemplate(mol, MonomerType::Sugar, sugar))
+                    throw Error("Unknown sugar '%s'", sugar);
+                if (phosphate.size() > 0 && !checkAddTemplate(mol, MonomerType::Phosphate, phosphate))
+                    throw Error("Unknown phosphate '%s'", phosphate);
+
+                _seq_id++;
+
+                addNucleotide(mol, ch, sugar, phosphate);
+                _col++;
+            }
+            sugar = IDT_DEF_SUGAR; // reset sugar to default
+            phosphate = "";
+            base = "";
         }
     }
 

@@ -454,6 +454,12 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadFastaFromString(str, seq_type)));
         }
 
+        public IndigoObject loadIDT(string str)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadIDTFromString(str)));
+        }
+
         public IndigoObject loadSmarts(byte[] buf)
         {
             setSessionID();
@@ -476,6 +482,12 @@ namespace com.epam.indigo
         {
             setSessionID();
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadFastaFromFile(path, seq_type)));
+        }
+
+        public IndigoObject loadIDTFromFile(string path, string seq_type)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadIDTFromFile(path)));
         }
 
         public IndigoObject loadReaction(string str)
