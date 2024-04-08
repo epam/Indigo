@@ -947,6 +947,21 @@ M  END
             options.delete();
         });
     }
+
+    {
+        test("IDT", "basic", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-idt");
+            const idt = "mA*mGC";
+            const res_ket = indigo.convert(idt, "ket", options);
+            const res_ket_ref = fs.readFileSync("idt_maxmgc.ket");
+            assert.equal(res_ket, res_ket_ref.toString());
+            options.delete();
+        });
+    }
+
     // Run tests
     run();
 });

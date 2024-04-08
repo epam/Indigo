@@ -3413,6 +3413,36 @@ M  END
                 json.loads(result_dna_ket.text)["struct"], file.read()
             )
 
+    def test_convert_idt(self):
+        fname = "idt_maxmgc"
+        idt_prefix = os.path.join(joinPathPy("structures/", __file__), fname)
+
+        # IDT to ket
+        with open(idt_prefix + ".idt", "r") as file:
+            idt = file.read()
+
+        headers, data = self.get_headers(
+            {
+                "struct": idt,
+                "input_format": "chemical/x-idt",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_ket = json.loads(result.text)["struct"]
+
+        ref_prefix = os.path.join(joinPathPy("ref/", __file__), fname)
+        # write references
+        # with open(ref_prefix + ".ket", "w") as file:
+        #     file.write()
+
+        # check
+        with open(ref_prefix + ".ket", "r") as file:
+            self.assertEqual(result_ket.text, file.read())
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2, warnings="ignore")
