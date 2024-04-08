@@ -550,7 +550,7 @@ void MoleculeFingerprintBuilder::_canonicalizeFragmentAndSetBits(BaseMolecule& m
 void MoleculeFingerprintBuilder::_handleSubgraph(Graph& graph, const Array<int>& vertices, const Array<int>& edges)
 {
 
-    if (cancellation && cancellation->isCancelled())
+    if (cancellation && cancellation->isCancelled()) [[unlikely]]
         throw Error("Fingerprint calculation has been cancelled: %s", cancellation->cancelledRequestMessage());
 
     BaseMolecule& mol = (BaseMolecule&)graph;

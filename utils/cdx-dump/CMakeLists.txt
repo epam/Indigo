@@ -6,7 +6,8 @@ if (MSVC)
     string(APPEND CMAKE_CXX_FLAGS " -W4 -WX")
 endif ()
 
-add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
+add_executable(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+        ../bingo-file/bingo-index.cpp)
 target_link_libraries(${PROJECT_NAME}
         PUBLIC indigo-core)
 
