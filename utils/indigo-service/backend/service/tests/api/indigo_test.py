@@ -3432,6 +3432,9 @@ M  END
         result = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
+        print("result=", result)
+        print("result.text=",result.text)
+        print("result.text as json="json.loads(result.text))
         result_ket = json.loads(result.text)["struct"]
 
         ref_prefix = os.path.join(joinPathPy("ref/", __file__), fname)
@@ -3441,7 +3444,7 @@ M  END
 
         # check
         with open(ref_prefix + ".ket", "r") as file:
-            self.assertEqual(result_ket.text, file.read())
+            self.assertEqual(result_ket, file.read())
 
 
 if __name__ == "__main__":
