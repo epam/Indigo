@@ -320,88 +320,94 @@ namespace indigo
 
         int objectId = -1;
         auto input_format = options.find("input-format");
-        if (input_format != options.end() && (input_format->second == "smarts" || input_format->second == "chemical/x-daylight-smarts"))
+        if (input_format != options.end())
         {
-            print_js("load as smarts");
-            objectId = indigoLoadSmartsFromBuffer(data.c_str(), data.size());
-            if (objectId >= 0)
+            if (input_format->second == "smarts" || input_format->second == "chemical/x-daylight-smarts")
             {
-                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
-            }
-            exceptionMessages.emplace_back(indigoGetLastError());
-            // Let's try reaction
-            print_js("try as reaction");
-            objectId = indigoLoadReactionSmartsFromBuffer(data.c_str(), data.size());
-            if (objectId >= 0)
-            {
-                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
-            }
-            exceptionMessages.emplace_back(indigoGetLastError());
-        }
-        else if (input_format != options.end() && seq_formats.count(input_format->second))
-        {
-            auto seq_it = seq_formats.find(input_format->second);
-            objectId = indigoLoadSequenceFromString(data.c_str(), seq_it->second.c_str());
-            if (objectId >= 0)
-                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
-        }
-        else if (input_format != options.end() && fasta_formats.count(input_format->second))
-        {
-            auto fasta_it = fasta_formats.find(input_format->second);
-            objectId = indigoLoadFastaFromString(data.c_str(), fasta_it->second.c_str());
-            if (objectId >= 0)
-                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
-        }
-        else
-        {
-            if (data.find("InChI") == 0)
-            {
-                objectId = indigoInchiLoadMolecule(data.c_str());
-                if (objectId >= 0)
-                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
-            }
-            bool query = false;
-            auto i = options.find("query");
-            if (i != options.end() and i->second == "true")
-            {
-                query = true;
-            }
-            if (!query)
-            {
-                // Let's try a simple molecule
-                print_js("try as molecule");
-                objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
+                print_js("load as smarts");
+                objectId = indigoLoadSmartsFromBuffer(data.c_str(), data.size());
                 if (objectId >= 0)
                 {
-                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
                 }
                 exceptionMessages.emplace_back(indigoGetLastError());
-
                 // Let's try reaction
                 print_js("try as reaction");
-                objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
+                objectId = indigoLoadReactionSmartsFromBuffer(data.c_str(), data.size());
                 if (objectId >= 0)
                 {
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
                 }
                 exceptionMessages.emplace_back(indigoGetLastError());
             }
-            exceptionMessages.emplace_back(indigoGetLastError());
-            // Let's try query molecule
-            print_js("try as query molecule");
-            objectId = indigoLoadQueryMoleculeFromBuffer(data.c_str(), data.size());
+            else if (seq_formats.count(input_format->second))
+            {
+                auto seq_it = seq_formats.find(input_format->second);
+                objectId = indigoLoadSequenceFromString(data.c_str(), seq_it->second.c_str());
+                if (objectId >= 0)
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            }
+            else if (fasta_formats.count(input_format->second))
+            {
+                auto fasta_it = fasta_formats.find(input_format->second);
+                objectId = indigoLoadFastaFromString(data.c_str(), fasta_it->second.c_str());
+                if (objectId >= 0)
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            }
+            else if (input_format->second == "chemical/x-idt")
+            {
+                objectId = indigoLoadIDTFromString(data.c_str());
+                if (objectId >= 0)
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            }
+        }
+        if (data.find("InChI") == 0)
+        {
+            objectId = indigoInchiLoadMolecule(data.c_str());
+            if (objectId >= 0)
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+        }
+        bool query = false;
+        auto i = options.find("query");
+        if (i != options.end() and i->second == "true")
+        {
+            query = true;
+        }
+        if (!query)
+        {
+            // Let's try a simple molecule
+            print_js("try as molecule");
+            objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
             if (objectId >= 0)
             {
-                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
             }
             exceptionMessages.emplace_back(indigoGetLastError());
-            // Let's try query reaction
-            print_js("try as query reaction");
-            objectId = indigoLoadQueryReactionFromBuffer(data.c_str(), data.size());
+
+            // Let's try reaction
+            print_js("try as reaction");
+            objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
             if (objectId >= 0)
             {
-                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReactionQuery);
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
             }
+            exceptionMessages.emplace_back(indigoGetLastError());
+        }
+        exceptionMessages.emplace_back(indigoGetLastError());
+        // Let's try query molecule
+        print_js("try as query molecule");
+        objectId = indigoLoadQueryMoleculeFromBuffer(data.c_str(), data.size());
+        if (objectId >= 0)
+        {
+            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
+        }
+        exceptionMessages.emplace_back(indigoGetLastError());
+        // Let's try query reaction
+        print_js("try as query reaction");
+        objectId = indigoLoadQueryReactionFromBuffer(data.c_str(), data.size());
+        if (objectId >= 0)
+        {
+            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReactionQuery);
         }
         // It's not anything we can load, let's throw an exception
         std::stringstream ss;

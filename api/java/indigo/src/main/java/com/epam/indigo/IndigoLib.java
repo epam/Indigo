@@ -129,6 +129,12 @@ public interface IndigoLib extends Library {
 
     int indigoLoadFastaFromFile(String filename, String seq_type);
 
+    int indigoLoadIDT(int source);
+
+    int indigoLoadIDTFromString(String str);
+
+    int indigoLoadIDTFromFile(String filename);
+
     int indigoLoadStructureFromString(String str, String params);
 
     int indigoLoadStructureFromFile(String filename, String params);
