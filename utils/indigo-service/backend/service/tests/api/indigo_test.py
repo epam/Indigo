@@ -474,12 +474,13 @@ M  END\n",
             data="c1ccccc1",
         )
         self.assertEqual(400, result.status_code)
-        expected_text = "ValidationError: {'input_format': ['Must be one of: chemical/x-mdl-rxnfile, \
-chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
-chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, \
-chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, \
-chemical/x-peptide-fasta, chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, chemical/x-idt.']}"
+        formats = "chemical/x-mdl-rxnfile, chemical/x-mdl-molfile, chemical/x-indigo-ket, \
+chemical/x-daylight-smiles, chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, \
+chemical/x-iupac, chemical/x-daylight-smarts, chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, \
+chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, \
+chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, chemical/x-peptide-fasta, \
+chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, chemical/x-idt."
+        expected_text = "ValidationError: {'input_format': ['Must be one of: %s']}" % formats
         self.assertEquals(
             expected_text,
             result.text,
@@ -494,10 +495,7 @@ chemical/x-peptide-fasta, chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x
             data="c1ccccc1",
         )
         self.assertEqual(400, result.status_code)
-        expected_text = "ValidationError: {'output_format': ['Must be one of: chemical/x-mdl-rxnfile, \
-chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
-chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, chemical/x-peptide-fasta, chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta.']}"
+        expected_text = "ValidationError: {'output_format': ['Must be one of: %s']}" % formats
         self.assertEquals(
             expected_text,
             result.text,
@@ -592,7 +590,7 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml, chemical/x
             self.url_prefix + "/convert", headers=headers, data=data
         )
         self.assertEqual(200, result.status_code)
-        print(result.text)
+        #print(result.text)
 
     def test_convert_correct(self):
         formats = (
@@ -3439,7 +3437,7 @@ M  END
         ref_prefix = os.path.join(joinPathPy("ref/", __file__), fname)
         # write references
         # with open(ref_prefix + ".ket", "w") as file:
-        #     file.write()
+        #     file.write(result_ket)
 
         # check
         with open(ref_prefix + ".ket", "r") as file:
