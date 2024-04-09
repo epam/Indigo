@@ -480,7 +480,10 @@ chemical/x-iupac, chemical/x-daylight-smarts, chemical/x-inchi-aux, chemical/x-c
 chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, \
 chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, chemical/x-peptide-fasta, \
 chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, chemical/x-idt."
-        expected_text = "ValidationError: {'input_format': ['Must be one of: %s']}" % formats
+        expected_text = (
+            "ValidationError: {'input_format': ['Must be one of: %s']}"
+            % formats
+        )
         self.assertEquals(
             expected_text,
             result.text,
@@ -495,7 +498,10 @@ chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, chemical/x-idt."
             data="c1ccccc1",
         )
         self.assertEqual(400, result.status_code)
-        expected_text = "ValidationError: {'output_format': ['Must be one of: %s']}" % formats
+        expected_text = (
+            "ValidationError: {'output_format': ['Must be one of: %s']}"
+            % formats
+        )
         self.assertEquals(
             expected_text,
             result.text,
@@ -590,7 +596,7 @@ chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, chemical/x-idt."
             self.url_prefix + "/convert", headers=headers, data=data
         )
         self.assertEqual(200, result.status_code)
-        #print(result.text)
+        # print(result.text)
 
     def test_convert_correct(self):
         formats = (
