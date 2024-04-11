@@ -67,7 +67,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
                 std::string monomer = mol.getTemplateAtom(atom_idx);
                 if (monomer_class != kMonomerClassSUGAR)
                     if (used_atoms.size() > 1)
-                        throw Error("Canot save molecule in IDT format - expected shugar but found %s.", monomer);
+                        throw Error("Canot save molecule in IDT format - expected shugar but found %s.", monomer.c_str());
                     else if (monomer_class != kMonomerClassPHOSPHATE && monomer == "P") // first monomer is "P"
                     {
                         seq_string += "/5Phos/";
@@ -75,7 +75,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
                     }
                     else
                     {
-                        throw Error("Canot save molecule in IDT format - monomer %s cannot be first.", monomer);
+                        throw Error("Canot save molecule in IDT format - monomer %s cannot be first.", monomer.c_str());
                     }
                 if (monomer == "R")
                     seq_string += "r";
@@ -84,7 +84,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
                 else if (monomer == "mR")
                     seq_string += "m";
                 else if (monomer != "dR")
-                    throw Error("Canot save molecule in IDT format - unknown sugar %s.", monomer);
+                    throw Error("Canot save molecule in IDT format - unknown sugar %s.", monomer.c_str());
                 auto& v = mol.getVertex(atom_idx);
                 std::string base;
                 std::string phosphate;
@@ -100,24 +100,24 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
                         if (monomer_class == kMonomerClassBASE)
                         {
                             if (base.size() > 0)
-                                throw Error("Canot save molecule in IDT format - sugar %s with two base connected %s and %s.", monomer, base,
+                                throw Error("Canot save molecule in IDT format - sugar %s with two base connected %s and %s.", monomer.c_str(), base.c_str(),
                                             mol.getTemplateAtom(nei_atom_idx));
                             base = mol.getTemplateAtom(nei_atom_idx);
                             if (IDT_STANDARD_BASES.count(base) == 0)
-                                throw Error("Canot save molecule in IDT format - unknown base %s.", base);
+                                throw Error("Canot save molecule in IDT format - unknown base %s.", base.c_str());
                             seq_string += base;
                         }
                         else if (monomer_class == kMonomerClassPHOSPHATE)
                         {
                             if (phosphate.size() > 0) // left phosphate should be in used_atoms and skiped
-                                throw Error("Canot save molecule in IDT format - sugar %s with too much phosphates connected %s and %s.", monomer, phosphate,
-                                            mol.getTemplateAtom(nei_atom_idx));
+                                throw Error("Canot save molecule in IDT format - sugar %s with too much phosphates connected %s and %s.", monomer.c_str(),
+                                            phosphate.c_str(), mol.getTemplateAtom(nei_atom_idx));
                             phosphate = mol.getTemplateAtom(nei_atom_idx);
                         }
                         else
                         {
-                            throw Error("Canot save molecule in IDT format - sugar %s connected to unknown monomer %s with class %s.", monomer,
-                                        mol.getTemplateAtom(nei_atom_idx), monomer_class);
+                            throw Error("Canot save molecule in IDT format - sugar %s connected to unknown monomer %s with class %s.", monomer.c_str(),
+                                        mol.getTemplateAtom(nei_atom_idx), monomer_class.c_str());
                         }
                     }
                     else
@@ -246,10 +246,12 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         if (seq_string.size())
         {
             if (seq_text.size() > 0)
+            {
                 if (sf == SeqFormat::Sequence)
                     seq_text += " ";
                 else if (sf == SeqFormat::IDT)
                     seq_text += "\n";
+            }
             seq_text += seq_string;
         }
         seq_idx++;
