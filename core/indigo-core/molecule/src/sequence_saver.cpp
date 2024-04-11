@@ -66,17 +66,14 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
                 std::string monomer_class = mol.getTemplateAtomClass(atom_idx);
                 std::string monomer = mol.getTemplateAtom(atom_idx);
                 if (monomer_class != kMonomerClassSUGAR)
+                {
                     if (used_atoms.size() > 1)
                         throw Error("Canot save molecule in IDT format - expected shugar but found %s.", monomer.c_str());
-                    else if (monomer_class != kMonomerClassPHOSPHATE && monomer == "P") // first monomer is "P"
-                    {
-                        seq_string += "/5Phos/";
-                        continue;
-                    }
-                    else
-                    {
+                    if (monomer_class != kMonomerClassPHOSPHATE || monomer != "P") // first monomer can be phosphate "P"
                         throw Error("Canot save molecule in IDT format - monomer %s cannot be first.", monomer.c_str());
-                    }
+                    seq_string += "/5Phos/";
+                    continue;
+                }
                 if (monomer == "R")
                     seq_string += "r";
                 else if (monomer == "LR")
@@ -134,18 +131,19 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
                     monomer_class = mol.getTemplateAtomClass(atom_idx);
                     monomer = mol.getTemplateAtom(atom_idx);
                     if (monomer_class != kMonomerClassPHOSPHATE)
-                        throw Error("Canot save molecule in IDT format - phosphate expected between sugars but %s monomer %s found.", monomer_class, monomer);
+                        throw Error("Canot save molecule in IDT format - phosphate expected between sugars but %s monomer %s found.", monomer_class.c_str(),
+                                    monomer.c_str());
                     if (used_atoms.count(atom_idx) == 0) // phosphate should be already processed at sugar neighbours check
-                        throw Error("Canot save molecule in IDT format - phosphate %s not connected to privious sugar.", phosphate);
+                        throw Error("Canot save molecule in IDT format - phosphate %s not connected to privious sugar.", phosphate.c_str());
                     if (sequence.size() == 0)
                         if (phosphate == "P")
                             seq_string += "/3Phos/";
                         else
-                            throw Error("Canot save molecule in IDT format - phosphate %s cannot be last monomer in sequence.", phosphate);
+                            throw Error("Canot save molecule in IDT format - phosphate %s cannot be last monomer in sequence.", phosphate.c_str());
                     else if (phosphate == "sP")
                         seq_string += "*";
                     else if (phosphate != "P")
-                        throw Error("Canot save molecule in IDT format - unknown phosphate %s.", phosphate);
+                        throw Error("Canot save molecule in IDT format - unknown phosphate %s.", phosphate.c_str());
                 }
             }
         }
