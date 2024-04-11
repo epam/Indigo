@@ -196,12 +196,15 @@ bool SequenceLoader::addMonomer(BaseMolecule& mol, char ch, SeqType seq_type)
     if (_added_templates.count(std::make_pair(mt, std::string(1, ch))) == 0 && !addTemplate(mol, std::string(1, ch), mt))
         return false;
 
-    if (_seq_id == 1 && seq_type != SeqType::PEPTIDESeq)
+    if (seq_type != SeqType::PEPTIDESeq)
     {
-        // add phosphate template
-        addMonomerTemplate(mol, MonomerType::Phosphate, "P");
         // add sugar template
-        addMonomerTemplate(mol, MonomerType::Sugar, seq_type == SeqType::RNASeq ? "R" : "dR");
+        if (_seq_id == 0)
+            addMonomerTemplate(mol, MonomerType::Sugar, seq_type == SeqType::RNASeq ? "R" : "dR");
+
+        // add phosphate template
+        if (_seq_id == 1)
+            addMonomerTemplate(mol, MonomerType::Phosphate, "P");
     }
 
     _seq_id++;
