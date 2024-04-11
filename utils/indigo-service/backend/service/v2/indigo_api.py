@@ -348,7 +348,7 @@ def load_moldata(
         md.is_rxn = False
         md.is_query = False
     elif input_format == "chemical/x-idt":
-        md.struct = indigo.loadIDT(molstr)
+        md.struct = indigo.loadIdt(molstr)
         md.is_rxn = False
         md.is_query = False
     elif molstr.startswith("InChI"):
@@ -397,6 +397,8 @@ def save_moldata(md, output_format=None, options={}, indigo=None):
         return md.struct.sequence()
     elif output_format == "chemical/x-fasta":
         return md.struct.fasta()
+    elif output_format == "chemical/x-idt":
+        return md.struct.idt()
     elif output_format == "chemical/x-daylight-smiles":
         if options.get("smiles") == "canonical":
             return md.struct.canonicalSmiles()

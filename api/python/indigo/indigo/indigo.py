@@ -600,7 +600,7 @@ class Indigo:
             ),
         )
 
-    def loadIDT(self, string):
+    def loadIdt(self, string):
         """Loads molecule from IDT string
 
         Args:
@@ -616,11 +616,11 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadIDTFromString(string.encode())
+                self._lib().indigoLoadIdtFromString(string.encode())
             ),
         )
 
-    def loadIDTFromFile(self, filename):
+    def loadIdtFromFile(self, filename):
         """Loads query molecule from file in IDT sequence format
 
         Args:
@@ -636,7 +636,7 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadIDTFromFile(filename.encode())
+                self._lib().indigoLoadIdtFromFile(filename.encode())
             ),
         )
 

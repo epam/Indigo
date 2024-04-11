@@ -196,9 +196,13 @@ bool SequenceLoader::addMonomer(BaseMolecule& mol, char ch, SeqType seq_type)
     if (_added_templates.count(std::make_pair(mt, std::string(1, ch))) == 0 && !addTemplate(mol, std::string(1, ch), mt))
         return false;
 
-    // add phosphate template
     if (_seq_id == 1 && seq_type != SeqType::PEPTIDESeq)
+    {
+        // add phosphate template
         addMonomerTemplate(mol, MonomerType::Phosphate, "P");
+        // add sugar template
+        addMonomerTemplate(mol, MonomerType::Sugar, seq_type == SeqType::RNASeq ? "R" : "dR");
+    }
 
     _seq_id++;
     switch (seq_type)
@@ -238,10 +242,6 @@ void SequenceLoader::addAminoAcid(BaseMolecule& mol, char ch)
 void SequenceLoader::addNucleotide(BaseMolecule& mol, char ch, const std::string& sugar_alias, const std::string& phosphate_alias)
 {
     Vec3f pos(_col * MoleculeLayout::DEFAULT_BOND_LENGTH, -MoleculeLayout::DEFAULT_BOND_LENGTH * _row, 0);
-
-    // add sugar template
-    if (_seq_id == 1)
-        addMonomerTemplate(mol, MonomerType::Sugar, sugar_alias);
 
     // add sugar
     int sugar_idx = mol.asMolecule().addAtom(-1);
@@ -318,7 +318,7 @@ bool SequenceLoader::checkAddTemplate(BaseMolecule& mol, MonomerType type, const
     return true;
 }
 
-void SequenceLoader::loadIDT(BaseMolecule& mol)
+void SequenceLoader::loadIdt(BaseMolecule& mol)
 {
     const auto IDT_DEF_SUGAR = "dR";
     const auto IDT_DEF_PHOSPHATE = "P";

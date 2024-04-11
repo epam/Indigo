@@ -626,7 +626,7 @@ CEXPORT int indigoLoadFastaFromFile(const char* filename, const char* seq_type)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadIDT(int source)
+CEXPORT int indigoLoadIdt(int source)
 {
     INDIGO_BEGIN
     {
@@ -636,13 +636,13 @@ CEXPORT int indigoLoadIDT(int source)
         std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
 
         Molecule& mol = molptr->mol;
-        loader.loadIDT(mol);
+        loader.loadIdt(mol);
         return self.addObject(molptr.release());
     }
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadIDTFromString(const char* string)
+CEXPORT int indigoLoadIdtFromString(const char* string)
 {
     INDIGO_BEGIN
     {
@@ -652,14 +652,14 @@ CEXPORT int indigoLoadIDTFromString(const char* string)
         if (source <= 0)
             return -1;
 
-        result = indigoLoadIDT(source);
+        result = indigoLoadIdt(source);
         indigoFree(source);
         return result;
     }
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadIDTFromFile(const char* filename)
+CEXPORT int indigoLoadIdtFromFile(const char* filename)
 {
     INDIGO_BEGIN
     {
@@ -669,7 +669,7 @@ CEXPORT int indigoLoadIDTFromFile(const char* filename)
         if (source < 0)
             return -1;
 
-        result = indigoLoadIDT(source);
+        result = indigoLoadIdt(source);
         indigoFree(source);
         return result;
     }

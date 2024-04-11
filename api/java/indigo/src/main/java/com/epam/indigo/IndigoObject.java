@@ -87,6 +87,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoFasta(self));
     }
 
+    public String idt() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoIdt(self));
+    }
+
     public String getOriginalFormat() {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoGetOriginalFormat(self));

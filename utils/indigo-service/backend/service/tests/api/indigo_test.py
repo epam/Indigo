@@ -3449,6 +3449,21 @@ M  END
         with open(ref_prefix + ".ket", "r") as file:
             self.assertEqual(result_ket, file.read())
 
+        # Ket to IDT
+        headers, data = self.get_headers(
+            {
+                "struct": result_ket,
+                "input_format": "chemical/x-indigo-ket",
+                "output_format": "chemical/x-idt",
+            }
+        )
+
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_idt = json.loads(result.text)["struct"]
+        self.assertEqual(idt, result_idt)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2, warnings="ignore")

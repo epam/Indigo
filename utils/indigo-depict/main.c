@@ -939,7 +939,7 @@ int main(int argc, char* argv[])
         }
         else if (strcasecmp(p.infile_ext, "idt") == 0)
         {
-            obj = indigoLoadIDT(reader);
+            obj = indigoLoadIdt(reader);
         }
         else
             obj = indigoLoadMolecule(reader);
