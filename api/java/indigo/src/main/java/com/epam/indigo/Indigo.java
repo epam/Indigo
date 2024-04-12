@@ -380,14 +380,14 @@ public class Indigo {
         return new IndigoObject(this, checkResult(this, lib.indigoLoadFastaFromFile(path, seq_type)));
     }
 
-    public IndigoObject loadIDT(String str) {
+    public IndigoObject loadIdt(String str) {
         setSessionID();
-        return new IndigoObject(this, checkResult(this, lib.indigoLoadIDTFromString(str)));
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadIdtFromString(str)));
     }
 
-    public IndigoObject loadIDTFromFile(String path) {
+    public IndigoObject loadIdtFromFile(String path) {
         setSessionID();
-        return new IndigoObject(this, checkResult(this, lib.indigoLoadIDTFromFile(path)));
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadIdtFromFile(path)));
     }
 
     public IndigoObject loadReaction(String str) {

@@ -135,7 +135,7 @@ namespace com.epam.indigo
         public static extern int indigoLoadFastaFromString(string str, string seq_type);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadIDTFromString(string str);
+        public static extern int indigoLoadIdtFromString(string str);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadSequenceFromFile(string filename, string seq_type);
@@ -144,7 +144,7 @@ namespace com.epam.indigo
         public static extern int indigoLoadFastaFromFile(string filename, string seq_type);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadIDTFromFile(string filename);
+        public static extern int indigoLoadIdtFromFile(string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadSmartsFromBuffer(byte[] buffer, int size);
@@ -175,6 +175,9 @@ namespace com.epam.indigo
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoFasta(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern byte* indigoIdt(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoSaveCml(int molecule, int output);

@@ -411,7 +411,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
                 }
                 else if (kIDT == tag.data())
                 {
-                    sl.loadIDT(mol);
+                    sl.loadIdt(mol);
                     return;
                 }
                 else

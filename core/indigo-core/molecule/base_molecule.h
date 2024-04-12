@@ -286,6 +286,7 @@ namespace indigo
 
         // human-readable atom and bond desciptions for diagnostic purposes
         virtual void getAtomDescription(int idx, Array<char>& description) = 0;
+        std::string getAtomDescription(int idx);
         virtual void getBondDescription(int idx, Array<char>& description) = 0;
 
         // true if the bond can be that order, false otherwise

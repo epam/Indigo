@@ -4637,6 +4637,13 @@ void BaseMolecule::transformTemplatesToSuperatoms(MonomerFilterBase& filter)
     }
 }
 
+std::string BaseMolecule::getAtomDescription(int idx)
+{
+    Array<char> description;
+    getAtomDescription(idx, description);
+    return std::string(description.ptr(), description.size());
+}
+
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif

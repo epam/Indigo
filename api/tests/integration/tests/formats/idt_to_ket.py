@@ -29,7 +29,7 @@ fasta_files = [
 ]
 
 for filename in fasta_files:
-    mol = indigo.loadIDTFromFile(os.path.join(root, filename + ".idt"))
+    mol = indigo.loadIdtFromFile(os.path.join(root, filename + ".idt"))
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
     #     file.write(mol.json())
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
