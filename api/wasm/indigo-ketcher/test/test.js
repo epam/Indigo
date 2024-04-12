@@ -958,10 +958,14 @@ M  END
             const res_ket = indigo.convert(idt, "ket", options);
             const res_ket_ref = fs.readFileSync("idt_maxmgc.ket");
             assert.equal(res_ket, res_ket_ref.toString());
+            console.log("Idt to ket:ok");
             let save_options = new indigo.MapStringString();
             save_options.set("output-content-type", "application/json");
             save_options.set("input-format", "chemical/x-indigo-ket");
+            console.log("try to convert ket to idt");
             const res_idt = indigo.convert(res_ket, "idt", save_options);
+            console.log("idt:", idt);
+            console.log("res_idt:", res_idt);
             assert.equal(idt, res_idt);
             options.delete();
             save_options.delete();
