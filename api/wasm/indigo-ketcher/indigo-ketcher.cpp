@@ -324,46 +324,44 @@ namespace indigo
 
         int objectId = -1;
         auto input_format = options.find("input-format");
-        if (input_format != options.end())
+        if (input_format != options.end() && (input_format->second == "smarts" || input_format->second == "chemical/x-daylight-smarts"))
         {
-            if (input_format->second == "smarts" || input_format->second == "chemical/x-daylight-smarts")
+            print_js("load as smarts");
+            objectId = indigoLoadSmartsFromBuffer(data.c_str(), data.size());
+            if (objectId >= 0)
             {
-                print_js("load as smarts");
-                objectId = indigoLoadSmartsFromBuffer(data.c_str(), data.size());
-                if (objectId >= 0)
-                {
-                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
-                }
-                exceptionMessages.emplace_back(indigoGetLastError());
-                // Let's try reaction
-                print_js("try as reaction");
-                objectId = indigoLoadReactionSmartsFromBuffer(data.c_str(), data.size());
-                if (objectId >= 0)
-                {
-                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
-                }
-                exceptionMessages.emplace_back(indigoGetLastError());
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
             }
-            else if (seq_formats.count(input_format->second))
+            exceptionMessages.emplace_back(indigoGetLastError());
+            // Let's try reaction
+            print_js("try as reaction");
+            objectId = indigoLoadReactionSmartsFromBuffer(data.c_str(), data.size());
+            if (objectId >= 0)
             {
-                auto seq_it = seq_formats.find(input_format->second);
-                objectId = indigoLoadSequenceFromString(data.c_str(), seq_it->second.c_str());
-                if (objectId >= 0)
-                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
             }
-            else if (fasta_formats.count(input_format->second))
-            {
-                auto fasta_it = fasta_formats.find(input_format->second);
-                objectId = indigoLoadFastaFromString(data.c_str(), fasta_it->second.c_str());
-                if (objectId >= 0)
-                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
-            }
-            else if (input_format->second == "chemical/x-idt")
-            {
-                objectId = indigoLoadIdtFromString(data.c_str());
-                if (objectId >= 0)
-                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
-            }
+            exceptionMessages.emplace_back(indigoGetLastError());
+        }
+        else if (input_format != options.end() && seq_formats.count(input_format->second))
+        {
+            auto seq_it = seq_formats.find(input_format->second);
+            objectId = indigoLoadSequenceFromString(data.c_str(), seq_it->second.c_str());
+            if (objectId >= 0)
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+        }
+        else if (input_format != options.end() && fasta_formats.count(input_format->second))
+        {
+            auto fasta_it = fasta_formats.find(input_format->second);
+            objectId = indigoLoadFastaFromString(data.c_str(), fasta_it->second.c_str());
+            if (objectId >= 0)
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+        }
+        else if (input_format != options.end() && input_format->second == "chemical/x-idt")
+        {
+            objectId = indigoLoadIdtFromString(data.c_str());
+            if (objectId >= 0)
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            exceptionMessages.emplace_back(indigoGetLastError());
         }
         else
         {
