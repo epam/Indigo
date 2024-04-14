@@ -778,7 +778,7 @@ jobs:
   build_indigo_ketcher:
     runs-on: ubuntu-latest
     needs: static_analysis
-    container: emscripten/emsdk:1.40.1
+    container: emscripten/emsdk:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -810,7 +810,7 @@ jobs:
   build_indigo_ketcher_cjk:
     runs-on: ubuntu-latest
     needs: static_analysis
-    container: emscripten/emsdk:1.40.1
+    container: emscripten/emsdk:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
