@@ -1,9 +1,9 @@
 ![Build Status](https://github.com/epam/indigo/workflows/CI/badge.svg)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-# EPAM Indigo projects #
+# EPAM Indigo projects
 
-Copyright (c) 2009-2022 EPAM Systems, Inc.
+Copyright (c) 2009-2024 EPAM Systems, Inc.
 
 Licensed under the [Apache License version 2.0](LICENSE)
 
