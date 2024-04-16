@@ -44,6 +44,8 @@ namespace indigo
             IDT
         };
 
+        static constexpr uint32_t SEQ_LINE_LENGTH = 80;
+
         DECL_ERROR;
 
         SequenceSaver(Output& output);
