@@ -26,16 +26,10 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeLayoutGraph, "layout_graph");
 
-MoleculeLayoutGraph::MoleculeLayoutGraph() : Graph()
+MoleculeLayoutGraph::MoleculeLayoutGraph()
+    : Graph(), _flipped(false), max_iterations(-1), layout_orientation(UNCPECIFIED), preserve_existing_layout(false), cancellation(nullptr),
+      _total_morgan_code(0), _first_vertex_idx(-1), _n_fixed(0), _molecule(nullptr), _molecule_edge_mapping(nullptr)
 {
-    _total_morgan_code = 0;
-    _first_vertex_idx = -1;
-    _n_fixed = 0;
-    _molecule = 0;
-    _molecule_edge_mapping = 0;
-    cancellation = 0;
-    _flipped = false;
-    preserve_existing_layout = false;
 }
 
 MoleculeLayoutGraph::~MoleculeLayoutGraph()

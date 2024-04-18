@@ -1,0 +1,69 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ],
+        "connections": [],
+        "templates": []
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    15.249374214363929,
+                    -11.282470415521408,
+                    0
+                ],
+                "explicitValence": 8
+            },
+            {
+                "label": "C",
+                "location": [
+                    16.25062578563607,
+                    -11.282470415521408,
+                    0
+                ],
+                "explicitValence": 8
+            },
+            {
+                "label": "C",
+                "location": [
+                    15.750050188048686,
+                    -10.417529584478597,
+                    0
+                ],
+                "explicitValence": 8
+            }
+        ],
+        "bonds": [
+            {
+                "type": 4,
+                "atoms": [
+                    0,
+                    1
+                ],
+                "topology": 1
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    1,
+                    2
+                ],
+                "topology": 1
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    2,
+                    0
+                ],
+                "topology": 1
+            }
+        ]
+    }
+}

@@ -968,6 +968,25 @@ M  END
         });
     }
 
+    {
+        test("unfold-ci-error", "basic", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-indigo-ket");
+            const ket = fs.readFileSync("failed_unfold.ket");
+            const ket_unfold = JSON.parse(indigo.convert_explicit_hydrogens(ket, "unfold", "ket", options)).struct;
+
+            // fs.writeFileSync("failed_unfold_ref.ket", ket_unfold);
+
+            const ket_unfold_ref = fs.readFileSync("failed_unfold_ref.ket").toString();
+
+            assert.equal(ket_unfold, ket_unfold_ref);
+
+            options.delete();
+        });
+    }
+
     // Run tests
     run();
 });
