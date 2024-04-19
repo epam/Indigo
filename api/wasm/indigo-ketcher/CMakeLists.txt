@@ -43,6 +43,7 @@ if (NOT RENDER_ENABLE_CJK)
             COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/LICENSE ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
             COMMAND npm install
             COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/test/ ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+            COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_LIST_DIR}/patch.cmake
             COMMAND npm test
             COMMAND npm pack
             COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}
