@@ -10,7 +10,7 @@ set(EMCC_FLAGS
         -s INITIAL_MEMORY=32mb
         -s ALLOW_MEMORY_GROWTH=1
         -s DISABLE_EXCEPTION_CATCHING=0
-        -s SINGLE_FILE=1
+        -s SINGLE_FILE=0
         -s MODULARIZE=1
         -s FILESYSTEM=0
         -s ASSERTIONS=1
@@ -58,6 +58,7 @@ else ()
             COMMAND npm install
             COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/test/ ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
             COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/test-cjk/ ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+            COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_LIST_DIR}/patch.cmake
             COMMAND npm test
             COMMAND npm run test_cjk
             COMMAND npm pack
