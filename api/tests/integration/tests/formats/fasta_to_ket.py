@@ -51,5 +51,5 @@ for desc in fasta_files:
         else:
             print(filename + ".ket:FAILED")
             print(diff)
-    except Exception as e:
-        print(filename + ".fasta" + ":" + str(e))
+    except:
+        print(filename + ".fasta" + ":" + str(sys.exc_info()[1]))
