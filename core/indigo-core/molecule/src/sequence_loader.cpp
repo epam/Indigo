@@ -35,9 +35,6 @@ IMPL_ERROR(SequenceLoader, "SEQUENCE loader");
 SequenceLoader::SequenceLoader(Scanner& scanner)
     : _scanner(scanner), _mon_lib(MonomerTemplates::_instance()), _seq_id(0), _last_monomer_idx(-1), _row(-1), _col(0)
 {
-    _left_apid.readString(kLeftAttachmentPoint, true);
-    _right_apid.readString(kRightAttachmentPoint, true);
-    _xlink_apid.readString(kBranchAttachmentPoint, true);
 }
 
 SequenceLoader::~SequenceLoader()
@@ -62,6 +59,7 @@ void SequenceLoader::loadFasta(BaseMolecule& mol, SeqType seq_type)
     _last_monomer_idx = -1;
     _row = 0;
     _col = 0;
+    const int row_size = seq_type == SeqType::PEPTIDESeq ? 1 : 2;
     int frag_idx = 0;
     std::string invalid_symbols;
     Array<int> mapping;
@@ -86,7 +84,7 @@ void SequenceLoader::loadFasta(BaseMolecule& mol, SeqType seq_type)
                 {
                     _seq_id = 0;
                     _col = 0;
-                    _row++;
+                    _row += row_size;
                 }
                 _last_monomer_idx = -1;
                 properties.insert(kFASTA_HEADER, fasta_str);
@@ -102,11 +100,11 @@ void SequenceLoader::loadFasta(BaseMolecule& mol, SeqType seq_type)
             {
                 if (ch == '-')
                     continue;
-                else if (ch == '*' && mol.vertexCount())
+                else if (ch == '*' && seq_type == SeqType::PEPTIDESeq && mol.vertexCount())
                 {
                     _seq_id = 0;
                     _col = 0;
-                    _row++;
+                    _row += row_size;
                     continue;
                 }
                 else if (!addMonomer(mol, ch, seq_type))
@@ -150,6 +148,7 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
     _last_monomer_idx = -1;
     _row = 0;
     _col = 0;
+    const int row_size = seq_type == SeqType::PEPTIDESeq ? 1 : 2;
     mol.clear();
     std::string invalid_symbols;
     while (!_scanner.isEOF())
@@ -161,7 +160,7 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
         {
             _seq_id = 0;
             _col = 0;
-            _row++;
+            _row += row_size;
             continue;
         }
         if (!addMonomer(mol, ch, seq_type))
@@ -237,8 +236,8 @@ void SequenceLoader::addAminoAcid(BaseMolecule& mol, char ch)
     if (_seq_id > 1)
     {
         mol.asMolecule().addBond_Silent(amino_idx - 1, amino_idx, BOND_SINGLE);
-        mol.setTemplateAtomAttachmentDestination(amino_idx - 1, amino_idx, _right_apid);
-        mol.setTemplateAtomAttachmentDestination(amino_idx, amino_idx - 1, _left_apid);
+        mol.setTemplateAtomAttachmentOrder(amino_idx - 1, amino_idx, kRightAttachmentPoint);
+        mol.setTemplateAtomAttachmentOrder(amino_idx, amino_idx - 1, kLeftAttachmentPoint);
     }
 }
 
@@ -264,8 +263,8 @@ void SequenceLoader::addNucleotide(BaseMolecule& mol, char ch, const std::string
 
     // connect sugar to nucleobase
     mol.asMolecule().addBond_Silent(sugar_idx, nuc_base_idx, BOND_SINGLE);
-    mol.asMolecule().setTemplateAtomAttachmentDestination(sugar_idx, nuc_base_idx, _xlink_apid);
-    mol.asMolecule().setTemplateAtomAttachmentDestination(nuc_base_idx, sugar_idx, _left_apid);
+    mol.asMolecule().setTemplateAtomAttachmentOrder(sugar_idx, nuc_base_idx, kBranchAttachmentPoint);
+    mol.asMolecule().setTemplateAtomAttachmentOrder(nuc_base_idx, sugar_idx, kLeftAttachmentPoint);
 
     if (_seq_id > 1 && phosphate_alias.size())
     {
@@ -279,20 +278,20 @@ void SequenceLoader::addNucleotide(BaseMolecule& mol, char ch, const std::string
 
         // connect phosphate to the last sugar
         mol.asMolecule().addBond_Silent(_last_monomer_idx, phosphate_idx, BOND_SINGLE);
-        mol.asMolecule().setTemplateAtomAttachmentDestination(phosphate_idx, _last_monomer_idx, _left_apid);
-        mol.asMolecule().setTemplateAtomAttachmentDestination(_last_monomer_idx, phosphate_idx, _right_apid);
+        mol.asMolecule().setTemplateAtomAttachmentOrder(phosphate_idx, _last_monomer_idx, kLeftAttachmentPoint);
+        mol.asMolecule().setTemplateAtomAttachmentOrder(_last_monomer_idx, phosphate_idx, kRightAttachmentPoint);
 
         // connect phosphate to the current sugar
         mol.asMolecule().addBond_Silent(phosphate_idx, sugar_idx, BOND_SINGLE);
-        mol.asMolecule().setTemplateAtomAttachmentDestination(phosphate_idx, sugar_idx, _right_apid);
-        mol.asMolecule().setTemplateAtomAttachmentDestination(sugar_idx, phosphate_idx, _left_apid);
+        mol.asMolecule().setTemplateAtomAttachmentOrder(phosphate_idx, sugar_idx, kRightAttachmentPoint);
+        mol.asMolecule().setTemplateAtomAttachmentOrder(sugar_idx, phosphate_idx, kLeftAttachmentPoint);
     }
     else if (_last_monomer_idx >= 0)
     {
         // No phosphate - connect sugar to previous monomer
         mol.asMolecule().addBond_Silent(_last_monomer_idx, sugar_idx, BOND_SINGLE);
-        mol.asMolecule().setTemplateAtomAttachmentDestination(sugar_idx, _last_monomer_idx, _left_apid);
-        mol.asMolecule().setTemplateAtomAttachmentDestination(_last_monomer_idx, sugar_idx, _right_apid);
+        mol.asMolecule().setTemplateAtomAttachmentOrder(sugar_idx, _last_monomer_idx, kLeftAttachmentPoint);
+        mol.asMolecule().setTemplateAtomAttachmentOrder(_last_monomer_idx, sugar_idx, kRightAttachmentPoint);
     }
     _last_monomer_idx = sugar_idx;
     _col++;
