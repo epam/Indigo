@@ -7,6 +7,9 @@ assignees: ''
 
 ---
 
+**Summary**
+Short summary of problem here
+
 **Steps to Reproduce**
 1. Use Indigo library (Bingo cartridge). Describe environment
 2. Add script or SQL to reproduce the issue
