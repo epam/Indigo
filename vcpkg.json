@@ -1,0 +1,14 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
+  "dependencies": [
+    "cairo",
+    "cppcodec",
+    "gtest",
+    "rapidjson",
+    "tinyxml2",
+    "zlib"
+  ],
+  "description": "Hitachi EPAM Genome Analysis Toolset",
+  "name": "hit-ganp",
+  "version-string": "2024.03.02"
+}

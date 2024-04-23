@@ -48,14 +48,14 @@ if (BUILD_STANDALONE)
             PUBLIC inchi
             PUBLIC cppcodec)
 else()
-    find_package(InChI REQUIRED)
-    find_package(TinyXML2 REQUIRED)
+#    find_package(InChI REQUIRED)
+    find_package(tinyxml2 REQUIRED)
     find_package(ZLIB REQUIRED)
     find_package(RapidJSON REQUIRED)
     target_link_libraries(${PROJECT_NAME}
-            PUBLIC InChI::InChI
+            PUBLIC inchi
             PUBLIC RapidJSON::RapidJSON
-            PUBLIC TinyXML2::TinyXML2
+            PUBLIC tinyxml2::tinyxml2
             PUBLIC ZLIB::ZLIB)
 endif()
 target_include_directories(${PROJECT_NAME}

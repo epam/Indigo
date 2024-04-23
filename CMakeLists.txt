@@ -8,9 +8,9 @@ cmake_minimum_required(VERSION 3.9)
 # Options
 
 # Common options
-option(ENABLE_TESTS "Enable CTest tests" ON)
+option(ENABLE_TESTS "EVCPKG_CHAINLOAD_TOOLCHAIN_FILEnable CTest tests" ON)
 
-option(BUILD_STANDALONE "Build without any system dependencies except for libc, otherwise require tinyxml2, zlib, rapidjson, and cairo for renderer" ON)
+option(BUILD_STANDALONE "Build without any system dependencies except for libc, otherwise require tinyxml2, zlib, rapidjson, and cairo for renderer" OFF)
 option(USE_CLANG_TIDY "Use clang-tidy for static analysis" OFF)
 option(WITH_STATIC "Build Indigo static library as well as shared" OFF)
 
@@ -72,6 +72,7 @@ endif()
 
 if (EMSCRIPTEN)
     message(STATUS "Emscripten build: Disabling all except indigo-ketcher and indigo-wasm, and enabling them")
+    set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE "${CMAKE_TOOLCHAIN_FILE}")
     set(ENABLE_TESTS OFF)
     set(BUILD_STANDALONE ON)
     set(BUILD_INDIGO_WRAPPERS OFF)
@@ -109,6 +110,7 @@ message(STATUS "BUILD_BINGO_ELASTIC=${BUILD_BINGO_ELASTIC}")
 # Set up compiler flags and other preparatory steps
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(setup)
+include(vcpkg)
 
 # In subprojects we'll add dependencies for this pseudo-target to build all packages at once
 if (BUILD_INDIGO OR BUILD_INDIGO_UTILS OR BUILD_BINGO_POSTGRES OR BUILD_BINGO_ORACLE OR BUILD_BINGO_SQLSERVER)

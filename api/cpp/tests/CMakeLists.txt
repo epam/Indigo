@@ -19,7 +19,8 @@ if (ENABLE_TESTS)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common.h.in ${CMAKE_CURRENT_BINARY_DIR}/common.h)
     message(STATUS ${CMAKE_CURRENT_SOURCE_DIR}/common.h)
     add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES} main.cpp common.cpp)
-    target_link_libraries(${PROJECT_NAME} indigo-cpp gtest object_threadsafe)
+    find_package(GTest)
+    target_link_libraries(${PROJECT_NAME} indigo-cpp GTest::GTest object_threadsafe)
     target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
         PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

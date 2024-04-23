@@ -45,7 +45,12 @@ if (BUILD_STANDALONE)
 else ()
     find_package(Cairo REQUIRED)
     find_package(RapidJSON REQUIRED)
+    find_package(Freetype REQUIRED)
+    find_package(Fontconfig REQUIRED)
     target_link_libraries(${PROJECT_NAME}
             PUBLIC RapidJSON::RapidJSON
+            PUBLIC ${pkgcfg_lib_PC_CAIRO_pixman-1}
+            PUBLIC Freetype::Freetype
+            PUBLIC Fontconfig::Fontconfig
             PUBLIC Cairo::Cairo)
 endif ()
