@@ -34,6 +34,11 @@ fasta_files = [
     {"file": "test_1881", "seq_type": "PEPTIDE"},
 ]
 
+def remove_prefix(s, prefix="com.epam.indigo.IndigoException: "):
+    if s.startswith(prefix):
+        return s[len(prefix):]
+    return s
+
 for desc in fasta_files:
     filename = desc["file"]
     try:
@@ -52,4 +57,4 @@ for desc in fasta_files:
             print(filename + ".ket:FAILED")
             print(diff)
     except:
-        print(filename + ".fasta" + ":" + str(sys.exc_info()[1]))
+        print(filename + ".fasta" + ":" + remove_prefix(str(sys.exc_info()[1])))
