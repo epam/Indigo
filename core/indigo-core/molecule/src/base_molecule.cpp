@@ -85,6 +85,7 @@ void BaseMolecule::clear()
     sgroups.clear();
     tgroups.clear();
     template_attachment_points.clear();
+    template_attachment_indexes.clear();
     Graph::clear();
     _hl_atoms.clear();
     _hl_bonds.clear();
@@ -1111,11 +1112,22 @@ void BaseMolecule::setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx
     ap.ap_aidx = att_atom_idx;
     ap.ap_id.readString(att_id, false);
     ap.ap_id.push(0);
+    if (atom_idx >= template_attachment_indexes.size())
+        template_attachment_indexes.expand(atom_idx + 1);
+    template_attachment_indexes.at(atom_idx).push() = att_idx;
     updateEditRevision();
 }
 
 int BaseMolecule::getTemplateAtomAttachmentPoint(int atom_idx, int order)
 {
+    /* if (atom_idx < template_attachment_indexes.size())
+    {
+        auto& att_indexes = template_attachment_indexes.at(atom_idx);
+        if (order < att_indexes.size())
+            return att_indexes[order];
+    }
+    */
+
     int ap_count = 0;
     for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
     {
@@ -1372,6 +1384,7 @@ int BaseMolecule::transformSCSRtoFullCTAB()
     {
         tgroups.clear();
         template_attachment_points.clear();
+        template_attachment_indexes.clear();
     }
 
     /*

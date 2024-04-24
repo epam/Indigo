@@ -364,6 +364,7 @@ namespace indigo
         }
 
         ObjPool<TemplateAttPoint> template_attachment_points;
+        ObjArray<Array<int>> template_attachment_indexes;
 
         MoleculeSGroups sgroups;
 

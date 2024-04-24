@@ -645,14 +645,8 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
             if (mol.template_attachment_points.size() > 0)
             {
-                int ap_count = 0;
-                for (int j = mol.template_attachment_points.begin(); j != mol.template_attachment_points.end(); j = mol.template_attachment_points.next(j))
-                {
-                    BaseMolecule::TemplateAttPoint& ap = mol.template_attachment_points.at(j);
-                    if (ap.ap_occur_idx == i)
-                        ap_count++;
-                }
-                if (ap_count > 0)
+                int ap_count = mol.getTemplateAtomAttachmentPointsCount(i);
+                if (ap_count)
                 {
                     out.printf(" ATTCHORD=(%d", ap_count * 2);
                     for (int j = mol.template_attachment_points.begin(); j != mol.template_attachment_points.end(); j = mol.template_attachment_points.next(j))

@@ -854,7 +854,7 @@ int main(int argc, char* argv[])
     p.comment_field = NULL;
     p.comment = NULL;
     p.comment_name = 0;
-    p.seq_type = "PEPTIDE";
+    p.seq_type = "RNA";
 
     if (argc <= 2)
         USAGE();
