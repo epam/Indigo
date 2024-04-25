@@ -250,7 +250,12 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
                 else if (sf == SeqFormat::IDT)
                     seq_text += "\n";
             }
-            seq_text += seq_string;
+            seq_text += seq_string.substr(0, SEQ_LINE_LENGTH);
+            for (size_t format_ind = SEQ_LINE_LENGTH; format_ind < seq_string.size(); format_ind += SEQ_LINE_LENGTH)
+            {
+                seq_text += "\n";
+                seq_text += seq_string.substr(format_ind, SEQ_LINE_LENGTH);
+            }
         }
         seq_idx++;
     }
