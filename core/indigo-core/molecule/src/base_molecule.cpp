@@ -1115,6 +1115,8 @@ void BaseMolecule::setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx
     if (atom_idx >= template_attachment_indexes.size())
         template_attachment_indexes.expand(atom_idx + 1);
     template_attachment_indexes.at(atom_idx).push() = att_idx;
+    // int count1 = atom_idx < template_attachment_indexes.size() ? template_attachment_indexes.at(atom_idx).size() : 0;
+    // printf("atom: %d count:%d\n", atom_idx, count1);
     updateEditRevision();
 }
 
@@ -1215,6 +1217,8 @@ int BaseMolecule::getTemplateAtomAttachmentPointsCount(int atom_idx)
             count++;
         }
     }
+    // int count1 = atom_idx < template_attachment_indexes.size() ? template_attachment_indexes.at(atom_idx).size() : 0;
+    // printf("new atom: %d count: %d\n", atom_idx, count1);
     return count;
 }
 
