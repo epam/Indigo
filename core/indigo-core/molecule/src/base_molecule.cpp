@@ -1176,16 +1176,17 @@ std::optional<std::pair<int, std::reference_wrapper<ObjPool<int>>>> BaseMolecule
 int BaseMolecule::getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& att_id)
 {
     QS_DEF(Array<char>, tmp);
-    int aidx = -1;
-    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+    if (atom_idx < template_attachment_indexes.size())
     {
-        BaseMolecule::TemplateAttPoint& ap = template_attachment_points.at(j);
-        if ((ap.ap_occur_idx == atom_idx) && (ap.ap_id.memcmp(att_id) == 0))
+        auto& att_idxs = template_attachment_indexes[atom_idx];
+        for (int k = att_idxs.begin(); k != att_idxs.end(); k = att_idxs.next(k))
         {
-            return ap.ap_aidx;
+            auto& ap = template_attachment_points.at(att_idxs.at(k));
+            if( ap.ap_id.memcmp(att_id) == 0 )
+                return ap.ap_aidx;
         }
     }
-    return aidx;
+    return -1;
 }
 
 bool BaseMolecule::updateTemplateAtomAttachmentDestination(int atom_idx, int old_dest_atom_idx, int new_dest_atom_idx)
