@@ -1,7 +1,7 @@
 name: Indigo CI
 
 env:
-  OS_NAME_MAPPING_JSON: '{"ubuntu-latest": "linux", "windows-latest": "windows", "macos-latest": "macos"}'
+  OS_NAME_MAPPING_JSON: '{"ubuntu-latest": "linux", "windows-latest": "windows", "macos-13": "macos"}'
 
 on:
   push:
