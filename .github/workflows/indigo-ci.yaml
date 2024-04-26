@@ -267,7 +267,7 @@ jobs:
           name: indigo-python
           path: dist/
       - name: Install Pillow
-        run: python3 -m pip install Pillow==9.5.0
+        run: python3 -m pip install Pillow==9.5.0 --break-system-packages
       - name: Install wrappers Linux
         if: ${{ matrix.os == 'ubuntu' }}
         run: python3 -m pip install dist/*manylinux1_x86_64*.whl
