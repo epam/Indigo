@@ -36,8 +36,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos, ubuntu, windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ macos-13, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
       - name: Checkout
@@ -50,7 +50,7 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build Linux
-        if: ${{ matrix.os == 'ubuntu' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: docker://epmlsop/buildpack-centos7:latest
         with:
           args: >
@@ -62,7 +62,7 @@ jobs:
             ctest --verbose
             "
       - name: Build macOS
-        if: ${{ matrix.os == 'macos' }}
+        if: ${{ startsWith(matrix.os, 'macos') }}
         run: |
           mkdir build
           cd build
@@ -70,7 +70,7 @@ jobs:
           cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
           ctest --verbose
       - name: Build Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           mkdir build
           cd build
@@ -118,8 +118,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos, ubuntu ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ macos-13, ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
       - name: Checkout
@@ -132,7 +132,7 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build Linux
-        if: ${{ matrix.os == 'ubuntu' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: docker://epmlsop/buildpack-arm64:latest
         with:
           args: >
@@ -144,7 +144,7 @@ jobs:
             ctest --verbose -R dlopen
             "
       - name: Build macOS
-        if: ${{ matrix.os == 'macos' }}
+        if: ${{ startsWith(matrix.os, 'macos') }}
         run: |
           mkdir build
           cd build
@@ -246,7 +246,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-12.7.4, ubuntu-latest, windows-latest ]
+        os: [ macos-13, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
@@ -269,14 +269,14 @@ jobs:
       - name: Install Pillow
         run: python3 -m pip install Pillow==9.5.0
       - name: Install wrappers Linux
-        if: ${{ matrix.os == 'ubuntu' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         run: python3 -m pip install dist/*manylinux1_x86_64*.whl
       - name: Install wrappers Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: Get-ChildItem dist -Filter *win_amd64*.whl -Recurse | % { python3 -m pip install $_.FullName }
       - name: Install wrappers macOS
-        if: ${{ matrix.os == 'macos' }}
-        run: python3 -m pip install dist/*macosx_10_7_intel*.whl
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        run: python3 -m pip install dist/*.whl
       - name: Test
         run: python3 -Wignore api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
@@ -383,8 +383,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos, ubuntu, windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ macos-13, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -516,8 +516,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos, ubuntu, windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ macos-13, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -543,7 +543,7 @@ jobs:
           cd IronPython
           curl -OL https://github.com/IronLanguages/ironpython3/releases/download/v3.4.0/IronPython.3.4.0.zip
       - name: Prepare UNIX
-        if: ${{ matrix.os != 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           cd IronPython
           unzip IronPython.3.4.0.zip
@@ -551,28 +551,28 @@ jobs:
           unzip ../dist/Indigo.Net.*.nupkg
           chmod -R a+rw .
       - name: Prepare Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           cd IronPython
           Expand-Archive IronPython.3.4.0.zip .
           cd ../tmp
           Expand-Archive ../dist/Indigo.Net.*.nupkg .
       - name: Test Linux
-        if: ${{ matrix.os == 'ubuntu' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: |
           dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Test macOS
-        if: ${{ matrix.os == 'macos' }}
+        if: ${{ startsWith(matrix.os, 'macos') }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
         run: |
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
           dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Test Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
@@ -843,8 +843,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos, ubuntu, windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ macos-13, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
       - name: Checkout
@@ -857,7 +857,7 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build utils Linux
-        if: ${{ matrix.os == 'ubuntu' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: docker://epmlsop/buildpack-centos7:latest
         with:
           args: >
@@ -869,7 +869,7 @@ jobs:
             ctest --verbose
             "
       - name: Build utils macOS
-        if: ${{ matrix.os == 'macos' }}
+        if: ${{ startsWith(matrix.os, 'macos') }}
         run: |
           mkdir build
           cd build
@@ -877,7 +877,7 @@ jobs:
           cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
           ctest --verbose
       - name: Build utils Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           mkdir build
           cd build
@@ -1088,7 +1088,7 @@ jobs:
       fail-fast: false
       matrix:
         postgres_major_version: [ 12, 13, 14, 15 ]
-    runs-on: macos-latest
+    runs-on: macos-13
     needs: static_analysis
     steps:
       - name: Checkout
