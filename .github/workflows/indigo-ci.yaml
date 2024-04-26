@@ -543,7 +543,7 @@ jobs:
           cd IronPython
           curl -OL https://github.com/IronLanguages/ironpython3/releases/download/v3.4.0/IronPython.3.4.0.zip
       - name: Prepare UNIX
-        if: ${{ startsWith(matrix.os, 'windows') }}
+        if: ${{ !startsWith(matrix.os, 'windows') }}
         run: |
           cd IronPython
           unzip IronPython.3.4.0.zip
