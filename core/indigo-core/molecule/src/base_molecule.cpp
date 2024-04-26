@@ -1144,38 +1144,21 @@ int BaseMolecule::getTemplateAtomAttachmentPoint(int atom_idx, int order)
         if (att_indexes.size() && order < att_indexes.size())
             return template_attachment_points.at(att_indexes[order]).ap_aidx;
     }
-
-    //int ap_count = 0;
-    //for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
-    //{
-    //    auto& ap = template_attachment_points.at(j);
-    //    if (ap.ap_occur_idx == atom_idx)
-    //    {
-    //        if (ap_count == order)
-    //            return ap.ap_aidx;
-    //        ap_count++;
-    //    }
-    //}
     return -1;
 }
 
 void BaseMolecule::getTemplateAtomAttachmentPointId(int atom_idx, int order, Array<char>& apid)
 {
-    int ap_count = 0;
-    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+    if (atom_idx < template_attachment_indexes.size())
     {
-        auto& ap = template_attachment_points.at(j);
-        if (ap.ap_occur_idx == atom_idx)
+        auto& att_indexes = template_attachment_indexes.at(atom_idx);
+        if (att_indexes.size() && order < att_indexes.size())
         {
-            if (ap_count == order)
-            {
-                apid.copy(ap.ap_id);
-                return;
-            }
-            ap_count++;
+            apid.copy(template_attachment_points.at(att_indexes[order]).ap_id);
+            return;
         }
     }
-    throw Error("attachment point order %d is out of range (%d)", order, ap_count);
+    throw Error("attachment point order %d is out of range", order);
 }
 
 std::optional<std::pair<int, std::reference_wrapper<ObjPool<int>>>> BaseMolecule::getTemplateAtomAttachmentPointIdxs(int atom_idx, int att_point_idx)
