@@ -70,9 +70,6 @@ namespace indigo
         Scanner& _scanner;
         std::unordered_set<std::pair<MonomerType, std::string>, pair_hash> _added_templates;
         const MonomerTemplates& _mon_lib;
-        Array<char> _left_apid;
-        Array<char> _right_apid;
-        Array<char> _xlink_apid;
         int _seq_id;
         int _last_monomer_idx;
         int _row;
