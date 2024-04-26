@@ -1163,10 +1163,13 @@ void BaseMolecule::getTemplateAtomAttachmentPointId(int atom_idx, int order, Arr
 
 std::optional<std::pair<int, std::reference_wrapper<ObjPool<int>>>> BaseMolecule::getTemplateAtomAttachmentPointIdxs(int atom_idx, int att_point_idx)
 {
-    auto& att_idxs = template_attachment_indexes[atom_idx];
-    for (int k = att_idxs.begin(); k != att_idxs.end(); k = att_idxs.next(k))
-        if (att_idxs.at(k) == att_point_idx)
-            return std::make_pair(k, std::ref(att_idxs));
+    if (atom_idx < template_attachment_indexes.size())
+    {
+        auto& att_idxs = template_attachment_indexes[atom_idx];
+        for (int k = att_idxs.begin(); k != att_idxs.end(); k = att_idxs.next(k))
+            if (att_idxs.at(k) == att_point_idx)
+                return std::make_pair(k, std::ref(att_idxs));
+    }
     return std::nullopt;
 }
 
