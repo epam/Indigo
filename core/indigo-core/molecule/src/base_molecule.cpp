@@ -1074,6 +1074,24 @@ int BaseMolecule::getSingleAllowedRGroup(int atom_idx)
     throw Error("getSingleAllowedRGroup(): no r-groups defined on atom #%d", atom_idx);
 }
 
+void indigo::BaseMolecule::dumpTemplateAttachmentPoints()
+{
+    for (int i = template_attachment_points.begin(); i != template_attachment_points.end(); i = template_attachment_points.next(i))
+    {
+        auto& atp = template_attachment_points.at(i);
+        printf("atp_index: %d occur_idx: %d ap_idx: %d ap_id: %s\n", i, atp.ap_occur_idx, atp.ap_aidx, atp.ap_id.ptr());
+    }
+
+    for (int i = 0; i < template_attachment_indexes.size(); ++i)
+    {
+        auto& att_idxs = template_attachment_indexes.at(i);
+        for (int j = att_idxs.begin(); j != att_idxs.end(); ++j)
+        {
+            printf("occur_idx: %d atp_index: %d\n", i, att_idxs.at(j));
+        }
+    }
+}
+
 int BaseMolecule::countRSites()
 {
     int i, sum = 0;
@@ -1114,33 +1132,30 @@ void BaseMolecule::setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx
     ap.ap_id.push(0);
     if (atom_idx >= template_attachment_indexes.size())
         template_attachment_indexes.expand(atom_idx + 1);
-    template_attachment_indexes.at(atom_idx).push() = att_idx;
-    // int count1 = atom_idx < template_attachment_indexes.size() ? template_attachment_indexes.at(atom_idx).size() : 0;
-    // printf("atom: %d count:%d\n", atom_idx, count1);
+    template_attachment_indexes.at(atom_idx).add(att_idx);
     updateEditRevision();
 }
 
 int BaseMolecule::getTemplateAtomAttachmentPoint(int atom_idx, int order)
 {
-    /* if (atom_idx < template_attachment_indexes.size())
+    if (atom_idx < template_attachment_indexes.size())
     {
         auto& att_indexes = template_attachment_indexes.at(atom_idx);
-        if (order < att_indexes.size())
-            return att_indexes[order];
+        if (att_indexes.size() && order < att_indexes.size())
+            return template_attachment_points.at(att_indexes[order]).ap_aidx;
     }
-    */
 
-    int ap_count = 0;
-    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
-    {
-        auto& ap = template_attachment_points.at(j);
-        if (ap.ap_occur_idx == atom_idx)
-        {
-            if (ap_count == order)
-                return ap.ap_aidx;
-            ap_count++;
-        }
-    }
+    //int ap_count = 0;
+    //for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+    //{
+    //    auto& ap = template_attachment_points.at(j);
+    //    if (ap.ap_occur_idx == atom_idx)
+    //    {
+    //        if (ap_count == order)
+    //            return ap.ap_aidx;
+    //        ap_count++;
+    //    }
+    //}
     return -1;
 }
 
@@ -1161,6 +1176,15 @@ void BaseMolecule::getTemplateAtomAttachmentPointId(int atom_idx, int order, Arr
         }
     }
     throw Error("attachment point order %d is out of range (%d)", order, ap_count);
+}
+
+std::optional<std::pair<int, std::reference_wrapper<ObjPool<int>>>> BaseMolecule::getTemplateAtomAttachmentPointIdxs(int atom_idx, int att_point_idx)
+{
+    auto& att_idxs = template_attachment_indexes[atom_idx];
+    for (int k = att_idxs.begin(); k != att_idxs.end(); k = att_idxs.next(k))
+        if (att_idxs.at(k) == att_point_idx)
+            return std::make_pair(k, std::ref(att_idxs));
+    return std::nullopt;
 }
 
 int BaseMolecule::getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& att_id)
@@ -1208,6 +1232,8 @@ void BaseMolecule::setTemplateAtomAttachmentDestination(int atom_idx, int new_de
 
 int BaseMolecule::getTemplateAtomAttachmentPointsCount(int atom_idx)
 {
+    return atom_idx < template_attachment_indexes.size() ? template_attachment_indexes.at(atom_idx).size() : 0;
+
     int count = 0;
     for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
     {
@@ -1217,8 +1243,6 @@ int BaseMolecule::getTemplateAtomAttachmentPointsCount(int atom_idx)
             count++;
         }
     }
-    // int count1 = atom_idx < template_attachment_indexes.size() ? template_attachment_indexes.at(atom_idx).size() : 0;
-    // printf("new atom: %d count: %d\n", atom_idx, count1);
     return count;
 }
 

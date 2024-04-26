@@ -21,6 +21,7 @@
 
 #include <map>
 #include <set>
+#include <optional>
 
 #include "base_cpp/obj_array.h"
 #include "base_cpp/properties_map.h"
@@ -220,6 +221,7 @@ namespace indigo
         virtual const int getTemplateAtomTemplateIndex(int idx) = 0;
         virtual void getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map) = 0;
         virtual void getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map) = 0;
+        void dumpTemplateAttachmentPoints();
 
         int countRSites();
         int countTemplateAtoms();
@@ -252,6 +254,7 @@ namespace indigo
         void getTemplateAtomAttachmentPointId(int atom_idx, int order, Array<char>& apid);
         int getTemplateAtomAttachmentPointsCount(int atom_idx);
         int getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& att_id);
+        std::optional<std::pair<int, std::reference_wrapper<ObjPool<int>>>> getTemplateAtomAttachmentPointIdxs(int atom_idx, int att_point_idx);
 
         void addAttachmentPoint(int order, int atom_index);
 
@@ -364,7 +367,7 @@ namespace indigo
         }
 
         ObjPool<TemplateAttPoint> template_attachment_points;
-        ObjArray<Array<int>> template_attachment_indexes;
+        ObjArray<ObjPool<int>> template_attachment_indexes;
 
         MoleculeSGroups sgroups;
 

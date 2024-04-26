@@ -110,6 +110,7 @@ void MolfileLoader::_loadMolecule()
     }
 
     _postLoad();
+    //_mol->dumpTemplateAttachmentPoints();
 }
 
 void MolfileLoader::loadCtab3000(Molecule& mol)
@@ -2177,8 +2178,10 @@ bool MolfileLoader::_expandNucleotide(int nuc_atom_idx, int tg_idx, std::unorder
                 if (ap.ap_occur_idx == nuc_atom_idx && std::string(ap.ap_id.ptr()) > kLeftAttachmentPoint)
                 {
                     atp_map.emplace(ap.ap_id.ptr(), ap.ap_aidx);
-                    _mol->template_attachment_indexes[nuc_atom_idx].clear();
                     _mol->template_attachment_points.remove(j);
+                    auto att_idxs = _mol->getTemplateAtomAttachmentPointIdxs(nuc_atom_idx, j);
+                    if (att_idxs.has_value())
+                        att_idxs.value().second.get().remove(att_idxs.value().first);
                 }
             }
 
