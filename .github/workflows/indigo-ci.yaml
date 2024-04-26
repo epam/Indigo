@@ -246,8 +246,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos, ubuntu, windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ macos-12.7.4, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
