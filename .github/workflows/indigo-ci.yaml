@@ -1,7 +1,7 @@
 name: Indigo CI
 
 env:
-  OS_NAME_MAPPING_JSON: '{"ubuntu": "linux", "windows": "windows", "macos": "macos"}'
+  OS_NAME_MAPPING_JSON: '{"ubuntu-latest": "linux", "windows-latest": "windows", "macos-latest": "macos"}'
 
 on:
   push:
@@ -87,8 +87,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
       - name: Checkout
@@ -101,7 +101,7 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           mkdir build
           cd build
@@ -292,8 +292,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -313,7 +313,7 @@ jobs:
           name: indigo-python
           path: dist/
       - name: Test Linux
-        if: ${{ matrix.os == 'ubuntu' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: uraimo/run-on-arch-action@v2.0.5
         with:
           arch: aarch64
@@ -338,8 +338,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -366,7 +366,7 @@ jobs:
       - name: Install Pillow
         run: python -m pip install Pillow==9.5.0
       - name: Install wrappers Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: Get-ChildItem dist -Filter *win32*.whl -Recurse | % { python -m pip install $_.FullName }
       - name: Test
         run: python api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
@@ -424,8 +424,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -445,7 +445,7 @@ jobs:
           name: indigo-java
           path: dist/
       - name: Test Linux
-        if: ${{ matrix.os == 'ubuntu' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: uraimo/run-on-arch-action@v2.0.5
         with:
           arch: aarch64
@@ -470,8 +470,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -590,8 +590,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -617,7 +617,7 @@ jobs:
           cd IronPython
           curl -OL https://github.com/IronLanguages/ironpython3/releases/download/v3.4.0/IronPython.3.4.0.zip
       - name: Prepare Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           cd IronPython
           Expand-Archive IronPython.3.4.0.zip .
@@ -1122,8 +1122,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
       - name: Checkout
