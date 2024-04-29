@@ -83,7 +83,8 @@
             "x": 0.0,
             "y": -0.0
         },
-        "alias": "P"
+        "alias": "P",
+        "templateId": "P___Phosphate"
     },
     "monomer1": {
         "type": "monomer",
@@ -126,7 +127,8 @@
             "x": 4.800000190734863,
             "y": -0.0
         },
-        "alias": "P"
+        "alias": "P",
+        "templateId": "P___Phosphate"
     },
     "monomerTemplate-P___Phosphate": {
         "type": "monomerTemplate",

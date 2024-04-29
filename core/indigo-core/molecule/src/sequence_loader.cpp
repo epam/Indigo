@@ -375,6 +375,7 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
     std::string phosphate = IDT_DEF_PHOSPHATE;
     std::string base = "";
     std::string single_monomer = "";
+    std::string single_monomer_class;
     IdtModification modification = IdtModification::FIVE_PRIME_END;
 
     while (!_scanner.isEOF())
@@ -474,12 +475,13 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
                     MonomerTemplate monomer_template = MonomerTemplateLibrary::instance().getMonomerTemplateById(monomer_template_id);
                     checkAddTemplate(mol, monomer_template);
                     single_monomer = monomer_template.alias();
+                    single_monomer_class = MonomerTemplates::classToStr(monomer_template.monomerClass());
                 }
             }
 
             if (single_monomer.size())
             {
-                int monomer_idx = addTemplateAtom(mol, single_monomer.c_str(), kMonomerClassSUGAR, _seq_id);
+                int monomer_idx = addTemplateAtom(mol, single_monomer.c_str(), single_monomer_class.c_str(), _seq_id);
                 mol.asMolecule().setAtomXyz(monomer_idx, getBackboneMonomerPosition());
                 if (_last_monomer_idx >= 0)
                     addTemplateBond(mol, _last_monomer_idx, monomer_idx);

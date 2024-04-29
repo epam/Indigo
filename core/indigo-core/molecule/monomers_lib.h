@@ -184,7 +184,7 @@ namespace indigo
         AttachmentPoint(const std::string& label, AttachmentPointType ap_type, int att_atom, std::vector<int>& leaving_group)
             : _label(label), _type(ap_type), _attachment_atom(att_atom), _leaving_group(leaving_group){};
 
-        AttachmentPoint(AttachmentPoint& second)
+        AttachmentPoint(const AttachmentPoint& second)
         {
             _label = second._label;
             _type = second._type;
@@ -192,7 +192,7 @@ namespace indigo
             _leaving_group = second._leaving_group;
         }
 
-        inline const std::string& label()
+        inline const std::string& label() const 
         {
             return _label;
         };
@@ -222,9 +222,9 @@ namespace indigo
         static const std::string& MonomerClassToStr(MonomerClass monomer_type);
         static const MonomerClass StrToMonomerClass(const std::string& monomer_type);
 
-        inline void AddAttachmentPoint(AttachmentPoint& att_point)
+        inline void AddAttachmentPoint(const AttachmentPoint& att_point)
         {
-            _attachment_points.insert(std::pair<std::string, AttachmentPoint&>{att_point.label(), att_point});
+            _attachment_points.insert(std::pair<std::string, AttachmentPoint>(att_point.label(), att_point));
         };
 
         void AddAttachmentPoint(const std::string& id, const std::string& ap_type, int att_atom, std::vector<int>& leaving_group);
@@ -292,7 +292,7 @@ namespace indigo
         std::string _full_name;
         std::string _alias;
         std::string _natural_analog;
-        std::map<std::string, std::reference_wrapper<AttachmentPoint>> _attachment_points;
+        std::map<std::string, AttachmentPoint> _attachment_points;
         std::string molecule;
         IdtAlias _idt_alias;
         int _tgroup_id;
@@ -312,7 +312,7 @@ namespace indigo
         MonomerGroupTemplate(const std::string& id, const std::string& name, const std::string& template_class, const std::string& idt_alias_base)
             : _id(id), _name(name), _class(template_class), _idt_alias(idt_alias_base){};
 
-        MonomerGroupTemplate(const std::string& id, const std::string& name, const std::string& template_class, IdtAlias& idt_alias)
+        MonomerGroupTemplate(const std::string& id, const std::string& name, const std::string& template_class, const IdtAlias& idt_alias)
             : _id(id), _name(name), _class(template_class), _idt_alias(idt_alias){};
 
         void addTemplate(const std::string& template_id);
@@ -335,7 +335,7 @@ namespace indigo
         }
         MonomerTemplate& getTemplateByClass(MonomerClass monomer_class);
 
-        inline const std::string& id()
+        inline const std::string& id() const 
         {
             return _id;
         }
@@ -364,7 +364,7 @@ namespace indigo
         {
             _monomer_templates.emplace(monomer_template.id(), monomer_template);
         };
-        inline void addMonomerGroupTemplate(MonomerGroupTemplate& monomer_group_template)
+        inline void addMonomerGroupTemplate(const MonomerGroupTemplate& monomer_group_template)
         {
             _monomer_group_templates.emplace(monomer_group_template.id(), (monomer_group_template));
         };

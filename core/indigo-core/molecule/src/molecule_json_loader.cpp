@@ -1152,7 +1152,7 @@ void MoleculeJsonLoader::addToLibMonomerTemplate(const rapidjson::Value& mt_json
         bool idt_has_modifications = false;
         parseIdtAlias(mt_json, idt_alias_base, idt_has_modifications, idt_five_prime_end, idt_internal, idt_three_prime_end);
         if (idt_alias_base.size() == 0)
-            throw Error("Group monomer template %s(id=%s) contains IDT alias without base.", full_name, id);
+            throw Error("Group monomer template %s(id=%s) contains IDT alias without base.", full_name.c_str(), id.c_str());
         if (idt_has_modifications)
             mon_template.setIdtAlias(IdtAlias(idt_alias_base, idt_five_prime_end, idt_internal, idt_three_prime_end));
         else
@@ -1210,7 +1210,7 @@ void MoleculeJsonLoader::addToLibMonomerGroupTemplate(const rapidjson::Value& mo
         {
             parseIdtAlias(monomer_group_template, idt_alias_base, idt_has_modifications, idt_five_prime_end, idt_internal, idt_three_prime_end);
             if (idt_alias_base.size() == 0)
-                throw Error("Group monomer template %s(id=%s) contains IDT alias without base.", name, id);
+                throw Error("Group monomer template %s(id=%s) contains IDT alias without base.", name.c_str(), id.c_str());
         }
 
         MonomerTemplateLibrary& library = MonomerTemplateLibrary::instance();
