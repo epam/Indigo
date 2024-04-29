@@ -537,7 +537,7 @@ jobs:
           name: indigo-dotnet
           path: dist/
       - name: Install dotnet 6
-        if: ${{ !startsWith(matrix.os, 'macos') }}
+        if: ${{ startsWith(matrix.os, 'macos') }}
         run:  brew install dotnet@6
       - name: Prepare Common
         run: |
