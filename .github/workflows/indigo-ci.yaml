@@ -536,17 +536,17 @@ jobs:
         with:
           name: indigo-dotnet
           path: dist/
-      - name: Install dotnet 6
-        if: ${{ startsWith(matrix.os, 'macos') }}
-        run: |
-          curl https://download.visualstudio.microsoft.com/download/pr/8583970d-ca62-4053-9b25-01c2d2742062/8a5c9a04863a80655f483d67c3725255/dotnet-runtime-6.0.29-osx-x64.pkg --output dotnet-runtime-6.0.29-osx-x64.pkg
-          mkdir -p ${{ github.workspace }}/tmp/dotnet && tar zxf dotnet-runtime-6.0.29-osx-x64.pkg -C ${{ github.workspace }}/tmp/dotnet
       - name: Prepare Common
         run: |
           mkdir IronPython
           mkdir tmp
           cd IronPython
           curl -OL https://github.com/IronLanguages/ironpython3/releases/download/v3.4.0/IronPython.3.4.0.zip
+      - name: Install dotnet 6
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        run: |
+          curl https://download.visualstudio.microsoft.com/download/pr/8583970d-ca62-4053-9b25-01c2d2742062/8a5c9a04863a80655f483d67c3725255/dotnet-runtime-6.0.29-osx-x64.pkg --output dotnet-runtime-6.0.29-osx-x64.pkg
+          mkdir -p ${{ github.workspace }}/tmp/dotnet && tar zxf dotnet-runtime-6.0.29-osx-x64.pkg -C ${{ github.workspace }}/tmp/dotnet
       - name: Prepare UNIX
         if: ${{ !startsWith(matrix.os, 'windows') }}
         run: |
