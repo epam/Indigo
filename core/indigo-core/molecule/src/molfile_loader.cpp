@@ -110,7 +110,6 @@ void MolfileLoader::_loadMolecule()
     }
 
     _postLoad();
-    //_mol->dumpTemplateAttachmentPoints();
 }
 
 void MolfileLoader::loadCtab3000(Molecule& mol)

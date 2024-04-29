@@ -1074,24 +1074,6 @@ int BaseMolecule::getSingleAllowedRGroup(int atom_idx)
     throw Error("getSingleAllowedRGroup(): no r-groups defined on atom #%d", atom_idx);
 }
 
-void indigo::BaseMolecule::dumpTemplateAttachmentPoints()
-{
-    for (int i = template_attachment_points.begin(); i != template_attachment_points.end(); i = template_attachment_points.next(i))
-    {
-        auto& atp = template_attachment_points.at(i);
-        printf("atp_index: %d occur_idx: %d ap_idx: %d ap_id: %s\n", i, atp.ap_occur_idx, atp.ap_aidx, atp.ap_id.ptr());
-    }
-
-    for (int i = 0; i < template_attachment_indexes.size(); ++i)
-    {
-        auto& att_idxs = template_attachment_indexes.at(i);
-        for (int j = att_idxs.begin(); j != att_idxs.end(); ++j)
-        {
-            printf("occur_idx: %d atp_index: %d\n", i, att_idxs.at(j));
-        }
-    }
-}
-
 int BaseMolecule::countRSites()
 {
     int i, sum = 0;
@@ -1182,7 +1164,7 @@ int BaseMolecule::getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& 
         for (int k = att_idxs.begin(); k != att_idxs.end(); k = att_idxs.next(k))
         {
             auto& ap = template_attachment_points.at(att_idxs.at(k));
-            if( ap.ap_id.memcmp(att_id) == 0 )
+            if (ap.ap_id.memcmp(att_id) == 0)
                 return ap.ap_aidx;
         }
     }
@@ -1191,13 +1173,17 @@ int BaseMolecule::getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& 
 
 bool BaseMolecule::updateTemplateAtomAttachmentDestination(int atom_idx, int old_dest_atom_idx, int new_dest_atom_idx)
 {
-    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+    if (atom_idx < template_attachment_indexes.size())
     {
-        auto& ap = template_attachment_points.at(j);
-        if ((ap.ap_occur_idx == atom_idx) && (ap.ap_aidx == old_dest_atom_idx))
+        auto& att_idxs = template_attachment_indexes[atom_idx];
+        for (int k = att_idxs.begin(); k != att_idxs.end(); k = att_idxs.next(k))
         {
-            ap.ap_aidx = new_dest_atom_idx;
-            return true;
+            auto& ap = template_attachment_points.at(att_idxs.at(k));
+            if (ap.ap_aidx == old_dest_atom_idx)
+            {
+                ap.ap_aidx = new_dest_atom_idx;
+                return true;
+            }
         }
     }
     return false;
@@ -1205,32 +1191,26 @@ bool BaseMolecule::updateTemplateAtomAttachmentDestination(int atom_idx, int old
 
 void BaseMolecule::setTemplateAtomAttachmentDestination(int atom_idx, int new_dest_atom_idx, Array<char>& att_id)
 {
-    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+    if (atom_idx < template_attachment_indexes.size())
     {
-        auto& ap = template_attachment_points.at(j);
-        if ((ap.ap_occur_idx == atom_idx) && (ap.ap_id.memcmp(att_id) == 0))
+        auto& att_idxs = template_attachment_indexes[atom_idx];
+        for (int k = att_idxs.begin(); k != att_idxs.end(); k = att_idxs.next(k))
         {
-            ap.ap_aidx = new_dest_atom_idx;
-            return;
+            auto& ap = template_attachment_points.at(att_idxs.at(k));
+            if (ap.ap_id.memcmp(att_id) == 0)
+            {
+                ap.ap_aidx = new_dest_atom_idx;
+                return;
+            }
         }
     }
+
     setTemplateAtomAttachmentOrder(atom_idx, new_dest_atom_idx, att_id.ptr());
 }
 
 int BaseMolecule::getTemplateAtomAttachmentPointsCount(int atom_idx)
 {
     return atom_idx < template_attachment_indexes.size() ? template_attachment_indexes.at(atom_idx).size() : 0;
-
-    int count = 0;
-    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
-    {
-        auto& ap = template_attachment_points.at(j);
-        if (ap.ap_occur_idx == atom_idx)
-        {
-            count++;
-        }
-    }
-    return count;
 }
 
 int BaseMolecule::attachmentPointCount() const
