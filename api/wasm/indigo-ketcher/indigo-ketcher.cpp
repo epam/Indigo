@@ -437,7 +437,8 @@ namespace indigo
         return _checkResultString(indigoVersionInfo());
     }
 
-    std::string convert(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
+    std::string convert(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options,
+                        const char* monomerLibrary = nullptr)
     {
         const IndigoSession session;
         indigoSetOptions(options);
@@ -445,6 +446,10 @@ namespace indigo
         if (outputFormat.find("smarts") != std::string::npos)
         {
             options_copy["query"] = "true";
+        }
+        if (monomerLibrary)
+        {
+            IndigoKetcherObject iko = loadMoleculeOrReaction(data, monomerLibrary);
         }
         IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy);
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");

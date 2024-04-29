@@ -101,7 +101,7 @@ int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* /*context*/)
         return -1;
 }
 
-void TGroup::copy(TGroup& other)
+void TGroup::copy(const TGroup& other)
 {
     tgroup_class.copy(other.tgroup_class);
     tgroup_name.copy(other.tgroup_name);

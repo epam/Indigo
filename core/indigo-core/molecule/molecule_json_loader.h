@@ -100,7 +100,9 @@ namespace indigo
         void parseProperties(const rapidjson::Value& props, BaseMolecule& mol);
         void setStereoFlagPosition(const rapidjson::Value& pos, int fragment_index, BaseMolecule& mol);
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
-        void parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol);
+        int parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol);
+        void addToLibMonomerTemplate(const rapidjson::Value& mt_json, BaseMolecule& mol);
+        void addToLibMonomerGroupTemplate(const rapidjson::Value& monomer_group_template);
         std::string monomerTemplateClass(const rapidjson::Value& monomer_template);
         std::string monomerMolClass(const std::string& class_name);
 

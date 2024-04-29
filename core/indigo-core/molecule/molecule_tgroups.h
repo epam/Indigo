@@ -49,7 +49,7 @@ namespace indigo
         TGroup();
         ~TGroup();
 
-        void copy(TGroup& other);
+        void copy(const TGroup& other);
         void clear();
         static int cmp(TGroup& tg1, TGroup& tg2, void* context);
 

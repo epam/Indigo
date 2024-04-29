@@ -38,7 +38,7 @@ namespace indigo
 
     struct MonomerDescriptor
     {
-        MonomerType monomer_type;
+        MonomerClass monomer_type;
         std::string template_id;
         std::vector<std::string> aliases;
         std::string natreplace;
@@ -48,7 +48,7 @@ namespace indigo
     {
         NucleotideType nucleo_type;
         std::vector<std::string> aliases;
-        std::unordered_map<MonomerType, std::string> components;
+        std::unordered_map<MonomerClass, std::string> components;
     };
 
     const MonomerTemplates& MonomerTemplates::_instance()
@@ -57,13 +57,13 @@ namespace indigo
         return instance;
     }
 
-    const std::string& MonomerTemplates::classToStr(MonomerType mon_type)
+    const std::string& MonomerTemplates::classToStr(MonomerClass mon_type)
     {
-        static const std::unordered_map<MonomerType, std::string> kMonomerTypeStr = {{MonomerType::Phosphate, kMonomerClassPHOSPHATE},
-                                                                                     {MonomerType::Sugar, kMonomerClassSUGAR},
-                                                                                     {MonomerType::Base, kMonomerClassBASE},
-                                                                                     {MonomerType::AminoAcid, kMonomerClassAA},
-                                                                                     {MonomerType::CHEM, kMonomerClassCHEM}};
+        static const std::unordered_map<MonomerClass, std::string> kMonomerTypeStr = {{MonomerClass::Phosphate, kMonomerClassPHOSPHATE},
+                                                                                      {MonomerClass::Sugar, kMonomerClassSUGAR},
+                                                                                      {MonomerClass::Base, kMonomerClassBASE},
+                                                                                      {MonomerClass::AminoAcid, kMonomerClassAA},
+                                                                                      {MonomerClass::CHEM, kMonomerClassCHEM}};
 
         return kMonomerTypeStr.at(mon_type);
     }
@@ -89,17 +89,17 @@ namespace indigo
         return false;
     }
 
-    const std::unordered_map<std::string, MonomerType>& MonomerTemplates::getStrToMonomerType()
+    const std::unordered_map<std::string, MonomerClass>& MonomerTemplates::getStrToMonomerType()
     {
-        static const std::unordered_map<std::string, MonomerType> kStrMonomerType = {{kMonomerClassSUGAR, MonomerType::Sugar},
-                                                                                     {kMonomerClassPHOSPHATE, MonomerType::Phosphate},
-                                                                                     {kMonomerClassBASE, MonomerType::Base},
-                                                                                     {kMonomerClassAA, MonomerType::AminoAcid},
-                                                                                     {kMonomerClassCHEM, MonomerType::CHEM}};
+        static const std::unordered_map<std::string, MonomerClass> kStrMonomerType = {{kMonomerClassSUGAR, MonomerClass::Sugar},
+                                                                                      {kMonomerClassPHOSPHATE, MonomerClass::Phosphate},
+                                                                                      {kMonomerClassBASE, MonomerClass::Base},
+                                                                                      {kMonomerClassAA, MonomerClass::AminoAcid},
+                                                                                      {kMonomerClassCHEM, MonomerClass::CHEM}};
         return kStrMonomerType;
     }
 
-    bool MonomerTemplates::getMonomerTemplate(MonomerType mon_type, std::string alias, TGroup& tgroup)
+    bool MonomerTemplates::getMonomerTemplate(MonomerClass mon_type, std::string alias, TGroup& tgroup)
     {
         auto it = _instance()._monomers_lib.find(std::make_pair(mon_type, alias));
         if (it != _instance()._monomers_lib.end())
@@ -126,16 +126,16 @@ namespace indigo
     void MonomerTemplates::initializeMonomers()
     {
         static const std::vector<NucleotideDescriptor> nucleotide_presets = {
-            {NucleotideType::RNA, {"A", "AMP"}, {{MonomerType::Base, "A"}, {MonomerType::Sugar, "R"}, {MonomerType::Phosphate, "P"}}},
-            {NucleotideType::RNA, {"C", "CMP"}, {{MonomerType::Base, "C"}, {MonomerType::Sugar, "R"}, {MonomerType::Phosphate, "P"}}},
-            {NucleotideType::RNA, {"G", "GMP"}, {{MonomerType::Base, "G"}, {MonomerType::Sugar, "R"}, {MonomerType::Phosphate, "P"}}},
-            {NucleotideType::RNA, {"T", "TMP"}, {{MonomerType::Base, "T"}, {MonomerType::Sugar, "R"}, {MonomerType::Phosphate, "P"}}},
-            {NucleotideType::RNA, {"U", "UMP"}, {{MonomerType::Base, "U"}, {MonomerType::Sugar, "R"}, {MonomerType::Phosphate, "P"}}},
-            {NucleotideType::DNA, {"A", "dA", "dAMP"}, {{MonomerType::Base, "A"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}},
-            {NucleotideType::DNA, {"C", "dC", "dCMP"}, {{MonomerType::Base, "C"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}},
-            {NucleotideType::DNA, {"G", "dG", "dGMP"}, {{MonomerType::Base, "G"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}},
-            {NucleotideType::DNA, {"T", "dT", "dTMP"}, {{MonomerType::Base, "T"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}},
-            {NucleotideType::DNA, {"U", "dU", "dUMP"}, {{MonomerType::Base, "U"}, {MonomerType::Sugar, "dR"}, {MonomerType::Phosphate, "P"}}}};
+            {NucleotideType::RNA, {"A", "AMP"}, {{MonomerClass::Base, "A"}, {MonomerClass::Sugar, "R"}, {MonomerClass::Phosphate, "P"}}},
+            {NucleotideType::RNA, {"C", "CMP"}, {{MonomerClass::Base, "C"}, {MonomerClass::Sugar, "R"}, {MonomerClass::Phosphate, "P"}}},
+            {NucleotideType::RNA, {"G", "GMP"}, {{MonomerClass::Base, "G"}, {MonomerClass::Sugar, "R"}, {MonomerClass::Phosphate, "P"}}},
+            {NucleotideType::RNA, {"T", "TMP"}, {{MonomerClass::Base, "T"}, {MonomerClass::Sugar, "R"}, {MonomerClass::Phosphate, "P"}}},
+            {NucleotideType::RNA, {"U", "UMP"}, {{MonomerClass::Base, "U"}, {MonomerClass::Sugar, "R"}, {MonomerClass::Phosphate, "P"}}},
+            {NucleotideType::DNA, {"A", "dA", "dAMP"}, {{MonomerClass::Base, "A"}, {MonomerClass::Sugar, "dR"}, {MonomerClass::Phosphate, "P"}}},
+            {NucleotideType::DNA, {"C", "dC", "dCMP"}, {{MonomerClass::Base, "C"}, {MonomerClass::Sugar, "dR"}, {MonomerClass::Phosphate, "P"}}},
+            {NucleotideType::DNA, {"G", "dG", "dGMP"}, {{MonomerClass::Base, "G"}, {MonomerClass::Sugar, "dR"}, {MonomerClass::Phosphate, "P"}}},
+            {NucleotideType::DNA, {"T", "dT", "dTMP"}, {{MonomerClass::Base, "T"}, {MonomerClass::Sugar, "dR"}, {MonomerClass::Phosphate, "P"}}},
+            {NucleotideType::DNA, {"U", "dU", "dUMP"}, {{MonomerClass::Base, "U"}, {MonomerClass::Sugar, "dR"}, {MonomerClass::Phosphate, "P"}}}};
 
         // collect basic monomers
         using namespace rapidjson;
@@ -156,7 +156,7 @@ namespace indigo
         // create nucleotides' mappings
         for (const auto& desc : nucleotide_presets)
         {
-            std::unordered_map<MonomerType, std::reference_wrapper<MonomersLib::value_type>> nucleotide_triplet;
+            std::unordered_map<MonomerClass, std::reference_wrapper<MonomersLib::value_type>> nucleotide_triplet;
             // iterate nucleotide components
             for (auto& kvp : desc.components)
             {
@@ -170,4 +170,165 @@ namespace indigo
                 _nucleotides_lib.emplace(std::make_pair(desc.nucleo_type, alias), nucleotide_triplet);
         }
     }
+
+    IMPL_ERROR(IdtAlias, "IDT alias");
+
+    const std::string& IdtAlias::getModification(IdtModification modification)
+    {
+        switch (modification)
+        {
+        case IdtModification::FIVE_PRIME_END:
+            return getFivePrimeEnd();
+        case IdtModification::INTERNAL:
+            return getInternal();
+        case IdtModification::THREE_PRIME_END:
+            return getThreePrimeEnd();
+        };
+        throw Error("Unknown IDT modification: %s.", modification);
+        return "";
+    }
+
+    const std::string& IdtAlias::getFivePrimeEnd()
+    {
+        if (_five_prime_end != "")
+            return _five_prime_end;
+        else
+            throw Error("IDT alias %s has no five-prime end modification.", _base);
+    }
+
+    const std::string& IdtAlias::getInternal()
+    {
+        if (_internal != "")
+            return _internal;
+        else
+            throw Error("IDT alias %s has no internal modification.", _base);
+    }
+
+    const std::string& IdtAlias::getThreePrimeEnd()
+    {
+        if (_three_prime_end != "")
+            return _three_prime_end;
+        else
+            throw Error("IDT alias %s has no three-prime end modification.", _base);
+    }
+
+    IMPL_ERROR(MonomerTemplate, "MonomerTemplate");
+
+    const std::string& MonomerTemplate::MonomerClassToStr(MonomerClass monomer_type)
+    {
+        static const std::map<MonomerClass, std::string> _type_to_str{
+            {MonomerClass::AminoAcid, "AminoAcid"},   {MonomerClass::Sugar, "Sugar"},   {MonomerClass::Phosphate, "Phosphate"}, {MonomerClass::Base, "Base"},
+            {MonomerClass::Terminator, "Terminator"}, {MonomerClass::Linker, "Linker"}, {MonomerClass::Unknown, "Unknown"},     {MonomerClass::CHEM, "Chem"}};
+
+        return _type_to_str.at(monomer_type);
+    }
+
+    const MonomerClass MonomerTemplate::StrToMonomerClass(const std::string& monomer_type)
+    {
+        static const std::map<std::string, MonomerClass> _str_to_type = {
+            {"AminoAcid", MonomerClass::AminoAcid},   {"Sugar", MonomerClass::Sugar},   {"Phosphate", MonomerClass::Phosphate}, {"Base", MonomerClass::Base},
+            {"Terminator", MonomerClass::Terminator}, {"Linker", MonomerClass::Linker}, {"Unknown", MonomerClass::Unknown},     {"Chem", MonomerClass::CHEM}};
+        if (_str_to_type.count(monomer_type))
+            return _str_to_type.at(monomer_type);
+        return MonomerClass::Unknown;
+    }
+
+    MonomerTemplate::MonomerTemplate(const std::string& id, const std::string& mt_class, const std::string& class_HELM, const std::string& full_name,
+                                     const std::string& alias, const std::string& natural_analog, int tgroup_id, BaseMolecule& mol)
+        : _id(id), _class(StrToMonomerClass(mt_class)), _class_HELM(class_HELM), _full_name(full_name), _alias(alias), _natural_analog(natural_analog),
+          _tgroup_id(tgroup_id), _mol(mol)
+    {
+    }
+
+    void MonomerTemplate::AddAttachmentPoint(const std::string& id, const std::string& ap_type, int att_atom, std::vector<int>& leaving_group)
+    {
+        std::string ap_id = id.size() != 0 ? id : "R" + std::to_string(1 + _attachment_points.size());
+        AttachmentPointType attachment_point_type;
+        if (ap_type == "left")
+            attachment_point_type = AttachmentPointType::LEFT;
+        else if (ap_type == "right")
+            attachment_point_type = AttachmentPointType::RIGHT;
+        else if (ap_type == "side")
+            attachment_point_type = AttachmentPointType::SIDE;
+        else if (_attachment_points.size() == 0) // first is left
+            attachment_point_type = AttachmentPointType::LEFT;
+        else if (_attachment_points.size() == 0) // second is right
+            attachment_point_type = AttachmentPointType::RIGHT;
+        else // all other is side
+            attachment_point_type = AttachmentPointType::SIDE;
+        AddAttachmentPoint(AttachmentPoint(ap_id, attachment_point_type, att_atom, leaving_group));
+    }
+
+    const AttachmentPoint& MonomerTemplate::getAttachmenPointById(const std::string& att_point_id)
+    {
+        if (!hasAttachmenPointWithId(att_point_id))
+            throw Error("Attachment point with id %s not found in monomer template %s.", att_point_id, _id);
+        return _attachment_points.at(att_point_id);
+    }
+
+    const TGroup& MonomerTemplate::getTGroup() const
+    {
+        return _mol.tgroups.getTGroup(_tgroup_id);
+    }
+
+    IMPL_ERROR(MonomerGroupTemplate, "MonomerGroupTemplate");
+
+    void MonomerGroupTemplate::addTemplate(const std::string& template_id)
+    {
+        _monomer_templates.insert(
+            std::pair<std::string, MonomerTemplate&>(template_id, MonomerTemplateLibrary::instance().getMonomerTemplateById(template_id)));
+    };
+
+    MonomerTemplate& MonomerGroupTemplate::getTemplateByClass(MonomerClass monomer_class)
+    {
+        for (auto& id_template : _monomer_templates)
+        {
+            if (id_template.second.monomerClass() == monomer_class)
+                return id_template.second;
+        }
+        throw Error("Monomer template with class %s not found in monomer temmplate group %s.", MonomerTemplate::MonomerClassToStr(monomer_class).c_str(),
+                    _id.c_str());
+    }
+
+    IMPL_ERROR(MonomerTemplateLibrary, "MonomerTemplateLibrary");
+
+    MonomerTemplateLibrary& MonomerTemplateLibrary::instance()
+    {
+        static MonomerTemplateLibrary library_instance;
+        return library_instance;
+    }
+
+    MonomerTemplate& MonomerTemplateLibrary::getMonomerTemplateById(const std::string& monomer_template_id)
+    {
+        if (_monomer_templates.count(monomer_template_id) == 0)
+            throw Error("Monomert template with id %s not found.", monomer_template_id);
+        return _monomer_templates.at(monomer_template_id);
+    }
+
+    MonomerGroupTemplate& MonomerTemplateLibrary::getMonomerGroupTemplateById(const std::string& monomer_group_template_id)
+    {
+        if (_monomer_group_templates.count(monomer_group_template_id) == 0)
+            throw Error("Monomert group template with id %s not found.", monomer_group_template_id);
+        return _monomer_group_templates.at(monomer_group_template_id);
+    }
+
+    std::string MonomerTemplateLibrary::getMonomerTemplateIdByIdtAliasAndMod(const std::string& alias, IdtModification mod)
+    {
+        for (auto& monomer_template : _monomer_templates)
+        {
+            if (monomer_template.second.hasIdtAlias(alias, mod))
+                return monomer_template.first;
+        };
+        return "";
+    };
+
+    std::string MonomerTemplateLibrary::getMGTidByIdtAliasAndMod(const std::string& alias, IdtModification mod)
+    {
+        for (auto& mgt : _monomer_group_templates)
+        {
+            if (mgt.second.hasIdtAlias(alias, mod))
+                return mgt.first;
+        };
+        return "";
+    };
 }

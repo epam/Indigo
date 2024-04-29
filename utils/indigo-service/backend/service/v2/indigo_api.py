@@ -465,7 +465,9 @@ def get_request_data(request):
     return request_data
 
 
-def get_response(md, output_struct_format, json_output, options, indigo):
+def get_response(
+    md, output_struct_format, json_output, options, indigo, monomerLibrary=None
+):
     output_mol = save_moldata(md, output_struct_format, options, indigo)
     LOG_DATA(
         "[RESPONSE]", output_struct_format, options, output_mol.encode("utf-8")
@@ -708,6 +710,7 @@ def aromatize():
         mime_type=data["input_format"],
         options=data["options"],
         indigo=indigo,
+        monomer_library=data.get("monomerLibrary"),
     )
 
     md.struct.aromatize()
@@ -861,6 +864,11 @@ def convert():
             data["options"],
         )
         indigo = indigo_init(data["options"])
+
+        monomer_library = data.get("monomerLibrary")
+        if monomer_library is not None:
+            library = indigo.loadMolecule(monomer_library)
+
         query = False
         if "smarts" in data["output_format"]:
             query = True
@@ -877,6 +885,7 @@ def convert():
             data["json_output"],
             data["options"],
             indigo=indigo,
+            monomerLibrary=library,
         )
     elif request.method == "GET":
         input_dict = {
@@ -898,6 +907,11 @@ def convert():
             data["options"],
         )
         indigo = indigo_init(data["options"])
+
+        monomer_library = request.args.get("monomerLibrary")
+        if monomer_library is not None:
+            library = indigo.loadMolecule(monomer_library)
+
         md = load_moldata(
             data["struct"],
             mime_type=data["input_format"],
@@ -916,6 +930,7 @@ def convert():
             data["json_output"],
             data["options"],
             indigo=indigo,
+            monomerLibrary=library,
         )
 
 
