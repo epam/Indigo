@@ -20,8 +20,8 @@
 #define __base_molecule__
 
 #include <map>
-#include <set>
 #include <optional>
+#include <set>
 
 #include "base_cpp/obj_array.h"
 #include "base_cpp/properties_map.h"
