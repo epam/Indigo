@@ -538,7 +538,11 @@ jobs:
           path: dist/
       - name: Install dotnet 6
         if: ${{ startsWith(matrix.os, 'macos') }}
-        run:  brew install dotnet@6
+        run: |
+          curl https://download.visualstudio.microsoft.com/download/pr/8583970d-ca62-4053-9b25-01c2d2742062/8a5c9a04863a80655f483d67c3725255/dotnet-runtime-6.0.29-osx-x64.pkg --output dotnet-runtime-6.0.29-osx-x64.pkg
+          mkdir -p $HOME/dotnet && tar zxf dotnet-runtime-6.0.29-osx-x64.pkg -C $HOME/dotnet
+          export DOTNET_ROOT=$HOME/dotnet
+          export PATH=$PATH:$HOME/dotnet
       - name: Prepare Common
         run: |
           mkdir IronPython
