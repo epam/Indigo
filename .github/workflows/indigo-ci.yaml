@@ -540,9 +540,7 @@ jobs:
         if: ${{ startsWith(matrix.os, 'macos') }}
         run: |
           curl https://download.visualstudio.microsoft.com/download/pr/8583970d-ca62-4053-9b25-01c2d2742062/8a5c9a04863a80655f483d67c3725255/dotnet-runtime-6.0.29-osx-x64.pkg --output dotnet-runtime-6.0.29-osx-x64.pkg
-          mkdir -p $HOME/dotnet && tar zxf dotnet-runtime-6.0.29-osx-x64.pkg -C $HOME/dotnet
-          export DOTNET_ROOT=$HOME/dotnet
-          export PATH=$PATH:$HOME/dotnet
+          mkdir -p ${{ github.workspace }}/tmp/dotnet && tar zxf dotnet-runtime-6.0.29-osx-x64.pkg -C ${{ github.workspace }}/tmp/dotnet
       - name: Prepare Common
         run: |
           mkdir IronPython
@@ -575,6 +573,8 @@ jobs:
         if: ${{ startsWith(matrix.os, 'macos') }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
+          DOTNET_ROOT: ${{ github.workspace }}/tmp/dotnet
+          PATH: ${{ github.workspace }}/tmp/dotnet:$PATH
         run: |
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
           dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml
