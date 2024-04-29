@@ -175,6 +175,7 @@ namespace indigo
 
     const std::string& IdtAlias::getModification(IdtModification modification)
     {
+        static std::string empty;
         switch (modification)
         {
         case IdtModification::FIVE_PRIME_END:
@@ -185,7 +186,7 @@ namespace indigo
             return getThreePrimeEnd();
         };
         throw Error("Unknown IDT modification: %s.", modification);
-        return "";
+        return empty;
     }
 
     const std::string& IdtAlias::getFivePrimeEnd()
@@ -193,7 +194,7 @@ namespace indigo
         if (_five_prime_end != "")
             return _five_prime_end;
         else
-            throw Error("IDT alias %s has no five-prime end modification.", _base);
+            throw Error("IDT alias %s has no five-prime end modification.", _base.c_str());
     }
 
     const std::string& IdtAlias::getInternal()
@@ -201,7 +202,7 @@ namespace indigo
         if (_internal != "")
             return _internal;
         else
-            throw Error("IDT alias %s has no internal modification.", _base);
+            throw Error("IDT alias %s has no internal modification.", _base.c_str());
     }
 
     const std::string& IdtAlias::getThreePrimeEnd()
@@ -209,7 +210,7 @@ namespace indigo
         if (_three_prime_end != "")
             return _three_prime_end;
         else
-            throw Error("IDT alias %s has no three-prime end modification.", _base);
+            throw Error("IDT alias %s has no three-prime end modification.", _base.c_str());
     }
 
     IMPL_ERROR(MonomerTemplate, "MonomerTemplate");
@@ -262,7 +263,7 @@ namespace indigo
     const AttachmentPoint& MonomerTemplate::getAttachmenPointById(const std::string& att_point_id)
     {
         if (!hasAttachmenPointWithId(att_point_id))
-            throw Error("Attachment point with id %s not found in monomer template %s.", att_point_id, _id);
+            throw Error("Attachment point with id %s not found in monomer template %s.", att_point_id.c_str(), _id.c_str());
         return _attachment_points.at(att_point_id);
     }
 
@@ -301,14 +302,14 @@ namespace indigo
     MonomerTemplate& MonomerTemplateLibrary::getMonomerTemplateById(const std::string& monomer_template_id)
     {
         if (_monomer_templates.count(monomer_template_id) == 0)
-            throw Error("Monomert template with id %s not found.", monomer_template_id);
+            throw Error("Monomert template with id %s not found.", monomer_template_id.c_str());
         return _monomer_templates.at(monomer_template_id);
     }
 
     MonomerGroupTemplate& MonomerTemplateLibrary::getMonomerGroupTemplateById(const std::string& monomer_group_template_id)
     {
         if (_monomer_group_templates.count(monomer_group_template_id) == 0)
-            throw Error("Monomert group template with id %s not found.", monomer_group_template_id);
+            throw Error("Monomert group template with id %s not found.", monomer_group_template_id.c_str());
         return _monomer_group_templates.at(monomer_group_template_id);
     }
 

@@ -406,7 +406,7 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
             if (base == "")
                 throw Error("Invalid modification: empty string.");
             if (base.size() < 2)
-                throw Error("Invalid modification: %s.", base);
+                throw Error("Invalid modification: %s.", base.c_str());
             break;
         default:
             base = std::string(1, ch);
@@ -471,7 +471,7 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
                 {
                     std::string monomer_template_id = MonomerTemplateLibrary::instance().getMonomerTemplateIdByIdtAliasAndMod(base, modification);
                     if (!monomer_template_id.size())
-                        throw Error("IDT alias %s not found at %s position.", base, IdtAlias::IdtModificationToString(modification));
+                        throw Error("IDT alias %s not found at %s position.", base.c_str(), IdtAlias::IdtModificationToString(modification).c_str());
                     MonomerTemplate monomer_template = MonomerTemplateLibrary::instance().getMonomerTemplateById(monomer_template_id);
                     checkAddTemplate(mol, monomer_template);
                     single_monomer = monomer_template.alias();
