@@ -192,7 +192,7 @@ namespace indigo
             _leaving_group = second._leaving_group;
         }
 
-        inline const std::string& label() const 
+        inline const std::string& label() const
         {
             return _label;
         };
@@ -335,7 +335,7 @@ namespace indigo
         }
         MonomerTemplate& getTemplateByClass(MonomerClass monomer_class);
 
-        inline const std::string& id() const 
+        inline const std::string& id() const
         {
             return _id;
         }
