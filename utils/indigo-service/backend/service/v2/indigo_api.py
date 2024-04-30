@@ -466,8 +466,7 @@ def get_request_data(request):
     return request_data
 
 
-def get_response(
-    md, output_struct_format, json_output, options, indigo):
+def get_response(md, output_struct_format, json_output, options, indigo):
     output_mol = save_moldata(md, output_struct_format, options, indigo)
     LOG_DATA(
         "[RESPONSE]", output_struct_format, options, output_mol.encode("utf-8")
@@ -927,7 +926,7 @@ def convert():
             data["output_format"],
             data["json_output"],
             data["options"],
-            indigo=indigo
+            indigo=indigo,
         )
 
 
