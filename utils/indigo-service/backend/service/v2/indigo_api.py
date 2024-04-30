@@ -78,6 +78,7 @@ def indigo_init(options={}):
                 "smarts",
                 "input-format",
                 "output-content-type",
+                "monomerLibrary",
             ):
                 continue
             tls.indigo.setOption(option, value)
@@ -865,7 +866,7 @@ def convert():
         )
         indigo = indigo_init(data["options"])
 
-        monomer_library = data.get("monomerLibrary")
+        monomer_library = data["options"].get("monomerLibrary")
         if monomer_library is not None:
             library = indigo.loadMolecule(monomer_library)
 
@@ -908,7 +909,7 @@ def convert():
         )
         indigo = indigo_init(data["options"])
 
-        monomer_library = request.args.get("monomerLibrary")
+        monomer_library = data["options"].get("monomerLibrary")
         if monomer_library is not None:
             library = indigo.loadMolecule(monomer_library)
 

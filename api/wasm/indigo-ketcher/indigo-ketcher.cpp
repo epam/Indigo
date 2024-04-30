@@ -249,7 +249,7 @@ namespace indigo
 
     void indigoSetOptions(const std::map<std::string, std::string>& options)
     {
-        std::set<std::string> to_skip{"smiles", "smarts", "input-format", "output-content-type"};
+        std::set<std::string> to_skip{"smiles", "smarts", "input-format", "output-content-type", "monomerLibrary"};
         for (const auto& option : options)
         {
             if (to_skip.count(option.first) < 1)
@@ -437,8 +437,7 @@ namespace indigo
         return _checkResultString(indigoVersionInfo());
     }
 
-    std::string convert(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options,
-                        const char* monomerLibrary = nullptr)
+    std::string convert(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
     {
         const IndigoSession session;
         indigoSetOptions(options);
@@ -447,9 +446,11 @@ namespace indigo
         {
             options_copy["query"] = "true";
         }
-        if (monomerLibrary)
+        auto monomerLibrary = options.find("monomerLibrary");
+        if (monomerLibrary != options.end() && monomerLibrary->second.size())
         {
-            IndigoKetcherObject iko = loadMoleculeOrReaction(data, monomerLibrary);
+            options_copy["monomerLibrary"] = "";
+            IndigoKetcherObject iko = loadMoleculeOrReaction(monomerLibrary->second, options_copy);
         }
         IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy);
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");

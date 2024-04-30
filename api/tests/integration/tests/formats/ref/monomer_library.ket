@@ -1577,9 +1577,15 @@
         },
         "class": "RNA",
         "templates": [
-            "MOE___2'-O-Methoxyethyl ribose",
-            "A___Adenine",
-            "P___Phosphate"
+            {
+                "$ref": "monomerTemplate-MOE___2'-O-Methoxyethyl ribose"
+            },
+            {
+                "$ref": "monomerTemplate-A___Adenine"
+            },
+            {
+                "$ref": "monomerTemplate-P___Phosphate"
+            }
         ]
     },
     "monomerGroupTemplate-2": {
@@ -1591,9 +1597,15 @@
         },
         "class": "RNA",
         "templates": [
-            "MOE___2'-O-Methoxyethyl ribose",
-            "5meC___5-methyl-cytidine",
-            "P___Phosphate"
+            {
+                "$ref": "monomerTemplate-MOE___2'-O-Methoxyethyl ribose"
+            },
+            {
+                "$ref": "monomerTemplate-5meC___5-methyl-cytidine"
+            },
+            {
+                "$ref": "monomerTemplate-P___Phosphate"
+            }
         ]
     },
     "monomerGroupTemplate-3": {
@@ -1605,9 +1617,15 @@
         },
         "class": "RNA",
         "templates": [
-            "MOE___2'-O-Methoxyethyl ribose",
-            "G___Guanine",
-            "P___Phosphate"
+            {
+                "$ref": "monomerTemplate-MOE___2'-O-Methoxyethyl ribose"
+            },
+            {
+                "$ref": "monomerTemplate-G___Guanine"
+            },
+            {
+                "$ref": "monomerTemplate-P___Phosphate"
+            }
         ]
     },
     "monomerGroupTemplate-4": {
@@ -1619,9 +1637,15 @@
         },
         "class": "RNA",
         "templates": [
-            "MOE___2'-O-Methoxyethyl ribose",
-            "T___Thymine",
-            "P___Phosphate"
+            {
+                "$ref": "monomerTemplate-MOE___2'-O-Methoxyethyl ribose"
+            },
+            {
+                "$ref": "monomerTemplate-T___Thymine"
+            },
+            {
+                "$ref": "monomerTemplate-P___Phosphate"
+            }
         ]
     },
     "monomerGroupTemplate-5": {
@@ -1633,9 +1657,15 @@
         },
         "class": "RNA",
         "templates": [
-            "dR___Deoxy-Ribose",
-            "U___Uracil",
-            "P___Phosphate"
+            {
+                "$ref": "monomerTemplate-dR___Deoxy-Ribose"
+            },
+            {
+                "$ref": "monomerTemplate-U___Uracil"
+            },
+            {
+                "$ref": "monomerTemplate-P___Phosphate"
+            }
         ]
     }
 }
