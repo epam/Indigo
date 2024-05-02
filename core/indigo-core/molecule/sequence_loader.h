@@ -48,6 +48,13 @@ namespace indigo
         };
         DECL_ERROR;
 
+        static constexpr char NUM_BEGIN = 0x30;
+        static constexpr char NUM_END = 0x40;
+
+        static constexpr char CHAR_LOWERCASE_BEGIN = 0x61;
+        static constexpr char CHAR_LOWERCASE_END = 0x7B;
+        static constexpr char CHAR_SHIFT_CONVERT = 0x20;
+
         SequenceLoader(Scanner& scanner);
 
         ~SequenceLoader();

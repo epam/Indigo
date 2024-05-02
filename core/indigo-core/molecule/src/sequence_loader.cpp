@@ -116,7 +116,7 @@ void SequenceLoader::loadFasta(BaseMolecule& mol, SeqType seq_type)
             }
 
             if (invalid_symbols.size())
-                throw Error("Invalid symbols in the sequence: %s", invalid_symbols.c_str());
+                throw Error("SequenceLoader::loadFasta(), Invalid symbols in the sequence: %s", invalid_symbols.c_str());
 
             if (!properties.is_empty())
             {
@@ -151,12 +151,38 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
     const int row_size = seq_type == SeqType::PEPTIDESeq ? 1 : 2;
     mol.clear();
     std::string invalid_symbols;
+
+    bool isGenBankPept = false;
+    bool start_char = true;
+
     while (!_scanner.isEOF())
     {
         auto ch = _scanner.readChar();
         if (ch == '\n' || ch == '\r')
             continue;
-        if (ch == ' ')
+
+        if (start_char)
+        {
+            if (ch >= NUM_BEGIN && ch < NUM_END)
+            {
+                isGenBankPept = true;
+            }
+            start_char = false;
+        }
+
+        if (isGenBankPept)
+        {
+            if (ch == ' ' || (ch >= NUM_BEGIN && ch < NUM_END))
+            {
+                continue;
+            }
+            if (ch >= CHAR_LOWERCASE_BEGIN && ch < CHAR_LOWERCASE_END)
+            {
+                ch -= CHAR_SHIFT_CONVERT;
+            }
+        }
+
+        if (!isGenBankPept && ch == ' ')
         {
             _seq_id = 0;
             _col = 0;
@@ -172,7 +198,7 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
     }
 
     if (invalid_symbols.size())
-        throw Error("Invalid symbols in the sequence: %s", invalid_symbols.c_str());
+        throw Error("SequenceLoader::loadSequence(), Invalid symbols in the sequence: %s", invalid_symbols.c_str());
 }
 
 bool SequenceLoader::addTemplate(BaseMolecule& mol, const std::string alias, MonomerClass mon_type)
@@ -504,5 +530,5 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
     }
 
     if (invalid_symbols.size())
-        throw Error("Invalid symbols in the sequence: %s", invalid_symbols.c_str());
+        throw Error("SequenceLoader::loadIdt(), Invalid symbols in the sequence: %s", invalid_symbols.c_str());
 }
