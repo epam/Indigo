@@ -249,7 +249,7 @@ namespace indigo
 
     void indigoSetOptions(const std::map<std::string, std::string>& options)
     {
-        std::set<std::string> to_skip{"smiles", "smarts", "input-format", "output-content-type"};
+        std::set<std::string> to_skip{"smiles", "smarts", "input-format", "output-content-type", "monomerLibrary"};
         for (const auto& option : options)
         {
             if (to_skip.count(option.first) < 1)
@@ -445,6 +445,12 @@ namespace indigo
         if (outputFormat.find("smarts") != std::string::npos)
         {
             options_copy["query"] = "true";
+        }
+        auto monomerLibrary = options.find("monomerLibrary");
+        if (monomerLibrary != options.end() && monomerLibrary->second.size())
+        {
+            options_copy["monomerLibrary"] = "";
+            IndigoKetcherObject iko = loadMoleculeOrReaction(monomerLibrary->second, options_copy);
         }
         IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy);
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");

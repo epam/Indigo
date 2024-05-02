@@ -59,16 +59,24 @@ namespace indigo
         void loadIdt(BaseMolecule& mol);
 
     private:
+        Vec3f getBackboneMonomerPosition();
         bool addMonomer(BaseMolecule& mol, char ch, SeqType seq_type);
-        bool addTemplate(BaseMolecule& mol, const std::string alias, MonomerType seq_type);
+        bool addTemplate(BaseMolecule& mol, const std::string alias, MonomerClass seq_type);
+
+        void checkAddTemplate(BaseMolecule& mol, const MonomerTemplate& monomer_template);
 
         void addAminoAcid(BaseMolecule& mol, char ch);
-        void addNucleotide(BaseMolecule& mol, char ch, const std::string& sugar_alias, const std::string& phosphate_alias);
-        bool addMonomerTemplate(BaseMolecule& mol, MonomerType mt, const std::string& alias);
-        bool checkAddTemplate(BaseMolecule& mol, MonomerType type, const std::string monomer);
+        void addNucleotide(BaseMolecule& mol, std::string base, const std::string& sugar_alias, const std::string& phosphate_alias,
+                           bool phosphate_at_left = true);
+
+        int addTemplateAtom(BaseMolecule& mol, const char* alias, const char* monomer_class, int seq_id);
+        void addTemplateBond(BaseMolecule& mol, int left_idx, int right_idx, bool branch = false);
+
+        bool addMonomerTemplate(BaseMolecule& mol, MonomerClass mt, const std::string& alias);
+        bool checkAddTemplate(BaseMolecule& mol, MonomerClass type, const std::string monomer);
         SequenceLoader(const SequenceLoader&); // no implicit copy
         Scanner& _scanner;
-        std::unordered_set<std::pair<MonomerType, std::string>, pair_hash> _added_templates;
+        std::unordered_set<std::pair<MonomerClass, std::string>, pair_hash> _added_templates;
         const MonomerTemplates& _mon_lib;
         int _seq_id;
         int _last_monomer_idx;

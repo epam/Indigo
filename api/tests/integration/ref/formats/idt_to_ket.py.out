@@ -1,3 +1,5 @@
 *** IDT to KET ***
 idt_acg.ket:SUCCEED
 idt_maxmgc.ket:SUCCEED
+idt_2moera.ket:SUCCEED
+idt_modifications.ket:SUCCEED

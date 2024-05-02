@@ -78,6 +78,7 @@ def indigo_init(options={}):
                 "smarts",
                 "input-format",
                 "output-content-type",
+                "monomerLibrary",
             ):
                 continue
             tls.indigo.setOption(option, value)
@@ -861,6 +862,11 @@ def convert():
             data["options"],
         )
         indigo = indigo_init(data["options"])
+
+        monomer_library = data["options"].get("monomerLibrary")
+        if monomer_library is not None:
+            indigo.loadMolecule(monomer_library)
+
         query = False
         if "smarts" in data["output_format"]:
             query = True
@@ -898,6 +904,11 @@ def convert():
             data["options"],
         )
         indigo = indigo_init(data["options"])
+
+        monomer_library = data["options"].get("monomerLibrary")
+        if monomer_library is not None:
+            indigo.loadMolecule(monomer_library)
+
         md = load_moldata(
             data["struct"],
             mime_type=data["input_format"],
