@@ -10,10 +10,8 @@ set(EMCC_FLAGS
         -s INITIAL_MEMORY=32mb
         -s ALLOW_MEMORY_GROWTH=1
         -s DISABLE_EXCEPTION_CATCHING=0
-        -s SINGLE_FILE=0
-        -s LZ4=1
+        -s SINGLE_FILE=1
         -s MODULARIZE=1
-        -s FILESYSTEM=1
         -s ASSERTIONS=1
         -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0
         --no-entry)
