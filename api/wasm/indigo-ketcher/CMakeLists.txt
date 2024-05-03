@@ -12,6 +12,7 @@ set(EMCC_FLAGS
         -s DISABLE_EXCEPTION_CATCHING=0
         -s SINGLE_FILE=1
         -s MODULARIZE=1
+        -s FILESYSTEM=0
         -s ASSERTIONS=1
         -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0
         --no-entry)
