@@ -1020,14 +1020,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
 
             if (mol.template_attachment_points.size())
             {
-                int ap_count = 0;
-                for (int j = mol.template_attachment_points.begin(); j != mol.template_attachment_points.end(); j = mol.template_attachment_points.next(j))
-                {
-                    BaseMolecule::TemplateAttPoint& ap = mol.template_attachment_points.at(j);
-                    if (ap.ap_occur_idx == i)
-                        ap_count++;
-                }
-                if (ap_count)
+                if (mol.getTemplateAtomAttachmentPointsCount(i))
                 {
                     writer.Key("attOrder");
                     writer.StartArray();

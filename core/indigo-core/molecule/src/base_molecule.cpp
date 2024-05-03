@@ -85,6 +85,7 @@ void BaseMolecule::clear()
     sgroups.clear();
     tgroups.clear();
     template_attachment_points.clear();
+    template_attachment_indexes.clear();
     Graph::clear();
     _hl_atoms.clear();
     _hl_bonds.clear();
@@ -1111,68 +1112,78 @@ void BaseMolecule::setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx
     ap.ap_aidx = att_atom_idx;
     ap.ap_id.readString(att_id, false);
     ap.ap_id.push(0);
+    if (atom_idx >= template_attachment_indexes.size())
+        template_attachment_indexes.expand(atom_idx + 1);
+    template_attachment_indexes.at(atom_idx).add(att_idx);
     updateEditRevision();
 }
 
 int BaseMolecule::getTemplateAtomAttachmentPoint(int atom_idx, int order)
 {
-    int ap_count = 0;
-    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+    if (atom_idx < template_attachment_indexes.size())
     {
-        auto& ap = template_attachment_points.at(j);
-        if (ap.ap_occur_idx == atom_idx)
-        {
-            if (ap_count == order)
-                return ap.ap_aidx;
-            ap_count++;
-        }
+        auto& att_indexes = template_attachment_indexes.at(atom_idx);
+        if (att_indexes.size() && order < att_indexes.size())
+            return template_attachment_points.at(att_indexes[order]).ap_aidx;
     }
     return -1;
 }
 
 void BaseMolecule::getTemplateAtomAttachmentPointId(int atom_idx, int order, Array<char>& apid)
 {
-    int ap_count = 0;
-    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+    if (atom_idx < template_attachment_indexes.size())
     {
-        auto& ap = template_attachment_points.at(j);
-        if (ap.ap_occur_idx == atom_idx)
+        auto& att_indexes = template_attachment_indexes.at(atom_idx);
+        if (att_indexes.size() && order < att_indexes.size())
         {
-            if (ap_count == order)
-            {
-                apid.copy(ap.ap_id);
-                return;
-            }
-            ap_count++;
+            apid.copy(template_attachment_points.at(att_indexes[order]).ap_id);
+            return;
         }
     }
-    throw Error("attachment point order %d is out of range (%d)", order, ap_count);
+    throw Error("attachment point order %d is out of range", order);
+}
+
+std::optional<std::pair<int, std::reference_wrapper<ObjPool<int>>>> BaseMolecule::getTemplateAtomAttachmentPointIdxs(int atom_idx, int att_point_idx)
+{
+    if (atom_idx < template_attachment_indexes.size())
+    {
+        auto& att_idxs = template_attachment_indexes[atom_idx];
+        for (int k = att_idxs.begin(); k != att_idxs.end(); k = att_idxs.next(k))
+            if (att_idxs.at(k) == att_point_idx)
+                return std::make_pair(k, std::ref(att_idxs));
+    }
+    return std::nullopt;
 }
 
 int BaseMolecule::getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& att_id)
 {
     QS_DEF(Array<char>, tmp);
-    int aidx = -1;
-    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+    if (atom_idx < template_attachment_indexes.size())
     {
-        BaseMolecule::TemplateAttPoint& ap = template_attachment_points.at(j);
-        if ((ap.ap_occur_idx == atom_idx) && (ap.ap_id.memcmp(att_id) == 0))
+        auto& att_idxs = template_attachment_indexes[atom_idx];
+        for (int k = att_idxs.begin(); k != att_idxs.end(); k = att_idxs.next(k))
         {
-            return ap.ap_aidx;
+            auto& ap = template_attachment_points.at(att_idxs.at(k));
+            if (ap.ap_id.memcmp(att_id) == 0)
+                return ap.ap_aidx;
         }
     }
-    return aidx;
+    return -1;
 }
 
 bool BaseMolecule::updateTemplateAtomAttachmentDestination(int atom_idx, int old_dest_atom_idx, int new_dest_atom_idx)
 {
-    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+    if (atom_idx < template_attachment_indexes.size())
     {
-        auto& ap = template_attachment_points.at(j);
-        if ((ap.ap_occur_idx == atom_idx) && (ap.ap_aidx == old_dest_atom_idx))
+        auto& att_idxs = template_attachment_indexes[atom_idx];
+        for (int k = att_idxs.begin(); k != att_idxs.end(); k = att_idxs.next(k))
         {
-            ap.ap_aidx = new_dest_atom_idx;
-            return true;
+            auto& ap = template_attachment_points.at(att_idxs.at(k));
+            if (ap.ap_aidx == old_dest_atom_idx)
+            {
+                ap.ap_aidx = new_dest_atom_idx;
+                return true;
+            }
         }
     }
     return false;
@@ -1180,30 +1191,26 @@ bool BaseMolecule::updateTemplateAtomAttachmentDestination(int atom_idx, int old
 
 void BaseMolecule::setTemplateAtomAttachmentDestination(int atom_idx, int new_dest_atom_idx, Array<char>& att_id)
 {
-    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
+    if (atom_idx < template_attachment_indexes.size())
     {
-        auto& ap = template_attachment_points.at(j);
-        if ((ap.ap_occur_idx == atom_idx) && (ap.ap_id.memcmp(att_id) == 0))
+        auto& att_idxs = template_attachment_indexes[atom_idx];
+        for (int k = att_idxs.begin(); k != att_idxs.end(); k = att_idxs.next(k))
         {
-            ap.ap_aidx = new_dest_atom_idx;
-            return;
+            auto& ap = template_attachment_points.at(att_idxs.at(k));
+            if (ap.ap_id.memcmp(att_id) == 0)
+            {
+                ap.ap_aidx = new_dest_atom_idx;
+                return;
+            }
         }
     }
+
     setTemplateAtomAttachmentOrder(atom_idx, new_dest_atom_idx, att_id.ptr());
 }
 
 int BaseMolecule::getTemplateAtomAttachmentPointsCount(int atom_idx)
 {
-    int count = 0;
-    for (int j = template_attachment_points.begin(); j != template_attachment_points.end(); j = template_attachment_points.next(j))
-    {
-        auto& ap = template_attachment_points.at(j);
-        if (ap.ap_occur_idx == atom_idx)
-        {
-            count++;
-        }
-    }
-    return count;
+    return atom_idx < template_attachment_indexes.size() ? template_attachment_indexes.at(atom_idx).size() : 0;
 }
 
 int BaseMolecule::attachmentPointCount() const
@@ -1372,6 +1379,7 @@ int BaseMolecule::transformSCSRtoFullCTAB()
     {
         tgroups.clear();
         template_attachment_points.clear();
+        template_attachment_indexes.clear();
     }
 
     /*

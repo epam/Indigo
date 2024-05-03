@@ -20,6 +20,7 @@
 #define __base_molecule__
 
 #include <map>
+#include <optional>
 #include <set>
 
 #include "base_cpp/obj_array.h"
@@ -252,6 +253,7 @@ namespace indigo
         void getTemplateAtomAttachmentPointId(int atom_idx, int order, Array<char>& apid);
         int getTemplateAtomAttachmentPointsCount(int atom_idx);
         int getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& att_id);
+        std::optional<std::pair<int, std::reference_wrapper<ObjPool<int>>>> getTemplateAtomAttachmentPointIdxs(int atom_idx, int att_point_idx);
 
         void addAttachmentPoint(int order, int atom_index);
 
@@ -364,6 +366,7 @@ namespace indigo
         }
 
         ObjPool<TemplateAttPoint> template_attachment_points;
+        ObjArray<ObjPool<int>> template_attachment_indexes;
 
         MoleculeSGroups sgroups;
 
