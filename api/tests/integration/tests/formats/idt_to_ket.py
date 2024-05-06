@@ -12,7 +12,12 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import Indigo, joinPathPy  # noqa
+from env_indigo import (  # noqa
+    Indigo,
+    IndigoException,
+    getIndigoExceptionText,
+    joinPathPy,
+)
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
@@ -63,8 +68,9 @@ idt_errors = {
 for idt_seq, error in idt_errors.items():
     try:
         mol = indigo.loadIdt(idt_seq)
-    except Exception as e:
-        if e.value == error:
+    except IndigoException as e:
+        text = getIndigoExceptionText(e)
+        if text == error:
             print("Got expected error '%s'" % error)
         else:
-            print("Expected error '%s' but got '%s'" % (error, e.value))
+            print("Expected error '%s' but got '%s'" % (error, text))
