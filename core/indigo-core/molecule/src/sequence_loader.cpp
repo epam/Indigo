@@ -414,7 +414,7 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
         };
         if (base.size() > 0)
         {
-            if (_scanner.isEOF() && _seq_id > 0)
+            if (_scanner.isEOF())
             {
                 modification = IdtModification::THREE_PRIME_END;
                 phosphate = ""; // no phosphate at three-prime end
@@ -433,14 +433,16 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
                     if (invalid_symbols.size())
                         invalid_symbols += ',';
                     invalid_symbols += ch;
-                    continue;
                 }
-                if (!checkAddTemplate(mol, MonomerClass::Sugar, sugar))
-                    throw Error("Unknown sugar '%s'", sugar.c_str());
-                if (base.size() > 0 && !checkAddTemplate(mol, MonomerClass::Base, base))
-                    throw Error("Unknown base '%s'", base.c_str());
-                if (phosphate.size() > 0 && !checkAddTemplate(mol, MonomerClass::Phosphate, phosphate))
-                    throw Error("Unknown phosphate '%s'", phosphate.c_str());
+                else
+                {
+                    if (!checkAddTemplate(mol, MonomerClass::Sugar, sugar))
+                        throw Error("Unknown sugar '%s'", sugar.c_str());
+                    if (base.size() > 0 && !checkAddTemplate(mol, MonomerClass::Base, base))
+                        throw Error("Unknown base '%s'", base.c_str());
+                    if (phosphate.size() > 0 && !checkAddTemplate(mol, MonomerClass::Phosphate, phosphate))
+                        throw Error("Unknown phosphate '%s'", phosphate.c_str());
+                }
             }
             else
             {
