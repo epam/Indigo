@@ -1,5 +1,7 @@
 *** IDT to KET ***
+idt_a.ket:SUCCEED
 idt_acg.ket:SUCCEED
 idt_maxmgc.ket:SUCCEED
 idt_2moera.ket:SUCCEED
 idt_modifications.ket:SUCCEED
+Got expected error 'SEQUENCE loader: Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3'
