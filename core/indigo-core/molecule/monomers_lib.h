@@ -113,7 +113,7 @@ namespace indigo
             _three_prime_end = three_prime_end;
         };
 
-        inline bool hasModification(IdtModification modification)
+        inline bool hasModification(IdtModification modification) const
         {
             switch (modification)
             {
@@ -127,25 +127,26 @@ namespace indigo
             return false;
         }
 
-        inline bool hasFivePrimeEnd()
+        inline bool hasFivePrimeEnd() const
         {
             return _five_prime_end.size() != 0;
         }
 
-        inline bool hasInternal()
+        inline bool hasInternal() const
         {
             return _internal.size() != 0;
         }
 
-        inline bool hasThreePrimeEnd()
+        inline bool hasThreePrimeEnd() const
         {
             return _three_prime_end.size() != 0;
         }
 
-        const std::string& getModification(IdtModification modification);
-        const std::string& getFivePrimeEnd();
-        const std::string& getInternal();
-        const std::string& getThreePrimeEnd();
+        const std::string& getModification(IdtModification modification) const;
+        const std::string& getFivePrimeEnd() const;
+        const std::string& getInternal() const;
+        const std::string& getThreePrimeEnd() const;
+
         inline static std::string IdtModificationToString(IdtModification mod)
         {
             switch (mod)
@@ -248,6 +249,11 @@ namespace indigo
             return _class;
         }
 
+        inline const std::string& monomerClassStr() const
+        {
+            return MonomerClassToStr(_class);
+        }
+
         inline const std::string& classHELM() const
         {
             return _class_HELM;
@@ -278,12 +284,7 @@ namespace indigo
             _idt_alias = idt_alias;
         }
 
-        inline bool hasIdtAlias(const std::string& alias, IdtModification mod)
-        {
-            if (_idt_alias.hasModification(mod) && (_idt_alias.getModification(mod) == alias))
-                return true;
-            return false;
-        }
+        bool hasIdtAlias(const std::string& alias, IdtModification mod);
 
     private:
         std::string _id;
@@ -317,12 +318,7 @@ namespace indigo
 
         void addTemplate(const std::string& template_id);
 
-        inline bool hasIdtAlias(const std::string& alias, IdtModification mod)
-        {
-            if (_idt_alias.hasModification(mod) && (_idt_alias.getModification(mod) == alias))
-                return true;
-            return false;
-        }
+        bool hasIdtAlias(const std::string& alias, IdtModification mod);
 
         inline bool hasTemplateClass(MonomerClass monomer_class)
         {
@@ -333,11 +329,21 @@ namespace indigo
             }
             return false;
         }
-        MonomerTemplate& getTemplateByClass(MonomerClass monomer_class);
+
+        const MonomerTemplate& getTemplateByClass(MonomerClass monomer_class) const;
+
+        bool MonomerGroupTemplate::hasTemplate(MonomerClass monomer_class) const;
+
+        bool MonomerGroupTemplate::hasTemplate(MonomerClass monomer_class, const std::string monomer_id) const;
 
         inline const std::string& id() const
         {
             return _id;
+        }
+
+        inline const IdtAlias& idt_alias() const
+        {
+            return _idt_alias;
         }
 
     private:
@@ -369,11 +375,15 @@ namespace indigo
             _monomer_group_templates.emplace(monomer_group_template.id(), (monomer_group_template));
         };
 
-        MonomerTemplate& getMonomerTemplateById(const std::string& monomer_template_id);
+        const MonomerTemplate& getMonomerTemplateById(const std::string& monomer_template_id);
+        const std::string& getMonomerTemplateIdByAlias(MonomerClass monomer_class, const std::string& monomer_template_alias);
         MonomerGroupTemplate& getMonomerGroupTemplateById(const std::string& monomer_template_id);
 
-        std::string getMonomerTemplateIdByIdtAliasAndMod(const std::string& alias, IdtModification mod);
-        std::string getMGTidByIdtAliasAndMod(const std::string& alias, IdtModification mod);
+        const std::string& getMonomerTemplateIdByIdtAliasAndMod(const std::string& alias, IdtModification mod);
+        const std::string& getMGTidByIdtAliasAndMod(const std::string& alias, IdtModification mod);
+
+        const std::string& getIdtAliasByModification(IdtModification modification, const std::string sugar_id, const std::string base_id,
+                                                     const std::string phosphate_id);
 
     protected:
         MonomerTemplateLibrary(){};

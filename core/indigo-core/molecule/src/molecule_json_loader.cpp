@@ -1132,8 +1132,11 @@ void MoleculeJsonLoader::addToLibMonomerTemplate(const rapidjson::Value& mt_json
 {
     if (!mt_json.HasMember("id"))
         return; // Do we need exception here?
+    int tgroup_id = parseMonomerTemplate(mt_json, mol);
     std::string monomer_class, class_HELM, id, full_name, alias, natural_analog;
     id = mt_json["id"].GetString();
+    if (id.size() < 4)
+        return; // Skip templates from kMonomersBasicTemplates
     if (mt_json.HasMember("class"))
         monomer_class = mt_json["class"].GetString();
     if (mt_json.HasMember("classHELM"))
@@ -1145,7 +1148,7 @@ void MoleculeJsonLoader::addToLibMonomerTemplate(const rapidjson::Value& mt_json
     if (mt_json.HasMember("naturalAnalog"))
         natural_analog = mt_json["naturalAnalog"].GetString();
 
-    MonomerTemplate mon_template(id, monomer_class, class_HELM, full_name, alias, natural_analog, parseMonomerTemplate(mt_json, mol), mol);
+    MonomerTemplate mon_template(id, monomer_class, class_HELM, full_name, alias, natural_analog, tgroup_id, mol);
 
     if (mt_json.HasMember("idtAliases"))
     {

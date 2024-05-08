@@ -34,6 +34,7 @@
 
 namespace indigo
 {
+    static std::string EMPTY_STRING;
     IMPL_ERROR(MonomerTemplates, "monomers library");
 
     struct MonomerDescriptor
@@ -173,7 +174,7 @@ namespace indigo
 
     IMPL_ERROR(IdtAlias, "IDT alias");
 
-    const std::string& IdtAlias::getModification(IdtModification modification)
+    const std::string& IdtAlias::getModification(IdtModification modification) const
     {
         static std::string empty;
         switch (modification)
@@ -189,7 +190,7 @@ namespace indigo
         return empty;
     }
 
-    const std::string& IdtAlias::getFivePrimeEnd()
+    const std::string& IdtAlias::getFivePrimeEnd() const
     {
         if (_five_prime_end != "")
             return _five_prime_end;
@@ -197,7 +198,7 @@ namespace indigo
             throw Error("IDT alias %s has no five-prime end modification.", _base.c_str());
     }
 
-    const std::string& IdtAlias::getInternal()
+    const std::string& IdtAlias::getInternal() const
     {
         if (_internal != "")
             return _internal;
@@ -205,7 +206,7 @@ namespace indigo
             throw Error("IDT alias %s has no internal modification.", _base.c_str());
     }
 
-    const std::string& IdtAlias::getThreePrimeEnd()
+    const std::string& IdtAlias::getThreePrimeEnd() const
     {
         if (_three_prime_end != "")
             return _three_prime_end;
@@ -272,15 +273,21 @@ namespace indigo
         return _mol.tgroups.getTGroup(_tgroup_id);
     }
 
+    bool MonomerTemplate::hasIdtAlias(const std::string& alias, IdtModification mod)
+    {
+        if (_idt_alias.hasModification(mod) && (_idt_alias.getModification(mod) == alias))
+            return true;
+        return false;
+    }
+
     IMPL_ERROR(MonomerGroupTemplate, "MonomerGroupTemplate");
 
     void MonomerGroupTemplate::addTemplate(const std::string& template_id)
     {
-        _monomer_templates.insert(
-            std::pair<std::string, MonomerTemplate&>(template_id, MonomerTemplateLibrary::instance().getMonomerTemplateById(template_id)));
+        _monomer_templates.insert(std::pair<std::string, MonomerTemplate>(template_id, MonomerTemplateLibrary::instance().getMonomerTemplateById(template_id)));
     };
 
-    MonomerTemplate& MonomerGroupTemplate::getTemplateByClass(MonomerClass monomer_class)
+    const MonomerTemplate& MonomerGroupTemplate::getTemplateByClass(MonomerClass monomer_class) const
     {
         for (auto& id_template : _monomer_templates)
         {
@@ -291,6 +298,33 @@ namespace indigo
                     _id.c_str());
     }
 
+    bool MonomerGroupTemplate::hasTemplate(MonomerClass monomer_class, const std::string monomer_id) const
+    {
+        for (auto& id_template : _monomer_templates)
+        {
+            if (id_template.second.monomerClass() == monomer_class) // for now only one monomer of each class
+                return id_template.second.id() == monomer_id;
+        }
+        return false;
+    }
+
+    bool MonomerGroupTemplate::hasTemplate(MonomerClass monomer_class) const
+    {
+        for (auto& id_template : _monomer_templates)
+        {
+            if (id_template.second.monomerClass() == monomer_class)
+                return true;
+        }
+        return false;
+    }
+
+    bool MonomerGroupTemplate::hasIdtAlias(const std::string& alias, IdtModification mod)
+    {
+        if (_idt_alias.hasModification(mod) && (_idt_alias.getModification(mod) == alias))
+            return true;
+        return false;
+    }
+
     IMPL_ERROR(MonomerTemplateLibrary, "MonomerTemplateLibrary");
 
     MonomerTemplateLibrary& MonomerTemplateLibrary::instance()
@@ -299,11 +333,21 @@ namespace indigo
         return library_instance;
     }
 
-    MonomerTemplate& MonomerTemplateLibrary::getMonomerTemplateById(const std::string& monomer_template_id)
+    const MonomerTemplate& MonomerTemplateLibrary::getMonomerTemplateById(const std::string& monomer_template_id)
     {
         if (_monomer_templates.count(monomer_template_id) == 0)
             throw Error("Monomert template with id %s not found.", monomer_template_id.c_str());
         return _monomer_templates.at(monomer_template_id);
+    }
+
+    const std::string& MonomerTemplateLibrary::getMonomerTemplateIdByAlias(MonomerClass monomer_class, const std::string& monomer_template_alias)
+    {
+        for (auto& it : _monomer_templates)
+        {
+            if (it.second.monomerClass() == monomer_class && it.second.alias() == monomer_template_alias)
+                return it.second.id();
+        }
+        return EMPTY_STRING;
     }
 
     MonomerGroupTemplate& MonomerTemplateLibrary::getMonomerGroupTemplateById(const std::string& monomer_group_template_id)
@@ -313,23 +357,53 @@ namespace indigo
         return _monomer_group_templates.at(monomer_group_template_id);
     }
 
-    std::string MonomerTemplateLibrary::getMonomerTemplateIdByIdtAliasAndMod(const std::string& alias, IdtModification mod)
+    const std::string& MonomerTemplateLibrary::getMonomerTemplateIdByIdtAliasAndMod(const std::string& alias, IdtModification mod)
     {
         for (auto& monomer_template : _monomer_templates)
         {
             if (monomer_template.second.hasIdtAlias(alias, mod))
                 return monomer_template.first;
         };
-        return "";
+        return EMPTY_STRING;
     };
 
-    std::string MonomerTemplateLibrary::getMGTidByIdtAliasAndMod(const std::string& alias, IdtModification mod)
+    const std::string& MonomerTemplateLibrary::getMGTidByIdtAliasAndMod(const std::string& alias, IdtModification mod)
     {
         for (auto& mgt : _monomer_group_templates)
         {
             if (mgt.second.hasIdtAlias(alias, mod))
                 return mgt.first;
         };
-        return "";
+        return EMPTY_STRING;
     };
+
+    const std::string& MonomerTemplateLibrary::getIdtAliasByModification(IdtModification modification, const std::string sugar_id, const std::string base_id,
+                                                                         const std::string phosphate_id)
+    {
+        for (auto& mgt : _monomer_group_templates)
+        {
+            if (mgt.second.idt_alias().hasModification(modification))
+            {
+                if (!mgt.second.hasTemplate(MonomerClass::Sugar, sugar_id))
+                    continue;
+                if (modification != IdtModification::THREE_PRIME_END)
+                {
+                    if (!mgt.second.hasTemplate(MonomerClass::Phosphate, phosphate_id))
+                        continue;
+                }
+                if (base_id.size())
+                {
+                    if (!mgt.second.hasTemplate(MonomerClass::Base, base_id))
+                        continue;
+                }
+                else // If no base - group template should not contain base template
+                {
+                    if (mgt.second.hasTemplate(MonomerClass::Base))
+                        continue;
+                }
+                return mgt.second.idt_alias().getModification(modification);
+            }
+        }
+        return EMPTY_STRING;
+    }
 }

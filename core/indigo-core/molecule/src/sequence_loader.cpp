@@ -394,6 +394,7 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
             break;
         case '/':
             // read till next '/'
+            ch = 0;
             while (!_scanner.isEOF())
             {
                 ch = _scanner.readChar();
@@ -446,35 +447,38 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
             }
             else
             {
+                // Corner case - only one IDT mod - can be 5-end or 3-end - look to first symbol
+                if (_seq_id == 0 && modification == IdtModification::THREE_PRIME_END && base[0] == '5')
+                    modification = IdtModification::FIVE_PRIME_END;
                 // Find modification
-                std::string mgt_id = MonomerTemplateLibrary::instance().getMGTidByIdtAliasAndMod(base, modification);
+                const std::string& mgt_id = MonomerTemplateLibrary::instance().getMGTidByIdtAliasAndMod(base, modification);
                 if (mgt_id.size())
                 {
                     MonomerGroupTemplate& mgt = MonomerTemplateLibrary::instance().getMonomerGroupTemplateById(mgt_id);
-                    MonomerTemplate& sugar_template = mgt.getTemplateByClass(MonomerClass::Sugar);
+                    const MonomerTemplate& sugar_template = mgt.getTemplateByClass(MonomerClass::Sugar);
                     sugar = sugar_template.alias();
                     checkAddTemplate(mol, sugar_template);
                     phosphate = "";
                     base = "";
                     if (modification != IdtModification::THREE_PRIME_END && mgt.hasTemplateClass(MonomerClass::Phosphate))
                     {
-                        MonomerTemplate& phosphate_template = mgt.getTemplateByClass(MonomerClass::Phosphate);
+                        const MonomerTemplate& phosphate_template = mgt.getTemplateByClass(MonomerClass::Phosphate);
                         phosphate = phosphate_template.alias();
                         checkAddTemplate(mol, phosphate_template);
                     }
                     if (mgt.hasTemplateClass(MonomerClass::Base))
                     {
-                        MonomerTemplate& base_template = mgt.getTemplateByClass(MonomerClass::Base);
+                        const MonomerTemplate& base_template = mgt.getTemplateByClass(MonomerClass::Base);
                         base = base_template.alias();
                         checkAddTemplate(mol, base_template);
                     }
                 }
                 else
                 {
-                    std::string monomer_template_id = MonomerTemplateLibrary::instance().getMonomerTemplateIdByIdtAliasAndMod(base, modification);
+                    const std::string& monomer_template_id = MonomerTemplateLibrary::instance().getMonomerTemplateIdByIdtAliasAndMod(base, modification);
                     if (!monomer_template_id.size())
                         throw Error("IDT alias %s not found at %s position.", base.c_str(), IdtAlias::IdtModificationToString(modification).c_str());
-                    MonomerTemplate monomer_template = MonomerTemplateLibrary::instance().getMonomerTemplateById(monomer_template_id);
+                    const MonomerTemplate& monomer_template = MonomerTemplateLibrary::instance().getMonomerTemplateById(monomer_template_id);
                     checkAddTemplate(mol, monomer_template);
                     single_monomer = monomer_template.alias();
                     single_monomer_class = MonomerTemplates::classToStr(monomer_template.monomerClass());

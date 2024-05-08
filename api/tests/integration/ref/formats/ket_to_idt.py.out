@@ -1,2 +1,16 @@
 *** KET to IDT ***
 1654-dna-to-idt.idt:SUCCEED
+ket-to-idt-2moeract.idt:SUCCEED
+ket-to-idt-32moera.idt:SUCCEED
+ket-to-idt-52moera.idt:SUCCEED
+ket-to-idt-5phos3moera.idt:SUCCEED
+ket-to-idt-a.idt:SUCCEED
+Test ket-to-idt-r1r1connection: got expected error 'Sequence saver: Canot save molecule in IDT format - sugar MOE connected to monomer MOE with class SUGAR (only base or phosphate expected).'
+Test ket-to-idt-peptide: got expected error 'Sequence saver: Canot save molecule in IDT format - AA monomer DPhe4C cannot be first.'
+Test ket-to-idt-two-bases: got expected error 'Sequence saver: Canot save molecule in IDT format - sugar R with two base connected A and C.'
+Test ket-to-idt-invalid-posphates: got expected error 'Sequence saver: Canot save molecule in IDT format - sugar R with too much phosphates connected P and P.'
+Test ket-to-idt-invalid-last-phosphate: got expected error 'Sequence saver: Canot save molecule in IDT format - phosphate sP cannot be last monomer in sequence.'
+Test ket-to-idt-invalid-nucleotide: got expected error 'Sequence saver: IDT alias for group sugar:m2e2r base:z8c3G phosphate:mepo2 not found.'
+Test ket-to-idt-invalid-sugar-phosphate: got expected error 'Sequence saver: IDT alias for group sugar:m2e2r phosphate:mepo2 not found.'
+Test ket-to-idt-invalid-sugar: got expected error 'Sequence saver: IDT alias for sugar:m2e2r not found.'
+Test ket-to-idt-invalid-sugar-base: got expected error 'Sequence saver: IDT alias for group sugar:m2e2r base:z8c3G not found.'
