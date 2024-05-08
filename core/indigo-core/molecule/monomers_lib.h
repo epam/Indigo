@@ -332,9 +332,9 @@ namespace indigo
 
         const MonomerTemplate& getTemplateByClass(MonomerClass monomer_class) const;
 
-        bool MonomerGroupTemplate::hasTemplate(MonomerClass monomer_class) const;
+        bool hasTemplate(MonomerClass monomer_class) const;
 
-        bool MonomerGroupTemplate::hasTemplate(MonomerClass monomer_class, const std::string monomer_id) const;
+        bool hasTemplate(MonomerClass monomer_class, const std::string monomer_id) const;
 
         inline const std::string& id() const
         {
