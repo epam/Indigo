@@ -63,7 +63,7 @@ for idt_name in idt_names:
         print(diff)
 
 idt_errors = {
-    "!+-$#12w12r23e32e33": "SEQUENCE loader: Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3"
+    "!+-$#12w12r23e32e33": "SEQUENCE loader: SequenceLoader::loadIdt(), Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3"
 }
 for idt_seq, error in idt_errors.items():
     try:
