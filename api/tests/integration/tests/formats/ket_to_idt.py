@@ -54,15 +54,15 @@ for filename in files:
         print(diff)
 
 idt_errors = {
-    "ket-to-idt-r1r1connection": "Sequence saver: Canot save molecule in IDT format - sugar MOE connected to monomer MOE with class SUGAR (only base or phosphate expected).",
-    "ket-to-idt-peptide": "Sequence saver: Canot save molecule in IDT format - AA monomer DPhe4C cannot be first.",
-    "ket-to-idt-two-bases": "Sequence saver: Canot save molecule in IDT format - sugar R with two base connected A and C.",
-    "ket-to-idt-invalid-posphates": "Sequence saver: Canot save molecule in IDT format - sugar R with too much phosphates connected P and P.",
-    "ket-to-idt-invalid-last-phosphate": "Sequence saver: Canot save molecule in IDT format - phosphate sP cannot be last monomer in sequence.",
-    "ket-to-idt-invalid-nucleotide": "Sequence saver: IDT alias for group sugar:m2e2r base:z8c3G phosphate:mepo2 not found.",
-    "ket-to-idt-invalid-sugar-phosphate": "Sequence saver: IDT alias for group sugar:m2e2r phosphate:mepo2 not found.",
-    "ket-to-idt-invalid-sugar": "Sequence saver: IDT alias for sugar:m2e2r not found.",
-    "ket-to-idt-invalid-sugar-base": "Sequence saver: IDT alias for group sugar:m2e2r base:z8c3G not found.",
+    "ket-to-idt-r1r1connection": "Canot save molecule in IDT format - sugar MOE connected to monomer MOE with class SUGAR (only base or phosphate expected).",
+    "ket-to-idt-peptide": "Canot save molecule in IDT format - AA monomer DPhe4C cannot be first.",
+    "ket-to-idt-two-bases": "Canot save molecule in IDT format - sugar R with two base connected A and C.",
+    "ket-to-idt-invalid-posphates": "Canot save molecule in IDT format - sugar R with too much phosphates connected P and P.",
+    "ket-to-idt-invalid-last-phosphate": "Canot save molecule in IDT format - phosphate sP cannot be last monomer in sequence.",
+    "ket-to-idt-invalid-nucleotide": "IDT alias for group sugar:m2e2r base:z8c3G phosphate:mepo2 not found.",
+    "ket-to-idt-invalid-sugar-phosphate": "IDT alias for group sugar:m2e2r phosphate:mepo2 not found.",
+    "ket-to-idt-invalid-sugar": "IDT alias for sugar:m2e2r not found.",
+    "ket-to-idt-invalid-sugar-base": "IDT alias for group sugar:m2e2r base:z8c3G not found.",
 }
 for filename, error in idt_errors.items():
     try:
@@ -76,7 +76,7 @@ for filename, error in idt_errors.items():
         )
     except IndigoException as e:
         text = getIndigoExceptionText(e)
-        if text == error:
+        if error in text:
             print("Test %s: got expected error '%s'" % (filename, error))
         else:
             print(

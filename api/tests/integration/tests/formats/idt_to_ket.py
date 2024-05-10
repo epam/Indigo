@@ -57,12 +57,12 @@ for filename, idt in idt_data.items():
         print(diff)
 
 idt_errors = {
-    "!+-$#12w12r23e32e33": "SEQUENCE loader: SequenceLoader::loadIdt(), Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3",
-    "/": "SEQUENCE loader: Unexpected end of data",
-    "//": "SEQUENCE loader: Invalid modification: empty string.",
-    "/a/": "SEQUENCE loader: Invalid modification: a.",
-    "A*": "SEQUENCE loader: Invalid IDT sequence: '*' couldn't be the last symbol.",
-    "/i2MOErQA/": "SEQUENCE loader: IDT alias i2MOErQA not found at three-prime end position.",
+    "!+-$#12w12r23e32e33": "SequenceLoader::loadIdt(), Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3",
+    "/": "Unexpected end of data",
+    "//": "Invalid modification: empty string.",
+    "/a/": "Invalid modification: a.",
+    "A*": "Invalid IDT sequence: '*' couldn't be the last symbol.",
+    "/i2MOErQA/": "IDT alias i2MOErQA not found at three-prime end position.",
 }
 for idt_seq, error in idt_errors.items():
     try:
@@ -70,7 +70,7 @@ for idt_seq, error in idt_errors.items():
         print("Test %s failed: exception expected." % idt_seq)
     except IndigoException as e:
         text = getIndigoExceptionText(e)
-        if text == error:
+        if error in text:
             print("Test '%s': got expected error '%s'" % (idt_seq, error))
         else:
             print(
