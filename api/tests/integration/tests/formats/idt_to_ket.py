@@ -42,8 +42,8 @@ lib = indigo.loadMoleculeFromFile(
     os.path.join(ref_path, "monomer_library.ket")
 )
 
-for filename, idt in idt_data.items():
-    mol = indigo.loadIdt(idt)
+for filename in sorted(idt_data.keys()):
+    mol = indigo.loadIdt(idt_data[filename])
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
     #     file.write(mol.json())
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
@@ -64,7 +64,8 @@ idt_errors = {
     "A*": "Invalid IDT sequence: '*' couldn't be the last symbol.",
     "/i2MOErQA/": "IDT alias i2MOErQA not found at three-prime end position.",
 }
-for idt_seq, error in idt_errors.items():
+for idt_seq in sorted(idt_errors.keys()):
+    error = idt_errors[idt_seq]
     try:
         mol = indigo.loadIdt(idt_seq)
         print("Test %s failed: exception expected." % idt_seq)

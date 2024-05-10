@@ -38,8 +38,7 @@ files = [
     "ket-to-idt-5phos3moera",
 ]
 
-files.sort()
-for filename in files:
+for filename in sorted(files):
     mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
     # with open(os.path.join(ref_path, filename) + ".idt", "w") as file:
     #     file.write(mol.idt())
@@ -64,7 +63,8 @@ idt_errors = {
     "ket-to-idt-invalid-sugar": "IDT alias for sugar:m2e2r not found.",
     "ket-to-idt-invalid-sugar-base": "IDT alias for group sugar:m2e2r base:z8c3G not found.",
 }
-for filename, error in idt_errors.items():
+for filename in sorted(idt_errors.keys()):
+    error = idt_errors[filename]
     try:
         mol = indigo.loadMoleculeFromFile(
             os.path.join(root, filename + ".ket")
