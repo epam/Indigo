@@ -34,6 +34,7 @@ import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.*;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -262,12 +263,12 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
 
     @Override
     public Optional<T> findFirst() {
-        throw new BingoElasticException("findFirst() operation on this stream isn't implemented");
+        return this.limit(1).collect(Collectors.toList()).stream().findFirst();
     }
 
     @Override
     public Optional<T> findAny() {
-        throw new BingoElasticException("findAny() operation on this stream isn't implemented");
+        return findFirst();
     }
 
     @Override
@@ -342,22 +343,22 @@ public class ElasticStream<T extends IndigoRecord> implements Stream<T> {
 
     @Override
     public void forEach(Consumer<? super T> action) {
-        throw new BingoElasticException("forEach() operation on this stream isn't implemented");
+        this.collect(Collectors.toList()).forEach(action);
     }
 
     @Override
     public void forEachOrdered(Consumer<? super T> action) {
-        throw new BingoElasticException("forEachOrdered() operation on this stream isn't implemented");
+        this.forEach(action);
     }
 
     @Override
     public Object[] toArray() {
-        throw new BingoElasticException("toArray() operation on this stream isn't implemented");
+        return this.collect(Collectors.toList()).toArray();
     }
 
     @Override
     public <A> A[] toArray(IntFunction<A[]> generator) {
-        throw new BingoElasticException("toArray() operation on this stream isn't implemented");
+        throw new BingoElasticException("toArray(IntFunction<A[]> generator) operation on this stream isn't implemented");
     }
 
     @Override
