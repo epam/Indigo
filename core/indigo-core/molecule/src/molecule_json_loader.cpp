@@ -1662,7 +1662,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 
         if (vertex.degree() == 2 && pyramid[2] == -1 && mol.stereocenters.isTetrahydral(sc._atom_idx))
         {
-            //creating virtual atom
+            // creating virtual atom
             Molecule& _mol = mol.asMolecule();
             int atom_idx = mol.addAtom(ELEM_PSEUDO);
             _mol.setPseudoAtom(atom_idx, "X");
