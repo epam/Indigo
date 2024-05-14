@@ -1448,6 +1448,7 @@ std::string MoleculeJsonLoader::monomerMolClass(const std::string& class_name)
 
 void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 {
+    ObjArray<Array<int>> mol_mappings;
     for (rapidjson::SizeType node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
     {
         std::vector<EnhancedStereoCenter> stereo_centers;
@@ -1505,6 +1506,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 
         Array<int> mapping;
         mol.mergeWithMolecule(*pmol, &mapping, 0);
+        mol_mappings.push().copy(mapping);
 
         for (auto& sc : stereo_centers)
         {
@@ -1683,15 +1685,43 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         auto& ep1 = connection["endpoint1"];
         auto& ep2 = connection["endpoint2"];
 
-        auto mon_id1 = monomer_id_mapping.at(extract_id(ep1["monomerId"].GetString(), "monomer"));
-        auto mon_id2 = monomer_id_mapping.at(extract_id(ep2["monomerId"].GetString(), "monomer"));
+        int id1 = -1;
+        int id2 = -1;
+        std::string atp1, atp2;
 
-        std::string atp1 = convertAPFromHELM(ep1["attachmentPointId"].GetString());
-        std::string atp2 = convertAPFromHELM(ep2["attachmentPointId"].GetString());
+        if (ep1.HasMember("monomerId"))
+        {
+            id1 = monomer_id_mapping.at(extract_id(ep1["monomerId"].GetString(), "monomer"));
+            atp1 = convertAPFromHELM(ep1["attachmentPointId"].GetString());
+        }
+        else if (ep1.HasMember("moleculeId") && ep1.HasMember("atomId"))
+        {
+            int mol_id = extract_id(ep1["moleculeId"].GetString(), "mol");
+            id1 = mol_mappings[mol_id][atoi(ep1["atomId"].GetString())];
+        }
+        else
+            throw Error("Invalid endpoint");
 
-        mol.setTemplateAtomAttachmentOrder(mon_id1, mon_id2, atp1.c_str());
-        mol.setTemplateAtomAttachmentOrder(mon_id2, mon_id1, atp2.c_str());
-        mol.asMolecule().addBond_Silent(mon_id1, mon_id2, order);
+        if (ep2.HasMember("monomerId"))
+        {
+            id2 = monomer_id_mapping.at(extract_id(ep2["monomerId"].GetString(), "monomer"));
+            atp2 = convertAPFromHELM(ep2["attachmentPointId"].GetString());
+        }
+        else if (ep2.HasMember("moleculeId") && ep2.HasMember("atomId"))
+        {
+            int mol_id = extract_id(ep2["moleculeId"].GetString(), "mol");
+            id2 = mol_mappings[mol_id][atoi(ep2["atomId"].GetString())];
+        }
+        else
+            throw Error("Invalid endpoint");
+
+        if (atp1.size())
+            mol.setTemplateAtomAttachmentOrder(id1, id2, atp1.c_str());
+
+        if (atp2.size())
+            mol.setTemplateAtomAttachmentOrder(id2, id1, atp2.c_str());
+
+        mol.asMolecule().addBond_Silent(id1, id2, order);
     }
 
     MoleculeLayout ml(mol, false);
