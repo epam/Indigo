@@ -28,7 +28,7 @@ files = ["1878-ket-to-cml"]
 files.sort()
 for filename in files:
     ket = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
-    
+
     buffer = indigo.writeBuffer()
     cmlSaver = indigo.createSaver(buffer, "cml")
     cmlSaver.close()
