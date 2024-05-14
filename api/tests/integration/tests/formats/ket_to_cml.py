@@ -27,23 +27,10 @@ files = ["1878-ket-to-cml"]
 
 files.sort()
 for filename in files:
-    try:
-        ket = indigo.loadMoleculeFromFile(
-            os.path.join(root, filename + ".ket")
-        )
-    except:
-        try:
-            ket = indigo.loadQueryMoleculeFromFile(
-                os.path.join(root, filename + ".ket")
-            )
-        except IndigoException as e:
-            print("  %s" % (getIndigoExceptionText(e)))
-
+    ket = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
+    
     buffer = indigo.writeBuffer()
     cmlSaver = indigo.createSaver(buffer, "cml")
-    for frag in ket.iterateComponents():
-        cmlSaver.append(frag.clone())
-    cmlSaver.close()
     cml = buffer.toString()
 
     with open(os.path.join(ref_path, filename) + ".cml", "r") as file:
