@@ -15,11 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-
+#include <unistd.h>
 #include <gtest/gtest.h>
 
 #include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
+#include <fstream>
 #include <molecule/crippen.h>
 #include <molecule/hybridization.h>
 #include <molecule/lipinski.h>
@@ -29,6 +30,11 @@
 #include <molecule/tpsa.h>
 
 #include "common.h"
+#include "molecule/elements.h"
+#include "molecule/molfile_saver.h"
+#include "reaction/reaction.h"
+#include "reaction/reaction_auto_loader.h"
+#include "reaction/reaction_automapper.h"
 
 using namespace std;
 using namespace indigo;
@@ -351,4 +357,41 @@ TEST_F(IndigoCoreMoleculeTest, dearomatize_smarts)
     saver.saveQueryMolecule(molecule);
     // printf("%s", sm.c_str());
     EXPECT_STREQ("c1-c=c-c=c-c=1", sm.c_str());
+}
+
+TEST_F(IndigoCoreMoleculeTest, Reaction)
+{
+    Reaction reaction;
+    {
+        char dir[250];
+        getcwd(dir, 250);
+        cout << "Current directory: " << dir << "\n";
+        ifstream reactionFile("../../data/reactions/other/stereo_reaction.rxn");
+        string content;
+        string line;
+        while (getline(reactionFile, line))
+        {
+            content += line;
+            content.push_back('\n');
+        }
+        reactionFile.close();
+        //        cout << "The content is: \n" << content << "\n";
+        cout << "Loading reaction...";
+        loadReaction(content.c_str(), reaction);
+
+        reaction.aromatize(AromaticityOptions(AromaticityOptions::GENERIC));
+        ReactionAutomapper ram(reaction);
+        ram.automap(0);
+
+        for (int i = reaction.productBegin(); i < reaction.productEnd(); i = reaction.productNext(i))
+        {
+            cout << " *** Current Product Index is: " << i << " *** \n";
+            Molecule& mol = reaction.getMolecule(i);
+            string molOutStr;
+            StringOutput molOut(molOutStr);
+            MolfileSaver molSaver(molOut);
+            molSaver.saveMolecule(mol);
+            cout << molOutStr;
+        }
+    }
 }

@@ -1,4 +1,6 @@
 #include "common.h"
+#include "reaction/reaction.h"
+#include "reaction/reaction_auto_loader.h"
 #include "reaction/reaction_cml_saver.h"
 #include "reaction/reaction_json_saver.h"
 #include "reaction/rxnfile_saver.h"
@@ -23,6 +25,13 @@ void IndigoCoreTest::loadMolecule(const char* buf, Molecule& molecule)
     BufferScanner scanner(buf);
     MoleculeAutoLoader loader(scanner);
     loader.loadMolecule(molecule);
+}
+
+void IndigoCoreTest::loadReaction(const char* buf, Reaction& reaction)
+{
+    BufferScanner scanner(buf);
+    ReactionAutoLoader loader(scanner);
+    loader.loadReaction(reaction);
 }
 
 void IndigoCoreTest::loadQueryMolecule(const char* buf, QueryMolecule& queryMolecule)
