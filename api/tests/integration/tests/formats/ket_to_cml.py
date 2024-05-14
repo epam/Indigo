@@ -31,6 +31,7 @@ for filename in files:
     
     buffer = indigo.writeBuffer()
     cmlSaver = indigo.createSaver(buffer, "cml")
+    cmlSaver.close()
     cml = buffer.toString()
 
     with open(os.path.join(ref_path, filename) + ".cml", "r") as file:
