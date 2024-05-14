@@ -1600,7 +1600,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     }
 
     // save molecules
-    for (int i = 0; i < _no_template_molecules.size(); ++i)
+    for (int i = 0; i < static_cast<int>(_no_template_molecules.size()); ++i)
     {
         auto& component = _no_template_molecules[i];
         if (component->vertexCount())
