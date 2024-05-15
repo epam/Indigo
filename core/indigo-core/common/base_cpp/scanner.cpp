@@ -45,6 +45,11 @@ Scanner::~Scanner()
 {
 }
 
+bool Scanner::isEOL()
+{
+    return isEOF() || lookNext() == '\n' || lookNext() == '\r';
+}
+
 int Scanner::readIntFix(int digits)
 {
     int result;

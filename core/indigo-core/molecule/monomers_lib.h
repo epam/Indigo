@@ -152,7 +152,7 @@ namespace indigo
             switch (mod)
             {
             case IdtModification::FIVE_PRIME_END:
-                return "five-pime end";
+                return "five-prime end";
             case IdtModification::INTERNAL:
                 return "internal";
             case IdtModification::THREE_PRIME_END:

@@ -25,32 +25,35 @@ indigo.setOption("ignore-stereochemistry-errors", True)
 print("*** KET to IDT ***")
 
 root = joinPathPy("molecules/", __file__)
-ref_path = joinPathPy("ref/", __file__)
+ref = joinPathPy("ref/", __file__)
 
-indigo.loadMoleculeFromFile(os.path.join(ref_path, "monomer_library.ket"))
+indigo.loadMoleculeFromFile(os.path.join(ref, "monomer_library.ket"))
 
-files = [
-    "1654-dna-to-idt",
-    "ket-to-idt-a",
-    "ket-to-idt-2moeract",
-    "ket-to-idt-52moera",
-    "ket-to-idt-32moera",
-    "ket-to-idt-5phos3moera",
-]
+# same ref ket files used to check idt-to-ket and to check ket-to-idt
+idt_data = {
+    "idt_single_nucleoside": "A",
+    "idt_bases": "ATCGUI",
+    "idt_prefix_suffix": "mA*rT*+C*G*+UrImA",
+    "idt_modifications": "/52MOErA/*/i2MOErA//32MOErA/",
+    "idt_52moera_with_3phos": "/52MOErA//3Phos/",
+    "idt_singe_32moera_nucleoside": "/32MOErA/",
+    "idt_std_phosphates": "/5Phos/ATG/3Phos/",
+    "idt_mod_phosphates": "/5Phos//i2MOErC//3Phos/",
+    "idt_mixed": "/5Phos/+A*/i2MOErA/*rG/3Phos/",
+    "idt_many_molecules": "ACTG\n/52MOErA/*AU/3Phos/\nAC/i2MOErC//3Phos/\nTACG",
+}
 
-for filename in sorted(files):
-    mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
-    # with open(os.path.join(ref_path, filename) + ".idt", "w") as file:
-    #     file.write(mol.idt())
-    with open(os.path.join(ref_path, filename) + ".idt", "r") as file:
-        idt_ref = file.read()
+for filename in sorted(idt_data.keys()):
+    mol = indigo.loadMoleculeFromFile(os.path.join(ref, filename + ".ket"))
     idt = mol.idt()
-    diff = find_diff(idt_ref, idt)
-    if not diff:
-        print(filename + ".idt:SUCCEED")
+    idt_ref = idt_data[filename]
+    if idt_ref == idt:
+        print(filename + ".ket:SUCCEED")
     else:
-        print(filename + ".idt:FAILED")
-        print(diff)
+        print(
+            "%s.idt FAILED : expected '%s', got '%s'"
+            % (filename, idt_ref, idt)
+        )
 
 idt_errors = {
     "ket-to-idt-r1r1connection": "Canot save molecule in IDT format - sugar MOE connected to monomer MOE with class SUGAR (only base or phosphate expected).",

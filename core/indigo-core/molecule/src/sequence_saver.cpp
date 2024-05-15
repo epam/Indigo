@@ -145,31 +145,21 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
                     modification = IdtModification::THREE_PRIME_END;
                 }
 
+                bool add_asterisk = false;
+                if (phosphate == "sP")
+                {
+                    phosphate = "P";
+                    add_asterisk = true;
+                }
                 if (standard_base && standard_phosphate && standard_sugar)
                 {
                     sugar = IDT_STANDARD_SUGARS.at(sugar);
                     if (sugar.size())
                         seq_string += sugar;
                     seq_string += base;
-                    if (phosphate.size())
-                    {
-                        if (sequence.size() == 0)
-                            if (phosphate == "P")
-                                seq_string += "/3Phos/";
-                            else
-                                throw Error("Canot save molecule in IDT format - phosphate %s cannot be last monomer in sequence.", phosphate.c_str());
-                        if (phosphate == "sP")
-                            seq_string += "*";
-                    }
                 }
                 else
                 {
-                    bool add_asterisk = false;
-                    if (phosphate == "sP")
-                    {
-                        phosphate = "P";
-                        add_asterisk = true;
-                    }
                     // Try to find sugar,base,phosphate group template
                     MonomerTemplateLibrary& lib = MonomerTemplateLibrary::instance();
                     const std::string& sugar_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Sugar, sugar);
@@ -183,8 +173,6 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
                         seq_string += '/';
                         seq_string += idt_alias;
                         seq_string += '/';
-                        if (add_asterisk)
-                            seq_string += '*';
                     }
                     else
                     {
@@ -203,6 +191,23 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
                             else
                                 throw Error("IDT alias for sugar:%s not found.", sugar.c_str());
                         }
+                    }
+                }
+
+                if (phosphate.size())
+                {
+                    if (add_asterisk)
+                    {
+                        seq_string += "*";
+                        phosphate = "sP";
+                    }
+                    if (sequence.size() == 0)
+                    {
+                        modification = IdtModification::THREE_PRIME_END;
+                        if (phosphate == "P")
+                            seq_string += "/3Phos/";
+                        else
+                            throw Error("Canot save molecule in IDT format - phosphate %s cannot be last monomer in sequence.", phosphate.c_str());
                     }
                 }
 
