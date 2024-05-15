@@ -24,7 +24,6 @@ ref_path = joinPathPy("ref/", __file__)
 
 files = [
     "1822-peptide",
-    "1843-rna",
     "1950-mixed-seq",
 ]
 

@@ -248,6 +248,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
                 seq_text += sf == SeqFormat::Sequence ? " " : "\n";
 
             seq_text += seq_string;
+            seq_idx++;
         }
     }
     if (seq_text.size())
