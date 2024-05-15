@@ -29,13 +29,9 @@ files.sort()
 for filename in files:
     ket = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
 
-    buffer = indigo.writeBuffer()
-    cmlSaver = indigo.createSaver(buffer, "cml")
-    cmlSaver.close()
-    cml = buffer.toString()
-
     with open(os.path.join(ref_path, filename) + ".cml", "r") as file:
         cml_ref = file.read()
+    cml = ket.cml()
     diff = find_diff(cml_ref, cml)
     if not diff:
         print(filename + ".cml:SUCCEED")

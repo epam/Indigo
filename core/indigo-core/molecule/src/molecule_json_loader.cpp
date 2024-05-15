@@ -1657,17 +1657,19 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         else
             mol.stereocenters.setType(sc._atom_idx, sc._type, sc._group);
 
-        const Vertex& vertex = mol.getVertex(sc._atom_idx);
-        int* pyramid = mol.stereocenters.getPyramid(sc._atom_idx);
-
-        if (vertex.degree() == 2 && pyramid[2] == -1 && mol.stereocenters.isTetrahydral(sc._atom_idx))
+        if (!mol.isQueryMolecule())
         {
-            // creating virtual atom
-            Molecule& _mol = mol.asMolecule();
-            int atom_idx = mol.addAtom(ELEM_PSEUDO);
-            _mol.setPseudoAtom(atom_idx, "X");
+            const Vertex& vertex = mol.getVertex(sc._atom_idx);
+            int* pyramid = mol.stereocenters.getPyramid(sc._atom_idx);
 
-            pyramid[2] = atom_idx;
+            if (vertex.degree() == 2 && pyramid[2] == -1 && mol.stereocenters.isTetrahydral(sc._atom_idx) &&
+                mol.stereocenters.getType(sc._atom_idx) == MoleculeStereocenters::ATOM_ABS)
+            {
+                // creating virtual atom
+                int atom_idx = mol.asMolecule().addAtom(ELEM_PSEUDO);
+                mol.asMolecule().setPseudoAtom(atom_idx, "X");
+                pyramid[2] = atom_idx;
+            }
         }
     }
 
