@@ -134,10 +134,4 @@ setup(
     download_url="https://pypi.org/project/epam.indigo",
     test_suite="tests",
     python_requires=">=3.6.0",
-    extras_require={
-        "dev": [
-            'pylint==2.17.7; python_version=="3.7"',
-            'pylint==3.1.0; python_version=="3.10"',
-        ]
-    },
 )
