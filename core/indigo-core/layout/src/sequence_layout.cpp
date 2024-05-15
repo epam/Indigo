@@ -138,10 +138,7 @@ void SequenceLayout::sequenceExtract(std::vector<std::deque<int>>& sequences)
     for (int i = _molecule.vertexBegin(); i < _molecule.vertexEnd(); i = _molecule.vertexNext(i))
     {
         if (_molecule.isTemplateAtom(i))
-        {
             remaining_atoms.insert(i);
-            // printf("%d:%s:%s\n", i, _molecule.getTemplateAtom(i), _molecule.getTemplateAtomClass(i));
-        }
     }
 
     // bfs algorythm for a graph
@@ -150,7 +147,8 @@ void SequenceLayout::sequenceExtract(std::vector<std::deque<int>>& sequences)
         if (pq.size() == 0)
         {
             pq.emplace(std::make_pair(-1, *remaining_atoms.begin()), std::make_pair(-1, -1));
-            sequences.push_back({});
+            if (sequences.empty() || sequences.back().size())
+                sequences.push_back({});
         }
         auto te = pq.top(); // top element
         pq.pop();
