@@ -683,7 +683,7 @@ jobs:
           python setup.py bdist_wheel
           cp dist/*.whl ${GITHUB_WORKSPACE}/dist/
       - name: Run pylint
-        run: pylint --disable=not-an-iterable --max-args 10 bingo_elastic
+        run: pylint --max-args 10 bingo_elastic
         working-directory: bingo/bingo-elastic/python
       - name: Run tests
         run: pytest tests
