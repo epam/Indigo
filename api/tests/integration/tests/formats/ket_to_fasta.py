@@ -24,6 +24,7 @@ ref_path = joinPathPy("ref/", __file__)
 
 files = [
     "1822-peptide",
+    "1950-mixed-seq",
 ]
 
 files.sort()
@@ -36,7 +37,7 @@ for filename in files:
     seq = mol.fasta()
     diff = find_diff(seq_ref, seq)
     if not diff:
-        print(filename + ".seq:SUCCEED")
+        print(filename + ".fasta:SUCCEED")
     else:
-        print(filename + ".seq:FAILED")
+        print(filename + ".fasta:FAILED")
         print(diff)
