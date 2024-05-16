@@ -379,9 +379,9 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                 
                 if (pyramid[2] == -1)
                 {
-                    // The atomRefs4 attribute in the atomParity element specifies 
+                    // The atomRefs4 attribute in the atomParity element specifies
                     // the four atoms involved in defining the stereochemistry.
-                    // These atoms are typically ordered in a sequence 
+                    // These atoms are typically ordered in a sequence
                     // that represents a directed path from the stereocenter to the fourth atom
                     // with the reference atom (the atom to which the stereochemistry is referenced) being included twice.
                     const Vertex& v = _mol->getVertex(i);
