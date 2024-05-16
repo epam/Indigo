@@ -376,7 +376,12 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                 QS_DEF(Array<char>, sbuf);
                 ArrayOutput sout(sbuf);
                 const int* pyramid = _mol->stereocenters.getPyramid(i);
-                if (pyramid[3] == -1)
+                if (pyramid[2] == -1)
+                {
+                    int j = i + 1;
+                    sout.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], i, j);
+                }
+                else if (pyramid[3] == -1)
                     sout.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], pyramid[2], i);
                 else
                     sout.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], pyramid[2], pyramid[3]);
