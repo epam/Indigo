@@ -197,6 +197,7 @@ namespace indigo
 
     protected:
         void saveRoot(BaseMolecule& mol, JsonWriter& writer);
+        void saveMoleculeReference(int mol_id, JsonWriter& writer);
         void saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer);
         int getMonomerNumber(int mon_idx);
 
@@ -232,6 +233,8 @@ namespace indigo
         std::unordered_map<std::pair<int, int>, std::string, pair_int_hash> _monomer_connections;
         std::map<int, int> _monomers_enum;
         std::vector<std::unique_ptr<BaseMolecule>> _no_template_molecules;
+        ObjArray<Array<int>> _mappings;
+        std::unordered_map<int, int> _atom_to_mol_id;
 
     private:
         MoleculeJsonSaver(const MoleculeJsonSaver&); // no implicit copy

@@ -49,6 +49,27 @@ void dumpAtoms(BaseMolecule& mol)
     printf("\n");
 }
 
+void mergeMappings(Array<int>& dest, Array<int>& src)
+{
+    for (int i = 0; i < dest.size(); ++i)
+    {
+        int atom_idx = dest[i];
+        if (atom_idx > -1 && atom_idx < src.size())
+            dest[i] = src[atom_idx];
+        else
+            dest[i] = -1;
+    }
+}
+
+void printMappings(Array<int>& mapping)
+{
+    for (int i = 0; i < mapping.size(); ++i)
+    {
+        printf("%d ", mapping[i]);
+    }
+    printf("\n");
+}
+
 MoleculeJsonSaver::MoleculeJsonSaver(Output& output)
     : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false), use_native_precision(false)
 {
@@ -1303,18 +1324,50 @@ void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, i
     {
         writer.Key("monomerId");
         writer.String((std::string("monomer") + std::to_string(getMonomerNumber(beg_idx))).c_str());
-    }
-
-    // find connection
-    auto conn_it = _monomer_connections.find(std::make_pair(beg_idx, end_idx));
-    if (conn_it != _monomer_connections.end())
-    {
-        writer.Key("attachmentPointId");
-        writer.String(convertAPToHELM(conn_it->second).c_str());
+        auto conn_it = _monomer_connections.find(std::make_pair(beg_idx, end_idx));
+        if (conn_it != _monomer_connections.end())
+        {
+            writer.Key("attachmentPointId");
+            writer.String(convertAPToHELM(conn_it->second).c_str());
+        }
+        else
+            throw Error("Attachment point not found!!!");
     }
     else
-        throw Error("no attachment point");
+    {
+        auto atom_mol_it = _atom_to_mol_id.find(beg_idx);
+        if (atom_mol_it != _atom_to_mol_id.end())
+        {
+            int mol_id = atom_mol_it->second;
+            writer.Key("moleculeId");
+            writer.String((std::string("mol") + std::to_string(mol_id)).c_str());
+            writer.Key("atomId");
+            writer.String(std::to_string(_mappings[mol_id][beg_idx]).c_str());
+        }
+        else
+            throw Error("Atom %d not found", beg_idx);
+    }
     writer.EndObject();
+}
+
+void MoleculeJsonSaver::saveMoleculeReference(int mol_id, JsonWriter& writer)
+{
+    writer.StartObject();
+    writer.Key("$ref");
+    std::string mol_node = std::string("mol") + std::to_string(mol_id);
+    writer.String(mol_node.c_str());
+    writer.EndObject();
+    auto& mapping = _mappings[mol_id];
+    // printf("mol id:%d\n", mol_id);
+    for (auto atom_idx = 0; atom_idx < mapping.size(); ++atom_idx)
+    {
+        if (mapping[atom_idx] > -1)
+        {
+            // printf("%d ", atom_idx);
+            _atom_to_mol_id.emplace(atom_idx, mol_id);
+        }
+    }
+    // printf("\n");
 }
 
 void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
@@ -1330,22 +1383,52 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
 
     getSGroupAtoms(mol, _s_neighbors);
     // save mol references
+    int mol_id = 0;
     for (int idx = 0; idx < mol.countComponents(_s_neighbors); ++idx)
     {
         Filter filt(mol.getDecomposition().ptr(), Filter::EQ, idx);
         std::unique_ptr<BaseMolecule> component(mol.neu());
-        component->makeSubmolecule(mol, filt, NULL, NULL);
+        Array<int> mapping, inv_mapping;
+        component->makeSubmolecule(mol, filt, &mapping, &inv_mapping);
         if (!component->countTemplateAtoms())
         {
             _no_template_molecules.emplace_back(std::move(component));
-            writer.StartObject();
-            writer.Key("$ref");
-            std::string mol_node = std::string("mol") + std::to_string(_no_template_molecules.size() - 1);
-            writer.String(mol_node.c_str());
-            writer.EndObject();
+            _mappings.push().copy(inv_mapping);
+            saveMoleculeReference((int)_no_template_molecules.size() - 1, writer);
+        }
+        else
+        {
+            // collect non-template atoms
+            Array<int> vertices;
+            for (int atom_idx = component->vertexBegin(); atom_idx != component->vertexEnd(); atom_idx = component->vertexNext(atom_idx))
+            {
+                if (!component->isTemplateAtom(atom_idx))
+                    vertices.push(atom_idx);
+            }
+
+            if (vertices.size())
+            {
+                Array<int> sub_mapping;
+                std::unique_ptr<BaseMolecule> sub_mol(component->neu());
+                sub_mol->makeSubmolecule(*component, vertices, &sub_mapping);
+                mergeMappings(inv_mapping, sub_mapping);
+                for (int sub_idx = 0; sub_idx < sub_mol->countComponents(); ++sub_idx)
+                {
+                    Array<int> sub_comp_mapping, mapping_cp, inv_sub_comp_mapping;
+                    mapping_cp.copy(inv_mapping);
+                    Filter filt(sub_mol->getDecomposition().ptr(), Filter::EQ, sub_idx);
+                    std::unique_ptr<BaseMolecule> sub_mol_component(sub_mol->neu());
+                    sub_mol_component->makeSubmolecule(*sub_mol, filt, &sub_comp_mapping, &inv_sub_comp_mapping);
+                    _no_template_molecules.emplace_back(std::move(sub_mol_component));
+                    mergeMappings(mapping_cp, inv_sub_comp_mapping);
+                    _mappings.push().copy(mapping_cp);
+                    saveMoleculeReference(static_cast<int>(_no_template_molecules.size()) - 1, writer);
+                }
+            }
         }
     }
 
+    // save meta data
     saveMetaData(writer, mol.meta());
 
     // save rgroups
@@ -1381,6 +1464,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
 
     writer.EndArray(); // nodes
 
+    // save connections and templates
     if (mol.tgroups.getTGroupCount())
     {
         // collect attachment points into unordered map <key, val>. key - pair of from and destination atom. val - attachment point name.
@@ -1397,9 +1481,9 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
         for (auto i : mol.edges())
         {
             auto& e = mol.getEdge(i);
-            // save connections between templates
-            if (mol.isTemplateAtom(e.beg) && mol.isTemplateAtom(e.end))
+            if (mol.isTemplateAtom(e.beg) || mol.isTemplateAtom(e.end))
             {
+                // save connections between templates or atoms
                 writer.StartObject();
                 writer.Key("connectionType");
                 writer.String(mol.getBondOrder(i) == _BOND_HYDROGEN ? "hydrogen" : "single");
@@ -1446,6 +1530,8 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 
     if (!mol->isQueryMolecule())
         mol->getTemplatesMap(_templates);
+
+    // save root elements
     saveRoot(*mol, writer);
 
     // save monomers
@@ -1500,6 +1586,10 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 }
                 writer.EndObject(); // monomer
             }
+            else
+            {
+                //
+            }
         }
 
     // save templates
@@ -1510,12 +1600,12 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     }
 
     // save molecules
-    for (auto idx = 0; idx < (int)_no_template_molecules.size(); ++idx)
+    for (int i = 0; i < static_cast<int>(_no_template_molecules.size()); ++i)
     {
-        auto& component = _no_template_molecules[idx];
-        if (component->vertexCount() && !component->countTemplateAtoms())
+        auto& component = _no_template_molecules[i];
+        if (component->vertexCount())
         {
-            std::string mol_node = std::string("mol") + std::to_string(idx);
+            std::string mol_node = std::string("mol") + std::to_string(i);
             writer.Key(mol_node.c_str());
             writer.StartObject();
             writer.Key("type");
@@ -1523,7 +1613,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
             saveFragment(*component, writer);
             // TODO: the code below needs refactoring
             Vec3f flag_pos;
-            if (bmol.getStereoFlagPosition(idx, flag_pos))
+            if (bmol.getStereoFlagPosition(i, flag_pos))
             {
                 writer.Key("stereoFlagPosition");
                 writer.StartObject();
