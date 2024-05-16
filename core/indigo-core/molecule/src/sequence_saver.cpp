@@ -217,22 +217,6 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         }
         else
         {
-            if (sf == SeqFormat::FASTA)
-            {
-                if (seq_idx)
-                    seq_text += "\n";
-                std::string fasta_header = ">Sequence";
-                fasta_header += std::to_string(seq_idx + 1);
-                if (prop_it != mol_properties.end())
-                {
-                    auto& props = mol_properties.value(prop_it);
-                    prop_it++;
-                    if (props.contains(kFASTA_HEADER))
-                        fasta_header = props.at(kFASTA_HEADER);
-                }
-                fasta_header += "\n";
-                seq_text += fasta_header;
-            }
             for (auto atom_idx : sequence)
             {
                 if (mol.isTemplateAtom(atom_idx))
@@ -311,21 +295,34 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         }
         if (seq_string.size())
         {
-            if (seq_text.size() > 0)
+            // sequences separators are different for FASTA, IDT and Sequence
+            if (sf == SeqFormat::FASTA)
             {
-                if (sf == SeqFormat::Sequence)
-                    seq_text += " ";
-                else if (sf == SeqFormat::IDT)
+                if (seq_idx)
                     seq_text += "\n";
+                std::string fasta_header = ">Sequence";
+                fasta_header += std::to_string(seq_idx + 1);
+                if (prop_it != mol_properties.end())
+                {
+                    auto& props = mol_properties.value(prop_it);
+                    prop_it++;
+                    if (props.contains(kFASTA_HEADER))
+                        fasta_header = props.at(kFASTA_HEADER);
+                }
+                fasta_header += "\n";
+                seq_text += fasta_header;
             }
+            else if (seq_text.size())
+                seq_text += sf == SeqFormat::Sequence ? " " : "\n";
+
             seq_text += seq_string.substr(0, SEQ_LINE_LENGTH);
             for (size_t format_ind = SEQ_LINE_LENGTH; format_ind < seq_string.size(); format_ind += SEQ_LINE_LENGTH)
             {
                 seq_text += "\n";
                 seq_text += seq_string.substr(format_ind, SEQ_LINE_LENGTH);
             }
+            seq_idx++;
         }
-        seq_idx++;
     }
     if (seq_text.size())
         _output.write(seq_text.data(), static_cast<int>(seq_text.size()));
