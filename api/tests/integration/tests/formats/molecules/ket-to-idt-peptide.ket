@@ -1,0 +1,270 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "monomer147"
+            }
+        ],
+        "connections": [],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-DPhe4C___4-Chloro-D-phenylalanine"
+            }
+        ]
+    },
+    "monomer147": {
+        "type": "monomer",
+        "id": "147",
+        "position": {
+            "x": 9.637634521362981,
+            "y": -7.559168941877286
+        },
+        "alias": "DPhe4C",
+        "templateId": "DPhe4C___4-Chloro-D-phenylalanine"
+    },
+    "monomerTemplate-DPhe4C___4-Chloro-D-phenylalanine": {
+        "type": "monomerTemplate",
+        "atoms": [
+            {
+                "label": "Cl",
+                "location": [
+                    -3.8113,
+                    -3.0442,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -2.5101,
+                    -2.298,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.2133,
+                    -3.0518,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.0879,
+                    -2.3056,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.0923,
+                    -0.8056,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.3927,
+                    -0.0563,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.395,
+                    1.4445,
+                    0
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "N",
+                "location": [
+                    0.0946,
+                    2.1938,
+                    0
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -1.2043,
+                    1.4435,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    2.6954,
+                    2.1938,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    3.9936,
+                    1.4422,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    2.6977,
+                    3.6938,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.2045,
+                    -0.0518,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -2.5057,
+                    -0.798,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    5
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    7
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    7,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    9
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    9,
+                    10
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    9,
+                    11
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    12
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    12,
+                    13
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    13
+                ]
+            }
+        ],
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "id": "DPhe4C___4-Chloro-D-phenylalanine",
+        "fullName": "4-Chloro-D-phenylalanine",
+        "alias": "DPhe4C",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 7,
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                },
+                "type": "left"
+            },
+            {
+                "attachmentAtom": 9,
+                "leavingGroup": {
+                    "atoms": [
+                        10
+                    ]
+                },
+                "type": "right"
+            }
+        ],
+        "naturalAnalogShort": "F"
+    }
+}

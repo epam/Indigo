@@ -1,7 +1,31 @@
 *** IDT to KET ***
-idt_a.ket:SUCCEED
-idt_acg.ket:SUCCEED
-idt_maxmgc.ket:SUCCEED
-idt_2moera.ket:SUCCEED
+idt_52moera_with_3phos.ket:SUCCEED
+idt_bases.ket:SUCCEED
+idt_many_molecules.ket:SUCCEED
+idt_mixed.ket:SUCCEED
+idt_mod_phosphates.ket:SUCCEED
 idt_modifications.ket:SUCCEED
-Got expected error 'SEQUENCE loader: SequenceLoader::loadIdt(), Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3'
+idt_prefix_suffix.ket:SUCCEED
+idt_singe_32moera_nucleoside.ket:SUCCEED
+idt_single_nucleoside.ket:SUCCEED
+idt_std_phosphates.ket:SUCCEED
+Test '!+-$#12w12r23e32e33': got expected error 'SequenceLoader::loadIdt(), Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3'
+Test '+/5Phos/A': got expected error 'Sugar prefix could not be used with '/5Phos/''
+Test '/': got expected error 'Unexpected end of data'
+Test '//': got expected error 'Invalid modification: empty string.'
+Test '/32MOErA/T': got expected error 'IDT alias 32MOErA not found at five-prime end position.'
+Test '/3Phos/T': expected error 'IDT alias 3Phos not found at three-prime end position.' but got 'SEQUENCE loader: IDT alias 3Phos not found at five-prime end position.'
+Test '/52MOErA/': got expected error 'IDT alias 52MOErA not found at three-prime end position.'
+Test '/5Phos/*A': got expected error '/5Phos/ cannot be modified to 'sP''
+Test '/a/': got expected error 'Invalid modification: a.'
+Test '/i2MOErA/': got expected error 'IDT alias i2MOErA not found at three-prime end position.'
+Test '/i2MOErA/T': got expected error 'IDT alias i2MOErA not found at five-prime end position.'
+Test 'A*': got expected error 'Invalid IDT sequence: '*' couldn't be the last symbol.'
+Test 'A+/3Phos/': got expected error 'Sugar prefix could not be used with '/3Phos/''
+Test 'Am/3Phos/': got expected error 'Sugar prefix could not be used with '/3Phos/''
+Test 'Ar/3Phos/': got expected error 'Sugar prefix could not be used with '/3Phos/''
+Test 'T/52MOErA/': got expected error 'IDT alias 52MOErA not found at three-prime end position.'
+Test 'T/5Phos/': got expected error 'IDT alias 5Phos not found at three-prime end position.'
+Test 'T/i2MOErA/': got expected error 'IDT alias i2MOErA not found at three-prime end position.'
+Test 'm/5Phos/A': got expected error 'Sugar prefix could not be used with '/5Phos/''
+Test 'r/5Phos/A': got expected error 'Sugar prefix could not be used with '/5Phos/''

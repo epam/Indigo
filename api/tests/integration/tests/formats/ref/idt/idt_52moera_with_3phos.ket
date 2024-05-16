@@ -9,21 +9,6 @@
             },
             {
                 "$ref": "monomer2"
-            },
-            {
-                "$ref": "monomer3"
-            },
-            {
-                "$ref": "monomer4"
-            },
-            {
-                "$ref": "monomer5"
-            },
-            {
-                "$ref": "monomer6"
-            },
-            {
-                "$ref": "monomer7"
             }
         ],
         "connections": [
@@ -48,61 +33,6 @@
                     "monomerId": "monomer2",
                     "attachmentPointId": "R1"
                 }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer3",
-                    "attachmentPointId": "R3"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer4",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer2",
-                    "attachmentPointId": "R2"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer3",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer3",
-                    "attachmentPointId": "R2"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer5",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer6",
-                    "attachmentPointId": "R3"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer7",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer5",
-                    "attachmentPointId": "R2"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer6",
-                    "attachmentPointId": "R1"
-                }
             }
         ],
         "templates": [
@@ -110,13 +40,10 @@
                 "$ref": "monomerTemplate-MOE___2'-O-Methoxyethyl ribose"
             },
             {
-                "$ref": "monomerTemplate-sP"
+                "$ref": "monomerTemplate-P___Phosphate"
             },
             {
                 "$ref": "monomerTemplate-A___Adenine"
-            },
-            {
-                "$ref": "monomerTemplate-P___Phosphate"
             }
         ]
     },
@@ -150,63 +77,8 @@
             "x": 1.600000023841858,
             "y": -0.0
         },
-        "alias": "sP",
-        "templateId": "sP"
-    },
-    "monomer3": {
-        "type": "monomer",
-        "id": "3",
-        "seqid": 1,
-        "position": {
-            "x": 3.200000047683716,
-            "y": -0.0
-        },
-        "alias": "MOE",
-        "templateId": "MOE___2'-O-Methoxyethyl ribose"
-    },
-    "monomer4": {
-        "type": "monomer",
-        "id": "4",
-        "seqid": 1,
-        "position": {
-            "x": 3.200000047683716,
-            "y": -1.600000023841858
-        },
-        "alias": "A",
-        "templateId": "A___Adenine"
-    },
-    "monomer5": {
-        "type": "monomer",
-        "id": "5",
-        "seqid": 1,
-        "position": {
-            "x": 4.800000190734863,
-            "y": -0.0
-        },
         "alias": "P",
         "templateId": "P___Phosphate"
-    },
-    "monomer6": {
-        "type": "monomer",
-        "id": "6",
-        "seqid": 2,
-        "position": {
-            "x": 6.400000095367432,
-            "y": -0.0
-        },
-        "alias": "MOE",
-        "templateId": "MOE___2'-O-Methoxyethyl ribose"
-    },
-    "monomer7": {
-        "type": "monomer",
-        "id": "7",
-        "seqid": 2,
-        "position": {
-            "x": 6.400000095367432,
-            "y": -1.600000023841858
-        },
-        "alias": "A",
-        "templateId": "A___Adenine"
     },
     "monomerTemplate-MOE___2'-O-Methoxyethyl ribose": {
         "type": "monomerTemplate",
@@ -497,13 +369,13 @@
             }
         ]
     },
-    "monomerTemplate-sP": {
+    "monomerTemplate-P___Phosphate": {
         "type": "monomerTemplate",
-        "id": "sP",
+        "id": "P___Phosphate",
         "class": "Phosphate",
         "classHELM": "RNA",
-        "alias": "sP",
-        "name": "sP",
+        "alias": "P",
+        "name": "P",
         "fullName": "Phosphate",
         "naturalAnalogShort": "P",
         "attachmentPoints": [
@@ -528,7 +400,7 @@
             {
                 "label": "P",
                 "location": [
-                    -0.19991692900657655,
+                    -0.23989999294281007,
                     0.0,
                     0.0
                 ]
@@ -536,7 +408,7 @@
             {
                 "label": "O",
                 "location": [
-                    -1.199918270111084,
+                    -1.4399000406265259,
                     0.0,
                     0.0
                 ]
@@ -544,24 +416,24 @@
             {
                 "label": "O",
                 "location": [
-                    0.2998337149620056,
-                    -0.8661677837371826,
+                    0.3598000109195709,
+                    -1.0393999814987183,
                     0.0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    0.8000843524932861,
+                    0.960099995136261,
                     0.0,
                     0.0
                 ]
             },
             {
-                "label": "S",
+                "label": "O",
                 "location": [
-                    0.2998337149620056,
-                    0.8661677837371826,
+                    0.3598000109195709,
+                    1.0393999814987183,
                     0.0
                 ]
             }
@@ -790,106 +662,6 @@
                 "atoms": [
                     7,
                     8
-                ]
-            }
-        ]
-    },
-    "monomerTemplate-P___Phosphate": {
-        "type": "monomerTemplate",
-        "id": "P___Phosphate",
-        "class": "Phosphate",
-        "classHELM": "RNA",
-        "alias": "P",
-        "name": "P",
-        "fullName": "Phosphate",
-        "naturalAnalogShort": "P",
-        "attachmentPoints": [
-            {
-                "attachmentAtom": 0,
-                "leavingGroup": {
-                    "atoms": [
-                        1
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 0,
-                "leavingGroup": {
-                    "atoms": [
-                        3
-                    ]
-                }
-            }
-        ],
-        "atoms": [
-            {
-                "label": "P",
-                "location": [
-                    -0.23989999294281007,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    -1.4399000406265259,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.3598000109195709,
-                    -1.0393999814987183,
-                    0.0
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.960099995136261,
-                    0.0,
-                    0.0
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.3598000109195709,
-                    1.0393999814987183,
-                    0.0
-                ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    1
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    0,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    3
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    4
                 ]
             }
         ]

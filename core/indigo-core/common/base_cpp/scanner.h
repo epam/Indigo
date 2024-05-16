@@ -43,6 +43,7 @@ namespace indigo
         virtual void read(int length, void* res) = 0;
         virtual void skip(int n) = 0;
         virtual bool isEOF() = 0;
+        bool isEOL();
         virtual int lookNext() = 0;
         virtual void seek(long long pos, int from) = 0;
         virtual long long length() = 0;
