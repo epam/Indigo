@@ -376,7 +376,6 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                 QS_DEF(Array<char>, sbuf);
                 ArrayOutput sout(sbuf);
                 const int* pyramid = _mol->stereocenters.getPyramid(i);
-                
                 if (pyramid[2] == -1)
                 {
                     // The atomRefs4 attribute in the atomParity element specifies
