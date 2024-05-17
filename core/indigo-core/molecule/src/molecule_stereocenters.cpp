@@ -1634,7 +1634,12 @@ void MoleculeStereocenters::_restorePyramid(BaseMolecule& baseMolecule, int idx,
     }
 
     // sort pyramid indices
-    if (pyramid[3] == -1)
+    if (pyramid[2] == -1)
+    {
+        if (pyramid[0] > pyramid[1])
+            std::swap(pyramid[0], pyramid[1]);
+    }
+    else if (pyramid[3] == -1)
     {
         if (pyramid[0] > pyramid[1])
             std::swap(pyramid[0], pyramid[1]);
