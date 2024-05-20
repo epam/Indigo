@@ -9,7 +9,7 @@ idt_prefix_suffix.ket:SUCCEED
 idt_singe_32moera_nucleoside.ket:SUCCEED
 idt_single_nucleoside.ket:SUCCEED
 idt_std_phosphates.ket:SUCCEED
-Test '!+-$#12w12r23e32e33': got expected error 'SequenceLoader::loadIdt(), Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3'
+Test '!+-$#12w12r23e32e33': expected error 'SequenceLoader::loadIdt(), Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3' but got 'SEQUENCE loader: Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3'
 Test '+/5Phos/A': got expected error 'Sugar prefix could not be used with '/5Phos/''
 Test '/': got expected error 'Unexpected end of data'
 Test '//': got expected error 'Invalid modification: empty string.'
