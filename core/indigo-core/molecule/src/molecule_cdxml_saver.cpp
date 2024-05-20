@@ -1168,7 +1168,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
 
 void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum)
 {
-    // XMLElement* parent = _current;
+    XMLElement* parent = _current;
     XMLElement* fragment = _doc->NewElement("altgroup");
     _current->LinkEndChild(fragment);
     _current = fragment;
@@ -1204,6 +1204,7 @@ void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2
     rmin.y *= -_scale;
     auto gframe = std::to_string(rmin.x) + " " + std::to_string(rmin.y) + " " + std::to_string(rmax.x) + " " + std::to_string(rmax.y);
     fragment->SetAttribute("Valence", valence);
+    _current = parent;
 }
 
 void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float structure_scale, int frag_id, int& id, std::vector<int>& ids)
