@@ -28,7 +28,6 @@ files = [
     "multi_overlap",
     "961-text_size",
     "generic",
-    "R3R4R5",
 ]
 
 files.sort()
@@ -85,6 +84,7 @@ print("*** KET to CDXML ***")
 root_m = joinPathPy("molecules/", __file__)
 files = [
     "963-super",
+    "R3R4R5",
 ]
 
 files.sort()
