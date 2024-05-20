@@ -116,7 +116,7 @@ void SequenceLoader::loadFasta(BaseMolecule& mol, SeqType seq_type)
             }
 
             if (invalid_symbols.size())
-                throw Error("SequenceLoader::loadFasta(), Invalid symbols in the sequence: %s", invalid_symbols.c_str());
+                throw Error("Invalid symbols in the sequence: %s", invalid_symbols.c_str());
 
             if (!properties.is_empty())
             {
@@ -198,7 +198,7 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
     }
 
     if (invalid_symbols.size())
-        throw Error("SequenceLoader::loadSequence(), Invalid symbols in the sequence: %s", invalid_symbols.c_str());
+        throw Error("Invalid symbols in the sequence: %s", invalid_symbols.c_str());
 }
 
 bool SequenceLoader::addTemplate(BaseMolecule& mol, const std::string alias, MonomerClass mon_type)
@@ -560,5 +560,5 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
     }
 
     if (invalid_symbols.size())
-        throw Error("SequenceLoader::loadIdt(), Invalid symbols in the sequence: %s", invalid_symbols.c_str());
+        throw Error("Invalid symbols in the sequence: %s", invalid_symbols.c_str());
 }
