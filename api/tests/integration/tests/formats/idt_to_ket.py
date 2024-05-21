@@ -60,7 +60,7 @@ for filename in sorted(idt_data.keys()):
         print(diff)
 
 idt_errors = {
-    "!+-$#12w12r23e32e33": "SequenceLoader::loadIdt(), Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3",
+    "!+-$#12w12r23e32e33": "Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3",
     "/": "Unexpected end of data",
     "//": "Invalid modification: empty string.",
     "/a/": "Invalid modification: a.",
