@@ -952,10 +952,14 @@ M  END
         test("IDT", "basic", () => {
             var fs = require('fs');
             let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
             options.set("output-content-type", "application/json");
             options.set("input-format", "chemical/x-idt");
-            const idt = "mA*mGC";
-            const res_ket = JSON.parse(indigo.convert(idt, "ket", options)).struct;
+            options.set("monomerLibrary",monomersLib);
+            const idt = "/5Phos/mA*mGC/i2MOErA//3Phos/";
+            const res = indigo.convert(idt, "ket", options);
+            const res_ket = JSON.parse(res).struct;
+            // fs.writeFileSync("idt_maxmgc.ket", res_ket);
             const res_ket_ref = fs.readFileSync("idt_maxmgc.ket");
             assert.equal(res_ket, res_ket_ref.toString().trim());
             let save_options = new indigo.MapStringString();

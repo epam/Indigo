@@ -235,11 +235,25 @@ namespace indigo
         return MonomerClass::Unknown;
     }
 
+    MonomerTemplate::MonomerTemplate(const std::string& id, MonomerClass mt_class, const std::string& class_HELM, const std::string& full_name,
+                                     const std::string& alias, const std::string& natural_analog, int tgroup_id, BaseMolecule& mol)
+        : _id(id), _class(mt_class), _class_HELM(class_HELM), _full_name(full_name), _alias(alias), _natural_analog(natural_analog)
+    {
+        _tgroup.copy(mol.tgroups.getTGroup(tgroup_id));
+    }
+
     MonomerTemplate::MonomerTemplate(const std::string& id, const std::string& mt_class, const std::string& class_HELM, const std::string& full_name,
                                      const std::string& alias, const std::string& natural_analog, int tgroup_id, BaseMolecule& mol)
-        : _id(id), _class(StrToMonomerClass(mt_class)), _class_HELM(class_HELM), _full_name(full_name), _alias(alias), _natural_analog(natural_analog),
-          _tgroup_id(tgroup_id), _mol(mol)
+        : _id(id), _class(StrToMonomerClass(mt_class)), _class_HELM(class_HELM), _full_name(full_name), _alias(alias), _natural_analog(natural_analog)
     {
+        _tgroup.copy(mol.tgroups.getTGroup(tgroup_id));
+    }
+
+    MonomerTemplate::MonomerTemplate(const MonomerTemplate& other)
+        : _id(other._id), _class(other._class), _class_HELM(other._class_HELM), _full_name(other._full_name), _alias(other._alias),
+          _natural_analog(other._natural_analog), _idt_alias(other._idt_alias)
+    {
+        _tgroup.copy(other._tgroup);
     }
 
     void MonomerTemplate::AddAttachmentPoint(const std::string& id, const std::string& ap_type, int att_atom, std::vector<int>& leaving_group)
@@ -270,7 +284,7 @@ namespace indigo
 
     const TGroup& MonomerTemplate::getTGroup() const
     {
-        return _mol.tgroups.getTGroup(_tgroup_id);
+        return _tgroup;
     }
 
     bool MonomerTemplate::hasIdtAlias(const std::string& alias, IdtModification mod)

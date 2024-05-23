@@ -212,10 +212,10 @@ namespace indigo
 
         MonomerTemplate() = delete;
 
+        MonomerTemplate(const MonomerTemplate& other);
+
         MonomerTemplate(const std::string& id, MonomerClass mt_class, const std::string& class_HELM, const std::string& full_name, const std::string& alias,
-                        const std::string& natural_analog, int tgroup_id, BaseMolecule& mol)
-            : _id(id), _class(mt_class), _class_HELM(class_HELM), _full_name(full_name), _alias(alias), _natural_analog(natural_analog), _tgroup_id(tgroup_id),
-              _mol(mol){};
+                        const std::string& natural_analog, int tgroup_id, BaseMolecule& mol);
 
         MonomerTemplate(const std::string& id, const std::string& mt_class, const std::string& class_HELM, const std::string& full_name,
                         const std::string& alias, const std::string& natural_analog, int tgroup_id, BaseMolecule& mol);
@@ -274,11 +274,6 @@ namespace indigo
             return _natural_analog;
         }
 
-        inline int TGroupId() const
-        {
-            return _tgroup_id;
-        }
-
         inline void setIdtAlias(const IdtAlias& idt_alias)
         {
             _idt_alias = idt_alias;
@@ -296,8 +291,7 @@ namespace indigo
         std::map<std::string, AttachmentPoint> _attachment_points;
         std::string molecule;
         IdtAlias _idt_alias;
-        int _tgroup_id;
-        BaseMolecule& _mol;
+        TGroup _tgroup;
     };
 
     class DLLEXPORT MonomerGroupTemplate
@@ -322,7 +316,7 @@ namespace indigo
 
         inline bool hasTemplateClass(MonomerClass monomer_class)
         {
-            for (auto id_template : _monomer_templates)
+            for (auto& id_template : _monomer_templates)
             {
                 if (id_template.second.monomerClass() == monomer_class)
                     return true;

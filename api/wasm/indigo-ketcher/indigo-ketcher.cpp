@@ -440,18 +440,38 @@ namespace indigo
     std::string convert(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
     {
         const IndigoSession session;
-        indigoSetOptions(options);
-        std::map<std::string, std::string> options_copy = options;
+        std::map<std::string, std::string> options_copy;
+        for (const auto& option : options)
+        {
+            if (option.first != "monomerLibrary")
+            {
+                options_copy[option.first] = option.second;
+            }
+        }
+
+        auto monomerLibrary = options.find("monomerLibrary");
+        if (monomerLibrary != options.end() && monomerLibrary->second.size())
+        {
+            const char* ignore_stereo_option = "ignore-stereochemistry-errors";
+            std::map<std::string, std::string> options_lib = options_copy;
+            options_lib["input-format"] = "chemical/x-indigo-ket";
+            options_lib[ignore_stereo_option] = "true";
+            indigoSetOptions(options_lib);
+            IndigoKetcherObject iko = loadMoleculeOrReaction(monomerLibrary->second, options_lib);
+            auto ignore_stereo = options.find(ignore_stereo_option);
+            if (ignore_stereo == options.end())
+            {
+                // no ignore stereo erros option set - should reset to default "false"
+                options_lib[ignore_stereo_option] = "false";
+                indigoSetOptions(options_lib);
+            }
+        }
+
         if (outputFormat.find("smarts") != std::string::npos)
         {
             options_copy["query"] = "true";
         }
-        auto monomerLibrary = options.find("monomerLibrary");
-        if (monomerLibrary != options.end() && monomerLibrary->second.size())
-        {
-            options_copy["monomerLibrary"] = "";
-            IndigoKetcherObject iko = loadMoleculeOrReaction(monomerLibrary->second, options_copy);
-        }
+        indigoSetOptions(options);
         IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy);
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
