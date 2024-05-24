@@ -216,32 +216,6 @@ namespace indigo
 
     IMPL_ERROR(MonomerTemplate, "MonomerTemplate");
 
-    const std::string& MonomerTemplate::MonomerClassToStr(MonomerClass monomer_type)
-    {
-        static const std::map<MonomerClass, std::string> _type_to_str{
-            {MonomerClass::AminoAcid, "AminoAcid"},   {MonomerClass::Sugar, "Sugar"},   {MonomerClass::Phosphate, "Phosphate"}, {MonomerClass::Base, "Base"},
-            {MonomerClass::Terminator, "Terminator"}, {MonomerClass::Linker, "Linker"}, {MonomerClass::Unknown, "Unknown"},     {MonomerClass::CHEM, "Chem"}};
-
-        return _type_to_str.at(monomer_type);
-    }
-
-    const MonomerClass MonomerTemplate::StrToMonomerClass(const std::string& monomer_type)
-    {
-        static const std::map<std::string, MonomerClass> _str_to_type = {
-            {"AminoAcid", MonomerClass::AminoAcid},   {"Sugar", MonomerClass::Sugar},   {"Phosphate", MonomerClass::Phosphate}, {"Base", MonomerClass::Base},
-            {"Terminator", MonomerClass::Terminator}, {"Linker", MonomerClass::Linker}, {"Unknown", MonomerClass::Unknown},     {"Chem", MonomerClass::CHEM}};
-        if (_str_to_type.count(monomer_type))
-            return _str_to_type.at(monomer_type);
-        return MonomerClass::Unknown;
-    }
-
-    MonomerTemplate::MonomerTemplate(const std::string& id, const std::string& mt_class, const std::string& class_HELM, const std::string& full_name,
-                                     const std::string& alias, const std::string& natural_analog, int tgroup_id, BaseMolecule& mol)
-        : _id(id), _class(StrToMonomerClass(mt_class)), _class_HELM(class_HELM), _full_name(full_name), _alias(alias), _natural_analog(natural_analog),
-          _tgroup_id(tgroup_id), _mol(mol)
-    {
-    }
-
     void MonomerTemplate::AddAttachmentPoint(const std::string& id, const std::string& ap_type, int att_atom, std::vector<int>& leaving_group)
     {
         std::string ap_id = id.size() != 0 ? id : "R" + std::to_string(1 + _attachment_points.size());
@@ -270,7 +244,7 @@ namespace indigo
 
     const TGroup& MonomerTemplate::getTGroup() const
     {
-        return _mol.tgroups.getTGroup(_tgroup_id);
+        return _tgroup;
     }
 
     bool MonomerTemplate::hasIdtAlias(const std::string& alias, IdtModification mod)

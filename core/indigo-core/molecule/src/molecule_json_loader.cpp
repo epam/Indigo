@@ -1148,7 +1148,8 @@ void MoleculeJsonLoader::addToLibMonomerTemplate(const rapidjson::Value& mt_json
     if (mt_json.HasMember("naturalAnalog"))
         natural_analog = mt_json["naturalAnalog"].GetString();
 
-    MonomerTemplate mon_template(id, monomer_class, class_HELM, full_name, alias, natural_analog, tgroup_id, mol);
+    MonomerTemplate mon_template(id, MonomerTemplate::StrToMonomerClass(monomer_class), class_HELM, full_name, alias, natural_analog,
+                                 mol.tgroups.getTGroup(tgroup_id));
 
     if (mt_json.HasMember("idtAliases"))
     {
