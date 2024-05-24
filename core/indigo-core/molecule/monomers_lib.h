@@ -212,21 +212,21 @@ namespace indigo
 
         MonomerTemplate() = delete;
 
-        MonomerTemplate::MonomerTemplate(const std::string& id, MonomerClass mt_class, const std::string& class_HELM, const std::string& full_name,
-                                         const std::string& alias, const std::string& natural_analog, const TGroup& tgroup)
+        MonomerTemplate(const std::string& id, MonomerClass mt_class, const std::string& class_HELM, const std::string& full_name, const std::string& alias,
+                        const std::string& natural_analog, const TGroup& tgroup)
             : _id(id), _class(mt_class), _class_HELM(class_HELM), _full_name(full_name), _alias(alias), _natural_analog(natural_analog)
         {
             _tgroup.copy(tgroup);
         }
 
-        MonomerTemplate::MonomerTemplate(const MonomerTemplate& other)
+        MonomerTemplate(const MonomerTemplate& other)
             : _id(other._id), _class(other._class), _class_HELM(other._class_HELM), _full_name(other._full_name), _alias(other._alias),
               _natural_analog(other._natural_analog), _idt_alias(other._idt_alias)
         {
             _tgroup.copy(other._tgroup);
         }
 
-        static const std::string& MonomerTemplate::MonomerClassToStr(MonomerClass monomer_type)
+        static const std::string& MonomerClassToStr(MonomerClass monomer_type)
         {
             static const std::map<MonomerClass, std::string> _type_to_str{{MonomerClass::AminoAcid, "AminoAcid"},   {MonomerClass::Sugar, "Sugar"},
                                                                           {MonomerClass::Phosphate, "Phosphate"},   {MonomerClass::Base, "Base"},
@@ -236,7 +236,7 @@ namespace indigo
             return _type_to_str.at(monomer_type);
         }
 
-        static const MonomerClass MonomerTemplate::StrToMonomerClass(const std::string& monomer_type)
+        static const MonomerClass StrToMonomerClass(const std::string& monomer_type)
         {
             static const std::map<std::string, MonomerClass> _str_to_type = {{"AminoAcid", MonomerClass::AminoAcid},   {"Sugar", MonomerClass::Sugar},
                                                                              {"Phosphate", MonomerClass::Phosphate},   {"Base", MonomerClass::Base},
