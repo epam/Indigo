@@ -1835,11 +1835,11 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.Key("position");
             writer.StartObject();
             writer.Key("x");
-            writer.Double(simple_obj->_pos.x);
+            writer.Double(simple_obj->_bbox.left());
             writer.Key("y");
-            writer.Double(simple_obj->_pos.y);
+            writer.Double(simple_obj->_bbox.top());
             writer.Key("z");
-            writer.Double(simple_obj->_pos.z);
+            writer.Double(0.0);
             writer.EndObject(); // end position
             writer.EndObject(); // end data
             writer.EndObject(); // end node

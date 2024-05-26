@@ -315,7 +315,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                     TextItem ti;
                     ti.size = KETDefaultFontSize / KETFontScaleFactor; // default size
                     ti.ritype = RenderItem::RIT_TITLE;
-                    Vec2f text_origin(ko._pos.x, ko._pos.y);
+                    Vec2f text_origin(ko._bbox.left(), ko._bbox.top());
                     scale(text_origin);
                     for (auto& kvp : text_item.styles)
                     {
@@ -450,7 +450,7 @@ void RenderItemAuxiliary::init()
 {
 }
 
-float RenderItemAuxiliary::_getMaxHeight(const KETTextObject::KETTextLine& tl)
+float RenderItemAuxiliary::_getMaxHeight(const KETTextObject::KETTextParagraph& tl)
 {
     int first_index = -1;
     int second_index = -1;

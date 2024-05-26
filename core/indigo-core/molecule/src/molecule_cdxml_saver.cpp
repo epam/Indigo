@@ -1465,7 +1465,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
             size_t second_index = 0;
             // double text_offset_x = 0;
             FONT_STYLE_SET current_styles;
-            Vec2f text_origin(ko._pos.x, ko._pos.y);
+            Vec2f text_origin(ko._bbox.left(), ko._bbox.top());
             std::string pos_str = std::to_string(_bond_length * text_origin.x) + " " + std::to_string(-_bond_length * text_origin.y);
             XMLElement* t = _doc->NewElement("t");
             _current->LinkEndChild(t);

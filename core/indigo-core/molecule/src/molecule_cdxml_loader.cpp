@@ -1530,7 +1530,7 @@ void MoleculeCdxmlLoader::_parseLabel(BaseCDXElement& elem, std::string& label)
     }
 }
 
-void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair<Vec3f, std::string>>& text_parsed)
+void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair<Rect2f, std::string>>& text_parsed)
 {
     Vec3f text_pos;
     auto text_coordinates_lambda = [&text_pos, this](const std::string& data) { this->parsePos(data, text_pos); };
@@ -1664,7 +1664,7 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
     if (!is_valid_utf8(txt))
         txt = latin1_to_utf8(txt);
 
-    text_parsed.emplace_back(tpos, txt.c_str());
+    text_parsed.emplace_back(text_bbox, txt.c_str());
 }
 
 void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, BaseCDXProperty& prop)

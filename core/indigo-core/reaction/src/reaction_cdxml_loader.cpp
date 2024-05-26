@@ -206,7 +206,7 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                 {
                     auto& text = (KETTextObject&)_pmol->meta().getMetaObject(KETTextObject::CID, i);
                     int idx = rxn.meta().addMetaObject(text.clone());
-                    rxn.addSpecialCondition(idx, Rect2f(Vec2f(text._pos.x, text._pos.y), Vec2f(text._pos.x, text._pos.y)));
+                    rxn.addSpecialCondition(idx, Rect2f(Vec2f(text._bbox.left(), text._bbox.top()), Vec2f(text._bbox.left(), text._bbox.top())));
                 }
             }
             _cdxml_elements.erase(elem_it);

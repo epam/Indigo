@@ -1805,11 +1805,10 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
                     else if (sobj.HasMember("content") && sobj.HasMember("position"))
                     {
                         std::string content = sobj["content"].GetString();
-                        Vec3f text_origin;
-                        text_origin.x = sobj["position"]["x"].GetFloat();
-                        text_origin.y = sobj["position"]["y"].GetFloat();
-                        text_origin.z = sobj["position"]["z"].GetFloat();
-                        meta_interface.addMetaObject(new KETTextObject(text_origin, content));
+                        Vec2f v1(sobj["position"]["x"].GetFloat(), sobj["position"]["y"].GetFloat());
+                        Vec2f v2(v1);
+                        Rect2f text_box(v1, v2);
+                        meta_interface.addMetaObject(new KETTextObject(text_box, content));
                     }
                 }
             }

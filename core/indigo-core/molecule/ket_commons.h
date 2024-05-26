@@ -122,7 +122,7 @@ namespace indigo
         const std::unordered_map<std::string, int> KTextStylesMap{
             {KETFontBoldStr, EBold}, {KETFontItalicStr, EItalic}, {KETFontSuperscriptStr, ESuperScript}, {KETFontSubscriptStr, ESubScript}};
 
-        struct KETTextLine
+        struct KETTextParagraph
         {
             std::string text;
             std::map<std::size_t, FONT_STYLE_SET> styles;
@@ -130,10 +130,10 @@ namespace indigo
 
         static const std::uint32_t CID = "KET text object"_hash;
 
-        KETTextObject(const Vec3f& pos, const std::string& content) : MetaObject(CID)
+        KETTextObject(const Rect2f& bbox, const std::string& content) : MetaObject(CID)
         {
             using namespace rapidjson;
-            _pos = pos;
+            _bbox = bbox;
             _content = content;
             Document data;
             data.Parse(content.c_str());
@@ -142,7 +142,7 @@ namespace indigo
                 Value& blocks = data["blocks"];
                 for (rapidjson::SizeType i = 0; i < blocks.Size(); ++i)
                 {
-                    KETTextLine text_line;
+                    KETTextParagraph text_line;
                     if (blocks[i].HasMember("text"))
                     {
                         text_line.text = blocks[i]["text"].GetString();
@@ -199,12 +199,12 @@ namespace indigo
 
         MetaObject* clone() const override
         {
-            return new KETTextObject(_pos, _content);
+            return new KETTextObject(_bbox, _content);
         }
 
         std::string _content;
-        std::list<KETTextLine> _block;
-        Vec3f _pos;
+        std::list<KETTextParagraph> _block;
+        Rect2f _bbox;
     };
 
     class KETReactionArrow : public MetaObject
