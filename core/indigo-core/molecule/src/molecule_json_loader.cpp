@@ -1814,6 +1814,10 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
                         meta_interface.addMetaObject(new KETTextObject(text_box, content));
                     }
                 }
+                else if (node_type == "text")
+                {
+
+                }
             }
             else if (node_type == "arrow")
             {

@@ -130,6 +130,14 @@ namespace indigo
 
         static const std::uint32_t CID = "KET text object"_hash;
 
+        KETTextObject(const KETTextObject& other)
+            : MetaObject(CID)
+        {
+            _bbox.copy(other._bbox);
+            _content = other._content;
+            _block = other._block;
+        }
+
         KETTextObject(const Rect2f& bbox, const std::string& content) : MetaObject(CID)
         {
             using namespace rapidjson;
@@ -199,7 +207,7 @@ namespace indigo
 
         MetaObject* clone() const override
         {
-            return new KETTextObject(_bbox, _content);
+            return new KETTextObject(*this);
         }
 
         std::string _content;

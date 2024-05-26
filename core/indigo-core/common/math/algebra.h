@@ -309,7 +309,7 @@ namespace indigo
             _rightTop.max(b._rightTop);
         }
 
-        inline void copy(Rect2f& other)
+        inline void copy(const Rect2f& other)
         {
             _leftBottom = other._leftBottom;
             _rightTop = other._rightTop;
