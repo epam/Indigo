@@ -130,7 +130,6 @@ namespace indigo
         }
         return res;
     }
-
 }
 
 #ifdef _MSC_VER

@@ -660,7 +660,7 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(BaseCDXElement& first_elem, bool n
             {
                 auto it = std::upper_bound(fragment_node.inner_nodes.cbegin(), fragment_node.inner_nodes.cend(), fragment_node.id,
                                            [](int a, int b) { return a > b; });
-                if (nodes[i].pos.x == 0 && nodes[i].pos.y == 0 && nodes[i].pos.z == 0) // if no coord - copy from parent
+                if (nodes[i].pos.x == 0 && nodes[i].pos.y == 0 ) // if no coord - copy from parent
                     nodes[i].pos = fragment_node.pos;
                 fragment_node.inner_nodes.insert(it, nodes[i].id);
             }
@@ -1324,14 +1324,13 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, BaseCDXProperty& prop)
     applyDispatcher(prop, bond_dispatcher);
 }
 
-void MoleculeCdxmlLoader::parsePos(const std::string& data, Vec3f& pos)
+void MoleculeCdxmlLoader::parsePos(const std::string& data, Vec2f& pos)
 {
     std::vector<std::string> coords = split(data, ' ');
     if (coords.size() >= 2)
     {
         pos.x = std::stof(coords[0]);
         pos.y = std::stof(coords[1]);
-        pos.z = 0;
         if (this->_has_bounding_box)
         {
             pos.x -= this->cdxml_bbox.left();
@@ -1466,7 +1465,7 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
             default:
                 break;
             }
-            _graphic_arrows.push_back(std::make_pair(std::make_pair(Vec3f(tail.x, tail.y, 0), Vec3f(head.x, head.y, 0)), ar_type));
+            _graphic_arrows.push_back(std::make_pair(std::make_pair(tail, head), ar_type));
         }
     }
     break;
@@ -1496,9 +1495,9 @@ void MoleculeCdxmlLoader::_parseArrow(BaseCDXElement& elem)
 {
     Rect2f text_bbox;
     auto arrow_bbox_lambda = [&text_bbox, this](const std::string& data) { this->parseBBox(data, text_bbox); };
-    Vec3f begin_pos;
+    Vec2f begin_pos;
     auto arrow_begin_lambda = [&begin_pos, this](const std::string& data) { this->parsePos(data, begin_pos); };
-    Vec3f end_pos;
+    Vec2f end_pos;
     auto arrow_end_lambda = [&end_pos, this](const std::string& data) { this->parsePos(data, end_pos); };
     std::string fill_type;
     auto fill_type_lambda = [&fill_type](const std::string& data) { fill_type = data; };
@@ -1532,7 +1531,7 @@ void MoleculeCdxmlLoader::_parseLabel(BaseCDXElement& elem, std::string& label)
 
 void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair<Rect2f, std::string>>& text_parsed)
 {
-    Vec3f text_pos;
+    Vec2f text_pos;
     auto text_coordinates_lambda = [&text_pos, this](const std::string& data) { this->parsePos(data, text_pos); };
 
     Rect2f text_bbox;
@@ -1656,9 +1655,12 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
 
     writer.EndObject();
 
-    Vec3f tpos(text_pos);
     if (text_bbox.width() > 0 && text_bbox.height() > 0)
-        tpos.set(text_bbox.center().x, text_bbox.center().y, 0);
+    {
+        text_pos.set(text_bbox.center().x, text_bbox.center().y);
+        text_bbox.copy(Rect2f(text_pos, text_pos));
+    } else
+        text_bbox.copy(Rect2f(text_pos, text_pos));
 
     std::string txt = s.GetString();
     if (!is_valid_utf8(txt))

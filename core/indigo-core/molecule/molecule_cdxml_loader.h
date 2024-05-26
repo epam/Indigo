@@ -132,7 +132,8 @@ namespace indigo
         AutoInt id;
         std::string label;
         AutoInt element;
-        Vec3f pos;
+        Vec2f pos;
+        Vec3f pos3d;
         int type;
         AutoInt isotope;
         AutoInt charge;
@@ -796,7 +797,7 @@ namespace indigo
         static void applyDispatcher(BaseCDXProperty& prop, const std::unordered_map<std::string, std::function<void(const std::string&)>>& dispatcher);
         void parseCDXMLAttributes(BaseCDXProperty& prop);
         void parseBBox(const std::string& data, Rect2f& bbox);
-        void parsePos(const std::string& data, Vec3f& bbox);
+        void parsePos(const std::string& data, Vec2f& bbox);
         void parseSeg(const std::string& data, Vec2f& v1, Vec2f& v2);
 
         StereocentersOptions stereochemistry_options;
@@ -848,8 +849,8 @@ namespace indigo
         std::unordered_map<int, std::size_t> _id_to_bond_index;
         std::vector<int> _fragment_nodes;
         std::vector<Vec2f> _pluses;
-        std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
-        std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _graphic_arrows;
+        std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _arrows;
+        std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _graphic_arrows;
         std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _primitives;
 
         std::vector<EnhancedStereoCenter> _stereo_centers;
