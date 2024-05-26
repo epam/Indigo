@@ -23,8 +23,11 @@ IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
-      _connection_array(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), components_count(0)
+      _connection_array(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), _components_count(0)
 {
+    if (ket.HasMember("ket_version"))
+        _ket_version = ket["ket_version"].GetString();
+
     Value& root = ket["root"];
     Value& nodes = root["nodes"];
 
@@ -89,7 +92,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
     : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType), _connection_array(kArrayType), _pmol(0), _pqmol(0),
       ignore_noncritical_query_features(false), ignore_no_chiral_flag(false), skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0),
-      components_count(0)
+      _components_count(0)
 {
 }
 
@@ -890,11 +893,11 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             if (_pqmol)
             {
                 _pqmol->components.expandFill(_pqmol->components.size() + atoms.Size(), 0);
-                components_count++;
+                _components_count++;
                 for (rapidjson::SizeType j = 0; j < atoms.Size(); ++j)
                 {
                     int atom_idx = atoms[j].GetInt();
-                    _pqmol->components[atom_idx] = components_count;
+                    _pqmol->components[atom_idx] = _components_count;
                 }
             }
             else
