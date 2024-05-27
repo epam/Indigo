@@ -1543,6 +1543,7 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
     auto label_justification_alignment_lambda = [&label_alignment, this](const std::string& data) { label_alignment = data; };
 
     std::unordered_map<std::string, std::function<void(const std::string&)>> text_dispatcher = {{"p", text_coordinates_lambda},
+                                                                                                {"xyz", text_coordinates_lambda},
                                                                                                 {"BoundingBox", text_bbox_lambda},
                                                                                                 {"LabelJustification", label_justification_lambda},
                                                                                                 {"LabelAlignment", label_justification_alignment_lambda}};

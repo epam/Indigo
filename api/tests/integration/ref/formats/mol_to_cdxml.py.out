@@ -1,4 +1,48 @@
 *** Mol to CDXML ***
+1944-3D_Structure.mol
+1944-3D_Structure.mol
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
+<CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
+    <fonttable id="1">
+        <font id="2" charset="utf-8" name="Arial"/>
+        <font id="3" charset="utf-8" name="Times New Roman"/>
+    </fonttable>
+    <colortable>
+        <color r="1" g="1" b="1"/>
+        <color r="0" g="0" b="0"/>
+        <color r="1" g="0" b="0"/>
+        <color r="1" g="1" b="0"/>
+        <color r="0" g="1" b="0"/>
+        <color r="0" g="1" b="1"/>
+        <color r="0" g="0" b="1"/>
+        <color r="1" g="0" b="1"/>
+        <color r="0.5" g="0.5" b="0.5"/>
+    </colortable>
+    <page HeightPages="1" WidthPages="1">
+        <fragment id="4"/>
+        <altgroup id="5" Valence="0">
+            <fragment id="6">
+                <n id="7" p="168.228012 294.662994" xyz="4.607600 -8.822100 -9.662200"/>
+                <n id="8" p="202.376999 290.210999" xyz="5.745900 -8.673700 -11.579500"/>
+                <n id="9" p="186.375000 273.207001" xyz="5.212500 -8.106900 -10.552700"/>
+                <n id="10" p="200.292007 328.707001" xyz="5.676400 -9.956900 -11.719600"/>
+                <n id="11" p="166.134003 333.312012" xyz="4.537800 -10.110400 -9.802900"/>
+                <n id="12" p="182.252991 350.123993" xyz="5.075100 -10.670800 -10.835100"/>
+                <b id="13" B="9" E="7" Order="2"/>
+                <b id="14" B="10" E="8" Order="2"/>
+                <b id="15" B="7" E="11"/>
+                <b id="16" B="8" E="9"/>
+                <b id="17" B="11" E="12" Order="2"/>
+                <b id="18" B="12" E="10"/>
+            </fragment>
+            <t p="166.134003 273.207001" InterpretChemically="no">
+                <s font="3" size="10" face="96">R20</s>
+            </t>
+        </altgroup>
+    </page>
+</CDXML>
+
 enhanced_stereo1.mol
 enhanced_stereo1.mol
 <?xml version="1.0" encoding="UTF-8"?>

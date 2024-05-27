@@ -18,6 +18,7 @@ files = [
     "enhanced_stereo1.mol",
     "enhanced_stereo2.mol",
     "enhanced_stereo3.mol",
+    "1944-3D_Structure.mol"
 ]
 files.sort()
 for filename in files:
