@@ -41,6 +41,11 @@ namespace indigo
     const auto KETFontSuperscriptStr = "SUPERSCRIPT";
     const auto KETFontSubscriptStr = "SUBSCRIPT";
     const auto KETFontCustomSizeStr = "CUSTOM_FONT_SIZE";
+    const auto KETAlignmentLeft = "left";
+    const auto KETAlignmentRight = "right";
+    const auto KETAlignmentCenter = "center";
+    const auto KETAlignmentJustify = "justify";
+
     const uint8_t KETReactantArea = 0;
     const uint8_t KETReagentUpArea = 1;
     const uint8_t KETReagentDownArea = 2;
@@ -102,6 +107,7 @@ namespace indigo
             EKETRectangle,
             EKETLine
         };
+
         int _mode;
         std::pair<Vec2f, Vec2f> _coordinates;
     };
@@ -119,8 +125,35 @@ namespace indigo
             EFontSize = 5
         };
 
+        enum class TextAlignment : int
+        {
+            ELeft,
+            ERight,
+            ECenter,
+            EJustify
+        };
+
+        const std::unordered_map<std::string, TextAlignment> KTextAlignmentsMap{{KETAlignmentLeft, TextAlignment::ELeft},
+                                                                               {KETAlignmentRight, TextAlignment::ERight},
+                                                                               {KETAlignmentCenter, TextAlignment::ECenter},
+                                                                               {KETAlignmentJustify, TextAlignment::EJustify}};
+
         const std::unordered_map<std::string, int> KTextStylesMap{
             {KETFontBoldStr, EBold}, {KETFontItalicStr, EItalic}, {KETFontSuperscriptStr, ESuperScript}, {KETFontSubscriptStr, ESubScript}};
+
+        struct KETTextIndent
+        {
+            float left;
+            float right;
+            float first_line;
+        };
+
+        struct KETTextFont
+        {
+            std::string family;
+            int size;
+            uint32_t color;
+        };
 
         struct KETTextParagraph
         {
@@ -130,15 +163,14 @@ namespace indigo
 
         static const std::uint32_t CID = "KET text object"_hash;
 
-        KETTextObject(const KETTextObject& other)
-            : MetaObject(CID)
+        KETTextObject(const KETTextObject& other) : MetaObject(CID), _alignment(other._alignment), _indent(other._indent), _font{other._font}
         {
             _bbox.copy(other._bbox);
             _content = other._content;
             _block = other._block;
         }
 
-        KETTextObject(const Rect2f& bbox, const std::string& content) : MetaObject(CID)
+        KETTextObject(const Rect2f& bbox, const std::string& content) : MetaObject(CID), _alignment(TextAlignment::ELeft), _indent{}, _font{}
         {
             using namespace rapidjson;
             _bbox = bbox;
@@ -205,6 +237,17 @@ namespace indigo
             }
         }
 
+        KETTextObject(const rapidjson::Value& text_obj) : MetaObject(CID), _alignment(TextAlignment::ELeft), _indent{}, _font{}
+        {
+            using namespace rapidjson;
+            auto& bbox = text_obj["bounding_box"];
+            Vec2f v1(bbox["x"].GetFloat(), bbox["y"].GetFloat());
+            Vec2f v2(v1);
+            v2.add(Vec2f(bbox["width"].GetFloat(), bbox["height"].GetFloat()));
+            _bbox.copy(Rect2f(v1, v2));
+
+        }
+
         MetaObject* clone() const override
         {
             return new KETTextObject(*this);
@@ -213,6 +256,9 @@ namespace indigo
         std::string _content;
         std::list<KETTextParagraph> _block;
         Rect2f _bbox;
+        KETTextIndent _indent;
+        KETTextFont _font;
+        TextAlignment _alignment;
     };
 
     class KETReactionArrow : public MetaObject

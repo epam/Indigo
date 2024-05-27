@@ -1815,9 +1815,7 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
                     }
                 }
                 else if (node_type == "text")
-                {
-
-                }
+                    meta_interface.addMetaObject(new KETTextObject(mobj));
             }
             else if (node_type == "arrow")
             {
