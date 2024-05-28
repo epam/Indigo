@@ -3177,7 +3177,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
 
     Superatom& su = (Superatom&)sgroups.getSGroup(sg_idx);
 
-    if (su.subscript.size() == 0 || su.sa_class.size() == 0)
+    if (su.subscript.size() == 0)
         return -1;
 
     // TODO: special handling needed for LGRP
