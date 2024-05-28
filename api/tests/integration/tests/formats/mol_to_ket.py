@@ -47,6 +47,8 @@ files = [
     "1465-lr_sugar",
     "removed_phosphate",
     "taspoglutide",
+    "1972-case1",
+    "1972-case2",
 ]
 
 files.sort()
