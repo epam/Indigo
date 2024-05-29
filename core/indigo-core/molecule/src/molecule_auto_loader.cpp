@@ -312,15 +312,18 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
         long long pos = _scanner->tell();
         _scanner->skipSpace();
 
-        if (_scanner->startsWith("<molecule"))
+        if (_scanner->lookNext() == '<')
         {
-            CmlLoader loader(*_scanner);
-            loader.stereochemistry_options = stereochemistry_options;
-            if (query)
-                loader.loadQueryMolecule((QueryMolecule&)mol);
-            else
-                loader.loadMolecule((Molecule&)mol);
-            return;
+            if (_scanner->findWord("<molecule"))
+            {
+                CmlLoader loader(*_scanner);
+                loader.stereochemistry_options = stereochemistry_options;
+                if (query)
+                    loader.loadQueryMolecule((QueryMolecule&)mol);
+                else
+                    loader.loadMolecule((Molecule&)mol);
+                return;
+            }
         }
 
         _scanner->seek(pos, SEEK_SET);
@@ -330,7 +333,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
     {
         long long pos = _scanner->tell();
         _scanner->skipSpace();
-        if (_scanner->startsWith("<CDXML"))
+        if (_scanner->lookNext() == '<' && _scanner->findWord("CDXML"))
         {
             _scanner->seek(pos, SEEK_SET);
             MoleculeCdxmlLoader loader(*_scanner);
