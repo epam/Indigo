@@ -56,11 +56,11 @@ for filename in sorted(idt_data.keys()):
         )
 
 idt_errors = {
-    "ket-to-idt-r1r1connection": "Canot save molecule in IDT format - sugar MOE connected to monomer MOE with class SUGAR (only base or phosphate expected).",
-    "ket-to-idt-peptide": "Canot save molecule in IDT format - AA monomer DPhe4C cannot be first.",
-    "ket-to-idt-two-bases": "Canot save molecule in IDT format - sugar R with two base connected A and C.",
-    "ket-to-idt-invalid-posphates": "Canot save molecule in IDT format - sugar R with too much phosphates connected P and P.",
-    "ket-to-idt-invalid-last-phosphate": "Canot save molecule in IDT format - phosphate sP cannot be last monomer in sequence.",
+    "ket-to-idt-r1r1connection": "Cannot save molecule in IDT format - sugar MOE connected to monomer MOE with class SUGAR (only base or phosphate expected).",
+    "ket-to-idt-peptide": "Cannot save molecule in IDT format - AA monomer DPhe4C cannot be first.",
+    "ket-to-idt-two-bases": "Cannot save molecule in IDT format - sugar R with two base connected A and C.",
+    "ket-to-idt-invalid-posphates": "Cannot save molecule in IDT format - sugar R with too much phosphates connected P and P.",
+    "ket-to-idt-invalid-last-phosphate": "Cannot save molecule in IDT format - phosphate sP cannot be last monomer in sequence.",
     "ket-to-idt-invalid-nucleotide": "IDT alias for group sugar:m2e2r base:z8c3G phosphate:mepo2 not found.",
     "ket-to-idt-invalid-sugar-phosphate": "IDT alias for group sugar:m2e2r phosphate:mepo2 not found.",
     "ket-to-idt-invalid-sugar": "IDT alias for sugar:m2e2r not found.",
