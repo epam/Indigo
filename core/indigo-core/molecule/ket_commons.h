@@ -114,6 +114,7 @@ namespace indigo
 
     class KETTextObject : public MetaObject
     {
+
     public:
         enum
         {
@@ -134,9 +135,9 @@ namespace indigo
         };
 
         const std::unordered_map<std::string, TextAlignment> KTextAlignmentsMap{{KETAlignmentLeft, TextAlignment::ELeft},
-                                                                               {KETAlignmentRight, TextAlignment::ERight},
-                                                                               {KETAlignmentCenter, TextAlignment::ECenter},
-                                                                               {KETAlignmentJustify, TextAlignment::EJustify}};
+                                                                                {KETAlignmentRight, TextAlignment::ERight},
+                                                                                {KETAlignmentCenter, TextAlignment::ECenter},
+                                                                                {KETAlignmentJustify, TextAlignment::EJustify}};
 
         const std::unordered_map<std::string, int> KTextStylesMap{
             {KETFontBoldStr, EBold}, {KETFontItalicStr, EItalic}, {KETFontSuperscriptStr, ESuperScript}, {KETFontSubscriptStr, ESubScript}};
@@ -163,11 +164,17 @@ namespace indigo
 
         static const std::uint32_t CID = "KET text object"_hash;
 
-        KETTextObject(const KETTextObject& other) : MetaObject(CID), _alignment(other._alignment), _indent(other._indent), _font{other._font}
+        std::string _content;
+        std::list<KETTextParagraph> _block;
+        Rect2f _bbox;
+        KETTextIndent _indent;
+        KETTextFont _font;
+        TextAlignment _alignment;
+
+        KETTextObject(const KETTextObject& other)
+            : MetaObject(CID), _alignment(other._alignment), _indent(other._indent), _font{other._font}, _bbox(other._bbox), _content(other._content),
+              _block(other._block)
         {
-            _bbox.copy(other._bbox);
-            _content = other._content;
-            _block = other._block;
         }
 
         KETTextObject(const Rect2f& bbox, const std::string& content) : MetaObject(CID), _alignment(TextAlignment::ELeft), _indent{}, _font{}
@@ -240,25 +247,36 @@ namespace indigo
         KETTextObject(const rapidjson::Value& text_obj) : MetaObject(CID), _alignment(TextAlignment::ELeft), _indent{}, _font{}
         {
             using namespace rapidjson;
-            auto& bbox = text_obj["bounding_box"];
-            Vec2f v1(bbox["x"].GetFloat(), bbox["y"].GetFloat());
-            Vec2f v2(v1);
-            v2.add(Vec2f(bbox["width"].GetFloat(), bbox["height"].GetFloat()));
-            _bbox.copy(Rect2f(v1, v2));
+            auto bbox_lambda = [this](const Value& bbox_val) {
+                Vec2f v1(bbox_val["x"].GetFloat(), bbox_val["y"].GetFloat());
+                Vec2f v2(v1);
+                v2.add(Vec2f(bbox_val["width"].GetFloat(), bbox_val["height"].GetFloat()));
+                _bbox.copy(Rect2f(v1, v2));
+                };
 
+            auto alignment_lambda = [this](const Value& align_val) {
+                auto ta_it = KTextAlignmentsMap.find(align_val.GetString());
+                if (ta_it != KTextAlignmentsMap.end())
+                    _alignment = ta_it->second;
+            };
+
+
+            std::unordered_map<std::string, std::function<void(const Value&)>> node_dispatcher = {
+                {"bounding_box", bbox_lambda}, 
+                {"alignment", alignment_lambda}};
+
+            for (auto kvp_it = text_obj.MemberBegin(); kvp_it != text_obj.MemberEnd(); ++kvp_it)
+            {
+                auto disp_it = node_dispatcher.find(kvp_it->name.GetString());
+                if (disp_it != node_dispatcher.end())
+                    disp_it->second(kvp_it->value);
+            }
         }
 
         MetaObject* clone() const override
         {
             return new KETTextObject(*this);
         }
-
-        std::string _content;
-        std::list<KETTextParagraph> _block;
-        Rect2f _bbox;
-        KETTextIndent _indent;
-        KETTextFont _font;
-        TextAlignment _alignment;
     };
 
     class KETReactionArrow : public MetaObject
