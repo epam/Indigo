@@ -957,7 +957,10 @@ M  END
             options.set("input-format", "chemical/x-idt");
             options.set("monomerLibrary",monomersLib);
             const idt = "/5Phos/mA*mGC/i2MOErA//3Phos/";
+            var startTestTime = process.hrtime();
             const res = indigo.convert(idt, "ket", options);
+            const elapsedSeconds = parseHrtimeToSeconds(process.hrtime(startTestTime));
+            assert.equal(elapsedSeconds < 1, true);
             const res_ket = JSON.parse(res).struct;
             // fs.writeFileSync("idt_maxmgc.ket", res_ket);
             const res_ket_ref = fs.readFileSync("idt_maxmgc.ket");
