@@ -1333,7 +1333,7 @@ void MoleculeCdxmlLoader::parsePos(const std::string& data, Vec3f& pos)
         pos.y = std::stof(coords[1]);
         if (coords.size() > 2)
         {
-            pos.z = std::stof(coords[1]);
+            pos.z = std::stof(coords[2]);
             pos.z /= -SCALE;
         }
         if (this->_has_bounding_box)
