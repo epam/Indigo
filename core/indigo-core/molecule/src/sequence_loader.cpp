@@ -400,28 +400,29 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
         _seq_id = 0;
         _last_monomer_idx = -1;
         _col = 0;
-        std::string sugar = IDT_DEF_SUGAR;
-        std::string phosphate = IDT_DEF_PHOSPHATE;
-        std::string base = "";
-        std::string single_monomer = "";
-        std::string single_monomer_class;
-        IdtModification modification = IdtModification::FIVE_PRIME_END;
 
-        while (!_scanner.isEOL())
+        using token_t = std::pair<std::string, bool>;
+        std::queue<token_t> tokens; // second=true if token folowed by *
+        std::string cur_token;
+
+        while (true)
         {
+            if (_scanner.isEOL())
+            {
+                if (cur_token.size())
+                    tokens.emplace(cur_token, false);
+                break;
+            }
             auto ch = _scanner.readChar();
             switch (ch)
             {
-            case '+':
-                sugar = "LR";
-                break;
-            case 'm':
-                sugar = "mR";
-                break;
-            case 'r':
-                sugar = "R";
-                break;
-            case '/':
+            case ' ':
+                if (cur_token.size())
+                    tokens.emplace(cur_token, false);
+                continue;
+            case '/': {
+                if (cur_token.size())
+                    throw Error("Sugar prefix could not be used with modified monomer.");
                 // read till next '/'
                 ch = 0;
                 while (!_scanner.isEOL())
@@ -429,133 +430,201 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
                     ch = _scanner.readChar();
                     if (ch == '/')
                         break;
-                    base += ch;
+                    cur_token += ch;
                 }
                 if (ch != '/')
                     throw Error("Unexpected end of data");
-                if (base == "")
+                if (cur_token == "")
                     throw Error("Invalid modification: empty string.");
-                if (base.size() < 2)
-                    throw Error("Invalid modification: %s.", base.c_str());
+                if (cur_token.size() < 3)
+                    throw Error("Invalid modification: %s.", cur_token.c_str());
+                cur_token += ch;
+                break;
+            }
+            case 'A':
+            case 'T':
+            case 'C':
+            case 'G':
+            case 'U':
+            case 'I':
+                cur_token += ch;
+                break;
+            case 'r':
+            case '+':
+            case 'm':
+                if (cur_token.size())
+                    throw Error("Sugar prefix '%s' whithout base.", cur_token.c_str());
+                else
+                    cur_token += ch;
+                continue;
                 break;
             default:
-                base = std::string(1, ch);
+                if (invalid_symbols.size())
+                    invalid_symbols += ',';
+                invalid_symbols += ch;
+                continue;
                 break;
-            };
-
-            if (base.size() > 0)
-            {
-                if (base == "3Phos" && sugar != IDT_DEF_SUGAR)
-                    throw Error("Sugar prefix could not be used with '/3Phos/'");
-                if (base == "5Phos" && sugar != IDT_DEF_SUGAR)
-                    throw Error("Sugar prefix could not be used with '/5Phos/'");
-                if (_scanner.isEOL())
-                {
-                    modification = IdtModification::THREE_PRIME_END;
-                    if (base == "3Phos")
-                        continue;   // 3phos means that we should not delete phosphate from previuos nucleotide
-                    phosphate = ""; // no phosphate at three-prime end
-                }
-                else if (_scanner.lookNext() == '*')
-                {
-                    std::ignore = _scanner.readChar();
-                    if (_scanner.isEOL())
-                        throw Error("Invalid IDT sequence: '*' couldn't be the last symbol.");
-                    if (base == "5Phos")
-                        throw Error("/5Phos/ cannot be modified to 'sP'");
-                    phosphate = IDT_MODIFIED_PHOSPHATE;
-                }
-                if (base.size() == 1)
-                {
-                    if (IDT_STANDARD_BASES.count(base[0]) == 0)
-                    {
-                        if (invalid_symbols.size())
-                            invalid_symbols += ',';
-                        invalid_symbols += base[0];
-                    }
-                    else
-                    {
-                        if (!checkAddTemplate(mol, MonomerClass::Sugar, sugar))
-                            throw Error("Unknown sugar '%s'", sugar.c_str());
-                        if (base.size() > 0 && !checkAddTemplate(mol, MonomerClass::Base, base))
-                            throw Error("Unknown base '%s'", base.c_str());
-                        if (phosphate.size() > 0 && !checkAddTemplate(mol, MonomerClass::Phosphate, phosphate))
-                            throw Error("Unknown phosphate '%s'", phosphate.c_str());
-                    }
-                }
-                else
-                {
-                    // Corner case - only one IDT mod - can be 5-end or 3-end - look to first symbol
-                    // if (_seq_id == 0 && modification == IdtModification::THREE_PRIME_END && base[0] == '5')
-                    //     modification = IdtModification::FIVE_PRIME_END;
-                    // Find modification
-                    const std::string& mgt_id = MonomerTemplateLibrary::instance().getMGTidByIdtAliasAndMod(base, modification);
-                    if (mgt_id.size())
-                    {
-                        MonomerGroupTemplate& mgt = MonomerTemplateLibrary::instance().getMonomerGroupTemplateById(mgt_id);
-                        const MonomerTemplate& sugar_template = mgt.getTemplateByClass(MonomerClass::Sugar);
-                        sugar = sugar_template.alias();
-                        checkAddTemplate(mol, sugar_template);
-                        if (modification != IdtModification::THREE_PRIME_END && mgt.hasTemplateClass(MonomerClass::Phosphate))
-                        {
-                            if (phosphate == IDT_MODIFIED_PHOSPHATE) // * means that 'sP' should be used
-                            {
-                                checkAddTemplate(mol, MonomerClass::Phosphate, phosphate);
-                            }
-                            else // use phosphate from template
-                            {
-                                const MonomerTemplate& phosphate_template = mgt.getTemplateByClass(MonomerClass::Phosphate);
-                                phosphate = phosphate_template.alias();
-                                checkAddTemplate(mol, phosphate_template);
-                            }
-                        }
-                        else
-                        {
-                            phosphate = "";
-                        }
-                        base = "";
-                        if (mgt.hasTemplateClass(MonomerClass::Base))
-                        {
-                            const MonomerTemplate& base_template = mgt.getTemplateByClass(MonomerClass::Base);
-                            base = base_template.alias();
-                            checkAddTemplate(mol, base_template);
-                        }
-                    }
-                    else
-                    {
-                        const std::string& monomer_template_id = MonomerTemplateLibrary::instance().getMonomerTemplateIdByIdtAliasAndMod(base, modification);
-                        if (!monomer_template_id.size())
-                            throw Error("IDT alias %s not found at %s position.", base.c_str(), IdtAlias::IdtModificationToString(modification).c_str());
-                        const MonomerTemplate& monomer_template = MonomerTemplateLibrary::instance().getMonomerTemplateById(monomer_template_id);
-                        checkAddTemplate(mol, monomer_template);
-                        single_monomer = monomer_template.alias();
-                        single_monomer_class = MonomerTemplates::classToStr(monomer_template.monomerClass());
-                    }
-                }
-
-                if (single_monomer.size())
-                {
-                    int monomer_idx = addTemplateAtom(mol, single_monomer.c_str(), single_monomer_class.c_str(), _seq_id);
-                    mol.asMolecule().setAtomXyz(monomer_idx, getBackboneMonomerPosition());
-                    if (_last_monomer_idx >= 0)
-                        addTemplateBond(mol, _last_monomer_idx, monomer_idx);
-                    _last_monomer_idx = monomer_idx;
-                }
-                else
-                    addNucleotide(mol, base, sugar, phosphate, false);
-
-                _seq_id++;
-                _col++;
-
-                sugar = IDT_DEF_SUGAR; // reset sugar to default
-                phosphate = IDT_DEF_PHOSPHATE;
-                base = "";
-                single_monomer = "";
-                modification = IdtModification::INTERNAL;
             }
+
+            if (_scanner.lookNext() == '*')
+            {
+                tokens.emplace(cur_token, true);
+                _scanner.skip(1);
+                if (_scanner.isEOL())
+                    throw Error("Invalid IDT sequence: '*' couldn't be the last symbol.");
+            }
+            else
+                tokens.emplace(cur_token, false);
+            cur_token = "";
         }
         while (!_scanner.isEOF() && _scanner.isEOL()) // Skip EOL characters
             _scanner.skip(1);
+
+        IdtModification modification = IdtModification::FIVE_PRIME_END;
+
+        token_t prev_token;
+        while (tokens.size() > 0)
+        {
+            token_t token = tokens.front();
+            tokens.pop();
+
+            std::string phosphate = IDT_DEF_PHOSPHATE;
+            std::string sugar = IDT_DEF_SUGAR;
+            std::string base = "";
+            std::string single_monomer = "";
+            std::string single_monomer_class;
+
+            if (token.first.back() == '/')
+            {
+                token.first.pop_back();
+                base = token.first;
+            }
+            else
+            {
+                if (token.first.size() > 2)
+                    throw Error("Wrong IDT syntax: '%s'", token.first.c_str());
+                base = token.first.back();
+                if (token.first.size() > 1)
+                {
+                    switch (token.first[0])
+                    {
+                    case 'r':
+                        sugar = "R";
+                        break;
+                    case '+':
+                        sugar = "LR";
+                        break;
+                    case 'm':
+                        sugar = "mR";
+                        break;
+                    default:
+                        throw Error("Wrong IDT syntax: '%s'", token.first.c_str());
+                    }
+                }
+            }
+
+            if (tokens.size() == 0)
+            {
+                modification = IdtModification::THREE_PRIME_END;
+                if (base == "3Phos")
+                {
+                    if (prev_token.second)
+                        throw Error("Phosphor /3Phos/ cannod be modified with '*'.");
+                    break; // 3phos means that we should not delete phosphate from previuos nucleotide
+                }
+                phosphate = ""; // no phosphate at three-prime end
+            }
+
+            if (token.second)
+            {
+                if (base == "5Phos")
+                    throw Error("/5Phos/ cannot be modified to 'sP'");
+                phosphate = IDT_MODIFIED_PHOSPHATE;
+            }
+
+            if (base.size() == 1)
+            {
+                if (IDT_STANDARD_BASES.count(base[0]) == 0)
+                {
+                    if (invalid_symbols.size())
+                        invalid_symbols += ',';
+                    invalid_symbols += base[0];
+                }
+                else
+                {
+                    if (!checkAddTemplate(mol, MonomerClass::Sugar, sugar))
+                        throw Error("Unknown sugar '%s'", sugar.c_str());
+                    if (base.size() > 0 && !checkAddTemplate(mol, MonomerClass::Base, base))
+                        throw Error("Unknown base '%s'", base.c_str());
+                    if (phosphate.size() > 0 && !checkAddTemplate(mol, MonomerClass::Phosphate, phosphate))
+                        throw Error("Unknown phosphate '%s'", phosphate.c_str());
+                }
+            }
+            else
+            {
+                sugar = "";
+
+                const std::string& mgt_id = MonomerTemplateLibrary::instance().getMGTidByIdtAliasAndMod(base, modification);
+                if (mgt_id.size())
+                {
+                    MonomerGroupTemplate& mgt = MonomerTemplateLibrary::instance().getMonomerGroupTemplateById(mgt_id);
+                    const MonomerTemplate& sugar_template = mgt.getTemplateByClass(MonomerClass::Sugar);
+                    sugar = sugar_template.alias();
+                    checkAddTemplate(mol, sugar_template);
+                    if (modification != IdtModification::THREE_PRIME_END && mgt.hasTemplateClass(MonomerClass::Phosphate))
+                    {
+                        if (phosphate == IDT_MODIFIED_PHOSPHATE) // * means that 'sP' should be used
+                        {
+                            checkAddTemplate(mol, MonomerClass::Phosphate, phosphate);
+                        }
+                        else // use phosphate from template
+                        {
+                            const MonomerTemplate& phosphate_template = mgt.getTemplateByClass(MonomerClass::Phosphate);
+                            phosphate = phosphate_template.alias();
+                            checkAddTemplate(mol, phosphate_template);
+                        }
+                    }
+                    else
+                    {
+                        phosphate = "";
+                    }
+                    base = "";
+                    if (mgt.hasTemplateClass(MonomerClass::Base))
+                    {
+                        const MonomerTemplate& base_template = mgt.getTemplateByClass(MonomerClass::Base);
+                        base = base_template.alias();
+                        checkAddTemplate(mol, base_template);
+                    }
+                }
+                else
+                {
+                    const std::string& monomer_template_id = MonomerTemplateLibrary::instance().getMonomerTemplateIdByIdtAliasAndMod(base, modification);
+                    if (!monomer_template_id.size())
+                        throw Error("IDT alias %s not found at %s position.", base.c_str(), IdtAlias::IdtModificationToString(modification).c_str());
+                    const MonomerTemplate& monomer_template = MonomerTemplateLibrary::instance().getMonomerTemplateById(monomer_template_id);
+                    checkAddTemplate(mol, monomer_template);
+                    single_monomer = monomer_template.alias();
+                    single_monomer_class = MonomerTemplates::classToStr(monomer_template.monomerClass());
+                }
+            }
+
+            if (single_monomer.size())
+            {
+                int monomer_idx = addTemplateAtom(mol, single_monomer.c_str(), single_monomer_class.c_str(), _seq_id);
+                mol.asMolecule().setAtomXyz(monomer_idx, getBackboneMonomerPosition());
+                if (_last_monomer_idx >= 0)
+                    addTemplateBond(mol, _last_monomer_idx, monomer_idx);
+                _last_monomer_idx = monomer_idx;
+            }
+            else
+                addNucleotide(mol, base, sugar, phosphate, false);
+
+            _seq_id++;
+            _col++;
+
+            prev_token = token; // save to check */3Phos/ case
+            modification = IdtModification::INTERNAL;
+        }
         _row += 2;
     }
 
