@@ -404,7 +404,6 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
         using token_t = std::pair<std::string, bool>;
         std::queue<token_t> tokens; // second=true if token folowed by *
         std::string cur_token;
-        bool end_of_token = false;
 
         while (true)
         {
@@ -422,7 +421,6 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
                     tokens.emplace(cur_token, false);
                 continue;
             case '/': {
-                // end of token
                 if (cur_token.size())
                     throw Error("Sugar prefix could not be used with modified monomer.");
                 // read till next '/'
@@ -441,7 +439,6 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
                 if (cur_token.size() < 3)
                     throw Error("Invalid modification: %s.", cur_token.c_str());
                 cur_token += ch;
-                end_of_token = true;
                 break;
             }
             case 'A':
@@ -451,7 +448,6 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
             case 'U':
             case 'I':
                 cur_token += ch;
-                end_of_token = true;
                 break;
             case 'r':
             case '+':
@@ -460,28 +456,26 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
                     throw Error("Sugar prefix '%s' whithout base.", cur_token.c_str());
                 else
                     cur_token += ch;
+                continue;
                 break;
             default:
                 if (invalid_symbols.size())
                     invalid_symbols += ',';
                 invalid_symbols += ch;
+                continue;
                 break;
             }
 
-            if (end_of_token)
+            if (_scanner.lookNext() == '*')
             {
-                if (_scanner.lookNext() == '*')
-                {
-                    tokens.emplace(cur_token, true);
-                    _scanner.skip(1);
-                    if (_scanner.isEOL())
-                        throw Error("Invalid IDT sequence: '*' couldn't be the last symbol.");
-                }
-                else
-                    tokens.emplace(cur_token, false);
-                cur_token = "";
-                end_of_token = false;
+                tokens.emplace(cur_token, true);
+                _scanner.skip(1);
+                if (_scanner.isEOL())
+                    throw Error("Invalid IDT sequence: '*' couldn't be the last symbol.");
             }
+            else
+                tokens.emplace(cur_token, false);
+            cur_token = "";
         }
         while (!_scanner.isEOF() && _scanner.isEOL()) // Skip EOL characters
             _scanner.skip(1);
