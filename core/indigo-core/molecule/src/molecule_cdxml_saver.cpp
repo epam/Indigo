@@ -747,14 +747,6 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
         out.printf("%f %f", pos.x, -pos.y);
         buf.push(0);
         t->SetAttribute("p", buf.ptr());
-        if (have_z)
-        {
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
-            out.printf("%f %f %f", pos3.x, -pos3.y, -pos3.z);
-            buf.push(0);
-            node->SetAttribute("xyz", buf.ptr());
-        }
         t->SetAttribute("Justification", "Center");
 
         XMLElement* s = _doc->NewElement("s");
@@ -776,14 +768,6 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
         out.printf("%f %f", pos.x, -pos.y);
         buf.push(0);
         t->SetAttribute("p", buf.ptr());
-        if (have_z)
-        {
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
-            out.printf("%f %f %f", pos3.x, -pos3.y, -pos3.z);
-            buf.push(0);
-            node->SetAttribute("xyz", buf.ptr());
-        }
         t->SetAttribute("LabelJustification", "Left");
 
         XMLElement* s = _doc->NewElement("s");
@@ -821,14 +805,6 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
         out.printf("%f %f", pos.x, -pos.y);
         buf.push(0);
         t->SetAttribute("p", buf.ptr());
-        if (have_z)
-        {
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
-            out.printf("%f %f %f", pos3.x, -pos3.y, -pos3.z);
-            buf.push(0);
-            node->SetAttribute("xyz", buf.ptr());
-        }
         t->SetAttribute("LabelJustification", "Left");
 
         XMLElement* s = _doc->NewElement("s");
@@ -865,14 +841,6 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
         out.printf("%f %f", pos.x, -pos.y);
         buf.push(0);
         t->SetAttribute("p", buf.ptr());
-        if (have_z)
-        {
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
-            out.printf("%f %f %f", pos3.x, -pos3.y, -pos3.z);
-            buf.push(0);
-            node->SetAttribute("xyz", buf.ptr());
-        }
         t->SetAttribute("LabelJustification", "Left");
 
         XMLElement* s = _doc->NewElement("s");
@@ -916,14 +884,6 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
         out.printf("%f %f", pos.x, -pos.y);
         buf.push(0);
         t->SetAttribute("p", buf.ptr());
-        if (have_z)
-        {
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
-            out.printf("%f %f %f", pos3.x, -pos3.y, -pos3.z);
-            buf.push(0);
-            node->SetAttribute("xyz", buf.ptr());
-        }
         t->SetAttribute("LabelJustification", "Left");
 
         XMLElement* s = _doc->NewElement("s");
