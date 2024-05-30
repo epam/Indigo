@@ -29,9 +29,9 @@ root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
 idt_data = {
-    "idt_single_nucleoside": "A",
-    "idt_bases": "ATCGUI",
-    "idt_prefix_suffix": "mA*rT*+C*G*+UrImA",
+    "idt_single_nucleoside": "  A  ",
+    "idt_bases": "  ATCGUI  ",
+    "idt_prefix_suffix": "  mA*rT*+C*G*+UrImA  ",
     "idt_modifications": "/52MOErA/*/i2MOErA//32MOErA/",
     "idt_52moera_with_3phos": "/52MOErA//3Phos/",
     "idt_singe_32moera_nucleoside": "/32MOErA/",
@@ -60,10 +60,11 @@ for filename in sorted(idt_data.keys()):
         print(diff)
 
 idt_errors = {
-    "!+-$#12w12r23e32e33": "Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3",
+    "!+A-$#12w12r23e32e33": "Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3",
     "/": "Unexpected end of data",
     "//": "Invalid modification: empty string.",
     "/a/": "Invalid modification: a.",
+    "r+A": "Sugar prefix 'r' whithout base.",
     "A*": "Invalid IDT sequence: '*' couldn't be the last symbol.",
     "/i2MOErA/": "IDT alias i2MOErA not found at three-prime end position.",
     "/i2MOErA/T": "IDT alias i2MOErA not found at five-prime end position.",
@@ -74,12 +75,13 @@ idt_errors = {
     "/3Phos/T": "IDT alias 3Phos not found at three-prime end position.",
     "T/5Phos/": "IDT alias 5Phos not found at three-prime end position.",
     "/5Phos/*A": "/5Phos/ cannot be modified to 'sP'",
-    "r/5Phos/A": "Sugar prefix could not be used with '/5Phos/'",
-    "+/5Phos/A": "Sugar prefix could not be used with '/5Phos/'",
-    "m/5Phos/A": "Sugar prefix could not be used with '/5Phos/'",
-    "Ar/3Phos/": "Sugar prefix could not be used with '/3Phos/'",
-    "A+/3Phos/": "Sugar prefix could not be used with '/3Phos/'",
-    "Am/3Phos/": "Sugar prefix could not be used with '/3Phos/'",
+    "r/5Phos/A": "Sugar prefix could not be used with modified monomer.",
+    "+/5Phos/A": "Sugar prefix could not be used with modified monomer.",
+    "m/5Phos/A": "Sugar prefix could not be used with modified monomer.",
+    "Ar/3Phos/": "Sugar prefix could not be used with modified monomer.",
+    "A+/3Phos/": "Sugar prefix could not be used with modified monomer.",
+    "Am/3Phos/": "Sugar prefix could not be used with modified monomer.",
+    "A*/3Phos/": "Phosphor /3Phos/ cannod be modified with '*'.",
 }
 for idt_seq in sorted(idt_errors.keys()):
     error = idt_errors[idt_seq]
