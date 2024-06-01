@@ -114,7 +114,6 @@ namespace indigo
 
     class KETTextObject : public MetaObject
     {
-
     public:
         enum
         {
@@ -134,12 +133,17 @@ namespace indigo
             EJustify
         };
 
-        const std::unordered_map<std::string, TextAlignment> KTextAlignmentsMap{{KETAlignmentLeft, TextAlignment::ELeft},
-                                                                                {KETAlignmentRight, TextAlignment::ERight},
-                                                                                {KETAlignmentCenter, TextAlignment::ECenter},
-                                                                                {KETAlignmentJustify, TextAlignment::EJustify}};
+        using TextAlignMap = const std::unordered_map<std::string, TextAlignment>;
+        using StrIntMap = const std::unordered_map<std::string, int>;
+        using DispatchMapKVP = std::unordered_map<std::string, std::function<void(const std::string&, const rapidjson::Value&)>>;
+        using DispatchMapVal = std::unordered_map<std::string, std::function<void(const rapidjson::Value&)>>;
 
-        const std::unordered_map<std::string, int> KTextStylesMap{
+        TextAlignMap KTextAlignmentsMap{{KETAlignmentLeft, TextAlignment::ELeft},
+                                        {KETAlignmentRight, TextAlignment::ERight},
+                                        {KETAlignmentCenter, TextAlignment::ECenter},
+                                        {KETAlignmentJustify, TextAlignment::EJustify}};
+
+        StrIntMap KTextStylesMap{
             {KETFontBoldStr, EBold}, {KETFontItalicStr, EItalic}, {KETFontSuperscriptStr, ESuperScript}, {KETFontSubscriptStr, ESubScript}};
 
         struct KETTextIndent
@@ -151,14 +155,32 @@ namespace indigo
 
         struct KETTextFont
         {
+            KETTextFont() : size(0), color(0)
+            {
+            }
             std::string family;
             int size;
             uint32_t color;
         };
 
+        struct KETTextStyle
+        {
+            KETTextStyle() : bold(false), italic(false), subscript(false), superscript(false)
+            {
+            }
+            bool bold;
+            bool italic;
+            bool subscript;
+            bool superscript;
+        };
+
         struct KETTextParagraph
         {
             std::string text;
+            KETTextStyle style;
+            KETTextFont font;
+            TextAlignment alignment;
+            KETTextIndent indent;
             std::map<std::size_t, FONT_STYLE_SET> styles;
         };
 
@@ -170,6 +192,158 @@ namespace indigo
         KETTextIndent _indent;
         KETTextFont _font;
         TextAlignment _alignment;
+        KETTextStyle _style;
+
+        static void applyDispatcher(const rapidjson::Value& val, const DispatchMapKVP& disp_map)
+        {
+            for (auto kvp_it = val.MemberBegin(); kvp_it != val.MemberEnd(); ++kvp_it)
+            {
+                auto disp_it = disp_map.find(kvp_it->name.GetString());
+                if (disp_it != disp_map.end())
+                    disp_it->second(kvp_it->name.GetString(), kvp_it->value);
+            }
+        }
+
+        static void applyDispatcher(const rapidjson::Value& val, const DispatchMapVal& disp_map)
+        {
+            for (auto kvp_it = val.MemberBegin(); kvp_it != val.MemberEnd(); ++kvp_it)
+            {
+                auto disp_it = disp_map.find(kvp_it->name.GetString());
+                if (disp_it != disp_map.end())
+                    disp_it->second(kvp_it->value);
+            }
+        }
+
+        static auto floatLambda(float& val)
+        {
+            return [&val](const rapidjson::Value& float_val) { val = float_val.GetFloat(); };
+        }
+
+        static auto intLambda(int& val)
+        {
+            return [&val](const rapidjson::Value& int_val) { val = int_val.GetInt(); };
+        }
+
+        static auto strLambda(std::string& str)
+        {
+            return [&str](const rapidjson::Value& str_val) { str = str_val.GetString(); };
+        }
+
+        static auto colorLambda(uint32_t& color)
+        {
+            return [&color](const rapidjson::Value& color_str) {
+                std::string color_string = color_str.GetString();
+                if (color_string.length() == 7 && color_string[0] == '#')
+                    color = std::stoul(color_string.substr(1), nullptr, 16);
+            };
+        }
+
+        auto alignLambda(TextAlignment& alignment)
+        {
+            return [this, &alignment](const std::string&, const rapidjson::Value& align_val) {
+                auto ta_it = KTextAlignmentsMap.find(align_val.GetString());
+                if (ta_it != KTextAlignmentsMap.end())
+                    alignment = ta_it->second;
+            };
+        }
+
+        auto styleLambda(KETTextStyle& style)
+        {
+            return [this, &style](const std::string& key, const rapidjson::Value& style_val) {
+                std::string style_name = key;
+                std::transform(style_name.begin(), style_name.end(), style_name.begin(), [](unsigned char c) { return std::toupper(c); });
+                auto ta_it = KTextStylesMap.find(style_name);
+                if (ta_it != KTextStylesMap.end())
+                {
+                    bool bval = style_val.GetBool();
+                    switch (ta_it->second)
+                    {
+                    case EBold:
+                        style.bold = bval;
+                        break;
+                    case EItalic:
+                        style.italic = bval;
+                        break;
+                    case ESubScript:
+                        style.subscript = bval;
+                        break;
+                    case ESuperScript:
+                        style.superscript = bval;
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            };
+        }
+
+        auto styleLambda(FONT_STYLE_SET& style)
+        {
+            return [this, &style](const std::string& key, const rapidjson::Value& style_val) {
+                std::string style_name = key;
+                std::transform(style_name.begin(), style_name.end(), style_name.begin(), [](unsigned char c) { return std::toupper(c); });
+                auto ta_it = KTextStylesMap.find(style_name);
+                if (ta_it != KTextStylesMap.end())
+                    style.emplace(ta_it->second, style_val.GetBool());
+            };
+        }
+
+        static auto indentLambda(KETTextIndent& indent)
+        {
+            return [&indent](const std::string&, const rapidjson::Value& indent_val) {
+                std::unordered_map<std::string, std::function<void(const rapidjson::Value&)>> indent_dispatcher = {
+                    {"first_line", floatLambda(indent.first_line)}, {"left", floatLambda(indent.left)}, {"right", floatLambda(indent.right)}};
+
+                for (auto indent_it = indent_val.MemberBegin(); indent_it != indent_val.MemberEnd(); ++indent_it)
+                {
+                    auto ind_it = indent_dispatcher.find(indent_it->name.GetString());
+                    if (ind_it != indent_dispatcher.end())
+                        ind_it->second(indent_it->value);
+                }
+            };
+        }
+
+        static auto fontLambda(KETTextFont& font)
+        {
+            return [&font](const std::string&, const rapidjson::Value& font_val) {
+                DispatchMapVal font_dispatcher = {{"family", strLambda(font.family)}, {"size", intLambda(font.size)}, {"color", colorLambda(font.color)}};
+                applyDispatcher(font_val, font_dispatcher);
+            };
+        }
+
+        auto partsLambda(KETTextParagraph& paragraph)
+        {
+            return [this, &paragraph](const std::string&, const rapidjson::Value& parts) {
+                auto text_lambda = [&paragraph](const std::string&, const rapidjson::Value& text_val) { paragraph.text += text_val.GetString(); };
+                auto style_lambda = [this, &paragraph](const std::string& key, const rapidjson::Value& style_val) 
+                {
+                    std::string style_name = key;
+                    std::transform(style_name.begin(), style_name.end(), style_name.begin(), [](unsigned char c) { return std::toupper(c); });
+                    auto ta_it = KTextStylesMap.find(style_name);
+                    if (ta_it != KTextStylesMap.end())
+                    {
+                        bool bval = style_val.GetBool();
+                        switch (ta_it->second)
+                        {
+                        case EBold:
+                            break;
+                        case EItalic:
+                            break;
+                        case ESubScript:
+                            break;
+                        case ESuperScript:
+                            break;
+                        default:
+                            break;
+                        }
+                    }
+                };
+                for (const auto& part : parts.GetArray())
+                {
+
+                }
+            };
+        }
 
         KETTextObject(const KETTextObject& other)
             : MetaObject(CID), _alignment(other._alignment), _indent(other._indent), _font{other._font}, _bbox(other._bbox), _content(other._content),
@@ -177,101 +351,9 @@ namespace indigo
         {
         }
 
-        KETTextObject(const Rect2f& bbox, const std::string& content) : MetaObject(CID), _alignment(TextAlignment::ELeft), _indent{}, _font{}
-        {
-            using namespace rapidjson;
-            _bbox = bbox;
-            _content = content;
-            Document data;
-            data.Parse(content.c_str());
-            if (data.HasMember("blocks"))
-            {
-                Value& blocks = data["blocks"];
-                for (rapidjson::SizeType i = 0; i < blocks.Size(); ++i)
-                {
-                    KETTextParagraph text_line;
-                    if (blocks[i].HasMember("text"))
-                    {
-                        text_line.text = blocks[i]["text"].GetString();
-                        text_line.styles.emplace(0, std::initializer_list<std::pair<int, bool>>{});
-                        text_line.styles.emplace(text_line.text.size(), std::initializer_list<std::pair<int, bool>>{});
-                        if (blocks[i].HasMember("inlineStyleRanges"))
-                        {
-                            Value& style_ranges = blocks[i]["inlineStyleRanges"];
-                            for (rapidjson::SizeType j = 0; j < style_ranges.Size(); ++j)
-                            {
-                                int style_begin = style_ranges[j]["offset"].GetInt();
-                                int style_end = style_begin + style_ranges[j]["length"].GetInt();
-                                int style_code = -1;
+        KETTextObject(const Rect2f& bbox, const std::string& content);
 
-                                std::string style = style_ranges[j]["style"].GetString();
-                                auto it = KTextStylesMap.find(style);
-                                if (it != KTextStylesMap.end())
-                                {
-                                    style_code = it->second;
-                                }
-                                else
-                                {
-                                    const std::string KCustomFontSize = "CUSTOM_FONT_SIZE_";
-                                    const std::string KCustomFontUnits = "px";
-                                    if (style.find(KCustomFontSize) == 0)
-                                    {
-                                        style_code =
-                                            std::stoi(style.substr(KCustomFontSize.size(), style.size() - KCustomFontSize.size() - KCustomFontUnits.size()));
-                                    }
-                                }
-                                const auto it_begin = text_line.styles.find(style_begin);
-                                const auto it_end = text_line.styles.find(style_end);
-
-                                if (it_begin == text_line.styles.end())
-                                    text_line.styles.emplace(style_begin, std::initializer_list<std::pair<int, bool>>{{style_code, true}});
-                                else
-                                {
-                                    it_begin->second.emplace(style_code, true);
-                                }
-
-                                if (it_end == text_line.styles.end())
-                                    text_line.styles.emplace(style_end, std::initializer_list<std::pair<int, bool>>{{style_code, false}});
-                                else
-                                {
-                                    it_end->second.emplace(style_code, false);
-                                }
-                            }
-                        }
-                    }
-                    _block.push_back(text_line);
-                }
-            }
-        }
-
-        KETTextObject(const rapidjson::Value& text_obj) : MetaObject(CID), _alignment(TextAlignment::ELeft), _indent{}, _font{}
-        {
-            using namespace rapidjson;
-            auto bbox_lambda = [this](const Value& bbox_val) {
-                Vec2f v1(bbox_val["x"].GetFloat(), bbox_val["y"].GetFloat());
-                Vec2f v2(v1);
-                v2.add(Vec2f(bbox_val["width"].GetFloat(), bbox_val["height"].GetFloat()));
-                _bbox.copy(Rect2f(v1, v2));
-                };
-
-            auto alignment_lambda = [this](const Value& align_val) {
-                auto ta_it = KTextAlignmentsMap.find(align_val.GetString());
-                if (ta_it != KTextAlignmentsMap.end())
-                    _alignment = ta_it->second;
-            };
-
-
-            std::unordered_map<std::string, std::function<void(const Value&)>> node_dispatcher = {
-                {"bounding_box", bbox_lambda}, 
-                {"alignment", alignment_lambda}};
-
-            for (auto kvp_it = text_obj.MemberBegin(); kvp_it != text_obj.MemberEnd(); ++kvp_it)
-            {
-                auto disp_it = node_dispatcher.find(kvp_it->name.GetString());
-                if (disp_it != node_dispatcher.end())
-                    disp_it->second(kvp_it->value);
-            }
-        }
+        KETTextObject(const rapidjson::Value& text_obj);
 
         MetaObject* clone() const override
         {
