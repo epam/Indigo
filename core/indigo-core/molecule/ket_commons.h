@@ -148,9 +148,9 @@ namespace indigo
 
         struct KETTextIndent
         {
-            float left;
-            float right;
-            float first_line;
+            std::optional<float> left;
+            std::optional<float> right;
+            std::optional<float> first_line;
         };
 
         struct KETTextFont
@@ -158,30 +158,34 @@ namespace indigo
             KETTextFont() : size(0), color(0)
             {
             }
-            std::string family;
-            int size;
-            uint32_t color;
+            std::optional<std::string> family;
+            std::optional<int> size;
+            std::optional<uint32_t> color;
         };
 
         struct KETTextStyle
         {
-            KETTextStyle() : bold(false), italic(false), subscript(false), superscript(false)
+            KETTextStyle()
             {
             }
-            bool bold;
-            bool italic;
-            bool subscript;
-            bool superscript;
+            std::optional<bool> bold;
+            std::optional<bool> italic;
+            std::optional<bool> subscript;
+            std::optional<bool> superscript;
         };
 
         struct KETTextParagraph
         {
+            KETTextParagraph()
+            {
+            }
             std::string text;
-            KETTextStyle style;
-            KETTextFont font;
-            TextAlignment alignment;
-            KETTextIndent indent;
+            std::optional<KETTextStyle> style;
+            std::optional<KETTextFont> font;
+            std::optional<TextAlignment> alignment;
+            std::optional<KETTextIndent> indent;
             std::map<std::size_t, FONT_STYLE_SET> styles;
+            std::map<std::size_t, KETTextFont> fonts;
         };
 
         static const std::uint32_t CID = "KET text object"_hash;
@@ -189,10 +193,10 @@ namespace indigo
         std::string _content;
         std::list<KETTextParagraph> _block;
         Rect2f _bbox;
-        KETTextIndent _indent;
-        KETTextFont _font;
-        TextAlignment _alignment;
-        KETTextStyle _style;
+        std::optional<KETTextIndent> _indent;
+        std::optional<KETTextFont> _font;
+        std::optional<TextAlignment> _alignment;
+        std::optional<KETTextStyle> _style;
 
         static void applyDispatcher(const rapidjson::Value& val, const DispatchMapKVP& disp_map)
         {
@@ -214,22 +218,22 @@ namespace indigo
             }
         }
 
-        static auto floatLambda(float& val)
+        static auto floatLambda(std::optional<float>& val)
         {
             return [&val](const rapidjson::Value& float_val) { val = float_val.GetFloat(); };
         }
 
-        static auto intLambda(int& val)
+        static auto intLambda(std::optional<int>& val)
         {
             return [&val](const rapidjson::Value& int_val) { val = int_val.GetInt(); };
         }
 
-        static auto strLambda(std::string& str)
+        static auto strLambda(std::optional<std::string>& str)
         {
             return [&str](const rapidjson::Value& str_val) { str = str_val.GetString(); };
         }
 
-        static auto colorLambda(uint32_t& color)
+        static auto colorLambda(std::optional<uint32_t>& color)
         {
             return [&color](const rapidjson::Value& color_str) {
                 std::string color_string = color_str.GetString();
@@ -238,7 +242,7 @@ namespace indigo
             };
         }
 
-        auto alignLambda(TextAlignment& alignment)
+        auto alignLambda(std::optional<TextAlignment>& alignment)
         {
             return [this, &alignment](const std::string&, const rapidjson::Value& align_val) {
                 auto ta_it = KTextAlignmentsMap.find(align_val.GetString());
@@ -247,7 +251,7 @@ namespace indigo
             };
         }
 
-        auto styleLambda(KETTextStyle& style)
+        auto styleLambda(std::optional<KETTextStyle>& style)
         {
             return [this, &style](const std::string& key, const rapidjson::Value& style_val) {
                 std::string style_name = key;
@@ -256,19 +260,20 @@ namespace indigo
                 if (ta_it != KTextStylesMap.end())
                 {
                     bool bval = style_val.GetBool();
+                    style = KETTextStyle();
                     switch (ta_it->second)
                     {
                     case EBold:
-                        style.bold = bval;
+                        style.value().bold = bval;
                         break;
                     case EItalic:
-                        style.italic = bval;
+                        style.value().italic = bval;
                         break;
                     case ESubScript:
-                        style.subscript = bval;
+                        style.value().subscript = bval;
                         break;
                     case ESuperScript:
-                        style.superscript = bval;
+                        style.value().superscript = bval;
                         break;
                     default:
                         break;
@@ -288,11 +293,11 @@ namespace indigo
             };
         }
 
-        static auto indentLambda(KETTextIndent& indent)
+        static auto indentLambda(std::optional<KETTextIndent>& indent)
         {
             return [&indent](const std::string&, const rapidjson::Value& indent_val) {
                 std::unordered_map<std::string, std::function<void(const rapidjson::Value&)>> indent_dispatcher = {
-                    {"first_line", floatLambda(indent.first_line)}, {"left", floatLambda(indent.left)}, {"right", floatLambda(indent.right)}};
+                    {"first_line", floatLambda(indent.value().first_line)}, {"left", floatLambda(indent.value().left)}, {"right", floatLambda(indent.value().right)}};
 
                 for (auto indent_it = indent_val.MemberBegin(); indent_it != indent_val.MemberEnd(); ++indent_it)
                 {
@@ -303,10 +308,12 @@ namespace indigo
             };
         }
 
-        static auto fontLambda(KETTextFont& font)
+        static auto fontLambda(std::optional<KETTextFont>& font)
         {
             return [&font](const std::string&, const rapidjson::Value& font_val) {
-                DispatchMapVal font_dispatcher = {{"family", strLambda(font.family)}, {"size", intLambda(font.size)}, {"color", colorLambda(font.color)}};
+                font = KETTextFont();
+                DispatchMapVal font_dispatcher = {
+                    {"family", strLambda(font.value().family)}, {"size", intLambda(font.value().size)}, {"color", colorLambda(font.value().color)}};
                 applyDispatcher(font_val, font_dispatcher);
             };
         }
@@ -314,33 +321,21 @@ namespace indigo
         auto partsLambda(KETTextParagraph& paragraph)
         {
             return [this, &paragraph](const std::string&, const rapidjson::Value& parts) {
-                auto text_lambda = [&paragraph](const std::string&, const rapidjson::Value& text_val) { paragraph.text += text_val.GetString(); };
-                auto style_lambda = [this, &paragraph](const std::string& key, const rapidjson::Value& style_val) 
-                {
-                    std::string style_name = key;
-                    std::transform(style_name.begin(), style_name.end(), style_name.begin(), [](unsigned char c) { return std::toupper(c); });
-                    auto ta_it = KTextStylesMap.find(style_name);
-                    if (ta_it != KTextStylesMap.end())
-                    {
-                        bool bval = style_val.GetBool();
-                        switch (ta_it->second)
-                        {
-                        case EBold:
-                            break;
-                        case EItalic:
-                            break;
-                        case ESubScript:
-                            break;
-                        case ESuperScript:
-                            break;
-                        default:
-                            break;
-                        }
-                    }
-                };
                 for (const auto& part : parts.GetArray())
                 {
-
+                    std::string text;
+                    FONT_STYLE_SET fss;
+                    auto text_lambda = [&text](const std::string&, const rapidjson::Value& text_val) { text = text_val.GetString(); };
+                    auto style_lambda = styleLambda(fss);
+                    DispatchMapKVP paragraph_dispatcher = {
+                        {"text", text_lambda}, {"bold", style_lambda}, {"italic", style_lambda}, {"subscript", style_lambda}, {"superscript", style_lambda},
+                    };
+                    applyDispatcher(part, paragraph_dispatcher);
+                    if (text.size())
+                    {
+                        paragraph.styles.emplace(paragraph.text.size(), fss);
+                        paragraph.text += text;
+                    }
                 }
             };
         }
