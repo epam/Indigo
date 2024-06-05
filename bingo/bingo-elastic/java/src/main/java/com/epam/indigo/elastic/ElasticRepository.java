@@ -217,11 +217,13 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                 IndexRequest indexRequest = new IndexRequest(this.indexName)
                         .source(builder);
 
-                if (documentIdProvider != null) {
+                if (this.documentIdProvider != null) {
                     String documentId = this.documentIdProvider.apply(t);
 
-                    indexRequest = indexRequest
-                            .id(documentId);
+                    if (documentId != null && !documentId.isEmpty()) {
+                        indexRequest = indexRequest
+                                .id(documentId);
+                    }
                 }
 
                 request.add(indexRequest);
