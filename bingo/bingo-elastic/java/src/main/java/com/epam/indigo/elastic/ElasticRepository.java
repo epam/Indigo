@@ -12,6 +12,8 @@ import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.flush.FlushRequest;
+import org.elasticsearch.action.admin.indices.flush.FlushResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -36,6 +38,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static com.epam.indigo.model.NamingConstants.*;
@@ -57,6 +60,8 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
     private int numShards = 1;
     private int numReplicas = 0;
     private String refreshInterval = "5m";
+    private Function<IndigoRecord, String> documentIdProvider = null;
+    private boolean autoFlush = false;
 
     private ElasticRepository() {
 
@@ -137,6 +142,23 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
         indexRecords(records, batchSize, new ActionListener<BulkResponse>() {
             @Override
             public void onResponse(BulkResponse bulkResponse) {
+                if (autoFlush) {
+                    flushRecords();
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+//              do nothing
+            }
+        });
+    }
+
+    public void flushRecords() {
+        FlushRequest flushRequest = new FlushRequest();
+        this.elasticClient.indices().flushAsync(flushRequest, RequestOptions.DEFAULT, new ActionListener<>() {
+            @Override
+            public void onResponse(FlushResponse bulkResponse) {
 //                do nothing
             }
 
@@ -195,18 +217,17 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                 IndexRequest indexRequest = new IndexRequest(this.indexName)
                         .source(builder);
 
-                if (t.getInternalID() != null && !t.getInternalID().isEmpty()) {
+                if (documentIdProvider != null) {
+                    String documentId = this.documentIdProvider.apply(t);
+
                     indexRequest = indexRequest
-                            .id(t.getInternalID());
+                            .id(documentId);
                 }
 
                 request.add(indexRequest);
                 this.elasticClient.bulkAsync(request, RequestOptions.DEFAULT, actionListener);
             }
         }
-//        TODO do we need it?
-//        FlushRequest flushRequest = new FlushRequest();
-//        this.elasticClient.indices().flushAsync(flushRequest, RequestOptions.DEFAULT);
     }
 
     @Override
@@ -290,6 +311,45 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
 
         public ElasticRepositoryBuilder<T> withRefreshInterval(String refreshInterval) {
             operations.add(repo -> repo.refreshInterval = refreshInterval);
+            return this;
+        }
+
+        /**
+         * Provide a function that maps an IndigoRecord attribute to
+         * ElasticSearch document _id unique identifier, to allow for
+         * updating existing records if they exist.
+         * Mutually exclusive with withUseInternalId
+         *
+         * @param documentIdProvider function that maps IndigoRecord to document id string
+         * @return the repository builder
+         */
+        public ElasticRepositoryBuilder<T> withDocumentIdProvider(Function<IndigoRecord, String> documentIdProvider) {
+            operations.add(repo -> repo.documentIdProvider = documentIdProvider);
+            return this;
+        }
+
+        /**
+         * Use IndigoRecord.internalID as the ElasticSearch document _id
+         * unique identifier, to allow for updating existing records
+         * if they exist.
+         * Mutually exclusive with withDocumentId
+         *
+         * @return the repository builder
+         */
+        public ElasticRepositoryBuilder<T> useInternalIdAsDocumentId() {
+            operations.add(repo -> repo.documentIdProvider = IndigoRecord::getInternalID);
+            return this;
+        }
+
+        /**
+         * Automatically flush updated index after making an index call.
+         * Not recommended for production use or when inserting a large number of records.
+         *
+         * @param autoFlush auto flush updated index
+         * @return the repository builder
+         */
+        public ElasticRepositoryBuilder<T> withAutoFlush(boolean autoFlush) {
+            operations.add(repo -> repo.autoFlush = autoFlush);
             return this;
         }
 
