@@ -332,7 +332,7 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
          * Use IndigoRecord.internalID as the ElasticSearch document _id
          * unique identifier, to allow for updating existing records
          * if they exist.
-         * Mutually exclusive with withDocumentId
+         * Mutually exclusive with withDocumentIdProvider
          *
          * @return the repository builder
          */
