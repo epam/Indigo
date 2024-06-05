@@ -2,7 +2,6 @@ package com.epam.indigo.elastic;
 
 import com.epam.indigo.BingoElasticException;
 import com.epam.indigo.GenericRepository;
-import com.epam.indigo.elastic.ElasticStream;
 import com.epam.indigo.model.IndigoRecord;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
