@@ -2,6 +2,7 @@ package com.epam.indigo.elastic;
 
 import com.epam.indigo.BingoElasticException;
 import com.epam.indigo.GenericRepository;
+import com.epam.indigo.elastic.ElasticStream;
 import com.epam.indigo.model.IndigoRecord;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -44,7 +45,7 @@ import static com.epam.indigo.model.NamingConstants.*;
  * Class responsible for all operations with Elasticsearch
  * Have ability to index, delete, produce stream for further operations like similarity match, filtering on extra textual fields, etc
  */
-public class ElasticRepository<T extends IndigoRecord> implements GenericRepository<T> {
+public class ElasticRepository<T extends IndigoRecord> implements GenericRepository<T>, AutoCloseable {
 
     private String indexName;
     private List<String> hostsNames;
@@ -59,6 +60,7 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
     private String refreshInterval = "5m";
 
     private ElasticRepository() {
+
     }
 
     private boolean checkIfIndexExists() throws BingoElasticException {
@@ -190,14 +192,19 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                     }
                 }
                 builder.endObject();
-                request.add(new IndexRequest(this.indexName)
-                        .source(builder));
+
+                IndexRequest indexRequest = new IndexRequest(this.indexName)
+                        .source(builder);
+
+                if (t.getInternalID() != null && !t.getInternalID().isEmpty()) {
+                    indexRequest = indexRequest
+                            .id(t.getInternalID());
+                }
+
+                request.add(indexRequest);
                 this.elasticClient.bulkAsync(request, RequestOptions.DEFAULT, actionListener);
             }
         }
-//        TODO do we need it?
-//        FlushRequest flushRequest = new FlushRequest();
-//        this.elasticClient.indices().flushAsync(flushRequest, RequestOptions.DEFAULT);
     }
 
     @Override
@@ -215,6 +222,11 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
             }
             throw new BingoElasticException("Couldn't delete records in Elasticsearch", e.getCause());
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        elasticClient.close();
     }
 
     public static class ElasticRepositoryBuilder<T extends IndigoRecord> {
