@@ -204,10 +204,10 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                 request.add(indexRequest);
                 this.elasticClient.bulkAsync(request, RequestOptions.DEFAULT, actionListener);
             }
-            //        TODO do we need it?
-            //        FlushRequest flushRequest = new FlushRequest();
-            //        this.elasticClient.indices().flushAsync(flushRequest, RequestOptions.DEFAULT);
         }
+//        TODO do we need it?
+//        FlushRequest flushRequest = new FlushRequest();
+//        this.elasticClient.indices().flushAsync(flushRequest, RequestOptions.DEFAULT);
     }
 
     @Override
