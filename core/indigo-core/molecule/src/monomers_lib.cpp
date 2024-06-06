@@ -279,39 +279,6 @@ namespace indigo
         return library_instance;
     }
 
-    inline void MonomerTemplateLibrary::addMonomerTemplate(MonomerTemplate& monomer_template)
-    {
-        auto res = _monomer_templates.emplace(monomer_template.id(), monomer_template);
-        if (res.second)
-            for (auto modification : {IdtModification::FIVE_PRIME_END, IdtModification::INTERNAL, IdtModification::THREE_PRIME_END})
-            {
-                if (monomer_template.idtAlias().hasModification(modification))
-                {
-                    const std::string& alias = monomer_template.idtAlias().getModification(modification);
-                    MonomerTemplate& templ_ref = res.first->second;
-                    _id_alias_to_monomer_templates.emplace(alias, std::make_pair(std::ref(templ_ref), modification));
-                }
-            }
-        // else
-        //     throw Error("Monomer with template id '%s' already in library.", monomer_template.id().c_str());
-    };
-
-    inline void MonomerTemplateLibrary::addMonomerGroupTemplate(const MonomerGroupTemplate& monomer_group_template)
-    {
-        auto res = _monomer_group_templates.emplace(monomer_group_template.id(), monomer_group_template);
-        if (res.second)
-            for (auto modification : {IdtModification::FIVE_PRIME_END, IdtModification::INTERNAL, IdtModification::THREE_PRIME_END})
-            {
-                if (monomer_group_template.idtAlias().hasModification(modification))
-                {
-                    const std::string& alias = monomer_group_template.idtAlias().getModification(modification);
-                    _id_alias_to_monomer_group_templates.emplace(alias, std::make_pair(std::ref(res.first->second), modification));
-                }
-            }
-        // else
-        //     throw Error("Monomer with template id '%s' already in library.", monomer_group_template.id().c_str());
-    };
-
     const MonomerTemplate& MonomerTemplateLibrary::getMonomerTemplateById(const std::string& monomer_template_id)
     {
         if (_monomer_templates.count(monomer_template_id) == 0)

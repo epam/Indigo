@@ -317,9 +317,36 @@ namespace indigo
         MonomerTemplateLibrary& operator=(MonomerTemplateLibrary&&) = delete;
         static MonomerTemplateLibrary& instance();
 
-        void addMonomerTemplate(MonomerTemplate& monomer_template);
+        inline void addMonomerTemplate(MonomerTemplate& monomer_template)
+        {
+            _monomer_templates.erase(monomer_template.id());
+            auto res = _monomer_templates.emplace(monomer_template.id(), monomer_template);
+            if (res.second)
+                for (auto modification : {IdtModification::FIVE_PRIME_END, IdtModification::INTERNAL, IdtModification::THREE_PRIME_END})
+                {
+                    if (monomer_template.idtAlias().hasModification(modification))
+                    {
+                        const std::string& alias = monomer_template.idtAlias().getModification(modification);
+                        MonomerTemplate& templ_ref = res.first->second;
+                        _id_alias_to_monomer_templates.emplace(alias, std::make_pair(std::ref(templ_ref), modification));
+                    }
+                }
+        }
 
-        void addMonomerGroupTemplate(const MonomerGroupTemplate& monomer_group_template);
+        inline void addMonomerGroupTemplate(const MonomerGroupTemplate& monomer_group_template)
+        {
+            _monomer_group_templates.erase(monomer_group_template.id());
+            auto res = _monomer_group_templates.emplace(monomer_group_template.id(), monomer_group_template);
+            if (res.second)
+                for (auto modification : {IdtModification::FIVE_PRIME_END, IdtModification::INTERNAL, IdtModification::THREE_PRIME_END})
+                {
+                    if (monomer_group_template.idtAlias().hasModification(modification))
+                    {
+                        const std::string& alias = monomer_group_template.idtAlias().getModification(modification);
+                        _id_alias_to_monomer_group_templates.emplace(alias, std::make_pair(std::ref(res.first->second), modification));
+                    }
+                }
+        }
 
         const MonomerTemplate& getMonomerTemplateById(const std::string& monomer_template_id);
         const std::string& getMonomerTemplateIdByAlias(MonomerClass monomer_class, const std::string& monomer_template_alias);

@@ -15,8 +15,7 @@ namespace indigo
     {
         FIVE_PRIME_END,
         INTERNAL,
-        THREE_PRIME_END,
-        UNKNOWN
+        THREE_PRIME_END
     };
 
     class DLLEXPORT IdtAlias
@@ -109,22 +108,6 @@ namespace indigo
         };
 
         static std::string getBaseForMod(const std::string& alias);
-
-        static IdtModification getModification(const std::string& alias)
-        {
-            if (alias.size() < 2)
-                return IdtModification::UNKNOWN;
-            switch (alias[0])
-            {
-            case '3':
-                return IdtModification::THREE_PRIME_END;
-            case 'i':
-                return IdtModification::INTERNAL;
-            case '5':
-                return IdtModification::FIVE_PRIME_END;
-            }
-            return IdtModification::UNKNOWN;
-        }
 
         inline bool hasModifications()
         {
