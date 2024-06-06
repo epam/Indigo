@@ -55,7 +55,7 @@ namespace indigo
 
     protected:
         TGroup& getTGroup();
-        std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence);
+        std::string saveIdt(BaseMolecule& mol, std::deque<int>& sequence);
 
     private:
         SequenceSaver(const SequenceSaver&); // no implicit copy
