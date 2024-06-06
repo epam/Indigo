@@ -171,6 +171,8 @@ namespace indigo
         int seqid;                 // SEQID (V3000 - 2017)
         Array<char> sa_natreplace; // NATREPLACE (V3000 - 2017)
 
+        bool unresolved;
+
         struct _AttachmentPoint
         {
             _AttachmentPoint() : aidx(-1), lvidx(-1)

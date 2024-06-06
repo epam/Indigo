@@ -4091,6 +4091,7 @@
         "name": "Fmoc",
         "attachmentPoints": [
             {
+                "id": "Cx",
                 "type": "side",
                 "label": "R3",
                 "attachmentAtom": 16
