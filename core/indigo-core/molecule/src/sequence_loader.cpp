@@ -392,10 +392,10 @@ void SequenceLoader::check_monomer_place(std::string& idt_alias, IdtModification
     if (mon_mod == IdtModification::FIVE_PRIME_END && alias_mod == IdtModification::THREE_PRIME_END)
         throw Error("IDT alias '%s' cannot be used at five prime end.", idt_alias.c_str());
     else if (mon_mod == IdtModification::INTERNAL && alias_mod != IdtModification::INTERNAL) // only internal modifications can be used in internal position
-        throw Error("IDT alias '%s' cannot be used at internal position.", idt_alias);
+        throw Error("IDT alias '%s' cannot be used at internal position.", idt_alias.c_str());
     else if (mon_mod == IdtModification::THREE_PRIME_END && alias_mod == IdtModification::FIVE_PRIME_END && has_prev_mon)
-        throw Error("IDT alias '%s' cannot be used at three prime end.", idt_alias); // 5' monomers not allowed at 3'
-                                                                                     // If this is only one monomer(no prev) - it could be any mod
+        throw Error("IDT alias '%s' cannot be used at three prime end.", idt_alias.c_str()); // 5' monomers not allowed at 3'
+                                                                                             // If this is only one monomer(no prev) - it could be any mod
 }
 
 void SequenceLoader::loadIdt(BaseMolecule& mol)
