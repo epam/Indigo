@@ -23,6 +23,7 @@
 #include "base_cpp/ptr_pool.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
+#include "molecule/idt_alias.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -45,6 +46,8 @@ namespace indigo
         Array<char> tgroup_natreplace;
         Array<char> tgroup_text_id;
         int tgroup_id;
+        bool unresolved;
+        IdtAlias idt_alias;
 
         TGroup();
         ~TGroup();

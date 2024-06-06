@@ -1147,8 +1147,11 @@ void MoleculeJsonLoader::addToLibMonomerTemplate(const rapidjson::Value& mt_json
         alias = mt_json["alias"].GetString();
     if (mt_json.HasMember("naturalAnalog"))
         natural_analog = mt_json["naturalAnalog"].GetString();
+    bool unresolved = false;
+    if (mt_json.HasMember("unresolved"))
+        unresolved = mt_json["unresolved"].GetBool();
 
-    MonomerTemplate mon_template(id, MonomerTemplate::StrToMonomerClass(monomer_class), class_HELM, full_name, alias, natural_analog,
+    MonomerTemplate mon_template(id, MonomerTemplate::StrToMonomerClass(monomer_class), class_HELM, full_name, alias, natural_analog, unresolved,
                                  mol.tgroups.getTGroup(tgroup_id));
 
     if (mt_json.HasMember("idtAliases"))
@@ -1162,6 +1165,11 @@ void MoleculeJsonLoader::addToLibMonomerTemplate(const rapidjson::Value& mt_json
             mon_template.setIdtAlias(IdtAlias(idt_alias_base, idt_five_prime_end, idt_internal, idt_three_prime_end));
         else
             mon_template.setIdtAlias(IdtAlias(idt_alias_base));
+        mol.tgroups.getTGroup(tgroup_id).idt_alias = mon_template.idtAlias();
+    }
+    else if (unresolved)
+    {
+        throw Error("Unresoved monomer '%s' without IDT alias.", id.c_str());
     }
 
     if (mt_json.HasMember("attachmentPoints"))
@@ -1323,6 +1331,9 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
                 }
                 tg.tgroup_name.readString(tg_name.c_str(), true);
             }
+            bool unresolved = false;
+            if (monomer_template.HasMember("unresolved"))
+                tg.unresolved = monomer_template["unresolved"].GetBool();
         }
 
         if (monomer_template.HasMember("fullName"))

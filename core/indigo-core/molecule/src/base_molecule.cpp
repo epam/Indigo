@@ -3667,6 +3667,12 @@ bool BaseMolecule::_mergeSGroupWithSubmolecule(SGroup& sgroup, SGroup& super, Ba
         merged = true;
     }
 
+    if (super.sgroup_type == SGroup::SG_TYPE_SUP && static_cast<Superatom&>(super).unresolved)
+    {
+        static_cast<Superatom&>(sgroup).unresolved = true;
+        merged = true;
+    }
+
     if (merged)
         updateEditRevision();
     return merged;

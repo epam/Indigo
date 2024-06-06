@@ -62,8 +62,12 @@ void SequenceLayout::addNeigbourDirections(BaseMolecule& mol, DirectionsPriority
             {
                 std::string to_class = mol.getTemplateAtomClass(nei_dir.second);
                 std::string from_class = mol.getTemplateAtomClass(back_dir.second);
+                bool isCHEM = (from_class == kMonomerClassCHEM) || (to_class == kMonomerClassCHEM);
+                bool isBothAminoAcid = isAminoAcidClass(to_class) && isAminoAcidClass(from_class);
+                bool isBothNucleic = isNucleicClass(to_class) && isNucleicClass(from_class);
                 // if to_class and from_class are different backbone types, treat the connection as branch
-                if (!((isAminoAcidClass(to_class) && isAminoAcidClass(from_class)) || (isNucleicClass(to_class) && isNucleicClass(from_class))))
+                // CHEM is ok in any sequence
+                if (!(isCHEM || isBothAminoAcid || isBothNucleic))
                 {
                     pq.emplace(kBranchAttachmentPointIdx, nei_dir.second, kBranchAttachmentPointIdx, back_dir.second);
                     continue;
@@ -94,8 +98,9 @@ void SequenceLayout::addSequenceElement(BaseMolecule& mol, PriorityElement& pel,
                 bool isNucleoTo = isNucleicClass(to_class) || isNucleotideClass(to_class);
                 bool isAAFrom = isAminoAcidClass(from_class);
                 bool isAATo = isAminoAcidClass(to_class);
+                bool isCHEM = (kMonomerClassCHEM == from_class) || (kMonomerClassCHEM == to_class);
 
-                if ((isNucleoFrom && isNucleoTo) || (isAAFrom && isAATo))
+                if ((isNucleoFrom && isNucleoTo) || (isAAFrom && isAATo) || isCHEM)
                 {
                     if (pel.from_dir.first == kRightAttachmentPointIdx && pel.dir.first == kLeftAttachmentPointIdx)
                     {

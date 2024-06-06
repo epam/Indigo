@@ -37,6 +37,200 @@ SequenceSaver::~SequenceSaver()
 {
 }
 
+std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
+{
+    static const std::unordered_set<std::string> IDT_STANDARD_BASES = {"A", "T", "C", "G", "U", "I"};
+    static const std::map<std::string, std::string> IDT_STANDARD_SUGARS{{"R", "r"}, {"LR", "+"}, {"mR", "m"}, {"dR", ""}};
+    std::string seq_string;
+    std::unordered_set<int> used_atoms;
+    IdtModification modification = IdtModification::FIVE_PRIME_END;
+    while (sequence.size() > 0)
+    {
+        int atom_idx = sequence.front();
+        used_atoms.emplace(atom_idx);
+        sequence.pop_front();
+        if (!mol.isTemplateAtom(atom_idx))
+            throw Error("Cannot save regular atom %s in IDT format.", mol.getAtomDescription(atom_idx).c_str());
+        std::string monomer_class = mol.getTemplateAtomClass(atom_idx);
+        std::string monomer = mol.getTemplateAtom(atom_idx);
+        bool standard_sugar = true;
+        bool standard_base = true;
+        bool standard_phosphate = true;
+        std::string sugar;
+        std::string base;
+        std::string phosphate;
+        if (monomer_class != kMonomerClassSUGAR)
+        {
+            // Check for unresoved monomer
+            std::optional<std::reference_wrapper<TGroup>> tg_ref = std::nullopt;
+            int temp_idx = mol.getTemplateAtomTemplateIndex(atom_idx);
+            if (temp_idx > -1)
+                tg_ref = std::optional<std::reference_wrapper<TGroup>>(std::ref(mol.tgroups.getTGroup(temp_idx)));
+            else
+                auto tg_ref = findTemplateInMap(monomer, monomer_class, _templates);
+            if (tg_ref.has_value())
+            {
+                auto& tg = tg_ref.value().get();
+                if (tg.unresolved)
+                {
+                    const std::string& idt_alias = tg.idt_alias.getBase();
+                    if (idt_alias.size())
+                    {
+                        seq_string.push_back('/');
+                        seq_string.append(idt_alias);
+                        seq_string.push_back('/');
+                        modification = IdtModification::INTERNAL;
+                        continue;
+                    }
+                    else
+                    {
+                        throw Error("Unresolved monomer '%s' has no IDT alias.", tg.tgroup_text_id.ptr());
+                    }
+                }
+            }
+
+            if (used_atoms.size() > 1)
+                throw Error("Cannot save molecule in IDT format - expected sugar but found %s monomer %s.", monomer_class.c_str(), monomer.c_str());
+            if (monomer_class != kMonomerClassPHOSPHATE || monomer != "P") // first monomer can be phosphate "P"
+                throw Error("Cannot save molecule in IDT format - %s monomer %s cannot be first.", monomer_class.c_str(), monomer.c_str());
+            seq_string += "/5Phos/";
+            modification = IdtModification::INTERNAL;
+            continue;
+        }
+        sugar = monomer;
+        if (IDT_STANDARD_SUGARS.count(monomer) == 0)
+            standard_sugar = false;
+        auto& v = mol.getVertex(atom_idx);
+        for (auto nei_idx = v.neiBegin(); nei_idx < v.neiEnd(); nei_idx = v.neiNext(nei_idx))
+        {
+            int nei_atom_idx = v.neiVertex(nei_idx);
+            if (used_atoms.count(nei_atom_idx) > 0)
+                continue;
+            used_atoms.emplace(nei_atom_idx);
+            if (mol.isTemplateAtom(nei_atom_idx))
+            {
+                monomer_class = std::string(mol.getTemplateAtomClass(nei_atom_idx));
+                if (monomer_class == kMonomerClassBASE)
+                {
+                    if (base.size() > 0)
+                        throw Error("Cannot save molecule in IDT format - sugar %s with two base connected %s and %s.", monomer.c_str(), base.c_str(),
+                                    mol.getTemplateAtom(nei_atom_idx));
+                    base = mol.getTemplateAtom(nei_atom_idx);
+                    if (IDT_STANDARD_BASES.count(base) == 0)
+                        standard_base = false;
+                }
+                else if (monomer_class == kMonomerClassPHOSPHATE)
+                {
+                    if (phosphate.size() > 0) // left phosphate should be in used_atoms and skiped
+                        throw Error("Cannot save molecule in IDT format - sugar %s with too much phosphates connected %s and %s.", monomer.c_str(),
+                                    phosphate.c_str(), mol.getTemplateAtom(nei_atom_idx));
+                    phosphate = mol.getTemplateAtom(nei_atom_idx);
+                }
+                else
+                {
+                    throw Error("Cannot save molecule in IDT format - sugar %s connected to monomer %s with class %s (only base or phosphate expected).",
+                                monomer.c_str(), mol.getTemplateAtom(nei_atom_idx), monomer_class.c_str());
+                }
+            }
+            else
+            {
+                throw Error("Cannot save regular atom %s in IDT format.", mol.getAtomDescription(atom_idx).c_str());
+            }
+        }
+
+        if (sequence.size() > 0)
+        { // process phosphate
+            atom_idx = sequence.front();
+            sequence.pop_front();
+            if (!mol.isTemplateAtom(atom_idx))
+                throw Error("Cannot save regular atom %s in IDT format.", mol.getAtomDescription(atom_idx).c_str());
+            monomer_class = mol.getTemplateAtomClass(atom_idx);
+            monomer = mol.getTemplateAtom(atom_idx);
+            if (monomer_class != kMonomerClassPHOSPHATE)
+                throw Error("Cannot save molecule in IDT format - phosphate expected between sugars but %s monomer %s found.", monomer_class.c_str(),
+                            monomer.c_str());
+            if (used_atoms.count(atom_idx) == 0) // phosphate should be already processed at sugar neighbours check
+                throw Error("Cannot save molecule in IDT format - phosphate %s not connected to previous sugar.", phosphate.c_str());
+            if (phosphate != "P" && phosphate != "sP")
+                standard_phosphate = false;
+        }
+        else
+        {
+            modification = IdtModification::THREE_PRIME_END;
+        }
+
+        bool add_asterisk = false;
+        if (phosphate == "sP")
+        {
+            phosphate = "P";
+            add_asterisk = true;
+        }
+        if (standard_base && standard_phosphate && standard_sugar)
+        {
+            sugar = IDT_STANDARD_SUGARS.at(sugar);
+            if (sugar.size())
+                seq_string += sugar;
+            seq_string += base;
+        }
+        else
+        {
+            // Try to find sugar,base,phosphate group template
+            MonomerTemplateLibrary& lib = MonomerTemplateLibrary::instance();
+            const std::string& sugar_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Sugar, sugar);
+            const std::string& phosphate_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, phosphate);
+            std::string base_id;
+            if (base.size())
+                base_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Base, base);
+            const std::string& idt_alias = lib.getIdtAliasByModification(modification, sugar_id, base_id, phosphate_id);
+            if (idt_alias.size())
+            {
+                seq_string += '/';
+                seq_string += idt_alias;
+                seq_string += '/';
+            }
+            else
+            {
+                if (base.size())
+                {
+                    if (phosphate.size())
+                        throw Error("IDT alias for group sugar:%s base:%s phosphate:%s not found.", sugar.c_str(), base.c_str(), phosphate.c_str());
+                    else
+                        throw Error("IDT alias for group sugar:%s base:%s not found.", sugar.c_str(), base.c_str());
+                }
+                else
+                {
+                    if (phosphate.size())
+
+                        throw Error("IDT alias for group sugar:%s phosphate:%s not found.", sugar.c_str(), phosphate.c_str());
+                    else
+                        throw Error("IDT alias for sugar:%s not found.", sugar.c_str());
+                }
+            }
+        }
+
+        if (phosphate.size())
+        {
+            if (add_asterisk)
+            {
+                seq_string += "*";
+                phosphate = "sP";
+            }
+            if (sequence.size() == 0)
+            {
+                modification = IdtModification::THREE_PRIME_END;
+                if (phosphate == "P")
+                    seq_string += "/3Phos/";
+                else
+                    throw Error("Cannot save molecule in IDT format - phosphate %s cannot be last monomer in sequence.", phosphate.c_str());
+            }
+        }
+
+        if (modification == IdtModification::FIVE_PRIME_END)
+            modification = IdtModification::INTERNAL;
+    }
+    return seq_string;
+}
+
 void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
 {
     if (!mol.isQueryMolecule())
@@ -49,172 +243,12 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
     sl.sequenceExtract(sequences);
     auto prop_it = mol_properties.begin();
     int seq_idx = 0;
-    static const std::unordered_set<std::string> IDT_STANDARD_BASES = {"A", "T", "C", "G", "U", "I"};
-    static const std::map<std::string, std::string> IDT_STANDARD_SUGARS{{"R", "r"}, {"LR", "+"}, {"mR", "m"}, {"dR", ""}};
     for (auto& sequence : sequences)
     {
         std::string seq_string;
         if (sf == SeqFormat::IDT)
         {
-            std::unordered_set<int> used_atoms;
-            IdtModification modification = IdtModification::FIVE_PRIME_END;
-            while (sequence.size() > 0)
-            {
-                int atom_idx = sequence.front();
-                used_atoms.emplace(atom_idx);
-                sequence.pop_front();
-                if (!mol.isTemplateAtom(atom_idx))
-                    throw Error("Cannot save regular atom %s in IDT format.", mol.getAtomDescription(atom_idx).c_str());
-                std::string monomer_class = mol.getTemplateAtomClass(atom_idx);
-                std::string monomer = mol.getTemplateAtom(atom_idx);
-                bool standard_sugar = true;
-                bool standard_base = true;
-                bool standard_phosphate = true;
-                std::string sugar;
-                std::string base;
-                std::string phosphate;
-                if (monomer_class != kMonomerClassSUGAR)
-                {
-                    if (used_atoms.size() > 1)
-                        throw Error("Cannot save molecule in IDT format - expected sugar but found %s monomer %s.", monomer_class.c_str(), monomer.c_str());
-                    if (monomer_class != kMonomerClassPHOSPHATE || monomer != "P") // first monomer can be phosphate "P"
-                        throw Error("Cannot save molecule in IDT format - %s monomer %s cannot be first.", monomer_class.c_str(), monomer.c_str());
-                    seq_string += "/5Phos/";
-                    modification = IdtModification::INTERNAL;
-                    continue;
-                }
-                sugar = monomer;
-                if (IDT_STANDARD_SUGARS.count(monomer) == 0)
-                    standard_sugar = false;
-                auto& v = mol.getVertex(atom_idx);
-                for (auto nei_idx = v.neiBegin(); nei_idx < v.neiEnd(); nei_idx = v.neiNext(nei_idx))
-                {
-                    int nei_atom_idx = v.neiVertex(nei_idx);
-                    if (used_atoms.count(nei_atom_idx) > 0)
-                        continue;
-                    used_atoms.emplace(nei_atom_idx);
-                    if (mol.isTemplateAtom(nei_atom_idx))
-                    {
-                        monomer_class = std::string(mol.getTemplateAtomClass(nei_atom_idx));
-                        if (monomer_class == kMonomerClassBASE)
-                        {
-                            if (base.size() > 0)
-                                throw Error("Cannot save molecule in IDT format - sugar %s with two base connected %s and %s.", monomer.c_str(), base.c_str(),
-                                            mol.getTemplateAtom(nei_atom_idx));
-                            base = mol.getTemplateAtom(nei_atom_idx);
-                            if (IDT_STANDARD_BASES.count(base) == 0)
-                                standard_base = false;
-                        }
-                        else if (monomer_class == kMonomerClassPHOSPHATE)
-                        {
-                            if (phosphate.size() > 0) // left phosphate should be in used_atoms and skiped
-                                throw Error("Cannot save molecule in IDT format - sugar %s with too much phosphates connected %s and %s.", monomer.c_str(),
-                                            phosphate.c_str(), mol.getTemplateAtom(nei_atom_idx));
-                            phosphate = mol.getTemplateAtom(nei_atom_idx);
-                        }
-                        else
-                        {
-                            throw Error(
-                                "Cannot save molecule in IDT format - sugar %s connected to monomer %s with class %s (only base or phosphate expected).",
-                                monomer.c_str(), mol.getTemplateAtom(nei_atom_idx), monomer_class.c_str());
-                        }
-                    }
-                    else
-                    {
-                        throw Error("Cannot save regular atom %s in IDT format.", mol.getAtomDescription(atom_idx).c_str());
-                    }
-                }
-
-                if (sequence.size() > 0)
-                { // process phosphate
-                    atom_idx = sequence.front();
-                    sequence.pop_front();
-                    if (!mol.isTemplateAtom(atom_idx))
-                        throw Error("Cannot save regular atom %s in IDT format.", mol.getAtomDescription(atom_idx).c_str());
-                    monomer_class = mol.getTemplateAtomClass(atom_idx);
-                    monomer = mol.getTemplateAtom(atom_idx);
-                    if (monomer_class != kMonomerClassPHOSPHATE)
-                        throw Error("Cannot save molecule in IDT format - phosphate expected between sugars but %s monomer %s found.", monomer_class.c_str(),
-                                    monomer.c_str());
-                    if (used_atoms.count(atom_idx) == 0) // phosphate should be already processed at sugar neighbours check
-                        throw Error("Cannot save molecule in IDT format - phosphate %s not connected to previous sugar.", phosphate.c_str());
-                    if (phosphate != "P" && phosphate != "sP")
-                        standard_phosphate = false;
-                }
-                else
-                {
-                    modification = IdtModification::THREE_PRIME_END;
-                }
-
-                bool add_asterisk = false;
-                if (phosphate == "sP")
-                {
-                    phosphate = "P";
-                    add_asterisk = true;
-                }
-                if (standard_base && standard_phosphate && standard_sugar)
-                {
-                    sugar = IDT_STANDARD_SUGARS.at(sugar);
-                    if (sugar.size())
-                        seq_string += sugar;
-                    seq_string += base;
-                }
-                else
-                {
-                    // Try to find sugar,base,phosphate group template
-                    MonomerTemplateLibrary& lib = MonomerTemplateLibrary::instance();
-                    const std::string& sugar_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Sugar, sugar);
-                    const std::string& phosphate_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, phosphate);
-                    std::string base_id;
-                    if (base.size())
-                        base_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Base, base);
-                    const std::string& idt_alias = lib.getIdtAliasByModification(modification, sugar_id, base_id, phosphate_id);
-                    if (idt_alias.size())
-                    {
-                        seq_string += '/';
-                        seq_string += idt_alias;
-                        seq_string += '/';
-                    }
-                    else
-                    {
-                        if (base.size())
-                        {
-                            if (phosphate.size())
-                                throw Error("IDT alias for group sugar:%s base:%s phosphate:%s not found.", sugar.c_str(), base.c_str(), phosphate.c_str());
-                            else
-                                throw Error("IDT alias for group sugar:%s base:%s not found.", sugar.c_str(), base.c_str());
-                        }
-                        else
-                        {
-                            if (phosphate.size())
-
-                                throw Error("IDT alias for group sugar:%s phosphate:%s not found.", sugar.c_str(), phosphate.c_str());
-                            else
-                                throw Error("IDT alias for sugar:%s not found.", sugar.c_str());
-                        }
-                    }
-                }
-
-                if (phosphate.size())
-                {
-                    if (add_asterisk)
-                    {
-                        seq_string += "*";
-                        phosphate = "sP";
-                    }
-                    if (sequence.size() == 0)
-                    {
-                        modification = IdtModification::THREE_PRIME_END;
-                        if (phosphate == "P")
-                            seq_string += "/3Phos/";
-                        else
-                            throw Error("Cannot save molecule in IDT format - phosphate %s cannot be last monomer in sequence.", phosphate.c_str());
-                    }
-                }
-
-                if (modification == IdtModification::FIVE_PRIME_END)
-                    modification = IdtModification::INTERNAL;
-            }
+            seq_string.append(saveIdt(mol, sequence));
         }
         else
         {
