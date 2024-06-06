@@ -53,6 +53,10 @@ namespace indigo
 
         void saveMolecule(BaseMolecule& mol, SeqFormat sf = SeqFormat::Sequence);
 
+    protected:
+        TGroup& getTGroup();
+        std::string saveIdt(BaseMolecule& mol, std::deque<int>& sequence);
+
     private:
         SequenceSaver(const SequenceSaver&); // no implicit copy
         Output& _output;

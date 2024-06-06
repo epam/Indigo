@@ -17,6 +17,7 @@
         "name": "cch",
         "attachmentPoints": [
             {
+                "id": "Br",
                 "type": "right",
                 "label": "R2",
                 "attachmentAtom": 8,
@@ -27,6 +28,7 @@
                 }
             },
             {
+                "id": "Cx",
                 "type": "side",
                 "label": "R3",
                 "attachmentAtom": 6,
@@ -37,6 +39,7 @@
                 }
             },
             {
+                "id": "Ex",
                 "type": "side",
                 "label": "R5",
                 "attachmentAtom": 3,

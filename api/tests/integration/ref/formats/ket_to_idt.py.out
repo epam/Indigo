@@ -1,6 +1,7 @@
 *** KET to IDT ***
 idt_52moera_with_3phos.ket:SUCCEED
 idt_bases.ket:SUCCEED
+idt_i2moera_t.ket:SUCCEED
 idt_many_molecules.ket:SUCCEED
 idt_mixed.ket:SUCCEED
 idt_mod_phosphates.ket:SUCCEED
@@ -9,6 +10,7 @@ idt_prefix_suffix.ket:SUCCEED
 idt_singe_32moera_nucleoside.ket:SUCCEED
 idt_single_nucleoside.ket:SUCCEED
 idt_std_phosphates.ket:SUCCEED
+idt_unresolved.ket:SUCCEED
 Test ket-to-idt-invalid-last-phosphate: got expected error 'Cannot save molecule in IDT format - phosphate sP cannot be last monomer in sequence.'
 Test ket-to-idt-invalid-nucleotide: got expected error 'IDT alias for group sugar:m2e2r base:z8c3G phosphate:mepo2 not found.'
 Test ket-to-idt-invalid-posphates: got expected error 'Cannot save molecule in IDT format - sugar R with too much phosphates connected P and P.'

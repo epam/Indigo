@@ -41,6 +41,11 @@ idt_data = {
     "idt_mod_phosphates": "/5Phos//i2MOErC//3Phos/",
     "idt_mixed": "/5Phos/+A*/i2MOErA/*rG/3Phos/",
     "idt_many_molecules": "ACTG\n/52MOErA/*AU/3Phos/\nAC/i2MOErC//3Phos/\nTACG",
+    # "idt_i2moera": "/i2MOErA/",
+    # "idt_52moera": "/52MOErA/",
+    "idt_i2moera_t": "/52MOErA/T",
+    # "idt_t_i2moera": "T/i2MOErA/",
+    "idt_unresolved": "/unr1//unr2/",
 }
 
 for filename in sorted(idt_data.keys()):
