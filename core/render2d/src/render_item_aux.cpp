@@ -264,23 +264,30 @@ void RenderItemAuxiliary::fillKETStyle(TextItem& ti, const FONT_STYLE_SET& style
 {
     for (const auto& text_style : style_set)
     {
-        switch (text_style.first)
+        switch (static_cast<KETFontStyle::FontStyle>(text_style.first))
         {
-        case KETTextObject::EBold:
+        case KETFontStyle::FontStyle::EBold:
             ti.bold = text_style.second;
             break;
-        case KETTextObject::EItalic:
+        case KETFontStyle::FontStyle::EItalic:
             ti.italic = text_style.second;
             break;
-        case KETTextObject::ESuperScript:
+        case KETFontStyle::FontStyle::ESuperScript:
             ti.script_type = text_style.second ? 1 : 0;
             break;
-        case KETTextObject::ESubScript:
+        case KETFontStyle::FontStyle::ESubScript:
             ti.script_type = text_style.second ? 2 : 0;
             break;
-        default:
-            ti.size = text_style.second ? text_style.first : KETDefaultFontSize;
+        case KETFontStyle::FontStyle::ESize:
+        {
+            ti.size = KETDefaultFontSize;
+            auto sz_val = text_style.first.getUInt();
+            if (text_style.second && sz_val.has_value())
+                ti.size = sz_val.value();
             ti.size /= KETFontScaleFactor;
+        }
+        break;
+        default:
             break;
         }
     }
@@ -317,7 +324,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                     ti.ritype = RenderItem::RIT_TITLE;
                     Vec2f text_origin(ko._bbox.left(), ko._bbox.top());
                     scale(text_origin);
-                    for (auto& kvp : text_item.styles)
+                    for (auto& kvp : text_item.font_styles)
                     {
                         if (first_index == -1)
                         {
@@ -459,7 +466,7 @@ float RenderItemAuxiliary::_getMaxHeight(const KETTextObject::KETTextParagraph& 
     TextItem ti;
     ti.size = KETDefaultFontSize / KETFontScaleFactor; // default size
     ti.ritype = RenderItem::RIT_TITLE;
-    for (auto& kvp : tl.styles)
+    for (auto& kvp : tl.font_styles)
     {
         if (first_index == -1)
         {
