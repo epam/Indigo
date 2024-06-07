@@ -92,7 +92,7 @@ namespace indigo
                 map->emplace(id, std::make_unique<T>());
             }
             printf("Before return\n");
-            printf("map->count(id)==%d\n", map->count(id));
+            printf("map->count(id)==%llu\n", map->count(id));
             return *map->at(id);
         }
 
