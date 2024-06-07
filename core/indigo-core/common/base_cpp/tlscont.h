@@ -83,11 +83,16 @@ namespace indigo
     public:
         T& createOrGetLocalCopy(const qword id = TL_GET_SESSION_ID())
         {
+            printf("Before sf::xlock_safe_ptr(_map)\n");
             auto map = sf::xlock_safe_ptr(_map);
+            printf("Before map->count(id)\n");
             if (!map->count(id))
             {
+                printf("Before map->emplace(id, std::make_unique<T>())\n");
                 map->emplace(id, std::make_unique<T>());
             }
+            printf("Before return\n");
+            printf("map->count(id)==%d\n", map->count(id));
             return *map->at(id);
         }
 
