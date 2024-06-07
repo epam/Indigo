@@ -1,7 +1,7 @@
 name: Indigo CI
 
 env:
-  OS_NAME_MAPPING_JSON: '{"ubuntu-latest": "linux", "windows-latest": "windows", "macos-13": "macos"}'
+  OS_NAME_MAPPING_JSON: '{"ubuntu-latest": "linux", "windows-2019": "windows", "macos-13": "macos"}'
 
 on:
   push:
@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest, windows-latest ]
+        os: [ macos-13, ubuntu-latest, windows-2019 ]
     runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
@@ -87,7 +87,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest ]
+        os: [ windows-2019 ]
     runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
@@ -246,7 +246,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest, windows-latest ]
+        os: [ macos-13, ubuntu-latest, windows-2019 ]
     runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
@@ -338,7 +338,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest ]
+        os: [ windows-2019 ]
     runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
@@ -383,7 +383,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest, windows-latest ]
+        os: [ macos-13, ubuntu-latest, windows-2019 ]
     runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
@@ -470,7 +470,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest ]
+        os: [ windows-2019 ]
     runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
@@ -516,7 +516,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest, windows-latest ]
+        os: [ macos-13, ubuntu-latest, windows-2019 ]
     runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
@@ -597,7 +597,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest ]
+        os: [ windows-2019 ]
     runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
@@ -730,7 +730,7 @@ jobs:
 
   build_indigo_windows_mingw_x86_64:
     timeout-minutes: 60
-    runs-on: windows-latest
+    runs-on: windows-2019
     needs: static_analysis
     defaults:
       run:
@@ -850,7 +850,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest, windows-latest ]
+        os: [ macos-13, ubuntu-latest, windows-2019 ]
     runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
@@ -924,7 +924,7 @@ jobs:
           path: dist/bingo-oracle*.tgz
 
   build_bingo_oracle_windows_mingw_x86_64:
-    runs-on: windows-latest
+    runs-on: windows-2019
     needs: static_analysis
     defaults:
       run:
@@ -956,7 +956,7 @@ jobs:
           path: dist/bingo-oracle*.zip
 
   build_bingo_oracle_windows_msvc_x86_64:
-    runs-on: windows-latest
+    runs-on: windows-2019
     needs: static_analysis
     steps:
       - name: Checkout
@@ -1059,7 +1059,7 @@ jobs:
       fail-fast: false
       matrix:
         postgres_major_version: [ "12", "13", "14", "15" ]
-    runs-on: windows-latest
+    runs-on: windows-2019
     needs: static_analysis
     steps:
       - name: Checkout
@@ -1129,7 +1129,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest ]
+        os: [ windows-2019 ]
     runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
