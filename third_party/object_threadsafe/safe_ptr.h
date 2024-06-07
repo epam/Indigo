@@ -442,10 +442,8 @@ namespace sf
     {
         T& ref_safe;
         typename T::xlock_t xlock;
-        xlocked_safe_ptr(T const& p) : ref_safe(*const_cast<T*>(&p))
+        xlocked_safe_ptr(T& p) : ref_safe(p), xlock(*(ref_safe.get_mtx_ptr()))
         {
-            printf("before xlock()\n");
-            xlock(*(ref_safe.get_mtx_ptr()));
         } // ++xp;}
         typename T::obj_t* operator->()
         {
@@ -462,7 +460,7 @@ namespace sf
     };
 
     template <typename T>
-    xlocked_safe_ptr<T> xlock_safe_ptr(T const& arg)
+    xlocked_safe_ptr<T> xlock_safe_ptr(T& arg)
     {
         return xlocked_safe_ptr<T>(arg);
     }
