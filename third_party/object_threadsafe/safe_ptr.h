@@ -51,19 +51,23 @@ namespace sf
             }
             T* operator->()
             {
+                printf("auto_lock_t ptr=%p\n", ptr);
                 return ptr;
             }
             const T* operator->() const
             {
+                printf("auto_lock_t ptr=%p\n", ptr);
                 return ptr;
             }
 
             T& operator*()
             {
+                printf("auto_lock_t ptr=%p\n", ptr);
                 return *ptr;
             };
             const T& operator*() const
             {
+                printf("auto_lock_t ptr=%p\n", ptr);
                 return *ptr;
             };
         };
@@ -84,6 +88,7 @@ namespace sf
             template <typename arg_t>
             auto operator[](arg_t&& arg) -> decltype((*ptr)[arg])
             {
+                printf("auto_lock_obj_t ptr=%p\n", ptr);
                 return (*ptr)[arg];
             }
         };
@@ -107,10 +112,12 @@ namespace sf
 
         T& operator*()
         {
+            printf("safe_ptr ptr=%p\n", ptr);
             return *ptr;
         }
         const T& operator*() const
         {
+            printf("safe_ptr ptr=%p\n", ptr);
             return *ptr;
         }
 
