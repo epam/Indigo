@@ -116,7 +116,9 @@ namespace sf
 
         mutex_t* get_mtx_ptr() const
         {
-            return mtx_ptr.get();
+            mutex_t* ptr = mtx_ptr.get();
+            printf("mtx_ptr get returned %p\n", ptr);
+            return ptr;
         }
 
         template <typename... Args>
