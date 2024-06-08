@@ -299,9 +299,9 @@ namespace
 
 CEXPORT qword indigoAllocSessionId()
 {
-    printf("Before createOrGetLocalCopy\n");
+    printf("Before TL_ALLOC_SESSION_ID\n");
     qword id = TL_ALLOC_SESSION_ID();
-    printf("Before createOrGetLocalCopy\n");
+    printf("Before TL_SET_SESSION_ID\n");
     TL_SET_SESSION_ID(id);
     printf("Before createOrGetLocalCopy\n");
     Indigo& indigo = indigo_self.createOrGetLocalCopy(id);

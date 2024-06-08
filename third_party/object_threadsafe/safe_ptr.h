@@ -584,6 +584,7 @@ namespace sf
     // ---------------------------------------------------------------
 
     // contention free shared mutex (same-lock-type is recursive for X->X, X->S or S->S locks), but (S->X - is UB)
+    /* contention_free_shared_mutex
     template <unsigned contention_free_count = 36, bool shared_flag = false>
     class contention_free_shared_mutex
     {
@@ -810,6 +811,7 @@ namespace sf
         }
     };
 
+    //contention_free_shared_mutex */
     template <typename mutex_t>
     struct shared_lock_guard
     {
@@ -824,11 +826,11 @@ namespace sf
         }
     };
 
-    using default_contention_free_shared_mutex = contention_free_shared_mutex<>;
+    // using default_contention_free_shared_mutex = contention_free_shared_mutex<>;
 
-    template <typename T>
-    using contfree_safe_ptr =
-        safe_ptr<T, contention_free_shared_mutex<>, std::unique_lock<contention_free_shared_mutex<>>, shared_lock_guard<contention_free_shared_mutex<>>>;
+    // template <typename T>
+    // using contfree_safe_ptr =
+    //     safe_ptr<T, contention_free_shared_mutex<>, std::unique_lock<contention_free_shared_mutex<>>, shared_lock_guard<contention_free_shared_mutex<>>>;
     // ---------------------------------------------------------------
 
     // safe partitioned map
