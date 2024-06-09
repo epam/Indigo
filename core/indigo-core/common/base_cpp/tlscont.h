@@ -83,31 +83,31 @@ namespace indigo
     public:
         T& createOrGetLocalCopy(const qword id = TL_GET_SESSION_ID())
         {
-            std::lock_guard<std::mutex> lk(_mutex);
-            if (!map->count(id))
+            std::lock_guard<std::mutex> lg(_mutex);
+            if (!_map.count(id))
             {
-                map->emplace(id, std::make_unique<T>());
+                _map.emplace(id, std::make_unique<T>());
             }
-            auto& res = *map->at(id);
+            auto& res = *_map.at(id);
             return res;
         }
 
-        T& getLocalCopy(const qword id = TL_GET_SESSION_ID()) const
+        T& getLocalCopy(const qword id = TL_GET_SESSION_ID())
         {
-            std::lock_guard<std::mutex> lk(_mutex);
-            return *map->at(id);
+            std::lock_guard<std::mutex> lg(_mutex);
+            return *_map.at(id);
         }
 
         void removeLocalCopy(const qword id = TL_GET_SESSION_ID())
         {
-            std::lock_guard<std::mutex> lk(_mutex);
-            map->erase(id);
+            std::lock_guard<std::mutex> lg(_mutex);
+            _map.erase(id);
         }
 
-        bool hasLocalCopy(const qword id = TL_GET_SESSION_ID()) const
+        bool hasLocalCopy(const qword id = TL_GET_SESSION_ID())
         {
-            std::lock_guard<std::mutex> lk(_mutex);
-            return map->count(id) > 0;
+            std::lock_guard<std::mutex> lg(_mutex);
+            return _map.count(id) > 0;
         }
 
     private:

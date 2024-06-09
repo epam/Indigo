@@ -299,21 +299,13 @@ namespace
 
 CEXPORT qword indigoAllocSessionId()
 {
-    printf("Before TL_ALLOC_SESSION_ID\n");
     qword id = TL_ALLOC_SESSION_ID();
-    printf("Before TL_SET_SESSION_ID\n");
     TL_SET_SESSION_ID(id);
-    printf("Before createOrGetLocalCopy\n");
     Indigo& indigo = indigo_self.createOrGetLocalCopy(id);
-    printf("Before indigo.init\n");
     indigo.init();
-    printf("Before setLocale\n");
     sf::xlock_safe_ptr(IndigoLocaleHandler::handler())->setLocale(LC_NUMERIC, "C");
-    printf("Before createOrGetLocalCopy\n");
     IndigoOptionManager::getIndigoOptionManager().createOrGetLocalCopy(id);
-    printf("Before setBasicOptionHandlers\n");
     IndigoOptionHandlerSetter::setBasicOptionHandlers(id);
-    printf("Before return\n");
 #ifdef INDIGO_DEBUG
     std::stringstream ss;
     ss << "IndigoSession(" << id << ")";
