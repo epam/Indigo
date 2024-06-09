@@ -212,6 +212,7 @@ namespace sf
         }
         mutex_t* get_mtx_ptr() const
         {
+            printf("get_mtx_ptr &mtx=%p\n", &mtx);
             return &mtx;
         }
 
@@ -232,6 +233,7 @@ namespace sf
         template <typename... Args>
         safe_obj(Args... args) : obj(args...)
         {
+            printf("safe_obj(Args... args) &mtx=%p\n", &mtx);
         }
         safe_obj(safe_obj&& safe_obj) noexcept
         {
