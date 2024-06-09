@@ -208,7 +208,9 @@ namespace sf
 
         T* get_obj_ptr() const
         {
-            return const_cast<T*>(&obj);
+            T* ptr = const_cast<T*>(&obj);
+            printf("get_obj_ptr ptr=%p\n", ptr);
+            return ptr;
         }
         mutex_t* get_mtx_ptr() const
         {
