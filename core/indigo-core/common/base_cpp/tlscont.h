@@ -83,13 +83,18 @@ namespace indigo
     public:
         T& createOrGetLocalCopy(const qword id = TL_GET_SESSION_ID())
         {
+            printf("before std::lock_guard<std::mutex> lg(_mutex);\n");
             std::lock_guard<std::mutex> lg(_mutex);
+            printf("before !_map.count(id)\n");
             if (!_map.count(id))
             {
+                printf("before _map.emplace(id, std::make_unique<T>());\n");
                 _map.emplace(id, std::make_unique<T>());
             }
-            auto& res = *_map.at(id);
-            return res;
+            printf("before *_map.at(id);\n");
+            auto ptr = _map.at(id);
+            printf("before return ptr=%p\n", ptr);
+            return *ptr;
         }
 
         T& getLocalCopy(const qword id = TL_GET_SESSION_ID())
