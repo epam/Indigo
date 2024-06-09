@@ -209,12 +209,10 @@ namespace sf
         T* get_obj_ptr() const
         {
             T* ptr = const_cast<T*>(&obj);
-            printf("get_obj_ptr ptr=%p\n", ptr);
             return ptr;
         }
         mutex_t* get_mtx_ptr() const
         {
-            printf("get_mtx_ptr &mtx=%p\n", &mtx);
             return &mtx;
         }
 
@@ -465,7 +463,6 @@ namespace sf
         typename T::obj_t& operator*()
         {
             auto ptr = ref_safe.get_obj_ptr();
-            printf("xlocked_safe_ptr ptr=%p\n", ptr);
             return *ptr;
         }
         operator typename T::obj_t()
@@ -495,7 +492,6 @@ namespace sf
         typename T::obj_t const& operator*() const
         {
             auto ptr = ref_safe.get_obj_ptr();
-            printf("slocked_safe_ptr ptr=%p\n", ptr);
             return *(ref_safe.get_obj_ptr());
         }
         operator typename T::obj_t() const

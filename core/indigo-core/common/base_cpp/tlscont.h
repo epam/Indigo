@@ -92,9 +92,7 @@ namespace indigo
                 _map.emplace(id, std::make_unique<T>());
             }
             printf("before *_map.at(id);\n");
-            auto& ptr = _map.at(id);
-            printf("before return ptr=%p\n", ptr);
-            return *ptr;
+            return *_map.at(id);
         }
 
         T& getLocalCopy(const qword id = TL_GET_SESSION_ID())
