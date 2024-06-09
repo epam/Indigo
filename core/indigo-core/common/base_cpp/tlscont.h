@@ -92,7 +92,7 @@ namespace indigo
                 _map.emplace(id, std::make_unique<T>());
             }
             printf("before *_map.at(id);\n");
-            auto ptr = _map.at(id);
+            auto& ptr = _map.at(id);
             printf("before return ptr=%p\n", ptr);
             return *ptr;
         }
