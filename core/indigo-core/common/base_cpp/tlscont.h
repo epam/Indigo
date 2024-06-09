@@ -83,40 +83,36 @@ namespace indigo
     public:
         T& createOrGetLocalCopy(const qword id = TL_GET_SESSION_ID())
         {
-            printf("Before sf::xlock_safe_ptr(_map)\n");
-            auto map = sf::xlock_safe_ptr(_map);
-            printf("Before map->count(id)\n");
+            std::lock_guard<std::mutex> lk(_mutex);
             if (!map->count(id))
             {
-                printf("Before map->emplace(id, std::make_unique<T>())\n");
                 map->emplace(id, std::make_unique<T>());
             }
-            printf("Before return\n");
-            printf("map->count(id)==%u\n", static_cast<unsigned int>(map->count(id)));
-            return *map->at(id);
+            auto& res = *map->at(id);
+            return res;
         }
 
-        // FIXME:MK: it's not thread safe, decide what to do
         T& getLocalCopy(const qword id = TL_GET_SESSION_ID()) const
         {
-            const auto map = sf::slock_safe_ptr(_map);
+            std::lock_guard<std::mutex> lk(_mutex);
             return *map->at(id);
         }
 
         void removeLocalCopy(const qword id = TL_GET_SESSION_ID())
         {
-            auto map = sf::xlock_safe_ptr(_map);
+            std::lock_guard<std::mutex> lk(_mutex);
             map->erase(id);
         }
 
         bool hasLocalCopy(const qword id = TL_GET_SESSION_ID()) const
         {
-            const auto map = sf::slock_safe_ptr(_map);
+            std::lock_guard<std::mutex> lk(_mutex);
             return map->count(id) > 0;
         }
 
     private:
-        sf::safe_shared_hide_obj<std::unordered_map<qword, std::unique_ptr<T>>> _map;
+        std::unordered_map<qword, std::unique_ptr<T>> _map;
+        std::mutex _mutex;
     };
 
 // Macros for working with global variables per each session
