@@ -39,11 +39,24 @@
 #include <iostream>
 #endif
 
+static std::atomic<_SessionLocalContainer<Indigo>*> self_ptr = nullptr;
+
+std::once_flag create_flag;
+
+void create_self()
+{
+    std::call_once(create_flag, []() {
+        if (self_ptr == nullptr)
+            self_ptr = new _SessionLocalContainer<Indigo>();
+    });
+};
+
 _SessionLocalContainer<Indigo>& get_self()
 {
-    static _SessionLocalContainer<Indigo> _indigo_self;
-    return _indigo_self;
+    create_self();
+    return *self_ptr;
 }
+// static _SessionLocalContainer<Indigo> indigo_self;
 
 DLLEXPORT Indigo& indigoGetInstance()
 {
