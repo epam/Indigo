@@ -175,8 +175,7 @@ public class Indigo {
                 } catch (UnsatisfiedLinkError e) {
                     System.out.println(String.format("Load %s UnsatisfiedLinkError: %s", dllPath, e.getMessage()));
                     // File could have been already loaded
-                // } catch (FileNotFoundException e) {
-                //     System.out.println(String.format("Load %s FileNotFoundException: %s", dllPath, e.getMessage()));
+                } catch (FileNotFoundException e) {
                     // ignore, not all native windows dlls are available
                 }
             }
