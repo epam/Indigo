@@ -1331,7 +1331,11 @@ void MoleculeCdxmlLoader::parsePos(const std::string& data, Vec3f& pos)
     {
         pos.x = std::stof(coords[0]);
         pos.y = std::stof(coords[1]);
-        pos.z = 0;
+        if (coords.size() > 2)
+        {
+            pos.z = std::stof(coords[2]);
+            pos.z /= -SCALE;
+        }
         if (this->_has_bounding_box)
         {
             pos.x -= this->cdxml_bbox.left();
@@ -1543,6 +1547,7 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
     auto label_justification_alignment_lambda = [&label_alignment, this](const std::string& data) { label_alignment = data; };
 
     std::unordered_map<std::string, std::function<void(const std::string&)>> text_dispatcher = {{"p", text_coordinates_lambda},
+                                                                                                {"xyz", text_coordinates_lambda},
                                                                                                 {"BoundingBox", text_bbox_lambda},
                                                                                                 {"LabelJustification", label_justification_lambda},
                                                                                                 {"LabelAlignment", label_justification_alignment_lambda}};
