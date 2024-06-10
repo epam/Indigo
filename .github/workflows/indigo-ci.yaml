@@ -493,7 +493,7 @@ jobs:
       - uses: actions/setup-java@v2
         with:
           distribution: 'adopt-hotspot'
-          java-version: '11'
+          java-version: '11.0.22+7'
           architecture: x86
       - name: Install Jython
         run: |
