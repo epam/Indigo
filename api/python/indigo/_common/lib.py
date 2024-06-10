@@ -1,4 +1,4 @@
-import ctypes.util
+# import ctypes.util
 import os
 import platform
 from ctypes import CDLL, RTLD_GLOBAL, c_void_p, sizeof
@@ -75,7 +75,7 @@ class Lib:
             vcruntime140 = CDLL(Lib._library_path("vcruntime140"))
             print("msvcp140=%s\nvcruntime140=%s\n" % (msvcp140, vcruntime140))
             path = Lib._library_path(name)
-            print("ctypes.util.find_msvcrt()=%s\n" % ctypes.util.find_msvcrt())
+            # print("ctypes.util.find_msvcrt()=%s\n" % ctypes.util.find_msvcrt())
             loaded_lib = CDLL(path)
             print("lib %s loaded\n" % path)
             return loaded_lib
