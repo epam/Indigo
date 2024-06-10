@@ -83,6 +83,16 @@ namespace indigo
     public:
         T& createOrGetLocalCopy(const qword id = TL_GET_SESSION_ID())
         {
+            printf("before try_lock\n");
+            if (_mutex.try_lock())
+            {
+                printf("Locked\n");
+                _mutex.unlock();
+            }
+            else
+            {
+                printf("Not locked\n");
+            }
             printf("before std::lock_guard<std::mutex> lg(_mutex);\n");
             std::lock_guard<std::mutex> lg(_mutex);
             printf("before !_map.count(id)\n");
