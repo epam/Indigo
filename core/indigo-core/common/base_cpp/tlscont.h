@@ -81,6 +81,11 @@ namespace indigo
     class _SessionLocalContainer
     {
     public:
+        _SessionLocalContainer() : _map()
+        {
+            printf("_SessionLocalContainer() called\n");
+        }
+
         T& createOrGetLocalCopy(const qword id = TL_GET_SESSION_ID())
         {
             auto map = sf::xlock_safe_ptr(_map);
