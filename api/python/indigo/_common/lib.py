@@ -1,3 +1,4 @@
+import ctypes.util
 import os
 import platform
 from ctypes import CDLL, RTLD_GLOBAL, c_void_p, sizeof
@@ -68,4 +69,10 @@ class Lib:
 
     @staticmethod
     def load(name: str) -> CDLL:
+        if Lib.__system_name() == "windows":
+            mvcrt_path = ctypes.util.find_library("msvcrt")
+            print("msvcrt path=%s\n" % mvcrt_path)
+            msvcrt = CDLL(Lib._library_path(name), mode=RTLD_GLOBAL)
+            print("msvcrt = %s\n" % msvcrt)
+            return CDLL(Lib._library_path(name), mode=RTLD_GLOBAL)
         return CDLL(Lib._library_path(name), mode=RTLD_GLOBAL)
