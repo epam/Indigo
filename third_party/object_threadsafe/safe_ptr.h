@@ -51,23 +51,19 @@ namespace sf
             }
             T* operator->()
             {
-                printf("auto_lock_t ptr=%p\n", ptr);
                 return ptr;
             }
             const T* operator->() const
             {
-                printf("auto_lock_t ptr=%p\n", ptr);
                 return ptr;
             }
 
             T& operator*()
             {
-                printf("auto_lock_t ptr=%p\n", ptr);
                 return *ptr;
             };
             const T& operator*() const
             {
-                printf("auto_lock_t ptr=%p\n", ptr);
                 return *ptr;
             };
         };
@@ -88,7 +84,6 @@ namespace sf
             template <typename arg_t>
             auto operator[](arg_t&& arg) -> decltype((*ptr)[arg])
             {
-                printf("auto_lock_obj_t ptr=%p\n", ptr);
                 return (*ptr)[arg];
             }
         };
@@ -112,20 +107,16 @@ namespace sf
 
         T& operator*()
         {
-            printf("safe_ptr ptr=%p\n", ptr);
             return *ptr;
         }
         const T& operator*() const
         {
-            printf("safe_ptr ptr=%p\n", ptr);
             return *ptr;
         }
 
         mutex_t* get_mtx_ptr() const
         {
-            mutex_t* ptr = mtx_ptr.get();
-            printf("mtx_ptr get returned %p\n", ptr);
-            return ptr;
+            return mtx_ptr.get();
         }
 
         template <typename... Args>
@@ -208,8 +199,7 @@ namespace sf
 
         T* get_obj_ptr() const
         {
-            T* ptr = const_cast<T*>(&obj);
-            return ptr;
+            return const_cast<T*>(&obj);
         }
         mutex_t* get_mtx_ptr() const
         {
@@ -233,7 +223,6 @@ namespace sf
         template <typename... Args>
         safe_obj(Args... args) : obj(args...)
         {
-            printf("safe_obj(Args... args) &mtx=%p\n", &mtx);
         }
         safe_obj(safe_obj&& safe_obj) noexcept
         {
@@ -453,7 +442,7 @@ namespace sf
     {
         T& ref_safe;
         typename T::xlock_t xlock;
-        xlocked_safe_ptr(T& p) : ref_safe(p), xlock(*(ref_safe.get_mtx_ptr()))
+        xlocked_safe_ptr(T const& p) : ref_safe(*const_cast<T*>(&p)), xlock(*(ref_safe.get_mtx_ptr()))
         {
         } // ++xp;}
         typename T::obj_t* operator->()
@@ -462,8 +451,7 @@ namespace sf
         }
         typename T::obj_t& operator*()
         {
-            auto ptr = ref_safe.get_obj_ptr();
-            return *ptr;
+            return *(ref_safe.get_obj_ptr());
         }
         operator typename T::obj_t()
         {
@@ -472,7 +460,7 @@ namespace sf
     };
 
     template <typename T>
-    xlocked_safe_ptr<T> xlock_safe_ptr(T& arg)
+    xlocked_safe_ptr<T> xlock_safe_ptr(T const& arg)
     {
         return xlocked_safe_ptr<T>(arg);
     }
@@ -491,7 +479,6 @@ namespace sf
         }
         typename T::obj_t const& operator*() const
         {
-            auto ptr = ref_safe.get_obj_ptr();
             return *(ref_safe.get_obj_ptr());
         }
         operator typename T::obj_t() const
@@ -588,7 +575,6 @@ namespace sf
     // ---------------------------------------------------------------
 
     // contention free shared mutex (same-lock-type is recursive for X->X, X->S or S->S locks), but (S->X - is UB)
-    /* contention_free_shared_mutex
     template <unsigned contention_free_count = 36, bool shared_flag = false>
     class contention_free_shared_mutex
     {
@@ -815,7 +801,6 @@ namespace sf
         }
     };
 
-    //contention_free_shared_mutex */
     template <typename mutex_t>
     struct shared_lock_guard
     {
@@ -830,11 +815,11 @@ namespace sf
         }
     };
 
-    // using default_contention_free_shared_mutex = contention_free_shared_mutex<>;
+    using default_contention_free_shared_mutex = contention_free_shared_mutex<>;
 
-    // template <typename T>
-    // using contfree_safe_ptr =
-    //     safe_ptr<T, contention_free_shared_mutex<>, std::unique_lock<contention_free_shared_mutex<>>, shared_lock_guard<contention_free_shared_mutex<>>>;
+    template <typename T>
+    using contfree_safe_ptr =
+        safe_ptr<T, contention_free_shared_mutex<>, std::unique_lock<contention_free_shared_mutex<>>, shared_lock_guard<contention_free_shared_mutex<>>>;
     // ---------------------------------------------------------------
 
     // safe partitioned map

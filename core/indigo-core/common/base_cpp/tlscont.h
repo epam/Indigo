@@ -83,49 +83,35 @@ namespace indigo
     public:
         T& createOrGetLocalCopy(const qword id = TL_GET_SESSION_ID())
         {
-            printf("before try_lock\n");
-            if (_mutex.try_lock())
+            auto map = sf::xlock_safe_ptr(_map);
+            if (!map->count(id))
             {
-                printf("Locked\n");
-                _mutex.unlock();
+                map->emplace(id, std::make_unique<T>());
             }
-            else
-            {
-                printf("Not locked\n");
-            }
-            printf("before std::lock_guard<std::mutex> lg(_mutex);\n");
-            std::lock_guard<std::mutex> lg(_mutex);
-            printf("before !_map.count(id)\n");
-            if (!_map.count(id))
-            {
-                printf("before _map.emplace(id, std::make_unique<T>());\n");
-                _map.emplace(id, std::make_unique<T>());
-            }
-            printf("before *_map.at(id);\n");
-            return *_map.at(id);
+            return *map->at(id);
         }
 
-        T& getLocalCopy(const qword id = TL_GET_SESSION_ID())
+        // FIXME:MK: it's not thread safe, decide what to do
+        T& getLocalCopy(const qword id = TL_GET_SESSION_ID()) const
         {
-            std::lock_guard<std::mutex> lg(_mutex);
-            return *_map.at(id);
+            const auto map = sf::slock_safe_ptr(_map);
+            return *map->at(id);
         }
 
         void removeLocalCopy(const qword id = TL_GET_SESSION_ID())
         {
-            std::lock_guard<std::mutex> lg(_mutex);
-            _map.erase(id);
+            auto map = sf::xlock_safe_ptr(_map);
+            map->erase(id);
         }
 
-        bool hasLocalCopy(const qword id = TL_GET_SESSION_ID())
+        bool hasLocalCopy(const qword id = TL_GET_SESSION_ID()) const
         {
-            std::lock_guard<std::mutex> lg(_mutex);
-            return _map.count(id) > 0;
+            const auto map = sf::slock_safe_ptr(_map);
+            return map->count(id) > 0;
         }
 
     private:
-        std::unordered_map<qword, std::unique_ptr<T>> _map;
-        std::mutex _mutex;
+        sf::safe_shared_hide_obj<std::unordered_map<qword, std::unique_ptr<T>>> _map;
     };
 
 // Macros for working with global variables per each session
