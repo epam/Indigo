@@ -71,12 +71,8 @@ class Lib:
     def load(name: str) -> CDLL:
         print("Lib.load()\n")
         if Lib._system_name() == "windows":
-            msvcp140 = CDLL(Lib._library_path("msvcp140"))
-            vcruntime140 = CDLL(Lib._library_path("vcruntime140"))
-            print("msvcp140=%s\nvcruntime140=%s\n" % (msvcp140, vcruntime140))
-            path = Lib._library_path(name)
-            # print("ctypes.util.find_msvcrt()=%s\n" % ctypes.util.find_msvcrt())
-            loaded_lib = CDLL(path)
-            print("lib %s loaded\n" % path)
-            return loaded_lib
+            CDLL(Lib._library_path("msvcp140"))
+            CDLL(Lib._library_path("vcruntime140"))
+            CDLL(Lib._library_path("vcruntime140_1"))
+            return CDLL(Lib._library_path(name))
         return CDLL(Lib._library_path(name), mode=RTLD_GLOBAL)
