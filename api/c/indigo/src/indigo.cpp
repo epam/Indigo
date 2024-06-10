@@ -39,11 +39,15 @@
 #include <iostream>
 #endif
 
-static _SessionLocalContainer<Indigo> indigo_self;
+_SessionLocalContainer<Indigo>& get_self()
+{
+    static _SessionLocalContainer<Indigo> _indigo_self;
+    return _indigo_self;
+}
 
 DLLEXPORT Indigo& indigoGetInstance()
 {
-    return indigo_self.getLocalCopy();
+    return get_self().getLocalCopy();
 }
 
 CEXPORT const char* indigoVersion()
@@ -301,7 +305,7 @@ CEXPORT qword indigoAllocSessionId()
 {
     qword id = TL_ALLOC_SESSION_ID();
     TL_SET_SESSION_ID(id);
-    Indigo& indigo = indigo_self.createOrGetLocalCopy(id);
+    Indigo& indigo = get_self().createOrGetLocalCopy(id);
     indigo.init();
     sf::xlock_safe_ptr(IndigoLocaleHandler::handler())->setLocale(LC_NUMERIC, "C");
     IndigoOptionManager::getIndigoOptionManager().createOrGetLocalCopy(id);
@@ -324,7 +328,7 @@ CEXPORT void indigoReleaseSessionId(qword id)
     TL_SET_SESSION_ID(id);
     indigoGetInstance().removeAllObjects();
     IndigoOptionManager::getIndigoOptionManager().removeLocalCopy(id);
-    indigo_self.removeLocalCopy(id);
+    get_self().removeLocalCopy(id);
     TL_RELEASE_SESSION_ID(id);
 #ifdef INDIGO_DEBUG
     std::stringstream ss;
@@ -346,7 +350,7 @@ CEXPORT void indigoSetErrorHandler(INDIGO_ERROR_HANDLER handler, void* context)
 CEXPORT int indigoFree(int handle)
 {
     // In some runtimes (e.g. Python) session could be removed before objects during resource releasing stage)
-    if (indigo_self.hasLocalCopy())
+    if (get_self().hasLocalCopy())
     {
         try
         {
