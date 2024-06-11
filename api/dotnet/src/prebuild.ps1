@@ -55,6 +55,7 @@ copyOrTouchIfNotExists -srcLibRoot ${distLibFolder} -libPath "windows-i386/indig
 copyOrTouchIfNotExists -srcLibRoot ${distLibFolder} -libPath "windows-i386/bingo-nosql.dll" -destLibRoot ${resourceFolder}
 copyOrTouchIfNotExists -srcLibRoot ${distLibFolder} -libPath "windows-i386/msvcp140.dll" -destLibRoot ${resourceFolder}
 copyOrTouchIfNotExists -srcLibRoot ${distLibFolder} -libPath "windows-i386/vcruntime140.dll" -destLibRoot ${resourceFolder}
+copyOrTouchIfNotExists -srcLibRoot ${distLibFolder} -libPath "windows-i386/vcruntime140_1.dll" -destLibRoot ${resourceFolder}
 copyOrTouchIfNotExists -srcLibRoot ${distLibFolder} -libPath "windows-aarch64/indigo.dll" -destLibRoot ${resourceFolder}
 copyOrTouchIfNotExists -srcLibRoot ${distLibFolder} -libPath "windows-aarch64/indigo-inchi.dll" -destLibRoot ${resourceFolder}
 copyOrTouchIfNotExists -srcLibRoot ${distLibFolder} -libPath "windows-aarch64/indigo-renderer.dll" -destLibRoot ${resourceFolder}
