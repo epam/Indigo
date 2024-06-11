@@ -319,7 +319,8 @@ namespace indigo
 
         inline void addMonomerTemplate(MonomerTemplate& monomer_template)
         {
-            _monomer_templates.erase(monomer_template.id());
+            // _monomer_templates.erase(monomer_template.id());
+            const std::lock_guard<std::mutex> lock(mt_mutex);
             auto res = _monomer_templates.emplace(monomer_template.id(), monomer_template);
             if (res.second)
                 for (auto modification : {IdtModification::FIVE_PRIME_END, IdtModification::INTERNAL, IdtModification::THREE_PRIME_END})
@@ -335,7 +336,8 @@ namespace indigo
 
         inline void addMonomerGroupTemplate(const MonomerGroupTemplate& monomer_group_template)
         {
-            _monomer_group_templates.erase(monomer_group_template.id());
+            //_monomer_group_templates.erase(monomer_group_template.id());
+            const std::lock_guard<std::mutex> lock(mg_mutex);
             auto res = _monomer_group_templates.emplace(monomer_group_template.id(), monomer_group_template);
             if (res.second)
                 for (auto modification : {IdtModification::FIVE_PRIME_END, IdtModification::INTERNAL, IdtModification::THREE_PRIME_END})
@@ -369,6 +371,8 @@ namespace indigo
         std::map<std::string, MonomerGroupTemplate> _monomer_group_templates;
         std::map<std::string, std::pair<MonomerTemplate&, IdtModification>> _id_alias_to_monomer_templates;
         std::map<std::string, std::pair<MonomerGroupTemplate&, IdtModification>> _id_alias_to_monomer_group_templates;
+        std::mutex mg_mutex;
+        std::mutex mt_mutex;
     };
 
 }
