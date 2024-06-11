@@ -169,13 +169,14 @@ public class Indigo {
             lib = Native.load(IndigoUtils.getPathToBinary(Indigo.class, dllpath, path, LIBINDIGO_DYLIB), IndigoLib.class);
         else if (Platform.isWindows()) {
             for (String dllName: WIN_DLLS) {
-                try {
-                    System.load(IndigoUtils.getPathToBinary(Indigo.class, dllpath, path, dllName));
-                } catch (UnsatisfiedLinkError e) {
-                    // File could have been already loaded
-                } catch (FileNotFoundException e) {
-                    // ignore, not all native windows dlls are available
-                }
+                System.load(IndigoUtils.getPathToBinary(Indigo.class, dllpath, path, dllName));
+                // try {
+                //     System.load(IndigoUtils.getPathToBinary(Indigo.class, dllpath, path, dllName));
+                // } catch (UnsatisfiedLinkError e) {
+                //     // File could have been already loaded
+                // } catch (FileNotFoundException e) {
+                //     // ignore, not all native windows dlls are available
+                // }
             }
             lib = Native.load(IndigoUtils.getPathToBinary(Indigo.class, dllpath, path, INDIGO_DLL), IndigoLib.class);
         }
