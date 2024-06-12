@@ -74,7 +74,6 @@ public class Indigo {
     public static final String LIBINDIGO_SO = "libindigo.so";
     public static final String LIBINDIGO_DYLIB = "libindigo.dylib";
     public static final String[] WIN_DLLS = {"vcruntime140.dll", "vcruntime140_1.dll", "msvcp140.dll"};
-    public static final String[] WIN_DLLS_I386 = {"vcruntime140.dll", "msvcp140.dll"};
     private static final String dllpath;
     private static IndigoLib lib = null;
 
@@ -169,14 +168,13 @@ public class Indigo {
         else if (Platform.isMac())
             lib = Native.load(IndigoUtils.getPathToBinary(Indigo.class, dllpath, path, LIBINDIGO_DYLIB), IndigoLib.class);
         else if (Platform.isWindows()) {
-            if (Platform.is64Bit()){
-                for (String dllName: WIN_DLLS) {
+            for (String dllName: WIN_DLLS) {
+                try {
                     System.load(IndigoUtils.getPathToBinary(Indigo.class, dllpath, path, dllName));
-                }
-            }else{
-                for (String dllName: WIN_DLLS_I386) {
-                    System.load(IndigoUtils.getPathToBinary(Indigo.class, dllpath, path, dllName));
-                }
+                } catch (UnsatisfiedLinkError e) {
+                    // File could have been already loaded
+                } catch (FileNotFoundException e) {
+                    // ignore, not all native windows dlls are available
             }
             lib = Native.load(IndigoUtils.getPathToBinary(Indigo.class, dllpath, path, INDIGO_DLL), IndigoLib.class);
         }
