@@ -175,6 +175,7 @@ public class Indigo {
                     // File could have been already loaded
                 } catch (FileNotFoundException e) {
                     // ignore, not all native windows dlls are available
+                }
             }
             lib = Native.load(IndigoUtils.getPathToBinary(Indigo.class, dllpath, path, INDIGO_DLL), IndigoLib.class);
         }
