@@ -15,6 +15,9 @@
             },
             {
                 "$ref": "monomer4"
+            },
+            {
+                "$ref": "monomer5"
             }
         ],
         "connections": [
@@ -59,6 +62,17 @@
                 },
                 "endpoint2": {
                     "monomerId": "monomer3",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer3",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer5",
                     "attachmentPointId": "R1"
                 }
             }
@@ -135,6 +149,17 @@
         },
         "alias": "A",
         "templateId": "A___Adenine"
+    },
+    "monomer5": {
+        "type": "monomer",
+        "id": "5",
+        "seqid": 1,
+        "position": {
+            "x": 4.800000190734863,
+            "y": -0.0
+        },
+        "alias": "P",
+        "templateId": "P"
     },
     "monomerTemplate-dRib": {
         "type": "monomerTemplate",

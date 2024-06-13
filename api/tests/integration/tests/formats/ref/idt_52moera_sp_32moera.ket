@@ -9,6 +9,12 @@
             },
             {
                 "$ref": "monomer2"
+            },
+            {
+                "$ref": "monomer3"
+            },
+            {
+                "$ref": "monomer4"
             }
         ],
         "connections": [
@@ -33,6 +39,28 @@
                     "monomerId": "monomer2",
                     "attachmentPointId": "R1"
                 }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer3",
+                    "attachmentPointId": "R3"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer4",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer2",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer3",
+                    "attachmentPointId": "R1"
+                }
             }
         ],
         "templates": [
@@ -40,7 +68,7 @@
                 "$ref": "monomerTemplate-MOE___2'-O-Methoxyethyl ribose"
             },
             {
-                "$ref": "monomerTemplate-P___Phosphate"
+                "$ref": "monomerTemplate-sP"
             },
             {
                 "$ref": "monomerTemplate-A___Adenine"
@@ -77,8 +105,30 @@
             "x": 1.600000023841858,
             "y": -0.0
         },
-        "alias": "P",
-        "templateId": "P___Phosphate"
+        "alias": "sP",
+        "templateId": "sP"
+    },
+    "monomer3": {
+        "type": "monomer",
+        "id": "3",
+        "seqid": 1,
+        "position": {
+            "x": 3.200000047683716,
+            "y": -0.0
+        },
+        "alias": "MOE",
+        "templateId": "MOE___2'-O-Methoxyethyl ribose"
+    },
+    "monomer4": {
+        "type": "monomer",
+        "id": "4",
+        "seqid": 1,
+        "position": {
+            "x": 3.200000047683716,
+            "y": -1.600000023841858
+        },
+        "alias": "A",
+        "templateId": "A___Adenine"
     },
     "monomerTemplate-MOE___2'-O-Methoxyethyl ribose": {
         "type": "monomerTemplate",
@@ -369,13 +419,13 @@
             }
         ]
     },
-    "monomerTemplate-P___Phosphate": {
+    "monomerTemplate-sP": {
         "type": "monomerTemplate",
-        "id": "P___Phosphate",
+        "id": "sP",
         "class": "Phosphate",
         "classHELM": "RNA",
-        "alias": "P",
-        "name": "P",
+        "alias": "sP",
+        "name": "sP",
         "fullName": "Phosphate",
         "naturalAnalogShort": "P",
         "attachmentPoints": [
@@ -400,7 +450,7 @@
             {
                 "label": "P",
                 "location": [
-                    -0.23989999294281007,
+                    -0.19991692900657655,
                     0.0,
                     0.0
                 ]
@@ -408,7 +458,7 @@
             {
                 "label": "O",
                 "location": [
-                    -1.4399000406265259,
+                    -1.199918270111084,
                     0.0,
                     0.0
                 ]
@@ -416,24 +466,24 @@
             {
                 "label": "O",
                 "location": [
-                    0.3598000109195709,
-                    -1.0393999814987183,
+                    0.2998337149620056,
+                    -0.8661677837371826,
                     0.0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    0.960099995136261,
+                    0.8000843524932861,
                     0.0,
                     0.0
                 ]
             },
             {
-                "label": "O",
+                "label": "S",
                 "location": [
-                    0.3598000109195709,
-                    1.0393999814987183,
+                    0.2998337149620056,
+                    0.8661677837371826,
                     0.0
                 ]
             }

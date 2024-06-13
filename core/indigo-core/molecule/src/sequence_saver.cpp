@@ -59,7 +59,31 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
         std::string sugar;
         std::string base;
         std::string phosphate;
-        if (monomer_class != kMonomerClassSUGAR)
+        if (monomer_class == kMonomerClassPHOSPHATE)
+        {
+            if (used_atoms.size() > 1 && sequence.size()) // Inside the sequence
+                throw Error("Cannot save molecule in IDT format - expected sugar but found phosphate %s.", monomer.c_str());
+            // first and last monomer can be phosphate "P" only
+            if (monomer != "P")
+            {
+                if (used_atoms.size() > 1)
+                    throw Error("Cannot save molecule in IDT format - phosphate %s cannot be last monomer in sequence.", monomer.c_str());
+                throw Error("Cannot save molecule in IDT format - phosphate %s cannot be first monomer in sequence.", monomer.c_str());
+            }
+            // This is 'P' at one of the end
+            if (used_atoms.size() == 1) // First monomer
+            {
+                seq_string += "/5Phos/";
+                modification = IdtModification::INTERNAL;
+            }
+            else
+            {
+                seq_string += "/3Phos/";
+                modification = IdtModification::THREE_PRIME_END;
+            }
+            continue;
+        }
+        else if (monomer_class != kMonomerClassSUGAR)
         {
             // Check for unresoved monomer
             std::optional<std::reference_wrapper<TGroup>> tg_ref = std::nullopt;
@@ -88,14 +112,7 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
                     }
                 }
             }
-
-            if (used_atoms.size() > 1)
-                throw Error("Cannot save molecule in IDT format - expected sugar but found %s monomer %s.", monomer_class.c_str(), monomer.c_str());
-            if (monomer_class != kMonomerClassPHOSPHATE || monomer != "P") // first monomer can be phosphate "P"
-                throw Error("Cannot save molecule in IDT format - %s monomer %s cannot be first.", monomer_class.c_str(), monomer.c_str());
-            seq_string += "/5Phos/";
-            modification = IdtModification::INTERNAL;
-            continue;
+            throw Error("Cannot save molecule in IDT format - expected sugar but found %s monomer %s.", monomer_class.c_str(), monomer.c_str());
         }
         sugar = monomer;
         if (IDT_STANDARD_SUGARS.count(monomer) == 0)
@@ -157,12 +174,14 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
         else
         {
             modification = IdtModification::THREE_PRIME_END;
+            phosphate = "";
+            standard_phosphate = true;
         }
 
         bool add_asterisk = false;
         if (phosphate == "sP")
         {
-            phosphate = "P";
+            phosphate = "P"; // Assume that modified monomers always contains P and modified to sP with *. TODO: confirm it with BA
             add_asterisk = true;
         }
         if (standard_base && standard_phosphate && standard_sugar)
@@ -171,6 +190,12 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
             if (sugar.size())
                 seq_string += sugar;
             seq_string += base;
+            if (sequence.size() == 0 && phosphate.size())
+            {
+                if (phosphate != "P" || add_asterisk)
+                    throw Error("Cannot save molecule in IDT format - phosphate %s cannot be last monomer in sequence.", monomer.c_str());
+                seq_string += "/3Phos/";
+            }
         }
         else
         {
@@ -208,21 +233,10 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
             }
         }
 
-        if (phosphate.size())
+        if (add_asterisk)
         {
-            if (add_asterisk)
-            {
-                seq_string += "*";
-                phosphate = "sP";
-            }
-            if (sequence.size() == 0)
-            {
-                modification = IdtModification::THREE_PRIME_END;
-                if (phosphate == "P")
-                    seq_string += "/3Phos/";
-                else
-                    throw Error("Cannot save molecule in IDT format - phosphate %s cannot be last monomer in sequence.", phosphate.c_str());
-            }
+            seq_string += "*";
+            phosphate = "sP";
         }
 
         if (modification == IdtModification::FIVE_PRIME_END)
