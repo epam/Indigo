@@ -164,7 +164,7 @@ void RdfLoader::readNext()
     /*
      * Current value for property reading
      */
-    Array<char>* current_datum = 0;
+    std::string* current_datum = 0;
     /*
      * Read properties
      */
@@ -214,7 +214,9 @@ void RdfLoader::readNext()
             scanner.skip(6);
             scanner.skipSpace();
 
-            _readLine(scanner, *current_datum);
+            Array<char> buffer;
+            _readLine(scanner, buffer);
+            *current_datum = buffer.ptr();
 
             continue;
         }
@@ -224,8 +226,8 @@ void RdfLoader::readNext()
          */
         if (_innerBuffer.size() && current_datum && current_datum->size())
         {
-            current_datum->appendString("\n", true);
-            current_datum->appendString(_innerBuffer.ptr(), true);
+            (*current_datum) += '\n';
+            (*current_datum) += _innerBuffer.ptr();
         }
 
     } while (_readLine(_getScanner(), _innerBuffer));
@@ -253,30 +255,26 @@ bool RdfLoader::_readIdentifiers(bool from_begin)
         word.push(0);
         if (strcmp(word.ptr(), "$MIREG") == 0 || strcmp(word.ptr(), "$RIREG") == 0)
         {
-            /*
-             * Insert new property key
-             */
-            Array<char>& val = properties.insert("internal-regno");
             scanner.skipSpace();
-            /*
-             * Insert new property value
-             */
-            scanner.readWord(val, 0);
-            val.push(0);
+
+            Array<char> buffer;
+            scanner.readWord(buffer, 0);
+            buffer.push(0);
+
+            properties.insert("internal-regno", buffer.ptr());
+
             result = true;
         }
         else if (strcmp(word.ptr(), "$MEREG") == 0 || strcmp(word.ptr(), "$REREG") == 0)
         {
-            /*
-             * Insert new property key
-             */
-            Array<char>& val = properties.insert("external-regno");
             scanner.skipSpace();
-            /*
-             * Insert new property value
-             */
-            scanner.readWord(val, 0);
-            val.push(0);
+
+            Array<char> buffer;
+            scanner.readWord(buffer, 0);
+            buffer.push(0);
+
+            properties.insert("mexternal-regno", buffer.ptr());
+
             result = true;
         }
         else if (from_begin)
