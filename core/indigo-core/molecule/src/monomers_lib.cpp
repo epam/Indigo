@@ -172,48 +172,6 @@ namespace indigo
         }
     }
 
-    IMPL_ERROR(IdtAlias, "IDT alias");
-
-    const std::string& IdtAlias::getModification(IdtModification modification) const
-    {
-        static std::string empty;
-        switch (modification)
-        {
-        case IdtModification::FIVE_PRIME_END:
-            return getFivePrimeEnd();
-        case IdtModification::INTERNAL:
-            return getInternal();
-        case IdtModification::THREE_PRIME_END:
-            return getThreePrimeEnd();
-        };
-        throw Error("Unknown IDT modification: %s.", modification);
-        return empty;
-    }
-
-    const std::string& IdtAlias::getFivePrimeEnd() const
-    {
-        if (_five_prime_end != "")
-            return _five_prime_end;
-        else
-            throw Error("IDT alias %s has no five-prime end modification.", _base.c_str());
-    }
-
-    const std::string& IdtAlias::getInternal() const
-    {
-        if (_internal != "")
-            return _internal;
-        else
-            throw Error("IDT alias %s has no internal modification.", _base.c_str());
-    }
-
-    const std::string& IdtAlias::getThreePrimeEnd() const
-    {
-        if (_three_prime_end != "")
-            return _three_prime_end;
-        else
-            throw Error("IDT alias %s has no three-prime end modification.", _base.c_str());
-    }
-
     IMPL_ERROR(MonomerTemplate, "MonomerTemplate");
 
     void MonomerTemplate::AddAttachmentPoint(const std::string& id, const std::string& ap_type, int att_atom, std::vector<int>& leaving_group)
@@ -250,6 +208,13 @@ namespace indigo
     bool MonomerTemplate::hasIdtAlias(const std::string& alias, IdtModification mod)
     {
         if (_idt_alias.hasModification(mod) && (_idt_alias.getModification(mod) == alias))
+            return true;
+        return false;
+    }
+
+    bool MonomerTemplate::hasIdtAliasBase(const std::string& alias_base)
+    {
+        if (_idt_alias.getBase() == alias_base)
             return true;
         return false;
     }
@@ -299,6 +264,13 @@ namespace indigo
         return false;
     }
 
+    bool MonomerGroupTemplate::hasIdtAliasBase(const std::string& alias_base)
+    {
+        if (_idt_alias.getBase() == alias_base)
+            return true;
+        return false;
+    }
+
     IMPL_ERROR(MonomerTemplateLibrary, "MonomerTemplateLibrary");
 
     MonomerTemplateLibrary& MonomerTemplateLibrary::instance()
@@ -331,23 +303,43 @@ namespace indigo
         return _monomer_group_templates.at(monomer_group_template_id);
     }
 
-    const std::string& MonomerTemplateLibrary::getMonomerTemplateIdByIdtAliasAndMod(const std::string& alias, IdtModification mod)
+    const std::string& MonomerTemplateLibrary::getMonomerTemplateIdByIdtAliasBase(const std::string& alias_base)
     {
         for (auto& monomer_template : _monomer_templates)
         {
-            if (monomer_template.second.hasIdtAlias(alias, mod))
+            if (monomer_template.second.hasIdtAliasBase(alias_base))
                 return monomer_template.first;
         };
         return EMPTY_STRING;
     };
 
-    const std::string& MonomerTemplateLibrary::getMGTidByIdtAliasAndMod(const std::string& alias, IdtModification mod)
+    const std::string& MonomerTemplateLibrary::getMGTidByIdtAliasBase(const std::string& alias_base)
     {
         for (auto& mgt : _monomer_group_templates)
         {
-            if (mgt.second.hasIdtAlias(alias, mod))
+            if (mgt.second.hasIdtAliasBase(alias_base))
                 return mgt.first;
         };
+        return EMPTY_STRING;
+    };
+
+    const std::string& MonomerTemplateLibrary::getMonomerTemplateIdByIdtAlias(const std::string& alias, IdtModification& mod)
+    {
+        if (auto it = _id_alias_to_monomer_templates.find(alias); it != _id_alias_to_monomer_templates.end())
+        {
+            mod = it->second.second;
+            return it->second.first.id();
+        }
+        return EMPTY_STRING;
+    };
+
+    const std::string& MonomerTemplateLibrary::getMGTidByIdtAlias(const std::string& alias, IdtModification& mod)
+    {
+        if (auto it = _id_alias_to_monomer_group_templates.find(alias); it != _id_alias_to_monomer_group_templates.end())
+        {
+            mod = it->second.second;
+            return it->second.first.id();
+        }
         return EMPTY_STRING;
     };
 
@@ -356,7 +348,7 @@ namespace indigo
     {
         for (auto& mgt : _monomer_group_templates)
         {
-            if (mgt.second.idt_alias().hasModification(modification))
+            if (mgt.second.idtAlias().hasModification(modification))
             {
                 if (!mgt.second.hasTemplate(MonomerClass::Sugar, sugar_id))
                     continue;
@@ -375,7 +367,7 @@ namespace indigo
                     if (mgt.second.hasTemplate(MonomerClass::Base))
                         continue;
                 }
-                return mgt.second.idt_alias().getModification(modification);
+                return mgt.second.idtAlias().getModification(modification);
             }
         }
         return EMPTY_STRING;

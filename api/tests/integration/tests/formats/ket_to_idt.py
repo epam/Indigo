@@ -36,11 +36,25 @@ idt_data = {
     "idt_prefix_suffix": "mA*rT*+C*G*+UrImA",
     "idt_modifications": "/52MOErA/*/i2MOErA//32MOErA/",
     "idt_52moera_with_3phos": "/52MOErA//3Phos/",
-    "idt_singe_32moera_nucleoside": "/32MOErA/",
     "idt_std_phosphates": "/5Phos/ATG/3Phos/",
     "idt_mod_phosphates": "/5Phos//i2MOErC//3Phos/",
     "idt_mixed": "/5Phos/+A*/i2MOErA/*rG/3Phos/",
     "idt_many_molecules": "ACTG\n/52MOErA/*AU/3Phos/\nAC/i2MOErC//3Phos/\nTACG",
+    "idt_52moera": "/52MOErA/",
+    "idt_i2moera": "/52MOErA/",
+    "idt_32moera": "/32MOErA/",
+    "idt_52moera_sp": "/52MOErA/*",
+    "idt_i2moera_sp": "/52MOErA/*",
+    "idt_3phos": "/5Phos/",
+    "idt_5phos": "/5Phos/",
+    "idt_i2moera_t": "/52MOErA/T",
+    "idt_t_i2moera": "T/i2MOErA/",
+    "idt_52moera_32moera": "/52MOErA//32MOErA/",
+    "idt_i2moera_32moera": "/52MOErA//32MOErA/",
+    "idt_52moera_i2moera": "/52MOErA//i2MOErA/",
+    "idt_52moera_sp_32moera": "/52MOErA/*/32MOErA/",
+    "idt_i2moera_sp_32moera": "/52MOErA/*/32MOErA/",
+    "idt_52moera_sp_i2moera_sp": "/52MOErA/*/i2MOErA/*",
 }
 
 for filename in sorted(idt_data.keys()):
@@ -57,7 +71,7 @@ for filename in sorted(idt_data.keys()):
 
 idt_errors = {
     "ket-to-idt-r1r1connection": "Cannot save molecule in IDT format - sugar MOE connected to monomer MOE with class SUGAR (only base or phosphate expected).",
-    "ket-to-idt-peptide": "Cannot save molecule in IDT format - AA monomer DPhe4C cannot be first.",
+    "ket-to-idt-peptide": "Cannot save molecule in IDT format - expected sugar but found AA monomer DPhe4C.",
     "ket-to-idt-two-bases": "Cannot save molecule in IDT format - sugar R with two base connected A and C.",
     "ket-to-idt-invalid-posphates": "Cannot save molecule in IDT format - sugar R with too much phosphates connected P and P.",
     "ket-to-idt-invalid-last-phosphate": "Cannot save molecule in IDT format - phosphate sP cannot be last monomer in sequence.",

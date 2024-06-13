@@ -82,6 +82,9 @@ namespace indigo
         bool addMonomerTemplate(BaseMolecule& mol, MonomerClass mt, const std::string& alias);
         bool checkAddTemplate(BaseMolecule& mol, MonomerClass type, const std::string monomer);
         SequenceLoader(const SequenceLoader&); // no implicit copy
+
+        static void check_monomer_place(std::string& idt_alias, IdtModification mon_mod, IdtModification alias_mod, bool has_prev_mon);
+
         Scanner& _scanner;
         std::unordered_set<std::pair<MonomerClass, std::string>, pair_hash> _added_templates;
         const MonomerTemplates& _mon_lib;
