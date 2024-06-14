@@ -128,6 +128,11 @@ namespace indigo
     protected:
         void _collectSuperatoms(BaseMolecule& mol);
         int _getAttachmentPoint(BaseMolecule& mol, int atom_idx);
+
+        tinyxml2::XMLElement* create_text(tinyxml2::XMLElement* parent, float x, float y, const char* label_justification);
+        void add_style_str(tinyxml2::XMLElement* parent, int font, int size, int face, const char* str);
+        void add_charge(tinyxml2::XMLElement* parent, int font, int size, int charge);
+
         Output& _output;
 
         float _bond_length;
