@@ -44,7 +44,7 @@ namespace indigo
         {
         }
 
-        Array(Array&& other) : _reserved(other._reserved), _length(other._length), _array(other._array)
+        Array(Array&& other) noexcept : _reserved(other._reserved), _length(other._length), _array(other._array)
         {
             other._array = nullptr;
             other._length = 0;

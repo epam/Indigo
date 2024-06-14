@@ -16,7 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "indigo_deconvolution.h"
+#include <algorithm>
+
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/obj_list.h"
@@ -24,6 +25,7 @@
 #include "base_cpp/tlscont.h"
 #include "graph/automorphism_search.h"
 #include "indigo_array.h"
+#include "indigo_deconvolution.h"
 #include "indigo_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/max_common_submolecule.h"
@@ -217,8 +219,8 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph& graph1, Graph& graph2, int* ma
      * Order - atom number for scaffold
      * Index - atom number for Rgroup
      */
-    ObjArray<Array<int>>& attachment_order = deco_match.attachmentOrder;
-    ObjArray<Array<int>>& attachment_index = deco_match.attachmentIndex;
+    std::vector<Array<int>>& attachment_order = deco_match.attachmentOrder;
+    std::vector<Array<int>>& attachment_index = deco_match.attachmentIndex;
 
     visited_atoms.clear_resize(graph2.vertexEnd());
     visited_atoms.zerofill();
@@ -226,8 +228,8 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph& graph1, Graph& graph2, int* ma
     attachment_index.clear();
     attachment_order.clear();
 
-    attachment_index.push();
-    attachment_order.push();
+    attachment_index.emplace_back();
+    attachment_order.emplace_back();
     /*
      * Calculate scaffold atoms and Rgroup atoms
      */
@@ -294,8 +296,8 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph& graph1, Graph& graph2, int* ma
             }
 
             ++n_rgroups;
-            attachment_index.push();
-            attachment_order.push();
+            attachment_index.emplace_back();
+            attachment_order.emplace_back();
         }
 
         visited_atoms[start_idx] = 1;
@@ -338,8 +340,8 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph& graph1, Graph& graph2, int* ma
                 attachment_index[n_rgroups].push(edge.end);
                 attachment_order[n_rgroups].push(edge.beg);
 
-                attachment_index.push();
-                attachment_order.push();
+                attachment_index.emplace_back();
+                attachment_order.emplace_back();
 
                 ++n_rgroups;
             }
@@ -376,8 +378,8 @@ void IndigoDeconvolution::createRgroups(IndigoDecompositionMatch& deco_match, bo
 
     Array<int>& visited_atoms = deco_match.visitedAtoms;
 
-    ObjArray<Array<int>>& attachment_order = deco_match.attachmentOrder;
-    ObjArray<Array<int>>& attachment_index = deco_match.attachmentIndex;
+    std::vector<Array<int>>& attachment_order = deco_match.attachmentOrder;
+    std::vector<Array<int>>& attachment_index = deco_match.attachmentIndex;
 
     int n_rgroups = deco_match.getRgroupNumber();
     /*
@@ -657,11 +659,13 @@ void IndigoDecompositionMatch::copy(IndigoDecompositionMatch& other)
     attachmentIndex.clear();
     for (int i = 0; i < other.attachmentOrder.size(); ++i)
     {
-        attachmentOrder.push().copy(other.attachmentOrder[i]);
+        attachmentOrder.emplace_back();
+        attachmentOrder.back().copy(other.attachmentOrder[i]);
     }
     for (int i = 0; i < other.attachmentIndex.size(); ++i)
     {
-        attachmentIndex.push().copy(other.attachmentIndex[i]);
+        attachmentIndex.emplace_back();
+        attachmentIndex.back().copy(other.attachmentIndex[i]);
     }
 
     mol_out.clone_KeepIndices(other.mol_out, 0);
@@ -688,13 +692,13 @@ void IndigoDecompositionMatch::removeRsitesFromMaps(Graph& query_graph)
     }
 }
 
-void IndigoDecompositionMatch::copyScafAutoMaps(ObjList<Array<int>>& autoMaps)
+void IndigoDecompositionMatch::copyScafAutoMaps(const std::vector<Array<int>>& autoMaps)
 {
     scafAutoMaps.clear();
-    for (int i = autoMaps.begin(); i != autoMaps.end(); i = autoMaps.next(i))
+    for (const auto& src : autoMaps)
     {
-        int idx = scafAutoMaps.add();
-        scafAutoMaps.at(idx).copy(autoMaps[i]);
+        scafAutoMaps.emplace_back();
+        scafAutoMaps.back().copy(src);
     }
 }
 
@@ -951,7 +955,7 @@ void IndigoDeconvolution::addCompleteRGroup(IndigoDecompositionMatch& deco_match
     if (deco_match.scafAutoMaps.size() == 0)
         throw Error("internal error: can not calculate scaffold matchings for null automorphism");
 
-    for (int aut_idx = deco_match.scafAutoMaps.begin(); aut_idx != deco_match.scafAutoMaps.end(); aut_idx = deco_match.scafAutoMaps.next(aut_idx))
+    for (int aut_idx = 0; aut_idx < deco_match.scafAutoMaps.size(); ++aut_idx)
     {
         int new_rg_num = _createRgMap(deco_match, aut_idx, match_rgroups, &rg_map_buf, false);
         /*
@@ -1123,7 +1127,7 @@ int IndigoDeconvolution::_createRgMap(IndigoDecompositionMatch& deco_match, int 
     int max_rg_idx = match_rgroups.at("max_rg_idx").at(0);
 
     int n_rgroups = deco_match.getRgroupNumber();
-    ObjArray<Array<int>>& attachment_order = deco_match.attachmentOrder;
+    std::vector<Array<int>>& attachment_order = deco_match.attachmentOrder;
     Array<int>& map = deco_match.lastInvMapping;
     int result_num = 0;
 
@@ -1237,8 +1241,8 @@ void IndigoDeconvolution::DecompositionEnumerator::calculateAutoMaps(Graph& sub)
      */
     _scafAutoMaps.clear();
 
-    int l_idx = _scafAutoMaps.add();
-    Array<int>& d_map = _scafAutoMaps.at(l_idx);
+    _scafAutoMaps.emplace_back();
+    Array<int>& d_map = _scafAutoMaps.back();
     d_map.resize(sub.vertexEnd());
     for (int i = 0; i < d_map.size(); ++i)
     {
@@ -1340,9 +1344,8 @@ void IndigoDeconvolution::DecompositionEnumerator::addMatch(IndigoDecompositionM
     {
         direct_order.push(pair.first);
     }
-    for (int auto_idx = _autoMaps.begin(); auto_idx != _autoMaps.end(); auto_idx = _autoMaps.next(auto_idx))
+    for (const Array<int>& auto_map : _autoMaps)
     {
-        Array<int>& auto_map = _autoMaps[auto_idx];
         /*
          * Check for correctness and condition
          */
@@ -1408,8 +1411,8 @@ bool IndigoDeconvolution::DecompositionEnumerator::_foundOrder(ObjArray<Array<in
 void IndigoDeconvolution::DecompositionEnumerator::_swapIndexes(IndigoDecompositionMatch& match, int old_idx, int new_idx)
 {
     QS_DEF(Array<int>, tmp_buf);
-    ObjArray<Array<int>>& attachment_order = match.attachmentOrder;
-    ObjArray<Array<int>>& attachment_index = match.attachmentIndex;
+    std::vector<Array<int>>& attachment_order = match.attachmentOrder;
+    std::vector<Array<int>>& attachment_index = match.attachmentIndex;
 
     tmp_buf.copy(attachment_order[old_idx]);
     attachment_order[old_idx].copy(attachment_order[new_idx]);
@@ -1434,7 +1437,7 @@ void IndigoDeconvolution::DecompositionEnumerator::_swapIndexes(IndigoDecomposit
     }
 }
 
-void IndigoDeconvolution::DecompositionEnumerator::_refineAutoMaps(ObjList<Array<int>>& auto_maps, Graph& sub_in, Graph& super, Array<int>& scaf_map)
+void IndigoDeconvolution::DecompositionEnumerator::_refineAutoMaps(std::vector<Array<int>>& auto_maps, Graph& sub_in, Graph& super, Array<int>& scaf_map)
 {
     QS_DEF(Array<int>, indices_to_remove);
     indices_to_remove.clear();
@@ -1442,7 +1445,7 @@ void IndigoDeconvolution::DecompositionEnumerator::_refineAutoMaps(ObjList<Array
     BaseMolecule& sub = (BaseMolecule&)sub_in;
 
     int sub_idx, super_idx, ae_idx_beg, ae_idx_end, e_beg, e_end;
-    for (int auto_idx = auto_maps.begin(); auto_idx != auto_maps.end(); auto_idx = auto_maps.next(auto_idx))
+    for (int auto_idx = 0; auto_idx < auto_maps.size(); ++auto_idx)
     {
         Array<int>& auto_map = auto_maps.at(auto_idx);
 
@@ -1513,10 +1516,21 @@ void IndigoDeconvolution::DecompositionEnumerator::_refineAutoMaps(ObjList<Array
             indices_to_remove.push(auto_idx);
         }
     }
-    for (int i = 0; i < indices_to_remove.size(); ++i)
+
+    // clean-up auto_maps according to indices_to_remove
+    auto tmp_maps = std::move(auto_maps);
+    auto_maps.clear();
+
+    int start = 0;
+    for (int idx : indices_to_remove)
     {
-        auto_maps.remove(indices_to_remove[i]);
+        const auto startIt = tmp_maps.begin() + start;
+        const auto endIt = tmp_maps.begin() + idx;
+        std::move(startIt, endIt, std::back_inserter(auto_maps));
+
+        start = idx + 1;
     }
+    std::move(tmp_maps.begin() + start, tmp_maps.end(), std::back_inserter(auto_maps));
 }
 
 void IndigoDeconvolution::DecompositionEnumerator::_addAllRsites(QueryMolecule& r_molecule, IndigoDecompositionMatch& deco_match, std::map<int, int>& r_sites)
@@ -1558,9 +1572,9 @@ void IndigoDeconvolution::DecompositionEnumerator::_addAllRsites(QueryMolecule& 
 
 bool IndigoDeconvolution::DecompositionEnumerator::_cbAutoCheckAutomorphism(Graph&, const Array<int>& mapping, const void* context)
 {
-    ObjList<Array<int>>& auto_maps = *(ObjList<Array<int>>*)context;
-    int l_idx = auto_maps.add();
-    auto_maps.at(l_idx).copy(mapping);
+    std::vector<Array<int>>& auto_maps = *(std::vector<Array<int>>*)context;
+    auto_maps.emplace_back();
+    auto_maps.back().copy(mapping);
     return false;
 }
 
