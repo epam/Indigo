@@ -20,7 +20,9 @@
 
 using namespace indigo;
 
+IMPL_ERROR(LayoutChooser, "attachemnt_layout");
 CP_DEF(AttachmentLayout);
+
 
 AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer& bc_decom, const PtrArray<MoleculeLayoutGraph>& bc_components, const Array<int>& bc_tree,
                                    MoleculeLayoutGraph& graph, int src_vertex)
@@ -237,6 +239,8 @@ LayoutChooser::LayoutChooser(AttachmentLayout& layout, Array<int>& fixed_compone
 void LayoutChooser::_perform(int level)
 {
     int i;
+    if (cancellation && cancellation->isCancelled())
+        throw Error("Layout chooser has been cancelled: %s", cancellation->cancelledRequestMessage());
 
     if (level == 0)
     {
