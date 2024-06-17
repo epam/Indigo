@@ -83,9 +83,25 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
             }
             continue;
         }
-        else if (monomer_class != kMonomerClassSUGAR)
+        else if (monomer_class == kMonomerClassCHEM || monomer_class == kMonomerClassDNA || monomer_class == kMonomerClassRNA)
         {
-            // Check for unresoved monomer
+            // Try to find in library
+            MonomerTemplateLibrary& lib = MonomerTemplateLibrary::instance();
+            const std::string& monomer_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Sugar, monomer);
+            if (monomer_id.size()) // Monomer in library
+            {
+                const MonomerTemplate& templ = lib.getMonomerTemplateById(monomer_id);
+                if (templ.idtAlias().hasModification(modification))
+                {
+                    const std::string& idt_alias = templ.idtAlias().getModification(modification);
+                    seq_string += '/';
+                    seq_string += idt_alias;
+                    seq_string += '/';
+                    continue;
+                }
+            }
+
+            // Check TGroup for IdtAlias
             std::optional<std::reference_wrapper<TGroup>> tg_ref = std::nullopt;
             int temp_idx = mol.getTemplateAtomTemplateIndex(atom_idx);
             if (temp_idx > -1)
@@ -95,25 +111,37 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
             if (tg_ref.has_value())
             {
                 auto& tg = tg_ref.value().get();
-                if (tg.unresolved)
+                const std::string& idt_alias = tg.unresolved                                ? tg.idt_alias.getBase()
+                                               : tg.idt_alias.hasModification(modification) ? tg.idt_alias.getModification(modification)
+                                                                                            : "";
+                if (idt_alias.size())
                 {
-                    const std::string& idt_alias = tg.idt_alias.getBase();
-                    if (idt_alias.size())
-                    {
-                        seq_string.push_back('/');
-                        seq_string.append(idt_alias);
-                        seq_string.push_back('/');
-                        modification = IdtModification::INTERNAL;
-                        continue;
-                    }
-                    else
-                    {
+                    seq_string.push_back('/');
+                    seq_string.append(idt_alias);
+                    seq_string.push_back('/');
+                    modification = IdtModification::INTERNAL;
+                    continue;
+                }
+                else
+                {
+                    if (tg.unresolved)
                         throw Error("Unresolved monomer '%s' has no IDT alias.", tg.tgroup_text_id.ptr());
-                    }
+                    else if (monomer_class == kMonomerClassDNA || monomer_class == kMonomerClassRNA)
+                        throw Error("Nucleotide '%s' has no IDT alias.", monomer);
+                    else // CHEM
+                        throw Error("Chem '%s' has no IDT alias.", tg.tgroup_text_id.ptr());
                 }
             }
+            else
+            {
+                throw Error("Internal error - monomer %s with class %s not found.", monomer.c_str(), monomer_class.c_str());
+            }
+        }
+        else if (monomer_class != kMonomerClassSUGAR)
+        {
             throw Error("Cannot save molecule in IDT format - expected sugar but found %s monomer %s.", monomer_class.c_str(), monomer.c_str());
         }
+
         sugar = monomer;
         if (IDT_STANDARD_SUGARS.count(monomer) == 0)
             standard_sugar = false;

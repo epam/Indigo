@@ -56,6 +56,7 @@ idt_data = {
     "idt_52moera_sp_32moera": "/52MOErA/*/32MOErA/",
     "idt_i2moera_sp_32moera": "/52MOErA/*/32MOErA/",
     "idt_52moera_sp_i2moera_sp": "/52MOErA/*/i2MOErA/*",
+    "idt_unsplit": "/UNSPLIT/",
 }
 
 for filename in sorted(idt_data.keys()):

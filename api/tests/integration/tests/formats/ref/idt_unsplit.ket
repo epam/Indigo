@@ -1,0 +1,59 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "monomer0"
+            }
+        ],
+        "connections": [],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-unknown_monomer_with_idt_alias_UNSPLIT"
+            }
+        ]
+    },
+    "monomer0": {
+        "type": "monomer",
+        "id": "0",
+        "seqid": 0,
+        "position": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "alias": "unknown_monomer_with_idt_alias_UNSPLIT",
+        "templateId": "unknown_monomer_with_idt_alias_UNSPLIT"
+    },
+    "monomerTemplate-unknown_monomer_with_idt_alias_UNSPLIT": {
+        "type": "monomerTemplate",
+        "id": "unknown_monomer_with_idt_alias_UNSPLIT",
+        "class": "Chem",
+        "classHELM": "CHEM",
+        "alias": "unknown_monomer_with_idt_alias_UNSPLIT",
+        "name": "unknown_monomer_with_idt_alias_UNSPLIT",
+        "unresolved": true,
+        "idtAliases": {
+            "base": "UNSPLIT",
+            "modifications": {
+                "endpoint5": "UNSPLIT",
+                "internal": "UNSPLIT",
+                "endpoint3": "UNSPLIT"
+            }
+        },
+        "attachmentPoints": [
+            {
+                "attachmentAtom": -1
+            },
+            {
+                "attachmentAtom": -1
+            },
+            {
+                "attachmentAtom": -1
+            },
+            {
+                "attachmentAtom": -1
+            }
+        ],
+        "atoms": [],
+        "bonds": []
+    }
+}
