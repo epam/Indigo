@@ -87,7 +87,7 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
         {
             // Try to find in library
             MonomerTemplateLibrary& lib = MonomerTemplateLibrary::instance();
-            const std::string& monomer_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Sugar, monomer);
+            const std::string& monomer_id = lib.getMonomerTemplateIdByAlias(MonomerTemplate::StrToMonomerClass(monomer_class), monomer);
             if (monomer_id.size()) // Monomer in library
             {
                 const MonomerTemplate& templ = lib.getMonomerTemplateById(monomer_id);

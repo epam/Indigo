@@ -101,7 +101,7 @@ namespace indigo
         void setStereoFlagPosition(const rapidjson::Value& pos, int fragment_index, BaseMolecule& mol);
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
         int parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol);
-        void addToLibMonomerTemplate(const rapidjson::Value& mt_json, BaseMolecule& mol);
+        void addToLibMonomerTemplate(const rapidjson::Value& mt_json, BaseMolecule& mol, int tgroup_id);
         void addToLibMonomerGroupTemplate(const rapidjson::Value& monomer_group_template);
         std::string monomerTemplateClass(const rapidjson::Value& monomer_template);
         std::string monomerMolClass(const std::string& class_name);
@@ -123,6 +123,7 @@ namespace indigo
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
         unsigned int components_count;
+        bool _is_library;
     };
 
 } // namespace indigo
