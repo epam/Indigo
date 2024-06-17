@@ -127,7 +127,7 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
                     if (tg.unresolved)
                         throw Error("Unresolved monomer '%s' has no IDT alias.", tg.tgroup_text_id.ptr());
                     else if (monomer_class == kMonomerClassDNA || monomer_class == kMonomerClassRNA)
-                        throw Error("Nucleotide '%s' has no IDT alias.", monomer);
+                        throw Error("Nucleotide '%s' has no IDT alias.", monomer.c_str());
                     else // CHEM
                         throw Error("Chem '%s' has no IDT alias.", tg.tgroup_text_id.ptr());
                 }
