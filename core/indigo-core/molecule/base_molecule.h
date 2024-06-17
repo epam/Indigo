@@ -35,6 +35,7 @@
 #include "molecule/molecule_cis_trans.h"
 #include "molecule/molecule_ionize.h"
 #include "molecule/molecule_rgroups.h"
+#include "molecule/molecule_altgroups.h"
 #include "molecule/molecule_sgroups.h"
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_stereocenters.h"
@@ -379,6 +380,7 @@ namespace indigo
         bool ignore_chem_templates = false;
 
         MoleculeRGroups rgroups;
+        MoleculeAltGroups altgroups;
 
         StringPool custom_collections;
 
