@@ -1376,7 +1376,7 @@ void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
 {
     std::vector<AutoInt> r_labels;
     std::vector<std::unique_ptr<BaseCDXElement>> r_fragments;
-
+    std::vector<std::unique_ptr<BaseCDXElement>> alt_groups;
     std::pair<Vec2f, Vec2f> bbox, text_frame, group_frame;
     auto bbox_lambda = [&bbox, this](const std::string& data) { this->parseSeg(data, bbox.first, bbox.second); };
     auto text_frame_lambda = [&text_frame, this](const std::string& data) { this->parseSeg(data, text_frame.first, text_frame.second); };
@@ -1398,6 +1398,8 @@ void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
             _parseLabel(*r_elem, rl);
             if (rl.find("R") == 0)
                 r_labels.push_back(rl.substr(1));
+
+            alt_groups.emplace_back(r_elem->copy());
         }
     }
 
@@ -1414,6 +1416,20 @@ void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
             MoleculeRGroups& rgroups = mol.rgroups;
             RGroup& rgroup = rgroups.getRGroup(r_labels.front());
             rgroup.fragments.add(fragment.release());
+        }
+        else if (alt_groups.size())
+        {
+            BaseMolecule& mol = _pmol ? *(BaseMolecule*)_pmol : *(BaseMolecule*)_pqmol;
+            // std::unique_ptr<BaseMolecule> fragment(mol.neu());
+
+            MoleculeAltGroups& altgroups = mol.altgroups;
+            altgroups.setBoundingBox(bbox);
+            altgroups.setGroupFrame(group_frame);
+            altgroups.setTextFrame(text_frame);
+            AltGroup& altgroup = altgroups.getAltGroup(r_labels.front());
+            // altgroup.
+            std::cout << "@Dp Adding altgroup details \n";
+            // altgroup.fragments.add(fragment.release());
         }
     }
 }

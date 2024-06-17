@@ -93,7 +93,7 @@ namespace indigo
         void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale, int frag_id, int& id, std::vector<int>& ids);
         void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale);
         void saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum);
-
+        void saveAltGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum);
         void addMetaObject(const MetaObject& obj, int id);
         void addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end);
 

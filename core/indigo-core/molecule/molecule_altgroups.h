@@ -1,0 +1,112 @@
+/****************************************************************************
+ * Copyright (C) from 2009 to Present EPAM Systems.
+ *
+ * This file is part of Indigo toolkit.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
+
+#ifndef __molecule_altgroups__
+#define __molecule_altgroups__
+
+#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_pool.h"
+#include "base_cpp/red_black.h"
+#include "math/algebra.h"
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
+namespace indigo
+{
+
+    class BaseMolecule;
+
+    struct AltGroup
+    {
+        explicit AltGroup();
+        ~AltGroup();
+        void clear();
+
+        void copy(AltGroup& other);
+
+        bool occurrenceSatisfied(int value);
+
+        //PtrPool<BaseMolecule> fragments;
+        //int if_then;
+        //int rest_h;
+        Array<int> occurrence;
+
+    protected:
+        explicit AltGroup(AltGroup& other);
+    };
+
+    class DLLEXPORT MoleculeAltGroups
+    {
+    public:
+        MoleculeAltGroups();
+        ~MoleculeAltGroups();
+
+        DECL_ERROR;
+
+        void copyAltGroupsFromMolecule(MoleculeAltGroups& other);
+
+        AltGroup& getAltGroup(int idx);
+        int getAltGroupCount() const;
+
+        void clear();
+        
+        inline void setBoundingBox(std::pair<Vec2f, Vec2f> bb)
+        {
+            bbox = bb;
+        }
+
+        inline void setTextFrame(std::pair<Vec2f, Vec2f> tf)
+        {
+            text_frame = tf;
+        }
+
+        inline void setGroupFrame(std::pair<Vec2f, Vec2f> gf)
+        {
+            group_frame = gf;
+        }
+
+        inline const std::pair<Vec2f, Vec2f>& aetBoundingBox(std::pair<Vec2f, Vec2f> bb)
+        {
+            return bbox;
+        }
+
+        inline const std::pair<Vec2f, Vec2f>& getTextFrame(std::pair<Vec2f, Vec2f> tf)
+        {
+            return text_frame;
+        }
+
+        inline const std::pair<Vec2f, Vec2f>& getGroupFrame(std::pair<Vec2f, Vec2f> gf)
+        {
+            return group_frame;
+        }
+
+        protected : 
+            ObjArray<AltGroup> _altgroups;
+            std::pair<Vec2f, Vec2f> bbox, text_frame, group_frame;
+    };
+
+} // namespace indigo
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
+
+#endif
