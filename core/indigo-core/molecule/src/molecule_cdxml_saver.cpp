@@ -1207,6 +1207,41 @@ void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2
     _current = parent;
 }
 
+void MoleculeCdxmlSaver::saveAltGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum)
+{
+
+    Vec2f rmin, rmax;
+    int valence = 0;
+    for (int i = fragments.begin(); i != fragments.end(); i = fragments.next(i))
+    {
+        Vec2f min_coord, max_coord;
+        fragments[i]->getBoundingBox(min_coord, max_coord);
+        if (i == fragments.begin())
+        {
+            rmin.copy(min_coord);
+            rmax.copy(max_coord);
+        }
+        else
+        {
+            rmin.min(min_coord);
+            rmax.max(max_coord);
+        }
+        saveMoleculeFragment(*fragments[i], offset, 1);
+        valence += fragments[i]->attachmentPointCount();
+    }
+    std::string rg_name("R");
+    rg_name += std::to_string(rgnum);
+    rmin.add(offset);
+    rmax.add(offset);
+    Vec2f text_origin(rmin.x, rmax.y);
+    addText(text_origin, rg_name.c_str(), nullptr);
+    rmin.x *= _scale;
+    rmax.x *= _scale;
+    rmax.y *= -_scale;
+    rmin.y *= -_scale;
+    auto gframe = std::to_string(rmin.x) + " " + std::to_string(rmin.y) + " " + std::to_string(rmax.x) + " " + std::to_string(rmax.y);
+}
+
 void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float structure_scale, int frag_id, int& id, std::vector<int>& ids)
 {
     _atoms_ids.clear();
@@ -1959,6 +1994,22 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& mol)
         if (rgrp.fragments.size())
             saveRGroup(rgrp.fragments, offset, i);
     }
+    std::cout << "@Dp Trying to access altgroup while saving \n";
+    XMLElement* parent = _current;
+    XMLElement* fragment = _doc->NewElement("altgroup");
+    _current->LinkEndChild(fragment);
+    _current = fragment;
+    fragment->SetAttribute("id", ++_id);
+    fragment->SetAttribute("BoundingBox", "161.07 66.15 327.92 168.55");
+    fragment->SetAttribute("GroupFrame", "161.63 87.75 327.38 168");
+    fragment->SetAttribute("TextFrame", "161.63 66.7 183.99 87.75");
+    for (int i = 1; i <= mol.altgroups.getAltGroupCount(); i++)
+    {
+        auto& rgrp = mol.altgroups.getAltGroup(i);
+        //if (rgrp.fragments.size())
+          //  saveAltGroup(rgrp.fragments, offset, i);
+    }
+    _current = parent;
 
     endPage();
     endDocument();
