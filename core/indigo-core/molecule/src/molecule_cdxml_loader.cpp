@@ -1420,16 +1420,11 @@ void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
         else if (alt_groups.size())
         {
             BaseMolecule& mol = _pmol ? *(BaseMolecule*)_pmol : *(BaseMolecule*)_pqmol;
-            // std::unique_ptr<BaseMolecule> fragment(mol.neu());
 
-            MoleculeAltGroups& altgroups = mol.altgroups;
-            altgroups.setBoundingBox(bbox);
-            altgroups.setGroupFrame(group_frame);
-            altgroups.setTextFrame(text_frame);
-            AltGroup& altgroup = altgroups.getAltGroup(r_labels.front());
-            // altgroup.
-            std::cout << "@Dp Adding altgroup details \n";
-            // altgroup.fragments.add(fragment.release());
+            MoleculeAltGroups& altgroup = mol.altgroups;
+            altgroup.setBoundingBox(bbox);
+            altgroup.setGroupFrame(group_frame);
+            altgroup.setTextFrame(text_frame);
         }
     }
 }
