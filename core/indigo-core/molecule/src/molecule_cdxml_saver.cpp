@@ -390,7 +390,7 @@ void MoleculeCdxmlSaver::beginDocument(Bounds* bounds)
 
         mac_print_info[12] = 871; // magic number
 
-        mac_print_info[13] = height / 5; // magic scaling coeffient
+        mac_print_info[13] = height / 5; // magic scaling coefficient
         mac_print_info[14] = width / 5;
 
         mac_print_info[24] = 100; // horizontal scale, in percent
@@ -1148,22 +1148,25 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
         }
 
         auto& sa = (Superatom&)mol.sgroups.getSGroup(kvp.first);
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
-        t->SetAttribute("LabelJustification", "Left");
-        t->SetAttribute("LabelAlignment", "Above");
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        XMLText* txt = _doc->NewText(sa.subscript.ptr());
-        s->LinkEndChild(txt);
+        if (sa.subscript.size())
+        {
+            XMLElement* t = _doc->NewElement("t");
+            node->LinkEndChild(t);
+            t->SetAttribute("LabelJustification", "Left");
+            t->SetAttribute("LabelAlignment", "Above");
+            XMLElement* s = _doc->NewElement("s");
+            t->LinkEndChild(s);
+            XMLText* txt = _doc->NewText(sa.subscript.ptr());
+            s->LinkEndChild(txt);
+        }
     }
 }
 
-void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale)
+void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float scale)
 {
-    std::vector<int> ids;
+    std::map<int, int> atom_ids;
     int id = 0;
-    saveMoleculeFragment(mol, offset, scale, -1, id, ids);
+    saveMoleculeFragment(bmol, offset, scale, -1, id, atom_ids);
 }
 
 void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum)
@@ -1206,8 +1209,12 @@ void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2
     fragment->SetAttribute("Valence", valence);
 }
 
-void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float structure_scale, int frag_id, int& id, std::vector<int>& ids)
+void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float structure_scale, int frag_id, int& id,
+                                              std::map<int, int>& atom_ids)
 {
+    std::unique_ptr<BaseMolecule> mol(bmol.neu());
+    mol->clone_KeepIndices(bmol);
+
     _atoms_ids.clear();
     _bonds_ids.clear();
     _super_atoms.clear();
@@ -1233,25 +1240,26 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
     else
         fragment->SetAttribute("id", ++_id);
 
-    if (ids.size())
+    if (atom_ids.size())
     {
-        _atoms_ids = ids;
-        if (_atoms_ids.back() > _id)
-            _id = _atoms_ids.back();
+        _atoms_ids = atom_ids;
+        auto back_it = std::prev(_atoms_ids.end());
+        if (back_it->second > _id)
+            _id = back_it->second;
     }
     else
-        for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-            _atoms_ids.push_back(++_id);
+        for (int i = mol->vertexBegin(); i != mol->vertexEnd(); i = mol->vertexNext(i))
+            _atoms_ids.emplace(i, ++_id);
 
-    for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-        _bonds_ids.push_back(++_id);
+    for (int i = mol->edgeBegin(); i != mol->edgeEnd(); i = mol->edgeNext(i))
+        _bonds_ids.emplace(i, ++_id);
 
     Vec2f min_coord, max_coord;
 
-    _collectSuperatoms(mol);
-    addFragmentNodes(mol, fragment, offset, min_coord, max_coord);
-    addNodesToFragment(mol, fragment, offset, min_coord, max_coord);
-    addBondsToFragment(mol, fragment);
+    _collectSuperatoms(*mol);
+    addFragmentNodes(*mol, fragment, offset, min_coord, max_coord);
+    addNodesToFragment(*mol, fragment, offset, min_coord, max_coord);
+    addBondsToFragment(*mol, fragment);
 
     for (const auto& out_bond : _out_connections)
     {
@@ -1262,7 +1270,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
         bond->SetAttribute("E", out_bond.end);
     }
 
-    if (mol.isChiral())
+    if (mol->isChiral())
     {
         Vec2f chiral_pos(max_coord.x, max_coord.y);
         Vec2f bbox(_scale * chiral_pos.x, -_scale * chiral_pos.y);
@@ -1284,8 +1292,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
         _current = fragment;
     }
 
-    for (int i = 0; i < mol.meta().metaData().size(); ++i)
-        addMetaObject(*mol.meta().metaData()[i], ++_id);
+    for (int i = 0; i < mol->meta().metaData().size(); ++i)
+        addMetaObject(*mol->meta().metaData()[i], ++_id);
 
     _current = parent;
     id = _id;
