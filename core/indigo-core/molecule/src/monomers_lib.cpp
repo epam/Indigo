@@ -64,7 +64,9 @@ namespace indigo
                                                                                       {MonomerClass::Sugar, kMonomerClassSUGAR},
                                                                                       {MonomerClass::Base, kMonomerClassBASE},
                                                                                       {MonomerClass::AminoAcid, kMonomerClassAA},
-                                                                                      {MonomerClass::CHEM, kMonomerClassCHEM}};
+                                                                                      {MonomerClass::CHEM, kMonomerClassCHEM},
+                                                                                      {MonomerClass::DNA, kMonomerClassDNA},
+                                                                                      {MonomerClass::RNA, kMonomerClassRNA}};
 
         return kMonomerTypeStr.at(mon_type);
     }
@@ -92,11 +94,11 @@ namespace indigo
 
     const std::unordered_map<std::string, MonomerClass>& MonomerTemplates::getStrToMonomerType()
     {
-        static const std::unordered_map<std::string, MonomerClass> kStrMonomerType = {{kMonomerClassSUGAR, MonomerClass::Sugar},
-                                                                                      {kMonomerClassPHOSPHATE, MonomerClass::Phosphate},
-                                                                                      {kMonomerClassBASE, MonomerClass::Base},
-                                                                                      {kMonomerClassAA, MonomerClass::AminoAcid},
-                                                                                      {kMonomerClassCHEM, MonomerClass::CHEM}};
+        static const std::unordered_map<std::string, MonomerClass> kStrMonomerType = {
+            {kMonomerClassSUGAR, MonomerClass::Sugar},  {kMonomerClassPHOSPHATE, MonomerClass::Phosphate}, {kMonomerClassBASE, MonomerClass::Base},
+            {kMonomerClassAA, MonomerClass::AminoAcid}, {kMonomerClassCHEM, MonomerClass::CHEM},           {kMonomerClassDNA, MonomerClass::DNA},
+            {kMonomerClassRNA, MonomerClass::RNA},
+        };
         return kStrMonomerType;
     }
 

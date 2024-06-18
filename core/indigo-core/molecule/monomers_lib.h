@@ -48,7 +48,9 @@ namespace indigo
         Terminator,
         Linker,
         Unknown,
-        CHEM
+        CHEM,
+        DNA,
+        RNA
     };
 
     enum class NucleotideType
@@ -151,20 +153,36 @@ namespace indigo
 
         static const std::string& MonomerClassToStr(MonomerClass monomer_type)
         {
-            static const std::map<MonomerClass, std::string> _type_to_str{{MonomerClass::AminoAcid, "AminoAcid"},   {MonomerClass::Sugar, "Sugar"},
-                                                                          {MonomerClass::Phosphate, "Phosphate"},   {MonomerClass::Base, "Base"},
-                                                                          {MonomerClass::Terminator, "Terminator"}, {MonomerClass::Linker, "Linker"},
-                                                                          {MonomerClass::Unknown, "Unknown"},       {MonomerClass::CHEM, "Chem"}};
+            static const std::map<MonomerClass, std::string> _type_to_str{
+                {MonomerClass::AminoAcid, "AminoAcid"},
+                {MonomerClass::Sugar, "Sugar"},
+                {MonomerClass::Phosphate, "Phosphate"},
+                {MonomerClass::Base, "Base"},
+                {MonomerClass::Terminator, "Terminator"},
+                {MonomerClass::Linker, "Linker"},
+                {MonomerClass::Unknown, "Unknown"},
+                {MonomerClass::CHEM, "Chem"},
+                {MonomerClass::DNA, "DNA"},
+                {MonomerClass::RNA, "RNA"},
+            };
 
             return _type_to_str.at(monomer_type);
         }
 
         static const MonomerClass StrToMonomerClass(const std::string& monomer_type)
         {
-            static const std::map<std::string, MonomerClass> _str_to_type = {{"AminoAcid", MonomerClass::AminoAcid},   {"Sugar", MonomerClass::Sugar},
-                                                                             {"Phosphate", MonomerClass::Phosphate},   {"Base", MonomerClass::Base},
-                                                                             {"Terminator", MonomerClass::Terminator}, {"Linker", MonomerClass::Linker},
-                                                                             {"Unknown", MonomerClass::Unknown},       {"Chem", MonomerClass::CHEM}};
+            static const std::map<std::string, MonomerClass> _str_to_type = {
+                {"AminoAcid", MonomerClass::AminoAcid},
+                {"Sugar", MonomerClass::Sugar},
+                {"Phosphate", MonomerClass::Phosphate},
+                {"Base", MonomerClass::Base},
+                {"Terminator", MonomerClass::Terminator},
+                {"Linker", MonomerClass::Linker},
+                {"Unknown", MonomerClass::Unknown},
+                {"Chem", MonomerClass::CHEM},
+                {"DNA", MonomerClass::DNA},
+                {"RNA", MonomerClass::RNA},
+            };
             if (_str_to_type.count(monomer_type))
                 return _str_to_type.at(monomer_type);
             return MonomerClass::Unknown;
