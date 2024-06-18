@@ -155,7 +155,7 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
                         if (dirs.size())
                         {
                             auto br_it = dirs.find(kBranchAttachmentPointIdx);
-                            if (br_it != dirs.end())
+                            if (br_it != dirs.end() && mol.isTemplateAtom(br_it->second))
                             {
                                 std::string br_class = mol.getTemplateAtomClass(br_it->second);
                                 seq_name = mol.getTemplateAtom(br_it->second);
@@ -169,7 +169,7 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
                             if (seq_name.size())
                             {
                                 br_it = dirs.find(kRightAttachmentPointIdx);
-                                if (br_it != dirs.end())
+                                if (br_it != dirs.end() && mol.isTemplateAtom(br_it->second))
                                 {
                                     std::string br_class = mol.getTemplateAtomClass(br_it->second);
                                     if (br_class == kMonomerClassPHOSPHATE)
