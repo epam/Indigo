@@ -82,10 +82,7 @@ for filename in files:
 print("*** KET to CDXML ***")
 
 root_m = joinPathPy("molecules/", __file__)
-files = [
-    "963-super",
-    "macro/sa-mono"
-]
+files = ["963-super", "macro/sa-mono"]
 
 files.sort()
 
