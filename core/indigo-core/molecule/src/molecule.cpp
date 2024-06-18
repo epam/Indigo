@@ -1483,7 +1483,6 @@ const int Molecule::getTemplateAtomDisplayOption(int idx)
     return res;
 }
 
-
 void Molecule::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map)
 {
     directions_map.clear();
