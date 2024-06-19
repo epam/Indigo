@@ -90,8 +90,8 @@ namespace indigo
         void addFontToTable(int id, const char* charset, const char* name);
         void addColorTable(const char* color);
         void addColorToTable(int id, int r, int g, int b);
-        void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale, int frag_id, int& id, std::vector<int>& ids);
-        void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale);
+        void saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float scale, int frag_id, int& id, std::map<int, int>& atom_ids);
+        void saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float scale);
         void saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum);
 
         void addMetaObject(const MetaObject& obj, int id);
@@ -149,8 +149,8 @@ namespace indigo
         std::unordered_set<int> _bonds_included;
         std::vector<OutConnection> _out_connections;
 
-        std::vector<int> _atoms_ids;
-        std::vector<int> _bonds_ids;
+        std::map<int, int> _atoms_ids;
+        std::map<int, int> _bonds_ids;
         std::map<int, std::vector<int>> _super_atoms;
 
         int _id;

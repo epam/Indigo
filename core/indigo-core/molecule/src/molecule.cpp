@@ -1483,17 +1483,6 @@ const int Molecule::getTemplateAtomDisplayOption(int idx)
     return res;
 }
 
-void Molecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map)
-{
-    templates_map.clear();
-    for (int i = tgroups.begin(); i != tgroups.end(); i = tgroups.next(i))
-    {
-        auto& tg = tgroups.getTGroup(i);
-        std::string tname = tg.tgroup_name.size() ? tg.tgroup_name.ptr() : monomerAlias(tg);
-        templates_map.emplace(std::make_pair(tname, tg.tgroup_class.ptr()), std::ref(tg));
-    }
-}
-
 void Molecule::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map)
 {
     directions_map.clear();

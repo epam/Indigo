@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
+<CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
+    <fonttable id="1">
+        <font id="2" charset="utf-8" name="Arial"/>
+        <font id="3" charset="utf-8" name="Times New Roman"/>
+    </fonttable>
+    <colortable>
+        <color r="1" g="1" b="1"/>
+        <color r="0" g="0" b="0"/>
+        <color r="1" g="0" b="0"/>
+        <color r="1" g="1" b="0"/>
+        <color r="0" g="1" b="0"/>
+        <color r="0" g="1" b="1"/>
+        <color r="0" g="0" b="1"/>
+        <color r="1" g="0" b="1"/>
+        <color r="0.5" g="0.5" b="0.5"/>
+    </colortable>
+    <page HeightPages="1" WidthPages="1">
+        <fragment id="4">
+            <n id="19" NodeType="Fragment">
+                <fragment id="20">
+                    <n id="7" p="56.003639 92.248993"/>
+                    <n id="21" NodeType="ExternalConnectionPoint"/>
+                    <n id="5" p="30.000000 107.252228"/>
+                    <n id="9" p="30.000000 137.400604"/>
+                    <n id="10" p="56.069153 152.250992"/>
+                    <n id="8" p="81.909027 137.265961"/>
+                    <n id="6" p="81.909027 107.237663"/>
+                    <b id="12" B="7" E="5" Order="2"/>
+                    <b id="13" B="5" E="9"/>
+                    <b id="14" B="9" E="10" Order="2"/>
+                    <b id="15" B="10" E="8"/>
+                    <b id="16" B="8" E="6" Order="2"/>
+                    <b id="17" B="6" E="7"/>
+                    <b id="23" B="21" E="7"/>
+                </fragment>
+                <t LabelJustification="Left" LabelAlignment="Above">
+                    <s></s>
+                </t>
+            </n>
+            <n id="11" Element="122" p="93.454514 30.000000">
+                <t p="93.454514 30.000000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">A</s>
+                </t>
+            </n>
+            <b id="22" B="11" E="19"/>
+        </fragment>
+    </page>
+</CDXML>
