@@ -38,6 +38,49 @@
 using namespace indigo;
 using namespace tinyxml2;
 
+tinyxml2::XMLElement* MoleculeCdxmlSaver::create_text(tinyxml2::XMLElement* parent, float x, float y, const char* label_justification)
+{
+    XMLElement* t = _doc->NewElement("t");
+    parent->LinkEndChild(t);
+    Array<char> buf;
+    ArrayOutput out(buf);
+    out.printf("%f %f", x, y);
+    buf.push(0);
+    t->SetAttribute("p", buf.ptr());
+    if (label_justification)
+        t->SetAttribute("LabelJustification", label_justification);
+    return t;
+}
+
+void MoleculeCdxmlSaver::add_style_str(tinyxml2::XMLElement* parent, int font, int size, int face, const char* str)
+{
+    XMLElement* s = _doc->NewElement("s");
+    parent->LinkEndChild(s);
+    s->SetAttribute("font", font);
+    s->SetAttribute("size", size);
+    s->SetAttribute("face", face);
+    XMLText* txt = _doc->NewText(str);
+    s->LinkEndChild(txt);
+}
+
+void MoleculeCdxmlSaver::add_charge(tinyxml2::XMLElement* parent, int font, int size, int charge)
+{
+    if (charge == 0 || charge == CHARGE_UNKNOWN)
+        return;
+    if (charge > 0)
+    {
+        if (charge > 1)
+            add_style_str(parent, font, size, 64, std::to_string(charge).c_str());
+        add_style_str(parent, font, size, 96, "+");
+    }
+    else if (charge < 0)
+    {
+        if (charge < -1)
+            add_style_str(parent, font, size, 64, std::to_string(-charge).c_str());
+        add_style_str(parent, font, size, 96, "-");
+    }
+}
+
 void MoleculeCdxmlSaver::writeBinaryTextValue(const tinyxml2::XMLElement* pTextElement)
 {
     if (std::string(pTextElement->Name()) != "t")
@@ -723,163 +766,59 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
 
     if (mol.getVertex(atom_idx).degree() == 0 && atom_number == ELEM_C && charge == 0 && radical == 0)
     {
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
-
-        QS_DEF(Array<char>, buf);
-        ArrayOutput out(buf);
-        out.printf("%f %f", pos.x, -pos.y);
-        buf.push(0);
-        t->SetAttribute("p", buf.ptr());
+        XMLElement* t = create_text(node, pos.x, -pos.y, nullptr);
         t->SetAttribute("Justification", "Center");
-
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        s->SetAttribute("font", 3);
-        s->SetAttribute("size", 10);
-        s->SetAttribute("face", 96);
-
-        XMLText* txt = _doc->NewText("CH4");
-        s->LinkEndChild(txt);
+        add_style_str(t, 3, 10, 96, "CH4");
+        add_charge(t, 3, 10, charge);
     }
     else if (mol.isRSite(atom_idx))
     {
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
-
+        XMLElement* t = create_text(node, pos.x, -pos.y, "Left");
         QS_DEF(Array<char>, buf);
-        ArrayOutput out(buf);
-        out.printf("%f %f", pos.x, -pos.y);
-        buf.push(0);
-        t->SetAttribute("p", buf.ptr());
-        t->SetAttribute("LabelJustification", "Left");
-
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        s->SetAttribute("font", 3);
-        s->SetAttribute("size", 10);
-        s->SetAttribute("face", 96);
-
-        out.clear();
-        //			out.printf("A");
         mol.getAtomSymbol(atom_idx, buf);
-        /*
-         * Skip charge since Chemdraw is pure. May be in future it will be fixed by Chemdraw
-         */
-        /*if (charge != 0) {
-            if (charge > 0) {
-                out.printf("+%d", charge);
-            }
-            else {
-                out.printf("-%d", charge);
-            }
-        }*/
         buf.push(0);
-
-        XMLText* txt = _doc->NewText(buf.ptr());
-        s->LinkEndChild(txt);
+        add_style_str(t, 3, 10, 96, buf.ptr());
+        add_charge(t, 3, 10, charge);
     }
     else if (mol.isPseudoAtom(atom_idx))
     {
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
-
-        QS_DEF(Array<char>, buf);
-        ArrayOutput out(buf);
-        out.printf("%f %f", pos.x, -pos.y);
-        buf.push(0);
-        t->SetAttribute("p", buf.ptr());
-        t->SetAttribute("LabelJustification", "Left");
-
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        s->SetAttribute("font", 3);
-        s->SetAttribute("size", 10);
-        s->SetAttribute("face", 96);
-
-        out.clear();
-
-        out.printf("%s", mol.getPseudoAtom(atom_idx));
-        /*
-         * Skip charge since Chemdraw is pure. May be in future it will be fixed by Chemdraw
-         */
-        /*if (charge != 0) {
-            if (charge > 0) {
-                out.printf("+%d", charge);
-            }
-            else {
-                out.printf("-%d", charge);
-            }
-        }*/
-        buf.push(0);
-        XMLText* txt = _doc->NewText(buf.ptr());
-        s->LinkEndChild(txt);
+        XMLElement* t = create_text(node, pos.x, -pos.y, "Left");
+        add_style_str(t, 3, 10, 96, mol.getPseudoAtom(atom_idx));
+        add_charge(t, 3, 10, charge);
     }
     else if (atom_number > 0 && atom_number != ELEM_C)
     {
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
+        XMLElement* t = create_text(node, pos.x, -pos.y, "Left");
 
         QS_DEF(Array<char>, buf);
         ArrayOutput out(buf);
-        out.printf("%f %f", pos.x, -pos.y);
-        buf.push(0);
-        t->SetAttribute("p", buf.ptr());
-        t->SetAttribute("LabelJustification", "Left");
-
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        s->SetAttribute("font", 3);
-        s->SetAttribute("size", 10);
-        s->SetAttribute("face", 96);
-
-        out.clear();
         mol.getAtomSymbol(atom_idx, buf);
         if (hcount > 0)
         {
             buf.pop();
             buf.push('H');
         }
-
         buf.push(0);
-        XMLText* txt = _doc->NewText(buf.ptr());
-        s->LinkEndChild(txt);
+        add_style_str(t, 3, 10, 96, buf.ptr());
+
         if (hcount > 1)
         {
-            XMLElement* ss = _doc->NewElement("s");
-            t->LinkEndChild(ss);
-            ss->SetAttribute("font", 3);
-            ss->SetAttribute("size", 10);
-            ss->SetAttribute("face", 32);
-
             out.clear();
             out.printf("%d", hcount);
             buf.push(0);
-            ss->LinkEndChild(_doc->NewText(buf.ptr()));
+            add_style_str(t, 3, 10, 32, buf.ptr());
         }
+        add_charge(t, 3, 10, charge);
     }
     else if (atom_number < 0 && mol.isQueryMolecule())
     {
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
+        XMLElement* t = create_text(node, pos.x, -pos.y, "Left");
 
         QS_DEF(Array<char>, buf);
         ArrayOutput out(buf);
-        out.printf("%f %f", pos.x, -pos.y);
-        buf.push(0);
-        t->SetAttribute("p", buf.ptr());
-        t->SetAttribute("LabelJustification", "Left");
-
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        s->SetAttribute("font", 3);
-        s->SetAttribute("size", 10);
-        s->SetAttribute("face", 96);
 
         QS_DEF(Array<int>, list);
         int query_atom_type;
-
-        out.clear();
 
         if (mol.isQueryMolecule() && (query_atom_type = QueryMolecule::parseQueryAtom(mol.asQueryMolecule(), atom_idx, list)) != -1)
         {
@@ -902,8 +841,7 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
                 mol.getAtomSymbol(atom_idx, buf);
         }
 
-        XMLText* txt = _doc->NewText(buf.ptr());
-        s->LinkEndChild(txt);
+        add_style_str(t, 3, 10, 96, buf.ptr());
     }
 }
 
