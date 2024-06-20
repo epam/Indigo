@@ -1214,6 +1214,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& o
 {
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
+    mol->transformTemplatesToSuperatoms();
 
     _atoms_ids.clear();
     _bonds_ids.clear();
@@ -1252,7 +1253,10 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& o
             _atoms_ids.emplace(i, ++_id);
 
     for (int i = mol->edgeBegin(); i != mol->edgeEnd(); i = mol->edgeNext(i))
+    {
         _bonds_ids.emplace(i, ++_id);
+        std::cout << _id << std::endl;
+    }
 
     Vec2f min_coord, max_coord;
 

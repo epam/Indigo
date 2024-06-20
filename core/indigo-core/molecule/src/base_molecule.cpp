@@ -2952,6 +2952,26 @@ bool BaseMolecule::isAtomBelongsSGroup(int idx)
     return sgs.size() > 0;
 }
 
+void BaseMolecule::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map)
+{
+    directions_map.clear();
+    if (vertexCount())
+    {
+        directions_map.resize(vertexEnd());
+        for (int i = template_attachment_points.begin(); i != template_attachment_points.end(); i = template_attachment_points.next(i))
+        {
+            auto& tap = template_attachment_points[i];
+            if (tap.ap_id.size())
+            {
+                Array<char> atom_label;
+                getAtomSymbol(tap.ap_occur_idx, atom_label);
+                int ap_id = tap.ap_id[0] - 'A';
+                directions_map[tap.ap_occur_idx].emplace(ap_id, tap.ap_aidx);
+            }
+        }
+    }
+}
+
 int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
 {
     int result = 0;
@@ -2962,6 +2982,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     QS_DEF(Array<int>, att_atoms);
     QS_DEF(Array<int>, tg_atoms);
     QS_DEF(Array<int>, lvgroups);
+    QS_DEF(Array<int>, atoms_to_delete);
     QS_DEF(StringPool, ap_points_ids);
     QS_DEF(Array<int>, ap_ids);
     QS_DEF(Array<char>, ap_id);
@@ -2982,11 +3003,19 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     ap_points_ids.clear();
     ap_ids.clear();
 
-    fragment.sgroups.findSGroups(SGroup::SG_CLASS, "LGRP", sgs);
     for (int j = fragment.sgroups.begin(); j != fragment.sgroups.end(); j = fragment.sgroups.next(j))
     {
-        if (sgs.find(j) == -1)
-            base_sgs.push(j);
+        // how to check if group is connected?
+        auto& sg = fragment.sgroups.getSGroup(j);
+        if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+        {
+            Superatom& sa = (Superatom&)sg;
+            BufferScanner sc(sa.sa_class);
+            if (sc.findWordIgnoreCase("LGRP"))
+                sgs.push(j);
+            else
+                base_sgs.push(j);
+        }            
     }
 
     if (base_sgs.size() == 0)
@@ -3014,11 +3043,12 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
             tg_atoms.push(ap.aidx);
             lvgroups.push(ap.lvidx);
             ap_ids.push(ap_points_ids.add(ap.apid));
-
+            ap.lvidx = -1;
             // printf("idx = %d, att_atom_idx = %d, ap.aidx = %d, ap.lvidx = %d, ap_id = %s\n", idx, att_atom_idx, ap.aidx, ap.lvidx, ap.apid.ptr());
         }
     }
 
+    mergeWithMolecule(fragment, &mapping);
     for (const auto sg_index : sgs)
     {
         const SGroup& lvg = fragment.sgroups.getSGroup(sg_index);
@@ -3026,7 +3056,8 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
         {
             if (lvg.atoms.find(lvgroup_index) > -1)
             {
-                fragment.removeSGroupWithBasis(sg_index);
+                atoms_to_delete.push(mapping[lvg.atoms[0]]);
+                fragment.removeSGroup(sg_index);
                 if (!fragment.sgroups.hasSGroup(sg_index))
                 {
                     break;
@@ -3034,8 +3065,6 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
             }
         }
     }
-
-    mergeWithMolecule(fragment, &mapping);
 
     for (auto i : fragment.vertices())
     {
@@ -3123,7 +3152,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
 
                         // printf("SUP AP  ap.aidx = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", ap.aidx, tg_atoms[i], mapping[tg_atoms[i]]);
 
-                        if (ap.aidx == mapping[tg_atoms[i]])
+                        if (ap.aidx == mapping[tg_atoms[i]] && ap.lvidx != -1)
                             ap.lvidx = att_atoms[i];
                     }
                 }
@@ -3144,7 +3173,8 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
         sg.atoms.concat(added_atoms);
     }
 
-    removeAtom(idx);
+    atoms_to_delete.push(idx);
+    removeAtoms(atoms_to_delete);
 
     return result;
 }
