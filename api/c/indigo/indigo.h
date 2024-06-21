@@ -207,6 +207,10 @@ CEXPORT int indigoLoadIdt(int source);
 CEXPORT int indigoLoadIdtFromString(const char* string);
 CEXPORT int indigoLoadIdtFromFile(const char* filename);
 
+CEXPORT int indigoLoadHelm(int source);
+CEXPORT int indigoLoadHelmFromString(const char* string);
+CEXPORT int indigoLoadHelmFromFile(const char* filename);
+
 CEXPORT int indigoSaveMolfile(int molecule, int output);
 CEXPORT int indigoSaveMolfileToFile(int molecule, const char* filename);
 CEXPORT const char* indigoMolfile(int molecule);
@@ -222,6 +226,10 @@ CEXPORT const char* indigoFasta(int molecule);
 CEXPORT int indigoSaveIdt(int molecule, int output);
 CEXPORT int indigoSaveIdtToFile(int molecule, const char* filename);
 CEXPORT const char* indigoIdt(int molecule);
+
+CEXPORT int indigoSaveHelm(int molecule, int output);
+CEXPORT int indigoSaveHelmToFile(int molecule, const char* filename);
+CEXPORT const char* indigoHelm(int molecule);
 
 CEXPORT int indigoSaveJsonToFile(int item, const char* filename);
 CEXPORT int indigoSaveJson(int item, int output);

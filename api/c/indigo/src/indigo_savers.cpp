@@ -639,6 +639,25 @@ CEXPORT int indigoSaveIdt(int item, int output)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoSaveHelm(int item, int output)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        Output& out = IndigoOutput::get(self.getObject(output));
+        if (IndigoBaseMolecule::is(obj))
+        {
+            SequenceSaver saver(out);
+            BaseMolecule& mol = obj.getBaseMolecule();
+            // saver.saveMolecule(mol, SequenceSaver::SeqFormat::HELM);
+            out.flush();
+            return 1;
+        }
+        throw IndigoError("indigoSaveHelm(): expected molecule, got %s", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
 CEXPORT int indigoSaveJson(int item, int output)
 {
     INDIGO_BEGIN

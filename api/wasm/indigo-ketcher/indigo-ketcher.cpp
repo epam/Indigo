@@ -148,6 +148,10 @@ namespace indigo
             {
                 result = _checkResultString(indigoIdt(id()));
             }
+            else if (outputFormat == "helm" || outputFormat == "chemical/x-helm")
+            {
+                result = _checkResultString(indigoHelm(id()));
+            }
             else if (outputFormat == "smarts" || outputFormat == "chemical/x-daylight-smarts")
             {
                 if (options.count("smarts") > 0 && options.at("smarts") == "canonical")
@@ -359,6 +363,13 @@ namespace indigo
         else if (input_format != options.end() && input_format->second == "chemical/x-idt")
         {
             objectId = indigoLoadIdtFromString(data.c_str());
+            if (objectId >= 0)
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            exceptionMessages.emplace_back(indigoGetLastError());
+        }
+        else if (input_format != options.end() && input_format->second == "chemical/x-helm")
+        {
+            objectId = indigoLoadHelmFromString(data.c_str());
             if (objectId >= 0)
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
             exceptionMessages.emplace_back(indigoGetLastError());
