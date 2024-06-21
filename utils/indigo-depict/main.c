@@ -865,7 +865,7 @@ int main(int argc, char* argv[])
     indigoSetErrorHandler(onError, 0);
 
     indigoSetOption("ignore-stereochemistry-errors", "on");
-    // indigoSetOption("ignore-bad-valence", "on");
+    indigoSetOption("ignore-bad-valence", "on");
     indigoSetOption("molfile-saving-mode", "3000");
     indigoSetOptionBool("json-saving-pretty", "on");
 

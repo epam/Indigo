@@ -938,8 +938,13 @@ void MoleculeCdxmlSaver::_collectSuperatoms(BaseMolecule& mol)
 
             if (beg_it != _atoms_excluded.end() || end_it != _atoms_excluded.end())
             {
-                if (beg_it != _atoms_excluded.end() && end_it != _atoms_excluded.end() && beg_it->second == end_it->second)
-                    _bonds_included.insert(i);
+                if (beg_it != _atoms_excluded.end() && end_it != _atoms_excluded.end())
+                {
+                    if (beg_it->second == end_it->second)
+                        _bonds_included.insert(i);
+                    else
+                        continue;
+                }
 
                 _bonds_excluded.insert(i);
             }

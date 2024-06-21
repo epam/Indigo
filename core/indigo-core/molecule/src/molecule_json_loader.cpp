@@ -1735,7 +1735,6 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     int arrows_count = mol.meta().getMetaCount(KETReactionArrow::CID);
     if (arrows_count && !load_arrows)
         throw Error("Not a molecule. Found %d arrows.", arrows_count);
-    mol.transformTemplatesToSuperatoms();
 }
 
 void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDataStorage& meta_interface)
