@@ -2993,7 +2993,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
 
     TGroup& tgroup = tgroups.getTGroup(tg_idx);
     fragment.clear();
-    fragment.clone_KeepIndices(*tgroup.fragment.get());
+    fragment.clone(*tgroup.fragment.get());
 
     sgs.clear();
     att_atoms.clear();
@@ -3010,6 +3010,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
         if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
             Superatom& sa = (Superatom&)sg;
+            sa.contracted = DisplayOption::Expanded;
             BufferScanner sc(sa.sa_class);
             if (sc.findWordIgnoreCase("LGRP"))
                 sgs.push(j);

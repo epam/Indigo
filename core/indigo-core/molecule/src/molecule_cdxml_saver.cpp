@@ -920,9 +920,10 @@ void MoleculeCdxmlSaver::_collectSuperatoms(BaseMolecule& mol)
             _super_atoms.emplace(i, std::vector<int>{});
             auto& atoms_list = _super_atoms.at(i);
             Superatom& sa = (Superatom&)sgroup;
+            // collect atoms of all the superatoms
             for (int j = 0; j < sa.atoms.size(); ++j)
             {
-                _atoms_excluded.insert(sa.atoms[j]);
+                _atoms_excluded.emplace(sa.atoms[j], i);
                 atoms_list.push_back(sa.atoms[j]);
             }
         }
@@ -932,17 +933,16 @@ void MoleculeCdxmlSaver::_collectSuperatoms(BaseMolecule& mol)
         for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
         {
             auto& edge = mol.getEdge(i);
-            int v_count = 0;
-            if (_atoms_excluded.find(edge.beg) != _atoms_excluded.end())
-                v_count++;
-            if (_atoms_excluded.find(edge.end) != _atoms_excluded.end())
-                v_count++;
+            auto beg_it = _atoms_excluded.find(edge.beg);
+            auto end_it = _atoms_excluded.find(edge.end);
 
-            if (v_count)
+            if (beg_it != _atoms_excluded.end() || end_it != _atoms_excluded.end())
+            {
+                if (beg_it != _atoms_excluded.end() && end_it != _atoms_excluded.end() && beg_it->second == end_it->second)
+                    _bonds_included.insert(i);
+
                 _bonds_excluded.insert(i);
-
-            if (v_count == 2) // 2 means that both bond's atoms belongs to superatom
-                _bonds_included.insert(i);
+            }
         }
 }
 
@@ -1090,6 +1090,7 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
             {
                 int nei_atom_idx = vx.neiVertex(nei_idx);
                 int nei_edge_idx = vx.neiEdge(nei_idx);
+                // if atom is not in superatom
                 if (_atoms_excluded.find(nei_atom_idx) == _atoms_excluded.end())
                 {
                     // external neighbor found
@@ -1212,10 +1213,6 @@ void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2
 void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float structure_scale, int frag_id, int& id,
                                               std::map<int, int>& atom_ids)
 {
-    std::unique_ptr<BaseMolecule> mol(bmol.neu());
-    mol->clone_KeepIndices(bmol);
-    mol->transformTemplatesToSuperatoms();
-
     _atoms_ids.clear();
     _bonds_ids.clear();
     _super_atoms.clear();
@@ -1249,21 +1246,20 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& o
             _id = back_it->second;
     }
     else
-        for (int i = mol->vertexBegin(); i != mol->vertexEnd(); i = mol->vertexNext(i))
+        for (int i = bmol.vertexBegin(); i != bmol.vertexEnd(); i = bmol.vertexNext(i))
             _atoms_ids.emplace(i, ++_id);
 
-    for (int i = mol->edgeBegin(); i != mol->edgeEnd(); i = mol->edgeNext(i))
+    for (int i = bmol.edgeBegin(); i != bmol.edgeEnd(); i = bmol.edgeNext(i))
     {
         _bonds_ids.emplace(i, ++_id);
-        std::cout << _id << std::endl;
     }
 
     Vec2f min_coord, max_coord;
 
-    _collectSuperatoms(*mol);
-    addFragmentNodes(*mol, fragment, offset, min_coord, max_coord);
-    addNodesToFragment(*mol, fragment, offset, min_coord, max_coord);
-    addBondsToFragment(*mol, fragment);
+    _collectSuperatoms(bmol);
+    addFragmentNodes(bmol, fragment, offset, min_coord, max_coord);
+    addNodesToFragment(bmol, fragment, offset, min_coord, max_coord);
+    addBondsToFragment(bmol, fragment);
 
     for (const auto& out_bond : _out_connections)
     {
@@ -1274,7 +1270,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& o
         bond->SetAttribute("E", out_bond.end);
     }
 
-    if (mol->isChiral())
+    if (bmol.isChiral())
     {
         Vec2f chiral_pos(max_coord.x, max_coord.y);
         Vec2f bbox(_scale * chiral_pos.x, -_scale * chiral_pos.y);
@@ -1296,8 +1292,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& o
         _current = fragment;
     }
 
-    for (int i = 0; i < mol->meta().metaData().size(); ++i)
-        addMetaObject(*mol->meta().metaData()[i], ++_id);
+    for (int i = 0; i < bmol.meta().metaData().size(); ++i)
+        addMetaObject(*bmol.meta().metaData()[i], ++_id);
 
     _current = parent;
     id = _id;
@@ -1927,18 +1923,22 @@ int MoleculeCdxmlSaver::getHydrogenCount(BaseMolecule& mol, int idx, int charge,
     return h;
 }
 
-void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& mol)
+void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
 {
+    std::unique_ptr<BaseMolecule> mol(bmol.neu());
+    mol->clone(bmol);
+    mol->transformTemplatesToSuperatoms();
+
     Vec3f min_coord, max_coord;
 
     _id = 0;
 
-    if (mol.have_xyz)
+    if (mol->have_xyz)
     {
-        for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+        for (int i = mol->vertexBegin(); i != mol->vertexEnd(); i = mol->vertexNext(i))
         {
-            Vec3f& pos = mol.getAtomXyz(i);
-            if (i == mol.vertexBegin())
+            Vec3f& pos = mol->getAtomXyz(i);
+            if (i == mol->vertexBegin())
                 min_coord = max_coord = pos;
             else
             {
@@ -1963,10 +1963,10 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& mol)
 
     Vec2f offset(-min_coord.x, -max_coord.y);
 
-    saveMoleculeFragment(mol, offset, 1);
-    for (int i = 1; i <= mol.rgroups.getRGroupCount(); i++)
+    saveMoleculeFragment(*mol, offset, 1);
+    for (int i = 1; i <= mol->rgroups.getRGroupCount(); i++)
     {
-        auto& rgrp = mol.rgroups.getRGroup(i);
+        auto& rgrp = mol->rgroups.getRGroup(i);
         if (rgrp.fragments.size())
             saveRGroup(rgrp.fragments, offset, i);
     }
