@@ -390,6 +390,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
             const std::string kRNA = "RNA:";
             const std::string kDNA = "DNA:";
             const std::string kIDT = "IDT:";
+            const std::string kHELM = "HELM:";
 
             long long start_pos = _scanner->tell();
             if (_scanner->length() > static_cast<long long>(kRNA.size()))
@@ -410,6 +411,11 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
                 else if (kIDT == tag.data())
                 {
                     sl.loadIdt(mol);
+                    return;
+                }
+                else if (kHELM == tag.data())
+                {
+                    // sl.loadHelm(mol);
                     return;
                 }
                 else
