@@ -29,7 +29,10 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     Value& nodes = root["nodes"];
 
     if (nodes.Size() == 0)
+    {
         _is_library = true;
+        MonomerTemplateLibrary::instance().clear();
+    }
 
     // rewind to first molecule node
     for (rapidjson::SizeType i = 0; i < nodes.Size(); ++i)
@@ -1169,7 +1172,6 @@ void MoleculeJsonLoader::addToLibMonomerTemplate(const rapidjson::Value& mt_json
     if (mt_json.HasMember("idtAliases"))
     {
         IdtAlias idt_alias = mol.tgroups.getTGroup(tgroup_id).idt_alias;
-        mol.tgroups.getTGroup(tgroup_id).idt_alias = parseIdtAlias(mt_json);
         if (idt_alias.getBase().size() == 0)
             throw Error("Monomer template %s contains IDT alias without base.", id.c_str());
         mon_template.setIdtAlias(idt_alias);

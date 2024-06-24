@@ -958,9 +958,10 @@ M  END
             options.set("monomerLibrary",monomersLib);
             const idt = "/5Phos/mA*mGC/i2MOErA//3Phos/";
             var startTestTime = process.hrtime();
-            const res = indigo.convert(idt, "ket", options);
+            const res1 = indigo.convert(idt, "ket", options);
             const elapsedSeconds = parseHrtimeToSeconds(process.hrtime(startTestTime));
             assert.equal(elapsedSeconds < 2, true);
+            const res = indigo.convert(idt, "ket", options); // convert second time to check issue with wrong library reload
             const res_ket = JSON.parse(res).struct;
             // fs.writeFileSync("idt_maxmgc.ket", res_ket);
             const res_ket_ref = fs.readFileSync("idt_maxmgc.ket");
