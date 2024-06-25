@@ -41,6 +41,7 @@ idt_data = {
     "idt_mixed": "/5Phos/+A*/i2MOErA/*rG/3Phos/",
     "idt_many_molecules": "ACTG\n/52MOErA/*AU/3Phos/\nAC/i2MOErC//3Phos/\nTACG",
     "idt_unresolved": "/unr1//unr2/",
+    "idt_unresolved_many": "/unr0/A/unr1/C/unr2/ACTG/unr3/G/unr4/",
     "idt_52moera": "/52MOErA/",
     "idt_i2moera": "/52MOErA/",
     "idt_32moera": "/32MOErA/",

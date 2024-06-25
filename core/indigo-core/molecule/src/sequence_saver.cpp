@@ -171,7 +171,7 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
                                     phosphate.c_str(), mol.getTemplateAtom(nei_atom_idx));
                     phosphate = mol.getTemplateAtom(nei_atom_idx);
                 }
-                else
+                else if (monomer_class != kMonomerClassCHEM) // chem is ok in any place
                 {
                     throw Error("Cannot save molecule in IDT format - sugar %s connected to monomer %s with class %s (only base or phosphate expected).",
                                 monomer.c_str(), mol.getTemplateAtom(nei_atom_idx), monomer_class.c_str());
@@ -273,6 +273,26 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
     return seq_string;
 }
 
+static void check_backbone_connection(BaseMolecule& mol, std::vector<std::map<int, int>> directions_map, int template_idx, int side,
+                                      std::map<int, int>& side_backbone_links, std::map<int, int>& other_side_backbone_links)
+{
+    auto& attachments = directions_map[template_idx];
+    auto& side_attachments = attachments.find(side);
+    if (side_attachments != attachments.end()) // has side attachment
+    {
+        int side_neighbor_idx = side_attachments->second;
+        if (mol.isTemplateAtom(side_neighbor_idx))
+        {
+            auto& neighbor_attachments = directions_map[side_neighbor_idx];
+            auto& neighbor_other_size = neighbor_attachments.find(side == kLeftAttachmentPointIdx ? kRightAttachmentPointIdx : kLeftAttachmentPointIdx);
+            if (neighbor_other_size != neighbor_attachments.end() && neighbor_other_size->second == template_idx)
+            {
+                side_backbone_links[template_idx] = side_neighbor_idx;
+                other_side_backbone_links[side_neighbor_idx] = template_idx;
+            }
+        }
+    }
+}
 void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
 {
     if (!mol.isQueryMolecule())
@@ -285,6 +305,60 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
     sl.sequenceExtract(sequences);
     auto prop_it = mol_properties.begin();
     int seq_idx = 0;
+    if (sf == SeqFormat::IDT)
+    {
+        std::vector<std::map<int, int>> directions_map;
+        mol.getTemplateAtomDirectionsMap(directions_map);
+        std::map<int, int> left_backbone_links;
+        std::map<int, int> right_backbone_links;
+        std::map<int, size_t> seq_start;
+        std::map<int, size_t> seq_end;
+        for (size_t idx = 0; idx < sequences.size(); idx++)
+        {
+            auto& sequence = sequences[idx];
+            auto template_idx = sequence.front();
+            seq_start[template_idx] = idx;
+            seq_end[sequence.back()] = idx;
+            if (sequence.size() != 1) // CHEM sequence always only one monomer
+                continue;
+            if (strcasecmp(mol.getTemplateAtomClass(template_idx), kMonomerClassCHEM))
+                continue;
+            check_backbone_connection(mol, directions_map, template_idx, kLeftAttachmentPointIdx, left_backbone_links, right_backbone_links);
+            check_backbone_connection(mol, directions_map, template_idx, kRightAttachmentPointIdx, right_backbone_links, left_backbone_links);
+        }
+        if (left_backbone_links.size())
+        {
+            std::vector<std::deque<int>> joined_sequences;
+            while (left_backbone_links.size())
+            {
+                auto left_atom_idx = left_backbone_links.begin()->second;
+                // find leftmost sequence and copy to joined sequences
+                for (auto left = left_backbone_links.find(left_atom_idx); left != left_backbone_links.end(); left = left_backbone_links.find(left_atom_idx))
+                {
+                    left_atom_idx = left->second;
+                }
+                joined_sequences.push_back({});
+                for (auto idx : sequences[seq_end[left_atom_idx]])
+                {
+                    joined_sequences.back().emplace_back(idx);
+                }
+                // while have sequence at right - connect it
+                for (auto right = right_backbone_links.find(left_atom_idx); right != right_backbone_links.end();)
+                {
+                    auto right_atom_idx = right->second;
+                    left_backbone_links.erase(right_atom_idx);
+                    int right_idx;
+                    for (auto idx : sequences[seq_start[right_atom_idx]])
+                    {
+                        joined_sequences.back().emplace_back(idx);
+                        right_idx = idx;
+                    }
+                    right = right_backbone_links.find(right_idx);
+                }
+            }
+            sequences = joined_sequences;
+        }
+    }
     for (auto& sequence : sequences)
     {
         std::string seq_string;

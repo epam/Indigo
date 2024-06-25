@@ -24,6 +24,7 @@ idt_single_nucleoside.ket:SUCCEED
 idt_std_phosphates.ket:SUCCEED
 idt_t_i2moera.ket:SUCCEED
 idt_unresolved.ket:SUCCEED
+idt_unresolved_many.ket:SUCCEED
 idt_unsplit.ket:SUCCEED
 Test ket-to-idt-invalid-last-phosphate: got expected error 'Cannot save molecule in IDT format - phosphate sP cannot be last monomer in sequence.'
 Test ket-to-idt-invalid-nucleotide: got expected error 'IDT alias for group sugar:m2e2r base:z8c3G phosphate:mepo2 not found.'

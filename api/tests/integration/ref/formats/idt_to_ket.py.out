@@ -24,6 +24,7 @@ idt_single_nucleoside.ket:SUCCEED
 idt_std_phosphates.ket:SUCCEED
 idt_t_i2moera.ket:SUCCEED
 idt_unresolved.ket:SUCCEED
+idt_unresolved_many.ket:SUCCEED
 idt_unsplit.ket:SUCCEED
 Test '!+A-$#12w12r23e32e33': got expected error 'Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3'
 Test '+/5Phos/A': got expected error 'Sugar prefix could not be used with modified monomer.'
