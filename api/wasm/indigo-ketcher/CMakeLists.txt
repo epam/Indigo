@@ -5,34 +5,59 @@ project(indigo-ketcher)
 add_library(${PROJECT_NAME}-object OBJECT indigo-ketcher.cpp)
 target_link_libraries(${PROJECT_NAME}-object indigo-static indigo-inchi-static indigo-renderer-static cppcodec)
 
-set(EMCC_FLAGS
+if (CMAKE_BUILD_TYPE STREQUAL Debug)
+    set(EMCC_FLAGS
+            -g
+            )
+else ()
+    set(EMCC_FLAGS
+            -Oz
+            )
+endif ()
+
+set(EMCC_COMMON_FLAGS
         --bind
         -s INITIAL_MEMORY=32mb
         -s ALLOW_MEMORY_GROWTH=1
         -s DISABLE_EXCEPTION_CATCHING=0
-        -s SINGLE_FILE=0
         -s MODULARIZE=1
         -s FILESYSTEM=0
         -s ASSERTIONS=1
         -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0
-        --no-entry)
-if (CMAKE_BUILD_TYPE STREQUAL Debug)
-    list(APPEND EMCC_FLAGS
-            -g
-            )
-elseif (CMAKE_BUILD_TYPE STREQUAL Release)
-    list(APPEND EMCC_FLAGS
-            -Oz
-            )
-endif ()
+        --no-entry
+        ${EMCC_FLAGS}
+        )
+
+set(EMCC_FLAGS_SEPARATE
+        ${EMCC_COMMON_FLAGS}
+        -s SINGLE_FILE=0
+        )
+
+set(EMCC_FLAGS
+        ${EMCC_COMMON_FLAGS}
+        -s SINGLE_FILE=1
+        )
+
+set(TARGET_FILES
+        $<TARGET_OBJECTS:${PROJECT_NAME}-object>
+        $<TARGET_FILE:indigo-static> $<TARGET_FILE:indigo-inchi-static> $<TARGET_FILE:indigo-renderer-static> $<TARGET_FILE:render2d> $<TARGET_FILE:cairo> $<TARGET_FILE:freetype> $<TARGET_FILE:png> $<TARGET_FILE:pixman> $<TARGET_FILE:indigo-core> $<TARGET_FILE:inchi> $<TARGET_FILE:tinyxml2> $<TARGET_FILE:z>
+        )
+
+add_custom_target(${PROJECT_NAME}-separate
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+        COMMAND emcc
+        -o ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/indigo-ketcher-separate-wasm.js
+        ${EMCC_FLAGS_SEPARATE}
+        ${TARGET_FILES}
+        DEPENDS ${PROJECT_NAME}-object
+        )
 
 add_custom_target(${PROJECT_NAME}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
         COMMAND emcc
         -o ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/indigo-ketcher.js
         ${EMCC_FLAGS}
-        $<TARGET_OBJECTS:${PROJECT_NAME}-object>
-        $<TARGET_FILE:indigo-static> $<TARGET_FILE:indigo-inchi-static> $<TARGET_FILE:indigo-renderer-static> $<TARGET_FILE:render2d> $<TARGET_FILE:cairo> $<TARGET_FILE:freetype> $<TARGET_FILE:png> $<TARGET_FILE:pixman> $<TARGET_FILE:indigo-core> $<TARGET_FILE:inchi> $<TARGET_FILE:tinyxml2> $<TARGET_FILE:z>
+        ${TARGET_FILES}
         DEPENDS ${PROJECT_NAME}-object
         )
 
@@ -49,7 +74,7 @@ if (NOT RENDER_ENABLE_CJK)
             COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}
             COMMAND ${COPY_COMMAND} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}${SEP}${PROJECT_NAME}*.tgz ${NATIVE_DIST_DIRECTORY}${SEP}
             WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-            DEPENDS ${PROJECT_NAME}
+            DEPENDS ${PROJECT_NAME} ${PROJECT_NAME}-separate
             )
 else ()
     add_custom_target(${PROJECT_NAME}-package
@@ -66,6 +91,6 @@ else ()
             COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}
             COMMAND ${COPY_COMMAND} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}${SEP}${PROJECT_NAME}*.tgz ${NATIVE_DIST_DIRECTORY}${SEP}
             WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-            DEPENDS ${PROJECT_NAME}
+            DEPENDS ${PROJECT_NAME} ${PROJECT_NAME}-separate
             )
 endif ()

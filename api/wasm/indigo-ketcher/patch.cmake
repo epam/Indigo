@@ -6,10 +6,10 @@ message("Version is: ${version}")
 string(REPLACE "indigo-ketcher.wasm" "indigo-ketcher-${version}.wasm" modifiedPackageJson ${packageJson})
 file(WRITE package.json "${modifiedPackageJson}")
 
-# patch indigo-ketcher.json
-file(READ indigo-ketcher.js content)
-string(REPLACE "indigo-ketcher.wasm" "indigo-ketcher-${version}.wasm" content "${content}")
-file(WRITE "indigo-ketcher.js" "${content}")
+# patch indigo-ketcher-separate-wasm.js
+file(READ indigo-ketcher-separate-wasm.js content)
+string(REPLACE "indigo-ketcher-separate.wasm" "indigo-ketcher-${version}.wasm" content "${content}")
+file(WRITE "indigo-ketcher-separate-wasm.js" "${content}")
 
 # rename indigo-ketcher.wasm
 file(RENAME indigo-ketcher.wasm indigo-ketcher-${version}.wasm)
