@@ -337,5 +337,21 @@ namespace indigo
             return bh(p.second) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         }
     };
+
+    struct commutative_pair_int_hash
+    {
+        pair_int_hash pih;
+    public:
+        size_t operator()(const std::pair<int, int>& p) const
+        {
+            std::pair<int, int> sorted_pair(p);
+            if (sorted_pair.first > sorted_pair.second)
+                std::swap(sorted_pair.first, sorted_pair.second);
+            auto c_val = pih(sorted_pair);
+            std::cout << "hash:" << c_val << std::endl;
+            return c_val;
+        }
+    };
+
 }
 #endif

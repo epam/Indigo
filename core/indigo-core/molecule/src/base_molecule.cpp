@@ -3070,10 +3070,10 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     for (auto i : fragment.vertices())
     {
         int aidx = mapping[i];
+        auto tpos = getAtomXyz(idx);
+        tpos.add(fragment.getAtomXyz(i));
         if (aidx > -1)
-        {
-            setAtomXyz(aidx, getAtomXyz(idx));
-        }
+            setAtomXyz(aidx, tpos);
     }
 
     QS_DEF(Array<int>, added_atoms);
@@ -4658,7 +4658,7 @@ void BaseMolecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std
 void BaseMolecule::transformTemplatesToSuperatoms()
 {
     std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
-
+    bool modified = false;
     getTemplatesMap(templates);
     for (auto atom_idx = vertexBegin(); atom_idx < vertexEnd(); atom_idx = vertexNext(atom_idx))
     {
@@ -4677,7 +4677,10 @@ void BaseMolecule::transformTemplatesToSuperatoms()
                 }
             }
             if (tg_idx != -1)
+            {
                 _transformTGroupToSGroup(atom_idx, tg_idx);
+                modified = true;
+            }
         }
     }
     tgroups.clear();
