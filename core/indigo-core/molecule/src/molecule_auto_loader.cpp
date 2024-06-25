@@ -255,15 +255,13 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
         }
     }
 
+    if (local_scanner->startsWith(kCDX_HeaderString))
     {
-        if (local_scanner->findWord(kCDX_HeaderString))
-        {
-            local_scanner->seek(kCDX_HeaderLength, SEEK_CUR);
-            MoleculeCdxmlLoader loader(*local_scanner, true);
-            loader.stereochemistry_options = stereochemistry_options;
-            loader.loadMolecule(mol);
-            return;
-        }
+        local_scanner->seek(kCDX_HeaderLength, SEEK_CUR);
+        MoleculeCdxmlLoader loader(*local_scanner, true);
+        loader.stereochemistry_options = stereochemistry_options;
+        loader.loadMolecule(mol);
+        return;
     }
 
     _scanner->skipBom();
@@ -391,6 +389,8 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
             const std::string kPeptide = "PEPTIDE:";
             const std::string kRNA = "RNA:";
             const std::string kDNA = "DNA:";
+            const std::string kIDT = "IDT:";
+            const std::string kHELM = "HELM:";
 
             long long start_pos = _scanner->tell();
             if (_scanner->length() > static_cast<long long>(kRNA.size()))
@@ -406,6 +406,16 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
                 else if (kDNA == tag.data())
                 {
                     sl.loadSequence(mol, SequenceLoader::SeqType::DNASeq);
+                    return;
+                }
+                else if (kIDT == tag.data())
+                {
+                    sl.loadIdt(mol);
+                    return;
+                }
+                else if (kHELM == tag.data())
+                {
+                    // sl.loadHelm(mol);
                     return;
                 }
                 else

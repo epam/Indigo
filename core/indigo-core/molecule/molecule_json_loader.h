@@ -100,7 +100,9 @@ namespace indigo
         void parseProperties(const rapidjson::Value& props, BaseMolecule& mol);
         void setStereoFlagPosition(const rapidjson::Value& pos, int fragment_index, BaseMolecule& mol);
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
-        void parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol);
+        int parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol);
+        void addToLibMonomerTemplate(const rapidjson::Value& mt_json, BaseMolecule& mol, int tgroup_id);
+        void addToLibMonomerGroupTemplate(const rapidjson::Value& monomer_group_template);
         std::string monomerTemplateClass(const rapidjson::Value& monomer_template);
         std::string monomerMolClass(const std::string& class_name);
 
@@ -116,10 +118,12 @@ namespace indigo
         rapidjson::Value _connection_array;
         rapidjson::Value _templates;
         std::unordered_map<std::string, int> _id_to_template;
+        std::map<std::string, std::string> _template_ref_to_id;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
         unsigned int components_count;
+        bool _is_library;
     };
 
 } // namespace indigo

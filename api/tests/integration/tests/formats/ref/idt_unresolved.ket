@@ -1,0 +1,121 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "monomer0"
+            },
+            {
+                "$ref": "monomer1"
+            }
+        ],
+        "connections": [
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer0",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer1",
+                    "attachmentPointId": "R1"
+                }
+            }
+        ],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-unknown_monomer_with_idt_alias_unr1"
+            },
+            {
+                "$ref": "monomerTemplate-unknown_monomer_with_idt_alias_unr2"
+            }
+        ]
+    },
+    "monomer0": {
+        "type": "monomer",
+        "id": "0",
+        "seqid": 0,
+        "position": {
+            "x": 0.0,
+            "y": -0.0
+        },
+        "alias": "unknown_monomer_with_idt_alias_unr1",
+        "templateId": "unknown_monomer_with_idt_alias_unr1"
+    },
+    "monomer1": {
+        "type": "monomer",
+        "id": "1",
+        "seqid": 1,
+        "position": {
+            "x": 1.600000023841858,
+            "y": -0.0
+        },
+        "alias": "unknown_monomer_with_idt_alias_unr2",
+        "templateId": "unknown_monomer_with_idt_alias_unr2"
+    },
+    "monomerTemplate-unknown_monomer_with_idt_alias_unr1": {
+        "type": "monomerTemplate",
+        "id": "unknown_monomer_with_idt_alias_unr1",
+        "class": "Chem",
+        "classHELM": "CHEM",
+        "alias": "unknown_monomer_with_idt_alias_unr1",
+        "name": "unknown_monomer_with_idt_alias_unr1",
+        "unresolved": true,
+        "idtAliases": {
+            "base": "unr1",
+            "modifications": {
+                "endpoint5": "unr1",
+                "internal": "unr1",
+                "endpoint3": "unr1"
+            }
+        },
+        "attachmentPoints": [
+            {
+                "attachmentAtom": -1
+            },
+            {
+                "attachmentAtom": -1
+            },
+            {
+                "attachmentAtom": -1
+            },
+            {
+                "attachmentAtom": -1
+            }
+        ],
+        "atoms": [],
+        "bonds": []
+    },
+    "monomerTemplate-unknown_monomer_with_idt_alias_unr2": {
+        "type": "monomerTemplate",
+        "id": "unknown_monomer_with_idt_alias_unr2",
+        "class": "Chem",
+        "classHELM": "CHEM",
+        "alias": "unknown_monomer_with_idt_alias_unr2",
+        "name": "unknown_monomer_with_idt_alias_unr2",
+        "unresolved": true,
+        "idtAliases": {
+            "base": "unr2",
+            "modifications": {
+                "endpoint5": "unr2",
+                "internal": "unr2",
+                "endpoint3": "unr2"
+            }
+        },
+        "attachmentPoints": [
+            {
+                "attachmentAtom": -1
+            },
+            {
+                "attachmentAtom": -1
+            },
+            {
+                "attachmentAtom": -1
+            },
+            {
+                "attachmentAtom": -1
+            }
+        ],
+        "atoms": [],
+        "bonds": []
+    }
+}

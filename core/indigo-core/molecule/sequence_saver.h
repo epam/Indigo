@@ -44,12 +44,18 @@ namespace indigo
             IDT
         };
 
+        static constexpr uint32_t SEQ_LINE_LENGTH = 80;
+
         DECL_ERROR;
 
         SequenceSaver(Output& output);
         ~SequenceSaver();
 
         void saveMolecule(BaseMolecule& mol, SeqFormat sf = SeqFormat::Sequence);
+
+    protected:
+        TGroup& getTGroup();
+        std::string saveIdt(BaseMolecule& mol, std::deque<int>& sequence);
 
     private:
         SequenceSaver(const SequenceSaver&); // no implicit copy

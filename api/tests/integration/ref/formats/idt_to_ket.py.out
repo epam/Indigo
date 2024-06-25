@@ -1,0 +1,47 @@
+*** IDT to KET ***
+idt_32moera.ket:SUCCEED
+idt_3phos.ket:SUCCEED
+idt_52moera.ket:SUCCEED
+idt_52moera_32moera.ket:SUCCEED
+idt_52moera_i2moera.ket:SUCCEED
+idt_52moera_sp.ket:SUCCEED
+idt_52moera_sp_32moera.ket:SUCCEED
+idt_52moera_sp_i2moera_sp.ket:SUCCEED
+idt_52moera_with_3phos.ket:SUCCEED
+idt_5phos.ket:SUCCEED
+idt_bases.ket:SUCCEED
+idt_i2moera.ket:SUCCEED
+idt_i2moera_32moera.ket:SUCCEED
+idt_i2moera_sp.ket:SUCCEED
+idt_i2moera_sp_32moera.ket:SUCCEED
+idt_i2moera_t.ket:SUCCEED
+idt_many_molecules.ket:SUCCEED
+idt_mixed.ket:SUCCEED
+idt_mod_phosphates.ket:SUCCEED
+idt_modifications.ket:SUCCEED
+idt_prefix_suffix.ket:SUCCEED
+idt_single_nucleoside.ket:SUCCEED
+idt_std_phosphates.ket:SUCCEED
+idt_t_i2moera.ket:SUCCEED
+idt_unresolved.ket:SUCCEED
+idt_unsplit.ket:SUCCEED
+Test '!+A-$#12w12r23e32e33': got expected error 'Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3'
+Test '+/5Phos/A': got expected error 'Sugar prefix could not be used with modified monomer.'
+Test '/': got expected error 'Unexpected end of data'
+Test '//': got expected error 'Invalid modification: empty string.'
+Test '/32MOErA/*': got expected error 'Monomer /32MOErA/ doesn't have phosphate, so '*' couldn't be applied.'
+Test '/32MOErA/T': got expected error 'IDT alias '32MOErA' cannot be used at five prime end.'
+Test '/3Phos/*': got expected error 'Symbol '*' could be placed only between two nucleotides/nucleosides.'
+Test '/3Phos/T': got expected error 'IDT alias '3Phos' cannot be used at five prime end.'
+Test '/52MOErA/*/3Phos/': got expected error 'Symbol '*' could be placed only between two nucleotides/nucleosides.'
+Test '/52MOErA//32MOErA/*': got expected error 'Monomer /32MOErA/ doesn't have phosphate, so '*' couldn't be applied.'
+Test '/5Phos/*A': got expected error 'Symbol '*' could be placed only between two nucleotides/nucleosides.'
+Test '/a/': got expected error 'Invalid modification: a.'
+Test 'A+/3Phos/': got expected error 'Sugar prefix could not be used with modified monomer.'
+Test 'Am/3Phos/': got expected error 'Sugar prefix could not be used with modified monomer.'
+Test 'Ar/3Phos/': got expected error 'Sugar prefix could not be used with modified monomer.'
+Test 'T/52MOErA/': got expected error 'IDT alias '52MOErA' cannot be used at three prime end.'
+Test 'T/5Phos/': got expected error 'IDT alias '5Phos' cannot be used at three prime end.'
+Test 'm/5Phos/A': got expected error 'Sugar prefix could not be used with modified monomer.'
+Test 'r+A': got expected error 'Sugar prefix 'r' whithout base.'
+Test 'r/5Phos/A': got expected error 'Sugar prefix could not be used with modified monomer.'

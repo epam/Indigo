@@ -21,7 +21,7 @@ set(EMCC_COMMON_FLAGS
         -s ALLOW_MEMORY_GROWTH=1
         -s DISABLE_EXCEPTION_CATCHING=0
         -s MODULARIZE=1
-        -s FILESYSTEM=0
+        -s FILESYSTEM=1
         -s ASSERTIONS=1
         -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0
         --no-entry

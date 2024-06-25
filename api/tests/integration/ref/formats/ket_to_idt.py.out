@@ -1,0 +1,36 @@
+*** KET to IDT ***
+idt_32moera.ket:SUCCEED
+idt_3phos.ket:SUCCEED
+idt_52moera.ket:SUCCEED
+idt_52moera_32moera.ket:SUCCEED
+idt_52moera_i2moera.ket:SUCCEED
+idt_52moera_sp.ket:SUCCEED
+idt_52moera_sp_32moera.ket:SUCCEED
+idt_52moera_sp_i2moera_sp.ket:SUCCEED
+idt_52moera_with_3phos.ket:SUCCEED
+idt_5phos.ket:SUCCEED
+idt_bases.ket:SUCCEED
+idt_i2moera.ket:SUCCEED
+idt_i2moera_32moera.ket:SUCCEED
+idt_i2moera_sp.ket:SUCCEED
+idt_i2moera_sp_32moera.ket:SUCCEED
+idt_i2moera_t.ket:SUCCEED
+idt_many_molecules.ket:SUCCEED
+idt_mixed.ket:SUCCEED
+idt_mod_phosphates.ket:SUCCEED
+idt_modifications.ket:SUCCEED
+idt_prefix_suffix.ket:SUCCEED
+idt_single_nucleoside.ket:SUCCEED
+idt_std_phosphates.ket:SUCCEED
+idt_t_i2moera.ket:SUCCEED
+idt_unresolved.ket:SUCCEED
+idt_unsplit.ket:SUCCEED
+Test ket-to-idt-invalid-last-phosphate: got expected error 'Cannot save molecule in IDT format - phosphate sP cannot be last monomer in sequence.'
+Test ket-to-idt-invalid-nucleotide: got expected error 'IDT alias for group sugar:m2e2r base:z8c3G phosphate:mepo2 not found.'
+Test ket-to-idt-invalid-posphates: got expected error 'Cannot save molecule in IDT format - sugar R with too much phosphates connected P and P.'
+Test ket-to-idt-invalid-sugar: got expected error 'IDT alias for sugar:m2e2r not found.'
+Test ket-to-idt-invalid-sugar-base: got expected error 'IDT alias for group sugar:m2e2r base:z8c3G not found.'
+Test ket-to-idt-invalid-sugar-phosphate: got expected error 'IDT alias for group sugar:m2e2r phosphate:mepo2 not found.'
+Test ket-to-idt-peptide: got expected error 'Cannot save molecule in IDT format - expected sugar but found AA monomer DPhe4C.'
+Test ket-to-idt-r1r1connection: got expected error 'Cannot save molecule in IDT format - sugar MOE connected to monomer MOE with class SUGAR (only base or phosphate expected).'
+Test ket-to-idt-two-bases: got expected error 'Cannot save molecule in IDT format - sugar R with two base connected A and C.'

@@ -45,6 +45,11 @@ Scanner::~Scanner()
 {
 }
 
+bool Scanner::isEOL()
+{
+    return isEOF() || lookNext() == '\n' || lookNext() == '\r';
+}
+
 int Scanner::readIntFix(int digits)
 {
     int result;
@@ -396,6 +401,21 @@ void Scanner::skipBom()
         if (bom != kBOM)
             seek(pos, SEEK_SET);
     }
+}
+
+bool Scanner::startsWith(const char* word)
+{
+    if (word == nullptr)
+        return false;
+    long long pos = tell();
+    char ch = *word;
+    while (ch != 0 && !isEOF() && ch == readChar())
+    {
+        word++;
+        ch = *word;
+    }
+    seek(pos, SEEK_SET);
+    return ch == 0;
 }
 
 void Scanner::skipUntil(const char* delimiters)
