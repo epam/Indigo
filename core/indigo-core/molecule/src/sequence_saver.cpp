@@ -277,14 +277,14 @@ static void check_backbone_connection(BaseMolecule& mol, std::vector<std::map<in
                                       std::map<int, int>& side_backbone_links, std::map<int, int>& other_side_backbone_links)
 {
     auto& attachments = directions_map[template_idx];
-    auto& side_attachments = attachments.find(side);
+    auto side_attachments = attachments.find(side);
     if (side_attachments != attachments.end()) // has side attachment
     {
         int side_neighbor_idx = side_attachments->second;
         if (mol.isTemplateAtom(side_neighbor_idx))
         {
             auto& neighbor_attachments = directions_map[side_neighbor_idx];
-            auto& neighbor_other_size = neighbor_attachments.find(side == kLeftAttachmentPointIdx ? kRightAttachmentPointIdx : kLeftAttachmentPointIdx);
+            auto neighbor_other_size = neighbor_attachments.find(side == kLeftAttachmentPointIdx ? kRightAttachmentPointIdx : kLeftAttachmentPointIdx);
             if (neighbor_other_size != neighbor_attachments.end() && neighbor_other_size->second == template_idx)
             {
                 side_backbone_links[template_idx] = side_neighbor_idx;
