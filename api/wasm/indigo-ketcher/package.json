@@ -16,7 +16,7 @@
   "files": [
     "indigo-ketcher-separate-wasm.js",
     "indigo-ketcher.js",
-    "indigo-ketcher.wasm",
+    "indigo-ketcher-separate.wasm",
     "README.md",
     "LICENSE"
   ],
