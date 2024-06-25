@@ -318,7 +318,6 @@ namespace indigo
 
         inline void addMonomerTemplate(MonomerTemplate& monomer_template)
         {
-            _monomer_templates.erase(monomer_template.id());
             auto res = _monomer_templates.emplace(monomer_template.id(), monomer_template);
             if (res.second)
                 for (auto modification : {IdtModification::FIVE_PRIME_END, IdtModification::INTERNAL, IdtModification::THREE_PRIME_END})
@@ -334,7 +333,6 @@ namespace indigo
 
         inline void addMonomerGroupTemplate(const MonomerGroupTemplate& monomer_group_template)
         {
-            _monomer_group_templates.erase(monomer_group_template.id());
             auto res = _monomer_group_templates.emplace(monomer_group_template.id(), monomer_group_template);
             if (res.second)
                 for (auto modification : {IdtModification::FIVE_PRIME_END, IdtModification::INTERNAL, IdtModification::THREE_PRIME_END})
@@ -359,6 +357,13 @@ namespace indigo
 
         const std::string& getIdtAliasByModification(IdtModification modification, const std::string sugar_id, const std::string base_id,
                                                      const std::string phosphate_id);
+        inline void clear()
+        {
+            _monomer_templates.clear();
+            _monomer_group_templates.clear();
+            _id_alias_to_monomer_templates.clear();
+            _id_alias_to_monomer_group_templates.clear();
+        }
 
     protected:
         MonomerTemplateLibrary(){};
