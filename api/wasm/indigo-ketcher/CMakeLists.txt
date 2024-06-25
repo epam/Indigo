@@ -68,12 +68,12 @@ if (NOT RENDER_ENABLE_CJK)
             COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/LICENSE ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
             COMMAND npm install
             COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/test/ ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+            WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
             COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_LIST_DIR}/patch.cmake
             COMMAND npm test
             COMMAND npm pack
             COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}
             COMMAND ${COPY_COMMAND} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}${SEP}${PROJECT_NAME}*.tgz ${NATIVE_DIST_DIRECTORY}${SEP}
-            WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
             DEPENDS ${PROJECT_NAME} ${PROJECT_NAME}-separate
             )
 else ()
@@ -84,13 +84,13 @@ else ()
             COMMAND npm install
             COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/test/ ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
             COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/test-cjk/ ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
+            WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
             COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_LIST_DIR}/patch.cmake
             COMMAND npm test
             COMMAND npm run test_cjk
             COMMAND npm pack
             COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}
             COMMAND ${COPY_COMMAND} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}${SEP}${PROJECT_NAME}*.tgz ${NATIVE_DIST_DIRECTORY}${SEP}
-            WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
             DEPENDS ${PROJECT_NAME} ${PROJECT_NAME}-separate
             )
 endif ()
