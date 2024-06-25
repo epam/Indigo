@@ -600,6 +600,86 @@ class Indigo:
             ),
         )
 
+    def loadIdt(self, string):
+        """Loads molecule from IDT string
+
+        Args:
+            string (str): sequence string
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadIdtFromString(string.encode())
+            ),
+        )
+
+    def loadIdtFromFile(self, filename):
+        """Loads query molecule from file in IDT sequence format
+
+        Args:
+            filename (str): full path to the file with sequence string
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadIdtFromFile(filename.encode())
+            ),
+        )
+
+    def loadHelm(self, string):
+        """Loads molecule from HELM string
+
+        Args:
+            string (str): sequence string
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadHelmFromString(string.encode())
+            ),
+        )
+
+    def loadHelmFromFile(self, filename):
+        """Loads query molecule from file in HELM sequence format
+
+        Args:
+            filename (str): full path to the file with sequence string
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadHelmFromFile(filename.encode())
+            ),
+        )
+
     def loadReaction(self, string):
         """Loads reaction from string. Format will be automatically recognized.
 

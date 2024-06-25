@@ -38,6 +38,49 @@
 using namespace indigo;
 using namespace tinyxml2;
 
+tinyxml2::XMLElement* MoleculeCdxmlSaver::create_text(tinyxml2::XMLElement* parent, float x, float y, const char* label_justification)
+{
+    XMLElement* t = _doc->NewElement("t");
+    parent->LinkEndChild(t);
+    Array<char> buf;
+    ArrayOutput out(buf);
+    out.printf("%f %f", x, y);
+    buf.push(0);
+    t->SetAttribute("p", buf.ptr());
+    if (label_justification)
+        t->SetAttribute("LabelJustification", label_justification);
+    return t;
+}
+
+void MoleculeCdxmlSaver::add_style_str(tinyxml2::XMLElement* parent, int font, int size, int face, const char* str)
+{
+    XMLElement* s = _doc->NewElement("s");
+    parent->LinkEndChild(s);
+    s->SetAttribute("font", font);
+    s->SetAttribute("size", size);
+    s->SetAttribute("face", face);
+    XMLText* txt = _doc->NewText(str);
+    s->LinkEndChild(txt);
+}
+
+void MoleculeCdxmlSaver::add_charge(tinyxml2::XMLElement* parent, int font, int size, int charge)
+{
+    if (charge == 0 || charge == CHARGE_UNKNOWN)
+        return;
+    if (charge > 0)
+    {
+        if (charge > 1)
+            add_style_str(parent, font, size, 64, std::to_string(charge).c_str());
+        add_style_str(parent, font, size, 96, "+");
+    }
+    else if (charge < 0)
+    {
+        if (charge < -1)
+            add_style_str(parent, font, size, 64, std::to_string(-charge).c_str());
+        add_style_str(parent, font, size, 96, "-");
+    }
+}
+
 void MoleculeCdxmlSaver::writeBinaryTextValue(const tinyxml2::XMLElement* pTextElement)
 {
     if (std::string(pTextElement->Name()) != "t")
@@ -390,7 +433,7 @@ void MoleculeCdxmlSaver::beginDocument(Bounds* bounds)
 
         mac_print_info[12] = 871; // magic number
 
-        mac_print_info[13] = height / 5; // magic scaling coeffient
+        mac_print_info[13] = height / 5; // magic scaling coefficient
         mac_print_info[14] = width / 5;
 
         mac_print_info[24] = 100; // horizontal scale, in percent
@@ -723,163 +766,59 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
 
     if (mol.getVertex(atom_idx).degree() == 0 && atom_number == ELEM_C && charge == 0 && radical == 0)
     {
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
-
-        QS_DEF(Array<char>, buf);
-        ArrayOutput out(buf);
-        out.printf("%f %f", pos.x, -pos.y);
-        buf.push(0);
-        t->SetAttribute("p", buf.ptr());
+        XMLElement* t = create_text(node, pos.x, -pos.y, nullptr);
         t->SetAttribute("Justification", "Center");
-
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        s->SetAttribute("font", 3);
-        s->SetAttribute("size", 10);
-        s->SetAttribute("face", 96);
-
-        XMLText* txt = _doc->NewText("CH4");
-        s->LinkEndChild(txt);
+        add_style_str(t, 3, 10, 96, "CH4");
+        add_charge(t, 3, 10, charge);
     }
     else if (mol.isRSite(atom_idx))
     {
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
-
+        XMLElement* t = create_text(node, pos.x, -pos.y, "Left");
         QS_DEF(Array<char>, buf);
-        ArrayOutput out(buf);
-        out.printf("%f %f", pos.x, -pos.y);
-        buf.push(0);
-        t->SetAttribute("p", buf.ptr());
-        t->SetAttribute("LabelJustification", "Left");
-
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        s->SetAttribute("font", 3);
-        s->SetAttribute("size", 10);
-        s->SetAttribute("face", 96);
-
-        out.clear();
-        //			out.printf("A");
         mol.getAtomSymbol(atom_idx, buf);
-        /*
-         * Skip charge since Chemdraw is pure. May be in future it will be fixed by Chemdraw
-         */
-        /*if (charge != 0) {
-            if (charge > 0) {
-                out.printf("+%d", charge);
-            }
-            else {
-                out.printf("-%d", charge);
-            }
-        }*/
         buf.push(0);
-
-        XMLText* txt = _doc->NewText(buf.ptr());
-        s->LinkEndChild(txt);
+        add_style_str(t, 3, 10, 96, buf.ptr());
+        add_charge(t, 3, 10, charge);
     }
     else if (mol.isPseudoAtom(atom_idx))
     {
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
-
-        QS_DEF(Array<char>, buf);
-        ArrayOutput out(buf);
-        out.printf("%f %f", pos.x, -pos.y);
-        buf.push(0);
-        t->SetAttribute("p", buf.ptr());
-        t->SetAttribute("LabelJustification", "Left");
-
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        s->SetAttribute("font", 3);
-        s->SetAttribute("size", 10);
-        s->SetAttribute("face", 96);
-
-        out.clear();
-
-        out.printf("%s", mol.getPseudoAtom(atom_idx));
-        /*
-         * Skip charge since Chemdraw is pure. May be in future it will be fixed by Chemdraw
-         */
-        /*if (charge != 0) {
-            if (charge > 0) {
-                out.printf("+%d", charge);
-            }
-            else {
-                out.printf("-%d", charge);
-            }
-        }*/
-        buf.push(0);
-        XMLText* txt = _doc->NewText(buf.ptr());
-        s->LinkEndChild(txt);
+        XMLElement* t = create_text(node, pos.x, -pos.y, "Left");
+        add_style_str(t, 3, 10, 96, mol.getPseudoAtom(atom_idx));
+        add_charge(t, 3, 10, charge);
     }
     else if (atom_number > 0 && atom_number != ELEM_C)
     {
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
+        XMLElement* t = create_text(node, pos.x, -pos.y, "Left");
 
         QS_DEF(Array<char>, buf);
         ArrayOutput out(buf);
-        out.printf("%f %f", pos.x, -pos.y);
-        buf.push(0);
-        t->SetAttribute("p", buf.ptr());
-        t->SetAttribute("LabelJustification", "Left");
-
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        s->SetAttribute("font", 3);
-        s->SetAttribute("size", 10);
-        s->SetAttribute("face", 96);
-
-        out.clear();
         mol.getAtomSymbol(atom_idx, buf);
         if (hcount > 0)
         {
             buf.pop();
             buf.push('H');
         }
-
         buf.push(0);
-        XMLText* txt = _doc->NewText(buf.ptr());
-        s->LinkEndChild(txt);
+        add_style_str(t, 3, 10, 96, buf.ptr());
+
         if (hcount > 1)
         {
-            XMLElement* ss = _doc->NewElement("s");
-            t->LinkEndChild(ss);
-            ss->SetAttribute("font", 3);
-            ss->SetAttribute("size", 10);
-            ss->SetAttribute("face", 32);
-
             out.clear();
             out.printf("%d", hcount);
             buf.push(0);
-            ss->LinkEndChild(_doc->NewText(buf.ptr()));
+            add_style_str(t, 3, 10, 32, buf.ptr());
         }
+        add_charge(t, 3, 10, charge);
     }
     else if (atom_number < 0 && mol.isQueryMolecule())
     {
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
+        XMLElement* t = create_text(node, pos.x, -pos.y, "Left");
 
         QS_DEF(Array<char>, buf);
         ArrayOutput out(buf);
-        out.printf("%f %f", pos.x, -pos.y);
-        buf.push(0);
-        t->SetAttribute("p", buf.ptr());
-        t->SetAttribute("LabelJustification", "Left");
-
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        s->SetAttribute("font", 3);
-        s->SetAttribute("size", 10);
-        s->SetAttribute("face", 96);
 
         QS_DEF(Array<int>, list);
         int query_atom_type;
-
-        out.clear();
 
         if (mol.isQueryMolecule() && (query_atom_type = QueryMolecule::parseQueryAtom(mol.asQueryMolecule(), atom_idx, list)) != -1)
         {
@@ -902,8 +841,7 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
                 mol.getAtomSymbol(atom_idx, buf);
         }
 
-        XMLText* txt = _doc->NewText(buf.ptr());
-        s->LinkEndChild(txt);
+        add_style_str(t, 3, 10, 96, buf.ptr());
     }
 }
 
@@ -1148,22 +1086,25 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
         }
 
         auto& sa = (Superatom&)mol.sgroups.getSGroup(kvp.first);
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
-        t->SetAttribute("LabelJustification", "Left");
-        t->SetAttribute("LabelAlignment", "Above");
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        XMLText* txt = _doc->NewText(sa.subscript.ptr());
-        s->LinkEndChild(txt);
+        if (sa.subscript.size())
+        {
+            XMLElement* t = _doc->NewElement("t");
+            node->LinkEndChild(t);
+            t->SetAttribute("LabelJustification", "Left");
+            t->SetAttribute("LabelAlignment", "Above");
+            XMLElement* s = _doc->NewElement("s");
+            t->LinkEndChild(s);
+            XMLText* txt = _doc->NewText(sa.subscript.ptr());
+            s->LinkEndChild(txt);
+        }
     }
 }
 
-void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale)
+void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float scale)
 {
-    std::vector<int> ids;
+    std::map<int, int> atom_ids;
     int id = 0;
-    saveMoleculeFragment(mol, offset, scale, -1, id, ids);
+    saveMoleculeFragment(bmol, offset, scale, -1, id, atom_ids);
 }
 
 void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum)
@@ -1206,8 +1147,12 @@ void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2
     fragment->SetAttribute("Valence", valence);
 }
 
-void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float structure_scale, int frag_id, int& id, std::vector<int>& ids)
+void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float structure_scale, int frag_id, int& id,
+                                              std::map<int, int>& atom_ids)
 {
+    std::unique_ptr<BaseMolecule> mol(bmol.neu());
+    mol->clone_KeepIndices(bmol);
+
     _atoms_ids.clear();
     _bonds_ids.clear();
     _super_atoms.clear();
@@ -1233,25 +1178,26 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
     else
         fragment->SetAttribute("id", ++_id);
 
-    if (ids.size())
+    if (atom_ids.size())
     {
-        _atoms_ids = ids;
-        if (_atoms_ids.back() > _id)
-            _id = _atoms_ids.back();
+        _atoms_ids = atom_ids;
+        auto back_it = std::prev(_atoms_ids.end());
+        if (back_it->second > _id)
+            _id = back_it->second;
     }
     else
-        for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-            _atoms_ids.push_back(++_id);
+        for (int i = mol->vertexBegin(); i != mol->vertexEnd(); i = mol->vertexNext(i))
+            _atoms_ids.emplace(i, ++_id);
 
-    for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-        _bonds_ids.push_back(++_id);
+    for (int i = mol->edgeBegin(); i != mol->edgeEnd(); i = mol->edgeNext(i))
+        _bonds_ids.emplace(i, ++_id);
 
     Vec2f min_coord, max_coord;
 
-    _collectSuperatoms(mol);
-    addFragmentNodes(mol, fragment, offset, min_coord, max_coord);
-    addNodesToFragment(mol, fragment, offset, min_coord, max_coord);
-    addBondsToFragment(mol, fragment);
+    _collectSuperatoms(*mol);
+    addFragmentNodes(*mol, fragment, offset, min_coord, max_coord);
+    addNodesToFragment(*mol, fragment, offset, min_coord, max_coord);
+    addBondsToFragment(*mol, fragment);
 
     for (const auto& out_bond : _out_connections)
     {
@@ -1262,7 +1208,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
         bond->SetAttribute("E", out_bond.end);
     }
 
-    if (mol.isChiral())
+    if (mol->isChiral())
     {
         Vec2f chiral_pos(max_coord.x, max_coord.y);
         Vec2f bbox(_scale * chiral_pos.x, -_scale * chiral_pos.y);
@@ -1284,8 +1230,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
         _current = fragment;
     }
 
-    for (int i = 0; i < mol.meta().metaData().size(); ++i)
-        addMetaObject(*mol.meta().metaData()[i], ++_id);
+    for (int i = 0; i < mol->meta().metaData().size(); ++i)
+        addMetaObject(*mol->meta().metaData()[i], ++_id);
 
     _current = parent;
     id = _id;

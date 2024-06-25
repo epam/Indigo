@@ -152,6 +152,14 @@ class IndigoLib:
             c_char_p,
             c_char_p,
         ]
+        IndigoLib.lib.indigoLoadIdtFromString.restype = c_int
+        IndigoLib.lib.indigoLoadIdtFromString.argtypes = [c_char_p]
+        IndigoLib.lib.indigoLoadIdtFromFile.restype = c_int
+        IndigoLib.lib.indigoLoadIdtFromFile.argtypes = [c_char_p]
+        IndigoLib.lib.indigoLoadHelmFromString.restype = c_int
+        IndigoLib.lib.indigoLoadHelmFromString.argtypes = [c_char_p]
+        IndigoLib.lib.indigoLoadHelmFromFile.restype = c_int
+        IndigoLib.lib.indigoLoadHelmFromFile.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadReactionFromString.restype = c_int
         IndigoLib.lib.indigoLoadReactionFromString.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadReactionFromFile.restype = c_int
@@ -883,6 +891,14 @@ class IndigoLib:
         IndigoLib.lib.indigoFasta.argtypes = [c_int]
         IndigoLib.lib.indigoSaveFastaToFile.restype = c_int
         IndigoLib.lib.indigoSaveFastaToFile.argtypes = [c_int, c_char_p]
+        IndigoLib.lib.indigoIdt.restype = c_char_p
+        IndigoLib.lib.indigoIdt.argtypes = [c_int]
+        IndigoLib.lib.indigoSaveIdtToFile.restype = c_int
+        IndigoLib.lib.indigoSaveIdtToFile.argtypes = [c_int, c_char_p]
+        IndigoLib.lib.indigoHelm.restype = c_char_p
+        IndigoLib.lib.indigoHelm.argtypes = [c_int]
+        IndigoLib.lib.indigoSaveHelmToFile.restype = c_int
+        IndigoLib.lib.indigoSaveHelmToFile.argtypes = [c_int, c_char_p]
         IndigoLib.lib.indigoSmarts.restype = c_char_p
         IndigoLib.lib.indigoSmarts.argtypes = [c_int]
         IndigoLib.lib.indigoName.restype = c_char_p

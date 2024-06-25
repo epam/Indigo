@@ -1881,7 +1881,7 @@ SN2_XtoOR_Stereo.rxn
                     <s font="3" size="10" face="96">A</s>
                 </t>
             </n>
-            <n id="6" p="6.750000 79.875000" Geometry="Tetrahedral" BondOrdering="5 8 9 7" EnhancedStereoType="And" EnhancedStereoGroupNum="1"/>
+            <n id="6" p="6.750000 79.875000" Geometry="Tetrahedral" BondOrdering="9 8 7 5" EnhancedStereoType="And" EnhancedStereoGroupNum="1"/>
             <n id="7" Element="1" p="24.249001 62.250000">
                 <t p="24.249001 62.250000" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>
@@ -1921,7 +1921,7 @@ SN2_XtoOR_Stereo.rxn
                     <s font="3" size="10" face="96">A</s>
                 </t>
             </n>
-            <n id="15" p="280.125000 79.875000" Geometry="Tetrahedral" BondOrdering="14 18 17 16" EnhancedStereoType="And" EnhancedStereoGroupNum="1"/>
+            <n id="15" p="280.125000 79.875000" Geometry="Tetrahedral" BondOrdering="17 18 16 14" EnhancedStereoType="And" EnhancedStereoGroupNum="1"/>
             <n id="16" Element="1" p="297.623993 62.250000">
                 <t p="297.623993 62.250000" LabelJustification="Left">
                     <s font="3" size="10" face="96">H</s>

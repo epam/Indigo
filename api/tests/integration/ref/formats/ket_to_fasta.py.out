@@ -1,2 +1,4 @@
 *** KET to FASTA ***
-1822-peptide.seq:SUCCEED
+1822-peptide.fasta:SUCCEED
+1843-rna.fasta:SUCCEED
+1950-mixed-seq.fasta:SUCCEED

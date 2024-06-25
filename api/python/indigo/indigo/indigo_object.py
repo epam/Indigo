@@ -3441,6 +3441,52 @@ class IndigoObject:
 
         return IndigoLib.checkResultString(self._lib().indigoFasta(self.id))
 
+    def saveIdt(self, filename):
+        """Saves macromolecule to IDT file
+
+        Args:
+            filename (str): full file path to the output file
+
+        Returns:
+            int: 1 if file is saved successfully
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSaveIDTToFile(self.id, filename.encode())
+        )
+
+    def idt(self):
+        """Molecule or reaction method returns IDT for the structure
+
+        Returns:
+            str: IDT string
+        """
+
+        return IndigoLib.checkResultString(self._lib().indigoIdt(self.id))
+
+    def saveHelm(self, filename):
+        """Saves macromolecule to HELM file
+
+        Args:
+            filename (str): full file path to the output file
+
+        Returns:
+            int: 1 if file is saved successfully
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSaveHelmToFile(self.id, filename.encode())
+        )
+
+    def helm(self):
+        """Molecule or reaction method returns Helm for the structure
+
+        Returns:
+            str: HELM string
+        """
+
+        return IndigoLib.checkResultString(self._lib().indigoHelm(self.id))
+
     def smarts(self):
         """Molecule or reaction method calculates SMARTS for the structure
 

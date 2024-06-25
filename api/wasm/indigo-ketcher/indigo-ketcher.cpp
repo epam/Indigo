@@ -144,6 +144,14 @@ namespace indigo
             {
                 result = _checkResultString(indigoFasta(id()));
             }
+            else if (outputFormat == "idt" || outputFormat == "chemical/x-idt")
+            {
+                result = _checkResultString(indigoIdt(id()));
+            }
+            else if (outputFormat == "helm" || outputFormat == "chemical/x-helm")
+            {
+                result = _checkResultString(indigoHelm(id()));
+            }
             else if (outputFormat == "smarts" || outputFormat == "chemical/x-daylight-smarts")
             {
                 if (options.count("smarts") > 0 && options.at("smarts") == "canonical")
@@ -245,7 +253,7 @@ namespace indigo
 
     void indigoSetOptions(const std::map<std::string, std::string>& options)
     {
-        std::set<std::string> to_skip{"smiles", "smarts", "input-format", "output-content-type"};
+        std::set<std::string> to_skip{"smiles", "smarts", "input-format", "output-content-type", "monomerLibrary"};
         for (const auto& option : options)
         {
             if (to_skip.count(option.first) < 1)
@@ -352,6 +360,20 @@ namespace indigo
             if (objectId >= 0)
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
         }
+        else if (input_format != options.end() && input_format->second == "chemical/x-idt")
+        {
+            objectId = indigoLoadIdtFromString(data.c_str());
+            if (objectId >= 0)
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            exceptionMessages.emplace_back(indigoGetLastError());
+        }
+        else if (input_format != options.end() && input_format->second == "chemical/x-helm")
+        {
+            objectId = indigoLoadHelmFromString(data.c_str());
+            if (objectId >= 0)
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            exceptionMessages.emplace_back(indigoGetLastError());
+        }
         else
         {
             if (data.find("InChI") == 0)
@@ -429,12 +451,38 @@ namespace indigo
     std::string convert(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
     {
         const IndigoSession session;
-        indigoSetOptions(options);
-        std::map<std::string, std::string> options_copy = options;
+        std::map<std::string, std::string> options_copy;
+        for (const auto& option : options)
+        {
+            if (option.first != "monomerLibrary")
+            {
+                options_copy[option.first] = option.second;
+            }
+        }
+
+        auto monomerLibrary = options.find("monomerLibrary");
+        if (monomerLibrary != options.end() && monomerLibrary->second.size())
+        {
+            const char* ignore_stereo_option = "ignore-stereochemistry-errors";
+            std::map<std::string, std::string> options_lib = options_copy;
+            options_lib["input-format"] = "chemical/x-indigo-ket";
+            options_lib[ignore_stereo_option] = "true";
+            indigoSetOptions(options_lib);
+            IndigoKetcherObject iko = loadMoleculeOrReaction(monomerLibrary->second, options_lib);
+            auto ignore_stereo = options.find(ignore_stereo_option);
+            if (ignore_stereo == options.end())
+            {
+                // no ignore stereo erros option set - should reset to default "false"
+                options_lib[ignore_stereo_option] = "false";
+                indigoSetOptions(options_lib);
+            }
+        }
+
         if (outputFormat.find("smarts") != std::string::npos)
         {
             options_copy["query"] = "true";
         }
+        indigoSetOptions(options);
         IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy);
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }

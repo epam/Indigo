@@ -2,6 +2,9 @@
     "root": {
         "nodes": [
             {
+                "$ref": "mol0"
+            },
+            {
                 "$ref": "monomer0"
             },
             {
@@ -33,6 +36,17 @@
             }
         ],
         "connections": [
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "moleculeId": "mol0",
+                    "atomId": "0"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer9",
+                    "attachmentPointId": "R1"
+                }
+            },
             {
                 "connectionType": "single",
                 "endpoint1": {
@@ -1487,5 +1501,19 @@
                 ]
             }
         ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "H",
+                "location": [
+                    0.5810999870300293,
+                    -6.210999965667725,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": []
     }
 }

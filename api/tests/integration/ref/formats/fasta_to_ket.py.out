@@ -3,6 +3,7 @@ test_peptide.ket:SUCCEED
 test_rna.ket:SUCCEED
 test_dna.ket:SUCCEED
 multiseq.ket:SUCCEED
-break.ket:SUCCEED
+break_peptide.ket:SUCCEED
+break_rna.fasta:SEQUENCE loader: Invalid symbols in the sequence: *
 comment.ket:SUCCEED
 test_1881.ket:SUCCEED

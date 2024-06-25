@@ -16,6 +16,11 @@ if (NOT EMSCRIPTEN)
     target_include_directories(${PROJECT_NAME}
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 
+    if(MSVC)
+        target_link_options(${PROJECT_NAME}
+            PRIVATE -force:multiple)
+    endif()
+
     if(UNIX AND NOT APPLE)
         target_link_options(${PROJECT_NAME} PRIVATE -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/src/libindigo-inchi.sym)
     endif()

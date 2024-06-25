@@ -937,6 +937,14 @@ int main(int argc, char* argv[])
         {
             obj = indigoLoadSequence(reader, p.seq_type);
         }
+        else if (strcasecmp(p.infile_ext, "idt") == 0)
+        {
+            obj = indigoLoadIdt(reader);
+        }
+        else if (strcasecmp(p.infile_ext, "helm") == 0)
+        {
+            obj = indigoLoadHelm(reader);
+        }
         else
             obj = indigoLoadMolecule(reader);
 
