@@ -341,7 +341,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
                 if (atp_id_str.length() > 0)
                 {
                     writer.Key("attachmentId");
-                    writer.String(atp_id_str.c_str());
+                    writer.String(convertAPToHELM(atp_id_str).c_str());
                 }
                 writer.EndObject();
             }

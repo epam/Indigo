@@ -391,11 +391,6 @@ const int LayeredMolecules::getTemplateAtomDisplayOption(int idx)
     return _proto.getTemplateAtomDisplayOption(idx);
 }
 
-void LayeredMolecules::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map)
-{
-    return _proto.getTemplateAtomDirectionsMap(directions_map);
-}
-
 bool LayeredMolecules::isRSite(int idx)
 {
     return _proto.isRSite(idx);

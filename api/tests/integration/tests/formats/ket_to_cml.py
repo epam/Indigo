@@ -23,15 +23,18 @@ print("*** KET to CML ***")
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
-files = ["1878-ket-to-cml"]
+files = ["1878-ket-to-cml", "macro/sa-mono"]
 
 files.sort()
 for filename in files:
     ket = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
 
+    cml = ket.cml()
+    # with open(os.path.join(ref_path, filename) + ".cml", "w") as file:
+    #     file.write(cml)
+
     with open(os.path.join(ref_path, filename) + ".cml", "r") as file:
         cml_ref = file.read()
-    cml = ket.cml()
     diff = find_diff(cml_ref, cml)
     if not diff:
         print(filename + ".cml:SUCCEED")
