@@ -26,3 +26,9 @@ print(
         joinPathPy("molecules/atropisomer.mol", __file__)
     ).smiles()
 )
+
+print(
+    indigo.loadMoleculeFromFile(
+        joinPathPy("molecules/macro/sa-mono.mol", __file__)
+    ).smiles()
+)
