@@ -3016,7 +3016,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
                 sgs.push(j);
             else
                 base_sgs.push(j);
-        }            
+        }
     }
 
     if (base_sgs.size() == 0)
