@@ -1035,11 +1035,6 @@ const int QueryMolecule::getTemplateAtomTemplateIndex(int /*idx*/)
     return -1;
 }
 
-void QueryMolecule::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& /*directions_map*/)
-{
-    throw Error("QueryMolecule::getTemplateAtomDirectionsMap not implemented");
-}
-
 const int QueryMolecule::getTemplateAtomDisplayOption(int /*idx*/)
 {
     return -1;

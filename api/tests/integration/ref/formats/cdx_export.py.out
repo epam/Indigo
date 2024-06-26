@@ -2,6 +2,7 @@
 enhanced_stereo1:success
 enhanced_stereo2:success
 enhanced_stereo3:success
+macro/sa-mono:success
 rgroup:success
 stereo_either-0020:success
 two_bn:success

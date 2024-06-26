@@ -105,7 +105,6 @@ namespace indigo
 
         const char* getTemplateAtomClass(int idx) override;
         const int getTemplateAtomDisplayOption(int idx) override;
-        void getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map) override;
 
         bool isRSite(int atom_idx) override;
         dword getRSiteBits(int atom_idx) override;

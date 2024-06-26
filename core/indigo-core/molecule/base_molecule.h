@@ -220,7 +220,7 @@ namespace indigo
         virtual const int getTemplateAtomDisplayOption(int idx) = 0;
         virtual const int getTemplateAtomTemplateIndex(int idx) = 0;
         void getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map);
-        virtual void getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map) = 0;
+        void getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map);
 
         int countRSites();
         int countTemplateAtoms();
