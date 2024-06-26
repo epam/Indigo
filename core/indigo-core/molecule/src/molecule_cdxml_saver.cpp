@@ -1007,7 +1007,7 @@ void MoleculeCdxmlSaver::addNodesToFragment(BaseMolecule& mol, XMLElement* fragm
 void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElement* fragment, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord)
 {
     // iterate over superatoms
-    std::unordered_map<std::pair<int, int>, int, pair_int_hash> outer_bond_ids; 
+    std::unordered_map<std::pair<int, int>, int, pair_int_hash> outer_bond_ids;
 
     for (auto& kvp : _superatoms)
     {
@@ -1056,7 +1056,7 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
                         outer_bond_ids.emplace(out_bond, _id);
                     }
                     else
-                        bond_ordering.push_back( outer_bond_it->second );
+                        bond_ordering.push_back(outer_bond_it->second);
                 }
             }
         }
