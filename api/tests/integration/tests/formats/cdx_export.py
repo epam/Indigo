@@ -27,6 +27,7 @@ files = [
     "enhanced_stereo3",
     "two_bn",
     "rgroup",
+    "macro/sa-mono",
 ]
 
 ref_path = joinPathPy("ref/", __file__)
@@ -152,8 +153,8 @@ for filename in files:
             os.path.join(root_cdxml, filename + ".cdxml")
         )
         resb64 = rea.b64cdx()
-        # with open(os.path.join(ref_path, filename + ".b64cdx"), "w") as file:
-        #    file.write(resb64)
+        with open(os.path.join(ref_path, filename + ".b64cdx"), "w") as file:
+           file.write(resb64)
         with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
             refb64 = file.read()
         print(filename + (":success" if refb64 == resb64 else ":failed"))
