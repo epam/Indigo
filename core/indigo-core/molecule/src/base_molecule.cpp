@@ -4657,35 +4657,38 @@ void BaseMolecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std
 
 void BaseMolecule::transformTemplatesToSuperatoms()
 {
-    std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
-    bool modified = false;
-    getTemplatesMap(templates);
-    for (auto atom_idx = vertexBegin(); atom_idx < vertexEnd(); atom_idx = vertexNext(atom_idx))
+    if (tgroups.getTGroupCount())
     {
-        if (isTemplateAtom(atom_idx))
+        std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
+        bool modified = false;
+        getTemplatesMap(templates);
+        for (auto atom_idx = vertexBegin(); atom_idx < vertexEnd(); atom_idx = vertexNext(atom_idx))
         {
-            auto tg_idx = getTemplateAtomTemplateIndex(atom_idx);
-            if (tg_idx < 0)
+            if (isTemplateAtom(atom_idx))
             {
-                std::string alias = getTemplateAtomClass(atom_idx);
-                std::string mon_class = getTemplateAtom(atom_idx);
-                auto tg_ref = findTemplateInMap(alias, mon_class, templates);
-                if (tg_ref.has_value())
+                auto tg_idx = getTemplateAtomTemplateIndex(atom_idx);
+                if (tg_idx < 0)
                 {
-                    auto& tg = tg_ref.value().get();
-                    tg_idx = tg.tgroup_id;
+                    std::string alias = getTemplateAtomClass(atom_idx);
+                    std::string mon_class = getTemplateAtom(atom_idx);
+                    auto tg_ref = findTemplateInMap(alias, mon_class, templates);
+                    if (tg_ref.has_value())
+                    {
+                        auto& tg = tg_ref.value().get();
+                        tg_idx = tg.tgroup_id;
+                    }
+                }
+                if (tg_idx != -1)
+                {
+                    _transformTGroupToSGroup(atom_idx, tg_idx);
+                    modified = true;
                 }
             }
-            if (tg_idx != -1)
-            {
-                _transformTGroupToSGroup(atom_idx, tg_idx);
-                modified = true;
-            }
         }
+        tgroups.clear();
+        template_attachment_points.clear();
+        template_attachment_indexes.clear();
     }
-    tgroups.clear();
-    template_attachment_points.clear();
-    template_attachment_indexes.clear();
 }
 
 std::string BaseMolecule::getAtomDescription(int idx)

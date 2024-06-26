@@ -52,8 +52,8 @@ void CmlSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 {
     LocaleGuard locale_guard;
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
-    mol->clone_KeepIndices(bmol);
-    // mol->transformTemplatesToSuperatoms();
+    mol->clone(bmol);
+    mol->transformTemplatesToSuperatoms();
 
     std::unique_ptr<XMLDocument> doc = std::make_unique<XMLDocument>();
     _doc = doc->GetDocument();
