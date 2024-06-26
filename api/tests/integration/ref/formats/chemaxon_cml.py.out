@@ -280,7 +280,14 @@ M  END
             <bond atomRefs2="a37 a41" order="1"/>
             <bond atomRefs2="a40 a41" order="2"/>
         </bondArray>
-        <molecule id="sg0" atomRefs="a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16 a17 a18 a19 a20 a21 a22 a23 a24 a25 a26 a27 a28 a29 a30 a31 a32 a33 a34 a35 a36 a37 a38 a39 a40 a41 a42 a43 a44" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="10.8754" y="1.8366" unitsDisplayed="Unit displayed" fieldData="abs"/>
+        <molecule id="sg1" atomRefs="a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16 a17 a18 a19 a20 a21 a22 a23 a24 a25 a26 a27 a28 a29 a30 a31 a32 a33 a34 a35 a36 a37 a38 a39 a40 a41 a42 a43 a44" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="10.8754" y="1.8366" unitsDisplayed="Unit displayed" fieldData="abs">
+            <molecule id="sg2" atomRefs="a39" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="0.948" y="3.2594" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+            <molecule id="sg3" atomRefs="a38" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="0.14" y="4.218" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+            <molecule id="sg4" atomRefs="a37" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="2.803" y="4.7168" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+            <molecule id="sg5" atomRefs="a41" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="5.2546" y="4.0559" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+            <molecule id="sg6" atomRefs="a40" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="4.1265" y="3.1444" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+            <molecule id="sg7" atomRefs="a20" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="5.2108" y="2.7544" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+        </molecule>
     </molecule>
 </cml>
 
@@ -626,8 +633,11 @@ M  END
             <bond atomRefs2="a57 a59" order="1"/>
             <bond atomRefs2="a57 a60" order="1"/>
         </bondArray>
-        <molecule id="sg0" atomRefs="a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16 a17 a18 a19 a20 a21 a22 a23 a24 a25 a26 a27 a28 a29 a30 a31 a32 a33 a34 a35 a36 a37 a38 a39 a40 a41 a42 a43 a44 a45 a46 a47 a48 a49 a50 a51 a52" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="5.7154" y="-9.1453" unitsDisplayed="Unit displayed" fieldData="abs"/>
-        <molecule id="sg0" atomRefs="a53 a54 a55 a56 a57 a58 a59 a60" role="DataSgroup" fieldName="MDLBG_FRAGMENT_COEFFICIENT" x="-10.8027" y="-8.57" unitsDisplayed="Unit displayed" fieldData="2"/>
+        <molecule id="sg1" atomRefs="a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16 a17 a18 a19 a20 a21 a22 a23 a24 a25 a26 a27 a28 a29 a30 a31 a32 a33 a34 a35 a36 a37 a38 a39 a40 a41 a42 a43 a44 a45 a46 a47 a48 a49 a50 a51 a52" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="5.7154" y="-9.1453" unitsDisplayed="Unit displayed" fieldData="abs">
+            <molecule id="sg3" atomRefs="a46" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="6.4976" y="-7.0485" unitsDisplayed="Unit displayed" fieldData="SP-4"/>
+            <molecule id="sg4" atomRefs="a5 a14" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="4.612" y="-5.3769" unitsDisplayed="Unit displayed" fieldData="STG"/>
+        </molecule>
+        <molecule id="sg2" atomRefs="a53 a54 a55 a56 a57 a58 a59 a60" role="DataSgroup" fieldName="MDLBG_FRAGMENT_COEFFICIENT" x="-10.8027" y="-8.57" unitsDisplayed="Unit displayed" fieldData="2"/>
     </molecule>
 </cml>
 
@@ -1073,7 +1083,10 @@ M  END
             <bond atomRefs2="a61 a80" order="1"/>
             <bond atomRefs2="a57 a58" order="1"/>
         </bondArray>
-        <molecule id="sg0" atomRefs="a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16 a17 a18 a19 a20 a21 a22 a23 a24 a25 a26 a27 a28 a29 a30 a31 a32 a33 a34 a35 a36 a37 a38 a39 a40 a41 a42 a43 a44 a45 a46 a47 a48 a49 a50 a51 a52 a53 a54 a55 a56 a57 a58 a59 a60 a61 a62 a63 a64 a65 a66 a67 a68 a69 a70 a71 a72 a73 a74 a75 a76 a77 a78 a79 a80" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="-28.8111" y="-4.2858" unitsDisplayed="Unit displayed" fieldData="abs"/>
+        <molecule id="sg1" atomRefs="a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16 a17 a18 a19 a20 a21 a22 a23 a24 a25 a26 a27 a28 a29 a30 a31 a32 a33 a34 a35 a36 a37 a38 a39 a40 a41 a42 a43 a44 a45 a46 a47 a48 a49 a50 a51 a52 a53 a54 a55 a56 a57 a58 a59 a60 a61 a62 a63 a64 a65 a66 a67 a68 a69 a70 a71 a72 a73 a74 a75 a76 a77 a78 a79 a80" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="-28.8111" y="-4.2858" unitsDisplayed="Unit displayed" fieldData="abs">
+            <molecule id="sg2" atomRefs="a57 a58" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="-27.4209" y="-4.3131" unitsDisplayed="Unit displayed" fieldData="STG"/>
+            <molecule id="sg3" atomRefs="a4" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="-25.6517" y="-4.2209" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+        </molecule>
     </molecule>
 </cml>
 
@@ -1375,7 +1388,7 @@ M  END
             <bond atomRefs2="a57 a58" order="1"/>
             <bond atomRefs2="a42 a45" order="1"/>
         </bondArray>
-        <molecule id="sg0" atomRefs="a42 a43 a44 a45 a46 a47 a48 a49 a50 a51 a52 a53 a54 a55 a56 a57 a58" role="DataSgroup" fieldName="MDLBG_FRAGMENT_COEFFICIENT" x="-28.7304" y="-0.6308" unitsDisplayed="Unit displayed" fieldData="4"/>
+        <molecule id="sg1" atomRefs="a42 a43 a44 a45 a46 a47 a48 a49 a50 a51 a52 a53 a54 a55 a56 a57 a58" role="DataSgroup" fieldName="MDLBG_FRAGMENT_COEFFICIENT" x="-28.7304" y="-0.6308" unitsDisplayed="Unit displayed" fieldData="4"/>
     </molecule>
 </cml>
 
@@ -1472,7 +1485,7 @@ M  END
             <bond atomRefs2="a3 a4" order="1"/>
             <bond atomRefs2="a4 a5" order="1"/>
         </bondArray>
-        <molecule id="sg0" atomRefs="a0" role="DataSgroup" fieldName="123" x="-2.98685" y="4.96477" unitsDisplayed="Unit displayed" fieldData="qwerty"/>
+        <molecule id="sg1" atomRefs="a0" role="DataSgroup" fieldName="123" x="-2.98685" y="4.96477" unitsDisplayed="Unit displayed" fieldData="qwerty"/>
     </molecule>
 </cml>
 
@@ -1541,7 +1554,9 @@ M  END
                 <bondStereo>W</bondStereo>
             </bond>
         </bondArray>
-        <molecule id="sg0" atomRefs="a0 a1 a2 a3 a4 a5 a6 a7 a8" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="-7.13182" y="-5.50444" unitsDisplayed="Unit displayed" fieldData="steric"/>
+        <molecule id="sg1" atomRefs="a0 a1 a2 a3 a4 a5 a6 a7 a8" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="-7.13182" y="-5.50444" unitsDisplayed="Unit displayed" fieldData="steric">
+            <molecule id="sg2" atomRefs="a0 a1 a2 a3 a4 a5 a6 a7 a8" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="-7.63182" y="-4.21278" unitsDisplayed="Unit displayed" fieldData="racemate"/>
+        </molecule>
     </molecule>
 </cml>
 
@@ -1589,7 +1604,9 @@ M  END
             <bond atomRefs2="a0 a4" order="1"/>
             <bond atomRefs2="a0 a1" order="1"/>
         </bondArray>
-        <molecule id="sg0" atomRefs="a0 a1 a2 a3 a4" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="15.74" y="-8.01998" unitsDisplayed="Unit displayed" fieldData="abs"/>
+        <molecule id="sg1" atomRefs="a0 a1 a2 a3 a4" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="15.74" y="-8.01998" unitsDisplayed="Unit displayed" fieldData="abs">
+            <molecule id="sg2" atomRefs="a0" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="13.3001" y="-7.46848" unitsDisplayed="Unit displayed" fieldData="SP-4"/>
+        </molecule>
     </molecule>
 </cml>
 
@@ -1636,8 +1653,8 @@ M  END
             <bond atomRefs2="a0 a4" order="1"/>
             <bond atomRefs2="a0 a1" order="1"/>
         </bondArray>
-        <molecule id="sg0" atomRefs="a0 a1 a2 a3 a4" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="15.74" y="-8.01998" unitsDisplayed="Unit displayed" fieldData="abs"/>
-        <molecule id="sg0" atomRefs="a0" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="13.3001" y="-7.46848" unitsDisplayed="Unit displayed" fieldData="SP-4"/>
+        <molecule id="sg1" atomRefs="a0 a1 a2 a3 a4" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="15.74" y="-8.01998" unitsDisplayed="Unit displayed" fieldData="abs"/>
+        <molecule id="sg2" atomRefs="a0" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="13.3001" y="-7.46848" unitsDisplayed="Unit displayed" fieldData="SP-4"/>
     </molecule>
 </cml>
 
@@ -2372,7 +2389,11 @@ M  END
                 <bondStereo>W</bondStereo>
             </bond>
         </bondArray>
-        <molecule id="sg0" atomRefs="a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16 a17 a18 a19" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="8.06755" y="2.14891" unitsDisplayed="Unit displayed" fieldData="abs"/>
+        <molecule id="sg1" atomRefs="a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16 a17 a18 a19" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="8.06755" y="2.14891" unitsDisplayed="Unit displayed" fieldData="abs">
+            <molecule id="sg2" atomRefs="a1 a2 a3" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="-3.97395" y="4.09827" unitsDisplayed="Unit displayed" fieldData="cis"/>
+            <molecule id="sg3" atomRefs="a16" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="0.0270667" y="-1.97979" unitsDisplayed="Unit displayed" fieldData="SP-4-PI"/>
+            <molecule id="sg4" atomRefs="a6" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="0.0270667" y="3.35496" unitsDisplayed="Unit displayed" fieldData="RS"/>
+        </molecule>
     </molecule>
 </cml>
 
@@ -2450,7 +2471,7 @@ M  END
             <atom id="a6" elementType="C" x2="14.4405" y2="-21.49"/>
             <atom id="a7" elementType="C" x2="15.7737" y2="-20.7202"/>
             <atom id="a8" elementType="C" x2="15.7737" y2="-19.1807">
-                <atomParity atomRefs4="a9 a13 a20 a7">1</atomParity>
+                <atomParity atomRefs4="a7 a13 a9 a20">1</atomParity>
             </atom>
             <atom id="a9" elementType="C" x2="14.4405" y2="-18.4098"/>
             <atom id="a10" elementType="C" x2="17.108" y2="-21.49"/>
@@ -2506,7 +2527,7 @@ M  END
             <bond atomRefs2="a10 a16" order="1"/>
             <bond atomRefs2="a16 a17" order="1"/>
         </bondArray>
-        <molecule id="sg0" atomRefs="a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16 a17 a18 a19 a20 a21" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="20.2418" y="-18.9153" unitsDisplayed="Unit displayed" fieldData="rel"/>
+        <molecule id="sg1" atomRefs="a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16 a17 a18 a19 a20 a21" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="20.2418" y="-18.9153" unitsDisplayed="Unit displayed" fieldData="rel"/>
     </molecule>
 </cml>
 
@@ -2582,7 +2603,7 @@ M  END
             <atom id="a6" elementType="C" x2="30.7484" y2="-12.1658"/>
             <atom id="a7" elementType="C" x2="32.0818" y2="-11.3961"/>
             <atom id="a8" elementType="C" x2="32.0818" y2="-9.85655">
-                <atomParity atomRefs4="a9 a13 a20 a7">1</atomParity>
+                <atomParity atomRefs4="a7 a13 a9 a20">1</atomParity>
             </atom>
             <atom id="a9" elementType="C" x2="30.7484" y2="-9.08561"/>
             <atom id="a10" elementType="C" x2="33.4161" y2="-12.1658"/>
@@ -2638,7 +2659,7 @@ M  END
             <bond atomRefs2="a10 a16" order="1"/>
             <bond atomRefs2="a16 a17" order="1"/>
         </bondArray>
-        <molecule id="sg0" atomRefs="a0" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" queryOp="   " x="9.80219" y="0.265349" dataDetached="false" placement="Relative" fieldData="rel"/>
+        <molecule id="sg1" atomRefs="a0" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" queryOp="   " x="9.80219" y="0.265349" dataDetached="false" placement="Relative" fieldData="rel"/>
     </molecule>
 </cml>
 
@@ -3600,7 +3621,17 @@ M  END
             <bond atomRefs2="a113 a114" order="1"/>
             <bond atomRefs2="a117 a118" order="1"/>
         </bondArray>
-        <molecule id="sg0" atomRefs="a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16 a17 a18 a19 a20 a21 a22 a23 a24 a25 a26 a27 a28 a29 a30 a31 a32 a33 a34 a35 a36 a37 a38 a39 a40 a41 a42 a43 a44 a45 a46 a47 a48 a49 a50 a51 a52 a53 a54 a55 a56 a57 a58 a59 a60 a61 a62 a63 a64 a65 a66 a67 a68 a69 a70 a71 a72 a73 a74 a75 a76 a77 a78 a79 a80 a81 a82 a83 a84 a85 a86 a87 a88 a89 a90 a91 a92 a93 a94 a95 a96 a97 a98 a99 a100 a101 a102 a103 a104 a105 a106 a107 a108 a109 a110 a111 a112 a113 a114 a115 a116 a117 a118" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="20.5316" y="0.3565" unitsDisplayed="Unit displayed" fieldData="abs"/>
+        <molecule id="sg1" atomRefs="a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12 a13 a14 a15 a16 a17 a18 a19 a20 a21 a22 a23 a24 a25 a26 a27 a28 a29 a30 a31 a32 a33 a34 a35 a36 a37 a38 a39 a40 a41 a42 a43 a44 a45 a46 a47 a48 a49 a50 a51 a52 a53 a54 a55 a56 a57 a58 a59 a60 a61 a62 a63 a64 a65 a66 a67 a68 a69 a70 a71 a72 a73 a74 a75 a76 a77 a78 a79 a80 a81 a82 a83 a84 a85 a86 a87 a88 a89 a90 a91 a92 a93 a94 a95 a96 a97 a98 a99 a100 a101 a102 a103 a104 a105 a106 a107 a108 a109 a110 a111 a112 a113 a114 a115 a116 a117 a118" role="DataSgroup" fieldName="MDLBG_FRAGMENT_STEREO" x="20.5316" y="0.3565" unitsDisplayed="Unit displayed" fieldData="abs">
+            <molecule id="sg2" atomRefs="a14" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="15.9134" y="-1.2336" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+            <molecule id="sg3" atomRefs="a27" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="15.6489" y="-1.0995" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+            <molecule id="sg4" atomRefs="a66" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="14.8143" y="0.2281" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+            <molecule id="sg5" atomRefs="a13" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="14.5604" y="0.9169" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+            <molecule id="sg6" atomRefs="a105" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="9.4474" y="1.4029" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+            <molecule id="sg7" atomRefs="a6" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="10.4088" y="0.9225" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+            <molecule id="sg8" atomRefs="a7" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="12.3858" y="2.2827" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+            <molecule id="sg9" atomRefs="a79" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="11.425" y="2.7753" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+            <molecule id="sg10" atomRefs="a92" role="DataSgroup" fieldName="MDLBG_STEREO_KEY" x="10.3366" y="1.6589" unitsDisplayed="Unit displayed" fieldData="T-4"/>
+        </molecule>
     </molecule>
 </cml>
 

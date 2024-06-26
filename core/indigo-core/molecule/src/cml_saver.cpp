@@ -56,6 +56,7 @@ void CmlSaver::_saveMolecule(BaseMolecule& bmol, bool query)
     if (bmol.tgroups.getTGroupCount())
     {
         mol.reset(bmol.neu());
+        mol->clone(bmol);
         mol->transformTemplatesToSuperatoms();
         pmol = mol.get();
     }

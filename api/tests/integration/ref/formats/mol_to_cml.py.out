@@ -248,7 +248,7 @@
             <bond atomRefs2="a38 a39" order="1"/>
             <bond atomRefs2="a32 a39" order="1"/>
         </bondArray>
-        <molecule id="sg0" atomRefs="a2 a3 a4 a5" role="GenericSgroup">
+        <molecule id="sg1" atomRefs="a2 a3 a4 a5" role="GenericSgroup">
             <MBracket type="SQUARE">
                 <MPoint x="9.749" y="-5.975"/>
                 <MPoint x="9.749" y="-4.475"/>
@@ -256,7 +256,7 @@
                 <MPoint x="13.2131" y="-5.975"/>
             </MBracket>
         </molecule>
-        <molecule id="sg0" atomRefs="a10 a11 a12 a13 a32 a33 a34 a35 a36 a37 a38 a39" role="MultipleSgroup" title="3" patoms="a10 a11 a12 a13">
+        <molecule id="sg2" atomRefs="a10 a11 a12 a13 a32 a33 a34 a35 a36 a37 a38 a39" role="MultipleSgroup" title="3" patoms="a10 a11 a12 a13">
             <MBracket type="SQUARE">
                 <MPoint x="9.924" y="-9.325"/>
                 <MPoint x="9.924" y="-7.825"/>
@@ -264,7 +264,7 @@
                 <MPoint x="13.3881" y="-9.325"/>
             </MBracket>
         </molecule>
-        <molecule id="sg0" atomRefs="a18 a19 a20 a21" role="SruSgroup" title="n" connect="ht">
+        <molecule id="sg3" atomRefs="a18 a19 a20 a21" role="SruSgroup" title="n" connect="ht">
             <MBracket type="SQUARE">
                 <MPoint x="9.724" y="-12.975"/>
                 <MPoint x="9.724" y="-11.475"/>
@@ -272,7 +272,7 @@
                 <MPoint x="13.1881" y="-12.975"/>
             </MBracket>
         </molecule>
-        <molecule id="sg0" atomRefs="a26 a27 a28 a29" role="SuperatomSgroup" title="test"/>
+        <molecule id="sg4" atomRefs="a26 a27 a28 a29" role="SuperatomSgroup" title="test"/>
     </molecule>
 </cml>
 
