@@ -60,12 +60,23 @@ namespace indigo
             int end;
         };
 
+        struct SuperatomDesc
+        {
+            SuperatomDesc(int uid) : id(uid)
+            {
+            }
+            int id;
+            std::vector<int> atoms;
+            std::vector<int> bonds;
+        };
+
     public:
         explicit MoleculeCdxmlSaver(Output& output, bool is_binary = false);
 
         ~MoleculeCdxmlSaver();
 
-        void saveMolecule(BaseMolecule& mol);
+        void saveMolecule(BaseMolecule& bmol);
+        void deleteNamelessSGroups(BaseMolecule& bmol);
         void addNodeToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment, int atom_idx, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord,
                                Vec2f& node_pos);
 
@@ -149,14 +160,13 @@ namespace indigo
 
     private:
         MoleculeCdxmlSaver(const MoleculeCdxmlSaver&); // no implicit copy
-        std::unordered_set<int> _atoms_excluded;
-        std::unordered_set<int> _bonds_excluded;
-        std::unordered_set<int> _bonds_included;
-        std::vector<OutConnection> _out_connections;
+        std::unordered_map<int, int> _superatoms_atoms;
+        std::unordered_map<int, int> _superatoms_bonds;
+        std::list<OutConnection> _out_connections;
 
         std::map<int, int> _atoms_ids;
         std::map<int, int> _bonds_ids;
-        std::map<int, std::vector<int>> _super_atoms;
+        std::map<int, SuperatomDesc> _superatoms;
 
         int _id;
         float _scale;

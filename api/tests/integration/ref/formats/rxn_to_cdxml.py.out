@@ -730,16 +730,16 @@ CN_Bond-S-GRP.rxn
         </fragment>
         <fragment id="11">
             <n id="31" NodeType="Fragment">
-                <fragment id="32">
+                <fragment id="33">
                     <n id="14" p="444.486023 159.261002"/>
-                    <n id="33" NodeType="ExternalConnectionPoint"/>
-                    <b id="35" B="33" E="14"/>
+                    <n id="34" NodeType="ExternalConnectionPoint"/>
+                    <b id="36" B="34" E="14"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R2</s>
                 </t>
             </n>
-            <n id="36" NodeType="Fragment">
+            <n id="32" NodeType="Fragment">
                 <fragment id="37">
                     <n id="12" p="413.790009 212.423996"/>
                     <n id="38" NodeType="ExternalConnectionPoint"/>
@@ -754,8 +754,8 @@ CN_Bond-S-GRP.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <b id="34" B="13" E="31"/>
-            <b id="39" B="13" E="36"/>
+            <b id="35" B="13" E="31"/>
+            <b id="39" B="13" E="32"/>
         </fragment>
         <t p="198.396011 175.387482" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
@@ -831,16 +831,16 @@ CN_Bond-S-GRP.rxn
         </fragment>
         <fragment id="11">
             <n id="31" NodeType="Fragment">
-                <fragment id="32">
+                <fragment id="33">
                     <n id="14" p="444.486023 159.261002"/>
-                    <n id="33" NodeType="ExternalConnectionPoint"/>
-                    <b id="35" B="33" E="14"/>
+                    <n id="34" NodeType="ExternalConnectionPoint"/>
+                    <b id="36" B="34" E="14"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R2</s>
                 </t>
             </n>
-            <n id="36" NodeType="Fragment">
+            <n id="32" NodeType="Fragment">
                 <fragment id="37">
                     <n id="12" p="413.790009 212.423996"/>
                     <n id="38" NodeType="ExternalConnectionPoint"/>
@@ -855,8 +855,8 @@ CN_Bond-S-GRP.rxn
                     <s font="3" size="10" face="96">NH</s>
                 </t>
             </n>
-            <b id="34" B="13" E="31"/>
-            <b id="39" B="13" E="36"/>
+            <b id="35" B="13" E="31"/>
+            <b id="39" B="13" E="32"/>
         </fragment>
         <t p="198.396011 175.387482" Justification="Center" InterpretChemically="no">
             <s font="3" size="10" face="96">+</s>
