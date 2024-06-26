@@ -341,6 +341,7 @@ namespace indigo
     struct commutative_pair_int_hash
     {
         pair_int_hash pih;
+
     public:
         size_t operator()(const std::pair<int, int>& p) const
         {
