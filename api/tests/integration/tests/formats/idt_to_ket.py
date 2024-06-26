@@ -58,6 +58,10 @@ idt_data = {
 lib = indigo.loadMoleculeFromFile(
     os.path.join(ref_path, "monomer_library.ket")
 )
+# Load second time to check issue with wrong reload
+lib = indigo.loadMoleculeFromFile(
+    os.path.join(ref_path, "monomer_library.ket")
+)
 
 for filename in sorted(idt_data.keys()):
     mol = indigo.loadIdt(idt_data[filename])
