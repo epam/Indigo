@@ -51,9 +51,14 @@ void CmlSaver::saveQueryMolecule(QueryMolecule& mol)
 void CmlSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 {
     LocaleGuard locale_guard;
-    std::unique_ptr<BaseMolecule> mol(bmol.neu());
-    mol->clone(bmol);
-    mol->transformTemplatesToSuperatoms();
+    auto* pmol = &bmol;
+    std::unique_ptr<BaseMolecule> mol;
+    if (bmol.tgroups.getTGroupCount())
+    {
+        mol.reset(bmol.neu());
+        mol->transformTemplatesToSuperatoms();
+        pmol = mol.get();
+    }
 
     std::unique_ptr<XMLDocument> doc = std::make_unique<XMLDocument>();
     _doc = doc->GetDocument();
@@ -69,9 +74,9 @@ void CmlSaver::_saveMolecule(BaseMolecule& bmol, bool query)
         elem = _root;
     }
 
-    _addMoleculeElement(elem, *mol, query);
+    _addMoleculeElement(elem, *pmol, query);
 
-    _addRgroups(elem, *mol, query);
+    _addRgroups(elem, *pmol, query);
 
     XMLPrinter printer;
     _doc->Accept(&printer);
