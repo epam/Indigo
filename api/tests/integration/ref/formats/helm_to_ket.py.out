@@ -1,0 +1,4 @@
+*** HELM to KET ***
+helm_multi_char_rna.ket:SUCCEED
+helm_simple_rna.ket:SUCCEED
+Test 'PEPTIDE1{A'2'}$$$$V2.0': got expected error 'Repeating do not supported now.'

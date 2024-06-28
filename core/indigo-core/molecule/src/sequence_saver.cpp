@@ -273,6 +273,226 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
     return seq_string;
 }
 
+static inline void add_monomer(std::string& helm_string, const std::string& monomer_alias)
+{
+    if (monomer_alias.size() == 1)
+        helm_string += monomer_alias;
+    else
+        helm_string += '[' + monomer_alias + ']';
+}
+
+std::string SequenceSaver::getMonomerAlias(BaseMolecule& mol, int atom_idx)
+{
+    std::string monomer_alias = "";
+    std::string monomer_class = mol.getTemplateAtomClass(atom_idx);
+    std::string monomer = mol.getTemplateAtom(atom_idx);
+    MonomerTemplateLibrary& lib = MonomerTemplateLibrary::instance();
+    const std::string& monomer_id = lib.getMonomerTemplateIdByAlias(MonomerTemplates::getStrToMonomerType().at(monomer_class), monomer);
+    if (monomer_id.size())
+    {
+        auto& monomer_template = MonomerTemplateLibrary::instance().getMonomerTemplateById(monomer_id);
+        monomer_alias = monomer_template.alias();
+    }
+    return monomer_alias;
+}
+
+std::string SequenceSaver::getHelmPolymerClass(BaseMolecule& mol, int atom_idx)
+{
+    std::string monomer_class = mol.getTemplateAtomClass(atom_idx);
+    std::string monomer = mol.getTemplateAtom(atom_idx);
+    std::string helm_polymer_class = "";
+    MonomerTemplateLibrary& lib = MonomerTemplateLibrary::instance();
+    const std::string& monomer_id = lib.getMonomerTemplateIdByAlias(MonomerTemplates::getStrToMonomerType().at(monomer_class), monomer);
+    if (monomer_id.size())
+    {
+        auto& monomer_template = lib.getMonomerTemplateById(monomer_id);
+        helm_polymer_class = monomer_template.classHELM();
+    }
+    if (helm_polymer_class.size() == 0)
+    {
+        if (isNucleicClass(monomer_class))
+            helm_polymer_class = kHELMPolymerTypeRNA;
+        else if (isAminoAcidClass(monomer_class))
+            helm_polymer_class = kHELMPolymerTypePEPTIDE;
+        else
+            helm_polymer_class = kHELMPolymerTypeCHEM;
+    }
+    return helm_polymer_class;
+}
+
+std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<int>>& sequences)
+{
+    std::string helm_string = "";
+    int peptide_idx = 0;
+    int rna_idx = 0;
+    int chem_idx = 0;
+    std::set<int> used_atoms;
+    using MonomerInfo = std::tuple<HELMType, int, int>;
+    constexpr int polymer_type = 0;
+    constexpr int polymer_num = 1;
+    constexpr int monomer_num = 2;
+    std::map<int, MonomerInfo> atom_idx_to_monomer_info;
+    for (auto& sequence : sequences)
+    {
+        int monomer_idx = 0;
+        int polymer_idx = -1;
+        std::string helm_polymer_class = "";
+        HELMType helm_type = HELMType::Unknown;
+        for (auto atom_idx : sequence)
+        {
+            if (used_atoms.count(atom_idx) > 0) // Phosphate can be processed with rest of nucleotide
+                continue;
+            std::string monomer = mol.getTemplateAtom(atom_idx);
+            std::string monomer_alias = getMonomerAlias(mol, atom_idx);
+            std::string monomer_class = mol.getTemplateAtomClass(atom_idx);
+            if (monomer_idx == 0)
+            {
+                // start new polymer
+                MonomerTemplateLibrary& lib = MonomerTemplateLibrary::instance();
+                const std::string& monomer_id = lib.getMonomerTemplateIdByAlias(MonomerTemplates::getStrToMonomerType().at(monomer_class), monomer);
+                if (monomer_id.size())
+                    helm_polymer_class = lib.getMonomerTemplateById(monomer_id).classHELM();
+                if (helm_string.size())
+                    helm_string += '|'; // separator between polymers
+                helm_string += helm_polymer_class;
+                helm_type = getHELMTypeFromString(helm_polymer_class);
+                if (helm_polymer_class == kHELMPolymerTypePEPTIDE)
+                    polymer_idx = ++peptide_idx;
+                else if (helm_polymer_class == kHELMPolymerTypeRNA)
+                    polymer_idx = ++rna_idx;
+                else if (helm_polymer_class == kHELMPolymerTypeCHEM)
+                    polymer_idx = ++chem_idx;
+                helm_string += std::to_string(polymer_idx);
+                helm_string += '{';
+            }
+            if (monomer_alias.size() == 0)
+            {
+                if (monomer_class == kMonomerClassBASE)
+                    monomer_alias = monomerAliasByName(monomer_class, monomer);
+                else if (isAminoAcidClass(monomer_class))
+                    monomer_alias = monomerAliasByName(kMonomerClassAA, monomer);
+                else if (isNucleotideClass(monomer_class))
+                    monomer_alias = monomerAliasByName(kMonomerClassBASE, monomer);
+                if (monomer_alias.size() == 0) // If alias not foud - use monomer name
+                    monomer_alias = monomer;
+            }
+            if (monomer_idx)
+                helm_string += '.'; // separator between monomers
+            add_monomer(helm_string, monomer_alias);
+            monomer_idx++;
+            atom_idx_to_monomer_info.emplace(std::make_pair(atom_idx, std::make_tuple(helm_type, polymer_idx, monomer_idx)));
+
+            used_atoms.emplace(atom_idx);
+
+            if (monomer_class == kMonomerClassSUGAR)
+            {
+                auto& v = mol.getVertex(atom_idx);
+                std::string phosphate = "";
+                int phosphate_idx = -1;
+                for (auto nei_idx = v.neiBegin(); nei_idx < v.neiEnd(); nei_idx = v.neiNext(nei_idx))
+                {
+                    int nei_atom_idx = v.neiVertex(nei_idx);
+                    if (mol.isTemplateAtom(nei_atom_idx))
+                    {
+                        if (used_atoms.count(nei_atom_idx) > 0)
+                            continue;
+                        std::string mon_class = mol.getTemplateAtomClass(nei_atom_idx);
+                        if (mon_class == kMonomerClassBASE)
+                        {
+                            helm_string += '('; // branch monomers in ()
+                            add_monomer(helm_string, monomerAliasByName(mon_class, mol.getTemplateAtom(nei_atom_idx)));
+                            monomer_idx++;
+                            atom_idx_to_monomer_info.emplace(std::make_pair(nei_atom_idx, std::make_tuple(helm_type, polymer_idx, monomer_idx)));
+                            used_atoms.emplace(nei_atom_idx);
+                            helm_string += ')';
+                        }
+                        else if (mon_class == kMonomerClassPHOSPHATE)
+                        {
+                            phosphate = monomerAliasByName(mon_class, mol.getTemplateAtom(nei_atom_idx));
+                            phosphate_idx = nei_atom_idx;
+                        }
+                    }
+                }
+                if (phosphate.size())
+                {
+                    add_monomer(helm_string, phosphate);
+                    monomer_idx++;
+                    atom_idx_to_monomer_info.emplace(std::make_pair(phosphate_idx, std::make_tuple(helm_type, polymer_idx, monomer_idx)));
+                    used_atoms.emplace(phosphate_idx);
+                }
+            }
+        }
+        if (monomer_idx)
+            helm_string += '}'; // Finish polymer
+    }
+    helm_string += '$';
+    // Add connections
+    int connections_count = 0;
+    std::vector<std::map<int, int>> directions_map;
+    mol.getTemplateAtomDirectionsMap(directions_map);
+    std::set<std::pair<int, int>> processed_connections;
+    for (int atom_idx = 0; atom_idx < mol.vertexCount(); atom_idx++)
+    {
+        if (mol.isTemplateAtom(atom_idx))
+        {
+            for (auto& connection : directions_map[atom_idx])
+            {
+                if (processed_connections.count(std::make_pair(atom_idx, connection.second)) == 0)
+                {
+                    auto [cur_type, cur_pol_num, cur_mon_num] = atom_idx_to_monomer_info.at(atom_idx);
+                    auto [nei_type, nei_pol_num, nei_mon_num] = atom_idx_to_monomer_info.at(connection.second);
+                    if (cur_type != nei_type || cur_pol_num != nei_pol_num) // TODO: add check for connections between same polymer monomers
+                    {
+                        // add connection
+                        if (connections_count)
+                            helm_string += '|';
+                        helm_string += getStringFromHELMType(cur_type);
+                        helm_string += std::to_string(cur_pol_num);
+                        helm_string += ',';
+                        helm_string += getStringFromHELMType(nei_type);
+                        helm_string += std::to_string(nei_pol_num);
+                        helm_string += ',';
+                        helm_string += std::to_string(cur_mon_num);
+                        helm_string += ":R";
+                        helm_string += std::to_string(connection.first);
+                        helm_string += '-';
+                        helm_string += std::to_string(cur_mon_num);
+                        helm_string += ':';
+                        int nei_ap_id = -1;
+                        for (auto& nei_conn : directions_map[connection.second])
+                        { // TODO: rewrite when connection will contain info about neighb ap_id
+                            if (nei_conn.second == atom_idx)
+                            {
+                                nei_ap_id = nei_conn.first;
+                                break;
+                            }
+                        }
+                        if (nei_ap_id >= 0)
+                        {
+                            helm_string += 'R';
+                            helm_string += std::to_string(nei_ap_id);
+                        }
+                        else
+                        {
+                            helm_string += '?';
+                        }
+                    }
+                    processed_connections.emplace(std::make_pair(atom_idx, connection.second));
+                    processed_connections.emplace(std::make_pair(connection.second, atom_idx));
+                }
+            }
+        }
+    }
+    helm_string += '$';
+    // Add polymer groups
+    helm_string += '$';
+    // Add ExtendedAnnotation
+    helm_string += '$';
+    // Add helm version
+    helm_string += "V2.0";
+    return helm_string;
+}
+
 static void check_backbone_connection(BaseMolecule& mol, std::vector<std::map<int, int>> directions_map, int template_idx, int side,
                                       std::map<int, int>& side_backbone_links, std::map<int, int>& other_side_backbone_links)
 {
@@ -305,174 +525,181 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
     sl.sequenceExtract(sequences);
     auto prop_it = mol_properties.begin();
     int seq_idx = 0;
-    if (sf == SeqFormat::IDT)
+    if (sf == SeqFormat::HELM)
     {
-        std::vector<std::map<int, int>> directions_map;
-        mol.getTemplateAtomDirectionsMap(directions_map);
-        std::map<int, int> left_backbone_links;
-        std::map<int, int> right_backbone_links;
-        std::map<int, size_t> seq_start;
-        std::map<int, size_t> seq_end;
-        for (size_t idx = 0; idx < sequences.size(); idx++)
-        {
-            auto& sequence = sequences[idx];
-            auto template_idx = sequence.front();
-            seq_start[template_idx] = idx;
-            seq_end[sequence.back()] = idx;
-            if (sequence.size() != 1) // CHEM sequence always only one monomer
-                continue;
-            if (strcasecmp(mol.getTemplateAtomClass(template_idx), kMonomerClassCHEM))
-                continue;
-            check_backbone_connection(mol, directions_map, template_idx, kLeftAttachmentPointIdx, left_backbone_links, right_backbone_links);
-            check_backbone_connection(mol, directions_map, template_idx, kRightAttachmentPointIdx, right_backbone_links, left_backbone_links);
-        }
-        if (left_backbone_links.size())
-        {
-            std::vector<std::deque<int>> joined_sequences;
-            while (left_backbone_links.size())
-            {
-                auto left_atom_idx = left_backbone_links.begin()->second;
-                // find leftmost sequence and copy to joined sequences
-                for (auto left = left_backbone_links.find(left_atom_idx); left != left_backbone_links.end(); left = left_backbone_links.find(left_atom_idx))
-                {
-                    left_atom_idx = left->second;
-                }
-                joined_sequences.push_back({});
-                for (auto idx : sequences[seq_end[left_atom_idx]])
-                {
-                    joined_sequences.back().emplace_back(idx);
-                }
-                // while have sequence at right - connect it
-                for (auto right = right_backbone_links.find(left_atom_idx); right != right_backbone_links.end();)
-                {
-                    auto right_atom_idx = right->second;
-                    left_backbone_links.erase(right_atom_idx);
-                    int right_idx;
-                    for (auto idx : sequences[seq_start[right_atom_idx]])
-                    {
-                        joined_sequences.back().emplace_back(idx);
-                        right_idx = idx;
-                    }
-                    right = right_backbone_links.find(right_idx);
-                }
-            }
-            sequences = joined_sequences;
-        }
+        seq_text = saveHELM(mol, sequences);
     }
-    for (auto& sequence : sequences)
+    else
     {
-        std::string seq_string;
         if (sf == SeqFormat::IDT)
         {
-            seq_string.append(saveIdt(mol, sequence));
-        }
-        else
-        {
-            for (auto atom_idx : sequence)
+            std::vector<std::map<int, int>> directions_map;
+            mol.getTemplateAtomDirectionsMap(directions_map);
+            std::map<int, int> left_backbone_links;
+            std::map<int, int> right_backbone_links;
+            std::map<int, size_t> seq_start;
+            std::map<int, size_t> seq_end;
+            for (size_t idx = 0; idx < sequences.size(); idx++)
             {
-                if (mol.isTemplateAtom(atom_idx))
+                auto& sequence = sequences[idx];
+                auto template_idx = sequence.front();
+                seq_start[template_idx] = idx;
+                seq_end[sequence.back()] = idx;
+                if (sequence.size() != 1) // CHEM sequence always only one monomer
+                    continue;
+                if (strcasecmp(mol.getTemplateAtomClass(template_idx), kMonomerClassCHEM))
+                    continue;
+                check_backbone_connection(mol, directions_map, template_idx, kLeftAttachmentPointIdx, left_backbone_links, right_backbone_links);
+                check_backbone_connection(mol, directions_map, template_idx, kRightAttachmentPointIdx, right_backbone_links, left_backbone_links);
+            }
+            if (left_backbone_links.size())
+            {
+                std::vector<std::deque<int>> joined_sequences;
+                while (left_backbone_links.size())
                 {
-                    std::string mon_class = mol.getTemplateAtomClass(atom_idx);
-                    if (isBackboneClass(mon_class))
+                    auto left_atom_idx = left_backbone_links.begin()->second;
+                    // find leftmost sequence and copy to joined sequences
+                    for (auto left = left_backbone_links.find(left_atom_idx); left != left_backbone_links.end(); left = left_backbone_links.find(left_atom_idx))
                     {
-                        std::string label;
-                        if (mon_class == kMonomerClassSUGAR)
+                        left_atom_idx = left->second;
+                    }
+                    joined_sequences.push_back({});
+                    for (auto idx : sequences[seq_end[left_atom_idx]])
+                    {
+                        joined_sequences.back().emplace_back(idx);
+                    }
+                    // while have sequence at right - connect it
+                    for (auto right = right_backbone_links.find(left_atom_idx); right != right_backbone_links.end();)
+                    {
+                        auto right_atom_idx = right->second;
+                        left_backbone_links.erase(right_atom_idx);
+                        int right_idx;
+                        for (auto idx : sequences[seq_start[right_atom_idx]])
                         {
-                            auto& v = mol.getVertex(atom_idx);
-                            for (auto nei_idx = v.neiBegin(); nei_idx < v.neiEnd(); nei_idx = v.neiNext(nei_idx))
+                            joined_sequences.back().emplace_back(idx);
+                            right_idx = idx;
+                        }
+                        right = right_backbone_links.find(right_idx);
+                    }
+                }
+                sequences = joined_sequences;
+            }
+        }
+        for (auto& sequence : sequences)
+        {
+            std::string seq_string;
+            if (sf == SeqFormat::IDT)
+            {
+                seq_string.append(saveIdt(mol, sequence));
+            }
+            else
+            {
+                for (auto atom_idx : sequence)
+                {
+                    if (mol.isTemplateAtom(atom_idx))
+                    {
+                        std::string mon_class = mol.getTemplateAtomClass(atom_idx);
+                        if (isBackboneClass(mon_class))
+                        {
+                            std::string label;
+                            if (mon_class == kMonomerClassSUGAR)
                             {
-                                int nei_atom_idx = v.neiVertex(nei_idx);
-                                if (mol.isTemplateAtom(nei_atom_idx) && std::string(mol.getTemplateAtomClass(nei_atom_idx)) == kMonomerClassBASE)
+                                auto& v = mol.getVertex(atom_idx);
+                                for (auto nei_idx = v.neiBegin(); nei_idx < v.neiEnd(); nei_idx = v.neiNext(nei_idx))
                                 {
-                                    mon_class = kMonomerClassBASE;
-                                    atom_idx = nei_atom_idx;
-                                    label = monomerAliasByName(mon_class, mol.getTemplateAtom(nei_atom_idx));
-                                    break;
-                                }
-                            }
-                        }
-                        else if (isAminoAcidClass(mon_class))
-                        {
-                            mon_class = kMonomerClassAA;
-                            label = monomerAliasByName(kMonomerClassAA, mol.getTemplateAtom(atom_idx));
-                        }
-                        else if (isNucleotideClass(mon_class))
-                        {
-                            mon_class = kMonomerClassBASE; // treat nucleotide symbol as a base
-                            label = monomerAliasByName(kMonomerClassBASE, mol.getTemplateAtom(atom_idx));
-                        }
-
-                        if (label.size())
-                        {
-                            TGroup temp;
-                            if (!_mon_lib.getMonomerTemplate(mon_class, label, temp))
-                            {
-                                // if symbol is not standard, check its natural analog
-                                const char* natrep = nullptr;
-                                int temp_idx = mol.getTemplateAtomTemplateIndex(atom_idx);
-                                if (temp_idx > -1)
-                                {
-                                    auto& tg = mol.tgroups.getTGroup(temp_idx);
-                                    natrep = tg.tgroup_natreplace.ptr();
-                                }
-                                else
-                                {
-                                    auto tg_ref = findTemplateInMap(label, mon_class, _templates);
-                                    if (tg_ref.has_value())
+                                    int nei_atom_idx = v.neiVertex(nei_idx);
+                                    if (mol.isTemplateAtom(nei_atom_idx) && std::string(mol.getTemplateAtomClass(nei_atom_idx)) == kMonomerClassBASE)
                                     {
-                                        auto& tg = tg_ref.value().get();
-                                        natrep = tg.tgroup_natreplace.ptr();
+                                        mon_class = kMonomerClassBASE;
+                                        atom_idx = nei_atom_idx;
+                                        label = monomerAliasByName(mon_class, mol.getTemplateAtom(nei_atom_idx));
+                                        break;
                                     }
                                 }
-                                std::string natural_analog;
-                                if (natrep)
-                                    natural_analog = monomerAliasByName(mon_class, extractMonomerName(natrep));
-
-                                if (_mon_lib.getMonomerTemplate(mon_class, natural_analog, temp))
-                                    label = natural_analog;
-                                else if (mon_class == kMonomerClassBASE)
-                                    label = "N";
-                                else if (mon_class == kMonomerClassAA)
-                                    label = "X";
+                            }
+                            else if (isAminoAcidClass(mon_class))
+                            {
+                                mon_class = kMonomerClassAA;
+                                label = monomerAliasByName(kMonomerClassAA, mol.getTemplateAtom(atom_idx));
+                            }
+                            else if (isNucleotideClass(mon_class))
+                            {
+                                mon_class = kMonomerClassBASE; // treat nucleotide symbol as a base
+                                label = monomerAliasByName(kMonomerClassBASE, mol.getTemplateAtom(atom_idx));
                             }
 
-                            if (label.size() > 1)
-                                throw Error("Can't save '%s' to sequence format", label.c_str());
-                            seq_string += label;
+                            if (label.size())
+                            {
+                                TGroup temp;
+                                if (!_mon_lib.getMonomerTemplate(mon_class, label, temp))
+                                {
+                                    // if symbol is not standard, check its natural analog
+                                    const char* natrep = nullptr;
+                                    int temp_idx = mol.getTemplateAtomTemplateIndex(atom_idx);
+                                    if (temp_idx > -1)
+                                    {
+                                        auto& tg = mol.tgroups.getTGroup(temp_idx);
+                                        natrep = tg.tgroup_natreplace.ptr();
+                                    }
+                                    else
+                                    {
+                                        auto tg_ref = findTemplateInMap(label, mon_class, _templates);
+                                        if (tg_ref.has_value())
+                                        {
+                                            auto& tg = tg_ref.value().get();
+                                            natrep = tg.tgroup_natreplace.ptr();
+                                        }
+                                    }
+                                    std::string natural_analog;
+                                    if (natrep)
+                                        natural_analog = monomerAliasByName(mon_class, extractMonomerName(natrep));
+
+                                    if (_mon_lib.getMonomerTemplate(mon_class, natural_analog, temp))
+                                        label = natural_analog;
+                                    else if (mon_class == kMonomerClassBASE)
+                                        label = "N";
+                                    else if (mon_class == kMonomerClassAA)
+                                        label = "X";
+                                }
+
+                                if (label.size() > 1)
+                                    throw Error("Can't save '%s' to sequence format", label.c_str());
+                                seq_string += label;
+                            }
                         }
                     }
                 }
             }
-        }
-        if (seq_string.size())
-        {
-            // sequences separators are different for FASTA, IDT and Sequence
-            if (sf == SeqFormat::FASTA)
+            if (seq_string.size())
             {
-                if (seq_idx)
-                    seq_text += "\n";
-                std::string fasta_header = ">Sequence";
-                fasta_header += std::to_string(seq_idx + 1);
-                if (prop_it != mol_properties.end())
+                // sequences separators are different for FASTA, IDT and Sequence
+                if (sf == SeqFormat::FASTA)
                 {
-                    auto& props = mol_properties.value(prop_it);
-                    prop_it++;
-                    if (props.contains(kFASTA_HEADER))
-                        fasta_header = props.at(kFASTA_HEADER);
+                    if (seq_idx)
+                        seq_text += "\n";
+                    std::string fasta_header = ">Sequence";
+                    fasta_header += std::to_string(seq_idx + 1);
+                    if (prop_it != mol_properties.end())
+                    {
+                        auto& props = mol_properties.value(prop_it);
+                        prop_it++;
+                        if (props.contains(kFASTA_HEADER))
+                            fasta_header = props.at(kFASTA_HEADER);
+                    }
+                    fasta_header += "\n";
+                    seq_text += fasta_header;
                 }
-                fasta_header += "\n";
-                seq_text += fasta_header;
-            }
-            else if (seq_text.size())
-                seq_text += sf == SeqFormat::Sequence ? " " : "\n";
+                else if (seq_text.size())
+                    seq_text += sf == SeqFormat::Sequence ? " " : "\n";
 
-            seq_text += seq_string.substr(0, SEQ_LINE_LENGTH);
-            for (size_t format_ind = SEQ_LINE_LENGTH; format_ind < seq_string.size(); format_ind += SEQ_LINE_LENGTH)
-            {
-                seq_text += "\n";
-                seq_text += seq_string.substr(format_ind, SEQ_LINE_LENGTH);
+                seq_text += seq_string.substr(0, SEQ_LINE_LENGTH);
+                for (size_t format_ind = SEQ_LINE_LENGTH; format_ind < seq_string.size(); format_ind += SEQ_LINE_LENGTH)
+                {
+                    seq_text += "\n";
+                    seq_text += seq_string.substr(format_ind, SEQ_LINE_LENGTH);
+                }
+                seq_idx++;
             }
-            seq_idx++;
         }
     }
     if (seq_text.size())

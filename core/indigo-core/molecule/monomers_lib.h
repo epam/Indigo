@@ -161,7 +161,7 @@ namespace indigo
                 {MonomerClass::Terminator, "Terminator"},
                 {MonomerClass::Linker, "Linker"},
                 {MonomerClass::Unknown, "Unknown"},
-                {MonomerClass::CHEM, "Chem"},
+                {MonomerClass::CHEM, "CHEM"},
                 {MonomerClass::DNA, "DNA"},
                 {MonomerClass::RNA, "RNA"},
             };
@@ -179,7 +179,7 @@ namespace indigo
                 {"Terminator", MonomerClass::Terminator},
                 {"Linker", MonomerClass::Linker},
                 {"Unknown", MonomerClass::Unknown},
-                {"Chem", MonomerClass::CHEM},
+                {"CHEM", MonomerClass::CHEM},
                 {"DNA", MonomerClass::DNA},
                 {"RNA", MonomerClass::RNA},
             };

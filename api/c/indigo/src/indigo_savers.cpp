@@ -649,7 +649,7 @@ CEXPORT int indigoSaveHelm(int item, int output)
         {
             SequenceSaver saver(out);
             BaseMolecule& mol = obj.getBaseMolecule();
-            // saver.saveMolecule(mol, SequenceSaver::SeqFormat::HELM);
+            saver.saveMolecule(mol, SequenceSaver::SeqFormat::HELM);
             out.flush();
             return 1;
         }

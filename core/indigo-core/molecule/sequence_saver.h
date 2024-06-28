@@ -41,7 +41,8 @@ namespace indigo
         {
             Sequence,
             FASTA,
-            IDT
+            IDT,
+            HELM
         };
 
         static constexpr uint32_t SEQ_LINE_LENGTH = 80;
@@ -56,8 +57,11 @@ namespace indigo
     protected:
         TGroup& getTGroup();
         std::string saveIdt(BaseMolecule& mol, std::deque<int>& sequence);
+        std::string saveHELM(BaseMolecule& mol, std::vector<std::deque<int>>& sequence);
 
     private:
+        std::string getMonomerAlias(BaseMolecule& mol, int atom_idx);
+        std::string getHelmPolymerClass(BaseMolecule& mol, int atom_idx);
         SequenceSaver(const SequenceSaver&); // no implicit copy
         Output& _output;
         const MonomerTemplates& _mon_lib;

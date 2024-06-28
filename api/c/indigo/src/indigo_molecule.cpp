@@ -686,7 +686,7 @@ CEXPORT int indigoLoadHelm(int source)
         std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
 
         Molecule& mol = molptr->mol;
-        // loader.loadHelm(mol);
+        loader.loadHELM(mol);
         return self.addObject(molptr.release());
     }
     INDIGO_END(-1);
