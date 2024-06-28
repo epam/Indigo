@@ -1,4 +1,3 @@
-# import ctypes.util
 import os
 import platform
 from ctypes import CDLL, RTLD_GLOBAL, c_void_p, sizeof
@@ -69,10 +68,4 @@ class Lib:
 
     @staticmethod
     def load(name: str) -> CDLL:
-        if Lib._system_name() == "windows":
-            CDLL(Lib._library_path("msvcp140"))
-            CDLL(Lib._library_path("vcruntime140"))
-            if Lib._machine_name() == "x86_64":
-                CDLL(Lib._library_path("vcruntime140_1"))
-            return CDLL(Lib._library_path(name))
         return CDLL(Lib._library_path(name), mode=RTLD_GLOBAL)
