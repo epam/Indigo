@@ -32,7 +32,7 @@ helm_data = {
     "helm_simple_rna": "RNA1{R(U)P.R(T)P.R(G)P.R(C)P.R(A)}$$$$V2.0",
     "helm_multi_char_rna": "RNA1{R(U)P.R(T)P.R(G)P.R(C)P.R([daA])}$$$$V2.0",
     "helm_peptide": "PEPTIDE1{A.[meA].C}$$$$V2.0",
-    "helm_chem_peptide": "CHEM1{[PEG2]}|PEPTIDE1{W.N.D.[Pen].G.[Orn].D.A.D.G.S.G.[Cap]}$CHEM1,PEPTIDE1,1:R1-1:R0$$$V2.0",
+    "helm_chem_peptide": "CHEM1{[PEG2]}|PEPTIDE1{W.N.D.[Pen].G.[Orn].D.A.D.G.S.G.[Cap]}$CHEM1,PEPTIDE1,1:R1-1:R1$$$V2.0",
     "helm_annotations": 'BLOB1{BEAD}"Animated Polystyrene"|CHEM1{[hxy]"Annotation"}|RNA1{R(A"mutation")P.R(U)P.R(G)P}$$$$V2.0',
 }
 
@@ -42,8 +42,8 @@ lib = indigo.loadMoleculeFromFile(
 
 for filename in sorted(helm_data.keys()):
     mol = indigo.loadHelm(helm_data[filename])
-    with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-        file.write(mol.json())
+    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+    #     file.write(mol.json())
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
         ket_ref = file.read()
     ket = mol.json()

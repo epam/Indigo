@@ -24,6 +24,7 @@
 #include "base_cpp/scanner.h"
 #include "layout/molecule_layout.h"
 #include "layout/sequence_layout.h"
+#include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/sequence_loader.h"
@@ -1070,6 +1071,7 @@ void SequenceLoader::loadHELM(BaseMolecule& mol)
             Array<char> position;
             size_t error_pos;
             _scanner.readWord(position, ":");
+            _scanner.skip(1);
             left_monomer_idx = std::stoi(position.ptr(), &error_pos);
             if (error_pos != position.size() - 1) // arrray contains 0 at the end
                 throw Error("Only direct connections supported now.");
@@ -1084,8 +1086,9 @@ void SequenceLoader::loadHELM(BaseMolecule& mol)
             _scanner.readWord(right_ap, "\"|$");
             int left_templ_atom_idx = used_polymer_nums[left_polymer][left_monomer_idx];
             int right_templ_atom_idx = used_polymer_nums[right_polymer][right_monomer_idx];
-            mol.setTemplateAtomAttachmentOrder(left_templ_atom_idx, right_templ_atom_idx, left_ap.ptr());
-            mol.setTemplateAtomAttachmentOrder(right_templ_atom_idx, left_templ_atom_idx, right_ap.ptr());
+            mol.asMolecule().addBond_Silent(left_templ_atom_idx, right_templ_atom_idx, BOND_SINGLE);
+            mol.setTemplateAtomAttachmentOrder(left_templ_atom_idx, right_templ_atom_idx, convertAPFromHELM(left_ap.ptr()).c_str());
+            mol.setTemplateAtomAttachmentOrder(right_templ_atom_idx, left_templ_atom_idx, convertAPFromHELM(right_ap.ptr()).c_str());
             if (_scanner.isEOF())
                 throw Error(unexpected_eod);
             ch = _scanner.readChar();

@@ -454,7 +454,7 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
                         helm_string += ',';
                         helm_string += std::to_string(cur_mon_num);
                         helm_string += ":R";
-                        helm_string += std::to_string(connection.first);
+                        helm_string += std::to_string(connection.first + 1);
                         helm_string += '-';
                         helm_string += std::to_string(cur_mon_num);
                         helm_string += ':';
@@ -470,7 +470,7 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
                         if (nei_ap_id >= 0)
                         {
                             helm_string += 'R';
-                            helm_string += std::to_string(nei_ap_id);
+                            helm_string += std::to_string(nei_ap_id + 1);
                         }
                         else
                         {
