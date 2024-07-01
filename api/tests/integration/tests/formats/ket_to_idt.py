@@ -58,6 +58,7 @@ idt_data = {
     "idt_i2moera_sp_32moera": "/52MOErA/*/32MOErA/",
     "idt_52moera_sp_i2moera_sp": "/52MOErA/*/i2MOErA/*",
     "idt_unsplit": "/5UNSPLIT/A",
+    "idt_more_than_80_chars": "/52MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//3Phos/",
 }
 
 for filename in sorted(idt_data.keys()):
