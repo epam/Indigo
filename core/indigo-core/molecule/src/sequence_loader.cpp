@@ -24,6 +24,7 @@
 #include "base_cpp/scanner.h"
 #include "layout/molecule_layout.h"
 #include "layout/sequence_layout.h"
+#include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/sequence_loader.h"
@@ -693,4 +694,443 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
 
     if (invalid_symbols.size())
         throw Error("Invalid symbols in the sequence: %s", invalid_symbols.c_str());
+}
+
+static std::set<std::string> polymer_types{kHELMPolymerTypePEPTIDE, kHELMPolymerTypeRNA, kHELMPolymerTypeCHEM, kHELMPolymerTypeUnknown};
+static const char* reserved_helm_chars = "${}|.,-:[]()";
+static const char* unexpected_eod = unexpected_eod;
+
+SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer()
+{
+    std::string monomer_name, repeating, annotation;
+    auto ch = _scanner.lookNext();
+    if (ch == '[')
+    {
+        std::string name;
+        _scanner.skip(1);
+        bool smiles = false;
+        for (int bracket_count = 1; bracket_count != 0 && !_scanner.isEOF();)
+        {
+            ch = _scanner.readChar();
+            switch (ch)
+            {
+            case '[':
+                bracket_count++;
+                smiles = true;
+                break;
+            case ']':
+                bracket_count--;
+                break;
+            default:
+                monomer_name += ch;
+                break;
+            }
+        }
+        if (_scanner.isEOF())
+            throw Error(unexpected_eod);
+        if (ch != ']')
+            throw Error("Unexpected char. Expected ']' but found '%c'.", ch);
+        if (smiles)
+            throw Error("Inline smiles not supported for now.");
+    }
+    else if (ch != -1)
+    {
+        _scanner.skip(1);
+        monomer_name = ch;
+    }
+    if (_scanner.isEOF())
+        throw Error(unexpected_eod);
+    if (_scanner.lookNext() == '\'')
+    {
+        // repeating
+        Array<char> name;
+        _scanner.skip(1);
+        _scanner.readWord(name, "'");
+        if (_scanner.lookNext() != '\'')
+            throw Error("Unexpected char. Expected ''' but found '%c'.", _scanner.lookNext());
+        _scanner.skip(1); // skip "'"
+        repeating = name.ptr();
+    }
+    if (_scanner.lookNext() == '"') // inline annotation
+    {
+        Array<char> name;
+        _scanner.skip(1);
+        _scanner.readWord(name, "\"");
+        if (_scanner.lookNext() != '"')
+            throw Error("Unexpected char. Expected '\"' but found '%c'.", _scanner.lookNext());
+        _scanner.skip(1); // skip '"'
+        annotation = name.ptr();
+    }
+    // check monomer_name for
+    return std::make_tuple(monomer_name, repeating, annotation);
+}
+
+std::string SequenceLoader::readHelmSimplePolymerName(std::string& polymer_name)
+{
+    auto ch = _scanner.lookNext();
+    while (std::isalpha(ch) && !_scanner.isEOF())
+    {
+        _scanner.skip(1);
+        polymer_name += std::toupper(ch);
+        ch = _scanner.lookNext();
+    }
+    std::string polymer_type = polymer_name;
+    if (polymer_types.count(polymer_name) == 0)
+        throw Error("Unknown polymer type '%s'.", polymer_name.c_str());
+    while (std::isdigit(ch) && !_scanner.isEOF())
+    {
+        _scanner.skip(1);
+        polymer_name += ch;
+        ch = _scanner.lookNext();
+    }
+    return polymer_type;
+}
+
+void SequenceLoader::loadHELM(BaseMolecule& mol)
+{
+    _row = 0;
+    mol.clear();
+    std::string simple_polymer_name = "";
+    std::string simple_polymer_type = "";
+    int monomer_idx = 0;
+    int prev_monomer_template_atom_idx = -1;
+    using polymer_map = std::map<std::string, std::map<int, int>>;
+    polymer_map used_polymer_nums;
+    polymer_map::iterator cur_polymer_map;
+    enum class helm_parts
+    {
+        ListOfSimplePolymers,
+        ListOfConnections,
+        ListOfPolymerGroups,
+        ExtendedAnnotation,
+        End
+    };
+    helm_parts helm_part = helm_parts::ListOfSimplePolymers;
+    auto& lib = MonomerTemplateLibrary::instance();
+
+    while (!_scanner.isEOF())
+    {
+        if (helm_part == helm_parts::ListOfSimplePolymers)
+        {
+            auto ch = _scanner.lookNext();
+            if (simple_polymer_name.size() == 0) // Read simple polymer_name
+            {
+                _col = 0;
+                simple_polymer_type = readHelmSimplePolymerName(simple_polymer_name);
+                if (used_polymer_nums.count(simple_polymer_name))
+                    throw Error("Simple polymer '%s' defined more than once.", simple_polymer_name.c_str());
+                if (simple_polymer_name == simple_polymer_type)
+                    throw Error("Polymer '%s' without number not allowed.", simple_polymer_name.c_str());
+                ch = _scanner.lookNext();
+                if (ch != '{')
+                    throw Error("Unexpected symbol. Expected '{' but found '%c'.", ch);
+                _scanner.skip(1); // skip '{'
+                if (used_polymer_nums.count(simple_polymer_name))
+                    throw Error("Simple polymer '%s' defined more than once.", simple_polymer_name.c_str());
+                auto res = used_polymer_nums.emplace(std::make_pair(simple_polymer_name, std::map<int, int>()));
+                if (res.second)
+                    cur_polymer_map = res.first;
+                else
+                    throw Error("Internal error - cannot emplace polymer map.");
+            }
+            else if (ch == '(')
+            {
+                throw Error("Unexpected symbol '('. Group not supported for now.");
+            }
+            else if (ch != '}')
+            {
+                monomer_idx++;
+                Vec3f pos(_col * MoleculeLayout::DEFAULT_BOND_LENGTH, -MoleculeLayout::DEFAULT_BOND_LENGTH * _row, 0);
+                _col++;
+                if (simple_polymer_type == kHELMPolymerTypeUnknown)
+                {
+                    Array<char> name;
+                    _scanner.readWord(name, reserved_helm_chars);
+                    // skip blob for now
+                    ch = _scanner.lookNext();
+                    if (ch != '}')
+                        throw Error("Unexpected symbol. Expected '}' but found '%c'.", ch);
+                }
+                else if (simple_polymer_type == kHELMPolymerTypeCHEM)
+                {
+                    auto [id, repeating, annotaion] = readHelmMonomer();
+                    ch = _scanner.lookNext();
+                    if (ch != '}')
+                        throw Error("Unexpected symbol. Expected '}' but found '%c'.", ch); // only one monomer in chem
+                    if (repeating.size())
+                        throw Error("Chem cannot be repeated.");
+                    const std::string& monomer_id = lib.getMonomerTemplateIdByAlias(MonomerClass::CHEM, id);
+                    if (monomer_id.size() == 0) // if not found - check for atom mapped SMILES([*:1]) and CXSMILES([*]...[*] |$_R1;;;;_R2;$|) - not now
+                        throw Error("Monomer '%s' not found.", id.c_str());
+                    checkAddTemplate(mol, lib.getMonomerTemplateById(monomer_id));
+                    int chem_idx = mol.asMolecule().addAtom(-1);
+                    mol.asMolecule().setTemplateAtom(chem_idx, id.c_str());
+                    mol.asMolecule().setTemplateAtomClass(chem_idx, kMonomerClassCHEM);
+                    mol.asMolecule().setAtomXyz(chem_idx, pos);
+                    cur_polymer_map->second[monomer_idx] = chem_idx;
+                }
+                else if (simple_polymer_type == kHELMPolymerTypePEPTIDE)
+                {
+                    auto [id, repeating, annotaion] = readHelmMonomer();
+                    const std::string& monomer_id = lib.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, id);
+                    if (monomer_id.size() == 0) // if not found - check for atom mapped SMILES([*:1]) and CXSMILES([*]...[*] |$_R1;;;;_R2;$|) - not now
+                        throw Error("Monomer '%s' not found.", id.c_str());
+                    if (repeating.size())
+                        throw Error("Repeating do not supported now.");
+                    checkAddTemplate(mol, lib.getMonomerTemplateById(monomer_id));
+                    int amino_idx = mol.asMolecule().addAtom(-1);
+                    mol.asMolecule().setTemplateAtom(amino_idx, id.c_str());
+                    mol.asMolecule().setTemplateAtomClass(amino_idx, kMonomerClassAA);
+                    mol.asMolecule().setTemplateAtomSeqid(amino_idx, monomer_idx);
+                    mol.asMolecule().setAtomXyz(amino_idx, pos);
+                    cur_polymer_map->second[monomer_idx] = amino_idx;
+                    if (monomer_idx > 1)
+                    {
+                        mol.asMolecule().addBond_Silent(amino_idx - 1, amino_idx, BOND_SINGLE);
+                        mol.setTemplateAtomAttachmentOrder(amino_idx - 1, amino_idx, kRightAttachmentPoint);
+                        mol.setTemplateAtomAttachmentOrder(amino_idx, amino_idx - 1, kLeftAttachmentPoint);
+                    }
+                    ch = _scanner.lookNext();
+                    if (ch == '.')
+                        _scanner.skip(1);
+                }
+                else // kHELMPolymerTypeRNA
+                {
+                    auto [id, repeating, annotaion] = readHelmMonomer();
+                    const std::string& phosphate_lib_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, id);
+                    if (phosphate_lib_id.size())
+                    {
+                        if (repeating.size())
+                            throw Error("Phosphate cannot be repeated.");
+                        // add phosphate
+                        checkAddTemplate(mol, lib.getMonomerTemplateById(phosphate_lib_id));
+                        int phosphate_idx = mol.asMolecule().addAtom(-1);
+                        mol.asMolecule().setTemplateAtom(phosphate_idx, id.c_str());
+                        mol.asMolecule().setTemplateAtomClass(phosphate_idx, kMonomerClassPHOSPHATE);
+                        mol.asMolecule().setTemplateAtomSeqid(phosphate_idx, monomer_idx);
+                        mol.asMolecule().setAtomXyz(phosphate_idx, pos);
+                        cur_polymer_map->second[monomer_idx] = phosphate_idx;
+                        if (monomer_idx > 1)
+                        {
+                            mol.asMolecule().addBond_Silent(phosphate_idx - 1, phosphate_idx, BOND_SINGLE);
+                            mol.setTemplateAtomAttachmentOrder(phosphate_idx - 1, phosphate_idx, kRightAttachmentPoint);
+                            mol.setTemplateAtomAttachmentOrder(phosphate_idx, phosphate_idx - 1, kLeftAttachmentPoint);
+                        }
+                        ch = _scanner.lookNext();
+                        if (ch != '.' && ch != '}')
+                            throw Error("Unexpected symbol. Expected '.' or '}' but found '%c'.", ch);
+                        if (ch == '.')
+                            _scanner.skip(1);
+                        continue;
+                    }
+                    const std::string& sugar_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Sugar, id);
+                    if (sugar_id.size() == 0) // if not found - check for atom mapped SMILES([*:1]) and CXSMILES([*]...[*] |$_R1;;;;_R2;$|) - not now
+                        throw Error("Sugar '%s' not found.", id.c_str());
+                    if (repeating.size())
+                        throw Error("Sugar cannot be repeated.");
+                    checkAddTemplate(mol, lib.getMonomerTemplateById(sugar_id));
+                    int sugar_idx = mol.asMolecule().addAtom(-1);
+                    mol.asMolecule().setTemplateAtom(sugar_idx, id.c_str());
+                    mol.asMolecule().setTemplateAtomClass(sugar_idx, kMonomerClassSUGAR);
+                    mol.asMolecule().setTemplateAtomSeqid(sugar_idx, monomer_idx);
+                    mol.asMolecule().setAtomXyz(sugar_idx, pos);
+                    cur_polymer_map->second[monomer_idx] = sugar_idx;
+                    if (monomer_idx > 1)
+                    {
+                        mol.asMolecule().addBond_Silent(sugar_idx - 1, sugar_idx, BOND_SINGLE);
+                        mol.setTemplateAtomAttachmentOrder(sugar_idx - 1, sugar_idx, kRightAttachmentPoint);
+                        mol.setTemplateAtomAttachmentOrder(sugar_idx, sugar_idx - 1, kLeftAttachmentPoint);
+                    }
+                    ch = _scanner.lookNext();
+                    if (ch != '(') // In RNA after sugar should be base in ()
+                        throw Error("Expected '(' for base but found '%c'.", ch);
+                    _scanner.skip(1);
+                    monomer_idx++;
+                    auto [base_id, base_repeating, base_annotaion] = readHelmMonomer();
+                    ch = _scanner.lookNext();
+                    if (ch != ')') // In RNA after sugar should be base in ()
+                        throw Error("Expected ')' after base but found '%c'.", ch);
+                    _scanner.skip(1);
+                    if (repeating.size())
+                        throw Error("Base cannot be repeated.");
+                    const std::string& base_lib_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Base, base_id);
+                    if (base_lib_id.size() == 0) // if not found - check for atom mapped SMILES([*:1]) and CXSMILES([*]...[*] |$_R1;;;;_R2;$|) - not now
+                        throw Error("Base '%s' not found.", base_id.c_str());
+                    if (base_repeating.size())
+                        throw Error("Base cannot be repeated.");
+                    checkAddTemplate(mol, lib.getMonomerTemplateById(base_lib_id));
+                    Vec3f base_pos((_col - 1) * MoleculeLayout::DEFAULT_BOND_LENGTH, -MoleculeLayout::DEFAULT_BOND_LENGTH * (_row + 1), 0);
+                    int base_idx = mol.asMolecule().addAtom(-1);
+                    mol.asMolecule().setTemplateAtom(base_idx, base_id.c_str());
+                    mol.asMolecule().setTemplateAtomClass(base_idx, kMonomerClassBASE);
+                    mol.asMolecule().setTemplateAtomSeqid(base_idx, monomer_idx);
+                    mol.asMolecule().setAtomXyz(base_idx, base_pos);
+                    cur_polymer_map->second[monomer_idx] = base_idx;
+                    mol.asMolecule().addBond_Silent(sugar_idx, base_idx, BOND_SINGLE);
+                    mol.setTemplateAtomAttachmentOrder(sugar_idx, base_idx, kBranchAttachmentPoint);
+                    mol.setTemplateAtomAttachmentOrder(base_idx, sugar_idx, kLeftAttachmentPoint);
+                    ch = _scanner.lookNext();
+                    if (ch == '.')
+                    {
+                        _scanner.skip(1);
+                        continue;
+                    }
+                    if (ch == '}')
+                        continue;
+                    auto [phosphate_id, phosphate_repeating, phosphate_annotaion] = readHelmMonomer();
+                    const std::string& phosp_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, phosphate_id);
+                    if (phosp_id.size() == 0)
+                        throw Error("Phosphate '%s' not found.", phosphate_id.c_str());
+                    if (repeating.size())
+                        throw Error("Phosphate cannot be repeated.");
+                    monomer_idx++;
+                    checkAddTemplate(mol, lib.getMonomerTemplateById(phosp_id));
+                    Vec3f phosphate_pos(_col * MoleculeLayout::DEFAULT_BOND_LENGTH, -MoleculeLayout::DEFAULT_BOND_LENGTH * _row, 0);
+                    _col++;
+                    int phosphate_idx = mol.asMolecule().addAtom(-1);
+                    mol.asMolecule().setTemplateAtom(phosphate_idx, phosphate_id.c_str());
+                    mol.asMolecule().setTemplateAtomClass(phosphate_idx, kMonomerClassPHOSPHATE);
+                    mol.asMolecule().setTemplateAtomSeqid(phosphate_idx, monomer_idx);
+                    mol.asMolecule().setAtomXyz(phosphate_idx, phosphate_pos);
+                    cur_polymer_map->second[monomer_idx] = phosphate_idx;
+                    mol.asMolecule().addBond_Silent(sugar_idx, phosphate_idx, BOND_SINGLE);
+                    mol.setTemplateAtomAttachmentOrder(sugar_idx, phosphate_idx, kRightAttachmentPoint);
+                    mol.setTemplateAtomAttachmentOrder(phosphate_idx, sugar_idx, kLeftAttachmentPoint);
+                    ch = _scanner.lookNext();
+                    if (ch != '.' && ch != '}')
+                        throw Error("Unexpected symbol. Expected '.' or '}' but found '%c'.", ch);
+                    if (ch == '.')
+                        _scanner.skip(1);
+                }
+            }
+            else // end of polymer - }
+            {
+                _scanner.skip(1); // skip '}'
+                ch = _scanner.lookNext();
+                if (ch == '"')
+                {
+                    Array<char> annotation;
+                    _scanner.skip(1);
+                    _scanner.readWord(annotation, "\"");
+                    if (_scanner.lookNext() != '"')
+                        throw Error("Unexpected symbol. Expected '\"' but found '%c'.", _scanner.lookNext());
+                    _scanner.skip(1);
+                    // skip annotation for now
+                    ch = _scanner.lookNext();
+                }
+                _row++;
+                _col = 0;
+                monomer_idx = 0;
+                if (simple_polymer_type == kHELMPolymerTypeRNA)
+                    _row++; // additional row for bases in RNA
+                if (ch == '|')
+                {
+                    // cleanup to go to next simple polymer
+                    simple_polymer_name = "";
+                    simple_polymer_type = "";
+                }
+                else if (ch == '$')
+                {
+                    helm_part = helm_parts::ListOfConnections;
+                }
+                else if (ch == -1)
+                {
+                    throw Error(unexpected_eod);
+                }
+                else
+                {
+                    throw Error("Unexpected symbol. Expected '|' or '$' but found '%c'.", ch);
+                }
+                _scanner.skip(1);
+            }
+        }
+        else if (helm_part == helm_parts::ListOfConnections)
+        {
+            auto ch = _scanner.lookNext();
+            if (ch == '$')
+            {
+                helm_part = helm_parts::ListOfPolymerGroups;
+                _scanner.skip(1);
+                continue;
+            }
+            // CHEM1,RNA1,32:R1-12:R2"annotation"|.....
+            std::string left_polymer, right_polymer;
+            std::ignore = readHelmSimplePolymerName(left_polymer);
+            ch = _scanner.lookNext();
+            if (ch != ',')
+                throw Error("Unexpected symbol. Expected ',' but found '%c'.", _scanner.lookNext());
+            _scanner.skip(1);
+            std::ignore = readHelmSimplePolymerName(right_polymer);
+            ch = _scanner.lookNext();
+            if (ch != ',')
+                throw Error("Unexpected symbol. Expected ',' but found '%c'.", _scanner.lookNext());
+            _scanner.skip(1);
+            // read monomer position
+            int left_monomer_idx, right_monomer_idx;
+            Array<char> left_ap, right_ap;
+            Array<char> position;
+            size_t error_pos;
+            _scanner.readWord(position, ":");
+            _scanner.skip(1);
+            left_monomer_idx = std::stoi(position.ptr(), &error_pos);
+            if (error_pos != position.size() - 1) // arrray contains 0 at the end
+                throw Error("Only direct connections supported now.");
+            _scanner.readWord(left_ap, "-");
+            _scanner.skip(1);
+            position.clear();
+            _scanner.readWord(position, ":");
+            _scanner.skip(1);
+            right_monomer_idx = std::stoi(position.ptr(), &error_pos);
+            if (error_pos != position.size() - 1) // arrray contains 0 at the end
+                throw Error("Only direct connections supported now.");
+            _scanner.readWord(right_ap, "\"|$");
+            int left_templ_atom_idx = used_polymer_nums[left_polymer][left_monomer_idx];
+            int right_templ_atom_idx = used_polymer_nums[right_polymer][right_monomer_idx];
+            mol.asMolecule().addBond_Silent(left_templ_atom_idx, right_templ_atom_idx, BOND_SINGLE);
+            mol.setTemplateAtomAttachmentOrder(left_templ_atom_idx, right_templ_atom_idx, convertAPFromHELM(left_ap.ptr()).c_str());
+            mol.setTemplateAtomAttachmentOrder(right_templ_atom_idx, left_templ_atom_idx, convertAPFromHELM(right_ap.ptr()).c_str());
+            if (_scanner.isEOF())
+                throw Error(unexpected_eod);
+            ch = _scanner.readChar();
+            if (ch == '"')
+            {
+                Array<char> annotation;
+                _scanner.readWord(annotation, "\"");
+                if (_scanner.isEOF())
+                    throw Error(unexpected_eod);
+                if (_scanner.lookNext() != '"')
+                    throw Error("Unexpected char. Expected '\"' but found '%c'.", _scanner.lookNext());
+                _scanner.skip(1); // skip '"'
+                if (_scanner.isEOF())
+                    throw Error(unexpected_eod);
+                ch = _scanner.readChar();
+            }
+            if (ch != '|' && ch != '$')
+                throw Error("Unexpected symbol. Expected '|' or '$' but found '%c'.", _scanner.lookNext());
+        }
+        else if (helm_part == helm_parts::ListOfPolymerGroups)
+        {
+            Array<char> groups;
+            _scanner.readWord(groups, "$");
+            // skip groups for now
+            helm_part = helm_parts::ExtendedAnnotation;
+        }
+        else // helm_parts::ExtendedAnnotation
+        {
+            // read rest of data
+            std::string rest_of_helm;
+            _scanner.readAll(rest_of_helm);
+            auto it = rest_of_helm.find_last_of('$');
+            if (it == rest_of_helm.npos)
+                throw Error("Incorrect format. Last '$' not found.");
+            std::string signature = rest_of_helm.substr(it + 1);
+            // split by last '$' and check if right part eq “V2.0”
+            // if (signature != "v2.0")
+            //     throw Error("Expected HELM V2.0 but got '%s'.", signature.c_str());
+            // check that left part is valid json - TODO
+            helm_part = helm_parts::End;
+        }
+    }
+    if (helm_part != helm_parts::End)
+        throw Error(unexpected_eod);
 }

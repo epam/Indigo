@@ -96,5 +96,22 @@ namespace indigo
         int leaving_group;
         std::string id;
     };
+
+    const auto kHELMPolymerTypePEPTIDE = kMonomerClassPEPTIDE;
+    const auto kHELMPolymerTypeRNA = kMonomerClassRNA;
+    const auto kHELMPolymerTypeCHEM = kMonomerClassCHEM;
+    const auto kHELMPolymerTypeUnknown = "BLOB";
+
+    enum class HELMType
+    {
+        Peptide,
+        RNA,
+        Chem,
+        Unknown
+    };
+
+    HELMType getHELMTypeFromString(const std::string& helm_type);
+    const std::string& getStringFromHELMType(HELMType helm_type);
+
 }
 #endif

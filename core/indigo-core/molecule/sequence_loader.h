@@ -64,6 +64,7 @@ namespace indigo
         void loadFasta(BaseMolecule& mol, const std::string& seq_type_str);
         void loadFasta(BaseMolecule& mol, SeqType seq_type);
         void loadIdt(BaseMolecule& mol);
+        void loadHELM(BaseMolecule& mol);
 
     private:
         Vec3f getBackboneMonomerPosition();
@@ -84,6 +85,11 @@ namespace indigo
         SequenceLoader(const SequenceLoader&); // no implicit copy
 
         static void check_monomer_place(std::string& idt_alias, IdtModification mon_mod, IdtModification alias_mod, bool has_prev_mon);
+
+        using MonomerInfo = std::tuple<std::string, std::string, std::string>;
+
+        MonomerInfo readHelmMonomer();
+        std::string readHelmSimplePolymerName(std::string& polymer_name);
 
         Scanner& _scanner;
         std::unordered_set<std::pair<MonomerClass, std::string>, pair_hash> _added_templates;
