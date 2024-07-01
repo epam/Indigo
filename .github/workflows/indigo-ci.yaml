@@ -383,8 +383,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # os: [ macos-13, ubuntu-latest, windows-latest ] # temporary disable broken windows tests
-        os: [ macos-13, ubuntu-latest]
+        os: [ macos-13, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
@@ -466,60 +465,58 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "${{ matrix.os }}-aarch64-java_test_report"
 
-  # temporary disable broken windows tests
-  # test_indigo_java_i386:
-  #   timeout-minutes: 60
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       os: [ windows-latest ]
-  #   runs-on: ${{ matrix.os }}
-  #   needs: build_indigo_wrappers
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #       with:
-  #         lfs: false
-  #         fetch-depth: 500
-  #     - name: Git fetch tags
-  #       run: |
-  #            git config --global --add safe.directory '*'
-  #            git fetch --tags -f
-  #     - name: Create folder for native libs
-  #       run: mkdir dist
-  #     - name: Download wrappers
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: indigo-java
-  #         path: dist/
-  #     - uses: actions/setup-java@v2
-  #       with:
-  #         distribution: 'adopt-hotspot'
-  #         java-version: '11'
-  #         architecture: x86
-  #     - name: Install Jython
-  #       run: |
-  #         curl -L https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
-  #     - name: Test
-  #       env:
-  #         INDIGO_PATH: ${{ github.workspace }}/dist
-  #       run: |
-  #         java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
-  #     - name: Publish Test Report
-  #       if: always()
-  #       uses: mikepenz/action-junit-report@v3
-  #       with:
-  #         report_paths: 'junit_report.xml'
-  #         github_token: ${{ secrets.GITHUB_TOKEN }}
-  #         check_name: "${{ matrix.os }}-i386-java_test_report"
+  test_indigo_java_i386:
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest ]
+    runs-on: ${{ matrix.os }}
+    needs: build_indigo_wrappers
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Create folder for native libs
+        run: mkdir dist
+      - name: Download wrappers
+        uses: actions/download-artifact@v3
+        with:
+          name: indigo-java
+          path: dist/
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt-hotspot'
+          java-version: '11'
+          architecture: x86
+      - name: Install Jython
+        run: |
+          curl -L https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
+      - name: Test
+        env:
+          INDIGO_PATH: ${{ github.workspace }}/dist
+        run: |
+          java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v3
+        with:
+          report_paths: 'junit_report.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: "${{ matrix.os }}-i386-java_test_report"
 
   test_indigo_dotnet_x86_64:
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
-        # os: [ macos-13, ubuntu-latest, windows-latest ] # temporary disable broken windows tests
-        os: [ macos-13, ubuntu-latest]
+        os: [ macos-13, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
@@ -595,58 +592,57 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           check_name: "${{ matrix.os }}-x86_64-dotnet_test_report"
 
-  # temporary disable broken windows tests
-  # test_indigo_dotnet_i386:
-  #   timeout-minutes: 60
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       os: [ windows-latest ]
-  #   runs-on: ${{ matrix.os }}
-  #   needs: build_indigo_wrappers
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-  #       with:
-  #         lfs: false
-  #         fetch-depth: 500
-  #     - name: Git fetch tags
-  #       run: |
-  #            git config --global --add safe.directory '*'
-  #            git fetch --tags -f
-  #     - name: Create folder for native libs
-  #       run: mkdir dist
-  #     - name: Download wrappers
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: indigo-dotnet
-  #         path: dist/
-  #     - name: Prepare Common
-  #       run: |
-  #         mkdir IronPython
-  #         mkdir tmp
-  #         cd IronPython
-  #         curl -OL https://github.com/IronLanguages/ironpython3/releases/download/v3.4.0/IronPython.3.4.0.zip
-  #     - name: Prepare Windows
-  #       if: ${{ startsWith(matrix.os, 'windows') }}
-  #       run: |
-  #         cd IronPython
-  #         Expand-Archive IronPython.3.4.0.zip .
-  #         cd ../tmp
-  #         Expand-Archive ../dist/Indigo.Net.*.nupkg .
-  #     - name: Test Windows
-  #       if: ${{ matrix.os == 'windows' }}
-  #       env:
-  #         INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
-  #         PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x86/native
-  #       run: ./IronPython/net462/ipy32.exe api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
-  #     - name: Publish Test Report
-  #       if: always()
-  #       uses: mikepenz/action-junit-report@v3
-  #       with:
-  #         report_paths: 'junit_report.xml'
-  #         github_token: ${{ secrets.GITHUB_TOKEN }}
-  #         check_name: "${{ matrix.os }}_i386_dotnet_test_report"
+  test_indigo_dotnet_i386:
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest ]
+    runs-on: ${{ matrix.os }}
+    needs: build_indigo_wrappers
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Create folder for native libs
+        run: mkdir dist
+      - name: Download wrappers
+        uses: actions/download-artifact@v3
+        with:
+          name: indigo-dotnet
+          path: dist/
+      - name: Prepare Common
+        run: |
+          mkdir IronPython
+          mkdir tmp
+          cd IronPython
+          curl -OL https://github.com/IronLanguages/ironpython3/releases/download/v3.4.0/IronPython.3.4.0.zip
+      - name: Prepare Windows
+        if: ${{ startsWith(matrix.os, 'windows') }}
+        run: |
+          cd IronPython
+          Expand-Archive IronPython.3.4.0.zip .
+          cd ../tmp
+          Expand-Archive ../dist/Indigo.Net.*.nupkg .
+      - name: Test Windows
+        if: ${{ matrix.os == 'windows' }}
+        env:
+          INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
+          PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x86/native
+        run: ./IronPython/net462/ipy32.exe api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v3
+        with:
+          report_paths: 'junit_report.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: "${{ matrix.os }}_i386_dotnet_test_report"
 
   test_bingo_elastic_python_linux_x86_64:
     runs-on: ubuntu-latest
@@ -1161,9 +1157,7 @@ jobs:
   publish_indigo_to_pypi:
     if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest
-    # temporary disable broken windows tests
-    # needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
-    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
@@ -1201,9 +1195,7 @@ jobs:
   publish_indigo_to_nuget:
     if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest
-    # temporary disable broken windows tests
-    # needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
-    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
@@ -1235,9 +1227,7 @@ jobs:
   publish_indigo_to_npm:
     if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest
-    # temporary disable broken windows tests
-    # needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
-    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
@@ -1274,9 +1264,7 @@ jobs:
   publish_indigo_to_maven:
     if: startsWith(github.ref, 'refs/tags/indigo-')
     runs-on: ubuntu-latest
-    # temporary disable broken windows tests
-    # needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
-    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, test_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
