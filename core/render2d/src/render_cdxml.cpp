@@ -149,20 +149,11 @@ void RenderParamCdxmlInterface::render(RenderParams& params)
 void RenderParamCdxmlInterface::_renderRxns(RenderParams& params)
 {
     ReactionCdxmlSaver saver(*params.rOpt.output);
-
-    Array<BaseReaction*> rxns;
-
     if (params.rxns.size() != 0)
         for (int i = 0; i < params.rxns.size(); ++i)
-            rxns.push(params.rxns[i]);
-    else if (params.rxn.get() != 0)
-        rxns.push(params.rxn.get());
-
-    for (int rxn_ind = 0; rxn_ind < rxns.size(); rxn_ind++)
-    {
-        BaseReaction& rxn = (BaseReaction&)*rxns[rxn_ind];
-        saver.saveReaction(rxn);
-    }
+            saver.saveReaction(*params.rxns[i]);
+    else if (params.rxn)
+        saver.saveReaction(*params.rxn);
 }
 
 void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
@@ -178,7 +169,6 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
     else if (params.mol.get() != 0)
         mols.push(params.mol.get());
 
-    Vec2f offset(0, 0);
     Array<float> column_widths;
     column_widths.resize(params.cnvOpt.gridColumnNumber);
     column_widths.fill(0);
@@ -411,7 +401,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
         Pos& p = positions[mol_idx];
         Vec2f offset = p.offset;
         offset.scale(1 / p.scale);
-        saver.saveMoleculeFragment(mols[mol_idx]->asMolecule(), offset, p.scale, -1, ids);
+        saver.saveMoleculeFragment(mols[mol_idx]->asMolecule(), offset, p.scale);
 
         if (mol_idx < params.titles.size())
         {

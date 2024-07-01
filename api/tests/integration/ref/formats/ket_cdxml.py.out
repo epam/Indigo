@@ -1,0 +1,14 @@
+*** KET to CDXML to KET ***
+961-text_size.cdxml:SUCCEED
+961-text_size.ket:SUCCEED
+agents.cdxml:SUCCEED
+agents.ket:SUCCEED
+generic.cdxml:SUCCEED
+generic.ket:SUCCEED
+multi.cdxml:SUCCEED
+multi.ket:SUCCEED
+multi_overlap.cdxml:SUCCEED
+multi_overlap.ket:SUCCEED
+*** KET to CDXML ***
+963-super.cdxml:SUCCEED
+macro/sa-mono.cdxml:SUCCEED

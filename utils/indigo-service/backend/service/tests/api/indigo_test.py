@@ -7,6 +7,14 @@ import unittest
 import requests
 
 
+def joinPathPy(args, file_py):
+    return os.path.normpath(
+        os.path.abspath(
+            os.path.join(os.path.abspath(os.path.dirname(file_py)), args)
+        )
+    ).replace("\\", "/")
+
+
 # @unittest.skip("Skip libraries test case")
 class IndigoTestCase(unittest.TestCase):
     def setUp(self):
@@ -466,10 +474,16 @@ M  END\n",
             data="c1ccccc1",
         )
         self.assertEqual(400, result.status_code)
-        expected_text = "ValidationError: {'input_format': ['Must be one of: chemical/x-mdl-rxnfile, \
-chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
-chemical/x-cml, chemical/x-inchi, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml.']}"
+        formats = "chemical/x-mdl-rxnfile, chemical/x-mdl-molfile, chemical/x-indigo-ket, \
+chemical/x-daylight-smiles, chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, \
+chemical/x-iupac, chemical/x-daylight-smarts, chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, \
+chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-peptide-sequence, \
+chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, chemical/x-peptide-fasta, \
+chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, chemical/x-idt."
+        expected_text = (
+            "ValidationError: {'input_format': ['Must be one of: %s']}"
+            % formats
+        )
         self.assertEquals(
             expected_text,
             result.text,
@@ -484,10 +498,10 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml.']}"
             data="c1ccccc1",
         )
         self.assertEqual(400, result.status_code)
-        expected_text = "ValidationError: {'output_format': ['Must be one of: chemical/x-mdl-rxnfile, \
-chemical/x-mdl-molfile, chemical/x-indigo-ket, chemical/x-daylight-smiles, \
-chemical/x-cml, chemical/x-inchi, chemical/x-iupac, chemical/x-daylight-smarts, \
-chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml.']}"
+        expected_text = (
+            "ValidationError: {'output_format': ['Must be one of: %s']}"
+            % formats
+        )
         self.assertEquals(
             expected_text,
             result.text,
@@ -543,19 +557,46 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml.']}"
         self.assertEqual("C1C=CC=CC=1.C1C=CC=CC=1", result_data["struct"])
 
     def test_dearomatize_query_molecule(self):
+        headers, data = self.get_headers(
+            {
+                "struct": "c1ccccc1.c1ccccc1",
+                "input_format": "chemical/x-daylight-smiles",
+                "output_format": "chemical/x-daylight-smiles",
+            }
+        )
         result = requests.post(
-            self.url_prefix + "/dearomatize",
-            headers={
-                "Content-Type": "chemical/x-daylight-smiles",
-                "Accept": "chemical/x-daylight-smiles",
-            },
-            data="CX",
+            self.url_prefix + "/dearomatize", headers=headers, data=data
         )
-        self.assertEqual(400, result.status_code)
-        self.assertEqual(
-            "Structures with query features cannot be dearomatized yet",
-            result.text,
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual("C1C=CC=CC=1.C1C=CC=CC=1", result_data["struct"])
+
+    def test_convert_large_cdx(self):
+        ref_path = joinPathPy("ref/", __file__)
+        with open(ref_path + "/large.cdx.base64") as f:
+            cdx = f.read()
+        cdx = "base64::" + cdx
+        headers, data = self.get_headers(
+            {
+                "struct": cdx,
+                "output_format": "chemical/x-indigo-ket",
+                "options": {
+                    "input-format": "chemical/x-unknown",
+                    "aromatize-skip-superatoms": True,
+                    "dearomatize-on-load": False,
+                    "gross-formula-add-rsites": True,
+                    "ignore-no-chiral-flag": True,
+                    "ignore-stereochemistry-errors": True,
+                    "mass-skip-error-on-pseudoatoms": False,
+                    "smart-layout": True,
+                },
+            }
         )
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        self.assertEqual(200, result.status_code)
+        # print(result.text)
 
     def test_convert_correct(self):
         formats = (
@@ -645,10 +686,10 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml.']}"
 
     def test_convert_smarts(self):
         smarts = [
-            "[#8;A]-[!#1]-[#6;A](-[#9])(-[#9])-[#9]",
-            "[#6,#1]",
-            "[#1,#1]",
-            "[#9,#17,#35,#53,#7&A&+,$([OH]-*=[!#6]),+;!#1]",
+            "O-[*]-C(-F)(-F)-F",
+            "[#6,H]",
+            "[H,H]",
+            "[F,Cl,Br,I,N&+,$([OH]-*=[!#6]),+;*]",
         ]
         results = []
         # results_get = []
@@ -755,7 +796,6 @@ chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, chemical/x-cdxml.']}"
         # self.assertEqual(smiles, results_get)
 
     def test_convert_utf8(self):
-
         text = """
   Ketcher 02051318482D 1   1.00000     0.00000     0
 
@@ -877,6 +917,28 @@ $END MOL
         # )
         # self.assertEqual(200, result.status_code)
 
+    def test_layout_ccc(self):
+        headers, data = self.get_headers(
+            {
+                "struct": "CCC",
+                "output_format": "chemical/x-indigo-ket",
+                "options": {
+                    "input-format": "chemical/x-unknown",
+                    "aromatize-skip-superatoms": True,
+                    "dearomatize-on-load": False,
+                    "gross-formula-add-rsites": True,
+                    "ignore-no-chiral-flag": True,
+                    "ignore-stereochemistry-errors": True,
+                    "mass-skip-error-on-pseudoatoms": False,
+                    "smart-layout": True,
+                },
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/layout", headers=headers, data=data
+        )
+        self.assertEqual(200, result.status_code)
+
     def test_layout(self):
         result = requests.post(
             self.url_prefix + "/layout",
@@ -936,12 +998,12 @@ M  END""",
             {
                 "struct": """$RXN
 
-
+ -INDIGO- 0100000000
 
   2  1  0
 $MOL
 
-  Ketcher 10071615322D 1   1.00000     0.00000     0
+  -INDIGO-01000000002D
 
   6  6  0     0  0            999 V2000
     0.5450    0.6292    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
@@ -959,7 +1021,7 @@ $MOL
 M  END
 $MOL
 
-  Ketcher 10071615322D 1   1.00000     0.00000     0
+  -INDIGO-01000000002D
 
  12 13  0     0  0            999 V2000
     3.0898   -0.0001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
@@ -990,7 +1052,7 @@ $MOL
 M  END
 $MOL
 
-  Ketcher 10071615322D 1   1.00000     0.00000     0
+  -INDIGO-01000000002D
 
   6  6  0     0  0            999 V2000
    16.4754    0.9017    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
@@ -1009,7 +1071,10 @@ M  END
 """,
                 "selected": [5, 6],
                 "output_format": "chemical/x-mdl-rxnfile",
-                "options": {"molfile-saving-skip-date": "1"},
+                "options": {
+                    "molfile-saving-skip-date": "1",
+                    "molfile-saving-mode": "2000",
+                },
             }
         )
         result = requests.post(
@@ -1028,12 +1093,12 @@ $MOL
   -INDIGO-01000000002D
 
   6  6  0  0  0  0  0  0  0  0999 V2000
-    1.3856    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000   -2.4000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    1.3856   -3.2000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    2.7713   -2.4000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    2.7713   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.6856    1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.3000    0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.3000   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.6856   -1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    4.0713   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    4.0713    0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
   1  2  1  0  0  0  0
   2  3  2  0  0  0  0
   3  4  1  0  0  0  0
@@ -1046,18 +1111,18 @@ $MOL
   -INDIGO-01000000002D
 
  12 13  0  0  0  0  0  0  0  0999 V2000
-    8.2513   -1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    9.0513   -0.2144    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   10.6513   -0.2144    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   11.4513   -1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   10.6513   -2.9856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    9.0513   -2.9856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   13.0513   -1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   13.8513   -0.2144    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   15.4513   -0.2144    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   16.2513   -1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   15.4513   -2.9856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   13.8513   -2.9856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    7.6713    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    8.4713    1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   10.0713    1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   10.8713    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   10.0713   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    8.4713   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   12.4713    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   13.2713    1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   14.8713    1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   15.6713    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   14.8713   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   13.2713   -1.3856    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
   1  2  1  0  0  0  0
   2  3  2  0  0  0  0
   3  4  1  0  0  0  0
@@ -1077,12 +1142,12 @@ $MOL
   -INDIGO-01000000002D
 
   6  6  0  0  0  0  0  0  0  0999 V2000
-   23.1169    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   21.7313   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   21.7313   -2.4000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   23.1169   -3.2000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   24.5026   -2.4000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   24.5026   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   23.2569    1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   21.8713    0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   21.8713   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   23.2569   -1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   24.6426   -0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   24.6426    0.8000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
   1  2  1  0  0  0  0
   2  3  2  0  0  0  0
   3  4  1  0  0  0  0
@@ -1254,13 +1319,9 @@ M  END""",
         )
 
     def test_calculate_cip_correct(self):
-        result = requests.post(
-            self.url_prefix + "/calculate_cip",
-            headers={
-                "Content-Type": "chemical/x-mdl-molfile",
-                "Accept": "chemical/x-mdl-molfile",
-            },
-            data="""
+        headers, data = self.get_headers(
+            {
+                "struct": """
   Ketcher 07261618302D 1   1.00000     0.00000     0
 
  12 12  0     0  0            999 V2000
@@ -1290,9 +1351,19 @@ M  END""",
   3 12  1  0     0  0
 M  END
 """,
+                "input_format": "chemical/x-mdl-molfile",
+                "output_format": "chemical/x-mdl-molfile",
+                "options": {"molfile-saving-mode": "2000"},
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/calculate_cip",
+            headers=headers,
+            data=data,
         )
         self.assertEqual(200, result.status_code)
-        # print(result.text)
+        res = json.loads(result.text)
+        # print(res["struct"])
         self.assertEqual(
             """
  12 12  0  0  0  0  0  0  0  0999 V2000
@@ -1331,7 +1402,7 @@ M  SDT   2 INDIGO_CIP_DESC
 M  SDD   2     0.0000    0.0000    DR    ALL  1       1
 M  SED   2 (R)
 M  END""",
-            "\n".join([s.rstrip() for s in result.text.splitlines()[2:]]),
+            "\n".join([s.rstrip() for s in res["struct"].splitlines()[2:]]),
         )
 
     def test_render(self):
@@ -1461,72 +1532,6 @@ M  END""",
                     self.assertIn(
                         result_struct, self.aromatized_mols[output_format]
                     )
-
-    def test_json_check(self):
-        headers, data = self.get_headers(
-            {
-                "struct": """
-  Ketcher 08151618402D 1   1.00000     0.00000     0
-
- 13 13  0     0  0            999 V2000
-   -0.8662    1.5003    0.0000 C   0  0  0  0  0  7  0  0  0  0  0  0
-   -1.7324    1.0003    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.7324    0.0001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.8662   -0.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0001    1.0002    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.5982    1.5002    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.8659    1.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.8663   -1.4999    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
-    0.5876   -0.8089    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.9943   -0.1045    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.2079   -0.9779    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.7431    0.6690    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0     0  0
-  1  6  2  0     0  0
-  2  3  2  0     0  0
-  3  4  1  0     0  0
-  4  5  2  0     0  0
-  5  6  1  0     0  0
-  2  7  1  0     0  0
-  6  8  1  0     0  0
-  4  9  1  0     0  0
-  5 10  1  0     0  0
-  5 11  1  0     0  0
-  5 12  1  0     0  0
-  5 13  1  0     0  0
-M  CHG  1   3 -40
-M  RAD  1   3   3
-M  STY  1   1 DAT
-M  SLB  1   1   1
-M  SAL   1  1   7
-M  SDT   1 INDIGO_ALIAS
-M  SDD   1    -2.5982    1.5002    AA    ALL  1      1
-M  SED   1 Psd
-M  STY  1   2 DAT
-M  SLB  1   2   2
-M  SAL   2  1   8
-M  SDT   2 INDIGO_ALIAS
-M  SDD   2     0.8659    1.5001    AA    ALL  1      1
-M  SED   2 Pol
-M  END
-""",
-            }
-        )
-        result = requests.post(
-            self.url_prefix + "/check", headers=headers, data=data
-        )
-        self.assertEqual(200, result.status_code)
-        result_data = json.loads(result.text)
-        self.assertEqual(
-            "Structure contains atoms with unusual valence: (2,4)",
-            result_data["valence"],
-        )
-        self.assertEqual(
-            "Structure contains radicals: (2)",
-            result_data["radicals"],
-        )
-        self.assertEqual("Structure contains S-groups", result_data["sgroups"])
 
     def test_check(self):
         headers, data = self.get_headers(
@@ -2496,6 +2501,9 @@ M  END
                 "selected": [
                     2,
                 ],
+                "options": {
+                    "molfile-saving-add-mrv-sma": False,
+                },
             }
         )
         result = requests.post(
@@ -2660,6 +2668,9 @@ M  END
                 "selected": [
                     2,
                 ],
+                "options": {
+                    "molfile-saving-add-mrv-sma": False,
+                },
             }
         )
         result = requests.post(
@@ -2683,6 +2694,9 @@ M  END
                     "mass-composition",
                 ],
                 "selected": [2, 3, 4, 5],
+                "options": {
+                    "molfile-saving-add-mrv-sma": False,
+                },
             }
         )
         result = requests.post(
@@ -3004,6 +3018,452 @@ M  END
         self.assertEqual("chemical/x-cdxml", result_data["format"])
         self.assertIn("CDXML", result_data["struct"])
 
+    def test_convert_explicit_hydrogens_auto(self):
+        params = {
+            "struct": "CC.[HH]",
+            "mode": "auto",
+            "output_format": "chemical/x-daylight-smiles",
+            "input_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert_explicit_hydrogens",
+            headers=headers,
+            data=data,
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual(
+            "C([H])([H])([H])C([H])([H])[H].[H][H]", result_data["struct"]
+        )
+        params = {
+            "struct": result_data["struct"],
+            "output_format": "chemical/x-daylight-smiles",
+            "input_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert_explicit_hydrogens",
+            headers=headers,
+            data=data,
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual("CC.[HH]", result_data["struct"])
+
+    def test_convert_explicit_hydrogens_fold(self):
+        params = {
+            "struct": "C([H])([H])([H])C([H])([H])[H]",
+            "mode": "fold",
+            "output_format": "chemical/x-daylight-smiles",
+            "input_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert_explicit_hydrogens",
+            headers=headers,
+            data=data,
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual("CC", result_data["struct"])
+
+    def test_convert_explicit_hydrogens_unfold(self):
+        params = {
+            "struct": "CC",
+            "mode": "unfold",
+            "output_format": "chemical/x-daylight-smiles",
+            "input_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert_explicit_hydrogens",
+            headers=headers,
+            data=data,
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual(
+            "C([H])([H])([H])C([H])([H])[H]", result_data["struct"]
+        )
+
+    def test_convert_explicit_hydrogens_auto_h(self):
+        params = {
+            "struct": "[HH]",
+            "mode": "auto",
+            "output_format": "chemical/x-daylight-smiles",
+            "input_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert_explicit_hydrogens",
+            headers=headers,
+            data=data,
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual("[H][H]", result_data["struct"])
+        params = {
+            "struct": result_data["struct"],
+            "output_format": "chemical/x-daylight-smiles",
+            "input_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert_explicit_hydrogens",
+            headers=headers,
+            data=data,
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual("[HH]", result_data["struct"])
+
+    def test_convert_explicit_hydrogens_reaction(self):
+        params = {
+            "struct": "CC>>C",
+            "mode": "auto",
+            "output_format": "chemical/x-daylight-smiles",
+            "input_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert_explicit_hydrogens",
+            headers=headers,
+            data=data,
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual(
+            "C([H])([H])([H])C([H])([H])[H]>>C([H])([H])([H])[H]",
+            result_data["struct"],
+        )
+        params = {
+            "struct": result_data["struct"],
+            "output_format": "chemical/x-daylight-smiles",
+            "input_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert_explicit_hydrogens",
+            headers=headers,
+            data=data,
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = json.loads(result.text)
+        self.assertEqual("CC>>C", result_data["struct"])
+
+    def test_convert_sequences(self):
+        headers, data = self.get_headers(
+            {
+                "struct": "ACGTU",
+                "input_format": "chemical/x-rna-sequence",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result_rna = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
+                "struct": "ACGTU",
+                "input_format": "chemical/x-rna-sequence",
+                "output_format": "chemical/x-sequence",
+            }
+        )
+
+        result_rna_1 = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        self.assertEqual(json.loads(result_rna_1.text)["struct"], "ACGTU")
+
+        headers, data = self.get_headers(
+            {
+                "struct": "ACGTU",
+                "input_format": "chemical/x-dna-sequence",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result_dna = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
+                "struct": "ACGTU",
+                "input_format": "chemical/x-dna-sequence",
+                "output_format": "chemical/x-sequence",
+            }
+        )
+        result_dna_1 = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        self.assertEqual(json.loads(result_dna_1.text)["struct"], "ACGTU")
+
+        headers, data = self.get_headers(
+            {
+                "struct": "ACGTU",
+                "input_format": "chemical/x-peptide-sequence",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result_peptide = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
+                "struct": "ACDEFGHIKLMNOPQRSRUVWY",
+                "input_format": "chemical/x-peptide-sequence",
+                "output_format": "chemical/x-sequence",
+            }
+        )
+        result_peptide_1 = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        self.assertEqual(
+            json.loads(result_peptide_1.text)["struct"],
+            "ACDEFGHIKLMNOPQRSRUVWY",
+        )
+
+        ref_path = joinPathPy("ref/", __file__)
+
+        # with open(os.path.join(ref_path, "rna_ref") + ".ket", "w") as file:
+        #     file.write(result_rna.text)
+        # with open(os.path.join(ref_path, "dna_ref") + ".ket", "w") as file:
+        #     file.write(result_dna.text)
+        # with open(os.path.join(ref_path, "peptide_ref") + ".ket", "w") as file:
+        #     file.write(result_peptide.text)
+
+        with open(os.path.join(ref_path, "rna_ref") + ".ket", "r") as file:
+            rna_ref = file.read()
+            self.assertEqual(result_rna.text, rna_ref)
+
+        with open(os.path.join(ref_path, "dna_ref") + ".ket", "r") as file:
+            dna_ref = file.read()
+            self.assertEqual(result_dna.text, dna_ref)
+
+        with open(os.path.join(ref_path, "peptide_ref") + ".ket", "r") as file:
+            peptide_ref = file.read()
+            self.assertEqual(result_peptide.text, peptide_ref)
+
+    def test_convert_fasta(self):
+        ref_path = joinPathPy("ref/", __file__)
+        struct_path = joinPathPy("structures/", __file__)
+
+        # peptides
+        with open(
+            os.path.join(struct_path, "test_peptide") + ".fasta", "r"
+        ) as file:
+            peptide_fasta = file.read()
+
+        headers, data = self.get_headers(
+            {
+                "struct": peptide_fasta,
+                "input_format": "chemical/x-peptide-fasta",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result_peptide_ket = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
+                "struct": peptide_fasta,
+                "input_format": "chemical/x-peptide-fasta",
+                "output_format": "chemical/x-fasta",
+            }
+        )
+
+        result_peptide_fasta = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        # write references
+        # with open(
+        #     os.path.join(ref_path, "peptide_fasta_ref") + ".fasta", "w"
+        # ) as file:
+        #     file.write(json.loads(result_peptide_fasta.text)["struct"])
+        # with open(
+        #     os.path.join(ref_path, "peptide_fasta_ref") + ".ket", "w"
+        # ) as file:
+        #     file.write(json.loads(result_peptide_ket.text)["struct"])
+
+        # check
+        with open(
+            os.path.join(ref_path, "peptide_fasta_ref") + ".fasta", "r"
+        ) as file:
+            self.assertEqual(
+                json.loads(result_peptide_fasta.text)["struct"], file.read()
+            )
+
+        with open(
+            os.path.join(ref_path, "peptide_fasta_ref") + ".ket", "r"
+        ) as file:
+            self.assertEqual(
+                json.loads(result_peptide_ket.text)["struct"], file.read()
+            )
+
+        # RNA
+        with open(
+            os.path.join(struct_path, "test_rna") + ".fasta", "r"
+        ) as file:
+            rna_fasta = file.read()
+
+        headers, data = self.get_headers(
+            {
+                "struct": rna_fasta,
+                "input_format": "chemical/x-rna-fasta",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result_rna_ket = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
+                "struct": rna_fasta,
+                "input_format": "chemical/x-rna-fasta",
+                "output_format": "chemical/x-fasta",
+            }
+        )
+
+        result_rna_fasta = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        # write references
+        # with open(
+        #    os.path.join(ref_path, "rna_fasta_ref") + ".fasta", "w"
+        # ) as file:
+        #    file.write(json.loads(result_rna_fasta.text)["struct"])
+        # with open(
+        #    os.path.join(ref_path, "rna_fasta_ref") + ".ket", "w"
+        # ) as file:
+        #     file.write(json.loads(result_rna_ket.text)["struct"])
+
+        # check
+        with open(
+            os.path.join(ref_path, "rna_fasta_ref") + ".fasta", "r"
+        ) as file:
+            self.assertEqual(
+                json.loads(result_rna_fasta.text)["struct"], file.read()
+            )
+
+        with open(
+            os.path.join(ref_path, "rna_fasta_ref") + ".ket", "r"
+        ) as file:
+            self.assertEqual(
+                json.loads(result_rna_ket.text)["struct"], file.read()
+            )
+
+        # DNA
+        with open(
+            os.path.join(struct_path, "test_dna") + ".fasta", "r"
+        ) as file:
+            dna_fasta = file.read()
+
+        headers, data = self.get_headers(
+            {
+                "struct": dna_fasta,
+                "input_format": "chemical/x-dna-fasta",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result_dna_ket = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
+                "struct": dna_fasta,
+                "input_format": "chemical/x-dna-fasta",
+                "output_format": "chemical/x-fasta",
+            }
+        )
+
+        result_dna_fasta = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        # write references
+        # with open(
+        #     os.path.join(ref_path, "dna_fasta_ref") + ".fasta", "w"
+        # ) as file:
+        #     file.write(json.loads(result_dna_fasta.text)["struct"])
+        # with open(
+        #     os.path.join(ref_path, "dna_fasta_ref") + ".ket", "w"
+        # ) as file:
+        #     file.write(json.loads(result_dna_ket.text)["struct"])
+
+        # check
+        with open(
+            os.path.join(ref_path, "dna_fasta_ref") + ".fasta", "r"
+        ) as file:
+            self.assertEqual(
+                json.loads(result_dna_fasta.text)["struct"], file.read()
+            )
+
+        with open(
+            os.path.join(ref_path, "dna_fasta_ref") + ".ket", "r"
+        ) as file:
+            self.assertEqual(
+                json.loads(result_dna_ket.text)["struct"], file.read()
+            )
+
+    def test_convert_idt(self):
+        fname = "idt_maxmgc"
+        idt_prefix = os.path.join(joinPathPy("structures/", __file__), fname)
+
+        # IDT to ket
+        with open(idt_prefix + ".idt", "r") as file:
+            idt = file.read()
+
+        headers, data = self.get_headers(
+            {
+                "struct": idt,
+                "input_format": "chemical/x-idt",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_ket = json.loads(result.text)["struct"]
+
+        ref_prefix = os.path.join(joinPathPy("ref/", __file__), fname)
+        # write references
+        # with open(ref_prefix + ".ket", "w") as file:
+        #     file.write(result_ket)
+
+        # check
+        with open(ref_prefix + ".ket", "r") as file:
+            self.assertEqual(result_ket, file.read())
+
+        # Ket to IDT
+        headers, data = self.get_headers(
+            {
+                "struct": result_ket,
+                "input_format": "chemical/x-indigo-ket",
+                "output_format": "chemical/x-idt",
+            }
+        )
+
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_idt = json.loads(result.text)["struct"]
+        self.assertEqual(idt, result_idt)
+
 
 if __name__ == "__main__":
-    exit(unittest.main(verbosity=2, warnings="ignore"))
+    unittest.main(verbosity=2, warnings="ignore")

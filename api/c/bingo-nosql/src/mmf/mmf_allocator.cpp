@@ -118,7 +118,7 @@ void MMFAllocator::_addFile(size_t alloc_size)
     {
         if (alloc_size <= file_size)
         {
-            int dgr = log(file_size / allocator_data->_min_file_size);
+            int dgr = static_cast<int>(log(file_size / allocator_data->_min_file_size));
             bitSetBit(&allocator_data->_existing_files, dgr, 1);
 
             break;

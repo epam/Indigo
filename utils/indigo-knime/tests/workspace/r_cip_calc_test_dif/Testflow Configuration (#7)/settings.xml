@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="settings.xml">
+<entry key="node_file" type="xstring" value="settings.xml"/>
+<config key="flow_stack"/>
+<config key="internal_node_subsettings">
+<entry key="memory_policy" type="xstring" value="CacheSmallInMemory"/>
+</config>
+<config key="model">
+<entry key="owner" type="xstring" value="Anastasiia_Rybakova@inf.uni-konstanz.de"/>
+<config key="requiredLogErrors">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="requiredLogWarnings">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="requiredLogInfos">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="failingNodes">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="requiredNodeWarnings">
+<entry key="count" type="xint" value="0"/>
+</config>
+<config key="requiredNodeErrors">
+<entry key="count" type="xint" value="0"/>
+</config>
+<entry key="timeout" type="xint" value="300"/>
+<entry key="maxHilitedRows" type="xint" value="2500"/>
+<config key="usedJanitors">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<entry key="streamingTest" type="xboolean" value="false"/>
+<entry key="requiredLoadVersion" type="xstring" value="&lt;future&gt;"/>
+</config>
+<entry key="customDescription" type="xstring" isnull="true" value=""/>
+<entry key="state" type="xstring" value="EXECUTED"/>
+<entry key="factory" type="xstring" value="org.knime.testing.node.config.TestConfigNodeFactory"/>
+<entry key="node-name" type="xstring" value="Testflow Configuration"/>
+<entry key="node-bundle-name" type="xstring" value="Test-Node extension for KNIME Workbench"/>
+<entry key="node-bundle-symbolic-name" type="xstring" value="org.knime.testing"/>
+<entry key="node-bundle-vendor" type="xstring" value="KNIME GmbH, Konstanz, Germany"/>
+<entry key="node-bundle-version" type="xstring" value="3.3.1.v201612192115"/>
+<entry key="node-feature-name" type="xstring" value="KNIME Testing Framework"/>
+<entry key="node-feature-symbolic-name" type="xstring" value="org.knime.features.testingapplication.feature.group"/>
+<entry key="node-feature-vendor" type="xstring" value="KNIME GmbH, Konstanz, Germany"/>
+<entry key="node-feature-version" type="xstring" value="3.3.1.v201612192115"/>
+<config key="factory_settings"/>
+<entry key="name" type="xstring" value="Testflow Configuration"/>
+<entry key="hasContent" type="xboolean" value="true"/>
+<entry key="isInactive" type="xboolean" value="false"/>
+<config key="ports"/>
+<config key="filestores">
+<entry key="file_store_location" type="xstring" isnull="true" value=""/>
+<entry key="file_store_id" type="xstring" value="109d3aad-4d2c-4617-90aa-914957cf34d0"/>
+</config>
+</config>

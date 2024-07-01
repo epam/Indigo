@@ -1,3 +1,4 @@
+import difflib
 import os
 import sys
 
@@ -170,66 +171,28 @@ mol = indigo.loadMoleculeFromFile(
 )
 print(mol.smiles())
 
-print("*** INDIGO_ALIAS molfile ***")
-mol = indigo.loadMolecule(
-    """
-  Ketcher 08151618402D 1   1.00000     0.00000     0
-
- 13 13  0     0  0            999 V2000
-   -0.8662    1.5003    0.0000 C   0  0  0  0  0  7  0  0  0  0  0  0
-   -1.7324    1.0003    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.7324    0.0001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.8662   -0.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0001    1.0002    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.5982    1.5002    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.8659    1.5001    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.8663   -1.4999    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
-    0.5876   -0.8089    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.9943   -0.1045    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.2079   -0.9779    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.7431    0.6690    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0     0  0
-  1  6  2  0     0  0
-  2  3  2  0     0  0
-  3  4  1  0     0  0
-  4  5  2  0     0  0
-  5  6  1  0     0  0
-  2  7  1  0     0  0
-  6  8  1  0     0  0
-  4  9  1  0     0  0
-  5 10  1  0     0  0
-  5 11  1  0     0  0
-  5 12  1  0     0  0
-  5 13  1  0     0  0
-M  CHG  1   3 -40
-M  RAD  1   3   3
-M  STY  1   1 DAT
-M  SLB  1   1   1
-M  SAL   1  1   7
-M  SDT   1 INDIGO_ALIAS
-M  SDD   1    -2.5982    1.5002    AA    ALL  1      1
-M  SED   1 Psd
-M  STY  1   2 DAT
-M  SLB  1   2   2
-M  SAL   2  1   8
-M  SDT   2 INDIGO_ALIAS
-M  SDD   2     0.8659    1.5001    AA    ALL  1      1
-M  SED   2 Pol
-M  END
-"""
-)
-
-indigo.setOption("molfile-saving-mode", "2000")
-print(mol.molfile())
-
+print("*** 1415 wrong S-Group count in molfile V3000 ***")
+smiles = "C1CCC(C1)Nc1ccc2ccn(-c3ccc4[nH]ncc4c3)c2c1"
+mol = indigo.loadMolecule(smiles)
+print(smiles)
 indigo.setOption("molfile-saving-mode", "3000")
 print(mol.molfile())
 
-print(mol.cml())
-
-print("*** Single atom NOT list ***")
-mol = indigo.loadQueryMoleculeFromFile(
-    joinPathPy("molecules/single_not_list.mol", __file__)
+print("*** 1431 Query explicit valency crash ***")
+qmol = indigo.loadQueryMoleculeFromFile(
+    joinPathPy("molecules/query_crash_1431.mol", __file__)
 )
-print(mol.molfile())
+
+print(qmol.smarts())
+
+print("\n*** 1468 MRV SMA overrite valence ***")
+filename = joinPathPy("molecules/issue_1468.mol", __file__)
+qmol = indigo.loadQueryMoleculeFromFile(filename)
+with open(filename) as f:
+    mol_origin = f.read()
+indigo.setOption("molfile-saving-mode", "2000")
+mol_save = qmol.molfile()
+if mol_save == mol_origin:
+    print("Succes.\n")
+else:
+    print("Failure. \n%s\ndifferent from\n%s\n" % (mol_origin, mol_save))

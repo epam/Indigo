@@ -34,6 +34,7 @@ readCdxAndPrintInfo("molecules/test-multi.cdx")
 
 readCdxAndPrintInfo("molecules/CDX3_4molecules_prop.cdx")
 
+readCdxAndPrintInfo("molecules/bonds.cdx")
 
 print("**** Read CDX with wrong empty objects ****")
 readCdxAndPrintInfo("molecules/test_title_0.cdx")

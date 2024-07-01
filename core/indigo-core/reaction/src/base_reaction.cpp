@@ -18,6 +18,7 @@
 
 #include "reaction/base_reaction.h"
 #include "base_cpp/tlscont.h"
+#include "molecule/molecule_dearom.h"
 
 using namespace indigo;
 
@@ -73,7 +74,7 @@ SideIter SideAuto::begin()
         idx = _owner.catalystBegin();
         break;
     case BaseReaction::INTERMEDIATE:
-        idx = _owner.catalystBegin();
+        idx = _owner.intermediateBegin();
         break;
     case BaseReaction::UNDEFINED:
         idx = _owner.catalystBegin();
@@ -91,7 +92,8 @@ SideIter SideAuto::end()
 }
 
 BaseReaction::BaseReaction()
-    : reactants(*this, REACTANT), catalysts(*this, CATALYST), products(*this, PRODUCT), intermediates(*this, INTERMEDIATE), undefined(*this, UNDEFINED)
+    : reactants(*this, REACTANT), catalysts(*this, CATALYST), products(*this, PRODUCT), intermediates(*this, INTERMEDIATE), undefined(*this, UNDEFINED),
+      original_format(BaseMolecule::UNKNOWN)
 {
     clear();
 }
@@ -461,6 +463,28 @@ int BaseReaction::findMolecule(BaseMolecule* mol)
             return i;
 
     return -1;
+}
+
+bool BaseReaction::dearomatize(const AromaticityOptions& options)
+{
+    bool all_dearomatized = true;
+    for (int i = begin(); i < end(); i = next(i))
+    {
+        all_dearomatized &= MoleculeDearomatizer::dearomatizeMolecule(*_allMolecules[i], options);
+    }
+    return all_dearomatized;
+}
+
+void BaseReaction::unfoldHydrogens()
+{
+    QS_DEF(Array<int>, markers);
+    int i;
+
+    for (i = begin(); i != end(); i = next(i))
+    {
+        BaseMolecule& b_mol = getBaseMolecule(i);
+        b_mol.unfoldHydrogens(&markers, -1);
+    }
 }
 
 MetaDataStorage& BaseReaction::meta()

@@ -72,12 +72,12 @@ namespace indigo
         void setPath(int* path, int length);
         void clearPath(void);
 
-        virtual bool checkVertex(int v_idx)
+        virtual bool checkVertex(int /*v_idx*/)
         {
             return true;
         }
         // e_idx - edge index in graph (not mapping)
-        virtual bool checkEdge(int e_idx)
+        virtual bool checkEdge(int /*e_idx*/)
         {
             return true;
         }

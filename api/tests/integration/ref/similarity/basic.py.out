@@ -70,8 +70,8 @@
   None: 1.0
   euclid-sub: 1.0
 *** Test 01 ***
-m1: CC(C)(C)[C@@H](OC(=O)Nc1ccc(cc1C)OC)C(=O)N1CC(C[C@@H]1C(=O)NC1(CC1C=C)C(=O)NS(=O)(=O)C1CC1)Oc1cc([n]c2cc(ccc12)OC)-c1ccccc1 |&1:4,24,r|
-m1: CC(C)(C)[C@@H](OC(=O)Nc1ccc(cc1C)OC)C(=O)N1CC(C[C@@H]1C(=O)NC1(CCC1=C)C(=O)NS(=O)(=O)C1CC1)Oc1cc([n]c2cc(ccc12)OC)-c1ccccc1 |&1:4,24,r|
+m1: CC(C)(C)[C@@H](OC(=O)Nc1ccc(cc1C)OC)C(=O)N1CC(C[C@@H]1C(=O)NC1(CC1C=C)C(=O)NS(=O)(=O)C1CC1)Oc1cc([n]c2cc(ccc12)OC)-c1ccccc1
+m1: CC(C)(C)[C@@H](OC(=O)Nc1ccc(cc1C)OC)C(=O)N1CC(C[C@@H]1C(=O)NC1(CCC1=C)C(=O)NS(=O)(=O)C1CC1)Oc1cc([n]c2cc(ccc12)OC)-c1ccccc1
 Similarity: 0.9699
 *** Test for edit distance ***
 tanimoto

@@ -19,15 +19,26 @@
 #ifndef __molecule_cdxml_saver_h__
 #define __molecule_cdxml_saver_h__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include <memory>
 
 #include "base_cpp/properties_map.h"
 #include "ket_commons.h"
 #include "math/algebra.h"
 
+typedef unsigned short int UINT16;
+typedef int INT32;
+typedef unsigned int UINT32;
+#include "CDXCommons.h"
+
 namespace tinyxml2
 {
     class XMLElement;
+    class XMLAttribute;
     class XMLDocument;
 }
 
@@ -39,14 +50,46 @@ namespace indigo
 
     class DLLEXPORT MoleculeCdxmlSaver
     {
+        struct OutConnection
+        {
+            OutConnection(int uid, int b, int e) : id(uid), beg(b), end(e)
+            {
+            }
+            int id;
+            int beg;
+            int end;
+        };
+
+        struct SuperatomDesc
+        {
+            SuperatomDesc(int uid) : id(uid)
+            {
+            }
+            int id;
+            std::vector<int> atoms;
+            std::vector<int> bonds;
+        };
+
     public:
-        explicit MoleculeCdxmlSaver(Output& output);
+        explicit MoleculeCdxmlSaver(Output& output, bool is_binary = false);
 
         ~MoleculeCdxmlSaver();
 
-        void saveMolecule(BaseMolecule& mol);
+        void saveMolecule(BaseMolecule& bmol);
+        void deleteNamelessSGroups(BaseMolecule& bmol);
+        void addNodeToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment, int atom_idx, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord,
+                               Vec2f& node_pos);
+
+        void addBondToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment, int bond_idx);
+
+        void addNodesToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord);
+        void addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElement* fragment, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord);
+        void addBondsToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment);
+
         static const int SCALE = 30;
         static const int MAX_PAGE_HEIGHT = 64;
+        const float PLUS_HALF_HEIGHT = 7.5 / 2;
+
         struct Bounds
         {
             Vec2f min, max;
@@ -58,8 +101,13 @@ namespace indigo
         void addFontToTable(int id, const char* charset, const char* name);
         void addColorTable(const char* color);
         void addColorToTable(int id, int r, int g, int b);
-        void saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale, int id, Array<int>& nodes_ids);
-        void addMetaData(const MetaDataStorage& meta, int id);
+        void saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float scale, int frag_id, int& id, std::map<int, int>& atom_ids);
+        void saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float scale);
+        void saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum);
+
+        void addMetaObject(const MetaObject& obj, int id);
+        void addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end);
+
         void addText(const Vec2f& pos, const char* text);
         void addText(const Vec2f& pos, const char* text, const char* alignment);
         void addCustomText(const Vec2f& pos, const char* alignment, float line_height, const char* text);
@@ -70,6 +118,13 @@ namespace indigo
         void endCurrentElement();
         void endPage();
         void endDocument();
+        void writeBinaryElement(tinyxml2::XMLElement* element);
+        void writeBinaryAttributes(tinyxml2::XMLElement* pElement);
+        void writeIrregularElement(tinyxml2::XMLElement* pElement, int16_t tag);
+
+        void writeBinaryValue(const tinyxml2::XMLAttribute* pAttr, int16_t tag, ECDXType cdx_type);
+        void writeBinaryTextValue(const tinyxml2::XMLElement* pTextElement);
+
         int getHydrogenCount(BaseMolecule& mol, int idx, int charge, int radical);
 
         float pageHeight() const;
@@ -77,10 +132,18 @@ namespace indigo
 
         void addDefaultFontTable();
         void addDefaultColorTable();
+        int getId();
 
         DECL_ERROR;
 
     protected:
+        void _collectSuperatoms(BaseMolecule& mol);
+        int _getAttachmentPoint(BaseMolecule& mol, int atom_idx);
+
+        tinyxml2::XMLElement* create_text(tinyxml2::XMLElement* parent, float x, float y, const char* label_justification);
+        void add_style_str(tinyxml2::XMLElement* parent, int font, int size, int face, const char* str);
+        void add_charge(tinyxml2::XMLElement* parent, int font, int size, int charge);
+
         Output& _output;
 
         float _bond_length;
@@ -97,8 +160,23 @@ namespace indigo
 
     private:
         MoleculeCdxmlSaver(const MoleculeCdxmlSaver&); // no implicit copy
+        std::unordered_map<int, int> _superatoms_atoms;
+        std::unordered_map<int, int> _superatoms_bonds;
+        std::list<OutConnection> _out_connections;
+
+        std::map<int, int> _atoms_ids;
+        std::map<int, int> _bonds_ids;
+        std::map<int, SuperatomDesc> _superatoms;
+
+        int _id;
+        float _scale;
+        bool _is_binary;
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

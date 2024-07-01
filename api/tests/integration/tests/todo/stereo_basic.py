@@ -36,7 +36,7 @@ M  END
 """,
     "C1=CC=CC=C1",
     "F/C=C/F",
-    "F/C=C\F",
+    r"F/C=C\F",
 ):
     print(struct)
     m = indigo.loadMolecule(struct)

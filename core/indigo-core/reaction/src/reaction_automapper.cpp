@@ -1815,7 +1815,7 @@ bool RSubstructureMcs::bondConditionReactStrict(Graph& g1, Graph& g2, int i, int
     return true;
 }
 
-bool RSubstructureMcs::bondConditionReactSimple(Graph& g1, Graph& g2, int i, int j, void* userdata)
+bool RSubstructureMcs::bondConditionReactSimple(Graph& g1, Graph& g2, int i, int j, void* /*userdata*/)
 {
     BaseMolecule& mol1 = (BaseMolecule&)g1;
     BaseMolecule& mol2 = (BaseMolecule&)g2;
@@ -2141,7 +2141,7 @@ int RSubstructureMcs::_cbAutoVertexReact(Graph& graph, int idx1, int idx2, const
     return atomConditionReact(graph, graph, 0, idx1, idx2, (void*)context);
 }
 
-bool RSubstructureMcs::_cbAutoCheckAutomorphismReact(Graph& graph, const Array<int>& mapping, const void* context)
+bool RSubstructureMcs::_cbAutoCheckAutomorphismReact(Graph& /*graph*/, const Array<int>& mapping, const void* context)
 {
     RSubstructureMcs& rsm = *(RSubstructureMcs*)context;
     rsm._autoMaps.push().copy(mapping);

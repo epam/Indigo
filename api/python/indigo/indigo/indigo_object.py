@@ -236,6 +236,17 @@ class IndigoObject:
 
         return IndigoLib.checkResult(self._lib().indigoRemove(self.id))
 
+    def getOriginalFormat(self):
+        """Molecule method return format molecule loaded from
+
+        Returns:
+            str: original format string
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoGetOriginalFormat(self.id)
+        )
+
     def saveMolfile(self, filename):
         """Molecule method saves the structure into a Molfile
 
@@ -296,6 +307,20 @@ class IndigoObject:
             self._lib().indigoSaveCdxmlToFile(self.id, filename.encode())
         )
 
+    def saveCdx(self, filename):
+        """Molecule method saves the structure into a CDX file
+
+        Args:
+            filename (str): full path to the output file
+
+        Returns:
+            int: 1 if the file is saved successfully
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSaveCdxToFile(self.id, filename.encode())
+        )
+
     def cdxml(self):
         """Molecule method returns the structure as a string in CDXML format
 
@@ -304,6 +329,17 @@ class IndigoObject:
         """
 
         return IndigoLib.checkResultString(self._lib().indigoCdxml(self.id))
+
+    def b64cdx(self):
+        """Molecule method returns the structure as a string in CDX base64 encoded format
+
+        Returns:
+            str: base64 encoded CDX string
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoCdxBase64(self.id)
+        )
 
     def json(self):
         """Structure method returns the structure as a string in KET format
@@ -801,6 +837,10 @@ class IndigoObject:
             IndigoLib.checkResult(self._lib().indigoIterateRGroups(self.id)),
         )
 
+    def copyRGroups(self, other: "IndigoObject") -> None:
+        """Molecule method, copies RGroups from other molecule"""
+        IndigoLib.checkResult(self._lib().indigoCopyRGroups(self.id, other.id))
+
     def countRGroups(self):
         """Molecule method returns the number of r-groups
 
@@ -1170,7 +1210,7 @@ class IndigoObject:
         for target_fragment in self.iterateComponents():
             target_fragment = target_fragment.clone()
             for salt in SALTS:
-                query_salt = self.session.loadQueryMolecule(salt)
+                query_salt = self.session.loadSmarts(salt)
                 matcher = self.session.substructureMatcher(target_fragment)
                 if matcher.match(query_salt):
                     return True
@@ -3327,13 +3367,23 @@ class IndigoObject:
             self._lib().indigoUnfoldHydrogens(self.id)
         )
 
+    def foldUnfoldHydrogens(self):
+        """Molecule or reaction method unfold hydrogens if no explicit hydrogens, otherwise - fold
+
+        Returns:
+            int: 1 if there are no errors
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoFoldUnfoldHydrogens(self.id)
+        )
+
     def layout(self):
         """Molecule or reaction method calculates layout for the structure
 
         Returns:
             int: 1 if there are no errors
         """
-
         return IndigoLib.checkResult(self._lib().indigoLayout(self.id))
 
     def smiles(self):
@@ -3344,6 +3394,98 @@ class IndigoObject:
         """
 
         return IndigoLib.checkResultString(self._lib().indigoSmiles(self.id))
+
+    def saveSequence(self, filename):
+        """Saves macromolecule to monomers sequence file
+
+        Args:
+            filename (str): full file path to the output file
+
+        Returns:
+            int: 1 if file is saved successfully
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSaveSequenceToFile(self.id, filename.encode())
+        )
+
+    def sequence(self):
+        """Molecule or reaction method returns monomer sequence for the structure
+
+        Returns:
+            str: sequence string
+        """
+
+        return IndigoLib.checkResultString(self._lib().indigoSequence(self.id))
+
+    def saveFasta(self, filename):
+        """Saves macromolecule to FASTA file
+
+        Args:
+            filename (str): full file path to the output file
+
+        Returns:
+            int: 1 if file is saved successfully
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSaveFastaToFile(self.id, filename.encode())
+        )
+
+    def fasta(self):
+        """Molecule or reaction method returns FASTA for the structure
+
+        Returns:
+            str: FASTA string
+        """
+
+        return IndigoLib.checkResultString(self._lib().indigoFasta(self.id))
+
+    def saveIdt(self, filename):
+        """Saves macromolecule to IDT file
+
+        Args:
+            filename (str): full file path to the output file
+
+        Returns:
+            int: 1 if file is saved successfully
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSaveIDTToFile(self.id, filename.encode())
+        )
+
+    def idt(self):
+        """Molecule or reaction method returns IDT for the structure
+
+        Returns:
+            str: IDT string
+        """
+
+        return IndigoLib.checkResultString(self._lib().indigoIdt(self.id))
+
+    def saveHelm(self, filename):
+        """Saves macromolecule to HELM file
+
+        Args:
+            filename (str): full file path to the output file
+
+        Returns:
+            int: 1 if file is saved successfully
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSaveHelmToFile(self.id, filename.encode())
+        )
+
+    def helm(self):
+        """Molecule or reaction method returns Helm for the structure
+
+        Returns:
+            str: HELM string
+        """
+
+        return IndigoLib.checkResultString(self._lib().indigoHelm(self.id))
 
     def smarts(self):
         """Molecule or reaction method calculates SMARTS for the structure
@@ -4049,3 +4191,15 @@ class IndigoObject:
         return IndigoLib.checkResultString(
             self._lib().indigoDbgInternalType(self.id)
         )
+
+    def clearXYZ(self):
+        """Molecule method clear coordinates of atoms
+
+        Raises:
+            IndigoException: on error
+
+        Returns:
+            list: molecule ID
+        """
+        self._lib().indigoClearXYZ(self.id)
+        return

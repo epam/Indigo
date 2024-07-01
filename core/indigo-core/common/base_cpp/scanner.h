@@ -19,6 +19,11 @@
 #ifndef __scanner_h__
 #define __scanner_h__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include "base_cpp/array.h"
 #include "base_cpp/io_base.h"
 #include "base_cpp/obj_array.h"
@@ -38,6 +43,7 @@ namespace indigo
         virtual void read(int length, void* res) = 0;
         virtual void skip(int n) = 0;
         virtual bool isEOF() = 0;
+        bool isEOL();
         virtual int lookNext() = 0;
         virtual void seek(long long pos, int from) = 0;
         virtual long long length() = 0;
@@ -45,6 +51,7 @@ namespace indigo
 
         virtual byte readByte();
         virtual void readAll(Array<char>& arr);
+        virtual void readAll(std::string& str);
 
         void read(int length, Array<char>& buf);
 
@@ -65,6 +72,7 @@ namespace indigo
         float readFloatFix(int digits);
         int readIntFix(int digits);
         void skipSpace();
+        void skipBom();
 
         void skipUntil(const char* delimiters);
 
@@ -73,6 +81,9 @@ namespace indigo
         int readInt(void);
         int readInt1(void);
         int readUnsigned();
+        int tryReadUnsigned();
+
+        bool startsWith(const char* word);
 
         // when delimiters = 0, any isspace() character is considered delimiter
         void readWord(Array<char>& word, const char* delimiters);
@@ -154,5 +165,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

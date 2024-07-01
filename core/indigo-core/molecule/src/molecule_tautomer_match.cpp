@@ -57,7 +57,7 @@ TautomerSearchContext::~TautomerSearchContext()
 {
 }
 
-bool TautomerMatcher::_matchAtoms(Graph& subgraph, Graph& supergraph, const int* core_sub, int sub_idx, int super_idx, void* userdata)
+bool TautomerMatcher::_matchAtoms(Graph& subgraph, Graph& supergraph, const int* /*core_sub*/, int sub_idx, int super_idx, void* /*userdata*/)
 {
     QueryMolecule& query = ((BaseMolecule&)subgraph).asQueryMolecule();
     QueryMolecule::Atom* atom = &query.getAtom(sub_idx);
@@ -81,7 +81,7 @@ bool TautomerMatcher::_matchAtoms(Graph& subgraph, Graph& supergraph, const int*
     return true;
 }
 
-bool TautomerMatcher::_matchAtomsEx(Graph& subgraph, Graph& supergraph, const int* core_sub, int sub_idx, int super_idx, void* userdata)
+bool TautomerMatcher::_matchAtomsEx(Graph& subgraph, Graph& supergraph, const int* /*core_sub*/, int sub_idx, int super_idx, void* /*userdata*/)
 {
     return MoleculeExactMatcher::matchAtoms(((BaseMolecule&)subgraph).asMolecule(), (BaseMolecule&)supergraph, sub_idx, super_idx, 0xFFFFFFFFUL);
 }
@@ -117,7 +117,7 @@ bool TautomerMatcher::matchBondsTau(Graph& subgraph, Graph& supergraph, int sub_
     return false;
 }
 
-bool TautomerMatcher::matchBondsTauSub(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* userdata)
+bool TautomerMatcher::matchBondsTauSub(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* /*userdata*/)
 {
     BaseMolecule& molecule = (BaseMolecule&)supergraph;
     QueryMolecule& query = ((BaseMolecule&)subgraph).asQueryMolecule();
@@ -197,7 +197,7 @@ int TautomerMatcher::_remainderEmbedding(Graph& g1, Graph& g2, int* core1, int* 
     return 0;
 }
 
-int TautomerMatcher::_preliminaryEmbedding(Graph& g1, Graph& g2, int* core1, int* core2, void* userdata)
+int TautomerMatcher::_preliminaryEmbedding(Graph& /*g1*/, Graph& g2, int* core1, int* core2, void* userdata)
 {
     TautomerMatcher::MatchData& d = *(TautomerMatcher::MatchData*)userdata;
 
@@ -525,7 +525,7 @@ bool TautomerMatcher::findMatch()
     return true;
 }
 
-bool TautomerMatcher::fixBondsNotInChains(TautomerSearchContext& context, const int* core1, const int* core2)
+bool TautomerMatcher::fixBondsNotInChains(TautomerSearchContext& context, const int* /*core1*/, const int* core2)
 {
     bool ok = true;
 

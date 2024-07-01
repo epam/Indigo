@@ -307,6 +307,7 @@ testSaveLoad(
 # query molecules
 print("*** Saving query molecules in different formats *** ")
 print("*** SDF *** ")
+indigo.setOption("molfile-saving-mode", "2000")
 testSaveLoad(
     qmols,
     joinPathPy("savers_out/out_qmols.sdf", __file__),

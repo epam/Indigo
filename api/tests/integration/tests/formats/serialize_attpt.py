@@ -11,6 +11,7 @@ from env_indigo import *
 indigo = Indigo()
 indigo.setOption("ignore-stereochemistry-errors", True)
 indigo.setOption("molfile-saving-skip-date", True)
+indigo.setOption("serialize-preserve-ordering", True)
 
 
 def testSerializeAttachmentPoints(filename):
@@ -20,11 +21,16 @@ def testSerializeAttachmentPoints(filename):
         for frag in rgp.iterateRGroupFragments():
             print("  rgroup {0} frag {1}".format(rgp.index(), frag.index()))
             buf = frag.serialize()
+            smiles_orig = frag.smiles()
             print("  fragment serialized to {0} bytes".format(len(buf)))
-            print("    " + frag.canonicalSmiles())
+            print("    " + smiles_orig)
             frag2 = indigo.unserialize(buf)
-            print("    " + frag2.canonicalSmiles())
-            if frag.canonicalSmiles() != frag2.canonicalSmiles():
+            smiles_unserialize = frag2.smiles()
+            buf2 = frag2.serialize()
+            print("    " + smiles_unserialize)
+            if buf != buf2:
+                print("    SERIALIZED NOT EQUALS!!!")
+            if smiles_orig != smiles_unserialize:
                 print("    MISMATCH!!!")
 
 

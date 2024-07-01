@@ -48,9 +48,19 @@ void CmlSaver::saveQueryMolecule(QueryMolecule& mol)
     _saveMolecule(mol, true);
 }
 
-void CmlSaver::_saveMolecule(BaseMolecule& mol, bool query)
+void CmlSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 {
     LocaleGuard locale_guard;
+    auto* pmol = &bmol;
+    std::unique_ptr<BaseMolecule> mol;
+    if (bmol.tgroups.getTGroupCount())
+    {
+        mol.reset(bmol.neu());
+        mol->clone(bmol);
+        mol->transformTemplatesToSuperatoms();
+        pmol = mol.get();
+    }
+
     std::unique_ptr<XMLDocument> doc = std::make_unique<XMLDocument>();
     _doc = doc->GetDocument();
     _root = 0;
@@ -65,9 +75,9 @@ void CmlSaver::_saveMolecule(BaseMolecule& mol, bool query)
         elem = _root;
     }
 
-    _addMoleculeElement(elem, mol, query);
+    _addMoleculeElement(elem, *pmol, query);
 
-    _addRgroups(elem, mol, query);
+    _addRgroups(elem, *pmol, query);
 
     XMLPrinter printer;
     _doc->Accept(&printer);
@@ -117,6 +127,8 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                 atom_str = "R";
             else if (_mol->isPseudoAtom(i))
                 atom_str = _mol->getPseudoAtom(i);
+            // else if (_mol->isTemplateAtom(i))
+            //    atom_str = _mol->getTemplateAtom(i);
             else if (atom_number > 0)
                 atom_str = Element::toString(atom_number);
             else if (qmol != 0)
@@ -220,18 +232,9 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                     }
                 }
 
-                for (int j = _mol->sgroups.begin(); j != _mol->sgroups.end(); j = _mol->sgroups.next(j))
+                if (mol.isAlias(i))
                 {
-                    SGroup& sgroup = _mol->sgroups.getSGroup(j);
-                    if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
-                    {
-                        DataSGroup& dsg = (DataSGroup&)sgroup;
-                        if ((dsg.name.size() >= 12) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0) && (dsg.atoms.size() > 0) && (dsg.atoms[0] == i) &&
-                            dsg.data.size() > 0)
-                        {
-                            atom->SetAttribute("mrvAlias", dsg.data.ptr());
-                        }
-                    }
+                    atom->SetAttribute("mrvAlias", mol.getAlias(i));
                 }
             }
 
@@ -241,21 +244,21 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
 
                 _mol->getAllowedRGroups(i, rg_refs);
 
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
+                QS_DEF(Array<char>, rbuf);
+                ArrayOutput rout(rbuf);
 
                 if (rg_refs.size() == 1)
                 {
-                    out.printf("%d", rg_refs[0]);
-                    buf.push(0);
-                    atom->SetAttribute("rgroupRef", buf.ptr());
+                    rout.printf("%d", rg_refs[0]);
+                    rbuf.push(0);
+                    atom->SetAttribute("rgroupRef", rbuf.ptr());
                 }
             }
 
             if (qmol != 0)
             {
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
+                QS_DEF(Array<char>, qbuf);
+                ArrayOutput qout(qbuf);
 
                 QS_DEF(Array<int>, list);
 
@@ -266,62 +269,62 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                     {
                         int k;
 
-                        out.writeString("L");
+                        qout.writeString("L");
 
                         for (k = 0; k < list.size(); k++)
                         {
                             if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
-                                out.writeString("!");
+                                qout.writeString("!");
                             else
-                                out.writeString(",");
+                                qout.writeString(",");
 
-                            out.writeString(Element::toString(list[k]));
+                            qout.writeString(Element::toString(list[k]));
                         }
-                        out.writeString(": ");
+                        qout.writeString(": ");
                     }
                     else if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
-                        out.writeString("A");
+                        qout.writeString("A");
                     else if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
-                        out.writeString("Q");
+                        qout.writeString("Q");
                 }
 
                 int rbc;
                 if (_getRingBondCountFlagValue(*qmol, i, rbc))
                 {
                     if (rbc > 0)
-                        out.printf("rb%d;", rbc);
+                        qout.printf("rb%d;", rbc);
                     else if (rbc == -2)
-                        out.printf("rb*;");
+                        qout.printf("rb*;");
                     else if (rbc == -1)
-                        out.printf("rb0;");
+                        qout.printf("rb0;");
                 }
 
                 int subst;
                 if (_getSubstitutionCountFlagValue(*qmol, i, subst))
                 {
                     if (subst > 0)
-                        out.printf("s%d;", subst);
+                        qout.printf("s%d;", subst);
                     else if (subst == -2)
-                        out.printf("s*;");
+                        qout.printf("s*;");
                     else if (subst == -1)
-                        out.printf("s0;");
+                        qout.printf("s0;");
                 }
 
                 int unsat;
                 if (qmol->getAtom(i).sureValue(QueryMolecule::ATOM_UNSATURATION, unsat))
-                    out.printf("u1;");
+                    qout.printf("u1;");
 
                 int hcount = MoleculeSavers::getHCount(mol, i, atom_number, charge);
 
                 if (hcount > 0)
-                    out.printf("H%d", hcount);
+                    qout.printf("H%d", hcount);
                 else if (hcount == 0)
-                    out.printf("H0");
+                    qout.printf("H0");
 
-                if (buf.size() > 0)
+                if (qbuf.size() > 0)
                 {
-                    buf.push(0);
-                    atom->SetAttribute("mrvQueryProps", buf.ptr());
+                    qbuf.push(0);
+                    atom->SetAttribute("mrvQueryProps", qbuf.ptr());
                 }
             }
 
@@ -377,20 +380,31 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                 }
             }
 
-            if (_mol->stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY)
+            if (_mol->stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY && _mol->stereocenters.isTetrahydral(i))
             {
                 XMLElement* atomparity = _doc->NewElement("atomParity");
                 atom->LinkEndChild(atomparity);
 
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
+                QS_DEF(Array<char>, sbuf);
+                ArrayOutput sout(sbuf);
                 const int* pyramid = _mol->stereocenters.getPyramid(i);
-                if (pyramid[3] == -1)
-                    out.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], pyramid[2], i);
+                if (pyramid[2] == -1)
+                {
+                    // The atomRefs4 attribute in the atomParity element specifies
+                    // the four atoms involved in defining the stereochemistry.
+                    // These atoms are typically ordered in a sequence
+                    // that represents a directed path from the stereocenter to the fourth atom
+                    // with the reference atom (the atom to which the stereochemistry is referenced) being included twice.
+                    const Vertex& v = _mol->getVertex(i);
+                    int j = v.neiVertex(i);
+                    sout.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], i, j);
+                }
+                else if (pyramid[3] == -1)
+                    sout.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], pyramid[2], i);
                 else
-                    out.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], pyramid[2], pyramid[3]);
-                buf.push(0);
-                atomparity->SetAttribute("atomRefs4", buf.ptr());
+                    sout.printf("a%d a%d a%d a%d", pyramid[0], pyramid[1], pyramid[2], pyramid[3]);
+                sbuf.push(0);
+                atomparity->SetAttribute("atomRefs4", sbuf.ptr());
 
                 atomparity->LinkEndChild(_doc->NewText("1"));
             }
@@ -482,13 +496,13 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
 
                 int qb = QueryMolecule::getQueryBondType(qmol->getBond(i));
 
-                if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
+                if (qb == _BOND_SINGLE_OR_DOUBLE)
                     bond->SetAttribute("queryType", "SD");
-                else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
+                else if (qb == _BOND_SINGLE_OR_AROMATIC)
                     bond->SetAttribute("queryType", "SA");
-                else if (qb == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC)
+                else if (qb == _BOND_DOUBLE_OR_AROMATIC)
                     bond->SetAttribute("queryType", "DA");
-                else if (qb == QueryMolecule::QUERY_BOND_ANY)
+                else if (qb == _BOND_ANY)
                     bond->SetAttribute("queryType", "Any");
 
                 int indigo_topology = -1;
@@ -515,13 +529,13 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                 XMLElement* bondstereo = _doc->NewElement("bondStereo");
                 bond->LinkEndChild(bondstereo);
 
-                QS_DEF(Array<char>, buf);
-                ArrayOutput out(buf);
+                QS_DEF(Array<char>, pbuf);
+                ArrayOutput pout(pbuf);
 
                 const int* subst = _mol->cis_trans.getSubstituents(i);
-                out.printf("a%d a%d a%d a%d", subst[0], edge.beg, edge.end, subst[2]);
-                buf.push(0);
-                bondstereo->SetAttribute("atomRefs4", buf.ptr());
+                pout.printf("a%d a%d a%d a%d", subst[0], edge.beg, edge.end, subst[2]);
+                pbuf.push(0);
+                bondstereo->SetAttribute("atomRefs4", pbuf.ptr());
                 bondstereo->LinkEndChild(_doc->NewText((parity == MoleculeCisTrans::CIS) ? "C" : "T"));
             }
             else if (_mol->cis_trans.isIgnored(i))
@@ -545,13 +559,6 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
         {
             SGroup& sgroup = _mol->sgroups.getSGroup(i);
 
-            if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
-            {
-                DataSGroup& dsg = (DataSGroup&)sgroup;
-                if ((dsg.name.size() >= 12) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0))
-                    continue;
-            }
-
             if (sgroup.parent_group == 0)
                 _addSgroupElement(molecule, *_mol, sgroup);
         }
@@ -571,16 +578,16 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
 
     if (sgroup.atoms.size() > 0)
     {
-        QS_DEF(Array<char>, buf);
-        ArrayOutput out(buf);
+        QS_DEF(Array<char>, sbuf);
+        ArrayOutput sout(sbuf);
 
         for (int j = 0; j < sgroup.atoms.size(); j++)
-            out.printf("a%d ", sgroup.atoms[j]);
+            sout.printf("a%d ", sgroup.atoms[j]);
 
-        buf.pop();
-        buf.push(0);
+        sbuf.pop();
+        sbuf.push(0);
 
-        sg->SetAttribute("atomRefs", buf.ptr());
+        sg->SetAttribute("atomRefs", sbuf.ptr());
     }
 
     if (sgroup.brackets.size() > 0)
@@ -758,16 +765,16 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
 
         if (mul.parent_atoms.size() > 0)
         {
-            QS_DEF(Array<char>, buf);
-            ArrayOutput out(buf);
+            QS_DEF(Array<char>, pbuf);
+            ArrayOutput pout(pbuf);
 
             for (int j = 0; j < mul.parent_atoms.size(); j++)
-                out.printf("a%d ", mul.parent_atoms[j]);
+                pout.printf("a%d ", mul.parent_atoms[j]);
 
-            buf.pop();
-            buf.push(0);
+            pbuf.pop();
+            pbuf.push(0);
 
-            sg->SetAttribute("patoms", buf.ptr());
+            sg->SetAttribute("patoms", pbuf.ptr());
         }
 
         MoleculeSGroups* sgroups = &mol.sgroups;

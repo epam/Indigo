@@ -1,0 +1,26 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    6.000000,
+                    -3.000000,
+                    0.000000
+                ],
+                "queryProperties": {
+                    "chirality": "anticlockwise"
+                }
+            }
+        ],
+        "bonds": []
+    }
+}

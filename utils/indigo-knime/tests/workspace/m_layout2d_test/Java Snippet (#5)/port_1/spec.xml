@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.knime.org/2008/09/XMLConfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.knime.org/2008/09/XMLConfig http://www.knime.org/XMLConfig_2008_09.xsd" key="spec.xml">
+<entry key="spec_name" type="xstring" value="default"/>
+<entry key="number_columns" type="xint" value="1"/>
+<config key="column_spec_0">
+<entry key="column_name" type="xstring" value="column1"/>
+<config key="element_names">
+<entry key="array-size" type="xint" value="0"/>
+</config>
+<config key="column_type">
+<entry key="cell_class" type="xstring" value="org.knime.core.data.def.StringCell"/>
+</config>
+<config key="column_domain">
+<config key="possible_values">
+<entry key="array-size" type="xint" value="1"/>
+<config key="0">
+<entry key="datacell" type="xstring" value="org.knime.core.data.def.StringCell"/>
+<config key="org.knime.core.data.def.StringCell">
+<entry key="StringCell" type="xstring" value="%%00010    %%00010%%00010 13 14  0  0  0  0            999 V2000%%00010   -0.7071    4.3902    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   -2.6591    2.9464    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   -3.5136    2.0920    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   -3.0348    0.3536    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    0.0957    1.0312    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   -2.5266    1.2080    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   -0.5157    2.5634    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010   -2.2541   -0.0884    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    0.4639   -0.1768    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    0.1988    2.1509    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    0.9132    2.5634    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    2.5338    3.9188    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010    1.3331    1.3259    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0%%00010  1  2  1  0  0  0  0%%00010  1  6  1  0  0  0  0%%00010  2  3  1  0  0  0  0%%00010  3  4  1  0  0  0  0%%00010  4  5  1  0  0  0  0%%00010  7  6  1  0  0  0  0%%00010  6  5  1  0  0  0  0%%00010  5  8  1  0  0  0  0%%00010  7 10  1  0  0  0  0%%00010  8  9  1  0  0  0  0%%00010  9 10  1  0  0  0  0%%00010 10 11  1  0  0  0  0%%00010 11 12  1  0  0  0  0%%00010 12 13  1  0  0  0  0%%00010M  END%%00010"/>
+</config>
+</config>
+</config>
+</config>
+<config key="column_properties"/>
+</config>
+</config>

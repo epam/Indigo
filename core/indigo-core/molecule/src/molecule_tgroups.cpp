@@ -24,7 +24,7 @@
 
 using namespace indigo;
 
-TGroup::TGroup()
+TGroup::TGroup() : unresolved(false)
 {
 }
 
@@ -34,9 +34,10 @@ TGroup::~TGroup()
 
 void TGroup::clear()
 {
+    unresolved = false;
 }
 
-int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* context)
+int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* /*context*/)
 {
     QS_DEF(Array<int>, lgrps)
     QS_DEF(Array<int>, bgrps)
@@ -45,6 +46,11 @@ int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* context)
         return -1;
     if (tg2.fragment.get() == 0)
         return 1;
+
+    if (tg1.unresolved && !tg2.unresolved)
+        return 1;
+    else if (!tg1.unresolved && tg2.unresolved)
+        return -1;
 
     lgrps.clear();
     bgrps.clear();
@@ -101,14 +107,18 @@ int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* context)
         return -1;
 }
 
-void TGroup::copy(TGroup& other)
+void TGroup::copy(const TGroup& other)
 {
     tgroup_class.copy(other.tgroup_class);
     tgroup_name.copy(other.tgroup_name);
+    tgroup_full_name.copy(other.tgroup_full_name);
     tgroup_alias.copy(other.tgroup_alias);
+    tgroup_text_id.copy(other.tgroup_text_id);
     tgroup_comment.copy(other.tgroup_comment);
     tgroup_natreplace.copy(other.tgroup_natreplace);
     tgroup_id = other.tgroup_id;
+    unresolved = other.unresolved;
+    idt_alias = other.idt_alias;
     fragment.reset(other.fragment->neu());
     fragment->clone(*other.fragment.get(), 0, 0);
 }

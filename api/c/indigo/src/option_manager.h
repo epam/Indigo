@@ -19,6 +19,11 @@
 #ifndef __otion_manager_h__
 #define __otion_manager_h__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include "base_cpp/os_sync_wrapper.h"
 #include "base_cpp/red_black.h"
 
@@ -185,5 +190,9 @@ protected:
 private:
     IndigoOptionManager(const IndigoOptionManager&);
 };
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif //__otion_manager_h__

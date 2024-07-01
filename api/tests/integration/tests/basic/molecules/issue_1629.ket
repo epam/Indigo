@@ -1,0 +1,60 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "$ref": "mol1"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    1.000000,
+                    -1.000000,
+                    0.000000
+                ],
+                "attachmentPoints": 2
+            },
+            {
+                "label": "C",
+                "location": [
+                    2.000000,
+                    -1.000000,
+                    0.000000
+                ],
+                "attachmentPoints": 1
+            }
+        ],
+        "bonds": [
+            {
+                "type": 2,
+                "atoms": [
+                    0,
+                    1
+                ]
+            }
+        ]
+    },
+    "mol1": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "A",
+                "location": [
+                    5.000000,
+                    -9.000000,
+                    0.000000
+                ],
+                "queryProperties": {
+                    "aromaticity": "aromatic"
+                }
+            }
+        ]
+    }
+}

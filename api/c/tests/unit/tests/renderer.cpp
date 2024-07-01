@@ -55,7 +55,6 @@ protected:
         indigoSetOption("render-stereo-style", "none");
         indigoSetOptionXY("render-image-size", 400, 400);
         indigoSetOption("render-output-format", "png");
-        indigoSetOption("render-superatom-mode", "collapse");
 
         try
         {
@@ -89,7 +88,6 @@ TEST_F(IndigoApiRendererTest, layout_rings)
         indigoSetOption("render-stereo-style", "none");
         indigoSetOptionXY("render-image-size", 400, 400);
         indigoSetOption("render-output-format", "png");
-        indigoSetOption("render-superatom-mode", "collapse");
         indigoRenderToFile(m, "ring.png");
     }
     catch (Exception& e)
@@ -112,7 +110,6 @@ TEST_F(IndigoApiRendererTest, layout_crown)
         indigoSetOption("render-stereo-style", "none");
         indigoSetOptionXY("render-image-size", 400, 400);
         indigoSetOption("render-output-format", "png");
-        indigoSetOption("render-superatom-mode", "collapse");
         indigoRenderToFile(m, "crown.png");
     }
     catch (Exception& e)

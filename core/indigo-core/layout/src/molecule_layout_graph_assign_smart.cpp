@@ -16,7 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
-//#include "api/src/indigo_internal.h"
+// #include "api/src/indigo_internal.h"
 
 #include "base_cpp/profiling.h"
 #include "graph/biconnected_decomposer.h"
@@ -61,113 +61,18 @@ static int _vertex_cmp(int& n1, int& n2, void* context)
     return v1.morgan_code - v2.morgan_code;
 }
 
-void MoleculeLayoutGraphSmart::_assignAbsoluteCoordinates(float bond_length)
+void MoleculeLayoutGraphSmart::_layout_component(BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& bc_tree,
+                                                 Array<int>& fixed_components, int src_vertex)
 {
-    BiconnectedDecomposer bc_decom(*this);
-    QS_DEF(Array<int>, bc_tree);
-    QS_DEF(PtrArray<MoleculeLayoutGraph>, bc_components);
-    QS_DEF(Array<int>, fixed_components);
-    bool all_trivial = true;
+    // Component layout in current vertex should have the same angles between components.
+    // So it depends on component order and their flipping (for nontrivial components)
+    AttachmentLayoutSmart att_layout(bc_decom, bc_components, bc_tree, *this, src_vertex);
 
-    int n_comp = bc_decom.decompose();
+    LayoutChooser layout_chooser(att_layout, fixed_components);
 
-    fixed_components.clear_resize(n_comp);
-    fixed_components.zerofill();
+    layout_chooser.perform();
 
-    bc_components.clear();
-
-    for (int i = 0; i < n_comp; i++)
-    {
-        Filter comp;
-        bc_decom.getComponent(i, comp);
-        std::unique_ptr<MoleculeLayoutGraph> current_component(getInstance());
-        current_component->makeLayoutSubgraph(*this, comp);
-        bc_components.add(current_component.release());
-    }
-
-    bc_tree.clear_resize(vertexEnd());
-    _makeComponentsTree(bc_decom, bc_components, bc_tree);
-
-    // 1. Find biconnected components forming connected subgraph from fixed vertices
-    _findFixedComponents(bc_decom, fixed_components, bc_components);
-
-    all_trivial = _assignComponentsRelativeCoordinates(bc_components, fixed_components, bc_decom);
-
-    _findFirstVertexIdx(n_comp, fixed_components, bc_components, all_trivial);
-
-    int i, j = -1;
-
-    // ( 1] atoms assigned absolute coordinates and adjacent to atoms not;
-    //   assigned coordinates are put on a list;
-    QS_DEF(Array<int>, assigned_list);
-    QS_DEF(Array<int>, adjacent_list);
-
-    while (true)
-    {
-        if (cancellation && cancellation->isCancelled())
-            throw Error("Molecule layout has been cancelled: %s", cancellation->cancelledRequestMessage());
-
-        if (!_prepareAssignedList(assigned_list, bc_decom, bc_components, bc_tree))
-            return;
-
-        // ( 3.i] let k = 0  ( top of the list];;
-        while (assigned_list.size() != 0)
-        {
-            int k = assigned_list.pop();
-            const Vertex& vert_k = getVertex(k);
-
-            // ( 3.ii] a list of atoms adjacent to atom Uzel and not previously;
-            //		 assigned coordinates is created and ordered with cyclic atoms;
-            //       at the top of the list with descending ATCD numbers and acyclic atoms;
-            //       at the bottom of the list with descending ATCD numbers;;
-            adjacent_list.clear();
-
-            for (i = vert_k.neiBegin(); i < vert_k.neiEnd(); i = vert_k.neiNext(i))
-                if (_layout_vertices[vert_k.neiVertex(i)].type == ELEMENT_NOT_DRAWN)
-                    adjacent_list.push(vert_k.neiVertex(i));
-
-            if (adjacent_list.size() == 0)
-                break;
-
-            // When all components outgoing from vertex are trivial (edges) then use tree algorithm
-            all_trivial = true;
-
-            for (i = 0; i < bc_decom.getIncomingCount(k); i++)
-                if (!bc_components[bc_decom.getIncomingComponents(k)[i]]->isSingleEdge())
-                {
-                    all_trivial = false;
-                    break;
-                }
-
-            if (all_trivial && bc_tree[k] != -1 && !bc_components[bc_tree[k]]->isSingleEdge())
-                all_trivial = false;
-
-            if (all_trivial)
-            {
-                adjacent_list.qsort(_vertex_cmp, this);
-
-                _attachDandlingVertices(k, adjacent_list);
-            }
-            else
-            {
-                // Component layout in current vertex should have the same angles between components.
-                // So it depends on component order and their flipping (for nontrivial components)
-                AttachmentLayoutSmart att_layout(bc_decom, bc_components, bc_tree, *this, k);
-
-                // ( 3.iii] Look over all possible orders of component layouts
-                //         (vertex itself is already drawn means one component is already drawn)
-                // ( 3.iv]  Choose layout with minimal energy
-                LayoutChooser layout_chooser(att_layout);
-
-                layout_chooser.perform();
-
-                att_layout.markDrawnVertices();
-            }
-            // ( 3.v] let k = k + 1;;
-            // ( 3.vi] repeat steps 3.ii-3.v until all atoms in the list have been processed;;
-        }
-        // ( 4] repeat steps 1-3 until all atoms have been assigned absolute coordinates.;
-    }
+    att_layout.markDrawnVertices();
 }
 
 void MoleculeLayoutGraphSmart::_get_toches_to_component(Cycle& cycle, int component_number, Array<interval>& interval_list)
@@ -326,7 +231,7 @@ void MoleculeLayoutGraphSmart::_assignRelativeCoordinates(int& fixed_component, 
         QS_DEF(Array<int>, unused_count);
         unused_count.clear_resize(cycles.end());
         unused_count.zerofill();
-        for (int i = cycles.begin(); i != cycles.end(); i = cycles.next(i))
+        for (i = cycles.begin(); i != cycles.end(); i = cycles.next(i))
         {
             for (int j = 0; j < cycles[i].vertexCount(); j++)
             {
@@ -334,13 +239,13 @@ void MoleculeLayoutGraphSmart::_assignRelativeCoordinates(int& fixed_component, 
                     unused_count[i]++;
             }
         }
-        for (int i = cycles.begin(); i != cycles.end(); i = cycles.next(i))
+        for (i = cycles.begin(); i != cycles.end(); i = cycles.next(i))
             unused_count[i] *= cycles[i].vertexCount();
-        for (int i = cycles.begin(); i != cycles.end(); i = cycles.next(i))
+        for (i = cycles.begin(); i != cycles.end(); i = cycles.next(i))
             cycles[i].calcMorganCode(supergraph);
 
         int min_i = cycles.begin();
-        for (int i = cycles.begin(); i != cycles.end(); i = cycles.next(i))
+        for (i = cycles.begin(); i != cycles.end(); i = cycles.next(i))
         {
             if (unused_count[i] < unused_count[min_i] || (unused_count[i] == unused_count[min_i] && cycles[i].morganCode() > cycles[min_i].morganCode()))
                 min_i = i;
@@ -353,7 +258,7 @@ void MoleculeLayoutGraphSmart::_assignRelativeCoordinates(int& fixed_component, 
             int separating_component = _search_separated_component(cycles[min_i], interval_list);
             if (separating_component >= 0)
             {
-                for (int i = 0; i < interval_list.size(); i++)
+                for (i = 0; i < interval_list.size(); i++)
                 {
                     int start = interval_list[i].left;
                     int finish = interval_list[i].right;
@@ -715,7 +620,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
 
             if (i == segment_count - 1)
             {
-                int x = 5;
+                // int x = 5;
             }
 
             _list_of_vertex.clear_resize(0);
@@ -909,7 +814,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
     for (int i = 0; i < size; i++)
         need_to_insert[i] = _layout_vertices[cycle.getVertex(i)].type != ELEMENT_NOT_DRAWN;
 
-    int start = 0;
+    // int start = 0;
 
     bool componentIsWholeCycle = false;
 
@@ -1536,7 +1441,7 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const Cycle& cycle,
         segment_graph.push().makeLayoutSubgraph(*this, segments_filter[i]);
     }
 
-    int segment_count = segment_graph.size();
+    // int segment_count = segment_graph.size();
 
     int current_number = 0;
     for (int i = 0; i < cycle_size; i++)
@@ -1665,20 +1570,20 @@ SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, Array<float>& t_a, ObjArray<Mole
         edge_length[i] = _2FLOAT(s[i].getLength());
 }
 
-void SmoothingCycle::_do_smoothing(int iter_count)
+void SmoothingCycle::_do_smoothing(int /* iter_count */)
 {
     QS_DEF(Array<local_pair_ii>, touching_segments);
     touching_segments.clear();
 
     float coef = 1.0f;
-    float multiplyer = std::max(0.5f, std::min(0.999f, _2FLOAT(1. - 10.0 / iter_count)));
+    // float multiplyer = std::max(0.5f, std::min(0.999f, _2FLOAT(1. - 10.0 / iter_count)));
     for (int i = 0; i < 100; i++, coef *= 0.9f)
     {
         _gradient_step(coef, touching_segments, 0);
     }
 }
 
-void SmoothingCycle::_gradient_step(float coef, Array<local_pair_ii>& touching_segments, bool flag)
+void SmoothingCycle::_gradient_step(float coef, Array<local_pair_ii>& /* touching_segments */, bool /* flag */)
 {
     QS_DEF(Array<Vec2f>, change);
     change.clear_resize(cycle_length);
@@ -1728,7 +1633,7 @@ void SmoothingCycle::_gradient_step(float coef, Array<local_pair_ii>& touching_s
         point[i] -= change[i] * coef;
 }
 
-Vec2f SmoothingCycle::_get_len_derivative(Vec2f current_vector, float target_dist, bool flag)
+Vec2f SmoothingCycle::_get_len_derivative(Vec2f current_vector, float target_dist, bool /* flag */)
 {
     float dist = current_vector.length();
     // dist = std::max(dist, 0.01f);
@@ -1744,15 +1649,15 @@ Vec2f SmoothingCycle::_get_len_derivative(Vec2f current_vector, float target_dis
     return current_vector * -coef;
 }
 
-Vec2f SmoothingCycle::_get_len_derivative_simple(Vec2f current_vector, float target_dist)
+Vec2f SmoothingCycle::_get_len_derivative_simple(Vec2f current_vector, float /* target_dist */)
 {
-    float dist = current_vector.length();
+    // float dist = current_vector.length();
     // dist = std::max(dist, 0.01f);
     float coef = -1; // dist - target_dist;
     return current_vector * -coef;
 }
 
-Vec2f SmoothingCycle::_get_angle_derivative(Vec2f left_point, Vec2f right_point, float target_angle, bool flag)
+Vec2f SmoothingCycle::_get_angle_derivative(Vec2f left_point, Vec2f right_point, float target_angle, bool /* flag */)
 {
     float len1_sq = left_point.lengthSqr();
     float len2_sq = right_point.lengthSqr();

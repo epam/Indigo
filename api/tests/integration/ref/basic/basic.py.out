@@ -28,14 +28,14 @@ False
 ****** Bad valence, smiles and unfold ********
 C/C=C(/N(=O)O)\N(=O)O
 CC=C(N(O)=O)N(O)=O
-element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+CC=C(N(O)=O)N(O)=O
 ****** Serialize and atom changing ********
 CC[C@H](/C=C\C)N
 C/C=C\[C@H](N)CC
 ***(*=**)* |$*;*;*;*;*;*;*$|
+***(*)*=**
 ***(*)*=** |$*;*;*;*;*;*;*$|
-***(*)*=** |$*;*;*;*;*;*;*$|
-***(*)*=** |$*;*;*;*;*;*;*$|
+***(*)*=**
 ****** Anormal properties ********
 0 8
 0 2
@@ -52,7 +52,7 @@ C/C=C\[C@H](N)CC
 0 2
 -10 1
 ****** Unmarked stereobonds ********
-C1C2CCC3CCC4C5CCCCC5CCC4[C@@]321 |&1:17,r|
+C1C2CCC3CCC4C5CCCCC5CCC4[C@@]321
 C1C2CCC3CCC4C5CCCCC5CCC4C321
 C1C2CCC3CCC4C5CCCCC5CCC4C321
 ****** Chemical formula ********
@@ -216,14 +216,14 @@ CC(=O)[C@H]1C[C@H](O)[C@H]2[C@@H]3CCC4=CC(=O)CC[C@]4(C)[C@H]3C(=O)C[C@@]21C
 CC(=O)[C@H]1C[C@H](O)[C@H]2[C@@H]3CCC4=CC(=O)CC[C@]4(C)[C@H]3C(=O)C[C@@]21C
 ****** SMILES cis-trans check *****
 IC1=C(C([H])=C([H])C([H])=C([H])C([H])=C([H])C2C=CC=CC(/C(=N/[H])/N([H])[H])=C([H])C=21)[H] |c:16,18,29,t:1,4,8,12,26|
-[H]/N=C(\N)/C1=CC2C(I)=CC=CC=CC=CC=2C=CC=C1 |c:8,10,12,14,18,20,t:4,16|
+[H]/N=C(\N)/C1=CC2C(I)=CC=CC=CC=CC=2C=CC=C1
 ****** Empty SDF saver *****
 0
 0
 ****** Normalize and serialize *****
 [O-]/[N+](=C\C1C=CC=CC=1)/C1C=CC=CC=1
 O=N(=CC1C=CC=CC=1)C1C=CC=CC=1
-CC=CC1C=CC=CC=1/[N+](/[O-])=C/C1=CC(/C=C/C)=CC=C1 |t:1|
+CC=CC1C=CC=CC=1/[N+](/[O-])=C/C1=CC(/C=C/C)=CC=C1
 C/C=C/C1C=CC=CC=1N(=O)=CC1=CC(/C=C/C)=CC=C1
 ***** Serialization of aromatic hydrogens *****
 ***** Reset options check *****

@@ -1,0 +1,106 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    12.600000,
+                    -10.600000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "selected": true,
+                "location": [
+                    13.500000,
+                    -10.100000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    12.600000,
+                    -11.600000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "selected": true,
+                "location": [
+                    14.357657,
+                    -10.614222,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "selected": true,
+                "location": [
+                    13.516500,
+                    -9.100137,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "selected": true,
+                "location": [
+                    14.374157,
+                    -9.614358,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "selected": true,
+                "atoms": [
+                    1,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "selected": true,
+                "atoms": [
+                    1,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "selected": true,
+                "atoms": [
+                    1,
+                    5
+                ]
+            }
+        ]
+    }
+}

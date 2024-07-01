@@ -94,7 +94,7 @@ void SmartTableOutput::flush()
 void SmartTableOutput::setLineFormat(const char* line_format)
 {
     Array<char>& format = _line_formats.push();
-    format.copy(line_format, strlen(line_format));
+    format.copy(line_format, static_cast<int>(strlen(line_format)));
     _line_format_index.top() = _line_formats.size() - 1;
 }
 

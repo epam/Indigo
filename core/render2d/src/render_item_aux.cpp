@@ -25,6 +25,11 @@
 #include "render_internal.h"
 #include <codecvt>
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4996)
+#endif
+
 using namespace indigo;
 
 IMPL_ERROR(RenderItemAuxiliary, "RenderItemAuxiliary");
@@ -316,22 +321,21 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                     {
                         if (first_index == -1)
                         {
-                            first_index = kvp.first;
+                            first_index = static_cast<int>(kvp.first);
                             current_styles = kvp.second;
                             continue;
                         }
-                        second_index = kvp.first;
+                        second_index = static_cast<int>(kvp.first);
 
                         std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
                         std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
 
                         auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(text_item.text).substr(first_index, second_index - first_index));
-
                         ti.text.readString(sub_text.c_str(), true);
                         fillKETStyle(ti, current_styles);
                         _rc.setTextItemSize(ti);
-                        ti.bbp.x = text_origin.x - ti.relpos.x + text_offset_x;
-                        ti.bbp.y = text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y;
+                        ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
+                        ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
                         _rc.drawTextItemText(ti, Vec3f(0, 0, 0), idle);
 
                         text_offset_x += ti.bbsz.x + _settings.boundExtent;
@@ -459,12 +463,16 @@ float RenderItemAuxiliary::_getMaxHeight(const KETTextObject::KETTextLine& tl)
     {
         if (first_index == -1)
         {
-            first_index = kvp.first;
+            first_index = static_cast<int>(kvp.first);
             current_styles = kvp.second;
             continue;
         }
-        second_index = kvp.first;
-        auto sub_text = tl.text.substr(first_index, second_index - first_index);
+        second_index = static_cast<int>(kvp.first);
+
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
+        auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(tl.text).substr(first_index, second_index - first_index));
+
         ti.text.readString(sub_text.c_str(), true);
         fillKETStyle(ti, current_styles);
         _rc.setTextItemSize(ti);
@@ -474,3 +482,7 @@ float RenderItemAuxiliary::_getMaxHeight(const KETTextObject::KETTextLine& tl)
     }
     return sz;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

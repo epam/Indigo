@@ -66,7 +66,7 @@ TautomerSuperStructure::TautomerSuperStructure(Molecule& mol)
     // Detect distances from _atomsEmitBond elements to _atomsAcceptBond elements
     QS_DEF(Array<int>, distancesMatrix);
     distancesMatrix.resize(_atomsEmitBond.size() * _atomsAcceptBond.size());
-    for (int i = 0; i < _atomsEmitBond.size(); i++)
+    for (i = 0; i < _atomsEmitBond.size(); i++)
     {
         int* result = distancesMatrix.ptr() + _atomsAcceptBond.size() * i;
         _findMinDistance(_atomsEmitBond[i], 6, _atomsAcceptBond, result);
@@ -74,7 +74,7 @@ TautomerSuperStructure::TautomerSuperStructure(Molecule& mol)
 
     QS_DEF(Array<int>, attachedBonds);
     attachedBonds.clear();
-    for (int i = 0; i < _atomsEmitBond.size(); i++)
+    for (i = 0; i < _atomsEmitBond.size(); i++)
         for (int j = 0; j < _atomsAcceptBond.size(); j++)
         {
             int v1 = _atomsEmitBond[i];
@@ -91,7 +91,7 @@ TautomerSuperStructure::TautomerSuperStructure(Molecule& mol)
 
     _isBondAttachedArray.resize(edgeEnd());
     _isBondAttachedArray.zerofill();
-    for (int i = 0; i < attachedBonds.size(); i++)
+    for (i = 0; i < attachedBonds.size(); i++)
         _isBondAttachedArray[attachedBonds[i]] = true;
 
     _inside_ctor = false;
@@ -131,7 +131,7 @@ bool TautomerSuperStructure::possibleBondOrder(int idx, int order)
     return Molecule::possibleBondOrder(idx, order);
 }
 
-int TautomerSuperStructure::getSubgraphType(const Array<int>& vertices, const Array<int>& edges)
+int TautomerSuperStructure::getSubgraphType(const Array<int>& /*vertices*/, const Array<int>& edges)
 {
     // For any atoms number of attached bonds must be 0 or 1
 

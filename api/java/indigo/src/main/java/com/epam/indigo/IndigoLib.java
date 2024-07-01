@@ -27,6 +27,8 @@ import com.sun.jna.ptr.PointerByReference;
 public interface IndigoLib extends Library {
     String indigoVersion();
 
+    String indigoVersionInfo();
+
     long indigoAllocSessionId();
 
     void indigoSetSessionId(long id);
@@ -85,6 +87,8 @@ public interface IndigoLib extends Library {
 
     int indigoRemove(int item);
 
+    Pointer indigoGetOriginalFormat(int item);
+
     int indigoCreateMolecule();
 
     int indigoCreateQueryMolecule();
@@ -113,6 +117,30 @@ public interface IndigoLib extends Library {
 
     int indigoLoadSmartsFromBuffer(byte[] buffer, int size);
 
+    int indigoLoadSequence(int source, String seq_type);
+
+    int indigoLoadSequenceFromString(String str, String seq_type);
+
+    int indigoLoadSequenceFromFile(String filename, String seq_type);
+
+    int indigoLoadFasta(int source, String seq_type);
+
+    int indigoLoadFastaFromString(String str, String seq_type);
+
+    int indigoLoadFastaFromFile(String filename, String seq_type);
+
+    int indigoLoadIdt(int source);
+
+    int indigoLoadIdtFromString(String str);
+
+    int indigoLoadIdtFromFile(String filename);
+
+    int indigoLoadHelm(int source);
+
+    int indigoLoadHelmFromString(String str);
+
+    int indigoLoadHelmFromFile(String filename);
+
     int indigoLoadStructureFromString(String str, String params);
 
     int indigoLoadStructureFromFile(String filename, String params);
@@ -121,9 +149,21 @@ public interface IndigoLib extends Library {
 
     int indigoSaveMolfile(int molecule, int output);
 
+    int indigoSaveSequenceToFile(int molecule, String filename);
+
+    int indigoSaveFastaToFile(int molecule, String filename);
+
     int indigoSaveMolfileToFile(int molecule, String filename);
 
     Pointer indigoMolfile(int molecule);
+
+    Pointer indigoSequence(int molecule);
+
+    Pointer indigoFasta(int molecule);
+
+    Pointer indigoIdt(int molecule);
+
+    Pointer indigoHelm(int molecule);
 
     int indigoSaveCml(int object, int output);
 
@@ -139,6 +179,8 @@ public interface IndigoLib extends Library {
     int indigoSaveCdxmlToFile(int object, String filename);
 
     Pointer indigoCdxml(int object);
+
+    Pointer indigoCdxBase64(int object);
 
     int indigoSaveMDLCT(int item, int output);
 
@@ -650,6 +692,10 @@ public interface IndigoLib extends Library {
 
     int indigoUnfoldHydrogens(int item);
 
+    int indigoFoldUnfoldHydrogens(int item);
+
+    int indigoClearXYZ(int item);
+
     int indigoLayout(int object);
 
     int indigoClean2d(int object);
@@ -833,4 +879,6 @@ public interface IndigoLib extends Library {
     int indigoDbgBreakpoint();
 
     Pointer indigoDbgInternalType(int object);
+
+    int indigoCopyRGroups(int molecule_from, int molecule_to);
 }

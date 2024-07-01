@@ -10,7 +10,7 @@ from env_indigo import *  # noqa
 
 indigo = Indigo()
 bingo = Bingo.createDatabaseFile(
-    indigo, joinPathPy("db_gross_mol", __file__), "molecule", ""
+    indigo, joinPathPy("out/db_gross_mol", __file__), "molecule", ""
 )
 
 for idx, mol in enumerate(

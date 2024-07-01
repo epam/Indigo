@@ -49,8 +49,8 @@ AromatizerBase::AromatizerBase(BaseMolecule& molecule)
         SGroup& sgroup = molecule.sgroups.getSGroup(i);
         if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
         {
-            for (int i = 0; i < sgroup.atoms.size(); i++)
-                _inside_superatoms.find_or_insert(sgroup.atoms[i]);
+            for (int j = 0; j < sgroup.atoms.size(); j++)
+                _inside_superatoms.find_or_insert(sgroup.atoms[j]);
         }
     }
 }
@@ -174,13 +174,13 @@ bool AromatizerBase::handleUnsureCycles()
     return is_all_aromatic;
 }
 
-bool AromatizerBase::_cb_check_vertex(Graph& graph, int v_idx, void* context)
+bool AromatizerBase::_cb_check_vertex(Graph& /*graph*/, int v_idx, void* context)
 {
     AromatizerBase* arom = (AromatizerBase*)context;
     return arom->_checkVertex(v_idx);
 }
 
-bool AromatizerBase::_cb_handle_cycle(Graph& graph, const Array<int>& vertices, const Array<int>& edges, void* context)
+bool AromatizerBase::_cb_handle_cycle(Graph& /*graph*/, const Array<int>& vertices, const Array<int>& /*edges*/, void* context)
 {
     AromatizerBase* arom = (AromatizerBase*)context;
     arom->_handleCycle(vertices);
@@ -268,12 +268,12 @@ void AromatizerBase::removeAromaticCycle(int id, const int* cycle, int cycle_len
     }
 }
 
-bool AromatizerBase::_checkVertex(int v_idx)
+bool AromatizerBase::_checkVertex(int /*v_idx*/)
 {
     return true;
 }
 
-void AromatizerBase::_handleAromaticCycle(const int* cycle, int cycle_len)
+void AromatizerBase::_handleAromaticCycle(const int* /*cycle*/, int /*cycle_len*/)
 {
 }
 
@@ -641,7 +641,7 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel(int v_idx)
         }
     }
 
-    if (_options.aromatize_skip_superatoms && _inside_superatoms.size() && _inside_superatoms.find(v_idx) != _inside_superatoms.end())
+    if (_options.aromatize_skip_superatoms && _inside_superatoms.size() && _inside_superatoms.find(v_idx))
         return PiValue(-1, -1);
 
     if (query.isRSite(v_idx))

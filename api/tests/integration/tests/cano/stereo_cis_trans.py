@@ -69,8 +69,12 @@ def testAll(clear_cis_trans):
                     mol2.clearCisTrans()
                 mol2.layout()
                 mol2.markEitherCisTrans()
-                mol2.saveMolfile(joinPathPy("out/out.mol", __file__))
+                # issue #1200 related.
+                # saveMolfile add MRV_IMPLICIT_H Data S-groups for saving the number of implicit H for aromatic atoms.
+                # these Data S-Groups removed in readMolfile.
+                # so generate SMILES before save to avoid differences.
                 cansm2 = mol2.canonicalSmiles()
+                mol2.saveMolfile(joinPathPy("out/out.mol", __file__))
                 mol3 = indigo.loadMoleculeFromFile(
                     joinPathPy("out/out.mol", __file__)
                 )

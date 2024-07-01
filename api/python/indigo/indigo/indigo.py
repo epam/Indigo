@@ -129,68 +129,41 @@ class Indigo:
             IndigoException: if option does not exist
         """
 
+        opt = option.encode()
         if (
-            (
-                type(value1).__name__ == "str"
-                or type(value1).__name__ == "unicode"
+            isinstance(value1, float)
+            and isinstance(value2, float)
+            and isinstance(value3, float)
+        ):
+            IndigoLib.checkResult(
+                self._lib().indigoSetOptionColor(opt, value1, value2, value3)
             )
-            and value2 is None
+        elif (
+            isinstance(value1, int)
+            and isinstance(value2, int)
             and value3 is None
         ):
             IndigoLib.checkResult(
-                self._lib().indigoSetOption(
-                    option.encode(),
-                    value1.encode(),
-                )
+                self._lib().indigoSetOptionXY(opt, value1, value2)
             )
-        elif (
-            type(value1).__name__ == "int"
-            and value2 is None
-            and value3 is None
-        ):
-            IndigoLib.checkResult(
-                self._lib().indigoSetOptionInt(option.encode(), value1)
-            )
-        elif (
-            type(value1).__name__ == "float"
-            and value2 is None
-            and value3 is None
-        ):
-            IndigoLib.checkResult(
-                self._lib().indigoSetOptionFloat(option.encode(), value1)
-            )
-        elif (
-            type(value1).__name__ == "bool"
-            and value2 is None
-            and value3 is None
-        ):
-            value1_b = 0
-            if value1:
-                value1_b = 1
-            IndigoLib.checkResult(
-                self._lib().indigoSetOptionBool(option.encode(), value1_b)
-            )
-        elif (
-            type(value1).__name__ == "int"
-            and value2
-            and type(value2).__name__ == "int"
-            and value3 is None
-        ):
-            IndigoLib.checkResult(
-                self._lib().indigoSetOptionXY(option.encode(), value1, value2)
-            )
-        elif (
-            type(value1).__name__ == "float"
-            and value2
-            and type(value2).__name__ == "float"
-            and value3
-            and type(value3).__name__ == "float"
-        ):
-            IndigoLib.checkResult(
-                self._lib().indigoSetOptionColor(
-                    option.encode(), value1, value2, value3
-                )
-            )
+        elif value2 is None and value3 is None:
+            if isinstance(value1, str):
+                setOpt = self._lib().indigoSetOption
+                value = value1.encode()
+            elif isinstance(value1, int):
+                setOpt = self._lib().indigoSetOptionInt
+                value = value1
+            elif isinstance(value1, float):
+                setOpt = self._lib().indigoSetOptionFloat
+                value = value1
+            elif isinstance(value1, bool):
+                value1 = 0
+                if value1:
+                    value1 = 1
+                setOpt = self._lib().indigoSetOptionBool
+            else:
+                raise IndigoException("bad option")
+            IndigoLib.checkResult(setOpt(opt, value))
         else:
             raise IndigoException("bad option")
 
@@ -313,6 +286,15 @@ class Indigo:
         """
 
         return IndigoLib.checkResultString(self._lib().indigoVersion())
+
+    def versionInfo(self):
+        """Returns Indigo version info
+
+        Returns:
+            str: version info string
+        """
+
+        return IndigoLib.checkResultString(self._lib().indigoVersionInfo())
 
     def countReferences(self):
         """Returns the number of objects in pool
@@ -523,6 +505,178 @@ class Indigo:
             self,
             IndigoLib.checkResult(
                 self._lib().indigoLoadSmartsFromFile(filename.encode())
+            ),
+        )
+
+    def loadSequence(self, string, seq_type):
+        """Loads molecule from DNA/RNA/PEPTIDE sequence string
+
+        Args:
+            string (str): sequence string
+            seq_type (str): sequence type (RNA/DNA/PEPTIDE)
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadSequenceFromString(
+                    string.encode(), seq_type.encode()
+                )
+            ),
+        )
+
+    def loadSequenceFromFile(self, filename, seq_type):
+        """Loads query molecule from file in sequence format
+
+        Args:
+            filename (str): full path to the file with sequence string
+            seq_type (str): sequence type (RNA/DNA/PEPTIDE)
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadSequenceFromFile(
+                    filename.encode(), seq_type.encode()
+                )
+            ),
+        )
+
+    def loadFasta(self, string, seq_type):
+        """Loads molecule from DNA/RNA/PEPTIDE sequence string
+
+        Args:
+            string (str): sequence string
+            seq_type (str): sequence type (RNA/DNA/PEPTIDE)
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadFastaFromString(
+                    string.encode(), seq_type.encode()
+                )
+            ),
+        )
+
+    def loadFastaFromFile(self, filename, seq_type):
+        """Loads query molecule from file in sequence format
+
+        Args:
+            filename (str): full path to the file with sequence string
+            seq_type (str): sequence type (RNA/DNA/PEPTIDE)
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadFastaFromFile(
+                    filename.encode(), seq_type.encode()
+                )
+            ),
+        )
+
+    def loadIdt(self, string):
+        """Loads molecule from IDT string
+
+        Args:
+            string (str): sequence string
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadIdtFromString(string.encode())
+            ),
+        )
+
+    def loadIdtFromFile(self, filename):
+        """Loads query molecule from file in IDT sequence format
+
+        Args:
+            filename (str): full path to the file with sequence string
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadIdtFromFile(filename.encode())
+            ),
+        )
+
+    def loadHelm(self, string):
+        """Loads molecule from HELM string
+
+        Args:
+            string (str): sequence string
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadHelmFromString(string.encode())
+            ),
+        )
+
+    def loadHelmFromFile(self, filename):
+        """Loads query molecule from file in HELM sequence format
+
+        Args:
+            filename (str): full path to the file with sequence string
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadHelmFromFile(filename.encode())
             ),
         )
 

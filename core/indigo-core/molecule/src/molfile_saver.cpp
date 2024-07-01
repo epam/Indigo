@@ -24,6 +24,7 @@
 
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
+#include "layout/sequence_layout.h"
 #include "math/algebra.h"
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
@@ -33,6 +34,7 @@
 #include "molecule/molecule_savers.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_stereocenters.h"
+#include "molecule/monomer_commons.h"
 #include "molecule/query_molecule.h"
 
 using namespace indigo;
@@ -41,7 +43,7 @@ IMPL_ERROR(MolfileSaver, "molfile saver");
 
 CP_DEF(MolfileSaver);
 
-MolfileSaver::MolfileSaver(Output& output) : _output(output), CP_INIT, TL_CP_GET(_atom_mapping), TL_CP_GET(_bond_mapping)
+MolfileSaver::MolfileSaver(Output& output) : _output(output), CP_INIT, TL_CP_GET(_atom_mapping), TL_CP_GET(_bond_mapping), add_mrv_sma(true)
 {
     mode = MODE_AUTO;
     no_chiral = false;
@@ -80,6 +82,32 @@ void convert_xyz_to_string(Vec3f& xyz, std::stringstream& coords)
     write_c(xyz.z, coords);
 }
 
+/*
+ * Remove added implicit sgroups
+ */
+void _removeImplicitSGroups(BaseMolecule& mol, std::list<int>& implicit_sgroups_indexes)
+{
+    for (int idx : implicit_sgroups_indexes)
+    {
+        SGroup& sg = mol.sgroups.getSGroup(idx);
+        if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
+        {
+            DataSGroup& dsg = static_cast<DataSGroup&>(sg);
+            if (dsg.isMrv_implicit())
+            {
+                mol.sgroups.remove(idx);
+            }
+            else
+            {
+                throw MolfileSaver::Error("internal: wanted mrv_implicit sgroup but got other");
+            }
+        }
+        else
+        {
+            throw MolfileSaver::Error("internal: wanted data sgroup but got other");
+        }
+    }
+}
 void MolfileSaver::saveBaseMolecule(BaseMolecule& mol)
 {
     _saveMolecule(mol, mol.isQueryMolecule());
@@ -93,6 +121,80 @@ void MolfileSaver::saveMolecule(Molecule& mol)
 void MolfileSaver::saveQueryMolecule(QueryMolecule& mol)
 {
     _saveMolecule(mol, true);
+}
+
+void MolfileSaver::_handleMonomers(BaseMolecule& mol)
+{
+    SequenceLayout sl(mol);
+    std::vector<std::deque<int>> sequences;
+    sl.sequenceExtract(sequences);
+    const auto& directions_map = sl.directionsMap();
+    _calculateSEQIDs(mol, directions_map, sequences);
+    // MonomersToSgroupFilter mon_filter(mol, directions_map);
+    // mol.transformTemplatesToSuperatoms(mon_filter);
+}
+
+void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::map<int, int>>& directions_map, std::vector<std::deque<int>>& sequences)
+{
+    for (auto& sequence : sequences)
+    {
+        int seq_id = 1;
+        for (auto atom_idx : sequence)
+        {
+            if (mol.isTemplateAtom(atom_idx))
+            {
+                std::string mon_class = mol.getTemplateAtomClass(atom_idx);
+                if (isBackboneClass(mon_class) && mon_class != kMonomerClassCHEM) // No SEQID for chem
+                {
+                    mol.asMolecule().setTemplateAtomSeqid(atom_idx, seq_id);
+                    if (mon_class == kMonomerClassSUGAR)
+                    {
+                        // set seq_id for base
+                        std::string seq_name;
+                        auto& dirs = directions_map[atom_idx];
+                        if (dirs.size())
+                        {
+                            auto br_it = dirs.find(kBranchAttachmentPointIdx);
+                            if (br_it != dirs.end() && mol.isTemplateAtom(br_it->second))
+                            {
+                                std::string br_class = mol.getTemplateAtomClass(br_it->second);
+                                seq_name = mol.getTemplateAtom(br_it->second);
+                                if (br_class == kMonomerClassBASE)
+                                {
+                                    mol.asMolecule().setTemplateAtomSeqid(br_it->second, seq_id);
+                                    mol.asMolecule().setTemplateAtomSeqName(br_it->second, seq_name.c_str());
+                                    mol.asMolecule().setTemplateAtomSeqName(atom_idx, seq_name.c_str());
+                                }
+                            }
+                            if (seq_name.size())
+                            {
+                                br_it = dirs.find(kRightAttachmentPointIdx);
+                                if (br_it != dirs.end() && mol.isTemplateAtom(br_it->second))
+                                {
+                                    std::string br_class = mol.getTemplateAtomClass(br_it->second);
+                                    if (br_class == kMonomerClassPHOSPHATE)
+                                        mol.asMolecule().setTemplateAtomSeqName(br_it->second, seq_name.c_str());
+                                }
+                            }
+                        }
+                    }
+                    else if (isAminoAcidClass(mon_class) || isNucleotideClass(mon_class) || mon_class == kMonomerClassPHOSPHATE)
+                        seq_id++;
+                }
+            }
+        }
+    }
+}
+
+void MolfileSaver::_handleCIP(BaseMolecule& mol)
+{
+    MoleculeCIPCalculator mcc;
+    mcc.removeCIPSgroups(mol); // remove old CIP-Sroups
+
+    if (add_stereo_desc && mcc.addCIPStereoDescriptors(mol))
+    {
+        mcc.addCIPSgroups(mol);
+    }
 }
 
 void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
@@ -112,14 +214,8 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
     {
         // auto-detect the format: save to v3000 molfile only
         // if v2000 is not enough
-        _v2000 = true;
-
-        if (mol.hasHighlighting())
-            _v2000 = false;
-        else if (!mol.stereocenters.haveAllAbsAny() && !mol.stereocenters.haveAllAndAny())
-            _v2000 = false;
-        else if (mol.vertexCount() > 999 || mol.edgeCount() > 999)
-            _v2000 = false;
+        _v2000 = !(mol.hasHighlighting() || mol.stereocenters.haveEnhancedStereocenter() ||
+                   (mol.vertexCount() > 999 || mol.edgeCount() > 999 || mol.tgroups.getTGroupCount()));
     }
 
     bool rg2000 = (_v2000 && mol.rgroups.getRGroupCount() > 0);
@@ -146,9 +242,6 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
         _output.writeStringCR("$END HDR");
         _output.writeStringCR("$CTAB");
     }
-
-    MoleculeCIPCalculator mcc;
-    mcc.updateCIPStereoDescriptors(mol, add_stereo_desc);
 
     if (_v2000)
     {
@@ -338,24 +431,46 @@ void MolfileSaver::_writeMultiString(Output& output, const char* string, int len
 
 void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 {
+    _handleCIP(mol);
+    if (mol.tgroups.getTGroupCount())
+        _handleMonomers(mol);
+
     QueryMolecule* qmol = 0;
 
     if (query)
         qmol = (QueryMolecule*)(&mol);
 
-    output.writeStringCR("M  V30 BEGIN CTAB");
-    output.printfCR("M  V30 COUNTS %d %d %d 0 0", mol.vertexCount(), mol.edgeCount(), mol.countSGroups());
-    output.writeStringCR("M  V30 BEGIN ATOM");
-
     int i;
     int iw = 1;
     QS_DEF(Array<char>, buf);
+    std::list<int> implicit_sgroups_indexes;
 
     _atom_mapping.clear_resize(mol.vertexEnd());
     _bond_mapping.clear_resize(mol.edgeEnd());
 
     for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i), iw++)
         _atom_mapping[i] = iw;
+
+    if (add_implicit_h && qmol == 0)
+    {
+        for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
+        {
+            int atom_number = mol.getAtomNumber(i);
+            int charge = mol.getAtomCharge(i);
+            int hcount = MoleculeSavers::getHCount(mol, i, atom_number, charge);
+            if (Molecule::shouldWriteHCount(mol.asMolecule(), i) && hcount > 0)
+            {
+                int sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+                implicit_sgroups_indexes.push_front(sg_idx);
+                DataSGroup& sgroup = static_cast<DataSGroup&>(mol.sgroups.getSGroup(sg_idx));
+                sgroup.setMrv_implicit(i, hcount);
+            }
+        }
+    }
+
+    output.writeStringCR("M  V30 BEGIN CTAB");
+    output.printfCR("M  V30 COUNTS %d %d %d 0 0", mol.vertexCount(), mol.edgeCount(), mol.countSGroups());
+    output.writeStringCR("M  V30 BEGIN ATOM");
 
     std::stringstream coords;
     for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
@@ -365,15 +480,16 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         ArrayOutput out(buf);
 
         out.printf("%d ", _atom_mapping[i]);
-        QS_DEF(Array<int>, list);
+        std::vector<std::unique_ptr<QueryMolecule::Atom>> list;
+        std::map<int, std::unique_ptr<QueryMolecule::Atom>> properties;
         int query_atom_type;
 
-        if (atom_number == ELEM_H && isotope == 2)
+        if (atom_number == ELEM_H && isotope == DEUTERIUM)
         {
             out.writeChar('D');
             isotope = 0;
         }
-        else if (atom_number == ELEM_H && isotope == 3)
+        else if (atom_number == ELEM_H && isotope == TRITIUM)
         {
             out.writeChar('T');
             isotope = 0;
@@ -388,7 +504,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         {
             _writeAtomLabel(out, atom_number);
         }
-        else if (qmol != 0 && (query_atom_type = QueryMolecule::parseQueryAtom(*qmol, i, list)) != -1)
+        else if (qmol != 0 && (query_atom_type = QueryMolecule::parseQueryAtomSmarts(*qmol, i, list, properties)) != -1)
         {
             if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
                 out.writeChar('A');
@@ -408,17 +524,23 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 out.writeString("MH");
             else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
             {
-                int k;
-
                 if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
                     out.writeString("NOT");
 
                 out.writeChar('[');
-                for (k = 0; k < list.size(); k++)
+
+                bool not_first = false;
+                for (auto& qatom : list)
                 {
-                    if (k > 0)
+                    if (not_first)
                         out.writeChar(',');
-                    _writeAtomLabel(out, list[k]);
+                    else
+                        not_first = true;
+
+                    if (qatom->type == QueryMolecule::ATOM_NUMBER)
+                        _writeAtomLabel(out, qatom->value_max);
+                    else if (qatom->type == QueryMolecule::ATOM_PSEUDO)
+                        out.writeString(qatom->alias.ptr());
                 }
                 out.writeChar(']');
             }
@@ -455,32 +577,13 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         if ((mol.isQueryMolecule() && charge != CHARGE_UNKNOWN) || (!mol.isQueryMolecule() && charge != 0))
             out.printf(" CHG=%d", charge);
 
-        int hcount = MoleculeSavers::getHCount(mol, i, atom_number, charge);
-
         if (qmol != 0)
         {
+            int hcount = MoleculeSavers::getHCount(mol, i, atom_number, charge);
             if (hcount > 0)
                 out.printf(" HCOUNT=%d", hcount);
             else if (hcount == 0)
                 out.printf(" HCOUNT=-1");
-        }
-        else if (add_implicit_h && Molecule::shouldWriteHCount(mol.asMolecule(), i) && hcount > 0)
-        {
-            int sg_idx;
-
-            sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
-            DataSGroup& sgroup = (DataSGroup&)mol.sgroups.getSGroup(sg_idx);
-
-            sgroup.atoms.push(i);
-
-            QS_DEF(Array<char>, tmp_buf);
-            ArrayOutput tmp_out(tmp_buf);
-            tmp_out.printf("IMPL_H%d", hcount);
-            tmp_buf.push(0);
-            sgroup.data.readString(tmp_buf.ptr(), true);
-
-            sgroup.name.readString("MRV_IMPLICIT_H", true);
-            sgroup.detached = true;
         }
 
         if (radical > 0)
@@ -527,22 +630,24 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
         if (mol.isTemplateAtom(i))
         {
+            std::string tclass;
             if (mol.getTemplateAtomClass(i) != 0 && strlen(mol.getTemplateAtomClass(i)) > 0)
-                out.printf(" CLASS=%s", mol.getTemplateAtomClass(i));
+            {
+                tclass = mol.getTemplateAtomClass(i);
+                // convert CHEM to LINKER for BIOVIA
+                out.printf(" CLASS=%s", tclass == kMonomerClassCHEM ? kMonomerClassLINKER : tclass.c_str());
+            }
 
-            if (mol.getTemplateAtomSeqid(i) != -1)
+            if (mol.getTemplateAtomSeqid(i) != -1 && tclass != kMonomerClassCHEM) // No SEQID for chem
                 out.printf(" SEQID=%d", mol.getTemplateAtomSeqid(i));
+
+            // if (mol.getTemplateAtomSeqName(i) && strlen(mol.getTemplateAtomSeqName(i)))
+            //    out.printf(" SEQNAME=%s", mol.getTemplateAtomSeqName(i));
 
             if (mol.template_attachment_points.size() > 0)
             {
-                int ap_count = 0;
-                for (int j = mol.template_attachment_points.begin(); j != mol.template_attachment_points.end(); j = mol.template_attachment_points.next(j))
-                {
-                    BaseMolecule::TemplateAttPoint& ap = mol.template_attachment_points.at(j);
-                    if (ap.ap_occur_idx == i)
-                        ap_count++;
-                }
-                if (ap_count > 0)
+                int ap_count = mol.getTemplateAtomAttachmentPointsCount(i);
+                if (ap_count)
                 {
                     out.printf(" ATTCHORD=(%d", ap_count * 2);
                     for (int j = mol.template_attachment_points.begin(); j != mol.template_attachment_points.end(); j = mol.template_attachment_points.next(j))
@@ -586,7 +691,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 out.printf(" SUBST=%d", subst);
             int rbc;
             if (MoleculeSavers::getRingBondCountFlagValue(*qmol, i, rbc))
-                out.printf(" RBCNT=%d", rbc);
+                out.printf(" RBCNT=%d", rbc > MAX_RING_BOND_COUNT ? MAX_RING_BOND_COUNT : rbc);
         }
 
         _writeMultiString(output, buf.ptr(), buf.size());
@@ -609,14 +714,8 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         {
             int qb = QueryMolecule::getQueryBondType(qmol->getBond(i));
 
-            if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
-                bond_order = 5;
-            else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
-                bond_order = 6;
-            else if (qb == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC)
-                bond_order = 7;
-            else if (qb == QueryMolecule::QUERY_BOND_ANY)
-                bond_order = 8;
+            if (qb == _BOND_SINGLE_OR_DOUBLE || qb == _BOND_SINGLE_OR_AROMATIC || qb == _BOND_DOUBLE_OR_AROMATIC || qb == _BOND_ANY)
+                bond_order = qb;
         }
 
         if (bond_order < 0)
@@ -624,9 +723,9 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
         if (bond_order == BOND_ZERO)
         {
-            bond_order = 9;
+            bond_order = _BOND_COORDINATION;
             if ((mol.getAtomNumber(edge.beg) == ELEM_H) || (mol.getAtomNumber(edge.end) == ELEM_H))
-                bond_order = 10;
+                bond_order = _BOND_HYDROGEN;
         }
 
         out.printf("%d %d %d %d", iw, bond_order, _atom_mapping[edge.beg], _atom_mapping[edge.end]);
@@ -784,7 +883,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
             {
-                Superatom& sup = (Superatom&)sgroup;
+                Superatom& sup = static_cast<Superatom&>(sgroup);
                 if (sup.bond_connections.size() > 0)
                 {
                     for (int j = 0; j < sup.bond_connections.size(); j++)
@@ -794,10 +893,16 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     }
                 }
                 if (sup.subscript.size() > 1)
-                    out.printf(" LABEL=%s", sup.subscript.ptr());
+                {
+                    if (sup.subscript.find(' ') > -1)
+                        out.printf(" LABEL=\"%s\"", sup.subscript.ptr());
+                    else
+                        out.printf(" LABEL=%s", sup.subscript.ptr());
+                }
+                // convert CHEM to LINKER for BIOVIA
                 if (sup.sa_class.size() > 1)
-                    out.printf(" CLASS=%s", sup.sa_class.ptr());
-                if (sup.contracted == 0)
+                    out.printf(" CLASS=%s", sup.sa_class.ptr() == std::string(kMonomerClassCHEM) ? kMonomerClassLINKER : sup.sa_class.ptr());
+                if (sup.contracted == DisplayOption::Expanded)
                     out.printf(" ESTATE=E");
                 if (sup.attachment_points.size() > 0)
                 {
@@ -820,7 +925,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
             {
-                DataSGroup& dsg = (DataSGroup&)sgroup;
+                DataSGroup& dsg = static_cast<DataSGroup&>(sgroup);
 
                 const char* name = dsg.name.ptr();
                 if (name != 0 && strlen(name) > 0)
@@ -897,7 +1002,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
             {
-                RepeatingUnit& ru = (RepeatingUnit&)sgroup;
+                RepeatingUnit& ru = static_cast<RepeatingUnit&>(sgroup);
                 if (ru.connectivity == SGroup::HEAD_TO_HEAD)
                     out.printf(" CONNECT=HH");
                 else if (ru.connectivity == SGroup::HEAD_TO_TAIL)
@@ -905,12 +1010,17 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 else
                     out.printf(" CONNECT=EU");
                 if (ru.subscript.size() > 1)
-                    out.printf(" LABEL=%s", ru.subscript.ptr());
+                {
+                    if (ru.subscript.find(' ') > -1)
+                        out.printf(" LABEL=\"%s\"", ru.subscript.ptr());
+                    else
+                        out.printf(" LABEL=%s", ru.subscript.ptr());
+                }
                 _writeMultiString(output, buf.ptr(), buf.size());
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
             {
-                MultipleGroup& mg = (MultipleGroup&)sgroup;
+                MultipleGroup& mg = static_cast<MultipleGroup&>(sgroup);
                 if (mg.parent_atoms.size() > 0)
                 {
                     out.printf(" PATOMS=(%d", mg.parent_atoms.size());
@@ -928,6 +1038,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             }
         }
         output.writeStringCR("M  V30 END SGROUP");
+        _removeImplicitSGroups(mol, implicit_sgroups_indexes);
     }
 
     output.writeStringCR("M  V30 END CTAB");
@@ -1043,14 +1154,23 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     TGroup& tgroup = mol.tgroups.getTGroup(tg_idx);
+    std::string natreplace;
+    if (tgroup.tgroup_natreplace.size() > 0)
+        natreplace = tgroup.tgroup_natreplace.ptr();
 
     out.printf("TEMPLATE %d ", tgroup.tgroup_id);
+    // convert CHEM to LINKER for BIOVIA
     if (tgroup.tgroup_class.size() > 0)
-        out.printf("%s/", tgroup.tgroup_class.ptr());
+        out.printf("%s/", tgroup.tgroup_class.ptr() == std::string(kMonomerClassCHEM) ? kMonomerClassLINKER : tgroup.tgroup_class.ptr());
     if (tgroup.tgroup_name.size() > 0)
         out.printf("%s", tgroup.tgroup_name.ptr());
     if (tgroup.tgroup_alias.size() > 0)
-        out.printf("/%s", tgroup.tgroup_alias.ptr());
+    {
+        if (natreplace == "AA/X")
+            out.printf("/");
+        else
+            out.printf(isAminoAcidClass(tgroup.tgroup_class.ptr()) ? "/%s/" : "/%s", tgroup.tgroup_alias.ptr());
+    }
     if (tgroup.tgroup_natreplace.size() > 0)
         out.printf(" NATREPLACE=%s", tgroup.tgroup_natreplace.ptr());
     if (tgroup.tgroup_comment.size() > 0)
@@ -1063,7 +1183,8 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
 
 void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 {
-    QueryMolecule* qmol = 0;
+    _handleCIP(mol);
+    QueryMolecule* qmol = nullptr;
 
     if (query)
         qmol = (QueryMolecule*)(&mol);
@@ -1077,6 +1198,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
     QS_DEF(Array<int>, unsaturated);
     QS_DEF(Array<int[2]>, substitution_count);
     QS_DEF(Array<int[2]>, ring_bonds);
+    QS_DEF(Array<int>, aliases);
+    std::list<int> implicit_sgroups_indexes;
 
     _atom_mapping.clear_resize(mol.vertexEnd());
     _bond_mapping.clear_resize(mol.edgeEnd());
@@ -1089,6 +1212,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
     unsaturated.clear();
     substitution_count.clear();
     ring_bonds.clear();
+    aliases.clear();
 
     int iw = 1;
 
@@ -1106,6 +1230,11 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
         if (!mol.isRSite(i) && !mol.isPseudoAtom(i))
             atom_radical = mol.getAtomRadical_NoThrow(i, 0);
+
+        if (mol.isAlias(i))
+        {
+            aliases.push(i);
+        }
 
         if (mol.isRSite(i))
         {
@@ -1133,9 +1262,9 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             if (qmol == 0)
                 throw Error("internal: atom number = -1, but qmol == 0");
 
-            QS_DEF(Array<int>, list);
-
-            int query_atom_type = QueryMolecule::parseQueryAtom(*qmol, i, list);
+            std::vector<std::unique_ptr<QueryMolecule::Atom>> list;
+            std::map<int, std::unique_ptr<QueryMolecule::Atom>> properties;
+            int query_atom_type = QueryMolecule::parseQueryAtomSmarts(*qmol, i, list, properties);
 
             if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
                 label[0] = 'A';
@@ -1174,9 +1303,9 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 label[0] = 'A';
             // throw Error("error saving atom #%d: unsupported query atom", i);
         }
-        else if (atom_number == ELEM_H && atom_isotope == 2)
+        else if (atom_number == ELEM_H && atom_isotope == DEUTERIUM)
             label[0] = 'D';
-        else if (atom_number == ELEM_H && atom_isotope == 3)
+        else if (atom_number == ELEM_H && atom_isotope == TRITIUM)
             label[0] = 'T';
         else
         {
@@ -1236,7 +1365,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             {
                 int* r = ring_bonds.push();
                 r[0] = i;
-                r[1] = rbc;
+                r[1] = rbc > MAX_RING_BOND_COUNT ? MAX_RING_BOND_COUNT : rbc;
             }
             int subst;
             if (MoleculeSavers::getSubstitutionCountFlagValue(*qmol, i, subst))
@@ -1262,19 +1391,9 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             int sg_idx;
 
             sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
-            DataSGroup& sgroup = (DataSGroup&)mol.sgroups.getSGroup(sg_idx);
-
-            sgroup.atoms.push(i);
-
-            QS_DEF(Array<char>, tmp_buf);
-            ArrayOutput tmp_out(tmp_buf);
-            tmp_buf.clear();
-            tmp_out.printf("IMPL_H%d", hydrogens_count);
-            tmp_buf.push(0);
-            sgroup.data.readString(tmp_buf.ptr(), true);
-
-            sgroup.name.readString("MRV_IMPLICIT_H", true);
-            sgroup.detached = true;
+            implicit_sgroups_indexes.push_front(sg_idx);
+            DataSGroup& sgroup = static_cast<DataSGroup&>(mol.sgroups.getSGroup(sg_idx));
+            sgroup.setMrv_implicit(i, hydrogens_count);
 
             hydrogens_count = 0;
         }
@@ -1313,14 +1432,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         {
             int qb = QueryMolecule::getQueryBondType(qmol->getBond(i));
 
-            if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_DOUBLE)
-                bond_order = 5;
-            else if (qb == QueryMolecule::QUERY_BOND_SINGLE_OR_AROMATIC)
-                bond_order = 6;
-            else if (qb == QueryMolecule::QUERY_BOND_DOUBLE_OR_AROMATIC)
-                bond_order = 7;
-            else if (qb == QueryMolecule::QUERY_BOND_ANY)
-                bond_order = 8;
+            if (qb == _BOND_SINGLE_OR_DOUBLE || qb == _BOND_SINGLE_OR_AROMATIC || qb == _BOND_DOUBLE_OR_AROMATIC || qb == _BOND_ANY)
+                bond_order = qb;
         }
 
         if (bond_order < 0)
@@ -1455,9 +1568,9 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
     for (i = 0; i < atom_lists.size(); i++)
     {
         int atom_idx = atom_lists[i];
-        QS_DEF(Array<int>, list);
-
-        int query_atom_type = QueryMolecule::parseQueryAtom(*qmol, atom_idx, list);
+        std::vector<std::unique_ptr<QueryMolecule::Atom>> list;
+        std::map<int, std::unique_ptr<QueryMolecule::Atom>> properties;
+        int query_atom_type = QueryMolecule::parseQueryAtomSmarts(*qmol, atom_idx, list, properties);
 
         if (query_atom_type != QueryMolecule::QUERY_ATOM_LIST && query_atom_type != QueryMolecule::QUERY_ATOM_NOTLIST)
             throw Error("internal: atom list not recognized");
@@ -1467,18 +1580,35 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
         output.printf("M  ALS %3d%3d %c ", _atom_mapping[atom_idx], list.size(), query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST ? 'T' : 'F');
 
-        int j;
-
-        for (j = 0; j < list.size(); j++)
+        for (auto& qatom : list)
         {
-            char c1 = ' ', c2 = ' ';
-            const char* str = Element::toString(list[j]);
+            if (qatom->type == QueryMolecule::ATOM_NUMBER)
+            {
+                char c1 = ' ', c2 = ' ';
+                const char* str = Element::toString(qatom->value_max);
 
-            c1 = str[0];
-            if (str[1] != 0)
-                c2 = str[1];
+                c1 = str[0];
+                if (str[1] != 0)
+                    c2 = str[1];
 
-            output.printf("%c%c  ", c1, c2);
+                output.printf("%c%c  ", c1, c2);
+            }
+            else if (qatom->type == QueryMolecule::ATOM_PSEUDO)
+            {
+                const char* str = qatom->alias.ptr();
+                constexpr int SYMBOL_WIDTH = 4;
+                if (strlen(str) > 4)
+                {
+                    for (int k = 0; k < SYMBOL_WIDTH; k++)
+                        output.writeChar(str[k]);
+                }
+                else
+                {
+                    output.writeString(str);
+                    for (auto k = strlen(str); k < SYMBOL_WIDTH; k++)
+                        output.writeChar(' ');
+                }
+            }
         }
         output.writeCR();
     }
@@ -1490,17 +1620,21 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         output.writeCR();
     }
 
-    for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+    for (i = 0; i < aliases.size(); i++)
     {
-        SGroup& sgroup = mol.sgroups.getSGroup(i);
-        if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+        output.printfCR("A  %3d", _atom_mapping[aliases[i]]);
+        output.writeString(mol.getAlias(aliases[i]));
+        output.writeCR();
+    }
+
+    if (qmol && add_mrv_sma)
+    {
+        for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
         {
-            DataSGroup& dsg = (DataSGroup&)sgroup;
-            if ((dsg.name.size() > 11) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0) && (dsg.atoms.size() > 0) && dsg.data.size() > 0)
+            std::string mrv_sma = QueryMolecule::getMolMrvSmaExtension(*qmol, i);
+            if (mrv_sma.length() > 0)
             {
-                output.printfCR("A  %3d", _atom_mapping[dsg.atoms[0]]);
-                output.writeString(dsg.data.ptr());
-                output.writeCR();
+                output.printfCR("M  MRV SMA %3u [%s]", i + 1, mrv_sma.c_str());
             }
         }
     }
@@ -1515,13 +1649,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
     for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
     {
-        SGroup& sgroup = mol.sgroups.getSGroup(i);
-        if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
-        {
-            DataSGroup& dsg = (DataSGroup&)sgroup;
-            if ((dsg.name.size() > 11) && (strncmp(dsg.name.ptr(), "INDIGO_ALIAS", 12) == 0))
-                continue;
-        }
+        /*SGroup& sgroup =*/std::ignore = mol.sgroups.getSGroup(i);
         sgroup_ids.push(i);
     }
 
@@ -1593,14 +1721,6 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
         {
             SGroup& sgroup = mol.sgroups.getSGroup(i);
-
-            if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
-            {
-                DataSGroup& datasgroup = (DataSGroup&)sgroup;
-                if ((datasgroup.name.size() > 11) && (strncmp(datasgroup.name.ptr(), "INDIGO_ALIAS", 12) == 0))
-                    continue;
-            }
-
             for (j = 0; j < sgroup.atoms.size(); j += 8)
             {
                 int k;
@@ -1623,7 +1743,12 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 Superatom& superatom = (Superatom&)sgroup;
 
                 if (superatom.subscript.size() > 1)
-                    output.printfCR("M  SMT %3d %s", superatom.original_group, superatom.subscript.ptr());
+                {
+                    if (superatom.subscript.find(' ') > -1)
+                        output.printfCR("M  SMT %3d \"%s\"", superatom.original_group, superatom.subscript.ptr());
+                    else
+                        output.printfCR("M  SMT %3d %s", superatom.original_group, superatom.subscript.ptr());
+                }
                 if (superatom.sa_class.size() > 1)
                     output.printfCR("M  SCL %3d %s", superatom.original_group, superatom.sa_class.ptr());
                 if (superatom.bond_connections.size() > 0)
@@ -1634,7 +1759,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                                         superatom.bond_connections[j].bond_dir.x, superatom.bond_connections[j].bond_dir.y);
                     }
                 }
-                if (superatom.contracted == 0)
+                if (superatom.contracted == DisplayOption::Expanded)
                 {
                     output.printfCR("M  SDS EXP  1 %3d", superatom.original_group);
                 }
@@ -1643,7 +1768,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                     bool next_line = true;
                     int nrem = superatom.attachment_points.size();
                     int k = 0;
-                    for (int j = superatom.attachment_points.begin(); j < superatom.attachment_points.end(); j = superatom.attachment_points.next(j))
+                    for (j = superatom.attachment_points.begin(); j < superatom.attachment_points.end(); j = superatom.attachment_points.next(j))
                     {
                         if (next_line)
                         {
@@ -1654,8 +1779,11 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                         int leave_idx = 0;
                         if (superatom.attachment_points[j].lvidx > -1)
                             leave_idx = _atom_mapping[superatom.attachment_points[j].lvidx];
-                        output.printf(" %3d %3d %c%c", _atom_mapping[superatom.attachment_points[j].aidx], leave_idx, superatom.attachment_points[j].apid[0],
-                                      superatom.attachment_points[j].apid[1]);
+                        const int KApIdNumPlaces = 2;
+                        std::string apid_str = superatom.attachment_points[j].apid.ptr();
+                        if (apid_str.size() < KApIdNumPlaces)
+                            apid_str = std::string(KApIdNumPlaces - apid_str.size(), ' ') + apid_str;
+                        output.printf(" %3d %3d %.*s", _atom_mapping[superatom.attachment_points[j].aidx], leave_idx, KApIdNumPlaces, apid_str.c_str());
                         k++;
                         nrem--;
                         if ((k == 6) || (nrem == 0))
@@ -1672,14 +1800,16 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 RepeatingUnit& sru = (RepeatingUnit&)sgroup;
 
                 if (sru.subscript.size() > 1)
-                    output.printfCR("M  SMT %3d %s", sru.original_group, sru.subscript.ptr());
+                {
+                    if (sru.subscript.find(' ') > -1)
+                        output.printfCR("M  SMT %3d \"%s\"", sru.original_group, sru.subscript.ptr());
+                    else
+                        output.printfCR("M  SMT %3d %s", sru.original_group, sru.subscript.ptr());
+                }
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& datasgroup = (DataSGroup&)sgroup;
-
-                if ((datasgroup.name.size() > 11) && (strncmp(datasgroup.name.ptr(), "INDIGO_ALIAS", 12) == 0))
-                    continue;
 
                 output.printf("M  SDT %3d ", datasgroup.original_group);
 
@@ -1706,7 +1836,6 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 char* ptr = datasgroup.data.ptr();
                 while (k > 0)
                 {
-                    int j;
                     for (j = 0; j < 69 && j < k; j++)
                         if (ptr[j] == '\n')
                             break;
@@ -1763,6 +1892,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             }
         }
     }
+    _removeImplicitSGroups(mol, implicit_sgroups_indexes);
 }
 
 void MolfileSaver::_writeFormattedString(Output& output, Array<char>& str, int length)
@@ -1891,7 +2021,7 @@ void MolfileSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list)
 int MolfileSaver::_getStereocenterParity(BaseMolecule& mol, int idx)
 {
     int type = mol.stereocenters.getType(idx);
-    if (type == 0)
+    if (type == 0 || !mol.stereocenters.isTetrahydral(idx))
         return 0;
     if (type == MoleculeStereocenters::ATOM_ANY)
         return 3;
@@ -2032,9 +2162,7 @@ void MolfileSaver::_writeAttachmentValues2000(Output& output, BaseMolecule& frag
 bool MolfileSaver::_checkAttPointOrder(BaseMolecule& mol, int rsite)
 {
     const Vertex& vertex = mol.getVertex(rsite);
-    int i;
-
-    for (i = 0; i < vertex.degree() - 1; i++)
+    for (int i = 0; i < vertex.degree() - 1; i++)
     {
         int cur = mol.getRSiteAttachmentPointByOrder(rsite, i);
         int next = mol.getRSiteAttachmentPointByOrder(rsite, i + 1);
@@ -2073,5 +2201,25 @@ bool MolfileSaver::_hasNeighborEitherBond(BaseMolecule& mol, int edge_idx)
     for (k = end.neiBegin(); k != end.neiEnd(); k = end.neiNext(k))
         if (mol.getBondDirection2(edge.end, end.neiVertex(k)) == BOND_EITHER)
             return true;
+    return false;
+}
+
+bool MolfileSaver::MonomersToSgroupFilter::operator()(int atom_idx) const
+{
+    std::string mon_class = _mol.getTemplateAtomClass(atom_idx);
+    _mol.getTemplateAtomAttachmentPointsCount(atom_idx);
+    if (mon_class == kMonomerClassCHEM)
+        return true;
+
+    if (isAminoAcidClass(mon_class))
+    {
+        auto& dirs = _directions_map[atom_idx];
+        if (dirs.size())
+        {
+            // if R3 is in use, convert the template to S-Group
+            if (dirs.find(kBranchAttachmentPointIdx) != dirs.end())
+                return true;
+        }
+    }
     return false;
 }

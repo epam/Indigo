@@ -18,6 +18,11 @@
 
 #pragma once
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include <atomic>
 #include <safe_ptr.h>
 
@@ -148,3 +153,7 @@ namespace indigo
         qword _start_time, _dt;
     };
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

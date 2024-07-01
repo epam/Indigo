@@ -61,7 +61,7 @@ void MoleculeChainFingerprintBuilder::process()
     gse.processChains();
 }
 
-void MoleculeChainFingerprintBuilder::_handleChain(Graph& graph, int size, const int* vertices, const int* edges, void* context)
+void MoleculeChainFingerprintBuilder::_handleChain(Graph& /* graph */, int size, const int* vertices, const int* edges, void* context)
 {
     MoleculeChainFingerprintBuilder* self = (MoleculeChainFingerprintBuilder*)context;
     QS_DEF(Array<char>, str);
@@ -112,7 +112,7 @@ void MoleculeChainFingerprintBuilder::_handleChain(Graph& graph, int size, const
 
     seed = std::min(seed1, seed2);
 
-    for (int i = 0; i < self->_parameters.bits_per_chain; i++)
+    for (i = 0; i < self->_parameters.bits_per_chain; i++)
     {
         seed = seed * 0x8088405 + 1;
 

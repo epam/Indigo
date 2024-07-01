@@ -317,7 +317,7 @@ async def test_a_wildcard_search(
         resource_loader("molecules/composition1.mol")
     )
     async with a_elastic_repository_molecule() as rep:
-        rep.index_record(IndigoRecordMolecule(indigo_object=mol))
+        await rep.index_record(IndigoRecordMolecule(indigo_object=mol))
     async with a_elastic_repository_molecule() as rep:
         result = rep.filter(name=WildcardQuery("Comp*"))
         async for item in result:
@@ -330,7 +330,6 @@ def test_custom_fields(
     loaded_sdf: IndigoRecordMolecule,
     resource_loader,
 ):
-
     mol = indigo_fixture.loadMoleculeFromFile(
         resource_loader("molecules/composition1.mol")
     )
@@ -361,7 +360,7 @@ async def test_a_custom_fields(
         indigo_object=mol, PUBCHEM_IUPAC_INCHIKEY="RDHQFKQIGNGIED-UHFFFAOYSA-N"
     )
     async with a_elastic_repository_molecule() as rep:
-        rep.index_record(rec)
+        await rep.index_record(rec)
 
     async with a_elastic_repository_molecule() as rep:
         result = rep.filter(
@@ -392,7 +391,7 @@ def test_search_empty_fingerprint(
     )
 
     assert (
-        "[H][H]"
+        "[HH]"
         == next(result).as_indigo_object(indigo_fixture).canonicalSmiles()
     )
     with pytest.raises(StopIteration):
@@ -423,7 +422,7 @@ async def test_a_search_empty_fingerprint(
 
         async for mol in result:
             assert (
-                "[H][H]"
+                "[HH]"
                 == mol.as_indigo_object(indigo_fixture).canonicalSmiles()
             )
 
@@ -434,7 +433,6 @@ def test_similarity_matches_reactions(
     resource_loader,
     indigo_fixture,
 ) -> None:
-
     reaction = indigo_fixture.loadReactionFromFile(
         resource_loader("reactions/rheadb/50353.rxn")
     )
@@ -480,7 +478,6 @@ async def test_a_similaririty_matches_reactions(
     resource_loader,
     indigo_fixture,
 ) -> None:
-
     reaction = indigo_fixture.loadReactionFromFile(
         resource_loader("reactions/rheadb/50353.rxn")
     )
@@ -517,3 +514,22 @@ async def test_a_similaririty_matches_reactions(
                 as_iob(found_reaction, indigo_fixture).countReactants()
                 == reaction.countReactants()
             )
+
+
+def test_limit_on_size(
+    elastic_repository_molecule: ElasticRepository,
+):
+    with pytest.raises(ValueError):
+        result = elastic_repository_molecule.filter(limit=2000)
+        next(result)
+
+
+@pytest.mark.asyncio
+async def test_a_limit_on_size(
+    a_elastic_repository_molecule: AsyncRepositoryT,
+):
+    with pytest.raises(ValueError):
+        async with a_elastic_repository_molecule() as rep:
+            result = rep.filter(limit=2000)
+            async for mol in result:
+                mol.name

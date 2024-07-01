@@ -25,7 +25,7 @@ else()
             DEPENDS before-indigo-wrappers
     )
 
-    add_executable(${PROJECT_NAME} _c/test.c)
+    add_executable(${PROJECT_NAME} _c/test.c ${CMAKE_CURRENT_BINARY_DIR}/_c/test.h)
     target_link_libraries(${PROJECT_NAME} Python3::Python)
     target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/_c)
     add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}-prepare)

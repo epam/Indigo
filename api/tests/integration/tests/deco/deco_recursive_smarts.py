@@ -10,6 +10,8 @@ from env_indigo import *
 
 indigo = Indigo()
 structures = ["CN(c1ccccc1)C=O", "CN(c1ccc(O)cc1)C=OP"]
+
+
 #
 # Prepare a molecule for printing out
 #

@@ -1,0 +1,91 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "$ref": "mol1"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "attachmentPoints": 2,
+                "label": "C",
+                "location": [
+                    1.000000,
+                    -1.000000,
+                    0.000000
+                ]
+            },
+            {
+                "attachmentPoints": 1,
+                "label": "C",
+                "location": [
+                    2.000000,
+                    -1.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    0.500000,
+                    -0.133975,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    2.500000,
+                    -1.866025,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 2,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    3
+                ]
+            }
+        ]
+    },
+    "mol1": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "A",
+                "location": [
+                    5.000000,
+                    -9.000000,
+                    0.000000
+                ],
+                "queryProperties": {
+                    "aromaticity": "aromatic"
+                }
+            }
+        ],
+        "bonds": []
+    }
+}

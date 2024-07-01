@@ -23,6 +23,9 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/tlscont.h"
 
+#include <list>
+#include <unordered_set>
+
 #ifdef _WIN32
 #pragma warning(push)
 #pragma warning(disable : 4251)
@@ -41,7 +44,7 @@ namespace indigo
         ~GraphDecomposer();
 
         // returns the amount of connected components
-        int decompose(const Filter* filter = NULL, const Filter* edge_filter = NULL);
+        int decompose(const Filter* filter = NULL, const Filter* edge_filter = NULL, const std::list<std::unordered_set<int>>* ext_neighbours = NULL);
 
         const Array<int>& getDecomposition() const;
 

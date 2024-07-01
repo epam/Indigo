@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cml>
+    <molecule>
+        <atomArray>
+            <atom id="a0" elementType="C" x2="20.554" y2="-9.49756">
+                <atomParity atomRefs4="a1 a2 a0 a1">1</atomParity>
+            </atom>
+            <atom id="a1" elementType="C" x2="21.3777" y2="-9.97249"/>
+            <atom id="a2" elementType="C" x2="19.6473" y2="-10.0256"/>
+        </atomArray>
+        <bondArray>
+            <bond atomRefs2="a0 a1" order="2">
+                <bondStereo convention="MDL" conventionValue="3"/>
+            </bond>
+            <bond atomRefs2="a2 a0" order="1"/>
+        </bondArray>
+    </molecule>
+</cml>

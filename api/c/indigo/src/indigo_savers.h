@@ -73,7 +73,7 @@ public:
     }
     const char* debugInfo() const override;
 
-    static void generateSmiles(IndigoObject& obj, Array<char>& out_buffer);
+    static void generateSmiles(IndigoObject& obj, Array<char>& out_buffer, SmilesSaver::SMILES_MODE smiles_format = SmilesSaver::SMILES_MODE::SMILES_CHEMAXON);
 
     static void generateSmarts(IndigoObject& obj, Array<char>& out_buffer);
 

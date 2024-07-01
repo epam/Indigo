@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # cython: profile=True
-"""
+r"""
 This package defines classes that simplify bit-wise creation, manipulation and
 interpretation of data.
 
@@ -2829,7 +2829,6 @@ class Bits(object):
             f = self._findregex
             x = re.compile(bs._getbin())
         while True:
-
             p = f(x, start, end, bytealigned)
             if not p:
                 break

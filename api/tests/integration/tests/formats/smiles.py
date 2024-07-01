@@ -78,23 +78,71 @@ mols_qsmiles = [
 for idx, sm in enumerate(mols_qsmiles):
     print(sm)
     q = indigo.loadQueryMolecule(sm)
-    try:
-        sm2 = q.smiles()
-        print("  -> " + sm2)
-        q2 = indigo.loadQueryMolecule(sm2)
-        sm3 = q2.smiles()
-        print("  -> " + sm3)
-    except IndigoException as e:
-        print(getIndigoExceptionText(e))
+    if q.getOriginalFormat() == "chemical/x-daylight-smarts":
+        print("%s loaded as SMARTS")
+    else:
+        try:
+            sm2 = q.smiles()
+            print("  -> " + sm2)
+            q2 = indigo.loadQueryMolecule(sm2)
+            print("q2=%s", q2.smarts())
+            sm3 = q2.smiles()
+            print("  -> " + sm3)
+        except IndigoException as e:
+            print(getIndigoExceptionText(e))
 
 print("*** S-Groups ***")
 mols_smiles = [
     "CCCC |Sg:gen:0,1,2:|",
     "CCCC |Sg:n:0,1,2:3-6:eu|",
+    "CCCC |Sg:n:0,1,2::ht|",
+    "CCCCC |Sg:n:1,2,3::hh|",
 ]
 for sm in mols_smiles:
+    print("default smiles:")
     print(indigo.loadMolecule(sm).smiles())
     try:
+        print("canonical smiles:")
         print(indigo.loadMolecule(sm).canonicalSmiles())
     except IndigoException as e:
         print(getIndigoExceptionText(e))
+
+indigo.setOption("smiles-saving-format", "daylight")
+for sm in mols_smiles:
+    print("daylight:")
+    try:
+        print(indigo.loadMolecule(sm).smiles())
+    except IndigoException as e:
+        print(getIndigoExceptionText(e))
+
+indigo.setOption("smiles-saving-format", "chemaxon")
+for sm in mols_smiles:
+    print("chemaxon:")
+    print(indigo.loadMolecule(sm).smiles())
+
+print("*** Atropisomers ***")
+mols_smiles = [
+    "C1C(O)=C(C2C=CC(C)=CC=2N)C(C)=CC=1 |o1:3,r,wU:3.12|",
+    "C1=CC=C(C)C(C2=C(N)C=C(C)C=C2)=C1O |wU:5.4,wD:5.5|",
+    "C1=CC=C(C)C(C2=C(N)C=C(C)C=C2)=C1O |w:5.4,5.5|",
+    "CC1CCCC(C)C=1N1C([C@@H](Cl)C)=CC=C1 |a:7,&1:10,r,wD:7.6,10.11,(13.73,-9.95,;14.59,-9.45,;16.07,-8.70,;16.18,-6.82,;17.23,-7.80,;16.33,-9.45,;17.19,-9.95,;15.46,-9.95,;15.46,-10.95,;14.76,-11.67,;13.77,-11.53,;13.40,-10.60,;13.16,-12.32,;15.23,-12.55,;16.22,-12.38,;16.36,-11.39,)|",
+]
+for sm in mols_smiles:
+    print("atropisomer:")
+    mol = indigo.loadMolecule(sm)
+    print(mol.smiles())
+    mol.layout()
+    print(mol.smiles())
+
+print("*** Suffoxides ***")
+mols_smiles = ["C1=C(C)C(=O)C[S@]1=O"]
+for sm in mols_smiles:
+    print("suffoxide:")
+    mol = indigo.loadMolecule(sm)
+    print(mol.smiles())
+    mol.layout()
+    print(mol.smiles())
+    for i in range(mol.countBonds()):
+        bs = mol.getBond(i).bondStereo()
+        if bs > 0:
+            print("bond:%d stereo:%d" % (i, bs))

@@ -20,8 +20,8 @@
 #define __string_pool_h__
 
 #include "base_cpp/auto_iter.h"
+#include "base_cpp/obj_array.h"
 #include "base_cpp/pool.h"
-#include "base_cpp/ptr_array.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -41,6 +41,7 @@ namespace indigo
         int add(const char* str);
         int add(Array<char>& str);
         int add(int size);
+        void set(int idx, const char* str);
         void remove(int idx);
         int size() const;
         int begin() const;
@@ -96,7 +97,7 @@ namespace indigo
         int _add(const char* str, int size);
 
         Pool<int> _pool;
-        PtrArray<Array<char>> _storage;
+        ObjArray<Array<char>> _storage;
 
     private:
         StringPool(const StringPool&); // no implicit copy

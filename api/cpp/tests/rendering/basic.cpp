@@ -16,9 +16,14 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <fstream>
+
 #include <gtest/gtest.h>
 
+#include "common.h"
+
 #include <IndigoMolecule.h>
+#include <IndigoQueryMolecule.h>
 #include <IndigoRenderer.h>
 #include <IndigoSession.h>
 
@@ -31,4 +36,34 @@ TEST(RenderingBasic, BasicSVG)
     const auto& m = session->loadMolecule("C");
     const auto& result = renderer.svg(m);
     ASSERT_TRUE(result.rfind("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", 0) == 0);
+}
+
+TEST(RenderingBasic, UTF8)
+{
+    auto session = IndigoSession::create();
+    const auto& renderer = IndigoRenderer(session);
+    const auto& m = session->loadMoleculeFromFile(dataPath("molecules/basic/sgroups_utf8.mol"));
+    const auto& result = renderer.png(m);
+    std::ofstream ff("sgroups_utf8.png", std::ofstream::out);
+    for (const auto c : result)
+    {
+        ff << c;
+    }
+    ff.close();
+}
+
+TEST(RenderingBasic, List)
+{
+    auto session = IndigoSession::create();
+    session->setOption("smart-layout", "1");
+    const auto& renderer = IndigoRenderer(session);
+    session->setOption("render-background-color", std::string("255, 255, 255"));
+    const auto& m = session->loadSmarts("[F,Cl,Br,I]");
+    const auto& result = renderer.png(m);
+    std::ofstream ff("list.png", std::ios::binary);
+    for (const auto c : result)
+    {
+        ff << c;
+    }
+    ff.close();
 }

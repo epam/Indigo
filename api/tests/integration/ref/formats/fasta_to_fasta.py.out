@@ -1,0 +1,5 @@
+*** FASTA to FASTA ***
+test_peptide.fasta:SUCCEED
+test_rna.fasta:SUCCEED
+test_dna.fasta:SUCCEED
+multiseq.fasta:SUCCEED

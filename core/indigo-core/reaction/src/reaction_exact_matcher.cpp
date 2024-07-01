@@ -58,7 +58,7 @@ bool ReactionExactMatcher::_match_atoms(BaseReaction& query_, Reaction& target, 
 }
 
 bool ReactionExactMatcher::_match_bonds(BaseReaction& query_, Reaction& target, int sub_mol_idx, int sub_bond_idx, int super_mol_idx, int super_bond_idx,
-                                        AromaticityMatcher* am, void* context)
+                                        AromaticityMatcher* /*am*/, void* context)
 {
     ReactionExactMatcher& self = *(ReactionExactMatcher*)context;
     Reaction& query = query_.asReaction();

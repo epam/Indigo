@@ -12,7 +12,7 @@ from env_indigo import *  # noqa
 
 def searchSim(bingo, q, minSim, maxSim, metric=None):
     print(
-        "** searchSim({0}, {1}, {2}, {3}) **".format(
+        "** searchSim({}, {:.1f}, {}, {}) **".format(
             q.smiles(), minSim, maxSim, metric
         )
     )
@@ -70,7 +70,7 @@ def searchExact(bingo, q, options=""):
 
 indigo = Indigo()
 bingo = Bingo.createDatabaseFile(
-    indigo, joinPathPy("db_molecule", __file__), "molecule", ""
+    indigo, joinPathPy("out/db_molecule", __file__), "molecule", ""
 )
 
 index = 0

@@ -185,6 +185,11 @@ namespace indigo
             }
         }
 
+        void copy(const T* other, std::size_t count)
+        {
+            copy(other, static_cast<int>(count));
+        }
+
         void concat(const Array<T>& other)
         {
             concat(other._array, other.size());
@@ -579,12 +584,5 @@ namespace indigo
     };
 
 } // namespace indigo
-
-// operators defined here for use with ObjArray<> and ObjPool<>
-template <typename T>
-void* operator new(size_t size, T* allocated_area)
-{
-    return allocated_area;
-}
 
 #endif

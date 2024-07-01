@@ -57,3 +57,5 @@ ALLOWED_TYPES = (
     "image/cmu-raster",
     "image/x-portable-bitmap",
 )
+
+IMAGO_VERSIONS = ["2.0.0"]

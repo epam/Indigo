@@ -1,0 +1,59 @@
+
+******* Test unfold aromatic ring *******
+testing filename: issue_1525.ket
+Unfolded molecule equal to expected
+Folded KET equal to original
+
+******* Test unfold fullerene *******
+testing filename: issue_1573.ket
+Unfolded molecule equal to expected
+Folded KET equal to original
+
+******* Test unfold fullerene with second component *******
+testing filename: issue_1573_2.ket
+Unfolded molecule equal to expected
+Folded KET equal to original
+
+******* Test unfold selected atoms *******
+testing filename: issue_1589.ket
+Unfolded molecule equal to expected
+Folded KET equal to original
+
+******* Test unfold bad valence *******
+testing filename: issue_1538.ket
+Unfolded molecule equal to expected
+Folded KET equal to original
+
+******* Test unfold any atom with valence *******
+testing filename: issue_1550.ket
+Unfolded molecule equal to expected
+Folded KET equal to original
+
+******* Test unfold selected with unselected explicit H *******
+testing filename: issue_1632.ket
+Unfolded molecule equal to expected
+Folded KET equal to original
+
+******* Test unfold two selected with one unselected molecules *******
+testing filename: issue_1640.ket
+Unfolded molecule equal to expected
+Folded KET equal to original
+
+******* Test unfold radicals in query molecules *******
+testing filename: issue_1634.ket
+Unfolded molecule equal to expected
+Folded KET equal to original
+
+******* Test query with attachemnt points *******
+testing filename: issue_1629.ket
+Unfolded molecule equal to expected
+Folded KET equal to original
+
+******* Test selection in reaction *******
+testing filename: issue_1724.ket
+Unfolded molecule equal to expected
+Folded KET equal to original
+
+******* Test unfold layout *******
+testing filename: issue_1576.ket
+Unfolded KET equal to expected

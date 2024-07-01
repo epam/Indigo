@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>m_bond_replacer_test_dif</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+		<nature>org.knime.workbench.ui.KNIMEProjectNature</nature>
+	</natures>
+</projectDescription>

@@ -3,6 +3,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -111,62 +112,124 @@ namespace indigo
         std::string toString(const std::map<std::string, std::string>& options, const std::string& outputFormat) const
         {
             print_js("toString:");
+            std::string result;
             if (outputFormat == "molfile" || outputFormat == "rxnfile" || outputFormat == "chemical/x-mdl-molfile" || outputFormat == "chemical/x-mdl-rxnfile")
             {
                 if (is_reaction())
-                {
-                    return _checkResultString(indigoRxnfile(id()));
-                }
-                return _checkResultString(indigoMolfile(id()));
+                    result = _checkResultString(indigoRxnfile(id()));
+                else
+                    result = _checkResultString(indigoMolfile(id()));
             }
             else if (outputFormat == "smiles" || outputFormat == "chemical/x-daylight-smiles" || outputFormat == "chemical/x-chemaxon-cxsmiles")
             {
                 if (options.count("smiles") > 0 && options.at("smiles") == "canonical")
                 {
-                    return _checkResultString(indigoCanonicalSmiles(id()));
+                    result = _checkResultString(indigoCanonicalSmiles(id()));
                 }
-                return _checkResultString(indigoSmiles(id()));
+                else
+                {
+                    if (outputFormat == "chemical/x-chemaxon-cxsmiles")
+                        indigoSetOption("smiles-saving-format", "chemaxon");
+                    else if (outputFormat == "chemical/x-daylight-smiles")
+                        indigoSetOption("smiles-saving-format", "daylight");
+
+                    result = _checkResultString(indigoSmiles(id()));
+                }
+            }
+            else if (outputFormat == "sequence" || outputFormat == "chemical/x-sequence")
+            {
+                result = _checkResultString(indigoSequence(id()));
+            }
+            else if (outputFormat == "fasta" || outputFormat == "chemical/x-fasta")
+            {
+                result = _checkResultString(indigoFasta(id()));
+            }
+            else if (outputFormat == "idt" || outputFormat == "chemical/x-idt")
+            {
+                result = _checkResultString(indigoIdt(id()));
+            }
+            else if (outputFormat == "helm" || outputFormat == "chemical/x-helm")
+            {
+                result = _checkResultString(indigoHelm(id()));
             }
             else if (outputFormat == "smarts" || outputFormat == "chemical/x-daylight-smarts")
             {
                 if (options.count("smarts") > 0 && options.at("smarts") == "canonical")
-                {
-                    return _checkResultString(indigoCanonicalSmarts(id()));
-                }
-                return _checkResultString(indigoSmarts(id()));
+                    result = _checkResultString(indigoCanonicalSmarts(id()));
+                else
+                    result = _checkResultString(indigoSmarts(id()));
             }
             else if (outputFormat == "cml" || outputFormat == "chemical/x-cml")
             {
-                return _checkResultString(indigoCml(id()));
+                result = _checkResultString(indigoCml(id()));
             }
             else if (outputFormat == "cdxml" || outputFormat == "chemical/x-cdxml")
             {
-                return _checkResultString(indigoCdxml(id()));
+                result = _checkResultString(indigoCdxml(id()));
+            }
+            else if (outputFormat == "cdx" || outputFormat == "chemical/x-cdx")
+            {
+                result = _checkResultString(indigoCdxBase64(id()));
             }
             else if (outputFormat == "inchi" || outputFormat == "chemical/x-inchi")
             {
-                return _checkResultString(indigoInchiGetInchi(id()));
+                result = _checkResultString(indigoInchiGetInchi(id()));
             }
             else if (outputFormat == "inchi-key" || outputFormat == "chemical/x-inchi-key")
             {
                 std::string inchi_str = _checkResultString(indigoInchiGetInchi(id()));
-                return _checkResultString(indigoInchiGetInchiKey(inchi_str.c_str()));
+                result = _checkResultString(indigoInchiGetInchiKey(inchi_str.c_str()));
             }
             else if (outputFormat == "inchi-aux" || outputFormat == "chemical/x-inchi-aux")
             {
                 std::stringstream ss;
                 ss << _checkResultString(indigoInchiGetInchi(id())) << '\n' << _checkResultString(indigoInchiGetAuxInfo());
-                return ss.str();
+                result = ss.str();
             }
             else if (outputFormat == "ket" || outputFormat == "chemical/x-indigo-ket")
             {
                 print_js(outputFormat.c_str());
-                return _checkResultString(indigoJson(id()));
+                result = _checkResultString(indigoJson(id()));
             }
-
-            std::stringstream ss;
-            ss << "Unknown output format: " << outputFormat;
-            jsThrow(ss.str().c_str());
+            else if (outputFormat == "sdf" || outputFormat == "chemical/x-sdf")
+            {
+                auto buffer = IndigoObject(_checkResult(indigoWriteBuffer()));
+                auto comp_it = IndigoObject(_checkResult(indigoIterateComponents(id())));
+                while (indigoHasNext(comp_it.id))
+                {
+                    const auto frag = IndigoObject(_checkResult(indigoNext(comp_it.id)));
+                    const auto mol = IndigoObject(_checkResult(indigoClone(frag.id)));
+                    indigoSdfAppend(buffer.id, mol.id);
+                }
+                print_js(outputFormat.c_str());
+                result = _checkResultString(indigoToString(buffer.id));
+            }
+            else
+            {
+                std::stringstream ss;
+                ss << "Unknown output format: " << outputFormat;
+                jsThrow(ss.str().c_str());
+                return ""; // suppress warning
+            }
+            auto out = options.find("output-content-type");
+            if (out != options.end() && out->second == "application/json")
+            {
+                std::string originalFormat = _checkResultString(indigoGetOriginalFormat(id()));
+                rapidjson::Document resultJson;
+                auto& allocator = resultJson.GetAllocator();
+                resultJson.SetObject();
+                resultJson.AddMember("struct", result, allocator);
+                resultJson.AddMember("format", outputFormat, allocator);
+                resultJson.AddMember("original_format", originalFormat, allocator);
+                rapidjson::StringBuffer buffer;
+                rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+                resultJson.Accept(writer);
+                return buffer.GetString();
+            }
+            else
+            {
+                return result;
+            }
         }
 
         IndigoKetcherObject substructure(const std::vector<int>& selected_atoms) const
@@ -190,9 +253,10 @@ namespace indigo
 
     void indigoSetOptions(const std::map<std::string, std::string>& options)
     {
+        std::set<std::string> to_skip{"smiles", "smarts", "input-format", "output-content-type", "monomerLibrary"};
         for (const auto& option : options)
         {
-            if (option.first != "smiles" && option.first != "smarts")
+            if (to_skip.count(option.first) < 1)
             {
                 _checkResult(indigoSetOption(option.first.c_str(), option.second.c_str()));
             }
@@ -250,53 +314,117 @@ namespace indigo
         IndigoRendererSession& operator=(IndigoRendererSession&&) = delete;
     };
 
-    IndigoKetcherObject loadMoleculeOrReaction(const std::string& data)
+    IndigoKetcherObject loadMoleculeOrReaction(const std::string& data, const std::map<std::string, std::string>& options)
     {
+        static std::unordered_map<std::string, std::string> seq_formats = {
+            {"chemical/x-peptide-sequence", "PEPTIDE"}, {"chemical/x-rna-sequence", "RNA"}, {"chemical/x-dna-sequence", "DNA"}};
+
+        static std::unordered_map<std::string, std::string> fasta_formats = {
+            {"chemical/x-peptide-fasta", "PEPTIDE"}, {"chemical/x-rna-fasta", "RNA"}, {"chemical/x-dna-fasta", "DNA"}};
+
         print_js("loadMoleculeOrReaction:");
         std::vector<std::string> exceptionMessages;
         exceptionMessages.reserve(4);
 
         int objectId = -1;
-        if (data.find("InChI") == 0)
+        auto input_format = options.find("input-format");
+        if (input_format != options.end() && (input_format->second == "smarts" || input_format->second == "chemical/x-daylight-smarts"))
         {
-            objectId = indigoInchiLoadMolecule(data.c_str());
+            print_js("load as smarts");
+            objectId = indigoLoadSmartsFromBuffer(data.c_str(), data.size());
+            if (objectId >= 0)
+            {
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
+            }
+            exceptionMessages.emplace_back(indigoGetLastError());
+            // Let's try reaction
+            print_js("try as reaction");
+            objectId = indigoLoadReactionSmartsFromBuffer(data.c_str(), data.size());
+            if (objectId >= 0)
+            {
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
+            }
+            exceptionMessages.emplace_back(indigoGetLastError());
+        }
+        else if (input_format != options.end() && seq_formats.count(input_format->second))
+        {
+            auto seq_it = seq_formats.find(input_format->second);
+            objectId = indigoLoadSequenceFromString(data.c_str(), seq_it->second.c_str());
             if (objectId >= 0)
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
         }
+        else if (input_format != options.end() && fasta_formats.count(input_format->second))
+        {
+            auto fasta_it = fasta_formats.find(input_format->second);
+            objectId = indigoLoadFastaFromString(data.c_str(), fasta_it->second.c_str());
+            if (objectId >= 0)
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+        }
+        else if (input_format != options.end() && input_format->second == "chemical/x-idt")
+        {
+            objectId = indigoLoadIdtFromString(data.c_str());
+            if (objectId >= 0)
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            exceptionMessages.emplace_back(indigoGetLastError());
+        }
+        else if (input_format != options.end() && input_format->second == "chemical/x-helm")
+        {
+            objectId = indigoLoadHelmFromString(data.c_str());
+            if (objectId >= 0)
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            exceptionMessages.emplace_back(indigoGetLastError());
+        }
+        else
+        {
+            if (data.find("InChI") == 0)
+            {
+                objectId = indigoInchiLoadMolecule(data.c_str());
+                if (objectId >= 0)
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            }
+            bool query = false;
+            auto i = options.find("query");
+            if (i != options.end() and i->second == "true")
+            {
+                query = true;
+            }
+            if (!query)
+            {
+                // Let's try a simple molecule
+                print_js("try as molecule");
+                objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
+                if (objectId >= 0)
+                {
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+                }
+                exceptionMessages.emplace_back(indigoGetLastError());
 
-        // Let's try a simple molecule
-        print_js("try as molecule");
-        objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
-        if (objectId >= 0)
-        {
-            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+                // Let's try reaction
+                print_js("try as reaction");
+                objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
+                if (objectId >= 0)
+                {
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
+                }
+                exceptionMessages.emplace_back(indigoGetLastError());
+            }
+            exceptionMessages.emplace_back(indigoGetLastError());
+            // Let's try query molecule
+            print_js("try as query molecule");
+            objectId = indigoLoadQueryMoleculeFromBuffer(data.c_str(), data.size());
+            if (objectId >= 0)
+            {
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
+            }
+            exceptionMessages.emplace_back(indigoGetLastError());
+            // Let's try query reaction
+            print_js("try as query reaction");
+            objectId = indigoLoadQueryReactionFromBuffer(data.c_str(), data.size());
+            if (objectId >= 0)
+            {
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReactionQuery);
+            }
         }
-        exceptionMessages.emplace_back(indigoGetLastError());
-
-        // Let's try reaction
-        print_js("try as reaction");
-        objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
-        if (objectId >= 0)
-        {
-            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
-        }
-        exceptionMessages.emplace_back(indigoGetLastError());
-        // Let's try query reaction
-        print_js("try as query reaction");
-        objectId = indigoLoadQueryReactionFromBuffer(data.c_str(), data.size());
-        if (objectId >= 0)
-        {
-            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReactionQuery);
-        }
-        exceptionMessages.emplace_back(indigoGetLastError());
-        // Let's try query molecule
-        print_js("try as query molecule");
-        objectId = indigoLoadQueryMoleculeFromBuffer(data.c_str(), data.size());
-        if (objectId >= 0)
-        {
-            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
-        }
-        exceptionMessages.emplace_back(indigoGetLastError());
         // It's not anything we can load, let's throw an exception
         std::stringstream ss;
         ss << "Given string could not be loaded as (query or plain) molecule or reaction, see the error messages: ";
@@ -315,11 +443,73 @@ namespace indigo
         return _checkResultString(indigoVersion());
     }
 
+    std::string versionInfo()
+    {
+        return _checkResultString(indigoVersionInfo());
+    }
+
     std::string convert(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
     {
         const IndigoSession session;
+        std::map<std::string, std::string> options_copy;
+        for (const auto& option : options)
+        {
+            if (option.first != "monomerLibrary")
+            {
+                options_copy[option.first] = option.second;
+            }
+        }
+
+        auto monomerLibrary = options.find("monomerLibrary");
+        if (monomerLibrary != options.end() && monomerLibrary->second.size())
+        {
+            const char* ignore_stereo_option = "ignore-stereochemistry-errors";
+            std::map<std::string, std::string> options_lib = options_copy;
+            options_lib["input-format"] = "chemical/x-indigo-ket";
+            options_lib[ignore_stereo_option] = "true";
+            indigoSetOptions(options_lib);
+            IndigoKetcherObject iko = loadMoleculeOrReaction(monomerLibrary->second, options_lib);
+            auto ignore_stereo = options.find(ignore_stereo_option);
+            if (ignore_stereo == options.end())
+            {
+                // no ignore stereo erros option set - should reset to default "false"
+                options_lib[ignore_stereo_option] = "false";
+                indigoSetOptions(options_lib);
+            }
+        }
+
+        if (outputFormat.find("smarts") != std::string::npos)
+        {
+            options_copy["query"] = "true";
+        }
         indigoSetOptions(options);
-        IndigoKetcherObject iko = loadMoleculeOrReaction(data);
+        IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy);
+        return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
+    }
+
+    std::string convert_explicit_hydrogens(const std::string& data, const std::string& mode, const std::string& outputFormat,
+                                           const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        indigoSetOptions(options);
+        std::map<std::string, std::string> options_copy = options;
+        if (outputFormat.find("smarts") != std::string::npos)
+        {
+            options_copy["query"] = "true";
+        }
+        IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy);
+        if (mode == "fold")
+        {
+            _checkResult(indigoFoldHydrogens(iko.id()));
+        }
+        else if (mode == "unfold")
+        {
+            _checkResult(indigoUnfoldHydrogens(iko.id()));
+        }
+        else if (mode == "auto")
+        {
+            _checkResult(indigoFoldUnfoldHydrogens(iko.id()));
+        }
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
 
@@ -327,7 +517,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str());
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
         _checkResult(indigoAromatize(iko.id()));
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
@@ -336,7 +526,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str());
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
         _checkResult(indigoDearomatize(iko.id()));
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
@@ -345,7 +535,12 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str());
+        std::map<std::string, std::string> options_copy = options;
+        if (outputFormat.find("smarts") != std::string::npos)
+        {
+            options_copy["query"] = "true";
+        }
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options_copy);
         _checkResult(indigoLayout(iko.id()));
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
@@ -355,7 +550,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        auto iko = loadMoleculeOrReaction(data.c_str());
+        auto iko = loadMoleculeOrReaction(data.c_str(), options);
         const auto& subiko = (selected_atoms.empty()) ? iko : iko.substructure(selected_atoms);
         _checkResult(indigoClean2d(subiko.id()));
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
@@ -365,7 +560,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str());
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
         _checkResult(indigoAutomap(iko.id(), mode.c_str()));
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
@@ -374,7 +569,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str());
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
         return _checkResultString(indigoCheckObj(iko.id(), properties.c_str()));
     }
 
@@ -384,7 +579,7 @@ namespace indigo
         indigoSetOptions(options);
         indigoSetOption("json-saving-add-stereo-desc", "true");
         indigoSetOption("molfile-saving-add-stereo-desc", "true");
-        const auto iko = loadMoleculeOrReaction(data.c_str());
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
 
@@ -632,7 +827,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        auto iko = loadMoleculeOrReaction(data.c_str());
+        auto iko = loadMoleculeOrReaction(data.c_str(), options);
         rapidjson::Document result;
         auto& allocator = result.GetAllocator();
         result.SetObject();
@@ -672,7 +867,7 @@ namespace indigo
         const IndigoRendererSession indigoRendererSession(session.getSessionId());
 
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str());
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
         auto buffer_object = IndigoObject(_checkResult(indigoWriteBuffer()));
         char* raw_ptr = nullptr;
         int size = 0;
@@ -681,12 +876,75 @@ namespace indigo
         return cppcodec::base64_rfc4648::encode(raw_ptr, size);
     }
 
-#ifdef __EMSCRIPTEN__
+    std::string reactionComponents(const std::string& data, const std::map<std::string, std::string>& options)
+    {
+        using namespace rapidjson;
+        Document result;
+        result.SetObject();
+        {
+            const IndigoSession session;
+            indigoSetOptions(options);
+            const auto reactionId = _checkResult(indigoLoadQueryReactionFromString(data.c_str()));
+            // reactants
+            {
+                Value reactants(kArrayType);
+                reactants.SetArray();
+                const auto reactantsIteratorId = _checkResult(indigoIterateReactants(reactionId));
+                while (const auto reactantId = _checkResult(indigoNext(reactantsIteratorId)))
+                {
+                    Value reactant(kStringType);
+                    reactant.SetString(_checkResultString(indigoSmiles(reactantId)), result.GetAllocator());
+                    reactants.PushBack(reactant, result.GetAllocator());
+                    _checkResult(indigoFree(reactantId));
+                }
+                result.AddMember("reactants", reactants, result.GetAllocator());
+                _checkResult(indigoFree(reactantsIteratorId));
+            }
+            // catalysts
+            {
+                Value catalysts(kArrayType);
+                catalysts.SetArray();
+                const auto catalystsIteratorId = _checkResult(indigoIterateCatalysts(reactionId));
+                while (const auto catalystId = _checkResult(indigoNext(catalystsIteratorId)))
+                {
+                    Value catalyst(kStringType);
+                    catalyst.SetString(_checkResultString(indigoSmiles(catalystId)), result.GetAllocator());
+                    catalysts.PushBack(catalyst, result.GetAllocator());
+                    _checkResult(indigoFree(catalystId));
+                }
+                result.AddMember("catalysts", catalysts, result.GetAllocator());
+                _checkResult(indigoFree(catalystsIteratorId));
+            }
+            // products
+            {
+                Value products(kArrayType);
+                products.SetArray();
+                const auto productsIteratorId = _checkResult(indigoIterateProducts(reactionId));
+                while (const auto productId = _checkResult(indigoNext(productsIteratorId)))
+                {
+                    Value product(kStringType);
+                    product.SetString(_checkResultString(indigoSmiles(productId)), result.GetAllocator());
+                    products.PushBack(product, result.GetAllocator());
+                    _checkResult(indigoFree(productId));
+                }
+                result.AddMember("products", products, result.GetAllocator());
+                _checkResult(indigoFree(productsIteratorId));
+            }
+            _checkResult(indigoFree(reactionId));
+        }
+        // Serialize results
+        StringBuffer buffer;
+        Writer<rapidjson::StringBuffer> writer(buffer);
+        result.Accept(writer);
+        return buffer.GetString();
+    }
 
     EMSCRIPTEN_BINDINGS(module)
     {
         emscripten::function("version", &version);
+        emscripten::function("versionInfo", &versionInfo);
         emscripten::function("convert", &convert);
+        emscripten::function("convert_explicit_hydrogens", &convert_explicit_hydrogens);
         emscripten::function("aromatize", &aromatize);
         emscripten::function("dearomatize", &dearomatize);
         emscripten::function("layout", &layout);
@@ -696,11 +954,9 @@ namespace indigo
         emscripten::function("calculateCip", &calculateCip);
         emscripten::function("calculate", &calculate);
         emscripten::function("render", &render);
+        emscripten::function("reactionComponents", &reactionComponents);
 
         emscripten::register_vector<int>("VectorInt");
         emscripten::register_map<std::string, std::string>("MapStringString");
-    }
-
-#endif
-
-} // namespace indigo
+    };
+}

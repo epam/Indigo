@@ -79,12 +79,13 @@ namespace indigo
     public:
         void copy(const ReactionBlock& other)
         {
-            indexes.copy(other.indexes);
-            arrows_to.copy(other.arrows_to);
+            reactants.copy(other.reactants);
+            products.copy(other.products);
+            arrow_index = other.arrow_index;
         }
-        Array<int> indexes;
-        Array<int> arrows_to;
-        int role;
+        Array<int> reactants;
+        Array<int> products;
+        int arrow_index;
     };
 
     class DLLEXPORT BaseReaction : public NonCopyable
@@ -268,7 +269,8 @@ namespace indigo
         // Returns true if some bonds were changed
         virtual bool aromatize(const AromaticityOptions& options) = 0;
         // Returns true if all bonds were dearomatized
-        virtual bool dearomatize(const AromaticityOptions& options) = 0;
+        bool dearomatize(const AromaticityOptions& options);
+        void unfoldHydrogens();
 
         // poor man's dynamic casting
         virtual Reaction& asReaction();
@@ -319,6 +321,8 @@ namespace indigo
                    ObjArray<Array<int>>* inv_mappings = nullptr);
 
         Array<char> name;
+
+        int original_format;
 
         DECL_ERROR;
 

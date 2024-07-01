@@ -35,7 +35,7 @@ unsigned int Random::next(int mod)
     if (mod > 0)
         return next() % mod;
     if (mod < 0)
-        return -(next() % -mod);
+        return next() % -mod;
     return 0;
 }
 
@@ -50,7 +50,7 @@ unsigned int Random::nextLarge(int mod)
     if ((1LL << 32) - x > mod)
         return x % mod;
 
-    int max = (1LL << 32) - (1LL << 32) % mod;
+    int max = static_cast<int>((1LL << 32) - (1LL << 32) % mod);
     if (x < max)
         return x % mod;
     return nextLarge(mod);

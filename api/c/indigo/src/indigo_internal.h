@@ -28,10 +28,13 @@
 #include <utility>
 
 #include "indigo.h"
+#include "indigo_abbreviations.h"
 
 #include "base_cpp/cancellation_handler.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/io_base.h"
+
+#include "layout/reaction_layout.h"
 
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_gross_formula.h"
@@ -40,6 +43,7 @@
 #include "molecule/molecule_standardize_options.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_tautomer.h"
+#include "molecule/smiles_saver.h"
 #include "option_manager.h"
 
 /* When Indigo internal code is used dynamically the INDIGO_VERSION define
@@ -199,6 +203,8 @@ public:
     virtual MonomersProperties& getMonomersProperties();
     virtual void copyProperties(PropertiesMap&);
 
+    void toBase64String(Array<char>& str);
+
 private:
     IndigoObject(const IndigoObject&);
 };
@@ -306,12 +312,17 @@ public:
     bool deco_ignore_errors;
 
     int molfile_saving_mode; // MolfileSaver::MODE_***, default is zero
+    bool dearomatize_on_load;
+    SmilesSaver::SMILES_MODE smiles_saving_format;
     bool molfile_saving_no_chiral;
     int molfile_saving_chiral_flag;
     bool molfile_saving_skip_date;
     bool molfile_saving_add_stereo_desc;
     bool molfile_saving_add_implicit_h;
+    bool molfile_saving_add_mrv_sma;
     bool json_saving_add_stereo_desc;
+    bool json_saving_pretty;
+    bool json_use_native_precision;
     bool smiles_saving_write_name;
     bool smiles_saving_smarts_mode;
 
@@ -322,7 +333,8 @@ public:
 
     int layout_max_iterations; // default is zero -- no limit
     bool smart_layout = false;
-    float layout_horintervalfactor = 1.4f;
+    float layout_horintervalfactor = ReactionLayout::DEFAULT_HOR_INTERVAL_FACTOR;
+    bool layout_preserve_existing = false;
 
     int layout_orientation = 0;
 
@@ -354,6 +366,7 @@ public:
     static void setErrorMessage(const char* message);
     static void handleError(const char* message);
     static void setErrorHandler(INDIGO_ERROR_HANDLER handler, void* context);
+    auto getAbbreviations() -> const abbreviations::IndigoAbbreviations&;
 
 private:
     static Array<char>& error_message();
@@ -366,8 +379,8 @@ private:
         int next_id = 1;
     };
     sf::safe_shared_hide_obj<ObjectsHolder> _objects_holder;
-
     int _indigo_id;
+    std::unique_ptr<abbreviations::IndigoAbbreviations> _abbreviations = nullptr;
 };
 
 class DLLEXPORT IndigoPluginContext
@@ -410,6 +423,7 @@ protected:
     }
 
 DLLEXPORT Indigo& indigoGetInstance();
+DLLEXPORT _SessionLocalContainer<Indigo>& indigoSelf();
 
 class DLLEXPORT IndigoError : public Exception
 {

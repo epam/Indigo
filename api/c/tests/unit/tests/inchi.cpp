@@ -50,13 +50,47 @@ TEST_F(IndigoApiInchiTest, test_inchi)
 
 TEST_F(IndigoApiInchiTest, basic)
 {
-    const char* inchi = "InChI=1S/C10H20N2O2/c11-7-1-5-2-8(12)10(14)4-6(5)3-9(7)13/h5-10,13-14H,1-4,11-12H2";
-    const auto m = indigoInchiLoadMolecule(inchi);
-    ASSERT_EQ(strcmp(indigoCanonicalSmiles(m), "NC1CC2CC(N)C(O)CC2CC1O"), 0);
-    const char* res_inchi = indigoInchiGetInchi(m);
-    ASSERT_EQ(strcmp(res_inchi, inchi), 0);
-    const char* empty_inchi = "InChI=1S//";
-    const auto empty = indigoInchiLoadMolecule(empty_inchi);
-    const char* res_empty = indigoInchiGetInchi(empty);
-    ASSERT_EQ(strcmp(res_empty, empty_inchi), 0);
+    try
+    {
+        const char* inchi = "InChI=1S/C10H20N2O2/c11-7-1-5-2-8(12)10(14)4-6(5)3-9(7)13/h5-10,13-14H,1-4,11-12H2";
+        const auto m = indigoInchiLoadMolecule(inchi);
+        ASSERT_EQ(strcmp(indigoCanonicalSmiles(m), "NC1CC2CC(N)C(O)CC2CC1O"), 0);
+        const char* res_inchi = indigoInchiGetInchi(m);
+        ASSERT_EQ(strcmp(res_inchi, inchi), 0);
+        const char* empty_inchi = "InChI=1S//";
+        const auto empty = indigoInchiLoadMolecule(empty_inchi);
+        EXPECT_ANY_THROW(indigoInchiGetInchi(empty));
+    }
+    catch (const std::exception& e)
+    {
+        ASSERT_STREQ("inchi-wrapper: Wrong InChI format", e.what());
+    }
+}
+
+TEST_F(IndigoApiInchiTest, incorrect_symbols)
+{
+    try
+    {
+        const char* inchi = "InChI=1S/C7H16O/c1-2-3-4-5-6-7-8$h8H,2-7H2,1H3";
+        const auto m = indigoInchiLoadMolecule(inchi);
+        EXPECT_ANY_THROW(indigoInchiGetInchi(m));
+    }
+    catch (const std::exception& e)
+    {
+        ASSERT_STREQ("inchi-wrapper: Wrong InChI format", e.what());
+    }
+}
+
+TEST_F(IndigoApiInchiTest, incorrect_symbols_123)
+{
+    try
+    {
+        const char* inchi = "InChI=123";
+        const auto m = indigoInchiLoadMolecule(inchi);
+        EXPECT_ANY_THROW(indigoInchiGetInchi(m));
+    }
+    catch (const std::exception& e)
+    {
+        ASSERT_STREQ("inchi-wrapper: Wrong InChI format", e.what());
+    }
 }

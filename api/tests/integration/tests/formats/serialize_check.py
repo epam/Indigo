@@ -171,16 +171,8 @@ class Processor(object):
         buf = mol.serialize()
         buf2 = m2.serialize()
 
-        hex_ser1 = binascii.hexlify(
-            buf.tostring()
-            if isJython()
-            else (str(buf) if isIronPython() else buf)
-        )
-        hex_ser2 = binascii.hexlify(
-            buf2.tostring()
-            if isJython()
-            else (str(buf2) if isIronPython() else buf2)
-        )
+        hex_ser1 = binascii.hexlify(buf.tostring() if isJython() else buf)
+        hex_ser2 = binascii.hexlify(buf2.tostring() if isJython() else buf)
 
         hex_output.write(hex_ser1.decode("ascii") + "\n")
         hex_output.write(hex_ser2.decode("ascii") + "\n")
@@ -200,13 +192,13 @@ class Processor(object):
             if isIronPython():
                 from System import Array, Byte
 
-                arr = Array[Byte]([Byte(ord(symbol)) for symbol in arr])
+                arr = Array[Byte](arr)
             mol_rel_prev = indigo.unserialize(arr)
             arr = binascii.unhexlify(s2)
             if isIronPython():
                 from System import Array, Byte
 
-                arr = Array[Byte]([Byte(ord(symbol)) for symbol in arr])
+                arr = Array[Byte](arr)
             m2_rel_prev = indigo.unserialize(arr)
 
             unser1_prev.append(mol_rel_prev)

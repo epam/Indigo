@@ -77,9 +77,44 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoMolfile(self));
     }
 
+    public String sequence() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoSequence(self));
+    }
+
+    public String fasta() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoFasta(self));
+    }
+
+    public String idt() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoIdt(self));
+    }
+
+    public String helm() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoHelm(self));
+    }
+
+    public String getOriginalFormat() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoGetOriginalFormat(self));
+    }
+
     public void saveMolfile(String filename) {
         dispatcher.setSessionID();
         Indigo.checkResult(this, lib.indigoSaveMolfileToFile(self, filename));
+    }
+
+    public void saveSequenceToFile(String filename) {
+        dispatcher.setSessionID();
+        Indigo.checkResult(this, lib.indigoSaveSequenceToFile(self, filename));
+    }
+
+    public void saveFastaToFile(String filename) {
+        dispatcher.setSessionID();
+        Indigo.checkResult(this, lib.indigoSaveFastaToFile(self, filename));
     }
 
     public String cml() {
@@ -100,6 +135,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public String cdxml() {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoCdxml(self));
+    }
+
+    public String b64cdx() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoCdxBase64(self));
     }
 
     public void saveCdxml(String filename) {
@@ -1437,6 +1477,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         Indigo.checkResult(this, lib.indigoUnfoldHydrogens(self));
     }
 
+    public void foldUnfoldHydrogens() {
+        dispatcher.setSessionID();
+        Indigo.checkResult(this, lib.indigoFoldUnfoldHydrogens(self));
+    }
+
+    public void clearXYZ() {
+        dispatcher.setSessionID();
+        Indigo.checkResult(this, lib.indigoClearXYZ(self));
+    }
+
     public void layout() {
         dispatcher.setSessionID();
         Indigo.checkResult(this, lib.indigoLayout(self));
@@ -1858,5 +1908,10 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public String dbgInternalType() {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoDbgInternalType(self));
+    }
+
+    public int copyRGroups(IndigoObject other) {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoCopyRGroups(other.self, self));
     }
 }

@@ -7,6 +7,8 @@ import com.epam.indigo.model.NamingConstants;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import java.util.Collections;
+
 /**
  * TODO: Add generic support or add IndigoRecordReaction support
  */
@@ -27,7 +29,7 @@ abstract public class NoSQLElasticCompareAbstract {
         ElasticRepository.ElasticRepositoryBuilder<IndigoRecordMolecule> builder = new ElasticRepository.ElasticRepositoryBuilder<>();
         repository = builder
                 .withIndexName(NamingConstants.BINGO_MOLECULES)
-                .withHostName(elasticsearchContainer.getHost())
+                .withHostsNames(Collections.singletonList(elasticsearchContainer.getHost()))
                 .withPort(elasticsearchContainer.getFirstMappedPort())
                 .withScheme("http")
                 .withReplicas(0)

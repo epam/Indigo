@@ -43,6 +43,11 @@ namespace indigo
     {
     public:
         DECL_ERROR;
+        enum class SMILES_MODE
+        {
+            SMILES_CHEMAXON = 0,
+            SMILES_DAYLIGHT
+        };
 
         SmilesSaver(Output& output);
         ~SmilesSaver();
@@ -55,6 +60,7 @@ namespace indigo
         bool ignore_hydrogens;
         bool canonize_chiralities;
         bool write_extra_info;
+        bool chemaxon;
         bool separate_rsites;
         bool rsite_indices_as_aam;
 
@@ -64,6 +70,8 @@ namespace indigo
 
         static void writePseudoAtom(const char* label, Output& out);
         void writeSpecialAtom(int aid, Output& out);
+        static SMILES_MODE parseFormatMode(const std::string& format);
+        static void saveFormatMode(SMILES_MODE mode, std::string& output);
 
         bool inside_rsmiles;
 
@@ -102,8 +110,8 @@ namespace indigo
         void _writeAtom(int idx, bool aromatic, bool lowercase, int chirality) const;
         void _writeChirality(int chirality) const;
         void _writeCharge(int charge) const;
-        void _writeSmartsAtom(int idx, QueryMolecule::Atom* atom, int chirality, int depth, bool has_or_parent, bool has_not_parent) const;
-        void _writeSmartsBond(int idx, QueryMolecule::Bond* bond, bool has_or_parent) const;
+        static void _writeSmartsAtom(Output& output, QueryMolecule::Atom* atom, int aam, int chirality, int depth, bool has_or_parent, bool has_not_parent);
+        static void _writeSmartsBond(Output& output, QueryMolecule::Bond* bond, bool has_or_parent);
         void _markCisTrans();
         void _banSlashes();
         int _calcBondDirection(int idx, int vprev);
@@ -120,6 +128,8 @@ namespace indigo
         void _writeRingBonds();
         void _writeUnsaturated();
         void _writeSubstitutionCounts();
+        void _writeWedges();
+        void _writeBondDirs(const std::string& tag, const std::vector<std::pair<int, int>>& bonds);
 
         bool _shouldWriteAromaticBond(int bond_idx);
         void _startExtension();
@@ -181,7 +191,6 @@ namespace indigo
         int _written_components;
         int _touched_cistransbonds;
         bool _comma;
-        bool _simple_sru;
 
     private:
         SmilesSaver(const SmilesSaver&); // no implicit copy

@@ -42,6 +42,7 @@ namespace indigo
     class Molecule;
     class QueryMolecule;
     class SGroup;
+    class Superatom;
     class MetaObjectsInterface;
 
     /*
@@ -90,25 +91,39 @@ namespace indigo
         };
 
         int addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope);
-        int addBondToMoleculeQuery(int beg, int end, int order, int topology = 0);
+        int addBondToMoleculeQuery(int beg, int end, int order, int topology = 0, int direction = 0);
         void validateMoleculeBond(int order);
         void parseAtoms(const rapidjson::Value& atoms, BaseMolecule& mol, std::vector<EnhancedStereoCenter>& stereo_centers);
         void parseBonds(const rapidjson::Value& bonds, BaseMolecule& mol);
         void parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol);
-        void parseSelection(const rapidjson::Value& selection, BaseMolecule& mol);
         void parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol);
+        void parseProperties(const rapidjson::Value& props, BaseMolecule& mol);
         void setStereoFlagPosition(const rapidjson::Value& pos, int fragment_index, BaseMolecule& mol);
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
+        int parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol);
+        void addToLibMonomerTemplate(const rapidjson::Value& mt_json, BaseMolecule& mol, int tgroup_id);
+        void addToLibMonomerGroupTemplate(const rapidjson::Value& monomer_group_template);
+        std::string monomerTemplateClass(const rapidjson::Value& monomer_template);
+        std::string monomerMolClass(const std::string& class_name);
 
     private:
+        void fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol);
         rapidjson::Value& _mol_nodes;
+
         RGroupDescriptionList _rgroups;
 
         rapidjson::Value _meta_objects;
         rapidjson::Value _mol_array;
+        rapidjson::Value _monomer_array;
+        rapidjson::Value _connection_array;
+        rapidjson::Value _templates;
+        std::unordered_map<std::string, int> _id_to_template;
+        std::map<std::string, std::string> _template_ref_to_id;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
+        unsigned int components_count;
+        bool _is_library;
     };
 
 } // namespace indigo

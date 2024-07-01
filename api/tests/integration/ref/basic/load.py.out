@@ -25,7 +25,7 @@ molecule auto loader: SMILES loader: unexpected end of input
 ** 1 **
 molecule auto loader: SMILES loader: invalid character within atom description: '"'
 ** 2 **
-molecule auto loader: SMILES loader: 'h' specifier is not supported
+molecule auto loader: SMILES loader: 'h' specifier is allowed only for query molecules
 ** 3 **
 molecule auto loader: SMILES loader: 'D' specifier is allowed only for query molecules
 ** 4 **
@@ -45,7 +45,7 @@ scanner: appendLine(): end of stream
 ** 11 **
 molecule auto loader: SMILES loader: invalid character within atom description: '"'
 ** 12 **
-molecule auto loader: SMILES loader: unrecognized lowercase symbol: e
+molecule auto loader: SMILES loader: unrecognized lowercase symbol: b
 ** 13 **
 C1C=CC=CC=1
 ** 14 **

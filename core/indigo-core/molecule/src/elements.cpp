@@ -236,6 +236,13 @@ int Element::fromTwoChars2(char c1, char c2)
     return fromString2(str);
 }
 
+int Element::fromTwoChars2(char c1, int c2)
+{
+    if (c2 < 0)
+        return -1;
+    return fromTwoChars2(c1, static_cast<char>(c2));
+}
+
 bool Element::isHalogen(int element)
 {
     return element == ELEM_F || element == ELEM_Cl || element == ELEM_Br || element == ELEM_I || element == ELEM_At;
@@ -1071,7 +1078,7 @@ void Element::_initDefaultIsotopes()
     std::vector<double> most_abundant_isotope_fraction;
     most_abundant_isotope_fraction.resize(_element_parameters.size());
 
-    for (int i = ELEM_MIN; i < _element_parameters.size(); i++)
+    for (unsigned int i = ELEM_MIN; i < _element_parameters.size(); i++)
     {
         _element_parameters.at(i).default_isotope = IsotopeKey::NATURAL;
         _element_parameters.at(i).most_abundant_isotope = IsotopeKey::NATURAL;
@@ -1132,7 +1139,7 @@ void Element::_initDefaultIsotopes()
         }
     }
 
-    for (int i = ELEM_MIN; i < _element_parameters.size(); i++)
+    for (unsigned int i = ELEM_MIN; i < _element_parameters.size(); i++)
     {
         ElementParameters& element = _element_parameters.at(i);
 
@@ -1147,7 +1154,7 @@ void Element::_initDefaultIsotopes()
     }
 
     // Post-condition
-    for (int i = ELEM_MIN; i < _element_parameters.size(); i++)
+    for (unsigned int i = ELEM_MIN; i < _element_parameters.size(); i++)
         if (_element_parameters.at(i).default_isotope == IsotopeKey::NATURAL)
             // usually you can't catch this as it's being thrown before main()
             throw Error("default isotope is not set on element #%d", i);
@@ -1303,7 +1310,7 @@ int Element::getNumOuterElectrons(int element)
         4 // Ce
     };
     // clang-format on
-    if (element > outerElements.size())
+    if (element > static_cast<int>(outerElements.size()))
     {
         throw Error("outerElements are currently filled only for elements up to lantanoids");
     }

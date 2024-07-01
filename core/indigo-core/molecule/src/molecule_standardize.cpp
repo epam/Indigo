@@ -519,7 +519,7 @@ void MoleculeStandardizer::_standardizeStereo(Molecule& mol)
     }
 }
 
-void MoleculeStandardizer::_standardizeStereo(QueryMolecule& mol)
+void MoleculeStandardizer::_standardizeStereo(QueryMolecule& /*mol*/)
 {
     throw Error("This option is not available for QueryMolecule object");
 }
@@ -641,7 +641,7 @@ void MoleculeStandardizer::_standardizeCharges(Molecule& mol)
     }
 }
 
-void MoleculeStandardizer::_standardizeCharges(QueryMolecule& mol)
+void MoleculeStandardizer::_standardizeCharges(QueryMolecule& /*mol*/)
 {
     throw Error("This option is not available for QueryMolecule object");
 }
@@ -826,7 +826,7 @@ void MoleculeStandardizer::_makeNonHAtomsCAtoms(QueryMolecule& mol)
     }
 }
 
-void MoleculeStandardizer::_makeNonHAtomsAAtoms(Molecule& mol)
+void MoleculeStandardizer::_makeNonHAtomsAAtoms(Molecule& /*mol*/)
 {
     throw Error("This option is available only for QueryMolecule object");
 }
@@ -841,7 +841,7 @@ void MoleculeStandardizer::_makeNonHAtomsAAtoms(QueryMolecule& mol)
     }
 }
 
-void MoleculeStandardizer::_makeNonCHAtomsQAtoms(Molecule& mol)
+void MoleculeStandardizer::_makeNonCHAtomsQAtoms(Molecule& /*mol*/)
 {
     throw Error("This option is available only for QueryMolecule object");
 }
@@ -880,7 +880,7 @@ void MoleculeStandardizer::_clearCoordinates(BaseMolecule& mol)
     mol.clearXyz();
 }
 
-void MoleculeStandardizer::_fixCoordinateDimension(BaseMolecule& mol)
+void MoleculeStandardizer::_fixCoordinateDimension(BaseMolecule& /*mol*/)
 {
     throw Error("This option is not used for Indigo");
 }
@@ -920,7 +920,7 @@ void MoleculeStandardizer::_clearMolecule(BaseMolecule& mol)
     mol.clear();
 }
 
-void MoleculeStandardizer::_removeMolecule(BaseMolecule& mol)
+void MoleculeStandardizer::_removeMolecule(BaseMolecule& /*mol*/)
 {
     throw Error("Not implemented yet");
 }
@@ -1190,7 +1190,7 @@ void MoleculeStandardizer::_clearCharges(QueryMolecule& mol)
     }
 }
 
-void MoleculeStandardizer::_clearPiBonds(BaseMolecule& mol)
+void MoleculeStandardizer::_clearPiBonds(BaseMolecule& /*mol*/)
 {
     throw Error("This option is not used for Indigo");
 }
@@ -1200,27 +1200,27 @@ void MoleculeStandardizer::_clearHighlightColors(BaseMolecule& mol)
     mol.unhighlightAll();
 }
 
-void MoleculeStandardizer::_clearQueryInfo(BaseMolecule& mol)
+void MoleculeStandardizer::_clearQueryInfo(BaseMolecule& /*mol*/)
 {
     throw Error("This option is not used for Indigo");
 }
 
-void MoleculeStandardizer::_clearAtomLabels(Molecule& mol)
+void MoleculeStandardizer::_clearAtomLabels(Molecule& /*mol*/)
 {
     throw Error("This option is available only for QueryMolecule object?");
 }
 
-void MoleculeStandardizer::_clearAtomLabels(QueryMolecule& mol)
+void MoleculeStandardizer::_clearAtomLabels(QueryMolecule& /*mol*/)
 {
     throw Error("This option is available only for QueryMolecule object?");
 }
 
-void MoleculeStandardizer::_clearBondLabels(Molecule& mol)
+void MoleculeStandardizer::_clearBondLabels(Molecule& /*mol*/)
 {
     throw Error("This option is available only for QueryMolecule object?");
 }
 
-void MoleculeStandardizer::_clearBondLabels(QueryMolecule& mol)
+void MoleculeStandardizer::_clearBondLabels(QueryMolecule& /*mol*/)
 {
     throw Error("This option is available only for QueryMolecule object?");
 }
@@ -1267,7 +1267,7 @@ void MoleculeStandardizer::_neutralizeBondedZwitterions(Molecule& mol)
     }
 }
 
-void MoleculeStandardizer::_neutralizeBondedZwitterions(QueryMolecule& mol)
+void MoleculeStandardizer::_neutralizeBondedZwitterions(QueryMolecule& /*mol*/)
 {
     throw Error("This option is not available for QueryMolecule object");
 }
@@ -1342,12 +1342,12 @@ void MoleculeStandardizer::_clearHydrogenBonds(BaseMolecule& mol)
         mol.removeBonds(remove_bonds);
 }
 
-void MoleculeStandardizer::_localizeMarkushRAtomsOnRings(Molecule& mol)
+void MoleculeStandardizer::_localizeMarkushRAtomsOnRings(Molecule& /*mol*/)
 {
     throw Error("This option is available only for QueryMolecule object?");
 }
 
-void MoleculeStandardizer::_localizeMarkushRAtomsOnRings(QueryMolecule& mol)
+void MoleculeStandardizer::_localizeMarkushRAtomsOnRings(QueryMolecule& /*mol*/)
 {
 }
 

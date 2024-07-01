@@ -36,6 +36,7 @@ CanonicalSmilesSaver::CanonicalSmilesSaver(Output& output) : SmilesSaver(output)
     ignore_invalid_hcount = false;
     ignore_hydrogens = true;
     canonize_chiralities = true;
+    write_extra_info = false;
     _initial_to_actual.clear();
     _initial_to_actual.emplace(0, 0);
     _aam_counter = 0;
@@ -116,7 +117,7 @@ void CanonicalSmilesSaver::saveMolecule(Molecule& mol_)
     _actual_atom_atom_mapping.clear_resize(mol.vertexCount());
     _actual_atom_atom_mapping.zerofill();
 
-    for (int i = 0; i < order.size(); ++i)
+    for (i = 0; i < order.size(); ++i)
     {
         int aam = mol.reaction_atom_mapping[order[i]];
         if (aam)

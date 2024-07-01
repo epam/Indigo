@@ -19,6 +19,11 @@
 #ifndef __properties_map_h__
 #define __properties_map_h__
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include "base_cpp/array.h"
 #include "base_cpp/auto_iter.h"
 #include "base_cpp/exception.h"
@@ -44,6 +49,7 @@ namespace indigo
         //   }
         void copy(RedBlackStringObjMap<Array<char>>& properties);
         void copy(PropertiesMap&);
+        void merge(PropertiesMap&);
         void insert(const char* key, const char* value);
         void insert(const char* key, const std::string& value);
 
@@ -57,6 +63,7 @@ namespace indigo
         const char* at(const char* key) const;
         void remove(const char* key);
         void clear();
+        bool is_empty();
 
         class PrIter : public AutoIterator
         {
@@ -91,5 +98,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif // __auto_iter_h__

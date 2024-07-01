@@ -61,6 +61,12 @@ void Output::writeBinaryWord(word value)
     write(&value, sizeof(word));
 }
 
+void Output::writeBinaryUInt16(uint16_t value)
+{
+    // value = htons(value);
+    write(&value, sizeof(value));
+}
+
 void Output::printf(const char* format, ...)
 {
     va_list args;

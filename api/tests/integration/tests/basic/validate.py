@@ -12,7 +12,7 @@ from env_indigo import *  # noqa
 
 indigo = Indigo()
 
-q = indigo.loadSmarts("[N,H3]")
+q = indigo.loadSmarts("[N,!#1&H3]")
 
 
 def doTest(m):

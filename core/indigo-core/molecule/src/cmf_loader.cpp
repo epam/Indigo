@@ -108,7 +108,7 @@ bool CmfLoader::_readAtom(int& code, _AtomDesc& atom, int atom_idx)
             int c;
             if (!_getNextCode(c))
                 throw Error("pseudo-atom label is incomplete");
-            label[i] = c;
+            label[i] = static_cast<char>(c);
         }
 
         label[len] = 0;
@@ -288,7 +288,7 @@ void CmfLoader::_readBond(int& code, _BondDesc& bond)
     bond.cis_trans = 0;
     bond.flags = 0;
     bond.swap = false;
-    bond.direction = 0;
+    bond.direction = BOND_ZERO;
     bond.highlighted = false;
 
     if (code == CMF_BOND_SINGLE_CHAIN)
@@ -700,12 +700,12 @@ void CmfLoader::loadMolecule(Molecule& mol)
     {
         // Compute inv_atom_mapping_to_restore
         inv_atom_mapping_to_restore.clear_resize(atom_mapping_to_restore.size());
-        for (int i = 0; i < atom_mapping_to_restore.size(); i++)
+        for (i = 0; i < atom_mapping_to_restore.size(); i++)
             inv_atom_mapping_to_restore[atom_mapping_to_restore[i]] = i;
 
         // Compute inv_bond_mapping_to_restore
         inv_bond_mapping_to_restore.clear_resize(bond_mapping_to_restore.size());
-        for (int i = 0; i < bond_mapping_to_restore.size(); i++)
+        for (i = 0; i < bond_mapping_to_restore.size(); i++)
             inv_bond_mapping_to_restore[bond_mapping_to_restore[i]] = i;
 
         QS_DEF(Molecule, tmp);
@@ -746,7 +746,11 @@ void CmfLoader::_readSGroup(int code, Molecule& mol)
         _readString(s.subscript);
         _readString(s.sa_class);
         byte bits = _scanner->readByte();
-        s.contracted = bits & 0x01;
+        if (bits & 0x01) // -1 and 1 are the same from here
+            s.contracted = DisplayOption::Contracted;
+        else
+            s.contracted = DisplayOption::Expanded;
+
         int bcons = bits >> 1;
         if (bcons > 0)
         {
@@ -952,7 +956,7 @@ void CmfLoader::loadXyz(Scanner& scanner)
     }
 
     // Read sgroup coordinates data
-    for (int i = 0; i < _sgroup_order.size(); i++)
+    for (i = 0; i < _sgroup_order.size(); i++)
         _readSGroupXYZ(scanner, _sgroup_order[i], *_mol, range);
 
     _mol->have_xyz = true;

@@ -100,6 +100,9 @@ namespace indigo
         bool isTemplateAtom(int idx) override;
         const char* getTemplateAtom(int idx) override;
         const int getTemplateAtomSeqid(int idx) override;
+        const char* getTemplateAtomSeqName(int idx) override;
+        const int getTemplateAtomTemplateIndex(int idx) override;
+
         const char* getTemplateAtomClass(int idx) override;
         const int getTemplateAtomDisplayOption(int idx) override;
 
@@ -126,6 +129,12 @@ namespace indigo
 
         bool aromatize(const AromaticityOptions& options) override;
         bool dearomatize(const AromaticityOptions& options) override;
+
+        int addAtom(int label) override;
+        int addBond(int beg, int end, int order) override;
+
+        int getImplicitH(int idx, bool impl_h_no_throw) override;
+        void setImplicitH(int idx, int impl_h) override;
 
         int layers;
 

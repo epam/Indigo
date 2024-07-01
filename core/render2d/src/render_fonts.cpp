@@ -102,6 +102,7 @@ double RenderContext::fontGetSize(FONT_SIZE size)
     return _settings.fzz[size];
 }
 
+#ifndef RENDER_USE_FONT_MANAGER
 void RenderContext::fontsSetFont(const TextItem& ti)
 {
     std::lock_guard<std::mutex> _lock(_cairo_mutex);
@@ -112,8 +113,22 @@ void RenderContext::fontsSetFont(const TextItem& ti)
     cairo_set_font_size(_cr, ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
     cairoCheckStatus();
 }
+#else
+void RenderContext::fontsSetFont(const TextItem& ti)
+{
+    std::lock_guard<std::mutex> _lock(_cairo_mutex);
 
-void RenderContext::fontsGetTextExtents(cairo_t* cr, const char* text, int size, float& dx, float& dy, float& rx, float& ry)
+    cairo_font_face_t* _cairo_face = _font_face_manager.selectCairoFontFace(ti);
+    cairoCheckStatus();
+
+    cairo_set_font_face(_cr, _cairo_face);
+    cairoCheckStatus();
+    cairo_set_font_size(_cr, ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
+    cairoCheckStatus();
+}
+#endif
+
+void RenderContext::fontsGetTextExtents(cairo_t* cr, const char* text, int /*size*/, float& dx, float& dy, float& rx, float& ry)
 {
     std::lock_guard<std::mutex> _lock(_cairo_mutex);
     cairo_text_extents_t te;

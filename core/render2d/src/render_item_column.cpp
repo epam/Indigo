@@ -42,9 +42,9 @@ void RenderItemColumn::setVerticalSpacing(float spacing)
     vSpace = spacing;
 }
 
-void RenderItemColumn::setAlignment(MultilineTextLayout::Alignment alignment)
+void RenderItemColumn::setAlignment(MultilineTextLayout::Alignment new_alignment)
 {
-    this->alignment = alignment;
+    this->alignment = new_alignment;
 }
 
 void RenderItemColumn::estimateSize()
