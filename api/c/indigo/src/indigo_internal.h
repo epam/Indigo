@@ -423,6 +423,7 @@ protected:
     }
 
 DLLEXPORT Indigo& indigoGetInstance();
+DLLEXPORT _SessionLocalContainer<Indigo>& indigoSelf();
 
 class DLLEXPORT IndigoError : public Exception
 {

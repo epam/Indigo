@@ -144,7 +144,7 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
             if (mol.isTemplateAtom(atom_idx))
             {
                 std::string mon_class = mol.getTemplateAtomClass(atom_idx);
-                if (isBackboneClass(mon_class))
+                if (isBackboneClass(mon_class) && mon_class != kMonomerClassCHEM) // No SEQID for chem
                 {
                     mol.asMolecule().setTemplateAtomSeqid(atom_idx, seq_id);
                     if (mon_class == kMonomerClassSUGAR)
@@ -155,7 +155,7 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
                         if (dirs.size())
                         {
                             auto br_it = dirs.find(kBranchAttachmentPointIdx);
-                            if (br_it != dirs.end())
+                            if (br_it != dirs.end() && mol.isTemplateAtom(br_it->second))
                             {
                                 std::string br_class = mol.getTemplateAtomClass(br_it->second);
                                 seq_name = mol.getTemplateAtom(br_it->second);
@@ -169,7 +169,7 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
                             if (seq_name.size())
                             {
                                 br_it = dirs.find(kRightAttachmentPointIdx);
-                                if (br_it != dirs.end())
+                                if (br_it != dirs.end() && mol.isTemplateAtom(br_it->second))
                                 {
                                     std::string br_class = mol.getTemplateAtomClass(br_it->second);
                                     if (br_class == kMonomerClassPHOSPHATE)
@@ -630,14 +630,15 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
         if (mol.isTemplateAtom(i))
         {
+            std::string tclass;
             if (mol.getTemplateAtomClass(i) != 0 && strlen(mol.getTemplateAtomClass(i)) > 0)
             {
-                std::string tclass = mol.getTemplateAtomClass(i);
+                tclass = mol.getTemplateAtomClass(i);
                 // convert CHEM to LINKER for BIOVIA
                 out.printf(" CLASS=%s", tclass == kMonomerClassCHEM ? kMonomerClassLINKER : tclass.c_str());
             }
 
-            if (mol.getTemplateAtomSeqid(i) != -1)
+            if (mol.getTemplateAtomSeqid(i) != -1 && tclass != kMonomerClassCHEM) // No SEQID for chem
                 out.printf(" SEQID=%d", mol.getTemplateAtomSeqid(i));
 
             // if (mol.getTemplateAtomSeqName(i) && strlen(mol.getTemplateAtomSeqName(i)))

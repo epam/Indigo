@@ -83,6 +83,8 @@ namespace indigo
         int readUnsigned();
         int tryReadUnsigned();
 
+        bool startsWith(const char* word);
+
         // when delimiters = 0, any isspace() character is considered delimiter
         void readWord(Array<char>& word, const char* delimiters);
 

@@ -104,6 +104,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoIdt(self));
         }
 
+        public string helm()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoHelm(self));
+        }
+
         public void saveSequenceToFile(string filename)
         {
             dispatcher.setSessionID();

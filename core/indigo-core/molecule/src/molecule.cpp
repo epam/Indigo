@@ -878,7 +878,9 @@ int Molecule::_getImplicitHForConnectivity(int idx, int conn, bool use_cache)
                 else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUBLET, conn, valence, impl_h, false))
                     radical = RADICAL_DOUBLET;
                 else
+                {
                     throw Element::Error("can not calculate valence on %s, charge %d, connectivity %d", Element::toString(atom.number), atom.charge, conn);
+                }
                 if (use_cache)
                 {
                     _radicals.expandFill(idx + 1, -1);
@@ -1481,37 +1483,6 @@ const int Molecule::getTemplateAtomDisplayOption(int idx)
     // const int res = occur.contracted;
 
     return res;
-}
-
-void Molecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map)
-{
-    templates_map.clear();
-    for (int i = tgroups.begin(); i != tgroups.end(); i = tgroups.next(i))
-    {
-        auto& tg = tgroups.getTGroup(i);
-        std::string tname = tg.tgroup_name.size() ? tg.tgroup_name.ptr() : monomerAlias(tg);
-        templates_map.emplace(std::make_pair(tname, tg.tgroup_class.ptr()), std::ref(tg));
-    }
-}
-
-void Molecule::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map)
-{
-    directions_map.clear();
-    if (vertexCount())
-    {
-        directions_map.resize(vertexEnd());
-        for (int i = template_attachment_points.begin(); i != template_attachment_points.end(); i = template_attachment_points.next(i))
-        {
-            auto& tap = template_attachment_points[i];
-            if (tap.ap_id.size())
-            {
-                Array<char> atom_label;
-                getAtomSymbol(tap.ap_occur_idx, atom_label);
-                int ap_id = tap.ap_id[0] - 'A';
-                directions_map[tap.ap_occur_idx].emplace(ap_id, tap.ap_aidx);
-            }
-        }
-    }
 }
 
 BaseMolecule* Molecule::neu()

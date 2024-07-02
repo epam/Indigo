@@ -7,6 +7,7 @@
 #endif
 
 #include "base_cpp/exception.h"
+#include "molecule/idt_alias.h"
 #include "molecule/molecule_tgroups.h"
 #include <map>
 #include <memory>
@@ -47,7 +48,9 @@ namespace indigo
         Terminator,
         Linker,
         Unknown,
-        CHEM
+        CHEM,
+        DNA,
+        RNA
     };
 
     enum class NucleotideType
@@ -88,84 +91,6 @@ namespace indigo
         std::unique_ptr<BaseMolecule> _templates_mol;
         std::unordered_map<NucleotideKey, GranularNucleotide, pair_hash> _nucleotides_lib;
         std::unordered_map<std::string, std::shared_ptr<BaseMolecule>> _aminoacids_lib;
-    };
-
-    enum class IdtModification
-    {
-        FIVE_PRIME_END,
-        INTERNAL,
-        THREE_PRIME_END,
-    };
-
-    class DLLEXPORT IdtAlias
-    {
-    public:
-        DECL_ERROR;
-        IdtAlias(){};
-        IdtAlias(const std::string& base) : _base(base), _five_prime_end("5" + base), _internal("i" + base), _three_prime_end("3" + base){};
-        IdtAlias(const std::string& base, const std::string& five_prime_end, const std::string& internal, const std::string& three_prime_end)
-            : _base(base), _five_prime_end(five_prime_end), _internal(internal), _three_prime_end(three_prime_end){};
-
-        inline void setModifications(const std::string& five_prime_end, const std::string& internal, const std::string& three_prime_end)
-        {
-            _five_prime_end = five_prime_end;
-            _internal = internal;
-            _three_prime_end = three_prime_end;
-        };
-
-        inline bool hasModification(IdtModification modification) const
-        {
-            switch (modification)
-            {
-            case IdtModification::FIVE_PRIME_END:
-                return hasFivePrimeEnd();
-            case IdtModification::INTERNAL:
-                return hasInternal();
-            case IdtModification::THREE_PRIME_END:
-                return hasThreePrimeEnd();
-            };
-            return false;
-        }
-
-        inline bool hasFivePrimeEnd() const
-        {
-            return _five_prime_end.size() != 0;
-        }
-
-        inline bool hasInternal() const
-        {
-            return _internal.size() != 0;
-        }
-
-        inline bool hasThreePrimeEnd() const
-        {
-            return _three_prime_end.size() != 0;
-        }
-
-        const std::string& getModification(IdtModification modification) const;
-        const std::string& getFivePrimeEnd() const;
-        const std::string& getInternal() const;
-        const std::string& getThreePrimeEnd() const;
-
-        inline static std::string IdtModificationToString(IdtModification mod)
-        {
-            switch (mod)
-            {
-            case IdtModification::FIVE_PRIME_END:
-                return "five-prime end";
-            case IdtModification::INTERNAL:
-                return "internal";
-            case IdtModification::THREE_PRIME_END:
-                return "three-prime end";
-            };
-            return "unknown modification";
-        };
-
-    private:
-        std::string _base;
-        std::string _five_prime_end;
-        std::string _internal;
-        std::string _three_prime_end;
     };
 
     enum class AttachmentPointType
@@ -213,15 +138,55 @@ namespace indigo
         MonomerTemplate() = delete;
 
         MonomerTemplate(const std::string& id, MonomerClass mt_class, const std::string& class_HELM, const std::string& full_name, const std::string& alias,
-                        const std::string& natural_analog, int tgroup_id, BaseMolecule& mol)
-            : _id(id), _class(mt_class), _class_HELM(class_HELM), _full_name(full_name), _alias(alias), _natural_analog(natural_analog), _tgroup_id(tgroup_id),
-              _mol(mol){};
+                        const std::string& natural_analog, bool unresolved, const TGroup& tgroup)
+            : _id(id), _class(mt_class), _class_HELM(class_HELM), _full_name(full_name), _alias(alias), _natural_analog(natural_analog), _unresolved(unresolved)
+        {
+            _tgroup.copy(tgroup);
+        }
 
-        MonomerTemplate(const std::string& id, const std::string& mt_class, const std::string& class_HELM, const std::string& full_name,
-                        const std::string& alias, const std::string& natural_analog, int tgroup_id, BaseMolecule& mol);
+        MonomerTemplate(const MonomerTemplate& other)
+            : _id(other._id), _class(other._class), _class_HELM(other._class_HELM), _full_name(other._full_name), _alias(other._alias),
+              _natural_analog(other._natural_analog), _idt_alias(other._idt_alias), _unresolved(other._unresolved)
+        {
+            _tgroup.copy(other._tgroup);
+        }
 
-        static const std::string& MonomerClassToStr(MonomerClass monomer_type);
-        static const MonomerClass StrToMonomerClass(const std::string& monomer_type);
+        static const std::string& MonomerClassToStr(MonomerClass monomer_type)
+        {
+            static const std::map<MonomerClass, std::string> _type_to_str{
+                {MonomerClass::AminoAcid, "AminoAcid"},
+                {MonomerClass::Sugar, "Sugar"},
+                {MonomerClass::Phosphate, "Phosphate"},
+                {MonomerClass::Base, "Base"},
+                {MonomerClass::Terminator, "Terminator"},
+                {MonomerClass::Linker, "Linker"},
+                {MonomerClass::Unknown, "Unknown"},
+                {MonomerClass::CHEM, "CHEM"},
+                {MonomerClass::DNA, "DNA"},
+                {MonomerClass::RNA, "RNA"},
+            };
+
+            return _type_to_str.at(monomer_type);
+        }
+
+        static const MonomerClass StrToMonomerClass(const std::string& monomer_type)
+        {
+            static const std::map<std::string, MonomerClass> _str_to_type = {
+                {"AminoAcid", MonomerClass::AminoAcid},
+                {"Sugar", MonomerClass::Sugar},
+                {"Phosphate", MonomerClass::Phosphate},
+                {"Base", MonomerClass::Base},
+                {"Terminator", MonomerClass::Terminator},
+                {"Linker", MonomerClass::Linker},
+                {"Unknown", MonomerClass::Unknown},
+                {"CHEM", MonomerClass::CHEM},
+                {"DNA", MonomerClass::DNA},
+                {"RNA", MonomerClass::RNA},
+            };
+            if (_str_to_type.count(monomer_type))
+                return _str_to_type.at(monomer_type);
+            return MonomerClass::Unknown;
+        }
 
         inline void AddAttachmentPoint(const AttachmentPoint& att_point)
         {
@@ -274,9 +239,9 @@ namespace indigo
             return _natural_analog;
         }
 
-        inline int TGroupId() const
+        inline const IdtAlias& idtAlias() const
         {
-            return _tgroup_id;
+            return _idt_alias;
         }
 
         inline void setIdtAlias(const IdtAlias& idt_alias)
@@ -285,6 +250,8 @@ namespace indigo
         }
 
         bool hasIdtAlias(const std::string& alias, IdtModification mod);
+
+        bool hasIdtAliasBase(const std::string& alias_base);
 
     private:
         std::string _id;
@@ -296,8 +263,8 @@ namespace indigo
         std::map<std::string, AttachmentPoint> _attachment_points;
         std::string molecule;
         IdtAlias _idt_alias;
-        int _tgroup_id;
-        BaseMolecule& _mol;
+        bool _unresolved;
+        TGroup _tgroup;
     };
 
     class DLLEXPORT MonomerGroupTemplate
@@ -320,9 +287,11 @@ namespace indigo
 
         bool hasIdtAlias(const std::string& alias, IdtModification mod);
 
+        bool hasIdtAliasBase(const std::string& alias_base);
+
         inline bool hasTemplateClass(MonomerClass monomer_class)
         {
-            for (auto id_template : _monomer_templates)
+            for (auto& id_template : _monomer_templates)
             {
                 if (id_template.second.monomerClass() == monomer_class)
                     return true;
@@ -341,7 +310,7 @@ namespace indigo
             return _id;
         }
 
-        inline const IdtAlias& idt_alias() const
+        inline const IdtAlias& idtAlias() const
         {
             return _idt_alias;
         }
@@ -368,22 +337,52 @@ namespace indigo
 
         inline void addMonomerTemplate(MonomerTemplate& monomer_template)
         {
-            _monomer_templates.emplace(monomer_template.id(), monomer_template);
-        };
+            auto res = _monomer_templates.emplace(monomer_template.id(), monomer_template);
+            if (res.second)
+                for (auto modification : {IdtModification::FIVE_PRIME_END, IdtModification::INTERNAL, IdtModification::THREE_PRIME_END})
+                {
+                    if (monomer_template.idtAlias().hasModification(modification))
+                    {
+                        const std::string& alias = monomer_template.idtAlias().getModification(modification);
+                        MonomerTemplate& templ_ref = res.first->second;
+                        _id_alias_to_monomer_templates.emplace(alias, std::make_pair(std::ref(templ_ref), modification));
+                    }
+                }
+        }
+
         inline void addMonomerGroupTemplate(const MonomerGroupTemplate& monomer_group_template)
         {
-            _monomer_group_templates.emplace(monomer_group_template.id(), (monomer_group_template));
-        };
+            auto res = _monomer_group_templates.emplace(monomer_group_template.id(), monomer_group_template);
+            if (res.second)
+                for (auto modification : {IdtModification::FIVE_PRIME_END, IdtModification::INTERNAL, IdtModification::THREE_PRIME_END})
+                {
+                    if (monomer_group_template.idtAlias().hasModification(modification))
+                    {
+                        const std::string& alias = monomer_group_template.idtAlias().getModification(modification);
+                        _id_alias_to_monomer_group_templates.emplace(alias, std::make_pair(std::ref(res.first->second), modification));
+                    }
+                }
+        }
 
         const MonomerTemplate& getMonomerTemplateById(const std::string& monomer_template_id);
         const std::string& getMonomerTemplateIdByAlias(MonomerClass monomer_class, const std::string& monomer_template_alias);
         MonomerGroupTemplate& getMonomerGroupTemplateById(const std::string& monomer_template_id);
 
-        const std::string& getMonomerTemplateIdByIdtAliasAndMod(const std::string& alias, IdtModification mod);
-        const std::string& getMGTidByIdtAliasAndMod(const std::string& alias, IdtModification mod);
+        const std::string& getMonomerTemplateIdByIdtAliasBase(const std::string& alias_base);
+        const std::string& getMGTidByIdtAliasBase(const std::string& alias_base);
+
+        const std::string& getMonomerTemplateIdByIdtAlias(const std::string& alias, IdtModification& mod);
+        const std::string& getMGTidByIdtAlias(const std::string& alias, IdtModification& mod);
 
         const std::string& getIdtAliasByModification(IdtModification modification, const std::string sugar_id, const std::string base_id,
                                                      const std::string phosphate_id);
+        inline void clear()
+        {
+            _monomer_templates.clear();
+            _monomer_group_templates.clear();
+            _id_alias_to_monomer_templates.clear();
+            _id_alias_to_monomer_group_templates.clear();
+        }
 
     protected:
         MonomerTemplateLibrary(){};
@@ -391,6 +390,8 @@ namespace indigo
     private:
         std::map<std::string, MonomerTemplate> _monomer_templates;
         std::map<std::string, MonomerGroupTemplate> _monomer_group_templates;
+        std::map<std::string, std::pair<MonomerTemplate&, IdtModification>> _id_alias_to_monomer_templates;
+        std::map<std::string, std::pair<MonomerGroupTemplate&, IdtModification>> _id_alias_to_monomer_group_templates;
     };
 
 }

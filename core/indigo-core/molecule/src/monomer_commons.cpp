@@ -83,7 +83,7 @@ namespace indigo
     bool isBackboneClass(const std::string& monomer_class)
     {
         return isAminoAcidClass(monomer_class) || monomer_class == kMonomerClassSUGAR || monomer_class == kMonomerClassPHOSPHATE ||
-               isNucleotideClass(monomer_class);
+               monomer_class == kMonomerClassCHEM || isNucleotideClass(monomer_class);
     }
 
     bool isBasicAminoAcid(const std::string& monomer_class, const std::string& alias)
@@ -269,6 +269,29 @@ namespace indigo
         }
         return tg_it == templates_map.end() ? std::nullopt : std::optional<std::reference_wrapper<TGroup>>(std::ref(tg_it->second));
     }
+
+    HELMType getHELMTypeFromString(const std::string& helm_type)
+    {
+        static const std::unordered_map<std::string, HELMType> strToType = {
+            {kHELMPolymerTypePEPTIDE, HELMType::Peptide},
+            {kHELMPolymerTypeRNA, HELMType::RNA},
+            {kHELMPolymerTypeCHEM, HELMType::Chem},
+            {kHELMPolymerTypeUnknown, HELMType::Unknown},
+        };
+        return strToType.at(helm_type);
+    }
+
+    const std::string& getStringFromHELMType(HELMType helm_type)
+    {
+        static const std::unordered_map<HELMType, std::string> typeToStr = {
+            {HELMType::Peptide, kHELMPolymerTypePEPTIDE},
+            {HELMType::RNA, kHELMPolymerTypeRNA},
+            {HELMType::Chem, kHELMPolymerTypeCHEM},
+            {HELMType::Unknown, kHELMPolymerTypeUnknown},
+        };
+        return typeToStr.at(helm_type);
+    }
+
 }
 
 #ifdef _MSC_VER

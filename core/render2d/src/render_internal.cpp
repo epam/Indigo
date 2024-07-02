@@ -876,7 +876,7 @@ void MoleculeRenderInternal::_cloneAndFillMappings()
     _bondMappingInv.clear();
     for (int i = clone->edgeBegin(); i < clone->edgeEnd(); i = clone->edgeNext(i))
     {
-        _bondMappingInv.emplace(i, BaseMolecule::findMappedEdge(*clone, *_mol, i, _atomMappingInv.ptr()));
+        _bondMappingInv.emplace(i, BaseMolecule::findMappedEdge(*clone, *_mol, i, _atomMapping.ptr()));
     }
     _mol = clone;
     _own_mol = true;
