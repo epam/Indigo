@@ -131,7 +131,7 @@ namespace indigo
         return res;
     }
 
-    KETTextObject::KETTextObject(const Rect2f& bbox, const std::string& content) : MetaObject(CID), _alignment(TextAlignment::ELeft), _indent{}, _font_style{}
+    KETTextObject::KETTextObject(const Rect2f& bbox, const std::string& content) : MetaObject(CID), _alignment(TextAlignment::ELeft), _indent{}, _font_styles{}
     {
         using namespace rapidjson;
         _bbox = bbox;
@@ -198,7 +198,7 @@ namespace indigo
         }
     }
 
-    KETTextObject::KETTextObject(const rapidjson::Value& text_obj) : MetaObject(CID), _alignment(TextAlignment::ELeft), _indent{}, _font_style{}
+    KETTextObject::KETTextObject(const rapidjson::Value& text_obj) : MetaObject(CID), _alignment(TextAlignment::ELeft), _indent{}, _font_styles{}
     {
         using namespace rapidjson;
 
@@ -228,7 +228,7 @@ namespace indigo
             }
         };
 
-        auto style_lambda = styleLambda(_font_style);
+        auto style_lambda = styleLambda(_font_styles);
 
         DispatchMapKVP text_obj_dispatcher = {{"bounding_box", bbox_lambda},
                                               {"alignment", alignLambda(_alignment)},
@@ -237,7 +237,7 @@ namespace indigo
                                               {"subscript", style_lambda},
                                               {"superscript", style_lambda},
                                               {"indent", indentLambda(_indent)},
-                                              {"font", fontLambda(_font_style)},
+                                              {"font", fontLambda(_font_styles)},
                                               {"paragraphs", paragraphs_lambda}};
 
         applyDispatcher(text_obj, text_obj_dispatcher);

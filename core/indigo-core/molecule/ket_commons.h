@@ -108,7 +108,7 @@ namespace indigo
             return std::nullopt;
         }
 
-        void setFontStyle( FontStyle fs )
+        void setFontStyle(FontStyle fs)
         {
             _font_style = fs;
         }
@@ -244,13 +244,6 @@ namespace indigo
 
         static const std::uint32_t CID = "KET text object"_hash;
 
-        std::string _content;
-        std::list<KETTextParagraph> _block;
-        Rect2f _bbox;
-        std::optional<KETTextIndent> _indent;
-        std::optional<TextAlignment> _alignment;
-        FONT_STYLE_SET _font_style;
-
         static void applyDispatcher(const rapidjson::Value& val, const DispatchMapKVP& disp_map)
         {
             for (auto kvp_it = val.MemberBegin(); kvp_it != val.MemberEnd(); ++kvp_it)
@@ -383,7 +376,7 @@ namespace indigo
         }
 
         KETTextObject(const KETTextObject& other)
-            : MetaObject(CID), _alignment(other._alignment), _indent(other._indent), _font_style{other._font_style}, _bbox(other._bbox),
+            : MetaObject(CID), _alignment(other._alignment), _indent(other._indent), _font_styles{other._font_styles}, _bbox(other._bbox),
               _content(other._content), _block(other._block)
         {
         }
@@ -396,6 +389,44 @@ namespace indigo
         {
             return new KETTextObject(*this);
         }
+
+        auto indent() const
+        {
+            return _indent;
+        }
+
+        auto alignment() const
+        {
+            return _alignment;
+        }
+
+        const auto& boundingBox() const
+        {
+            return _bbox;
+        }
+
+        const auto& block() const
+        {
+            return _block;
+        }
+
+        const auto& content() const
+        {
+            return _content;
+        }
+
+        const auto& fontStyles() const
+        {
+            return _font_styles;
+        }
+
+    private:
+        std::string _content;
+        std::list<KETTextParagraph> _block;
+        Rect2f _bbox;
+        std::optional<KETTextIndent> _indent;
+        std::optional<TextAlignment> _alignment;
+        FONT_STYLE_SET _font_styles;
     };
 
     class KETReactionArrow : public MetaObject

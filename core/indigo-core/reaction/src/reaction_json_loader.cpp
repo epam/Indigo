@@ -492,7 +492,8 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
     for (int i = 0; i < rxn.meta().getMetaCount(KETTextObject::CID); ++i)
     {
         auto& text = (const KETTextObject&)rxn.meta().getMetaObject(KETTextObject::CID, i);
-        Rect2f bbox(Vec2f(text._bbox.left(), text._bbox.top()), Vec2f(text._bbox.left(), text._bbox.top())); // change to real text box later
+        Rect2f bbox(Vec2f(text.boundingBox().left(), text.boundingBox().top()),
+                    Vec2f(text.boundingBox().left(), text.boundingBox().top())); // change to real text box later
         components.emplace_back(bbox, ReactionFragmentType::TEXT, nullptr);
     }
 

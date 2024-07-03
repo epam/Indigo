@@ -1843,6 +1843,16 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
                         std::string content = sobj["content"].GetString();
                         Vec2f v1(sobj["position"]["x"].GetFloat(), sobj["position"]["y"].GetFloat());
                         Vec2f v2(v1);
+                        if (sobj.HasMember("pos"))
+                        {
+                            auto pos_array = sobj["pos"].GetArray();
+                            if (pos_array.Size() == 4)
+                            {
+                                auto rb = pos_array[2].GetObject();
+                                v2.x = rb["x"].GetFloat();
+                                v2.y = rb["y"].GetFloat();
+                            }
+                        }
                         Rect2f text_box(v1, v2);
                         meta_interface.addMetaObject(new KETTextObject(text_box, content));
                     }

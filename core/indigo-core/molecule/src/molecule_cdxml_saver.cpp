@@ -1418,14 +1418,14 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
         // double text_offset_y = 0;
         int font_size = static_cast<int>(KETDefaultFontSize);
         CDXMLFontStyle font_face(0);
-        for (auto& text_item : ko._block)
+        for (auto& text_item : ko.block())
         {
             bool is_first_index = true;
             size_t first_index = 0;
             size_t second_index = 0;
             // double text_offset_x = 0;
             FONT_STYLE_SET current_styles;
-            Vec2f text_origin(ko._bbox.left(), ko._bbox.top());
+            Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().top());
             std::string pos_str = std::to_string(_bond_length * text_origin.x) + " " + std::to_string(-_bond_length * text_origin.y);
             XMLElement* t = _doc->NewElement("t");
             _current->LinkEndChild(t);

@@ -312,7 +312,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
             case KETTextObject::CID: {
                 const KETTextObject& ko = static_cast<const KETTextObject&>(mobj);
                 double text_offset_y = 0;
-                for (auto& text_item : ko._block)
+                for (auto& text_item : ko.block())
                 {
                     float text_max_height = _getMaxHeight(text_item);
                     int first_index = -1;
@@ -322,7 +322,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                     TextItem ti;
                     ti.size = KETDefaultFontSize / KETFontScaleFactor; // default size
                     ti.ritype = RenderItem::RIT_TITLE;
-                    Vec2f text_origin(ko._bbox.left(), ko._bbox.top());
+                    Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().top());
                     scale(text_origin);
                     for (auto& kvp : text_item.font_styles)
                     {

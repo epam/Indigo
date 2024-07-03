@@ -1734,7 +1734,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol)
     _output.printf("%s", result.str().c_str());
 }
 
-void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
+void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& meta)
 {
     static const std::unordered_map<int, std::string> _arrow_type2string = {
         {ReactionComponent::ARROW_BASIC, "open-angle"},
@@ -1774,24 +1774,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             // arrow coordinates
             writer.Key("pos");
             writer.StartArray();
-            writer.StartObject();
-            writer.Key("x");
-            writer.Double(ar._begin.x);
-            writer.Key("y");
-            writer.Double(ar._begin.y);
-            writer.Key("z");
-            writer.Double(0);
-            writer.EndObject();
-
-            writer.StartObject();
-            writer.Key("x");
-            writer.Double(ar._end.x);
-            writer.Key("y");
-            writer.Double(ar._end.y);
-            writer.Key("z");
-            writer.Double(0);
-            writer.EndObject();
-
+            writer.WritePoint(ar._begin);
+            writer.WritePoint(ar._end);
             writer.EndArray();  // arrow coordinates
             writer.EndObject(); // end data
             writer.EndObject(); // end node
@@ -1833,29 +1817,9 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             }
             writer.Key("pos");
             writer.StartArray();
-
             auto& coords = simple_obj->_coordinates;
-
-            // point1
-            writer.StartObject();
-            writer.Key("x");
-            writer.Double(coords.first.x);
-            writer.Key("y");
-            writer.Double(coords.first.y);
-            writer.Key("z");
-            writer.Double(0);
-            writer.EndObject();
-
-            // point2
-            writer.StartObject();
-            writer.Key("x");
-            writer.Double(coords.second.x);
-            writer.Key("y");
-            writer.Double(coords.second.y);
-            writer.Key("z");
-            writer.Double(0);
-            writer.EndObject();
-
+            writer.WritePoint(coords.first);
+            writer.WritePoint(coords.second);
             writer.EndArray();
 
             // end data
@@ -1865,27 +1829,88 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             break;
         }
         case KETTextObject::CID: {
-            auto simple_obj = (KETTextObject*)pobj;
+            auto ptext_obj = (KETTextObject*)pobj;
             writer.StartObject();
             writer.Key("type");
             writer.String("text");
-            writer.Key("data");
-            writer.StartObject();
-            writer.Key("content");
-            writer.String(simple_obj->_content.c_str());
-            writer.Key("position");
-            writer.StartObject();
-            writer.Key("x");
-            writer.Double(simple_obj->_bbox.left());
-            writer.Key("y");
-            writer.Double(simple_obj->_bbox.top());
-            writer.Key("z");
-            writer.Double(0.0);
-            writer.EndObject(); // end position
-            writer.EndObject(); // end data
+            saveTextV1(writer, *ptext_obj);
+            saveTextV2(writer, *ptext_obj);
             writer.EndObject(); // end node
             break;
         }
         }
     }
+}
+
+void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const KETTextObject& text_obj)
+{
+    writer.Key("data");
+    writer.StartObject();
+    writer.Key("content");
+    writer.String(text_obj.content().c_str());
+    writer.Key("position");
+    writer.WritePoint(text_obj.boundingBox().leftTop());
+    writer.Key("pos");
+    writer.StartArray();
+    writer.WritePoint(text_obj.boundingBox().leftTop());
+    writer.WritePoint(text_obj.boundingBox().leftBottom());
+    writer.WritePoint(text_obj.boundingBox().leftTop());
+    writer.WritePoint(text_obj.boundingBox().rightBottom());
+    writer.WritePoint(text_obj.boundingBox().rightTop());
+    writer.EndArray();
+    writer.EndObject();
+}
+
+void MoleculeJsonSaver::saveTextV2(JsonWriter& writer, const KETTextObject& text_obj)
+{
+    writer.Key("bounding_box");
+    writer.StartObject();
+    writer.WriteRect(text_obj.boundingBox());
+    if (text_obj.alignment().has_value())
+        saveAlignment(writer, text_obj.alignment().value());
+    if (text_obj.indent().has_value())
+        saveIndent(writer, text_obj.indent().value());
+    writer.EndObject();
+}
+
+void MoleculeJsonSaver::saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET& fss)
+{
+
+}
+
+void MoleculeJsonSaver::saveIndent(JsonWriter& writer, const KETTextObject::KETTextIndent& indent)
+{
+    if (indent.first_line.has_value())
+    {
+    }
+
+    if (indent.left.has_value())
+    {
+    }
+
+    if (indent.right.has_value())
+    {
+    }
+}
+
+void MoleculeJsonSaver::saveAlignment(JsonWriter& writer, KETTextObject::TextAlignment alignment)
+{
+    std::string alignment_str;
+    switch (alignment)
+    {
+    case KETTextObject::TextAlignment::ELeft:
+        alignment_str = KETAlignmentLeft;
+        break;
+    case KETTextObject::TextAlignment::ERight:
+        alignment_str = KETAlignmentRight;
+        break;
+    case KETTextObject::TextAlignment::ECenter:
+        alignment_str = KETAlignmentCenter;
+        break;
+    case KETTextObject::TextAlignment::EJustify:
+        alignment_str = KETAlignmentJustify;
+        break;
+    }
+    writer.Key("alignment");
+    writer.String(alignment_str.c_str());
 }
