@@ -20,6 +20,7 @@
 #include "gzip/gzip_scanner.h"
 #include "molecule/molecule_auto_loader.h"
 #include "molecule/parse_utils.h"
+#include "molecule/rdf_loader.h"
 #include "reaction/icr_loader.h"
 #include "reaction/icr_saver.h"
 #include "reaction/query_reaction.h"
@@ -44,6 +45,7 @@ void ReactionAutoLoader::_init()
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
     dearomatize_on_load = false;
+    treat_stereo_as = 0;
 }
 
 IMPL_ERROR(ReactionAutoLoader, "reaction auto loader");
@@ -281,6 +283,34 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
         }
         _scanner->seek(pos, SEEK_SET);
     }
+
+	// check for RDF format
+	{
+		long long pos = _scanner->tell();
+		Array<char> firstLine;
+		const char* delimeters {};
+		_scanner->readWord(firstLine, delimeters);
+        _scanner->seek(pos, SEEK_SET);
+		if (!strcmp(firstLine.ptr(), "$RDFILE"))
+		{
+			RdfLoader rdf_loader(*_scanner);
+			while (!rdf_loader.isEOF())
+			{
+				rdf_loader.readNext();
+				BufferScanner reaction_scanner(rdf_loader.data);
+
+				RxnfileLoader loader(reaction_scanner);
+				loader.stereochemistry_options = stereochemistry_options;
+				loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+				loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+				loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+				loader.treat_stereo_as = treat_stereo_as;
+				loader.ignore_bad_valence = ignore_bad_valence;
+				loader.loadReaction(dynamic_cast<Reaction&>(reaction));
+			}
+			return;
+		}
+	}
 
     // check for SMILES format
     if (Scanner::isSingleLine(*_scanner))

@@ -57,6 +57,7 @@ namespace indigo
         bool ignore_no_chiral_flag;
         bool ignore_bad_valence;
         bool dearomatize_on_load;
+        int treat_stereo_as;
         AromaticityOptions arom_options;
 
         DECL_ERROR;
