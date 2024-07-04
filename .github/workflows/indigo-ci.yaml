@@ -1015,10 +1015,10 @@ jobs:
           args: >
             /bin/sh -c "
             set -eux &&
-            yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils &&
+            yum install -y --disablerepo base --disablerepo centos-sclo-rh --disablerepo centos-sclo-sclo --disablerepo extras --disablerepo updates https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils &&
             curl -OL https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-RHEL &&
             rpm --import PGDG-RPM-GPG-KEY-RHEL &&
-            yumdownloader -y postgresql${{ matrix.postgres_major_version }}-devel &&
+            yumdownloader -y --disablerepo base --disablerepo centos-sclo-rh --disablerepo centos-sclo-sclo --disablerepo extras --disablerepo updates postgresql${{ matrix.postgres_major_version }}-devel &&
             rpm -i --nodeps postgresql${{ matrix.postgres_major_version }}*.rpm &&
             ls -alh /usr &&
             mkdir build &&
