@@ -278,7 +278,10 @@ namespace indigo
             {kHELMPolymerTypeCHEM, HELMType::Chem},
             {kHELMPolymerTypeUnknown, HELMType::Unknown},
         };
-        return strToType.at(helm_type);
+        auto it = strToType.find(helm_type);
+        if (it != strToType.end())
+            return it->second;
+        return HELMType::Unknown;
     }
 
     const std::string& getStringFromHELMType(HELMType helm_type)
