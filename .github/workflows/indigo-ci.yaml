@@ -920,6 +920,7 @@ jobs:
             cd build &&
             cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF &&
             cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
+            "
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
