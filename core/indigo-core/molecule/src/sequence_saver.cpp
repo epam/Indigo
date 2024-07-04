@@ -446,6 +446,7 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
                         // add connection
                         if (connections_count)
                             helm_string += '|';
+                        connections_count++;
                         helm_string += getStringFromHELMType(cur_type);
                         helm_string += std::to_string(cur_pol_num);
                         helm_string += ',';

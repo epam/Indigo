@@ -36,6 +36,7 @@ helm_data = {
     "helm_peptide": "PEPTIDE1{A.[meA].C}$$$$V2.0",
     "helm_chem_peptide": "CHEM1{[PEG2]}|PEPTIDE1{W.N.D.[Pen].G.[Orn].D.A.D.G.S.G.[Cap]}$CHEM1,PEPTIDE1,1:R1-1:R1$$$V2.0",
     "helm_annotations": "CHEM1{[hxy]}|RNA1{R(A)P.R(U)P.R(G)P}$$$$V2.0",
+    "helm_connetion_separator": "PEPTIDE1{A}|CHEM1{[A6OH]}|PEPTIDE2{C}$PEPTIDE1,CHEM1,1:R2-1:R1|PEPTIDE2,CHEM1,1:R1-1:R2$$$V2.0",
 }
 
 for filename in sorted(helm_data.keys()):
