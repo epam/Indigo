@@ -911,7 +911,7 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build bingo-oracle
-        uses: epmlsop/buildpack-centos7:latest
+        uses: docker://epmlsop/buildpack-centos7:latest
         with:
           args: >
             /bin/sh -c "
