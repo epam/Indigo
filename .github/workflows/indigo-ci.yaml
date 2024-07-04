@@ -900,7 +900,6 @@ jobs:
   build_bingo_oracle_linux_x86_64:
     runs-on: ubuntu-latest
     needs: static_analysis
-    container: epmlsop/buildpack-centos7:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -912,11 +911,16 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build bingo-oracle
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
-          cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
+        uses: docker://epmlsop/buildpack-centos7:latest
+        with:
+          args: >
+            /bin/sh -c "
+            set -eux &&
+            mkdir build &&
+            cd build &&
+            cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF &&
+            cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
+            "
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
