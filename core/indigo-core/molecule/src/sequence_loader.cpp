@@ -506,6 +506,7 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
             std::string base = "";
             std::string single_monomer = "";
             std::string single_monomer_class;
+            bool unresolved = false;
 
             if (token.first.back() == '/')
             {
@@ -647,8 +648,8 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
                         single_monomer = "unknown_monomer_with_idt_alias_" + idt_alias;
                         auto monomer_class = MonomerClass::CHEM;
                         single_monomer_class = MonomerTemplates::classToStr(monomer_class);
-                        t_group.tgroup_name.readString(single_monomer.c_str(), true);
-                        t_group.tgroup_alias.readString(single_monomer.c_str(), true);
+                        t_group.tgroup_name.readString(idt_alias.c_str(), true);
+                        t_group.tgroup_alias.readString(idt_alias.c_str(), true);
                         t_group.tgroup_text_id.readString(single_monomer.c_str(), true);
                         // t_group.tgroup_natreplace.readString(single_monomer.c_str(), true);
                         t_group.tgroup_class.readString(single_monomer_class.c_str(), true);
@@ -665,7 +666,8 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
                             atp.apid.readString(ap, true);
                         }
                         sa.unresolved = true;
-                        MonomerTemplate monomer_template(single_monomer, monomer_class, "", single_monomer, single_monomer, single_monomer, true, t_group);
+                        unresolved = true;
+                        MonomerTemplate monomer_template(single_monomer, monomer_class, "", idt_alias, idt_alias, "", true, t_group);
                         monomer_template.setIdtAlias(IdtAlias(idt_alias, idt_alias, idt_alias, idt_alias)); // Unresoved monomer could be in any position
                         checkAddTemplate(mol, monomer_template);
                     }
@@ -674,7 +676,7 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
 
             if (single_monomer.size())
             {
-                int monomer_idx = addTemplateAtom(mol, single_monomer.c_str(), single_monomer_class.c_str(), _seq_id);
+                int monomer_idx = addTemplateAtom(mol, unresolved ? idt_alias.c_str() : single_monomer.c_str(), single_monomer_class.c_str(), _seq_id);
                 mol.asMolecule().setAtomXyz(monomer_idx, getBackboneMonomerPosition());
                 if (_last_monomer_idx >= 0)
                     addTemplateBond(mol, _last_monomer_idx, monomer_idx);
