@@ -34,6 +34,7 @@ helm_data = {
     "helm_peptide": "PEPTIDE1{A.[meA].C}$$$$V2.0",
     "helm_chem_peptide": "CHEM1{[PEG2]}|PEPTIDE1{W.N.D.[Pen].G.[Orn].D.A.D.G.S.G.[Cap]}$CHEM1,PEPTIDE1,1:R1-1:R1$$$V2.0",
     "helm_annotations": 'BLOB1{BEAD}"Animated Polystyrene"|CHEM1{[hxy]"Annotation"}|RNA1{R(A"mutation")P.R(U)P.R(G)P}$$$$V2.0',
+    "helm_rna_without_base": "RNA1{RP}$$$$V2.0",
 }
 
 lib = indigo.loadMoleculeFromFile(
