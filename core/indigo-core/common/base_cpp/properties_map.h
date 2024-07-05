@@ -24,11 +24,12 @@
 #pragma warning(disable : 4251)
 #endif
 
-#include "base_cpp/array.h"
 #include "base_cpp/auto_iter.h"
 #include "base_cpp/exception.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/red_black.h"
+#include <map>
+#include <string>
+#include <vector>
 
 namespace indigo
 {
@@ -41,23 +42,17 @@ namespace indigo
         explicit PropertiesMap()
         {
         }
-        ~PropertiesMap()
-        {
-        }
-        //   inline RedBlackStringObjMap< Array<char> >& getProperties() {
-        //      return _properties;
-        //   }
-        void copy(RedBlackStringObjMap<Array<char>>& properties);
+
+        void copy(const RedBlackStringObjMap<Array<char>>& properties);
         void copy(PropertiesMap&);
         void merge(PropertiesMap&);
         void insert(const char* key, const char* value);
         void insert(const char* key, const std::string& value);
+        std::string& insert(const char* key);
 
-        Array<char>& insert(const char* key);
-
-        const char* key(int);
-        const char* value(int);
-        Array<char>& valueBuf(const char* key);
+        const char* key(int) const;
+        const char* value(int) const;
+        std::string& valueBuf(const char* key);
 
         bool contains(const char* key) const;
         const char* at(const char* key) const;
@@ -92,9 +87,13 @@ namespace indigo
         PrAuto elements();
 
     private:
+        // std::less<...> is used to avoid creation of temp string when searching by const char* index
+        using StorageType = std::map<std::string, std::string, std::less<std::string>>;
+
         PropertiesMap(const PropertiesMap&);
-        RedBlackStringObjMap<Array<char>> _properties;
-        ObjArray<Array<char>> _propertyNames;
+
+        StorageType _properties;
+        std::vector<StorageType::iterator> _propertiesOrdered;
     };
 
 } // namespace indigo
