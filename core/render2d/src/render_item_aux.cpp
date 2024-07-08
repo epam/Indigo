@@ -278,8 +278,7 @@ void RenderItemAuxiliary::fillKETStyle(TextItem& ti, const FONT_STYLE_SET& style
         case KETFontStyle::FontStyle::ESubScript:
             ti.script_type = text_style.second ? 2 : 0;
             break;
-        case KETFontStyle::FontStyle::ESize:
-        {
+        case KETFontStyle::FontStyle::ESize: {
             ti.size = KETDefaultFontSize;
             auto sz_val = text_style.first.getUInt();
             if (text_style.second && sz_val.has_value())

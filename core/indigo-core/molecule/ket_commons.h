@@ -386,14 +386,12 @@ namespace indigo
                     FONT_STYLE_SET fss;
                     auto text_lambda = [&text](const std::string&, const rapidjson::Value& text_val) { text = text_val.GetString(); };
                     auto style_lambda = styleLambda(fss);
-                    DispatchMapKVP paragraph_dispatcher = {
-                        {"text", text_lambda},
-                        {KETFontBoldStr, style_lambda},
-                        {KETFontItalicStr, style_lambda},
-                        {KETFontSubscriptStr, style_lambda},
-                        {KETFontSuperscriptStr, style_lambda},
-                        {"font", fontLambda(fss)}
-                    };
+                    DispatchMapKVP paragraph_dispatcher = {{"text", text_lambda},
+                                                           {KETFontBoldStr, style_lambda},
+                                                           {KETFontItalicStr, style_lambda},
+                                                           {KETFontSubscriptStr, style_lambda},
+                                                           {KETFontSuperscriptStr, style_lambda},
+                                                           {"font", fontLambda(fss)}};
                     applyDispatcher(part, paragraph_dispatcher);
                     if (text.size())
                     {

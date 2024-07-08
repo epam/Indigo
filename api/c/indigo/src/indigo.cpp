@@ -105,7 +105,7 @@ void Indigo::init()
     deco_save_ap_bond_orders = false;
     deco_ignore_errors = true;
     molfile_saving_mode = 0;
-    ket_saving_version = {1,0,0};
+    ket_saving_version = {1, 0, 0};
     dearomatize_on_load = false;
     smiles_saving_format = SmilesSaver::SMILES_MODE::SMILES_CHEMAXON;
     molfile_saving_no_chiral = false;

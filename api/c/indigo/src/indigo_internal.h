@@ -39,12 +39,12 @@
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_gross_formula.h"
 #include "molecule/molecule_ionize.h"
+#include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_mass_options.h"
 #include "molecule/molecule_standardize_options.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_tautomer.h"
 #include "molecule/smiles_saver.h"
-#include "molecule/molecule_json_saver.h"
 
 #include "option_manager.h"
 
