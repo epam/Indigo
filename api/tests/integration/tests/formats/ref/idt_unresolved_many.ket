@@ -401,7 +401,7 @@
             "x": 0.0,
             "y": -0.0
         },
-        "alias": "unknown_monomer_with_idt_alias_unr0",
+        "alias": "unr0",
         "templateId": "unknown_monomer_with_idt_alias_unr0"
     },
     "monomer1": {
@@ -445,7 +445,7 @@
             "x": 4.800000190734863,
             "y": -0.0
         },
-        "alias": "unknown_monomer_with_idt_alias_unr1",
+        "alias": "unr1",
         "templateId": "unknown_monomer_with_idt_alias_unr1"
     },
     "monomer5": {
@@ -489,7 +489,7 @@
             "x": 9.600000381469727,
             "y": -0.0
         },
-        "alias": "unknown_monomer_with_idt_alias_unr2",
+        "alias": "unr2",
         "templateId": "unknown_monomer_with_idt_alias_unr2"
     },
     "monomer9": {
@@ -632,7 +632,7 @@
             "x": 24.0,
             "y": -0.0
         },
-        "alias": "unknown_monomer_with_idt_alias_unr3",
+        "alias": "unr3",
         "templateId": "unknown_monomer_with_idt_alias_unr3"
     },
     "monomer22": {
@@ -676,7 +676,7 @@
             "x": 28.80000114440918,
             "y": -0.0
         },
-        "alias": "unknown_monomer_with_idt_alias_unr4",
+        "alias": "unr4",
         "templateId": "unknown_monomer_with_idt_alias_unr4"
     },
     "monomerTemplate-unknown_monomer_with_idt_alias_unr0": {
@@ -684,8 +684,8 @@
         "id": "unknown_monomer_with_idt_alias_unr0",
         "class": "Chem",
         "classHELM": "CHEM",
-        "alias": "unknown_monomer_with_idt_alias_unr0",
-        "name": "unknown_monomer_with_idt_alias_unr0",
+        "alias": "unr0",
+        "name": "unr0",
         "unresolved": true,
         "idtAliases": {
             "base": "unr0",
@@ -1226,8 +1226,8 @@
         "id": "unknown_monomer_with_idt_alias_unr1",
         "class": "Chem",
         "classHELM": "CHEM",
-        "alias": "unknown_monomer_with_idt_alias_unr1",
-        "name": "unknown_monomer_with_idt_alias_unr1",
+        "alias": "unr1",
+        "name": "unr1",
         "unresolved": true,
         "idtAliases": {
             "base": "unr1",
@@ -1419,8 +1419,8 @@
         "id": "unknown_monomer_with_idt_alias_unr2",
         "class": "Chem",
         "classHELM": "CHEM",
-        "alias": "unknown_monomer_with_idt_alias_unr2",
-        "name": "unknown_monomer_with_idt_alias_unr2",
+        "alias": "unr2",
+        "name": "unr2",
         "unresolved": true,
         "idtAliases": {
             "base": "unr2",
@@ -1839,8 +1839,8 @@
         "id": "unknown_monomer_with_idt_alias_unr3",
         "class": "Chem",
         "classHELM": "CHEM",
-        "alias": "unknown_monomer_with_idt_alias_unr3",
-        "name": "unknown_monomer_with_idt_alias_unr3",
+        "alias": "unr3",
+        "name": "unr3",
         "unresolved": true,
         "idtAliases": {
             "base": "unr3",
@@ -1872,8 +1872,8 @@
         "id": "unknown_monomer_with_idt_alias_unr4",
         "class": "Chem",
         "classHELM": "CHEM",
-        "alias": "unknown_monomer_with_idt_alias_unr4",
-        "name": "unknown_monomer_with_idt_alias_unr4",
+        "alias": "unr4",
+        "name": "unr4",
         "unresolved": true,
         "idtAliases": {
             "base": "unr4",

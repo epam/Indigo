@@ -3,5 +3,6 @@ helm_annotations.ket:SUCCEED
 helm_chem_peptide.ket:SUCCEED
 helm_multi_char_rna.ket:SUCCEED
 helm_peptide.ket:SUCCEED
+helm_rna_without_base.ket:SUCCEED
 helm_simple_rna.ket:SUCCEED
 Test 'PEPTIDE1{A'2'}$$$$V2.0': got expected error 'Repeating do not supported now.'
