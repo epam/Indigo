@@ -347,7 +347,7 @@ namespace indigo
         {
             return [&fs, bval](const rapidjson::Value& val) {
                 if (val.IsInt())
-                    fs.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::ESize, val.GetInt()), std::forward_as_tuple(bval));
+                    fs.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::ESize, val.GetUint()), std::forward_as_tuple(bval));
             };
         }
 
