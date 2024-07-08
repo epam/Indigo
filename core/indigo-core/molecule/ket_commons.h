@@ -329,9 +329,10 @@ namespace indigo
                 std::string color_string = color_str.GetString();
                 if (color_string.length() == 7 && color_string[0] == '#')
                 {
-                    fs.emplace(std::piecewise_construct,
-                               std::forward_as_tuple(KETFontStyle::FontStyle::EColor, KETFontStyle::KETFontVal(std::stoul(color_string.substr(1), nullptr, 16))),
-                               std::forward_as_tuple(bval));
+                    fs.emplace(
+                        std::piecewise_construct,
+                        std::forward_as_tuple(KETFontStyle::FontStyle::EColor, KETFontStyle::KETFontVal(std::stoul(color_string.substr(1), nullptr, 16))),
+                        std::forward_as_tuple(bval));
                 }
             };
         }
