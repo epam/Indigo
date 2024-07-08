@@ -81,6 +81,7 @@ namespace indigo
 
     struct KETFontStyle
     {
+        using KETFontVal = std::variant<std::monostate, std::string, uint32_t>;
         enum class FontStyle : int
         {
             ENone,
@@ -93,7 +94,7 @@ namespace indigo
             EColor
         };
 
-        KETFontStyle(const FontStyle fs, std::variant<std::monostate, std::string, uint32_t> val = std::monostate{}) : _font_style(fs), _val(val)
+        KETFontStyle(const FontStyle fs, KETFontVal val = std::monostate{}) : _font_style(fs), _val(val)
         {
         }
 
@@ -329,7 +330,7 @@ namespace indigo
                 if (color_string.length() == 7 && color_string[0] == '#')
                 {
                     fs.emplace(std::piecewise_construct,
-                               std::forward_as_tuple(KETFontStyle::FontStyle::EColor, std::stoul(color_string.substr(1), nullptr, 16)),
+                               std::forward_as_tuple(KETFontStyle::FontStyle::EColor, KETFontStyle::KETFontVal(std::stoul(color_string.substr(1), nullptr, 16))),
                                std::forward_as_tuple(bval));
                 }
             };
@@ -347,7 +348,8 @@ namespace indigo
         {
             return [&fs, bval](const rapidjson::Value& val) {
                 if (val.IsInt())
-                    fs.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::ESize, val.GetUint()), std::forward_as_tuple(bval));
+                    fs.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::ESize, KETFontStyle::KETFontVal(val.GetUint())),
+                               std::forward_as_tuple(bval));
             };
         }
 
