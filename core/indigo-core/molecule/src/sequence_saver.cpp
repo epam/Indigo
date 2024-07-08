@@ -457,7 +457,7 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
                         helm_string += ":R";
                         helm_string += std::to_string(connection.first + 1);
                         helm_string += '-';
-                        helm_string += std::to_string(cur_mon_num);
+                        helm_string += std::to_string(nei_mon_num);
                         helm_string += ':';
                         int nei_ap_id = -1;
                         for (auto& nei_conn : directions_map[connection.second])
