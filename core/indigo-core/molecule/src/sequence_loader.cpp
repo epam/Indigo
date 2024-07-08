@@ -944,34 +944,35 @@ void SequenceLoader::loadHELM(BaseMolecule& mol)
                         mol.setTemplateAtomAttachmentOrder(sugar_idx, sugar_idx - 1, kLeftAttachmentPoint);
                     }
                     ch = _scanner.lookNext();
-                    if (ch != '(') // In RNA after sugar should be base in ()
-                        throw Error("Expected '(' for base but found '%c'.", ch);
-                    _scanner.skip(1);
-                    monomer_idx++;
-                    auto [base_id, base_repeating, base_annotaion] = readHelmMonomer();
-                    ch = _scanner.lookNext();
-                    if (ch != ')') // In RNA after sugar should be base in ()
-                        throw Error("Expected ')' after base but found '%c'.", ch);
-                    _scanner.skip(1);
-                    if (repeating.size())
-                        throw Error("Base cannot be repeated.");
-                    const std::string& base_lib_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Base, base_id);
-                    if (base_lib_id.size() == 0) // if not found - check for atom mapped SMILES([*:1]) and CXSMILES([*]...[*] |$_R1;;;;_R2;$|) - not now
-                        throw Error("Base '%s' not found.", base_id.c_str());
-                    if (base_repeating.size())
-                        throw Error("Base cannot be repeated.");
-                    checkAddTemplate(mol, lib.getMonomerTemplateById(base_lib_id));
-                    Vec3f base_pos((_col - 1) * MoleculeLayout::DEFAULT_BOND_LENGTH, -MoleculeLayout::DEFAULT_BOND_LENGTH * (_row + 1), 0);
-                    int base_idx = mol.asMolecule().addAtom(-1);
-                    mol.asMolecule().setTemplateAtom(base_idx, base_id.c_str());
-                    mol.asMolecule().setTemplateAtomClass(base_idx, kMonomerClassBASE);
-                    mol.asMolecule().setTemplateAtomSeqid(base_idx, monomer_idx);
-                    mol.asMolecule().setAtomXyz(base_idx, base_pos);
-                    cur_polymer_map->second[monomer_idx] = base_idx;
-                    mol.asMolecule().addBond_Silent(sugar_idx, base_idx, BOND_SINGLE);
-                    mol.setTemplateAtomAttachmentOrder(sugar_idx, base_idx, kBranchAttachmentPoint);
-                    mol.setTemplateAtomAttachmentOrder(base_idx, sugar_idx, kLeftAttachmentPoint);
-                    ch = _scanner.lookNext();
+                    if (ch == '(') // In RNA after sugar could be base in ()
+                    {
+                        _scanner.skip(1);
+                        monomer_idx++;
+                        auto [base_id, base_repeating, base_annotaion] = readHelmMonomer();
+                        ch = _scanner.lookNext();
+                        if (ch != ')')
+                            throw Error("Expected ')' after base but found '%c'.", ch);
+                        _scanner.skip(1);
+                        ch = _scanner.lookNext();
+                        if (repeating.size())
+                            throw Error("Base cannot be repeated.");
+                        const std::string& base_lib_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Base, base_id);
+                        if (base_lib_id.size() == 0) // if not found - check for atom mapped SMILES([*:1]) and CXSMILES([*]...[*] |$_R1;;;;_R2;$|) - not now
+                            throw Error("Base '%s' not found.", base_id.c_str());
+                        if (base_repeating.size())
+                            throw Error("Base cannot be repeated.");
+                        checkAddTemplate(mol, lib.getMonomerTemplateById(base_lib_id));
+                        Vec3f base_pos((_col - 1) * MoleculeLayout::DEFAULT_BOND_LENGTH, -MoleculeLayout::DEFAULT_BOND_LENGTH * (_row + 1), 0);
+                        int base_idx = mol.asMolecule().addAtom(-1);
+                        mol.asMolecule().setTemplateAtom(base_idx, base_id.c_str());
+                        mol.asMolecule().setTemplateAtomClass(base_idx, kMonomerClassBASE);
+                        mol.asMolecule().setTemplateAtomSeqid(base_idx, monomer_idx);
+                        mol.asMolecule().setAtomXyz(base_idx, base_pos);
+                        cur_polymer_map->second[monomer_idx] = base_idx;
+                        mol.asMolecule().addBond_Silent(sugar_idx, base_idx, BOND_SINGLE);
+                        mol.setTemplateAtomAttachmentOrder(sugar_idx, base_idx, kBranchAttachmentPoint);
+                        mol.setTemplateAtomAttachmentOrder(base_idx, sugar_idx, kLeftAttachmentPoint);
+                    }
                     if (ch == '.')
                     {
                         _scanner.skip(1);
