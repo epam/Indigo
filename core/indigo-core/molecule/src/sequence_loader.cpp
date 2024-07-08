@@ -1059,11 +1059,17 @@ void SequenceLoader::loadHELM(BaseMolecule& mol)
             // CHEM1,RNA1,32:R1-12:R2"annotation"|.....
             std::string left_polymer, right_polymer;
             std::ignore = readHelmSimplePolymerName(left_polymer);
+            auto left_polymer_nums = used_polymer_nums.find(left_polymer);
+            if (left_polymer_nums == used_polymer_nums.end())
+                throw Error("Polymer '%s' not found.", left_polymer.c_str());
             ch = _scanner.lookNext();
             if (ch != ',')
                 throw Error("Unexpected symbol. Expected ',' but found '%c'.", _scanner.lookNext());
             _scanner.skip(1);
             std::ignore = readHelmSimplePolymerName(right_polymer);
+            auto right_polymer_nums = used_polymer_nums.find(right_polymer);
+            if (right_polymer_nums == used_polymer_nums.end())
+                throw Error("Polymer '%s' not found.", right_polymer.c_str());
             ch = _scanner.lookNext();
             if (ch != ',')
                 throw Error("Unexpected symbol. Expected ',' but found '%c'.", _scanner.lookNext());
@@ -1087,8 +1093,14 @@ void SequenceLoader::loadHELM(BaseMolecule& mol)
             if (error_pos != position.size() - 1) // arrray contains 0 at the end
                 throw Error("Only direct connections supported now.");
             _scanner.readWord(right_ap, "\"|$");
-            int left_templ_atom_idx = used_polymer_nums[left_polymer][left_monomer_idx];
-            int right_templ_atom_idx = used_polymer_nums[right_polymer][right_monomer_idx];
+            auto left_mon_it = left_polymer_nums->second.find(left_monomer_idx);
+            if (left_mon_it == left_polymer_nums->second.end())
+                throw Error("Polymer '%s' does not contains monomer with number %d.", left_polymer.c_str(), left_monomer_idx);
+            int left_templ_atom_idx = left_mon_it->second;
+            auto right_mon_it = right_polymer_nums->second.find(right_monomer_idx);
+            if (right_mon_it == right_polymer_nums->second.end())
+                throw Error("Polymer '%s' does not contains monomer with number %d.", right_polymer.c_str(), right_monomer_idx);
+            int right_templ_atom_idx = right_mon_it->second;
             mol.asMolecule().addBond_Silent(left_templ_atom_idx, right_templ_atom_idx, BOND_SINGLE);
             mol.setTemplateAtomAttachmentOrder(left_templ_atom_idx, right_templ_atom_idx, convertAPFromHELM(left_ap.ptr()).c_str());
             mol.setTemplateAtomAttachmentOrder(right_templ_atom_idx, left_templ_atom_idx, convertAPFromHELM(right_ap.ptr()).c_str());
