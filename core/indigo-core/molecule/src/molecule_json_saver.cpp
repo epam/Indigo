@@ -71,8 +71,36 @@ void printMappings(Array<int>& mapping)
 }
 
 MoleculeJsonSaver::MoleculeJsonSaver(Output& output)
-    : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false), use_native_precision(false)
+    : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false), use_native_precision(false), ket_version(KETVersion2)
 {
+}
+
+void MoleculeJsonSaver::parseFormatMode(const char* version_str, KETVersion& version)
+{
+    auto version_data = split(version_str, '.');
+    for (int i = 0; i < version_data.size(); ++i)
+    {
+        int val = std::stoi(version_data[i]);
+        switch (static_cast<KETVersionIndex>(i))
+        {
+        case KETVersionIndex::EMajor:
+            version.major = val;
+            break;
+        case KETVersionIndex::EMinor:
+            version.minor = val;
+            break;
+        case KETVersionIndex::EPatch:
+            version.patch = val;
+            break;
+        }
+    }
+}
+
+void MoleculeJsonSaver::saveFormatMode(KETVersion& version, Array<char>& output)
+{
+    std::string ver;
+    ver += std::to_string(version.major) + "." + std::to_string(version.minor) + "." + std::to_string(version.patch);
+    output.readString(ver.c_str(), true);
 }
 
 void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list)
@@ -1417,6 +1445,16 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     writer.StartObject();
+
+    // save KET version
+    if (ket_version.major > KETVersion1.major)
+    {
+        writer.Key("ket_version");
+        Array<char> version_str;
+        saveFormatMode(ket_version, version_str);
+        writer.String(version_str.ptr());
+    }
+
     writer.Key("root");
     writer.StartObject();
     writer.Key("nodes");
@@ -1833,8 +1871,10 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             writer.StartObject();
             writer.Key("type");
             writer.String("text");
-            saveTextV1(writer, *ptext_obj);
-            saveTextV2(writer, *ptext_obj);
+            if (ket_version.major == KETVersion1.major)
+                saveTextV1(writer, *ptext_obj);
+            else
+                saveText(writer, *ptext_obj);
             writer.EndObject(); // end node
             break;
         }
@@ -1850,46 +1890,166 @@ void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const KETTextObject& text
     writer.String(text_obj.content().c_str());
     writer.Key("position");
     writer.WritePoint(text_obj.boundingBox().leftTop());
-    writer.Key("pos");
-    writer.StartArray();
-    writer.WritePoint(text_obj.boundingBox().leftTop());
-    writer.WritePoint(text_obj.boundingBox().leftBottom());
-    writer.WritePoint(text_obj.boundingBox().leftTop());
-    writer.WritePoint(text_obj.boundingBox().rightBottom());
-    writer.WritePoint(text_obj.boundingBox().rightTop());
-    writer.EndArray();
-    writer.EndObject();
+    if (text_obj.boundingBox().width() > 0 && text_obj.boundingBox().height() > 0)
+    {
+        writer.Key("pos");
+        writer.StartArray();
+        writer.WritePoint(text_obj.boundingBox().leftTop());
+        writer.WritePoint(text_obj.boundingBox().leftBottom());
+        writer.WritePoint(text_obj.boundingBox().leftTop());
+        writer.WritePoint(text_obj.boundingBox().rightBottom());
+        writer.WritePoint(text_obj.boundingBox().rightTop());
+        writer.EndArray();
+        writer.EndObject();
+    }
 }
 
-void MoleculeJsonSaver::saveTextV2(JsonWriter& writer, const KETTextObject& text_obj)
+void MoleculeJsonSaver::saveText(JsonWriter& writer, const KETTextObject& text_obj)
 {
     writer.Key("bounding_box");
-    writer.StartObject();
     writer.WriteRect(text_obj.boundingBox());
     if (text_obj.alignment().has_value())
         saveAlignment(writer, text_obj.alignment().value());
     if (text_obj.indent().has_value())
         saveIndent(writer, text_obj.indent().value());
-    writer.EndObject();
+    if (text_obj.fontStyles().size())
+        saveFontStyles(writer, text_obj.fontStyles());
+    if (text_obj.block().size())
+        saveParagraphs(writer, text_obj.block());
 }
 
 void MoleculeJsonSaver::saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET& fss)
 {
+    std::vector<std::reference_wrapper<const std::pair<KETFontStyle, bool>>> font_fields;
+    for (auto& fs : fss)
+    {
+        switch (fs.first.getFontStyle())
+        {
+        case KETFontStyle::FontStyle::EBold:
+            writer.Key(KETFontBoldStr);
+            writer.Bool(fs.second);
+            break;
+        case KETFontStyle::FontStyle::EItalic:
+            writer.Key(KETFontItalicStr);
+            writer.Bool(fs.second);
+            break;
+        case KETFontStyle::FontStyle::ESubScript:
+            writer.Key(KETFontSubscriptStr);
+            writer.Bool(fs.second);
+            break;
+        case KETFontStyle::FontStyle::ESuperScript:
+            writer.Key(KETFontSuperscriptStr);
+            writer.Bool(fs.second);
+            break;
+        case KETFontStyle::FontStyle::ENone:
+            // default style
+            break;
+        default:
+            if (fs.second)
+                font_fields.push_back(std::ref(fs));
+            break;
+        }
+    }
 
+    if (font_fields.size())
+    {
+        writer.Key("font");
+        writer.StartObject();
+        for (auto& fs_ref : font_fields)
+        {
+            auto& fs_font = fs_ref.get();
+            if (fs_font.second && fs_font.first.hasValue())
+                switch (fs_font.first.getFontStyle())
+                {
+                case KETFontStyle::FontStyle::EColor:
+                    writer.Key(KETFontColorStr);
+                    writer.Uint(fs_font.first.getUInt().value());
+                    break;
+                case KETFontStyle::FontStyle::EFamily:
+                    writer.Key(KETFontFamilyStr);
+                    writer.String(fs_font.first.getString().value());
+                    break;
+                case KETFontStyle::FontStyle::ESize:
+                    writer.Key(KETFontSizeStr);
+                    writer.Uint(fs_font.first.getUInt().value());
+                    break;
+                }
+            break;
+        }
+        writer.EndObject();
+    }
+}
+
+void MoleculeJsonSaver::saveParagraphs(JsonWriter& writer, const std::list<KETTextObject::KETTextParagraph>& paragraphs)
+{
+    writer.Key("paragraphs");
+    writer.StartArray();
+    for (const auto& paragraph : paragraphs)
+    {
+        writer.StartObject();
+        if (paragraph.alignment.has_value())
+            saveAlignment(writer, paragraph.alignment.value());
+        if (paragraph.indent.has_value())
+            saveIndent(writer, paragraph.indent.value());
+        if (paragraph.font_style.size())
+            saveFontStyles(writer, paragraph.font_style);
+        if (paragraph.font_styles.size())
+            saveParts(writer, paragraph.font_styles, paragraph.text);
+        writer.EndObject();
+    }
+    writer.EndArray();
+}
+
+void MoleculeJsonSaver::saveParts(JsonWriter& writer, const std::map<std::size_t, FONT_STYLE_SET>& fss_map, const std::string& text)
+{
+    if (fss_map.size() > 1)
+    {
+        std::string_view text_view = std::string_view(text);
+        writer.Key("parts");
+        writer.StartArray();
+        FONT_STYLE_SET fss;
+        for (auto it_fss_kvp = fss_map.begin(); it_fss_kvp != std::prev(fss_map.end()); ++it_fss_kvp)
+        {
+            writer.StartObject();
+            auto next_it = std::next(it_fss_kvp);
+            auto text_part = text_view.substr(it_fss_kvp->first, next_it->first - it_fss_kvp->first);
+            writer.Key("text");
+            writer.String(std::string(text_part).c_str());
+            if (it_fss_kvp->second.size())
+            {
+                fss += it_fss_kvp->second;
+                saveFontStyles(writer, fss);
+            }
+            writer.EndObject();
+        }
+        writer.EndArray();
+    }
 }
 
 void MoleculeJsonSaver::saveIndent(JsonWriter& writer, const KETTextObject::KETTextIndent& indent)
 {
-    if (indent.first_line.has_value())
+    if (indent.first_line.has_value() || indent.left.has_value() || indent.right.has_value())
     {
-    }
+        writer.Key("indent");
+        writer.StartObject();
+        if (indent.first_line.has_value())
+        {
+            writer.Key("first_line");
+            writer.Double(indent.first_line.value());
+        }
 
-    if (indent.left.has_value())
-    {
-    }
+        if (indent.left.has_value())
+        {
+            writer.Key("left");
+            writer.Double(indent.first_line.value());
+        }
 
-    if (indent.right.has_value())
-    {
+        if (indent.right.has_value())
+        {
+            writer.Key("right");
+            writer.Double(indent.first_line.value());
+        }
+        writer.EndObject();
     }
 }
 

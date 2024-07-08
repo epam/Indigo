@@ -1604,16 +1604,16 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
             else
             {
                 if (fs.is_bold)
-                    ket_text_style.styles.push_back(KETFontBoldStr);
+                    ket_text_style.styles.push_back(KETFontBoldStrV1);
                 if (fs.is_italic)
-                    ket_text_style.styles.push_back(KETFontItalicStr);
+                    ket_text_style.styles.push_back(KETFontItalicStrV1);
                 if (fs.is_superscript)
-                    ket_text_style.styles.push_back(KETFontSuperscriptStr);
+                    ket_text_style.styles.push_back(KETFontSuperscriptStrV1);
                 if (fs.is_subscript)
-                    ket_text_style.styles.push_back(KETFontSubscriptStr);
+                    ket_text_style.styles.push_back(KETFontSubscriptStrV1);
             }
             if (font_size > 0 && (int)font_size != KETDefaultFontSize)
-                ket_text_style.styles.push_back(std::string(KETFontCustomSizeStr) + "_" + std::to_string((int)ceil(font_size)) + "px");
+                ket_text_style.styles.push_back(std::string(KETFontCustomSizeStrV1) + "_" + std::to_string((int)ceil(font_size)) + "px");
         }
     }
 

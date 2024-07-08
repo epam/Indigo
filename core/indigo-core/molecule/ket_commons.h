@@ -37,11 +37,20 @@ namespace indigo
 {
     const double KETDefaultFontSize = 13;
     const double KETFontScaleFactor = 47;
-    const auto KETFontBoldStr = "BOLD";
-    const auto KETFontItalicStr = "ITALIC";
-    const auto KETFontSuperscriptStr = "SUPERSCRIPT";
-    const auto KETFontSubscriptStr = "SUBSCRIPT";
-    const auto KETFontCustomSizeStr = "CUSTOM_FONT_SIZE";
+    const auto KETFontBoldStrV1 = "BOLD";
+    const auto KETFontItalicStrV1 = "ITALIC";
+    const auto KETFontSuperscriptStrV1 = "SUPERSCRIPT";
+    const auto KETFontSubscriptStrV1 = "SUBSCRIPT";
+    const auto KETFontCustomSizeStrV1 = "CUSTOM_FONT_SIZE";
+
+    const auto KETFontBoldStr = "bold";
+    const auto KETFontItalicStr = "italic";
+    const auto KETFontSuperscriptStr = "superscript";
+    const auto KETFontSubscriptStr = "subscript";
+    const auto KETFontSizeStr = "size";
+    const auto KETFontColorStr = "color";
+    const auto KETFontFamilyStr = "family";
+
     const auto KETAlignmentLeft = "left";
     const auto KETAlignmentRight = "right";
     const auto KETAlignmentCenter = "center";
@@ -52,6 +61,23 @@ namespace indigo
     const uint8_t KETReagentDownArea = 2;
     const uint8_t KETProductArea = 3;
     const Vec2f MIN_MOL_SIZE = {0.5, 0.5};
+
+    struct KETVersion
+    {
+        int major;
+        int minor;
+        int patch;
+    };
+
+    const KETVersion KETVersion1 = {1, 0, 0};
+    const KETVersion KETVersion2 = {2, 0, 0};
+
+    enum class KETVersionIndex : int
+    {
+        EMajor,
+        EMinor,
+        EPatch
+    };
 
     struct KETFontStyle
     {
@@ -123,6 +149,11 @@ namespace indigo
             _val = val;
         }
 
+        bool hasValue() const
+        {
+            return _val.index() != 0;
+        }
+
     private:
         FontStyle _font_style;
         std::variant<std::monostate, std::string, uint32_t> _val;
@@ -137,6 +168,8 @@ namespace indigo
     };
 
     using FONT_STYLE_SET = std::set<std::pair<KETFontStyle, bool>, compareFunction>;
+
+    FONT_STYLE_SET& operator+=(FONT_STYLE_SET& lhs, const FONT_STYLE_SET& rhs);
 
     constexpr std::uint32_t string_hash(char const* s, std::size_t count)
     {
@@ -205,23 +238,13 @@ namespace indigo
         using DispatchMapKVP = std::unordered_map<std::string, std::function<void(const std::string&, const rapidjson::Value&)>>;
         using DispatchMapVal = std::unordered_map<std::string, std::function<void(const rapidjson::Value&)>>;
 
-        TextAlignMap KTextAlignmentsMap{{KETAlignmentLeft, TextAlignment::ELeft},
-                                        {KETAlignmentRight, TextAlignment::ERight},
-                                        {KETAlignmentCenter, TextAlignment::ECenter},
-                                        {KETAlignmentJustify, TextAlignment::EJustify}};
+        static const TextAlignMap& textAlignmentMap();
 
-        FontStyleMap KTextStylesMap{{KETFontBoldStr, KETFontStyle::FontStyle::EBold},
-                                    {KETFontItalicStr, KETFontStyle::FontStyle::EItalic},
-                                    {KETFontSuperscriptStr, KETFontStyle::FontStyle::ESuperScript},
-                                    {KETFontSubscriptStr, KETFontStyle::FontStyle::ESubScript}};
+        static const FontStyleMap& textStyleMapV1();
 
-        const std::unordered_map<std::string, KETFontStyle::FontStyle> KTextFontStylesMap{{"bold", KETFontStyle::FontStyle::EBold},
-                                                                                          {"italic ", KETFontStyle::FontStyle::EItalic},
-                                                                                          {"superscript", KETFontStyle::FontStyle::ESuperScript},
-                                                                                          {"subscript", KETFontStyle::FontStyle::ESubScript},
-                                                                                          {"family", KETFontStyle::FontStyle::EFamily},
-                                                                                          {"size", KETFontStyle::FontStyle::ESize},
-                                                                                          {"color", KETFontStyle::FontStyle::EColor}};
+        static const FontStyleMap& textStyleMap();
+
+        static KETFontStyle::FontStyle textStyleByName(const std::string& style_name);
 
         struct KETTextIndent
         {
@@ -282,8 +305,8 @@ namespace indigo
         auto alignLambda(std::optional<TextAlignment>& alignment)
         {
             return [this, &alignment](const std::string&, const rapidjson::Value& align_val) {
-                auto ta_it = KTextAlignmentsMap.find(align_val.GetString());
-                if (ta_it != KTextAlignmentsMap.end())
+                auto ta_it = textAlignmentMap().find(align_val.GetString());
+                if (ta_it != textAlignmentMap().end())
                     alignment = ta_it->second;
             };
         }
@@ -293,9 +316,9 @@ namespace indigo
             return [this, &fs](const std::string& key, const rapidjson::Value& style_val) {
                 std::string style_name = key;
                 std::transform(style_name.begin(), style_name.end(), style_name.begin(), [](unsigned char c) { return std::toupper(c); });
-                auto ta_it = KTextStylesMap.find(style_name);
-                if (ta_it != KTextStylesMap.end())
-                    fs.emplace(ta_it->second, style_val.GetBool());
+                auto style = textStyleByName(style_name);
+                if (style != KETFontStyle::FontStyle::ENone)
+                    fs.emplace(style, style_val.GetBool());
             };
         }
 
@@ -306,7 +329,7 @@ namespace indigo
                 if (color_string.length() == 7 && color_string[0] == '#')
                 {
                     fs.emplace(std::piecewise_construct,
-                               std::forward_as_tuple(KETFontStyle::FontStyle::EFamily, std::stoul(color_string.substr(1), nullptr, 16)),
+                               std::forward_as_tuple(KETFontStyle::FontStyle::EColor, std::stoul(color_string.substr(1), nullptr, 16)),
                                std::forward_as_tuple(bval));
                 }
             };
@@ -324,14 +347,15 @@ namespace indigo
         {
             return [&fs, bval](const rapidjson::Value& val) {
                 if (val.IsInt())
-                    fs.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::EFamily, val.GetString()), std::forward_as_tuple(bval));
+                    fs.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::ESize, val.GetInt()), std::forward_as_tuple(bval));
             };
         }
 
         auto fontLambda(FONT_STYLE_SET& fs, bool bval = true)
         {
             return [&fs, bval](const std::string&, const rapidjson::Value& font_val) {
-                DispatchMapVal font_dispatcher = {{"family", fontFamilyLambda(fs, bval)}, {"size", fontSizeLambda(fs, bval)}, {"color", colorLambda(fs, bval)}};
+                DispatchMapVal font_dispatcher = {
+                    {KETFontFamilyStr, fontFamilyLambda(fs, bval)}, {KETFontSizeStr, fontSizeLambda(fs, bval)}, {KETFontColorStr, colorLambda(fs, bval)}};
                 applyDispatcher(font_val, font_dispatcher);
             };
         }
@@ -363,7 +387,12 @@ namespace indigo
                     auto text_lambda = [&text](const std::string&, const rapidjson::Value& text_val) { text = text_val.GetString(); };
                     auto style_lambda = styleLambda(fss);
                     DispatchMapKVP paragraph_dispatcher = {
-                        {"text", text_lambda}, {"bold", style_lambda}, {"italic", style_lambda}, {"subscript", style_lambda}, {"superscript", style_lambda},
+                        {"text", text_lambda},
+                        {KETFontBoldStr, style_lambda},
+                        {KETFontItalicStr, style_lambda},
+                        {KETFontSubscriptStr, style_lambda},
+                        {KETFontSuperscriptStr, style_lambda},
+                        {"font", fontLambda(fss)}
                     };
                     applyDispatcher(part, paragraph_dispatcher);
                     if (text.size())

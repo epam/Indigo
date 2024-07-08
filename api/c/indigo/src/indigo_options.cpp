@@ -18,7 +18,6 @@
 
 #include "indigo_internal.h"
 #include "molecule/molfile_saver.h"
-#include "molecule/smiles_saver.h"
 
 static void setStrValue(const char* source, char* dest, int len)
 {
@@ -37,6 +36,18 @@ static void indigoGetMolfileSavingMode(Array<char>& value)
 {
     Indigo& self = indigoGetInstance();
     MolfileSaver::saveFormatMode(self.molfile_saving_mode, value);
+}
+
+static void indigoGetJsonSavingVersion(Array<char>& value)
+{
+    Indigo& self = indigoGetInstance();
+    MoleculeJsonSaver::saveFormatMode(self.ket_saving_version, value);
+}
+
+static void indigoSetJsonSavingVersion(const char* version)
+{
+    Indigo& self = indigoGetInstance();
+    MoleculeJsonSaver::parseFormatMode(version, self.ket_saving_version);
 }
 
 static void indigoSetSmilesSavingFormat(const char* mode)
@@ -281,6 +292,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerBool("deco-save-ap-bond-orders", SETTER_GETTER_BOOL_OPTION(indigo.deco_save_ap_bond_orders));
     mgr->setOptionHandlerBool("deco-ignore-errors", SETTER_GETTER_BOOL_OPTION(indigo.deco_ignore_errors));
     mgr->setOptionHandlerString("molfile-saving-mode", indigoSetMolfileSavingMode, indigoGetMolfileSavingMode);
+    mgr->setOptionHandlerString("ket-saving-version", indigoSetJsonSavingVersion, indigoGetJsonSavingVersion);
     mgr->setOptionHandlerString("smiles-saving-format", indigoSetSmilesSavingFormat, indigoGetSmilesSavingFormat);
 
     mgr->setOptionHandlerInt("molfile-saving-no-chiral", SETTER_GETTER_INT_OPTION(indigo.molfile_saving_no_chiral));

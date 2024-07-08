@@ -155,6 +155,11 @@ namespace indigo
             return pretty_json ? _pretty_writer.String(str) : _writer.String(str);
         }
 
+        bool String(const std::string& str)
+        {
+            return String(str.c_str());
+        }
+
         bool Key(const Ch* const& str)
         {
             return pretty_json ? _pretty_writer.Key(str) : _writer.Key(str);
@@ -173,7 +178,7 @@ namespace indigo
                 _writer.Flush();
         }
 
-        void WritePoint( const Vec2f& point )
+        void WritePoint(const Vec2f& point)
         {
             if (pretty_json)
             {
@@ -241,13 +246,18 @@ namespace indigo
         explicit MoleculeJsonSaver(Output& output);
         void saveMolecule(BaseMolecule& bmol);
         void saveMolecule(BaseMolecule& bmol, JsonWriter& writer);
+        void saveMetaData(JsonWriter& writer, const MetaDataStorage& meta);
 
-        static void saveMetaData(JsonWriter& writer, const MetaDataStorage& meta);
+        static void parseFormatMode(const char* version_str, KETVersion& version);
+        static void saveFormatMode(KETVersion& version, Array<char>& output);
+
         static void saveTextV1(JsonWriter& writer, const KETTextObject& text_obj);
-        static void saveTextV2(JsonWriter& writer, const KETTextObject& text_obj);
+        static void saveText(JsonWriter& writer, const KETTextObject& text_obj);
         static void saveAlignment(JsonWriter& writer, KETTextObject::TextAlignment alignment);
         static void saveIndent(JsonWriter& writer, const KETTextObject::KETTextIndent& indent);
         static void saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET& fss);
+        static void saveParagraphs(JsonWriter& writer, const std::list<KETTextObject::KETTextParagraph>& paragraphs);
+        static void saveParts(JsonWriter& writer, const std::map<std::size_t, FONT_STYLE_SET>& fss_map, const std::string& text);
 
         static std::string monomerId(const TGroup& tg);
         static std::string monomerKETClass(const std::string& class_name);
@@ -256,6 +266,7 @@ namespace indigo
         bool add_stereo_desc;
         bool pretty_json;
         bool use_native_precision; // TODO: Remove option and use_native_precision always - have to fix a lot of UTs
+        KETVersion ket_version;
 
     protected:
         void saveRoot(BaseMolecule& mol, JsonWriter& writer);

@@ -25,6 +25,25 @@
 
 namespace indigo
 {
+    FONT_STYLE_SET& operator+=(FONT_STYLE_SET& lhs, const FONT_STYLE_SET& rhs)
+    {
+        for (const auto& fs : rhs)
+        {
+            if (fs.second)
+            {
+                if (!lhs.count(fs))
+                    lhs.insert(fs);
+            }
+            else
+            {
+                auto it = lhs.find(std::make_pair(fs.first, true));
+                if (it != lhs.end())
+                    lhs.erase(it);
+            }
+        }
+        return lhs;
+    }
+
     uint8_t getPointSide(const Vec2f& point, const Vec2f& beg, const Vec2f& end)
     {
         uint8_t bit_mask = 0;
@@ -131,7 +150,48 @@ namespace indigo
         return res;
     }
 
-    KETTextObject::KETTextObject(const Rect2f& bbox, const std::string& content) : MetaObject(CID), _alignment(TextAlignment::ELeft), _indent{}, _font_styles{}
+    const KETTextObject::TextAlignMap& KETTextObject::textAlignmentMap()
+    {
+        static TextAlignMap KTextAlignmentsMap{{KETAlignmentLeft, TextAlignment::ELeft},
+                                               {KETAlignmentRight, TextAlignment::ERight},
+                                               {KETAlignmentCenter, TextAlignment::ECenter},
+                                               {KETAlignmentJustify, TextAlignment::EJustify}};
+        return KTextAlignmentsMap;
+    }
+
+    const KETTextObject::FontStyleMap& KETTextObject::textStyleMapV1()
+    {
+        static const FontStyleMap KTextStylesMap{{KETFontBoldStrV1, KETFontStyle::FontStyle::EBold},
+                                                 {KETFontItalicStrV1, KETFontStyle::FontStyle::EItalic},
+                                                 {KETFontSuperscriptStrV1, KETFontStyle::FontStyle::ESuperScript},
+                                                 {KETFontSubscriptStrV1, KETFontStyle::FontStyle::ESubScript}};
+        return KTextStylesMap;
+    }
+
+    const KETTextObject::FontStyleMap& KETTextObject::textStyleMap()
+    {
+        static const FontStyleMap KTextFontStylesMap{{KETFontBoldStr, KETFontStyle::FontStyle::EBold},
+                                                     {KETFontItalicStr, KETFontStyle::FontStyle::EItalic},
+                                                     {KETFontSuperscriptStr, KETFontStyle::FontStyle::ESuperScript},
+                                                     {KETFontSubscriptStr, KETFontStyle::FontStyle::ESubScript},
+                                                     {KETFontFamilyStr, KETFontStyle::FontStyle::EFamily},
+                                                     {KETFontSizeStr, KETFontStyle::FontStyle::ESize},
+                                                     {KETFontColorStr, KETFontStyle::FontStyle::EColor}};
+        return KTextFontStylesMap;
+    }
+
+    KETFontStyle::FontStyle KETTextObject::textStyleByName(const std::string& style_name)
+    {
+        auto style_it = textStyleMap().find(style_name);
+        if (style_it != textStyleMap().end())
+            return style_it->second;
+        style_it = textStyleMapV1().find(style_name);
+        if (style_it != textStyleMapV1().end())
+            return style_it->second;
+        return KETFontStyle::FontStyle::ENone;
+    }
+
+    KETTextObject::KETTextObject(const Rect2f& bbox, const std::string& content) : MetaObject(CID), _alignment{}, _indent{}, _font_styles{}
     {
         using namespace rapidjson;
         _bbox = bbox;
@@ -157,20 +217,21 @@ namespace indigo
                             int style_begin = style_ranges[j]["offset"].GetInt();
                             int style_end = style_begin + style_ranges[j]["length"].GetInt();
 
-                            std::string style = style_ranges[j]["style"].GetString();
+                            std::string style_name = style_ranges[j]["style"].GetString();
                             KETFontStyle ket_fs;
-                            auto it = KTextStylesMap.find(style);
-                            if (it != KTextStylesMap.end())
-                                ket_fs.setFontStyle( it->second );
+
+                            auto style = textStyleByName(style_name);
+                            if (style != KETFontStyle::FontStyle::ENone)
+                                ket_fs.setFontStyle(style);
                             else
                             {
                                 const std::string KCustomFontSize = "CUSTOM_FONT_SIZE_";
                                 const std::string KCustomFontUnits = "px";
-                                if (style.find(KCustomFontSize) == 0)
+                                if (style_name.find(KCustomFontSize) == 0)
                                 {
-                                    ket_fs.setFontStyle( KETFontStyle::FontStyle::ESize );
-                                    ket_fs.setValue(
-                                        std::stoi(style.substr(KCustomFontSize.size(), style.size() - KCustomFontSize.size() - KCustomFontUnits.size())));
+                                    ket_fs.setFontStyle(KETFontStyle::FontStyle::ESize);
+                                    ket_fs.setValue(std::stoi(
+                                        style_name.substr(KCustomFontSize.size(), style_name.size() - KCustomFontSize.size() - KCustomFontUnits.size())));
                                 }
                             }
 
@@ -180,16 +241,12 @@ namespace indigo
                             if (it_begin == text_line.font_styles.end())
                                 text_line.font_styles.emplace(style_begin, std::initializer_list<std::pair<KETFontStyle, bool>>{{ket_fs, true}});
                             else
-                            {
                                 it_begin->second.emplace(ket_fs, true);
-                            }
 
                             if (it_end == text_line.font_styles.end())
                                 text_line.font_styles.emplace(style_end, std::initializer_list<std::pair<KETFontStyle, bool>>{{ket_fs, false}});
                             else
-                            {
                                 it_end->second.emplace(ket_fs, false);
-                            }
                         }
                     }
                 }
@@ -198,7 +255,7 @@ namespace indigo
         }
     }
 
-    KETTextObject::KETTextObject(const rapidjson::Value& text_obj) : MetaObject(CID), _alignment(TextAlignment::ELeft), _indent{}, _font_styles{}
+    KETTextObject::KETTextObject(const rapidjson::Value& text_obj) : MetaObject(CID), _alignment{}, _indent{}, _font_styles{}
     {
         using namespace rapidjson;
 
@@ -215,10 +272,10 @@ namespace indigo
                 KETTextParagraph text_line;
                 auto style_lambda = styleLambda(text_line.font_style);
                 DispatchMapKVP paragraph_dispatcher = {{"alignment", alignLambda(text_line.alignment)},
-                                                       {"bold", style_lambda},
-                                                       {"italic", style_lambda},
-                                                       {"subscript", style_lambda},
-                                                       {"superscript", style_lambda},
+                                                       {KETFontBoldStr, style_lambda},
+                                                       {KETFontItalicStr, style_lambda},
+                                                       {KETFontSubscriptStr, style_lambda},
+                                                       {KETFontSuperscriptStr, style_lambda},
                                                        {"indent", indentLambda(text_line.indent)},
                                                        {"font", fontLambda(text_line.font_style)},
                                                        {"parts", partsLambda(text_line)}};
@@ -230,15 +287,9 @@ namespace indigo
 
         auto style_lambda = styleLambda(_font_styles);
 
-        DispatchMapKVP text_obj_dispatcher = {{"bounding_box", bbox_lambda},
-                                              {"alignment", alignLambda(_alignment)},
-                                              {"bold", style_lambda},
-                                              {"italic", style_lambda},
-                                              {"subscript", style_lambda},
-                                              {"superscript", style_lambda},
-                                              {"indent", indentLambda(_indent)},
-                                              {"font", fontLambda(_font_styles)},
-                                              {"paragraphs", paragraphs_lambda}};
+        DispatchMapKVP text_obj_dispatcher = {{"bounding_box", bbox_lambda},     {"alignment", alignLambda(_alignment)}, {KETFontBoldStr, style_lambda},
+                                              {KETFontItalicStr, style_lambda},  {KETFontSubscriptStr, style_lambda},    {KETFontSuperscriptStr, style_lambda},
+                                              {"indent", indentLambda(_indent)}, {"font", fontLambda(_font_styles)},     {"paragraphs", paragraphs_lambda}};
 
         applyDispatcher(text_obj, text_obj_dispatcher);
     }
