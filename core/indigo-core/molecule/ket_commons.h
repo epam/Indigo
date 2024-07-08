@@ -329,10 +329,9 @@ namespace indigo
                 std::string color_string = color_str.GetString();
                 if (color_string.length() == 7 && color_string[0] == '#')
                 {
-                    fs.emplace(
-                        std::piecewise_construct,
-                        std::forward_as_tuple(KETFontStyle::FontStyle::EColor, KETFontStyle::KETFontVal(std::stoul(color_string.substr(1), nullptr, 16))),
-                        std::forward_as_tuple(bval));
+                    fs.emplace(std::piecewise_construct,
+                               std::forward_as_tuple(KETFontStyle::FontStyle::EColor, static_cast<uint32_t>(std::stoul(color_string.substr(1), nullptr, 16))),
+                               std::forward_as_tuple(bval));
                 }
             };
         }
@@ -349,7 +348,7 @@ namespace indigo
         {
             return [&fs, bval](const rapidjson::Value& val) {
                 if (val.IsInt())
-                    fs.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::ESize, KETFontStyle::KETFontVal(val.GetUint())),
+                    fs.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::ESize, static_cast<uint32_t>(val.GetUint())),
                                std::forward_as_tuple(bval));
             };
         }
