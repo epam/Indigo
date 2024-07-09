@@ -66,6 +66,7 @@ files = [
     "macro/polyphosphate/polyphosphate_rna",
     "macro/terminators/terms_peptide",
     "macro/sa-mono",
+    "macro/R2R3R4",
 ]
 
 files.sort()

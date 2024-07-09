@@ -12,6 +12,7 @@ dna_mod.ket:SUCCEED
 dthymine.ket:SUCCEED
 fmoc.ket:SUCCEED
 issue_1476.ket:SUCCEED
+macro/R2R3R4.ket:SUCCEED
 macro/conjugates/pep-chem-rna.ket:SUCCEED
 macro/conjugates/peptide_rna.ket:SUCCEED
 macro/dendromers/dendro-peptide.ket:SUCCEED
