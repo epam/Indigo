@@ -78,7 +78,7 @@ MoleculeJsonSaver::MoleculeJsonSaver(Output& output)
 void MoleculeJsonSaver::parseFormatMode(const char* version_str, KETVersion& version)
 {
     auto version_data = split(version_str, '.');
-    for (auto i = 0; i < version_data.size(); ++i)
+    for (size_t i = 0; i < version_data.size(); ++i)
     {
         int val = std::stoi(version_data[i]);
         switch (static_cast<KETVersionIndex>(i))
