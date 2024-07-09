@@ -34,7 +34,10 @@ files = [
     "apamine",
 ]
 
-expected_exceptions = { 'rna_mod' : "Sequence saver: '5fU' nucleotide has no natural analog and cannot be saved into a sequence.", "dna_mod" : "Sequence saver: 'cdaC' nucleotide has no natural analog and cannot be saved into a sequence." }
+expected_exceptions = {
+    "rna_mod": "Sequence saver: '5fU' nucleotide has no natural analog and cannot be saved into a sequence.",
+    "dna_mod": "Sequence saver: 'cdaC' nucleotide has no natural analog and cannot be saved into a sequence.",
+}
 
 files.sort()
 for filename in files:
@@ -53,7 +56,10 @@ for filename in files:
             print(diff)
     except IndigoException as e:
         text_exception = getIndigoExceptionText(e)
-        if filename in expected_exceptions and expected_exceptions[filename] == text_exception: 
+        if (
+            filename in expected_exceptions
+            and expected_exceptions[filename] == text_exception
+        ):
             print(filename + ".seq:SUCCEED")
         else:
             print(filename + ".seq:FAILED")
