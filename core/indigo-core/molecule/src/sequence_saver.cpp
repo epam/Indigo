@@ -332,6 +332,8 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
     constexpr int polymer_num = 1;
     constexpr int monomer_num = 2;
     std::map<int, MonomerInfo> atom_idx_to_monomer_info;
+    std::set<std::pair<int, int>> used_connections;
+    int prev_atom_idx;
     for (auto& sequence : sequences)
     {
         int monomer_idx = 0;
@@ -365,6 +367,10 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
                 helm_string += std::to_string(polymer_idx);
                 helm_string += '{';
             }
+            else
+            {
+                used_connections.emplace(std::min(atom_idx, prev_atom_idx), std::max(atom_idx, prev_atom_idx));
+            }
             if (monomer_alias.size() == 0)
             {
                 if (monomer_class == kMonomerClassBASE)
@@ -383,6 +389,7 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
             atom_idx_to_monomer_info.emplace(std::make_pair(atom_idx, std::make_tuple(helm_type, polymer_idx, monomer_idx)));
 
             used_atoms.emplace(atom_idx);
+            prev_atom_idx = atom_idx;
 
             if (monomer_class == kMonomerClassSUGAR)
             {
@@ -404,6 +411,7 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
                             monomer_idx++;
                             atom_idx_to_monomer_info.emplace(std::make_pair(nei_atom_idx, std::make_tuple(helm_type, polymer_idx, monomer_idx)));
                             used_atoms.emplace(nei_atom_idx);
+                            used_connections.emplace(std::min(atom_idx, nei_atom_idx), std::max(atom_idx, nei_atom_idx));
                             helm_string += ')';
                         }
                         else if (mon_class == kMonomerClassPHOSPHATE)
@@ -419,6 +427,8 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
                     monomer_idx++;
                     atom_idx_to_monomer_info.emplace(std::make_pair(phosphate_idx, std::make_tuple(helm_type, polymer_idx, monomer_idx)));
                     used_atoms.emplace(phosphate_idx);
+                    used_connections.emplace(std::min(atom_idx, phosphate_idx), std::max(atom_idx, phosphate_idx));
+                    prev_atom_idx = phosphate_idx;
                 }
             }
         }
@@ -441,7 +451,9 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
                 {
                     auto [cur_type, cur_pol_num, cur_mon_num] = atom_idx_to_monomer_info.at(atom_idx);
                     auto [nei_type, nei_pol_num, nei_mon_num] = atom_idx_to_monomer_info.at(connection.second);
-                    if (cur_type != nei_type || cur_pol_num != nei_pol_num) // TODO: add check for connections between same polymer monomers
+                    if (cur_type != nei_type || cur_pol_num != nei_pol_num ||
+                        used_connections.find(std::make_pair(std::min(atom_idx, connection.second), std::max(atom_idx, connection.second))) ==
+                            used_connections.end())
                     {
                         // add connection
                         if (connections_count)
