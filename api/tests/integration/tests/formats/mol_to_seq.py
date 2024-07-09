@@ -34,6 +34,8 @@ files = [
     "apamine",
 ]
 
+expected_exceptions = { 'rna_mod' : "Sequence saver: '5fU' nucleotide has no natural analog and cannot be saved into a sequence.", "dna_mod" : "Sequence saver: 'cdaC' nucleotide has no natural analog and cannot be saved into a sequence." }
+
 files.sort()
 for filename in files:
     mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".mol"))
@@ -41,10 +43,18 @@ for filename in files:
     #     file.write(mol.sequence())
     with open(os.path.join(ref_path, filename) + ".seq", "r") as file:
         seq_ref = file.read()
-    seq = mol.sequence()
-    diff = find_diff(seq_ref, seq)
-    if not diff:
-        print(filename + ".seq:SUCCEED")
-    else:
-        print(filename + ".seq:FAILED")
-        print(diff)
+    try:
+        seq = mol.sequence()
+        diff = find_diff(seq_ref, seq)
+        if not diff:
+            print(filename + ".seq:SUCCEED")
+        else:
+            print(filename + ".seq:FAILED")
+            print(diff)
+    except IndigoException as e:
+        text_exception = getIndigoExceptionText(e)
+        if filename in expected_exceptions and expected_exceptions[filename] == text_exception: 
+            print(filename + ".seq:SUCCEED")
+        else:
+            print(filename + ".seq:FAILED")
+            print(text_exception)
