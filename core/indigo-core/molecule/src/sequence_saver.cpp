@@ -658,7 +658,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
                                     if (_mon_lib.getMonomerTemplate(mon_class, natural_analog, temp))
                                         label = natural_analog;
                                     else if (mon_class == kMonomerClassBASE)
-                                        label = "N";
+                                        throw Error("'%s' nucleotide has no natural analog and cannot be saved into a sequence.", label.c_str());
                                     else if (mon_class == kMonomerClassAA)
                                         label = "X";
                                 }
