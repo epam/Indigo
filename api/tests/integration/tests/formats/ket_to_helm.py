@@ -39,6 +39,7 @@ helm_data = {
     "helm_connetion_separator": "PEPTIDE1{A}|CHEM1{[A6OH]}|PEPTIDE2{C}$PEPTIDE1,CHEM1,1:R2-1:R1|PEPTIDE2,CHEM1,1:R1-1:R2$$$V2.0",
     "helm_chem_rna": "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:R1-3:R2$$$V2.0",
     "helm_rna_without_base": "RNA1{RP}$$$$V2.0",
+    "helm_cycled_polymer": "PEPTIDE1{C.D.E.F.A}$PEPTIDE1,PEPTIDE1,5:R2-1:R1$$$V2.0",
 }
 
 for filename in sorted(helm_data.keys()):
