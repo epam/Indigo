@@ -98,7 +98,7 @@ void MoleculeAutoLoader::loadMolecule(BaseMolecule& mol)
     }
     catch (Exception e)
     {
-        throw(e);
+        throw;
     }
 
     if (!mol.isQueryMolecule())
