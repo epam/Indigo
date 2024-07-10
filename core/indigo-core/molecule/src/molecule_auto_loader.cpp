@@ -118,7 +118,14 @@ void MoleculeAutoLoader::loadMolecule(BaseMolecule& bmol)
                         delete _scanner;
                     _own_scanner = true;
                     _scanner = new BufferScanner(mol_out_buffer);
-                    _loadMolecule(bmol);
+                    try
+                    {
+                        _loadMolecule(bmol);
+                    }
+                    catch (Exception)
+                    {
+                        throw(e);
+                    }
                 }
                 else
                     throw(e);
