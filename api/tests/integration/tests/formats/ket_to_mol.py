@@ -83,7 +83,7 @@ for test_tuple in files:
             os.path.join(root, filename + ".ket")
         )
 
-    if len( test_tuple ) > 1:
+    if len(test_tuple) > 1:
         indigo.setOption("molfile-saving-mode", test_tuple[1])
 
     # with open(os.path.join(ref_path, filename) + ".mol", "w") as file:
