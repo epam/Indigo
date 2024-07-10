@@ -201,11 +201,6 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
 {
     LocaleGuard locale_guard;
 
-    QueryMolecule* qmol = 0;
-
-    if (query)
-        qmol = (QueryMolecule*)(&mol);
-
     if (mode == MODE_2000)
         _v2000 = true;
     else if (mode == MODE_3000)
