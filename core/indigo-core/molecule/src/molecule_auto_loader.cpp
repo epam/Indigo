@@ -33,6 +33,7 @@
 #include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_name_parser.h"
 #include "molecule/molfile_loader.h"
+#include "molecule/molfile_saver.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
@@ -90,15 +91,56 @@ void MoleculeAutoLoader::loadQueryMolecule(QueryMolecule& qmol)
     loadMolecule(qmol);
 }
 
-void MoleculeAutoLoader::loadMolecule(BaseMolecule& mol)
+void MoleculeAutoLoader::loadMolecule(BaseMolecule& bmol)
 {
-    _loadMolecule(mol);
-
-    if (!mol.isQueryMolecule())
+    try
     {
-        mol.asMolecule().setIgnoreBadValenceFlag(ignore_bad_valence);
+        _loadMolecule(bmol);
+    }
+    catch (Exception e)
+    {
+        bool error_flag = false;
+        if (bmol.isQueryMolecule())
+        {
+            // trying to load as molecule
+            Molecule mol;
+            _scanner->seek(0, SEEK_SET);
+            try
+            {
+                _loadMolecule(mol);
+                if (mol.tgroups.getTGroupCount())
+                {
+                    mol.transformTemplatesToSuperatoms();
+                    Array<char> mol_out_buffer;
+                    ArrayOutput mol_output(mol_out_buffer);
+                    MolfileSaver saver_tmp(mol_output);
+                    saver_tmp.saveMolecule(mol.asMolecule());
+                    mol_out_buffer.push(0);
+                    if (_own_scanner)
+                        delete _scanner;
+                    _own_scanner = true;
+                    _scanner = new BufferScanner(mol_out_buffer);
+                    _loadMolecule(bmol);
+                }
+                else
+                    error_flag = true;
+            }
+            catch (...)
+            {
+                error_flag = true;
+            }
+        }
+        else
+            error_flag = true;
+        if (error_flag)
+            throw;
+    }
+
+    if (!bmol.isQueryMolecule())
+    {
+        bmol.asMolecule().setIgnoreBadValenceFlag(ignore_bad_valence);
         if (dearomatize_on_load)
-            mol.dearomatize(arom_options);
+            bmol.dearomatize(arom_options);
     }
 }
 
