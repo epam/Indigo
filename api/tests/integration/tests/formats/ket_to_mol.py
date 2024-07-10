@@ -25,51 +25,53 @@ ref_path = joinPathPy("ref/", __file__)
 root_rea = joinPathPy("reactions/", __file__)
 
 files = [
-    "suplabel",
-    "cysteine",
-    "dcysteine",
-    "thymine",
-    "dthymine",
-    "dala",
-    "chem",
-    "rna_mod",
-    "conjugate",
-    "dna_mod",
-    "pepchem",
-    "peptides",
-    "fmoc",
-    "anacyclamide",
-    "accl_no_class",
-    "conj_no_class",
-    "sgroups_mul",
-    "query_explicit_val",
-    "mon_long_id",
-    "acgt_1412",
-    "issue_1476",
-    "taspoglutide",
-    "macro/hundred-monomers",
-    "macro/conjugates/pep-chem-rna",
-    "macro/conjugates/peptide_rna",
-    "macro/dendromers/dendro-peptide",
-    "macro/disulfide/disulfide_peptide_cycle",
-    "macro/left_phosphate/left_phosphate",
-    "macro/linear/linear_dna",
-    "macro/linear/linear_rna",
-    "macro/linear/linear_peptide",
-    "macro/linear/linear_multi",
-    "macro/modified/mod_dna",
-    "macro/modified/mod_peptide",
-    "macro/modified/mod_rna",
-    "macro/modified/mod_rna_peptide",
-    "macro/peptide-rna/peptide-rna",
-    "macro/peptide-rna/peptide-rna-ac",
-    "macro/polyphosphate/polyphosphate_rna",
-    "macro/terminators/terms_peptide",
-    "macro/sa-mono",
+    ("suplabel", "auto"),
+    ("cysteine", "auto"),
+    ("dcysteine", "auto"),
+    ("thymine", "auto"),
+    ("dthymine", "auto"),
+    ("dala", "auto"),
+    ("chem", "auto"),
+    ("rna_mod", "auto"),
+    ("conjugate", "auto"),
+    ("dna_mod", "auto"),
+    ("pepchem", "auto"),
+    ("peptides", "auto"),
+    ("fmoc", "auto"),
+    ("anacyclamide", "auto"),
+    ("accl_no_class", "auto"),
+    ("conj_no_class", "auto"),
+    ("sgroups_mul", "auto"),
+    ("query_explicit_val", "auto"),
+    ("mon_long_id", "auto"),
+    ("acgt_1412", "auto"),
+    ("issue_1476", "auto"),
+    ("taspoglutide", "auto"),
+    ("macro/hundred-monomers", "auto"),
+    ("macro/conjugates/pep-chem-rna", "auto"),
+    ("macro/conjugates/peptide_rna", "auto"),
+    ("macro/dendromers/dendro-peptide", "auto"),
+    ("macro/disulfide/disulfide_peptide_cycle", "auto"),
+    ("macro/left_phosphate/left_phosphate", "auto"),
+    ("macro/linear/linear_dna", "auto"),
+    ("macro/linear/linear_rna", "auto"),
+    ("macro/linear/linear_peptide", "auto"),
+    ("macro/linear/linear_multi", "auto"),
+    ("macro/modified/mod_dna", "auto"),
+    ("macro/modified/mod_peptide", "auto"),
+    ("macro/modified/mod_rna", "auto"),
+    ("macro/modified/mod_rna_peptide", "auto"),
+    ("macro/peptide-rna/peptide-rna", "auto"),
+    ("macro/peptide-rna/peptide-rna-ac", "auto"),
+    ("macro/polyphosphate/polyphosphate_rna", "auto"),
+    ("macro/terminators/terms_peptide", "auto"),
+    ("macro/sa-mono", "auto"),
+    ("5amd", "2000"),
 ]
 
-files.sort()
-for filename in files:
+files.sort(key=lambda x: x[0])
+for test_tuple in files:
+    filename = test_tuple[0]
     try:
         indigo.setOption("molfile-saving-mode", "auto")
         mol = indigo.loadMoleculeFromFile(
@@ -80,6 +82,10 @@ for filename in files:
         mol = indigo.loadQueryMoleculeFromFile(
             os.path.join(root, filename + ".ket")
         )
+
+    if len( test_tuple ) > 1:
+        indigo.setOption("molfile-saving-mode", test_tuple[1])
+
     # with open(os.path.join(ref_path, filename) + ".mol", "w") as file:
     #     file.write(mol.molfile())
 
