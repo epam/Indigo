@@ -99,6 +99,7 @@ void MoleculeAutoLoader::loadMolecule(BaseMolecule& bmol)
     }
     catch (Exception e)
     {
+        bool error_flag = false;
         if (bmol.isQueryMolecule())
         {
             // trying to load as molecule
@@ -107,14 +108,7 @@ void MoleculeAutoLoader::loadMolecule(BaseMolecule& bmol)
             try
             {
                 _loadMolecule(mol);
-            }
-            catch (...)
-            {
-                throw(e);
-            }
-            if (mol.tgroups.getTGroupCount())
-            {
-                try
+                if (mol.tgroups.getTGroupCount())
                 {
                     mol.transformTemplatesToSuperatoms();
                     Array<char> mol_out_buffer;
@@ -128,16 +122,18 @@ void MoleculeAutoLoader::loadMolecule(BaseMolecule& bmol)
                     _scanner = new BufferScanner(mol_out_buffer);
                     _loadMolecule(bmol);
                 }
-                catch (...)
-                {
-                    throw(e);
-                }
+                else
+                    error_flag = true;
             }
-            else
-                throw(e);
+            catch (...)
+            {
+                error_flag = true;
+            }
         }
         else
-            throw(e);
+            error_flag = true;
+        if (error_flag)
+            throw;
     }
 
     if (!bmol.isQueryMolecule())
