@@ -92,7 +92,14 @@ void MoleculeAutoLoader::loadQueryMolecule(QueryMolecule& qmol)
 
 void MoleculeAutoLoader::loadMolecule(BaseMolecule& mol)
 {
-    _loadMolecule(mol);
+    try
+    {
+        _loadMolecule(mol);
+    }
+    catch (Exception e)
+    {
+        throw(e);
+    }
 
     if (!mol.isQueryMolecule())
     {
