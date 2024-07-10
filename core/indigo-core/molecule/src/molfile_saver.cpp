@@ -197,23 +197,32 @@ void MolfileSaver::_handleCIP(BaseMolecule& mol)
     }
 }
 
-void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
+void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 {
     LocaleGuard locale_guard;
-
+    BaseMolecule* pmol = &bmol;
+    std::unique_ptr<BaseMolecule> mol(bmol.neu());
     if (mode == MODE_2000)
+    {
         _v2000 = true;
+        if (bmol.tgroups.getTGroupCount())
+        {
+            mol->clone(bmol);
+            mol->transformTemplatesToSuperatoms();
+            pmol = mol.get();
+        }
+    }
     else if (mode == MODE_3000)
         _v2000 = false;
     else
     {
         // auto-detect the format: save to v3000 molfile only
         // if v2000 is not enough
-        _v2000 = !(mol.hasHighlighting() || mol.stereocenters.haveEnhancedStereocenter() ||
-                   (mol.vertexCount() > 999 || mol.edgeCount() > 999 || mol.tgroups.getTGroupCount()));
+        _v2000 = !(pmol->hasHighlighting() || pmol->stereocenters.haveEnhancedStereocenter() ||
+                   (pmol->vertexCount() > 999 || pmol->edgeCount() > 999 || pmol->tgroups.getTGroupCount()));
     }
 
-    bool rg2000 = (_v2000 && mol.rgroups.getRGroupCount() > 0);
+    bool rg2000 = (_v2000 && pmol->rgroups.getRGroupCount() > 0);
 
     if (rg2000)
     {
@@ -230,7 +239,7 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
         _output.writeStringCR("$HDR");
     }
 
-    _writeHeader(mol, _output, BaseMolecule::hasZCoord(mol));
+    _writeHeader(*pmol, _output, BaseMolecule::hasZCoord(*pmol));
 
     if (rg2000)
     {
@@ -240,26 +249,26 @@ void MolfileSaver::_saveMolecule(BaseMolecule& mol, bool query)
 
     if (_v2000)
     {
-        _writeCtabHeader2000(_output, mol);
-        _writeCtab2000(_output, mol, query);
+        _writeCtabHeader2000(_output, *pmol);
+        _writeCtab2000(_output, *pmol, query);
     }
     else
     {
         _writeCtabHeader(_output);
-        _writeCtab(_output, mol, query);
+        _writeCtab(_output, *pmol, query);
     }
 
     if (_v2000)
     {
-        _writeRGroupIndices2000(_output, mol);
-        _writeAttachmentValues2000(_output, mol);
+        _writeRGroupIndices2000(_output, *pmol);
+        _writeAttachmentValues2000(_output, *pmol);
     }
 
     if (rg2000)
     {
         int i, j;
 
-        MoleculeRGroups& rgroups = mol.rgroups;
+        MoleculeRGroups& rgroups = pmol->rgroups;
         int n_rgroups = rgroups.getRGroupCount();
 
         for (i = 1; i <= n_rgroups; i++)
