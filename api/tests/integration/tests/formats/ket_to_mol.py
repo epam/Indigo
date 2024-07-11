@@ -66,6 +66,7 @@ files = [
     ("macro/polyphosphate/polyphosphate_rna", "auto"),
     ("macro/terminators/terms_peptide", "auto"),
     ("macro/sa-mono", "auto"),
+    ("macro/R2R3R4", "auto"),
     ("5amd", "2000"),
 ]
 
