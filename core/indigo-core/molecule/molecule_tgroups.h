@@ -19,6 +19,8 @@
 #ifndef __molecule_tgroups__
 #define __molecule_tgroups__
 
+#include <functional>
+
 #include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_pool.h"
 #include "base_cpp/red_black.h"
@@ -79,6 +81,7 @@ namespace indigo
 
         void copyTGroupsFromMolecule(MoleculeTGroups& other);
         int findTGroup(const char* name);
+        void filterTGroups(std::vector<int>& groups, std::function<bool(const TGroup& tgrp)> filter);
 
         int begin();
         int end();
