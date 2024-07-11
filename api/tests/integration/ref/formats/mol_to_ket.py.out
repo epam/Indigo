@@ -2,6 +2,8 @@
 1032-quadra.ket:SUCCEED
 1046-imp_hydrogen.ket:SUCCEED
 1465-lr_sugar.ket:SUCCEED
+1972-case1.ket:SUCCEED
+1972-case2.ket:SUCCEED
 SgroupDifferent.ket:SUCCEED
 acgt_1412.ket:SUCCEED
 anacyclamide.ket:SUCCEED
@@ -20,4 +22,5 @@ peptides.ket:SUCCEED
 removed_phosphate.ket:SUCCEED
 rna_mod.ket:SUCCEED
 suplabel.ket:SUCCEED
+taspoglutide.ket:SUCCEED
 thymine.ket:SUCCEED

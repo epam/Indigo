@@ -20,6 +20,7 @@
 #define __base_molecule__
 
 #include <map>
+#include <optional>
 #include <set>
 
 #include "base_cpp/obj_array.h"
@@ -218,8 +219,8 @@ namespace indigo
         virtual const char* getTemplateAtomClass(int idx) = 0;
         virtual const int getTemplateAtomDisplayOption(int idx) = 0;
         virtual const int getTemplateAtomTemplateIndex(int idx) = 0;
-        virtual void getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map) = 0;
-        virtual void getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map) = 0;
+        void getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map);
+        void getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map);
 
         int countRSites();
         int countTemplateAtoms();
@@ -233,7 +234,7 @@ namespace indigo
         int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& helm_name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
         void transformSuperatomsToTemplates(int template_id);
-        void transformTemplatesToSuperatoms(MonomerFilterBase& filter);
+        void transformTemplatesToSuperatoms();
 
         virtual bool isRSite(int atom_idx) = 0;
         virtual dword getRSiteBits(int atom_idx) = 0;
@@ -252,6 +253,7 @@ namespace indigo
         void getTemplateAtomAttachmentPointId(int atom_idx, int order, Array<char>& apid);
         int getTemplateAtomAttachmentPointsCount(int atom_idx);
         int getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& att_id);
+        std::optional<std::pair<int, std::reference_wrapper<ObjPool<int>>>> getTemplateAtomAttachmentPointIdxs(int atom_idx, int att_point_idx);
 
         void addAttachmentPoint(int order, int atom_index);
 
@@ -364,6 +366,7 @@ namespace indigo
         }
 
         ObjPool<TemplateAttPoint> template_attachment_points;
+        ObjArray<ObjPool<int>> template_attachment_indexes;
 
         MoleculeSGroups sgroups;
 

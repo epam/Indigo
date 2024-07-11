@@ -1035,16 +1035,6 @@ const int QueryMolecule::getTemplateAtomTemplateIndex(int /*idx*/)
     return -1;
 }
 
-void QueryMolecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& /*templates_map*/)
-{
-    throw Error("QueryMolecule::getTemplatesMap not implemented");
-}
-
-void QueryMolecule::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& /*directions_map*/)
-{
-    throw Error("QueryMolecule::getTemplateAtomDirectionsMap not implemented");
-}
-
 const int QueryMolecule::getTemplateAtomDisplayOption(int /*idx*/)
 {
     return -1;

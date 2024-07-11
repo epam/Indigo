@@ -99,7 +99,7 @@ void DataSGroup::setMrv_implicit(int atom_idx, int hydrogens_count)
     detached = true;
 }
 
-Superatom::Superatom()
+Superatom::Superatom() : unresolved(false)
 {
     sgroup_type = SGroup::SG_TYPE_SUP;
     seqid = -1;

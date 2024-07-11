@@ -38,6 +38,49 @@
 using namespace indigo;
 using namespace tinyxml2;
 
+tinyxml2::XMLElement* MoleculeCdxmlSaver::create_text(tinyxml2::XMLElement* parent, float x, float y, const char* label_justification)
+{
+    XMLElement* t = _doc->NewElement("t");
+    parent->LinkEndChild(t);
+    Array<char> buf;
+    ArrayOutput out(buf);
+    out.printf("%f %f", x, y);
+    buf.push(0);
+    t->SetAttribute("p", buf.ptr());
+    if (label_justification)
+        t->SetAttribute("LabelJustification", label_justification);
+    return t;
+}
+
+void MoleculeCdxmlSaver::add_style_str(tinyxml2::XMLElement* parent, int font, int size, int face, const char* str)
+{
+    XMLElement* s = _doc->NewElement("s");
+    parent->LinkEndChild(s);
+    s->SetAttribute("font", font);
+    s->SetAttribute("size", size);
+    s->SetAttribute("face", face);
+    XMLText* txt = _doc->NewText(str);
+    s->LinkEndChild(txt);
+}
+
+void MoleculeCdxmlSaver::add_charge(tinyxml2::XMLElement* parent, int font, int size, int charge)
+{
+    if (charge == 0 || charge == CHARGE_UNKNOWN)
+        return;
+    if (charge > 0)
+    {
+        if (charge > 1)
+            add_style_str(parent, font, size, 64, std::to_string(charge).c_str());
+        add_style_str(parent, font, size, 96, "+");
+    }
+    else if (charge < 0)
+    {
+        if (charge < -1)
+            add_style_str(parent, font, size, 64, std::to_string(-charge).c_str());
+        add_style_str(parent, font, size, 96, "-");
+    }
+}
+
 void MoleculeCdxmlSaver::writeBinaryTextValue(const tinyxml2::XMLElement* pTextElement)
 {
     if (std::string(pTextElement->Name()) != "t")
@@ -390,7 +433,7 @@ void MoleculeCdxmlSaver::beginDocument(Bounds* bounds)
 
         mac_print_info[12] = 871; // magic number
 
-        mac_print_info[13] = height / 5; // magic scaling coeffient
+        mac_print_info[13] = height / 5; // magic scaling coefficient
         mac_print_info[14] = width / 5;
 
         mac_print_info[24] = 100; // horizontal scale, in percent
@@ -723,163 +766,59 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
 
     if (mol.getVertex(atom_idx).degree() == 0 && atom_number == ELEM_C && charge == 0 && radical == 0)
     {
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
-
-        QS_DEF(Array<char>, buf);
-        ArrayOutput out(buf);
-        out.printf("%f %f", pos.x, -pos.y);
-        buf.push(0);
-        t->SetAttribute("p", buf.ptr());
+        XMLElement* t = create_text(node, pos.x, -pos.y, nullptr);
         t->SetAttribute("Justification", "Center");
-
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        s->SetAttribute("font", 3);
-        s->SetAttribute("size", 10);
-        s->SetAttribute("face", 96);
-
-        XMLText* txt = _doc->NewText("CH4");
-        s->LinkEndChild(txt);
+        add_style_str(t, 3, 10, 96, "CH4");
+        add_charge(t, 3, 10, charge);
     }
     else if (mol.isRSite(atom_idx))
     {
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
-
+        XMLElement* t = create_text(node, pos.x, -pos.y, "Left");
         QS_DEF(Array<char>, buf);
-        ArrayOutput out(buf);
-        out.printf("%f %f", pos.x, -pos.y);
-        buf.push(0);
-        t->SetAttribute("p", buf.ptr());
-        t->SetAttribute("LabelJustification", "Left");
-
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        s->SetAttribute("font", 3);
-        s->SetAttribute("size", 10);
-        s->SetAttribute("face", 96);
-
-        out.clear();
-        //			out.printf("A");
         mol.getAtomSymbol(atom_idx, buf);
-        /*
-         * Skip charge since Chemdraw is pure. May be in future it will be fixed by Chemdraw
-         */
-        /*if (charge != 0) {
-            if (charge > 0) {
-                out.printf("+%d", charge);
-            }
-            else {
-                out.printf("-%d", charge);
-            }
-        }*/
         buf.push(0);
-
-        XMLText* txt = _doc->NewText(buf.ptr());
-        s->LinkEndChild(txt);
+        add_style_str(t, 3, 10, 96, buf.ptr());
+        add_charge(t, 3, 10, charge);
     }
     else if (mol.isPseudoAtom(atom_idx))
     {
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
-
-        QS_DEF(Array<char>, buf);
-        ArrayOutput out(buf);
-        out.printf("%f %f", pos.x, -pos.y);
-        buf.push(0);
-        t->SetAttribute("p", buf.ptr());
-        t->SetAttribute("LabelJustification", "Left");
-
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        s->SetAttribute("font", 3);
-        s->SetAttribute("size", 10);
-        s->SetAttribute("face", 96);
-
-        out.clear();
-
-        out.printf("%s", mol.getPseudoAtom(atom_idx));
-        /*
-         * Skip charge since Chemdraw is pure. May be in future it will be fixed by Chemdraw
-         */
-        /*if (charge != 0) {
-            if (charge > 0) {
-                out.printf("+%d", charge);
-            }
-            else {
-                out.printf("-%d", charge);
-            }
-        }*/
-        buf.push(0);
-        XMLText* txt = _doc->NewText(buf.ptr());
-        s->LinkEndChild(txt);
+        XMLElement* t = create_text(node, pos.x, -pos.y, "Left");
+        add_style_str(t, 3, 10, 96, mol.getPseudoAtom(atom_idx));
+        add_charge(t, 3, 10, charge);
     }
     else if (atom_number > 0 && atom_number != ELEM_C)
     {
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
+        XMLElement* t = create_text(node, pos.x, -pos.y, "Left");
 
         QS_DEF(Array<char>, buf);
         ArrayOutput out(buf);
-        out.printf("%f %f", pos.x, -pos.y);
-        buf.push(0);
-        t->SetAttribute("p", buf.ptr());
-        t->SetAttribute("LabelJustification", "Left");
-
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        s->SetAttribute("font", 3);
-        s->SetAttribute("size", 10);
-        s->SetAttribute("face", 96);
-
-        out.clear();
         mol.getAtomSymbol(atom_idx, buf);
         if (hcount > 0)
         {
             buf.pop();
             buf.push('H');
         }
-
         buf.push(0);
-        XMLText* txt = _doc->NewText(buf.ptr());
-        s->LinkEndChild(txt);
+        add_style_str(t, 3, 10, 96, buf.ptr());
+
         if (hcount > 1)
         {
-            XMLElement* ss = _doc->NewElement("s");
-            t->LinkEndChild(ss);
-            ss->SetAttribute("font", 3);
-            ss->SetAttribute("size", 10);
-            ss->SetAttribute("face", 32);
-
             out.clear();
             out.printf("%d", hcount);
             buf.push(0);
-            ss->LinkEndChild(_doc->NewText(buf.ptr()));
+            add_style_str(t, 3, 10, 32, buf.ptr());
         }
+        add_charge(t, 3, 10, charge);
     }
     else if (atom_number < 0 && mol.isQueryMolecule())
     {
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
+        XMLElement* t = create_text(node, pos.x, -pos.y, "Left");
 
         QS_DEF(Array<char>, buf);
         ArrayOutput out(buf);
-        out.printf("%f %f", pos.x, -pos.y);
-        buf.push(0);
-        t->SetAttribute("p", buf.ptr());
-        t->SetAttribute("LabelJustification", "Left");
-
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        s->SetAttribute("font", 3);
-        s->SetAttribute("size", 10);
-        s->SetAttribute("face", 96);
 
         QS_DEF(Array<int>, list);
         int query_atom_type;
-
-        out.clear();
 
         if (mol.isQueryMolecule() && (query_atom_type = QueryMolecule::parseQueryAtom(mol.asQueryMolecule(), atom_idx, list)) != -1)
         {
@@ -902,47 +841,44 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
                 mol.getAtomSymbol(atom_idx, buf);
         }
 
-        XMLText* txt = _doc->NewText(buf.ptr());
-        s->LinkEndChild(txt);
+        add_style_str(t, 3, 10, 96, buf.ptr());
     }
 }
 
 void MoleculeCdxmlSaver::_collectSuperatoms(BaseMolecule& mol)
 {
-    _atoms_excluded.clear();
-    _bonds_excluded.clear();
-    _bonds_included.clear();
     for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
     {
         SGroup& sgroup = mol.sgroups.getSGroup(i);
         if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
         {
-            _super_atoms.emplace(i, std::vector<int>{});
-            auto& atoms_list = _super_atoms.at(i);
+            _superatoms.emplace(i, ++_id);
+            auto& atoms_list = _superatoms.at(i).atoms;
+
             Superatom& sa = (Superatom&)sgroup;
+            // collect atoms of all the superatoms
             for (int j = 0; j < sa.atoms.size(); ++j)
             {
-                _atoms_excluded.insert(sa.atoms[j]);
+                _superatoms_atoms.emplace(sa.atoms[j], i);
                 atoms_list.push_back(sa.atoms[j]);
             }
         }
     }
 
-    if (_atoms_excluded.size())
+    if (_superatoms_atoms.size())
         for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
         {
             auto& edge = mol.getEdge(i);
-            int v_count = 0;
-            if (_atoms_excluded.find(edge.beg) != _atoms_excluded.end())
-                v_count++;
-            if (_atoms_excluded.find(edge.end) != _atoms_excluded.end())
-                v_count++;
+            auto beg_it = _superatoms_atoms.find(edge.beg);
+            auto end_it = _superatoms_atoms.find(edge.end);
 
-            if (v_count)
-                _bonds_excluded.insert(i);
+            if (beg_it != _superatoms_atoms.end() && end_it != _superatoms_atoms.end() && beg_it->second == end_it->second)
+                _superatoms.at(beg_it->second).bonds.push_back(i);
 
-            if (v_count == 2) // 2 means that both bond's atoms belongs to superatom
-                _bonds_included.insert(i);
+            if (beg_it != _superatoms_atoms.end())
+                _superatoms_bonds.emplace(i, beg_it->second);
+            else if (end_it != _superatoms_atoms.end())
+                _superatoms_bonds.emplace(i, end_it->second);
         }
 }
 
@@ -1051,7 +987,8 @@ void MoleculeCdxmlSaver::addBondsToFragment(BaseMolecule& mol, tinyxml2::XMLElem
 {
     for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
     {
-        if (_bonds_excluded.find(i) == _bonds_excluded.end())
+        // skip bonds from superatoms
+        if (_superatoms_bonds.find(i) == _superatoms_bonds.end())
             addBondToFragment(mol, fragment, i);
     }
 }
@@ -1061,36 +998,43 @@ void MoleculeCdxmlSaver::addNodesToFragment(BaseMolecule& mol, XMLElement* fragm
     Vec2f dummy_pos;
     for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
     {
-        if (_atoms_excluded.find(i) == _atoms_excluded.end()) // skip atoms from superatoms
+        // skip atoms from superatoms
+        if (_superatoms_atoms.find(i) == _superatoms_atoms.end())
             addNodeToFragment(mol, fragment, i, offset, min_coord, max_coord, dummy_pos);
     }
 }
 
 void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElement* fragment, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord)
 {
-    for (auto& kvp : _super_atoms)
+    // iterate over superatoms
+    std::unordered_map<std::pair<int, int>, int, pair_int_hash> outer_bond_ids;
+
+    for (auto& kvp : _superatoms)
     {
         std::vector<std::pair<int, int>> ext_connections;
         std::vector<int> connection_order, bond_ordering;
-        std::set<int> int_connections;
         XMLElement* node = _doc->NewElement("n");
         fragment->LinkEndChild(node);
-        node->SetAttribute("id", ++_id);
-        int fragment_node_id = _id;
+        int fragment_node_id = kvp.second.id;
+        node->SetAttribute("id", fragment_node_id);
         node->SetAttribute("NodeType", "Fragment");
         XMLElement* super_fragment = _doc->NewElement("fragment");
         super_fragment->SetAttribute("id", ++_id);
         node->LinkEndChild(super_fragment);
-        for (auto atom_idx : kvp.second)
+        // iterate atoms in the superatom
+        for (auto atom_idx : kvp.second.atoms)
         {
             Vec2f pos;
             addNodeToFragment(mol, super_fragment, atom_idx, offset, min_coord, max_coord, pos);
             auto& vx = mol.getVertex(atom_idx);
+            // iterate neighbors
             for (auto nei_idx = vx.neiBegin(); nei_idx != vx.neiEnd(); nei_idx = vx.neiNext(nei_idx))
             {
                 int nei_atom_idx = vx.neiVertex(nei_idx);
                 int nei_edge_idx = vx.neiEdge(nei_idx);
-                if (_atoms_excluded.find(nei_atom_idx) == _atoms_excluded.end())
+                auto ex_atom_it = _superatoms_atoms.find(nei_atom_idx);
+                // if atom is not in the superatom
+                if (ex_atom_it == _superatoms_atoms.end() || ex_atom_it->second != kvp.first)
                 {
                     // external neighbor found
                     XMLElement* connection_node = _doc->NewElement("n");
@@ -1099,19 +1043,25 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
                     connection_node->SetAttribute("NodeType", "ExternalConnectionPoint");
                     ext_connections.emplace_back(_id, _atoms_ids[atom_idx]);
                     connection_order.push_back(_id);
-                    bond_ordering.push_back(++_id);
-                    _out_connections.emplace_back(_id, _atoms_ids[nei_atom_idx], fragment_node_id);
-                }
-
-                if (_bonds_included.find(nei_edge_idx) != _bonds_included.end())
-                {
-                    if (int_connections.find(nei_edge_idx) == int_connections.end())
-                        int_connections.insert(nei_edge_idx);
+                    // if this connection already exists, _id should be reused for bond_ordering
+                    auto out_bond = std::make_pair(std::min(nei_atom_idx, atom_idx), std::max(nei_atom_idx, atom_idx));
+                    auto outer_bond_it = outer_bond_ids.find(out_bond);
+                    if (outer_bond_it == outer_bond_ids.end())
+                    {
+                        bond_ordering.push_back(++_id);
+                        if (ex_atom_it != _superatoms_atoms.end() && ex_atom_it->second != kvp.first)
+                            _out_connections.emplace_back(_id, _superatoms.at(ex_atom_it->second).id, fragment_node_id);
+                        else
+                            _out_connections.emplace_back(_id, _atoms_ids[nei_atom_idx], fragment_node_id);
+                        outer_bond_ids.emplace(out_bond, _id);
+                    }
+                    else
+                        bond_ordering.push_back(outer_bond_it->second);
                 }
             }
         }
 
-        for (int edge_idx : int_connections)
+        for (int edge_idx : kvp.second.bonds)
             addBondToFragment(mol, super_fragment, edge_idx);
 
         for (const auto& ext_bond : ext_connections)
@@ -1148,22 +1098,25 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
         }
 
         auto& sa = (Superatom&)mol.sgroups.getSGroup(kvp.first);
-        XMLElement* t = _doc->NewElement("t");
-        node->LinkEndChild(t);
-        t->SetAttribute("LabelJustification", "Left");
-        t->SetAttribute("LabelAlignment", "Above");
-        XMLElement* s = _doc->NewElement("s");
-        t->LinkEndChild(s);
-        XMLText* txt = _doc->NewText(sa.subscript.ptr());
-        s->LinkEndChild(txt);
+        if (sa.subscript.size())
+        {
+            XMLElement* t = _doc->NewElement("t");
+            node->LinkEndChild(t);
+            t->SetAttribute("LabelJustification", "Left");
+            t->SetAttribute("LabelAlignment", "Above");
+            XMLElement* s = _doc->NewElement("s");
+            t->LinkEndChild(s);
+            XMLText* txt = _doc->NewText(sa.subscript.ptr());
+            s->LinkEndChild(txt);
+        }
     }
 }
 
-void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float scale)
+void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float scale)
 {
-    std::vector<int> ids;
+    std::map<int, int> atom_ids;
     int id = 0;
-    saveMoleculeFragment(mol, offset, scale, -1, id, ids);
+    saveMoleculeFragment(bmol, offset, scale, -1, id, atom_ids);
 }
 
 void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum)
@@ -1206,14 +1159,18 @@ void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2
     fragment->SetAttribute("Valence", valence);
 }
 
-void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& offset, float structure_scale, int frag_id, int& id, std::vector<int>& ids)
+void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float structure_scale, int frag_id, int& id,
+                                              std::map<int, int>& atom_ids)
 {
+    std::unique_ptr<BaseMolecule> mol(bmol.neu());
+    mol->clone(bmol);
+    deleteNamelessSGroups(*mol);
+    mol->transformTemplatesToSuperatoms();
     _atoms_ids.clear();
     _bonds_ids.clear();
-    _super_atoms.clear();
-    _atoms_excluded.clear();
-    _bonds_excluded.clear();
-    _bonds_included.clear();
+    _superatoms.clear();
+    _superatoms_atoms.clear();
+    _superatoms_bonds.clear();
     _out_connections.clear();
 
     _scale = structure_scale * _bond_length;
@@ -1233,25 +1190,28 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
     else
         fragment->SetAttribute("id", ++_id);
 
-    if (ids.size())
+    if (atom_ids.size())
     {
-        _atoms_ids = ids;
-        if (_atoms_ids.back() > _id)
-            _id = _atoms_ids.back();
+        _atoms_ids = atom_ids;
+        auto back_it = std::prev(_atoms_ids.end());
+        if (back_it->second > _id)
+            _id = back_it->second;
     }
     else
-        for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-            _atoms_ids.push_back(++_id);
+        for (int i = mol->vertexBegin(); i != mol->vertexEnd(); i = mol->vertexNext(i))
+            _atoms_ids.emplace(i, ++_id);
 
-    for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-        _bonds_ids.push_back(++_id);
+    for (int i = mol->edgeBegin(); i != mol->edgeEnd(); i = mol->edgeNext(i))
+    {
+        _bonds_ids.emplace(i, ++_id);
+    }
 
     Vec2f min_coord, max_coord;
 
-    _collectSuperatoms(mol);
-    addFragmentNodes(mol, fragment, offset, min_coord, max_coord);
-    addNodesToFragment(mol, fragment, offset, min_coord, max_coord);
-    addBondsToFragment(mol, fragment);
+    _collectSuperatoms(*mol);
+    addFragmentNodes(*mol, fragment, offset, min_coord, max_coord);
+    addNodesToFragment(*mol, fragment, offset, min_coord, max_coord);
+    addBondsToFragment(*mol, fragment);
 
     for (const auto& out_bond : _out_connections)
     {
@@ -1262,7 +1222,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
         bond->SetAttribute("E", out_bond.end);
     }
 
-    if (mol.isChiral())
+    if (mol->isChiral())
     {
         Vec2f chiral_pos(max_coord.x, max_coord.y);
         Vec2f bbox(_scale * chiral_pos.x, -_scale * chiral_pos.y);
@@ -1284,8 +1244,8 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& mol, const Vec2f& of
         _current = fragment;
     }
 
-    for (int i = 0; i < mol.meta().metaData().size(); ++i)
-        addMetaObject(*mol.meta().metaData()[i], ++_id);
+    for (int i = 0; i < mol->meta().metaData().size(); ++i)
+        addMetaObject(*mol->meta().metaData()[i], ++_id);
 
     _current = parent;
     id = _id;
@@ -1915,18 +1875,18 @@ int MoleculeCdxmlSaver::getHydrogenCount(BaseMolecule& mol, int idx, int charge,
     return h;
 }
 
-void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& mol)
+void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
 {
     Vec3f min_coord, max_coord;
 
     _id = 0;
 
-    if (mol.have_xyz)
+    if (bmol.have_xyz)
     {
-        for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+        for (int i = bmol.vertexBegin(); i != bmol.vertexEnd(); i = bmol.vertexNext(i))
         {
-            Vec3f& pos = mol.getAtomXyz(i);
-            if (i == mol.vertexBegin())
+            Vec3f& pos = bmol.getAtomXyz(i);
+            if (i == bmol.vertexBegin())
                 min_coord = max_coord = pos;
             else
             {
@@ -1951,16 +1911,30 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& mol)
 
     Vec2f offset(-min_coord.x, -max_coord.y);
 
-    saveMoleculeFragment(mol, offset, 1);
-    for (int i = 1; i <= mol.rgroups.getRGroupCount(); i++)
+    saveMoleculeFragment(bmol, offset, 1);
+    for (int i = 1; i <= bmol.rgroups.getRGroupCount(); i++)
     {
-        auto& rgrp = mol.rgroups.getRGroup(i);
+        auto& rgrp = bmol.rgroups.getRGroup(i);
         if (rgrp.fragments.size())
             saveRGroup(rgrp.fragments, offset, i);
     }
 
     endPage();
     endDocument();
+}
+
+void MoleculeCdxmlSaver::deleteNamelessSGroups(BaseMolecule& bmol)
+{
+    for (int j = bmol.sgroups.begin(); j != bmol.sgroups.end(); j = bmol.sgroups.next(j))
+    {
+        SGroup& sg = bmol.sgroups.getSGroup(j);
+        if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+        {
+            auto& sa = static_cast<Superatom&>(sg);
+            if (sa.subscript.size() == 0 || std::string(sa.subscript.ptr()).size() == 0)
+                bmol.sgroups.remove(j);
+        }
+    }
 }
 
 #ifdef _MSC_VER

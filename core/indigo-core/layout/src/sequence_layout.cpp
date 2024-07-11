@@ -62,8 +62,10 @@ void SequenceLayout::addNeigbourDirections(BaseMolecule& mol, DirectionsPriority
             {
                 std::string to_class = mol.getTemplateAtomClass(nei_dir.second);
                 std::string from_class = mol.getTemplateAtomClass(back_dir.second);
+                bool isBothAminoAcid = isAminoAcidClass(to_class) && isAminoAcidClass(from_class);
+                bool isBothNucleic = isNucleicClass(to_class) && isNucleicClass(from_class);
                 // if to_class and from_class are different backbone types, treat the connection as branch
-                if (!((isAminoAcidClass(to_class) && isAminoAcidClass(from_class)) || (isNucleicClass(to_class) && isNucleicClass(from_class))))
+                if (!(isBothAminoAcid || isBothNucleic))
                 {
                     pq.emplace(kBranchAttachmentPointIdx, nei_dir.second, kBranchAttachmentPointIdx, back_dir.second);
                     continue;
@@ -138,10 +140,7 @@ void SequenceLayout::sequenceExtract(std::vector<std::deque<int>>& sequences)
     for (int i = _molecule.vertexBegin(); i < _molecule.vertexEnd(); i = _molecule.vertexNext(i))
     {
         if (_molecule.isTemplateAtom(i))
-        {
             remaining_atoms.insert(i);
-            // printf("%d:%s:%s\n", i, _molecule.getTemplateAtom(i), _molecule.getTemplateAtomClass(i));
-        }
     }
 
     // bfs algorythm for a graph
@@ -150,7 +149,8 @@ void SequenceLayout::sequenceExtract(std::vector<std::deque<int>>& sequences)
         if (pq.size() == 0)
         {
             pq.emplace(std::make_pair(-1, *remaining_atoms.begin()), std::make_pair(-1, -1));
-            sequences.push_back({});
+            if (sequences.empty() || sequences.back().size())
+                sequences.push_back({});
         }
         auto te = pq.top(); // top element
         pq.pop();

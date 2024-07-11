@@ -48,6 +48,13 @@ namespace indigo
         };
         DECL_ERROR;
 
+        static constexpr char NUM_BEGIN = 0x30;
+        static constexpr char NUM_END = 0x40;
+
+        static constexpr char CHAR_LOWERCASE_BEGIN = 0x61;
+        static constexpr char CHAR_LOWERCASE_END = 0x7B;
+        static constexpr char CHAR_SHIFT_CONVERT = 0x20;
+
         SequenceLoader(Scanner& scanner);
 
         ~SequenceLoader();
@@ -57,22 +64,36 @@ namespace indigo
         void loadFasta(BaseMolecule& mol, const std::string& seq_type_str);
         void loadFasta(BaseMolecule& mol, SeqType seq_type);
         void loadIdt(BaseMolecule& mol);
+        void loadHELM(BaseMolecule& mol);
 
     private:
+        Vec3f getBackboneMonomerPosition();
         bool addMonomer(BaseMolecule& mol, char ch, SeqType seq_type);
-        bool addTemplate(BaseMolecule& mol, const std::string alias, MonomerType seq_type);
+        bool addTemplate(BaseMolecule& mol, const std::string alias, MonomerClass seq_type);
+
+        void checkAddTemplate(BaseMolecule& mol, const MonomerTemplate& monomer_template);
 
         void addAminoAcid(BaseMolecule& mol, char ch);
-        void addNucleotide(BaseMolecule& mol, char ch, const std::string& sugar_alias, const std::string& phosphate_alias);
-        bool addMonomerTemplate(BaseMolecule& mol, MonomerType mt, const std::string& alias);
-        bool checkAddTemplate(BaseMolecule& mol, MonomerType type, const std::string monomer);
+        void addNucleotide(BaseMolecule& mol, std::string base, const std::string& sugar_alias, const std::string& phosphate_alias,
+                           bool phosphate_at_left = true);
+
+        int addTemplateAtom(BaseMolecule& mol, const char* alias, const char* monomer_class, int seq_id);
+        void addTemplateBond(BaseMolecule& mol, int left_idx, int right_idx, bool branch = false);
+
+        bool addMonomerTemplate(BaseMolecule& mol, MonomerClass mt, const std::string& alias);
+        bool checkAddTemplate(BaseMolecule& mol, MonomerClass type, const std::string monomer);
         SequenceLoader(const SequenceLoader&); // no implicit copy
+
+        static void check_monomer_place(std::string& idt_alias, IdtModification mon_mod, IdtModification alias_mod, bool has_prev_mon);
+
+        using MonomerInfo = std::tuple<std::string, std::string, std::string>;
+
+        MonomerInfo readHelmMonomer();
+        std::string readHelmSimplePolymerName(std::string& polymer_name);
+
         Scanner& _scanner;
-        std::unordered_set<std::pair<MonomerType, std::string>, pair_hash> _added_templates;
+        std::unordered_set<std::pair<MonomerClass, std::string>, pair_hash> _added_templates;
         const MonomerTemplates& _mon_lib;
-        Array<char> _left_apid;
-        Array<char> _right_apid;
-        Array<char> _xlink_apid;
         int _seq_id;
         int _last_monomer_idx;
         int _row;

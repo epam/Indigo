@@ -78,6 +78,7 @@ def indigo_init(options={}):
                 "smarts",
                 "input-format",
                 "output-content-type",
+                "monomerLibrary",
             ):
                 continue
             tls.indigo.setOption(option, value)
@@ -351,6 +352,10 @@ def load_moldata(
         md.struct = indigo.loadIdt(molstr)
         md.is_rxn = False
         md.is_query = False
+    elif input_format == "chemical/x-helm":
+        md.struct = indigo.loadHelm(molstr)
+        md.is_rxn = False
+        md.is_query = False
     elif molstr.startswith("InChI"):
         md.struct = indigo.inchi.loadMolecule(molstr)
         md.is_rxn = False
@@ -399,6 +404,8 @@ def save_moldata(md, output_format=None, options={}, indigo=None):
         return md.struct.fasta()
     elif output_format == "chemical/x-idt":
         return md.struct.idt()
+    elif output_format == "chemical/x-helm":
+        return md.struct.helm()
     elif output_format == "chemical/x-daylight-smiles":
         if options.get("smiles") == "canonical":
             return md.struct.canonicalSmiles()
@@ -861,6 +868,11 @@ def convert():
             data["options"],
         )
         indigo = indigo_init(data["options"])
+
+        monomer_library = data["options"].get("monomerLibrary")
+        if monomer_library is not None:
+            indigo.loadMolecule(monomer_library)
+
         query = False
         if "smarts" in data["output_format"]:
             query = True
@@ -898,6 +910,11 @@ def convert():
             data["options"],
         )
         indigo = indigo_init(data["options"])
+
+        monomer_library = data["options"].get("monomerLibrary")
+        if monomer_library is not None:
+            indigo.loadMolecule(monomer_library)
+
         md = load_moldata(
             data["struct"],
             mime_type=data["input_format"],

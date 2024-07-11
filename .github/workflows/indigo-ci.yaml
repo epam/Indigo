@@ -1,7 +1,7 @@
 name: Indigo CI
 
 env:
-  OS_NAME_MAPPING_JSON: '{"ubuntu": "linux", "windows": "windows", "macos": "macos"}'
+  OS_NAME_MAPPING_JSON: '{"ubuntu-latest": "linux", "windows-latest": "windows", "macos-13": "macos"}'
 
 on:
   push:
@@ -36,8 +36,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos, ubuntu, windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ macos-13, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
       - name: Checkout
@@ -50,7 +50,7 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build Linux
-        if: ${{ matrix.os == 'ubuntu' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: docker://epmlsop/buildpack-centos7:latest
         with:
           args: >
@@ -62,7 +62,7 @@ jobs:
             ctest --verbose
             "
       - name: Build macOS
-        if: ${{ matrix.os == 'macos' }}
+        if: ${{ startsWith(matrix.os, 'macos') }}
         run: |
           mkdir build
           cd build
@@ -70,7 +70,7 @@ jobs:
           cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
           ctest --verbose
       - name: Build Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           mkdir build
           cd build
@@ -87,8 +87,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
       - name: Checkout
@@ -101,7 +101,7 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           mkdir build
           cd build
@@ -118,8 +118,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos, ubuntu ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ macos-13, ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
       - name: Checkout
@@ -132,7 +132,7 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build Linux
-        if: ${{ matrix.os == 'ubuntu' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: docker://epmlsop/buildpack-arm64:latest
         with:
           args: >
@@ -144,7 +144,7 @@ jobs:
             ctest --verbose -R dlopen
             "
       - name: Build macOS
-        if: ${{ matrix.os == 'macos' }}
+        if: ${{ startsWith(matrix.os, 'macos') }}
         run: |
           mkdir build
           cd build
@@ -246,8 +246,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos, ubuntu, windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ macos-13, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -269,13 +269,13 @@ jobs:
       - name: Install Pillow
         run: python3 -m pip install Pillow==9.5.0
       - name: Install wrappers Linux
-        if: ${{ matrix.os == 'ubuntu' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         run: python3 -m pip install dist/*manylinux1_x86_64*.whl
       - name: Install wrappers Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: Get-ChildItem dist -Filter *win_amd64*.whl -Recurse | % { python3 -m pip install $_.FullName }
       - name: Install wrappers macOS
-        if: ${{ matrix.os == 'macos' }}
+        if: ${{ startsWith(matrix.os, 'macos') }}
         run: python3 -m pip install dist/*macosx_10_7_intel*.whl
       - name: Test
         run: python3 -Wignore api/tests/integration/test.py -t 1 -j junit_report.xml
@@ -292,8 +292,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -313,7 +313,7 @@ jobs:
           name: indigo-python
           path: dist/
       - name: Test Linux
-        if: ${{ matrix.os == 'ubuntu' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: uraimo/run-on-arch-action@v2.0.5
         with:
           arch: aarch64
@@ -338,8 +338,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -366,7 +366,7 @@ jobs:
       - name: Install Pillow
         run: python -m pip install Pillow==9.5.0
       - name: Install wrappers Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: Get-ChildItem dist -Filter *win32*.whl -Recurse | % { python -m pip install $_.FullName }
       - name: Test
         run: python api/tests/integration/test.py -t 1 -p basic/basic.py -j junit_report.xml
@@ -383,8 +383,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos, ubuntu, windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ macos-13, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -424,8 +424,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -445,7 +445,7 @@ jobs:
           name: indigo-java
           path: dist/
       - name: Test Linux
-        if: ${{ matrix.os == 'ubuntu' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: uraimo/run-on-arch-action@v2.0.5
         with:
           arch: aarch64
@@ -470,8 +470,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -516,8 +516,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos, ubuntu, windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ macos-13, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -542,8 +542,13 @@ jobs:
           mkdir tmp
           cd IronPython
           curl -OL https://github.com/IronLanguages/ironpython3/releases/download/v3.4.0/IronPython.3.4.0.zip
+      - name: Install dotnet 6
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        run: |
+          curl -Lo dotnet.tar.gz https://download.visualstudio.microsoft.com/download/pr/270b615f-5281-4c58-980f-d9f7a08db642/3e874492a9cb0d5b87195c596b46d609/dotnet-sdk-6.0.421-osx-x64.tar.gz
+          mkdir -p ${{ github.workspace }}/tmp/dotnet && tar zxf dotnet.tar.gz -C ${{ github.workspace }}/tmp/dotnet
       - name: Prepare UNIX
-        if: ${{ matrix.os != 'windows' }}
+        if: ${{ !startsWith(matrix.os, 'windows') }}
         run: |
           cd IronPython
           unzip IronPython.3.4.0.zip
@@ -551,28 +556,30 @@ jobs:
           unzip ../dist/Indigo.Net.*.nupkg
           chmod -R a+rw .
       - name: Prepare Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           cd IronPython
           Expand-Archive IronPython.3.4.0.zip .
           cd ../tmp
           Expand-Archive ../dist/Indigo.Net.*.nupkg .
       - name: Test Linux
-        if: ${{ matrix.os == 'ubuntu' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: |
           dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Test macOS
-        if: ${{ matrix.os == 'macos' }}
+        if: ${{ startsWith(matrix.os, 'macos') }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
+          DOTNET_ROOT: ${{ github.workspace }}/tmp/dotnet
+          PATH: ${{ github.workspace }}/tmp/dotnet:$PATH
         run: |
           export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
           dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Test Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
           PATH: ${{ env.PATH }};${{ github.workspace }}/tmp/runtimes/win-x64/native
@@ -590,8 +597,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
       - name: Checkout
@@ -617,7 +624,7 @@ jobs:
           cd IronPython
           curl -OL https://github.com/IronLanguages/ironpython3/releases/download/v3.4.0/IronPython.3.4.0.zip
       - name: Prepare Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           cd IronPython
           Expand-Archive IronPython.3.4.0.zip .
@@ -778,7 +785,7 @@ jobs:
   build_indigo_ketcher:
     runs-on: ubuntu-latest
     needs: static_analysis
-    container: emscripten/emsdk:1.40.1
+    container: emscripten/emsdk:3.1.60
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -810,7 +817,7 @@ jobs:
   build_indigo_ketcher_cjk:
     runs-on: ubuntu-latest
     needs: static_analysis
-    container: emscripten/emsdk:1.40.1
+    container: emscripten/emsdk:3.1.60
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -843,8 +850,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos, ubuntu, windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ macos-13, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
       - name: Checkout
@@ -857,7 +864,7 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build utils Linux
-        if: ${{ matrix.os == 'ubuntu' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         uses: docker://epmlsop/buildpack-centos7:latest
         with:
           args: >
@@ -869,7 +876,7 @@ jobs:
             ctest --verbose
             "
       - name: Build utils macOS
-        if: ${{ matrix.os == 'macos' }}
+        if: ${{ startsWith(matrix.os, 'macos') }}
         run: |
           mkdir build
           cd build
@@ -877,7 +884,7 @@ jobs:
           cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
           ctest --verbose
       - name: Build utils Windows
-        if: ${{ matrix.os == 'windows' }}
+        if: ${{ startsWith(matrix.os, 'windows') }}
         run: |
           mkdir build
           cd build
@@ -893,7 +900,6 @@ jobs:
   build_bingo_oracle_linux_x86_64:
     runs-on: ubuntu-latest
     needs: static_analysis
-    container: epmlsop/buildpack-centos7:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -905,11 +911,16 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Build bingo-oracle
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF
-          cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
+        uses: docker://epmlsop/buildpack-centos7:latest
+        with:
+          args: >
+            /bin/sh -c "
+            set -eux &&
+            mkdir build &&
+            cd build &&
+            cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF &&
+            cmake --build . --config Release --target package-bingo-oracle -- -j $(nproc)
+            "
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -1000,10 +1011,10 @@ jobs:
           args: >
             /bin/sh -c "
             set -eux &&
-            yum install -y -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils &&
+            yum install -y --disablerepo base --disablerepo centos-sclo-rh --disablerepo centos-sclo-sclo --disablerepo extras --disablerepo updates https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils &&
             curl -OL https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-RHEL &&
             rpm --import PGDG-RPM-GPG-KEY-RHEL &&
-            yumdownloader -y postgresql${{ matrix.postgres_major_version }}-devel &&
+            yumdownloader -y --disablerepo base --disablerepo centos-sclo-rh --disablerepo centos-sclo-sclo --disablerepo extras --disablerepo updates postgresql${{ matrix.postgres_major_version }}-devel &&
             rpm -i --nodeps postgresql${{ matrix.postgres_major_version }}*.rpm &&
             ls -alh /usr &&
             mkdir build &&
@@ -1088,7 +1099,7 @@ jobs:
       fail-fast: false
       matrix:
         postgres_major_version: [ 12, 13, 14, 15 ]
-    runs-on: macos-latest
+    runs-on: macos-13
     needs: static_analysis
     steps:
       - name: Checkout
@@ -1122,8 +1133,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows ]
-    runs-on: ${{ matrix.os }}-latest
+        os: [ windows-latest ]
+    runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
       - name: Checkout
