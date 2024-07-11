@@ -333,7 +333,7 @@ void MolfileSaver::_validate(BaseMolecule& bmol)
 {
     std::string unresolved;
     if (bmol.getUnresolvedTemplatesList(bmol, unresolved))
-        throw Error("Monomers %s cannot be written in MDL Molfile format.", unresolved.c_str());
+        throw Error("%s cannot be written in MDL Molfile format.", unresolved.c_str());
 }
 
 void MolfileSaver::saveCtab3000(Molecule& mol)
