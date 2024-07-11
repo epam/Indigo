@@ -599,7 +599,7 @@ void InchiWrapper::_validate(BaseMolecule& bmol)
 {
     std::string unresolved;
     if (bmol.getUnresolvedTemplatesList(bmol, unresolved))
-        throw Error("Monomers %s cannot be written in InChi format.", unresolved.c_str());
+        throw Error("%s cannot be written in InChi format.", unresolved.c_str());
 }
 
 void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)

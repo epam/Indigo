@@ -531,7 +531,7 @@ void SequenceSaver::_validateSequence(BaseMolecule& bmol)
 {
     std::string unresolved;
     if (bmol.getUnresolvedTemplatesList(bmol, unresolved))
-        throw Error("Monomers %s cannot be written in sequence/FASTA format.", unresolved.c_str());
+        throw Error("%s cannot be written in sequence/FASTA format.", unresolved.c_str());
 }
 
 void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
