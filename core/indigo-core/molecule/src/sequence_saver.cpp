@@ -526,8 +526,19 @@ static void check_backbone_connection(BaseMolecule& mol, std::vector<std::map<in
         }
     }
 }
+
+void SequenceSaver::_validateSequence(BaseMolecule& bmol)
+{
+    std::string unresolved;
+    if (bmol.getUnresolvedTemplatesList(bmol, unresolved))
+        throw Error("Monomers %s cannot be written in sequence/FASTA format.", unresolved.c_str());
+}
+
 void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
 {
+    if (sf == SeqFormat::FASTA || sf == SeqFormat::Sequence)
+        _validateSequence(mol);
+
     if (!mol.isQueryMolecule())
         mol.getTemplatesMap(_templates);
 

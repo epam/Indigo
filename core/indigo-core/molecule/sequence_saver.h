@@ -58,6 +58,7 @@ namespace indigo
         TGroup& getTGroup();
         std::string saveIdt(BaseMolecule& mol, std::deque<int>& sequence);
         std::string saveHELM(BaseMolecule& mol, std::vector<std::deque<int>>& sequence);
+        void _validateSequence(BaseMolecule& bmol);
 
     private:
         std::string getMonomerAlias(BaseMolecule& mol, int atom_idx);
