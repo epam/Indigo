@@ -4650,6 +4650,30 @@ bool BaseMolecule::convertableToImplicitHydrogen(int idx)
     return false;
 }
 
+bool BaseMolecule::getUnresolvedTemplatesList(BaseMolecule& bmol, std::string& unresolved)
+{
+    unresolved.clear();
+    if (!bmol.isQueryMolecule())
+    {
+        std::vector<int> groups;
+        bmol.tgroups.filterTGroups(groups, [](const TGroup& tgrp) { return tgrp.unresolved; });
+        if (groups.size())
+        {
+            for (auto tgidx : groups)
+            {
+                auto& tg = bmol.tgroups.getTGroup(tgidx);
+                if (tg.tgroup_alias.size())
+                {
+                    if (unresolved.size())
+                        unresolved += ',';
+                    unresolved += tg.tgroup_alias.ptr();
+                }
+            }
+        }
+    }
+    return unresolved.size();
+}
+
 void BaseMolecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map)
 {
     templates_map.clear();

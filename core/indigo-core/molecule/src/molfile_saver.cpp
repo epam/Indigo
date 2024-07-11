@@ -200,6 +200,9 @@ void MolfileSaver::_handleCIP(BaseMolecule& mol)
 void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 {
     LocaleGuard locale_guard;
+
+    _validate(bmol);
+
     BaseMolecule* pmol = &bmol;
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     if (mode == MODE_2000)
@@ -324,6 +327,13 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
     }
     else
         _output.writeStringCR("M  END");
+}
+
+void MolfileSaver::_validate(BaseMolecule& bmol)
+{
+    std::string unresolved;
+    if (bmol.getUnresolvedTemplatesList(bmol, unresolved))
+        throw Error("Monomers %s cannot be written in MDL Molfile format.", unresolved.c_str());
 }
 
 void MolfileSaver::saveCtab3000(Molecule& mol)

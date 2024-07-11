@@ -198,3 +198,12 @@ int MoleculeTGroups::findTGroup(const char* name)
     }
     return -1;
 }
+
+void MoleculeTGroups::filterTGroups(std::vector<int>& groups, std::function<bool(const TGroup& tgrp)> filter)
+{
+    for (auto i = _tgroups.begin(); i != _tgroups.end(); i = _tgroups.next(i))
+    {
+        if (filter(getTGroup(i)))
+            groups.push_back(i);
+    }
+}

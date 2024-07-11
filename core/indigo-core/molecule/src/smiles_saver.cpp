@@ -81,6 +81,8 @@ void SmilesSaver::saveQueryMolecule(QueryMolecule& mol)
 
 void SmilesSaver::_saveMolecule()
 {
+    _validate(*_bmol);
+
     int i, j, k;
 
     _ignored_vertices.clear_resize(_bmol->vertexEnd());
@@ -2205,4 +2207,11 @@ void SmilesSaver::saveFormatMode(SmilesSaver::SMILES_MODE mode, std::string& out
     default:
         throw Error("unknown SMILES format mode: %d", mode);
     }
+}
+
+void SmilesSaver::_validate(BaseMolecule& bmol)
+{
+    std::string unresolved;
+    if (bmol.getUnresolvedTemplatesList(bmol, unresolved))
+        throw Error("Monomers %s cannot be written in SMILES/SMARTS format.", unresolved.c_str());
 }
