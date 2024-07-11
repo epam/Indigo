@@ -4655,14 +4655,12 @@ bool BaseMolecule::getUnresolvedTemplatesList(BaseMolecule& bmol, std::string& u
     unresolved.clear();
     if (!bmol.isQueryMolecule())
     {
-        std::vector<int> groups;
-        bmol.tgroups.filterTGroups(groups, [](const TGroup& tgrp) { return tgrp.unresolved; });
-        if (groups.size())
+        if (bmol.tgroups.getTGroupCount())
         {
-            for (auto tgidx : groups)
+            for (auto tgidx = bmol.tgroups.begin(); tgidx != bmol.tgroups.end(); tgidx = bmol.tgroups.next(tgidx))
             {
                 auto& tg = bmol.tgroups.getTGroup(tgidx);
-                if (tg.tgroup_alias.size())
+                if (tg.unresolved && tg.tgroup_alias.size())
                 {
                     if (unresolved.size())
                         unresolved += ',';
