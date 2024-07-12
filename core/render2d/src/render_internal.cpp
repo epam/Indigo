@@ -738,6 +738,9 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             QS_DEF(Array<Vec2f[2]>, brackets);
             _placeBrackets(sg, group.atoms, brackets);
             _loadBrackets(sg, brackets);
+
+            if (group.subscript.size() == 0 || std::string(group.subscript.ptr()).empty())
+                sg.hide_brackets = true;
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
             TextItem& index = _data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
@@ -2040,7 +2043,8 @@ void MoleculeRenderInternal::_renderSGroups()
         for (int j = 0; j < sg.gicount; ++j)
             _cw.drawGraphItem(_data.graphitems[j + sg.gibegin]);
         for (int j = 0; j < sg.bicount; ++j)
-            _cw.drawBracket(_data.brackets[j + sg.bibegin]);
+            if (!sg.hide_brackets)
+                _cw.drawBracket(_data.brackets[j + sg.bibegin]);
     }
 
     /*
