@@ -1,6 +1,6 @@
 *** IDT unresolved to misc. unsupported formats ***
-Sequence saver: Monomers i2AmPr cannot be written in sequence/FASTA format.
-molecule CDXML saver: Monomers i2AmPr cannot be written in CDXML/CDX format.
-molfile saver: Monomers i2AmPr cannot be written in MDL Molfile format.
-SMILES saver: Monomers i2AmPr cannot be written in SMILES/SMARTS format.
-CML saver: Monomers i2AmPr cannot be written in CML format.
+Sequence saver: i2AmPr cannot be written in sequence/FASTA format.
+molecule CDXML saver: i2AmPr cannot be written in CDXML/CDX format.
+molfile saver: i2AmPr cannot be written in MDL Molfile format.
+SMILES saver: i2AmPr cannot be written in SMILES/SMARTS format.
+CML saver: i2AmPr cannot be written in CML format.
