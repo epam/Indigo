@@ -170,6 +170,7 @@ void Sgroup::clear()
 {
     tibegin = gibegin = bibegin = -1;
     ticount = gicount = bicount = 0;
+    hide_brackets = false;
 }
 
 BondEnd::BondEnd()

@@ -153,6 +153,15 @@ indigo.setOption("smart-layout", "true")
 renderer.renderToFile(mol, joinPathPy("out/smart-layout-crown.png", __file__))
 print(checkImageSimilarity("smart-layout-crown.png"))
 
+print("****** Nameless S-Group *****")
+indigo.resetOptions()
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/sa-mono.ket", __file__)
+)
+
+renderer.renderToFile(mol, joinPathPy("out/sa-mono.png", __file__))
+print(checkImageSimilarity("sa-mono.png"))
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()
