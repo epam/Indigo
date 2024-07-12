@@ -219,6 +219,9 @@ namespace indigo
         virtual const char* getTemplateAtomClass(int idx) = 0;
         virtual const int getTemplateAtomDisplayOption(int idx) = 0;
         virtual const int getTemplateAtomTemplateIndex(int idx) = 0;
+
+        bool getUnresolvedTemplatesList(BaseMolecule& bmol, std::string& unresolved);
+
         void getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map);
         void getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map);
 

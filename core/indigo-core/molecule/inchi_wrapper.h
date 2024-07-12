@@ -36,6 +36,7 @@ namespace indigo
 
     // Forward declaration
     class Molecule;
+    class BaseMolecule;
     struct InchiOutput;
 
     class DLLEXPORT InchiWrapper
@@ -78,6 +79,7 @@ namespace indigo
         };
 
     private:
+        void _validate(BaseMolecule& bmol);
         Array<char> options;
         int _stereo_opt;
     };
