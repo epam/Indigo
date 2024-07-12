@@ -48,9 +48,17 @@ void CmlSaver::saveQueryMolecule(QueryMolecule& mol)
     _saveMolecule(mol, true);
 }
 
+void CmlSaver::_validate(BaseMolecule& bmol)
+{
+    std::string unresolved;
+    if (bmol.getUnresolvedTemplatesList(bmol, unresolved))
+        throw Error("%s cannot be written in CML format.", unresolved.c_str());
+}
+
 void CmlSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 {
     LocaleGuard locale_guard;
+    _validate(bmol);
     auto* pmol = &bmol;
     std::unique_ptr<BaseMolecule> mol;
     if (bmol.tgroups.getTGroupCount())

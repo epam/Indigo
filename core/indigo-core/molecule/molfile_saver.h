@@ -83,6 +83,7 @@ namespace indigo
         friend class MoleculeCIPCalculator;
 
         void _saveMolecule(BaseMolecule& bmol, bool query);
+        void _validate(BaseMolecule& bmol);
         void _handleCIP(BaseMolecule& mol);
         void _handleMonomers(BaseMolecule& mol);
         void _calculateSEQIDs(BaseMolecule& mol, const std::vector<std::map<int, int>>& directions_map, std::vector<std::deque<int>>& sequences);
