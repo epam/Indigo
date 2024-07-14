@@ -3808,7 +3808,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "text",
                 "data": {
-                    "content": "{\"blocks\":[{\"text\":\"100 mg (int-2)\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":14,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"\",\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
+                    "content": "{\"blocks\":[{\"text\":\"100 mg \\r(int-2)\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":15,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
                     "position": {
                         "x": 1.4541666507720948,
                         "y": -4.8663330078125,
@@ -3830,7 +3830,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "text",
                 "data": {
-                    "content": "{\"blocks\":[{\"text\":\"500 mg (int-2)\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":14,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"\",\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
+                    "content": "{\"blocks\":[{\"text\":\"500 mg \\r(int-2)\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":15,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
                     "position": {
                         "x": 1.4541666507720948,
                         "y": -5.9666666984558109,
