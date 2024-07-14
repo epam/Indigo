@@ -34,6 +34,7 @@ helm_data = {
     "helm_peptide": "PEPTIDE1{A.[meA].C}$$$$V2.0",
     "helm_chem_peptide": "CHEM1{[PEG2]}|PEPTIDE1{W.N.D.[Pen].G.[Orn].D.A.D.G.S.G.[Cap]}$CHEM1,PEPTIDE1,1:R1-1:R1$$$V2.0",
     "helm_annotations": 'BLOB1{BEAD}"Animated Polystyrene"|CHEM1{[hxy]"Annotation"}|RNA1{R(A"mutation")P.R(U)P.R(G)P}$$$$V2.0',
+    "helm_chem_rna": "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:R1-3:R2$$$V2.0",
     "helm_rna_without_base": "RNA1{RP}$$$$V2.0",
 }
 
@@ -55,7 +56,12 @@ for filename in sorted(helm_data.keys()):
         print(filename + ".ket:FAILED")
         print(diff)
 
-helm_errors = {"PEPTIDE1{A'2'}$$$$V2.0": "Repeating do not supported now."}
+helm_errors = {
+    "PEPTIDE1{A'2'}$$$$V2.0": "Repeating do not supported now.",
+    "CHEM1{[MCC]}|RNA1{R(A)P.R(C)P.R(G)P.R(T)P.R(U)P}$RNA1,PEPTIDE1,15:R2-1:R1$$$V2.0": "Polymer 'PEPTIDE1' not found.",
+    "CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM10,PEPTIDE1,1:R2-1:R1$$$V2.0": "Polymer 'CHEM10' not found.",
+    "CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM1,PEPTIDE1,1:R2-3:R1$$$V2.0": "Polymer 'PEPTIDE1' does not contains monomer with number 3.",
+}
 for helm_seq in sorted(helm_errors.keys()):
     error = helm_errors[helm_seq]
     try:

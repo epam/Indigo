@@ -287,6 +287,7 @@ namespace indigo
         int tibegin, ticount;
         int gibegin, gicount;
         int bibegin, bicount;
+        bool hide_brackets;
 
     private:
         Sgroup(const SGroup& sg);

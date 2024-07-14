@@ -1364,11 +1364,12 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
         {
             auto& att_points = monomer_template["attachmentPoints"];
             std::vector<MonomerAttachmentPoint> attachment_descs;
+            int att_index = 0;
             for (SizeType i = 0; i < att_points.Size(); i++)
             {
                 auto& ap = att_points[i];
-                std::string att_label(1, 'A' + static_cast<char>(i));
-                MonomerAttachmentPoint att_desc = {-1, -1, att_label + (i > 0 ? (i > 1 ? 'x' : 'r') : 'l')};
+                std::string att_label(1, 'A' + static_cast<char>(att_index));
+                MonomerAttachmentPoint att_desc = {-1, -1, att_label + (att_index > 0 ? (att_index > 1 ? 'x' : 'r') : 'l')};
                 if (ap.HasMember("leavingGroup"))
                 {
                     int grp_idx = monomer_mol.sgroups.addSGroup(SGroup::SG_TYPE_SUP);
@@ -1419,10 +1420,16 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
                     if (label_type == "left")
                         att_desc.id = kLeftAttachmentPoint;
                     else if (label_type == "right")
+                    {
+                        att_index = 1;
                         att_desc.id = kRightAttachmentPoint;
+                    }
+                    else if (att_index < 2)
+                        att_index = 2;
                 }
 
                 attachment_descs.push_back(att_desc);
+                att_index++;
             }
 
             int grp_idx = monomer_mol.sgroups.addSGroup(SGroup::SG_TYPE_SUP);

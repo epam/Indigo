@@ -595,8 +595,16 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
     input.szOptions = options.ptr();
 }
 
+void InchiWrapper::_validate(BaseMolecule& bmol)
+{
+    std::string unresolved;
+    if (bmol.getUnresolvedTemplatesList(bmol, unresolved))
+        throw Error("%s cannot be written in InChi format.", unresolved.c_str());
+}
+
 void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
 {
+    _validate(mol);
     inchi_Input input{nullptr, nullptr, nullptr, 0, 0};
     QS_DEF(Array<inchi_Atom>, atoms);
     QS_DEF(Array<inchi_Stereo0D>, stereo);
