@@ -1900,8 +1900,8 @@ void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const KETTextObject& text
         writer.WritePoint(text_obj.boundingBox().rightBottom());
         writer.WritePoint(text_obj.boundingBox().rightTop());
         writer.EndArray();
-        writer.EndObject();
     }
+    writer.EndObject();
 }
 
 void MoleculeJsonSaver::saveText(JsonWriter& writer, const KETTextObject& text_obj)
