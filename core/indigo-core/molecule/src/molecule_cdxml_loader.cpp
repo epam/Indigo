@@ -1580,7 +1580,7 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
             }
 
             auto lines = split_with_empty(style_text, '\n');
-            for (auto i = 0; i < lines.size(); ++i)
+            for (size_t i = 0; i < lines.size(); ++i)
             {
                 if (i)
                     ket_text_lines.emplace_back();
