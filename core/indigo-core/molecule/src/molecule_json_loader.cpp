@@ -1171,7 +1171,7 @@ void MoleculeJsonLoader::addToLibMonomerTemplate(const rapidjson::Value& mt_json
 
     if (mt_json.HasMember("idtAliases"))
     {
-        IdtAlias idt_alias = mol.tgroups.getTGroup(tgroup_id).idt_alias;
+        IdtAlias idt_alias = parseIdtAlias(mt_json);
         if (idt_alias.getBase().size() == 0)
             throw Error("Monomer template %s contains IDT alias without base.", id.c_str());
         mon_template.setIdtAlias(idt_alias);
@@ -1354,7 +1354,7 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
         if (monomer_template.HasMember("idtAliases"))
         {
 
-            tg.idt_alias = parseIdtAlias(monomer_template);
+            tg.idt_alias.readString(parseIdtAlias(monomer_template).getBase().c_str(), true);
         }
 
         if (monomer_template.HasMember("attachmentPoints"))
