@@ -522,7 +522,7 @@ CEXPORT int bingoGetRecordObj(int db, int id)
         {
             std::unique_ptr<IndigoReaction> rxnptr = std::make_unique<IndigoReaction>();
 
-            Reaction& rxn = rxnptr->rxn;
+            Reaction& rxn = rxnptr->getReaction();
             CrfLoader crf_loader(buf_scn);
             crf_loader.loadReaction(rxn);
 
