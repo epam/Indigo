@@ -111,13 +111,10 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
             if (tg_ref.has_value())
             {
                 auto& tg = tg_ref.value().get();
-                const std::string& idt_alias = tg.unresolved                                ? tg.idt_alias.getBase()
-                                               : tg.idt_alias.hasModification(modification) ? tg.idt_alias.getModification(modification)
-                                                                                            : "";
-                if (idt_alias.size())
+                if (tg.idt_alias.size())
                 {
                     seq_string.push_back('/');
-                    seq_string.append(idt_alias);
+                    seq_string.append(tg.idt_alias.ptr());
                     seq_string.push_back('/');
                     modification = IdtModification::INTERNAL;
                     continue;

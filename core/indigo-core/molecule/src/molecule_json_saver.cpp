@@ -1180,33 +1180,21 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
         writer.Key("unresolved");
         writer.Bool(tg.unresolved);
 
-        if (tg.idt_alias.getBase().size()) // Save IDT alias only for unresolved
+        if (tg.idt_alias.size()) // Save IDT alias only for unresolved
         {
             writer.Key("idtAliases");
             writer.StartObject();
             writer.Key("base");
-            writer.String(tg.idt_alias.getBase().c_str());
-            if (tg.idt_alias.hasModifications())
-            {
-                writer.Key("modifications");
-                writer.StartObject();
-                writer.Key("endpoint5");
-                if (tg.idt_alias.hasModification(IdtModification::FIVE_PRIME_END))
-                    writer.String(tg.idt_alias.getModification(IdtModification::FIVE_PRIME_END).c_str());
-                else
-                    writer.String("");
-                writer.Key("internal");
-                if (tg.idt_alias.hasModification(IdtModification::INTERNAL))
-                    writer.String(tg.idt_alias.getModification(IdtModification::INTERNAL).c_str());
-                else
-                    writer.String("");
-                writer.Key("endpoint3");
-                if (tg.idt_alias.hasModification(IdtModification::THREE_PRIME_END))
-                    writer.String(tg.idt_alias.getModification(IdtModification::THREE_PRIME_END).c_str());
-                else
-                    writer.String("");
-                writer.EndObject();
-            }
+            writer.String(tg.idt_alias.ptr());
+            writer.Key("modifications");
+            writer.StartObject();
+            writer.Key("endpoint5");
+            writer.String(tg.idt_alias.ptr());
+            writer.Key("internal");
+            writer.String(tg.idt_alias.ptr());
+            writer.Key("endpoint3");
+            writer.String(tg.idt_alias.ptr());
+            writer.EndObject();
             writer.EndObject();
         }
     }

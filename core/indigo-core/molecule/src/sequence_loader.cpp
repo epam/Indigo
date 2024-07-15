@@ -383,7 +383,7 @@ void SequenceLoader::checkAddTemplate(BaseMolecule& mol, const MonomerTemplate& 
         auto& tg = mol.tgroups.getTGroup(tg_idx);
         tg.copy(monomer_template.getTGroup());
         tg.tgroup_id = tg_idx;
-        tg.idt_alias = monomer_template.idtAlias();
+        tg.idt_alias.readString(monomer_template.idtAlias().getBase().c_str(), true);
         _added_templates.emplace(monomer_template.monomerClass(), monomer_template.alias());
     }
 }

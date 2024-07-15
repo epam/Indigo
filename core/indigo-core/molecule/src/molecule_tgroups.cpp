@@ -117,7 +117,7 @@ void TGroup::copy(const TGroup& other)
     tgroup_natreplace.copy(other.tgroup_natreplace);
     tgroup_id = other.tgroup_id;
     unresolved = other.unresolved;
-    idt_alias = other.idt_alias;
+    idt_alias.copy(other.idt_alias);
     fragment.reset(other.fragment->neu());
     fragment->clone(*other.fragment.get(), 0, 0);
 }
