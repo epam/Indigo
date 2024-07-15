@@ -843,7 +843,7 @@ CEXPORT int indigoUnserialize(const byte* buf, int size)
             BufferScanner scanner(buf, size);
             IcrLoader loader(scanner);
             std::unique_ptr<IndigoReaction> ir = std::make_unique<IndigoReaction>();
-            loader.loadReaction(ir->rxn);
+            loader.loadReaction(ir->getReaction());
             return self.addObject(ir.release());
         }
         else
