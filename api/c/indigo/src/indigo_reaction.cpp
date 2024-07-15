@@ -44,7 +44,7 @@ bool IndigoBaseReaction::is(IndigoObject& obj)
 {
     int type = obj.type;
 
-    if (type == REACTION || type == QUERY_REACTION || type == RDF_REACTION || type == SMILES_REACTION || type == CML_REACTION || type == JSON_REACTION)
+    if (type == REACTION || type == QUERY_REACTION || type == RDF_REACTION || type == SMILES_REACTION || type == CML_REACTION || type == JSON_REACTION || type == PATHWAY_REACTION)
         return true;
 
     if (type == ARRAY_ELEMENT)
@@ -78,7 +78,8 @@ IndigoReaction::~IndigoReaction()
 
 void IndigoReaction::init(std::unique_ptr<BaseReaction>&& reaction)
 {
-	rxn = reaction ? std::move(reaction) : std::make_unique<Reaction>();
+    type = dynamic_cast<Reaction*>(reaction.get()) ? IndigoObject::REACTION : IndigoObject::PATHWAY_REACTION;
+    rxn = reaction ? std::move(reaction) : std::make_unique<Reaction>();
 }
 
 Reaction& IndigoReaction::getReaction()

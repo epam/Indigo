@@ -94,6 +94,7 @@ public:
         RDF_MOLECULE,
         RDF_REACTION,
         RDF_LOADER,
+        PATHWAY_REACTION,
         SMILES_MOLECULE,
         SMILES_REACTION,
         MULTILINE_SMILES_LOADER,
