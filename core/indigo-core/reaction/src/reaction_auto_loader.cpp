@@ -23,6 +23,7 @@
 #include "molecule/rdf_loader.h"
 #include "reaction/icr_loader.h"
 #include "reaction/icr_saver.h"
+#include "reaction/pathway_reaction.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_cdxml_loader.h"
@@ -335,7 +336,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
 		{
 			if (query)
 				throw Error("RDF queries not supported");
-			std::vector<Reaction> reactions;
+			std::deque<Reaction> reactions;
 			RdfLoader rdf_loader(*_scanner);
 			while (!rdf_loader.isEOF())
 			{
@@ -350,13 +351,10 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
 				loader.treat_stereo_as = treat_stereo_as;
 				loader.ignore_bad_valence = ignore_bad_valence;
 
-				//auto reaction = std::make_unique<Reaction>();
-				//reactions.emplace_back();
-				//loader.loadReaction(reactions.back());
-				//reactions.emplace_back(*reaction);
+				reactions.emplace_back();
+				loader.loadReaction(reactions.back());
 			}
-			// TODO: return CascadeReaction;
-			return nullptr;
+            return std::make_unique<PathwayReaction>(reactions);
 		}
 	}
 
