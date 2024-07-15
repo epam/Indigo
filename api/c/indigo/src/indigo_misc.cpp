@@ -1602,6 +1602,9 @@ CEXPORT const char* indigoJson(int item)
         }
         else if (IndigoBaseReaction::is(obj))
         {
+            if (obj.type == IndigoObject::PATHWAY_REACTION)
+                return "PATHWAY_REACTION";
+
             ReactionJsonSaver jn(out);
             self.initReactionJsonSaver(jn);
             BaseReaction& br = obj.getBaseReaction();
