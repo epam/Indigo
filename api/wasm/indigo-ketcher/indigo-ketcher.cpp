@@ -24,6 +24,7 @@
 namespace indigo
 {
     using cstring = const char*;
+    const char* EMPTY_LIB = "{\"root\":{}}";
 
     EM_JS(void, jsThrow, (cstring str), { throw UTF8ToString(str); });
 
@@ -138,22 +139,22 @@ namespace indigo
             }
             else if (outputFormat == "sequence" || outputFormat == "chemical/x-sequence")
             {
-                int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_OBJECT);
+                int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_LIB);
                 result = _checkResultString(indigoSequence(id(), lib));
             }
             else if (outputFormat == "fasta" || outputFormat == "chemical/x-fasta")
             {
-                int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_OBJECT);
+                int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_LIB);
                 result = _checkResultString(indigoFasta(id(), lib));
             }
             else if (outputFormat == "idt" || outputFormat == "chemical/x-idt")
             {
-                int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_OBJECT);
+                int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_LIB);
                 result = _checkResultString(indigoIdt(id(), lib));
             }
             else if (outputFormat == "helm" || outputFormat == "chemical/x-helm")
             {
-                int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_OBJECT);
+                int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_LIB);
                 result = _checkResultString(indigoHelm(id(), lib));
             }
             else if (outputFormat == "smarts" || outputFormat == "chemical/x-daylight-smarts")
@@ -353,7 +354,7 @@ namespace indigo
         else if (input_format != options.end() && seq_formats.count(input_format->second))
         {
             auto seq_it = seq_formats.find(input_format->second);
-            int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_OBJECT);
+            int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_LIB);
             objectId = indigoLoadSequenceFromString(data.c_str(), seq_it->second.c_str(), lib);
             if (objectId >= 0)
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
@@ -361,14 +362,14 @@ namespace indigo
         else if (input_format != options.end() && fasta_formats.count(input_format->second))
         {
             auto fasta_it = fasta_formats.find(input_format->second);
-            int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_OBJECT);
+            int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_LIB);
             objectId = indigoLoadFastaFromString(data.c_str(), fasta_it->second.c_str(), lib);
             if (objectId >= 0)
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
         }
         else if (input_format != options.end() && input_format->second == "chemical/x-idt")
         {
-            int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_OBJECT);
+            int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_LIB);
             objectId = indigoLoadIdtFromString(data.c_str(), lib);
             if (objectId >= 0)
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
@@ -376,7 +377,7 @@ namespace indigo
         }
         else if (input_format != options.end() && input_format->second == "chemical/x-helm")
         {
-            int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_OBJECT);
+            int lib = indigoLoadMonomerLibraryFromString(library ? library : EMPTY_LIB);
             objectId = indigoLoadHelmFromString(data.c_str(), lib);
             if (objectId >= 0)
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
