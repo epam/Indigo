@@ -917,6 +917,7 @@ int main(int argc, char* argv[])
     // read in the input
     reader = (p.file_to_load != NULL) ? indigoReadFile(p.file_to_load) : indigoReadString(p.string_to_load);
 
+    int lib = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
     if (p.mode == MODE_SINGLE_MOLECULE)
     {
         if (p.id != NULL)
@@ -931,19 +932,19 @@ int main(int argc, char* argv[])
             obj = indigoLoadQueryMolecule(reader);
         else if (strcasecmp(p.infile_ext, "fst") == 0)
         {
-            obj = indigoLoadFasta(reader, p.seq_type);
+            obj = indigoLoadFasta(reader, p.seq_type, lib);
         }
         else if (strcasecmp(p.infile_ext, "seq") == 0)
         {
-            obj = indigoLoadSequence(reader, p.seq_type);
+            obj = indigoLoadSequence(reader, p.seq_type, lib);
         }
         else if (strcasecmp(p.infile_ext, "idt") == 0)
         {
-            obj = indigoLoadIdt(reader);
+            obj = indigoLoadIdt(reader, lib);
         }
         else if (strcasecmp(p.infile_ext, "helm") == 0)
         {
-            obj = indigoLoadHelm(reader);
+            obj = indigoLoadHelm(reader, lib);
         }
         else
             obj = indigoLoadMolecule(reader);
@@ -957,9 +958,9 @@ int main(int argc, char* argv[])
             else if (p.out_ext == OEXT_KET)
                 indigoSaveJsonToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_SEQ)
-                indigoSaveSequenceToFile(obj, p.outfile);
+                indigoSaveSequenceToFile(obj, p.outfile, lib);
             else if (p.out_ext == OEXT_FASTA)
-                indigoSaveFastaToFile(obj, p.outfile);
+                indigoSaveFastaToFile(obj, p.outfile, lib);
             else if (p.out_ext == OEXT_SMI)
             {
                 char* pMol;
