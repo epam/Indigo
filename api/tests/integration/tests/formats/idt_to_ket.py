@@ -58,16 +58,12 @@ idt_data = {
     "idt_unsplit": "/5UNSPLIT/A",
 }
 
-lib = indigo.loadMoleculeFromFile(
-    os.path.join(ref_path, "monomer_library.ket")
-)
-# Load second time to check issue with wrong reload
-lib = indigo.loadMoleculeFromFile(
+lib = indigo.loadMonomerLibraryFromFile(
     os.path.join(ref_path, "monomer_library.ket")
 )
 
 for filename in sorted(idt_data.keys()):
-    mol = indigo.loadIdt(idt_data[filename])
+    mol = indigo.loadIdt(idt_data[filename], lib)
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
     #     file.write(mol.json())
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
@@ -105,7 +101,7 @@ idt_errors = {
 for idt_seq in sorted(idt_errors.keys()):
     error = idt_errors[idt_seq]
     try:
-        mol = indigo.loadIdt(idt_seq)
+        mol = indigo.loadIdt(idt_seq, lib)
         print("Test %s failed: exception expected." % idt_seq)
     except IndigoException as e:
         text = getIndigoExceptionText(e)

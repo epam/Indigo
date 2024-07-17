@@ -360,44 +360,54 @@ public class Indigo {
         return new IndigoObject(this, checkResult(this, lib.indigoLoadSmartsFromFile(path)));
     }
 
-    public IndigoObject loadSequence(String str, String seq_type) {
+    public IndigoObject loadMonomerLibrary(String str) {
         setSessionID();
-        return new IndigoObject(this, checkResult(this, lib.indigoLoadSequenceFromString(str, seq_type)));
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadMonomerLibraryFromString(str)));
     }
 
-    public IndigoObject loadSequenceFromFile(String path, String seq_type) {
+    public IndigoObject loadMonomerLibraryFromFile(String path) {
         setSessionID();
-        return new IndigoObject(this, checkResult(this, lib.indigoLoadSequenceFromFile(path, seq_type)));
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadMonomerLibraryFromFile(path)));
     }
 
-    public IndigoObject loadFasta(String str, String seq_type) {
+    public IndigoObject loadSequence(String str, String seq_type, int library) {
         setSessionID();
-        return new IndigoObject(this, checkResult(this, lib.indigoLoadFastaFromString(str, seq_type)));
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadSequenceFromString(str, seq_type, library)));
     }
 
-    public IndigoObject loadFastaFromFile(String path, String seq_type) {
+    public IndigoObject loadSequenceFromFile(String path, String seq_type, int library) {
         setSessionID();
-        return new IndigoObject(this, checkResult(this, lib.indigoLoadFastaFromFile(path, seq_type)));
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadSequenceFromFile(path, seq_type, library)));
     }
 
-    public IndigoObject loadIdt(String str) {
+    public IndigoObject loadFasta(String str, String seq_type, int library) {
         setSessionID();
-        return new IndigoObject(this, checkResult(this, lib.indigoLoadIdtFromString(str)));
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadFastaFromString(str, seq_type, library)));
     }
 
-    public IndigoObject loadIdtFromFile(String path) {
+    public IndigoObject loadFastaFromFile(String path, String seq_type, int library) {
         setSessionID();
-        return new IndigoObject(this, checkResult(this, lib.indigoLoadIdtFromFile(path)));
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadFastaFromFile(path, seq_type, library)));
     }
 
-    public IndigoObject loadHelm(String str) {
+    public IndigoObject loadIdt(String str, int library) {
         setSessionID();
-        return new IndigoObject(this, checkResult(this, lib.indigoLoadHelmFromString(str)));
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadIdtFromString(str, library)));
     }
 
-    public IndigoObject loadHelmFromFile(String path) {
+    public IndigoObject loadIdtFromFile(String path, int library) {
         setSessionID();
-        return new IndigoObject(this, checkResult(this, lib.indigoLoadHelmFromFile(path)));
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadIdtFromFile(path, library)));
+    }
+
+    public IndigoObject loadHelm(String str, int library) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadHelmFromString(str, library)));
+    }
+
+    public IndigoObject loadHelmFromFile(String path, int library) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadHelmFromFile(path, library)));
     }
 
     public IndigoObject loadReaction(String str) {

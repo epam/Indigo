@@ -28,6 +28,9 @@ files = [
     "1950-mixed-seq",
 ]
 
+# empty library - internal used for now
+lib = indigo.loadMonomerLibrary('{"root":{}}')
+
 files.sort()
 for filename in files:
     mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
@@ -35,7 +38,7 @@ for filename in files:
     #     file.write(mol.fasta())
     with open(os.path.join(ref_path, filename) + ".fasta", "r") as file:
         seq_ref = file.read()
-    seq = mol.fasta()
+    seq = mol.fasta(lib)
     diff = find_diff(seq_ref, seq)
     if not diff:
         print(filename + ".fasta:SUCCEED")

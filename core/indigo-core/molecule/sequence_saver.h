@@ -49,7 +49,7 @@ namespace indigo
 
         DECL_ERROR;
 
-        SequenceSaver(Output& output);
+        SequenceSaver(Output& output, MonomerTemplateLibrary& library);
         ~SequenceSaver();
 
         void saveMolecule(BaseMolecule& mol, SeqFormat sf = SeqFormat::Sequence);
@@ -67,6 +67,7 @@ namespace indigo
         Output& _output;
         const MonomerTemplates& _mon_lib;
         std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> _templates;
+        MonomerTemplateLibrary& _library;
     };
 
 } // namespace indigo

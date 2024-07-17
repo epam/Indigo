@@ -27,9 +27,11 @@ print("*** KET to HELM ***")
 root = joinPathPy("molecules/", __file__)
 ref = joinPathPy("ref/", __file__)
 
-indigo.loadMoleculeFromFile(os.path.join(ref, "monomer_library.ket"))
+lib = indigo.loadMonomerLibraryFromFile(
+    os.path.join(ref, "monomer_library.ket")
+)
 
-# same ref ket files used to check idt-to-ket and to check ket-to-idt
+# same ref ket files used to check helm-to-ket and to check ket-to-helm
 helm_data = {
     "helm_simple_rna": "RNA1{R(U)P.R(T)P.R(G)P.R(C)P.R(A)}$$$$V2.0",
     "helm_multi_char_rna": "RNA1{R(U)P.R(T)P.R(G)P.R(C)P.R([daA])}$$$$V2.0",
@@ -44,14 +46,14 @@ helm_data = {
 
 for filename in sorted(helm_data.keys()):
     mol = indigo.loadMoleculeFromFile(os.path.join(ref, filename + ".ket"))
-    idt = mol.helm()
-    idt_ref = helm_data[filename]
-    if idt_ref == idt:
+    helm = mol.helm(lib)
+    helm_ref = helm_data[filename]
+    if helm_ref == helm:
         print(filename + ".ket:SUCCEED")
     else:
         print(
-            "%s.idt FAILED : expected '%s', got '%s'"
-            % (filename, idt_ref, idt)
+            "%s.helm FAILED : expected '%s', got '%s'"
+            % (filename, helm_ref, helm)
         )
 
 helm_errors = {}
@@ -61,10 +63,10 @@ for filename in sorted(helm_errors.keys()):
         mol = indigo.loadMoleculeFromFile(
             os.path.join(root, filename + ".ket")
         )
-        idt = mol.idt()
+        helm = mol.helm(lib)
         print(
-            "Test %s failed: exception expected but got next idt - '%s'."
-            % (filename, idt)
+            "Test %s failed: exception expected but got next helm - '%s'."
+            % (filename, helm)
         )
     except IndigoException as e:
         text = getIndigoExceptionText(e)

@@ -27,14 +27,17 @@ files = [
     {"file": "1844-gen_pept", "seq_type": "PEPTIDE"},
 ]
 
+# empty library - internal used for now
+lib = indigo.loadMonomerLibrary('{"root":{}}')
+
 for infile in files:
     filename = infile["file"] + ".seq"
     mol = indigo.loadSequenceFromFile(
-        os.path.join(root, filename), infile["seq_type"]
+        os.path.join(root, filename), infile["seq_type"], lib
     )
     with open(os.path.join(ref_path, filename), "r") as file:
         seq_ref = file.read()
-    seq = mol.sequence()
+    seq = mol.sequence(lib)
     diff = find_diff(seq_ref, seq)
     if not diff:
         print(filename + ".seq:SUCCEED")

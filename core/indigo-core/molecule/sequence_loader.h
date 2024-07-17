@@ -55,7 +55,7 @@ namespace indigo
         static constexpr char CHAR_LOWERCASE_END = 0x7B;
         static constexpr char CHAR_SHIFT_CONVERT = 0x20;
 
-        SequenceLoader(Scanner& scanner);
+        SequenceLoader(Scanner& scanner, MonomerTemplateLibrary& library);
 
         ~SequenceLoader();
 
@@ -98,6 +98,7 @@ namespace indigo
         int _last_monomer_idx;
         int _row;
         int _col;
+        MonomerTemplateLibrary& _library;
     };
 
 } // namespace indigo

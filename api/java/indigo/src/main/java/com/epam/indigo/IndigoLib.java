@@ -117,29 +117,35 @@ public interface IndigoLib extends Library {
 
     int indigoLoadSmartsFromBuffer(byte[] buffer, int size);
 
-    int indigoLoadSequence(int source, String seq_type);
+    int indigoLoadMonomerLibrary(int source);
 
-    int indigoLoadSequenceFromString(String str, String seq_type);
+    int indigoLoadMonomerLibraryFromString(String str);
 
-    int indigoLoadSequenceFromFile(String filename, String seq_type);
+    int indigoLoadMonomerLibraryFromFile(String filename);
 
-    int indigoLoadFasta(int source, String seq_type);
+    int indigoLoadSequence(int source, String seq_type, int library);
 
-    int indigoLoadFastaFromString(String str, String seq_type);
+    int indigoLoadSequenceFromString(String str, String seq_type, int library);
 
-    int indigoLoadFastaFromFile(String filename, String seq_type);
+    int indigoLoadSequenceFromFile(String filename, String seq_type, int library);
 
-    int indigoLoadIdt(int source);
+    int indigoLoadFasta(int source, String seq_type, int library);
 
-    int indigoLoadIdtFromString(String str);
+    int indigoLoadFastaFromString(String str, String seq_type, int library);
 
-    int indigoLoadIdtFromFile(String filename);
+    int indigoLoadFastaFromFile(String filename, String seq_type, int library);
 
-    int indigoLoadHelm(int source);
+    int indigoLoadIdt(int source, int library);
 
-    int indigoLoadHelmFromString(String str);
+    int indigoLoadIdtFromString(String str, int library);
 
-    int indigoLoadHelmFromFile(String filename);
+    int indigoLoadIdtFromFile(String filename, int library);
+
+    int indigoLoadHelm(int source, int library);
+
+    int indigoLoadHelmFromString(String str, int library);
+
+    int indigoLoadHelmFromFile(String filename, int library);
 
     int indigoLoadStructureFromString(String str, String params);
 
@@ -149,7 +155,7 @@ public interface IndigoLib extends Library {
 
     int indigoSaveMolfile(int molecule, int output);
 
-    int indigoSaveSequenceToFile(int molecule, String filename);
+    int indigoSaveSequenceToFile(int molecule, String filename, int library);
 
     int indigoSaveFastaToFile(int molecule, String filename);
 

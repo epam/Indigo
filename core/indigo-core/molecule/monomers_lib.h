@@ -64,6 +64,8 @@ namespace indigo
     using MonomersLib = std::unordered_map<MonomerKey, std::reference_wrapper<TGroup>, pair_hash>;
     using GranularNucleotide = std::unordered_map<MonomerClass, std::reference_wrapper<MonomersLib::value_type>>;
 
+    class MonomerTemplateLibrary;
+
     // singleton MonomerTemplates class
 
     class DLLEXPORT MonomerTemplates
@@ -283,7 +285,7 @@ namespace indigo
         MonomerGroupTemplate(const std::string& id, const std::string& name, const std::string& template_class, const IdtAlias& idt_alias)
             : _id(id), _name(name), _class(template_class), _idt_alias(idt_alias){};
 
-        void addTemplate(const std::string& template_id);
+        void addTemplate(MonomerTemplateLibrary& library, const std::string& template_id);
 
         bool hasIdtAlias(const std::string& alias, IdtModification mod);
 
@@ -329,11 +331,12 @@ namespace indigo
     public:
         DECL_ERROR;
 
+        MonomerTemplateLibrary(){};
+
         MonomerTemplateLibrary(const MonomerTemplateLibrary&) = delete;
         MonomerTemplateLibrary(MonomerTemplateLibrary&&) = delete;
         MonomerTemplateLibrary& operator=(const MonomerTemplateLibrary&) = delete;
         MonomerTemplateLibrary& operator=(MonomerTemplateLibrary&&) = delete;
-        static MonomerTemplateLibrary& instance();
 
         inline void addMonomerTemplate(MonomerTemplate& monomer_template)
         {
@@ -376,16 +379,6 @@ namespace indigo
 
         const std::string& getIdtAliasByModification(IdtModification modification, const std::string sugar_id, const std::string base_id,
                                                      const std::string phosphate_id);
-        inline void clear()
-        {
-            _monomer_templates.clear();
-            _monomer_group_templates.clear();
-            _id_alias_to_monomer_templates.clear();
-            _id_alias_to_monomer_group_templates.clear();
-        }
-
-    protected:
-        MonomerTemplateLibrary(){};
 
     private:
         std::map<std::string, MonomerTemplate> _monomer_templates;
