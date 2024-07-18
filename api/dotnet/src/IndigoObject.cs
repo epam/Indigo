@@ -86,35 +86,35 @@ namespace com.epam.indigo
             dispatcher.checkResult(IndigoLib.indigoFree(s));
         }
 
-        public string sequence(int library)
+        public string sequence(IndigoObject library)
         {
             dispatcher.setSessionID();
-            return dispatcher.checkResult(IndigoLib.indigoSequence(self, library));
+            return dispatcher.checkResult(IndigoLib.indigoSequence(self, library.self));
         }
 
-        public string fasta(int library)
+        public string fasta(IndigoObject library)
         {
             dispatcher.setSessionID();
-            return dispatcher.checkResult(IndigoLib.indigoFasta(self, library));
+            return dispatcher.checkResult(IndigoLib.indigoFasta(self, library.self));
         }
 
-        public string idt(int library)
+        public string idt(IndigoObject library)
         {
             dispatcher.setSessionID();
-            return dispatcher.checkResult(IndigoLib.indigoIdt(self,library));
+            return dispatcher.checkResult(IndigoLib.indigoIdt(self, library.self));
         }
 
-        public string helm(int library)
+        public string helm(IndigoObject library)
         {
             dispatcher.setSessionID();
-            return dispatcher.checkResult(IndigoLib.indigoHelm(self, library));
+            return dispatcher.checkResult(IndigoLib.indigoHelm(self, library.self));
         }
 
-        public void saveSequenceToFile(string filename, int library)
+        public void saveSequenceToFile(string filename, IndigoObject library)
         {
             dispatcher.setSessionID();
             int s = dispatcher.checkResult(IndigoLib.indigoWriteFile(filename));
-            dispatcher.checkResult(IndigoLib.indigoSaveSequenceToFile(self, s, library));
+            dispatcher.checkResult(IndigoLib.indigoSaveSequenceToFile(self, s, library.self));
             dispatcher.checkResult(IndigoLib.indigoFree(s));
         }
 

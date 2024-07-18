@@ -306,14 +306,14 @@ def remove_unselected_repeating_units_r(r, selected):
             remove_unselected_repeating_units_m(m, moleculeAtoms)
 
 
-def check_library(indigo, library):
-    if library is not None:
-        return library
-    return indigo.loadMonomerLibrary('{"root":{}}')
-
-
 def load_moldata(
-    molstr, indigo=None, options={}, query=False, mime_type=None, library=None
+    molstr,
+    indigo=None,
+    options={},
+    query=False,
+    mime_type=None,
+    selected=None,
+    library=None,
 ):
     if not indigo:
         try:
@@ -331,47 +331,35 @@ def load_moldata(
         md.struct = indigo.loadSmarts(molstr)
         md.is_query = True
     elif input_format == "chemical/x-peptide-sequence":
-        md.struct = indigo.loadSequence(
-            molstr, "PEPTIDE", check_library(indigo, library)
-        )
+        md.struct = indigo.loadSequence(molstr, "PEPTIDE", library)
         md.is_rxn = False
         md.is_query = False
     elif input_format == "chemical/x-rna-sequence":
-        md.struct = indigo.loadSequence(
-            molstr, "RNA", check_library(indigo, library)
-        )
+        md.struct = indigo.loadSequence(molstr, "RNA", library)
         md.is_rxn = False
         md.is_query = False
     elif input_format == "chemical/x-dna-sequence":
-        md.struct = indigo.loadSequence(
-            molstr, "DNA", check_library(indigo, library)
-        )
+        md.struct = indigo.loadSequence(molstr, "DNA", library)
         md.is_rxn = False
         md.is_query = False
     elif input_format == "chemical/x-peptide-fasta":
-        md.struct = indigo.loadFasta(
-            molstr, "PEPTIDE", check_library(indigo, library)
-        )
+        md.struct = indigo.loadFasta(molstr, "PEPTIDE", library)
         md.is_rxn = False
         md.is_query = False
     elif input_format == "chemical/x-rna-fasta":
-        md.struct = indigo.loadFasta(
-            molstr, "RNA", check_library(indigo, library)
-        )
+        md.struct = indigo.loadFasta(molstr, "RNA", library)
         md.is_rxn = False
         md.is_query = False
     elif input_format == "chemical/x-dna-fasta":
-        md.struct = indigo.loadFasta(
-            molstr, "DNA", check_library(indigo, library)
-        )
+        md.struct = indigo.loadFasta(molstr, "DNA", library)
         md.is_rxn = False
         md.is_query = False
     elif input_format == "chemical/x-idt":
-        md.struct = indigo.loadIdt(molstr, check_library(indigo, library))
+        md.struct = indigo.loadIdt(molstr, library)
         md.is_rxn = False
         md.is_query = False
     elif input_format == "chemical/x-helm":
-        md.struct = indigo.loadHelm(molstr, check_library(indigo, library))
+        md.struct = indigo.loadHelm(molstr, library)
         md.is_rxn = False
         md.is_query = False
     elif molstr.startswith("InChI"):
@@ -419,13 +407,13 @@ def save_moldata(
     elif output_format == "chemical/x-indigo-ket":
         return md.struct.json()
     elif output_format == "chemical/x-sequence":
-        return md.struct.sequence(check_library(indigo, library))
+        return md.struct.sequence(library)
     elif output_format == "chemical/x-fasta":
-        return md.struct.fasta(check_library(indigo, library))
+        return md.struct.fasta(library)
     elif output_format == "chemical/x-idt":
-        return md.struct.idt(check_library(indigo, library))
+        return md.struct.idt(library)
     elif output_format == "chemical/x-helm":
-        return md.struct.helm(check_library(indigo, library))
+        return md.struct.helm(library)
     elif output_format == "chemical/x-daylight-smiles":
         if options.get("smiles") == "canonical":
             return md.struct.canonicalSmiles()
@@ -897,6 +885,8 @@ def convert():
         library = None
         if monomer_library is not None:
             library = indigo.loadMonomerLibrary(monomer_library)
+        else:
+            library = indigo.loadMonomerLibrary('{"root":{}}')
 
         query = False
         if "smarts" in data["output_format"]:

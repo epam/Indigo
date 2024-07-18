@@ -6,7 +6,7 @@ const looksSame = require('looks-same');
 let tests = []
 
 function test(group, name, fn) {
-    tests.push({group, name, fn})
+    tests.push({ group, name, fn })
 }
 
 function parseHrtimeToSeconds(hrtime) {
@@ -580,7 +580,7 @@ M  END
         });
 
     }
-    
+
     // Dearomatize
     {
         test("dearomatize", "basic", () => {
@@ -680,7 +680,7 @@ M  END
             const ket_data = fs.readFileSync("test_symbols_4_styles_2_sizes.ket");
             const png = Buffer.from(indigo.render(ket_data, options), "base64");
             fs.writeFileSync("utf8_out.png", png);
-            const {equal} = await looksSame('utf8_ref.png', 'utf8_out.png');
+            const { equal } = await looksSame('utf8_ref.png', 'utf8_out.png');
             assert(equal);
             options.delete();
         });
@@ -693,7 +693,7 @@ M  END
             const ket_data = fs.readFileSync("ketcher_text_panel_test_regular.ket");
             const png = Buffer.from(indigo.render(ket_data, options), "base64");
             fs.writeFileSync("ketcher_text_panel_regular_out.png", png);
-            const {equal} = await looksSame('ketcher_text_panel_regular_ref.png', 'ketcher_text_panel_regular_out.png');
+            const { equal } = await looksSame('ketcher_text_panel_regular_ref.png', 'ketcher_text_panel_regular_out.png');
             assert(equal);
             options.delete();
         });
@@ -706,7 +706,7 @@ M  END
             const ket_data = fs.readFileSync("ketcher_text_panel_test_bold.ket");
             const png = Buffer.from(indigo.render(ket_data, options), "base64");
             fs.writeFileSync("ketcher_text_panel_bold_out.png", png);
-            const {equal} = await looksSame('ketcher_text_panel_bold_ref.png', 'ketcher_text_panel_bold_out.png');
+            const { equal } = await looksSame('ketcher_text_panel_bold_ref.png', 'ketcher_text_panel_bold_out.png');
             assert(equal);
             options.delete();
         });
@@ -719,7 +719,7 @@ M  END
             const ket_data = fs.readFileSync("ketcher_text_panel_test_italic.ket");
             const png = Buffer.from(indigo.render(ket_data, options), "base64");
             fs.writeFileSync("ketcher_text_panel_italic_out.png", png);
-            const {equal} = await looksSame('ketcher_text_panel_italic_ref.png', 'ketcher_text_panel_italic_out.png');
+            const { equal } = await looksSame('ketcher_text_panel_italic_ref.png', 'ketcher_text_panel_italic_out.png');
             assert(equal);
             options.delete();
         });
@@ -732,7 +732,7 @@ M  END
             const ket_data = fs.readFileSync("ketcher_text_panel_test_bold_italic.ket");
             const png = Buffer.from(indigo.render(ket_data, options), "base64");
             fs.writeFileSync("ketcher_text_panel_bold_italic_out.png", png);
-            const {equal} = await looksSame('ketcher_text_panel_bold_italic_ref.png', 'ketcher_text_panel_bold_italic_out.png');
+            const { equal } = await looksSame('ketcher_text_panel_bold_italic_ref.png', 'ketcher_text_panel_bold_italic_out.png');
             assert(equal);
             options.delete();
         });
@@ -831,7 +831,7 @@ M  END
 
             const peptide_seq = indigo.convert(peptide_seq_ref, "sequence", options);
             // fs.writeFileSync("peptide_ref.seq", peptide_seq);
-            const peptide_seq_ref1= fs.readFileSync("peptide_ref.seq");
+            const peptide_seq_ref1 = fs.readFileSync("peptide_ref.seq");
             assert.equal(peptide_seq, peptide_seq_ref1.toString());
             options.delete();
         });
@@ -851,7 +851,7 @@ M  END
 
             const rna_seq = indigo.convert(rna_seq_ref, "sequence", options);
             // fs.writeFileSync("rna_ref.seq", rna_seq);
-            const rna_seq_ref1= fs.readFileSync("rna_ref.seq");
+            const rna_seq_ref1 = fs.readFileSync("rna_ref.seq");
             assert.equal(rna_seq, rna_seq_ref1.toString());
             options.delete();
         });
@@ -872,7 +872,7 @@ M  END
 
             const dna_seq = indigo.convert(dna_seq_ref, "sequence", options);
             // fs.writeFileSync("dna_ref.seq", dna_seq);
-            const dna_seq_ref1= fs.readFileSync("dna_ref.seq");
+            const dna_seq_ref1 = fs.readFileSync("dna_ref.seq");
             assert.equal(dna_seq, dna_seq_ref1.toString());
             options.delete();
         });
@@ -955,7 +955,7 @@ M  END
             const monomersLib = fs.readFileSync("monomer_library.ket");
             options.set("output-content-type", "application/json");
             options.set("input-format", "chemical/x-idt");
-            options.set("monomerLibrary",monomersLib);
+            options.set("monomerLibrary", monomersLib);
             const idt = "/5Phos/mA*mGC/i2MOErA//3Phos/";
             var startTestTime = process.hrtime();
             const res1 = indigo.convert(idt, "ket", options);
@@ -969,6 +969,7 @@ M  END
             let save_options = new indigo.MapStringString();
             save_options.set("output-content-type", "application/json");
             save_options.set("input-format", "chemical/x-indigo-ket");
+            save_options.set("monomerLibrary", monomersLib);
             const res_idt = JSON.parse(indigo.convert(res_ket, "idt", save_options)).struct;
             assert.equal(idt, res_idt);
             options.delete();
