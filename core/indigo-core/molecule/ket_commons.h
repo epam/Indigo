@@ -312,52 +312,53 @@ namespace indigo
             };
         }
 
-        auto styleLambda(FONT_STYLE_SET& fs)
+        auto styleLambda(FONT_STYLE_SET& fss)
         {
-            return [this, &fs](const std::string& key, const rapidjson::Value& style_val) {
+            return [this, &fss](const std::string& key, const rapidjson::Value& style_val) {
                 std::string style_name = key;
                 std::transform(style_name.begin(), style_name.end(), style_name.begin(), [](unsigned char c) { return std::toupper(c); });
                 auto style = textStyleByName(style_name);
                 if (style != KETFontStyle::FontStyle::ENone)
-                    fs.emplace(style, style_val.GetBool());
+                    fss.emplace(style, style_val.GetBool());
             };
         }
 
-        static auto colorLambda(FONT_STYLE_SET& fs, bool bval)
+        static auto colorLambda(FONT_STYLE_SET& fss, bool bval)
         {
-            return [&fs, bval](const rapidjson::Value& color_str) {
+            return [&fss, bval](const rapidjson::Value& color_str) {
                 std::string color_string = color_str.GetString();
-                if (color_string.length() == 7 && color_string[0] == '#')
+                if (color_string.size() && color_string[0] == '#')
                 {
-                    fs.emplace(std::piecewise_construct,
-                               std::forward_as_tuple(KETFontStyle::FontStyle::EColor, static_cast<uint32_t>(std::stoul(color_string.substr(1), nullptr, 16))),
-                               std::forward_as_tuple(bval));
+                    fss.emplace(std::piecewise_construct,
+                                std::forward_as_tuple(KETFontStyle::FontStyle::EColor, static_cast<uint32_t>(std::stoul(color_string.substr(1), nullptr, 16))),
+                                std::forward_as_tuple(bval));
                 }
             };
         }
 
-        static auto fontFamilyLambda(FONT_STYLE_SET& fs, bool bval)
+        static auto fontFamilyLambda(FONT_STYLE_SET& fss, bool bval)
         {
-            return [&fs, bval](const rapidjson::Value& val) {
+            return [&fss, bval](const rapidjson::Value& val) {
                 if (val.IsString())
-                    fs.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::EFamily, val.GetString()), std::forward_as_tuple(bval));
+                    fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::EFamily, val.GetString()),
+                                std::forward_as_tuple(bval));
             };
         }
 
-        static auto fontSizeLambda(FONT_STYLE_SET& fs, bool bval)
+        static auto fontSizeLambda(FONT_STYLE_SET& fss, bool bval)
         {
-            return [&fs, bval](const rapidjson::Value& val) {
+            return [&fss, bval](const rapidjson::Value& val) {
                 if (val.IsInt())
-                    fs.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::ESize, static_cast<uint32_t>(val.GetUint())),
-                               std::forward_as_tuple(bval));
+                    fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::ESize, static_cast<uint32_t>(val.GetUint())),
+                                std::forward_as_tuple(bval));
             };
         }
 
-        auto fontLambda(FONT_STYLE_SET& fs, bool bval = true)
+        auto fontLambda(FONT_STYLE_SET& fss, bool bval = true)
         {
-            return [&fs, bval](const std::string&, const rapidjson::Value& font_val) {
+            return [&fss, bval](const std::string&, const rapidjson::Value& font_val) {
                 DispatchMapVal font_dispatcher = {
-                    {KETFontFamilyStr, fontFamilyLambda(fs, bval)}, {KETFontSizeStr, fontSizeLambda(fs, bval)}, {KETFontColorStr, colorLambda(fs, bval)}};
+                    {KETFontFamilyStr, fontFamilyLambda(fss, bval)}, {KETFontSizeStr, fontSizeLambda(fss, bval)}, {KETFontColorStr, colorLambda(fss, bval)}};
                 applyDispatcher(font_val, font_dispatcher);
             };
         }
@@ -382,11 +383,11 @@ namespace indigo
         auto partsLambda(KETTextParagraph& paragraph)
         {
             return [this, &paragraph](const std::string&, const rapidjson::Value& parts) {
-                for (const auto& part : parts.GetArray())
+                for (const auto& part_val : parts.GetArray())
                 {
-                    std::string text;
+                    std::string part;
                     FONT_STYLE_SET fss;
-                    auto text_lambda = [&text](const std::string&, const rapidjson::Value& text_val) { text = text_val.GetString(); };
+                    auto text_lambda = [&part](const std::string&, const rapidjson::Value& text_val) { part = text_val.GetString(); };
                     auto style_lambda = styleLambda(fss);
                     DispatchMapKVP paragraph_dispatcher = {{"text", text_lambda},
                                                            {KETFontBoldStr, style_lambda},
@@ -394,11 +395,12 @@ namespace indigo
                                                            {KETFontSubscriptStr, style_lambda},
                                                            {KETFontSuperscriptStr, style_lambda},
                                                            {"font", fontLambda(fss)}};
-                    applyDispatcher(part, paragraph_dispatcher);
-                    if (text.size())
+                    // all styles collected in fss
+                    applyDispatcher(part_val, paragraph_dispatcher);
+                    if (part.size())
                     {
                         paragraph.font_styles.emplace(paragraph.text.size(), fss);
-                        paragraph.text += text;
+                        paragraph.text += part;
                     }
                 }
             };
@@ -413,25 +415,46 @@ namespace indigo
         KETTextObject(const Rect2f& bbox, const std::string& content);
 
         KETTextObject(const rapidjson::Value& text_obj);
+        KETTextObject();
 
         MetaObject* clone() const override
         {
             return new KETTextObject(*this);
         }
 
-        auto indent() const
+        auto& indent()
         {
             return _indent;
         }
 
-        auto alignment() const
+        const auto& indent() const
+        {
+            return _indent;
+        }
+
+        auto& alignment()
         {
             return _alignment;
+        }
+
+        const auto& alignment() const
+        {
+            return _alignment;
+        }
+
+        auto& boundingBox()
+        {
+            return _bbox;
         }
 
         const auto& boundingBox() const
         {
             return _bbox;
+        }
+
+        auto& block()
+        {
+            return _block;
         }
 
         const auto& block() const
@@ -442,6 +465,11 @@ namespace indigo
         const auto& content() const
         {
             return _content;
+        }
+
+        auto& fontStyles()
+        {
+            return _font_styles;
         }
 
         const auto& fontStyles() const

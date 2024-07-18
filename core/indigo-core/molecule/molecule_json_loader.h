@@ -77,7 +77,7 @@ namespace indigo
                              //  = ATOM_AND ('rac')
                              //  = ATOM_ANY ('any')
 
-        static void loadMetaObjects(rapidjson::Value& meta_objects, MetaDataStorage& meta);
+        void loadMetaObjects(rapidjson::Value& meta_objects, MetaDataStorage& meta);
 
     protected:
         struct EnhancedStereoCenter

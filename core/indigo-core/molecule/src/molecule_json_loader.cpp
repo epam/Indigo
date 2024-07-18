@@ -26,7 +26,9 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
       _connection_array(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), _components_count(0), _is_library(false)
 {
     if (ket.HasMember("ket_version"))
+    {
         _ket_version = ket["ket_version"].GetString();
+    }
 
     Value& root = ket["root"];
     Value& nodes = root["nodes"];
@@ -1865,7 +1867,11 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
                     }
                 }
                 else if (node_type == "text")
-                    meta_interface.addMetaObject(new KETTextObject(mobj));
+                {
+                    std::string ver2 = std::to_string(KETVersion2.major) + "." + std::to_string(KETVersion2.minor) + "." + std::to_string(KETVersion2.patch);
+                    if (_ket_version == ver2)
+                        meta_interface.addMetaObject(new KETTextObject(mobj));
+                }
             }
             else if (node_type == "arrow")
             {

@@ -1961,10 +1961,13 @@ void MoleculeJsonSaver::saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET&
             if (fs_font.second && fs_font.first.hasValue())
                 switch (fs_font.first.getFontStyle())
                 {
-                case KETFontStyle::FontStyle::EColor:
+                case KETFontStyle::FontStyle::EColor: {
                     writer.Key(KETFontColorStr);
-                    writer.Uint(fs_font.first.getUInt().value());
-                    break;
+                    std::stringstream ss;
+                    ss << "#" << std::hex << fs_font.first.getUInt().value();
+                    writer.String(ss.str());
+                }
+                break;
                 case KETFontStyle::FontStyle::EFamily:
                     writer.Key(KETFontFamilyStr);
                     writer.String(fs_font.first.getString().value());
@@ -1974,7 +1977,6 @@ void MoleculeJsonSaver::saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET&
                     writer.Uint(fs_font.first.getUInt().value());
                     break;
                 }
-            break;
         }
         writer.EndObject();
     }

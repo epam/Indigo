@@ -29,8 +29,14 @@ namespace indigo
     {
         for (const auto& fs : rhs)
         {
-            if (fs.second)
+            if (fs.second) // we want to turn on the style
             {
+                // remove previous switching off the style if there is one
+                auto it = lhs.find(std::make_pair(fs.first, false));
+                if (it != lhs.end())
+                    lhs.erase(it);
+
+                // check for duplicates
                 if (!lhs.count(fs))
                     lhs.insert(fs);
             }
@@ -195,64 +201,71 @@ namespace indigo
     {
         using namespace rapidjson;
         _bbox = bbox;
-        _content = content;
-        Document data;
-        data.Parse(content.c_str());
-        if (data.HasMember("blocks"))
+        if (content.size())
         {
-            Value& blocks = data["blocks"];
-            for (rapidjson::SizeType i = 0; i < blocks.Size(); ++i)
+            _content = content;
+            Document data;
+            data.Parse(content.c_str());
+            if (data.HasMember("blocks"))
             {
-                KETTextParagraph text_line;
-                if (blocks[i].HasMember("text"))
+                Value& blocks = data["blocks"];
+                for (rapidjson::SizeType i = 0; i < blocks.Size(); ++i)
                 {
-                    text_line.text = blocks[i]["text"].GetString();
-                    text_line.font_styles.emplace(0, std::initializer_list<std::pair<KETFontStyle, bool>>{{}});
-                    text_line.font_styles.emplace(text_line.text.size(), std::initializer_list<std::pair<KETFontStyle, bool>>{{}});
-                    if (blocks[i].HasMember("inlineStyleRanges"))
+                    KETTextParagraph text_line;
+                    if (blocks[i].HasMember("text"))
                     {
-                        Value& style_ranges = blocks[i]["inlineStyleRanges"];
-                        for (rapidjson::SizeType j = 0; j < style_ranges.Size(); ++j)
+                        text_line.text = blocks[i]["text"].GetString();
+                        text_line.font_styles.emplace(0, std::initializer_list<std::pair<KETFontStyle, bool>>{{}});
+                        text_line.font_styles.emplace(text_line.text.size(), std::initializer_list<std::pair<KETFontStyle, bool>>{{}});
+                        if (blocks[i].HasMember("inlineStyleRanges"))
                         {
-                            int style_begin = style_ranges[j]["offset"].GetInt();
-                            int style_end = style_begin + style_ranges[j]["length"].GetInt();
-
-                            std::string style_name = style_ranges[j]["style"].GetString();
-                            KETFontStyle ket_fs;
-
-                            auto style = textStyleByName(style_name);
-                            if (style != KETFontStyle::FontStyle::ENone)
-                                ket_fs.setFontStyle(style);
-                            else
+                            Value& style_ranges = blocks[i]["inlineStyleRanges"];
+                            for (rapidjson::SizeType j = 0; j < style_ranges.Size(); ++j)
                             {
-                                const std::string KCustomFontSize = "CUSTOM_FONT_SIZE_";
-                                const std::string KCustomFontUnits = "px";
-                                if (style_name.find(KCustomFontSize) == 0)
+                                int style_begin = style_ranges[j]["offset"].GetInt();
+                                int style_end = style_begin + style_ranges[j]["length"].GetInt();
+
+                                std::string style_name = style_ranges[j]["style"].GetString();
+                                KETFontStyle ket_fs;
+
+                                auto style = textStyleByName(style_name);
+                                if (style != KETFontStyle::FontStyle::ENone)
+                                    ket_fs.setFontStyle(style);
+                                else
                                 {
-                                    ket_fs.setFontStyle(KETFontStyle::FontStyle::ESize);
-                                    ket_fs.setValue(std::stoi(
-                                        style_name.substr(KCustomFontSize.size(), style_name.size() - KCustomFontSize.size() - KCustomFontUnits.size())));
+                                    const std::string KCustomFontSize = "CUSTOM_FONT_SIZE_";
+                                    const std::string KCustomFontUnits = "px";
+                                    if (style_name.find(KCustomFontSize) == 0)
+                                    {
+                                        ket_fs.setFontStyle(KETFontStyle::FontStyle::ESize);
+                                        ket_fs.setValue(std::stoi(
+                                            style_name.substr(KCustomFontSize.size(), style_name.size() - KCustomFontSize.size() - KCustomFontUnits.size())));
+                                    }
                                 }
+
+                                const auto it_begin = text_line.font_styles.find(style_begin);
+                                const auto it_end = text_line.font_styles.find(style_end);
+
+                                if (it_begin == text_line.font_styles.end())
+                                    text_line.font_styles.emplace(style_begin, std::initializer_list<std::pair<KETFontStyle, bool>>{{ket_fs, true}});
+                                else
+                                    it_begin->second.emplace(ket_fs, true);
+
+                                if (it_end == text_line.font_styles.end())
+                                    text_line.font_styles.emplace(style_end, std::initializer_list<std::pair<KETFontStyle, bool>>{{ket_fs, false}});
+                                else
+                                    it_end->second.emplace(ket_fs, false);
                             }
-
-                            const auto it_begin = text_line.font_styles.find(style_begin);
-                            const auto it_end = text_line.font_styles.find(style_end);
-
-                            if (it_begin == text_line.font_styles.end())
-                                text_line.font_styles.emplace(style_begin, std::initializer_list<std::pair<KETFontStyle, bool>>{{ket_fs, true}});
-                            else
-                                it_begin->second.emplace(ket_fs, true);
-
-                            if (it_end == text_line.font_styles.end())
-                                text_line.font_styles.emplace(style_end, std::initializer_list<std::pair<KETFontStyle, bool>>{{ket_fs, false}});
-                            else
-                                it_end->second.emplace(ket_fs, false);
                         }
                     }
+                    _block.push_back(text_line);
                 }
-                _block.push_back(text_line);
             }
         }
+    }
+
+    KETTextObject::KETTextObject() : MetaObject(CID)
+    {
     }
 
     KETTextObject::KETTextObject(const rapidjson::Value& text_obj) : MetaObject(CID), _alignment{}, _indent{}, _font_styles{}
