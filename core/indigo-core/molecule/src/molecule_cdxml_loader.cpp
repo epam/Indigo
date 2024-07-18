@@ -1625,7 +1625,7 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
                                     std::forward_as_tuple(true));
 
                     // set fss font color
-                    if (font_color_index >= 0 && font_color_index < color_table.size())
+                    if (font_color_index >= 0 && font_color_index < static_cast<int>(color_table.size()))
                     {
                         fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::EColor, color_table[font_color_index]),
                                     std::forward_as_tuple(true));
