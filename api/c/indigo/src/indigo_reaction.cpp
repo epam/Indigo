@@ -377,7 +377,7 @@ CEXPORT int indigoLoadReaction(int source)
         loader.arom_options = self.arom_options;
 
         std::unique_ptr<IndigoReaction> rxnptr = std::make_unique<IndigoReaction>();
-		rxnptr->init(loader.loadReaction(false));
+        rxnptr->init(loader.loadReaction(false));
         return self.addObject(rxnptr.release());
     }
     INDIGO_END(-1);

@@ -66,6 +66,7 @@ namespace indigo
     class PropertiesMap;
     class MoleculeJsonSaver;
     class ReactionJsonSaver;
+    class PathwayReactionJsonSaver;
 
     typedef ObjArray<PropertiesMap> MonomersProperties;
 } // namespace indigo
@@ -351,6 +352,7 @@ public:
     void initRxnfileSaver(RxnfileSaver& saver);
     void initMoleculeJsonSaver(MoleculeJsonSaver& saver);
     void initReactionJsonSaver(ReactionJsonSaver& saver);
+    void initReactionJsonSaver(PathwayReactionJsonSaver& saver);
 
     bool preserve_ordering_in_serialize;
 
