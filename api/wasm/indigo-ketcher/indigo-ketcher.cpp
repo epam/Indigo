@@ -462,9 +462,12 @@ namespace indigo
 
         int library = -1;
         auto monomerLibrary = options.find("monomerLibrary");
-        if (monomerLibrary != options.end() && monomerLibrary->second.size()) {
+        if (monomerLibrary != options.end() && monomerLibrary->second.size())
+        {
             library = indigoLoadMonomerLibraryFromString(monomerLibrary->second.c_str());
-        }else{
+        }
+        else
+        {
             library = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
         }
 
