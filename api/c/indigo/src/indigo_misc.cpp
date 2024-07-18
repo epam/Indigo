@@ -31,6 +31,8 @@
 #include "molecule/sdf_loader.h"
 #include "reaction/icr_loader.h"
 #include "reaction/icr_saver.h"
+#include "reaction/pathway_reaction.h"
+#include "reaction/pathway_reaction_json_saver.h"
 #include "reaction/reaction_hash.h"
 #include "reaction/reaction_json_saver.h"
 
@@ -1603,12 +1605,19 @@ CEXPORT const char* indigoJson(int item)
         else if (IndigoBaseReaction::is(obj))
         {
             if (obj.type == IndigoObject::PATHWAY_REACTION)
-                return "PATHWAY_REACTION";
-
-            ReactionJsonSaver jn(out);
-            self.initReactionJsonSaver(jn);
-            BaseReaction& br = obj.getBaseReaction();
-            jn.saveReaction(br);
+            {
+                PathwayReactionJsonSaver jn(out);
+                self.initReactionJsonSaver(jn);
+                BaseReaction& br = obj.getBaseReaction();
+                jn.saveReaction(dynamic_cast<PathwayReaction&>(br));
+            }
+            else
+            {
+                ReactionJsonSaver jn(out);
+                self.initReactionJsonSaver(jn);
+                BaseReaction& br = obj.getBaseReaction();
+                jn.saveReaction(br);
+            }
         }
         out.writeChar(0);
         return tmp.string.ptr();
