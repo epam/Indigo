@@ -32,6 +32,7 @@
 #include "base_cpp/exception.h"
 #include "elements.h"
 #include "molecule/base_molecule.h"
+#include "molecule/ket_commons.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
 
@@ -132,7 +133,8 @@ namespace indigo
         AutoInt id;
         std::string label;
         AutoInt element;
-        Vec3f pos;
+        Vec2f pos;
+        Vec3f pos3d;
         int type;
         AutoInt isotope;
         AutoInt charge;
@@ -795,9 +797,56 @@ namespace indigo
 
         static void applyDispatcher(BaseCDXProperty& prop, const std::unordered_map<std::string, std::function<void(const std::string&)>>& dispatcher);
         void parseCDXMLAttributes(BaseCDXProperty& prop);
-        void parseBBox(const std::string& data, Rect2f& bbox);
-        void parsePos(const std::string& data, Vec3f& bbox);
-        void parseSeg(const std::string& data, Vec2f& v1, Vec2f& v2);
+
+        auto segLambda(Vec2f& v1, Vec2f& v2);
+
+        auto bboxLambda(Rect2f& bbox);
+
+        static auto strLambda(std::string& str)
+        {
+            return [&str](const std::string& data) { str = data; };
+        }
+
+        static auto intLambda(AutoInt& val)
+        {
+            return [&val](const std::string& data) { val = data; };
+        }
+
+        static auto floatLambda(float& val)
+        {
+            return [&val](const std::string& data) { val = std::stof(data); };
+        }
+
+        auto posLambda(Vec2f& pos)
+        {
+            return [this, &pos](const std::string& data) {
+                std::vector<std::string> coords = split(data, ' ');
+                if (coords.size() >= 2)
+                {
+                    pos.x = std::stof(coords[0]);
+                    pos.y = std::stof(coords[1]);
+                    if (_has_bounding_box)
+                    {
+                        pos.x -= cdxml_bbox.left();
+                        pos.y -= cdxml_bbox.bottom();
+                    }
+                    pos.x /= SCALE;
+                    pos.y /= -SCALE;
+                }
+                else
+                    throw Error("Not enought coordinates");
+            };
+        }
+
+        static auto intListLambda(std::vector<int>& vals)
+        {
+            return [&vals](const std::string& data) {
+                std::vector<std::string> str_vals = split(data, ' ');
+                vals.clear();
+                for (auto& str : str_vals)
+                    vals.push_back(std::stoi(str));
+            };
+        }
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
@@ -806,7 +855,10 @@ namespace indigo
         std::vector<CdxmlNode> nodes;
         std::vector<CdxmlBond> bonds;
         std::vector<CdxmlBracket> brackets;
-        std::vector<std::pair<Vec3f, std::string>> text_objects;
+        std::vector<std::pair<Rect2f, std::string>> text_objects;
+        std::vector<KETTextObject> ket_text_objects;
+        std::map<int, std::string> font_table;
+        std::vector<uint32_t> color_table;
 
         static const int SCALE = 30;
 
@@ -821,7 +873,9 @@ namespace indigo
         void _parseBond(CdxmlBond& bond, BaseCDXProperty& prop);
 
         void _parseBracket(CdxmlBracket& bracket, BaseCDXProperty& prop);
-        void _parseText(BaseCDXElement& elem, std::vector<std::pair<Vec3f, std::string>>& text_parsed);
+        void _parseText(BaseCDXElement& elem, std::vector<std::pair<Rect2f, std::string>>& text_parsed);
+        void _parseTextToKetObject(BaseCDXElement& elem, std::vector<KETTextObject>& text_objects);
+
         void _parseLabel(BaseCDXElement& elem, std::string& label);
 
         void _parseGraphic(BaseCDXElement& elem);
@@ -848,8 +902,8 @@ namespace indigo
         std::unordered_map<int, std::size_t> _id_to_bond_index;
         std::vector<int> _fragment_nodes;
         std::vector<Vec2f> _pluses;
-        std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
-        std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _graphic_arrows;
+        std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _arrows;
+        std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _graphic_arrows;
         std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _primitives;
 
         std::vector<EnhancedStereoCenter> _stereo_centers;

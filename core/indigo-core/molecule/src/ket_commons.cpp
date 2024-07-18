@@ -25,6 +25,31 @@
 
 namespace indigo
 {
+    FONT_STYLE_SET& operator+=(FONT_STYLE_SET& lhs, const FONT_STYLE_SET& rhs)
+    {
+        for (const auto& fs : rhs)
+        {
+            if (fs.second) // we want to turn on the style
+            {
+                // remove previous switching off the style if there is one
+                auto it = lhs.find(std::make_pair(fs.first, false));
+                if (it != lhs.end())
+                    lhs.erase(it);
+
+                // check for duplicates
+                if (!lhs.count(fs))
+                    lhs.insert(fs);
+            }
+            else
+            {
+                auto it = lhs.find(std::make_pair(fs.first, true));
+                if (it != lhs.end())
+                    lhs.erase(it);
+            }
+        }
+        return lhs;
+    }
+
     uint8_t getPointSide(const Vec2f& point, const Vec2f& beg, const Vec2f& end)
     {
         uint8_t bit_mask = 0;
@@ -129,6 +154,157 @@ namespace indigo
             break;
         }
         return res;
+    }
+
+    const KETTextObject::TextAlignMap& KETTextObject::textAlignmentMap()
+    {
+        static TextAlignMap KTextAlignmentsMap{{KETAlignmentLeft, TextAlignment::ELeft},
+                                               {KETAlignmentRight, TextAlignment::ERight},
+                                               {KETAlignmentCenter, TextAlignment::ECenter},
+                                               {KETAlignmentJustify, TextAlignment::EJustify}};
+        return KTextAlignmentsMap;
+    }
+
+    const KETTextObject::FontStyleMap& KETTextObject::textStyleMapV1()
+    {
+        static const FontStyleMap KTextStylesMap{{KETFontBoldStrV1, KETFontStyle::FontStyle::EBold},
+                                                 {KETFontItalicStrV1, KETFontStyle::FontStyle::EItalic},
+                                                 {KETFontSuperscriptStrV1, KETFontStyle::FontStyle::ESuperScript},
+                                                 {KETFontSubscriptStrV1, KETFontStyle::FontStyle::ESubScript}};
+        return KTextStylesMap;
+    }
+
+    const KETTextObject::FontStyleMap& KETTextObject::textStyleMap()
+    {
+        static const FontStyleMap KTextFontStylesMap{{KETFontBoldStr, KETFontStyle::FontStyle::EBold},
+                                                     {KETFontItalicStr, KETFontStyle::FontStyle::EItalic},
+                                                     {KETFontSuperscriptStr, KETFontStyle::FontStyle::ESuperScript},
+                                                     {KETFontSubscriptStr, KETFontStyle::FontStyle::ESubScript},
+                                                     {KETFontFamilyStr, KETFontStyle::FontStyle::EFamily},
+                                                     {KETFontSizeStr, KETFontStyle::FontStyle::ESize},
+                                                     {KETFontColorStr, KETFontStyle::FontStyle::EColor}};
+        return KTextFontStylesMap;
+    }
+
+    KETFontStyle::FontStyle KETTextObject::textStyleByName(const std::string& style_name)
+    {
+        auto style_it = textStyleMap().find(style_name);
+        if (style_it != textStyleMap().end())
+            return style_it->second;
+        style_it = textStyleMapV1().find(style_name);
+        if (style_it != textStyleMapV1().end())
+            return style_it->second;
+        return KETFontStyle::FontStyle::ENone;
+    }
+
+    KETTextObject::KETTextObject(const Rect2f& bbox, const std::string& content) : MetaObject(CID), _alignment{}, _indent{}, _font_styles{}
+    {
+        using namespace rapidjson;
+        _bbox = bbox;
+        if (content.size())
+        {
+            _content = content;
+            Document data;
+            data.Parse(content.c_str());
+            if (data.HasMember("blocks"))
+            {
+                Value& blocks = data["blocks"];
+                for (rapidjson::SizeType i = 0; i < blocks.Size(); ++i)
+                {
+                    KETTextParagraph text_line;
+                    if (blocks[i].HasMember("text"))
+                    {
+                        text_line.text = blocks[i]["text"].GetString();
+                        text_line.font_styles.emplace(0, std::initializer_list<std::pair<KETFontStyle, bool>>{{}});
+                        text_line.font_styles.emplace(text_line.text.size(), std::initializer_list<std::pair<KETFontStyle, bool>>{{}});
+                        if (blocks[i].HasMember("inlineStyleRanges"))
+                        {
+                            Value& style_ranges = blocks[i]["inlineStyleRanges"];
+                            for (rapidjson::SizeType j = 0; j < style_ranges.Size(); ++j)
+                            {
+                                int style_begin = style_ranges[j]["offset"].GetInt();
+                                int style_end = style_begin + style_ranges[j]["length"].GetInt();
+
+                                std::string style_name = style_ranges[j]["style"].GetString();
+                                KETFontStyle ket_fs;
+
+                                auto style = textStyleByName(style_name);
+                                if (style != KETFontStyle::FontStyle::ENone)
+                                    ket_fs.setFontStyle(style);
+                                else
+                                {
+                                    const std::string KCustomFontSize = "CUSTOM_FONT_SIZE_";
+                                    const std::string KCustomFontUnits = "px";
+                                    if (style_name.find(KCustomFontSize) == 0)
+                                    {
+                                        ket_fs.setFontStyle(KETFontStyle::FontStyle::ESize);
+                                        ket_fs.setValue(std::stoi(
+                                            style_name.substr(KCustomFontSize.size(), style_name.size() - KCustomFontSize.size() - KCustomFontUnits.size())));
+                                    }
+                                }
+
+                                const auto it_begin = text_line.font_styles.find(style_begin);
+                                const auto it_end = text_line.font_styles.find(style_end);
+
+                                if (it_begin == text_line.font_styles.end())
+                                    text_line.font_styles.emplace(style_begin, std::initializer_list<std::pair<KETFontStyle, bool>>{{ket_fs, true}});
+                                else
+                                    it_begin->second.emplace(ket_fs, true);
+
+                                if (it_end == text_line.font_styles.end())
+                                    text_line.font_styles.emplace(style_end, std::initializer_list<std::pair<KETFontStyle, bool>>{{ket_fs, false}});
+                                else
+                                    it_end->second.emplace(ket_fs, false);
+                            }
+                        }
+                    }
+                    _block.push_back(text_line);
+                }
+            }
+        }
+    }
+
+    KETTextObject::KETTextObject() : MetaObject(CID)
+    {
+    }
+
+    KETTextObject::KETTextObject(const rapidjson::Value& text_obj) : MetaObject(CID), _alignment{}, _indent{}, _font_styles{}
+    {
+        using namespace rapidjson;
+
+        auto bbox_lambda = [this](const std::string&, const Value& bbox_val) {
+            Vec2f v1(bbox_val["x"].GetFloat(), bbox_val["y"].GetFloat());
+            Vec2f v2(v1);
+            v2.add(Vec2f(bbox_val["width"].GetFloat(), bbox_val["height"].GetFloat()));
+            _bbox.copy(Rect2f(v1, v2));
+        };
+
+        auto paragraphs_lambda = [this](const std::string&, const Value& paragraphs_val) {
+            for (const auto& paragraph : paragraphs_val.GetArray())
+            {
+                KETTextParagraph text_line;
+                auto style_lambda = styleLambda(text_line.font_style);
+                DispatchMapKVP paragraph_dispatcher = {{"alignment", alignLambda(text_line.alignment)},
+                                                       {KETFontBoldStr, style_lambda},
+                                                       {KETFontItalicStr, style_lambda},
+                                                       {KETFontSubscriptStr, style_lambda},
+                                                       {KETFontSuperscriptStr, style_lambda},
+                                                       {"indent", indentLambda(text_line.indent)},
+                                                       {"font", fontLambda(text_line.font_style)},
+                                                       {"parts", partsLambda(text_line)}};
+
+                applyDispatcher(paragraph, paragraph_dispatcher);
+                _block.push_back(text_line);
+            }
+        };
+
+        auto style_lambda = styleLambda(_font_styles);
+
+        DispatchMapKVP text_obj_dispatcher = {{"bounding_box", bbox_lambda},     {"alignment", alignLambda(_alignment)}, {KETFontBoldStr, style_lambda},
+                                              {KETFontItalicStr, style_lambda},  {KETFontSubscriptStr, style_lambda},    {KETFontSuperscriptStr, style_lambda},
+                                              {"indent", indentLambda(_indent)}, {"font", fontLambda(_font_styles)},     {"paragraphs", paragraphs_lambda}};
+
+        applyDispatcher(text_obj, text_obj_dispatcher);
     }
 
 }

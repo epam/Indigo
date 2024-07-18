@@ -34,6 +34,7 @@ namespace indigo
 
     bool validate_base64(const std::string& str);
 
+    std::vector<std::string> split_with_empty(const std::string& str, char delim);
     std::vector<std::string> split(const std::string& str, char delim);
 
     inline bool is_lower_case(const std::string& str)

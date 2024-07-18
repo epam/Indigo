@@ -1418,14 +1418,14 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
         // double text_offset_y = 0;
         int font_size = static_cast<int>(KETDefaultFontSize);
         CDXMLFontStyle font_face(0);
-        for (auto& text_item : ko._block)
+        for (auto& text_item : ko.block())
         {
             bool is_first_index = true;
             size_t first_index = 0;
             size_t second_index = 0;
             // double text_offset_x = 0;
             FONT_STYLE_SET current_styles;
-            Vec2f text_origin(ko._pos.x, ko._pos.y);
+            Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().top());
             std::string pos_str = std::to_string(_bond_length * text_origin.x) + " " + std::to_string(-_bond_length * text_origin.y);
             XMLElement* t = _doc->NewElement("t");
             _current->LinkEndChild(t);
@@ -1433,7 +1433,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
             t->SetAttribute("p", pos_str.c_str());
             t->SetAttribute("Justification", "Left");
             t->SetAttribute("InterpretChemically", "no");
-            for (auto& kvp : text_item.styles)
+            for (auto& kvp : text_item.font_styles)
             {
                 if (is_first_index)
                 {
@@ -1451,24 +1451,30 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
                 auto sub_text = text_item.text.substr(first_index, second_index - first_index);
                 for (const auto& text_style : current_styles)
                 {
-                    switch (text_style.first)
+                    switch (static_cast<KETFontStyle::FontStyle>(text_style.first))
                     {
-                    case KETTextObject::EPlain:
+                    case KETFontStyle::FontStyle::ENone:
                         break;
-                    case KETTextObject::EBold:
+                    case KETFontStyle::FontStyle::EBold:
                         font_face.is_bold = text_style.second;
                         break;
-                    case KETTextObject::EItalic:
+                    case KETFontStyle::FontStyle::EItalic:
                         font_face.is_italic = text_style.second;
                         break;
-                    case KETTextObject::ESuperScript:
+                    case KETFontStyle::FontStyle::ESuperScript:
                         font_face.is_superscript = text_style.second;
                         break;
-                    case KETTextObject::ESubScript:
+                    case KETFontStyle::FontStyle::ESubScript:
                         font_face.is_subscript = text_style.second;
                         break;
+                    case KETFontStyle::FontStyle::ESize: {
+                        font_size = static_cast<int>(KETDefaultFontSize);
+                        auto sz_val = text_style.first.getUInt();
+                        if (text_style.second && sz_val.has_value())
+                            font_size = sz_val.value();
+                    }
+                    break;
                     default:
-                        font_size = text_style.second ? text_style.first : static_cast<int>(KETDefaultFontSize);
                         break;
                     }
                 }

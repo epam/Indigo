@@ -155,6 +155,11 @@ namespace indigo
             return pretty_json ? _pretty_writer.String(str) : _writer.String(str);
         }
 
+        bool String(const std::string& str)
+        {
+            return String(str.c_str());
+        }
+
         bool Key(const Ch* const& str)
         {
             return pretty_json ? _pretty_writer.Key(str) : _writer.Key(str);
@@ -173,6 +178,62 @@ namespace indigo
                 _writer.Flush();
         }
 
+        void WritePoint(const Vec2f& point)
+        {
+            if (pretty_json)
+            {
+                _pretty_writer.StartObject();
+                _pretty_writer.Key("x");
+                _pretty_writer.Double(point.x);
+                _pretty_writer.Key("y");
+                _pretty_writer.Double(point.y);
+                _pretty_writer.Key("z");
+                _pretty_writer.Double(0.0);
+                _pretty_writer.EndObject(); // end position
+            }
+            else
+            {
+                _writer.StartObject();
+                _writer.Key("x");
+                _writer.Double(point.x);
+                _writer.Key("y");
+                _writer.Double(point.y);
+                _writer.Key("z");
+                _writer.Double(0.0);
+                _writer.EndObject(); // end position
+            }
+        }
+
+        void WriteRect(const Rect2f& rect)
+        {
+            if (pretty_json)
+            {
+                _pretty_writer.StartObject();
+                _pretty_writer.Key("x");
+                _pretty_writer.Double(rect.left());
+                _pretty_writer.Key("y");
+                _pretty_writer.Double(rect.top());
+                _pretty_writer.Key("width");
+                _pretty_writer.Double(rect.width());
+                _pretty_writer.Key("height");
+                _pretty_writer.Double(rect.height());
+                _pretty_writer.EndObject();
+            }
+            else
+            {
+                _writer.StartObject();
+                _writer.Key("x");
+                _writer.Double(rect.left());
+                _writer.Key("y");
+                _writer.Double(rect.top());
+                _writer.Key("width");
+                _writer.Double(rect.width());
+                _writer.Key("height");
+                _writer.Double(rect.height());
+                _writer.EndObject();
+            }
+        }
+
     private:
         bool pretty_json;
         rapidjson::Writer<rapidjson::StringBuffer> _writer;
@@ -185,15 +246,27 @@ namespace indigo
         explicit MoleculeJsonSaver(Output& output);
         void saveMolecule(BaseMolecule& bmol);
         void saveMolecule(BaseMolecule& bmol, JsonWriter& writer);
+        void saveMetaData(JsonWriter& writer, const MetaDataStorage& meta);
 
-        static void saveMetaData(JsonWriter& writer, MetaDataStorage& meta);
+        static void parseFormatMode(const char* version_str, KETVersion& version);
+        static void saveFormatMode(KETVersion& version, Array<char>& output);
+
+        static void saveTextV1(JsonWriter& writer, const KETTextObject& text_obj);
+        static void saveText(JsonWriter& writer, const KETTextObject& text_obj);
+        static void saveAlignment(JsonWriter& writer, KETTextObject::TextAlignment alignment);
+        static void saveIndent(JsonWriter& writer, const KETTextObject::KETTextIndent& indent);
+        static void saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET& fss);
+        static void saveParagraphs(JsonWriter& writer, const std::list<KETTextObject::KETTextParagraph>& paragraphs);
+        static void saveParts(JsonWriter& writer, const std::map<std::size_t, FONT_STYLE_SET>& fss_map, const std::string& text);
+
         static std::string monomerId(const TGroup& tg);
         static std::string monomerKETClass(const std::string& class_name);
         static std::string monomerHELMClass(const std::string& class_name);
 
         bool add_stereo_desc;
         bool pretty_json;
-        bool use_native_precision; // TODO: Remove option and use_native_precision allways - have to fix a lot of UTs
+        bool use_native_precision; // TODO: Remove option and use_native_precision always - have to fix a lot of UTs
+        KETVersion ket_version;
 
     protected:
         void saveRoot(BaseMolecule& mol, JsonWriter& writer);

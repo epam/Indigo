@@ -45,6 +45,7 @@ namespace indigo
         void saveReactionWithMetaData(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver);
         bool add_stereo_desc;
         bool pretty_json;
+        KETVersion ket_version;
         DECL_ERROR;
 
     protected:

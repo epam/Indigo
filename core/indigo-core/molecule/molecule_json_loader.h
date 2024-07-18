@@ -77,7 +77,7 @@ namespace indigo
                              //  = ATOM_AND ('rac')
                              //  = ATOM_ANY ('any')
 
-        static void loadMetaObjects(rapidjson::Value& meta_objects, MetaDataStorage& meta);
+        void loadMetaObjects(rapidjson::Value& meta_objects, MetaDataStorage& meta);
 
     protected:
         struct EnhancedStereoCenter
@@ -122,7 +122,8 @@ namespace indigo
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
-        unsigned int components_count;
+        std::string _ket_version;
+        unsigned int _components_count;
         bool _is_library;
     };
 
