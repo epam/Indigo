@@ -25,18 +25,29 @@ IMPL_ERROR(PathwayReaction, "pathway reaction");
 
 PathwayReaction::PathwayReaction(std::deque<Reaction>& reactions)
 {
-	for (size_t i = 0; i < reactions.size(); i++)
-	{
-		for (int j = reactions[i].begin(); j < reactions[i].end(); j = reactions[i].next(j))
-		{
-			auto molecule = std::make_unique<Molecule>();
-			reactions[i].getBaseMolecule(j).clone(*molecule);
-			int id = _allMolecules.add(molecule.release());
-			_reactionsByMolecules[id] = i;
-		}
-        // TODO: Should I leave it here?
-        _meta.append(reactions[i].meta());
-	}
+    for (size_t i = 0; i < reactions.size(); i++)
+    {
+        for (int j = reactions[i].begin(); j < reactions[i].end(); j = reactions[i].next(j))
+        {
+            auto molecule = std::make_unique<Molecule>();
+            molecule->clone(reactions[i].getBaseMolecule(j));
+            int id = _allMolecules.add(molecule.release());
+            _addedBaseMolecule(id, reactions[i].getSideType(j), *_allMolecules[id]);
+            _reactions.expand(id + 1);
+            _reactions[id] = i;
+        }
+    }
+}
+
+int PathwayReaction::getReactionId(int moleculeId) const
+{
+    return _reactions.at(moleculeId);
+}
+
+void PathwayReaction::clone(PathwayReaction& reaction)
+{
+    BaseReaction::clone(reaction);
+    _reactions.copy(reaction._reactions);
 }
 
 BaseReaction* PathwayReaction::neu()

@@ -18,37 +18,32 @@
 
 #pragma once
 
-#include <deque>
-#include "reaction/base_reaction.h"
+#include "base_cpp/exception.h"
 
 namespace indigo
 {
 
-class Reaction;
+class Output;
+class PathwayReaction;
 
-class DLLEXPORT PathwayReaction : public BaseReaction
+class PathwayReactionJsonSaver
 {
 public:
 
-    PathwayReaction() = default;
-    PathwayReaction(std::deque<Reaction>&);
-    ~PathwayReaction() override = default;
+    explicit PathwayReactionJsonSaver(Output&);
 
-    int getReactionId(int moleculeId) const;
-    void clone(PathwayReaction&);
+    PathwayReactionJsonSaver(const PathwayReactionJsonSaver&) = delete;
+    PathwayReactionJsonSaver& operator=(const PathwayReactionJsonSaver&) = delete;
 
-    BaseReaction* neu() override;
-    bool aromatize(const AromaticityOptions& options) override;
+    void saveReaction(PathwayReaction&);
 
+    bool add_stereo_desc;
+    bool pretty_json;
     DECL_ERROR;
-
-protected:
-
-    int _addBaseMolecule(int side) override;
 
 private:
 
-    Array<int> _reactions;
+    Output& _output;
 };
 
 } // namespace indigo
