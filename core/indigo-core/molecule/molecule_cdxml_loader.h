@@ -32,9 +32,9 @@
 #include "base_cpp/exception.h"
 #include "elements.h"
 #include "molecule/base_molecule.h"
+#include "molecule/ket_commons.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
-#include "molecule/ket_commons.h"
 
 typedef unsigned short int UINT16;
 typedef int INT32;
