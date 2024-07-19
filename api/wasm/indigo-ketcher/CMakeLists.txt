@@ -5,6 +5,13 @@ project(indigo-ketcher)
 add_library(${PROJECT_NAME}-object OBJECT indigo-ketcher.cpp)
 target_link_libraries(${PROJECT_NAME}-object indigo-static indigo-inchi-static indigo-renderer-static cppcodec)
 
+add_library(${PROJECT_NAME}-object-norender OBJECT indigo-ketcher.cpp)
+target_link_libraries(${PROJECT_NAME}-object-norender indigo-static indigo-inchi-static cppcodec)
+
+set_property(TARGET ${PROJECT_NAME}-object-norender
+    PROPERTY COMPILE_DEFINITIONS INDIGO_NO_RENDER
+)
+
 if (CMAKE_BUILD_TYPE STREQUAL Debug)
     set(EMCC_FLAGS
             -g
@@ -40,8 +47,12 @@ set(EMCC_FLAGS
 
 set(TARGET_FILES
         $<TARGET_OBJECTS:${PROJECT_NAME}-object>
-        $<TARGET_FILE:indigo-static> $<TARGET_FILE:indigo-inchi-static> $<TARGET_FILE:indigo-renderer-static> $<TARGET_FILE:render2d> $<TARGET_FILE:cairo> $<TARGET_FILE:freetype> $<TARGET_FILE:png> $<TARGET_FILE:pixman> $<TARGET_FILE:indigo-core> $<TARGET_FILE:inchi> $<TARGET_FILE:tinyxml2> $<TARGET_FILE:z>
+        $<TARGET_FILE:indigo-static> $<TARGET_FILE:indigo-inchi-static> $<TARGET_FILE:indigo-renderer-static> $<TARGET_FILE:render2d> $<TARGET_FILE:cairo> $<TARGET_FILE:freetype>  $<TARGET_FILE:png> $<TARGET_FILE:pixman> $<TARGET_FILE:indigo-core> $<TARGET_FILE:inchi> $<TARGET_FILE:tinyxml2> $<TARGET_FILE:z>
         )
+
+set(TARGET_FILES_NORENDER
+    $<TARGET_OBJECTS:${PROJECT_NAME}-object-norender> $<TARGET_FILE:indigo-static> $<TARGET_FILE:indigo-inchi-static> $<TARGET_FILE:indigo-core> $<TARGET_FILE:inchi> $<TARGET_FILE:tinyxml2> $<TARGET_FILE:z>
+)
 
 add_custom_target(${PROJECT_NAME}-separate
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
@@ -61,6 +72,24 @@ add_custom_target(${PROJECT_NAME}
         DEPENDS ${PROJECT_NAME}-object
         )
 
+add_custom_target(${PROJECT_NAME}-separate-norender
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+        COMMAND emcc
+        -o ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/indigo-ketcher-separate-wasm-norender.js
+        ${EMCC_FLAGS_SEPARATE}
+        ${TARGET_FILES_NORENDER}
+        DEPENDS ${PROJECT_NAME}-object-norender
+        )
+
+add_custom_target(${PROJECT_NAME}-norender
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+        COMMAND emcc
+        -o ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/indigo-ketcher-norender.js
+        ${EMCC_FLAGS}
+        ${TARGET_FILES_NORENDER}
+        DEPENDS ${PROJECT_NAME}-object-norender
+        )
+
 if (NOT RENDER_ENABLE_CJK)
     add_custom_target(${PROJECT_NAME}-package
             COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/package.json ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
@@ -74,7 +103,7 @@ if (NOT RENDER_ENABLE_CJK)
             COMMAND npm pack
             COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}
             COMMAND ${COPY_COMMAND} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}${SEP}${PROJECT_NAME}*.tgz ${NATIVE_DIST_DIRECTORY}${SEP}
-            DEPENDS ${PROJECT_NAME} ${PROJECT_NAME}-separate
+            DEPENDS ${PROJECT_NAME} ${PROJECT_NAME}-separate ${PROJECT_NAME}-separate-norender ${PROJECT_NAME}-norender
             )
 else ()
     add_custom_target(${PROJECT_NAME}-package
@@ -91,6 +120,6 @@ else ()
             COMMAND npm pack
             COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}
             COMMAND ${COPY_COMMAND} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}${SEP}${PROJECT_NAME}*.tgz ${NATIVE_DIST_DIRECTORY}${SEP}
-            DEPENDS ${PROJECT_NAME} ${PROJECT_NAME}-separate
+            DEPENDS ${PROJECT_NAME} ${PROJECT_NAME}-separate ${PROJECT_NAME}-separate-norender ${PROJECT_NAME}-norender
             )
 endif ()

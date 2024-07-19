@@ -10,12 +10,23 @@
     "./binaryWasm": {
       "import": "./indigo-ketcher-separate-wasm.js",
       "require": "./indigo-ketcher-separate-wasm.js"
+    },
+    "./jsNoRender": {
+      "import": "./indigo-ketcher-norender.js",
+      "require": "./indigo-ketcher-norender.js"
+    },
+    "./binaryWasmNoRender": {
+      "import": "./indigo-ketcher-separate-norender.js",
+      "require": "./indigo-ketcher-separate-norender.js"
     }
   },
   "files": [
     "indigo-ketcher-separate-wasm.js",
+    "indigo-ketcher-separate-norender.js",
     "indigo-ketcher.js",
+    "indigo-ketcher-norender.js",
     "indigo-ketcher-separate-wasm.wasm",
+    "indigo-ketcher-separate-norender.wasm",
     "README.md",
     "LICENSE"
   ],
