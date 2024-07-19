@@ -29,7 +29,7 @@ IMPL_ERROR(SequenceSaver, "Sequence saver");
 
 CP_DEF(SequenceSaver);
 
-SequenceSaver::SequenceSaver(Output& output) : _output(output), _mon_lib(MonomerTemplates::_instance())
+SequenceSaver::SequenceSaver(Output& output, MonomerTemplateLibrary& library) : _output(output), _mon_lib(MonomerTemplates::_instance()), _library(library)
 {
 }
 
@@ -86,11 +86,10 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
         else if (monomer_class == kMonomerClassCHEM || monomer_class == kMonomerClassDNA || monomer_class == kMonomerClassRNA)
         {
             // Try to find in library
-            MonomerTemplateLibrary& lib = MonomerTemplateLibrary::instance();
-            const std::string& monomer_id = lib.getMonomerTemplateIdByAlias(MonomerTemplate::StrToMonomerClass(monomer_class), monomer);
+            const std::string& monomer_id = _library.getMonomerTemplateIdByAlias(MonomerTemplate::StrToMonomerClass(monomer_class), monomer);
             if (monomer_id.size()) // Monomer in library
             {
-                const MonomerTemplate& templ = lib.getMonomerTemplateById(monomer_id);
+                const MonomerTemplate& templ = _library.getMonomerTemplateById(monomer_id);
                 if (templ.idtAlias().hasModification(modification))
                 {
                     const std::string& idt_alias = templ.idtAlias().getModification(modification);
@@ -225,13 +224,12 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
         else
         {
             // Try to find sugar,base,phosphate group template
-            MonomerTemplateLibrary& lib = MonomerTemplateLibrary::instance();
-            const std::string& sugar_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Sugar, sugar);
-            const std::string& phosphate_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, phosphate);
+            const std::string& sugar_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Sugar, sugar);
+            const std::string& phosphate_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, phosphate);
             std::string base_id;
             if (base.size())
-                base_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Base, base);
-            const std::string& idt_alias = lib.getIdtAliasByModification(modification, sugar_id, base_id, phosphate_id);
+                base_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Base, base);
+            const std::string& idt_alias = _library.getIdtAliasByModification(modification, sugar_id, base_id, phosphate_id);
             if (idt_alias.size())
             {
                 seq_string += '/';
@@ -283,11 +281,10 @@ std::string SequenceSaver::getMonomerAlias(BaseMolecule& mol, int atom_idx)
     std::string monomer_alias = "";
     std::string monomer_class = mol.getTemplateAtomClass(atom_idx);
     std::string monomer = mol.getTemplateAtom(atom_idx);
-    MonomerTemplateLibrary& lib = MonomerTemplateLibrary::instance();
-    const std::string& monomer_id = lib.getMonomerTemplateIdByAlias(MonomerTemplates::getStrToMonomerType().at(monomer_class), monomer);
+    const std::string& monomer_id = _library.getMonomerTemplateIdByAlias(MonomerTemplates::getStrToMonomerType().at(monomer_class), monomer);
     if (monomer_id.size())
     {
-        auto& monomer_template = MonomerTemplateLibrary::instance().getMonomerTemplateById(monomer_id);
+        auto& monomer_template = _library.getMonomerTemplateById(monomer_id);
         monomer_alias = monomer_template.alias();
     }
     return monomer_alias;
@@ -298,11 +295,10 @@ std::string SequenceSaver::getHelmPolymerClass(BaseMolecule& mol, int atom_idx)
     std::string monomer_class = mol.getTemplateAtomClass(atom_idx);
     std::string monomer = mol.getTemplateAtom(atom_idx);
     std::string helm_polymer_class = "";
-    MonomerTemplateLibrary& lib = MonomerTemplateLibrary::instance();
-    const std::string& monomer_id = lib.getMonomerTemplateIdByAlias(MonomerTemplates::getStrToMonomerType().at(monomer_class), monomer);
+    const std::string& monomer_id = _library.getMonomerTemplateIdByAlias(MonomerTemplates::getStrToMonomerType().at(monomer_class), monomer);
     if (monomer_id.size())
     {
-        auto& monomer_template = lib.getMonomerTemplateById(monomer_id);
+        auto& monomer_template = _library.getMonomerTemplateById(monomer_id);
         helm_polymer_class = monomer_template.classHELM();
     }
     if (helm_polymer_class.size() == 0)
@@ -347,10 +343,9 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
             if (monomer_idx == 0)
             {
                 // start new polymer
-                MonomerTemplateLibrary& lib = MonomerTemplateLibrary::instance();
-                const std::string& monomer_id = lib.getMonomerTemplateIdByAlias(MonomerTemplates::getStrToMonomerType().at(monomer_class), monomer);
+                const std::string& monomer_id = _library.getMonomerTemplateIdByAlias(MonomerTemplates::getStrToMonomerType().at(monomer_class), monomer);
                 if (monomer_id.size())
-                    helm_polymer_class = lib.getMonomerTemplateById(monomer_id).classHELM();
+                    helm_polymer_class = _library.getMonomerTemplateById(monomer_id).classHELM();
                 if (helm_string.size())
                     helm_string += '|'; // separator between polymers
                 helm_string += helm_polymer_class;

@@ -508,7 +508,47 @@ class Indigo:
             ),
         )
 
-    def loadSequence(self, string, seq_type):
+    def loadMonomerLibrary(self, string):
+        """Loads monomer library from ket string
+
+        Args:
+            string (str): ket
+
+        Returns:
+            IndigoObject: loaded monomer library
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadMonomerLibraryFromString(string.encode())
+            ),
+        )
+
+    def loadMonomerLibraryFromFile(self, filename):
+        """Loads monomer library from from file in ket format
+
+        Args:
+            string (str): full path to the file with ket
+
+        Returns:
+            IndigoObject: loaded monomer library
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadMonomerLibraryFromFile(filename.encode())
+            ),
+        )
+
+    def loadSequence(self, string, seq_type, library):
         """Loads molecule from DNA/RNA/PEPTIDE sequence string
 
         Args:
@@ -526,12 +566,12 @@ class Indigo:
             self,
             IndigoLib.checkResult(
                 self._lib().indigoLoadSequenceFromString(
-                    string.encode(), seq_type.encode()
+                    string.encode(), seq_type.encode(), library.id
                 )
             ),
         )
 
-    def loadSequenceFromFile(self, filename, seq_type):
+    def loadSequenceFromFile(self, filename, seq_type, library):
         """Loads query molecule from file in sequence format
 
         Args:
@@ -549,12 +589,12 @@ class Indigo:
             self,
             IndigoLib.checkResult(
                 self._lib().indigoLoadSequenceFromFile(
-                    filename.encode(), seq_type.encode()
+                    filename.encode(), seq_type.encode(), library.id
                 )
             ),
         )
 
-    def loadFasta(self, string, seq_type):
+    def loadFasta(self, string, seq_type, library):
         """Loads molecule from DNA/RNA/PEPTIDE sequence string
 
         Args:
@@ -572,12 +612,12 @@ class Indigo:
             self,
             IndigoLib.checkResult(
                 self._lib().indigoLoadFastaFromString(
-                    string.encode(), seq_type.encode()
+                    string.encode(), seq_type.encode(), library.id
                 )
             ),
         )
 
-    def loadFastaFromFile(self, filename, seq_type):
+    def loadFastaFromFile(self, filename, seq_type, library):
         """Loads query molecule from file in sequence format
 
         Args:
@@ -595,12 +635,12 @@ class Indigo:
             self,
             IndigoLib.checkResult(
                 self._lib().indigoLoadFastaFromFile(
-                    filename.encode(), seq_type.encode()
+                    filename.encode(), seq_type.encode(), library.id
                 )
             ),
         )
 
-    def loadIdt(self, string):
+    def loadIdt(self, string, library):
         """Loads molecule from IDT string
 
         Args:
@@ -616,11 +656,13 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadIdtFromString(string.encode())
+                self._lib().indigoLoadIdtFromString(
+                    string.encode(), library.id
+                )
             ),
         )
 
-    def loadIdtFromFile(self, filename):
+    def loadIdtFromFile(self, filename, library):
         """Loads query molecule from file in IDT sequence format
 
         Args:
@@ -636,11 +678,13 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadIdtFromFile(filename.encode())
+                self._lib().indigoLoadIdtFromFile(
+                    filename.encode(), library.id
+                )
             ),
         )
 
-    def loadHelm(self, string):
+    def loadHelm(self, string, library):
         """Loads molecule from HELM string
 
         Args:
@@ -656,11 +700,13 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadHelmFromString(string.encode())
+                self._lib().indigoLoadHelmFromString(
+                    string.encode(), library.id
+                )
             ),
         )
 
-    def loadHelmFromFile(self, filename):
+    def loadHelmFromFile(self, filename, library):
         """Loads query molecule from file in HELM sequence format
 
         Args:
@@ -676,7 +722,9 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadHelmFromFile(filename.encode())
+                self._lib().indigoLoadHelmFromFile(
+                    filename.encode(), library.id
+                )
             ),
         )
 

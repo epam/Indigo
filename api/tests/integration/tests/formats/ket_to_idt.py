@@ -27,7 +27,9 @@ print("*** KET to IDT ***")
 root = joinPathPy("molecules/", __file__)
 ref = joinPathPy("ref/", __file__)
 
-indigo.loadMoleculeFromFile(os.path.join(ref, "monomer_library.ket"))
+lib = indigo.loadMonomerLibraryFromFile(
+    os.path.join(ref, "monomer_library.ket")
+)
 
 # same ref ket files used to check idt-to-ket and to check ket-to-idt
 idt_data = {
@@ -63,7 +65,7 @@ idt_data = {
 
 for filename in sorted(idt_data.keys()):
     mol = indigo.loadMoleculeFromFile(os.path.join(ref, filename + ".ket"))
-    idt = mol.idt()
+    idt = mol.idt(lib)
     idt_ref = idt_data[filename]
     if idt_ref == idt:
         print(filename + ".ket:SUCCEED")
@@ -90,7 +92,7 @@ for filename in sorted(idt_errors.keys()):
         mol = indigo.loadMoleculeFromFile(
             os.path.join(root, filename + ".ket")
         )
-        idt = mol.idt()
+        idt = mol.idt(lib)
         print(
             "Test %s failed: exception expected but got next idt - '%s'."
             % (filename, idt)

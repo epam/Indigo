@@ -33,8 +33,8 @@ using namespace indigo;
 
 IMPL_ERROR(SequenceLoader, "SEQUENCE loader");
 
-SequenceLoader::SequenceLoader(Scanner& scanner)
-    : _scanner(scanner), _mon_lib(MonomerTemplates::_instance()), _seq_id(0), _last_monomer_idx(-1), _row(-1), _col(0)
+SequenceLoader::SequenceLoader(Scanner& scanner, MonomerTemplateLibrary& library)
+    : _scanner(scanner), _mon_lib(MonomerTemplates::_instance()), _seq_id(0), _last_monomer_idx(-1), _row(-1), _col(0), _library(library)
 {
 }
 
@@ -583,12 +583,12 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
 
                 sugar = "";
                 IdtModification alias_mod;
-                const std::string& mgt_id = MonomerTemplateLibrary::instance().getMGTidByIdtAlias(idt_alias, alias_mod);
+                const std::string& mgt_id = _library.getMGTidByIdtAlias(idt_alias, alias_mod);
                 if (mgt_id.size())
                 {
                     // Check that alias modification can be used in current position
                     check_monomer_place(idt_alias, modification, alias_mod, prev_token.first.size() > 0);
-                    MonomerGroupTemplate& mgt = MonomerTemplateLibrary::instance().getMonomerGroupTemplateById(mgt_id);
+                    MonomerGroupTemplate& mgt = _library.getMonomerGroupTemplateById(mgt_id);
                     const MonomerTemplate& sugar_template = mgt.getTemplateByClass(MonomerClass::Sugar);
                     sugar = sugar_template.alias();
                     checkAddTemplate(mol, sugar_template);
@@ -631,13 +631,13 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
                 else
                 {
                     IdtModification alias_mod;
-                    auto monomer_template_id = MonomerTemplateLibrary::instance().getMonomerTemplateIdByIdtAlias(idt_alias, alias_mod);
+                    auto monomer_template_id = _library.getMonomerTemplateIdByIdtAlias(idt_alias, alias_mod);
                     if (monomer_template_id.size())
                     {
                         if (token.second)
                             throw Error("'*' couldn't be applied to monomer /%s/.", idt_alias.c_str());
                         check_monomer_place(idt_alias, modification, alias_mod, prev_token.first.size() > 0);
-                        const MonomerTemplate& monomer_template = MonomerTemplateLibrary::instance().getMonomerTemplateById(monomer_template_id);
+                        const MonomerTemplate& monomer_template = _library.getMonomerTemplateById(monomer_template_id);
                         checkAddTemplate(mol, monomer_template);
                         single_monomer = monomer_template.alias();
                         single_monomer_class = MonomerTemplates::classToStr(monomer_template.monomerClass());
@@ -808,7 +808,6 @@ void SequenceLoader::loadHELM(BaseMolecule& mol)
         End
     };
     helm_parts helm_part = helm_parts::ListOfSimplePolymers;
-    auto& lib = MonomerTemplateLibrary::instance();
 
     while (!_scanner.isEOF())
     {
@@ -861,10 +860,10 @@ void SequenceLoader::loadHELM(BaseMolecule& mol)
                         throw Error("Unexpected symbol. Expected '}' but found '%c'.", ch); // only one monomer in chem
                     if (repeating.size())
                         throw Error("Chem cannot be repeated.");
-                    const std::string& monomer_id = lib.getMonomerTemplateIdByAlias(MonomerClass::CHEM, id);
+                    const std::string& monomer_id = _library.getMonomerTemplateIdByAlias(MonomerClass::CHEM, id);
                     if (monomer_id.size() == 0) // if not found - check for atom mapped SMILES([*:1]) and CXSMILES([*]...[*] |$_R1;;;;_R2;$|) - not now
                         throw Error("Monomer '%s' not found.", id.c_str());
-                    checkAddTemplate(mol, lib.getMonomerTemplateById(monomer_id));
+                    checkAddTemplate(mol, _library.getMonomerTemplateById(monomer_id));
                     int chem_idx = mol.asMolecule().addAtom(-1);
                     mol.asMolecule().setTemplateAtom(chem_idx, id.c_str());
                     mol.asMolecule().setTemplateAtomClass(chem_idx, kMonomerClassCHEM);
@@ -874,12 +873,12 @@ void SequenceLoader::loadHELM(BaseMolecule& mol)
                 else if (simple_polymer_type == kHELMPolymerTypePEPTIDE)
                 {
                     auto [id, repeating, annotaion] = readHelmMonomer();
-                    const std::string& monomer_id = lib.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, id);
+                    const std::string& monomer_id = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, id);
                     if (monomer_id.size() == 0) // if not found - check for atom mapped SMILES([*:1]) and CXSMILES([*]...[*] |$_R1;;;;_R2;$|) - not now
                         throw Error("Monomer '%s' not found.", id.c_str());
                     if (repeating.size())
                         throw Error("Repeating do not supported now.");
-                    checkAddTemplate(mol, lib.getMonomerTemplateById(monomer_id));
+                    checkAddTemplate(mol, _library.getMonomerTemplateById(monomer_id));
                     int amino_idx = mol.asMolecule().addAtom(-1);
                     mol.asMolecule().setTemplateAtom(amino_idx, id.c_str());
                     mol.asMolecule().setTemplateAtomClass(amino_idx, kMonomerClassAA);
@@ -899,13 +898,13 @@ void SequenceLoader::loadHELM(BaseMolecule& mol)
                 else // kHELMPolymerTypeRNA
                 {
                     auto [id, repeating, annotaion] = readHelmMonomer();
-                    const std::string& phosphate_lib_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, id);
+                    const std::string& phosphate_lib_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, id);
                     if (phosphate_lib_id.size())
                     {
                         if (repeating.size())
                             throw Error("Phosphate cannot be repeated.");
                         // add phosphate
-                        checkAddTemplate(mol, lib.getMonomerTemplateById(phosphate_lib_id));
+                        checkAddTemplate(mol, _library.getMonomerTemplateById(phosphate_lib_id));
                         int phosphate_idx = mol.asMolecule().addAtom(-1);
                         mol.asMolecule().setTemplateAtom(phosphate_idx, id.c_str());
                         mol.asMolecule().setTemplateAtomClass(phosphate_idx, kMonomerClassPHOSPHATE);
@@ -925,12 +924,12 @@ void SequenceLoader::loadHELM(BaseMolecule& mol)
                             _scanner.skip(1);
                         continue;
                     }
-                    const std::string& sugar_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Sugar, id);
+                    const std::string& sugar_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Sugar, id);
                     if (sugar_id.size() == 0) // if not found - check for atom mapped SMILES([*:1]) and CXSMILES([*]...[*] |$_R1;;;;_R2;$|) - not now
                         throw Error("Sugar '%s' not found.", id.c_str());
                     if (repeating.size())
                         throw Error("Sugar cannot be repeated.");
-                    checkAddTemplate(mol, lib.getMonomerTemplateById(sugar_id));
+                    checkAddTemplate(mol, _library.getMonomerTemplateById(sugar_id));
                     int sugar_idx = mol.asMolecule().addAtom(-1);
                     mol.asMolecule().setTemplateAtom(sugar_idx, id.c_str());
                     mol.asMolecule().setTemplateAtomClass(sugar_idx, kMonomerClassSUGAR);
@@ -956,12 +955,12 @@ void SequenceLoader::loadHELM(BaseMolecule& mol)
                         ch = _scanner.lookNext();
                         if (repeating.size())
                             throw Error("Base cannot be repeated.");
-                        const std::string& base_lib_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Base, base_id);
+                        const std::string& base_lib_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Base, base_id);
                         if (base_lib_id.size() == 0) // if not found - check for atom mapped SMILES([*:1]) and CXSMILES([*]...[*] |$_R1;;;;_R2;$|) - not now
                             throw Error("Base '%s' not found.", base_id.c_str());
                         if (base_repeating.size())
                             throw Error("Base cannot be repeated.");
-                        checkAddTemplate(mol, lib.getMonomerTemplateById(base_lib_id));
+                        checkAddTemplate(mol, _library.getMonomerTemplateById(base_lib_id));
                         Vec3f base_pos((_col - 1) * MoleculeLayout::DEFAULT_BOND_LENGTH, -MoleculeLayout::DEFAULT_BOND_LENGTH * (_row + 1), 0);
                         int base_idx = mol.asMolecule().addAtom(-1);
                         mol.asMolecule().setTemplateAtom(base_idx, base_id.c_str());
@@ -981,13 +980,13 @@ void SequenceLoader::loadHELM(BaseMolecule& mol)
                     if (ch == '}')
                         continue;
                     auto [phosphate_id, phosphate_repeating, phosphate_annotaion] = readHelmMonomer();
-                    const std::string& phosp_id = lib.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, phosphate_id);
+                    const std::string& phosp_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, phosphate_id);
                     if (phosp_id.size() == 0)
                         throw Error("Phosphate '%s' not found.", phosphate_id.c_str());
                     if (repeating.size())
                         throw Error("Phosphate cannot be repeated.");
                     monomer_idx++;
-                    checkAddTemplate(mol, lib.getMonomerTemplateById(phosp_id));
+                    checkAddTemplate(mol, _library.getMonomerTemplateById(phosp_id));
                     Vec3f phosphate_pos(_col * MoleculeLayout::DEFAULT_BOND_LENGTH, -MoleculeLayout::DEFAULT_BOND_LENGTH * _row, 0);
                     _col++;
                     int phosphate_idx = mol.asMolecule().addAtom(-1);

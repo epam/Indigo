@@ -195,41 +195,45 @@ CEXPORT int indigoLoadSmartsFromString(const char* string);
 CEXPORT int indigoLoadSmartsFromFile(const char* filename);
 CEXPORT int indigoLoadSmartsFromBuffer(const char* buffer, int size);
 
-CEXPORT int indigoLoadSequence(int source, const char* seq_type);
-CEXPORT int indigoLoadSequenceFromString(const char* string, const char* seq_type);
-CEXPORT int indigoLoadSequenceFromFile(const char* filename, const char* seq_type);
+CEXPORT int indigoLoadMonomerLibrary(int source);
+CEXPORT int indigoLoadMonomerLibraryFromString(const char* string);
+CEXPORT int indigoLoadMonomerLibraryFromFile(const char* filename);
 
-CEXPORT int indigoLoadFasta(int source, const char* seq_type);
-CEXPORT int indigoLoadFastaFromString(const char* string, const char* seq_type);
-CEXPORT int indigoLoadFastaFromFile(const char* filename, const char* seq_type);
+CEXPORT int indigoLoadSequence(int source, const char* seq_type, int library);
+CEXPORT int indigoLoadSequenceFromString(const char* string, const char* seq_type, int library);
+CEXPORT int indigoLoadSequenceFromFile(const char* filename, const char* seq_type, int library);
 
-CEXPORT int indigoLoadIdt(int source);
-CEXPORT int indigoLoadIdtFromString(const char* string);
-CEXPORT int indigoLoadIdtFromFile(const char* filename);
+CEXPORT int indigoLoadFasta(int source, const char* seq_type, int library);
+CEXPORT int indigoLoadFastaFromString(const char* string, const char* seq_type, int library);
+CEXPORT int indigoLoadFastaFromFile(const char* filename, const char* seq_type, int library);
 
-CEXPORT int indigoLoadHelm(int source);
-CEXPORT int indigoLoadHelmFromString(const char* string);
-CEXPORT int indigoLoadHelmFromFile(const char* filename);
+CEXPORT int indigoLoadIdt(int source, int library);
+CEXPORT int indigoLoadIdtFromString(const char* string, int library);
+CEXPORT int indigoLoadIdtFromFile(const char* filename, int library);
+
+CEXPORT int indigoLoadHelm(int source, int library);
+CEXPORT int indigoLoadHelmFromString(const char* string, int library);
+CEXPORT int indigoLoadHelmFromFile(const char* filename, int library);
 
 CEXPORT int indigoSaveMolfile(int molecule, int output);
 CEXPORT int indigoSaveMolfileToFile(int molecule, const char* filename);
 CEXPORT const char* indigoMolfile(int molecule);
 
-CEXPORT int indigoSaveSequence(int molecule, int output);
-CEXPORT int indigoSaveSequenceToFile(int molecule, const char* filename);
-CEXPORT const char* indigoSequence(int molecule);
+CEXPORT int indigoSaveSequence(int molecule, int output, int library);
+CEXPORT int indigoSaveSequenceToFile(int molecule, const char* filename, int library);
+CEXPORT const char* indigoSequence(int molecule, int library);
 
-CEXPORT int indigoSaveFasta(int molecule, int output);
-CEXPORT int indigoSaveFastaToFile(int molecule, const char* filename);
-CEXPORT const char* indigoFasta(int molecule);
+CEXPORT int indigoSaveFasta(int molecule, int output, int library);
+CEXPORT int indigoSaveFastaToFile(int molecule, const char* filename, int library);
+CEXPORT const char* indigoFasta(int molecule, int library);
 
-CEXPORT int indigoSaveIdt(int molecule, int output);
-CEXPORT int indigoSaveIdtToFile(int molecule, const char* filename);
-CEXPORT const char* indigoIdt(int molecule);
+CEXPORT int indigoSaveIdt(int molecule, int output, int library);
+CEXPORT int indigoSaveIdtToFile(int molecule, const char* filename, int library);
+CEXPORT const char* indigoIdt(int molecule, int library);
 
-CEXPORT int indigoSaveHelm(int molecule, int output);
-CEXPORT int indigoSaveHelmToFile(int molecule, const char* filename);
-CEXPORT const char* indigoHelm(int molecule);
+CEXPORT int indigoSaveHelm(int molecule, int output, int library);
+CEXPORT int indigoSaveHelmToFile(int molecule, const char* filename, int library);
+CEXPORT const char* indigoHelm(int molecule, int library);
 
 CEXPORT int indigoSaveJsonToFile(int item, const char* filename);
 CEXPORT int indigoSaveJson(int item, int output);

@@ -223,9 +223,9 @@ namespace indigo
 
     IMPL_ERROR(MonomerGroupTemplate, "MonomerGroupTemplate");
 
-    void MonomerGroupTemplate::addTemplate(const std::string& template_id)
+    void MonomerGroupTemplate::addTemplate(MonomerTemplateLibrary& library, const std::string& template_id)
     {
-        _monomer_templates.insert(std::pair<std::string, MonomerTemplate>(template_id, MonomerTemplateLibrary::instance().getMonomerTemplateById(template_id)));
+        _monomer_templates.insert(std::pair<std::string, MonomerTemplate>(template_id, library.getMonomerTemplateById(template_id)));
     };
 
     const MonomerTemplate& MonomerGroupTemplate::getTemplateByClass(MonomerClass monomer_class) const
@@ -274,12 +274,6 @@ namespace indigo
     }
 
     IMPL_ERROR(MonomerTemplateLibrary, "MonomerTemplateLibrary");
-
-    MonomerTemplateLibrary& MonomerTemplateLibrary::instance()
-    {
-        static MonomerTemplateLibrary library_instance;
-        return library_instance;
-    }
 
     const MonomerTemplate& MonomerTemplateLibrary::getMonomerTemplateById(const std::string& monomer_template_id)
     {

@@ -123,6 +123,7 @@ IndigoObjectTypes::IndigoObjectTypes()
     emplace(IndigoObject::GROSS_REACTION, "<GrossReaction>");
     emplace(IndigoObject::JSON_MOLECULE, "<JsonMolecule>");
     emplace(IndigoObject::JSON_REACTION, "<JsonReaction>");
+    emplace(IndigoObject::MONOMER_LIBRARY, "<MonomerLibrary>");
 
     if (size() != IndigoObject::INDIGO_OBJECT_LAST_TYPE - 1)
     {

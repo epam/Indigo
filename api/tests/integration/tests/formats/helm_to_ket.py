@@ -38,12 +38,12 @@ helm_data = {
     "helm_rna_without_base": "RNA1{RP}$$$$V2.0",
 }
 
-lib = indigo.loadMoleculeFromFile(
+lib = indigo.loadMonomerLibraryFromFile(
     os.path.join(ref_path, "monomer_library.ket")
 )
 
 for filename in sorted(helm_data.keys()):
-    mol = indigo.loadHelm(helm_data[filename])
+    mol = indigo.loadHelm(helm_data[filename], lib)
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
     #     file.write(mol.json())
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
@@ -65,7 +65,7 @@ helm_errors = {
 for helm_seq in sorted(helm_errors.keys()):
     error = helm_errors[helm_seq]
     try:
-        mol = indigo.loadHelm(helm_seq)
+        mol = indigo.loadHelm(helm_seq, lib)
         print("Test %s failed: exception expected." % helm_seq)
     except IndigoException as e:
         text = getIndigoExceptionText(e)

@@ -41,11 +41,14 @@ def remove_prefix(s, prefix="com.epam.indigo.IndigoException: "):
     return s
 
 
+# empty library - internal used for now
+lib = indigo.loadMonomerLibrary('{"root":{}}')
+
 for desc in fasta_files:
     filename = desc["file"]
     try:
         mol = indigo.loadFastaFromFile(
-            os.path.join(root, filename + ".fasta"), desc["seq_type"]
+            os.path.join(root, filename + ".fasta"), desc["seq_type"], lib
         )
         # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
         #     file.write(mol.json())
