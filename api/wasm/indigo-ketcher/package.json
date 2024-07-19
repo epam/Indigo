@@ -16,17 +16,17 @@
       "require": "./indigo-ketcher-norender.js"
     },
     "./binaryWasmNoRender": {
-      "import": "./indigo-ketcher-separate-norender.js",
-      "require": "./indigo-ketcher-separate-norender.js"
+      "import": "./indigo-ketcher-separate-wasm-norender.js",
+      "require": "./indigo-ketcher-separate-wasm-norender.js"
     }
   },
   "files": [
     "indigo-ketcher-separate-wasm.js",
-    "indigo-ketcher-separate-norender.js",
+    "indigo-ketcher-separate-wasm-norender.js",
     "indigo-ketcher.js",
     "indigo-ketcher-norender.js",
     "indigo-ketcher-separate-wasm.wasm",
-    "indigo-ketcher-separate-norender.wasm",
+    "indigo-ketcher-separate-wasm-norender.wasm",
     "README.md",
     "LICENSE"
   ],
