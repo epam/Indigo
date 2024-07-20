@@ -13,8 +13,6 @@
 #include <unistd.h>
 #endif
 
-#include "base_c/os_dir.h"
-
 #include "indigo_fingerprints.h"
 
 using namespace bingo;
