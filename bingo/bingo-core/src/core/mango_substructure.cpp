@@ -16,7 +16,6 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "base_c/nano.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "bingo_context.h"
