@@ -19,7 +19,6 @@
 #include "oracle/ora_wrap.h"
 
 #include "base_c/bitarray.h"
-#include "base_c/nano.h"
 #include "base_cpp/output.h"
 #include "base_cpp/profiling.h"
 #include "base_cpp/scanner.h"
