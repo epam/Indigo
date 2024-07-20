@@ -20,8 +20,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
-#include <regex>
 #include <iostream>
+#include <regex>
 
 #include "indigo.h"
 
