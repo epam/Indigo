@@ -282,13 +282,11 @@ int main(int argc, const char** argv)
 
             for (const auto& path : std::filesystem::directory_iterator(dirname))
             {
-                const char* current_filename = path.path().filename().c_str();
+                const char* current_filename = path.path().filename().string().c_str();
                 if (!matchesPattern(current_filename, pattern))
                 {
                     continue;
                 }
-
-                std::cout << "Processing file: " << current_filename << std::endl;
                 _handleInputFile(path.path().c_str(), structures);
             }
         }
