@@ -287,7 +287,7 @@ int main(int argc, const char** argv)
                 {
                     continue;
                 }
-                _handleInputFile(path.path().c_str(), structures);
+                _handleInputFile(path.path().string().c_str(), structures);
             }
         }
     }
