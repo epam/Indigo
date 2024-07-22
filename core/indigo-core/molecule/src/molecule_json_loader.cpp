@@ -1788,7 +1788,8 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
         {"elliptical-arc-arrow-filled-bow", ReactionComponent::ARROW_ELLIPTICAL_ARC_FILLED_BOW},
         {"elliptical-arc-arrow-filled-triangle", ReactionComponent::ARROW_ELLIPTICAL_ARC_FILLED_TRIANGLE},
         {"elliptical-arc-arrow-open-angle", ReactionComponent::ARROW_ELLIPTICAL_ARC_OPEN_ANGLE},
-        {"elliptical-arc-arrow-open-half-angle", ReactionComponent::ARROW_ELLIPTICAL_ARC_OPEN_HALF_ANGLE}};
+        {"elliptical-arc-arrow-open-half-angle", ReactionComponent::ARROW_ELLIPTICAL_ARC_OPEN_HALF_ANGLE},
+        {"retrosynthetic", ReactionComponent::ARROW_RETROSYNTHETIC}};
 
     if (meta_objects.IsArray())
     {

@@ -1,0 +1,77 @@
+input file: ket_retro_arrow.ket, reaction type: R1 => R2
+output format: RXN 2000
+ket_retro_arrow_2000.rxn:SUCCEED
+output format: RXN 3000
+ket_retro_arrow_3000.rxn:SUCCEED
+output format: SMILES
+ket_retro_arrow.smi:SUCCEED
+output format: SMARTS
+ket_retro_arrow.smarts:SUCCEED
+output format: CML
+ket_retro_arrow.cml:SUCCEED
+input file: ket_retro_arrow_sum_of_reactants.ket, reaction type: R1 + R2 => R3
+output format: RXN 2000
+ket_retro_arrow_sum_of_reactants_2000.rxn:SUCCEED
+output format: RXN 3000
+ket_retro_arrow_sum_of_reactants_3000.rxn:SUCCEED
+output format: SMILES
+ket_retro_arrow_sum_of_reactants.smi:SUCCEED
+output format: SMARTS
+ket_retro_arrow_sum_of_reactants.smarts:SUCCEED
+output format: CML
+ket_retro_arrow_sum_of_reactants.cml:SUCCEED
+input file: ket_retro_arrow_to_product.ket, reaction type: => R1
+output format: RXN 2000
+ket_retro_arrow_to_product_2000.rxn:SUCCEED
+output format: RXN 3000
+ket_retro_arrow_to_product_3000.rxn:SUCCEED
+output format: SMILES
+ket_retro_arrow_to_product.smi:SUCCEED
+output format: SMARTS
+ket_retro_arrow_to_product.smarts:SUCCEED
+output format: CML
+ket_retro_arrow_to_product.cml:SUCCEED
+input file: ket_retro_arrow_from_reactant.ket, reaction type: R1 =>
+output format: RXN 2000
+ket_retro_arrow_from_reactant_2000.rxn:SUCCEED
+output format: RXN 3000
+ket_retro_arrow_from_reactant_3000.rxn:SUCCEED
+output format: SMILES
+ket_retro_arrow_from_reactant.smi:SUCCEED
+output format: SMARTS
+ket_retro_arrow_from_reactant.smarts:SUCCEED
+output format: CML
+ket_retro_arrow_from_reactant.cml:SUCCEED
+input file: ket_retro_arrow_and_simple_arrow.ket, reaction type: R1 => R2 -> R3
+output format: RXN 2000
+ket_retro_arrow_and_simple_arrow_2000.rxn:SUCCEED
+output format: RXN 3000
+ket_retro_arrow_and_simple_arrow_3000.rxn:SUCCEED
+output format: SMILES
+ket_retro_arrow_and_simple_arrow.smi:SUCCEED
+output format: SMARTS
+ket_retro_arrow_and_simple_arrow.smarts:SUCCEED
+output format: CML
+ket_retro_arrow_and_simple_arrow.cml:SUCCEED
+input file: ket_two_retro_arrows.ket, reaction type: R1 => R2 => R3
+output format: RXN 2000
+ket_two_retro_arrows_2000.rxn:SUCCEED
+output format: RXN 3000
+ket_two_retro_arrows_3000.rxn:SUCCEED
+output format: SMILES
+ket_two_retro_arrows.smi:SUCCEED
+output format: SMARTS
+ket_two_retro_arrows.smarts:SUCCEED
+output format: CML
+ket_two_retro_arrows.cml:SUCCEED
+input file: ket_simple_arrow_retro_arrow_sum_of_products.ket, reaction type: R1 -> R2 => R3 + R4
+output format: RXN 2000
+ket_simple_arrow_retro_arrow_sum_of_products_2000.rxn:SUCCEED
+output format: RXN 3000
+ket_simple_arrow_retro_arrow_sum_of_products_3000.rxn:SUCCEED
+output format: SMILES
+ket_simple_arrow_retro_arrow_sum_of_products.smi:SUCCEED
+output format: SMARTS
+ket_simple_arrow_retro_arrow_sum_of_products.smarts:SUCCEED
+output format: CML
+ket_simple_arrow_retro_arrow_sum_of_products.cml:SUCCEED
