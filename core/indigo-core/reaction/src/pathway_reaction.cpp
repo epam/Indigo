@@ -23,7 +23,21 @@ using namespace indigo;
 
 IMPL_ERROR(PathwayReaction, "pathway reaction");
 
-PathwayReaction::PathwayReaction(std::deque<Reaction>& reactions)
+struct PathwayReaction::impl
+{
+    Array<int> reactions;
+};
+
+PathwayReaction::PathwayReaction() : _pimpl(new impl)
+{
+}
+
+PathwayReaction::~PathwayReaction()
+{
+    delete _pimpl;
+}
+
+PathwayReaction::PathwayReaction(std::deque<Reaction>& reactions) : _pimpl(new impl)
 {
     for (size_t i = 0; i < reactions.size(); i++)
     {
@@ -33,21 +47,21 @@ PathwayReaction::PathwayReaction(std::deque<Reaction>& reactions)
             molecule->clone(reactions[i].getBaseMolecule(j));
             int id = _allMolecules.add(molecule.release());
             _addedBaseMolecule(id, reactions[i].getSideType(j), *_allMolecules[id]);
-            _reactions.expand(id + 1);
-            _reactions[id] = i;
+            _pimpl->reactions.expand(id + 1);
+            _pimpl->reactions[id] = i;
         }
     }
 }
 
 int PathwayReaction::getReactionId(int moleculeId) const
 {
-    return _reactions.at(moleculeId);
+    return _pimpl->reactions.at(moleculeId);
 }
 
 void PathwayReaction::clone(PathwayReaction& reaction)
 {
     BaseReaction::clone(reaction);
-    _reactions.copy(reaction._reactions);
+    _pimpl->reactions.copy(reaction._pimpl->reactions);
 }
 
 BaseReaction* PathwayReaction::neu()
