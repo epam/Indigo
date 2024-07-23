@@ -65,7 +65,7 @@ public:
     IndigoReaction();
     ~IndigoReaction() override;
 
-	void init(std::unique_ptr<BaseReaction>&& = {});
+    void init(std::unique_ptr<BaseReaction>&& = {});
     BaseReaction& getBaseReaction() override;
     Reaction& getReaction() override;
     const char* getName() override;
@@ -76,7 +76,7 @@ public:
 
     const char* debugInfo() const override;
 
-	std::unique_ptr<BaseReaction> rxn;
+    std::unique_ptr<BaseReaction> rxn;
 };
 
 class DLLEXPORT IndigoQueryReaction : public IndigoBaseReaction
