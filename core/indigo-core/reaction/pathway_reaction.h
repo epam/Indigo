@@ -18,38 +18,34 @@
 
 #pragma once
 
-#include <deque>
 #include "reaction/base_reaction.h"
+#include <deque>
 
 namespace indigo
 {
 
-class Reaction;
+    class Reaction;
 
-class DLLEXPORT PathwayReaction : public BaseReaction
-{
-public:
+    class DLLEXPORT PathwayReaction : public BaseReaction
+    {
+    public:
+        PathwayReaction() = default;
+        PathwayReaction(std::deque<Reaction>&);
+        ~PathwayReaction() override = default;
 
-    PathwayReaction() = default;
-    PathwayReaction(std::deque<Reaction>&);
-    ~PathwayReaction() override = default;
+        int getReactionId(int moleculeId) const;
+        void clone(PathwayReaction&);
 
-    int getReactionId(int moleculeId) const;
-    void clone(PathwayReaction&);
+        BaseReaction* neu() override;
+        bool aromatize(const AromaticityOptions& options) override;
 
-    BaseReaction* neu() override;
-    bool aromatize(const AromaticityOptions& options) override;
+        DECL_ERROR;
 
-    DECL_ERROR;
+    protected:
+        int _addBaseMolecule(int side) override;
 
-protected:
-
-    int _addBaseMolecule(int side) override;
-
-private:
-
-    Array<int> _reactions;
-};
+    private:
+        Array<int> _reactions;
+    };
 
 } // namespace indigo
-

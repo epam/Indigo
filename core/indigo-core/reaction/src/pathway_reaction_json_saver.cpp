@@ -27,62 +27,60 @@
 namespace indigo
 {
 
-IMPL_ERROR(PathwayReactionJsonSaver, "pathway reaction KET saver");
+    IMPL_ERROR(PathwayReactionJsonSaver, "pathway reaction KET saver");
 
-PathwayReactionJsonSaver::PathwayReactionJsonSaver(Output& output)
-    : _output(output), add_stereo_desc(), pretty_json()
-{
-}
-
-void PathwayReactionJsonSaver::saveReaction(PathwayReaction& rxn)
-{
-    auto merged = std::make_unique<Molecule>();
-    auto reaction = std::make_unique<PathwayReaction>();
-    reaction->clone(rxn);
-
-    constexpr int SPACE = 5;
-    int offsetX, offsetY = -1;
-    int side;
-    for (int i = reaction->begin(); i < reaction->end(); i = reaction->next(i))
+    PathwayReactionJsonSaver::PathwayReactionJsonSaver(Output& output) : _output(output), add_stereo_desc(), pretty_json()
     {
-        if (offsetY != reaction->getReactionId(i) * -SPACE * 2)
-        {
-            offsetX = 0;
-            side = BaseReaction::REACTANT;
-        }
-        offsetY = reaction->getReactionId(i) * -SPACE * 2;
-        if (side != reaction->getSideType(i))
-        {
-            offsetX += SPACE;
-            side = reaction->getSideType(i);
-        }
-
-        auto& mol = reaction->getBaseMolecule(i);
-        Rect2f box;
-        mol.getBoundingBox(box);
-        auto normOffset = box.center();
-        normOffset.negate();
-        offsetX += box.width() / 2;
-        for (int j = mol.vertexBegin(); j != mol.vertexEnd(); j = mol.vertexNext(j))
-        {
-            Vec3f& xyz = mol.getAtomXyz(j);
-            xyz.add(normOffset);
-            xyz.x += offsetX;
-            xyz.y += offsetY;
-        }
-        merged->mergeWithMolecule(mol, 0, 0);
-        offsetX += box.width() / 2;
-        offsetX += SPACE;
     }
 
-    rapidjson::StringBuffer s;
-    JsonWriter writer(pretty_json);
-    writer.Reset(s);
-    MoleculeJsonSaver json_saver(_output);
-    json_saver.add_stereo_desc = add_stereo_desc;
-    json_saver.saveMolecule(*merged, writer);
-    _output.printf("%s", s.GetString());
-}
+    void PathwayReactionJsonSaver::saveReaction(PathwayReaction& rxn)
+    {
+        auto merged = std::make_unique<Molecule>();
+        auto reaction = std::make_unique<PathwayReaction>();
+        reaction->clone(rxn);
+
+        constexpr int SPACE = 5;
+        int offsetX, offsetY = -1;
+        int side;
+        for (int i = reaction->begin(); i < reaction->end(); i = reaction->next(i))
+        {
+            if (offsetY != reaction->getReactionId(i) * -SPACE * 2)
+            {
+                offsetX = 0;
+                side = BaseReaction::REACTANT;
+            }
+            offsetY = reaction->getReactionId(i) * -SPACE * 2;
+            if (side != reaction->getSideType(i))
+            {
+                offsetX += SPACE;
+                side = reaction->getSideType(i);
+            }
+
+            auto& mol = reaction->getBaseMolecule(i);
+            Rect2f box;
+            mol.getBoundingBox(box);
+            auto normOffset = box.center();
+            normOffset.negate();
+            offsetX += box.width() / 2;
+            for (int j = mol.vertexBegin(); j != mol.vertexEnd(); j = mol.vertexNext(j))
+            {
+                Vec3f& xyz = mol.getAtomXyz(j);
+                xyz.add(normOffset);
+                xyz.x += offsetX;
+                xyz.y += offsetY;
+            }
+            merged->mergeWithMolecule(mol, 0, 0);
+            offsetX += box.width() / 2;
+            offsetX += SPACE;
+        }
+
+        rapidjson::StringBuffer s;
+        JsonWriter writer(pretty_json);
+        writer.Reset(s);
+        MoleculeJsonSaver json_saver(_output);
+        json_saver.add_stereo_desc = add_stereo_desc;
+        json_saver.saveMolecule(*merged, writer);
+        _output.printf("%s", s.GetString());
+    }
 
 } // namespace indigo
-
