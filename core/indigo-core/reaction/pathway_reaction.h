@@ -29,9 +29,9 @@ namespace indigo
     class DLLEXPORT PathwayReaction : public BaseReaction
     {
     public:
-        PathwayReaction() = default;
+        PathwayReaction();
         PathwayReaction(std::deque<Reaction>&);
-        ~PathwayReaction() override = default;
+        ~PathwayReaction() override;
 
         int getReactionId(int moleculeId) const;
         void clone(PathwayReaction&);
@@ -45,7 +45,8 @@ namespace indigo
         int _addBaseMolecule(int side) override;
 
     private:
-        Array<int> _reactions;
+        struct impl;
+        impl* _pimpl;
     };
 
 } // namespace indigo
