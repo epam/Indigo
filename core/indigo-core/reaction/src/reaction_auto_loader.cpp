@@ -163,9 +163,9 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
             loader.stereochemistry_options = stereochemistry_options;
             if (query)
                 throw Error("CDX queries not supported yet");
-			auto reaction = std::make_unique<Reaction>();
+            auto reaction = std::make_unique<Reaction>();
             loader.loadReaction(*reaction);
-			return reaction;
+            return reaction;
         }
     }
 
@@ -182,17 +182,17 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader.ignore_bad_valence = ignore_bad_valence;
             if (query)
-			{
-				auto reaction = std::make_unique<QueryReaction>();
-				loader.loadQueryReaction(*reaction);
-				return reaction;
-			}
+            {
+                auto reaction = std::make_unique<QueryReaction>();
+                loader.loadQueryReaction(*reaction);
+                return reaction;
+            }
             else
-			{
-				auto reaction = std::make_unique<Reaction>();
-				loader.loadReaction(*reaction);
-				return reaction;
-			}
+            {
+                auto reaction = std::make_unique<Reaction>();
+                loader.loadReaction(*reaction);
+                return reaction;
+            }
         }
     }
 
@@ -210,9 +210,9 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
                 throw Error("cannot load query reaction from ICR format");
 
             IcrLoader loader(*_scanner);
-			auto reaction = std::make_unique<Reaction>();
-			loader.loadReaction(*reaction);
-			return reaction;
+            auto reaction = std::make_unique<Reaction>();
+            loader.loadReaction(*reaction);
+            return reaction;
         }
     }
 
@@ -230,9 +230,9 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
 
                 if (query)
                     throw Error("CML queries not supported");
-				auto reaction = std::make_unique<Reaction>();
-				loader.loadReaction(*reaction);
-				return reaction;
+                auto reaction = std::make_unique<Reaction>();
+                loader.loadReaction(*reaction);
+                return reaction;
             }
         }
 
@@ -250,17 +250,17 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
             loader.stereochemistry_options = stereochemistry_options;
 
             if (query)
-			{
-				auto reaction = std::make_unique<QueryReaction>();
-				loader.loadReaction(*reaction);
-				return reaction;
-			}
+            {
+                auto reaction = std::make_unique<QueryReaction>();
+                loader.loadReaction(*reaction);
+                return reaction;
+            }
             else
-			{
-				auto reaction = std::make_unique<Reaction>();
-				loader.loadReaction(*reaction);
-				return reaction;
-			}
+            {
+                auto reaction = std::make_unique<Reaction>();
+                loader.loadReaction(*reaction);
+                return reaction;
+            }
         }
         _scanner->seek(pos, SEEK_SET);
     }
@@ -304,18 +304,18 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
                             loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
                             loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
                             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-							if (query)
-							{
-								auto reaction = std::make_unique<QueryReaction>();
-								loader.loadReaction(*reaction);
-								return reaction;
-							}
-							else
-							{
-								auto reaction = std::make_unique<Reaction>();
-								loader.loadReaction(*reaction);
-								return reaction;
-							}
+                            if (query)
+                            {
+                                auto reaction = std::make_unique<QueryReaction>();
+                                loader.loadReaction(*reaction);
+                                return reaction;
+                            }
+                            else
+                            {
+                                auto reaction = std::make_unique<Reaction>();
+                                loader.loadReaction(*reaction);
+                                return reaction;
+                            }
                         }
                     }
                     return nullptr;
@@ -325,38 +325,38 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
         _scanner->seek(pos, SEEK_SET);
     }
 
-	// check for RDF format
-	{
-		long long pos = _scanner->tell();
-		Array<char> firstLine;
-		const char* delimeters {};
-		_scanner->readWord(firstLine, delimeters);
+    // check for RDF format
+    {
+        long long pos = _scanner->tell();
+        Array<char> firstLine;
+        const char* delimeters{};
+        _scanner->readWord(firstLine, delimeters);
         _scanner->seek(pos, SEEK_SET);
-		if (!strcmp(firstLine.ptr(), "$RDFILE"))
-		{
-			if (query)
-				throw Error("RDF queries not supported");
-			std::deque<Reaction> reactions;
-			RdfLoader rdf_loader(*_scanner);
-			while (!rdf_loader.isEOF())
-			{
-				rdf_loader.readNext();
-				BufferScanner reaction_scanner(rdf_loader.data);
+        if (!strcmp(firstLine.ptr(), "$RDFILE"))
+        {
+            if (query)
+                throw Error("RDF queries not supported");
+            std::deque<Reaction> reactions;
+            RdfLoader rdf_loader(*_scanner);
+            while (!rdf_loader.isEOF())
+            {
+                rdf_loader.readNext();
+                BufferScanner reaction_scanner(rdf_loader.data);
 
-				RxnfileLoader loader(reaction_scanner);
-				loader.stereochemistry_options = stereochemistry_options;
-				loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-				loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-				loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-				loader.treat_stereo_as = treat_stereo_as;
-				loader.ignore_bad_valence = ignore_bad_valence;
+                RxnfileLoader loader(reaction_scanner);
+                loader.stereochemistry_options = stereochemistry_options;
+                loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+                loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+                loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+                loader.treat_stereo_as = treat_stereo_as;
+                loader.ignore_bad_valence = ignore_bad_valence;
 
-				reactions.emplace_back();
-				loader.loadReaction(reactions.back());
-			}
+                reactions.emplace_back();
+                loader.loadReaction(reactions.back());
+            }
             return std::make_unique<PathwayReaction>(reactions);
-		}
-	}
+        }
+    }
 
     // check for SMILES format
     if (Scanner::isSingleLine(*_scanner))
@@ -372,24 +372,24 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
         if (query)
         {
             // Try to load query as SMILES, if error occured - try to load as SMARTS
-			auto reaction = std::make_unique<QueryReaction>();
+            auto reaction = std::make_unique<QueryReaction>();
             try
             {
-				loader.loadQueryReaction(*reaction);
+                loader.loadQueryReaction(*reaction);
             }
             catch (Exception&)
             {
                 loader.smarts_mode = true;
                 _scanner->seek(pos, SEEK_SET);
-				loader.loadQueryReaction(*reaction);
+                loader.loadQueryReaction(*reaction);
             }
-			return reaction;
+            return reaction;
         }
         else
         {
-			auto reaction = std::make_unique<Reaction>();
-			loader.loadReaction(*reaction);
-			return reaction;
+            auto reaction = std::make_unique<Reaction>();
+            loader.loadReaction(*reaction);
+            return reaction;
         }
     }
 
@@ -403,17 +403,17 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
         loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
         loader.ignore_bad_valence = ignore_bad_valence;
 
-		if (query)
-		{
-			auto reaction = std::make_unique<QueryReaction>();
-			loader.loadQueryReaction(*reaction);
-			return reaction;
-		}
-		else
-		{
-			auto reaction = std::make_unique<Reaction>();
-			loader.loadReaction(*reaction);
-			return reaction;
-		}
+        if (query)
+        {
+            auto reaction = std::make_unique<QueryReaction>();
+            loader.loadQueryReaction(*reaction);
+            return reaction;
+        }
+        else
+        {
+            auto reaction = std::make_unique<Reaction>();
+            loader.loadReaction(*reaction);
+            return reaction;
+        }
     }
 }
