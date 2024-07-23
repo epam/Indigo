@@ -23,28 +23,25 @@
 namespace indigo
 {
 
-class Output;
-class PathwayReaction;
+    class Output;
+    class PathwayReaction;
 
-class PathwayReactionJsonSaver
-{
-public:
+    class PathwayReactionJsonSaver
+    {
+    public:
+        explicit PathwayReactionJsonSaver(Output&);
 
-    explicit PathwayReactionJsonSaver(Output&);
+        PathwayReactionJsonSaver(const PathwayReactionJsonSaver&) = delete;
+        PathwayReactionJsonSaver& operator=(const PathwayReactionJsonSaver&) = delete;
 
-    PathwayReactionJsonSaver(const PathwayReactionJsonSaver&) = delete;
-    PathwayReactionJsonSaver& operator=(const PathwayReactionJsonSaver&) = delete;
+        void saveReaction(PathwayReaction&);
 
-    void saveReaction(PathwayReaction&);
+        bool add_stereo_desc;
+        bool pretty_json;
+        DECL_ERROR;
 
-    bool add_stereo_desc;
-    bool pretty_json;
-    DECL_ERROR;
-
-private:
-
-    Output& _output;
-};
+    private:
+        Output& _output;
+    };
 
 } // namespace indigo
-

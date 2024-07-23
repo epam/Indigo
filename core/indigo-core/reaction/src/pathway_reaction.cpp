@@ -71,4 +71,3 @@ bool PathwayReaction::aromatize(const AromaticityOptions& options)
     }
     return arom_found;
 }
-
