@@ -48,7 +48,7 @@ PathwayReaction::PathwayReaction(std::deque<Reaction>& reactions) : _pimpl(new i
             int id = _allMolecules.add(molecule.release());
             _addedBaseMolecule(id, reactions[i].getSideType(j), *_allMolecules[id]);
             _pimpl->reactions.expand(id + 1);
-            _pimpl->reactions[id] = i;
+            _pimpl->reactions[id] = static_cast<int>(i);
         }
     }
 }

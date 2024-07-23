@@ -40,7 +40,8 @@ namespace indigo
         reaction->clone(rxn);
 
         constexpr int SPACE = 5;
-        int offsetX, offsetY = -1;
+        int offsetY = -1;
+        float offsetX;
         int side;
         for (int i = reaction->begin(); i < reaction->end(); i = reaction->next(i))
         {
