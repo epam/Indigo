@@ -1893,11 +1893,11 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.Double(bbox.width());
             writer.Key("height");
             writer.Double(bbox.height());
-            writer.EndObject();   // end bbox
+            writer.EndObject(); // end bbox
 
             writer.Key("data");
             writer.String(image_obj->getBase64().c_str());
-            writer.EndObject();   // end node
+            writer.EndObject(); // end node
             break;
         }
         }

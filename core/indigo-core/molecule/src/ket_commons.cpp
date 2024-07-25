@@ -21,8 +21,8 @@
 #endif
 
 #include "molecule/ket_commons.h"
-#include "molecule/monomer_commons.h"
 #include "base_cpp/scanner.h"
+#include "molecule/monomer_commons.h"
 #include <cppcodec/base64_default_rfc4648.hpp>
 
 namespace indigo
@@ -138,7 +138,7 @@ namespace indigo
         auto header_data = split(base64, ',');
         if (header_data.size() == 2)
         {
-            auto header = split(header_data[0],';');
+            auto header = split(header_data[0], ';');
             if (header.size() == 2)
             {
                 if (header[1] == "base64")
@@ -154,7 +154,8 @@ namespace indigo
                 }
                 else
                     throw Exception("Unknown encoding:%s", header[1].c_str());
-            } else
+            }
+            else
                 throw Exception("Expected data header: <mime_type>;<encoding> received:%s", header_data[0].c_str());
         }
         else
@@ -163,7 +164,7 @@ namespace indigo
 
     std::string KETImage::getBase64() const
     {
-        auto encoded_str = ";base64,"+base64::encode(_image_data.c_str(), _image_data.size());
+        auto encoded_str = ";base64," + base64::encode(_image_data.c_str(), _image_data.size());
         std::string img_format_str;
         switch (_image_format)
         {
@@ -177,7 +178,7 @@ namespace indigo
             throw Exception("Unknown image format: %d", _image_format);
             break;
         }
-        return encoded_str; 
+        return encoded_str;
     }
 
 }

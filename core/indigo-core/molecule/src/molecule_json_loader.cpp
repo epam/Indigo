@@ -1913,7 +1913,7 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
             {
                 const rapidjson::Value& bbox_val = mobj["boundingBox"];
                 Vec2f lt(bbox_val["x"].GetFloat(), bbox_val["y"].GetFloat());
-                Vec2f rb( lt );
+                Vec2f rb(lt);
                 rb.add(Vec2f(bbox_val["width"].GetFloat(), bbox_val["height"].GetFloat()));
                 meta_interface.addMetaObject(new KETImage(Rect2f(lt, rb), mobj["data"].GetString()));
             }
