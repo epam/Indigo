@@ -54,6 +54,11 @@ indigo.setOption("render-output-format", "png")
 renderer.renderToFile(rea, joinPathPy("out/single_arrow.png", __file__))
 print(checkImageSimilarity("single_arrow.png"))
 
+mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/images.ket", __file__))
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(mol, joinPathPy("out/images.png", __file__))
+print(checkImageSimilarity("images.png"))
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()
