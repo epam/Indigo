@@ -31,39 +31,42 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
 void MoleculeJsonLoader::parse_ket(Document& ket)
 {
     Value& root = ket["root"];
-    Value& nodes = root["nodes"];
-
-    // rewind to first molecule node
-    for (rapidjson::SizeType i = 0; i < nodes.Size(); ++i)
+    if (root.HasMember("nodes"))
     {
-        if (nodes[i].HasMember("$ref"))
+        Value& nodes = root["nodes"];
+
+        // rewind to first molecule node
+        for (rapidjson::SizeType i = 0; i < nodes.Size(); ++i)
         {
-            std::string node_name = nodes[i]["$ref"].GetString();
-            Value& node = ket[node_name.c_str()];
-            std::string node_type = node["type"].GetString();
-            if (node_type.compare("molecule") == 0)
+            if (nodes[i].HasMember("$ref"))
             {
-                _mol_nodes.PushBack(node, ket.GetAllocator());
+                std::string node_name = nodes[i]["$ref"].GetString();
+                Value& node = ket[node_name.c_str()];
+                std::string node_type = node["type"].GetString();
+                if (node_type.compare("molecule") == 0)
+                {
+                    _mol_nodes.PushBack(node, ket.GetAllocator());
+                }
+                else if (node_type.compare("rgroup") == 0 && node_name.size() > 2)
+                {
+                    std::string rg = "rg";
+                    int rg_num = std::atoi(node_name.substr(rg.size()).c_str());
+                    _rgroups.emplace_back(rg_num, node);
+                }
+                else if (node_type.compare("monomer") == 0)
+                {
+                    _monomer_array.PushBack(node, ket.GetAllocator());
+                }
+                else
+                    throw Error("Unknows node type: %s", node_type.c_str());
             }
-            else if (node_type.compare("rgroup") == 0 && node_name.size() > 2)
+            else if (nodes[i].HasMember("type"))
             {
-                std::string rg = "rg";
-                int rg_num = std::atoi(node_name.substr(rg.size()).c_str());
-                _rgroups.emplace_back(rg_num, node);
-            }
-            else if (node_type.compare("monomer") == 0)
-            {
-                _monomer_array.PushBack(node, ket.GetAllocator());
+                _meta_objects.PushBack(nodes[i], ket.GetAllocator());
             }
             else
-                throw Error("Unknows node type: %s", node_type.c_str());
+                throw Error("Unsupported node for molecule");
         }
-        else if (nodes[i].HasMember("type"))
-        {
-            _meta_objects.PushBack(nodes[i], ket.GetAllocator());
-        }
-        else
-            throw Error("Unsupported node for molecule");
     }
 
     if (root.HasMember("templates"))
@@ -1908,7 +1911,7 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
             }
             else if (node_type == "image")
             {
-                const rapidjson::Value& bbox_val = mobj["bounding_box"];
+                const rapidjson::Value& bbox_val = mobj["boundingBox"];
                 Vec2f lt(bbox_val["x"].GetFloat(), bbox_val["y"].GetFloat());
                 Vec2f rb( lt );
                 rb.add(Vec2f(bbox_val["width"].GetFloat(), bbox_val["height"].GetFloat()));

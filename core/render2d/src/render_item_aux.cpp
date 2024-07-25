@@ -359,9 +359,23 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                 const KETReactionArrow& ar = static_cast<const KETReactionArrow&>(mobj);
                 _drawArrow(ar);
             }
+            case KETImage::CID: {
+                const KETImage& img = static_cast<const KETImage&>(mobj);
+                _drawImage(img);
+            }
             break;
             }
         }
+    }
+}
+
+void RenderItemAuxiliary::_drawImage(const KETImage& img)
+{
+    if (img.getFormat() == KETImage::EKETPNG)
+        _rc.drawPng(img.getData(), img.getBoundingBox());
+    else if (img.getFormat() == KETImage::EKETPNG)
+    {
+        // TODO: implement SVG-rendering
     }
 }
 

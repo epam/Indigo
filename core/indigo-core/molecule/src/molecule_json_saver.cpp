@@ -1874,6 +1874,32 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.EndObject(); // end node
             break;
         }
+        case KETImage::CID: {
+            auto image_obj = static_cast<const KETImage*>(pobj);
+            auto& bbox = image_obj->getBoundingBox();
+            writer.StartObject(); // start node
+            writer.Key("type");
+            writer.String("image");
+            writer.Key("boundingBox");
+
+            writer.StartObject(); // start bbox
+
+            writer.Key("x");
+            writer.Double(bbox.left());
+            writer.Key("y");
+            writer.Double(bbox.bottom());
+
+            writer.Key("width");
+            writer.Double(bbox.width());
+            writer.Key("height");
+            writer.Double(bbox.height());
+            writer.EndObject();   // end bbox
+
+            writer.Key("data");
+            writer.String(image_obj->getBase64().c_str());
+            writer.EndObject();   // end node
+            break;
+        }
         }
     }
 }

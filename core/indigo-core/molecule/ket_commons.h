@@ -41,6 +41,9 @@ namespace indigo
     const auto KETFontSuperscriptStr = "SUPERSCRIPT";
     const auto KETFontSubscriptStr = "SUBSCRIPT";
     const auto KETFontCustomSizeStr = "CUSTOM_FONT_SIZE";
+    const auto KImagePNG = "image/png";
+    const auto KImageSVG = "image/svg+xml";
+
     const uint8_t KETReactantArea = 0;
     const uint8_t KETReagentUpArea = 1;
     const uint8_t KETReagentDownArea = 2;
@@ -269,16 +272,41 @@ namespace indigo
     class KETImage : public MetaObject
     {
     public:
+        enum ImageFormat
+        {
+            EKETPNG,
+            EKETSVG
+        };
+
         static const std::uint32_t CID = "KET embedded image"_hash;
-        KETImage(const Rect2f& bbox, const std::string& base64) : MetaObject(CID), _bbox(bbox), _base64(base64){};
+        KETImage(const Rect2f& bbox, const std::string& base64);
 
         MetaObject* clone() const override
         {
-            return new KETImage(_bbox, _base64);
+            return new KETImage(_bbox, getBase64());
         }
 
+        auto& getBoundingBox() const
+        {
+            return _bbox;
+        }
+
+        std::string getBase64() const;
+
+        const std::string& getData() const
+        {
+            return _image_data;
+        }
+
+        ImageFormat getFormat() const
+        {
+            return _image_format;
+        }
+
+    private:
         Rect2f _bbox;
-        std::string _base64;
+        std::string _image_data;
+        ImageFormat _image_format;
     };
 
     struct MolSumm
