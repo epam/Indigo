@@ -1906,6 +1906,14 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
                 Vec2f plus_pos(plus_location[0].GetFloat(), plus_location[1].GetFloat());
                 meta_interface.addMetaObject(new KETReactionPlus(plus_pos));
             }
+            else if (node_type == "image")
+            {
+                const rapidjson::Value& bbox_val = mobj["bounding_box"];
+                Vec2f lt(bbox_val["x"].GetFloat(), bbox_val["y"].GetFloat());
+                Vec2f rb( lt );
+                rb.add(Vec2f(bbox_val["width"].GetFloat(), bbox_val["height"].GetFloat()));
+                meta_interface.addMetaObject(new KETImage(Rect2f(lt, rb), mobj["data"].GetString()));
+            }
         }
     }
 }

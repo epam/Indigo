@@ -266,6 +266,21 @@ namespace indigo
         Vec2f _pos;
     };
 
+    class KETImage : public MetaObject
+    {
+    public:
+        static const std::uint32_t CID = "KET embedded image"_hash;
+        KETImage(const Rect2f& bbox, const std::string& base64) : MetaObject(CID), _bbox(bbox), _base64(base64){};
+
+        MetaObject* clone() const override
+        {
+            return new KETImage(_bbox, _base64);
+        }
+
+        Rect2f _bbox;
+        std::string _base64;
+    };
+
     struct MolSumm
     {
         MolSumm() : bbox(Vec2f(0, 0), Vec2f(0, 0)), role(BaseReaction::UNDEFINED){};
