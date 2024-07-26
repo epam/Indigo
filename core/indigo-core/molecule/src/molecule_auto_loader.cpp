@@ -35,6 +35,7 @@
 #include "molecule/molfile_loader.h"
 #include "molecule/molfile_saver.h"
 #include "molecule/monomer_commons.h"
+#include "molecule/monomers_template_library.h"
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "molecule/sdf_loader.h"
