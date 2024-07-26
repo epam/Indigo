@@ -16,43 +16,26 @@
  * limitations under the License.
  ***************************************************************************/
 
-#ifndef __indigo_monomer_library__
-#define __indigo_monomer_library__
+#include "molecule/ket_document.h"
+#include "base_cpp/exception.h"
+#include "molecule/base_molecule.h"
 
-#include "indigo_internal.h"
-#include "molecule/monomers_template_library.h"
+using namespace indigo;
 
-#ifdef _WIN32
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif
+IMPL_ERROR(KetDocument, "Ket Document")
 
-class DLLEXPORT IndigoMonomerLibrary : public IndigoObject
+KetMolecule& KetDocument::addMolecule(const std::string& ref)
 {
-public:
-    explicit IndigoMonomerLibrary();
+    auto res = _molecules.emplace(ref, KetMolecule());
+    if (!res.second)
+        throw Error("Molecule with ref='%s' already exists", ref.c_str());
+    return res.first->second;
+}
 
-    ~IndigoMonomerLibrary() override;
-
-    static bool is(const IndigoObject& obj);
-
-    static MonomerTemplateLibrary& get(IndigoObject& obj);
-
-    inline MonomerTemplateLibrary& get()
-    {
-        return library;
-    }
-
-    const char* debugInfo() const override;
-
-    MonomerTemplateLibrary& getMonomerLibrary();
-
-private:
-    MonomerTemplateLibrary library;
-};
-
-#ifdef _WIN32
-#pragma warning(pop)
-#endif
-
-#endif
+KetMonomer& KetDocument::addMonomer(const std::string& ref, const std::string& id, const std::string& template_id)
+{
+    auto res = _monomers.emplace(ref, KetMonomer(id, template_id));
+    if (!res.second)
+        throw Error("Monomer with ref='%s' already exists", ref.c_str());
+    return res.first->second;
+}

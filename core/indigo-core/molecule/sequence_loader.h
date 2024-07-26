@@ -36,6 +36,7 @@ namespace indigo
     class BaseMolecule;
     class Molecule;
     class QueryMolecule;
+    class MonomerTemplate;
 
     class DLLEXPORT SequenceLoader
     {

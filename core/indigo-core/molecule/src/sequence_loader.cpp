@@ -27,6 +27,7 @@
 #include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/monomer_commons.h"
+#include "molecule/monomers_template_library.h"
 #include "molecule/sequence_loader.h"
 
 using namespace indigo;
@@ -377,14 +378,14 @@ bool SequenceLoader::checkAddTemplate(BaseMolecule& mol, MonomerClass type, cons
 // return true if monomer already in templates or successfuly added. otherwise - false
 void SequenceLoader::checkAddTemplate(BaseMolecule& mol, const MonomerTemplate& monomer_template)
 {
-    if (_added_templates.count(std::make_pair(monomer_template.monomerClass(), monomer_template.alias())) == 0)
+    if (_added_templates.count(std::make_pair(monomer_template.monomerClass(), monomer_template.getStringProp("alias"))) == 0)
     {
         int tg_idx = mol.tgroups.addTGroup();
         auto& tg = mol.tgroups.getTGroup(tg_idx);
-        tg.copy(monomer_template.getTGroup());
+        tg.copy(*monomer_template.getTGroup());
         tg.tgroup_id = tg_idx;
         tg.idt_alias.readString(monomer_template.idtAlias().getBase().c_str(), true);
-        _added_templates.emplace(monomer_template.monomerClass(), monomer_template.alias());
+        _added_templates.emplace(monomer_template.monomerClass(), monomer_template.getStringProp("alias"));
     }
 }
 
@@ -590,7 +591,7 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
                     check_monomer_place(idt_alias, modification, alias_mod, prev_token.first.size() > 0);
                     MonomerGroupTemplate& mgt = _library.getMonomerGroupTemplateById(mgt_id);
                     const MonomerTemplate& sugar_template = mgt.getTemplateByClass(MonomerClass::Sugar);
-                    sugar = sugar_template.alias();
+                    sugar = sugar_template.getStringProp("alias");
                     checkAddTemplate(mol, sugar_template);
                     if (alias_mod == IdtModification::THREE_PRIME_END)
                     {
@@ -610,7 +611,7 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
                             else // use phosphate from template
                             {
                                 const MonomerTemplate& phosphate_template = mgt.getTemplateByClass(MonomerClass::Phosphate);
-                                phosphate = phosphate_template.alias();
+                                phosphate = phosphate_template.getStringProp("alias");
                                 checkAddTemplate(mol, phosphate_template);
                             }
                         }
@@ -624,7 +625,7 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
                     if (mgt.hasTemplateClass(MonomerClass::Base))
                     {
                         const MonomerTemplate& base_template = mgt.getTemplateByClass(MonomerClass::Base);
-                        base = base_template.alias();
+                        base = base_template.getStringProp("alias");
                         checkAddTemplate(mol, base_template);
                     }
                 }
@@ -639,36 +640,20 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
                         check_monomer_place(idt_alias, modification, alias_mod, prev_token.first.size() > 0);
                         const MonomerTemplate& monomer_template = _library.getMonomerTemplateById(monomer_template_id);
                         checkAddTemplate(mol, monomer_template);
-                        single_monomer = monomer_template.alias();
+                        single_monomer = monomer_template.getStringProp("alias");
                         single_monomer_class = MonomerTemplates::classToStr(monomer_template.monomerClass());
                     }
                     else // IDT alias not found
                     {
-                        TGroup t_group;
+                        unresolved = true;
                         single_monomer = "unknown_monomer_with_idt_alias_" + idt_alias;
                         auto monomer_class = MonomerClass::CHEM;
                         single_monomer_class = MonomerTemplates::classToStr(monomer_class);
-                        t_group.tgroup_name.readString(idt_alias.c_str(), true);
-                        t_group.tgroup_alias.readString(idt_alias.c_str(), true);
-                        t_group.tgroup_text_id.readString(single_monomer.c_str(), true);
-                        // t_group.tgroup_natreplace.readString(single_monomer.c_str(), true);
-                        t_group.tgroup_class.readString(single_monomer_class.c_str(), true);
-                        t_group.fragment.reset(mol.neu());
-                        t_group.unresolved = true;
-                        auto& monomer_mol = *t_group.fragment;
-                        int grp_idx = monomer_mol.sgroups.addSGroup(SGroup::SG_TYPE_SUP);
-                        Superatom& sa = static_cast<Superatom&>(monomer_mol.sgroups.getSGroup(grp_idx));
+                        // Unresoved monomer could be in any position
+                        MonomerTemplate monomer_template(single_monomer, monomer_class, IdtAlias(idt_alias, idt_alias, idt_alias, idt_alias), true);
+                        monomer_template.setStringProp("alias", idt_alias);
                         for (auto ap : {"R1", "R2", "R3", "R4"})
-                        {
-                            int atp_index = sa.attachment_points.add();
-                            auto& atp = sa.attachment_points[atp_index];
-                            atp.aidx = -1;
-                            atp.apid.readString(ap, true);
-                        }
-                        sa.unresolved = true;
-                        unresolved = true;
-                        MonomerTemplate monomer_template(single_monomer, monomer_class, "", idt_alias, idt_alias, "", true, t_group);
-                        monomer_template.setIdtAlias(IdtAlias(idt_alias, idt_alias, idt_alias, idt_alias)); // Unresoved monomer could be in any position
+                            monomer_template.AddAttachmentPoint(ap, -1);
                         checkAddTemplate(mol, monomer_template);
                     }
                 }

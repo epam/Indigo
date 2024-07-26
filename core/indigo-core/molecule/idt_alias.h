@@ -23,8 +23,17 @@ namespace indigo
     public:
         DECL_ERROR;
         IdtAlias(){};
-        IdtAlias(const std::string& base)
-            : _base(base), _five_prime_end("5" + base), _internal("i" + base), _three_prime_end("3" + base), _has_modifications(false){};
+
+        IdtAlias(const std::string& base) : _base(base), _has_modifications(false)
+        {
+            if (_base.size() > 0)
+            {
+                _five_prime_end = "5" + base;
+                _internal = "i" + base;
+                _three_prime_end = "3" + base;
+            }
+        };
+
         IdtAlias(const std::string& base, const std::string& five_prime_end, const std::string& internal, const std::string& three_prime_end)
             : _base(base), _five_prime_end(five_prime_end), _internal(internal), _three_prime_end(three_prime_end), _has_modifications(true){};
 

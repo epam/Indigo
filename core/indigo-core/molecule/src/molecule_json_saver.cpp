@@ -27,6 +27,7 @@
 #include "molecule/molecule_savers.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/monomer_commons.h"
+#include "molecule/monomers_template_library.h"
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
@@ -650,18 +651,18 @@ void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, JsonWriter& writer)
         writer.EndArray();
     }
 }
+static void writeNativeFloat(JsonWriter& writer, float f_value)
+{
+    std::string val = std::to_string(f_value);
+    writer.RawValue(val.c_str(), val.length(), kStringType);
+}
 
 void MoleculeJsonSaver::writeFloat(JsonWriter& writer, float f_value)
 {
     if (use_native_precision)
-    {
-        std::string val = std::to_string(f_value);
-        writer.RawValue(val.c_str(), val.length(), kStringType);
-    }
+        writeNativeFloat(writer, f_value);
     else
-    {
         writer.Double(f_value);
-    }
 }
 
 void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
@@ -1902,4 +1903,217 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
         }
         }
     }
+}
+
+static void saveNonEmptyStr(JsonWriter& writer, const char* name, const std::string& str)
+{
+    if (str.size())
+    {
+        writer.Key(name);
+        writer.String(str);
+    }
+}
+
+static void saveStr(JsonWriter& writer, const char* name, const std::string& str)
+{
+    writer.Key(name);
+    writer.String(str);
+}
+
+static void saveMonomerTemplateAttachmentPoints(JsonWriter& writer, const MonomerTemplate& monomer_template)
+{
+    if (monomer_template.attachemntPoints().size() == 0)
+        return;
+
+    writer.Key("attachmentPoints");
+    writer.StartArray();
+    for (auto& it : monomer_template.attachemntPoints())
+    {
+        auto& att_point = it.second;
+        writer.StartObject();
+
+        writer.Key("attachmentAtom");
+        writer.Int(att_point.attachment_atom());
+        att_point.saveOptsToKet(writer);
+
+        auto& leaving_group = att_point.leavingGroup();
+
+        if (leaving_group.has_value())
+        {
+            writer.Key("leavingGroup");
+            writer.StartObject();
+            writer.Key("atoms");
+            writer.StartArray();
+            for (auto idx : leaving_group.value())
+            {
+                writer.Int(idx);
+            }
+            writer.EndArray();
+            writer.EndObject();
+        }
+        writer.EndObject();
+    }
+    writer.EndArray();
+}
+
+static void saveKetAtom(JsonWriter& writer, const KetBaseAtomType* base_atom)
+{
+    if (base_atom == nullptr)
+        return;
+    writer.StartObject();
+    switch (base_atom->getType())
+    {
+    case KetBaseAtomType::atype::atom: {
+        const KetAtom* atom = static_cast<const KetAtom*>(base_atom);
+        saveStr(writer, "label", atom->label());
+        auto& custom_query = atom->customQuery();
+        auto& query_propertes = atom->queryProperties();
+        if (custom_query.has_value() || query_propertes.has_value())
+        {
+            writer.Key("queryProperties");
+            writer.StartObject();
+            if (custom_query.has_value())
+            {
+                saveStr(writer, "customQuery", custom_query.value());
+            }
+            else if (query_propertes.has_value())
+            {
+                query_propertes.value().saveOptsToKet(writer);
+            }
+            writer.EndObject();
+        }
+        break;
+    }
+    case KetBaseAtomType::atype::atom_list: {
+        saveStr(writer, "type", "atom-list");
+        const KetAtomList* atom_list = static_cast<const KetAtomList*>(base_atom);
+        auto& query_propertes = atom_list->queryProperties();
+        writer.Key("elements");
+        writer.StartArray();
+        for (auto& label : atom_list->atomList())
+        {
+            writer.String(label);
+        }
+        writer.EndArray();
+        if (query_propertes.has_value())
+        {
+            writer.Key("queryProperties");
+            writer.StartObject();
+            query_propertes.value().saveOptsToKet(writer);
+            writer.EndObject();
+        }
+        break;
+    }
+    case KetBaseAtomType::atype::rg_label: {
+        saveStr(writer, "type", "rg-label");
+        const KetRgLabel* rg_label = static_cast<const KetRgLabel*>(base_atom);
+        auto& attachment_order = rg_label->attachmentOrder();
+        if (attachment_order.has_value())
+        {
+            writer.Key("attachmentOrder");
+            writer.StartArray();
+            for (auto& att : attachment_order.value())
+            {
+                writer.Key("attachmentAtom");
+                writer.Int(att.first);
+                writer.Key("attachmentId");
+                writer.Int(att.second);
+            }
+            writer.EndArray();
+        }
+        auto& refs = rg_label->refs();
+        if (refs.has_value())
+        {
+            writer.Key("$refs");
+            writer.StartArray();
+            for (auto& ref : refs.value())
+                writer.String(ref);
+            writer.EndArray();
+        }
+        break;
+    }
+    }
+    auto& location = base_atom->location();
+    if (location.has_value())
+    {
+        writer.Key("location");
+        writer.StartArray();
+        auto& loc = location.value();
+        writeNativeFloat(writer, loc.x);
+        writeNativeFloat(writer, loc.y);
+        writeNativeFloat(writer, loc.z);
+        writer.EndArray();
+    }
+    base_atom->saveOptsToKet(writer);
+    writer.EndObject();
+}
+
+static void saveKetAtoms(JsonWriter& writer, const KetMolecule::atoms_type& atoms)
+{
+    writer.Key("atoms");
+    writer.StartArray();
+    for (auto& atom : atoms)
+        saveKetAtom(writer, atom.get());
+    writer.EndArray();
+};
+
+static void saveKetBonds(JsonWriter& writer, const std::vector<KetBond>& bonds)
+{
+    writer.Key("bonds");
+    writer.StartArray();
+    for (auto& bond : bonds)
+    {
+        writer.StartObject();
+        writer.Key("type");
+        writer.Int(static_cast<int>(bond.getType()));
+        writer.Key("atoms");
+        writer.StartArray();
+        writer.Int(bond.atoms().first);
+        writer.Int(bond.atoms().second);
+        writer.EndArray();
+        bond.saveOptsToKet(writer);
+        writer.EndObject();
+    }
+    writer.EndArray();
+};
+
+void MoleculeJsonSaver::saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template)
+{
+    writer.Key("monomerTemplate-" + monomer_template.id());
+    writer.StartObject();
+    saveStr(writer, "type", "monomerTemplate");
+    saveStr(writer, "id", monomer_template.id());
+    saveNonEmptyStr(writer, "class", monomer_template.monomerClassStr());
+    monomer_template.saveOptsToKet(writer);
+    if (monomer_template.unresolved())
+    {
+        writer.Key("unresolved");
+        writer.Bool(monomer_template.unresolved());
+
+        IdtAlias idt_alias = monomer_template.idtAlias().getBase();
+        if (idt_alias.getBase().size()) // Save IDT alias only for unresolved
+        {
+            writer.Key("idtAliases");
+            writer.StartObject();
+            saveStr(writer, "base", idt_alias.getBase());
+            if (idt_alias.hasModifications())
+            {
+                writer.Key("modifications");
+                writer.StartObject();
+                if (idt_alias.hasFivePrimeEnd())
+                    saveStr(writer, "endpoint5", idt_alias.getFivePrimeEnd());
+                if (idt_alias.hasInternal())
+                    saveStr(writer, "internal", idt_alias.getInternal());
+                if (idt_alias.hasThreePrimeEnd())
+                    saveStr(writer, "endpoint3", idt_alias.getThreePrimeEnd());
+                writer.EndObject();
+            }
+            writer.EndObject();
+        }
+    }
+
+    saveMonomerTemplateAttachmentPoints(writer, monomer_template);
+    saveKetAtoms(writer, monomer_template.atoms());
+    saveKetBonds(writer, monomer_template.bonds());
+    writer.EndObject();
 }
