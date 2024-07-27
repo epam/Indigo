@@ -1230,8 +1230,14 @@ bool MoleculeStereocenters::isPyramidMappingRigid_Sort(int* pyramid, const int* 
     return rigid;
 }
 
-bool MoleculeStereocenters::isPyramidMappingRigid(const int* pyramid, int size, const int* mapping)
+bool MoleculeStereocenters::isPyramidMappingRigid(const int* pyramid, int size, const Array<int>& mapping)
 {
+    for (int i = 0; i < size; ++i)
+    {
+        if (pyramid[i] >= mapping.size() || pyramid[i] < 0)
+            return false;
+    }
+
     if (size == 3)
     {
         int order[3] = {mapping[pyramid[0]], mapping[pyramid[1]], mapping[pyramid[2]]};
@@ -1261,13 +1267,6 @@ bool MoleculeStereocenters::isPyramidMappingRigid(const int* pyramid, int size, 
     }
 
     throw Error("IsPyramidMappingRigid: size = %d", size);
-}
-
-bool MoleculeStereocenters::isPyramidMappingRigid(const int* pyramid, int size, const Array<int>& mapping)
-{
-    if (mapping.size() >= size)
-        return isPyramidMappingRigid(pyramid, size, mapping.ptr());
-    return false;
 }
 
 void MoleculeStereocenters::getPyramidMapping(BaseMolecule& query, BaseMolecule& target, int query_atom, const int* mapping, int* mapping_out,

@@ -824,7 +824,7 @@ void MoleculeCIPCalculator::_calcStereocenters(Molecule& source, Molecule& mol, 
 
         source.stereocenters.get(mapping[i], type, group, source_pyramid);
 
-        if (source.stereocenters.isPyramidMappingRigid(source_pyramid) != mol.stereocenters.isPyramidMappingRigid(pyramid, size, mapping.ptr()))
+        if (source.stereocenters.isPyramidMappingRigid(source_pyramid) != mol.stereocenters.isPyramidMappingRigid(pyramid, size, mapping))
             std::swap(pyramid[0], pyramid[1]);
 
         mol.addStereocenters(i, MoleculeStereocenters::ATOM_ABS, 1, pyramid);

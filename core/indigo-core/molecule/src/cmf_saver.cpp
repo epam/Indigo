@@ -577,9 +577,9 @@ void CmfSaver::_encodeAtom(Molecule& mol, int idx, const Array<int>& mapping)
         int code;
         const int* pyramid = stereo.getPyramid(idx);
 
-        if (pyramid[3] == -1 && mapping.size() >= 3)
+        if (pyramid[3] == -1)
             rigid = MoleculeStereocenters::isPyramidMappingRigid(pyramid, 3, mapping);
-        else if (mapping.size() >= 4)
+        else
             rigid = MoleculeStereocenters::isPyramidMappingRigid(pyramid, 4, mapping);
 
         if (stereo_type == MoleculeStereocenters::ATOM_ABS)
