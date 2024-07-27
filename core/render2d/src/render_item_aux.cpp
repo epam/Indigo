@@ -359,6 +359,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                 const KETReactionArrow& ar = static_cast<const KETReactionArrow&>(mobj);
                 _drawArrow(ar);
             }
+            break;
             case KETImage::CID: {
                 const KETImage& img = static_cast<const KETImage&>(mobj);
                 _drawImage(img);
