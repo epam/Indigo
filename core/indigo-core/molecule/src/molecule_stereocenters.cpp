@@ -1263,6 +1263,13 @@ bool MoleculeStereocenters::isPyramidMappingRigid(const int* pyramid, int size, 
     throw Error("IsPyramidMappingRigid: size = %d", size);
 }
 
+bool MoleculeStereocenters::isPyramidMappingRigid(const int* pyramid, int size, const Array<int>& mapping)
+{
+    if (mapping.size() >= size)
+        return isPyramidMappingRigid(pyramid, size, mapping.ptr());
+    return false;
+}
+
 void MoleculeStereocenters::getPyramidMapping(BaseMolecule& query, BaseMolecule& target, int query_atom, const int* mapping, int* mapping_out,
                                               bool /* reset_h_isotopes */)
 {

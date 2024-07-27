@@ -103,7 +103,7 @@ void CmfSaver::saveMolecule(Molecule& mol)
     /* Encode first atom */
     if (v_seq.size() > 0)
     {
-        _encodeAtom(mol, v_seq[0].idx, mapping.ptr());
+        _encodeAtom(mol, v_seq[0].idx, mapping);
         _atom_sequence.push(v_seq[0].idx);
 
         int j, openings = walk.numOpenings(v_seq[0].idx);
@@ -142,7 +142,7 @@ void CmfSaver::saveMolecule(Molecule& mol)
             if (branch_counters[v_prev_idx] > branches)
                 throw Error("unexpected branch");
 
-            _encodeBond(mol, e_idx, mapping.ptr());
+            _encodeBond(mol, e_idx, mapping);
             bond_mapping[e_idx] = bond_index++;
 
             if (save_bond_dirs)
@@ -191,7 +191,7 @@ void CmfSaver::saveMolecule(Molecule& mol)
 
         if (write_atom)
         {
-            _encodeAtom(mol, v_idx, mapping.ptr());
+            _encodeAtom(mol, v_idx, mapping);
             _atom_sequence.push(v_idx);
 
             int openings = walk.numOpenings(v_idx);
@@ -448,7 +448,7 @@ void CmfSaver::_encodeString(const Array<char>& str)
     _output->write(str.ptr(), len);
 }
 
-void CmfSaver::_encodeAtom(Molecule& mol, int idx, const int* mapping)
+void CmfSaver::_encodeAtom(Molecule& mol, int idx, const Array<int>& mapping)
 {
     int number = 0;
 
@@ -577,9 +577,9 @@ void CmfSaver::_encodeAtom(Molecule& mol, int idx, const int* mapping)
         int code;
         const int* pyramid = stereo.getPyramid(idx);
 
-        if (pyramid[3] == -1)
+        if (pyramid[3] == -1 && mapping.size() >= 3)
             rigid = MoleculeStereocenters::isPyramidMappingRigid(pyramid, 3, mapping);
-        else
+        else if (mapping.size() >= 4)
             rigid = MoleculeStereocenters::isPyramidMappingRigid(pyramid, 4, mapping);
 
         if (stereo_type == MoleculeStereocenters::ATOM_ABS)
@@ -686,7 +686,7 @@ void CmfSaver::_encodeAtom(Molecule& mol, int idx, const int* mapping)
             _encode(CMF_HIGHLIGHTED);
 }
 
-void CmfSaver::_encodeBond(Molecule& mol, int idx, const int* mapping)
+void CmfSaver::_encodeBond(Molecule& mol, int idx, const Array<int>& mapping)
 {
     int order = mol.getBondOrder(idx);
 
@@ -703,7 +703,7 @@ void CmfSaver::_encodeBond(Molecule& mol, int idx, const int* mapping)
 
         if (parity != 0)
         {
-            int mapped_parity = MoleculeCisTrans::applyMapping(parity, mol.cis_trans.getSubstituents(idx), mapping, true);
+            int mapped_parity = MoleculeCisTrans::applyMapping(parity, mol.cis_trans.getSubstituents(idx), mapping.ptr(), true);
 
             if (mapped_parity == MoleculeCisTrans::CIS)
             {
