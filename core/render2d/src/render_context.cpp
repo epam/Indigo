@@ -510,18 +510,27 @@ void RenderContext::drawTextItemText(const TextItem& ti, const Vec3f& color, boo
     fontsDrawText(ti_mod, color, idle);
 }
 
+struct PngReadContext
+{
+    const unsigned char* data;
+    size_t size;
+    size_t offset;
+};
+
 cairo_status_t pngReadFunc(void* closure, unsigned char* data, unsigned int length)
 {
-    std::string* pngData = static_cast<std::string*>(closure);
-    memcpy(data, pngData->substr(0, length).c_str(), length);
-    pngData->erase(0, length);
+    PngReadContext* context = static_cast<PngReadContext*>(closure);
+    if (context->offset + length > context->size)
+        return CAIRO_STATUS_READ_ERROR;
+    memcpy(data, context->data + context->offset, length);
+    context->offset += length;
     return CAIRO_STATUS_SUCCESS;
 }
 
 void RenderContext::drawPng(const std::string& pngData, const Rect2f& bbox)
 {
-    std::string tmp = pngData; // unfortunately void* closure is not a const. need to copy.
-    cairo_surface_t* image = cairo_image_surface_create_from_png_stream(pngReadFunc, &tmp);
+    PngReadContext context = {(const unsigned char*)pngData.data(), pngData.size(), 0};
+    cairo_surface_t* image = cairo_image_surface_create_from_png_stream(pngReadFunc, &context);
 
     if (cairo_surface_status(image) != CAIRO_STATUS_SUCCESS)
     {

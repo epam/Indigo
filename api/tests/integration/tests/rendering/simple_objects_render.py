@@ -35,6 +35,7 @@ if not os.path.exists(joinPathPy("out", __file__)):
 
 
 indigo = Indigo()
+# indigo.dbgBreakpoint()
 renderer = IndigoRenderer(indigo)
 
 mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/simple.ket", __file__))
