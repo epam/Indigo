@@ -280,7 +280,7 @@ namespace indigo
 
         MonomerTemplate& addMonomerTemplate(const std::string& id, const std::string& monomer_class, IdtAlias idt_alias, bool unresolved = false);
 
-        inline void addMonomerGroupTemplate(MonomerGroupTemplate& monomer_group_template)
+        inline void addMonomerGroupTemplate(MonomerGroupTemplate&& monomer_group_template)
         {
             auto res = _monomer_group_templates.emplace(monomer_group_template.id(), std::move(monomer_group_template));
             if (res.second)
