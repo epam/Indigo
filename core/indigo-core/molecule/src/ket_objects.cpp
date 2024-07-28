@@ -44,7 +44,7 @@ const std::map<std::string, int>& KetObjWithProps::getStringPropStrToIdx() const
 void KetObjWithProps::setBoolProp(std::string name, bool value)
 {
     auto& map = getBoolPropStrToIdx();
-    auto& it = map.find(name);
+    auto it = map.find(name);
     if (it == map.end())
         throw Error("Unknown bool property '%s'", name.c_str());
     setBoolProp(it->second, value);
@@ -53,7 +53,7 @@ void KetObjWithProps::setBoolProp(std::string name, bool value)
 void KetObjWithProps::setIntProp(std::string name, int value)
 {
     auto& map = getIntPropStrToIdx();
-    auto& it = map.find(name);
+    auto it = map.find(name);
     if (it == map.end())
         throw Error("Unknown int property '%s'", name.c_str());
     setIntProp(it->second, value);
@@ -62,7 +62,7 @@ void KetObjWithProps::setIntProp(std::string name, int value)
 void KetObjWithProps::setStringProp(std::string name, std::string value)
 {
     auto& map = getStringPropStrToIdx();
-    auto& it = map.find(name);
+    auto it = map.find(name);
     if (it == map.end())
         throw Error("Unknown string property '%s'", name.c_str());
     setStringProp(it->second, value);
@@ -94,7 +94,7 @@ const std::string& KetObjWithProps::getStringProp(int idx) const
 
 static std::pair<bool, int> find_prop_idx(const std::map<std::string, int>& map, const std::string& name)
 {
-    auto& it = map.find(name);
+    auto it = map.find(name);
     if (it == map.end())
         return std::make_pair(false, -1);
     return std::make_pair(true, it->second);
@@ -466,7 +466,7 @@ void KetMolecule::parseKetAtoms(KetMolecule::atoms_type& ket_atoms, const rapidj
         if (atom_type == "atom")
         {
             ket_atoms.push_back(std::make_unique<KetAtom>(atom["label"].GetString()));
-            auto& base_atom = ket_atoms.rbegin();
+            auto base_atom = ket_atoms.rbegin();
             if (query_props.has_value())
                 static_cast<KetAtom*>(base_atom->get())->setQueryProperties(query_props.value());
             atom_ptr = base_atom->get();
@@ -474,7 +474,7 @@ void KetMolecule::parseKetAtoms(KetMolecule::atoms_type& ket_atoms, const rapidj
         else if (atom_type == "rg-label")
         {
             ket_atoms.push_back(std::make_unique<KetRgLabel>());
-            auto& rg_label = ket_atoms.rbegin();
+            auto rg_label = ket_atoms.rbegin();
             KetRgLabel* r_ptr = static_cast<KetRgLabel*>(rg_label->get());
             if (atom.HasMember("$refs"))
             {
