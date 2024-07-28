@@ -46,7 +46,7 @@ if (APPLE)
 endif()
 
 if (MINGW)
-    string(APPEND CMAKE_CXX_FLAGS " -Wincompatible-pointer-types")
+    string(APPEND CMAKE_CXX_FLAGS " -Wno-incompatible-pointer-types")
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
