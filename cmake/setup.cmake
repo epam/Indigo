@@ -47,6 +47,7 @@ endif()
 
 if (MINGW)
     string(APPEND CMAKE_CXX_FLAGS " -Wno-error=incompatible-pointer-types")
+    string(APPEND CMAKE_C_FLAGS " -Wno-error=incompatible-pointer-types")
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
