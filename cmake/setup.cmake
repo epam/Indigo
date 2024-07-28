@@ -45,6 +45,10 @@ if (APPLE)
     string(APPEND CMAKE_CXX_FLAGS " -Wno-register")
 endif()
 
+if (MINGW)
+    string(APPEND CMAKE_CXX_FLAGS " -Wincompatible-pointer-types")
+endif()
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # Compile flags

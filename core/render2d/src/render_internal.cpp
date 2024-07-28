@@ -1717,7 +1717,7 @@ void MoleculeRenderInternal::_initAtomData()
             ad.type = AtomDesc::TYPE_REGULAR;
         }
 
-        ad.label = -1;
+        ad.label = 0;
         if (ad.type == AtomDesc::TYPE_REGULAR)
             ad.label = atomNumber;
 
