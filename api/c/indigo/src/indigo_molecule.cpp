@@ -23,6 +23,7 @@
 #include "indigo_array.h"
 #include "indigo_io.h"
 #include "indigo_mapping.h"
+#include "indigo_monomer_library.h"
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/elements.h"
 #include "molecule/hybridization.h"
@@ -31,6 +32,7 @@
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_gross_formula.h"
 #include "molecule/molecule_inchi.h"
+#include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_mass.h"
 #include "molecule/molecule_name_parser.h"
 #include "molecule/molecule_savers.h"
@@ -526,12 +528,61 @@ CEXPORT int indigoLoadQueryMolecule(int source)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadSequence(int source, const char* seq_type)
+CEXPORT int indigoLoadMonomerLibrary(int source)
 {
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(source);
-        SequenceLoader loader(IndigoScanner::get(obj));
+        std::unique_ptr<IndigoMonomerLibrary> libptr = std::make_unique<IndigoMonomerLibrary>();
+        MoleculeJsonLoader loader(IndigoScanner::get(obj));
+        loader.stereochemistry_options.ignore_errors = true;
+        loader.loadMonomerLibrary(libptr->get());
+        return self.addObject(libptr.release());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadMonomerLibraryFromString(const char* string)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadString(string);
+        int result;
+
+        if (source <= 0)
+            return -1;
+
+        result = indigoLoadMonomerLibrary(source);
+        indigoFree(source);
+        return result;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadMonomerLibraryFromFile(const char* filename)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadFile(filename);
+        int result;
+
+        if (source < 0)
+            return -1;
+
+        result = indigoLoadMonomerLibrary(source);
+        indigoFree(source);
+        return result;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadSequence(int source, const char* seq_type, int library)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(source);
+        IndigoObject& lib_obj = self.getObject(library);
+        SequenceLoader loader(IndigoScanner::get(obj), IndigoMonomerLibrary::get(lib_obj));
 
         std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
 
@@ -542,7 +593,7 @@ CEXPORT int indigoLoadSequence(int source, const char* seq_type)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadSequenceFromString(const char* string, const char* seq_type)
+CEXPORT int indigoLoadSequenceFromString(const char* string, const char* seq_type, int library)
 {
     INDIGO_BEGIN
     {
@@ -552,14 +603,14 @@ CEXPORT int indigoLoadSequenceFromString(const char* string, const char* seq_typ
         if (source <= 0)
             return -1;
 
-        result = indigoLoadSequence(source, seq_type);
+        result = indigoLoadSequence(source, seq_type, library);
         indigoFree(source);
         return result;
     }
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadSequenceFromFile(const char* filename, const char* seq_type)
+CEXPORT int indigoLoadSequenceFromFile(const char* filename, const char* seq_type, int library)
 {
     INDIGO_BEGIN
     {
@@ -569,19 +620,20 @@ CEXPORT int indigoLoadSequenceFromFile(const char* filename, const char* seq_typ
         if (source < 0)
             return -1;
 
-        result = indigoLoadSequence(source, seq_type);
+        result = indigoLoadSequence(source, seq_type, library);
         indigoFree(source);
         return result;
     }
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadFasta(int source, const char* seq_type)
+CEXPORT int indigoLoadFasta(int source, const char* seq_type, int library)
 {
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(source);
-        SequenceLoader loader(IndigoScanner::get(obj));
+        IndigoObject& lib_obj = self.getObject(library);
+        SequenceLoader loader(IndigoScanner::get(obj), IndigoMonomerLibrary::get(lib_obj));
 
         std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
 
@@ -592,7 +644,7 @@ CEXPORT int indigoLoadFasta(int source, const char* seq_type)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadFastaFromString(const char* string, const char* seq_type)
+CEXPORT int indigoLoadFastaFromString(const char* string, const char* seq_type, int library)
 {
     INDIGO_BEGIN
     {
@@ -602,14 +654,14 @@ CEXPORT int indigoLoadFastaFromString(const char* string, const char* seq_type)
         if (source <= 0)
             return -1;
 
-        result = indigoLoadFasta(source, seq_type);
+        result = indigoLoadFasta(source, seq_type, library);
         indigoFree(source);
         return result;
     }
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadFastaFromFile(const char* filename, const char* seq_type)
+CEXPORT int indigoLoadFastaFromFile(const char* filename, const char* seq_type, int library)
 {
     INDIGO_BEGIN
     {
@@ -619,19 +671,21 @@ CEXPORT int indigoLoadFastaFromFile(const char* filename, const char* seq_type)
         if (source < 0)
             return -1;
 
-        result = indigoLoadFasta(source, seq_type);
+        result = indigoLoadFasta(source, seq_type, library);
         indigoFree(source);
         return result;
     }
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadIdt(int source)
+CEXPORT int indigoLoadIdt(int source, int library)
 {
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(source);
-        SequenceLoader loader(IndigoScanner::get(obj));
+        IndigoObject& lib_obj = self.getObject(library);
+        MonomerTemplateLibrary& lib = IndigoMonomerLibrary::get(lib_obj);
+        SequenceLoader loader(IndigoScanner::get(obj), lib);
 
         std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
 
@@ -642,7 +696,7 @@ CEXPORT int indigoLoadIdt(int source)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadIdtFromString(const char* string)
+CEXPORT int indigoLoadIdtFromString(const char* string, int library)
 {
     INDIGO_BEGIN
     {
@@ -652,14 +706,14 @@ CEXPORT int indigoLoadIdtFromString(const char* string)
         if (source <= 0)
             return -1;
 
-        result = indigoLoadIdt(source);
+        result = indigoLoadIdt(source, library);
         indigoFree(source);
         return result;
     }
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadIdtFromFile(const char* filename)
+CEXPORT int indigoLoadIdtFromFile(const char* filename, int library)
 {
     INDIGO_BEGIN
     {
@@ -669,7 +723,58 @@ CEXPORT int indigoLoadIdtFromFile(const char* filename)
         if (source < 0)
             return -1;
 
-        result = indigoLoadIdt(source);
+        result = indigoLoadIdt(source, library);
+        indigoFree(source);
+        return result;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadHelm(int source, int library)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(source);
+        IndigoObject& lib_obj = self.getObject(library);
+        SequenceLoader loader(IndigoScanner::get(obj), IndigoMonomerLibrary::get(lib_obj));
+
+        std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
+
+        Molecule& mol = molptr->mol;
+        loader.loadHELM(mol);
+        return self.addObject(molptr.release());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadHelmFromString(const char* string, int library)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadString(string);
+        int result;
+
+        if (source <= 0)
+            return -1;
+
+        result = indigoLoadHelm(source, library);
+        indigoFree(source);
+        return result;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadHelmFromFile(const char* filename, int library)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadFile(filename);
+        int result;
+
+        if (source < 0)
+            return -1;
+
+        result = indigoLoadHelm(source, library);
         indigoFree(source);
         return result;
     }

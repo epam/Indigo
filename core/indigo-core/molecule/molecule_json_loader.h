@@ -57,8 +57,10 @@ namespace indigo
         DECL_ERROR;
         explicit MoleculeJsonLoader(rapidjson::Document& ket);
         explicit MoleculeJsonLoader(rapidjson::Value& mol_nodes);
+        explicit MoleculeJsonLoader(Scanner& scanner);
 
         void loadMolecule(BaseMolecule& mol, bool load_arrows = false);
+        void loadMonomerLibrary(MonomerTemplateLibrary& library);
         StereocentersOptions stereochemistry_options;
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
         bool skip_3d_chirality;     // do not compute chirality from 3D coordinates
@@ -101,12 +103,13 @@ namespace indigo
         void setStereoFlagPosition(const rapidjson::Value& pos, int fragment_index, BaseMolecule& mol);
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
         int parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol);
-        void addToLibMonomerTemplate(const rapidjson::Value& mt_json, BaseMolecule& mol);
-        void addToLibMonomerGroupTemplate(const rapidjson::Value& monomer_group_template);
+        void addToLibMonomerTemplate(MonomerTemplateLibrary& library, const rapidjson::Value& mt_json, TGroup& tgroup);
+        void addToLibMonomerGroupTemplate(MonomerTemplateLibrary& library, const rapidjson::Value& monomer_group_template);
         std::string monomerTemplateClass(const rapidjson::Value& monomer_template);
         std::string monomerMolClass(const std::string& class_name);
 
     private:
+        void parse_ket(rapidjson::Document& ket);
         void fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol);
         rapidjson::Value& _mol_nodes;
 
@@ -123,6 +126,7 @@ namespace indigo
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
         unsigned int components_count;
+        rapidjson::Document _document;
     };
 
 } // namespace indigo

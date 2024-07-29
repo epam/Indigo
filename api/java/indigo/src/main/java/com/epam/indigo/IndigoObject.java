@@ -77,19 +77,24 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoMolfile(self));
     }
 
-    public String sequence() {
+    public String sequence(IndigoObject library) {
         dispatcher.setSessionID();
-        return Indigo.checkResultString(this, lib.indigoSequence(self));
+        return Indigo.checkResultString(this, lib.indigoSequence(self, library.self));
     }
 
-    public String fasta() {
+    public String fasta(IndigoObject library) {
         dispatcher.setSessionID();
-        return Indigo.checkResultString(this, lib.indigoFasta(self));
+        return Indigo.checkResultString(this, lib.indigoFasta(self, library.self));
     }
 
-    public String idt() {
+    public String idt(IndigoObject library) {
         dispatcher.setSessionID();
-        return Indigo.checkResultString(this, lib.indigoIdt(self));
+        return Indigo.checkResultString(this, lib.indigoIdt(self, library.self));
+    }
+
+    public String helm(IndigoObject library) {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoHelm(self, library.self));
     }
 
     public String getOriginalFormat() {
@@ -102,9 +107,9 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         Indigo.checkResult(this, lib.indigoSaveMolfileToFile(self, filename));
     }
 
-    public void saveSequenceToFile(String filename) {
+    public void saveSequenceToFile(String filename, IndigoObject library) {
         dispatcher.setSessionID();
-        Indigo.checkResult(this, lib.indigoSaveSequenceToFile(self, filename));
+        Indigo.checkResult(this, lib.indigoSaveSequenceToFile(self, filename, library.self));
     }
 
     public void saveFastaToFile(String filename) {

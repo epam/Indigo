@@ -142,6 +142,7 @@ namespace indigo
         void _checkRGroupsAndAttachmentPoints();
 
         void _writeOccurrenceRanges(Output& out, const Array<int>& occurrences);
+        void _validate(BaseMolecule& bmol);
 
         struct _DBond // directed bond (near cis-trans bond)
         {

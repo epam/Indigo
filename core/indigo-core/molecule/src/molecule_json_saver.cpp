@@ -315,7 +315,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
     case SGroup::SG_TYPE_SUP: {
         Superatom& sa = (Superatom&)sgroup;
         writer.Key("name");
-        writer.String(sa.subscript.ptr());
+        writer.String(sa.subscript.size() ? sa.subscript.ptr() : "");
         if (sa.contracted == DisplayOption::Expanded)
         {
             writer.Key("expanded");
@@ -341,7 +341,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
                 if (atp_id_str.length() > 0)
                 {
                     writer.Key("attachmentId");
-                    writer.String(atp_id_str.c_str());
+                    writer.String(convertAPToHELM(atp_id_str).c_str());
                 }
                 writer.EndObject();
             }
@@ -1175,6 +1175,30 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
         writer.String(tg.tgroup_comment.ptr());
     }
 
+    if (tg.unresolved)
+    {
+        writer.Key("unresolved");
+        writer.Bool(tg.unresolved);
+
+        if (tg.idt_alias.size()) // Save IDT alias only for unresolved
+        {
+            writer.Key("idtAliases");
+            writer.StartObject();
+            writer.Key("base");
+            writer.String(tg.idt_alias.ptr());
+            writer.Key("modifications");
+            writer.StartObject();
+            writer.Key("endpoint5");
+            writer.String(tg.idt_alias.ptr());
+            writer.Key("internal");
+            writer.String(tg.idt_alias.ptr());
+            writer.Key("endpoint3");
+            writer.String(tg.idt_alias.ptr());
+            writer.EndObject();
+            writer.EndObject();
+        }
+    }
+
     saveMonomerAttachmentPoints(tg, writer);
     saveFragment(*tg.fragment, writer);
     writer.EndObject();
@@ -1205,6 +1229,11 @@ void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter&
                 std::string atp_id_str(atp.apid.ptr());
                 if (!isAttachmentPointsInOrder(order++, atp_id_str))
                 {
+                    if (atp_id_str.size())
+                    {
+                        writer.Key("id");
+                        writer.String(atp_id_str.c_str());
+                    }
                     writer.Key("type");
                     if (atp_id_str == kLeftAttachmentPoint || atp_id_str == kAttachmentPointR1)
                         writer.String("left");

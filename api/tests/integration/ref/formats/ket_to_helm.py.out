@@ -1,0 +1,10 @@
+*** KET to HELM ***
+helm_annotations.ket:SUCCEED
+helm_chem_peptide.ket:SUCCEED
+helm_chem_rna.ket:SUCCEED
+helm_connetion_separator.ket:SUCCEED
+helm_cycled_polymer.ket:SUCCEED
+helm_multi_char_rna.ket:SUCCEED
+helm_peptide.ket:SUCCEED
+helm_rna_without_base.ket:SUCCEED
+helm_simple_rna.ket:SUCCEED

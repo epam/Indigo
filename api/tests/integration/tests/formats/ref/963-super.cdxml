@@ -19,9 +19,9 @@
     <page HeightPages="1" WidthPages="1">
         <fragment id="4">
             <n id="48" NodeType="Fragment">
-                <fragment id="49">
+                <fragment id="51">
                     <n id="11" p="59.835632 109.329903"/>
-                    <n id="50" NodeType="ExternalConnectionPoint"/>
+                    <n id="52" NodeType="ExternalConnectionPoint"/>
                     <n id="12" Element="8" NumHydrogens="0" p="30.202303 104.643272">
                         <t p="30.202303 104.643272" LabelJustification="Left">
                             <s font="3" size="10" face="96">O</s>
@@ -42,20 +42,20 @@
                     <b id="37" B="14" E="15"/>
                     <b id="38" B="14" E="16"/>
                     <b id="39" B="14" E="17"/>
-                    <b id="52" B="50" E="11"/>
+                    <b id="54" B="52" E="11"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>CO2tBu</s>
                 </t>
             </n>
-            <n id="53" NodeType="Fragment">
-                <fragment id="54">
+            <n id="49" NodeType="Fragment">
+                <fragment id="55">
                     <n id="18" Element="16" NumHydrogens="0" p="59.998569 229.331665">
                         <t p="59.998569 229.331665" LabelJustification="Left">
                             <s font="3" size="10" face="96">S</s>
                         </t>
                     </n>
-                    <n id="55" NodeType="ExternalConnectionPoint"/>
+                    <n id="56" NodeType="ExternalConnectionPoint"/>
                     <n id="19" p="60.107033 259.326599"/>
                     <n id="20" Element="8" NumHydrogens="0" p="30.000000 229.440125">
                         <t p="30.000000 229.440125" LabelJustification="Left">
@@ -70,13 +70,13 @@
                     <b id="41" B="19" E="18"/>
                     <b id="42" B="18" E="20" Order="2"/>
                     <b id="43" B="18" E="21" Order="2"/>
-                    <b id="57" B="55" E="18"/>
+                    <b id="58" B="56" E="18"/>
                 </fragment>
                 <t LabelJustification="Left" LabelAlignment="Above">
                     <s>Ms</s>
                 </t>
             </n>
-            <n id="58" NodeType="Fragment">
+            <n id="50" NodeType="Fragment">
                 <fragment id="59">
                     <n id="22" Element="16" NumHydrogens="0" p="168.518234 145.330887">
                         <t p="168.518234 145.330887" LabelJustification="Left">
@@ -120,8 +120,8 @@
             <b id="30" B="6" E="7"/>
             <b id="31" B="9" E="10" Order="2"/>
             <b id="32" B="10" E="8"/>
-            <b id="51" B="7" E="48"/>
-            <b id="56" B="10" E="53"/>
+            <b id="53" B="7" E="48"/>
+            <b id="57" B="10" E="49"/>
         </fragment>
     </page>
 </CDXML>

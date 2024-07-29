@@ -403,6 +403,21 @@ void Scanner::skipBom()
     }
 }
 
+bool Scanner::startsWith(const char* word)
+{
+    if (word == nullptr)
+        return false;
+    long long pos = tell();
+    char ch = *word;
+    while (ch != 0 && !isEOF() && ch == readChar())
+    {
+        word++;
+        ch = *word;
+    }
+    seek(pos, SEEK_SET);
+    return ch == 0;
+}
+
 void Scanner::skipUntil(const char* delimiters)
 {
     while (strchr(delimiters, lookNext()) == nullptr)

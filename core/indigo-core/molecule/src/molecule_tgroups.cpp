@@ -20,11 +20,10 @@
 #include "base_cpp/scanner.h"
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
-#include <memory>
 
 using namespace indigo;
 
-TGroup::TGroup()
+TGroup::TGroup() : unresolved(false)
 {
 }
 
@@ -34,6 +33,7 @@ TGroup::~TGroup()
 
 void TGroup::clear()
 {
+    unresolved = false;
 }
 
 int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* /*context*/)
@@ -45,6 +45,11 @@ int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* /*context*/)
         return -1;
     if (tg2.fragment.get() == 0)
         return 1;
+
+    if (tg1.unresolved && !tg2.unresolved)
+        return 1;
+    else if (!tg1.unresolved && tg2.unresolved)
+        return -1;
 
     lgrps.clear();
     bgrps.clear();
@@ -111,6 +116,8 @@ void TGroup::copy(const TGroup& other)
     tgroup_comment.copy(other.tgroup_comment);
     tgroup_natreplace.copy(other.tgroup_natreplace);
     tgroup_id = other.tgroup_id;
+    unresolved = other.unresolved;
+    idt_alias.copy(other.idt_alias);
     fragment.reset(other.fragment->neu());
     fragment->clone(*other.fragment.get(), 0, 0);
 }

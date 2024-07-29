@@ -168,6 +168,7 @@ public:
         GROSS_REACTION,
         JSON_MOLECULE,
         JSON_REACTION,
+        MONOMER_LIBRARY,
         INDIGO_OBJECT_LAST_TYPE // must be the last element in the enum
     };
 
@@ -423,6 +424,7 @@ protected:
     }
 
 DLLEXPORT Indigo& indigoGetInstance();
+DLLEXPORT _SessionLocalContainer<Indigo>& indigoSelf();
 
 class DLLEXPORT IndigoError : public Exception
 {

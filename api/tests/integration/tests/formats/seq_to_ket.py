@@ -37,8 +37,11 @@ seq_tests = [
     },
 ]
 
+# empty library - internal used for now
+lib = indigo.loadMonomerLibrary('{"root":{}}')
+
 for seq in seq_tests:
-    mol = indigo.loadSequence(seq["seq_data"], seq["seq_type"])
+    mol = indigo.loadSequence(seq["seq_data"], seq["seq_type"], lib)
     filename = seq["ref"]
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
     #     file.write(mol.json())

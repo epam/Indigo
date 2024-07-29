@@ -12,6 +12,9 @@
             },
             {
                 "$ref": "monomer3"
+            },
+            {
+                "$ref": "monomer4"
             }
         ],
         "connections": [
@@ -45,6 +48,17 @@
                 },
                 "endpoint2": {
                     "monomerId": "monomer3",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer3",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer4",
                     "attachmentPointId": "R1"
                 }
             }
@@ -100,6 +114,17 @@
         "seqid": 1,
         "position": {
             "x": 3.200000047683716,
+            "y": -0.0
+        },
+        "alias": "P",
+        "templateId": "P___Phosphate"
+    },
+    "monomer4": {
+        "type": "monomer",
+        "id": "4",
+        "seqid": 2,
+        "position": {
+            "x": 4.800000190734863,
             "y": -0.0
         },
         "alias": "P",

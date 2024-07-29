@@ -80,7 +80,7 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
     std::vector<int> mol_ids;
     std::vector<int> meta_ids;
 
-    std::vector<std::vector<int>> nodes_ids;
+    std::vector<std::map<int, int>> nodes_ids;
 
     MoleculeCdxmlSaver molsaver(_output, _is_binary);
     MoleculeCdxmlSaver::Bounds b;
@@ -296,7 +296,7 @@ void ReactionCdxmlSaver::_closeScheme(MoleculeCdxmlSaver& molsaver)
     molsaver.endCurrentElement();
 }
 
-void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, std::vector<int>& mol_ids, std::vector<std::vector<int>>& nodes_ids,
+void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, std::vector<int>& mol_ids, std::vector<std::map<int, int>>& nodes_ids,
                                   const std::pair<int, int>& arrow_id)
 {
     int id = -1;
@@ -418,7 +418,7 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
 }
 
 void ReactionCdxmlSaver::_generateCdxmlObjIds(BaseReaction& rxn, std::vector<int>& mol_ids, std::vector<int>& meta_ids,
-                                              std::vector<std::vector<int>>& nodes_ids)
+                                              std::vector<std::map<int, int>>& nodes_ids)
 {
     for (auto i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
     {
@@ -428,7 +428,7 @@ void ReactionCdxmlSaver::_generateCdxmlObjIds(BaseReaction& rxn, std::vector<int
         nodes_ids.push_back({});
 
         for (auto j = mol.vertexBegin(); j != mol.vertexEnd(); j = mol.vertexNext(j))
-            nodes_ids[i].push_back(++_id);
+            nodes_ids[i].emplace(j, ++_id);
     }
 
     // generate ids for meta objects. 1 node and 1 extra object. text or graphics
@@ -438,7 +438,7 @@ void ReactionCdxmlSaver::_generateCdxmlObjIds(BaseReaction& rxn, std::vector<int
         meta_ids.push_back(++_id);
         nodes_ids.push_back({});
         _id += 2;
-        nodes_ids[r_id].push_back(_id);
+        nodes_ids[r_id].emplace(r_id, _id);
     }
 }
 

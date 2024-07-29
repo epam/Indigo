@@ -62,3 +62,9 @@ print(
 fname = "ket_with_bond_stereo_ether.ket"
 expected = r"[#6]1-[#6]=[#6]-[#6]=[#6]\[#6]=1"
 test_ket_to_smarts(fname, expected)
+
+print("**** #2036 ket with templates to smarts  ****")
+test_ket_to_smarts(
+    "5amd.ket",
+    "[#7]1-[#6](-[#7])=[#7]-[#6]2-[#7](-[#6]=[#7]-[#6]=2-[#6]=1-[#7])/[#6@]1-[#6]-[#6@](\\[#8]-[#15](-[H])(-[#8])=[#8])-[#6@@](/[#6]-[#8]-[H])-[#8]-1",
+)

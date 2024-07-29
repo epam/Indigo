@@ -48,9 +48,27 @@ void CmlSaver::saveQueryMolecule(QueryMolecule& mol)
     _saveMolecule(mol, true);
 }
 
-void CmlSaver::_saveMolecule(BaseMolecule& mol, bool query)
+void CmlSaver::_validate(BaseMolecule& bmol)
+{
+    std::string unresolved;
+    if (bmol.getUnresolvedTemplatesList(bmol, unresolved))
+        throw Error("%s cannot be written in CML format.", unresolved.c_str());
+}
+
+void CmlSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 {
     LocaleGuard locale_guard;
+    _validate(bmol);
+    auto* pmol = &bmol;
+    std::unique_ptr<BaseMolecule> mol;
+    if (bmol.tgroups.getTGroupCount())
+    {
+        mol.reset(bmol.neu());
+        mol->clone(bmol);
+        mol->transformTemplatesToSuperatoms();
+        pmol = mol.get();
+    }
+
     std::unique_ptr<XMLDocument> doc = std::make_unique<XMLDocument>();
     _doc = doc->GetDocument();
     _root = 0;
@@ -65,9 +83,9 @@ void CmlSaver::_saveMolecule(BaseMolecule& mol, bool query)
         elem = _root;
     }
 
-    _addMoleculeElement(elem, mol, query);
+    _addMoleculeElement(elem, *pmol, query);
 
-    _addRgroups(elem, mol, query);
+    _addRgroups(elem, *pmol, query);
 
     XMLPrinter printer;
     _doc->Accept(&printer);
@@ -117,6 +135,8 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                 atom_str = "R";
             else if (_mol->isPseudoAtom(i))
                 atom_str = _mol->getPseudoAtom(i);
+            // else if (_mol->isTemplateAtom(i))
+            //    atom_str = _mol->getTemplateAtom(i);
             else if (atom_number > 0)
                 atom_str = Element::toString(atom_number);
             else if (qmol != 0)

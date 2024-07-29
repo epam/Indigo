@@ -120,6 +120,9 @@
             },
             {
                 "$ref": "monomer39"
+            },
+            {
+                "$ref": "monomer40"
             }
         ],
         "connections": [
@@ -412,19 +415,19 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer29",
-                    "attachmentPointId": "R3"
+                    "monomerId": "monomer28",
+                    "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer30",
+                    "monomerId": "monomer29",
                     "attachmentPointId": "R1"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer29",
-                    "attachmentPointId": "R2"
+                    "monomerId": "monomer30",
+                    "attachmentPointId": "R3"
                 },
                 "endpoint2": {
                     "monomerId": "monomer31",
@@ -434,8 +437,30 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
+                    "monomerId": "monomer30",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
                     "monomerId": "monomer32",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer33",
                     "attachmentPointId": "R3"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer34",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer32",
+                    "attachmentPointId": "R2"
                 },
                 "endpoint2": {
                     "monomerId": "monomer33",
@@ -445,22 +470,22 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer31",
+                    "monomerId": "monomer33",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer32",
+                    "monomerId": "monomer35",
                     "attachmentPointId": "R1"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer32",
-                    "attachmentPointId": "R2"
+                    "monomerId": "monomer36",
+                    "attachmentPointId": "R3"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer34",
+                    "monomerId": "monomer37",
                     "attachmentPointId": "R1"
                 }
             },
@@ -468,7 +493,7 @@
                 "connectionType": "single",
                 "endpoint1": {
                     "monomerId": "monomer35",
-                    "attachmentPointId": "R3"
+                    "attachmentPointId": "R2"
                 },
                 "endpoint2": {
                     "monomerId": "monomer36",
@@ -478,44 +503,33 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer34",
+                    "monomerId": "monomer36",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer35",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer35",
-                    "attachmentPointId": "R2"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer37",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
                     "monomerId": "monomer38",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer39",
                     "attachmentPointId": "R3"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer39",
+                    "monomerId": "monomer40",
                     "attachmentPointId": "R1"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer37",
+                    "monomerId": "monomer38",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer38",
+                    "monomerId": "monomer39",
                     "attachmentPointId": "R1"
                 }
             }
@@ -875,6 +889,17 @@
     "monomer29": {
         "type": "monomer",
         "id": "29",
+        "seqid": 3,
+        "position": {
+            "x": 9.600000381469727,
+            "y": -6.400000095367432
+        },
+        "alias": "P",
+        "templateId": "P"
+    },
+    "monomer30": {
+        "type": "monomer",
+        "id": "30",
         "seqid": 0,
         "position": {
             "x": 0.0,
@@ -883,9 +908,9 @@
         "alias": "dR",
         "templateId": "dRib"
     },
-    "monomer30": {
+    "monomer31": {
         "type": "monomer",
-        "id": "30",
+        "id": "31",
         "seqid": 0,
         "position": {
             "x": 0.0,
@@ -894,9 +919,9 @@
         "alias": "T",
         "templateId": "Thy"
     },
-    "monomer31": {
+    "monomer32": {
         "type": "monomer",
-        "id": "31",
+        "id": "32",
         "seqid": 0,
         "position": {
             "x": 1.600000023841858,
@@ -905,9 +930,9 @@
         "alias": "P",
         "templateId": "P"
     },
-    "monomer32": {
+    "monomer33": {
         "type": "monomer",
-        "id": "32",
+        "id": "33",
         "seqid": 1,
         "position": {
             "x": 3.200000047683716,
@@ -916,9 +941,9 @@
         "alias": "dR",
         "templateId": "dRib"
     },
-    "monomer33": {
+    "monomer34": {
         "type": "monomer",
-        "id": "33",
+        "id": "34",
         "seqid": 1,
         "position": {
             "x": 3.200000047683716,
@@ -927,9 +952,9 @@
         "alias": "A",
         "templateId": "Ade"
     },
-    "monomer34": {
+    "monomer35": {
         "type": "monomer",
-        "id": "34",
+        "id": "35",
         "seqid": 1,
         "position": {
             "x": 4.800000190734863,
@@ -938,9 +963,9 @@
         "alias": "P",
         "templateId": "P"
     },
-    "monomer35": {
+    "monomer36": {
         "type": "monomer",
-        "id": "35",
+        "id": "36",
         "seqid": 2,
         "position": {
             "x": 6.400000095367432,
@@ -949,9 +974,9 @@
         "alias": "dR",
         "templateId": "dRib"
     },
-    "monomer36": {
+    "monomer37": {
         "type": "monomer",
-        "id": "36",
+        "id": "37",
         "seqid": 2,
         "position": {
             "x": 6.400000095367432,
@@ -960,9 +985,9 @@
         "alias": "C",
         "templateId": "Cyt"
     },
-    "monomer37": {
+    "monomer38": {
         "type": "monomer",
-        "id": "37",
+        "id": "38",
         "seqid": 2,
         "position": {
             "x": 8.0,
@@ -971,9 +996,9 @@
         "alias": "P",
         "templateId": "P"
     },
-    "monomer38": {
+    "monomer39": {
         "type": "monomer",
-        "id": "38",
+        "id": "39",
         "seqid": 3,
         "position": {
             "x": 9.600000381469727,
@@ -982,9 +1007,9 @@
         "alias": "dR",
         "templateId": "dRib"
     },
-    "monomer39": {
+    "monomer40": {
         "type": "monomer",
-        "id": "39",
+        "id": "40",
         "seqid": 3,
         "position": {
             "x": 9.600000381469727,

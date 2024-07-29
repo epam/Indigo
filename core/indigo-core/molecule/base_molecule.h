@@ -219,8 +219,11 @@ namespace indigo
         virtual const char* getTemplateAtomClass(int idx) = 0;
         virtual const int getTemplateAtomDisplayOption(int idx) = 0;
         virtual const int getTemplateAtomTemplateIndex(int idx) = 0;
-        virtual void getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map) = 0;
-        virtual void getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map) = 0;
+
+        bool getUnresolvedTemplatesList(BaseMolecule& bmol, std::string& unresolved);
+
+        void getTemplatesMap(std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map);
+        void getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>& directions_map);
 
         int countRSites();
         int countTemplateAtoms();
@@ -234,7 +237,7 @@ namespace indigo
         int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& helm_name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
         void transformSuperatomsToTemplates(int template_id);
-        void transformTemplatesToSuperatoms(MonomerFilterBase& filter);
+        void transformTemplatesToSuperatoms();
 
         virtual bool isRSite(int atom_idx) = 0;
         virtual dword getRSiteBits(int atom_idx) = 0;

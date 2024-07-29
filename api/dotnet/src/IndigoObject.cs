@@ -86,29 +86,35 @@ namespace com.epam.indigo
             dispatcher.checkResult(IndigoLib.indigoFree(s));
         }
 
-        public string sequence()
+        public string sequence(IndigoObject library)
         {
             dispatcher.setSessionID();
-            return dispatcher.checkResult(IndigoLib.indigoSequence(self));
+            return dispatcher.checkResult(IndigoLib.indigoSequence(self, library.self));
         }
 
-        public string fasta()
+        public string fasta(IndigoObject library)
         {
             dispatcher.setSessionID();
-            return dispatcher.checkResult(IndigoLib.indigoFasta(self));
+            return dispatcher.checkResult(IndigoLib.indigoFasta(self, library.self));
         }
 
-        public string idt()
+        public string idt(IndigoObject library)
         {
             dispatcher.setSessionID();
-            return dispatcher.checkResult(IndigoLib.indigoIdt(self));
+            return dispatcher.checkResult(IndigoLib.indigoIdt(self, library.self));
         }
 
-        public void saveSequenceToFile(string filename)
+        public string helm(IndigoObject library)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoHelm(self, library.self));
+        }
+
+        public void saveSequenceToFile(string filename, IndigoObject library)
         {
             dispatcher.setSessionID();
             int s = dispatcher.checkResult(IndigoLib.indigoWriteFile(filename));
-            dispatcher.checkResult(IndigoLib.indigoSaveSequenceToFile(self, s));
+            dispatcher.checkResult(IndigoLib.indigoSaveSequenceToFile(self, s, library.self));
             dispatcher.checkResult(IndigoLib.indigoFree(s));
         }
 

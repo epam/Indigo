@@ -72,7 +72,7 @@ if (UNIX OR MINGW)
     endif()
 elseif (MSVC)
     string(APPEND CMAKE_C_FLAGS " -MP -D_CRT_SECURE_NO_WARNINGS -D_WIN32_WINNT=0x0601 -DWINVER=0x0601")
-    string(APPEND CMAKE_CXX_FLAGS " -MP -EHs -D_CRT_SECURE_NO_WARNINGS -D_WIN32_WINNT=0x0601 -DWINVER=0x0601")
+    string(APPEND CMAKE_CXX_FLAGS " -MP -EHs -D_CRT_SECURE_NO_WARNINGS -D_WIN32_WINNT=0x0601 -DWINVER=0x0601 -D_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR")
 endif ()
 
 # NOTE: Link-time optimization flags - turned off for now due to issues with exception handling

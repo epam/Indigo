@@ -55,7 +55,7 @@ namespace indigo
         static constexpr char CHAR_LOWERCASE_END = 0x7B;
         static constexpr char CHAR_SHIFT_CONVERT = 0x20;
 
-        SequenceLoader(Scanner& scanner);
+        SequenceLoader(Scanner& scanner, MonomerTemplateLibrary& library);
 
         ~SequenceLoader();
 
@@ -64,6 +64,7 @@ namespace indigo
         void loadFasta(BaseMolecule& mol, const std::string& seq_type_str);
         void loadFasta(BaseMolecule& mol, SeqType seq_type);
         void loadIdt(BaseMolecule& mol);
+        void loadHELM(BaseMolecule& mol);
 
     private:
         Vec3f getBackboneMonomerPosition();
@@ -82,6 +83,14 @@ namespace indigo
         bool addMonomerTemplate(BaseMolecule& mol, MonomerClass mt, const std::string& alias);
         bool checkAddTemplate(BaseMolecule& mol, MonomerClass type, const std::string monomer);
         SequenceLoader(const SequenceLoader&); // no implicit copy
+
+        static void check_monomer_place(std::string& idt_alias, IdtModification mon_mod, IdtModification alias_mod, bool has_prev_mon);
+
+        using MonomerInfo = std::tuple<std::string, std::string, std::string>;
+
+        MonomerInfo readHelmMonomer();
+        std::string readHelmSimplePolymerName(std::string& polymer_name);
+
         Scanner& _scanner;
         std::unordered_set<std::pair<MonomerClass, std::string>, pair_hash> _added_templates;
         const MonomerTemplates& _mon_lib;
@@ -89,6 +98,7 @@ namespace indigo
         int _last_monomer_idx;
         int _row;
         int _col;
+        MonomerTemplateLibrary& _library;
     };
 
 } // namespace indigo
