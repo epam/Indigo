@@ -14,6 +14,7 @@ print("*** Mol to CDXML ***")
 
 root = joinPathPy("molecules/", __file__)
 files = [
+    "1944-3D_Structure.mol",
     "stereo_either-0020.mol",
     "enhanced_stereo1.mol",
     "enhanced_stereo2.mol",

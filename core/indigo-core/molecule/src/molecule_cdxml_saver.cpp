@@ -587,6 +587,14 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
     Vec3f pos3 = mol.getAtomXyz(atom_idx);
     Vec2f pos(pos3.x, pos3.y);
 
+    bool have_z = BaseMolecule::hasZCoord(mol);
+    if (have_z)
+    {
+        Vec3f offset(1, -1, -1);
+        pos3.add(offset);
+        pos3.scale(_scale);
+    }
+
     pos.add(offset);
     if (atom_idx == mol.vertexBegin())
         min_coord = max_coord = pos;
@@ -723,6 +731,14 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
         out.printf("%f %f", pos.x, -pos.y);
         buf.push(0);
         node->SetAttribute("p", buf.ptr());
+        if (have_z)
+        {
+            QS_DEF(Array<char>, buf);
+            ArrayOutput out(buf);
+            out.printf("%f %f %f", pos3.x, -pos3.y, -pos3.z);
+            buf.push(0);
+            node->SetAttribute("xyz", buf.ptr());
+        }
     }
 
     int enh_stereo_type = mol.stereocenters.getType(atom_idx);
