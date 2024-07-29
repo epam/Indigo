@@ -18,8 +18,11 @@
 #include <rapidjson/writer.h>
 
 #include "indigo-inchi.h"
-#include "indigo-renderer.h"
 #include "indigo.h"
+
+#ifndef INDIGO_NO_RENDER
+#include "indigo-renderer.h"
+#endif
 
 namespace indigo
 {
@@ -300,12 +303,20 @@ namespace indigo
     public:
         explicit IndigoRendererSession(const qword sessionId) : _sessionId(sessionId)
         {
+#ifndef INDIGO_NO_RENDER
             indigoRendererInit(_sessionId);
+#else
+            jsThrow("No renderer included in this wasm bundle!");
+#endif
         }
 
         ~IndigoRendererSession()
         {
+#ifndef INDIGO_NO_RENDER
             indigoRendererDispose(_sessionId);
+#else
+            jsThrow("No renderer included in this wasm bundle!");
+#endif
         }
 
         IndigoRendererSession(const IndigoRendererSession&) = delete;
@@ -856,6 +867,7 @@ namespace indigo
 
     std::string render(const std::string& data, const std::map<std::string, std::string>& options)
     {
+#ifndef INDIGO_NO_RENDER
         const IndigoSession session;
         const IndigoRendererSession indigoRendererSession(session.getSessionId());
 
@@ -867,6 +879,10 @@ namespace indigo
         _checkResult(indigoRender(iko.id(), buffer_object.id));
         _checkResult(indigoToBuffer(buffer_object.id, &raw_ptr, &size));
         return cppcodec::base64_rfc4648::encode(raw_ptr, size);
+#else
+        jsThrow("No renderer included in this wasm bundle!");
+        return "";
+#endif
     }
 
     std::string reactionComponents(const std::string& data, const std::map<std::string, std::string>& options)
