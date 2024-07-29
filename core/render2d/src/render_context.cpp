@@ -510,6 +510,52 @@ void RenderContext::drawTextItemText(const TextItem& ti, const Vec3f& color, boo
     fontsDrawText(ti_mod, color, idle);
 }
 
+struct PngReadContext
+{
+    const unsigned char* data;
+    size_t size;
+    size_t offset;
+};
+
+cairo_status_t pngReadFunc(void* closure, unsigned char* data, unsigned int length)
+{
+    PngReadContext* context = static_cast<PngReadContext*>(closure);
+    if (context->offset + length > context->size)
+        return CAIRO_STATUS_READ_ERROR;
+    memcpy(data, context->data + context->offset, length);
+    context->offset += length;
+    return CAIRO_STATUS_SUCCESS;
+}
+
+void RenderContext::drawPng(const std::string& pngData, const Rect2f& bbox)
+{
+    PngReadContext context = {(const unsigned char*)pngData.data(), pngData.size(), 0};
+    cairo_surface_t* image = cairo_image_surface_create_from_png_stream(pngReadFunc, &context);
+
+    if (cairo_surface_status(image) != CAIRO_STATUS_SUCCESS)
+    {
+        cairo_surface_destroy(image);
+        return;
+    }
+
+    double imgWidth = cairo_image_surface_get_width(image);
+    double imgHeight = cairo_image_surface_get_height(image);
+
+    cairo_save(_cr);
+
+    cairo_translate(_cr, bbox.left(), bbox.bottom());
+    cairo_scale(_cr, bbox.width() / imgWidth, bbox.height() / imgHeight);
+
+    cairo_set_source_surface(_cr, image, 0, 0);
+    cairo_paint(_cr);
+
+    cairo_restore(_cr);
+    cairo_surface_destroy(image);
+
+    bbIncludePoint(bbox.leftBottom());
+    bbIncludePoint(bbox.rightTop());
+}
+
 void RenderContext::drawLine(const Vec2f& v0, const Vec2f& v1)
 {
     moveTo(v0);
