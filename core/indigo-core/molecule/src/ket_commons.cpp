@@ -300,7 +300,7 @@ namespace indigo
 
         auto style_lambda = styleLambda(_font_styles);
 
-        DispatchMapKVP text_obj_dispatcher = {{"bounding_box", bbox_lambda},     {"alignment", alignLambda(_alignment)}, {KETFontBoldStr, style_lambda},
+        DispatchMapKVP text_obj_dispatcher = {{"boundingBox", bbox_lambda},     {"alignment", alignLambda(_alignment)}, {KETFontBoldStr, style_lambda},
                                               {KETFontItalicStr, style_lambda},  {KETFontSubscriptStr, style_lambda},    {KETFontSuperscriptStr, style_lambda},
                                               {"indent", indentLambda(_indent)}, {"font", fontLambda(_font_styles)},     {"paragraphs", paragraphs_lambda}};
 

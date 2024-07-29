@@ -769,8 +769,8 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(BaseCDXElement& first_elem, bool n
         }
         else
         {
-            //_parseTextToKetObject(elem, ket_text_objects);
-            _parseText(elem, text_objects);
+            _parseTextToKetObject(elem, ket_text_objects);
+            //_parseText(elem, text_objects);
         }
     };
 

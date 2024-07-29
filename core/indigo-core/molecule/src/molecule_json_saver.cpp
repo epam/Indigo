@@ -1906,7 +1906,7 @@ void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const KETTextObject& text
 
 void MoleculeJsonSaver::saveText(JsonWriter& writer, const KETTextObject& text_obj)
 {
-    writer.Key("bounding_box");
+    writer.Key("boundingBox");
     writer.WriteRect(text_obj.boundingBox());
     if (text_obj.alignment().has_value())
         saveAlignment(writer, text_obj.alignment().value());
