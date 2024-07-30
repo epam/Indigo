@@ -60,6 +60,27 @@ void KetDocument::addMonomerTemplate(const MonomerTemplate& monomer_template)
     it.first->second.copy(monomer_template);
 }
 
+KetVariantMonomerTemplate& KetDocument::addVariantMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name,
+                                                                  std::vector<KetVariantMonomerOption>& options)
+{
+    auto ref = KetVariantMonomerTemplate::ref_prefix + id;
+    if (_variant_templates.find(ref) != _variant_templates.end())
+        throw Error("Variant monomer template '%s' already exists.", ref.c_str());
+    _variant_templates_refs.emplace_back(ref);
+    auto it = _variant_templates.try_emplace(ref, subtype, id, name, options);
+    return it.first->second;
+};
+
+KetVariantMonomer& KetDocument::addVariantMonomer(const std::string& id, const std::string& template_id)
+{
+    std::string ref = KetVariantMonomer::ref_prefix + id;
+    if (_variant_monomers.find(ref) != _variant_monomers.end())
+        throw Error("Variant monomer '%s' already exists.", ref.c_str());
+    _variant_monomers_refs.emplace_back(ref);
+    auto it = _variant_monomers.try_emplace(ref, id, template_id);
+    return it.first->second;
+};
+
 BaseMolecule& KetDocument::getBaseMolecule()
 {
     static thread_local std::optional<std::unique_ptr<Molecule>> molecule; // Temporary until direct conversion to molecule supported

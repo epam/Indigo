@@ -64,7 +64,6 @@ namespace indigo
 
         void loadMolecule(BaseMolecule& mol, bool load_arrows = false);
         void loadMonomerLibrary(MonomerTemplateLibrary& library);
-        void loadDocument(KetDocument& ket_document);
         StereocentersOptions stereochemistry_options;
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
         bool skip_3d_chirality;     // do not compute chirality from 3D coordinates
@@ -111,9 +110,6 @@ namespace indigo
         void addToLibMonomerGroupTemplate(MonomerTemplateLibrary& library, const rapidjson::Value& monomer_group_template);
         static std::string monomerTemplateClass(const rapidjson::Value& monomer_template);
         std::string monomerMolClass(const std::string& class_name);
-
-        void ParseKetMolecule(KetDocument& document, std::string ref, rapidjson::Value& json);
-        void parseKetSGroups(KetMolecule& mol, rapidjson::Value& sgroups);
 
     private:
         void parse_ket(rapidjson::Document& ket);

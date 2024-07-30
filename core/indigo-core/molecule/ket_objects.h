@@ -708,6 +708,122 @@ namespace indigo
         KetConnectionEndPoint _ep1;
         KetConnectionEndPoint _ep2;
     };
+
+    class DLLEXPORT KetVariantMonomerOption : public KetObjWithProps
+    {
+    public:
+        DECL_ERROR;
+        KetVariantMonomerOption(std::string templateId) : _templateId(templateId){};
+
+        const std::string& templateId() const
+        {
+            return _templateId;
+        };
+
+        void setProbability(float probability)
+        {
+            _probability = probability;
+        };
+
+        void setRatio(float ratio)
+        {
+            _ratio = ratio;
+        };
+
+        const std::optional<float> probability() const
+        {
+            return _probability;
+        };
+
+        const std::optional<float> ratio() const
+        {
+            return _ratio;
+        };
+
+    private:
+        std::string _templateId;
+        std::optional<float> _probability;
+        std::optional<float> _ratio;
+    };
+
+    class DLLEXPORT KetVariantMonomerTemplate : public KetObjWithProps
+    {
+    public:
+        DECL_ERROR;
+
+        inline static std::string ref_prefix = "variantMonomerTemplate-";
+
+        KetVariantMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name,
+                                  const std::vector<KetVariantMonomerOption>& options)
+            : _subtype(subtype), _id(id), _name(name), _options(options){};
+
+        const std::string& subtype() const
+        {
+            return _subtype;
+        };
+
+        const std::string& id() const
+        {
+            return _id;
+        };
+
+        const std::string& name() const
+        {
+            return _name;
+        };
+
+        const std::vector<KetVariantMonomerOption>& options() const
+        {
+            return _options;
+        };
+
+    private:
+        std::string _subtype;
+        std::string _id;
+        std::string _name;
+        std::vector<KetVariantMonomerOption> _options;
+    };
+
+    class DLLEXPORT KetVariantMonomer : public KetObjWithProps
+    {
+    public:
+        DECL_ERROR;
+
+        inline static std::string ref_prefix = "variantMonomer-";
+
+        KetVariantMonomer(std::string id, std::string template_id) : _id(id), _template_id(template_id){};
+
+        inline void setPosition(const Vec3f& position)
+        {
+            _position = Vec2f(position.x, position.y);
+        };
+
+        const std::optional<Vec2f>& position() const
+        {
+            return _position;
+        };
+
+        const std::string& id() const
+        {
+            return _id;
+        };
+
+        const std::string& templateId() const
+        {
+            return _template_id;
+        };
+
+        const std::map<std::string, int>& getStringPropStrToIdx() const override;
+
+    private:
+        enum class StringProps
+        {
+            alias
+        };
+        std::string _id;
+        std::string _template_id;
+        std::optional<Vec2f> _position;
+    };
 }
 
 #endif

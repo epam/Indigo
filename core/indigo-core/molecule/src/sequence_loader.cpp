@@ -791,6 +791,9 @@ void SequenceLoader::loadIdt(KetDocument& document)
     const auto IDT_DEF_PHOSPHATE = "P";
     const auto IDT_MODIFIED_PHOSPHATE = "sP";
     static const std::unordered_set<char> IDT_STANDARD_BASES = {'A', 'T', 'C', 'G', 'U', 'I'};
+    static const std::map<std::string, std::vector<std::string>> IDT_STANDARD_MIXED_BASES = {
+        {"R", {"A", "G"}},      {"Y", {"C", "T"}},      {"M", {"A", "C"}},      {"K", {"G", "T"}},      {"S", {"G", "C"}},          {"W", {"A", "T"}},
+        {"H", {"A", "C", "T"}}, {"B", {"G", "C", "T"}}, {"V", {"A", "C", "G"}}, {"D", {"A", "G", "T"}}, {"N", {"A", "C", "G", "T"}}};
     constexpr int MAX_STD_TOKEN_SIZE = 2;
     _row = 0;
     std::string invalid_symbols;
@@ -846,6 +849,17 @@ void SequenceLoader::loadIdt(KetDocument& document)
             case 'G':
             case 'U':
             case 'I':
+            case 'R':
+            case 'Y':
+            case 'M':
+            case 'K':
+            case 'S':
+            case 'W':
+            case 'H':
+            case 'B':
+            case 'V':
+            case 'D':
+            case 'N':
                 cur_token += ch;
                 break;
             case 'r':
@@ -893,6 +907,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
             std::string single_monomer_alias = "";
             std::string single_monomer_class;
             bool unresolved = false;
+            bool variant_monomer = false;
 
             if (token.first.back() == '/')
             {
@@ -927,12 +942,33 @@ void SequenceLoader::loadIdt(KetDocument& document)
 
             if (idt_alias.size() == 1)
             {
-                if (IDT_STANDARD_BASES.count(idt_alias[0]) == 0)
+                if (IDT_STANDARD_BASES.count(idt_alias[0]) == 0 && IDT_STANDARD_MIXED_BASES.count(idt_alias) == 0)
                 {
                     if (invalid_symbols.size())
                         invalid_symbols += ',';
                     invalid_symbols += idt_alias[0];
                     continue;
+                }
+                if (IDT_STANDARD_MIXED_BASES.count(idt_alias) != 0)
+                {
+                    variant_monomer = true;
+                    if (!document.hasVariantMonomerTemplate(idt_alias))
+                    {
+                        auto it = IDT_STANDARD_MIXED_BASES.find(idt_alias);
+                        std::vector<KetVariantMonomerOption> options;
+                        for (auto template_alias : it->second)
+                        {
+                            auto& template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Base, template_alias);
+                            if (template_id.size() == 0)
+                                throw Error("Monomer base template '%s' not found", template_alias);
+                            options.emplace_back(template_id);
+                            auto& monomer_template = _library.getMonomerTemplateById(template_id);
+                            checkAddTemplate(document, monomer_template);
+                            _alias_to_id.emplace(template_alias, template_id);
+                        }
+                        document.addVariantMonomerTemplate("mixture", idt_alias, idt_alias, options);
+                    }
+                    document.addVariantMonomer(idt_alias, idt_alias);
                 }
                 else
                 {
@@ -1061,7 +1097,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     addTemplateConnection(document, _last_monomer_idx, monomer_idx);
                 _last_monomer_idx = static_cast<int>(monomer_idx);
             }
-            else
+            else if (!variant_monomer)
                 addNucleotide(document, base, sugar, phosphate, false);
 
             _seq_id++;

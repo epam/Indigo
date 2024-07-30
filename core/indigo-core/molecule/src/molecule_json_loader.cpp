@@ -1922,39 +1922,3 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
         }
     }
 }
-
-void MoleculeJsonLoader::ParseKetMolecule(KetDocument& document, std::string ref, rapidjson::Value& json)
-{
-    KetMolecule& mol = document.addMolecule(ref);
-    if (!json.HasMember("atoms"))
-        throw Error("Expected atoms block not found");
-
-    // parse atoms
-    // mol.parseKetAtoms(json["atoms"]);
-
-    // parse bonds
-    if (json.HasMember("bonds"))
-    {
-        // mol.parseKetBonds(json["bonds"]);
-    }
-
-    // if (json.HasMember("highlight"))
-    // {
-    //     parseHighlight(json["highlight"], *pmol);
-    // }
-
-    // parse SGroups
-    if (json.HasMember("sgroups"))
-    {
-        mol.parseKetSGroups(json["sgroups"]);
-    }
-
-    // if (json.HasMember("properties"))
-    // {
-    //     parseProperties(json["properties"], *pmol);
-    // }
-}
-
-void MoleculeJsonLoader::loadDocument(KetDocument& ket_document)
-{
-}

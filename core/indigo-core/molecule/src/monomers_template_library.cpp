@@ -87,7 +87,7 @@ namespace indigo
         JsonWriter writer;
         writer.Reset(string_buffer);
         writer.StartObject();
-        KetDocumentJsonSaver::saveMonomerTemplate(writer, *this);
+        KetDocumentJsonSaver::saveMonomerTemplate(writer, ref_prefix + id(), *this);
         writer.EndObject();
         std::string ket(string_buffer.GetString());
         // read TGroup

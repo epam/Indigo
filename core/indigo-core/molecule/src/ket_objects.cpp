@@ -599,3 +599,13 @@ const std::map<std::string, int>& KetConnection::getStringPropStrToIdx() const
     };
     return str_to_idx;
 }
+
+IMPL_ERROR(KetVariantMonomer, "Ket Variant Monomer")
+
+const std::map<std::string, int>& KetVariantMonomer::getStringPropStrToIdx() const
+{
+    static std::map<std::string, int> str_to_idx{
+        {"alias", toUType(StringProps::alias)},
+    };
+    return str_to_idx;
+}

@@ -48,9 +48,15 @@ namespace indigo
 
         void addMonomerTemplate(const MonomerTemplate& monomer_template);
 
+        KetVariantMonomerTemplate& addVariantMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name,
+                                                             std::vector<KetVariantMonomerOption>& options);
+        KetVariantMonomer& addVariantMonomer(const std::string& id, const std::string& template_id);
+
         using molecules_map = std::map<std::string, KetMolecule>;
         using templates_map = std::map<std::string, MonomerTemplate>;
         using monomers_map = std::map<std::string, KetMonomer>;
+        using variant_templates_map = std::map<std::string, KetVariantMonomerTemplate>;
+        using variant_monomers_map = std::map<std::string, KetVariantMonomer>;
 
         inline const molecules_map& molecules() const
         {
@@ -95,7 +101,33 @@ namespace indigo
 
         int original_format;
 
+        const variant_templates_map& variantTemplates() const
+        {
+            return _variant_templates;
+        };
+
+        const std::vector<std::string>& variantTemplatesRefs() const
+        {
+            return _variant_templates_refs;
+        };
+
+        const variant_monomers_map& variantMonomers() const
+        {
+            return _variant_monomers;
+        };
+
+        const std::vector<std::string>& variantMonomersRefs() const
+        {
+            return _variant_monomers_refs;
+        };
+
         BaseMolecule& getBaseMolecule();
+
+        bool hasVariantMonomerTemplate(const std::string& id) const
+        {
+            auto ref = KetVariantMonomerTemplate::ref_prefix + id;
+            return _variant_templates.find(ref) != _variant_templates.end();
+        };
 
     private:
         molecules_map _molecules;
@@ -104,6 +136,10 @@ namespace indigo
         std::vector<std::string> _monomers_refs;
         templates_map _templates;
         std::vector<std::string> _templates_refs;
+        variant_templates_map _variant_templates;
+        std::vector<std::string> _variant_templates_refs;
+        variant_monomers_map _variant_monomers;
+        std::vector<std::string> _variant_monomers_refs;
         std::vector<KetConnection> _connections;
     };
 }
