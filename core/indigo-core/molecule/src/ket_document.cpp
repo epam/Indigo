@@ -26,16 +26,44 @@ IMPL_ERROR(KetDocument, "Ket Document")
 
 KetMolecule& KetDocument::addMolecule(const std::string& ref)
 {
+    _molecule_refs.emplace_back(ref);
     auto res = _molecules.emplace(ref, KetMolecule());
     if (!res.second)
         throw Error("Molecule with ref='%s' already exists", ref.c_str());
     return res.first->second;
 }
 
-KetMonomer& KetDocument::addMonomer(const std::string& ref, const std::string& id, const std::string& template_id)
+KetMonomer& KetDocument::addMonomer(const std::string& ref, const std::string& id, const std::string& alias, const std::string& template_id)
 {
-    auto res = _monomers.emplace(ref, KetMonomer(id, template_id));
+    _monomers_refs.emplace_back(ref);
+    auto res = _monomers.emplace(ref, KetMonomer(id, alias, template_id));
     if (!res.second)
         throw Error("Monomer with ref='%s' already exists", ref.c_str());
     return res.first->second;
+}
+
+KetMonomer& KetDocument::addMonomer(const std::string& alias, const std::string& template_id)
+{
+    std::string id = std::to_string(_monomers.size());
+    return addMonomer("monomer" + id, id, alias, template_id);
+}
+
+void KetDocument::addMonomerTemplate(const MonomerTemplate& monomer_template)
+{
+    std::string ref = MonomerTemplate::ref_prefix + monomer_template.id();
+    _templates_refs.emplace_back(ref);
+    auto it = _templates.try_emplace(ref, monomer_template.id(), monomer_template.monomerClass(), monomer_template.idtAlias(), monomer_template.unresolved());
+    if (!it.second)
+        throw Error("Template with id '%s' already added", monomer_template.id());
+    it.first->second.copy(monomer_template);
+}
+
+BaseMolecule& KetDocument::getBaseMolecule()
+{
+    if (!_molecule.has_value())
+    {
+        // save to ket
+        // load molecule from ket
+    }
+    return *_molecule.value().get();
 }

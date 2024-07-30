@@ -69,6 +69,8 @@ namespace indigo
 
         MonomerTemplate(MonomerTemplate&& other) = default;
 
+        static inline const std::string ref_prefix = "monomerTemplate-";
+
         static const std::string& MonomerClassToStr(MonomerClass monomer_type)
         {
             static const std::map<MonomerClass, std::string> _type_to_str{
@@ -158,7 +160,7 @@ namespace indigo
             return _attachment_points;
         }
 
-        using atom_ptr = std::unique_ptr<KetBaseAtomType>;
+        using atom_ptr = std::shared_ptr<KetBaseAtomType>;
         using atoms_type = std::vector<atom_ptr>;
 
         const atoms_type& atoms() const
@@ -181,6 +183,18 @@ namespace indigo
             KetMolecule::parseKetBonds(_bonds, bonds);
         }
 
+        void copy(const MonomerTemplate& other)
+        {
+            KetObjWithProps::copy(other);
+            _id = other._id;
+            _class = other._class;
+            _attachment_points = other._attachment_points;
+            _idt_alias = other._idt_alias;
+            _unresolved = other._unresolved;
+            _atoms = other._atoms;
+            _bonds = other._bonds;
+        }
+
     private:
         enum class StringProps
         {
@@ -194,7 +208,6 @@ namespace indigo
         MonomerClass _class;
 
         std::map<std::string, MonomerTemplateAttachmentPoint> _attachment_points;
-        std::string molecule;
         IdtAlias _idt_alias;
         bool _unresolved;
         atoms_type _atoms;

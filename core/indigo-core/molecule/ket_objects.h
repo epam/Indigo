@@ -61,6 +61,11 @@ namespace indigo
             _int_props[idx] = value;
         };
 
+        inline void setIntProp(int idx, std::size_t value)
+        {
+            _int_props[idx] = static_cast<int>(value);
+        };
+
         inline void setStringProp(int idx, std::string value)
         {
             _string_props[idx] = value;
@@ -123,6 +128,13 @@ namespace indigo
 
         void parseOptsFromKet(const rapidjson::Value& json);
         void saveOptsToKet(JsonWriter& writer) const;
+
+        void copy(const KetObjWithProps& other)
+        {
+            _bool_props = other._bool_props;
+            _int_props = other._int_props;
+            _string_props = other._string_props;
+        }
 
     private:
         std::map<int, bool> _bool_props;
@@ -527,7 +539,7 @@ namespace indigo
         KetMolecule(const KetMolecule& other) = delete;
         KetMolecule& operator=(const KetMolecule&) = delete;
 
-        using atom_ptr = std::unique_ptr<KetBaseAtomType>;
+        using atom_ptr = std::shared_ptr<KetBaseAtomType>;
         using atoms_type = std::vector<atom_ptr>;
 
         using sgroup_ptr = std::unique_ptr<KetBaseSGroup>;
@@ -600,30 +612,102 @@ namespace indigo
     {
     public:
         DECL_ERROR;
-        KetMonomer(const std::string& id, const std::string& template_id) : _id(id), _template_id(template_id){};
+
+        static inline const std::string ref_prefix = "monomer";
+        KetMonomer(const std::string& id, const std::string& alias, const std::string& template_id) : _id(id), _alias(alias), _template_id(template_id){};
 
         inline void setPosition(const Vec2f& position)
         {
             _position = position;
         };
 
+        inline void setPosition(const Vec3f& position)
+        {
+            _position = Vec2f(position.x, position.y);
+        };
+
+        const std::optional<Vec2f>& position() const
+        {
+            return _position;
+        };
+
         const std::map<std::string, int>& getIntPropStrToIdx() const override;
-        const std::map<std::string, int>& getStringPropStrToIdx() const override;
+
+        const std::string& id() const
+        {
+            return _id;
+        };
+
+        const std::string& alias() const
+        {
+            return _alias;
+        };
+
+        const std::string& templateId() const
+        {
+            return _template_id;
+        };
 
     private:
         enum class IntProps
         {
             seqid
         };
-        enum class StringProps
-        {
-            alias
-        };
         std::string _id;
+        std::string _alias;
         std::string _template_id;
         std::optional<Vec2f> _position;
     };
 
+    class DLLEXPORT KetConnectionEndPoint : public KetObjWithProps
+    {
+    public:
+        DECL_ERROR;
+
+        const std::map<std::string, int>& getStringPropStrToIdx() const override;
+
+    private:
+        enum class StringProps
+        {
+            groupId,
+            monomerId,
+            attachmentPointId
+        };
+    };
+
+    class DLLEXPORT KetConnection : public KetObjWithProps
+    {
+    public:
+        DECL_ERROR;
+
+        KetConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) : _connection_type("single"), _ep1(ep1), _ep2(ep2){};
+
+        const std::map<std::string, int>& getStringPropStrToIdx() const override;
+
+        inline const std::string connectionType() const
+        {
+            return _connection_type;
+        };
+
+        const KetConnectionEndPoint& ep1() const
+        {
+            return _ep1;
+        };
+
+        const KetConnectionEndPoint& ep2() const
+        {
+            return _ep2;
+        };
+
+    private:
+        enum class StringProps
+        {
+            label,
+        };
+        std::string _connection_type;
+        KetConnectionEndPoint _ep1;
+        KetConnectionEndPoint _ep2;
+    };
 }
 
 #endif

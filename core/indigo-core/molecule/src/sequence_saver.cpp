@@ -40,7 +40,7 @@ SequenceSaver::~SequenceSaver()
 
 std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
 {
-    static const std::unordered_set<std::string> IDT_STANDARD_BASES = {"A", "T", "C", "G", "U", "I"};
+    static const std::unordered_set<std::string> IDT_STANDARD_BASES = {"A", "T", "C", "G", "U", "I", "In"};
     static const std::map<std::string, std::string> IDT_STANDARD_SUGARS{{"R", "r"}, {"LR", "+"}, {"mR", "m"}, {"dR", ""}};
     std::string seq_string;
     std::unordered_set<int> used_atoms;
@@ -214,7 +214,7 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
             sugar = IDT_STANDARD_SUGARS.at(sugar);
             if (sugar.size())
                 seq_string += sugar;
-            seq_string += base;
+            seq_string += base == "In" ? "I" : base; // Inosine coded as I in IDT
             if (sequence.size() == 0 && phosphate.size())
             {
                 if (phosphate != "P" || add_asterisk)

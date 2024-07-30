@@ -54,7 +54,6 @@ namespace indigo
         static std::string monomerId(const TGroup& tg);
         static std::string monomerKETClass(const std::string& class_name);
         static std::string monomerHELMClass(const std::string& class_name);
-        static void saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template);
 
         bool add_stereo_desc;
         bool pretty_json;
