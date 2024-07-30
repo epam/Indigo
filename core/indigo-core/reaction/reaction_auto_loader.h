@@ -46,7 +46,7 @@ namespace indigo
         ~ReactionAutoLoader();
 
         void loadReaction(BaseReaction& reaction);
-        std::unique_ptr<BaseReaction> loadReaction(bool query);
+        BaseReaction* loadReaction(bool query);
         // to keep C++ API compatible
         void loadQueryReaction(QueryReaction& qreaction);
 

@@ -92,12 +92,12 @@ void ReactionAutoLoader::loadReaction(BaseReaction& reaction)
         reaction.addReactionBlock().copy(rptr->reactionBlock(i));
 }
 
-std::unique_ptr<BaseReaction> ReactionAutoLoader::loadReaction(bool query)
+BaseReaction* ReactionAutoLoader::loadReaction(bool query)
 {
     auto reaction = _loadReaction(query);
     if (!query && dearomatize_on_load)
         reaction->dearomatize(arom_options);
-    return reaction;
+    return reaction.release();
 }
 
 std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
@@ -151,7 +151,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
             loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
             loader2.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader2.ignore_bad_valence = ignore_bad_valence;
-            return loader2.loadReaction(query);
+            return std::unique_ptr<BaseReaction>(loader2.loadReaction(query));
         }
     }
 
