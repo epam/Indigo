@@ -233,6 +233,7 @@ namespace indigo
             EEllipticalArcFilledTriangle,
             EEllipticalArcOpenAngle,
             EEllipticalArcOpenHalfAngle,
+            ERetrosynthetic,
         };
 
         KETReactionArrow(int arrow_type, const Vec2f& begin, const Vec2f& end, float height = 0)
@@ -342,7 +343,8 @@ namespace indigo
             ARROW_ELLIPTICAL_ARC_FILLED_BOW,
             ARROW_ELLIPTICAL_ARC_FILLED_TRIANGLE,
             ARROW_ELLIPTICAL_ARC_OPEN_ANGLE,
-            ARROW_ELLIPTICAL_ARC_OPEN_HALF_ANGLE
+            ARROW_ELLIPTICAL_ARC_OPEN_HALF_ANGLE,
+            ARROW_RETROSYNTHETIC,
         };
 
         enum
