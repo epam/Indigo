@@ -92,7 +92,7 @@ void ReactionAutoLoader::loadReaction(BaseReaction& reaction)
         reaction.addReactionBlock().copy(rptr->reactionBlock(i));
 }
 
-std::unique_ptr<BaseReaction> ReactionAutoLoader::loadReaction(bool query)
+BaseReaction* ReactionAutoLoader::loadReaction(bool query)
 {
     auto reaction = _loadReaction(query);
     if (!query && dearomatize_on_load)
@@ -100,7 +100,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::loadReaction(bool query)
     return reaction;
 }
 
-std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
+BaseReaction* ReactionAutoLoader::_loadReaction(bool query)
 {
     auto local_scanner = _scanner;
     // chack for base64
@@ -163,7 +163,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
             loader.stereochemistry_options = stereochemistry_options;
             if (query)
                 throw Error("CDX queries not supported yet");
-            auto reaction = std::make_unique<Reaction>();
+            auto reaction = new Reaction();
             loader.loadReaction(*reaction);
             return reaction;
         }
@@ -183,13 +183,13 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
             loader.ignore_bad_valence = ignore_bad_valence;
             if (query)
             {
-                auto reaction = std::make_unique<QueryReaction>();
+                auto reaction = new QueryReaction();
                 loader.loadQueryReaction(*reaction);
                 return reaction;
             }
             else
             {
-                auto reaction = std::make_unique<Reaction>();
+                auto reaction = new Reaction();
                 loader.loadReaction(*reaction);
                 return reaction;
             }
@@ -210,7 +210,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
                 throw Error("cannot load query reaction from ICR format");
 
             IcrLoader loader(*_scanner);
-            auto reaction = std::make_unique<Reaction>();
+            auto reaction = new Reaction();
             loader.loadReaction(*reaction);
             return reaction;
         }
@@ -230,7 +230,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
 
                 if (query)
                     throw Error("CML queries not supported");
-                auto reaction = std::make_unique<Reaction>();
+                auto reaction = new Reaction();
                 loader.loadReaction(*reaction);
                 return reaction;
             }
@@ -251,13 +251,13 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
 
             if (query)
             {
-                auto reaction = std::make_unique<QueryReaction>();
+                auto reaction = new QueryReaction();
                 loader.loadReaction(*reaction);
                 return reaction;
             }
             else
             {
-                auto reaction = std::make_unique<Reaction>();
+                auto reaction = new Reaction();
                 loader.loadReaction(*reaction);
                 return reaction;
             }
@@ -306,13 +306,13 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
                             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
                             if (query)
                             {
-                                auto reaction = std::make_unique<QueryReaction>();
+                                auto reaction = new QueryReaction();
                                 loader.loadReaction(*reaction);
                                 return reaction;
                             }
                             else
                             {
-                                auto reaction = std::make_unique<Reaction>();
+                                auto reaction = new Reaction();
                                 loader.loadReaction(*reaction);
                                 return reaction;
                             }
@@ -354,7 +354,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
                 reactions.emplace_back();
                 loader.loadReaction(reactions.back());
             }
-            return std::make_unique<PathwayReaction>(reactions);
+            return new PathwayReaction(reactions);
         }
     }
 
@@ -372,7 +372,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
         if (query)
         {
             // Try to load query as SMILES, if error occured - try to load as SMARTS
-            auto reaction = std::make_unique<QueryReaction>();
+            auto reaction = new QueryReaction();
             try
             {
                 loader.loadQueryReaction(*reaction);
@@ -387,7 +387,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
         }
         else
         {
-            auto reaction = std::make_unique<Reaction>();
+            auto reaction = new Reaction();
             loader.loadReaction(*reaction);
             return reaction;
         }
@@ -405,13 +405,13 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
 
         if (query)
         {
-            auto reaction = std::make_unique<QueryReaction>();
+            auto reaction = new QueryReaction();
             loader.loadQueryReaction(*reaction);
             return reaction;
         }
         else
         {
-            auto reaction = std::make_unique<Reaction>();
+            auto reaction = new Reaction();
             loader.loadReaction(*reaction);
             return reaction;
         }
