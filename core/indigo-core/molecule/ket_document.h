@@ -22,6 +22,8 @@
 #include "molecule/ket_objects.h"
 #include "molecule/monomers_template_library.h"
 
+#include <rapidjson/document.h> // Temporary until direct conversion to molecule supported
+
 #ifdef _WIN32
 #pragma warning(push)
 #pragma warning(disable : 4251)
@@ -103,7 +105,6 @@ namespace indigo
         templates_map _templates;
         std::vector<std::string> _templates_refs;
         std::vector<KetConnection> _connections;
-        std::optional<std::unique_ptr<BaseMolecule>> _molecule;
     };
 }
 

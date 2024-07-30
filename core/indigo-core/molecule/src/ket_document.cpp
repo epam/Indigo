@@ -18,7 +18,9 @@
 
 #include "molecule/ket_document.h"
 #include "base_cpp/exception.h"
-#include "molecule/base_molecule.h"
+#include "molecule/ket_document_json_saver.h"
+#include "molecule/molecule.h"
+#include "molecule/molecule_json_loader.h"
 
 using namespace indigo;
 
@@ -60,10 +62,23 @@ void KetDocument::addMonomerTemplate(const MonomerTemplate& monomer_template)
 
 BaseMolecule& KetDocument::getBaseMolecule()
 {
-    if (!_molecule.has_value())
+    static thread_local std::optional<std::unique_ptr<Molecule>> molecule; // Temporary until direct conversion to molecule supported
+    if (!molecule.has_value())
     {
         // save to ket
+        std::string json;
+        StringOutput out(json);
+        KetDocumentJsonSaver saver(out);
+        saver.saveKetDocument(*this);
         // load molecule from ket
+        rapidjson::Document data;
+        auto& res = data.Parse(json.c_str());
+        // if res.hasParseError()
+        MoleculeJsonLoader loader(data);
+        loader.stereochemistry_options.ignore_errors = true;
+        loader.ignore_noncritical_query_features = true;
+        molecule.emplace(std::make_unique<Molecule>());
+        loader.loadMolecule(*molecule.value().get());
     }
-    return *_molecule.value().get();
+    return *molecule.value().get();
 }
