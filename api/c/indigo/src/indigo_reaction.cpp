@@ -118,7 +118,6 @@ const char* IndigoQueryReaction::debugInfo() const
 
 IndigoQueryReaction::~IndigoQueryReaction()
 {
-    
 }
 
 BaseReaction& IndigoQueryReaction::getBaseReaction()
