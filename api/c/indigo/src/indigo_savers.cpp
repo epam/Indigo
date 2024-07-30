@@ -40,6 +40,7 @@
 #include <memory>
 
 #include "indigo_io.h"
+#include "indigo_ket_document.h"
 #include "indigo_molecule.h"
 #include "indigo_monomer_library.h"
 #include "indigo_reaction.h"
@@ -109,7 +110,7 @@ void IndigoSaver::appendObject(IndigoObject& object)
 
 void IndigoSdfSaver::appendMolfile(Output& out, IndigoObject& obj)
 {
-    if (IndigoBaseMolecule::is(obj))
+    if (IndigoBaseMolecule::is(obj) || IndigoKetDocument::is(obj))
     {
         Indigo& indigo = indigoGetInstance();
 
@@ -167,7 +168,7 @@ CEXPORT int indigoSdfAppend(int output, int molecule)
 void IndigoSmilesSaver::generateSmiles(IndigoObject& obj, Array<char>& out_buffer, SmilesSaver::SMILES_MODE smiles_format)
 {
     ArrayOutput output(out_buffer);
-    if (IndigoBaseMolecule::is(obj))
+    if (IndigoBaseMolecule::is(obj) || IndigoKetDocument::is(obj))
     {
         BaseMolecule& mol = obj.getBaseMolecule();
         SmilesSaver saver(output);
@@ -589,7 +590,7 @@ CEXPORT int indigoSaveSequence(int item, int output, int library)
     {
         IndigoObject& obj = self.getObject(item);
         Output& out = IndigoOutput::get(self.getObject(output));
-        if (IndigoBaseMolecule::is(obj))
+        if (IndigoBaseMolecule::is(obj) || IndigoKetDocument::is(obj))
         {
             IndigoObject& lib_obj = self.getObject(library);
             SequenceSaver saver(out, IndigoMonomerLibrary::get(lib_obj));
@@ -698,7 +699,7 @@ CEXPORT int indigoSaveCml(int item, int output)
     {
         IndigoObject& obj = self.getObject(item);
         Output& out = IndigoOutput::get(self.getObject(output));
-        if (IndigoBaseMolecule::is(obj))
+        if (IndigoBaseMolecule::is(obj) || IndigoKetDocument::is(obj))
         {
             CmlSaver saver(out);
 
@@ -806,6 +807,13 @@ CEXPORT int indigoSaveCdxml(int item, int output)
                 QueryMolecule& mol = obj.getQueryMolecule();
                 saver.saveMolecule(mol);
             }
+            out.flush();
+            return 1;
+        }
+        if (IndigoKetDocument::is(obj))
+        {
+            MoleculeCdxmlSaver saver(out);
+            saver.saveMolecule(obj.getBaseMolecule());
             out.flush();
             return 1;
         }

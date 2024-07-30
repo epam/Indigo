@@ -26,9 +26,9 @@
 #include "layout/molecule_layout.h"
 #include "molecule/elements.h"
 #include "molecule/json_writer.h"
+#include "molecule/ket_document_json_saver.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
-#include "molecule/molecule_json_saver.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_basic_templates.h"
 #include "molecule/monomers_lib.h"
@@ -87,13 +87,13 @@ namespace indigo
         JsonWriter writer;
         writer.Reset(string_buffer);
         writer.StartObject();
-        MoleculeJsonSaver::saveMonomerTemplate(writer, *this);
+        KetDocumentJsonSaver::saveMonomerTemplate(writer, *this);
         writer.EndObject();
         std::string ket(string_buffer.GetString());
         // read TGroup
         rapidjson::Document document;
         document.Parse(ket.c_str());
-        std::string template_id = "monomerTemplate-" + _id;
+        auto template_id = ref_prefix + _id;
         auto& mon_template = document[template_id.c_str()];
         Molecule mol;
         StereocentersOptions stereo_opt;

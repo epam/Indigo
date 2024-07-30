@@ -35,8 +35,8 @@
         "id": "0",
         "seqid": 0,
         "position": {
-            "x": 0.0,
-            "y": -0.0
+            "x": 0.000000,
+            "y": -0.000000
         },
         "alias": "unr1",
         "templateId": "unknown_monomer_with_idt_alias_unr1"
@@ -46,8 +46,8 @@
         "id": "1",
         "seqid": 1,
         "position": {
-            "x": 1.600000023841858,
-            "y": -0.0
+            "x": 1.600000,
+            "y": -0.000000
         },
         "alias": "unr2",
         "templateId": "unknown_monomer_with_idt_alias_unr2"
@@ -55,31 +55,28 @@
     "monomerTemplate-unknown_monomer_with_idt_alias_unr1": {
         "type": "monomerTemplate",
         "id": "unknown_monomer_with_idt_alias_unr1",
-        "class": "Chem",
-        "classHELM": "CHEM",
+        "class": "CHEM",
         "alias": "unr1",
-        "name": "unr1",
         "unresolved": true,
         "idtAliases": {
-            "base": "unr1",
-            "modifications": {
-                "endpoint5": "unr1",
-                "internal": "unr1",
-                "endpoint3": "unr1"
-            }
+            "base": "unr1"
         },
         "attachmentPoints": [
             {
-                "attachmentAtom": -1
+                "attachmentAtom": -1,
+                "label": "R1"
             },
             {
-                "attachmentAtom": -1
+                "attachmentAtom": -1,
+                "label": "R2"
             },
             {
-                "attachmentAtom": -1
+                "attachmentAtom": -1,
+                "label": "R3"
             },
             {
-                "attachmentAtom": -1
+                "attachmentAtom": -1,
+                "label": "R4"
             }
         ],
         "atoms": [],
@@ -88,31 +85,28 @@
     "monomerTemplate-unknown_monomer_with_idt_alias_unr2": {
         "type": "monomerTemplate",
         "id": "unknown_monomer_with_idt_alias_unr2",
-        "class": "Chem",
-        "classHELM": "CHEM",
+        "class": "CHEM",
         "alias": "unr2",
-        "name": "unr2",
         "unresolved": true,
         "idtAliases": {
-            "base": "unr2",
-            "modifications": {
-                "endpoint5": "unr2",
-                "internal": "unr2",
-                "endpoint3": "unr2"
-            }
+            "base": "unr2"
         },
         "attachmentPoints": [
             {
-                "attachmentAtom": -1
+                "attachmentAtom": -1,
+                "label": "R1"
             },
             {
-                "attachmentAtom": -1
+                "attachmentAtom": -1,
+                "label": "R2"
             },
             {
-                "attachmentAtom": -1
+                "attachmentAtom": -1,
+                "label": "R3"
             },
             {
-                "attachmentAtom": -1
+                "attachmentAtom": -1,
+                "label": "R4"
             }
         ],
         "atoms": [],

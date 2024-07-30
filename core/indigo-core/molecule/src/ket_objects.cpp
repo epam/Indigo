@@ -162,29 +162,45 @@ void KetObjWithProps::parseOptsFromKet(const rapidjson::Value& json)
 void KetObjWithProps::saveOptsToKet(JsonWriter& writer) const
 {
     // Parse bool props
+    std::map<int, std::string> boolPropIdxTostr;
     for (auto it : getBoolPropStrToIdx())
     {
-        if (hasBoolProp(it.first.c_str()))
+        boolPropIdxTostr.emplace(it.second, it.first);
+    }
+    for (auto it : boolPropIdxTostr)
+    {
+        if (hasBoolProp(it.first))
         {
-            writer.Key(it.first);
+            writer.Key(it.second);
             writer.Bool(getBoolProp(it.second));
         }
     }
+
     // Parse int props
+    std::map<int, std::string> intPropIdxTostr;
     for (auto it : getIntPropStrToIdx())
     {
-        if (hasIntProp(it.first.c_str()))
+        intPropIdxTostr.emplace(it.second, it.first);
+    }
+    for (auto it : intPropIdxTostr)
+    {
+        if (hasIntProp(it.first))
         {
-            writer.Key(it.first);
+            writer.Key(it.second);
             writer.Int(getIntProp(it.second));
         }
     }
     // Parse string props
+    std::map<int, std::string> strPropIdxTostr;
     for (auto it : getStringPropStrToIdx())
     {
-        if (hasStringProp(it.first.c_str()))
+        strPropIdxTostr.emplace(it.second, it.first);
+    }
+    for (auto it : strPropIdxTostr)
+    {
+        if (hasStringProp(it.first))
         {
-            writer.Key(it.first);
+            writer.Key(it.second);
             writer.String(getStringProp(it.second));
         }
     }
@@ -562,10 +578,24 @@ const std::map<std::string, int>& KetMonomer::getIntPropStrToIdx() const
     return str_to_idx;
 }
 
-const std::map<std::string, int>& KetMonomer::getStringPropStrToIdx() const
+IMPL_ERROR(KetConnectionEndPoint, "Ket Connection End Point")
+
+const std::map<std::string, int>& KetConnectionEndPoint::getStringPropStrToIdx() const
 {
     static std::map<std::string, int> str_to_idx{
-        {"alias", toUType(StringProps::alias)},
+        {"groupId", toUType(StringProps::groupId)},
+        {"monomerId", toUType(StringProps::monomerId)},
+        {"attachmentPointId", toUType(StringProps::attachmentPointId)},
+    };
+    return str_to_idx;
+}
+
+IMPL_ERROR(KetConnection, "Ket Connection")
+
+const std::map<std::string, int>& KetConnection::getStringPropStrToIdx() const
+{
+    static std::map<std::string, int> str_to_idx{
+        {"label", toUType(StringProps::label)},
     };
     return str_to_idx;
 }
