@@ -54,7 +54,7 @@ void KetDocument::addMonomerTemplate(const MonomerTemplate& monomer_template)
     _templates_refs.emplace_back(ref);
     auto it = _templates.try_emplace(ref, monomer_template.id(), monomer_template.monomerClass(), monomer_template.idtAlias(), monomer_template.unresolved());
     if (!it.second)
-        throw Error("Template with id '%s' already added", monomer_template.id());
+        throw Error("Template with id '%s' already added", monomer_template.id().c_str());
     it.first->second.copy(monomer_template);
 }
 
