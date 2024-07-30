@@ -960,7 +960,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         {
                             auto& template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Base, template_alias);
                             if (template_id.size() == 0)
-                                throw Error("Monomer base template '%s' not found", template_alias);
+                                throw Error("Monomer base template '%s' not found", template_alias.c_str());
                             options.emplace_back(template_id);
                             auto& monomer_template = _library.getMonomerTemplateById(template_id);
                             checkAddTemplate(document, monomer_template);
