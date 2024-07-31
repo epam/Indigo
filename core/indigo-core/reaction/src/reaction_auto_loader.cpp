@@ -82,9 +82,34 @@ void ReactionAutoLoader::loadQueryReaction(QueryReaction& qreaction)
 
 void ReactionAutoLoader::loadReaction(BaseReaction& reaction)
 {
-    _loadReaction(reaction);
-    if (!reaction.isQueryReaction() && dearomatize_on_load)
-        reaction.dearomatize(arom_options);
+    if (reaction.isQueryReaction())
+    {
+        QueryReaction r;
+        _loadReaction(r);
+        if (!reaction.isQueryReaction() && dearomatize_on_load)
+            reaction.dearomatize(arom_options);
+
+        reaction.clone(r);
+        reaction.original_format = r.original_format;
+        for (int i = 0; i < r.reactionBlocksCount(); i++)
+            reaction.addReactionBlock().copy(r.reactionBlock(i));
+        for (int i = 0; i < r.specialConditionsCount(); i++)
+            reaction.addSpecialCondition(r.specialCondition(i).meta_idx, r.specialCondition(i).bbox);
+    }
+    else
+    {
+        Reaction r;
+        _loadReaction(r);
+        if (!reaction.isQueryReaction() && dearomatize_on_load)
+            reaction.dearomatize(arom_options);
+
+        reaction.clone(r);
+        reaction.original_format = r.original_format;
+        for (int i = 0; i < r.reactionBlocksCount(); i++)
+            reaction.addReactionBlock().copy(r.reactionBlock(i));
+        for (int i = 0; i < r.specialConditionsCount(); i++)
+            reaction.addSpecialCondition(r.specialCondition(i).meta_idx, r.specialCondition(i).bbox);
+    }
 }
 
 void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
