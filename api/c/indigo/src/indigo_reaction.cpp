@@ -70,7 +70,11 @@ IndigoReaction::IndigoReaction() : IndigoBaseReaction(REACTION)
 
 const char* IndigoReaction::debugInfo() const
 {
-    return "<reaction>";
+    if (type == IndigoObject::REACTION)
+        return "<reaction>";
+    if (type == IndigoObject::PATHWAY_REACTION)
+        return "<pathway reaction>";
+    return "";
 }
 
 IndigoReaction::~IndigoReaction()
