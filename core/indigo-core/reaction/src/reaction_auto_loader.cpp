@@ -90,6 +90,8 @@ void ReactionAutoLoader::loadReaction(BaseReaction& reaction)
     reaction.original_format = rptr->original_format;
     for (int i = 0; i < rptr->reactionBlocksCount(); i++)
         reaction.addReactionBlock().copy(rptr->reactionBlock(i));
+    for (int i = 0; i < rptr->specialConditionsCount(); i++)
+        reaction.addSpecialCondition(rptr->specialCondition(i).meta_idx, rptr->specialCondition(i).bbox);
 }
 
 std::unique_ptr<BaseReaction> ReactionAutoLoader::loadReaction(bool query)
