@@ -284,33 +284,33 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
         _scanner->seek(pos, SEEK_SET);
     }
 
-	// check for RDF format
-	{
-		long long pos = _scanner->tell();
-		Array<char> firstLine;
-		const char* delimeters {};
-		_scanner->readWord(firstLine, delimeters);
+    // check for RDF format
+    {
+        long long pos = _scanner->tell();
+        Array<char> firstLine;
+        const char* delimeters{};
+        _scanner->readWord(firstLine, delimeters);
         _scanner->seek(pos, SEEK_SET);
-		if (!strcmp(firstLine.ptr(), "$RDFILE"))
-		{
-			RdfLoader rdf_loader(*_scanner);
-			while (!rdf_loader.isEOF())
-			{
-				rdf_loader.readNext();
-				BufferScanner reaction_scanner(rdf_loader.data);
+        if (!strcmp(firstLine.ptr(), "$RDFILE"))
+        {
+            RdfLoader rdf_loader(*_scanner);
+            while (!rdf_loader.isEOF())
+            {
+                rdf_loader.readNext();
+                BufferScanner reaction_scanner(rdf_loader.data);
 
-				RxnfileLoader loader(reaction_scanner);
-				loader.stereochemistry_options = stereochemistry_options;
-				loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-				loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-				loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-				loader.treat_stereo_as = treat_stereo_as;
-				loader.ignore_bad_valence = ignore_bad_valence;
-				loader.loadReaction(dynamic_cast<Reaction&>(reaction));
-			}
-			return;
-		}
-	}
+                RxnfileLoader loader(reaction_scanner);
+                loader.stereochemistry_options = stereochemistry_options;
+                loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+                loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+                loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+                loader.treat_stereo_as = treat_stereo_as;
+                loader.ignore_bad_valence = ignore_bad_valence;
+                loader.loadReaction(dynamic_cast<Reaction&>(reaction));
+            }
+            return;
+        }
+    }
 
     // check for SMILES format
     if (Scanner::isSingleLine(*_scanner))
