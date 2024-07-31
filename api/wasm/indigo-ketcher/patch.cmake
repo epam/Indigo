@@ -3,10 +3,10 @@ file(READ package.json packageJson)
 string(REGEX REPLACE ".*\"version\": \"([^\"]*)\".*" "\\1" version ${packageJson})
 message("Version is: ${version}")
 # patch package.json
-string(REPLACE "indigo-ketcher-separate-wasm.wasm" "indigo-ketcher-${version}.wasm" modifiedPackageJson ${packageJson})
-string(REPLACE "indigo-ketcher-separate-norender.wasm" "indigo-ketcher-norender-${version}.wasm" modifiedPackageJson ${packageJson})
+string(REPLACE "indigo-ketcher-separate-wasm.wasm" "indigo-ketcher-${version}.wasm" packageJson ${packageJson})
+string(REPLACE "indigo-ketcher-separate-wasm-norender.wasm" "indigo-ketcher-norender-${version}.wasm" packageJson ${packageJson})
 
-file(WRITE package.json "${modifiedPackageJson}")
+file(WRITE package.json "${packageJson}")
 
 # patch indigo-ketcher-separate-wasm.js
 file(READ indigo-ketcher-separate-wasm.js content)
