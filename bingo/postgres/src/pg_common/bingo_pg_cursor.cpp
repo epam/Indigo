@@ -12,7 +12,6 @@ extern "C"
 
 #include "bingo_pg_fix_post.h"
 
-#include "base_c/nano.h"
 #include "base_cpp/output.h"
 #include "base_cpp/tlscont.h"
 
@@ -204,7 +203,7 @@ void BingoPgCursor::_init(indigo::Array<char>& query_str)
         SPI_connect();
         SPIPlanPtr plan_ptr = SPI_prepare_cursor(query_str.ptr(), arg_types.size(), arg_types.ptr(), 0);
 
-        auto cursor_idx = nanoClock();
+        auto cursor_idx = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
         ArrayOutput cursor_name_out(_cursorName);
         cursor_name_out.printf("bingo_cursor_%llu", cursor_idx);
         cursor_name_out.writeChar(0);

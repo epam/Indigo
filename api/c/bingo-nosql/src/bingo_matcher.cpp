@@ -6,7 +6,6 @@
 #include "molecule/molecule_substructure_matcher.h"
 
 #include "base_c/bitarray.h"
-#include "base_c/nano.h"
 #include "base_cpp/profiling.h"
 
 #include <algorithm>
