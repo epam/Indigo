@@ -134,6 +134,11 @@ CEXPORT int indigoReactionProductEnumerate(int reaction, int monomers)
             QS_DEF(IndigoReaction, indigo_rxn);
             indigo_rxn._monomersProperties.clear();
             indigo_rxn.rxn->clone(out_reaction, NULL, NULL, NULL);
+            indigo_rxn.rxn->original_format = out_reaction.original_format;
+            for (int i = 0; i < out_reaction.reactionBlocksCount(); i++)
+                indigo_rxn.rxn->addReactionBlock().copy(out_reaction.reactionBlock(i));
+            for (int i = 0; i < out_reaction.specialConditionsCount(); i++)
+                indigo_rxn.rxn->addSpecialCondition(out_reaction.specialCondition(i).meta_idx, out_reaction.specialCondition(i).bbox);
 
             int properties_count = monomers_properties.size();
             Array<int>& out_indices = out_indices_all[k];
