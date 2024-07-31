@@ -1,6 +1,7 @@
 #include "bingo_base_index.h"
 
 #include <climits>
+#include <filesystem>
 #include <sstream>
 #include <string>
 
@@ -11,8 +12,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #endif
-
-#include "base_c/os_dir.h"
 
 #include "indigo_fingerprints.h"
 
@@ -78,7 +77,7 @@ void BaseIndex::create(const char* location, const MoleculeFingerprintParameters
     int sim_block_size = 8192;
     int cf_block_size = 1048576;
 
-    osDirCreate(location);
+    std::filesystem::create_directories(location);
 
     _location = location;
 
@@ -139,10 +138,9 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
 {
     // MMFStorage::setDatabaseId(index_id);
 
-    if (osDirExists(location) == OS_DIR_NOTFOUND)
+    if (!std::filesystem::exists(location) || !std::filesystem::is_directory(location))
         throw Exception("database directory missed");
 
-    osDirCreate(location);
     _location = location;
 
     _lock_fd = tryGetDirLock(_location);

@@ -16,12 +16,25 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <filesystem>
+#include <iostream>
+#include <regex>
 
-#include "base_c/os_dir.h"
 #include "indigo.h"
+
+bool matchesPattern(const std::string& filename, const std::string& pattern)
+{
+    // Convert wildcard pattern to regex
+    std::string regexPattern = std::regex_replace(pattern, std::regex("\\."), "\\.");
+    regexPattern = std::regex_replace(regexPattern, std::regex("\\*"), ".*");
+    regexPattern = std::regex_replace(regexPattern, std::regex("\\?"), ".");
+
+    std::regex re(regexPattern);
+    return std::regex_match(filename, re);
+}
 
 void onError(const char* message, void* context)
 {
@@ -233,7 +246,7 @@ int main(int argc, const char** argv)
         {
             char dirname[1024];
             char errbuf[1024];
-            const char* filename = 0;
+            const char* pattern = 0;
             int k;
 
             for (k = (int)strlen(argv[i]) - 1; k >= 0; k--)
@@ -265,38 +278,16 @@ int main(int argc, const char** argv)
 
             _replaceSlashes(dirname);
 
-            filename = argv[i] + k + 1;
+            pattern = argv[i] + k + 1;
 
+            for (const auto& path : std::filesystem::directory_iterator(dirname))
             {
-                OsDirIter dir_iter;
-                int rc = osDirSearch(dirname, filename, &dir_iter);
-
-                if (rc == OS_DIR_OK)
+                const char* current_filename = path.path().filename().string().c_str();
+                if (!matchesPattern(current_filename, pattern))
                 {
-                    int count = 0;
-
-                    while ((rc = osDirNext(&dir_iter)) == OS_DIR_OK)
-                    {
-                        _replaceSlashes(dir_iter.path);
-                        _handleInputFile(dir_iter.path, structures);
-                        count++;
-                    }
-                    if (rc != OS_DIR_END)
-                    {
-                        fprintf(stderr, "%s\n", osDirLastError(errbuf, sizeof(errbuf)));
-                        return -1;
-                    }
-                    if (count == 0)
-                    {
-                        fprintf(stderr, "can not find %s in directory %s\n", filename, dirname);
-                        return -1;
-                    }
+                    continue;
                 }
-                else
-                {
-                    fprintf(stderr, "%s\n", osDirLastError(errbuf, sizeof(errbuf)));
-                    return -1;
-                }
+                _handleInputFile(path.path().string().c_str(), structures);
             }
         }
     }
