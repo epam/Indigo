@@ -79,7 +79,7 @@ IndigoReaction::~IndigoReaction()
 
 void IndigoReaction::init(std::unique_ptr<BaseReaction>&& reaction)
 {
-    type = dynamic_cast<Reaction*>(reaction.get()) ? IndigoObject::REACTION : IndigoObject::PATHWAY_REACTION;
+    type = !reaction || dynamic_cast<Reaction*>(reaction.get()) ? IndigoObject::REACTION : IndigoObject::PATHWAY_REACTION;
     rxn = reaction ? std::move(reaction) : std::make_unique<Reaction>();
 }
 
