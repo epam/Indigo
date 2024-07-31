@@ -63,7 +63,7 @@ const char* IndigoBaseReaction::debugInfo() const
 // IndigoBaseReaction
 //
 
-IndigoReaction::IndigoReaction() : IndigoBaseReaction(REACTION)
+IndigoReaction::IndigoReaction() : IndigoBaseReaction(REACTION), rxn()
 {
     init();
 }
@@ -79,12 +79,13 @@ const char* IndigoReaction::debugInfo() const
 
 IndigoReaction::~IndigoReaction()
 {
+    delete rxn;
 }
 
 void IndigoReaction::init(std::unique_ptr<BaseReaction>&& reaction)
 {
     type = !reaction || dynamic_cast<Reaction*>(reaction.get()) ? IndigoObject::REACTION : IndigoObject::PATHWAY_REACTION;
-    rxn = reaction ? std::move(reaction) : std::make_unique<Reaction>();
+    rxn = reaction ? reaction.release() : new Reaction;
 }
 
 Reaction& IndigoReaction::getReaction()

@@ -76,7 +76,7 @@ public:
 
     const char* debugInfo() const override;
 
-    std::unique_ptr<BaseReaction> rxn;
+    BaseReaction* rxn;
 };
 
 class DLLEXPORT IndigoQueryReaction : public IndigoBaseReaction
