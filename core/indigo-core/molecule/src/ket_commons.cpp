@@ -133,52 +133,15 @@ namespace indigo
         return res;
     }
 
-    KETImage::KETImage(const Rect2f& bbox, const std::string& base64) : MetaObject(CID), _bbox(bbox)
+    KETImage::KETImage(const Rect2f& bbox, KETImage::ImageFormat format, const std::string& base64) : MetaObject(CID), _bbox(bbox), _image_format(format)
     {
-        auto header_data = split(base64, ',');
-        if (header_data.size() == 2)
-        {
-            auto header = split(header_data[0], ';');
-            if (header.size() == 2)
-            {
-                if (header[1] == "base64")
-                {
-                    BufferScanner b64decode(header_data[1].c_str(), true);
-                    b64decode.readAll(_image_data);
-                    if (header[0] == KImagePNG)
-                        _image_format = EKETPNG;
-                    else if (header[0] == KImageSVG)
-                        _image_format = EKETSVG;
-                    else
-                        throw Exception("Unknown MIME type: %s", header[0].c_str());
-                }
-                else
-                    throw Exception("Unknown encoding:%s", header[1].c_str());
-            }
-            else
-                throw Exception("Expected data header: <mime_type>;<encoding> received:%s", header_data[0].c_str());
-        }
-        else
-            throw Exception("Unknown image data:%s", base64.c_str());
+        BufferScanner b64decode(base64.c_str(), true);
+        b64decode.readAll(_image_data);
     }
 
     std::string KETImage::getBase64() const
     {
-        auto encoded_str = ";base64," + base64::encode(_image_data.c_str(), _image_data.size());
-        std::string img_format_str;
-        switch (_image_format)
-        {
-        case EKETPNG:
-            encoded_str = KImagePNG + encoded_str;
-            break;
-        case EKETSVG:
-            encoded_str = KImageSVG + encoded_str;
-            break;
-        default:
-            throw Exception("Unknown image format: %d", _image_format);
-            break;
-        }
-        return encoded_str;
+        return base64::encode(_image_data.c_str(), _image_data.size());
     }
 
 }

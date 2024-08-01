@@ -1916,7 +1916,16 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
                 Vec2f lt(bbox_val["x"].GetFloat(), bbox_val["y"].GetFloat());
                 Vec2f rb(lt);
                 rb.add(Vec2f(bbox_val["width"].GetFloat(), bbox_val["height"].GetFloat()));
-                meta_interface.addMetaObject(new KETImage(Rect2f(lt, rb), mobj["data"].GetString()));
+                std::string image_format_str = mobj["format"].GetString();
+                KETImage::ImageFormat image_format;
+                if (image_format_str == KImagePNG)
+                    image_format = KETImage::EKETPNG;
+                else if (image_format_str == KImageSVG)
+                    image_format = KETImage::EKETSVG;
+                else
+                    throw Exception("Unsupported image format: %s", image_format_str.c_str());
+
+                meta_interface.addMetaObject(new KETImage(Rect2f(lt, rb), image_format, mobj["data"].GetString()));
             }
         }
     }
