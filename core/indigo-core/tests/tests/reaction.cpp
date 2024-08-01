@@ -137,17 +137,17 @@ TEST_F(IndigoCoreReactionTest, iterate_rdf)
         IcrSaver icr(std_out);
         icr.save_xyz = false;
         icr.saveReaction(reaction);
-        std::string out_str( out.ptr(), out.size() );
+        std::string out_str(out.ptr(), out.size());
         out_stream << rdf_loader.currentNumber() << ":";
         if (reaction.name.size())
         {
-            std::string rname(reaction.name.ptr(), reaction.name.size()); 
+            std::string rname(reaction.name.ptr(), reaction.name.size());
             out_stream << rname << ":";
         }
         out_stream << std::hex;
         for (uint8_t val : out_str)
             out_stream << std::setw(2) << std::setfill('0') << (int)val << " ";
-        out_stream << std::endl; 
+        out_stream << std::endl;
         out_stream << std::dec;
     }
     out_stream.close();
