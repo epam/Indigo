@@ -19,10 +19,17 @@
 #include <gtest/gtest.h>
 
 #include <base_cpp/output.h>
+#include <base_cpp/scanner.h>
+#include <molecule/rdf_loader.h>
+#include <reaction/icr_saver.h>
 #include <reaction/reaction.h>
+#include <reaction/reaction_auto_loader.h>
 #include <reaction/rsmiles_saver.h>
 
 #include "common.h"
+
+#include <fstream>
+#include <iostream>
 
 using namespace std;
 using namespace indigo;
@@ -108,4 +115,55 @@ TEST_F(IndigoCoreReactionTest, smarts_reaction)
     out.push(0);
     std::string smarts_out{out.ptr()};
     ASSERT_EQ(smarts_in, smarts_out);
+}
+
+TEST_F(IndigoCoreReactionTest, iterate_rdf)
+{
+    std::string rdfFile = std::string(DATA_PATH) + "/reactions/other/rxns.rdf";
+
+    std::ofstream out_stream(std::string(DATA_PATH) + "/reactions/other/rxns.out");
+
+    FileScanner fs(rdfFile.c_str());
+    RdfLoader rdf_loader(fs);
+    while (!rdf_loader.isEOF())
+    {
+        Array<char> out;
+        ArrayOutput std_out(out);
+        Reaction reaction;
+        rdf_loader.readNext();
+        ReactionAutoLoader rloader(rdf_loader.data);
+        rloader.loadReaction(reaction);
+
+        IcrSaver icr(std_out);
+        icr.save_xyz = false;
+        icr.saveReaction(reaction);
+        std::string out_str( out.ptr(), out.size() );
+        out_stream << rdf_loader.currentNumber() << ":";
+        if (reaction.name.size())
+        {
+            std::string rname(reaction.name.ptr(), reaction.name.size()); 
+            out_stream << rname << ":";
+        }
+        out_stream << std::hex;
+        for (uint8_t val : out_str)
+            out_stream << std::setw(2) << std::setfill('0') << (int)val << " ";
+        out_stream << std::endl; 
+        out_stream << std::dec;
+    }
+    out_stream.close();
+
+    // read reference
+    std::ifstream in_stream_ref(std::string(DATA_PATH) + "/reactions/other/rxns.ref");
+    std::stringstream rdf_ref_buffer;
+    rdf_ref_buffer << in_stream_ref.rdbuf();
+    auto rdf_ref_str = rdf_ref_buffer.str();
+    in_stream_ref.close();
+
+    // read current output
+    std::ifstream in_stream_out(std::string(DATA_PATH) + "/reactions/other/rxns.out");
+    std::stringstream rdf_buffer;
+    rdf_buffer << in_stream_out.rdbuf();
+    auto rdf_str = rdf_ref_buffer.str();
+    in_stream_out.close();
+    ASSERT_EQ(rdf_str, rdf_ref_str);
 }
