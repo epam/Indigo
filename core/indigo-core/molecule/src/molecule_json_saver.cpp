@@ -1881,14 +1881,28 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.StartObject(); // start node
             writer.Key("type");
             writer.String("image");
+            writer.Key("format");
+            switch (image_obj->getFormat())
+            {
+            case KETImage::EKETPNG:
+                writer.String(KImagePNG);
+                break;
+            case KETImage::EKETSVG:
+                writer.String(KImageSVG);
+                break;
+            default:
+                throw Exception("Bad image format: %d", image_obj->getFormat());
+            }
+
             writer.Key("boundingBox");
 
             writer.StartObject(); // start bbox
-
             writer.Key("x");
             writer.Double(bbox.left());
             writer.Key("y");
             writer.Double(bbox.bottom());
+            writer.Key("z");
+            writer.Double(0);
 
             writer.Key("width");
             writer.Double(bbox.width());
