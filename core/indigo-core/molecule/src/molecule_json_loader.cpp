@@ -7,11 +7,13 @@
 #include "layout/molecule_layout.h"
 #include "molecule/elements.h"
 #include "molecule/ket_commons.h"
+#include "molecule/ket_document.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_sgroups.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_lib.h"
+#include "molecule/monomers_template_library.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
 
@@ -103,8 +105,8 @@ MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
         Array<char> buf;
         scanner.readAll(buf);
         buf.push(0);
-        unsigned char* ptr = (unsigned char*)buf.ptr();
-        if (!_document.Parse((char*)ptr).HasParseError())
+        char* ptr = buf.ptr();
+        if (!_document.Parse(ptr).HasParseError())
         {
             if (_document.HasMember("root"))
             {
@@ -1166,40 +1168,43 @@ static IdtAlias parseIdtAlias(const rapidjson::Value& parent)
         return IdtAlias(idt_alias_base);
 }
 
-void MoleculeJsonLoader::addToLibMonomerTemplate(MonomerTemplateLibrary& library, const rapidjson::Value& mt_json, TGroup& tgroup)
+void MoleculeJsonLoader::addMonomerTemplate(const rapidjson::Value& mt_json, MonomerTemplateLibrary* library, KetDocument* document)
 {
     if (!mt_json.HasMember("id"))
-        return; // Do we need exception here?
-    std::string monomer_class, class_HELM, id, full_name, alias, natural_analog;
-    id = mt_json["id"].GetString();
-    if (id.size() < 4)
-        return; // Skip templates from kMonomersBasicTemplates
-    if (mt_json.HasMember("class"))
-        monomer_class = mt_json["class"].GetString();
-    if (mt_json.HasMember("classHELM"))
-        class_HELM = mt_json["classHELM"].GetString();
-    if (mt_json.HasMember("fullName"))
-        full_name = mt_json["fullName"].GetString();
-    if (mt_json.HasMember("alias"))
-        alias = mt_json["alias"].GetString();
-    if (mt_json.HasMember("naturalAnalog"))
-        natural_analog = mt_json["naturalAnalog"].GetString();
+        throw Error("Monomer template without id");
+
+    std::string id = mt_json["id"].GetString();
+
+    if (!mt_json.HasMember("class"))
+        throw Error("Monomer template without class");
+    std::string monomer_class = mt_json["class"].GetString();
+
     bool unresolved = false;
     if (mt_json.HasMember("unresolved"))
         unresolved = mt_json["unresolved"].GetBool();
 
-    MonomerTemplate mon_template(id, MonomerTemplate::StrToMonomerClass(monomer_class), class_HELM, full_name, alias, natural_analog, unresolved, tgroup);
-
+    IdtAlias idt_alias;
     if (mt_json.HasMember("idtAliases"))
     {
-        IdtAlias idt_alias = parseIdtAlias(mt_json);
+        idt_alias = parseIdtAlias(mt_json);
         if (idt_alias.getBase().size() == 0)
             throw Error("Monomer template %s contains IDT alias without base.", id.c_str());
-        mon_template.setIdtAlias(idt_alias);
     }
     else if (unresolved)
     {
         throw Error("Unresoved monomer '%s' without IDT alias.", id.c_str());
+    }
+
+    auto& mon_template = library->addMonomerTemplate(id, monomer_class, idt_alias, unresolved);
+    mon_template.parseOptsFromKet(mt_json);
+
+    // parse atoms
+    mon_template.parseAtoms(mt_json["atoms"]);
+
+    // parse bonds
+    if (mt_json.HasMember("bonds"))
+    {
+        mon_template.parseBonds(mt_json["bonds"]);
     }
 
     if (mt_json.HasMember("attachmentPoints"))
@@ -1210,28 +1215,26 @@ void MoleculeJsonLoader::addToLibMonomerTemplate(MonomerTemplateLibrary& library
             auto& ap = att_points[i];
             std::string ap_type, label;
             int attachment_atom;
-            std::vector<int> leaving_group;
-            if (ap.HasMember("type"))
-                ap_type = ap["type"].GetString();
             if (ap.HasMember("label"))
                 label = ap["label"].GetString();
-            if (ap.HasMember("attachmentAtom"))
-                attachment_atom = ap["attachmentAtom"].GetInt();
+            attachment_atom = ap["attachmentAtom"].GetInt();
+            auto& att_point = mon_template.AddAttachmentPoint(label, attachment_atom);
+            att_point.parseOptsFromKet(ap);
             if (ap.HasMember("leavingGroup"))
             {
                 auto& lv = ap["leavingGroup"];
                 if (lv.HasMember("atoms"))
                 {
+                    std::vector<int> leaving_group;
                     auto& atoms = lv["atoms"];
                     for (SizeType i = 0; i < atoms.Size(); i++)
                     {
                         leaving_group.emplace_back(atoms[i].GetInt());
                     }
+                    att_point.setLeavingGroup(leaving_group);
                 }
             }
-            mon_template.AddAttachmentPoint(label, ap_type, attachment_atom, leaving_group);
         }
-        library.addMonomerTemplate(mon_template);
     }
 }
 
@@ -1284,8 +1287,7 @@ void MoleculeJsonLoader::loadMonomerLibrary(MonomerTemplateLibrary& library)
         auto& mt = _templates[i];
         if (mt.HasMember("type") && mt["type"].GetString() == std::string("monomerTemplate"))
         {
-            int tgroup_id = parseMonomerTemplate(mt, mol);
-            addToLibMonomerTemplate(library, mt, mol.tgroups.getTGroup(tgroup_id));
+            addMonomerTemplate(mt, &library, nullptr);
         }
     }
 
@@ -1316,7 +1318,7 @@ std::string MoleculeJsonLoader::monomerTemplateClass(const rapidjson::Value& mon
     return result;
 }
 
-int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol)
+int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol, StereocentersOptions stereochemistry_options)
 {
     auto tg_idx = mol.tgroups.addTGroup();
     TGroup& tg = mol.tgroups.getTGroup(tg_idx);
@@ -1635,7 +1637,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         auto& mt = _templates[i];
         // int tp = mt.GetType();
         if (mt.HasMember("type") && mt["type"].GetString() == std::string("monomerTemplate"))
-            int tgroup_id = parseMonomerTemplate(mt, mol);
+            int tgroup_id = parseMonomerTemplate(mt, mol, stereochemistry_options);
     }
 
     std::unordered_map<int, int> monomer_id_mapping;

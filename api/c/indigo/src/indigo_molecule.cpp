@@ -22,6 +22,7 @@
 #include "base_cpp/scanner.h"
 #include "indigo_array.h"
 #include "indigo_io.h"
+#include "indigo_ket_document.h"
 #include "indigo_mapping.h"
 #include "indigo_monomer_library.h"
 #include "molecule/canonical_smiles_saver.h"
@@ -687,11 +688,13 @@ CEXPORT int indigoLoadIdt(int source, int library)
         MonomerTemplateLibrary& lib = IndigoMonomerLibrary::get(lib_obj);
         SequenceLoader loader(IndigoScanner::get(obj), lib);
 
-        std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
+        // std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
+        std::unique_ptr<IndigoKetDocument> docptr = std::make_unique<IndigoKetDocument>();
 
-        Molecule& mol = molptr->mol;
-        loader.loadIdt(mol);
-        return self.addObject(molptr.release());
+        // Molecule& mol = molptr->mol;
+        // loader.loadIdt(mol);
+        loader.loadIdt(docptr->get());
+        return self.addObject(docptr.release());
     }
     INDIGO_END(-1);
 }

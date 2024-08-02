@@ -16,43 +16,43 @@
  * limitations under the License.
  ***************************************************************************/
 
-#ifndef __indigo_monomer_library__
-#define __indigo_monomer_library__
+#include "indigo_ket_document.h"
 
-#include "indigo_internal.h"
-#include "molecule/monomers_template_library.h"
+//
+// IndigoKetDocument
+//
 
-#ifdef _WIN32
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif
-
-class DLLEXPORT IndigoMonomerLibrary : public IndigoObject
+IndigoKetDocument::IndigoKetDocument() : IndigoObject(KET_DOCUMENT), _document()
 {
-public:
-    explicit IndigoMonomerLibrary();
+}
 
-    ~IndigoMonomerLibrary() override;
+IndigoKetDocument::~IndigoKetDocument()
+{
+}
 
-    static bool is(const IndigoObject& obj);
+bool IndigoKetDocument::is(const IndigoObject& object)
+{
+    return object.type == KET_DOCUMENT;
+}
 
-    static MonomerTemplateLibrary& get(IndigoObject& obj);
+KetDocument& IndigoKetDocument::get(IndigoObject& obj)
+{
+    if (obj.type != KET_DOCUMENT)
+        throw IndigoError("%s is not a ket document", obj.debugInfo());
+    return reinterpret_cast<IndigoKetDocument&>(obj)._document;
+}
 
-    inline MonomerTemplateLibrary& get()
-    {
-        return library;
-    }
+const char* IndigoKetDocument::debugInfo() const
+{
+    return "<KetDocument>";
+}
 
-    const char* debugInfo() const override;
+KetDocument& IndigoKetDocument::getKetDocument()
+{
+    return _document;
+}
 
-    MonomerTemplateLibrary& getMonomerLibrary();
-
-private:
-    MonomerTemplateLibrary library;
-};
-
-#ifdef _WIN32
-#pragma warning(pop)
-#endif
-
-#endif
+BaseMolecule& IndigoKetDocument::getBaseMolecule()
+{
+    return _document.getBaseMolecule();
+}

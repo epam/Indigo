@@ -3423,6 +3423,11 @@ M  END
         fname = "idt_maxmgc"
         idt_prefix = os.path.join(joinPathPy("structures/", __file__), fname)
 
+        lib_file = "monomer_library.ket"
+        lib_path = os.path.join(joinPathPy("structures/", __file__), lib_file)
+        with open(lib_path, "r") as file:
+            monomer_library = file.read()
+
         # IDT to ket
         with open(idt_prefix + ".idt", "r") as file:
             idt = file.read()
@@ -3430,6 +3435,7 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": idt,
+                "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-idt",
                 "output_format": "chemical/x-indigo-ket",
             }
@@ -3453,6 +3459,7 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": result_ket,
+                "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-indigo-ket",
                 "output_format": "chemical/x-idt",
             }

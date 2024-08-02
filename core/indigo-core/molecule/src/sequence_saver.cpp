@@ -22,6 +22,7 @@
 #include "base_cpp/scanner.h"
 #include "layout/sequence_layout.h"
 #include "molecule/molecule.h"
+#include "molecule/monomers_template_library.h"
 
 using namespace indigo;
 
@@ -39,7 +40,7 @@ SequenceSaver::~SequenceSaver()
 
 std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
 {
-    static const std::unordered_set<std::string> IDT_STANDARD_BASES = {"A", "T", "C", "G", "U", "I"};
+    static const std::unordered_set<std::string> IDT_STANDARD_BASES = {"A", "T", "C", "G", "U", "I", "In"};
     static const std::map<std::string, std::string> IDT_STANDARD_SUGARS{{"R", "r"}, {"LR", "+"}, {"mR", "m"}, {"dR", ""}};
     std::string seq_string;
     std::unordered_set<int> used_atoms;
@@ -213,7 +214,7 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
             sugar = IDT_STANDARD_SUGARS.at(sugar);
             if (sugar.size())
                 seq_string += sugar;
-            seq_string += base;
+            seq_string += base == "In" ? "I" : base; // Inosine coded as I in IDT
             if (sequence.size() == 0 && phosphate.size())
             {
                 if (phosphate != "P" || add_asterisk)
@@ -285,7 +286,7 @@ std::string SequenceSaver::getMonomerAlias(BaseMolecule& mol, int atom_idx)
     if (monomer_id.size())
     {
         auto& monomer_template = _library.getMonomerTemplateById(monomer_id);
-        monomer_alias = monomer_template.alias();
+        monomer_alias = monomer_template.getStringProp("alias");
     }
     return monomer_alias;
 }
@@ -299,7 +300,7 @@ std::string SequenceSaver::getHelmPolymerClass(BaseMolecule& mol, int atom_idx)
     if (monomer_id.size())
     {
         auto& monomer_template = _library.getMonomerTemplateById(monomer_id);
-        helm_polymer_class = monomer_template.classHELM();
+        helm_polymer_class = monomer_template.getStringProp("classHELM");
     }
     if (helm_polymer_class.size() == 0)
     {
@@ -345,7 +346,7 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
                 // start new polymer
                 const std::string& monomer_id = _library.getMonomerTemplateIdByAlias(MonomerTemplates::getStrToMonomerType().at(monomer_class), monomer);
                 if (monomer_id.size())
-                    helm_polymer_class = _library.getMonomerTemplateById(monomer_id).classHELM();
+                    helm_polymer_class = _library.getMonomerTemplateById(monomer_id).getStringProp("classHELM");
                 if (helm_string.size())
                     helm_string += '|'; // separator between polymers
                 helm_string += helm_polymer_class;

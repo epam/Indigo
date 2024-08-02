@@ -27,6 +27,7 @@
 #include "molecule/molecule_savers.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/monomer_commons.h"
+#include "molecule/monomers_template_library.h"
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
@@ -650,18 +651,18 @@ void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, JsonWriter& writer)
         writer.EndArray();
     }
 }
+static void saveNativeFloat(JsonWriter& writer, float f_value)
+{
+    std::string val = std::to_string(f_value);
+    writer.RawValue(val.c_str(), val.length(), kStringType);
+}
 
 void MoleculeJsonSaver::writeFloat(JsonWriter& writer, float f_value)
 {
     if (use_native_precision)
-    {
-        std::string val = std::to_string(f_value);
-        writer.RawValue(val.c_str(), val.length(), kStringType);
-    }
+        saveNativeFloat(writer, f_value);
     else
-    {
         writer.Double(f_value);
-    }
 }
 
 void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
