@@ -1,0 +1,61 @@
+# docker build -f .\bingo\postgres\DockerFile.full -t bingo_postgres .
+FROM centos:7
+
+ARG DEVTOOLSET_VERSION=11
+ARG GIT_VERSION=227
+ARG BINGO_PG_VERSION
+
+RUN yum install -y epel-release centos-release-scl
+RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo
+RUN yum update -y
+RUN yum install -y devtoolset-${DEVTOOLSET_VERSION}-gcc-c++ devtoolset-${DEVTOOLSET_VERSION}-libasan-devel devtoolset-${DEVTOOLSET_VERSION}-liblsan-devel freetype-devel fontconfig-devel make python3 rh-git${GIT_VERSION}
+RUN yum clean -y all
+RUN echo $'leak:libfontconfig\nleak:libc\n' >> /opt/external.supp
+
+# Enable the SCL for all bash scripts.
+ENV MANPATH=/opt/rh/rh-git${GIT_VERSION}/root/usr/share/man:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/share/man \
+    X_SCLS="devtoolset-${DEVTOOLSET_VERSION} rh-git${GIT_VERSION}" \
+    PCP_DIR=/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root \
+    PATH=/opt/rh/rh-git${GIT_VERSION}/root/usr/bin:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+    PKG_CONFIG_PATH=/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/lib64/pkgconfig \
+    LD_LIBRARY_PATH=/opt/rh/httpd24/root/usr/lib64:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/lib64:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/lib:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/lib64/dyninst:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/lib/dyninst:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/lib64:/opt/rh/devtoolset-${DEVTOOLSET_VERSION}/root/usr/lib \
+    LSAN_OPTIONS=suppressions=/opt/external.supp \
+    ASAN_OPTIONS=alloc_dealloc_mismatch=0
+
+
+RUN PIP_ONLY_BINARY="cmake" python3 -m pip install cmake
+
+RUN cmake --version && \
+    gcc --version && \
+    g++ --version && \
+    git --version && \
+    make --version && \
+    python --version && \
+    python3 --version
+
+# docker build 
+COPY . ./Indigo
+
+RUN set -eux &&
+    yum install -y --disablerepo base --disablerepo centos-sclo-rh --disablerepo centos-sclo-sclo --disablerepo extras --disablerepo updates https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm yum-utils &&
+    curl -OL https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-RHEL &&
+    rpm --import PGDG-RPM-GPG-KEY-RHEL &&
+    yumdownloader -y --disablerepo base --disablerepo centos-sclo-rh --disablerepo centos-sclo-sclo --disablerepo extras --disablerepo updates postgresql${BINGO_PG_VERSION}-devel &&
+    rpm -i --nodeps postgresql${BINGO_PG_VERSION}*.rpm &&
+    ls -alh /usr && cd Indigo &&
+    mkdir build &&
+    cd build &&
+    cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF -DCMAKE_PREFIX_PATH=/usr/pgsql-${{ matrix.postgres_major_version }} &&
+    cmake --build . --config Release --target package-bingo-postgres -- -j $(nproc)
+
+RUN echo BINGO_PG_VERSION=${BINGO_PG_VERSION}
+COPY ./Indigo/dist/bingo-postgres${BINGO_PG_VERSION}-linux-*.tgz /opt/
+
+RUN cd /opt/ && tar -xzf bingo-postgres${BINGO_PG_VERSION}*.tgz && \
+mv /opt/bingo-postgres*/ /opt/bingo-postgres/ && \
+cd /opt/bingo-postgres && \
+sh ./bingo-pg-install.sh -libdir /opt/bingo-postgres/lib -y && \
+chown postgres:postgres /opt/bingo-postgres/lib/libbingo-postgres.so && \
+cp /opt/bingo-postgres/bingo_install.sql /docker-entrypoint-initdb.d/ && \
+rm /opt/bingo-postgres*.tgz
+
