@@ -16,39 +16,42 @@
  * limitations under the License.
  ***************************************************************************/
 
-#ifndef __indigo_monomer_library__
-#define __indigo_monomer_library__
+#ifndef __indigo_ket_documnet__
+#define __indigo_ket_documnet__
 
 #include "indigo_internal.h"
-#include "molecule/monomers_template_library.h"
+#include "molecule/base_molecule.h"
+#include "molecule/ket_document.h"
 
 #ifdef _WIN32
 #pragma warning(push)
 #pragma warning(disable : 4251)
 #endif
 
-class DLLEXPORT IndigoMonomerLibrary : public IndigoObject
+class DLLEXPORT IndigoKetDocument : public IndigoObject
 {
 public:
-    explicit IndigoMonomerLibrary();
+    explicit IndigoKetDocument();
 
-    ~IndigoMonomerLibrary() override;
+    ~IndigoKetDocument() override;
 
     static bool is(const IndigoObject& obj);
 
-    static MonomerTemplateLibrary& get(IndigoObject& obj);
+    static KetDocument& get(IndigoObject& obj);
 
-    inline MonomerTemplateLibrary& get()
+    inline KetDocument& get()
     {
-        return library;
+        return _document;
     }
+
+    BaseMolecule& getBaseMolecule() override;
 
     const char* debugInfo() const override;
 
-    MonomerTemplateLibrary& getMonomerLibrary();
+    KetDocument& getKetDocument();
 
 private:
-    MonomerTemplateLibrary library;
+    KetDocument _document;
 };
 
 #ifdef _WIN32

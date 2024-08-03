@@ -280,11 +280,11 @@ namespace indigo
         };
 
         static const std::uint32_t CID = "KET embedded image"_hash;
-        KETImage(const Rect2f& bbox, const std::string& base64);
+        KETImage(const Rect2f& bbox, KETImage::ImageFormat format, const std::string& base64);
 
         MetaObject* clone() const override
         {
-            return new KETImage(_bbox, getBase64());
+            return new KETImage(_bbox, _image_format, getBase64());
         }
 
         auto& getBoundingBox() const

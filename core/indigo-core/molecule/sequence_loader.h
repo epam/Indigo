@@ -36,6 +36,8 @@ namespace indigo
     class BaseMolecule;
     class Molecule;
     class QueryMolecule;
+    class MonomerTemplate;
+    class KetDocument;
 
     class DLLEXPORT SequenceLoader
     {
@@ -64,6 +66,7 @@ namespace indigo
         void loadFasta(BaseMolecule& mol, const std::string& seq_type_str);
         void loadFasta(BaseMolecule& mol, SeqType seq_type);
         void loadIdt(BaseMolecule& mol);
+        void loadIdt(KetDocument& document);
         void loadHELM(BaseMolecule& mol);
 
     private:
@@ -73,12 +76,19 @@ namespace indigo
 
         void checkAddTemplate(BaseMolecule& mol, const MonomerTemplate& monomer_template);
 
+        const std::string& checkAddTemplate(KetDocument& document, MonomerClass monomer_class, const std::string alias);
+        void checkAddTemplate(KetDocument& document, const MonomerTemplate& monomer_template);
+
         void addAminoAcid(BaseMolecule& mol, char ch);
         void addNucleotide(BaseMolecule& mol, std::string base, const std::string& sugar_alias, const std::string& phosphate_alias,
+                           bool phosphate_at_left = true);
+        void addNucleotide(KetDocument& document, std::string base_alias, const std::string& sugar_alias, const std::string& phosphate_alias,
                            bool phosphate_at_left = true);
 
         int addTemplateAtom(BaseMolecule& mol, const char* alias, const char* monomer_class, int seq_id);
         void addTemplateBond(BaseMolecule& mol, int left_idx, int right_idx, bool branch = false);
+
+        void addTemplateConnection(KetDocument& document, std::size_t left_idx, std::size_t right_idx, bool branch = false);
 
         bool addMonomerTemplate(BaseMolecule& mol, MonomerClass mt, const std::string& alias);
         bool checkAddTemplate(BaseMolecule& mol, MonomerClass type, const std::string monomer);
@@ -99,6 +109,7 @@ namespace indigo
         int _row;
         int _col;
         MonomerTemplateLibrary& _library;
+        std::map<std::string, std::string> _alias_to_id;
     };
 
 } // namespace indigo

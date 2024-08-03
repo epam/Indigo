@@ -125,6 +125,7 @@ IndigoObjectTypes::IndigoObjectTypes()
     emplace(IndigoObject::JSON_MOLECULE, "<JsonMolecule>");
     emplace(IndigoObject::JSON_REACTION, "<JsonReaction>");
     emplace(IndigoObject::MONOMER_LIBRARY, "<MonomerLibrary>");
+    emplace(IndigoObject::KET_DOCUMENT, "<KetDocument>");
 
     if (size() != IndigoObject::INDIGO_OBJECT_LAST_TYPE - 1)
     {

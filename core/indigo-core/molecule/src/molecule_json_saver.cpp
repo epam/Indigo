@@ -27,6 +27,7 @@
 #include "molecule/molecule_savers.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/monomer_commons.h"
+#include "molecule/monomers_template_library.h"
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
@@ -650,18 +651,18 @@ void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, JsonWriter& writer)
         writer.EndArray();
     }
 }
+static void saveNativeFloat(JsonWriter& writer, float f_value)
+{
+    std::string val = std::to_string(f_value);
+    writer.RawValue(val.c_str(), val.length(), kStringType);
+}
 
 void MoleculeJsonSaver::writeFloat(JsonWriter& writer, float f_value)
 {
     if (use_native_precision)
-    {
-        std::string val = std::to_string(f_value);
-        writer.RawValue(val.c_str(), val.length(), kStringType);
-    }
+        saveNativeFloat(writer, f_value);
     else
-    {
         writer.Double(f_value);
-    }
 }
 
 void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
@@ -1881,14 +1882,28 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.StartObject(); // start node
             writer.Key("type");
             writer.String("image");
+            writer.Key("format");
+            switch (image_obj->getFormat())
+            {
+            case KETImage::EKETPNG:
+                writer.String(KImagePNG);
+                break;
+            case KETImage::EKETSVG:
+                writer.String(KImageSVG);
+                break;
+            default:
+                throw Exception("Bad image format: %d", image_obj->getFormat());
+            }
+
             writer.Key("boundingBox");
 
             writer.StartObject(); // start bbox
-
             writer.Key("x");
             writer.Double(bbox.left());
             writer.Key("y");
             writer.Double(bbox.bottom());
+            writer.Key("z");
+            writer.Double(0);
 
             writer.Key("width");
             writer.Double(bbox.width());

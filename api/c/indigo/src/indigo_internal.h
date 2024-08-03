@@ -171,6 +171,7 @@ public:
         JSON_MOLECULE,
         JSON_REACTION,
         MONOMER_LIBRARY,
+        KET_DOCUMENT,
         INDIGO_OBJECT_LAST_TYPE // must be the last element in the enum
     };
 

@@ -56,6 +56,7 @@ idt_data = {
     "idt_unresolved": "/unr1//unr2/",
     "idt_unresolved_many": "/unr0/A/unr1/C/unr2/ACTG/unr3/G/unr4/",
     "idt_unsplit": "/5UNSPLIT/A",
+    "idt_mixed_std": "ARAS",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
