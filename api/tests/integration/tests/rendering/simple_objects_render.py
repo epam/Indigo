@@ -60,6 +60,13 @@ indigo.setOption("render-output-format", "png")
 renderer.renderToFile(mol, joinPathPy("out/images.png", __file__))
 print(checkImageSimilarity("images.png"))
 
+indigo.setOption("render-background-color", "255, 255, 255")
+reac = indigo.loadReactionFromFile(joinPathPy("reactions/test1png.ket", __file__))
+reac.layout()
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(reac, joinPathPy("out/test1png.png", __file__))
+print(checkImageSimilarity("test1png.png"))
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()

@@ -1917,7 +1917,7 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
                 const rapidjson::Value& bbox_val = mobj["boundingBox"];
                 Vec2f lt(bbox_val["x"].GetFloat(), bbox_val["y"].GetFloat());
                 Vec2f rb(lt);
-                rb.add(Vec2f(bbox_val["width"].GetFloat(), bbox_val["height"].GetFloat()));
+                rb.add(Vec2f(bbox_val["width"].GetFloat(), -bbox_val["height"].GetFloat()));
                 std::string image_format_str = mobj["format"].GetString();
                 KETImage::ImageFormat image_format;
                 if (image_format_str == KImagePNG)

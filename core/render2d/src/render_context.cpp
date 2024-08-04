@@ -551,9 +551,8 @@ void RenderContext::drawPng(const std::string& pngData, const Rect2f& bbox)
 
     cairo_restore(_cr);
     cairo_surface_destroy(image);
-
-    bbIncludePoint(bbox.leftBottom());
-    bbIncludePoint(bbox.rightTop());
+    bbIncludePoint(bbox.leftTop());
+    bbIncludePoint(bbox.rightBottom());
 }
 
 void RenderContext::drawLine(const Vec2f& v0, const Vec2f& v1)
