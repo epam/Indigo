@@ -212,13 +212,18 @@ CEXPORT int indigoHighlightedTarget(int item)
             std::unique_ptr<IndigoReaction> rxn = std::make_unique<IndigoReaction>();
             QS_DEF(ObjArray<Array<int>>, mappings);
             QS_DEF(Array<int>, mol_mapping);
-            rxn->rxn.clone(im.to, &mol_mapping, 0, &mappings);
+            rxn->rxn->clone(im.to, &mol_mapping, 0, &mappings);
+            rxn->rxn->original_format = im.to.original_format;
+            for (int i = 0; i < im.to.reactionBlocksCount(); i++)
+                rxn->rxn->addReactionBlock().copy(im.to.reactionBlock(i));
+            for (int i = 0; i < im.to.specialConditionsCount(); i++)
+                rxn->rxn->addSpecialCondition(im.to.specialCondition(i).meta_idx, im.to.specialCondition(i).bbox);
             for (int i = im.from.begin(); i != im.from.end(); i = im.from.next(i))
             {
                 if (im.mol_mapping[i] < 0)
                     // can happen with catalysts
                     continue;
-                _indigoHighlightSubstructure(im.from.getBaseMolecule(i), rxn->rxn.getBaseMolecule(mol_mapping[im.mol_mapping[i]]), im.mappings[i],
+                _indigoHighlightSubstructure(im.from.getBaseMolecule(i), rxn->rxn->getBaseMolecule(mol_mapping[im.mol_mapping[i]]), im.mappings[i],
                                              mappings[im.mol_mapping[i]]);
             }
             return self.addObject(rxn.release());

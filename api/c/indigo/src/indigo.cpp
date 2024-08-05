@@ -27,6 +27,7 @@
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molfile_saver.h"
+#include "reaction/pathway_reaction_json_saver.h"
 #include "reaction/reaction_json_saver.h"
 #include "reaction/rxnfile_saver.h"
 
@@ -207,6 +208,12 @@ void Indigo::initMoleculeJsonSaver(MoleculeJsonSaver& saver)
 }
 
 void Indigo::initReactionJsonSaver(ReactionJsonSaver& saver)
+{
+    saver.add_stereo_desc = json_saving_add_stereo_desc;
+    saver.pretty_json = json_saving_pretty;
+}
+
+void Indigo::initReactionJsonSaver(PathwayReactionJsonSaver& saver)
 {
     saver.add_stereo_desc = json_saving_add_stereo_desc;
     saver.pretty_json = json_saving_pretty;
