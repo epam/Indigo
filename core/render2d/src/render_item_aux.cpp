@@ -362,6 +362,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
             break;
             case KETImage::CID: {
                 const KETImage& img = static_cast<const KETImage&>(mobj);
+
                 _drawImage(img);
             }
             break;
@@ -372,8 +373,13 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
 
 void RenderItemAuxiliary::_drawImage(const KETImage& img)
 {
+    auto& bb = img.getBoundingBox();
+    auto v1 = bb.leftBottom();
+    auto v2 = bb.rightTop();
+    scale(v1);
+    scale(v2);
     if (img.getFormat() == KETImage::EKETPNG)
-        _rc.drawPng(img.getData(), img.getBoundingBox());
+        _rc.drawPng(img.getData(), Rect2f(v1, v2));
     else if (img.getFormat() == KETImage::EKETPNG)
     {
         // TODO: implement SVG-rendering

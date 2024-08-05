@@ -26,6 +26,9 @@ int MetaDataStorage::addMetaObject(MetaObject* pobj)
     case KETReactionArrow::CID:
         _arrow_indexes.push() = index;
         break;
+    case KETImage::CID:
+        _image_indexes.push() = index;
+        break;
     default:
         break;
     }
@@ -61,6 +64,9 @@ int MetaDataStorage::getMetaObjectIndex(uint32_t meta_type, int index) const
     case KETReactionArrow::CID:
         return _arrow_indexes[index];
         break;
+    case KETImage::CID:
+        return _image_indexes[index];
+        break;
     default:
         throw Error("Unknown meta type");
         break;
@@ -74,7 +80,7 @@ const MetaObject& MetaDataStorage::getMetaObject(uint32_t meta_type, int index) 
 
 int MetaDataStorage::getNonChemicalMetaCount() const
 {
-    return getMetaCount(KETTextObject::CID) + getMetaCount(KETSimpleObject::CID);
+    return getMetaCount(KETTextObject::CID) + getMetaCount(KETSimpleObject::CID) + getMetaCount(KETImage::CID);
 }
 
 int MetaDataStorage::getMetaCount(uint32_t meta_type) const
@@ -92,6 +98,9 @@ int MetaDataStorage::getMetaCount(uint32_t meta_type) const
         break;
     case KETReactionArrow::CID:
         return _arrow_indexes.size();
+        break;
+    case KETImage::CID:
+        return _image_indexes.size();
         break;
     default:
         break;
