@@ -18,6 +18,11 @@
 
 #pragma once
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 #include "reaction/base_reaction.h"
 #include <deque>
 
@@ -49,3 +54,7 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
