@@ -295,12 +295,6 @@ IndigoReaction* IndigoReaction::cloneFrom(IndigoObject& obj)
     Reaction& rxn = obj.getReaction();
     std::unique_ptr<IndigoReaction> rxnptr = std::make_unique<IndigoReaction>();
     rxnptr->rxn->clone(rxn, 0, 0, 0);
-    rxnptr->rxn->original_format = rxn.original_format;
-    for (int i = 0; i < rxn.reactionBlocksCount(); i++)
-        rxnptr->rxn->addReactionBlock().copy(rxn.reactionBlock(i));
-    for (int i = 0; i < rxn.specialConditionsCount(); i++)
-        rxnptr->rxn->addSpecialCondition(rxn.specialCondition(i).meta_idx, rxn.specialCondition(i).bbox);
-
     try
     {
         MonomersProperties& mprops = obj.getMonomersProperties();
