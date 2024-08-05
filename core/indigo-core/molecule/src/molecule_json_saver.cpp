@@ -1901,7 +1901,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.Key("x");
             writer.Double(bbox.left());
             writer.Key("y");
-            writer.Double(bbox.bottom());
+            writer.Double(bbox.top());
             writer.Key("z");
             writer.Double(0);
 
