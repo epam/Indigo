@@ -45,8 +45,7 @@ namespace indigo
         int _addBaseMolecule(int side) override;
 
     private:
-        struct impl;
-        impl* _pimpl;
+        Array<int> _reactions;
     };
 
 } // namespace indigo

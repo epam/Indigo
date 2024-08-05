@@ -23,21 +23,15 @@ using namespace indigo;
 
 IMPL_ERROR(PathwayReaction, "pathway reaction");
 
-struct PathwayReaction::impl
-{
-    Array<int> reactions;
-};
-
-PathwayReaction::PathwayReaction() : _pimpl(new impl)
+PathwayReaction::PathwayReaction()
 {
 }
 
 PathwayReaction::~PathwayReaction()
 {
-    delete _pimpl;
 }
 
-PathwayReaction::PathwayReaction(std::deque<Reaction>& reactions) : _pimpl(new impl)
+PathwayReaction::PathwayReaction(std::deque<Reaction>& reactions)
 {
     for (size_t i = 0; i < reactions.size(); i++)
     {
@@ -47,21 +41,21 @@ PathwayReaction::PathwayReaction(std::deque<Reaction>& reactions) : _pimpl(new i
             molecule->clone(reactions[i].getBaseMolecule(j));
             int id = _allMolecules.add(molecule.release());
             _addedBaseMolecule(id, reactions[i].getSideType(j), *_allMolecules[id]);
-            _pimpl->reactions.expand(id + 1);
-            _pimpl->reactions[id] = static_cast<int>(i);
+            _reactions.expand(id + 1);
+            _reactions[id] = static_cast<int>(i);
         }
     }
 }
 
 int PathwayReaction::getReactionId(int moleculeId) const
 {
-    return _pimpl->reactions.at(moleculeId);
+    return _reactions.at(moleculeId);
 }
 
 void PathwayReaction::clone(PathwayReaction& reaction)
 {
     BaseReaction::clone(reaction);
-    _pimpl->reactions.copy(reaction._pimpl->reactions);
+    _reactions.copy(reaction._reactions);
 }
 
 BaseReaction* PathwayReaction::neu()
