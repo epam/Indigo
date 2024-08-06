@@ -798,6 +798,7 @@ namespace indigo
         void parseBBox(const std::string& data, Rect2f& bbox);
         void parsePos(const std::string& data, Vec3f& bbox);
         void parseSeg(const std::string& data, Vec2f& v1, Vec2f& v2);
+        void parseHex(const std::string& hex, std::string& binary);
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
@@ -827,6 +828,7 @@ namespace indigo
         void _parseGraphic(BaseCDXElement& elem);
         void _parseArrow(BaseCDXElement& elem);
         void _parseAltGroup(BaseCDXElement& elem);
+        void _parseEmbeddedObject(BaseCDXElement& elem);
 
         int _addBond(Molecule& mol, const CdxmlBond& bond, int begin, int end);
         void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& new_bonds);

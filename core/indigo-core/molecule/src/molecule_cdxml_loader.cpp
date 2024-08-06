@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include <algorithm>
+#include <charconv>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
@@ -714,9 +715,14 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(BaseCDXElement& first_elem, bool n
 
     auto altgroup_lambda = [this](BaseCDXElement& elem) { this->_parseAltGroup(elem); };
 
+    auto embedded_object_lambda = [this](BaseCDXElement& elem) { this->_parseEmbeddedObject(elem); };
+
     std::unordered_map<std::string, std::function<void(BaseCDXElement & elem)>> cdxml_dispatcher = {
         {"n", node_lambda},          {"b", bond_lambda},      {"fragment", fragment_lambda}, {"group", group_lambda}, {"bracketedgroup", bracketed_lambda},
-        {"graphic", graphic_lambda}, {"arrow", arrow_lambda}, {"altgroup", altgroup_lambda}};
+                                                                                                    {"graphic", graphic_lambda},
+                                                                                                    {"arrow", arrow_lambda},
+                                                                                                    {"altgroup", altgroup_lambda},
+                                                                                                    {"embeddedobject", embedded_object_lambda}};
 
     for (auto pelem = first_elem.copy(); pelem->hasContent(); pelem = pelem->nextSiblingElement())
     {
@@ -1376,6 +1382,25 @@ void MoleculeCdxmlLoader::parseSeg(const std::string& data, Vec2f& v1, Vec2f& v2
         throw Error("Not enought coordinates for text bounding box");
 }
 
+void indigo::MoleculeCdxmlLoader::parseHex(const std::string& hex, std::string& binary)
+{
+    binary.reserve(hex.size() / 2);
+
+    for (size_t i = 0; i < hex.size(); i += 2)
+    {
+        unsigned char byte;
+        auto [ptr, ec] = std::from_chars(hex.data() + i, hex.data() + i + 2, byte, 16);
+        if (ec == std::errc())
+        {
+            binary.push_back(static_cast<char>(byte));
+        }
+        else
+        {
+            throw std::runtime_error("Invalid hex digit");
+        }
+    }
+}
+
 void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
 {
     std::vector<AutoInt> r_labels;
@@ -1420,6 +1445,35 @@ void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
             rgroup.fragments.add(fragment.release());
         }
     }
+}
+
+#include <fstream>
+#include <iostream>
+
+void MoleculeCdxmlLoader::_parseEmbeddedObject(BaseCDXElement& elem)
+{
+    std::pair<Vec2f, Vec2f> embedded_bbox;
+    std::string win_meta_bin;
+    std::string enh_meta_bin;
+
+    auto embdedded_box_lambda = [&embedded_bbox, this](const std::string& data) { this->parseSeg(data, embedded_bbox.first, embedded_bbox.second); };
+    auto win_meta_lambda = [&win_meta_bin, this](const std::string& data) { this->parseHex(data, win_meta_bin); };
+    auto enh_meta_lambda = [&enh_meta_bin, this](const std::string& data) { this->parseHex(data, enh_meta_bin); };
+
+    std::unordered_map<std::string, std::function<void(const std::string&)>> embedded_dispatcher = {
+        {"BoundingBox", embdedded_box_lambda},
+        {"WindowsMetafile", win_meta_lambda},
+        {"EnhancedMetafile", enh_meta_lambda}
+    };
+
+    applyDispatcher(*elem.firstProperty().get(), embedded_dispatcher);
+    std::cout << win_meta_bin.size() << ":" << enh_meta_bin.size() << std::endl;
+    std::ofstream win_outfile("win.wmf", std::ios::binary);
+    std::ofstream enh_outfile("emf.emf", std::ios::binary);
+    win_outfile.write(win_meta_bin.data(), win_meta_bin.size());
+    enh_outfile.write(enh_meta_bin.data(), enh_meta_bin.size());
+    win_outfile.close();
+    enh_outfile.close();
 }
 
 void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
