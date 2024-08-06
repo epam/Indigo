@@ -20,8 +20,10 @@
 #include "gzip/gzip_scanner.h"
 #include "molecule/molecule_auto_loader.h"
 #include "molecule/parse_utils.h"
+#include "molecule/rdf_loader.h"
 #include "reaction/icr_loader.h"
 #include "reaction/icr_saver.h"
+#include "reaction/pathway_reaction.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_cdxml_loader.h"
@@ -44,6 +46,7 @@ void ReactionAutoLoader::_init()
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
     dearomatize_on_load = false;
+    treat_stereo_as = 0;
 }
 
 IMPL_ERROR(ReactionAutoLoader, "reaction auto loader");
@@ -82,14 +85,23 @@ void ReactionAutoLoader::loadQueryReaction(QueryReaction& qreaction)
 
 void ReactionAutoLoader::loadReaction(BaseReaction& reaction)
 {
-    _loadReaction(reaction);
-    if (!reaction.isQueryReaction() && dearomatize_on_load)
-        reaction.dearomatize(arom_options);
+    auto rptr = loadReaction(reaction.isQueryReaction());
+    reaction.clone(*rptr);
+    reaction.original_format = rptr->original_format;
+    for (int i = 0; i < rptr->reactionBlocksCount(); i++)
+        reaction.addReactionBlock().copy(rptr->reactionBlock(i));
 }
 
-void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
+std::unique_ptr<BaseReaction> ReactionAutoLoader::loadReaction(bool query)
 {
-    bool query = reaction.isQueryReaction();
+    auto reaction = _loadReaction(query);
+    if (!query && dearomatize_on_load)
+        reaction->dearomatize(arom_options);
+    return reaction;
+}
+
+std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
+{
     auto local_scanner = _scanner;
     // chack for base64
     uint8_t base64_id[] = "base64::";
@@ -139,8 +151,7 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
             loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
             loader2.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader2.ignore_bad_valence = ignore_bad_valence;
-            loader2.loadReaction(reaction);
-            return;
+            return loader2.loadReaction(query);
         }
     }
 
@@ -152,8 +163,9 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
             loader.stereochemistry_options = stereochemistry_options;
             if (query)
                 throw Error("CDX queries not supported yet");
-            loader.loadReaction(reaction);
-            return;
+            auto reaction = std::make_unique<Reaction>();
+            loader.loadReaction(*reaction);
+            return reaction;
         }
     }
 
@@ -170,10 +182,17 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader.ignore_bad_valence = ignore_bad_valence;
             if (query)
-                loader.loadQueryReaction((QueryReaction&)reaction);
+            {
+                auto reaction = std::make_unique<QueryReaction>();
+                loader.loadQueryReaction(*reaction);
+                return reaction;
+            }
             else
-                loader.loadReaction((Reaction&)reaction);
-            return;
+            {
+                auto reaction = std::make_unique<Reaction>();
+                loader.loadReaction(*reaction);
+                return reaction;
+            }
         }
     }
 
@@ -191,8 +210,9 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
                 throw Error("cannot load query reaction from ICR format");
 
             IcrLoader loader(*_scanner);
-            loader.loadReaction((Reaction&)reaction);
-            return;
+            auto reaction = std::make_unique<Reaction>();
+            loader.loadReaction(*reaction);
+            return reaction;
         }
     }
 
@@ -210,8 +230,9 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
 
                 if (query)
                     throw Error("CML queries not supported");
-                loader.loadReaction((Reaction&)reaction);
-                return;
+                auto reaction = std::make_unique<Reaction>();
+                loader.loadReaction(*reaction);
+                return reaction;
             }
         }
 
@@ -227,8 +248,19 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
             _scanner->seek(pos, SEEK_SET);
             ReactionCdxmlLoader loader(*_scanner);
             loader.stereochemistry_options = stereochemistry_options;
-            loader.loadReaction(reaction);
-            return;
+
+            if (query)
+            {
+                auto reaction = std::make_unique<QueryReaction>();
+                loader.loadReaction(*reaction);
+                return reaction;
+            }
+            else
+            {
+                auto reaction = std::make_unique<Reaction>();
+                loader.loadReaction(*reaction);
+                return reaction;
+            }
         }
         _scanner->seek(pos, SEEK_SET);
     }
@@ -272,14 +304,58 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
                             loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
                             loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
                             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-                            loader.loadReaction(reaction);
+                            if (query)
+                            {
+                                auto reaction = std::make_unique<QueryReaction>();
+                                loader.loadReaction(*reaction);
+                                return reaction;
+                            }
+                            else
+                            {
+                                auto reaction = std::make_unique<Reaction>();
+                                loader.loadReaction(*reaction);
+                                return reaction;
+                            }
                         }
                     }
-                    return;
+                    return nullptr;
                 }
             }
         }
         _scanner->seek(pos, SEEK_SET);
+    }
+
+    // check for RDF format
+    {
+        long long pos = _scanner->tell();
+        Array<char> firstLine;
+        const char* delimeters{};
+        _scanner->readWord(firstLine, delimeters);
+        _scanner->seek(pos, SEEK_SET);
+        if (!strcmp(firstLine.ptr(), "$RDFILE"))
+        {
+            if (query)
+                throw Error("RDF queries not supported");
+            std::deque<Reaction> reactions;
+            RdfLoader rdf_loader(*_scanner);
+            while (!rdf_loader.isEOF())
+            {
+                rdf_loader.readNext();
+                BufferScanner reaction_scanner(rdf_loader.data);
+
+                RxnfileLoader loader(reaction_scanner);
+                loader.stereochemistry_options = stereochemistry_options;
+                loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+                loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
+                loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+                loader.treat_stereo_as = treat_stereo_as;
+                loader.ignore_bad_valence = ignore_bad_valence;
+
+                reactions.emplace_back();
+                loader.loadReaction(reactions.back());
+            }
+            return std::make_unique<PathwayReaction>(reactions);
+        }
     }
 
     // check for SMILES format
@@ -296,20 +372,24 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
         if (query)
         {
             // Try to load query as SMILES, if error occured - try to load as SMARTS
+            auto reaction = std::make_unique<QueryReaction>();
             try
             {
-                loader.loadQueryReaction(static_cast<QueryReaction&>(reaction));
+                loader.loadQueryReaction(*reaction);
             }
             catch (Exception&)
             {
                 loader.smarts_mode = true;
                 _scanner->seek(pos, SEEK_SET);
-                loader.loadQueryReaction(static_cast<QueryReaction&>(reaction));
+                loader.loadQueryReaction(*reaction);
             }
+            return reaction;
         }
         else
         {
-            loader.loadReaction(static_cast<Reaction&>(reaction));
+            auto reaction = std::make_unique<Reaction>();
+            loader.loadReaction(*reaction);
+            return reaction;
         }
     }
 
@@ -324,8 +404,16 @@ void ReactionAutoLoader::_loadReaction(BaseReaction& reaction)
         loader.ignore_bad_valence = ignore_bad_valence;
 
         if (query)
-            loader.loadQueryReaction((QueryReaction&)reaction);
+        {
+            auto reaction = std::make_unique<QueryReaction>();
+            loader.loadQueryReaction(*reaction);
+            return reaction;
+        }
         else
-            loader.loadReaction((Reaction&)reaction);
+        {
+            auto reaction = std::make_unique<Reaction>();
+            loader.loadReaction(*reaction);
+            return reaction;
+        }
     }
 }

@@ -49,6 +49,7 @@ IndigoObjectTypes::IndigoObjectTypes()
     emplace(IndigoObject::RDF_MOLECULE, "<RDFMolecule>");
     emplace(IndigoObject::RDF_REACTION, "<RDFReaction>");
     emplace(IndigoObject::RDF_LOADER, "<RDFLoader>");
+    emplace(IndigoObject::PATHWAY_REACTION, "<PathwayReaction>");
     emplace(IndigoObject::SMILES_MOLECULE, "<SmilesMolecule>");
     emplace(IndigoObject::SMILES_REACTION, "<SmilesReaction>");
     emplace(IndigoObject::MULTILINE_SMILES_LOADER, "<MultilineSmilesLoader>");

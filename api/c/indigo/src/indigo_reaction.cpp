@@ -44,7 +44,8 @@ bool IndigoBaseReaction::is(IndigoObject& obj)
 {
     int type = obj.type;
 
-    if (type == REACTION || type == QUERY_REACTION || type == RDF_REACTION || type == SMILES_REACTION || type == CML_REACTION || type == JSON_REACTION)
+    if (type == REACTION || type == QUERY_REACTION || type == RDF_REACTION || type == SMILES_REACTION || type == CML_REACTION || type == JSON_REACTION ||
+        type == PATHWAY_REACTION)
         return true;
 
     if (type == ARRAY_ELEMENT)
@@ -64,32 +65,45 @@ const char* IndigoBaseReaction::debugInfo() const
 
 IndigoReaction::IndigoReaction() : IndigoBaseReaction(REACTION)
 {
+    init();
 }
 
 const char* IndigoReaction::debugInfo() const
 {
-    return "<reaction>";
+    if (type == IndigoObject::REACTION)
+        return "<reaction>";
+    if (type == IndigoObject::PATHWAY_REACTION)
+        return "<pathway reaction>";
+    return "";
 }
 
 IndigoReaction::~IndigoReaction()
 {
 }
 
+void IndigoReaction::init(std::unique_ptr<BaseReaction>&& reaction)
+{
+    type = !reaction || dynamic_cast<Reaction*>(reaction.get()) ? IndigoObject::REACTION : IndigoObject::PATHWAY_REACTION;
+    rxn = reaction ? std::move(reaction) : std::make_unique<Reaction>();
+}
+
 Reaction& IndigoReaction::getReaction()
 {
-    return rxn;
+    assert(rxn);
+    return dynamic_cast<Reaction&>(*rxn);
 }
 
 BaseReaction& IndigoReaction::getBaseReaction()
 {
-    return rxn;
+    assert(rxn);
+    return *rxn;
 }
 
 const char* IndigoReaction::getName()
 {
-    if (rxn.name.ptr() == 0)
+    if (!rxn || rxn->name.ptr() == 0)
         return "";
-    return rxn.name.ptr();
+    return rxn->name.ptr();
 }
 
 //
@@ -280,7 +294,7 @@ IndigoReaction* IndigoReaction::cloneFrom(IndigoObject& obj)
 {
     Reaction& rxn = obj.getReaction();
     std::unique_ptr<IndigoReaction> rxnptr = std::make_unique<IndigoReaction>();
-    rxnptr->rxn.clone(rxn, 0, 0, 0);
+    rxnptr->rxn->clone(rxn, 0, 0, 0);
     try
     {
         MonomersProperties& mprops = obj.getMonomersProperties();
@@ -368,7 +382,7 @@ CEXPORT int indigoLoadReaction(int source)
         loader.arom_options = self.arom_options;
 
         std::unique_ptr<IndigoReaction> rxnptr = std::make_unique<IndigoReaction>();
-        loader.loadReaction(rxnptr->rxn);
+        rxnptr->init(loader.loadReaction(false));
         return self.addObject(rxnptr.release());
     }
     INDIGO_END(-1);
