@@ -89,6 +89,7 @@ namespace indigo
         static const int SCALE = 30;
         static const int MAX_PAGE_HEIGHT = 64;
         const float PLUS_HALF_HEIGHT = 7.5 / 2;
+        const float RETRO_ARROW_DELTA_X = 0.5;
 
         struct Bounds
         {
@@ -107,6 +108,7 @@ namespace indigo
 
         void addMetaObject(const MetaObject& obj, int id);
         void addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end);
+        void addRetrosynteticArrow(int graphic_obj_id, int arrow_id, const Vec2f& arrow_beg, const Vec2f& arrow_end);
 
         void addText(const Vec2f& pos, const char* text);
         void addText(const Vec2f& pos, const char* text, const char* alignment);

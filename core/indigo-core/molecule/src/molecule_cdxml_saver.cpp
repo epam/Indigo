@@ -1267,6 +1267,55 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& o
     id = _id;
 }
 
+void MoleculeCdxmlSaver::addRetrosynteticArrow(int graphic_obj_id, int arrow_id, const Vec2f& arrow_beg, const Vec2f& arrow_end)
+{
+    PropertiesMap attrs;
+    attrs.insert("FillType", "None");
+    attrs.insert("ArrowheadHead", "Full");
+    attrs.insert("ArrowheadType", "Angle");
+    attrs.insert("HeadSize", "600");
+    attrs.insert("ArrowheadCenterSize", "600");
+    attrs.insert("ArrowheadWidth", "150");
+    attrs.insert("ArrowShaftSpacing", "600");
+
+    Vec3f ar_beg(arrow_beg.x, -arrow_beg.y, 0);
+    Vec3f ar_end(arrow_end.x, -arrow_end.y, 0);
+    ar_beg.scale(_bond_length);
+    ar_end.scale(_bond_length);
+
+    auto upper_point = std::max(ar_end.y, ar_beg.y);
+    auto bottom_point = std::min(ar_end.y, ar_beg.y);
+    auto left_point = std::min(ar_end.x, ar_beg.x);
+    auto right_point = std::max(ar_end.x, ar_beg.x);
+    Vec2f graph_beg(right_point - RETRO_ARROW_DELTA_X, bottom_point + (upper_point - bottom_point) / 2);
+    Vec2f graph_end(left_point + RETRO_ARROW_DELTA_X, bottom_point + (upper_point - bottom_point) / 2);
+
+    attrs.insert("Head3D", std::to_string(graph_beg.x) + " " + std::to_string(graph_beg.y) + " " + std::to_string(ar_end.z));
+    attrs.insert("Tail3D", std::to_string(graph_end.x) + " " + std::to_string(graph_end.y) + " " + std::to_string(ar_beg.z));
+
+    addElement("arrow", arrow_id, arrow_end, arrow_beg, attrs);
+
+    attrs.clear();
+
+    attrs.insert("SupersededBy", std::to_string(arrow_id));
+    attrs.insert("GraphicType", "Line");
+    attrs.insert("ArrowType", "RetroSynthetic");
+    attrs.insert("HeadSize", "600");
+
+    QS_DEF(Array<char>, buf);
+    ArrayOutput out(buf);
+    out.printf("%f %f %f %f", graph_beg.x, graph_beg.y, graph_end.x, graph_end.y);
+    buf.push(0);
+
+    attrs.insert("BoundingBox", buf.ptr());
+
+    QS_DEF(Array<char>, name);
+    name.clear();
+    name.readString("graphic", true);
+
+    addCustomElement(graphic_obj_id, name, attrs);
+}
+
 void MoleculeCdxmlSaver::addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end)
 {
     PropertiesMap attrs;

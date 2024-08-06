@@ -115,9 +115,9 @@ namespace indigo
 
     const std::unordered_map<std::string, int16_t> kCDXProp_Arrow_ArrowHeadStrToInt = {{"Full", 2}, {"HalfLeft", 3}, {"HalfRight", 4}};
 
-    const std::unordered_map<std::string, int16_t> kCDXProp_Arrow_ArrowHeadTypeStrToInt = {{"Solid", 1}, {"Hollow", 2}, {"Angled", 3}};
+    const std::unordered_map<std::string, int16_t> kCDXProp_Arrow_ArrowHeadTypeStrToInt = {{"Solid", 1}, {"Hollow", 2}, {"Angle", 3}};
 
-    const std::unordered_map<int16_t, std::string> kCDXProp_Arrow_ArrowHeadTypeIntToStr = {{1, "Solid"}, {2, "Hollow"}, {3, "Angled"}};
+    const std::unordered_map<int16_t, std::string> kCDXProp_Arrow_ArrowHeadTypeIntToStr = {{1, "Solid"}, {2, "Hollow"}, {3, "Angle"}};
 
     const std::unordered_map<std::string, CDXLineType> kLineTypeStrToInt = {
         {"Solid", kCDXLineType_Solid}, {"Dashed", kCDXLineType_Dashed}, {"Bold", kCDXLineType_Bold}, {"Wavy", kCDXLineType_Wavy}};

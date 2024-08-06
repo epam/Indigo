@@ -848,8 +848,9 @@ namespace indigo
         std::unordered_map<int, std::size_t> _id_to_bond_index;
         std::vector<int> _fragment_nodes;
         std::vector<Vec2f> _pluses;
-        std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
+        std::unordered_map<int, std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
         std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _graphic_arrows;
+        std::unordered_set<int> _retro_arrows_graph_id;
         std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _primitives;
 
         std::vector<EnhancedStereoCenter> _stereo_centers;

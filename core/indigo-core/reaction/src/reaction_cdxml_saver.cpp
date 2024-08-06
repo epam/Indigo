@@ -94,6 +94,8 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
     _generateCdxmlObjIds(rxn, mol_ids, meta_ids, nodes_ids);
 
     std::vector<std::pair<int, int>> arrow_ids;
+    std::unordered_map<int, int> retro_arrows_graph_id;
+
     int arrow_count = rxn.meta().getMetaCount(KETReactionArrow::CID);
     if (arrow_count)
     {
@@ -115,18 +117,29 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
     {
         for (int i = 0; i < rxn.meta().metaData().size(); ++i)
         {
-            molsaver.addMetaObject(*rxn.meta().metaData()[i], meta_ids[i]);
+            auto& obj = *rxn.meta().metaData()[i];
+            if (obj._class_id == KETReactionArrow::CID)
+            {
+                KETReactionArrow& arrow = (KETReactionArrow&)(obj);
+                if (arrow._arrow_type == KETReactionArrow::ERetrosynthetic)
+                {
+                    molsaver.addRetrosynteticArrow(++_id, meta_ids[i], arrow._begin, arrow._end);
+                    retro_arrows_graph_id[meta_ids[i]] = _id;
+                    continue;
+                }
+            }
+            molsaver.addMetaObject(obj, meta_ids[i]);
         }
     }
     else
     {
         _addPlusses(rxn, molsaver);
-        _addArrow(rxn, molsaver, arrow_ids.front().first);
+        _addArrow(rxn, molsaver, arrow_ids.front().first, retro_arrows_graph_id);
     }
 
     _addScheme(molsaver);
     for (const auto& ar_id : arrow_ids)
-        _addStep(rxn, molsaver, mol_ids, nodes_ids, ar_id);
+        _addStep(rxn, molsaver, mol_ids, nodes_ids, ar_id, retro_arrows_graph_id);
     _closeScheme(molsaver);
 
     if (rxn.name.size() > 0)
@@ -183,7 +196,7 @@ void ReactionCdxmlSaver::_addPlusses(BaseReaction& rxn, MoleculeCdxmlSaver& mols
     }
 }
 
-void ReactionCdxmlSaver::_addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, int arrow_id)
+void ReactionCdxmlSaver::_addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, int arrow_id, std::unordered_map<int, int>& retro_arrows_graph_id)
 {
     Vec2f p1(0, 0);
     Vec2f p2(0, 0);
@@ -275,7 +288,13 @@ void ReactionCdxmlSaver::_addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsav
         }
     }
 
-    molsaver.addArrow(arrow_id, KETReactionArrow::EOpenAngle, p2, p1);
+    if (rxn.isRetrosyntetic())
+    {
+        molsaver.addRetrosynteticArrow(++_id, arrow_id, p2, p1);
+        retro_arrows_graph_id[arrow_id] = _id;
+    }
+    else
+        molsaver.addArrow(arrow_id, KETReactionArrow::EOpenAngle, p2, p1);
 }
 
 void ReactionCdxmlSaver::_addScheme(MoleculeCdxmlSaver& molsaver)
@@ -297,7 +316,7 @@ void ReactionCdxmlSaver::_closeScheme(MoleculeCdxmlSaver& molsaver)
 }
 
 void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, std::vector<int>& mol_ids, std::vector<std::map<int, int>>& nodes_ids,
-                                  const std::pair<int, int>& arrow_id)
+                                  const std::pair<int, int>& arrow_id, std::unordered_map<int, int>& retro_arrows_graph_id)
 {
     int id = -1;
     Array<char> name;
@@ -311,9 +330,17 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
     Array<char> buf;
     ArrayOutput buf_out(buf);
 
+    auto reactantBegin = rxn.isRetrosyntetic() ? rxn.productBegin() : rxn.reactantBegin();
+    auto reactantEnd = rxn.isRetrosyntetic() ? rxn.productEnd() : rxn.reactantEnd();
+    auto reactantNext = rxn.isRetrosyntetic() ? &BaseReaction::productNext : &BaseReaction::reactantNext;
+
+    auto productBegin = rxn.isRetrosyntetic() ? rxn.reactantBegin() : rxn.productBegin();
+    auto productEnd = rxn.isRetrosyntetic() ? rxn.reactantEnd() : rxn.productEnd();
+    auto productNext = rxn.isRetrosyntetic() ? &BaseReaction::reactantNext : &BaseReaction::productNext;
+
     if (arrow_id.second < 0)
     {
-        for (auto i = rxn.reactantBegin(); i < rxn.reactantEnd(); i = rxn.reactantNext(i))
+        for (auto i = reactantBegin; i < reactantEnd; i = (rxn.*reactantNext)(i))
         {
             if (mol_ids[i] > 0)
                 buf_out.printf("%d ", mol_ids[i]);
@@ -324,7 +351,8 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
         if (rxn.reactionBlocksCount())
         {
             auto& rb = rxn.reactionBlock(arrow_id.second);
-            for (auto i : rb.reactants)
+            auto& reactants = rxn.isRetrosyntetic() ? rb.products : rb.reactants;
+            for (auto i : reactants)
                 buf_out.printf("%d ", mol_ids[i]);
         }
     }
@@ -339,7 +367,7 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
     buf.clear();
     if (arrow_id.second < 0)
     {
-        for (auto i = rxn.productBegin(); i < rxn.productEnd(); i = rxn.productNext(i))
+        for (auto i = productBegin; i < productEnd; i = (rxn.*productNext)(i))
         {
             if (mol_ids[i] > 0)
                 buf_out.printf("%d ", mol_ids[i]);
@@ -350,7 +378,8 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
         if (rxn.reactionBlocksCount())
         {
             auto& rb = rxn.reactionBlock(arrow_id.second);
-            for (auto i : rb.products)
+            auto& products = rxn.isRetrosyntetic() ? rb.reactants : rb.products;
+            for (auto i : products)
                 buf_out.printf("%d ", mol_ids[i]);
         }
     }
@@ -380,12 +409,18 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
         attrs.insert("ReactionStepObjectsAboveArrow", above_arrow.c_str());
 
     buf.clear();
-    buf_out.printf("%d", arrow_id.first);
+
+    auto graph_id = retro_arrows_graph_id.find(arrow_id.first);
+    if (graph_id != retro_arrows_graph_id.end())
+        buf_out.printf("%d", graph_id->second);
+    else
+        buf_out.printf("%d", arrow_id.first);
+
     buf.push(0);
     attrs.insert("ReactionStepArrows", buf.ptr());
 
     buf.clear();
-    for (auto i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
+    for (auto i = reactantBegin; i != reactantEnd; i = (rxn.*reactantNext)(i))
     {
         BaseMolecule& mol = rxn.getBaseMolecule(i);
 
@@ -394,7 +429,7 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
             int aam = rxn.findAamNumber(&mol, j);
             if (aam > 0)
             {
-                for (auto k = rxn.productBegin(); k != rxn.productEnd(); k = rxn.productNext(k))
+                for (auto k = productBegin; k != productEnd; k = (rxn.*productNext)(k))
                 {
                     int mapped_atom = rxn.findAtomByAAM(k, aam);
                     if (mapped_atom != -1)

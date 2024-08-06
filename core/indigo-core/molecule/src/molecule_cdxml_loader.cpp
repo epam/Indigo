@@ -507,7 +507,7 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         Vec2f p2(g_arr_info.second.x, g_arr_info.second.y);
         for (auto it = _arrows.begin(); it != _arrows.end(); it++)
         {
-            const auto& arr_info = (*it).first;
+            const auto& arr_info = (*it).second.first;
             Vec2f ap1(arr_info.first.x, arr_info.first.y);
             Vec2f ap2(arr_info.second.x, arr_info.second.y);
             if (fabsf(p1.x - ap1.x) < EPSILON && fabsf(p1.y - ap1.y) < EPSILON && fabsf(p2.x - ap2.x) < EPSILON && fabsf(p2.y - ap2.y) < EPSILON)
@@ -521,10 +521,10 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
 
     for (const auto& arrow : _arrows)
     {
-        const auto& arr_info = arrow.first;
+        const auto& arr_info = arrow.second.first;
         Vec2f v1(arr_info.first.x, arr_info.first.y);
         Vec2f v2(arr_info.second.x, arr_info.second.y);
-        mol.meta().addMetaObject(new KETReactionArrow(arrow.second, v1, v2));
+        mol.meta().addMetaObject(new KETReactionArrow(arrow.second.second, v1, v2));
     }
 
     for (const auto& prim : _primitives)
@@ -1472,6 +1472,21 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
             }
             _graphic_arrows.push_back(std::make_pair(std::make_pair(Vec3f(tail.x, tail.y, 0), Vec3f(head.x, head.y, 0)), ar_type));
         }
+        else if (arrow_type == kCDXArrowType_RetroSynthetic && superseded_id != 0)
+        {
+            auto& head = graph_bbox.first;
+            auto& tail = graph_bbox.second;
+
+            auto arrow_it = _arrows.find(superseded_id);
+            if (arrow_it != _arrows.end())
+            {
+                _arrows.erase(arrow_it);
+            }
+            _retro_arrows_graph_id.emplace(superseded_id);
+
+            _graphic_arrows.push_back(
+                std::make_pair(std::make_pair(Vec3f(tail.x, tail.y, 0), Vec3f(head.x, head.y, 0)), ReactionComponent::ARROW_RETROSYNTHETIC));
+        }
     }
     break;
     case kCDXGraphicType_Oval:
@@ -1510,12 +1525,20 @@ void MoleculeCdxmlLoader::_parseArrow(BaseCDXElement& elem)
     auto arrow_head_lambda = [&arrow_head](const std::string& data) { arrow_head = data; };
     std::string head_type;
     auto head_type_lambda = [&head_type](const std::string& data) { head_type = data; };
-    std::unordered_map<std::string, std::function<void(const std::string&)>> arrow_dispatcher = {
-        {"BoundingBox", arrow_bbox_lambda},  {"FillType", fill_type_lambda}, {"ArrowheadHead", arrow_head_lambda},
-        {"ArrowheadType", head_type_lambda}, {"Head3D", arrow_end_lambda},   {"Tail3D", arrow_begin_lambda}};
+    AutoInt arrow_id = 0;
+    auto arrow_id_lambda = [&arrow_id](const std::string& data) { arrow_id = std::stoi(data); };
+    std::unordered_map<std::string, std::function<void(const std::string&)>> arrow_dispatcher = {{"BoundingBox", arrow_bbox_lambda},
+                                                                                                 {"FillType", fill_type_lambda},
+                                                                                                 {"ArrowheadHead", arrow_head_lambda},
+                                                                                                 {"ArrowheadType", head_type_lambda},
+                                                                                                 {"Head3D", arrow_end_lambda},
+                                                                                                 {"Tail3D", arrow_begin_lambda},
+                                                                                                 {"id", arrow_id_lambda}};
 
     applyDispatcher(*elem.firstProperty().get(), arrow_dispatcher);
-    _arrows.push_back(std::make_pair(std::make_pair(begin_pos, end_pos), 2));
+
+    if (!_retro_arrows_graph_id.count(arrow_id))
+        _arrows[arrow_id] = (std::make_pair(std::make_pair(begin_pos, end_pos), 2));
 }
 
 void MoleculeCdxmlLoader::_parseLabel(BaseCDXElement& elem, std::string& label)

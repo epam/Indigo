@@ -324,6 +324,16 @@ namespace indigo
 
         int original_format;
 
+        bool isRetrosyntetic()
+        {
+            return isRetrosynthetic;
+        };
+
+        void setIsRetrosyntetic()
+        {
+            isRetrosynthetic = true;
+        };
+
         DECL_ERROR;
 
     protected:
@@ -348,6 +358,7 @@ namespace indigo
         int _nextElement(int type, int index);
 
         MetaDataStorage _meta;
+        bool isRetrosynthetic = false;
 
         virtual void _clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings);
     };
