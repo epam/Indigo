@@ -69,6 +69,14 @@ indigo.setOption("render-output-format", "png")
 renderer.renderToFile(reac, joinPathPy("out/test1png.png", __file__))
 print(checkImageSimilarity("test1png.png"))
 
+reac = indigo.loadReactionFromFile(
+    joinPathPy("reactions/image_first.ket", __file__)
+)
+reac.layout()
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(reac, joinPathPy("out/image_first.png", __file__))
+print(checkImageSimilarity("image_first.png"))
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()
