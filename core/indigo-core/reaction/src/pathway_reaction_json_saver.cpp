@@ -19,6 +19,7 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
+#include "molecule/inchi_wrapper.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_saver.h"
 #include "reaction/pathway_reaction.h"
@@ -34,6 +35,17 @@ namespace indigo
     }
 
     void PathwayReactionJsonSaver::saveReaction(PathwayReaction& rxn)
+    {
+        InchiWrapper inchiWrapper;
+        Array<char> inchi, inchiKey;
+
+        //std::vector<std::string> inchiKeys(
+        //inchiWrapper.saveMoleculeIntoInchi(dynamic_cast<Molecule&>(*_allMolecules[id]), inchi);
+        //InchiWrapper::InChIKey(inchi.ptr(), inchikey);
+        //inchikeys.emplace_back(inchikey.ptr(), inchikey.size());
+    }
+
+    void PathwayReactionJsonSaver::saveReactionAsList(PathwayReaction& rxn)
     {
         auto merged = std::make_unique<Molecule>();
         auto reaction = std::make_unique<PathwayReaction>();
