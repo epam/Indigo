@@ -45,12 +45,12 @@ namespace indigo
         int side;
         for (int i = reaction->begin(); i < reaction->end(); i = reaction->next(i))
         {
-            if (offsetY != reaction->getReactionId(i) * -SPACE * 2)
+            if (offsetY != reaction->reactionId(i) * -SPACE * 2)
             {
                 offsetX = 0;
                 side = BaseReaction::REACTANT;
             }
-            offsetY = reaction->getReactionId(i) * -SPACE * 2;
+            offsetY = reaction->reactionId(i) * -SPACE * 2;
             if (side != reaction->getSideType(i))
             {
                 offsetX += SPACE;

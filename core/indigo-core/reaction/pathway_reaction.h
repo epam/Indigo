@@ -38,7 +38,8 @@ namespace indigo
         PathwayReaction(std::deque<Reaction>&);
         ~PathwayReaction() override;
 
-        int getReactionId(int moleculeId) const;
+        int reactionId(int moleculeId) const;
+        int reactionsCount() const;
         void clone(PathwayReaction&);
 
         BaseReaction* neu() override;

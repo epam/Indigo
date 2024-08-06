@@ -47,9 +47,14 @@ PathwayReaction::PathwayReaction(std::deque<Reaction>& reactions)
     }
 }
 
-int PathwayReaction::getReactionId(int moleculeId) const
+int PathwayReaction::reactionId(int moleculeId) const
 {
     return _reactions.at(moleculeId);
+}
+
+int PathwayReaction::reactionsCount() const
+{
+    return _reactions.size();
 }
 
 void PathwayReaction::clone(PathwayReaction& reaction)
