@@ -292,7 +292,19 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
     {
         _rc.setSingleSource(CWC_BASE);
         const auto& md = meta->metaData();
+        // images go first
+        std::vector<int> order_indexes, back_indexes;
         for (int i = 0; i < md.size(); ++i)
+        {
+            const auto& mobj = *md[i];
+            if (mobj._class_id == KETImage::CID)
+                order_indexes.push_back(i);
+            else
+                back_indexes.push_back(i);
+        }
+        order_indexes.insert(order_indexes.end(), back_indexes.begin(), back_indexes.end());
+
+        for (auto i : order_indexes)
         {
             const auto& mobj = *md[i];
             switch (mobj._class_id)
