@@ -24,6 +24,8 @@
 
 #include "common.h"
 
+#include <fstream>
+
 using namespace std;
 using namespace indigo;
 
@@ -281,4 +283,30 @@ TEST_F(IndigoApiFormatsTest, noFile)
             obj = indigoLoadStructureFromFile("/wrong/path/to/non/existent/file", "");
         },
         Exception);
+}
+
+TEST_F(IndigoApiFormatsTest, idt_to_ket)
+{
+    int obj = -1;
+    int library = indigoLoadMonomerLibraryFromFile(dataPath("molecules/basic/monomer_library.ket").c_str());
+    obj = indigoLoadIdtFromString("ARAS", library);
+    indigoSetOptionBool("json-saving-pretty", true);
+    const char* res = indigoJson(obj);
+    // printf("res=%s", res);
+    std::ifstream is(dataPath("molecules/basic/idt_mixed_std.ket"), std::ios::binary | std::ios::ate);
+    auto size = is.tellg();
+    std::string str(size, '\0'); // construct string to stream size
+    is.seekg(0);
+    is.read(&str[0], size);
+    ASSERT_STREQ(res, str.c_str());
+}
+
+TEST_F(IndigoApiFormatsTest, ket_to_idt)
+{
+    int obj = -1;
+    int library = indigoLoadMonomerLibraryFromFile(dataPath("molecules/basic/monomer_library.ket").c_str());
+    obj = indigoLoadKetDocumentFromFile(dataPath("molecules/basic/idt_mixed_std.ket").c_str());
+    const char* res = indigoIdt(obj, library);
+    // printf("res=%s", res);
+    ASSERT_STREQ("ARAS", res);
 }

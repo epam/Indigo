@@ -314,6 +314,7 @@ def load_moldata(
     mime_type=None,
     selected=None,
     library=None,
+    use_document=False,
 ):
     if not indigo:
         try:
@@ -898,6 +899,7 @@ def convert():
             indigo=indigo,
             query=query,
             library=library,
+            use_document=True,
         )
         return get_response(
             md,
@@ -929,14 +931,19 @@ def convert():
         indigo = indigo_init(data["options"])
 
         monomer_library = data["options"].get("monomerLibrary")
+        library = None
         if monomer_library is not None:
-            indigo.loadMolecule(monomer_library)
+            library = indigo.loadMonomerLibrary(monomer_library)
+        else:
+            library = indigo.loadMonomerLibrary('{"root":{}}')
 
         md = load_moldata(
             data["struct"],
             mime_type=data["input_format"],
             options=data["options"],
             indigo=indigo,
+            library=library,
+            use_document=True,
         )
 
         if "json_output" in request.args:
@@ -950,6 +957,7 @@ def convert():
             data["json_output"],
             data["options"],
             indigo=indigo,
+            library=library,
         )
 
 

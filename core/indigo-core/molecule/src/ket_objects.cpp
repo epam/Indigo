@@ -567,6 +567,30 @@ void KetMolecule::parseKetSGroups(rapidjson::Value& sgroups)
     }
 }
 
+IMPL_ERROR(KetAttachmentPoint, "Ket Attachment Point");
+
+const std::map<std::string, int>& KetAttachmentPoint::getStringPropStrToIdx() const
+{
+    static std::map<std::string, int> str_to_idx{
+        {"label", toUType(StringProps::label)},
+        {"type", toUType(StringProps::type)},
+    };
+    return str_to_idx;
+}
+
+IMPL_ERROR(KetBaseMonomer, "Ket Base Monomer")
+
+void KetBaseMonomer::connectAttachmentPointTo(const std::string& ap_id, const std::string& monomer_ref, const std::string& other_ap_id)
+{
+    if (_attachment_points.find(ap_id) == _attachment_points.end())
+        throw Error("Unknown attachment point '%S'", ap_id.c_str());
+    auto& it = _connections.find(ap_id);
+    if (it != _connections.end())
+        throw Error("Monomer '%s' attachment point '%s' already connected to monomer'%s' attachment point '%s'", _id.c_str(), ap_id.c_str(),
+                    it->second.first.c_str(), it->second.second.c_str());
+    _connections.try_emplace(ap_id, monomer_ref, other_ap_id);
+}
+
 IMPL_ERROR(KetMonomer, "Ket Monomer")
 
 const std::map<std::string, int>& KetMonomer::getIntPropStrToIdx() const
@@ -602,10 +626,34 @@ const std::map<std::string, int>& KetConnection::getStringPropStrToIdx() const
 
 IMPL_ERROR(KetVariantMonomer, "Ket Variant Monomer")
 
+const std::map<std::string, int>& KetVariantMonomer::getIntPropStrToIdx() const
+{
+    static std::map<std::string, int> str_to_idx{
+        {"seqid", toUType(IntProps::seqid)},
+    };
+    return str_to_idx;
+}
+
 const std::map<std::string, int>& KetVariantMonomer::getStringPropStrToIdx() const
 {
     static std::map<std::string, int> str_to_idx{
         {"alias", toUType(StringProps::alias)},
     };
     return str_to_idx;
+}
+
+IMPL_ERROR(KetBaseMonomerTemplate, "Ket Base Monomer Template")
+
+bool KetBaseMonomerTemplate::hasIdtAlias(const std::string& alias, IdtModification mod)
+{
+    if (_idt_alias.hasModification(mod) && (_idt_alias.getModification(mod) == alias))
+        return true;
+    return false;
+}
+
+bool KetBaseMonomerTemplate::hasIdtAliasBase(const std::string& alias_base)
+{
+    if (_idt_alias.getBase() == alias_base)
+        return true;
+    return false;
 }

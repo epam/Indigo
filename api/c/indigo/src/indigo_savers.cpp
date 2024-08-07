@@ -639,6 +639,14 @@ CEXPORT int indigoSaveIdt(int item, int output, int library)
             out.flush();
             return 1;
         }
+        else if (IndigoKetDocument::is(obj))
+        {
+            IndigoObject& lib_obj = self.getObject(library);
+            SequenceSaver saver(out, IndigoMonomerLibrary::get(lib_obj));
+            saver.saveKetDocument(static_cast<IndigoKetDocument&>(obj).get(), SequenceSaver::SeqFormat::IDT);
+            out.flush();
+            return 1;
+        }
         throw IndigoError("indigoSaveIdt(): expected molecule, got %s", obj.debugInfo());
     }
     INDIGO_END(-1);

@@ -289,10 +289,10 @@ void SequenceLoader::addTemplateBond(BaseMolecule& mol, int left_idx, int right_
 void SequenceLoader::addTemplateConnection(KetDocument& document, std::size_t left_idx, std::size_t right_idx, bool branch)
 {
     KetConnectionEndPoint ep1{};
-    ep1.setStringProp("monomerId", KetMonomer::ref_prefix + std::to_string(left_idx));
+    ep1.setStringProp("monomerId", document.monomers().at(std::to_string(left_idx))->ref());
     ep1.setStringProp("attachmentPointId", branch ? "R3" : "R2");
     KetConnectionEndPoint ep2{};
-    ep2.setStringProp("monomerId", KetMonomer::ref_prefix + std::to_string(right_idx));
+    ep2.setStringProp("monomerId", document.monomers().at(std::to_string(right_idx))->ref());
     ep2.setStringProp("attachmentPointId", "R1");
     document.addConnection(ep1, ep2);
 }
@@ -365,24 +365,25 @@ void SequenceLoader::addNucleotide(BaseMolecule& mol, std::string base, const st
 }
 
 void SequenceLoader::addNucleotide(KetDocument& document, std::string base_alias, const std::string& sugar_alias, const std::string& phosphate_alias,
-                                   bool phosphate_at_left)
+                                   bool phosphate_at_left, bool variant)
 {
     Vec3f pos = getBackboneMonomerPosition();
 
     // add sugar
     auto sugar_idx = document.monomers().size();
     auto& sugar = document.addMonomer(sugar_alias, _alias_to_id.at(sugar_alias));
-    sugar.setIntProp("seqid", _seq_id);
-    sugar.setPosition(pos);
+    sugar->setIntProp("seqid", _seq_id);
+    sugar->setPosition(pos);
 
     // add base
     if (base_alias.size() > 0)
     {
         auto nuc_base_idx = document.monomers().size();
-        auto& base = document.addMonomer(base_alias, _alias_to_id.at(base_alias));
-        base.setIntProp("seqid", _seq_id);
+        auto& base =
+            variant ? document.addVariantMonomer(base_alias, _alias_to_id.at(base_alias)) : document.addMonomer(base_alias, _alias_to_id.at(base_alias));
+        base->setIntProp("seqid", _seq_id);
         Vec3f base_coord(pos.x, pos.y - MoleculeLayout::DEFAULT_BOND_LENGTH, 0);
-        base.setPosition(base_coord);
+        base->setPosition(base_coord);
 
         // connect nucleobase to the sugar
         addTemplateConnection(document, sugar_idx, nuc_base_idx, true);
@@ -397,9 +398,9 @@ void SequenceLoader::addNucleotide(KetDocument& document, std::string base_alias
                 // add phosphate
                 auto phosphate_idx = document.monomers().size();
                 auto& phosphate = document.addMonomer(phosphate_alias, _alias_to_id.at(phosphate_alias));
-                phosphate.setIntProp("seqid", _seq_id - 1);
+                phosphate->setIntProp("seqid", _seq_id - 1);
                 Vec3f phosphate_coord(pos.x - MoleculeLayout::DEFAULT_BOND_LENGTH, pos.y, 0);
-                phosphate.setPosition(phosphate_coord);
+                phosphate->setPosition(phosphate_coord);
 
                 addTemplateConnection(document, _last_monomer_idx, phosphate_idx); // connect phosphate to the previous monomer
                 addTemplateConnection(document, phosphate_idx, sugar_idx);         // connect current sugar to the phosphate
@@ -410,9 +411,9 @@ void SequenceLoader::addNucleotide(KetDocument& document, std::string base_alias
             // add phosphate
             auto phosphate_idx = document.monomers().size();
             auto& phosphate = document.addMonomer(phosphate_alias, _alias_to_id.at(phosphate_alias));
-            phosphate.setIntProp("seqid", _seq_id);
+            phosphate->setIntProp("seqid", _seq_id);
             Vec3f phosphate_coord(pos.x + MoleculeLayout::DEFAULT_BOND_LENGTH, pos.y, 0);
-            phosphate.setPosition(phosphate_coord);
+            phosphate->setPosition(phosphate_coord);
 
             if (_last_monomer_idx >= 0)
                 addTemplateConnection(document, _last_monomer_idx, sugar_idx); // сonnect sugar to the previous monomer
@@ -949,6 +950,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     invalid_symbols += idt_alias[0];
                     continue;
                 }
+                base = idt_alias;
                 if (IDT_STANDARD_MIXED_BASES.count(idt_alias) != 0)
                 {
                     variant_monomer = true;
@@ -966,34 +968,32 @@ void SequenceLoader::loadIdt(KetDocument& document)
                             checkAddTemplate(document, monomer_template);
                             _alias_to_id.emplace(template_alias, template_id);
                         }
-                        document.addVariantMonomerTemplate("mixture", idt_alias, idt_alias, options);
+                        document.addVariantMonomerTemplate("mixture", idt_alias, idt_alias, IdtAlias(), options);
+                        _alias_to_id.emplace(idt_alias, idt_alias);
                     }
-                    document.addVariantMonomer(idt_alias, idt_alias);
                 }
                 else
                 {
-                    base = idt_alias;
                     if (base == "I")
                         base = "In"; // use correct alias for Inosine
-
-                    if (tokens.size() == 0)
-                    {
-                        if (token.second)
-                            throw Error("Invalid IDT sequence: '*' couldn't be the last symbol.");
-                        modification = IdtModification::THREE_PRIME_END;
-                        phosphate = "";
-                    }
-                    else if (token.second)
-                    {
-                        phosphate = IDT_MODIFIED_PHOSPHATE;
-                    }
-
-                    _alias_to_id.emplace(sugar, checkAddTemplate(document, MonomerClass::Sugar, sugar));
-                    if (idt_alias.size() > 0)
-                        _alias_to_id.emplace(base, checkAddTemplate(document, MonomerClass::Base, base));
-                    if (phosphate.size() > 0)
-                        _alias_to_id.emplace(phosphate, checkAddTemplate(document, MonomerClass::Phosphate, phosphate));
                 }
+                if (tokens.size() == 0)
+                {
+                    if (token.second)
+                        throw Error("Invalid IDT sequence: '*' couldn't be the last symbol.");
+                    modification = IdtModification::THREE_PRIME_END;
+                    phosphate = "";
+                }
+                else if (token.second)
+                {
+                    phosphate = IDT_MODIFIED_PHOSPHATE;
+                }
+
+                _alias_to_id.emplace(sugar, checkAddTemplate(document, MonomerClass::Sugar, sugar));
+                if (base.size() > 0 && !variant_monomer)
+                    _alias_to_id.emplace(base, checkAddTemplate(document, MonomerClass::Base, base));
+                if (phosphate.size() > 0)
+                    _alias_to_id.emplace(phosphate, checkAddTemplate(document, MonomerClass::Phosphate, phosphate));
             }
             else
             {
@@ -1091,14 +1091,14 @@ void SequenceLoader::loadIdt(KetDocument& document)
             {
                 auto monomer_idx = document.monomers().size();
                 auto& monomer = document.addMonomer(single_monomer_alias, single_monomer);
-                monomer.setIntProp("seqid", _seq_id);
-                monomer.setPosition(getBackboneMonomerPosition());
+                monomer->setIntProp("seqid", _seq_id);
+                monomer->setPosition(getBackboneMonomerPosition());
                 if (_last_monomer_idx >= 0)
                     addTemplateConnection(document, _last_monomer_idx, monomer_idx);
                 _last_monomer_idx = static_cast<int>(monomer_idx);
             }
-            else if (!variant_monomer)
-                addNucleotide(document, base, sugar, phosphate, false);
+            else
+                addNucleotide(document, base, sugar, phosphate, false, variant_monomer);
 
             _seq_id++;
             _col++;

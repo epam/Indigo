@@ -548,6 +548,46 @@ class Indigo:
             ),
         )
 
+    def loadKetDocument(self, string):
+        """Loads ket document from ket string
+
+        Args:
+            string (str): ket
+
+        Returns:
+            IndigoObject: loaded ket document
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadKetDocumentFromString(string.encode())
+            ),
+        )
+
+    def loadKetDocumentFromFile(self, filename):
+        """Loads ket document from from file in ket format
+
+        Args:
+            string (str): full path to the file with ket
+
+        Returns:
+            IndigoObject: loaded ket document
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadKetDocumentFromFile(filename.encode())
+            ),
+        )
+
     def loadSequence(self, string, seq_type, library):
         """Loads molecule from DNA/RNA/PEPTIDE sequence string
 

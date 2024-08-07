@@ -61,10 +61,11 @@ idt_data = {
     "idt_52moera_sp_i2moera_sp": "/52MOErA/*/i2MOErA/*",
     "idt_unsplit": "/5UNSPLIT/A",
     "idt_more_than_80_chars": "/52MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//3Phos/",
+    "idt_mixed_std": "ARAS",
 }
 
 for filename in sorted(idt_data.keys()):
-    mol = indigo.loadMoleculeFromFile(os.path.join(ref, filename + ".ket"))
+    mol = indigo.loadKetDocumentFromFile(os.path.join(ref, filename + ".ket"))
     idt = mol.idt(lib)
     idt_ref = idt_data[filename]
     if idt_ref == idt:

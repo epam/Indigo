@@ -20,6 +20,12 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
+#include "molecule/ket_document.h"
+#include "molecule/ket_document_json_loader.h"
+#include "molecule/ket_document_json_saver.h"
+#include "molecule/monomers_template_library.h"
+#include "molecule/sequence_loader.h"
+#include "molecule/sequence_saver.h"
 #include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
 #include <molecule/cmf_loader.h>
@@ -370,4 +376,75 @@ TEST_F(IndigoCoreFormatsTest, json_load_save)
     saver.saveMolecule(q_mol);
     std::string json_out{out.ptr(), static_cast<std::size_t>(out.size())};
     // ASSERT_EQ(json, json_out);
+}
+
+TEST_F(IndigoCoreFormatsTest, idt_load)
+{
+    const char* idt = "ARAS";
+    BufferScanner scanner(idt);
+    MonomerTemplateLibrary library;
+    FileScanner sc(dataPath("molecules/basic/monomer_library.ket").c_str());
+    std::string json;
+    sc.readAll(json);
+    rapidjson::Document data;
+    if (!data.Parse(json.c_str()).HasParseError())
+    {
+        if (data.HasMember("root"))
+        {
+            MoleculeJsonLoader loader(data);
+            loader.loadMonomerLibrary(library);
+        }
+    }
+
+    SequenceLoader loader(scanner, library);
+    KetDocument document;
+    loader.loadIdt(document);
+
+    Array<char> out;
+    ArrayOutput std_out(out);
+    KetDocumentJsonSaver saver(std_out);
+    saver.pretty_json = true;
+    saver.saveKetDocument(document);
+    std::string json_out{out.ptr(), static_cast<std::size_t>(out.size())};
+    // printf("%s", json_out.c_str());
+    Array<char> buf;
+    ArrayOutput output(buf);
+    SequenceSaver idt_saver(output, library);
+    FileScanner ket(dataPath("molecules/basic/idt_mixed_std.ket").c_str());
+    std::string json2;
+    ket.readAll(json2);
+    ASSERT_EQ(json2, json_out);
+}
+
+TEST_F(IndigoCoreFormatsTest, idt_save)
+{
+    MonomerTemplateLibrary library;
+    FileScanner sc(dataPath("molecules/basic/monomer_library.ket").c_str());
+    std::string json;
+    sc.readAll(json);
+    rapidjson::Document data;
+    if (!data.Parse(json.c_str()).HasParseError())
+    {
+        if (data.HasMember("root"))
+        {
+            MoleculeJsonLoader loader(data);
+            loader.loadMonomerLibrary(library);
+        }
+    }
+
+    Array<char> buf;
+    ArrayOutput output(buf);
+    SequenceSaver idt_saver(output, library);
+    FileScanner ket(dataPath("molecules/basic/idt_mixed_std.ket").c_str());
+    std::string json2;
+    ket.readAll(json2);
+    KetDocument ket_document;
+    KetDocumentJsonLoader kdloader;
+    kdloader.parseJson(json2, ket_document);
+
+    idt_saver.saveKetDocument(ket_document, SequenceSaver::SeqFormat::IDT);
+
+    std::string json_out{buf.ptr(), static_cast<std::size_t>(buf.size())};
+    // printf("%s", json_out.c_str());
+    ASSERT_EQ("ARAS", json_out);
 }

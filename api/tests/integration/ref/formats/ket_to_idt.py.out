@@ -17,6 +17,7 @@ idt_i2moera_sp_32moera.ket:SUCCEED
 idt_i2moera_t.ket:SUCCEED
 idt_many_molecules.ket:SUCCEED
 idt_mixed.ket:SUCCEED
+idt_mixed_std.ket:SUCCEED
 idt_mod_phosphates.ket:SUCCEED
 idt_modifications.ket:SUCCEED
 idt_more_than_80_chars.ket:SUCCEED

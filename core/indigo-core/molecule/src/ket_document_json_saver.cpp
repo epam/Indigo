@@ -30,6 +30,12 @@ using namespace rapidjson;
 
 IMPL_ERROR(KetDocumentJsonSaver, "KetDocument json saver");
 
+template <class T>
+const std::string get_ref(const T& obj)
+{
+    return T::ref_prefix + obj.id();
+}
+
 static void saveNativeFloat(JsonWriter& writer, float f_value)
 {
     std::string val = std::to_string(f_value);
@@ -53,12 +59,12 @@ static void saveStr(JsonWriter& writer, const char* name, const std::string& str
 
 static void saveMonomerTemplateAttachmentPoints(JsonWriter& writer, const MonomerTemplate& monomer_template)
 {
-    if (monomer_template.attachemntPoints().size() == 0)
+    if (monomer_template.attachmentPoints().size() == 0)
         return;
 
     writer.Key("attachmentPoints");
     writer.StartArray();
-    for (auto& it : monomer_template.attachemntPoints())
+    for (auto& it : monomer_template.attachmentPoints())
     {
         auto& att_point = it.second;
         writer.StartObject();
@@ -218,9 +224,9 @@ void KetDocumentJsonSaver::saveMolecule(JsonWriter& writer, const std::string& r
     writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveMonomer(JsonWriter& writer, const std::string& ref, const KetMonomer& monomer)
+void KetDocumentJsonSaver::saveMonomer(JsonWriter& writer, const KetMonomer& monomer)
 {
-    writer.Key(ref);
+    writer.Key(monomer.ref());
     writer.StartObject();
     saveStr(writer, "type", "monomer");
     saveStr(writer, "id", monomer.id());
@@ -241,9 +247,9 @@ void KetDocumentJsonSaver::saveMonomer(JsonWriter& writer, const std::string& re
     writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const std::string& ref, const MonomerTemplate& monomer_template)
+void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template)
 {
-    writer.Key(ref);
+    writer.Key(get_ref(monomer_template));
     writer.StartObject();
     saveStr(writer, "type", "monomerTemplate");
     saveStr(writer, "id", monomer_template.id());
@@ -282,9 +288,9 @@ void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const std::st
     writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveVariantMonomer(JsonWriter& writer, const std::string& ref, const KetVariantMonomer& monomer)
+void KetDocumentJsonSaver::saveVariantMonomer(JsonWriter& writer, const KetVariantMonomer& monomer)
 {
-    writer.Key(ref);
+    writer.Key(monomer.ref());
     writer.StartObject();
     saveStr(writer, "type", "variantMonomer");
     saveStr(writer, "id", monomer.id());
@@ -304,9 +310,9 @@ void KetDocumentJsonSaver::saveVariantMonomer(JsonWriter& writer, const std::str
     writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveVariantMonomerTemplate(JsonWriter& writer, const std::string& ref, const KetVariantMonomerTemplate& monomer_template)
+void KetDocumentJsonSaver::saveVariantMonomerTemplate(JsonWriter& writer, const KetVariantMonomerTemplate& monomer_template)
 {
-    writer.Key(ref);
+    writer.Key(get_ref(monomer_template));
     writer.StartObject();
     saveStr(writer, "type", "variantMonomerTemplate");
     saveStr(writer, "subtype", monomer_template.subtype());
@@ -340,7 +346,6 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
 {
     auto& molecules = document.molecules();
     auto& monomers = document.monomers();
-    auto& variant_monomers = document.variantMonomers();
     auto& connections = document.connections();
     auto& templates = document.templates();
     auto& variant_templates = document.variantTemplates();
@@ -355,16 +360,10 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
         saveStr(writer, "$ref", it.first);
         writer.EndObject();
     }
-    for (auto& it : document.monomersRefs())
+    for (auto& id : document.monomersIds())
     {
         writer.StartObject();
-        saveStr(writer, "$ref", it);
-        writer.EndObject();
-    }
-    for (auto& it : document.variantMonomersRefs())
-    {
-        writer.StartObject();
-        saveStr(writer, "$ref", it);
+        saveStr(writer, "$ref", monomers.at(id)->ref());
         writer.EndObject();
     }
     writer.EndArray(); // nodes
@@ -386,21 +385,27 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
         writer.EndObject();
     }
     writer.EndArray(); // connections
-    if (document.templatesRefs().size() > 0)
+    if (document.templatesIds().size() + document.variantTemplatesIds().size() > 0)
     {
         writer.Key("templates");
         writer.StartArray();
-        for (auto& it : document.templatesRefs())
+        if (document.templatesIds().size() > 0)
         {
-            writer.StartObject();
-            saveStr(writer, "$ref", it);
-            writer.EndObject();
+            for (auto& it : document.templatesIds())
+            {
+                writer.StartObject();
+                saveStr(writer, "$ref", MonomerTemplate::ref_prefix + it);
+                writer.EndObject();
+            }
         }
-        for (auto& it : document.variantTemplatesRefs())
+        if (document.variantTemplatesIds().size() > 0)
         {
-            writer.StartObject();
-            saveStr(writer, "$ref", it);
-            writer.EndObject();
+            for (auto& it : document.variantTemplatesIds())
+            {
+                writer.StartObject();
+                saveStr(writer, "$ref", KetVariantMonomerTemplate::ref_prefix + it);
+                writer.EndObject();
+            }
         }
         writer.EndArray(); // templates
     }
@@ -409,17 +414,22 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
     for (auto& it : document.moleculesRefs())
         saveMolecule(writer, it, molecules.at(it));
 
-    for (auto& it : document.monomersRefs())
-        saveMonomer(writer, it, monomers.at(it));
+    for (auto& it : document.monomersIds())
+    {
+        auto& monomer = monomers.at(it);
+        if (monomer->monomerType() == KetBaseMonomer::MonomerType::Monomer)
+            saveMonomer(writer, *static_cast<KetMonomer*>(monomer.get()));
+        else if (monomer->monomerType() == KetBaseMonomer::MonomerType::VarianMonomer)
+            saveVariantMonomer(writer, *static_cast<KetVariantMonomer*>(monomer.get()));
+        else
+            throw Error("Unknown monomer type");
+    }
 
-    for (auto& it : document.variantMonomersRefs())
-        saveVariantMonomer(writer, it, variant_monomers.at(it));
+    for (auto& it : document.templatesIds())
+        saveMonomerTemplate(writer, templates.at(it));
 
-    for (auto& it : document.templatesRefs())
-        saveMonomerTemplate(writer, it, templates.at(it));
-
-    for (auto& it : document.variantTemplatesRefs())
-        saveVariantMonomerTemplate(writer, it, variant_templates.at(it));
+    for (auto& it : document.variantTemplatesIds())
+        saveVariantMonomerTemplate(writer, variant_templates.at(it));
 
     writer.EndObject(); // end
 }

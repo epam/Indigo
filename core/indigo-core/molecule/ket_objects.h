@@ -27,7 +27,11 @@
 
 #include <rapidjson/document.h>
 
-#include "math/algebra.h"
+#include "common/base_c/defs.h"
+#include "common/base_cpp/exception.h"
+#include "common/math/algebra.h"
+#include "molecule/idt_alias.h"
+#include "molecule/monomers_defs.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -45,6 +49,8 @@ namespace indigo
     {
         return static_cast<std::underlying_type_t<T>>(enumerator);
     }
+
+    using ket_connections_type = std::map<std::string, std::pair<std::string, std::string>>;
 
     class DLLEXPORT KetObjWithProps
     {
@@ -534,6 +540,8 @@ namespace indigo
     {
     public:
         DECL_ERROR;
+        static inline const std::string ref_prefix = "molecule";
+
         KetMolecule() : _atoms(){};
 
         KetMolecule(const KetMolecule& other) = delete;
@@ -608,13 +616,61 @@ namespace indigo
         sgroups_type _sgroups;
     };
 
-    class DLLEXPORT KetMonomer : public KetObjWithProps
+    class DLLEXPORT KetAttachmentPoint : public KetObjWithProps
     {
     public:
         DECL_ERROR;
+        KetAttachmentPoint(int attachment_atom) : _attachment_atom(attachment_atom){};
 
-        static inline const std::string ref_prefix = "monomer";
-        KetMonomer(const std::string& id, const std::string& alias, const std::string& template_id) : _id(id), _alias(alias), _template_id(template_id){};
+        const std::map<std::string, int>& getStringPropStrToIdx() const override;
+
+        int attachment_atom() const
+        {
+            return _attachment_atom;
+        };
+
+        void setLeavingGroup(std::vector<int>& leaving_group)
+        {
+            _leaving_group = leaving_group;
+        };
+
+        const std::optional<std::vector<int>> leavingGroup() const
+        {
+            return _leaving_group;
+        };
+
+    private:
+        enum class StringProps
+        {
+            type,
+            label,
+        };
+        int _attachment_atom;
+        std::optional<std::vector<int>> _leaving_group;
+    };
+
+    class DLLEXPORT KetBaseMonomer : public KetObjWithProps
+    {
+    public:
+        DECL_ERROR;
+        enum class MonomerType
+        {
+            Monomer,
+            VarianMonomer,
+        };
+
+        KetBaseMonomer(MonomerType monomer_type, const std::string& id, const std::string& alias, const std::string& template_id)
+            : _monomer_type(monomer_type), _id(id), _template_id(template_id), _alias(alias){};
+
+        void setRef(const std::string& ref)
+        {
+            _ref = ref;
+        };
+
+        const std::string& ref() const
+        {
+            return _ref;
+        };
 
         inline void setPosition(const Vec2f& position)
         {
@@ -631,16 +687,9 @@ namespace indigo
             return _position;
         };
 
-        const std::map<std::string, int>& getIntPropStrToIdx() const override;
-
         const std::string& id() const
         {
             return _id;
-        };
-
-        const std::string& alias() const
-        {
-            return _alias;
         };
 
         const std::string& templateId() const
@@ -648,15 +697,69 @@ namespace indigo
             return _template_id;
         };
 
+        void setAttachmentPoints(const std::map<std::string, KetAttachmentPoint>& attachment_points)
+        {
+            _attachment_points = attachment_points;
+        };
+
+        const std::map<std::string, KetAttachmentPoint>& attachmentPoints() const
+        {
+            return _attachment_points;
+        };
+
+        void connectAttachmentPointTo(const std::string& ap_id, const std::string& monomer_ref, const std::string& other_ap_id);
+
+        void disconnectAttachmentPoint(const std::string& ap_id)
+        {
+            _connections.erase(ap_id);
+        };
+
+        const ket_connections_type& connections() const
+        {
+            return _connections;
+        };
+
+        MonomerType monomerType() const
+        {
+            return _monomer_type;
+        };
+
+        const std::string& alias() const
+        {
+            return _alias;
+        };
+
+    protected:
+        MonomerType _monomer_type;
+        std::string _id;
+        std::string _template_id;
+        std::string _alias;
+        std::optional<Vec2f> _position;
+        std::map<std::string, KetAttachmentPoint> _attachment_points;
+        ket_connections_type _connections;
+        std::string _ref;
+    };
+
+    class DLLEXPORT KetMonomer : public KetBaseMonomer
+    {
+    public:
+        DECL_ERROR;
+
+        static inline const std::string ref_prefix = "monomer";
+
+        KetMonomer(const std::string& id, const std::string& alias, const std::string& template_id)
+            : KetBaseMonomer(MonomerType::Monomer, id, alias, template_id)
+        {
+            _ref = ref_prefix + _id;
+        };
+
+        const std::map<std::string, int>& getIntPropStrToIdx() const override;
+
     private:
         enum class IntProps
         {
             seqid
         };
-        std::string _id;
-        std::string _alias;
-        std::string _template_id;
-        std::optional<Vec2f> _position;
     };
 
     class DLLEXPORT KetConnectionEndPoint : public KetObjWithProps
@@ -699,6 +802,16 @@ namespace indigo
             return _ep2;
         };
 
+        const std::string id()
+        {
+            if (!_id.has_value())
+            {
+                _id.emplace(_ep1.getStringProp("monomerId") + _ep1.getStringProp("attachmentPointId") + _ep2.getStringProp("monomerId") +
+                            _ep2.getStringProp("attachmentPointId"));
+            }
+            return _id.value();
+        };
+
     private:
         enum class StringProps
         {
@@ -707,13 +820,14 @@ namespace indigo
         std::string _connection_type;
         KetConnectionEndPoint _ep1;
         KetConnectionEndPoint _ep2;
+        std::optional<std::string> _id;
     };
 
     class DLLEXPORT KetVariantMonomerOption : public KetObjWithProps
     {
     public:
         DECL_ERROR;
-        KetVariantMonomerOption(std::string templateId) : _templateId(templateId){};
+        KetVariantMonomerOption(const std::string& templateId) : _templateId(templateId){};
 
         const std::string& templateId() const
         {
@@ -746,25 +860,98 @@ namespace indigo
         std::optional<float> _ratio;
     };
 
-    class DLLEXPORT KetVariantMonomerTemplate : public KetObjWithProps
+    class DLLEXPORT KetBaseMonomerTemplate : public KetObjWithProps
+    {
+    public:
+        DECL_ERROR;
+
+        enum class TemplateType
+        {
+            MonomerTemplate,
+            VariantMonomerTemplate
+        };
+
+        KetBaseMonomerTemplate(TemplateType template_type, const std::string& id, MonomerClass monomer_class, IdtAlias idt_alias)
+            : _template_type(template_type), _id(id), _monomer_class(monomer_class), _idt_alias(idt_alias){};
+
+        const std::string& id() const
+        {
+            return _id;
+        };
+
+        void setAttachmentPoints(const std::map<std::string, KetAttachmentPoint>& attachment_points)
+        {
+            _attachment_points = attachment_points;
+        };
+
+        const std::map<std::string, KetAttachmentPoint>& attachmentPoints() const
+        {
+            return _attachment_points;
+        };
+
+        void setMonomerClass(MonomerClass monomer_class)
+        {
+            _monomer_class = monomer_class;
+        };
+
+        MonomerClass monomerClass() const
+        {
+            return _monomer_class;
+        }
+
+        inline const IdtAlias& idtAlias() const
+        {
+            return _idt_alias;
+        }
+
+        inline void setIdtAlias(const IdtAlias& idt_alias)
+        {
+            _idt_alias = idt_alias;
+        }
+
+        void copy(const KetBaseMonomerTemplate& other)
+        {
+            KetObjWithProps::copy(other);
+            _id = other._id;
+            _monomer_class = other._monomer_class;
+            _attachment_points = other._attachment_points;
+            _idt_alias = other._idt_alias;
+        };
+
+        bool hasIdtAlias(const std::string& alias, IdtModification mod);
+
+        bool hasIdtAliasBase(const std::string& alias_base);
+
+        TemplateType templateType() const
+        {
+            return _template_type;
+        };
+
+    protected:
+        std::string _id;
+        MonomerClass _monomer_class;
+        std::map<std::string, KetAttachmentPoint> _attachment_points;
+
+    private:
+        TemplateType _template_type;
+        IdtAlias _idt_alias;
+    };
+
+    class DLLEXPORT KetVariantMonomerTemplate : public KetBaseMonomerTemplate
     {
     public:
         DECL_ERROR;
 
         inline static std::string ref_prefix = "variantMonomerTemplate-";
 
-        KetVariantMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name,
+        KetVariantMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name, IdtAlias idt_alias,
                                   const std::vector<KetVariantMonomerOption>& options)
-            : _subtype(subtype), _id(id), _name(name), _options(options){};
+            : KetBaseMonomerTemplate(TemplateType::VariantMonomerTemplate, id, MonomerClass::Unknown, idt_alias), _subtype(subtype), _name(name),
+              _options(options){};
 
         const std::string& subtype() const
         {
             return _subtype;
-        };
-
-        const std::string& id() const
-        {
-            return _id;
         };
 
         const std::string& name() const
@@ -779,50 +966,42 @@ namespace indigo
 
     private:
         std::string _subtype;
-        std::string _id;
         std::string _name;
         std::vector<KetVariantMonomerOption> _options;
     };
 
-    class DLLEXPORT KetVariantMonomer : public KetObjWithProps
+    class DLLEXPORT KetVariantMonomer : public KetBaseMonomer
     {
     public:
         DECL_ERROR;
 
         inline static std::string ref_prefix = "variantMonomer-";
 
-        KetVariantMonomer(std::string id, std::string template_id) : _id(id), _template_id(template_id){};
-
-        inline void setPosition(const Vec3f& position)
+        KetVariantMonomer(const std::string& id, const std::string& alias, const std::string& template_id)
+            : KetBaseMonomer(MonomerType::VarianMonomer, id, alias, template_id)
         {
-            _position = Vec2f(position.x, position.y);
+            _ref = ref_prefix + _id;
         };
 
-        const std::optional<Vec2f>& position() const
-        {
-            return _position;
-        };
-
-        const std::string& id() const
-        {
-            return _id;
-        };
-
-        const std::string& templateId() const
-        {
-            return _template_id;
-        };
-
+        const std::map<std::string, int>& getIntPropStrToIdx() const override;
         const std::map<std::string, int>& getStringPropStrToIdx() const override;
 
     private:
+        enum class IntProps
+        {
+            seqid
+        };
+
         enum class StringProps
         {
             alias
         };
-        std::string _id;
-        std::string _template_id;
-        std::optional<Vec2f> _position;
+    };
+
+    class DLLEXPORT SimplePolymer
+    {
+    public:
+    private:
     };
 }
 

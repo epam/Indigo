@@ -24,6 +24,9 @@
 
 #include <rapidjson/document.h> // Temporary until direct conversion to molecule supported
 
+#include <deque>
+#include <set>
+
 #ifdef _WIN32
 #pragma warning(push)
 #pragma warning(disable : 4251)
@@ -43,20 +46,25 @@ namespace indigo
 
         KetMolecule& addMolecule(const std::string& ref);
 
-        KetMonomer& addMonomer(const std::string& alias, const std::string& template_id);
-        KetMonomer& addMonomer(const std::string& ref, const std::string& id, const std::string& alias, const std::string& template_id);
+        std::unique_ptr<KetBaseMonomer>& addMonomer(const std::string& alias, const std::string& template_id);
+        std::unique_ptr<KetBaseMonomer>& addMonomer(const std::string& id, const std::string& alias, const std::string& template_id);
+        std::unique_ptr<KetBaseMonomer>& addMonomer(const std::string& id, const std::string& alias, const std::string& template_id, const std::string& ref);
+        const std::unique_ptr<KetBaseMonomer>& getMonomerById(const std::string& ref) const;
 
+        MonomerTemplate& addMonomerTemplate(const std::string& id, const std::string& monomer_class, IdtAlias idt_alias, bool unresolved = false);
         void addMonomerTemplate(const MonomerTemplate& monomer_template);
 
-        KetVariantMonomerTemplate& addVariantMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name,
+        KetVariantMonomerTemplate& addVariantMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name, IdtAlias idt_alias,
                                                              std::vector<KetVariantMonomerOption>& options);
-        KetVariantMonomer& addVariantMonomer(const std::string& id, const std::string& template_id);
+        std::unique_ptr<KetBaseMonomer>& addVariantMonomer(const std::string& alias, const std::string& template_id);
+        std::unique_ptr<KetBaseMonomer>& addVariantMonomer(const std::string& id, const std::string& alias, const std::string& template_id);
+        std::unique_ptr<KetBaseMonomer>& addVariantMonomer(const std::string& id, const std::string& alias, const std::string& template_id,
+                                                           const std::string& ref);
 
         using molecules_map = std::map<std::string, KetMolecule>;
         using templates_map = std::map<std::string, MonomerTemplate>;
-        using monomers_map = std::map<std::string, KetMonomer>;
+        using monomers_map = std::map<std::string, std::unique_ptr<KetBaseMonomer>>;
         using variant_templates_map = std::map<std::string, KetVariantMonomerTemplate>;
-        using variant_monomers_map = std::map<std::string, KetVariantMonomer>;
 
         inline const molecules_map& molecules() const
         {
@@ -73,9 +81,9 @@ namespace indigo
             return _monomers;
         };
 
-        inline const std::vector<std::string>& monomersRefs() const
+        inline const std::vector<std::string>& monomersIds() const
         {
-            return _monomers_refs;
+            return _monomers_ids;
         };
 
         inline const templates_map& templates() const
@@ -83,20 +91,23 @@ namespace indigo
             return _templates;
         };
 
-        inline const std::vector<std::string>& templatesRefs() const
+        inline const std::vector<std::string>& templatesIds() const
         {
-            return _templates_refs;
+            return _templates_ids;
         };
 
-        KetConnection& addConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
-        {
-            _connections.emplace_back(ep1, ep2);
-            return *_connections.rbegin();
-        };
+        KetConnection& addConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
+
+        void connectMonomerTo(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2);
 
         const std::vector<KetConnection> connections() const
         {
             return _connections;
+        };
+
+        const std::vector<KetConnection> nonSequenceConnections() const
+        {
+            return _non_sequence_connections;
         };
 
         int original_format;
@@ -106,41 +117,46 @@ namespace indigo
             return _variant_templates;
         };
 
-        const std::vector<std::string>& variantTemplatesRefs() const
+        const std::vector<std::string>& variantTemplatesIds() const
         {
-            return _variant_templates_refs;
-        };
-
-        const variant_monomers_map& variantMonomers() const
-        {
-            return _variant_monomers;
-        };
-
-        const std::vector<std::string>& variantMonomersRefs() const
-        {
-            return _variant_monomers_refs;
+            return _variant_templates_ids;
         };
 
         BaseMolecule& getBaseMolecule();
 
         bool hasVariantMonomerTemplate(const std::string& id) const
         {
-            auto ref = KetVariantMonomerTemplate::ref_prefix + id;
-            return _variant_templates.find(ref) != _variant_templates.end();
+            return _variant_templates.find(id) != _variant_templates.end();
         };
+
+        void processVariantMonomerTemplates();
+
+        void parseSimplePolymers(std::vector<std::deque<std::string>>& sequences, bool for_sequence = false);
+
+        MonomerClass getMonomerClass(const KetBaseMonomer& monomer) const;
+
+        MonomerClass getMonomerClass(const std::string& monomer_id) const;
+
+        const KetBaseMonomerTemplate& getMonomerTemplate(const std::string& template_id) const;
+
+    protected:
+        void KetDocument::collect_sequence_side(const std::string& monomer_id, bool left_side, std::set<std::string>& monomers,
+                                                std::set<std::string>& used_monomers, std::deque<std::string>& sequence,
+                                                std::map<std::pair<std::string, std::string>, const KetConnection&>& ap_to_connection);
 
     private:
         molecules_map _molecules;
         std::vector<std::string> _molecule_refs;
         monomers_map _monomers;
-        std::vector<std::string> _monomers_refs;
+        std::vector<std::string> _monomers_ids;
+        std::map<std::string, std::string> _monomer_ref_to_id;
         templates_map _templates;
-        std::vector<std::string> _templates_refs;
+        std::vector<std::string> _templates_ids;
         variant_templates_map _variant_templates;
-        std::vector<std::string> _variant_templates_refs;
-        variant_monomers_map _variant_monomers;
-        std::vector<std::string> _variant_monomers_refs;
+        std::vector<std::string> _variant_templates_ids;
         std::vector<KetConnection> _connections;
+        std::vector<KetConnection> _non_sequence_connections;
+        std::map<std::string, KetBaseMonomerTemplate::TemplateType> _template_id_to_type;
     };
 }
 
