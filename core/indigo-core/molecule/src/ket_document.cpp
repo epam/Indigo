@@ -159,8 +159,8 @@ KetConnection& KetDocument::addConnection(KetConnectionEndPoint ep1, KetConnecti
 
 void KetDocument::connectMonomerTo(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2)
 {
-    auto mon1_id = _monomer_ref_to_id.at(mon1);
-    auto& it = _monomers.find(mon1_id);
+    std::string mon1_id = _monomer_ref_to_id.at(mon1);
+    auto it = _monomers.find(mon1_id);
     if (it == _monomers.end())
         throw Error("Unknown monomer '%s'", mon1.c_str());
     it->second->connectAttachmentPointTo(ap1, mon2, ap2);

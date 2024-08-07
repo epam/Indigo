@@ -140,7 +140,7 @@ namespace indigo
         const KetBaseMonomerTemplate& getMonomerTemplate(const std::string& template_id) const;
 
     protected:
-        void KetDocument::collect_sequence_side(const std::string& monomer_id, bool left_side, std::set<std::string>& monomers,
+        void collect_sequence_side(const std::string& monomer_id, bool left_side, std::set<std::string>& monomers,
                                                 std::set<std::string>& used_monomers, std::deque<std::string>& sequence,
                                                 std::map<std::pair<std::string, std::string>, const KetConnection&>& ap_to_connection);
 
