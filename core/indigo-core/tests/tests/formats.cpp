@@ -413,7 +413,7 @@ TEST_F(IndigoCoreFormatsTest, idt_load)
     FileScanner ket(dataPath("molecules/basic/idt_mixed_std.ket").c_str());
     std::string json2;
     ket.readAll(json2);
-    std::erase(json2,'\r');
+    std::erase(json2, '\r');
     ASSERT_EQ(json2, json_out);
 }
 

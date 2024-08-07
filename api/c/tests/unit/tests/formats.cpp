@@ -298,7 +298,7 @@ TEST_F(IndigoApiFormatsTest, idt_to_ket)
     std::string str(size, '\0'); // construct string to stream size
     is.seekg(0);
     is.read(&str[0], size);
-    std::erase(str,'\r');
+    std::erase(str, '\r');
     ASSERT_STREQ(res, str.c_str());
 }
 
