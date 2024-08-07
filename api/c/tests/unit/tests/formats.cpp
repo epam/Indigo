@@ -24,6 +24,7 @@
 
 #include "common.h"
 
+#include <algorithm>
 #include <fstream>
 
 using namespace std;
@@ -298,7 +299,7 @@ TEST_F(IndigoApiFormatsTest, idt_to_ket)
     std::string str(size, '\0'); // construct string to stream size
     is.seekg(0);
     is.read(&str[0], size);
-    std::erase(str, '\r');
+    str.erase(std::remove(str.begin(), str.end(), '\r'), str.end());
     ASSERT_STREQ(res, str.c_str());
 }
 

@@ -45,6 +45,8 @@
 
 #include "common.h"
 
+#include <algorithm>
+
 using namespace indigo;
 
 class IndigoCoreFormatsTest : public IndigoCoreTest
@@ -413,7 +415,7 @@ TEST_F(IndigoCoreFormatsTest, idt_load)
     FileScanner ket(dataPath("molecules/basic/idt_mixed_std.ket").c_str());
     std::string json2;
     ket.readAll(json2);
-    std::erase(json2, '\r');
+    json2.erase(std::remove(json2.begin(), json2.end(), '\r'), json2.end());
     ASSERT_EQ(json2, json_out);
 }
 
