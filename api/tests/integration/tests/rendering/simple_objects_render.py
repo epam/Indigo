@@ -77,9 +77,7 @@ indigo.setOption("render-output-format", "png")
 renderer.renderToFile(reac, joinPathPy("out/image_first.png", __file__))
 print(checkImageSimilarity("image_first.png"))
 
-reac = indigo.loadReactionFromFile(
-    joinPathPy("reactions/retro.ket", __file__)
-)
+reac = indigo.loadReactionFromFile(joinPathPy("reactions/retro.ket", __file__))
 indigo.setOption("render-output-format", "png")
 renderer.renderToFile(reac, joinPathPy("out/retro.png", __file__))
 print(checkImageSimilarity("retro.png"))
