@@ -35,7 +35,6 @@ namespace indigo
         PathwayReactionJsonSaver& operator=(const PathwayReactionJsonSaver&) = delete;
 
         void saveReaction(PathwayReaction&);
-        void saveReactionAsList(PathwayReaction&);
 
         bool add_stereo_desc;
         bool pretty_json;
