@@ -69,8 +69,8 @@ namespace indigo
         std::unordered_map<int, Vec2f> points;
         points.reserve(reaction->reactionsCount());
         constexpr int SPACE = 5;
-        constexpr float K = 0.8f;
-        float multiplier = 1.f;
+        constexpr float NARROWING_QUOTIENT = 0.8f;
+        float multiplierY = 1.f;
         std::queue<int> q;
         q.push(finalProductId);
         while (!q.empty())
@@ -88,14 +88,14 @@ namespace indigo
                 auto zero = points[id];
                 id = productIter->second;
                 float offsetY = reactantIdsByReactions[reaction->reactionId(id)].size() > 1 ? -2.f * SPACE : 0;
-                offsetY *= multiplier;
+                offsetY *= multiplierY;
                 for (int reactantId : reactantIdsByReactions[reaction->reactionId(id)])
                 {
                     points[reactantId] = zero - Vec2f(3 * SPACE, offsetY);
-                    offsetY += 4 * SPACE * multiplier;
+                    offsetY += 4 * SPACE * multiplierY;
                     q.push(reactantId);
                 }
-                multiplier *= K;
+                multiplierY *= NARROWING_QUOTIENT;
             }
         }
 
