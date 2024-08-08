@@ -448,6 +448,12 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMonomerLibraryFromString(str)));
         }
 
+        public IndigoObject loadKetDocument(string str)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadKetDocumentFromString(str)));
+        }
+
         public IndigoObject loadSequence(string str, string seq_type, IndigoObject library)
         {
             setSessionID();
@@ -488,6 +494,12 @@ namespace com.epam.indigo
         {
             setSessionID();
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMonomerLibraryFromFile(path)));
+        }
+
+        public IndigoObject loadKetDocumentFromFile(string path)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadKetDocumentFromFile(path)));
         }
 
         public IndigoObject loadSequenceFromFile(string path, string seq_type, IndigoObject library)
