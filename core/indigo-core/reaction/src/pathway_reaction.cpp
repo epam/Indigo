@@ -99,15 +99,15 @@ std::unordered_map<int, Vec2f> PathwayReaction::makeTree()
     constexpr int SPACE = 5;
     constexpr float NARROWING_QUOTIENT = 0.8f;
     float multiplierY = 1.f;
-    std::queue<int> q;
-    q.push(finalProductId);
-    while (!q.empty())
+    std::queue<int> bfsQueue;
+    bfsQueue.push(finalProductId);
+    while (!bfsQueue.empty())
     {
-        auto size = q.size();
+        auto size = bfsQueue.size();
         for (size_t i = 0; i < size; i++)
         {
-            auto id = q.front();
-            q.pop();
+            auto id = bfsQueue.front();
+            bfsQueue.pop();
 
             auto productIter = productIds.find(inchiKeys.at(id));
             if (productIter == productIds.cend())
@@ -121,7 +121,7 @@ std::unordered_map<int, Vec2f> PathwayReaction::makeTree()
             {
                 points[reactantId] = zero - Vec2f(3 * SPACE, offsetY);
                 offsetY += 4 * SPACE * multiplierY;
-                q.push(reactantId);
+                bfsQueue.push(reactantId);
             }
             multiplierY *= NARROWING_QUOTIENT;
         }
