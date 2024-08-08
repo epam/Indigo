@@ -250,7 +250,7 @@ void RenderItemAuxiliary::_drawArrow(const KETReactionArrow& ar)
 
     case KETReactionArrow::ERetrosynthetic:
         _rc.drawRetroSynthArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
-    break;
+        break;
 
     default:
         _rc.drawArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
