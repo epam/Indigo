@@ -16,6 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <queue>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
@@ -36,13 +37,91 @@ namespace indigo
 
     void PathwayReactionJsonSaver::saveReaction(PathwayReaction& rxn)
     {
+        auto merged = std::make_unique<Molecule>();
+        auto reaction = std::make_unique<PathwayReaction>();
+        reaction->clone(rxn);
+
+        std::vector<std::string> inchiKeys(reaction->reactionsCount());
         InchiWrapper inchiWrapper;
         Array<char> inchi, inchiKey;
+        for (int i = reaction->begin(); i < reaction->end(); i = reaction->next(i))
+        {
+            auto& molecule = dynamic_cast<Molecule&>(reaction->getBaseMolecule(i));
+            inchiWrapper.saveMoleculeIntoInchi(molecule, inchi);
+            InchiWrapper::InChIKey(inchi.ptr(), inchiKey);
+            inchiKeys.at(i).assign(inchiKey.ptr(), inchiKey.size());
+        }
 
-        //std::vector<std::string> inchiKeys(
-        //inchiWrapper.saveMoleculeIntoInchi(dynamic_cast<Molecule&>(*_allMolecules[id]), inchi);
-        //InchiWrapper::InChIKey(inchi.ptr(), inchikey);
-        //inchikeys.emplace_back(inchikey.ptr(), inchikey.size());
+        int finalProductId;
+        std::vector<std::vector<int>> reactantIdsByReactions(reaction->reactionsCount());
+        std::unordered_map<std::string, int> productIds;
+        for (int i = reaction->begin(); i < reaction->end(); i = reaction->next(i))
+        {
+            if (BaseReaction::REACTANT == reaction->getSideType(i))
+                reactantIdsByReactions.at(reaction->reactionId(i)).push_back(i);
+            else if (BaseReaction::PRODUCT == reaction->getSideType(i))
+            {
+                productIds.emplace(inchiKeys.at(i), i);
+                finalProductId = i;
+            }
+        }
+
+        std::unordered_map<int, Vec2f> points;
+        points.reserve(reaction->reactionsCount());
+        constexpr int SPACE = 5;
+        constexpr float K = 0.8;
+        float multiplier = 1;
+        std::queue<int> q;
+        q.push(finalProductId);
+        while (!q.empty())
+        {
+            auto size = q.size();
+            for (size_t i = 0; i < size; i++)
+            {
+                auto id = q.front();
+                q.pop();
+
+                auto productIter = productIds.find(inchiKeys.at(id));
+                if (productIter == productIds.cend())
+                    continue;
+
+                auto zero = points[id];
+                id = productIter->second;
+                float offsetY = reactantIdsByReactions[reaction->reactionId(id)].size() > 1 ? -2 * SPACE : 0;
+                offsetY *= multiplier;
+                for (int reactantId : reactantIdsByReactions[reaction->reactionId(id)])
+                {
+                    points[reactantId] = zero - Vec2f(3 * SPACE, offsetY);
+                    offsetY += 4 * SPACE * multiplier;
+                    q.push(reactantId);
+                }
+                multiplier *= K;
+            }
+        }
+
+        for (auto& p : points)
+        {
+            auto& molecule = reaction->getBaseMolecule(p.first);
+            Rect2f box;
+            molecule.getBoundingBox(box);
+            auto offset = box.center();
+            offset.negate();
+            offset.add(p.second);
+            for (int j = molecule.vertexBegin(); j != molecule.vertexEnd(); j = molecule.vertexNext(j))
+            {
+                Vec3f& xyz = molecule.getAtomXyz(j);
+                xyz.add(offset);
+            }
+            merged->mergeWithMolecule(molecule, 0, 0);
+        }
+
+        rapidjson::StringBuffer buffer;
+        JsonWriter writer(pretty_json);
+        writer.Reset(buffer);
+        MoleculeJsonSaver moleculeSaver(_output);
+        moleculeSaver.add_stereo_desc = add_stereo_desc;
+        moleculeSaver.saveMolecule(*merged, writer);
+        _output.printf("%s", buffer.GetString());
     }
 
     void PathwayReactionJsonSaver::saveReactionAsList(PathwayReaction& rxn)
