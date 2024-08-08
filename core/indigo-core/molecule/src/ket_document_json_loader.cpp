@@ -75,11 +75,13 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
                 std::string node_type = node["type"].GetString();
                 if (node_type == "molecule")
                 {
-                    parseKetMolecule(ref, node, document);
+                    // parseKetMolecule(ref, node, document);
+                    document.addMolecule(node);
                 }
                 else if (node_type == "rgroup")
                 {
-                    parseKetRgroup(ref, node, document);
+                    // parseKetRgroup(ref, node, document);
+                    document.addRGroup(node);
                 }
                 else if (node_type == "monomer")
                 {
@@ -92,6 +94,12 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
                 else
                     throw Error("Unknows node type: %s", node_type.c_str());
             }
+            else if (nodes[i].HasMember("type"))
+            {
+                document.addMetaObject(nodes[i]);
+            }
+            else
+                throw Error("Unsupported node for molecule");
         }
     }
     if (root.HasMember("connections"))

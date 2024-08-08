@@ -326,6 +326,21 @@ MonomerClass KetDocument::getMonomerClass(const std::string& monomer_id) const
     return getMonomerClass(*_monomers.at(monomer_id));
 }
 
+void KetDocument::addMetaObject(const rapidjson::Value& node)
+{
+    _meta_objects.PushBack(_json_document.CopyFrom(node, _json_document.GetAllocator()), _json_document.GetAllocator());
+}
+
+void KetDocument::addRGroup(const rapidjson::Value& node)
+{
+    _r_groups.PushBack(_json_document.CopyFrom(node, _json_document.GetAllocator()), _json_document.GetAllocator());
+}
+
+void KetDocument::addMolecule(const rapidjson::Value& node)
+{
+    _json_molecules.PushBack(_json_document.CopyFrom(node, _json_document.GetAllocator()), _json_document.GetAllocator());
+}
+
 const KetBaseMonomerTemplate& KetDocument::getMonomerTemplate(const std::string& template_id) const
 {
     if (_template_id_to_type.at(template_id) == KetBaseMonomerTemplate::TemplateType::MonomerTemplate)

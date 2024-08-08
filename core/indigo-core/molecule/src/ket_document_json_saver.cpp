@@ -354,10 +354,26 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
     writer.StartObject();
     writer.Key("nodes");
     writer.StartArray();
+    /*
     for (auto& it : molecules)
     {
         writer.StartObject();
         saveStr(writer, "$ref", it.first);
+        writer.EndObject();
+    }
+    // */
+    std::string molecule_prefix = "mol";
+    for (rapidjson::SizeType i = 0; i < document.jsonMolecules().Size(); i++)
+    {
+        writer.StartObject();
+        saveStr(writer, "$ref", molecule_prefix + std::to_string(i));
+        writer.EndObject();
+    }
+    std::string rgroup_prefix = "rg";
+    for (rapidjson::SizeType i = 0; i < document.rgroups().Size(); i++)
+    {
+        writer.StartObject();
+        saveStr(writer, "$ref", rgroup_prefix + std::to_string(i));
         writer.EndObject();
     }
     for (auto& id : document.monomersIds())
@@ -366,25 +382,33 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
         saveStr(writer, "$ref", monomers.at(id)->ref());
         writer.EndObject();
     }
-    writer.EndArray(); // nodes
-    writer.Key("connections");
-    writer.StartArray();
-    for (auto it : connections)
+    auto& meta_objects = document.metaObjects();
+    for (rapidjson::SizeType i = 0; i < meta_objects.Size(); i++)
     {
-        writer.StartObject();
-        saveStr(writer, "connectionType", it.connectionType());
-        it.saveOptsToKet(writer);
-        writer.Key("endpoint1");
-        writer.StartObject();
-        it.ep1().saveOptsToKet(writer);
-        writer.EndObject();
-        writer.Key("endpoint2");
-        writer.StartObject();
-        it.ep2().saveOptsToKet(writer);
-        writer.EndObject();
-        writer.EndObject();
+        meta_objects[i].Accept(writer);
     }
-    writer.EndArray(); // connections
+    writer.EndArray(); // nodes
+    if (connections.size() > 0)
+    {
+        writer.Key("connections");
+        writer.StartArray();
+        for (auto it : connections)
+        {
+            writer.StartObject();
+            saveStr(writer, "connectionType", it.connectionType());
+            it.saveOptsToKet(writer);
+            writer.Key("endpoint1");
+            writer.StartObject();
+            it.ep1().saveOptsToKet(writer);
+            writer.EndObject();
+            writer.Key("endpoint2");
+            writer.StartObject();
+            it.ep2().saveOptsToKet(writer);
+            writer.EndObject();
+            writer.EndObject();
+        }
+        writer.EndArray(); // connections
+    }
     if (document.templatesIds().size() + document.variantTemplatesIds().size() > 0)
     {
         writer.Key("templates");
@@ -411,8 +435,22 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
     }
     writer.EndObject(); // root
 
-    for (auto& it : document.moleculesRefs())
-        saveMolecule(writer, it, molecules.at(it));
+    auto& json_molecules = document.jsonMolecules();
+    for (rapidjson::SizeType i = 0; i < json_molecules.Size(); i++)
+    {
+        writer.Key(molecule_prefix + std::to_string(i));
+        json_molecules[i].Accept(writer);
+    }
+
+    auto& rgroups = document.rgroups();
+    for (rapidjson::SizeType i = 0; i < rgroups.Size(); i++)
+    {
+        writer.Key(rgroup_prefix + std::to_string(i));
+        rgroups[i].Accept(writer);
+    }
+
+    // for (auto& it : document.moleculesRefs())
+    //     saveMolecule(writer, it, molecules.at(it));
 
     for (auto& it : document.monomersIds())
     {

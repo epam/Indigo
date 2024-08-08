@@ -40,7 +40,9 @@ namespace indigo
     {
     public:
         DECL_ERROR;
-        KetDocument() : _molecules(), original_format(0){};
+        KetDocument()
+            : _molecules(), original_format(0), _meta_objects(rapidjson::kArrayType), _r_groups(rapidjson::kArrayType), _json_molecules(rapidjson::kArrayType),
+              _json_document(){};
         KetDocument(const KetDocument& other) = delete;
         KetDocument& operator=(const KetDocument&) = delete;
 
@@ -139,6 +141,27 @@ namespace indigo
 
         const KetBaseMonomerTemplate& getMonomerTemplate(const std::string& template_id) const;
 
+        void addMetaObject(const rapidjson::Value& node);
+
+        void addRGroup(const rapidjson::Value& node);
+
+        void addMolecule(const rapidjson::Value& node);
+
+        const rapidjson::Value& metaObjects() const
+        {
+            return _meta_objects;
+        };
+
+        const rapidjson::Value& rgroups() const
+        {
+            return _r_groups;
+        };
+
+        const rapidjson::Value& jsonMolecules() const
+        {
+            return _json_molecules;
+        };
+
     protected:
         void collect_sequence_side(const std::string& monomer_id, bool left_side, std::set<std::string>& monomers, std::set<std::string>& used_monomers,
                                    std::deque<std::string>& sequence, std::map<std::pair<std::string, std::string>, const KetConnection&>& ap_to_connection);
@@ -156,7 +179,15 @@ namespace indigo
         std::vector<KetConnection> _connections;
         std::vector<KetConnection> _non_sequence_connections;
         std::map<std::string, KetBaseMonomerTemplate::TemplateType> _template_id_to_type;
+        rapidjson::Value _meta_objects;
+        rapidjson::Value _r_groups;
+        rapidjson::Value _json_molecules;
+        rapidjson::Document _json_document;
     };
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif
