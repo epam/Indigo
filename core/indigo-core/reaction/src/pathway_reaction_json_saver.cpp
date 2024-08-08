@@ -24,46 +24,43 @@
 #include "reaction/pathway_reaction.h"
 #include "reaction/pathway_reaction_json_saver.h"
 
-namespace indigo
+using namespace indigo;
+
+IMPL_ERROR(PathwayReactionJsonSaver, "pathway reaction KET saver");
+
+PathwayReactionJsonSaver::PathwayReactionJsonSaver(Output& output) : _output(output), add_stereo_desc(), pretty_json()
 {
+}
 
-    IMPL_ERROR(PathwayReactionJsonSaver, "pathway reaction KET saver");
+void PathwayReactionJsonSaver::saveReaction(PathwayReaction& rxn)
+{
+    auto merged = std::make_unique<Molecule>();
+    auto reaction = std::make_unique<PathwayReaction>();
+    reaction->clone(rxn);
 
-    PathwayReactionJsonSaver::PathwayReactionJsonSaver(Output& output) : _output(output), add_stereo_desc(), pretty_json()
+    auto points = reaction->makeTree();
+
+    for (auto& p : points)
     {
-    }
-
-    void PathwayReactionJsonSaver::saveReaction(PathwayReaction& rxn)
-    {
-        auto merged = std::make_unique<Molecule>();
-        auto reaction = std::make_unique<PathwayReaction>();
-        reaction->clone(rxn);
-
-        auto points = reaction->makeTree();
-
-        for (auto& p : points)
+        auto& molecule = reaction->getBaseMolecule(p.first);
+        Rect2f box;
+        molecule.getBoundingBox(box);
+        auto offset = box.center();
+        offset.negate();
+        offset.add(p.second);
+        for (int j = molecule.vertexBegin(); j != molecule.vertexEnd(); j = molecule.vertexNext(j))
         {
-            auto& molecule = reaction->getBaseMolecule(p.first);
-            Rect2f box;
-            molecule.getBoundingBox(box);
-            auto offset = box.center();
-            offset.negate();
-            offset.add(p.second);
-            for (int j = molecule.vertexBegin(); j != molecule.vertexEnd(); j = molecule.vertexNext(j))
-            {
-                Vec3f& xyz = molecule.getAtomXyz(j);
-                xyz.add(offset);
-            }
-            merged->mergeWithMolecule(molecule, 0, 0);
+            Vec3f& xyz = molecule.getAtomXyz(j);
+            xyz.add(offset);
         }
-
-        rapidjson::StringBuffer buffer;
-        JsonWriter writer(pretty_json);
-        writer.Reset(buffer);
-        MoleculeJsonSaver moleculeSaver(_output);
-        moleculeSaver.add_stereo_desc = add_stereo_desc;
-        moleculeSaver.saveMolecule(*merged, writer);
-        _output.printf("%s", buffer.GetString());
+        merged->mergeWithMolecule(molecule, 0, 0);
     }
 
-} // namespace indigo
+    rapidjson::StringBuffer buffer;
+    JsonWriter writer(pretty_json);
+    writer.Reset(buffer);
+    MoleculeJsonSaver moleculeSaver(_output);
+    moleculeSaver.add_stereo_desc = add_stereo_desc;
+    moleculeSaver.saveMolecule(*merged, writer);
+    _output.printf("%s", buffer.GetString());
+}
