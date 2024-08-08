@@ -233,7 +233,7 @@ namespace indigo
             EEllipticalArcFilledTriangle,
             EEllipticalArcOpenAngle,
             EEllipticalArcOpenHalfAngle,
-            ERetrosynthetic,
+            ERetrosynthetic
         };
 
         KETReactionArrow(int arrow_type, const Vec2f& begin, const Vec2f& end, float height = 0)

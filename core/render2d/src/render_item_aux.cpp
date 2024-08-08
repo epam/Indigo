@@ -248,6 +248,10 @@ void RenderItemAuxiliary::_drawArrow(const KETReactionArrow& ar)
         _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar._height, ar._arrow_type);
         break;
 
+    case KETReactionArrow::ERetrosynthetic:
+        _rc.drawRetroSynthArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+        break;
+
     default:
         _rc.drawArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
         break;
