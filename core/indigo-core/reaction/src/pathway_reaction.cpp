@@ -16,6 +16,9 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <queue>
+
+#include "molecule/inchi_wrapper.h"
 #include "reaction/pathway_reaction.h"
 #include "reaction/reaction.h"
 
@@ -61,6 +64,70 @@ void PathwayReaction::clone(PathwayReaction& reaction)
 {
     BaseReaction::clone(reaction);
     _reactions.copy(reaction._reactions);
+}
+
+std::unordered_map<int, Vec2f> PathwayReaction::makeTree()
+{
+    auto reaction = this;
+    std::vector<std::string> inchiKeys(reaction->reactionsCount());
+    InchiWrapper inchiWrapper;
+    Array<char> inchi, inchiKey;
+    for (int i = reaction->begin(); i < reaction->end(); i = reaction->next(i))
+    {
+        auto& molecule = dynamic_cast<Molecule&>(reaction->getBaseMolecule(i));
+        inchiWrapper.saveMoleculeIntoInchi(molecule, inchi);
+        InchiWrapper::InChIKey(inchi.ptr(), inchiKey);
+        inchiKeys.at(i).assign(inchiKey.ptr(), inchiKey.size());
+    }
+
+    int finalProductId;
+    std::vector<std::vector<int>> reactantIdsByReactions(reaction->reactionsCount());
+    std::unordered_map<std::string, int> productIds;
+    for (int i = reaction->begin(); i < reaction->end(); i = reaction->next(i))
+    {
+        if (BaseReaction::REACTANT == reaction->getSideType(i))
+            reactantIdsByReactions.at(reaction->reactionId(i)).push_back(i);
+        else if (BaseReaction::PRODUCT == reaction->getSideType(i))
+        {
+            productIds.emplace(inchiKeys.at(i), i);
+            finalProductId = i;
+        }
+    }
+
+    std::unordered_map<int, Vec2f> points;
+    points.reserve(reaction->reactionsCount());
+    constexpr int SPACE = 5;
+    constexpr float NARROWING_QUOTIENT = 0.8f;
+    float multiplierY = 1.f;
+    std::queue<int> q;
+    q.push(finalProductId);
+    while (!q.empty())
+    {
+        auto size = q.size();
+        for (size_t i = 0; i < size; i++)
+        {
+            auto id = q.front();
+            q.pop();
+
+            auto productIter = productIds.find(inchiKeys.at(id));
+            if (productIter == productIds.cend())
+                continue;
+
+            auto zero = points[id];
+            id = productIter->second;
+            float offsetY = reactantIdsByReactions[reaction->reactionId(id)].size() > 1 ? -2.f * SPACE : 0;
+            offsetY *= multiplierY;
+            for (int reactantId : reactantIdsByReactions[reaction->reactionId(id)])
+            {
+                points[reactantId] = zero - Vec2f(3 * SPACE, offsetY);
+                offsetY += 4 * SPACE * multiplierY;
+                q.push(reactantId);
+            }
+            multiplierY *= NARROWING_QUOTIENT;
+        }
+    }
+
+    return points;
 }
 
 BaseReaction* PathwayReaction::neu()
