@@ -96,8 +96,6 @@ std::unordered_map<int, Vec2f> PathwayReaction::makeTree()
 
     std::unordered_map<int, Vec2f> points;
     points.reserve(reaction->reactionsCount());
-    constexpr int SPACE = 5;
-    constexpr float NARROWING_QUOTIENT = 0.8f;
     float multiplierY = 1.f;
     std::queue<int> bfsQueue;
     bfsQueue.push(finalProductId);
