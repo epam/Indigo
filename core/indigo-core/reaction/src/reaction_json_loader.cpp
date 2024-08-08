@@ -492,6 +492,9 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
     auto& arrow = (const KETReactionArrow&)rxn.meta().getMetaObject(KETReactionArrow::CID, 0);
     bool reverseReactionOrder = arrow._arrow_type == KETReactionArrow::ERetrosynthetic;
 
+    if (reverseReactionOrder)
+        rxn.setIsRetrosyntetic();
+
     for (int i = 0; i < rxn.meta().getMetaCount(KETTextObject::CID); ++i)
     {
         auto& text = (const KETTextObject&)rxn.meta().getMetaObject(KETTextObject::CID, i);
