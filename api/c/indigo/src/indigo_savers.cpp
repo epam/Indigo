@@ -24,6 +24,7 @@
 #include "base_cpp/scanner.h"
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/cml_saver.h"
+#include "molecule/ket_document_json_saver.h"
 #include "molecule/molecule_cdxml_saver.h"
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molfile_loader.h"
@@ -639,6 +640,14 @@ CEXPORT int indigoSaveIdt(int item, int output, int library)
             out.flush();
             return 1;
         }
+        else if (IndigoKetDocument::is(obj))
+        {
+            IndigoObject& lib_obj = self.getObject(library);
+            SequenceSaver saver(out, IndigoMonomerLibrary::get(lib_obj));
+            saver.saveKetDocument(static_cast<IndigoKetDocument&>(obj).get(), SequenceSaver::SeqFormat::IDT);
+            out.flush();
+            return 1;
+        }
         throw IndigoError("indigoSaveIdt(): expected molecule, got %s", obj.debugInfo());
     }
     INDIGO_END(-1);
@@ -685,6 +694,14 @@ CEXPORT int indigoSaveJson(int item, int output)
             self.initReactionJsonSaver(saver);
             BaseReaction& rxn = obj.getBaseReaction();
             saver.saveReaction(rxn);
+            out.flush();
+            return 1;
+        }
+        else if (IndigoKetDocument::is(obj))
+        {
+            KetDocumentJsonSaver js(out);
+            js.pretty_json = self.json_saving_pretty;
+            js.saveKetDocument(static_cast<IndigoKetDocument&>(obj).get());
             out.flush();
             return 1;
         }

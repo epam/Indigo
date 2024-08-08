@@ -54,15 +54,15 @@ namespace indigo
 
         static void saveKetDocument(JsonWriter& writer, const KetDocument& document);
 
-        static void saveMonomerTemplate(JsonWriter& writer, const std::string& ref, const MonomerTemplate& monomer_template);
+        static void saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template);
 
         bool pretty_json;
 
     protected:
         static void saveMolecule(JsonWriter& writer, const std::string& ref, const KetMolecule& molecule);
-        static void saveMonomer(JsonWriter& writer, const std::string& ref, const KetMonomer& monomer);
-        static void saveVariantMonomer(JsonWriter& writer, const std::string& ref, const KetVariantMonomer& monomer);
-        static void saveVariantMonomerTemplate(JsonWriter& writer, const std::string& ref, const KetVariantMonomerTemplate& monomer_template);
+        static void saveMonomer(JsonWriter& writer, const KetMonomer& monomer);
+        static void saveVariantMonomer(JsonWriter& writer, const KetVariantMonomer& monomer);
+        static void saveVariantMonomerTemplate(JsonWriter& writer, const KetVariantMonomerTemplate& monomer_template);
 
         DECL_ERROR;
 

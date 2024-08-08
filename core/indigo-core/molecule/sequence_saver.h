@@ -33,6 +33,7 @@ namespace indigo
 
     class Output;
     class BaseMolecule;
+    class KetDocument;
 
     class DLLEXPORT SequenceSaver
     {
@@ -53,6 +54,8 @@ namespace indigo
         ~SequenceSaver();
 
         void saveMolecule(BaseMolecule& mol, SeqFormat sf = SeqFormat::Sequence);
+
+        void saveKetDocument(KetDocument& doc, SeqFormat sf = SeqFormat::Sequence);
 
     protected:
         TGroup& getTGroup();

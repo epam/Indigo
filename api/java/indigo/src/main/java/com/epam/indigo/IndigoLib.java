@@ -123,6 +123,12 @@ public interface IndigoLib extends Library {
 
     int indigoLoadMonomerLibraryFromFile(String filename);
 
+    int indigoLoadKetDocument(int source);
+
+    int indigoLoadKetDocumentFromString(String str);
+
+    int indigoLoadKetDocumentFromFile(String filename);
+
     int indigoLoadSequence(int source, String seq_type, int library);
 
     int indigoLoadSequenceFromString(String str, String seq_type, int library);
