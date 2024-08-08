@@ -499,8 +499,8 @@ namespace indigo
         }
         indigoSetOptions(options);
         std::string input_format = "ket";
-        if (auto& it = options.find("input-format"); it != options.end())
-            input_format = it;
+        if (const auto& it = options.find("input-format"); it != options.end())
+            input_format = it.second;
 
         bool use_document = false;
         if (input_format == "ket" && outputFormat.size() > 0 && (outputFormat == "idt" || outputFormat == "chemical/x-idt"))
