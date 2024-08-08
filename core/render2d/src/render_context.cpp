@@ -1373,6 +1373,34 @@ void RenderContext::drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const floa
     lineTo(p);
 }
 
+void RenderContext::drawRetroSynthArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize)
+{
+    Vec2f d, n, pa(p1);
+    d.diff(p2, p1);
+    float len = d.length();
+    d.normalize();
+    n.copy(d);
+    n.rotate(-1, 0);
+
+    pa.addScaled(n, headwidth / 2);
+    Vec2f pb(pa);
+    pb.addScaled(d, len);
+    drawBar(pa, pb, width, headwidth);
+    n.negate();
+    pa.addScaled(n, headwidth);
+    pb.addScaled(n, headwidth);
+    drawBar(pa, pb, width, headwidth);
+
+    n.negate();
+    pb.addScaled(n, headwidth / 2);
+
+    drawArrowHeader(pb, d, width, (headwidth + width) * 2, headsize * 2);
+    checkPathNonEmpty();
+    bbIncludePath(false);
+    cairo_fill(_cr);
+    cairoCheckStatus();
+}
+
 void RenderContext::drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const bool is_bow,
                                     const bool is_failed)
 {
