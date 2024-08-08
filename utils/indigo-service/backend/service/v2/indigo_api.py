@@ -314,7 +314,7 @@ def load_moldata(
     mime_type=None,
     selected=None,
     library=None,
-    use_document=False,
+    try_document=False,
 ):
     if not indigo:
         try:
@@ -368,6 +368,12 @@ def load_moldata(
         md.is_rxn = False
         md.is_query = False
     else:
+        if try_document:
+            try:
+                md.struct = indigo.loadKetDocument(molstr)
+                return md
+            except IndigoException:
+                pass
         try:
             if not query:
                 md.struct = indigo.loadMolecule(molstr)
@@ -892,6 +898,11 @@ def convert():
         query = False
         if "smarts" in data["output_format"]:
             query = True
+
+        try_document = False
+        if data["output_format"] == "chemical/x-idt":
+            try_document = True
+
         md = load_moldata(
             data["struct"],
             mime_type=data["input_format"],
@@ -899,7 +910,7 @@ def convert():
             indigo=indigo,
             query=query,
             library=library,
-            use_document=True,
+            try_document=try_document,
         )
         return get_response(
             md,
@@ -943,7 +954,7 @@ def convert():
             options=data["options"],
             indigo=indigo,
             library=library,
-            use_document=True,
+            try_document=True,
         )
 
         if "json_output" in request.args:
