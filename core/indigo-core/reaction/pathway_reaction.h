@@ -25,7 +25,6 @@
 
 #include "reaction/base_reaction.h"
 #include <deque>
-#include <unordered_map>
 
 namespace indigo
 {
@@ -45,7 +44,7 @@ namespace indigo
         int reactionId(int moleculeId) const;
         int reactionsCount() const;
         void clone(PathwayReaction&);
-        std::unordered_map<int, Vec2f> makeTreePoints();
+        std::vector<std::pair<int, Vec2f>> makeTreePoints();
 
         BaseReaction* neu() override;
         bool aromatize(const AromaticityOptions& options) override;
