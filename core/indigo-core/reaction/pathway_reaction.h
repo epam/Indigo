@@ -33,13 +33,18 @@ namespace indigo
 
     class DLLEXPORT PathwayReaction : public BaseReaction
     {
+        static constexpr int SPACE = 5;
+        static constexpr float NARROWING_QUOTIENT = 0.8f;
+
     public:
         PathwayReaction();
         PathwayReaction(std::deque<Reaction>&);
         ~PathwayReaction() override;
 
-        int getReactionId(int moleculeId) const;
+        int reactionId(int moleculeId) const;
+        int reactionsCount() const;
         void clone(PathwayReaction&);
+        std::vector<std::pair<int, Vec2f>> makeTreePoints();
 
         BaseReaction* neu() override;
         bool aromatize(const AromaticityOptions& options) override;

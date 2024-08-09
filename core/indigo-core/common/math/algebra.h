@@ -153,6 +153,11 @@ namespace indigo
 
         // OPERATORS:
 
+        inline bool operator<(const Vec2f& a) const
+        {
+            return std::make_pair(x, y) < std::make_pair(a.x, a.y);
+        }
+
         inline Vec2f operator+(const Vec2f& a) const
         {
             return Vec2f(x + a.x, y + a.y);
