@@ -66,7 +66,7 @@ void PathwayReaction::clone(PathwayReaction& reaction)
     _reactions.copy(reaction._reactions);
 }
 
-std::unordered_map<int, Vec2f> PathwayReaction::makeTree()
+std::unordered_map<int, Vec2f> PathwayReaction::makeTreePoints()
 {
     auto reaction = this;
     std::vector<std::string> inchiKeys(reaction->reactionsCount());

@@ -38,7 +38,7 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& rxn)
     auto reaction = std::make_unique<PathwayReaction>();
     reaction->clone(rxn);
 
-    auto points = reaction->makeTree();
+    auto points = reaction->makeTreePoints();
 
     for (auto& p : points)
     {
