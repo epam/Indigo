@@ -1,6 +1,11 @@
-import errno
+import difflib
 import os
 import sys
+
+
+def find_diff(a, b):
+    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
+
 
 sys.path.append(
     os.path.normpath(
@@ -10,16 +15,22 @@ sys.path.append(
 from env_indigo import *
 
 indigo = Indigo()
+input_path = joinPathPy("reactions/", __file__)
+ref_path = joinPathPy("ref/", __file__)
 
-if not os.path.exists(joinPathPy("out", __file__)):
-    try:
-        os.makedirs(joinPathPy("out", __file__))
-    except OSError as e:
-        if e.errno != errno.EEXIST:
-            raise
+files = ["pathway_simple"]
 
-r1 = indigo.loadReactionFromFile(
-    joinPathPy("reactions/pathway_simple.rdf", __file__)
-)
+for filename in files:
+    rxn = indigo.loadReactionFromFile(
+        os.path.join(input_path, filename + ".rdf")
+    )
+    rxn_ref = open(os.path.join(ref_path, filename) + ".ket", "r").read()
 
-print(r1.json())
+    rxn_txt = rxn.json()
+
+    diff = find_diff(rxn_ref, rxn_txt)
+    if not diff:
+        print(filename + ".rdf:SUCCEED")
+    else:
+        print(filename + ".rdf:FAILED")
+        print(diff)
