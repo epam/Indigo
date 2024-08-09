@@ -39,6 +39,8 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& rxn)
     reaction->clone(rxn);
 
     auto points = reaction->makeTreePoints();
+    // Ensure the same order across different platforms.
+    std::sort(points.begin(), points.end());
 
     for (auto& p : points)
     {
