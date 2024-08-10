@@ -77,6 +77,8 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, MoleculeJsonSaver& json_
         merged = std::make_unique<Molecule>();
     }
 
+    const auto& vec = rxn.getBaseMolecule(0).getAtomXyz(0);
+    std::cout << vec.x << ":" << vec.y << std::endl;
     // merge 
     for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
         merged->mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
