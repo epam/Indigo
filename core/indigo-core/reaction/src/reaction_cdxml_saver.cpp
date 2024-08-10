@@ -121,9 +121,9 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
             if (obj._class_id == KETReactionArrow::CID)
             {
                 KETReactionArrow& arrow = (KETReactionArrow&)(obj);
-                if (arrow._arrow_type == KETReactionArrow::ERetrosynthetic)
+                if (arrow.getArrowType() == KETReactionArrow::ERetrosynthetic)
                 {
-                    molsaver.addRetrosynteticArrow(++_id, meta_ids[i], arrow._begin, arrow._end);
+                    molsaver.addRetrosynteticArrow(++_id, meta_ids[i], arrow.getTail(), arrow.getHead());
                     retro_arrows_graph_id[meta_ids[i]] = _id;
                     continue;
                 }

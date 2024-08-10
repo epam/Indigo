@@ -1756,7 +1756,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             // arrow mode
             writer.Key("mode");
             std::string arrow_mode = "open-angle";
-            auto at_it = _arrow_type2string.find(ar._arrow_type);
+            auto at_it = _arrow_type2string.find(ar.getArrowType());
             if (at_it != _arrow_type2string.end())
                 arrow_mode = at_it->second.c_str();
             writer.String(arrow_mode.c_str());
@@ -1766,18 +1766,18 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.StartArray();
             writer.StartObject();
             writer.Key("x");
-            writer.Double(ar._begin.x);
+            writer.Double(ar.getTail().x);
             writer.Key("y");
-            writer.Double(ar._begin.y);
+            writer.Double(ar.getTail().y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
 
             writer.StartObject();
             writer.Key("x");
-            writer.Double(ar._end.x);
+            writer.Double(ar.getHead().x);
             writer.Key("y");
-            writer.Double(ar._end.y);
+            writer.Double(ar.getHead().y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
@@ -1794,8 +1794,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.String("plus");
             writer.Key("location");
             writer.StartArray();
-            writer.Double(rp._pos.x);
-            writer.Double(rp._pos.y);
+            writer.Double(rp.getPos().x);
+            writer.Double(rp.getPos().y);
             writer.Double(0);
             writer.EndArray();
             writer.EndObject();

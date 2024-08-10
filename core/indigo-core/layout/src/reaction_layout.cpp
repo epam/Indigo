@@ -18,17 +18,158 @@
 
 #include "layout/reaction_layout.h"
 #include "layout/molecule_layout.h"
+#include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "reaction/reaction.h"
+#include <numeric>
 #include <stdio.h>
 
 using namespace indigo;
 
 ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
     : bond_length(MoleculeLayout::DEFAULT_BOND_LENGTH), plus_interval_factor(1), arrow_interval_factor(2), preserve_molecule_layout(false), _r(r),
-      _smart_layout(smart_layout), horizontal_interval_factor(DEFAULT_HOR_INTERVAL_FACTOR), atom_label_width(1.3f)
+      _smart_layout(smart_layout), horizontal_interval_factor(DEFAULT_HOR_INTERVAL_FACTOR), atom_label_width(1.3f), layout_orientation(UNCPECIFIED),
+      max_iterations(0)
 {
-    max_iterations = 0;
+}
+
+void ReactionLayout::fixLayout()
+{
+    Vec2f rmax{Vec2f::min_coord(), Vec2f::min_coord()}, pmin{Vec2f::max_coord(), Vec2f::max_coord()};
+    Rect2f bb;
+    // Calculate rightTop of reactant bounding box
+    for (int i = _r.reactantBegin(); i != _r.reactantEnd(); i = _r.reactantNext(i))
+    {
+        _r.getBaseMolecule(i).getBoundingBox(bb);
+        rmax.max(bb.rightTop());
+    }
+
+    // Calculate leftBottom of product bounding box
+    for (int i = _r.productBegin(); i != _r.productEnd(); i = _r.productNext(i))
+    {
+        _r.getBaseMolecule(i).getBoundingBox(bb);
+        pmin.min(bb.leftBottom());
+    }
+
+    // if left side of product bb at left of right side of reactant bb - fix layout
+    if (rmax.x > pmin.x)
+    {
+        ReactionLayout rl(_r, true);
+        rl.preserve_molecule_layout = true;
+        rl.make();
+    }
+    else
+        _updateMetadata();
+}
+
+void ReactionLayout::_updateMetadata()
+{
+    int arrow_count = _r.meta().getMetaCount(KETReactionArrow::CID);
+    if (arrow_count >= 1)
+        return; // we don't have a layout for multi-arrow reactions yet
+    float arrow_height = 0;
+    int arrow_type = KETReactionArrow::EOpenAngle;
+    if (arrow_count > 0)
+    {
+        auto& ra = static_cast<const KETReactionArrow&>(_r.meta().getMetaObject(KETReactionArrow::CID, 0));
+        // remember arrow type & height
+        arrow_type = ra.getArrowType();
+        arrow_height = ra.getHeight();
+        // reset pluses and arrows
+        _r.meta().resetReactionData();
+    }
+
+    std::vector<Vec2f> pluses;
+    Rect2f react_box, product_box, catalyst_box;
+    bool last_single_reactant = false;
+    bool first_single_product = false;
+    if (_r.reactantsCount() > 0)
+    {
+        processSideBoxes(pluses, react_box, BaseReaction::REACTANT);
+        for (int i = _r.reactantBegin(); i != _r.reactantEnd(); i = _r.reactantNext(i))
+            last_single_reactant = _r.getBaseMolecule(i).vertexCount() == 1;
+    }
+
+    if (_r.productsCount() > 0)
+    {
+        processSideBoxes(pluses, product_box, BaseReaction::PRODUCT);
+        first_single_product = _r.getBaseMolecule(_r.productBegin()).vertexCount() == 1;
+    }
+
+    if (_r.catalystCount() > 0)
+        processSideBoxes(pluses, catalyst_box, BaseReaction::CATALYST);
+
+    for (const auto& plus_offset : pluses)
+        _r.meta().addMetaObject(new KETReactionPlus(plus_offset));
+
+    Vec2f arrow_head(0, 0);
+    Vec2f arrow_tail(0, 0);
+
+    constexpr float shift = 1.0f;
+    if (_r.productsCount() == 0)
+    {
+        arrow_tail.x = react_box.right() + shift;
+        arrow_tail.y = react_box.middleY();
+        arrow_head.x = arrow_tail.x + shift;
+        arrow_head.y = arrow_tail.y;
+    }
+    else if (_r.reactantsCount() == 0)
+    {
+        arrow_head.x = product_box.left() - shift;
+        arrow_head.y = product_box.middleY();
+        arrow_tail.x = arrow_head.x - shift;
+        arrow_tail.y = arrow_head.y;
+    }
+    else
+    {
+        const float ptab = first_single_product ? 2.0f : 1.0f;
+        const float rtab = last_single_reactant ? 2.0f : 1.0f;
+
+        arrow_head.y = product_box.middleY();
+        arrow_tail.y = react_box.middleY();
+
+        if (product_box.left() > react_box.right())
+        {
+            arrow_head.x = product_box.left() - ptab;
+            arrow_tail.x = react_box.right() + rtab;
+        }
+        else
+        {
+            arrow_head.x = react_box.right() + rtab;
+            arrow_tail.x = product_box.left() - ptab;
+        }
+    }
+    _r.meta().addMetaObject(new KETReactionArrow(arrow_type, arrow_tail, arrow_head, arrow_height));
+}
+
+void ReactionLayout::processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_box, int side)
+{
+    int begin = _r.sideBegin(side);
+    std::vector<Rect2f> boxes;
+
+    for (int i = begin; i != _r.sideEnd(); i = _r.sideNext(side, i))
+    {
+        BaseMolecule& mol = _r.getBaseMolecule(i);
+
+        Rect2f box;
+        mol.getBoundingBox(box);
+        if (i == begin)
+            type_box.copy(box);
+        else
+            type_box.extend(box);
+
+        if (side != BaseReaction::CATALYST)
+            boxes.emplace_back(box);
+    }
+
+    // For REACTANT and PRODUCT insert pluses between boxes
+    if (side != BaseReaction::CATALYST && boxes.size() > 1)
+    {
+        std::ignore = std::accumulate(std::next(boxes.begin()), boxes.end(), boxes[0], [&pluses](Rect2f left, Rect2f right) {
+            pluses.emplace_back(right.between_left_box(left), left.middleY());
+            return right;
+        });
+    }
 }
 
 void ReactionLayout::make()
@@ -92,6 +233,7 @@ void ReactionLayout::make()
     _ml.scaleSz();
     _ml.calcContentSize();
     _ml.process();
+    _updateMetadata();
 }
 
 void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_agent)
