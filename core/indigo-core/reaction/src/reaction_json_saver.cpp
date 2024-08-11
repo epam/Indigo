@@ -67,6 +67,8 @@ void ReactionJsonSaver::saveReactionWithMetaData(BaseReaction& rxn, BaseMolecule
 
 void ReactionJsonSaver::saveReaction(BaseReaction& rxn, MoleculeJsonSaver& json_saver)
 {
+    auto& xyz = rxn.getBaseMolecule(1).getAtomXyz(1);
+    std::cout << std::setprecision(16) << xyz.x << std::endl;
     std::unique_ptr<BaseMolecule> merged;
     if (rxn.isQueryReaction())
     {
@@ -77,16 +79,15 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, MoleculeJsonSaver& json_
         merged = std::make_unique<Molecule>();
     }
 
-    const auto& vec = rxn.getBaseMolecule(0).getAtomXyz(0);
-    std::cout << vec.x << ":" << vec.y << std::endl;
-    // merge 
-    for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-        merged->mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
-
     std::unique_ptr<BaseReaction> reaction(rxn.neu());
     reaction->clone(rxn);
     ReactionLayout rl(*reaction);
     rl.fixLayout();
+
+    // merge
+    for (int i = reaction->begin(); i != reaction->end(); i = reaction->next(i))
+        merged->mergeWithMolecule(reaction->getBaseMolecule(i), 0, 0);
+
     merged->meta().clone(reaction->meta());
 
     // dump molecules

@@ -65,7 +65,7 @@ void ReactionLayout::fixLayout()
 void ReactionLayout::_updateMetadata()
 {
     int arrow_count = _r.meta().getMetaCount(KETReactionArrow::CID);
-    if (arrow_count >= 1)
+    if (arrow_count > 1)
         return; // we don't have a layout for multi-arrow reactions yet
     float arrow_height = 0;
     int arrow_type = KETReactionArrow::EOpenAngle;
