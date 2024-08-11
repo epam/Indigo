@@ -292,6 +292,7 @@ namespace indigo
         {
             return _pos;
         }
+
     private:
         Vec2f _pos;
     };
