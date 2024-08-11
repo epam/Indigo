@@ -52,21 +52,10 @@ ReactionJsonSaver::~ReactionJsonSaver()
 {
 }
 
-void ReactionJsonSaver::saveReactionWithMetaData(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver)
+void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 {
-    for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-        merged.mergeWithMolecule(rxn.getBaseMolecule(i), 0, 0);
-
-    merged.meta().clone(rxn.meta());
-    StringBuffer s;
-    JsonWriter writer(pretty_json);
-    writer.Reset(s);
-    json_saver.saveMolecule(merged, writer);
-    _output.printf("%s", s.GetString());
-}
-
-void ReactionJsonSaver::saveReaction(BaseReaction& rxn, MoleculeJsonSaver& json_saver)
-{
+    MoleculeJsonSaver json_saver(_output);
+    json_saver.add_stereo_desc = add_stereo_desc;
     std::unique_ptr<BaseMolecule> merged;
     if (rxn.isQueryReaction())
     {
@@ -103,31 +92,4 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, MoleculeJsonSaver& json_
     writer.Reset(s);
     ket.Accept(writer);
     _output.printf("%s", s.GetString());
-}
-
-void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
-{
-    MoleculeJsonSaver json_saver(_output);
-    json_saver.add_stereo_desc = add_stereo_desc;
-    std::unique_ptr<BaseMolecule> merged;
-    if (rxn.isQueryReaction())
-    {
-        merged = std::make_unique<QueryMolecule>();
-    }
-    else
-    {
-        merged = std::make_unique<Molecule>();
-    }
-
-    int arrows_count = rxn.meta().getMetaCount(KETReactionArrow::CID);
-    int simple_count = rxn.meta().getMetaCount(KETSimpleObject::CID) + rxn.meta().getMetaCount(KETTextObject::CID);
-    if (arrows_count > 1 || simple_count)
-    {
-        // if metadata presents
-        saveReactionWithMetaData(rxn, *merged, json_saver);
-    }
-    else
-    {
-        saveReaction(rxn, json_saver);
-    }
 }

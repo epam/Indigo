@@ -41,8 +41,6 @@ namespace indigo
         ~ReactionJsonSaver();
 
         void saveReaction(BaseReaction& rxn);
-        void saveReaction(BaseReaction& rxn, MoleculeJsonSaver& json_saver);
-        void saveReactionWithMetaData(BaseReaction& rxn, BaseMolecule& merged, MoleculeJsonSaver& json_saver);
         bool add_stereo_desc;
         bool pretty_json;
         DECL_ERROR;

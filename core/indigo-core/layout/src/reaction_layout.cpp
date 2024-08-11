@@ -35,6 +35,11 @@ ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
 
 void ReactionLayout::fixLayout()
 {
+    int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
+    int simple_count = _r.meta().getMetaCount(KETSimpleObject::CID) + _r.meta().getMetaCount(KETTextObject::CID);
+    if (arrows_count > 1 || simple_count)
+        return;
+
     Vec2f rmax{Vec2f::min_coord(), Vec2f::min_coord()}, pmin{Vec2f::max_coord(), Vec2f::max_coord()};
     Rect2f bb;
     // Calculate rightTop of reactant bounding box
@@ -64,12 +69,9 @@ void ReactionLayout::fixLayout()
 
 void ReactionLayout::_updateMetadata()
 {
-    int arrow_count = _r.meta().getMetaCount(KETReactionArrow::CID);
-    if (arrow_count > 1)
-        return; // we don't have a layout for multi-arrow reactions yet
     float arrow_height = 0;
     int arrow_type = KETReactionArrow::EOpenAngle;
-    if (arrow_count > 0)
+    if (_r.meta().getMetaCount(KETReactionArrow::CID) > 0)
     {
         auto& ra = static_cast<const KETReactionArrow&>(_r.meta().getMetaObject(KETReactionArrow::CID, 0));
         // remember arrow type & height
@@ -174,6 +176,11 @@ void ReactionLayout::processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_b
 
 void ReactionLayout::make()
 {
+    int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
+    int simple_count = _r.meta().getNonChemicalMetaCount();
+    if (arrows_count > 1 || simple_count)
+        return; // not implemented yet
+
     const auto kHalfBondLength = bond_length / 2;
     const auto kDoubleBondLength = bond_length * 2;
     // update layout of molecules, if needed
