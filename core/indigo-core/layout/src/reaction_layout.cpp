@@ -58,7 +58,7 @@ void ReactionLayout::fixLayout()
         rl.preserve_molecule_layout = true;
         rl.make();
     }
-    else
+    else if (_r.meta().getMetaCount(KETReactionArrow::CID) == 0)
         _updateMetadata();
 }
 
