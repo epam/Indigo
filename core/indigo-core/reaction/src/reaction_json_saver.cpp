@@ -103,7 +103,6 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, MoleculeJsonSaver& json_
     writer.Reset(s);
     ket.Accept(writer);
     _output.printf("%s", s.GetString());
-
 }
 
 void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
