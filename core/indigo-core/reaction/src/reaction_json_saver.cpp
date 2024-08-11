@@ -67,8 +67,6 @@ void ReactionJsonSaver::saveReactionWithMetaData(BaseReaction& rxn, BaseMolecule
 
 void ReactionJsonSaver::saveReaction(BaseReaction& rxn, MoleculeJsonSaver& json_saver)
 {
-    auto& xyz = rxn.getBaseMolecule(1).getAtomXyz(1);
-    std::cout << std::setprecision(16) << xyz.x << std::endl;
     std::unique_ptr<BaseMolecule> merged;
     if (rxn.isQueryReaction())
     {
@@ -95,12 +93,17 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn, MoleculeJsonSaver& json_
     JsonWriter writer(pretty_json);
     writer.Reset(s);
     json_saver.saveMolecule(*merged, writer);
+    std::cout << writer.GetMaxDecimalPlaces() << std::endl;
+
     Document ket;
     ket.Parse(s.GetString());
     if (!(ket.HasMember("root") && ket["root"].HasMember("nodes")))
         throw Error("reaction_json_saver: MoleculeJsonSaver::saveMolecule failed");
 
     _output.printf("%s", s.GetString());
+
+    auto& xyz = reaction->getBaseMolecule(1).getAtomXyz(1);
+    std::cout << std::setprecision(18) << xyz.x << std::endl;
 }
 
 void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
