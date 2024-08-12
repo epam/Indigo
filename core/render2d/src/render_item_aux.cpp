@@ -174,11 +174,11 @@ void RenderItemAuxiliary::_drawPlus()
 void RenderItemAuxiliary::_drawArrow(const KETReactionArrow& ar)
 {
     _rc.setSingleSource(CWC_BASE);
-    auto beg = ar._begin;
-    auto end = ar._end;
+    Vec2f beg = ar.getTail();
+    Vec2f end = ar.getHead();
     scale(beg);
     scale(end);
-    switch (ar._arrow_type)
+    switch (ar.getArrowType())
     {
     case KETReactionArrow::EOpenAngle:
         _rc.drawCustomArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, false, false);
@@ -233,19 +233,19 @@ void RenderItemAuxiliary::_drawArrow(const KETReactionArrow& ar)
         break;
 
     case KETReactionArrow::EEllipticalArcFilledBow:
-        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar._height, ar._arrow_type);
+        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar.getHeight(), ar.getArrowType());
         break;
 
     case KETReactionArrow::EEllipticalArcFilledTriangle:
-        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar._height, ar._arrow_type);
+        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar.getHeight(), ar.getArrowType());
         break;
 
     case KETReactionArrow::EEllipticalArcOpenAngle:
-        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar._height, ar._arrow_type);
+        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar.getHeight(), ar.getArrowType());
         break;
 
     case KETReactionArrow::EEllipticalArcOpenHalfAngle:
-        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar._height, ar._arrow_type);
+        _rc.drawEllipticalArrow(beg, end, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize, ar.getHeight(), ar.getArrowType());
         break;
 
     default:
@@ -362,7 +362,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
             case KETReactionPlus::CID: {
                 const KETReactionPlus& rp = static_cast<const KETReactionPlus&>(mobj);
                 _rc.setSingleSource(CWC_BASE);
-                auto plus_pos = rp._pos;
+                Vec2f plus_pos = rp.getPos();
                 scale(plus_pos);
                 _rc.drawPlus(plus_pos, _settings.metaLineWidth, _settings.plusSize);
             }
@@ -374,7 +374,6 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
             break;
             case KETImage::CID: {
                 const KETImage& img = static_cast<const KETImage&>(mobj);
-
                 _drawImage(img);
             }
             break;

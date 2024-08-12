@@ -114,9 +114,7 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
     if (rxn.meta().metaData().size()) // we have metadata
     {
         for (int i = 0; i < rxn.meta().metaData().size(); ++i)
-        {
             molsaver.addMetaObject(*rxn.meta().metaData()[i], meta_ids[i]);
-        }
     }
     else
     {

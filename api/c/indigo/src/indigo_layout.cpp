@@ -104,7 +104,6 @@ CEXPORT int indigoLayout(int object)
             bool no_layout = rxn.intermediateCount() || rxn.specialConditionsCount() || rxn.meta().getNonChemicalMetaCount();
             if (!no_layout)
             {
-                rxn.meta().resetMetaData();
                 ReactionLayout rl(rxn, self.smart_layout);
                 rl.max_iterations = self.layout_max_iterations;
                 rl.layout_orientation = (layout_orientation_value)self.layout_orientation;

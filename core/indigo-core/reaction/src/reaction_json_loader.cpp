@@ -246,7 +246,7 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
     for (int i = 0; i < rxn.meta().getMetaCount(KETReactionPlus::CID); ++i)
     {
         auto& plus = (const KETReactionPlus&)rxn.meta().getMetaObject(KETReactionPlus::CID, i);
-        const Vec2f& plus_pos = plus._pos;
+        const auto& plus_pos = plus.getPos();
         Rect2f bbox(plus_pos - PLUS_BBOX_SHIFT, plus_pos + PLUS_BBOX_SHIFT);
         _reaction_components.emplace_back(ReactionComponent::PLUS, bbox, i, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(plus_pos);
@@ -260,10 +260,10 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
     for (int i = 0; i < rxn.meta().getMetaCount(KETReactionArrow::CID); ++i)
     {
         auto& arrow = (const KETReactionArrow&)rxn.meta().getMetaObject(KETReactionArrow::CID, i);
-        int arrow_type = arrow._arrow_type;
-        bool reverseReactionOrder = arrow._arrow_type == KETReactionArrow::ERetrosynthetic;
-        const Vec2f& arr_begin = !reverseReactionOrder ? arrow._begin : arrow._end;
-        const Vec2f& arr_end = !reverseReactionOrder ? arrow._end : arrow._begin;
+        int arrow_type = arrow.getArrowType();
+        bool reverseReactionOrder = arrow_type == KETReactionArrow::ERetrosynthetic;
+        const Vec2f& arr_begin = !reverseReactionOrder ? arrow.getTail() : arrow.getHead();
+        const Vec2f& arr_end = !reverseReactionOrder ? arrow.getTail() : arrow.getHead();
         Rect2f bbox(arr_begin - ARROW_BBOX_SHIFT, arr_end + ARROW_BBOX_SHIFT);
         _reaction_components.emplace_back(arrow_type, bbox, i, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(arr_begin);
@@ -283,8 +283,8 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
 
     for (int i = 0; i < rxn.meta().getMetaCount(KETReactionPlus::CID); ++i)
     {
-        auto& plus = (const KETReactionPlus&)rxn.meta().getMetaObject(KETReactionPlus::CID, i);
-        const Vec2f& plus_pos = plus._pos;
+        auto& plus = static_cast<const KETReactionPlus&>(rxn.meta().getMetaObject(KETReactionPlus::CID, i));
+        auto& plus_pos = plus.getPos();
         std::pair<int, int> plus_connection; // (component1_index, component2_index)
 
         if (findPlusNeighbours(plus_pos, mol_tops, mol_bottoms, mol_lefts, mol_rights, plus_connection))
@@ -388,10 +388,10 @@ void ReactionJsonLoader::parseMultipleArrowReaction(BaseReaction& rxn)
     for (int i = 0; i < rxn.meta().getMetaCount(KETReactionArrow::CID); ++i)
     {
         auto& arrow = (const KETReactionArrow&)rxn.meta().getMetaObject(KETReactionArrow::CID, i);
-        int arrow_type = arrow._arrow_type;
-        bool reverseReactionOrder = arrow._arrow_type == KETReactionArrow::ERetrosynthetic;
-        const Vec2f& arr_begin = !reverseReactionOrder ? arrow._begin : arrow._end;
-        const Vec2f& arr_end = !reverseReactionOrder ? arrow._end : arrow._begin;
+        int arrow_type = arrow.getArrowType();
+        bool reverseReactionOrder = arrow_type == KETReactionArrow::ERetrosynthetic;
+        const Vec2f& arr_begin = !reverseReactionOrder ? arrow.getTail() : arrow.getHead();
+        const Vec2f& arr_end = !reverseReactionOrder ? arrow.getHead() : arrow.getTail();
         double min_dist_prod = -1, min_dist_reac = -1;
         int idx_cs_min_prod = -1, idx_cs_min_reac = -1;
         for (int index_cs = 0; index_cs < static_cast<int>(_component_summ_blocks.size()); ++index_cs)
@@ -490,7 +490,7 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
     }
 
     auto& arrow = (const KETReactionArrow&)rxn.meta().getMetaObject(KETReactionArrow::CID, 0);
-    bool reverseReactionOrder = arrow._arrow_type == KETReactionArrow::ERetrosynthetic;
+    bool reverseReactionOrder = arrow.getArrowType() == KETReactionArrow::ERetrosynthetic;
 
     for (int i = 0; i < rxn.meta().getMetaCount(KETTextObject::CID); ++i)
     {
@@ -510,7 +510,7 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
             {
                 Vec3f& pt3d = cmol.getAtomXyz(idx);
                 Vec2f pt(pt3d.x, pt3d.y);
-                int side = !reverseReactionOrder ? getPointSide(pt, arrow._begin, arrow._end) : getPointSide(pt, arrow._end, arrow._begin);
+                int side = !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
                 switch (side)
                 {
                 case KETReagentUpArea:
@@ -531,7 +531,7 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
         case ReactionFragmentType::TEXT: {
             const auto& bbox = std::get<BBOX_IDX>(comp);
             Vec2f pt(bbox.center());
-            int side = !reverseReactionOrder ? getPointSide(pt, arrow._begin, arrow._end) : getPointSide(pt, arrow._end, arrow._begin);
+            int side = !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
             if (side == KETReagentUpArea || side == KETReagentDownArea)
             {
                 rxn.addSpecialCondition(text_meta_idx, bbox);

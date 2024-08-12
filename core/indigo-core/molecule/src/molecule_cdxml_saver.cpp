@@ -1375,15 +1375,15 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
     {
     case KETReactionArrow::CID: {
         KETReactionArrow& ar = (KETReactionArrow&)(obj);
-        addArrow(id, ar._arrow_type, ar._begin, ar._end);
+        addArrow(id, ar.getArrowType(), ar.getTail(), ar.getHead());
     }
     break;
     case KETReactionPlus::CID: {
         KETReactionPlus& rp = (KETReactionPlus&)(obj);
         attrs.insert("GraphicType", "Symbol");
         attrs.insert("SymbolType", "Plus");
-        Vec2f v1(rp._pos.x, rp._pos.y - PLUS_HALF_HEIGHT / _bond_length);
-        Vec2f v2(rp._pos.x, rp._pos.y + PLUS_HALF_HEIGHT / _bond_length);
+        Vec2f v1(rp.getPos().x, rp.getPos().y - PLUS_HALF_HEIGHT / _bond_length);
+        Vec2f v2(rp.getPos().x, rp.getPos().y + PLUS_HALF_HEIGHT / _bond_length);
         addElement("graphic", id, v1, v2, attrs);
     }
     break;
