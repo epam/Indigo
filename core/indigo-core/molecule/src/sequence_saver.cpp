@@ -858,7 +858,7 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                             for (auto& option : doc.variantTemplates().at(monomers.at(base_id)->templateId()).options())
                             {
                                 auto& opt_alias = doc.templates().at(option.templateId()).getStringProp("alias");
-                                auto& it = IDT_BASE_TO_RATIO_IDX.find(opt_alias);
+                                const auto& it = IDT_BASE_TO_RATIO_IDX.find(opt_alias);
                                 if (it == IDT_BASE_TO_RATIO_IDX.end())
                                     throw Error("Cannot save IDT - unknown mnomer template %s", opt_alias.c_str());
                                 auto ratio = option.ratio();
