@@ -244,6 +244,27 @@ namespace indigo
             return new KETReactionArrow(_arrow_type, _begin, _end, _height);
         }
 
+        int getArrowType() const
+        {
+            return _arrow_type;
+        }
+
+        float getHeight() const
+        {
+            return _height;
+        }
+
+        const auto& getHead() const
+        {
+            return _end;
+        }
+
+        const auto& getTail() const
+        {
+            return _begin;
+        }
+
+    private:
         int _arrow_type;
         float _height;
         Vec2f _begin;
@@ -267,6 +288,12 @@ namespace indigo
             EKETRectangle,
             EKETLine
         };
+        const auto& getPos() const
+        {
+            return _pos;
+        }
+
+    private:
         Vec2f _pos;
     };
 
