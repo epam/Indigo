@@ -33,8 +33,9 @@ namespace indigo
 
     class DLLEXPORT PathwayReaction : public BaseReaction
     {
-        static constexpr int SPACE = 5;
-        static constexpr float NARROWING_QUOTIENT = 0.8f;
+        static constexpr int SPACE = 2;
+        static constexpr int ARROW_WIDTH = 3;
+        static constexpr int ARROW_MIN_HEIGHT = 5;
 
     public:
         PathwayReaction();

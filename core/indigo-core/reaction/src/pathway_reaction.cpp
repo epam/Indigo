@@ -94,8 +94,45 @@ std::vector<std::pair<int, Vec2f>> PathwayReaction::makeTreePoints()
         }
     }
 
+    std::unordered_map<int, Rect2f> sumBoxes;
+    std::stack<int> dfsStack;
+    dfsStack.push(finalProductId);
+    while (!dfsStack.empty())
+    {
+        auto stackSize = dfsStack.size();
+        auto id = dfsStack.top();
+
+        auto productIter = productIds.find(inchiKeys.at(id));
+        if (productIter == productIds.cend())
+        {
+            auto& box = sumBoxes[id];
+            reaction->getBaseMolecule(id).getBoundingBox(box);
+            dfsStack.pop();
+            continue;
+        }
+
+        auto productId = productIter->second;
+        for (int reactantId : reactantIdsByReactions[reaction->reactionId(productId)])
+            if (!sumBoxes.count(reactantId))
+                dfsStack.push(reactantId);
+        if (dfsStack.size() > stackSize)
+            continue;
+
+        Rect2f box;
+        reaction->getBaseMolecule(id).getBoundingBox(box);
+        Vec2f rightTop(std::max<float>(box.width(), ARROW_MIN_HEIGHT), -SPACE);
+        for (int reactantId : reactantIdsByReactions[reaction->reactionId(productId)])
+        {
+            Rect2f box;
+            reaction->getBaseMolecule(reactantId).getBoundingBox(box);
+            rightTop.x = std::max(rightTop.x, box.width());
+            rightTop.y += sumBoxes[reactantId].height() + SPACE;
+        }
+        sumBoxes[id] = {{}, rightTop};
+        dfsStack.pop();
+    }
+
     std::unordered_map<int, Vec2f> points;
-    points.reserve(reaction->reactionsCount());
     float multiplierY = 1.f;
     std::queue<int> bfsQueue;
     bfsQueue.push(finalProductId);
