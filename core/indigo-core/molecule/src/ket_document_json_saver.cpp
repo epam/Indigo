@@ -324,7 +324,6 @@ void KetDocumentJsonSaver::saveVariantMonomerTemplate(JsonWriter& writer, const 
     {
         writer.StartObject();
         saveStr(writer, "templateId", it.templateId());
-        writer.EndObject();
         auto& ratio = it.ratio();
         if (ratio.has_value())
         {
@@ -337,6 +336,7 @@ void KetDocumentJsonSaver::saveVariantMonomerTemplate(JsonWriter& writer, const 
             writer.Key("probability");
             saveNativeFloat(writer, probability.value());
         }
+        writer.EndObject();
     }
     writer.EndArray();
     writer.EndObject();

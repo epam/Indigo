@@ -817,6 +817,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                 break;
             }
             auto ch = _scanner.readChar();
+
             switch (ch)
             {
             case ' ':
@@ -841,6 +842,23 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     throw Error("Invalid modification: empty string.");
                 if (cur_token.size() < 3)
                     throw Error("Invalid modification: %s.", cur_token.c_str());
+                cur_token += ch;
+                break;
+            }
+            case '(': { // read till ')'
+                cur_token += ch;
+                ch = 0;
+                while (!_scanner.isEOL())
+                {
+                    ch = _scanner.readChar();
+                    if (ch == ')')
+                        break;
+                    cur_token += ch;
+                }
+                if (ch != ')')
+                    throw Error("Unexpected end of data");
+                if (cur_token == "")
+                    throw Error("Invalid variant monomer: empty string.");
                 cur_token += ch;
                 break;
             }
@@ -919,51 +937,92 @@ void SequenceLoader::loadIdt(KetDocument& document)
             }
             else
             {
+
                 if (token.first.size() > MAX_STD_TOKEN_SIZE)
-                    throw Error("Wrong IDT syntax: '%s'", token.first.c_str());
-                idt_alias = token.first.back();
+                    if (token.first.back() == ')')
+                        idt_alias = token.first;
+                    else
+                        throw Error("Wrong IDT syntax: '%s'", token.first.c_str());
+                else
+                    idt_alias = token.first.back();
                 if (token.first.size() > 1)
                 {
-                    switch (token.first[0])
+                    auto ch = token.first[0];
+                    if (ch != '(')
                     {
-                    case 'r':
-                        sugar = "R";
-                        break;
-                    case '+':
-                        sugar = "LR";
-                        break;
-                    case 'm':
-                        sugar = "mR";
-                        break;
-                    default:
-                        throw Error("Wrong IDT syntax: '%s'", token.first.c_str());
+                        switch (ch)
+                        {
+                        case 'r':
+                            sugar = "R";
+                            break;
+                        case '+':
+                            sugar = "LR";
+                            break;
+                        case 'm':
+                            sugar = "mR";
+                            break;
+                        default:
+                            throw Error("Wrong IDT syntax: '%s'", token.first.c_str());
+                        }
+                        if (idt_alias.back() == ')')
+                            idt_alias.erase(0, 1);
                     }
                 }
             }
 
-            if (idt_alias.size() == 1)
+            if (IDT_STANDARD_MIXED_BASES.count(idt_alias) != 0 || idt_alias.back() == ')')
+                variant_monomer = true;
+
+            if (idt_alias.size() == 1 || variant_monomer)
             {
-                if (IDT_STANDARD_BASES.count(idt_alias[0]) == 0 && IDT_STANDARD_MIXED_BASES.count(idt_alias) == 0)
+                if (IDT_STANDARD_BASES.count(idt_alias[0]) == 0 && !variant_monomer)
                 {
                     if (invalid_symbols.size())
                         invalid_symbols += ',';
                     invalid_symbols += idt_alias[0];
                     continue;
                 }
-                base = idt_alias;
-                if (IDT_STANDARD_MIXED_BASES.count(idt_alias) != 0)
+
+                if (variant_monomer)
                 {
-                    variant_monomer = true;
+                    auto mixed_base = idt_alias;
+                    std::optional<std::array<float, 4>> ratios;
+                    if (mixed_base.back() == ')')
+                    {
+                        mixed_base = idt_alias.substr(1, idt_alias.size() - 2);
+                        if (auto pos = mixed_base.find(':'); pos != std::string::npos)
+                        {
+                            auto ratios_str = mixed_base.substr(pos + 1, mixed_base.size() - pos - 1);
+                            mixed_base = mixed_base.substr(0, pos);
+                            if (ratios_str.size() != 8)
+                                throw Exception("Invalid IDT variant monomer %s", idt_alias.c_str());
+                            ratios.emplace(std::array<float, 4>{std::stof(ratios_str.substr(0, 2)), std::stof(ratios_str.substr(2, 2)),
+                                                                std::stof(ratios_str.substr(4, 2)), std::stof(ratios_str.substr(6, 2))});
+                            idt_alias = '(' + mixed_base + ')';
+                            mixed_base = mixed_base[0];
+                        }
+                    }
+                    if (sugar == "R")
+                        idt_alias = 'r' + idt_alias;
                     if (!document.hasVariantMonomerTemplate(idt_alias))
                     {
-                        auto it = IDT_STANDARD_MIXED_BASES.find(idt_alias);
+                        auto it = IDT_STANDARD_MIXED_BASES.find(mixed_base);
+                        if (it == IDT_STANDARD_MIXED_BASES.end())
+                            throw Error("Unknown mixed base '%s'", mixed_base.c_str());
+
                         std::vector<KetVariantMonomerOption> options;
                         for (auto template_alias : it->second)
                         {
+                            if (sugar == "r" && template_alias == "T") // U instead of T for RNA
+                                template_alias = "U";
                             auto& template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Base, template_alias);
                             if (template_id.size() == 0)
                                 throw Error("Monomer base template '%s' not found", template_alias.c_str());
-                            options.emplace_back(template_id);
+                            auto& option = options.emplace_back(template_id);
+                            if (ratios.has_value())
+                            {
+                                option.setRatio(ratios.value()[IDT_BASE_TO_RATIO_IDX.at(template_alias)]);
+                            }
                             auto& monomer_template = _library.getMonomerTemplateById(template_id);
                             checkAddTemplate(document, monomer_template);
                             _alias_to_id.emplace(template_alias, template_id);
@@ -971,12 +1030,14 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         document.addVariantMonomerTemplate("mixture", idt_alias, idt_alias, IdtAlias(), options);
                         _alias_to_id.emplace(idt_alias, idt_alias);
                     }
+                    else if (ratios.has_value())
+                        throw Error("Variant monomer %s redefinion", idt_alias.c_str());
                 }
-                else
-                {
-                    if (base == "I")
-                        base = "In"; // use correct alias for Inosine
-                }
+                base = idt_alias;
+
+                if (base == "I")
+                    base = "In"; // use correct alias for Inosine
+
                 if (tokens.size() == 0)
                 {
                     if (token.second)

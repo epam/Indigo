@@ -62,6 +62,7 @@ idt_data = {
     "idt_unsplit": "/5UNSPLIT/A",
     "idt_more_than_80_chars": "/52MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//3Phos/",
     "idt_mixed_std": "ARAS",
+    "idt_mixed_custom": "(N1:10203050)(N1)N",
 }
 
 for filename in sorted(idt_data.keys()):

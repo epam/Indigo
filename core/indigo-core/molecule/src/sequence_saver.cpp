@@ -17,12 +17,13 @@
  ***************************************************************************/
 
 #include "molecule/sequence_saver.h"
-#include "../molecule/monomer_commons.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "layout/sequence_layout.h"
 #include "molecule/ket_document.h"
+#include "molecule/ket_objects.h"
 #include "molecule/molecule.h"
+#include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
 
 using namespace indigo;
@@ -751,6 +752,7 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
     {
         std::string seq_string;
         IdtModification modification = IdtModification::FIVE_PRIME_END;
+        std::set<std::string> custom_variants;
         while (sequence.size() > 0)
         {
             auto monomer_id = sequence.front();
@@ -836,6 +838,7 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
             if (IDT_STANDARD_SUGARS.count(monomer) == 0)
                 standard_sugar = false;
 
+            bool variant_base = false;
             if (sequence.size() > 0)
             { // process base
                 auto base_id = sequence.front();
@@ -845,6 +848,39 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                     sequence.pop_front();
                     if (IDT_STANDARD_BASES.count(base) == 0 && IDT_STANDARD_MIXED_BASES.count(base) == 0)
                         standard_base = false;
+                    if (base.back() == ')')
+                    {
+                        variant_base = true;
+                        if (custom_variants.count(base) == 0)
+                        {
+                            custom_variants.emplace(base);
+                            std::array<float, 4> ratios;
+                            for (auto& option : doc.variantTemplates().at(monomers.at(base_id)->templateId()).options())
+                            {
+                                auto& opt_alias = doc.templates().at(option.templateId()).getStringProp("alias");
+                                auto& it = IDT_BASE_TO_RATIO_IDX.find(opt_alias);
+                                if (it == IDT_BASE_TO_RATIO_IDX.end())
+                                    throw Error("Cannot save IDT - unknown mnomer template %s", opt_alias.c_str());
+                                auto ratio = option.ratio();
+                                if (!ratio.has_value())
+                                    throw Error("Cannot save IDT - variant monomer template '%s' use template '%s' without ratio.", base.c_str(),
+                                                opt_alias.c_str());
+                                ratios[it->second] = ratio.value();
+                            }
+                            base.pop_back(); // remove ')'
+                            base += ':';
+                            // add ratios
+                            for (auto r : ratios)
+                            {
+                                int ir = static_cast<int>(std::round(r));
+                                std::string sr = std::to_string(ir);
+                                if (sr.size() < 2)
+                                    sr = '0' + sr;
+                                base += sr;
+                            }
+                            base += ')';
+                        }
+                    }
                 }
             }
 
@@ -873,7 +909,7 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                 phosphate = "P"; // Assume that modified monomers always contains P and modified to sP with *. TODO: confirm it with BA
                 add_asterisk = true;
             }
-            if (standard_base && standard_phosphate && standard_sugar)
+            if ((standard_base || variant_base) && standard_phosphate && standard_sugar)
             {
                 sugar = IDT_STANDARD_SUGARS.at(sugar);
                 if (sugar.size())
