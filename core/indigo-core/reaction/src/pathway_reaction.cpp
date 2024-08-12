@@ -133,11 +133,14 @@ std::vector<std::pair<int, Vec2f>> PathwayReaction::makeTreePoints()
     }
 
     std::unordered_map<int, Vec2f> points;
-    float multiplierY = 1.f;
     std::queue<int> bfsQueue;
     bfsQueue.push(finalProductId);
+    Rect2f box;
+    reaction->getBaseMolecule(finalProductId).getBoundingBox(box);
+    float offsetX = box.width() / 2 + ARROW_WIDTH + SPACE;
     while (!bfsQueue.empty())
     {
+        float nextOffsetX = 0;
         auto size = bfsQueue.size();
         for (size_t i = 0; i < size; i++)
         {
@@ -149,17 +152,16 @@ std::vector<std::pair<int, Vec2f>> PathwayReaction::makeTreePoints()
                 continue;
 
             auto zero = points[id];
-            id = productIter->second;
-            float offsetY = reactantIdsByReactions[reaction->reactionId(id)].size() > 1 ? -2.f * SPACE : 0;
-            offsetY *= multiplierY;
-            for (int reactantId : reactantIdsByReactions[reaction->reactionId(id)])
+            float offsetY = sumBoxes[id].height() / 2;
+            nextOffsetX = std::max(nextOffsetX, sumBoxes[id].width());
+            for (int reactantId : reactantIdsByReactions[reaction->reactionId(productIter->second)])
             {
-                points[reactantId] = zero - Vec2f(3 * SPACE, offsetY);
-                offsetY += 4 * SPACE * multiplierY;
+                points[reactantId] = zero - Vec2f(offsetX + sumBoxes[id].width() / 2, -offsetY + sumBoxes[reactantId].height() / 2);
                 bfsQueue.push(reactantId);
+                offsetY -= sumBoxes[reactantId].height() + SPACE;
             }
-            multiplierY *= NARROWING_QUOTIENT;
         }
+        offsetX = nextOffsetX / 2 + ARROW_WIDTH + SPACE;
     }
 
     return {points.cbegin(), points.cend()};
