@@ -16,6 +16,9 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <queue>
+
+#include "molecule/inchi_wrapper.h"
 #include "reaction/pathway_reaction.h"
 #include "reaction/reaction.h"
 
@@ -47,15 +50,82 @@ PathwayReaction::PathwayReaction(std::deque<Reaction>& reactions)
     }
 }
 
-int PathwayReaction::getReactionId(int moleculeId) const
+int PathwayReaction::reactionId(int moleculeId) const
 {
     return _reactions.at(moleculeId);
+}
+
+int PathwayReaction::reactionsCount() const
+{
+    return _reactions.size();
 }
 
 void PathwayReaction::clone(PathwayReaction& reaction)
 {
     BaseReaction::clone(reaction);
     _reactions.copy(reaction._reactions);
+}
+
+std::vector<std::pair<int, Vec2f>> PathwayReaction::makeTreePoints()
+{
+    auto reaction = this;
+    std::vector<std::string> inchiKeys(reaction->reactionsCount());
+    InchiWrapper inchiWrapper;
+    Array<char> inchi, inchiKey;
+    for (int i = reaction->begin(); i < reaction->end(); i = reaction->next(i))
+    {
+        auto& molecule = dynamic_cast<Molecule&>(reaction->getBaseMolecule(i));
+        inchiWrapper.saveMoleculeIntoInchi(molecule, inchi);
+        InchiWrapper::InChIKey(inchi.ptr(), inchiKey);
+        inchiKeys.at(i).assign(inchiKey.ptr(), inchiKey.size());
+    }
+
+    int finalProductId;
+    std::vector<std::vector<int>> reactantIdsByReactions(reaction->reactionsCount());
+    std::unordered_map<std::string, int> productIds;
+    for (int i = reaction->begin(); i < reaction->end(); i = reaction->next(i))
+    {
+        if (BaseReaction::REACTANT == reaction->getSideType(i))
+            reactantIdsByReactions.at(reaction->reactionId(i)).push_back(i);
+        else if (BaseReaction::PRODUCT == reaction->getSideType(i))
+        {
+            productIds.emplace(inchiKeys.at(i), i);
+            finalProductId = i;
+        }
+    }
+
+    std::unordered_map<int, Vec2f> points;
+    points.reserve(reaction->reactionsCount());
+    float multiplierY = 1.f;
+    std::queue<int> bfsQueue;
+    bfsQueue.push(finalProductId);
+    while (!bfsQueue.empty())
+    {
+        auto size = bfsQueue.size();
+        for (size_t i = 0; i < size; i++)
+        {
+            auto id = bfsQueue.front();
+            bfsQueue.pop();
+
+            auto productIter = productIds.find(inchiKeys.at(id));
+            if (productIter == productIds.cend())
+                continue;
+
+            auto zero = points[id];
+            id = productIter->second;
+            float offsetY = reactantIdsByReactions[reaction->reactionId(id)].size() > 1 ? -2.f * SPACE : 0;
+            offsetY *= multiplierY;
+            for (int reactantId : reactantIdsByReactions[reaction->reactionId(id)])
+            {
+                points[reactantId] = zero - Vec2f(3 * SPACE, offsetY);
+                offsetY += 4 * SPACE * multiplierY;
+                bfsQueue.push(reactantId);
+            }
+            multiplierY *= NARROWING_QUOTIENT;
+        }
+    }
+
+    return {points.cbegin(), points.cend()};
 }
 
 BaseReaction* PathwayReaction::neu()
