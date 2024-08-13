@@ -34,6 +34,7 @@
 #include "molecule/base_molecule.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
+#include "common/utils/emf_utils.h"
 
 typedef unsigned short int UINT16;
 typedef int INT32;
@@ -850,6 +851,7 @@ namespace indigo
         std::unordered_map<int, std::size_t> _id_to_bond_index;
         std::vector<int> _fragment_nodes;
         std::vector<Vec2f> _pluses;
+        std::vector<std::pair<Rect2f, Bitmap>> _images;
         std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
         std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _graphic_arrows;
         std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _primitives;

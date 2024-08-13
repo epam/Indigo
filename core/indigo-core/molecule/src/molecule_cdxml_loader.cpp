@@ -499,6 +499,12 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
     for (const auto& plus : _pluses)
         mol.meta().addMetaObject(new KETReactionPlus(plus));
 
+    for (const auto& image : _images)
+    {
+        auto png = convert_dib_to_png_string(image.second.dibits);
+        mol.meta().addMetaObject(new KETImage(image.first, KETImage::EKETPNG, png));
+    }
+
     // CDX contains draphic arrow wich id dublicate arrow/
     // Search arrows for arrow with coords same as in grapic arrow and if found - remove tis arrow gecause graphic arrow contains more specific type
     for (const auto& g_arrow : _graphic_arrows)
@@ -1447,9 +1453,6 @@ void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
     }
 }
 
-#include <fstream>
-#include <iostream>
-
 void MoleculeCdxmlLoader::_parseEmbeddedObject(BaseCDXElement& elem)
 {
     std::pair<Vec2f, Vec2f> embedded_bbox;
@@ -1467,13 +1470,12 @@ void MoleculeCdxmlLoader::_parseEmbeddedObject(BaseCDXElement& elem)
     };
 
     applyDispatcher(*elem.firstProperty().get(), embedded_dispatcher);
-    std::cout << win_meta_bin.size() << ":" << enh_meta_bin.size() << std::endl;
-    std::ofstream win_outfile("win.wmf", std::ios::binary);
-    std::ofstream enh_outfile("emf.emf", std::ios::binary);
-    win_outfile.write(win_meta_bin.data(), win_meta_bin.size());
-    enh_outfile.write(enh_meta_bin.data(), enh_meta_bin.size());
-    win_outfile.close();
-    enh_outfile.close();
+    auto bitmaps = ripBitmapsFromEMF(enh_meta_bin);
+
+    for (auto dib : bitmaps)
+        _images.emplace_back(Rect2f(embedded_bbox.first, embedded_bbox.second), dib);
+
+    std::cout << win_meta_bin.size() << ":" << enh_meta_bin.size() << ":" << bitmaps.size() << std::endl;
 }
 
 void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)

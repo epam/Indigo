@@ -133,10 +133,16 @@ namespace indigo
         return res;
     }
 
-    KETImage::KETImage(const Rect2f& bbox, KETImage::ImageFormat format, const std::string& base64) : MetaObject(CID), _bbox(bbox), _image_format(format)
+    KETImage::KETImage(const Rect2f& bbox, KETImage::ImageFormat format, const std::string& data, bool is_base64)
+        : MetaObject(CID), _bbox(bbox), _image_format(format)
     {
-        BufferScanner b64decode(base64.c_str(), true);
-        b64decode.readAll(_image_data);
+        if (is_base64)
+        {
+            BufferScanner b64decode(data.c_str(), true);
+            b64decode.readAll(_image_data);
+        }
+		else
+			_image_data = data;
     }
 
     std::string KETImage::getBase64() const
