@@ -120,7 +120,7 @@ std::vector<std::pair<int, Vec2f>> PathwayReaction::makeTreePoints()
 
         Rect2f box;
         reaction->getBaseMolecule(id).getBoundingBox(box);
-        Vec2f rightTop(std::max<float>(box.width(), ARROW_MIN_HEIGHT), -SPACE);
+        Vec2f rightTop(std::max(box.width(), ARROW_MIN_HEIGHT), -SPACE);
         for (int reactantId : reactantIdsByReactions[reaction->reactionId(productId)])
         {
             Rect2f box;
