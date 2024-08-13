@@ -152,11 +152,15 @@ std::vector<std::pair<int, Vec2f>> PathwayReaction::makeTreePoints()
                 continue;
 
             auto zero = points[id];
+            auto& reactantIds = reactantIdsByReactions[reaction->reactionId(productIter->second)];
             float offsetY = sumBoxes[id].height() / 2;
+            offsetY -= -sumBoxes[reactantIds.front()].height() / 4 + sumBoxes[reactantIds.back()].height() / 4;
             nextOffsetX = std::max(nextOffsetX, sumBoxes[id].width());
-            for (int reactantId : reactantIdsByReactions[reaction->reactionId(productIter->second)])
+            for (int reactantId : reactantIds)
             {
-                points[reactantId] = zero - Vec2f(offsetX + sumBoxes[id].width() / 2, -offsetY + sumBoxes[reactantId].height() / 2);
+                float x = offsetX + sumBoxes[id].width() / 2;
+                float y = -offsetY + sumBoxes[reactantId].height() / 2;
+                points[reactantId] = zero - Vec2f(x, y);
                 bfsQueue.push(reactantId);
                 offsetY -= sumBoxes[reactantId].height() + SPACE;
             }
