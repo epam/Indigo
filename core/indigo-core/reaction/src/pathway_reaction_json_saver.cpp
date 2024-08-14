@@ -60,6 +60,9 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& rxn)
         merged->mergeWithMolecule(molecule, 0, 0);
     }
 
+    for (auto& a : arrows)
+        merged->meta().addMetaObject(new KETReactionMultitailArrow(a.begin(), a.end()));
+
     rapidjson::StringBuffer buffer;
     JsonWriter writer(pretty_json);
     writer.Reset(buffer);
