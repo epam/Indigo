@@ -3153,9 +3153,15 @@ M  END
         self.assertEqual("CC>>C", result_data["struct"])
 
     def test_convert_sequences(self):
+        lib_file = "monomer_library.ket"
+        lib_path = os.path.join(joinPathPy("structures/", __file__), lib_file)
+        with open(lib_path, "r") as file:
+            monomer_library = file.read()
+
         headers, data = self.get_headers(
             {
                 "struct": "ACGTU",
+                "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-rna-sequence",
                 "output_format": "chemical/x-indigo-ket",
             }
@@ -3167,6 +3173,7 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": "ACGTU",
+                "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-rna-sequence",
                 "output_format": "chemical/x-sequence",
             }
@@ -3181,6 +3188,7 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": "ACGTU",
+                "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-dna-sequence",
                 "output_format": "chemical/x-indigo-ket",
             }
@@ -3192,6 +3200,7 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": "ACGTU",
+                "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-dna-sequence",
                 "output_format": "chemical/x-sequence",
             }
@@ -3205,6 +3214,7 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": "ACGTU",
+                "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-peptide-sequence",
                 "output_format": "chemical/x-indigo-ket",
             }
@@ -3216,6 +3226,7 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": "ACDEFGHIKLMNOPQRSRUVWY",
+                "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-peptide-sequence",
                 "output_format": "chemical/x-sequence",
             }
@@ -3260,9 +3271,15 @@ M  END
         ) as file:
             peptide_fasta = file.read()
 
+        lib_file = "monomer_library.ket"
+        lib_path = os.path.join(joinPathPy("structures/", __file__), lib_file)
+        with open(lib_path, "r") as file:
+            monomer_library = file.read()
+
         headers, data = self.get_headers(
             {
                 "struct": peptide_fasta,
+                "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-peptide-fasta",
                 "output_format": "chemical/x-indigo-ket",
             }
@@ -3275,6 +3292,7 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": peptide_fasta,
+                "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-peptide-fasta",
                 "output_format": "chemical/x-fasta",
             }
@@ -3318,6 +3336,7 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": rna_fasta,
+                "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-rna-fasta",
                 "output_format": "chemical/x-indigo-ket",
             }
@@ -3330,6 +3349,7 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": rna_fasta,
+                "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-rna-fasta",
                 "output_format": "chemical/x-fasta",
             }
@@ -3345,7 +3365,7 @@ M  END
         # ) as file:
         #    file.write(json.loads(result_rna_fasta.text)["struct"])
         # with open(
-        #    os.path.join(ref_path, "rna_fasta_ref") + ".ket", "w"
+        #     os.path.join(ref_path, "rna_fasta_ref") + ".ket", "w"
         # ) as file:
         #     file.write(json.loads(result_rna_ket.text)["struct"])
 
@@ -3373,6 +3393,7 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": dna_fasta,
+                "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-dna-fasta",
                 "output_format": "chemical/x-indigo-ket",
             }
@@ -3385,6 +3406,7 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": dna_fasta,
+                "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-dna-fasta",
                 "output_format": "chemical/x-fasta",
             }
