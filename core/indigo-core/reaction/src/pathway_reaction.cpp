@@ -66,7 +66,7 @@ void PathwayReaction::clone(PathwayReaction& reaction)
     _reactions.copy(reaction._reactions);
 }
 
-std::vector<std::pair<int, Vec2f>> PathwayReaction::makeTreePoints()
+std::pair<std::vector<std::pair<int, Vec2f>>, std::vector<std::vector<Vec2f>>> PathwayReaction::makeTreePoints()
 {
     auto reaction = this;
     std::vector<std::string> inchiKeys(reaction->reactionsCount());
@@ -183,7 +183,7 @@ std::vector<std::pair<int, Vec2f>> PathwayReaction::makeTreePoints()
         offsetX = nextOffsetX / 2 + ARROW_WIDTH + MARGIN;
     }
 
-    return {points.cbegin(), points.cend()};
+    return {std::piecewise_construct, std::forward_as_tuple(points.cbegin(), points.cend()), std::forward_as_tuple(arrows)};
 }
 
 BaseReaction* PathwayReaction::neu()

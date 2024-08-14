@@ -38,7 +38,9 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& rxn)
     auto reaction = std::make_unique<PathwayReaction>();
     reaction->clone(rxn);
 
-    auto points = reaction->makeTreePoints();
+    std::vector<std::pair<int, Vec2f>> points;
+    std::vector<std::vector<Vec2f>> arrows;
+    std::tie(points, arrows) = reaction->makeTreePoints();
     // Ensure the same order across different platforms.
     std::sort(points.begin(), points.end());
 

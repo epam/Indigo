@@ -47,7 +47,7 @@ namespace indigo
         int reactionId(int moleculeId) const;
         int reactionsCount() const;
         void clone(PathwayReaction&);
-        std::vector<std::pair<int, Vec2f>> makeTreePoints();
+        std::pair<std::vector<std::pair<int, Vec2f>>, std::vector<std::vector<Vec2f>>> makeTreePoints();
 
         BaseReaction* neu() override;
         bool aromatize(const AromaticityOptions& options) override;
