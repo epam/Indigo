@@ -33,7 +33,7 @@ namespace indigo
 
     class DLLEXPORT PathwayReaction : public BaseReaction
     {
-        static constexpr float SPACE = 2.f;
+        static constexpr float MARGIN = 1.f;
         static constexpr float ARROW_WIDTH = 3.f;
         static constexpr float ARROW_MIN_HEIGHT = 5.f;
 
