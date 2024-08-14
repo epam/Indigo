@@ -18,7 +18,15 @@ indigo = Indigo()
 input_path = joinPathPy("reactions/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
-files = ["pathway1", "pathway2", "pathway3", "pathway4", "pathway5", "pathway6", "pathway7"]
+files = [
+    "pathway1",
+    "pathway2",
+    "pathway3",
+    "pathway4",
+    "pathway5",
+    "pathway6",
+    "pathway7",
+]
 
 for filename in files:
     rxn = indigo.loadReactionFromFile(
