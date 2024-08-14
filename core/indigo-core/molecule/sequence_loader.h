@@ -66,8 +66,13 @@ namespace indigo
         void loadFasta(BaseMolecule& mol, const std::string& seq_type_str);
         void loadFasta(BaseMolecule& mol, SeqType seq_type);
         void loadIdt(BaseMolecule& mol);
-        void loadIdt(KetDocument& document);
         void loadHELM(BaseMolecule& mol);
+
+        void loadSequence(KetDocument& document, const std::string& seq_type_str);
+        void loadSequence(KetDocument& document, SeqType seq_type);
+        void loadFasta(KetDocument& document, const std::string& seq_type_str);
+        void loadFasta(KetDocument& document, SeqType seq_type);
+        void loadIdt(KetDocument& document);
 
     private:
         Vec3f getBackboneMonomerPosition();
@@ -82,7 +87,12 @@ namespace indigo
         void addAminoAcid(BaseMolecule& mol, char ch);
         void addNucleotide(BaseMolecule& mol, std::string base, const std::string& sugar_alias, const std::string& phosphate_alias,
                            bool phosphate_at_left = true);
-        void addNucleotide(KetDocument& document, std::string base_alias, const std::string& sugar_alias, const std::string& phosphate_alias,
+
+        void addMonomer(KetDocument& mol, const std::string& monomer, SeqType seq_type, bool mixed = false);
+        void addAminoAcid(KetDocument& document, const std::string& monomer, bool mixed = false);
+        void addNucleotideTemplates(KetDocument& document, const std::string& base_alias, const std::string& sugar_alias, const std::string& phosphate_alias,
+                                    bool variant = false);
+        void addNucleotide(KetDocument& document, const std::string& base_alias, const std::string& sugar_alias, const std::string& phosphate_alias,
                            bool phosphate_at_left = true, bool variant = false);
 
         int addTemplateAtom(BaseMolecule& mol, const char* alias, const char* monomer_class, int seq_id);

@@ -27,8 +27,9 @@ files = [
     {"file": "1844-gen_pept", "seq_type": "PEPTIDE"},
 ]
 
-# empty library - internal used for now
-lib = indigo.loadMonomerLibrary('{"root":{}}')
+lib = indigo.loadMonomerLibraryFromFile(
+    os.path.join(ref_path, "monomer_library.ket")
+)
 
 for infile in files:
     filename = infile["file"] + ".seq"

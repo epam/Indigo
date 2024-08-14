@@ -113,6 +113,19 @@ namespace indigo
     HELMType getHELMTypeFromString(const std::string& helm_type);
     const std::string& getStringFromHELMType(HELMType helm_type);
 
+    static const std::unordered_set<std::string> STANDARD_PEPTIDES = {"A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M",
+                                                                      "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "Y"};
+    static const std::unordered_set<std::string> STANDARD_NUCLEOTIDES = {"A", "C", "G", "T", "U"};
+
+    static const std::unordered_set<std::string> IDT_STANDARD_BASES = {"A", "T", "C", "G", "U", "I", "In"};
     static const std::map<std::string, int> IDT_BASE_TO_RATIO_IDX = {{"A", 0}, {"C", 1}, {"G", 2}, {"T", 3}, {"U", 3}};
+    static const std::map<std::string, std::string> IDT_STANDARD_SUGARS{{"R", "r"}, {"LR", "+"}, {"mR", "m"}, {"dR", ""}};
+
+    static const std::map<std::string, std::vector<std::string>> STANDARD_MIXED_PEPTIDES = {
+        {"B", {"D", "N"}}, {"J", {"L", "I"}}, {"Z", {"E", "Q"}}, {"X", {"A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M",
+                                                                        "N", "O", "P", "G", "R", "S", "T", "U", "V", "W", "Y"}}};
+    static const std::map<std::string, std::vector<std::string>> STANDARD_MIXED_BASES = {
+        {"R", {"A", "G"}},      {"Y", {"C", "T"}},      {"M", {"A", "C"}},      {"K", {"G", "T"}},      {"S", {"G", "C"}},          {"W", {"A", "T"}},
+        {"H", {"A", "C", "T"}}, {"B", {"C", "G", "T"}}, {"V", {"A", "C", "G"}}, {"D", {"A", "G", "T"}}, {"N", {"A", "C", "G", "T"}}};
 }
 #endif

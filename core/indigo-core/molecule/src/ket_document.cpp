@@ -246,7 +246,7 @@ static bool isSimplePolymerConnection(MonomerClass cl1, const std::string& ap1, 
     return false;
 }
 
-static bool isSequenceConnection(MonomerClass cl1, const std::string& ap1, MonomerClass cl2, const std::string& ap2)
+static bool isIdtConnection(MonomerClass cl1, const std::string& ap1, MonomerClass cl2, const std::string& ap2)
 {
     bool is_simple_pol_connection = isSimplePolymerConnection(cl1, ap1, cl2, ap2);
     if (is_simple_pol_connection)
@@ -366,7 +366,7 @@ bool is_backbone_class(MonomerClass monomer_class)
     return false;
 }
 
-void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequences, bool for_sequence)
+void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequences, bool for_idt)
 {
     std::map<std::string, MonomerClass> id_to_class;
     std::set<std::string> monomers;
@@ -413,8 +413,8 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
         ap_to_connection.emplace(std::make_pair(mon_id_2, ap_id_2), connection);
 
         bool sequence_connection = false;
-        if (for_sequence)
-            sequence_connection = isSequenceConnection(mon1_class, ap_id_1, mon2_class, ap_id_2);
+        if (for_idt)
+            sequence_connection = isIdtConnection(mon1_class, ap_id_1, mon2_class, ap_id_2);
         else
             sequence_connection = isSimplePolymerConnection(mon1_class, ap_id_1, mon2_class, ap_id_2);
         if (!sequence_connection)

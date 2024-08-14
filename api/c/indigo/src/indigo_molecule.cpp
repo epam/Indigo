@@ -568,11 +568,10 @@ CEXPORT int indigoLoadSequence(int source, const char* seq_type, int library)
         IndigoObject& lib_obj = self.getObject(library);
         SequenceLoader loader(IndigoScanner::get(obj), IndigoMonomerLibrary::get(lib_obj));
 
-        std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
+        std::unique_ptr<IndigoKetDocument> docptr = std::make_unique<IndigoKetDocument>();
 
-        Molecule& mol = molptr->mol;
-        loader.loadSequence(mol, seq_type);
-        return self.addObject(molptr.release());
+        loader.loadSequence(docptr->get(), seq_type);
+        return self.addObject(docptr.release());
     }
     INDIGO_END(-1);
 }
@@ -619,11 +618,10 @@ CEXPORT int indigoLoadFasta(int source, const char* seq_type, int library)
         IndigoObject& lib_obj = self.getObject(library);
         SequenceLoader loader(IndigoScanner::get(obj), IndigoMonomerLibrary::get(lib_obj));
 
-        std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
+        std::unique_ptr<IndigoKetDocument> docptr = std::make_unique<IndigoKetDocument>();
 
-        Molecule& mol = molptr->mol;
-        loader.loadFasta(mol, seq_type);
-        return self.addObject(molptr.release());
+        loader.loadFasta(docptr->get(), seq_type);
+        return self.addObject(docptr.release());
     }
     INDIGO_END(-1);
 }
@@ -671,11 +669,8 @@ CEXPORT int indigoLoadIdt(int source, int library)
         MonomerTemplateLibrary& lib = IndigoMonomerLibrary::get(lib_obj);
         SequenceLoader loader(IndigoScanner::get(obj), lib);
 
-        // std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
         std::unique_ptr<IndigoKetDocument> docptr = std::make_unique<IndigoKetDocument>();
 
-        // Molecule& mol = molptr->mol;
-        // loader.loadIdt(mol);
         loader.loadIdt(docptr->get());
         return self.addObject(docptr.release());
     }
@@ -3067,7 +3062,6 @@ CEXPORT int indigoAddDataSGroup(int molecule, int natoms, int* atoms, int nbonds
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
         int idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
         DataSGroup& dsg = (DataSGroup&)mol.sgroups.getSGroup(idx);
-        int i;
         if (atoms != nullptr)
             dsg.atoms.concat(atoms, natoms);
 
@@ -4780,7 +4774,7 @@ CEXPORT int indigoNameToStructure(const char* name, const char* params)
             Duplicate params string as we call destructive function strtok() on callee side
             We can get rid of it if we have sustainable options in the future
             */
-            char* options = ::strdup(params);
+            char* options = ::_strdup(params);
             if (options)
             {
                 parser.setOptions(options);

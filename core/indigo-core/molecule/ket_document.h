@@ -133,7 +133,7 @@ namespace indigo
 
         void processVariantMonomerTemplates();
 
-        void parseSimplePolymers(std::vector<std::deque<std::string>>& sequences, bool for_sequence = false);
+        void parseSimplePolymers(std::vector<std::deque<std::string>>& sequences, bool for_idt = false);
 
         MonomerClass getMonomerClass(const KetBaseMonomer& monomer) const;
 
@@ -162,6 +162,16 @@ namespace indigo
             return _json_molecules;
         };
 
+        void setFastaProps(std::vector<std::string> fasta_properties)
+        {
+            _fasta_properties = fasta_properties;
+        };
+
+        const std::vector<std::string>& fastaProps()
+        {
+            return _fasta_properties;
+        };
+
     protected:
         void collect_sequence_side(const std::string& monomer_id, bool left_side, std::set<std::string>& monomers, std::set<std::string>& used_monomers,
                                    std::deque<std::string>& sequence, std::map<std::pair<std::string, std::string>, const KetConnection&>& ap_to_connection);
@@ -183,6 +193,7 @@ namespace indigo
         rapidjson::Value _r_groups;
         rapidjson::Value _json_molecules;
         rapidjson::Document _json_document;
+        std::vector<std::string> _fasta_properties;
     };
 }
 

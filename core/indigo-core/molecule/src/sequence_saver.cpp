@@ -738,11 +738,88 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
 
 void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
 {
-    if (sf == SeqFormat::FASTA || sf == SeqFormat::Sequence || sf == SeqFormat::HELM)
+    if (sf == SeqFormat::HELM)
         throw Error("Not supported yet");
     std::vector<std::deque<std::string>> sequences;
-    doc.parseSimplePolymers(sequences, true);
+    int seq_idx = 0;
     std::string seq_text;
+    if (sf == SeqFormat::IDT)
+    {
+        doc.parseSimplePolymers(sequences, true);
+        saveIdt(doc, sequences, seq_text);
+    }
+    else if (sf == SeqFormat::FASTA || sf == SeqFormat::Sequence)
+    {
+        auto& monomers = doc.monomers();
+        doc.parseSimplePolymers(sequences, false);
+        auto prop_it = doc.fastaProps().begin();
+        for (auto& sequence : sequences)
+        {
+            std::string seq_string;
+            for (auto monomer_id : sequence)
+            {
+                MonomerClass monomer_class = doc.getMonomerClass(monomer_id);
+                const auto& monomer = monomers.at(monomer_id);
+                auto monomer_alias = monomer->alias();
+                if (monomer_class == MonomerClass::CHEM)
+                    throw Error("Can't save chem '%s' to sequence format", monomer_alias.c_str());
+                if (monomer_class == MonomerClass::Sugar || monomer_class == MonomerClass::Phosphate)
+                    continue;
+
+                if (monomer_alias.size() > 1 ||
+                    (monomer_class == MonomerClass::AminoAcid && STANDARD_NUCLEOTIDES.count(monomer_alias) == 0 &&
+                     STANDARD_MIXED_PEPTIDES.count(monomer_alias) == 0) ||
+                    (monomer_class == MonomerClass::Base && STANDARD_NUCLEOTIDES.count(monomer_alias) == 0 && STANDARD_MIXED_BASES.count(monomer_alias) == 0))
+                {
+                    const auto& monomer_template = doc.templates().at(monomer->templateId());
+                    if (monomer_template.hasStringProp("naturalAnalogShort"))
+                        monomer_alias = monomer_template.getStringProp("naturalAnalogShort");
+                    else
+                        throw Error("Can't save '%s' to sequence format", monomer_alias.c_str());
+                }
+                seq_string += monomer_alias;
+            }
+
+            if (seq_string.size())
+            {
+                // sequences separators are different for FASTA, IDT and Sequence
+                if (sf == SeqFormat::FASTA)
+                {
+                    if (seq_idx)
+                        seq_text += "\n";
+                    std::string fasta_header;
+                    if (prop_it != doc.fastaProps().end())
+                    {
+                        fasta_header = *prop_it;
+                        prop_it++;
+                    }
+                    else
+                    {
+                        fasta_header = ">Sequence";
+                        fasta_header += std::to_string(seq_idx + 1);
+                    }
+                    fasta_header += "\n";
+                    seq_text += fasta_header;
+                }
+                else if (seq_text.size())
+                    seq_text += sf == SeqFormat::Sequence ? " " : "\n";
+
+                seq_text += seq_string.substr(0, SEQ_LINE_LENGTH);
+                for (size_t format_ind = SEQ_LINE_LENGTH; format_ind < seq_string.size(); format_ind += SEQ_LINE_LENGTH)
+                {
+                    seq_text += "\n";
+                    seq_text += seq_string.substr(format_ind, SEQ_LINE_LENGTH);
+                }
+                seq_idx++;
+            }
+        }
+    }
+    if (seq_text.size())
+        _output.writeString(seq_text.c_str());
+}
+
+void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string>> sequences, std::string& seq_text)
+{
     auto& monomer_templates = doc.templates();
     auto& variant_monomer_templates = doc.variantTemplates();
     auto& monomers = doc.monomers();
@@ -846,7 +923,7 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                 {
                     base = monomers.at(base_id)->alias();
                     sequence.pop_front();
-                    if (IDT_STANDARD_BASES.count(base) == 0 && IDT_STANDARD_MIXED_BASES.count(base) == 0)
+                    if (IDT_STANDARD_BASES.count(base) == 0 && STANDARD_MIXED_BASES.count(base) == 0)
                         standard_base = false;
                     if (base.back() == ')')
                     {
@@ -970,6 +1047,4 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
             seq_text += "\n";
         seq_text += seq_string;
     }
-    if (seq_text.size())
-        _output.writeString(seq_text.c_str());
 }

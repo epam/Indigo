@@ -14,16 +14,15 @@
                 "$ref": "monomer3"
             }
         ],
-        "connections": [],
         "templates": [
             {
-                "$ref": "monomerTemplate-Ala"
+                "$ref": "monomerTemplate-A___Alanine"
             },
             {
-                "$ref": "monomerTemplate-Asp"
+                "$ref": "monomerTemplate-D___Aspartic acid"
             },
             {
-                "$ref": "monomerTemplate-Cys"
+                "$ref": "monomerTemplate-C___Cysteine"
             }
         ]
     },
@@ -32,58 +31,57 @@
         "id": "0",
         "seqid": 1,
         "position": {
-            "x": 0.0,
-            "y": -0.0
+            "x": 0.000000,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer1": {
         "type": "monomer",
         "id": "1",
         "seqid": 1,
         "position": {
-            "x": 0.0,
-            "y": -1.600000023841858
+            "x": 0.000000,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer2": {
         "type": "monomer",
         "id": "2",
         "seqid": 1,
         "position": {
-            "x": 0.0,
-            "y": -3.200000047683716
+            "x": 0.000000,
+            "y": -3.200000
         },
-        "alias": "Asp",
-        "templateId": "Asp"
+        "alias": "D",
+        "templateId": "D___Aspartic acid"
     },
     "monomer3": {
         "type": "monomer",
         "id": "3",
         "seqid": 1,
         "position": {
-            "x": 0.0,
-            "y": -4.800000190734863
+            "x": 0.000000,
+            "y": -4.800000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
-    "monomerTemplate-Ala": {
+    "monomerTemplate-A___Alanine": {
         "type": "monomerTemplate",
-        "id": "Ala",
+        "id": "A___Alanine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
-        "alias": "A",
-        "name": "Ala",
         "fullName": "Alanine",
+        "alias": "A",
         "naturalAnalogShort": "A",
-        "naturalAnalog": "Ala",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
+                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         6
@@ -92,6 +90,7 @@
             },
             {
                 "attachmentAtom": 3,
+                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         5
@@ -103,58 +102,58 @@
             {
                 "label": "N",
                 "location": [
-                    -0.9805331230163574,
-                    -0.3062945008277893,
-                    0.0
+                    -1.254900,
+                    -0.392000,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.21253088116645814,
-                    0.2057330161333084,
-                    0.0
+                    -0.272000,
+                    0.263300,
+                    0.000000
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "C",
                 "location": [
-                    -0.24245710670948029,
-                    1.3590255975723267,
-                    0.0
+                    -0.310300,
+                    1.739300,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.8222288489341736,
-                    -0.3062945008277893,
-                    0.0
+                    1.052300,
+                    -0.392000,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    0.846138596534729,
-                    -1.2284597158432007,
-                    0.0
+                    1.082900,
+                    -1.572200,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.5903092622756959,
-                    0.2057330161333084,
-                    0.0
+                    2.035300,
+                    0.263300,
+                    0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -1.823233723640442,
-                    0.07071340084075928,
-                    0.0
+                    -2.333400,
+                    0.090500,
+                    0.000000
                 ]
             }
         ],
@@ -204,19 +203,18 @@
             }
         ]
     },
-    "monomerTemplate-Asp": {
+    "monomerTemplate-D___Aspartic acid": {
         "type": "monomerTemplate",
-        "id": "Asp",
+        "id": "D___Aspartic acid",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
-        "alias": "D",
-        "name": "Asp",
         "fullName": "Aspartic acid",
+        "alias": "D",
         "naturalAnalogShort": "D",
-        "naturalAnalog": "Asp",
         "attachmentPoints": [
             {
                 "attachmentAtom": 3,
+                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         4
@@ -225,6 +223,7 @@
             },
             {
                 "attachmentAtom": 0,
+                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         9
@@ -233,6 +232,7 @@
             },
             {
                 "attachmentAtom": 8,
+                "type": "side",
                 "leavingGroup": {
                     "atoms": [
                         10
@@ -244,90 +244,90 @@
             {
                 "label": "C",
                 "location": [
-                    1.63100004196167,
-                    -1.557800054550171,
-                    0.0
+                    1.631000,
+                    -1.557800,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.632699966430664,
-                    -2.7392001152038576,
-                    0.0
+                    1.632700,
+                    -2.739200,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.3506999909877777,
-                    -0.8201000094413757,
-                    0.0
+                    0.350700,
+                    -0.820100,
+                    0.000000
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "N",
                 "location": [
-                    -0.9294999837875366,
-                    -1.557800054550171,
-                    0.0
+                    -0.929500,
+                    -1.557800,
+                    0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -1.9524999856948853,
-                    -0.9668999910354614,
-                    0.0
+                    -1.952500,
+                    -0.966900,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.34850001335144045,
-                    0.6575000286102295,
-                    0.0
+                    0.348500,
+                    0.657500,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.9316999912261963,
-                    1.3952000141143799,
-                    0.0
+                    -0.931700,
+                    1.395200,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    -1.954200029373169,
-                    0.8032000064849854,
-                    0.0
+                    -1.954200,
+                    0.803200,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    -0.9334999918937683,
-                    2.5766000747680666,
-                    0.0
+                    -0.933500,
+                    2.576600,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    2.65339994430542,
-                    -0.9657999873161316,
-                    0.0
+                    2.653400,
+                    -0.965800,
+                    0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    0.08510000258684159,
-                    3.175100088119507,
-                    0.0
+                    0.085100,
+                    3.175100,
+                    0.000000
                 ]
             }
         ],
@@ -405,19 +405,18 @@
             }
         ]
     },
-    "monomerTemplate-Cys": {
+    "monomerTemplate-C___Cysteine": {
         "type": "monomerTemplate",
-        "id": "Cys",
+        "id": "C___Cysteine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
-        "alias": "C",
-        "name": "Cys",
         "fullName": "Cysteine",
+        "alias": "C",
         "naturalAnalogShort": "C",
-        "naturalAnalog": "Cys",
         "attachmentPoints": [
             {
                 "attachmentAtom": 4,
+                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         7
@@ -426,6 +425,7 @@
             },
             {
                 "attachmentAtom": 0,
+                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         6
@@ -434,6 +434,7 @@
             },
             {
                 "attachmentAtom": 3,
+                "type": "side",
                 "leavingGroup": {
                     "atoms": [
                         8
@@ -445,74 +446,74 @@
             {
                 "label": "C",
                 "location": [
-                    1.4457000494003297,
-                    -1.1332999467849732,
-                    0.0
+                    1.445700,
+                    -1.133300,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.1453000009059906,
-                    -0.3840000033378601,
-                    0.0
+                    0.145300,
+                    -0.384000,
+                    0.000000
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "C",
                 "location": [
-                    0.14300000667572022,
-                    1.1167999505996705,
-                    0.0
+                    0.143000,
+                    1.116800,
+                    0.000000
                 ]
             },
             {
                 "label": "S",
                 "location": [
-                    -1.1572999954223633,
-                    1.8660999536514283,
-                    0.0
+                    -1.157300,
+                    1.866100,
+                    0.000000
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    -1.1550999879837037,
-                    -1.1332999467849732,
-                    0.0
+                    -1.155100,
+                    -1.133300,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.4474999904632569,
-                    -2.3333001136779787,
-                    0.0
+                    1.447500,
+                    -2.333300,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    2.4842000007629396,
-                    -0.5320000052452087,
-                    0.0
+                    2.484200,
+                    -0.532000,
+                    0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -2.194200038909912,
-                    -0.5331000089645386,
-                    0.0
+                    -2.194200,
+                    -0.533100,
+                    0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -1.15910005569458,
-                    3.0660998821258547,
-                    0.0
+                    -1.159100,
+                    3.066100,
+                    0.000000
                 ]
             }
         ],

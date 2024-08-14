@@ -7,3 +7,6 @@ break_peptide.ket:SUCCEED
 break_rna.fasta:SEQUENCE loader: Invalid symbols in the sequence: *
 comment.ket:SUCCEED
 test_1881.ket:SUCCEED
+aminoacids_variants.ket:SUCCEED
+rna_variants.ket:SUCCEED
+dna_variants.ket:SUCCEED
