@@ -1787,6 +1787,80 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.EndObject(); // end node
         }
         break;
+        case KETReactionMultitailArrow::CID: {
+            KETReactionMultitailArrow& ar = (KETReactionMultitailArrow&)(*pobj);
+            writer.StartObject();
+            writer.Key("type");
+            writer.String("multi-tailed-arrow");
+            writer.Key("data");
+            writer.StartObject();
+
+            writer.Key("head");
+            writer.StartObject();
+            writer.Key("position");
+            writer.StartObject();
+            writer.Key("x");
+            writer.Double(ar.getHead().x);
+            writer.Key("y");
+            writer.Double(ar.getHead().y);
+            writer.Key("z");
+            writer.Double(0);
+            writer.EndObject();
+            writer.EndObject();
+
+            writer.Key("spine");
+            writer.StartObject();
+            writer.Key("pos");
+            writer.StartArray();
+
+            writer.StartObject();
+            writer.Key("x");
+            writer.Double(ar.getSpineBegin().x);
+            writer.Key("y");
+            writer.Double(ar.getSpineBegin().y);
+            writer.Key("z");
+            writer.Double(0);
+            writer.EndObject();
+
+            writer.StartObject();
+            writer.Key("x");
+            writer.Double(ar.getSpineEnd().x);
+            writer.Key("y");
+            writer.Double(ar.getSpineEnd().y);
+            writer.Key("z");
+            writer.Double(0);
+            writer.EndObject();
+
+            writer.EndArray();
+            writer.EndObject();
+
+            writer.Key("tails");
+            writer.StartObject();
+            writer.Key("pos");
+            writer.StartArray();
+
+            for (auto& t : ar.getTails())
+            {
+                writer.StartObject();
+                writer.Key("x");
+                writer.Double(t.x);
+                writer.Key("y");
+                writer.Double(t.y);
+                writer.Key("z");
+                writer.Double(0);
+                writer.EndObject();
+            }
+
+            writer.EndArray();
+            writer.EndObject();
+
+            writer.Key("zOrder");
+            writer.Int(0);
+
+            writer.EndObject();
+            writer.EndObject();
+        }
+        break;
         case KETReactionPlus::CID: {
             KETReactionPlus& rp = (KETReactionPlus&)(*pobj);
             writer.StartObject();
