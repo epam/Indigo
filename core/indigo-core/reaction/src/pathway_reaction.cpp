@@ -137,7 +137,7 @@ std::vector<std::pair<int, Vec2f>> PathwayReaction::makeTreePoints()
     bfsQueue.push(finalProductId);
     Rect2f box;
     reaction->getBaseMolecule(finalProductId).getBoundingBox(box);
-    float offsetX = box.width() / 2 + ARROW_WIDTH + MARGIN;
+    float offsetX = box.width() / 2 + ARROW_HEAD_WIDTH + ARROW_TAIL_WIDTH + MARGIN;
     while (!bfsQueue.empty())
     {
         float nextOffsetX = 0;
@@ -165,7 +165,7 @@ std::vector<std::pair<int, Vec2f>> PathwayReaction::makeTreePoints()
                 offsetY -= sumBoxes[reactantId].height() + 2 * MARGIN;
             }
         }
-        offsetX = nextOffsetX / 2 + ARROW_WIDTH + MARGIN;
+        offsetX = nextOffsetX / 2 + ARROW_HEAD_WIDTH + ARROW_TAIL_WIDTH + MARGIN;
     }
 
     return {points.cbegin(), points.cend()};
