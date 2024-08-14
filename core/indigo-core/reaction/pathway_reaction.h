@@ -36,6 +36,7 @@ namespace indigo
         static constexpr float MARGIN = 1.f;
         static constexpr float ARROW_HEAD_WIDTH = 2.5f;
         static constexpr float ARROW_TAIL_WIDTH = 0.5f;
+        static constexpr float ARROW_WIDTH = ARROW_HEAD_WIDTH + ARROW_TAIL_WIDTH;
         static constexpr float ARROW_MIN_HEIGHT = 2.5f;
 
     public:
