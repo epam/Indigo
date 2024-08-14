@@ -92,7 +92,8 @@ namespace indigo
             EKETMolecule,
             EKETMoleculeQuery,
             EKETReaction,
-            EKETReactionQuery
+            EKETReactionQuery,
+            EKETDocument,
         };
         KOType objtype;
 
@@ -325,7 +326,8 @@ namespace indigo
         IndigoRendererSession& operator=(IndigoRendererSession&&) = delete;
     };
 
-    IndigoKetcherObject loadMoleculeOrReaction(const std::string& data, const std::map<std::string, std::string>& options, int library = -1)
+    IndigoKetcherObject loadMoleculeOrReaction(const std::string& data, const std::map<std::string, std::string>& options, int library = -1,
+                                               bool use_document = false)
     {
         static std::unordered_map<std::string, std::string> seq_formats = {
             {"chemical/x-peptide-sequence", "PEPTIDE"}, {"chemical/x-rna-sequence", "RNA"}, {"chemical/x-dna-sequence", "DNA"}};
@@ -392,6 +394,15 @@ namespace indigo
                 objectId = indigoInchiLoadMolecule(data.c_str());
                 if (objectId >= 0)
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            }
+            if (use_document)
+            {
+                print_js("try as document");
+                objectId = indigoLoadKetDocumentFromBuffer(data.c_str(), data.size());
+                if (objectId >= 0)
+                {
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                }
             }
             bool query = false;
             auto i = options.find("query");
@@ -487,7 +498,15 @@ namespace indigo
             options_copy["query"] = "true";
         }
         indigoSetOptions(options);
-        IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy, library);
+        std::string input_format = "ket";
+        if (const auto& it = options.find("input-format"); it != options.end())
+            input_format = it->second;
+
+        bool use_document = false;
+        if (input_format == "ket" && outputFormat.size() > 0 && (outputFormat == "idt" || outputFormat == "chemical/x-idt"))
+            use_document = true;
+        IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy, library, use_document);
+
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket", library);
     }
 

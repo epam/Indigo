@@ -83,7 +83,7 @@ namespace indigo
         void addNucleotide(BaseMolecule& mol, std::string base, const std::string& sugar_alias, const std::string& phosphate_alias,
                            bool phosphate_at_left = true);
         void addNucleotide(KetDocument& document, std::string base_alias, const std::string& sugar_alias, const std::string& phosphate_alias,
-                           bool phosphate_at_left = true);
+                           bool phosphate_at_left = true, bool variant = false);
 
         int addTemplateAtom(BaseMolecule& mol, const char* alias, const char* monomer_class, int seq_id);
         void addTemplateBond(BaseMolecule& mol, int left_idx, int right_idx, bool branch = false);

@@ -136,6 +136,10 @@ class IndigoLib:
         IndigoLib.lib.indigoLoadMonomerLibraryFromString.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadMonomerLibraryFromFile.restype = c_int
         IndigoLib.lib.indigoLoadMonomerLibraryFromFile.argtypes = [c_char_p]
+        IndigoLib.lib.indigoLoadKetDocumentFromString.restype = c_int
+        IndigoLib.lib.indigoLoadKetDocumentFromString.argtypes = [c_char_p]
+        IndigoLib.lib.indigoLoadKetDocumentFromFile.restype = c_int
+        IndigoLib.lib.indigoLoadKetDocumentFromFile.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadSequenceFromString.restype = c_int
         IndigoLib.lib.indigoLoadSequenceFromString.argtypes = [
             c_char_p,

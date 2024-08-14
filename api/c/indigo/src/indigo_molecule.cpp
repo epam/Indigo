@@ -28,6 +28,7 @@
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/elements.h"
 #include "molecule/hybridization.h"
+#include "molecule/ket_document_json_loader.h"
 #include "molecule/molecule_auto_loader.h"
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/molecule_fingerprint.h"
@@ -543,36 +544,18 @@ CEXPORT int indigoLoadMonomerLibrary(int source)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoLoadMonomerLibraryFromString(const char* string)
+CEXPORT int indigoLoadKetDocument(int source)
 {
     INDIGO_BEGIN
     {
-        int source = indigoReadString(string);
-        int result;
-
-        if (source <= 0)
-            return -1;
-
-        result = indigoLoadMonomerLibrary(source);
-        indigoFree(source);
-        return result;
-    }
-    INDIGO_END(-1);
-}
-
-CEXPORT int indigoLoadMonomerLibraryFromFile(const char* filename)
-{
-    INDIGO_BEGIN
-    {
-        int source = indigoReadFile(filename);
-        int result;
-
-        if (source < 0)
-            return -1;
-
-        result = indigoLoadMonomerLibrary(source);
-        indigoFree(source);
-        return result;
+        IndigoObject& obj = self.getObject(source);
+        auto& scanner = IndigoScanner::get(obj);
+        std::string json_str;
+        scanner.readAll(json_str);
+        std::unique_ptr<IndigoKetDocument> docptr = std::make_unique<IndigoKetDocument>();
+        KetDocumentJsonLoader loader{};
+        loader.parseJson(json_str, docptr->get());
+        return self.addObject(docptr.release());
     }
     INDIGO_END(-1);
 }

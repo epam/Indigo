@@ -370,6 +370,16 @@ public class Indigo {
         return new IndigoObject(this, checkResult(this, lib.indigoLoadMonomerLibraryFromFile(path)));
     }
 
+    public IndigoObject loadKetDocument(String str) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadKetDocumentFromString(str)));
+    }
+
+    public IndigoObject loadKetDocumentFromFile(String path) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadKetDocumentFromFile(path)));
+    }
+
     public IndigoObject loadSequence(String str, String seq_type, IndigoObject library) {
         setSessionID();
         return new IndigoObject(this, checkResult(this, lib.indigoLoadSequenceFromString(str, seq_type, library.self)));

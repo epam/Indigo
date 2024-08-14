@@ -113,5 +113,6 @@ namespace indigo
     HELMType getHELMTypeFromString(const std::string& helm_type);
     const std::string& getStringFromHELMType(HELMType helm_type);
 
+    static const std::map<std::string, int> IDT_BASE_TO_RATIO_IDX = {{"A", 0}, {"C", 1}, {"G", 2}, {"T", 3}, {"U", 3}};
 }
 #endif

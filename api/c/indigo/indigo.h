@@ -198,6 +198,12 @@ CEXPORT int indigoLoadSmartsFromBuffer(const char* buffer, int size);
 CEXPORT int indigoLoadMonomerLibrary(int source);
 CEXPORT int indigoLoadMonomerLibraryFromString(const char* string);
 CEXPORT int indigoLoadMonomerLibraryFromFile(const char* filename);
+CEXPORT int indigoLoadMonomerLibraryFromBuffer(const char* buffer, int size);
+
+CEXPORT int indigoLoadKetDocument(int source);
+CEXPORT int indigoLoadKetDocumentFromString(const char* string);
+CEXPORT int indigoLoadKetDocumentFromFile(const char* filename);
+CEXPORT int indigoLoadKetDocumentFromBuffer(const char* buffer, int size);
 
 CEXPORT int indigoLoadSequence(int source, const char* seq_type, int library);
 CEXPORT int indigoLoadSequenceFromString(const char* string, const char* seq_type, int library);

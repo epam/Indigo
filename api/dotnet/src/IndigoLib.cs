@@ -132,6 +132,9 @@ namespace com.epam.indigo
         public static extern int indigoLoadMonomerLibraryFromString(string str);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadKetDocumentFromString(string str);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadSequenceFromString(string str, string seq_type, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
@@ -145,6 +148,9 @@ namespace com.epam.indigo
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadMonomerLibraryFromFile(string filename);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadKetDocumentFromFile(string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadSequenceFromFile(string filename, string seq_type, int library);

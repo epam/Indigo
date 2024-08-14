@@ -84,6 +84,14 @@ WRAPPER_LOAD_FROM_STRING(indigoLoadReactionSmarts)
 WRAPPER_LOAD_FROM_FILE(indigoLoadReactionSmarts)
 WRAPPER_LOAD_FROM_BUFFER(indigoLoadReactionSmarts)
 
+WRAPPER_LOAD_FROM_STRING(indigoLoadMonomerLibrary)
+WRAPPER_LOAD_FROM_FILE(indigoLoadMonomerLibrary)
+WRAPPER_LOAD_FROM_BUFFER(indigoLoadMonomerLibrary)
+
+WRAPPER_LOAD_FROM_STRING(indigoLoadKetDocument)
+WRAPPER_LOAD_FROM_FILE(indigoLoadKetDocument)
+WRAPPER_LOAD_FROM_BUFFER(indigoLoadKetDocument)
+
 CEXPORT int indigoSaveMolfileToFile(int molecule, const char* filename)
 {
     int f = indigoWriteFile(filename);
