@@ -271,6 +271,65 @@ namespace indigo
         Vec2f _end;
     };
 
+    class KETReactionMultitailArrow : public MetaObject
+    {
+    public:
+        static const std::uint32_t CID = "KET reaction multitail arrow"_hash;
+
+        template <typename Iterator>
+        KETReactionMultitailArrow(Iterator&& begin, Iterator&& end) : MetaObject(CID)
+        {
+            auto d = std::distance(begin, end);
+            if (d < 5)
+                throw Exception("KETReactionMultitailArrow: invalid arguments");
+
+            _head = *begin++;
+            _tails.reserve(d - 1 - 2);
+            while (begin != end)
+                _tails.push(*begin++);
+            _spine_begin = _tails.pop();
+            _spine_end = _tails.pop();
+        }
+
+        KETReactionMultitailArrow(Vec2f head, const Array<Vec2f>& tails, Vec2f spine_begin, Vec2f spine_end)
+            : MetaObject(CID), _head(head), _spine_begin(spine_begin), _spine_end(spine_end)
+        {
+            if (tails.size() < 2)
+                throw Exception("KETReactionMultitailArrow: invalid arguments");
+            _tails.copy(tails);
+        }
+
+        MetaObject* clone() const override
+        {
+            return new KETReactionMultitailArrow(_head, _tails, _spine_begin, _spine_end);
+        }
+
+        auto getHead() const
+        {
+            return _head;
+        }
+
+        auto& getTails() const
+        {
+            return _tails;
+        }
+
+        auto getSpineBegin() const
+        {
+            return _spine_begin;
+        }
+
+        auto getSpineEnd() const
+        {
+            return _spine_end;
+        }
+
+    private:
+        Vec2f _head;
+        Array<Vec2f> _tails;
+        Vec2f _spine_begin, _spine_end;
+    };
+
     class KETReactionPlus : public MetaObject
     {
     public:
