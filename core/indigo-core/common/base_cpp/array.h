@@ -380,6 +380,16 @@ namespace indigo
             return _array + _length;
         }
 
+        T* begin() const
+        {
+            return _array;
+        }
+
+        T* end() const
+        {
+            return _array + _length;
+        }
+
         // CMP_FUNCTOR has two arguments and returns sign of comparation
         template <typename CmpFunctor>
         void insertionSort(int start, int end, CmpFunctor cmp)
