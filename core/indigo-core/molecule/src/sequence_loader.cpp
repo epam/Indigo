@@ -374,14 +374,14 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
         std::optional<std::reference_wrapper<const std::vector<std::string>>> mixture;
         if (seq_type == SeqType::PEPTIDESeq)
         {
-            auto& it = STANDARD_MIXED_PEPTIDES.find(monomer);
+            const auto& it = STANDARD_MIXED_PEPTIDES.find(monomer);
             if (it == STANDARD_MIXED_PEPTIDES.end())
                 throw Error("Unknown mixed peptide '%s'", monomer.c_str());
             mixture.emplace(std::cref(it->second));
         }
         else
         {
-            auto& it = STANDARD_MIXED_BASES.find(monomer);
+            const auto& it = STANDARD_MIXED_BASES.find(monomer);
             if (it == STANDARD_MIXED_BASES.end())
                 throw Error("Unknown mixed base '%s'", monomer.c_str());
             mixture.emplace(std::cref(it->second));
