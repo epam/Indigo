@@ -1,0 +1,14 @@
+input file: ket_retro_arrow.ket, reaction type: R1 => R2
+ket_retro_arrow.cdxml:SUCCEED
+input file: ket_retro_arrow_sum_of_reactants.ket, reaction type: R1 + R2 => R3
+ket_retro_arrow_sum_of_reactants.cdxml:SUCCEED
+input file: ket_retro_arrow_to_product.ket, reaction type: => R1
+ket_retro_arrow_to_product.cdxml:SUCCEED
+input file: ket_retro_arrow_from_reactant.ket, reaction type: R1 =>
+ket_retro_arrow_from_reactant.cdxml:SUCCEED
+input file: ket_retro_arrow_and_simple_arrow.ket, reaction type: R1 => R2 -> R3
+ket_retro_arrow_and_simple_arrow.cdxml:SUCCEED
+input file: ket_two_retro_arrows.ket, reaction type: R1 => R2 => R3
+ket_two_retro_arrows.cdxml:SUCCEED
+input file: ket_simple_arrow_retro_arrow_sum_of_products.ket, reaction type: R1 -> R2 => R3 + R4
+ket_simple_arrow_retro_arrow_sum_of_products.cdxml:SUCCEED

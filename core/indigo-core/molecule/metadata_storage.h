@@ -76,6 +76,7 @@ namespace indigo
         Array<int> _arrow_indexes;
         Array<int> _simple_object_indexes;
         Array<int> _text_object_indexes;
+        Array<int> _image_indexes;
     };
 }
 #endif

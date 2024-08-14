@@ -23,7 +23,6 @@
 
 #include "base_cpp/scanner.h"
 #include "molecule/elements.h"
-#include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cdxml_loader.h"
 #include "molecule/molecule_scaffold_detection.h"
@@ -500,10 +499,7 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         mol.meta().addMetaObject(new KETReactionPlus(plus));
 
     for (const auto& image : _images)
-    {
-        auto png = convert_dib_to_png_string(image.second.dibits);
-        mol.meta().addMetaObject(new KETImage(image.first, KETImage::EKETPNG, png));
-    }
+        mol.meta().addMetaObject(new KETImage(image.bbox, image.image_format, image.data, false));
 
     // CDX contains draphic arrow wich id dublicate arrow/
     // Search arrows for arrow with coords same as in grapic arrow and if found - remove tis arrow gecause graphic arrow contains more specific type
@@ -514,7 +510,7 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         Vec2f p2(g_arr_info.second.x, g_arr_info.second.y);
         for (auto it = _arrows.begin(); it != _arrows.end(); it++)
         {
-            const auto& arr_info = (*it).first;
+            const auto& arr_info = (*it).second.first;
             Vec2f ap1(arr_info.first.x, arr_info.first.y);
             Vec2f ap2(arr_info.second.x, arr_info.second.y);
             if (fabsf(p1.x - ap1.x) < EPSILON && fabsf(p1.y - ap1.y) < EPSILON && fabsf(p2.x - ap2.x) < EPSILON && fabsf(p2.y - ap2.y) < EPSILON)
@@ -528,10 +524,10 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
 
     for (const auto& arrow : _arrows)
     {
-        const auto& arr_info = arrow.first;
+        const auto& arr_info = arrow.second.first;
         Vec2f v1(arr_info.first.x, arr_info.first.y);
         Vec2f v2(arr_info.second.x, arr_info.second.y);
-        mol.meta().addMetaObject(new KETReactionArrow(arrow.second, v1, v2));
+        mol.meta().addMetaObject(new KETReactionArrow(arrow.second.second, v1, v2));
     }
 
     for (const auto& prim : _primitives)
@@ -723,8 +719,11 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(BaseCDXElement& first_elem, bool n
 
     auto embedded_object_lambda = [this](BaseCDXElement& elem) { this->_parseEmbeddedObject(elem); };
 
-    std::unordered_map<std::string, std::function<void(BaseCDXElement & elem)>> cdxml_dispatcher = {
-        {"n", node_lambda},          {"b", bond_lambda},      {"fragment", fragment_lambda}, {"group", group_lambda}, {"bracketedgroup", bracketed_lambda},
+    std::unordered_map<std::string, std::function<void(BaseCDXElement & elem)>> cdxml_dispatcher = {{"n", node_lambda},
+                                                                                                    {"b", bond_lambda},
+                                                                                                    {"fragment", fragment_lambda},
+                                                                                                    {"group", group_lambda},
+                                                                                                    {"bracketedgroup", bracketed_lambda},
                                                                                                     {"graphic", graphic_lambda},
                                                                                                     {"arrow", arrow_lambda},
                                                                                                     {"altgroup", altgroup_lambda},
@@ -1452,30 +1451,44 @@ void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
         }
     }
 }
-
+#include <fstream>
 void MoleculeCdxmlLoader::_parseEmbeddedObject(BaseCDXElement& elem)
 {
     std::pair<Vec2f, Vec2f> embedded_bbox;
-    std::string win_meta_bin;
-    std::string enh_meta_bin;
+    std::string image_png;
 
     auto embdedded_box_lambda = [&embedded_bbox, this](const std::string& data) { this->parseSeg(data, embedded_bbox.first, embedded_bbox.second); };
-    auto win_meta_lambda = [&win_meta_bin, this](const std::string& data) { this->parseHex(data, win_meta_bin); };
-    auto enh_meta_lambda = [&enh_meta_bin, this](const std::string& data) { this->parseHex(data, enh_meta_bin); };
-
-    std::unordered_map<std::string, std::function<void(const std::string&)>> embedded_dispatcher = {
-        {"BoundingBox", embdedded_box_lambda},
-        {"WindowsMetafile", win_meta_lambda},
-        {"EnhancedMetafile", enh_meta_lambda}
+    auto emf_png_lambda = [&image_png, &embedded_bbox, this](const std::string& data) {
+        std::string image_bin;
+        this->parseHex(data, image_bin);
+        auto bitmaps = ripBitmapsFromEMF(image_bin);
+        for (auto dib : bitmaps)
+            _images.emplace_back(KETImage::EKETPNG, Rect2f(embedded_bbox.first, embedded_bbox.second), dibToPNG(dib.dibits));
     };
 
+    auto emf64_png_lambda = [&image_png, &embedded_bbox, this](const std::string& data) {
+        std::string emf_base64, emf;
+        std::copy_if(data.begin(), data.end(), std::back_inserter(emf_base64), [](char c) { return c != '\n' && c != '\r'; });
+        BufferScanner b64decode(emf_base64.c_str(), true);
+        b64decode.readAll(emf);
+        std::ofstream outFile("emf.comp", std::ios::binary);
+        outFile.write(emf.c_str(), emf.size());
+        outFile.close();
+        auto bitmaps = ripBitmapsFromEMF(emf);
+        for (auto dib : bitmaps)
+            _images.emplace_back(KETImage::EKETPNG, Rect2f(embedded_bbox.first, embedded_bbox.second), dibToPNG(dib.dibits));
+    };
+
+    auto png_lambda = [&image_png, &embedded_bbox, this](const std::string& data) {
+        std::string image_bin;
+        this->parseHex(data, image_bin);
+        _images.emplace_back(KETImage::EKETPNG, Rect2f(embedded_bbox.first, embedded_bbox.second), image_bin);
+    };
+
+    std::unordered_map<std::string, std::function<void(const std::string&)>> embedded_dispatcher = {
+        {"BoundingBox", embdedded_box_lambda}, {"EnhancedMetafile", emf_png_lambda}, {"CompressedEnhancedMetafile", emf64_png_lambda}, {"PNG", png_lambda}};
+
     applyDispatcher(*elem.firstProperty().get(), embedded_dispatcher);
-    auto bitmaps = ripBitmapsFromEMF(enh_meta_bin);
-
-    for (auto dib : bitmaps)
-        _images.emplace_back(Rect2f(embedded_bbox.first, embedded_bbox.second), dib);
-
-    std::cout << win_meta_bin.size() << ":" << enh_meta_bin.size() << ":" << bitmaps.size() << std::endl;
 }
 
 void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
@@ -1528,6 +1541,21 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
             }
             _graphic_arrows.push_back(std::make_pair(std::make_pair(Vec3f(tail.x, tail.y, 0), Vec3f(head.x, head.y, 0)), ar_type));
         }
+        else if (arrow_type == kCDXArrowType_RetroSynthetic && superseded_id != 0)
+        {
+            auto& head = graph_bbox.first;
+            auto& tail = graph_bbox.second;
+
+            auto arrow_it = _arrows.find(superseded_id);
+            if (arrow_it != _arrows.end())
+            {
+                _arrows.erase(arrow_it);
+            }
+            _retro_arrows_graph_id.emplace(superseded_id);
+
+            _graphic_arrows.push_back(
+                std::make_pair(std::make_pair(Vec3f(tail.x, tail.y, 0), Vec3f(head.x, head.y, 0)), ReactionComponent::ARROW_RETROSYNTHETIC));
+        }
     }
     break;
     case kCDXGraphicType_Oval:
@@ -1566,12 +1594,20 @@ void MoleculeCdxmlLoader::_parseArrow(BaseCDXElement& elem)
     auto arrow_head_lambda = [&arrow_head](const std::string& data) { arrow_head = data; };
     std::string head_type;
     auto head_type_lambda = [&head_type](const std::string& data) { head_type = data; };
-    std::unordered_map<std::string, std::function<void(const std::string&)>> arrow_dispatcher = {
-        {"BoundingBox", arrow_bbox_lambda},  {"FillType", fill_type_lambda}, {"ArrowheadHead", arrow_head_lambda},
-        {"ArrowheadType", head_type_lambda}, {"Head3D", arrow_end_lambda},   {"Tail3D", arrow_begin_lambda}};
+    AutoInt arrow_id = 0;
+    auto arrow_id_lambda = [&arrow_id](const std::string& data) { arrow_id = std::stoi(data); };
+    std::unordered_map<std::string, std::function<void(const std::string&)>> arrow_dispatcher = {{"BoundingBox", arrow_bbox_lambda},
+                                                                                                 {"FillType", fill_type_lambda},
+                                                                                                 {"ArrowheadHead", arrow_head_lambda},
+                                                                                                 {"ArrowheadType", head_type_lambda},
+                                                                                                 {"Head3D", arrow_end_lambda},
+                                                                                                 {"Tail3D", arrow_begin_lambda},
+                                                                                                 {"id", arrow_id_lambda}};
 
     applyDispatcher(*elem.firstProperty().get(), arrow_dispatcher);
-    _arrows.push_back(std::make_pair(std::make_pair(begin_pos, end_pos), 2));
+
+    if (!_retro_arrows_graph_id.count(arrow_id))
+        _arrows[arrow_id] = (std::make_pair(std::make_pair(begin_pos, end_pos), 2));
 }
 
 void MoleculeCdxmlLoader::_parseLabel(BaseCDXElement& elem, std::string& label)

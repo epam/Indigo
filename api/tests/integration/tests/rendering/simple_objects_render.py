@@ -55,10 +55,32 @@ indigo.setOption("render-output-format", "png")
 renderer.renderToFile(rea, joinPathPy("out/single_arrow.png", __file__))
 print(checkImageSimilarity("single_arrow.png"))
 
+indigo.setOption("render-background-color", "255, 255, 255")
 mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/images.ket", __file__))
 indigo.setOption("render-output-format", "png")
 renderer.renderToFile(mol, joinPathPy("out/images.png", __file__))
 print(checkImageSimilarity("images.png"))
+
+reac = indigo.loadReactionFromFile(
+    joinPathPy("reactions/test1png.ket", __file__)
+)
+reac.layout()
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(reac, joinPathPy("out/test1png.png", __file__))
+print(checkImageSimilarity("test1png.png"))
+
+reac = indigo.loadReactionFromFile(
+    joinPathPy("reactions/image_first.ket", __file__)
+)
+reac.layout()
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(reac, joinPathPy("out/image_first.png", __file__))
+print(checkImageSimilarity("image_first.png"))
+
+reac = indigo.loadReactionFromFile(joinPathPy("reactions/retro.ket", __file__))
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(reac, joinPathPy("out/retro.png", __file__))
+print(checkImageSimilarity("retro.png"))
 
 if isIronPython():
     renderer.Dispose()

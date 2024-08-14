@@ -2893,7 +2893,7 @@ CDXML loader: Not a molecule. Found 1 arrows.
                             "z": 0.0
                         },
                         {
-                            "x": 12.442000389099121,
+                            "x": 12.44200038909912,
                             "y": -1.1613332033157349,
                             "z": 0.0
                         }
@@ -2915,7 +2915,7 @@ CDXML loader: Not a molecule. Found 1 arrows.
                 "type": "plus",
                 "location": [
                     16.42766571044922,
-                    -0.9143331050872803,
+                    -0.9143331050872804,
                     0.0
                 ]
             },
@@ -3033,14 +3033,14 @@ CDXML loader: Not a molecule. Found 1 arrows.
                 "label": "C",
                 "location": [
                     6.1419997215271,
-                    -0.18999938666820527,
+                    -0.1899993866682053,
                     0.0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    5.3329997062683109,
+                    5.332999706268311,
                     -0.7776662111282349,
                     0.0
                 ]
@@ -3114,15 +3114,15 @@ CDXML loader: Not a molecule. Found 1 arrows.
             {
                 "label": "C",
                 "location": [
-                    13.934000015258789,
-                    -0.24399922788143159,
+                    13.934000015258788,
+                    -0.2439992278814316,
                     0.0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    13.125333786010743,
+                    13.125333786010744,
                     -0.8319997191429138,
                     0.0
                 ]
@@ -3130,7 +3130,7 @@ CDXML loader: Not a molecule. Found 1 arrows.
             {
                 "label": "C",
                 "location": [
-                    13.434000015258789,
+                    13.434000015258788,
                     -1.7829996347427369,
                     0.0
                 ]
@@ -3138,7 +3138,7 @@ CDXML loader: Not a molecule. Found 1 arrows.
             {
                 "label": "C",
                 "location": [
-                    14.434000015258789,
+                    14.434000015258788,
                     -1.7829996347427369,
                     0.0
                 ]
@@ -3146,7 +3146,7 @@ CDXML loader: Not a molecule. Found 1 arrows.
             {
                 "label": "C",
                 "location": [
-                    14.743000030517579,
+                    14.74300003051758,
                     -0.8319997191429138,
                     0.0
                 ]
@@ -3204,7 +3204,7 @@ CDXML loader: Not a molecule. Found 1 arrows.
             {
                 "label": "C",
                 "location": [
-                    17.968332290649415,
+                    17.968332290649419,
                     -0.7373331785202026,
                     0.0
                 ]
@@ -3509,7 +3509,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                     "content": "{\"blocks\":[{\"text\":\"test\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":4,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
                     "position": {
                         "x": 17.70600128173828,
-                        "y": -1.8826665878295899,
+                        "y": -1.88266658782959,
                         "z": 0.0
                     }
                 }
@@ -3519,7 +3519,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                 "data": {
                     "content": "{\"blocks\":[{\"text\":\"6\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":1,\"style\":\"BOLD\"},{\"offset\":0,\"length\":1,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
                     "position": {
-                        "x": 20.129331588745118,
+                        "x": 20.12933158874512,
                         "y": -1.3268331289291382,
                         "z": 0.0
                     }
@@ -3559,132 +3559,6 @@ CDXML loader: Not a molecule. Found 14 arrows.
                 }
             },
             {
-                "type": "arrow",
-                "data": {
-                    "mode": "open-angle",
-                    "pos": [
-                        {
-                            "x": 17.46666717529297,
-                            "y": -2.2283334732055666,
-                            "z": 0.0
-                        },
-                        {
-                            "x": 20.536664962768556,
-                            "y": -2.2283334732055666,
-                            "z": 0.0
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "arrow",
-                "data": {
-                    "mode": "open-angle",
-                    "pos": [
-                        {
-                            "x": 24.649999618530275,
-                            "y": -2.245000123977661,
-                            "z": 0.0
-                        },
-                        {
-                            "x": 26.748666763305665,
-                            "y": -2.245000123977661,
-                            "z": 0.0
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "arrow",
-                "data": {
-                    "mode": "open-angle",
-                    "pos": [
-                        {
-                            "x": 10.425999641418457,
-                            "y": -4.869000434875488,
-                            "z": 0.0
-                        },
-                        {
-                            "x": 13.12600040435791,
-                            "y": -4.869000434875488,
-                            "z": 0.0
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "arrow",
-                "data": {
-                    "mode": "open-angle",
-                    "pos": [
-                        {
-                            "x": 25.433332443237306,
-                            "y": -7.985666751861572,
-                            "z": 0.0
-                        },
-                        {
-                            "x": 27.9010009765625,
-                            "y": -7.985666751861572,
-                            "z": 0.0
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "arrow",
-                "data": {
-                    "mode": "open-angle",
-                    "pos": [
-                        {
-                            "x": 2.2676665782928469,
-                            "y": -4.874666213989258,
-                            "z": 0.0
-                        },
-                        {
-                            "x": 6.392666816711426,
-                            "y": -4.874666213989258,
-                            "z": 0.0
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "arrow",
-                "data": {
-                    "mode": "open-angle",
-                    "pos": [
-                        {
-                            "x": 15.874332427978516,
-                            "y": -7.179999828338623,
-                            "z": 0.0
-                        },
-                        {
-                            "x": 19.924333572387697,
-                            "y": -7.179999828338623,
-                            "z": 0.0
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "arrow",
-                "data": {
-                    "mode": "open-angle",
-                    "pos": [
-                        {
-                            "x": 16.32433319091797,
-                            "y": -4.84666633605957,
-                            "z": 0.0
-                        },
-                        {
-                            "x": 19.84433364868164,
-                            "y": -4.84666633605957,
-                            "z": 0.0
-                        }
-                    ]
-                }
-            },
-            {
                 "type": "text",
                 "data": {
                     "content": "{\"blocks\":[{\"text\":\"Step-1\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":6,\"style\":\"BOLD\"},{\"offset\":0,\"length\":6,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
@@ -3711,8 +3585,8 @@ CDXML loader: Not a molecule. Found 14 arrows.
                 "data": {
                     "content": "{\"blocks\":[{\"text\":\"test2\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":5,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
                     "position": {
-                        "x": 3.1116669178009035,
-                        "y": -1.8923335075378419,
+                        "x": 3.1116669178009039,
+                        "y": -1.892333507537842,
                         "z": 0.0
                     }
                 }
@@ -3766,7 +3640,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                 "data": {
                     "content": "{\"blocks\":[{\"text\":\"test3\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":5,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
                     "position": {
-                        "x": 10.712333679199219,
+                        "x": 10.71233367919922,
                         "y": -1.4706664085388184,
                         "z": 0.0
                     }
@@ -3778,7 +3652,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                     "content": "{\"blocks\":[{\"text\":\"test20\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":6,\"style\":\"BOLD\"},{\"offset\":0,\"length\":6,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
                     "position": {
                         "x": 27.751501083374025,
-                        "y": -3.7408337593078615,
+                        "y": -3.7408337593078619,
                         "z": 0.0
                     }
                 }
@@ -3833,7 +3707,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                     "content": "{\"blocks\":[{\"text\":\"500 mg (int-2)\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":14,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"\",\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
                     "position": {
                         "x": 1.4541666507720948,
-                        "y": -5.9666666984558109,
+                        "y": -5.966666698455811,
                         "z": 0.0
                     }
                 }
@@ -3844,7 +3718,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                     "content": "{\"blocks\":[{\"text\":\"test7\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":5,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
                     "position": {
                         "x": 7.121333122253418,
-                        "y": -5.9666666984558109,
+                        "y": -5.966666698455811,
                         "z": 0.0
                     }
                 }
@@ -3866,7 +3740,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                     "content": "{\"blocks\":[{\"text\":\"TEST, iTest, 80 oC, 12 h\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":6,\"style\":\"CUSTOM_FONT_SIZE_15px\"},{\"offset\":6,\"length\":1,\"style\":\"ITALIC\"},{\"offset\":6,\"length\":1,\"style\":\"SUPERSCRIPT\"},{\"offset\":6,\"length\":1,\"style\":\"CUSTOM_FONT_SIZE_15px\"},{\"offset\":7,\"length\":9,\"style\":\"CUSTOM_FONT_SIZE_15px\"},{\"offset\":16,\"length\":1,\"style\":\"SUPERSCRIPT\"},{\"offset\":16,\"length\":1,\"style\":\"CUSTOM_FONT_SIZE_15px\"},{\"offset\":17,\"length\":7,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
                     "position": {
                         "x": 4.072500228881836,
-                        "y": -5.5998334884643559,
+                        "y": -5.599833488464356,
                         "z": 0.0
                     }
                 }
@@ -3909,7 +3783,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                 "data": {
                     "content": "{\"blocks\":[{\"text\":\"200 mg\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":6,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
                     "position": {
-                        "x": 15.214333534240723,
+                        "x": 15.214333534240725,
                         "y": -8.036666870117188,
                         "z": 0.0
                     }
@@ -4009,7 +3883,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                     "content": "{\"blocks\":[{\"text\":\"test15\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":6,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
                     "position": {
                         "x": 25.946334838867189,
-                        "y": -9.451665878295899,
+                        "y": -9.4516658782959,
                         "z": 0.0
                     }
                 }
@@ -4023,132 +3897,6 @@ CDXML loader: Not a molecule. Found 14 arrows.
                         "y": -9.668333053588868,
                         "z": 0.0
                     }
-                }
-            },
-            {
-                "type": "arrow",
-                "data": {
-                    "mode": "open-angle",
-                    "pos": [
-                        {
-                            "x": 10.256667137145996,
-                            "y": -2.253333568572998,
-                            "z": 0.0
-                        },
-                        {
-                            "x": 13.358999252319336,
-                            "y": -2.253333568572998,
-                            "z": 0.0
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "arrow",
-                "data": {
-                    "mode": "open-angle",
-                    "pos": [
-                        {
-                            "x": 2.6666667461395265,
-                            "y": -2.240000009536743,
-                            "z": 0.0
-                        },
-                        {
-                            "x": 6.066666603088379,
-                            "y": -2.240000009536743,
-                            "z": 0.0
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "arrow",
-                "data": {
-                    "mode": "open-angle",
-                    "pos": [
-                        {
-                            "x": 10.425999641418457,
-                            "y": -5.949333667755127,
-                            "z": 0.0
-                        },
-                        {
-                            "x": 13.13599967956543,
-                            "y": -5.949333667755127,
-                            "z": 0.0
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "arrow",
-                "data": {
-                    "mode": "open-angle",
-                    "pos": [
-                        {
-                            "x": 2.2676665782928469,
-                            "y": -5.974999904632568,
-                            "z": 0.0
-                        },
-                        {
-                            "x": 6.392666816711426,
-                            "y": -5.974999904632568,
-                            "z": 0.0
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "arrow",
-                "data": {
-                    "mode": "open-angle",
-                    "pos": [
-                        {
-                            "x": 15.874332427978516,
-                            "y": -8.045000076293946,
-                            "z": 0.0
-                        },
-                        {
-                            "x": 19.924333572387697,
-                            "y": -8.045000076293946,
-                            "z": 0.0
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "arrow",
-                "data": {
-                    "mode": "open-angle",
-                    "pos": [
-                        {
-                            "x": 15.874332427978516,
-                            "y": -10.145000457763672,
-                            "z": 0.0
-                        },
-                        {
-                            "x": 19.924333572387697,
-                            "y": -10.145000457763672,
-                            "z": 0.0
-                        }
-                    ]
-                }
-            },
-            {
-                "type": "arrow",
-                "data": {
-                    "mode": "open-angle",
-                    "pos": [
-                        {
-                            "x": 25.58333396911621,
-                            "y": -9.73566722869873,
-                            "z": 0.0
-                        },
-                        {
-                            "x": 28.051000595092775,
-                            "y": -9.73566722869873,
-                            "z": 0.0
-                        }
-                    ]
                 }
             },
             {
@@ -4193,7 +3941,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                     "mode": "open-angle",
                     "pos": [
                         {
-                            "x": 24.649999618530275,
+                            "x": 24.649999618530278,
                             "y": -2.245000123977661,
                             "z": 0.0
                         },
@@ -4229,7 +3977,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                     "mode": "open-angle",
                     "pos": [
                         {
-                            "x": 10.425999641418457,
+                            "x": 10.425999641418456,
                             "y": -4.869000434875488,
                             "z": 0.0
                         },
@@ -4247,7 +3995,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                     "mode": "open-angle",
                     "pos": [
                         {
-                            "x": 10.425999641418457,
+                            "x": 10.425999641418456,
                             "y": -5.949333667755127,
                             "z": 0.0
                         },
@@ -4396,7 +4144,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                             "z": 0.0
                         },
                         {
-                            "x": 28.051000595092775,
+                            "x": 28.051000595092778,
                             "y": -9.73566722869873,
                             "z": 0.0
                         }
@@ -4411,7 +4159,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "label": "Si",
                 "location": [
-                    2.3273332118988039,
+                    2.327333211898804,
                     0.3419998288154602,
                     0.0
                 ]
@@ -4420,7 +4168,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                 "label": "C",
                 "location": [
                     2.4753334522247316,
-                    -0.11299998313188553,
+                    -0.11299998313188552,
                     0.0
                 ]
             },
@@ -4428,7 +4176,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                 "label": "C",
                 "location": [
                     2.1553335189819338,
-                    -0.46866658329963686,
+                    -0.4686665832996369,
                     0.0
                 ]
             },
@@ -4436,7 +4184,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                 "label": "O",
                 "location": [
                     2.303333282470703,
-                    -0.9233332276344299,
+                    -0.92333322763443,
                     0.0
                 ]
             },
@@ -4468,14 +4216,14 @@ CDXML loader: Not a molecule. Found 14 arrows.
                 "label": "C",
                 "location": [
                     1.9833333492279053,
-                    -1.2789998054504395,
+                    -1.2789998054504397,
                     0.0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    1.8350001573562623,
+                    1.8350001573562625,
                     -2.50433349609375,
                     0.0
                 ]
@@ -4491,8 +4239,8 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "label": "N",
                 "location": [
-                    1.8350001573562623,
-                    -1.7356668710708619,
+                    1.8350001573562625,
+                    -1.735666871070862,
                     0.0
                 ]
             }
@@ -4597,7 +4345,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "label": "C",
                 "location": [
-                    28.618000030517579,
+                    28.61800003051758,
                     -2.4803335666656496,
                     0.0
                 ]
@@ -4605,7 +4353,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "label": "C",
                 "location": [
-                    28.618000030517579,
+                    28.61800003051758,
                     -2.9603333473205568,
                     0.0
                 ]
@@ -4689,7 +4437,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                 "label": "C",
                 "location": [
                     24.004667282104493,
-                    -1.2470000982284547,
+                    -1.2470000982284549,
                     0.0
                 ]
             },
@@ -4721,14 +4469,14 @@ CDXML loader: Not a molecule. Found 14 arrows.
                 "label": "O",
                 "location": [
                     24.338998794555665,
-                    -0.30266672372817995,
+                    -0.30266672372818,
                     0.0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    25.250667572021486,
+                    25.250667572021489,
                     1.1613332033157349,
                     0.0
                 ]
@@ -4753,7 +4501,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                 "label": "C",
                 "location": [
                     23.871334075927736,
-                    -0.40199992060661318,
+                    -0.4019999206066132,
                     0.0
                 ]
             }
@@ -4866,7 +4614,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "label": "N",
                 "location": [
-                    9.334667205810547,
+                    9.334667205810549,
                     -0.6086664795875549,
                     0.0
                 ]
@@ -4874,7 +4622,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "label": "C",
                 "location": [
-                    9.616666793823243,
+                    9.616666793823244,
                     -0.9970000982284546,
                     0.0
                 ]
@@ -4882,7 +4630,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "label": "C",
                 "location": [
-                    9.334667205810547,
+                    9.334667205810549,
                     -1.3853332996368409,
                     0.0
                 ]
@@ -4891,7 +4639,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                 "label": "C",
                 "location": [
                     8.878000259399414,
-                    -1.2369999885559083,
+                    -1.2369999885559085,
                     0.0
                 ]
             },
@@ -4899,14 +4647,14 @@ CDXML loader: Not a molecule. Found 14 arrows.
                 "label": "Si",
                 "location": [
                     10.714666366577149,
-                    0.9563333988189697,
+                    0.9563333988189696,
                     0.0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    10.567000389099121,
+                    10.56700038909912,
                     0.501666784286499,
                     0.0
                 ]
@@ -4922,7 +4670,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "label": "O",
                 "location": [
-                    9.951000213623047,
+                    9.951000213623049,
                     -0.05266672745347023,
                     0.0
                 ]
@@ -4930,7 +4678,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "label": "C",
                 "location": [
-                    10.862667083740235,
+                    10.862667083740237,
                     1.4113332033157349,
                     0.0
                 ]
@@ -4954,7 +4702,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "label": "C",
                 "location": [
-                    9.482999801635743,
+                    9.482999801635744,
                     -0.15199992060661317,
                     0.0
                 ]
@@ -5105,7 +4853,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "label": "Si",
                 "location": [
-                    17.893333435058595,
+                    17.893333435058599,
                     0.6843332648277283,
                     0.0
                 ]
@@ -5121,7 +4869,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "label": "C",
                 "location": [
-                    17.277667999267579,
+                    17.27766799926758,
                     0.1299998015165329,
                     0.0
                 ]
@@ -5130,7 +4878,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
                 "label": "O",
                 "location": [
                     17.129667282104493,
-                    -0.32499998807907107,
+                    -0.3249999880790711,
                     0.0
                 ]
             },
@@ -5298,8 +5046,8 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "label": "Cl",
                 "location": [
-                    19.573667526245118,
-                    -1.1426665782928467,
+                    19.57366752624512,
+                    -1.142666578292847,
                     0.0
                 ],
                 "charge": -1
@@ -5410,7 +5158,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "label": "C",
                 "location": [
-                    11.731667518615723,
+                    11.731667518615725,
                     -0.02666676789522171,
                     0.0
                 ]
