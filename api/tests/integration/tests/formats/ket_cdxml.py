@@ -95,8 +95,8 @@ for filename in files:
         print(getIndigoExceptionText(e))
         raise SystemExit
     cdxml_text = ket.cdxml()
-    with open(os.path.join(ref_path, filename) + ".cdxml", "w") as file:
-      file.write(cdxml_text)
+    # with open(os.path.join(ref_path, filename) + ".cdxml", "w") as file:
+    #   file.write(cdxml_text)
 
     indigo.loadMolecule(
         cdxml_text
