@@ -141,8 +141,8 @@ namespace indigo
             BufferScanner b64decode(data.c_str(), true);
             b64decode.readAll(_image_data);
         }
-		else
-			_image_data = data;
+        else
+            _image_data = data;
     }
 
     std::string KETImage::getBase64() const

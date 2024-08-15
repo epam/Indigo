@@ -1588,7 +1588,6 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
         addImage(id, image);
     }
     break;
-
     }
 }
 
