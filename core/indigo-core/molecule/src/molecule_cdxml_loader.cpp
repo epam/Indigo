@@ -16,13 +16,15 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include "gzip/gzip_scanner.h"
+#include "lzw/lzw_decoder.h"
 #include <algorithm>
+#include <charconv>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
 #include "base_cpp/scanner.h"
 #include "molecule/elements.h"
-#include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cdxml_loader.h"
 #include "molecule/molecule_scaffold_detection.h"
@@ -378,6 +380,7 @@ void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
     _id_to_node_index.clear();
     _id_to_bond_index.clear();
     _fragment_nodes.clear();
+    _images.clear();
     text_objects.clear();
     _pluses.clear();
     brackets.clear();
@@ -497,6 +500,9 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
 
     for (const auto& plus : _pluses)
         mol.meta().addMetaObject(new KETReactionPlus(plus));
+
+    for (const auto& image : _images)
+        mol.meta().addMetaObject(new KETImage(image.bbox, image.image_format, image.data, false));
 
     // CDX contains draphic arrow wich id dublicate arrow/
     // Search arrows for arrow with coords same as in grapic arrow and if found - remove tis arrow gecause graphic arrow contains more specific type
@@ -714,9 +720,17 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(BaseCDXElement& first_elem, bool n
 
     auto altgroup_lambda = [this](BaseCDXElement& elem) { this->_parseAltGroup(elem); };
 
-    std::unordered_map<std::string, std::function<void(BaseCDXElement & elem)>> cdxml_dispatcher = {
-        {"n", node_lambda},          {"b", bond_lambda},      {"fragment", fragment_lambda}, {"group", group_lambda}, {"bracketedgroup", bracketed_lambda},
-        {"graphic", graphic_lambda}, {"arrow", arrow_lambda}, {"altgroup", altgroup_lambda}};
+    auto embedded_object_lambda = [this](BaseCDXElement& elem) { this->_parseEmbeddedObject(elem); };
+
+    std::unordered_map<std::string, std::function<void(BaseCDXElement & elem)>> cdxml_dispatcher = {{"n", node_lambda},
+                                                                                                    {"b", bond_lambda},
+                                                                                                    {"fragment", fragment_lambda},
+                                                                                                    {"group", group_lambda},
+                                                                                                    {"bracketedgroup", bracketed_lambda},
+                                                                                                    {"graphic", graphic_lambda},
+                                                                                                    {"arrow", arrow_lambda},
+                                                                                                    {"altgroup", altgroup_lambda},
+                                                                                                    {"embeddedobject", embedded_object_lambda}};
 
     for (auto pelem = first_elem.copy(); pelem->hasContent(); pelem = pelem->nextSiblingElement())
     {
@@ -1376,6 +1390,25 @@ void MoleculeCdxmlLoader::parseSeg(const std::string& data, Vec2f& v1, Vec2f& v2
         throw Error("Not enought coordinates for text bounding box");
 }
 
+void indigo::MoleculeCdxmlLoader::parseHex(const std::string& hex, std::string& binary)
+{
+    binary.reserve(hex.size() / 2);
+
+    for (size_t i = 0; i < hex.size(); i += 2)
+    {
+        unsigned char byte;
+        auto [ptr, ec] = std::from_chars(hex.data() + i, hex.data() + i + 2, byte, 16);
+        if (ec == std::errc())
+        {
+            binary.push_back(static_cast<char>(byte));
+        }
+        else
+        {
+            throw std::runtime_error("Invalid hex digit");
+        }
+    }
+}
+
 void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
 {
     std::vector<AutoInt> r_labels;
@@ -1420,6 +1453,44 @@ void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
             rgroup.fragments.add(fragment.release());
         }
     }
+}
+
+void MoleculeCdxmlLoader::_parseEmbeddedObject(BaseCDXElement& elem)
+{
+    std::pair<Vec2f, Vec2f> embedded_bbox;
+    std::string image_png;
+    std::vector<Bitmap> bitmaps;
+
+    auto embdedded_box_lambda = [&embedded_bbox, this](const std::string& data) { this->parseSeg(data, embedded_bbox.first, embedded_bbox.second); };
+    auto emf_png_lambda = [&bitmaps, &embedded_bbox, this](const std::string& data) {
+        std::string image_bin;
+        this->parseHex(data, image_bin);
+        bitmaps = ripBitmapsFromEMF(image_bin);
+    };
+
+    auto emf64_png_lambda = [&bitmaps, &embedded_bbox, this](const std::string& data) {
+        std::string emf_base64, emf;
+        std::copy_if(data.begin(), data.end(), std::back_inserter(emf_base64), [](char c) { return c != '\n' && c != '\r'; });
+        // base64 decode
+        BufferScanner b64decode(emf_base64.c_str(), true);
+        b64decode.readAll(emf);
+        // lzw decompress and rip raster images
+        bitmaps = ripBitmapsFromEMF(_inflate(emf.data(), emf.size()));
+    };
+
+    auto png_lambda = [&image_png, &embedded_bbox, this](const std::string& data) { this->parseHex(data, image_png); };
+
+    std::unordered_map<std::string, std::function<void(const std::string&)>> embedded_dispatcher = {
+        {"BoundingBox", embdedded_box_lambda}, {"EnhancedMetafile", emf_png_lambda}, {"CompressedEnhancedMetafile", emf64_png_lambda}, {"PNG", png_lambda}};
+
+    applyDispatcher(*elem.firstProperty().get(), embedded_dispatcher);
+
+    Rect2f emb_rect(embedded_bbox.first, embedded_bbox.second);
+    if (image_png.size())
+        _images.emplace_back(KETImage::EKETPNG, emb_rect, image_png);
+    else
+        for (const auto& dib : bitmaps)
+            _images.emplace_back(KETImage::EKETPNG, emb_rect, dibToPNG(dib.dibits));
 }
 
 void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
@@ -1734,4 +1805,70 @@ void MoleculeCdxmlLoader::_appendQueryAtom(const char* atom_label, std::unique_p
         atom.reset(cur_atom.release());
     else
         atom.reset(QueryMolecule::Atom::oder(atom.release(), cur_atom.release()));
+}
+
+void MoleculeCdxmlLoader::_gunzip(Scanner& scanner, Array<char>& dataBuf)
+{
+    // check GZip format
+    if (scanner.length() >= 2)
+    {
+        byte id[2];
+        long long pos = scanner.tell();
+
+        scanner.readCharsFix(2, (char*)id);
+        scanner.seek(pos, SEEK_SET);
+
+        if (id[0] == 0x1f && id[1] == 0x8b)
+        {
+            GZipScanner gzscanner(scanner);
+            gzscanner.readAll(dataBuf);
+            dataBuf.push('\0');
+            return;
+        }
+    }
+
+    scanner.readAll(dataBuf);
+    dataBuf.push('\0');
+}
+
+std::string MoleculeCdxmlLoader::_inflate(const char* data, size_t dataLength)
+{
+    z_stream zs; // Structure for zlib decompression
+    memset(&zs, 0, sizeof(zs));
+
+    if (inflateInit(&zs) != Z_OK)
+    {
+        throw Error("inflateInit failed while decompressing.");
+    }
+
+    zs.next_in = (Bytef*)data;
+    zs.avail_in = static_cast<uInt>(dataLength);
+
+    int ret;
+    char buffer[1024];
+    std::string decompressedData;
+
+    // Get decompressed data
+    do
+    {
+        zs.next_out = reinterpret_cast<Bytef*>(buffer);
+        zs.avail_out = sizeof(buffer);
+
+        ret = inflate(&zs, 0);
+        if (decompressedData.size() < zs.total_out)
+        {
+            decompressedData.append(buffer, zs.total_out - decompressedData.size());
+        }
+
+    } while (ret == Z_OK);
+
+    inflateEnd(&zs);
+
+    if (ret != Z_STREAM_END)
+    { // An error occurred that was not EOF
+        std::ostringstream oss;
+        throw Error("Exception during zlib decompression: %s", zs.msg);
+    }
+
+    return decompressedData;
 }
