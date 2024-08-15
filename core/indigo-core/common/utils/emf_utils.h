@@ -1,3 +1,4 @@
+#include "../common/math/algebra.h"
 #include <cmath>
 #include <cstdint>
 #include <cstring>
