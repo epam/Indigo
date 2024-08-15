@@ -48,7 +48,6 @@ void ReactionCdxmlLoader::_initReaction(BaseReaction& rxn)
     intermediates_ids.clear();
     arrows_ids.clear();
     agents_ids.clear();
-    
 
     if (rxn.isQueryReaction())
         _pqrxn = &rxn.asQueryReaction();
