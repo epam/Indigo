@@ -1485,11 +1485,12 @@ void MoleculeCdxmlLoader::_parseEmbeddedObject(BaseCDXElement& elem)
 
     applyDispatcher(*elem.firstProperty().get(), embedded_dispatcher);
 
+    Rect2f emb_rect(embedded_bbox.first, embedded_bbox.second);
     if (image_png.size())
-        _images.emplace_back(KETImage::EKETPNG, Rect2f(embedded_bbox.first, embedded_bbox.second), image_png);
+        _images.emplace_back(KETImage::EKETPNG, emb_rect, image_png);
     else
         for (const auto& dib : bitmaps)
-            _images.emplace_back(KETImage::EKETPNG, Rect2f(embedded_bbox.first, embedded_bbox.second), dibToPNG(dib.dibits));
+            _images.emplace_back(KETImage::EKETPNG, emb_rect, dibToPNG(dib.dibits));
 }
 
 void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
