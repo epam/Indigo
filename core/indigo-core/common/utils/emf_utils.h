@@ -1,11 +1,4 @@
 #include "../common/math/algebra.h"
-#include <cmath>
-#include <cstdint>
-#include <cstring>
-#include <sstream>
-#include <stdexcept>
-#include <string>
-#include <vector>
 
 namespace indigo
 {

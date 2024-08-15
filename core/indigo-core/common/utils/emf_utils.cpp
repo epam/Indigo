@@ -1,6 +1,8 @@
-#include "emf_utils.h"
-#include <fstream>
 #include <png.h>
+#include <vector>
+#include <sstream>
+
+#include "emf_utils.h"
 
 using namespace indigo;
 
