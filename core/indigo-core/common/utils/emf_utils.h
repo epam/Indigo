@@ -1,4 +1,3 @@
-#include "..\math\algebra.h"
 #include <cmath>
 #include <cstdint>
 #include <cstring>
