@@ -284,7 +284,7 @@ namespace indigo
                 throw Exception("KETReactionMultitailArrow: invalid arguments");
 
             _head = *begin++;
-            _tails.reserve(d - 1 - 2);
+            _tails.reserve(static_cast<int>(d) - 1 - 2);
             while (begin != end)
                 _tails.push(*begin++);
             _spine_begin = _tails.pop();
