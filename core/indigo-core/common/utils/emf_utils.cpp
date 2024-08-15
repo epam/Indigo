@@ -262,7 +262,7 @@ std::string indigo::createEMFFromBitmap(const std::string& bmpData)
     emfHeader.frameLeft = 0;
     emfHeader.frameTop = 0;
     const float dpi = 96.0f;
-    emfHeader.frameRight = 0; // TBC: 13894
+    emfHeader.frameRight = 0;  // TBC: 13894
     emfHeader.frameBottom = 0; // TBC: 13894
 
     emfHeader.dSignature = 0x464D4520;
@@ -273,11 +273,11 @@ std::string indigo::createEMFFromBitmap(const std::string& bmpData)
     emfHeader.sReserved = 0;
     emfHeader.nDescription = 0;
     emfHeader.offDescription = 0;
-    emfHeader.nPalEntries = 0; // No palette
-    emfHeader.deviceCx = 1920; // TBC:
-    emfHeader.deviceCy = 1080; // TBC:
-    emfHeader.millimetersCx = 521; //TBC:
-    emfHeader.millimetersCy = 293; //TBC:
+    emfHeader.nPalEntries = 0;     // No palette
+    emfHeader.deviceCx = 1920;     // TBC:
+    emfHeader.deviceCy = 1080;     // TBC:
+    emfHeader.millimetersCx = 521; // TBC:
+    emfHeader.millimetersCy = 293; // TBC:
     emfHeader.micrometersCx = emfHeader.millimetersCx * 1000;
     emfHeader.micrometersCy = emfHeader.millimetersCy * 1000;
     emfHeader.cbPixelFormat = 0;
