@@ -364,7 +364,93 @@ void SequenceLoader::addNucleotide(BaseMolecule& mol, std::string base, const st
         _last_monomer_idx = sugar_idx;
 }
 
-void SequenceLoader::addNucleotide(KetDocument& document, std::string base_alias, const std::string& sugar_alias, const std::string& phosphate_alias,
+void SequenceLoader::addMonomer(KetDocument& document, const std::string& monomer, SeqType seq_type, bool mixed)
+{
+    MonomerClass monomer_class = seq_type == SeqType::PEPTIDESeq ? MonomerClass::AminoAcid : MonomerClass::Base;
+    if (!mixed)
+        _alias_to_id.emplace(monomer, checkAddTemplate(document, monomer_class, monomer));
+    else if (!document.hasVariantMonomerTemplate(monomer))
+    {
+        std::optional<std::reference_wrapper<const std::vector<std::string>>> mixture;
+        if (seq_type == SeqType::PEPTIDESeq)
+        {
+            const auto& it = STANDARD_MIXED_PEPTIDES.find(monomer);
+            if (it == STANDARD_MIXED_PEPTIDES.end())
+                throw Error("Unknown mixed peptide '%s'", monomer.c_str());
+            mixture.emplace(std::cref(it->second));
+        }
+        else
+        {
+            const auto& it = STANDARD_MIXED_BASES.find(monomer);
+            if (it == STANDARD_MIXED_BASES.end())
+                throw Error("Unknown mixed base '%s'", monomer.c_str());
+            mixture.emplace(std::cref(it->second));
+        }
+
+        std::vector<KetVariantMonomerOption> options;
+        for (auto template_alias : mixture.value().get())
+        {
+            auto& template_id = _library.getMonomerTemplateIdByAlias(monomer_class, template_alias);
+            if (template_id.size() == 0)
+                throw Error("Monomer base template '%s' not found", template_alias.c_str());
+            auto& option = options.emplace_back(template_id);
+            auto& monomer_template = _library.getMonomerTemplateById(template_id);
+            checkAddTemplate(document, monomer_template);
+            _alias_to_id.emplace(template_alias, template_id);
+        }
+        document.addVariantMonomerTemplate("mixture", monomer, monomer, IdtAlias(), options);
+        _alias_to_id.emplace(monomer, monomer);
+    }
+
+    std::string sugar_alias = seq_type == SeqType::RNASeq ? "R" : "dR";
+    std::string phosphate_alias = "P";
+    if (seq_type != SeqType::PEPTIDESeq)
+    {
+        // add sugar template
+        if (_seq_id == 0)
+        {
+            _alias_to_id.emplace(sugar_alias, checkAddTemplate(document, MonomerClass::Sugar, sugar_alias));
+            phosphate_alias = "";
+        }
+
+        // add phosphate template
+        if (_seq_id == 1)
+            _alias_to_id.emplace(phosphate_alias, checkAddTemplate(document, MonomerClass::Phosphate, phosphate_alias));
+    }
+
+    _seq_id++;
+    switch (seq_type)
+    {
+    case SeqType::PEPTIDESeq:
+        addAminoAcid(document, monomer, mixed);
+        break;
+    case SeqType::RNASeq:
+        addNucleotide(document, monomer, sugar_alias, phosphate_alias, true, mixed);
+        break;
+    case SeqType::DNASeq:
+        addNucleotide(document, monomer, sugar_alias, phosphate_alias, true, mixed);
+        break;
+    }
+    _col++;
+}
+
+void SequenceLoader::addAminoAcid(KetDocument& document, const std::string& monomer, bool variant)
+{
+    Vec3f pos(_col * MoleculeLayout::DEFAULT_BOND_LENGTH, -MoleculeLayout::DEFAULT_BOND_LENGTH * _row, 0);
+    auto amino_idx = document.monomers().size();
+    auto& amino_acid = document.addMonomer(monomer, _alias_to_id.at(monomer));
+    if (variant)
+        amino_acid->setAttachmentPoints(document.variantTemplates().at(_alias_to_id.at(monomer)).attachmentPoints());
+    else
+        amino_acid->setAttachmentPoints(document.templates().at(_alias_to_id.at(monomer)).attachmentPoints());
+    amino_acid->setIntProp("seqid", _seq_id);
+    amino_acid->setPosition(pos);
+
+    if (_seq_id > 1)
+        addTemplateConnection(document, amino_idx - 1, amino_idx);
+}
+
+void SequenceLoader::addNucleotide(KetDocument& document, const std::string& base_alias, const std::string& sugar_alias, const std::string& phosphate_alias,
                                    bool phosphate_at_left, bool variant)
 {
     Vec3f pos = getBackboneMonomerPosition();
@@ -372,6 +458,7 @@ void SequenceLoader::addNucleotide(KetDocument& document, std::string base_alias
     // add sugar
     auto sugar_idx = document.monomers().size();
     auto& sugar = document.addMonomer(sugar_alias, _alias_to_id.at(sugar_alias));
+    sugar->setAttachmentPoints(document.templates().at(_alias_to_id.at(sugar_alias)).attachmentPoints());
     sugar->setIntProp("seqid", _seq_id);
     sugar->setPosition(pos);
 
@@ -381,6 +468,10 @@ void SequenceLoader::addNucleotide(KetDocument& document, std::string base_alias
         auto nuc_base_idx = document.monomers().size();
         auto& base =
             variant ? document.addVariantMonomer(base_alias, _alias_to_id.at(base_alias)) : document.addMonomer(base_alias, _alias_to_id.at(base_alias));
+        if (variant)
+            base->setAttachmentPoints(document.variantTemplates().at(_alias_to_id.at(base_alias)).attachmentPoints());
+        else
+            base->setAttachmentPoints(document.templates().at(_alias_to_id.at(base_alias)).attachmentPoints());
         base->setIntProp("seqid", _seq_id);
         Vec3f base_coord(pos.x, pos.y - MoleculeLayout::DEFAULT_BOND_LENGTH, 0);
         base->setPosition(base_coord);
@@ -398,6 +489,7 @@ void SequenceLoader::addNucleotide(KetDocument& document, std::string base_alias
                 // add phosphate
                 auto phosphate_idx = document.monomers().size();
                 auto& phosphate = document.addMonomer(phosphate_alias, _alias_to_id.at(phosphate_alias));
+                phosphate->setAttachmentPoints(document.templates().at(_alias_to_id.at(phosphate_alias)).attachmentPoints());
                 phosphate->setIntProp("seqid", _seq_id - 1);
                 Vec3f phosphate_coord(pos.x - MoleculeLayout::DEFAULT_BOND_LENGTH, pos.y, 0);
                 phosphate->setPosition(phosphate_coord);
@@ -411,6 +503,7 @@ void SequenceLoader::addNucleotide(KetDocument& document, std::string base_alias
             // add phosphate
             auto phosphate_idx = document.monomers().size();
             auto& phosphate = document.addMonomer(phosphate_alias, _alias_to_id.at(phosphate_alias));
+            phosphate->setAttachmentPoints(document.templates().at(_alias_to_id.at(phosphate_alias)).attachmentPoints());
             phosphate->setIntProp("seqid", _seq_id);
             Vec3f phosphate_coord(pos.x + MoleculeLayout::DEFAULT_BOND_LENGTH, pos.y, 0);
             phosphate->setPosition(phosphate_coord);
@@ -508,7 +601,6 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
     const auto IDT_DEF_SUGAR = "dR";
     const auto IDT_DEF_PHOSPHATE = "P";
     const auto IDT_MODIFIED_PHOSPHATE = "sP";
-    static const std::unordered_set<char> IDT_STANDARD_BASES = {'A', 'T', 'C', 'G', 'U', 'I'};
     constexpr int MAX_STD_TOKEN_SIZE = 2;
     _row = 0;
     mol.clear();
@@ -645,7 +737,7 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
 
             if (idt_alias.size() == 1)
             {
-                if (IDT_STANDARD_BASES.count(idt_alias[0]) == 0)
+                if (IDT_STANDARD_BASES.count(idt_alias) == 0)
                 {
                     if (invalid_symbols.size())
                         invalid_symbols += ',';
@@ -791,10 +883,6 @@ void SequenceLoader::loadIdt(KetDocument& document)
     const auto IDT_DEF_SUGAR = "dR";
     const auto IDT_DEF_PHOSPHATE = "P";
     const auto IDT_MODIFIED_PHOSPHATE = "sP";
-    static const std::unordered_set<char> IDT_STANDARD_BASES = {'A', 'T', 'C', 'G', 'U', 'I'};
-    static const std::map<std::string, std::vector<std::string>> IDT_STANDARD_MIXED_BASES = {
-        {"R", {"A", "G"}},      {"Y", {"C", "T"}},      {"M", {"A", "C"}},      {"K", {"G", "T"}},      {"S", {"G", "C"}},          {"W", {"A", "T"}},
-        {"H", {"A", "C", "T"}}, {"B", {"G", "C", "T"}}, {"V", {"A", "C", "G"}}, {"D", {"A", "G", "T"}}, {"N", {"A", "C", "G", "T"}}};
     constexpr int MAX_STD_TOKEN_SIZE = 2;
     _row = 0;
     std::string invalid_symbols;
@@ -970,12 +1058,12 @@ void SequenceLoader::loadIdt(KetDocument& document)
                 }
             }
 
-            if (IDT_STANDARD_MIXED_BASES.count(idt_alias) != 0 || idt_alias.back() == ')')
+            if (STANDARD_MIXED_BASES.count(idt_alias) != 0 || idt_alias.back() == ')')
                 variant_monomer = true;
 
             if (idt_alias.size() == 1 || variant_monomer)
             {
-                if (IDT_STANDARD_BASES.count(idt_alias[0]) == 0 && !variant_monomer)
+                if (IDT_STANDARD_BASES.count(idt_alias) == 0 && !variant_monomer)
                 {
                     if (invalid_symbols.size())
                         invalid_symbols += ',';
@@ -1006,8 +1094,8 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         idt_alias = 'r' + idt_alias;
                     if (!document.hasVariantMonomerTemplate(idt_alias))
                     {
-                        auto it = IDT_STANDARD_MIXED_BASES.find(mixed_base);
-                        if (it == IDT_STANDARD_MIXED_BASES.end())
+                        auto it = STANDARD_MIXED_BASES.find(mixed_base);
+                        if (it == STANDARD_MIXED_BASES.end())
                             throw Error("Unknown mixed base '%s'", mixed_base.c_str());
 
                         std::vector<KetVariantMonomerOption> options;
@@ -1623,4 +1711,172 @@ void SequenceLoader::loadHELM(BaseMolecule& mol)
     }
     if (helm_part != helm_parts::End)
         throw Error(unexpected_eod);
+}
+
+void SequenceLoader::loadSequence(KetDocument& document, const std::string& seq_type_str)
+{
+    if (seq_type_str == kMonomerClassDNA)
+        loadSequence(document, SeqType::DNASeq);
+    else if (seq_type_str == kMonomerClassRNA)
+        loadSequence(document, SeqType::RNASeq);
+    else if (seq_type_str == kMonomerClassPEPTIDE)
+        loadSequence(document, SeqType::PEPTIDESeq);
+    else
+        throw Error("Bad sequence type: %s", seq_type_str.c_str());
+}
+
+void SequenceLoader::loadSequence(KetDocument& document, SeqType seq_type)
+{
+    _seq_id = 0;
+    _last_monomer_idx = -1;
+    _row = 0;
+    _col = 0;
+    const int row_size = seq_type == SeqType::PEPTIDESeq ? 1 : 2;
+    std::string invalid_symbols;
+
+    bool isGenBankPept = false;
+    bool start_char = true;
+
+    while (!_scanner.isEOF())
+    {
+        auto ch = _scanner.readChar();
+        if (ch == '\n' || ch == '\r')
+            continue;
+
+        if (start_char)
+        {
+            if (isdigit(ch))
+                isGenBankPept = true;
+            start_char = false;
+        }
+
+        if (isGenBankPept)
+        {
+            if (ch == ' ' || isdigit(ch))
+                continue;
+            if (islower(ch))
+                ch -= CHAR_SHIFT_CONVERT;
+        }
+
+        if (!isGenBankPept && ch == ' ')
+        {
+            _seq_id = 0;
+            _col = 0;
+            _row += row_size;
+            continue;
+        }
+        std::string monomer(1, ch);
+        if ((seq_type == SeqType::PEPTIDESeq && STANDARD_PEPTIDES.count(monomer) > 0) ||
+            (seq_type != SeqType::PEPTIDESeq && STANDARD_NUCLEOTIDES.count(monomer) > 0))
+        {
+            addMonomer(document, monomer, seq_type);
+        }
+        else if ((seq_type == SeqType::PEPTIDESeq && STANDARD_MIXED_PEPTIDES.count(monomer) > 0) ||
+                 (seq_type != SeqType::PEPTIDESeq && STANDARD_MIXED_BASES.count(monomer) > 0))
+        {
+            addMonomer(document, monomer, seq_type, true);
+        }
+        else
+        {
+            if (invalid_symbols.size())
+                invalid_symbols += ',';
+            invalid_symbols += ch;
+        }
+    }
+
+    if (invalid_symbols.size())
+        throw Error("Invalid symbols in the sequence: %s", invalid_symbols.c_str());
+}
+
+void SequenceLoader::loadFasta(KetDocument& document, const std::string& seq_type_str)
+{
+    if (seq_type_str == kMonomerClassDNA)
+        loadFasta(document, SeqType::DNASeq);
+    else if (seq_type_str == kMonomerClassRNA)
+        loadFasta(document, SeqType::RNASeq);
+    else if (seq_type_str == kMonomerClassPEPTIDE)
+        loadFasta(document, SeqType::PEPTIDESeq);
+    else
+        throw Error("Bad sequence type: %s", seq_type_str.c_str());
+}
+
+void SequenceLoader::loadFasta(KetDocument& document, SeqType seq_type)
+{
+    _seq_id = 0;
+    _last_monomer_idx = -1;
+    _row = 0;
+    _col = 0;
+    const int row_size = seq_type == SeqType::PEPTIDESeq ? 1 : 2;
+    std::string invalid_symbols;
+    Array<int> mapping;
+    std::vector<std::string> properties;
+
+    while (!_scanner.isEOF())
+    {
+        Array<char> str;
+        _scanner.readLine(str, true);
+        if (str.size())
+        {
+            std::string fasta_str = str.ptr();
+            switch (fasta_str.front())
+            {
+            case ';':
+                // handle comment
+                continue;
+                break;
+            case '>':
+                // handle header
+                if (_seq_id)
+                {
+                    _seq_id = 0;
+                    _col = 0;
+                    _row += row_size;
+                }
+                _last_monomer_idx = -1;
+                properties.emplace_back(fasta_str);
+                continue;
+                break;
+            default:
+                break;
+            }
+
+            for (auto ch : fasta_str)
+            {
+                auto monomer = std::string(1, ch);
+                if (ch == '-')
+                    continue;
+                else if (ch == '*' && seq_type == SeqType::PEPTIDESeq)
+                {
+                    _seq_id = 0;
+                    _col = 0;
+                    _row += row_size;
+                    continue;
+                }
+                if ((seq_type == SeqType::PEPTIDESeq && STANDARD_PEPTIDES.count(monomer) > 0) ||
+                    (seq_type != SeqType::PEPTIDESeq && STANDARD_NUCLEOTIDES.count(monomer) > 0))
+                {
+                    addMonomer(document, monomer, seq_type);
+                }
+                else if ((seq_type == SeqType::PEPTIDESeq && STANDARD_MIXED_PEPTIDES.count(monomer) > 0) ||
+                         (seq_type != SeqType::PEPTIDESeq && STANDARD_MIXED_BASES.count(monomer) > 0))
+                {
+                    addMonomer(document, monomer, seq_type, true);
+                }
+                else
+                {
+                    if (invalid_symbols.size())
+                        invalid_symbols += ',';
+                    invalid_symbols += ch;
+                }
+            }
+
+            if (invalid_symbols.size())
+                throw Error("Invalid symbols in the sequence: %s", invalid_symbols.c_str());
+        }
+    }
+
+    if (!properties.size())
+        throw Error("Invalid FASTA: no '>' headers");
+    else
+        document.setFastaProps(properties);
 }

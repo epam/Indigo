@@ -28,8 +28,9 @@ files = [
     "1950-mixed-seq",
 ]
 
-# empty library - internal used for now
-lib = indigo.loadMonomerLibrary('{"root":{}}')
+lib = indigo.loadMonomerLibraryFromFile(
+    os.path.join(ref_path, "monomer_library.ket")
+)
 
 files.sort()
 for filename in files:

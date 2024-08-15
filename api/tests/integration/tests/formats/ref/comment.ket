@@ -1944,16 +1944,16 @@
         ],
         "templates": [
             {
-                "$ref": "monomerTemplate-Gly"
+                "$ref": "monomerTemplate-G___Glycine"
             },
             {
-                "$ref": "monomerTemplate-Cys"
+                "$ref": "monomerTemplate-C___Cysteine"
             },
             {
-                "$ref": "monomerTemplate-Ala"
+                "$ref": "monomerTemplate-A___Alanine"
             },
             {
-                "$ref": "monomerTemplate-Thr"
+                "$ref": "monomerTemplate-T___Threonine"
             }
         ]
     },
@@ -1962,1554 +1962,1553 @@
         "id": "0",
         "seqid": 1,
         "position": {
-            "x": 0.0,
-            "y": -0.0
+            "x": 0.000000,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer1": {
         "type": "monomer",
         "id": "1",
         "seqid": 2,
         "position": {
-            "x": 1.600000023841858,
-            "y": -0.0
+            "x": 1.600000,
+            "y": -0.000000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer2": {
         "type": "monomer",
         "id": "2",
         "seqid": 3,
         "position": {
-            "x": 3.200000047683716,
-            "y": -0.0
+            "x": 3.200000,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer3": {
         "type": "monomer",
         "id": "3",
         "seqid": 4,
         "position": {
-            "x": 4.800000190734863,
-            "y": -0.0
+            "x": 4.800000,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer4": {
         "type": "monomer",
         "id": "4",
         "seqid": 5,
         "position": {
-            "x": 6.400000095367432,
-            "y": -0.0
+            "x": 6.400000,
+            "y": -0.000000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer5": {
         "type": "monomer",
         "id": "5",
         "seqid": 6,
         "position": {
-            "x": 8.0,
-            "y": -0.0
+            "x": 8.000000,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer6": {
         "type": "monomer",
         "id": "6",
         "seqid": 7,
         "position": {
-            "x": 9.600000381469727,
-            "y": -0.0
+            "x": 9.600000,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer7": {
         "type": "monomer",
         "id": "7",
         "seqid": 8,
         "position": {
-            "x": 11.199999809265137,
-            "y": -0.0
+            "x": 11.200000,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer8": {
         "type": "monomer",
         "id": "8",
         "seqid": 9,
         "position": {
-            "x": 12.800000190734864,
-            "y": -0.0
+            "x": 12.800000,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer9": {
         "type": "monomer",
         "id": "9",
         "seqid": 10,
         "position": {
-            "x": 14.40000057220459,
-            "y": -0.0
+            "x": 14.400001,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer10": {
         "type": "monomer",
         "id": "10",
         "seqid": 11,
         "position": {
-            "x": 16.0,
-            "y": -0.0
+            "x": 16.000000,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer11": {
         "type": "monomer",
         "id": "11",
         "seqid": 12,
         "position": {
-            "x": 17.600000381469728,
-            "y": -0.0
+            "x": 17.600000,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer12": {
         "type": "monomer",
         "id": "12",
         "seqid": 13,
         "position": {
-            "x": 19.200000762939454,
-            "y": -0.0
+            "x": 19.200001,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer13": {
         "type": "monomer",
         "id": "13",
         "seqid": 14,
         "position": {
-            "x": 20.80000114440918,
-            "y": -0.0
+            "x": 20.800001,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer14": {
         "type": "monomer",
         "id": "14",
         "seqid": 15,
         "position": {
-            "x": 22.399999618530275,
-            "y": -0.0
+            "x": 22.400000,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer15": {
         "type": "monomer",
         "id": "15",
         "seqid": 16,
         "position": {
-            "x": 24.0,
-            "y": -0.0
+            "x": 24.000000,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer16": {
         "type": "monomer",
         "id": "16",
         "seqid": 17,
         "position": {
-            "x": 25.600000381469728,
-            "y": -0.0
+            "x": 25.600000,
+            "y": -0.000000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer17": {
         "type": "monomer",
         "id": "17",
         "seqid": 18,
         "position": {
-            "x": 27.200000762939454,
-            "y": -0.0
+            "x": 27.200001,
+            "y": -0.000000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer18": {
         "type": "monomer",
         "id": "18",
         "seqid": 19,
         "position": {
-            "x": 28.80000114440918,
-            "y": -0.0
+            "x": 28.800001,
+            "y": -0.000000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer19": {
         "type": "monomer",
         "id": "19",
         "seqid": 20,
         "position": {
-            "x": 30.399999618530275,
-            "y": -0.0
+            "x": 30.400000,
+            "y": -0.000000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer20": {
         "type": "monomer",
         "id": "20",
         "seqid": 21,
         "position": {
-            "x": 32.0,
-            "y": -0.0
+            "x": 32.000000,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer21": {
         "type": "monomer",
         "id": "21",
         "seqid": 22,
         "position": {
-            "x": 33.60000228881836,
-            "y": -0.0
+            "x": 33.600002,
+            "y": -0.000000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer22": {
         "type": "monomer",
         "id": "22",
         "seqid": 23,
         "position": {
-            "x": 35.20000076293945,
-            "y": -0.0
+            "x": 35.200001,
+            "y": -0.000000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer23": {
         "type": "monomer",
         "id": "23",
         "seqid": 24,
         "position": {
-            "x": 36.79999923706055,
-            "y": -0.0
+            "x": 36.799999,
+            "y": -0.000000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer24": {
         "type": "monomer",
         "id": "24",
         "seqid": 25,
         "position": {
-            "x": 38.400001525878909,
-            "y": -0.0
+            "x": 38.400002,
+            "y": -0.000000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer25": {
         "type": "monomer",
         "id": "25",
         "seqid": 26,
         "position": {
-            "x": 40.0,
-            "y": -0.0
+            "x": 40.000000,
+            "y": -0.000000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer26": {
         "type": "monomer",
         "id": "26",
         "seqid": 27,
         "position": {
-            "x": 41.60000228881836,
-            "y": -0.0
+            "x": 41.600002,
+            "y": -0.000000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer27": {
         "type": "monomer",
         "id": "27",
         "seqid": 28,
         "position": {
-            "x": 43.20000076293945,
-            "y": -0.0
+            "x": 43.200001,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer28": {
         "type": "monomer",
         "id": "28",
         "seqid": 29,
         "position": {
-            "x": 44.79999923706055,
-            "y": -0.0
+            "x": 44.799999,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer29": {
         "type": "monomer",
         "id": "29",
         "seqid": 30,
         "position": {
-            "x": 46.400001525878909,
-            "y": -0.0
+            "x": 46.400002,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer30": {
         "type": "monomer",
         "id": "30",
         "seqid": 31,
         "position": {
-            "x": 48.0,
-            "y": -0.0
+            "x": 48.000000,
+            "y": -0.000000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer31": {
         "type": "monomer",
         "id": "31",
         "seqid": 32,
         "position": {
-            "x": 49.60000228881836,
-            "y": -0.0
+            "x": 49.600002,
+            "y": -0.000000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer32": {
         "type": "monomer",
         "id": "32",
         "seqid": 33,
         "position": {
-            "x": 51.20000076293945,
-            "y": -0.0
+            "x": 51.200001,
+            "y": -0.000000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer33": {
         "type": "monomer",
         "id": "33",
         "seqid": 34,
         "position": {
-            "x": 52.79999923706055,
-            "y": -0.0
+            "x": 52.799999,
+            "y": -0.000000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer34": {
         "type": "monomer",
         "id": "34",
         "seqid": 35,
         "position": {
-            "x": 54.400001525878909,
-            "y": -0.0
+            "x": 54.400002,
+            "y": -0.000000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer35": {
         "type": "monomer",
         "id": "35",
         "seqid": 36,
         "position": {
-            "x": 56.0,
-            "y": -0.0
+            "x": 56.000000,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer36": {
         "type": "monomer",
         "id": "36",
         "seqid": 37,
         "position": {
-            "x": 57.60000228881836,
-            "y": -0.0
+            "x": 57.600002,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer37": {
         "type": "monomer",
         "id": "37",
         "seqid": 38,
         "position": {
-            "x": 59.20000076293945,
-            "y": -0.0
+            "x": 59.200001,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer38": {
         "type": "monomer",
         "id": "38",
         "seqid": 39,
         "position": {
-            "x": 60.79999923706055,
-            "y": -0.0
+            "x": 60.799999,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer39": {
         "type": "monomer",
         "id": "39",
         "seqid": 40,
         "position": {
-            "x": 62.400001525878909,
-            "y": -0.0
+            "x": 62.400002,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer40": {
         "type": "monomer",
         "id": "40",
         "seqid": 41,
         "position": {
-            "x": 64.0,
-            "y": -0.0
+            "x": 64.000000,
+            "y": -0.000000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer41": {
         "type": "monomer",
         "id": "41",
         "seqid": 42,
         "position": {
-            "x": 65.5999984741211,
-            "y": -0.0
+            "x": 65.599998,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer42": {
         "type": "monomer",
         "id": "42",
         "seqid": 43,
         "position": {
-            "x": 67.20000457763672,
-            "y": -0.0
+            "x": 67.200005,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer43": {
         "type": "monomer",
         "id": "43",
         "seqid": 44,
         "position": {
-            "x": 68.80000305175781,
-            "y": -0.0
+            "x": 68.800003,
+            "y": -0.000000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer44": {
         "type": "monomer",
         "id": "44",
         "seqid": 45,
         "position": {
-            "x": 70.4000015258789,
-            "y": -0.0
+            "x": 70.400002,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer45": {
         "type": "monomer",
         "id": "45",
         "seqid": 46,
         "position": {
-            "x": 72.0,
-            "y": -0.0
+            "x": 72.000000,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer46": {
         "type": "monomer",
         "id": "46",
         "seqid": 47,
         "position": {
-            "x": 73.5999984741211,
-            "y": -0.0
+            "x": 73.599998,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer47": {
         "type": "monomer",
         "id": "47",
         "seqid": 48,
         "position": {
-            "x": 75.20000457763672,
-            "y": -0.0
+            "x": 75.200005,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer48": {
         "type": "monomer",
         "id": "48",
         "seqid": 49,
         "position": {
-            "x": 76.80000305175781,
-            "y": -0.0
+            "x": 76.800003,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer49": {
         "type": "monomer",
         "id": "49",
         "seqid": 50,
         "position": {
-            "x": 78.4000015258789,
-            "y": -0.0
+            "x": 78.400002,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer50": {
         "type": "monomer",
         "id": "50",
         "seqid": 51,
         "position": {
-            "x": 80.0,
-            "y": -0.0
+            "x": 80.000000,
+            "y": -0.000000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer51": {
         "type": "monomer",
         "id": "51",
         "seqid": 52,
         "position": {
-            "x": 81.5999984741211,
-            "y": -0.0
+            "x": 81.599998,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer52": {
         "type": "monomer",
         "id": "52",
         "seqid": 53,
         "position": {
-            "x": 83.20000457763672,
-            "y": -0.0
+            "x": 83.200005,
+            "y": -0.000000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer53": {
         "type": "monomer",
         "id": "53",
         "seqid": 54,
         "position": {
-            "x": 84.80000305175781,
-            "y": -0.0
+            "x": 84.800003,
+            "y": -0.000000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer54": {
         "type": "monomer",
         "id": "54",
         "seqid": 55,
         "position": {
-            "x": 86.4000015258789,
-            "y": -0.0
+            "x": 86.400002,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer55": {
         "type": "monomer",
         "id": "55",
         "seqid": 56,
         "position": {
-            "x": 88.0,
-            "y": -0.0
+            "x": 88.000000,
+            "y": -0.000000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer56": {
         "type": "monomer",
         "id": "56",
         "seqid": 57,
         "position": {
-            "x": 89.5999984741211,
-            "y": -0.0
+            "x": 89.599998,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer57": {
         "type": "monomer",
         "id": "57",
         "seqid": 58,
         "position": {
-            "x": 91.20000457763672,
-            "y": -0.0
+            "x": 91.200005,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer58": {
         "type": "monomer",
         "id": "58",
         "seqid": 59,
         "position": {
-            "x": 92.80000305175781,
-            "y": -0.0
+            "x": 92.800003,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer59": {
         "type": "monomer",
         "id": "59",
         "seqid": 60,
         "position": {
-            "x": 94.4000015258789,
-            "y": -0.0
+            "x": 94.400002,
+            "y": -0.000000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer60": {
         "type": "monomer",
         "id": "60",
         "seqid": 61,
         "position": {
-            "x": 96.0,
-            "y": -0.0
+            "x": 96.000000,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer61": {
         "type": "monomer",
         "id": "61",
         "seqid": 62,
         "position": {
-            "x": 97.5999984741211,
-            "y": -0.0
+            "x": 97.599998,
+            "y": -0.000000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer62": {
         "type": "monomer",
         "id": "62",
         "seqid": 63,
         "position": {
-            "x": 99.20000457763672,
-            "y": -0.0
+            "x": 99.200005,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer63": {
         "type": "monomer",
         "id": "63",
         "seqid": 64,
         "position": {
-            "x": 100.80000305175781,
-            "y": -0.0
+            "x": 100.800003,
+            "y": -0.000000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer64": {
         "type": "monomer",
         "id": "64",
         "seqid": 65,
         "position": {
-            "x": 102.4000015258789,
-            "y": -0.0
+            "x": 102.400002,
+            "y": -0.000000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer65": {
         "type": "monomer",
         "id": "65",
         "seqid": 66,
         "position": {
-            "x": 104.0,
-            "y": -0.0
+            "x": 104.000000,
+            "y": -0.000000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer66": {
         "type": "monomer",
         "id": "66",
         "seqid": 67,
         "position": {
-            "x": 105.5999984741211,
-            "y": -0.0
+            "x": 105.599998,
+            "y": -0.000000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer67": {
         "type": "monomer",
         "id": "67",
         "seqid": 68,
         "position": {
-            "x": 107.20000457763672,
-            "y": -0.0
+            "x": 107.200005,
+            "y": -0.000000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer68": {
         "type": "monomer",
         "id": "68",
         "seqid": 69,
         "position": {
-            "x": 108.80000305175781,
-            "y": -0.0
+            "x": 108.800003,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer69": {
         "type": "monomer",
         "id": "69",
         "seqid": 70,
         "position": {
-            "x": 110.4000015258789,
-            "y": -0.0
+            "x": 110.400002,
+            "y": -0.000000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer70": {
         "type": "monomer",
         "id": "70",
         "seqid": 1,
         "position": {
-            "x": 0.0,
-            "y": -1.600000023841858
+            "x": 0.000000,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer71": {
         "type": "monomer",
         "id": "71",
         "seqid": 2,
         "position": {
-            "x": 1.600000023841858,
-            "y": -1.600000023841858
+            "x": 1.600000,
+            "y": -1.600000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer72": {
         "type": "monomer",
         "id": "72",
         "seqid": 3,
         "position": {
-            "x": 3.200000047683716,
-            "y": -1.600000023841858
+            "x": 3.200000,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer73": {
         "type": "monomer",
         "id": "73",
         "seqid": 4,
         "position": {
-            "x": 4.800000190734863,
-            "y": -1.600000023841858
+            "x": 4.800000,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer74": {
         "type": "monomer",
         "id": "74",
         "seqid": 5,
         "position": {
-            "x": 6.400000095367432,
-            "y": -1.600000023841858
+            "x": 6.400000,
+            "y": -1.600000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer75": {
         "type": "monomer",
         "id": "75",
         "seqid": 6,
         "position": {
-            "x": 8.0,
-            "y": -1.600000023841858
+            "x": 8.000000,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer76": {
         "type": "monomer",
         "id": "76",
         "seqid": 7,
         "position": {
-            "x": 9.600000381469727,
-            "y": -1.600000023841858
+            "x": 9.600000,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer77": {
         "type": "monomer",
         "id": "77",
         "seqid": 8,
         "position": {
-            "x": 11.199999809265137,
-            "y": -1.600000023841858
+            "x": 11.200000,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer78": {
         "type": "monomer",
         "id": "78",
         "seqid": 9,
         "position": {
-            "x": 12.800000190734864,
-            "y": -1.600000023841858
+            "x": 12.800000,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer79": {
         "type": "monomer",
         "id": "79",
         "seqid": 10,
         "position": {
-            "x": 14.40000057220459,
-            "y": -1.600000023841858
+            "x": 14.400001,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer80": {
         "type": "monomer",
         "id": "80",
         "seqid": 11,
         "position": {
-            "x": 16.0,
-            "y": -1.600000023841858
+            "x": 16.000000,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer81": {
         "type": "monomer",
         "id": "81",
         "seqid": 12,
         "position": {
-            "x": 17.600000381469728,
-            "y": -1.600000023841858
+            "x": 17.600000,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer82": {
         "type": "monomer",
         "id": "82",
         "seqid": 13,
         "position": {
-            "x": 19.200000762939454,
-            "y": -1.600000023841858
+            "x": 19.200001,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer83": {
         "type": "monomer",
         "id": "83",
         "seqid": 14,
         "position": {
-            "x": 20.80000114440918,
-            "y": -1.600000023841858
+            "x": 20.800001,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer84": {
         "type": "monomer",
         "id": "84",
         "seqid": 15,
         "position": {
-            "x": 22.399999618530275,
-            "y": -1.600000023841858
+            "x": 22.400000,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer85": {
         "type": "monomer",
         "id": "85",
         "seqid": 16,
         "position": {
-            "x": 24.0,
-            "y": -1.600000023841858
+            "x": 24.000000,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer86": {
         "type": "monomer",
         "id": "86",
         "seqid": 17,
         "position": {
-            "x": 25.600000381469728,
-            "y": -1.600000023841858
+            "x": 25.600000,
+            "y": -1.600000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer87": {
         "type": "monomer",
         "id": "87",
         "seqid": 18,
         "position": {
-            "x": 27.200000762939454,
-            "y": -1.600000023841858
+            "x": 27.200001,
+            "y": -1.600000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer88": {
         "type": "monomer",
         "id": "88",
         "seqid": 19,
         "position": {
-            "x": 28.80000114440918,
-            "y": -1.600000023841858
+            "x": 28.800001,
+            "y": -1.600000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer89": {
         "type": "monomer",
         "id": "89",
         "seqid": 20,
         "position": {
-            "x": 30.399999618530275,
-            "y": -1.600000023841858
+            "x": 30.400000,
+            "y": -1.600000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer90": {
         "type": "monomer",
         "id": "90",
         "seqid": 21,
         "position": {
-            "x": 32.0,
-            "y": -1.600000023841858
+            "x": 32.000000,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer91": {
         "type": "monomer",
         "id": "91",
         "seqid": 22,
         "position": {
-            "x": 33.60000228881836,
-            "y": -1.600000023841858
+            "x": 33.600002,
+            "y": -1.600000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer92": {
         "type": "monomer",
         "id": "92",
         "seqid": 23,
         "position": {
-            "x": 35.20000076293945,
-            "y": -1.600000023841858
+            "x": 35.200001,
+            "y": -1.600000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer93": {
         "type": "monomer",
         "id": "93",
         "seqid": 24,
         "position": {
-            "x": 36.79999923706055,
-            "y": -1.600000023841858
+            "x": 36.799999,
+            "y": -1.600000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer94": {
         "type": "monomer",
         "id": "94",
         "seqid": 25,
         "position": {
-            "x": 38.400001525878909,
-            "y": -1.600000023841858
+            "x": 38.400002,
+            "y": -1.600000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer95": {
         "type": "monomer",
         "id": "95",
         "seqid": 26,
         "position": {
-            "x": 40.0,
-            "y": -1.600000023841858
+            "x": 40.000000,
+            "y": -1.600000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer96": {
         "type": "monomer",
         "id": "96",
         "seqid": 27,
         "position": {
-            "x": 41.60000228881836,
-            "y": -1.600000023841858
+            "x": 41.600002,
+            "y": -1.600000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer97": {
         "type": "monomer",
         "id": "97",
         "seqid": 28,
         "position": {
-            "x": 43.20000076293945,
-            "y": -1.600000023841858
+            "x": 43.200001,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer98": {
         "type": "monomer",
         "id": "98",
         "seqid": 29,
         "position": {
-            "x": 44.79999923706055,
-            "y": -1.600000023841858
+            "x": 44.799999,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer99": {
         "type": "monomer",
         "id": "99",
         "seqid": 30,
         "position": {
-            "x": 46.400001525878909,
-            "y": -1.600000023841858
+            "x": 46.400002,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer100": {
         "type": "monomer",
         "id": "100",
         "seqid": 31,
         "position": {
-            "x": 48.0,
-            "y": -1.600000023841858
+            "x": 48.000000,
+            "y": -1.600000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer101": {
         "type": "monomer",
         "id": "101",
         "seqid": 32,
         "position": {
-            "x": 49.60000228881836,
-            "y": -1.600000023841858
+            "x": 49.600002,
+            "y": -1.600000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer102": {
         "type": "monomer",
         "id": "102",
         "seqid": 33,
         "position": {
-            "x": 51.20000076293945,
-            "y": -1.600000023841858
+            "x": 51.200001,
+            "y": -1.600000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer103": {
         "type": "monomer",
         "id": "103",
         "seqid": 34,
         "position": {
-            "x": 52.79999923706055,
-            "y": -1.600000023841858
+            "x": 52.799999,
+            "y": -1.600000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer104": {
         "type": "monomer",
         "id": "104",
         "seqid": 35,
         "position": {
-            "x": 54.400001525878909,
-            "y": -1.600000023841858
+            "x": 54.400002,
+            "y": -1.600000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer105": {
         "type": "monomer",
         "id": "105",
         "seqid": 36,
         "position": {
-            "x": 56.0,
-            "y": -1.600000023841858
+            "x": 56.000000,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer106": {
         "type": "monomer",
         "id": "106",
         "seqid": 37,
         "position": {
-            "x": 57.60000228881836,
-            "y": -1.600000023841858
+            "x": 57.600002,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer107": {
         "type": "monomer",
         "id": "107",
         "seqid": 38,
         "position": {
-            "x": 59.20000076293945,
-            "y": -1.600000023841858
+            "x": 59.200001,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer108": {
         "type": "monomer",
         "id": "108",
         "seqid": 39,
         "position": {
-            "x": 60.79999923706055,
-            "y": -1.600000023841858
+            "x": 60.799999,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer109": {
         "type": "monomer",
         "id": "109",
         "seqid": 40,
         "position": {
-            "x": 62.400001525878909,
-            "y": -1.600000023841858
+            "x": 62.400002,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer110": {
         "type": "monomer",
         "id": "110",
         "seqid": 41,
         "position": {
-            "x": 64.0,
-            "y": -1.600000023841858
+            "x": 64.000000,
+            "y": -1.600000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer111": {
         "type": "monomer",
         "id": "111",
         "seqid": 42,
         "position": {
-            "x": 65.5999984741211,
-            "y": -1.600000023841858
+            "x": 65.599998,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer112": {
         "type": "monomer",
         "id": "112",
         "seqid": 43,
         "position": {
-            "x": 67.20000457763672,
-            "y": -1.600000023841858
+            "x": 67.200005,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer113": {
         "type": "monomer",
         "id": "113",
         "seqid": 44,
         "position": {
-            "x": 68.80000305175781,
-            "y": -1.600000023841858
+            "x": 68.800003,
+            "y": -1.600000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer114": {
         "type": "monomer",
         "id": "114",
         "seqid": 45,
         "position": {
-            "x": 70.4000015258789,
-            "y": -1.600000023841858
+            "x": 70.400002,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer115": {
         "type": "monomer",
         "id": "115",
         "seqid": 46,
         "position": {
-            "x": 72.0,
-            "y": -1.600000023841858
+            "x": 72.000000,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer116": {
         "type": "monomer",
         "id": "116",
         "seqid": 47,
         "position": {
-            "x": 73.5999984741211,
-            "y": -1.600000023841858
+            "x": 73.599998,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer117": {
         "type": "monomer",
         "id": "117",
         "seqid": 48,
         "position": {
-            "x": 75.20000457763672,
-            "y": -1.600000023841858
+            "x": 75.200005,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer118": {
         "type": "monomer",
         "id": "118",
         "seqid": 49,
         "position": {
-            "x": 76.80000305175781,
-            "y": -1.600000023841858
+            "x": 76.800003,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer119": {
         "type": "monomer",
         "id": "119",
         "seqid": 50,
         "position": {
-            "x": 78.4000015258789,
-            "y": -1.600000023841858
+            "x": 78.400002,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer120": {
         "type": "monomer",
         "id": "120",
         "seqid": 51,
         "position": {
-            "x": 80.0,
-            "y": -1.600000023841858
+            "x": 80.000000,
+            "y": -1.600000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer121": {
         "type": "monomer",
         "id": "121",
         "seqid": 52,
         "position": {
-            "x": 81.5999984741211,
-            "y": -1.600000023841858
+            "x": 81.599998,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer122": {
         "type": "monomer",
         "id": "122",
         "seqid": 53,
         "position": {
-            "x": 83.20000457763672,
-            "y": -1.600000023841858
+            "x": 83.200005,
+            "y": -1.600000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer123": {
         "type": "monomer",
         "id": "123",
         "seqid": 54,
         "position": {
-            "x": 84.80000305175781,
-            "y": -1.600000023841858
+            "x": 84.800003,
+            "y": -1.600000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer124": {
         "type": "monomer",
         "id": "124",
         "seqid": 55,
         "position": {
-            "x": 86.4000015258789,
-            "y": -1.600000023841858
+            "x": 86.400002,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer125": {
         "type": "monomer",
         "id": "125",
         "seqid": 56,
         "position": {
-            "x": 88.0,
-            "y": -1.600000023841858
+            "x": 88.000000,
+            "y": -1.600000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer126": {
         "type": "monomer",
         "id": "126",
         "seqid": 57,
         "position": {
-            "x": 89.5999984741211,
-            "y": -1.600000023841858
+            "x": 89.599998,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer127": {
         "type": "monomer",
         "id": "127",
         "seqid": 58,
         "position": {
-            "x": 91.20000457763672,
-            "y": -1.600000023841858
+            "x": 91.200005,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer128": {
         "type": "monomer",
         "id": "128",
         "seqid": 59,
         "position": {
-            "x": 92.80000305175781,
-            "y": -1.600000023841858
+            "x": 92.800003,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer129": {
         "type": "monomer",
         "id": "129",
         "seqid": 60,
         "position": {
-            "x": 94.4000015258789,
-            "y": -1.600000023841858
+            "x": 94.400002,
+            "y": -1.600000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer130": {
         "type": "monomer",
         "id": "130",
         "seqid": 61,
         "position": {
-            "x": 96.0,
-            "y": -1.600000023841858
+            "x": 96.000000,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer131": {
         "type": "monomer",
         "id": "131",
         "seqid": 62,
         "position": {
-            "x": 97.5999984741211,
-            "y": -1.600000023841858
+            "x": 97.599998,
+            "y": -1.600000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer132": {
         "type": "monomer",
         "id": "132",
         "seqid": 63,
         "position": {
-            "x": 99.20000457763672,
-            "y": -1.600000023841858
+            "x": 99.200005,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer133": {
         "type": "monomer",
         "id": "133",
         "seqid": 64,
         "position": {
-            "x": 100.80000305175781,
-            "y": -1.600000023841858
+            "x": 100.800003,
+            "y": -1.600000
         },
-        "alias": "Gly",
-        "templateId": "Gly"
+        "alias": "G",
+        "templateId": "G___Glycine"
     },
     "monomer134": {
         "type": "monomer",
         "id": "134",
         "seqid": 65,
         "position": {
-            "x": 102.4000015258789,
-            "y": -1.600000023841858
+            "x": 102.400002,
+            "y": -1.600000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer135": {
         "type": "monomer",
         "id": "135",
         "seqid": 66,
         "position": {
-            "x": 104.0,
-            "y": -1.600000023841858
+            "x": 104.000000,
+            "y": -1.600000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer136": {
         "type": "monomer",
         "id": "136",
         "seqid": 67,
         "position": {
-            "x": 105.5999984741211,
-            "y": -1.600000023841858
+            "x": 105.599998,
+            "y": -1.600000
         },
-        "alias": "Thr",
-        "templateId": "Thr"
+        "alias": "T",
+        "templateId": "T___Threonine"
     },
     "monomer137": {
         "type": "monomer",
         "id": "137",
         "seqid": 68,
         "position": {
-            "x": 107.20000457763672,
-            "y": -1.600000023841858
+            "x": 107.200005,
+            "y": -1.600000
         },
-        "alias": "Cys",
-        "templateId": "Cys"
+        "alias": "C",
+        "templateId": "C___Cysteine"
     },
     "monomer138": {
         "type": "monomer",
         "id": "138",
         "seqid": 69,
         "position": {
-            "x": 108.80000305175781,
-            "y": -1.600000023841858
+            "x": 108.800003,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
     "monomer139": {
         "type": "monomer",
         "id": "139",
         "seqid": 70,
         "position": {
-            "x": 110.4000015258789,
-            "y": -1.600000023841858
+            "x": 110.400002,
+            "y": -1.600000
         },
-        "alias": "Ala",
-        "templateId": "Ala"
+        "alias": "A",
+        "templateId": "A___Alanine"
     },
-    "monomerTemplate-Gly": {
+    "monomerTemplate-G___Glycine": {
         "type": "monomerTemplate",
-        "id": "Gly",
+        "id": "G___Glycine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
-        "alias": "G",
-        "name": "Gly",
         "fullName": "Glycine",
+        "alias": "G",
         "naturalAnalogShort": "G",
-        "naturalAnalog": "Gly",
         "attachmentPoints": [
             {
                 "attachmentAtom": 4,
+                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         5
@@ -3518,6 +3517,7 @@
             },
             {
                 "attachmentAtom": 1,
+                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         3
@@ -3529,49 +3529,49 @@
             {
                 "label": "C",
                 "location": [
-                    -0.33629998564720156,
-                    0.534600019454956,
-                    0.0
+                    -0.336300,
+                    0.534600,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.992900013923645,
-                    -0.11069999635219574,
-                    0.0
+                    0.992900,
+                    -0.110700,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.0781999826431275,
-                    -1.2890000343322755,
-                    0.0
+                    1.078200,
+                    -1.289000,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.970900058746338,
-                    0.5519999861717224,
-                    0.0
+                    1.970900,
+                    0.552000,
+                    0.000000
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    -1.3259999752044678,
-                    -0.11069999635219574,
-                    0.0
+                    -1.326000,
+                    -0.110700,
+                    0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -2.379699945449829,
-                    0.423799991607666,
-                    0.0
+                    -2.379700,
+                    0.423800,
+                    0.000000
                 ]
             }
         ],
@@ -3613,19 +3613,18 @@
             }
         ]
     },
-    "monomerTemplate-Cys": {
+    "monomerTemplate-C___Cysteine": {
         "type": "monomerTemplate",
-        "id": "Cys",
+        "id": "C___Cysteine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
-        "alias": "C",
-        "name": "Cys",
         "fullName": "Cysteine",
+        "alias": "C",
         "naturalAnalogShort": "C",
-        "naturalAnalog": "Cys",
         "attachmentPoints": [
             {
                 "attachmentAtom": 4,
+                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         7
@@ -3634,6 +3633,7 @@
             },
             {
                 "attachmentAtom": 0,
+                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         6
@@ -3642,6 +3642,7 @@
             },
             {
                 "attachmentAtom": 3,
+                "type": "side",
                 "leavingGroup": {
                     "atoms": [
                         8
@@ -3653,74 +3654,74 @@
             {
                 "label": "C",
                 "location": [
-                    1.4457000494003297,
-                    -1.1332999467849732,
-                    0.0
+                    1.445700,
+                    -1.133300,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.1453000009059906,
-                    -0.3840000033378601,
-                    0.0
+                    0.145300,
+                    -0.384000,
+                    0.000000
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "C",
                 "location": [
-                    0.14300000667572022,
-                    1.1167999505996705,
-                    0.0
+                    0.143000,
+                    1.116800,
+                    0.000000
                 ]
             },
             {
                 "label": "S",
                 "location": [
-                    -1.1572999954223633,
-                    1.8660999536514283,
-                    0.0
+                    -1.157300,
+                    1.866100,
+                    0.000000
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    -1.1550999879837037,
-                    -1.1332999467849732,
-                    0.0
+                    -1.155100,
+                    -1.133300,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.4474999904632569,
-                    -2.3333001136779787,
-                    0.0
+                    1.447500,
+                    -2.333300,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    2.4842000007629396,
-                    -0.5320000052452087,
-                    0.0
+                    2.484200,
+                    -0.532000,
+                    0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -2.194200038909912,
-                    -0.5331000089645386,
-                    0.0
+                    -2.194200,
+                    -0.533100,
+                    0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -1.15910005569458,
-                    3.0660998821258547,
-                    0.0
+                    -1.159100,
+                    3.066100,
+                    0.000000
                 ]
             }
         ],
@@ -3784,19 +3785,18 @@
             }
         ]
     },
-    "monomerTemplate-Ala": {
+    "monomerTemplate-A___Alanine": {
         "type": "monomerTemplate",
-        "id": "Ala",
+        "id": "A___Alanine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
-        "alias": "A",
-        "name": "Ala",
         "fullName": "Alanine",
+        "alias": "A",
         "naturalAnalogShort": "A",
-        "naturalAnalog": "Ala",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
+                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         6
@@ -3805,6 +3805,7 @@
             },
             {
                 "attachmentAtom": 3,
+                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         5
@@ -3816,58 +3817,58 @@
             {
                 "label": "N",
                 "location": [
-                    -0.9805331230163574,
-                    -0.3062945008277893,
-                    0.0
+                    -1.254900,
+                    -0.392000,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.21253088116645814,
-                    0.2057330161333084,
-                    0.0
+                    -0.272000,
+                    0.263300,
+                    0.000000
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "C",
                 "location": [
-                    -0.24245710670948029,
-                    1.3590255975723267,
-                    0.0
+                    -0.310300,
+                    1.739300,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.8222288489341736,
-                    -0.3062945008277893,
-                    0.0
+                    1.052300,
+                    -0.392000,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    0.846138596534729,
-                    -1.2284597158432007,
-                    0.0
+                    1.082900,
+                    -1.572200,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.5903092622756959,
-                    0.2057330161333084,
-                    0.0
+                    2.035300,
+                    0.263300,
+                    0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -1.823233723640442,
-                    0.07071340084075928,
-                    0.0
+                    -2.333400,
+                    0.090500,
+                    0.000000
                 ]
             }
         ],
@@ -3917,19 +3918,18 @@
             }
         ]
     },
-    "monomerTemplate-Thr": {
+    "monomerTemplate-T___Threonine": {
         "type": "monomerTemplate",
-        "id": "Thr",
+        "id": "T___Threonine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
-        "alias": "T",
-        "name": "Thr",
         "fullName": "Threonine",
+        "alias": "T",
         "naturalAnalogShort": "T",
-        "naturalAnalog": "Thr",
         "attachmentPoints": [
             {
                 "attachmentAtom": 3,
+                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         4
@@ -3938,6 +3938,7 @@
             },
             {
                 "attachmentAtom": 0,
+                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         8
@@ -3946,6 +3947,7 @@
             },
             {
                 "attachmentAtom": 6,
+                "type": "side",
                 "leavingGroup": {
                     "atoms": [
                         9
@@ -3957,83 +3959,83 @@
             {
                 "label": "C",
                 "location": [
-                    0.8195480108261108,
-                    -0.9813008904457092,
-                    0.0
+                    1.048800,
+                    -1.255800,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    0.8190010190010071,
-                    -1.9042301177978516,
-                    0.0
+                    1.048100,
+                    -2.436900,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.17949101328849793,
-                    -0.40289756655693056,
-                    0.0
+                    -0.229700,
+                    -0.515600,
+                    0.000000
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "N",
                 "location": [
-                    -1.1784518957138062,
-                    -0.9813008904457092,
-                    0.0
+                    -1.508100,
+                    -1.255800,
+                    0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -1.9786207675933838,
-                    -0.5213600397109985,
-                    0.0
+                    -2.532100,
+                    -0.667200,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.17886587977409364,
-                    0.7512523531913757,
-                    0.0
+                    -0.228900,
+                    0.961400,
+                    0.000000
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "O",
                 "location": [
-                    0.6207560300827026,
-                    1.2119746208190919,
-                    0.0
+                    0.794400,
+                    1.551000,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.9775500893592835,
-                    1.2136155366897584,
-                    0.0
+                    -1.251000,
+                    1.553100,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.6190917491912842,
-                    -0.5205004811286926,
-                    0.0
+                    2.072000,
+                    -0.666100,
+                    0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    0.6146609783172607,
-                    2.134669303894043,
-                    0.0
+                    0.786600,
+                    2.731800,
+                    0.000000
                 ]
             }
         ],

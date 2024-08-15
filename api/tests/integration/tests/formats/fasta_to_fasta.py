@@ -30,8 +30,9 @@ fasta_files = [
     {"file": "multiseq", "seq_type": "DNA"},
 ]
 
-# empty library - internal used for now
-lib = indigo.loadMonomerLibrary('{"root":{}}')
+lib = indigo.loadMonomerLibraryFromFile(
+    os.path.join(ref_path, "monomer_library.ket")
+)
 
 for desc in fasta_files:
     filename = desc["file"]

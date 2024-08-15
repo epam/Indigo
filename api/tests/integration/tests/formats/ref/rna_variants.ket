@@ -5,43 +5,16 @@
                 "$ref": "monomer0"
             },
             {
-                "$ref": "monomer1"
+                "$ref": "variantMonomer-1"
             },
             {
                 "$ref": "monomer2"
             },
             {
-                "$ref": "monomer3"
+                "$ref": "variantMonomer-3"
             },
             {
                 "$ref": "monomer4"
-            },
-            {
-                "$ref": "monomer5"
-            },
-            {
-                "$ref": "monomer6"
-            },
-            {
-                "$ref": "monomer7"
-            },
-            {
-                "$ref": "monomer8"
-            },
-            {
-                "$ref": "monomer9"
-            },
-            {
-                "$ref": "monomer10"
-            },
-            {
-                "$ref": "monomer11"
-            },
-            {
-                "$ref": "monomer12"
-            },
-            {
-                "$ref": "monomer13"
             }
         ],
         "connections": [
@@ -52,7 +25,7 @@
                     "attachmentPointId": "R3"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer1",
+                    "monomerId": "variantMonomer-1",
                     "attachmentPointId": "R1"
                 }
             },
@@ -63,7 +36,7 @@
                     "attachmentPointId": "R3"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer3",
+                    "monomerId": "variantMonomer-3",
                     "attachmentPointId": "R1"
                 }
             },
@@ -88,113 +61,20 @@
                     "monomerId": "monomer2",
                     "attachmentPointId": "R1"
                 }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer5",
-                    "attachmentPointId": "R3"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer6",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer2",
-                    "attachmentPointId": "R2"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer7",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer7",
-                    "attachmentPointId": "R2"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer5",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer8",
-                    "attachmentPointId": "R3"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer9",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer5",
-                    "attachmentPointId": "R2"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer10",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer10",
-                    "attachmentPointId": "R2"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer8",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer11",
-                    "attachmentPointId": "R3"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer12",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer8",
-                    "attachmentPointId": "R2"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer13",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer13",
-                    "attachmentPointId": "R2"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer11",
-                    "attachmentPointId": "R1"
-                }
             }
         ],
         "templates": [
             {
-                "$ref": "monomerTemplate-A___Adenine"
+                "$ref": "monomerTemplate-G___Guanine"
+            },
+            {
+                "$ref": "monomerTemplate-T___Thymine"
             },
             {
                 "$ref": "monomerTemplate-R___Ribose"
+            },
+            {
+                "$ref": "monomerTemplate-A___Adenine"
             },
             {
                 "$ref": "monomerTemplate-C___Cytosine"
@@ -203,13 +83,10 @@
                 "$ref": "monomerTemplate-P___Phosphate"
             },
             {
-                "$ref": "monomerTemplate-G___Guanine"
+                "$ref": "variantMonomerTemplate-K"
             },
             {
-                "$ref": "monomerTemplate-T___Thymine"
-            },
-            {
-                "$ref": "monomerTemplate-U___Uracil"
+                "$ref": "variantMonomerTemplate-N"
             }
         ]
     },
@@ -224,16 +101,15 @@
         "alias": "R",
         "templateId": "R___Ribose"
     },
-    "monomer1": {
-        "type": "monomer",
+    "variantMonomer-1": {
+        "type": "variantMonomer",
         "id": "1",
-        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -1.600000
         },
-        "alias": "A",
-        "templateId": "A___Adenine"
+        "seqid": 1,
+        "templateId": "K"
     },
     "monomer2": {
         "type": "monomer",
@@ -246,16 +122,15 @@
         "alias": "R",
         "templateId": "R___Ribose"
     },
-    "monomer3": {
-        "type": "monomer",
+    "variantMonomer-3": {
+        "type": "variantMonomer",
         "id": "3",
-        "seqid": 2,
         "position": {
             "x": 1.600000,
             "y": -1.600000
         },
-        "alias": "C",
-        "templateId": "C___Cytosine"
+        "seqid": 2,
+        "templateId": "N"
     },
     "monomer4": {
         "type": "monomer",
@@ -267,791 +142,6 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate"
-    },
-    "monomer5": {
-        "type": "monomer",
-        "id": "5",
-        "seqid": 3,
-        "position": {
-            "x": 4.800000,
-            "y": -0.000000
-        },
-        "alias": "R",
-        "templateId": "R___Ribose"
-    },
-    "monomer6": {
-        "type": "monomer",
-        "id": "6",
-        "seqid": 3,
-        "position": {
-            "x": 4.800000,
-            "y": -1.600000
-        },
-        "alias": "G",
-        "templateId": "G___Guanine"
-    },
-    "monomer7": {
-        "type": "monomer",
-        "id": "7",
-        "seqid": 2,
-        "position": {
-            "x": 3.200000,
-            "y": -0.000000
-        },
-        "alias": "P",
-        "templateId": "P___Phosphate"
-    },
-    "monomer8": {
-        "type": "monomer",
-        "id": "8",
-        "seqid": 4,
-        "position": {
-            "x": 8.000000,
-            "y": -0.000000
-        },
-        "alias": "R",
-        "templateId": "R___Ribose"
-    },
-    "monomer9": {
-        "type": "monomer",
-        "id": "9",
-        "seqid": 4,
-        "position": {
-            "x": 8.000000,
-            "y": -1.600000
-        },
-        "alias": "T",
-        "templateId": "T___Thymine"
-    },
-    "monomer10": {
-        "type": "monomer",
-        "id": "10",
-        "seqid": 3,
-        "position": {
-            "x": 6.400000,
-            "y": -0.000000
-        },
-        "alias": "P",
-        "templateId": "P___Phosphate"
-    },
-    "monomer11": {
-        "type": "monomer",
-        "id": "11",
-        "seqid": 5,
-        "position": {
-            "x": 11.200000,
-            "y": -0.000000
-        },
-        "alias": "R",
-        "templateId": "R___Ribose"
-    },
-    "monomer12": {
-        "type": "monomer",
-        "id": "12",
-        "seqid": 5,
-        "position": {
-            "x": 11.200000,
-            "y": -1.600000
-        },
-        "alias": "U",
-        "templateId": "U___Uracil"
-    },
-    "monomer13": {
-        "type": "monomer",
-        "id": "13",
-        "seqid": 4,
-        "position": {
-            "x": 9.599999,
-            "y": -0.000000
-        },
-        "alias": "P",
-        "templateId": "P___Phosphate"
-    },
-    "monomerTemplate-A___Adenine": {
-        "type": "monomerTemplate",
-        "id": "A___Adenine",
-        "class": "Base",
-        "classHELM": "RNA",
-        "fullName": "Adenine",
-        "alias": "A",
-        "naturalAnalogShort": "A",
-        "attachmentPoints": [
-            {
-                "attachmentAtom": 6,
-                "type": "left",
-                "leavingGroup": {
-                    "atoms": [
-                        10
-                    ]
-                }
-            }
-        ],
-        "atoms": [
-            {
-                "label": "C",
-                "location": [
-                    1.035400,
-                    0.249800,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.079200,
-                    -0.754000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -1.505700,
-                    -0.290600,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    -1.817700,
-                    1.176600,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.703100,
-                    2.180400,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    0.723500,
-                    1.717000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    -2.387100,
-                    -1.503400,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -1.505300,
-                    -2.716800,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    -0.078700,
-                    -2.253200,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    2.176800,
-                    -0.120900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    -3.587100,
-                    -1.503400,
-                    0.000000
-                ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    9
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    0,
-                    5
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    1
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    8,
-                    1
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    1,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    6,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    3
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    3,
-                    4
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    4,
-                    5
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    6,
-                    7
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    6,
-                    10
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    7,
-                    8
-                ]
-            }
-        ]
-    },
-    "monomerTemplate-R___Ribose": {
-        "type": "monomerTemplate",
-        "id": "R___Ribose",
-        "class": "Sugar",
-        "classHELM": "RNA",
-        "fullName": "Ribose",
-        "alias": "R",
-        "naturalAnalogShort": "R",
-        "attachmentPoints": [
-            {
-                "attachmentAtom": 9,
-                "type": "left",
-                "leavingGroup": {
-                    "atoms": [
-                        10
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 5,
-                "type": "right",
-                "leavingGroup": {
-                    "atoms": [
-                        11
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 2,
-                "type": "side",
-                "leavingGroup": {
-                    "atoms": [
-                        8
-                    ]
-                }
-            }
-        ],
-        "atoms": [
-            {
-                "label": "O",
-                "location": [
-                    -1.101700,
-                    -1.066300,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.589700,
-                    0.343600,
-                    0.000000
-                ],
-                "stereoLabel": "abs"
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.080900,
-                    -1.988900,
-                    0.000000
-                ],
-                "stereoLabel": "abs"
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.909500,
-                    0.292400,
-                    0.000000
-                ],
-                "stereoLabel": "abs"
-            },
-            {
-                "label": "C",
-                "location": [
-                    1.323900,
-                    -1.149300,
-                    0.000000
-                ],
-                "stereoLabel": "abs"
-            },
-            {
-                "label": "O",
-                "location": [
-                    1.828500,
-                    1.475500,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    2.451800,
-                    -1.558900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -1.431000,
-                    1.583400,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.039900,
-                    -3.188100,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    -2.927900,
-                    1.475500,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    -3.601700,
-                    2.468400,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    3.017400,
-                    1.312500,
-                    0.000000
-                ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    1
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
-                    3
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
-                    7
-                ],
-                "stereo": 6
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    4
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    8
-                ],
-                "stereo": 6
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    4
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    5
-                ],
-                "stereo": 1
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    4,
-                    6
-                ],
-                "stereo": 1
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    5,
-                    11
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    7,
-                    9
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    9,
-                    10
-                ]
-            }
-        ]
-    },
-    "monomerTemplate-C___Cytosine": {
-        "type": "monomerTemplate",
-        "id": "C___Cytosine",
-        "class": "Base",
-        "classHELM": "RNA",
-        "fullName": "Cytosine",
-        "alias": "C",
-        "naturalAnalogShort": "C",
-        "attachmentPoints": [
-            {
-                "attachmentAtom": 3,
-                "type": "left",
-                "leavingGroup": {
-                    "atoms": [
-                        8
-                    ]
-                }
-            }
-        ],
-        "atoms": [
-            {
-                "label": "C",
-                "location": [
-                    1.861700,
-                    1.349900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    1.111700,
-                    2.648900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.388200,
-                    2.649000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    -1.138200,
-                    1.350000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.388300,
-                    0.050900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    1.111700,
-                    0.050900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    3.061800,
-                    1.349900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    -0.988400,
-                    -0.988300,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    -2.338300,
-                    1.350000,
-                    0.000000
-                ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    1
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    0,
-                    5
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    6
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    1,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    3
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    4
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    8
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    4,
-                    5
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    4,
-                    7
-                ]
-            }
-        ]
-    },
-    "monomerTemplate-P___Phosphate": {
-        "type": "monomerTemplate",
-        "id": "P___Phosphate",
-        "class": "Phosphate",
-        "classHELM": "RNA",
-        "fullName": "Phosphate",
-        "alias": "P",
-        "naturalAnalogShort": "P",
-        "attachmentPoints": [
-            {
-                "attachmentAtom": 0,
-                "type": "left",
-                "leavingGroup": {
-                    "atoms": [
-                        1
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 0,
-                "type": "right",
-                "leavingGroup": {
-                    "atoms": [
-                        3
-                    ]
-                }
-            }
-        ],
-        "atoms": [
-            {
-                "label": "P",
-                "location": [
-                    -0.239900,
-                    0.000000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    -1.439900,
-                    0.000000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.359800,
-                    -1.039400,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.960100,
-                    0.000000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.359800,
-                    1.039400,
-                    0.000000
-                ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    1
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    0,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    3
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    4
-                ]
-            }
-        ]
     },
     "monomerTemplate-G___Guanine": {
         "type": "monomerTemplate",
@@ -1438,14 +528,440 @@
             }
         ]
     },
-    "monomerTemplate-U___Uracil": {
+    "monomerTemplate-R___Ribose": {
         "type": "monomerTemplate",
-        "id": "U___Uracil",
+        "id": "R___Ribose",
+        "class": "Sugar",
+        "classHELM": "RNA",
+        "fullName": "Ribose",
+        "alias": "R",
+        "naturalAnalogShort": "R",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 9,
+                "type": "left",
+                "leavingGroup": {
+                    "atoms": [
+                        10
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 5,
+                "type": "right",
+                "leavingGroup": {
+                    "atoms": [
+                        11
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 2,
+                "type": "side",
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "O",
+                "location": [
+                    -1.101700,
+                    -1.066300,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.589700,
+                    0.343600,
+                    0.000000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.080900,
+                    -1.988900,
+                    0.000000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.909500,
+                    0.292400,
+                    0.000000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.323900,
+                    -1.149300,
+                    0.000000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.828500,
+                    1.475500,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    2.451800,
+                    -1.558900,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.431000,
+                    1.583400,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.039900,
+                    -3.188100,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -2.927900,
+                    1.475500,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -3.601700,
+                    2.468400,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    3.017400,
+                    1.312500,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    7
+                ],
+                "stereo": 6
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    8
+                ],
+                "stereo": 6
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    5
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    6
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    5,
+                    11
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    7,
+                    9
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    9,
+                    10
+                ]
+            }
+        ]
+    },
+    "monomerTemplate-A___Adenine": {
+        "type": "monomerTemplate",
+        "id": "A___Adenine",
         "class": "Base",
         "classHELM": "RNA",
-        "fullName": "Uracil",
-        "alias": "U",
-        "naturalAnalogShort": "U",
+        "fullName": "Adenine",
+        "alias": "A",
+        "naturalAnalogShort": "A",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 6,
+                "type": "left",
+                "leavingGroup": {
+                    "atoms": [
+                        10
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    1.035400,
+                    0.249800,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.079200,
+                    -0.754000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.505700,
+                    -0.290600,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    -1.817700,
+                    1.176600,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.703100,
+                    2.180400,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    0.723500,
+                    1.717000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    -2.387100,
+                    -1.503400,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.505300,
+                    -2.716800,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    -0.078700,
+                    -2.253200,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    2.176800,
+                    -0.120900,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -3.587100,
+                    -1.503400,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    9
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    0,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    8,
+                    1
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    7
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    10
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    7,
+                    8
+                ]
+            }
+        ]
+    },
+    "monomerTemplate-C___Cytosine": {
+        "type": "monomerTemplate",
+        "id": "C___Cytosine",
+        "class": "Base",
+        "classHELM": "RNA",
+        "fullName": "Cytosine",
+        "alias": "C",
+        "naturalAnalogShort": "C",
         "attachmentPoints": [
             {
                 "attachmentAtom": 3,
@@ -1470,23 +986,7 @@
                 "label": "C",
                 "location": [
                     1.111700,
-                    0.050900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.388300,
-                    0.050900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    -1.138200,
-                    1.350000,
+                    2.648900,
                     0.000000
                 ]
             },
@@ -1501,13 +1001,29 @@
             {
                 "label": "N",
                 "location": [
-                    1.111700,
-                    2.648900,
+                    -1.138200,
+                    1.350000,
                     0.000000
                 ]
             },
             {
-                "label": "O",
+                "label": "C",
+                "location": [
+                    -0.388300,
+                    0.050900,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    1.111700,
+                    0.050900,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
                 "location": [
                     3.061800,
                     1.349900,
@@ -1517,8 +1033,8 @@
             {
                 "label": "O",
                 "location": [
-                    -0.988200,
-                    3.688200,
+                    -0.988400,
+                    -0.988300,
                     0.000000
                 ]
             },
@@ -1533,14 +1049,14 @@
         ],
         "bonds": [
             {
-                "type": 2,
+                "type": 1,
                 "atoms": [
                     0,
-                    6
+                    1
                 ]
             },
             {
-                "type": 1,
+                "type": 2,
                 "atoms": [
                     0,
                     5
@@ -1550,7 +1066,7 @@
                 "type": 1,
                 "atoms": [
                     0,
-                    1
+                    6
                 ]
             },
             {
@@ -1582,18 +1098,153 @@
                 ]
             },
             {
-                "type": 2,
-                "atoms": [
-                    4,
-                    7
-                ]
-            },
-            {
                 "type": 1,
                 "atoms": [
                     4,
                     5
                 ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    4,
+                    7
+                ]
+            }
+        ]
+    },
+    "monomerTemplate-P___Phosphate": {
+        "type": "monomerTemplate",
+        "id": "P___Phosphate",
+        "class": "Phosphate",
+        "classHELM": "RNA",
+        "fullName": "Phosphate",
+        "alias": "P",
+        "naturalAnalogShort": "P",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 0,
+                "type": "left",
+                "leavingGroup": {
+                    "atoms": [
+                        1
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 0,
+                "type": "right",
+                "leavingGroup": {
+                    "atoms": [
+                        3
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "P",
+                "location": [
+                    -0.239900,
+                    0.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -1.439900,
+                    0.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.359800,
+                    -1.039400,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.960100,
+                    0.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.359800,
+                    1.039400,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    4
+                ]
+            }
+        ]
+    },
+    "variantMonomerTemplate-K": {
+        "type": "variantMonomerTemplate",
+        "subtype": "mixture",
+        "id": "K",
+        "name": "K",
+        "options": [
+            {
+                "templateId": "G___Guanine"
+            },
+            {
+                "templateId": "T___Thymine"
+            }
+        ]
+    },
+    "variantMonomerTemplate-N": {
+        "type": "variantMonomerTemplate",
+        "subtype": "mixture",
+        "id": "N",
+        "name": "N",
+        "options": [
+            {
+                "templateId": "A___Adenine"
+            },
+            {
+                "templateId": "C___Cytosine"
+            },
+            {
+                "templateId": "G___Guanine"
+            },
+            {
+                "templateId": "T___Thymine"
             }
         ]
     }

@@ -819,12 +819,14 @@ M  END
     // RNA/DNA/PEPTIDE
     {
         test("PEPTIDE", "basic", () => {
+            var fs = require('fs');
             let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("monomerLibrary", monomersLib);
             options.set("output-content-type", "application/json");
             options.set("input-format", "chemical/x-peptide-sequence");
             const peptide_seq_ref = "ACDEFGHIKLMNOPQRSRUVWY";
             const peptide_ket = indigo.convert(peptide_seq_ref, "ket", options);
-            var fs = require('fs');
             // fs.writeFileSync("peptide_ref.ket", peptide_ket);
             const peptide_ket_ref = fs.readFileSync("peptide_ref.ket");
             assert.equal(peptide_ket, peptide_ket_ref.toString());
@@ -839,12 +841,14 @@ M  END
 
     {
         test("RNA", "basic", () => {
+            var fs = require('fs');
             let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("monomerLibrary", monomersLib);
             options.set("output-content-type", "application/json");
             options.set("input-format", "chemical/x-rna-sequence");
             const rna_seq_ref = "ACGTU";
             const rna_ket = indigo.convert(rna_seq_ref, "ket", options);
-            var fs = require('fs');
             // fs.writeFileSync("rna_ref.ket", rna_ket);
             const rna_ket_ref = fs.readFileSync("rna_ref.ket");
             assert.equal(rna_ket, rna_ket_ref.toString());
@@ -860,12 +864,14 @@ M  END
 
     {
         test("DNA", "basic", () => {
+            var fs = require('fs');
             let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("monomerLibrary", monomersLib);
             options.set("output-content-type", "application/json");
             options.set("input-format", "chemical/x-dna-sequence");
             const dna_seq_ref = "ACGTU";
             const dna_ket = indigo.convert(dna_seq_ref, "ket", options);
-            var fs = require('fs');
             // fs.writeFileSync("dna_ref.ket", dna_ket);
             const dna_ket_ref = fs.readFileSync("dna_ref.ket");
             assert.equal(dna_ket, dna_ket_ref.toString());
@@ -883,6 +889,8 @@ M  END
         test("PEPTIDE-FASTA", "basic", () => {
             var fs = require('fs');
             let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("monomerLibrary", monomersLib);
             options.set("output-content-type", "application/json");
             options.set("input-format", "chemical/x-peptide-fasta");
             const fasta = fs.readFileSync("test_peptide.fasta");
@@ -906,6 +914,8 @@ M  END
         test("RNA-FASTA", "basic", () => {
             var fs = require('fs');
             let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("monomerLibrary", monomersLib);
             options.set("output-content-type", "application/json");
             options.set("input-format", "chemical/x-rna-fasta");
             const fasta = fs.readFileSync("test_rna.fasta");
@@ -929,13 +939,15 @@ M  END
         test("DNA-FASTA", "basic", () => {
             var fs = require('fs');
             let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("monomerLibrary", monomersLib);
             options.set("output-content-type", "application/json");
             options.set("input-format", "chemical/x-dna-fasta");
             const fasta = fs.readFileSync("test_dna.fasta");
             const dna_ket = indigo.convert(fasta, "ket", options);
             const dna_fasta = indigo.convert(fasta, "fasta", options);
 
-            // fs.writeFileSync("test_dna_ref.ket", dna_ket);
+            fs.writeFileSync("test_dna_ref.ket", dna_ket);
             // fs.writeFileSync("test_dna_ref.fasta", dna_fasta);
 
             const dna_ket_ref = fs.readFileSync("test_dna_ref.ket");
