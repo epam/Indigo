@@ -850,6 +850,8 @@ namespace indigo
         void _parseCDXMLPage(BaseCDXElement& elem);
         void _parseCDXMLElements(BaseCDXElement& elem, bool no_siblings = false, bool inside_fragment_node = false);
         void _parseFragmentAttributes(BaseCDXProperty& prop);
+        void _gunzip(Scanner& scanner, Array<char>& dataBuf);
+        std::string _inflate(const char* data, size_t dataLength);
 
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
         void _updateConnection(const CdxmlNode& node, int atom_idx);

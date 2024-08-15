@@ -16,6 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include "gzip/gzip_scanner.h"
+#include "lzw/lzw_decoder.h"
 #include <algorithm>
 #include <charconv>
 #include <rapidjson/stringbuffer.h>
@@ -378,6 +380,7 @@ void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
     _id_to_node_index.clear();
     _id_to_bond_index.clear();
     _fragment_nodes.clear();
+    _images.clear();
     text_objects.clear();
     _pluses.clear();
     brackets.clear();
@@ -1451,44 +1454,42 @@ void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
         }
     }
 }
-#include <fstream>
+
 void MoleculeCdxmlLoader::_parseEmbeddedObject(BaseCDXElement& elem)
 {
     std::pair<Vec2f, Vec2f> embedded_bbox;
     std::string image_png;
+    std::vector<Bitmap> bitmaps;
 
     auto embdedded_box_lambda = [&embedded_bbox, this](const std::string& data) { this->parseSeg(data, embedded_bbox.first, embedded_bbox.second); };
-    auto emf_png_lambda = [&image_png, &embedded_bbox, this](const std::string& data) {
+    auto emf_png_lambda = [&bitmaps, &embedded_bbox, this](const std::string& data) {
         std::string image_bin;
         this->parseHex(data, image_bin);
-        auto bitmaps = ripBitmapsFromEMF(image_bin);
-        for (auto dib : bitmaps)
-            _images.emplace_back(KETImage::EKETPNG, Rect2f(embedded_bbox.first, embedded_bbox.second), dibToPNG(dib.dibits));
+        bitmaps = ripBitmapsFromEMF(image_bin);
     };
 
-    auto emf64_png_lambda = [&image_png, &embedded_bbox, this](const std::string& data) {
+    auto emf64_png_lambda = [&bitmaps, &embedded_bbox, this](const std::string& data) {
         std::string emf_base64, emf;
         std::copy_if(data.begin(), data.end(), std::back_inserter(emf_base64), [](char c) { return c != '\n' && c != '\r'; });
+        // base64 decode
         BufferScanner b64decode(emf_base64.c_str(), true);
         b64decode.readAll(emf);
-        std::ofstream outFile("emf.comp", std::ios::binary);
-        outFile.write(emf.c_str(), emf.size());
-        outFile.close();
-        auto bitmaps = ripBitmapsFromEMF(emf);
-        for (auto dib : bitmaps)
-            _images.emplace_back(KETImage::EKETPNG, Rect2f(embedded_bbox.first, embedded_bbox.second), dibToPNG(dib.dibits));
+        // lzw decompress and rip raster images
+        bitmaps = ripBitmapsFromEMF(_inflate(emf.data(), emf.size()));
     };
 
-    auto png_lambda = [&image_png, &embedded_bbox, this](const std::string& data) {
-        std::string image_bin;
-        this->parseHex(data, image_bin);
-        _images.emplace_back(KETImage::EKETPNG, Rect2f(embedded_bbox.first, embedded_bbox.second), image_bin);
-    };
+    auto png_lambda = [&image_png, &embedded_bbox, this](const std::string& data) { this->parseHex(data, image_png); };
 
     std::unordered_map<std::string, std::function<void(const std::string&)>> embedded_dispatcher = {
         {"BoundingBox", embdedded_box_lambda}, {"EnhancedMetafile", emf_png_lambda}, {"CompressedEnhancedMetafile", emf64_png_lambda}, {"PNG", png_lambda}};
 
     applyDispatcher(*elem.firstProperty().get(), embedded_dispatcher);
+
+    if (image_png.size())
+        _images.emplace_back(KETImage::EKETPNG, Rect2f(embedded_bbox.first, embedded_bbox.second), image_png);
+    else
+        for (const auto& dib : bitmaps)
+            _images.emplace_back(KETImage::EKETPNG, Rect2f(embedded_bbox.first, embedded_bbox.second), dibToPNG(dib.dibits));
 }
 
 void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
@@ -1803,4 +1804,71 @@ void MoleculeCdxmlLoader::_appendQueryAtom(const char* atom_label, std::unique_p
         atom.reset(cur_atom.release());
     else
         atom.reset(QueryMolecule::Atom::oder(atom.release(), cur_atom.release()));
+}
+
+void MoleculeCdxmlLoader::_gunzip(Scanner& scanner, Array<char>& dataBuf)
+{
+    // check GZip format
+    if (scanner.length() >= 2)
+    {
+        byte id[2];
+        long long pos = scanner.tell();
+
+        scanner.readCharsFix(2, (char*)id);
+        scanner.seek(pos, SEEK_SET);
+
+        if (id[0] == 0x1f && id[1] == 0x8b)
+        {
+            GZipScanner gzscanner(scanner);
+            gzscanner.readAll(dataBuf);
+            dataBuf.push('\0');
+            return;
+        }
+    }
+
+    scanner.readAll(dataBuf);
+    dataBuf.push('\0');
+}
+
+std::string MoleculeCdxmlLoader::_inflate(const char* data, size_t dataLength)
+{
+    z_stream zs; // Structure for zlib decompression
+    memset(&zs, 0, sizeof(zs));
+
+    if (inflateInit(&zs) != Z_OK)
+    {
+        throw std::runtime_error("inflateInit failed while decompressing.");
+    }
+
+    zs.next_in = (Bytef*)data;
+    zs.avail_in = static_cast<uInt>(dataLength);
+
+    int ret;
+    char buffer[1024];
+    std::string decompressedData;
+
+    // Get decompressed data
+    do
+    {
+        zs.next_out = reinterpret_cast<Bytef*>(buffer);
+        zs.avail_out = sizeof(buffer);
+
+        ret = inflate(&zs, 0);
+        if (decompressedData.size() < zs.total_out)
+        {
+            decompressedData.append(buffer, zs.total_out - decompressedData.size());
+        }
+
+    } while (ret == Z_OK);
+
+    inflateEnd(&zs);
+
+    if (ret != Z_STREAM_END)
+    { // An error occurred that was not EOF
+        std::ostringstream oss;
+        oss << "Exception during zlib decompression: (" << ret << ") " << zs.msg;
+        throw std::runtime_error(oss.str());
+    }
+
+    return decompressedData;
 }

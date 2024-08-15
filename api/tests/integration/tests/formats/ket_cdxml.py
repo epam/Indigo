@@ -82,7 +82,7 @@ for filename in files:
 print("*** KET to CDXML ***")
 
 root_m = joinPathPy("molecules/", __file__)
-files = ["963-super", "macro/sa-mono"]
+files = ["963-super", "macro/sa-mono", "images"]
 
 files.sort()
 
@@ -95,8 +95,8 @@ for filename in files:
         print(getIndigoExceptionText(e))
         raise SystemExit
     cdxml_text = ket.cdxml()
-    # with open(os.path.join(ref_path, filename) + ".cdxml", "w") as file:
-    #   file.write(cdxml_text)
+    with open(os.path.join(ref_path, filename) + ".cdxml", "w") as file:
+      file.write(cdxml_text)
 
     indigo.loadMolecule(
         cdxml_text
