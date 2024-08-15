@@ -51,7 +51,7 @@ set(TARGET_FILES
         )
 
 set(TARGET_FILES_NORENDER
-    $<TARGET_OBJECTS:${PROJECT_NAME}-object-norender> $<TARGET_FILE:indigo-static> $<TARGET_FILE:indigo-inchi-static> $<TARGET_FILE:indigo-core> $<TARGET_FILE:inchi> $<TARGET_FILE:tinyxml2> $<TARGET_FILE:z>
+    $<TARGET_OBJECTS:${PROJECT_NAME}-object-norender> $<TARGET_FILE:indigo-static> $<TARGET_FILE:indigo-inchi-static> $<TARGET_FILE:indigo-core> $<TARGET_FILE:inchi> $<TARGET_FILE:tinyxml2> $<TARGET_FILE:png> $<TARGET_FILE:z>
 )
 
 add_custom_target(${PROJECT_NAME}-separate

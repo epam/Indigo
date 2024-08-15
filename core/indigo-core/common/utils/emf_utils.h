@@ -1,3 +1,5 @@
+#include <cstdint>
+
 #include "../common/math/algebra.h"
 
 namespace indigo
