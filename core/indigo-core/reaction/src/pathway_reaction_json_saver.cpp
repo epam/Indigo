@@ -61,7 +61,10 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& rxn)
     }
 
     for (auto& a : arrows)
-        merged->meta().addMetaObject(new KETReactionMultitailArrow(a.begin(), a.end()));
+        if (a.size() > 2)
+            merged->meta().addMetaObject(new KETReactionMultitailArrow(a.begin(), a.end()));
+        else if (a.size() == 2)
+            merged->meta().addMetaObject(new KETReactionArrow(KETReactionArrow::EOpenAngle, a.back(), a.front()));
 
     rapidjson::StringBuffer buffer;
     JsonWriter writer(pretty_json);

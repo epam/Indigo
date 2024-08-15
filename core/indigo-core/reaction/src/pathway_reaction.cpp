@@ -173,15 +173,12 @@ std::pair<std::vector<std::pair<int, Vec2f>>, std::vector<std::vector<Vec2f>>> P
                 arrows.back().emplace_back(zero.x - offsetX, zero.y - y);
             }
 
-            // One reactant case.
-            if (arrows.back().size() == 2)
+            if (arrows.back().size() > 2)
             {
-                arrows.back().back().y = zero.y + ARROW_MIN_HEIGHT / 2;
-                arrows.back().emplace_back(arrows.back().back()).y = zero.y - ARROW_MIN_HEIGHT / 2;
+                // Add spines. The first and the last reactant arrows "y" are the highest and the lowest.
+                arrows.back().emplace_back(zero.x - offsetX + ARROW_TAIL_WIDTH, arrows.back().back().y);
+                arrows.back().emplace_back(zero.x - offsetX + ARROW_TAIL_WIDTH, arrows.back()[1].y);
             }
-            // Add spines. The first and the last reactant arrows "y" are the highest and the lowest.
-            arrows.back().emplace_back(zero.x - offsetX + ARROW_TAIL_WIDTH, arrows.back().back().y);
-            arrows.back().emplace_back(zero.x - offsetX + ARROW_TAIL_WIDTH, arrows.back()[1].y);
         }
         offsetX = nextOffsetX / 2 + ARROW_WIDTH + MARGIN;
     }
