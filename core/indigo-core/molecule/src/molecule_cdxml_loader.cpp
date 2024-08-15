@@ -1837,7 +1837,7 @@ std::string MoleculeCdxmlLoader::_inflate(const char* data, size_t dataLength)
 
     if (inflateInit(&zs) != Z_OK)
     {
-        throw std::runtime_error("inflateInit failed while decompressing.");
+        throw Error("inflateInit failed while decompressing.");
     }
 
     zs.next_in = (Bytef*)data;
@@ -1866,8 +1866,7 @@ std::string MoleculeCdxmlLoader::_inflate(const char* data, size_t dataLength)
     if (ret != Z_STREAM_END)
     { // An error occurred that was not EOF
         std::ostringstream oss;
-        oss << "Exception during zlib decompression: (" << ret << ") " << zs.msg;
-        throw std::runtime_error(oss.str());
+        throw Error("Exception during zlib decompression: %s", zs.msg);
     }
 
     return decompressedData;
