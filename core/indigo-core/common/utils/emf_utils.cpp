@@ -1,6 +1,6 @@
 #include <png.h>
-#include <vector>
 #include <sstream>
+#include <vector>
 
 #include "emf_utils.h"
 
