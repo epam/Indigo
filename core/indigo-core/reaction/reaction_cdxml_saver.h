@@ -49,7 +49,7 @@ namespace indigo
     private:
         ReactionCdxmlSaver(const ReactionCdxmlSaver&); // no implicit copy
 
-        void _addPlusses(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver);
+        void _addPluses(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver);
         void _addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, int arrow_id, std::unordered_map<int, int>& retro_arrows_graph_id);
         void _addScheme(MoleculeCdxmlSaver& molsaver);
         void _closeScheme(MoleculeCdxmlSaver& molsaver);

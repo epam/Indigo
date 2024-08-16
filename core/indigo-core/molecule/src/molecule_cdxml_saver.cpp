@@ -1316,6 +1316,32 @@ void MoleculeCdxmlSaver::addRetrosynteticArrow(int graphic_obj_id, int arrow_id,
     addCustomElement(graphic_obj_id, name, attrs);
 }
 
+std::string stringToHex(const std::string& input)
+{
+    std::stringstream hexStream;
+    hexStream << std::hex << std::setfill('0');
+
+    for (uint8_t val : input)
+        hexStream << std::setw(2) << static_cast<int>(val);
+
+    return hexStream.str();
+}
+
+void MoleculeCdxmlSaver::addImage(int id, const KETImage& image)
+{
+    PropertiesMap attrs;
+    Array<char> emb_object;
+    QS_DEF(Array<char>, buf);
+    ArrayOutput out(buf);
+    const auto& bbox = image.getBoundingBox();
+    out.printf("%f %f %f %f", _bond_length * bbox.left(), -_bond_length * bbox.bottom(), _bond_length * bbox.right(), -_bond_length * bbox.top());
+    buf.push(0);
+    attrs.insert("BoundingBox", buf.ptr());
+    attrs.insert("PNG", stringToHex(image.getData()));
+    emb_object.readString("embeddedobject", true);
+    addCustomElement(id, emb_object, attrs);
+}
+
 void MoleculeCdxmlSaver::addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end)
 {
     PropertiesMap attrs;
@@ -1555,6 +1581,11 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
                 first_index = second_index;
             }
         }
+    }
+    break;
+    case KETImage::CID: {
+        const KETImage& image = static_cast<const KETImage&>(obj);
+        addImage(id, image);
     }
     break;
     }

@@ -133,7 +133,7 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
     }
     else
     {
-        _addPlusses(rxn, molsaver);
+        _addPluses(rxn, molsaver);
         _addArrow(rxn, molsaver, arrow_ids.front().first, retro_arrows_graph_id);
     }
 
@@ -151,7 +151,7 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
     molsaver.endDocument();
 }
 
-void ReactionCdxmlSaver::_addPlusses(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver)
+void ReactionCdxmlSaver::_addPluses(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver)
 {
     Vec2f offset(0, 0);
 
