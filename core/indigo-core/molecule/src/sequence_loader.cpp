@@ -408,10 +408,7 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
     {
         // add sugar template
         if (_seq_id == 0)
-        {
             _alias_to_id.emplace(sugar_alias, checkAddTemplate(document, MonomerClass::Sugar, sugar_alias));
-            phosphate_alias = "";
-        }
 
         // add phosphate template
         if (_seq_id == 1)
