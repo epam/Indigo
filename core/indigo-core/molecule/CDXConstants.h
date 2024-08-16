@@ -1051,4 +1051,11 @@ enum CDXArrowheadType
     kCDXArrowheadType_Angled
 };
 
+enum CDXArrowheadHead
+{
+    kCDXArrowheadFull = 2,
+    kCDXArrowheadHalfLeft,
+    kCDXArrowheadHalfRight
+};
+
 #endif // _H_CDXConstants

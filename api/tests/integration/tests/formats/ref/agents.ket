@@ -13,7 +13,7 @@
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "open-angle",
+                    "mode": "filled-triangle",
                     "pos": [
                         {
                             "x": 8.5,
