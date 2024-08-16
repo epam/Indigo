@@ -273,6 +273,10 @@ namespace indigo
 
     class KETReactionMultitailArrow : public MetaObject
     {
+        static const int CORRECT_CONSTRUCTOR_PARAMETERS_SIZE = 5;
+        static const int CORRECT_HEAD_SIZE = 1;
+        static const int CORRECT_TAIL_SIZE = 2;
+
     public:
         static const std::uint32_t CID = "KET reaction multitail arrow"_hash;
 
@@ -280,11 +284,11 @@ namespace indigo
         KETReactionMultitailArrow(Iterator&& begin, Iterator&& end) : MetaObject(CID)
         {
             auto d = std::distance(begin, end);
-            if (d < 5)
+            if (d < CORRECT_CONSTRUCTOR_PARAMETERS_SIZE)
                 throw Exception("KETReactionMultitailArrow: invalid arguments");
 
             _head = *begin++;
-            _tails.reserve(static_cast<int>(d) - 1 - 2);
+            _tails.reserve(static_cast<int>(d) - CORRECT_HEAD_SIZE - CORRECT_TAIL_SIZE);
             while (begin != end)
                 _tails.push(*begin++);
             _spine_begin = _tails.pop();
@@ -294,7 +298,7 @@ namespace indigo
         KETReactionMultitailArrow(Vec2f head, const Array<Vec2f>& tails, Vec2f spine_begin, Vec2f spine_end)
             : MetaObject(CID), _head(head), _spine_begin(spine_begin), _spine_end(spine_end)
         {
-            if (tails.size() < 2)
+            if (tails.size() < CORRECT_TAIL_SIZE)
                 throw Exception("KETReactionMultitailArrow: invalid arguments");
             _tails.copy(tails);
         }
