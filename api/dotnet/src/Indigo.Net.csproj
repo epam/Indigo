@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0</TargetFrameworks>
-		<Version>1.23.0-dev.4</Version>
+		<Version>1.24.0-dev.3</Version>
 		<Authors>EPAM Systems Life Science Department</Authors>
 		<Company>EPAM Systems</Company>
 		<Description>Universal cheminformatics toolkit</Description>
