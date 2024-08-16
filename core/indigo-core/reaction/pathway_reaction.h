@@ -36,7 +36,7 @@ namespace indigo
         static constexpr float MARGIN = 1.f;
         static constexpr float ARROW_HEAD_WIDTH = 2.5f;
         static constexpr float ARROW_TAIL_WIDTH = 0.5f;
-        static constexpr float ARROW_MIN_HEIGHT = 2.5f;
+        static constexpr float ARROW_WIDTH = ARROW_HEAD_WIDTH + ARROW_TAIL_WIDTH;
 
     public:
         PathwayReaction();
@@ -46,7 +46,7 @@ namespace indigo
         int reactionId(int moleculeId) const;
         int reactionsCount() const;
         void clone(PathwayReaction&);
-        std::vector<std::pair<int, Vec2f>> makeTreePoints();
+        std::pair<std::vector<std::pair<int, Vec2f>>, std::vector<std::vector<Vec2f>>> makeTreePoints();
 
         BaseReaction* neu() override;
         bool aromatize(const AromaticityOptions& options) override;

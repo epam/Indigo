@@ -66,7 +66,7 @@ void PathwayReaction::clone(PathwayReaction& reaction)
     _reactions.copy(reaction._reactions);
 }
 
-std::vector<std::pair<int, Vec2f>> PathwayReaction::makeTreePoints()
+std::pair<std::vector<std::pair<int, Vec2f>>, std::vector<std::vector<Vec2f>>> PathwayReaction::makeTreePoints()
 {
     auto reaction = this;
     std::vector<std::string> inchiKeys(reaction->reactionsCount());
@@ -105,8 +105,7 @@ std::vector<std::pair<int, Vec2f>> PathwayReaction::makeTreePoints()
         auto productIter = productIds.find(inchiKeys.at(id));
         if (productIter == productIds.cend())
         {
-            auto& box = sumBoxes[id];
-            reaction->getBaseMolecule(id).getBoundingBox(box);
+            sumBoxes[id];
             dfsStack.pop();
             continue;
         }
@@ -118,26 +117,25 @@ std::vector<std::pair<int, Vec2f>> PathwayReaction::makeTreePoints()
         if (dfsStack.size() > stackSize)
             continue;
 
-        Rect2f box;
-        reaction->getBaseMolecule(id).getBoundingBox(box);
-        Vec2f rightTop(std::max(box.width(), ARROW_MIN_HEIGHT), -2 * MARGIN);
+        Vec2f rightTop(0, -2 * MARGIN);
         for (int reactantId : reactantIdsByReactions[reaction->reactionId(productId)])
         {
             Rect2f box;
             reaction->getBaseMolecule(reactantId).getBoundingBox(box);
             rightTop.x = std::max(rightTop.x, box.width());
-            rightTop.y += sumBoxes[reactantId].height() + 2 * MARGIN;
+            rightTop.y += std::max(box.height(), sumBoxes[reactantId].height()) + 2 * MARGIN;
         }
         sumBoxes[id] = {{}, rightTop};
         dfsStack.pop();
     }
 
     std::unordered_map<int, Vec2f> points;
+    std::vector<std::vector<Vec2f>> arrows;
     std::queue<int> bfsQueue;
     bfsQueue.push(finalProductId);
     Rect2f box;
     reaction->getBaseMolecule(finalProductId).getBoundingBox(box);
-    float offsetX = box.width() / 2 + ARROW_HEAD_WIDTH + ARROW_TAIL_WIDTH + MARGIN;
+    float offsetX = box.width() / 2 + ARROW_WIDTH + MARGIN;
     while (!bfsQueue.empty())
     {
         float nextOffsetX = 0;
@@ -154,21 +152,38 @@ std::vector<std::pair<int, Vec2f>> PathwayReaction::makeTreePoints()
             auto zero = points[id];
             auto& reactantIds = reactantIdsByReactions[reaction->reactionId(productIter->second)];
             float offsetY = sumBoxes[id].height() / 2;
-            offsetY -= -sumBoxes[reactantIds.front()].height() / 4 + sumBoxes[reactantIds.back()].height() / 4;
+            Rect2f boxFront, boxBack;
+            reaction->getBaseMolecule(reactantIds.front()).getBoundingBox(boxFront);
+            reaction->getBaseMolecule(reactantIds.back()).getBoundingBox(boxBack);
+            offsetY -= -std::max(boxFront.height(), sumBoxes[reactantIds.front()].height()) / 4;
+            offsetY -= std::max(boxBack.height(), sumBoxes[reactantIds.back()].height()) / 4;
             nextOffsetX = std::max(nextOffsetX, sumBoxes[id].width());
+
+            arrows.emplace_back().reserve(1 + reactantIds.size());
+            arrows.back().emplace_back(zero.x - offsetX + ARROW_WIDTH, zero.y);
             for (int reactantId : reactantIds)
             {
-                float x = offsetX + sumBoxes[id].width() / 2;
-                float y = -offsetY + sumBoxes[reactantId].height() / 2;
+                Rect2f box;
+                reaction->getBaseMolecule(reactantId).getBoundingBox(box);
+                float x = offsetX + sumBoxes[id].width() / 2 + MARGIN;
+                float y = -offsetY + std::max(box.height(), sumBoxes[reactantId].height()) / 2;
                 points[reactantId] = zero - Vec2f(x, y);
                 bfsQueue.push(reactantId);
-                offsetY -= sumBoxes[reactantId].height() + 2 * MARGIN;
+                offsetY -= std::max(box.height(), sumBoxes[reactantId].height()) + 2 * MARGIN;
+                arrows.back().emplace_back(zero.x - offsetX, zero.y - y);
+            }
+
+            if (arrows.back().size() > 2)
+            {
+                // Add spines. The first and the last reactant arrows "y" are the highest and the lowest.
+                arrows.back().emplace_back(zero.x - offsetX + ARROW_TAIL_WIDTH, arrows.back().back().y);
+                arrows.back().emplace_back(zero.x - offsetX + ARROW_TAIL_WIDTH, arrows.back()[1].y);
             }
         }
-        offsetX = nextOffsetX / 2 + ARROW_HEAD_WIDTH + ARROW_TAIL_WIDTH + MARGIN;
+        offsetX = nextOffsetX / 2 + ARROW_WIDTH + MARGIN;
     }
 
-    return {points.cbegin(), points.cend()};
+    return {std::piecewise_construct, std::forward_as_tuple(points.cbegin(), points.cend()), std::forward_as_tuple(arrows)};
 }
 
 BaseReaction* PathwayReaction::neu()

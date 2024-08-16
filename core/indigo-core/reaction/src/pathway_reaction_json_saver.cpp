@@ -38,7 +38,9 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& rxn)
     auto reaction = std::make_unique<PathwayReaction>();
     reaction->clone(rxn);
 
-    auto points = reaction->makeTreePoints();
+    std::vector<std::pair<int, Vec2f>> points;
+    std::vector<std::vector<Vec2f>> arrows;
+    std::tie(points, arrows) = reaction->makeTreePoints();
     // Ensure the same order across different platforms.
     std::sort(points.begin(), points.end());
 
@@ -57,6 +59,12 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& rxn)
         }
         merged->mergeWithMolecule(molecule, 0, 0);
     }
+
+    for (auto& a : arrows)
+        if (a.size() > 2)
+            merged->meta().addMetaObject(new KETReactionMultitailArrow(a.begin(), a.end()));
+        else if (a.size() == 2)
+            merged->meta().addMetaObject(new KETReactionArrow(KETReactionArrow::EOpenAngle, a.back(), a.front()));
 
     rapidjson::StringBuffer buffer;
     JsonWriter writer(pretty_json);

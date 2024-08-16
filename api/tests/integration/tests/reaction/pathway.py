@@ -26,6 +26,7 @@ files = [
     "pathway5",
     "pathway6",
     "pathway7",
+    "pathway8",
 ]
 
 for filename in files:
