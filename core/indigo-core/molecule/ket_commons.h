@@ -283,12 +283,12 @@ namespace indigo
         template <typename Iterator>
         KETReactionMultitailArrow(Iterator&& begin, Iterator&& end) : MetaObject(CID)
         {
-            auto d = std::distance(begin, end);
-            if (d < CORRECT_CONSTRUCTOR_PARAMETERS_SIZE)
+            auto distanceBetweenBeginAndEnd = std::distance(begin, end);
+            if (distanceBetweenBeginAndEnd < CORRECT_CONSTRUCTOR_PARAMETERS_SIZE)
                 throw Exception("KETReactionMultitailArrow: invalid arguments");
 
             _head = *begin++;
-            _tails.reserve(static_cast<int>(d) - CORRECT_HEAD_SIZE - CORRECT_TAIL_SIZE);
+            _tails.reserve(static_cast<int>(distanceBetweenBeginAndEnd) - CORRECT_HEAD_SIZE - CORRECT_TAIL_SIZE);
             while (begin != end)
                 _tails.push(*begin++);
             _spine_begin = _tails.pop();
