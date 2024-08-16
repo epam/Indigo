@@ -278,7 +278,19 @@ std::string CDXProperty::parseCDXINT16(int16_t val) const
         auto it = kCDXProp_Arrow_ArrowHeadTypeIntToStr.find((CDXArrowheadType)val);
         if (it != kCDXProp_Arrow_ArrowHeadTypeIntToStr.end())
             return it->second;
-        break;
+    }
+    break;
+    case kCDXProp_Arrow_ArrowHead_Tail:
+    case kCDXProp_Arrow_ArrowHead_Head: {
+        auto it = kCDXProp_Arrow_ArrowHeadIntToStr.find((CDXArrowheadHead)val);
+        if (it != kCDXProp_Arrow_ArrowHeadIntToStr.end())
+            return it->second;
+    }
+    break;
+    case kCDXProp_Line_Type: {
+        auto it = kLineTypeIntToStr.find((CDXLineType)val);
+        if (it != kLineTypeIntToStr.end())
+            return it->second;
     }
     default:
         break;
@@ -1467,6 +1479,9 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
             case kCDXArrowType_Equilibrium:
                 ar_type = ReactionComponent::ARROW_EQUILIBRIUM_FILLED_HALF_BOW;
                 break;
+            case kCDXArrowType_FullHead:
+                ar_type = ReactionComponent::ARROW_FILLED_TRIANGLE;
+                break;
             default:
                 break;
             }
@@ -1525,20 +1540,58 @@ void MoleculeCdxmlLoader::_parseArrow(BaseCDXElement& elem)
     auto arrow_head_lambda = [&arrow_head](const std::string& data) { arrow_head = data; };
     std::string head_type;
     auto head_type_lambda = [&head_type](const std::string& data) { head_type = data; };
+    std::string arrow_tail;
+    auto arrow_tail_lambda = [&arrow_tail](const std::string& data) { arrow_tail = data; };
+    std::string no_go;
+    auto no_go_lambda = [&no_go](const std::string& data) { no_go = data; };
+    std::string line_type;
+    auto line_type_lambda = [&line_type](const std::string& data) { line_type = data; };
+
     AutoInt arrow_id = 0;
     auto arrow_id_lambda = [&arrow_id](const std::string& data) { arrow_id = std::stoi(data); };
     std::unordered_map<std::string, std::function<void(const std::string&)>> arrow_dispatcher = {{"BoundingBox", arrow_bbox_lambda},
                                                                                                  {"FillType", fill_type_lambda},
                                                                                                  {"ArrowheadHead", arrow_head_lambda},
                                                                                                  {"ArrowheadType", head_type_lambda},
+                                                                                                 {"ArrowheadTail", arrow_tail_lambda},
                                                                                                  {"Head3D", arrow_end_lambda},
                                                                                                  {"Tail3D", arrow_begin_lambda},
-                                                                                                 {"id", arrow_id_lambda}};
+                                                                                                 {"id", arrow_id_lambda},
+                                                                                                 {"NoGo", no_go_lambda},
+                                                                                                 {"LineType", line_type_lambda}};
 
     applyDispatcher(*elem.firstProperty().get(), arrow_dispatcher);
 
     if (!_retro_arrows_graph_id.count(arrow_id))
-        _arrows[arrow_id] = (std::make_pair(std::make_pair(begin_pos, end_pos), 2));
+    {
+        auto ar_type = ReactionComponent::ARROW_BASIC;
+        if (arrow_tail.size() == 0)
+        {
+            if (arrow_head == "Full")
+            {
+                if (no_go.size())
+                    ar_type = ReactionComponent::ARROW_FAILED;
+                else if (head_type == "Solid")
+                {
+                    if (line_type.size() == 0)
+                        ar_type = ReactionComponent::ARROW_FILLED_TRIANGLE;
+                }
+                else if (head_type == "Angle" && line_type == "Dashed")
+                {
+                    ar_type = ReactionComponent::ARROW_DASHED;
+                }
+            }
+        }
+        else if (arrow_head == arrow_tail)
+        {
+            if (arrow_head == "Full" && no_go.size() == 0 && line_type.size() == 0)
+            {
+                ar_type = ReactionComponent::ARROW_BOTH_ENDS_FILLED_TRIANGLE;
+            }
+        }
+
+        _arrows[arrow_id] = (std::make_pair(std::make_pair(begin_pos, end_pos), ar_type));
+    }
 }
 
 void MoleculeCdxmlLoader::_parseLabel(BaseCDXElement& elem, std::string& label)
