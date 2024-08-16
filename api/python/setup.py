@@ -98,7 +98,7 @@ if os.path.exists("epam.indigo.egg-info"):
 
 setup(
     name="epam.indigo",
-    version="1.23.0.dev3",
+    version="1.23.0.dev4",
     description="Indigo universal cheminformatics toolkit",
     author="EPAM Systems Life Science Department",
     author_email="lifescience.opensource@epam.com",
