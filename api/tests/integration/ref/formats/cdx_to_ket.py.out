@@ -2100,7 +2100,7 @@ arrow64.cdx
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 0.0,
@@ -2784,7 +2784,7 @@ CDXML loader: Not a molecule. Found 73 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 4.205333232879639,
@@ -3756,7 +3756,7 @@ CDXML loader: Not a molecule. Found 73 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 55.53033447265625,
@@ -3774,7 +3774,7 @@ CDXML loader: Not a molecule. Found 73 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 55.68033599853516,
@@ -3828,7 +3828,7 @@ CDXML loader: Not a molecule. Found 73 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 56.03033447265625,
@@ -3846,7 +3846,7 @@ CDXML loader: Not a molecule. Found 73 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 55.78033447265625,
@@ -17662,7 +17662,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 10.256667137145996,
@@ -17680,7 +17680,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 17.46666717529297,
@@ -17698,7 +17698,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 24.649999618530278,
@@ -17716,7 +17716,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 2.6666667461395265,
@@ -17734,7 +17734,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 10.425999641418456,
@@ -17752,7 +17752,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 10.425999641418456,
@@ -17770,7 +17770,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 25.433332443237306,
@@ -17788,7 +17788,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 2.2676665782928469,
@@ -17806,7 +17806,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 2.2676665782928469,
@@ -17824,7 +17824,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 15.874332427978516,
@@ -17842,7 +17842,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 15.874332427978516,
@@ -17860,7 +17860,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 16.32433319091797,
@@ -17878,7 +17878,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 15.874332427978516,
@@ -17896,7 +17896,7 @@ CDXML loader: Not a molecule. Found 14 arrows.
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 25.58333396911621,

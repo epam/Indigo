@@ -1642,11 +1642,6 @@ void MoleculeCdxmlLoader::_parseArrow(BaseCDXElement& elem)
             {
                 if (no_go.size())
                     ar_type = ReactionComponent::ARROW_FAILED;
-                else if (head_type == "Solid")
-                {
-                    if (line_type.size() == 0)
-                        ar_type = ReactionComponent::ARROW_FILLED_TRIANGLE;
-                }
                 else if (head_type == "Angle" && line_type == "Dashed")
                 {
                     ar_type = ReactionComponent::ARROW_DASHED;

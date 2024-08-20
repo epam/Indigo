@@ -10,7 +10,7 @@
             {
                 "type": "arrow",
                 "data": {
-                    "mode": "filled-triangle",
+                    "mode": "open-angle",
                     "pos": [
                         {
                             "x": 7.25,
