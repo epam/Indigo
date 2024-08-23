@@ -432,7 +432,7 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
         connectMonomerTo(mon_ref_2, ap_id_2, mon_ref_1, ap_id_1);
     }
 
-    auto& it = _monomers_ids.begin();
+    auto it = _monomers_ids.begin();
     while (monomers.size() > 0)
     {
         std::string start_monomer_id = "";

@@ -1836,7 +1836,7 @@ const std::string SequenceLoader::checkAddVariantMonomerTemplate(KetDocument& do
                                                                  variant_template_opts& options)
 {
     std::string template_id;
-    auto& it = _opts_to_template_id.find(options);
+    const auto& it = _opts_to_template_id.find(options);
     if (it != _opts_to_template_id.end())
     {
         template_id = it->second;
