@@ -36,6 +36,9 @@ helm_data = {
     "helm_annotations": 'BLOB1{BEAD}"Animated Polystyrene"|CHEM1{[hxy]"Annotation"}|RNA1{R(A"mutation")P.R(U)P.R(G)P}$$$$V2.0',
     "helm_chem_rna": "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:R1-3:R2$$$V2.0",
     "helm_rna_without_base": "RNA1{RP}$$$$V2.0",
+    "helm_mixed_base": "RNA1{[dR](A)P.[dR](A+G)P.[dR](A)P.[dR](G+C)}$$$$V2.0",
+    "helm_mixed_custom": "RNA1{[dR](A:10+C:20+G:30+T:50)P.[dR](A:10+C:20+G:30+T:50)P.[dR](A+C+G+T)}$$$$V2.0",
+    "aminoacids_variants": "PEPTIDE1{(D+N).(L+I).(E+Q).(A+C+D+E+F+G+H+I+K+L+M+N+O+P+Q+R+S+T+U+V+W+Y)}$$$$V2.0",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -57,7 +60,7 @@ for filename in sorted(helm_data.keys()):
         print(diff)
 
 helm_errors = {
-    "PEPTIDE1{A'2'}$$$$V2.0": "Repeating do not supported now.",
+    "PEPTIDE1{A'2'}$$$$V2.0": "Repeating not supported now.",
     "CHEM1{[MCC]}|RNA1{R(A)P.R(C)P.R(G)P.R(T)P.R(U)P}$RNA1,PEPTIDE1,15:R2-1:R1$$$V2.0": "Polymer 'PEPTIDE1' not found.",
     "CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM10,PEPTIDE1,1:R2-1:R1$$$V2.0": "Polymer 'CHEM10' not found.",
     "CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM1,PEPTIDE1,1:R2-3:R1$$$V2.0": "Polymer 'PEPTIDE1' does not contains monomer with number 3.",

@@ -738,12 +738,15 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
 
 void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
 {
-    if (sf == SeqFormat::HELM)
-        throw Error("Not supported yet");
     std::vector<std::deque<std::string>> sequences;
     int seq_idx = 0;
     std::string seq_text;
-    if (sf == SeqFormat::IDT)
+    if (sf == SeqFormat::HELM)
+    {
+        doc.parseSimplePolymers(sequences, false);
+        seq_text = saveHELM(doc, sequences);
+    }
+    else if (sf == SeqFormat::IDT)
     {
         doc.parseSimplePolymers(sequences, true);
         saveIdt(doc, sequences, seq_text);
@@ -1047,4 +1050,162 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
             seq_text += "\n";
         seq_text += seq_string;
     }
+}
+
+static const char* get_helm_class(MonomerClass monomer_class)
+{
+    switch (monomer_class)
+    {
+    case MonomerClass::AminoAcid:
+        return kHELMPolymerTypePEPTIDE;
+    case MonomerClass::Base:
+    case MonomerClass::Sugar:
+    case MonomerClass::Phosphate:
+    case MonomerClass::RNA:
+    case MonomerClass::DNA:
+    case MonomerClass::Linker:
+    case MonomerClass::Terminator:
+        return kHELMPolymerTypeRNA;
+    case MonomerClass::Unknown:
+    case MonomerClass::CHEM:
+    default:
+        return kHELMPolymerTypeCHEM;
+        break;
+    }
+    return kHELMPolymerTypeCHEM;
+}
+
+std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::deque<std::string>> sequences)
+{
+    std::string helm_string = "";
+    int peptide_idx = 0;
+    int rna_idx = 0;
+    int chem_idx = 0;
+    using MonomerInfo = std::tuple<HELMType, int, int>;
+    constexpr int polymer_type = 0;
+    constexpr int polymer_num = 1;
+    constexpr int monomer_num = 2;
+    std::map<std::string, MonomerInfo> monomer_id_to_monomer_info;
+    const auto& monomers = document.monomers();
+    const auto& templates = document.templates();
+    const auto& variant_templates = document.variantTemplates();
+    for (auto& sequence : sequences)
+    {
+        int monomer_idx = 0;
+        int polymer_idx = -1;
+        std::string helm_polymer_class = "";
+        HELMType helm_type = HELMType::Unknown;
+        MonomerClass prev_monomer_class = MonomerClass::Unknown;
+        for (auto monomer_id : sequence)
+        {
+            const auto& monomer = monomers.at(monomer_id);
+            auto monomer_class = document.getMonomerClass(monomer_id);
+            if (monomer_idx == 0)
+            {
+                if (helm_string.size() > 0)
+                    helm_string += '|';
+                // start new polymer
+                std::string helm_polymer_class;
+                if (monomer->monomerType() == KetBaseMonomer::MonomerType::Monomer && templates.at(monomer->templateId()).hasStringProp("classHELM"))
+                    helm_polymer_class = templates.at(monomer->templateId()).getStringProp("classHELM");
+                else
+                    helm_polymer_class = get_helm_class(monomer_class);
+                helm_string += helm_polymer_class;
+                helm_type = getHELMTypeFromString(helm_polymer_class);
+                if (helm_polymer_class == kHELMPolymerTypePEPTIDE)
+                    polymer_idx = ++peptide_idx;
+                else if (helm_polymer_class == kHELMPolymerTypeRNA)
+                    polymer_idx = ++rna_idx;
+                else if (helm_polymer_class == kHELMPolymerTypeCHEM)
+                    polymer_idx = ++chem_idx;
+                helm_string += std::to_string(polymer_idx);
+                helm_string += '{';
+            }
+            if (monomer_idx && monomer_class != MonomerClass::Base &&
+                !((prev_monomer_class == MonomerClass::Base || prev_monomer_class == MonomerClass::Sugar) && monomer_class == MonomerClass::Phosphate))
+                helm_string += '.'; // separator between sugar and base and between sugar or base and phosphate
+            if (monomer_class == MonomerClass::Base && prev_monomer_class != MonomerClass::Sugar)
+                throw Error("Wrong monomer sequence: base monomer %s after %s monomer.", monomer->alias().c_str(),
+                            MonomerTemplate::MonomerClassToStr(prev_monomer_class).c_str());
+            if (monomer_class == MonomerClass::Base)
+                helm_string += '(';
+            if (monomer->monomerType() == KetBaseMonomer::MonomerType::Monomer)
+                add_monomer(helm_string, monomer->alias());
+            else if (monomer->monomerType() == KetBaseMonomer::MonomerType::VarianMonomer)
+            {
+                const auto& templ = variant_templates.at(monomer->templateId());
+                if (monomer_class != MonomerClass::Base)
+                    helm_string += '(';
+                std::string variants;
+                bool mixture = (templ.subtype() == "mixture");
+                for (const auto& option : templ.options())
+                {
+                    if (variants.size() > 0)
+                        variants += mixture ? '+' : ',';
+                    variants += templates.at(option.templateId()).getStringProp("alias");
+                    auto num = mixture ? option.ratio() : option.probability();
+                    if (num.has_value())
+                    {
+                        variants += ':';
+                        variants += std::to_string(static_cast<int>(round(num.value())));
+                    }
+                }
+                helm_string += variants;
+                if (monomer_class != MonomerClass::Base)
+                    helm_string += ')';
+            }
+            if (monomer_class == MonomerClass::Base)
+                helm_string += ')';
+            monomer_idx++;
+            monomer_id_to_monomer_info.emplace(std::make_pair(monomer_id, std::make_tuple(helm_type, polymer_idx, monomer_idx)));
+            prev_monomer_class = monomer_class;
+        }
+        if (monomer_idx)
+            helm_string += '}'; // Finish polymer
+    }
+    helm_string += '$';
+    // Add connections
+    int connections_count = 0;
+    for (const auto& connection : document.nonSequenceConnections())
+    {
+        // add connection
+        if (connections_count)
+            helm_string += '|';
+        const auto& ep_1 = connection.ep1();
+        const auto& ep_2 = connection.ep2();
+        if (!ep_1.hasStringProp("monomerId") || !ep_2.hasStringProp("monomerId"))
+            throw Error("Endpoint without monomer id");
+        const auto& monomer_id_1 = ep_1.getStringProp("monomerId");
+        const auto& monomer_id_2 = ep_2.getStringProp("monomerId");
+        auto [type_1, pol_num_1, mon_num_1] = monomer_id_to_monomer_info.at(document.monomerIdByRef(monomer_id_1));
+        auto [type_2, pol_num_2, mon_num_2] = monomer_id_to_monomer_info.at(document.monomerIdByRef(monomer_id_2));
+        connections_count++;
+        helm_string += getStringFromHELMType(type_1);
+        helm_string += std::to_string(pol_num_1);
+        helm_string += ',';
+        helm_string += getStringFromHELMType(type_2);
+        helm_string += std::to_string(pol_num_2);
+        helm_string += ',';
+        helm_string += std::to_string(mon_num_1);
+        helm_string += ":";
+        if (ep_1.hasStringProp("attachmentPointId"))
+            helm_string += ep_1.getStringProp("attachmentPointId");
+        else
+            helm_string += '?';
+        helm_string += '-';
+        helm_string += std::to_string(mon_num_2);
+        helm_string += ':';
+        if (ep_2.hasStringProp("attachmentPointId"))
+            helm_string += ep_2.getStringProp("attachmentPointId");
+        else
+            helm_string += '?';
+    }
+    helm_string += '$';
+    // Add polymer groups
+    helm_string += '$';
+    // Add ExtendedAnnotation
+    helm_string += '$';
+    // Add helm version
+    helm_string += "V2.0";
+    return helm_string;
 }

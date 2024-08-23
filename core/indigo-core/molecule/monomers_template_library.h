@@ -60,19 +60,21 @@ namespace indigo
         static const MonomerClass StrToMonomerClass(const std::string& monomer_type)
         {
             static const std::map<std::string, MonomerClass> _str_to_type = {
-                {"AminoAcid", MonomerClass::AminoAcid},
-                {"Sugar", MonomerClass::Sugar},
-                {"Phosphate", MonomerClass::Phosphate},
-                {"Base", MonomerClass::Base},
-                {"Terminator", MonomerClass::Terminator},
-                {"Linker", MonomerClass::Linker},
-                {"Unknown", MonomerClass::Unknown},
-                {"CHEM", MonomerClass::CHEM},
-                {"DNA", MonomerClass::DNA},
-                {"RNA", MonomerClass::RNA},
+                {"aminoacid", MonomerClass::AminoAcid},
+                {"sugar", MonomerClass::Sugar},
+                {"phosphate", MonomerClass::Phosphate},
+                {"base", MonomerClass::Base},
+                {"terminator", MonomerClass::Terminator},
+                {"linker", MonomerClass::Linker},
+                {"unknown", MonomerClass::Unknown},
+                {"chem", MonomerClass::CHEM},
+                {"dna", MonomerClass::DNA},
+                {"rna", MonomerClass::RNA},
             };
-            if (_str_to_type.count(monomer_type))
-                return _str_to_type.at(monomer_type);
+            std::string mt = monomer_type;
+            std::transform(mt.begin(), mt.end(), mt.begin(), [](unsigned char c) { return std::tolower(c); });
+            if (_str_to_type.count(mt))
+                return _str_to_type.at(mt);
             return MonomerClass::Unknown;
         }
 

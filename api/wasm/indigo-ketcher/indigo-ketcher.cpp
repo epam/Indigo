@@ -503,7 +503,9 @@ namespace indigo
             input_format = it->second;
 
         bool use_document = false;
-        if (input_format == "ket" && outputFormat.size() > 0 && (outputFormat == "idt" || outputFormat == "chemical/x-idt"))
+        if (input_format == "ket" && outputFormat.size() > 0 &&
+            (outputFormat == "sequence" || outputFormat == "chemical/x-sequence" || outputFormat == "fasta" || outputFormat == "chemical/x-fasta" ||
+             outputFormat == "idt" || outputFormat == "chemical/x-idt" || outputFormat == "helm" || outputFormat == "chemical/x-helm" ||))
             use_document = true;
         IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy, library, use_document);
 

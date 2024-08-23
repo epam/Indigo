@@ -2,49 +2,49 @@
     "root": {
         "nodes": [
             {
-                "$ref": "monomer0"
+                "$ref": "variantMonomer-0"
             },
             {
-                "$ref": "monomer1"
+                "$ref": "variantMonomer-1"
             },
             {
-                "$ref": "monomer2"
+                "$ref": "variantMonomer-2"
             },
             {
-                "$ref": "monomer3"
+                "$ref": "variantMonomer-3"
             }
         ],
         "connections": [
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer0",
+                    "monomerId": "variantMonomer-0",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer1",
+                    "monomerId": "variantMonomer-1",
                     "attachmentPointId": "R1"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer1",
+                    "monomerId": "variantMonomer-1",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer2",
+                    "monomerId": "variantMonomer-2",
                     "attachmentPointId": "R1"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer2",
+                    "monomerId": "variantMonomer-2",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer3",
+                    "monomerId": "variantMonomer-3",
                     "attachmentPointId": "R1"
                 }
             }
@@ -130,48 +130,44 @@
             }
         ]
     },
-    "monomer0": {
-        "type": "monomer",
+    "variantMonomer-0": {
+        "type": "variantMonomer",
         "id": "0",
-        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -0.000000
         },
-        "alias": "B",
+        "seqid": 1,
         "templateId": "B"
     },
-    "monomer1": {
-        "type": "monomer",
+    "variantMonomer-1": {
+        "type": "variantMonomer",
         "id": "1",
-        "seqid": 2,
         "position": {
             "x": 1.600000,
             "y": -0.000000
         },
-        "alias": "J",
+        "seqid": 2,
         "templateId": "J"
     },
-    "monomer2": {
-        "type": "monomer",
+    "variantMonomer-2": {
+        "type": "variantMonomer",
         "id": "2",
-        "seqid": 3,
         "position": {
             "x": 3.200000,
             "y": -0.000000
         },
-        "alias": "Z",
+        "seqid": 3,
         "templateId": "Z"
     },
-    "monomer3": {
-        "type": "monomer",
+    "variantMonomer-3": {
+        "type": "variantMonomer",
         "id": "3",
-        "seqid": 4,
         "position": {
             "x": 4.800000,
             "y": -0.000000
         },
-        "alias": "X",
+        "seqid": 4,
         "templateId": "X"
     },
     "monomerTemplate-D___Aspartic acid": {
@@ -4756,7 +4752,7 @@
                 "templateId": "P___Proline"
             },
             {
-                "templateId": "G___Glycine"
+                "templateId": "Q___Glutamine"
             },
             {
                 "templateId": "R___Arginine"
