@@ -89,6 +89,14 @@ using namespace indigo;
         value.push(0);                                                                                                                                         \
     }
 
+#define SET_POSITIVE_FLOAT_OPTION(option, error)                                                                                                               \
+    [](float value) {                                                                                                                                          \
+        if (value <= 0.0f)                                                                                                                                     \
+            throw IndigoError(error);                                                                                                                          \
+        option = value;                                                                                                                                        \
+    },                                                                                                                                                         \
+        [](float& value) { value = option; }
+
 class DLLEXPORT IndigoOptionManager
 {
 public:

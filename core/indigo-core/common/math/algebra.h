@@ -218,7 +218,7 @@ namespace indigo
 
         DLLEXPORT float calc_angle_pos(Vec2f a, Vec2f b);
 
-        inline void scale(float s)
+        inline void scale(const float s)
         {
             x *= s;
             y *= s;

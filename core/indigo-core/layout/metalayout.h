@@ -44,6 +44,11 @@ namespace indigo
                 ETop,
                 EBottom
             };
+            enum class Type
+            {
+                EMolecule = 0,
+                ESpace = 1
+            };
 
             LayoutItem()
             {
@@ -53,9 +58,9 @@ namespace indigo
             void clear()
             {
                 verticalAlign = ItemVerticalAlign::ECenter;
-                type = 0;
+                type = Type::EMolecule;
                 id = 0;
-                fragment = false;
+                isMoleculeFragment = false;
                 min.zero();
                 max.zero();
                 scaledSize.zero();
@@ -63,9 +68,9 @@ namespace indigo
                 scaleFactor.zero();
                 minScaledSize.zero();
             }
-            int type;
+            Type type;
             int id;
-            bool fragment;
+            bool isMoleculeFragment;
             ItemVerticalAlign verticalAlign;
 
             Vec2f min, max;
@@ -93,16 +98,15 @@ namespace indigo
         Metalayout();
         void clear();
         bool isEmpty() const;
-        void prepare();
+        void prepare(); // calculates averageBondLength and scaleFactor
         float getAverageBondLength() const;
         float getScaleFactor() const;
         const Vec2f& getContentSize() const;
-        void setScaleFactor();
         void process();
         LayoutLine& newLine();
         static void getBoundRect(Vec2f& min, Vec2f& max, BaseMolecule& mol);
         void calcContentSize();
-        void scaleSz();
+        void scaleMoleculesSize();
 
         void* context;
         void (*cb_process)(LayoutItem& item, const Vec2f& pos, void* context);
@@ -112,7 +116,7 @@ namespace indigo
         static float getTotalMoleculeClosestDist(BaseMolecule& mol);
 
         // utility function to use in MoleculeLayout & ReactionLayout
-        void adjustMol(BaseMolecule& mol, const Vec2f& min, const Vec2f& pos);
+        void adjustMol(BaseMolecule& mol, const Vec2f& min, const Vec2f& pos) const;
 
         float horizontalIntervalFactor;
         float verticalIntervalFactor;
@@ -127,6 +131,110 @@ namespace indigo
         float _getAverageBondLength();
 
         ReusableObjArray<LayoutLine> _layout;
+    };
+
+    struct UnitsOfMeasure
+    {
+        enum TYPE
+        {
+            PT,
+            PX,
+            INCHES,
+            CM
+        };
+
+        static constexpr float INCH_TO_CM = 2.54f;
+        static constexpr float PT_TO_PX = 1.333334f;
+
+        static float convertToPx(const float input, const TYPE units, const float ppi)
+        {
+            switch (units)
+            {
+            case (PT):
+                return input * PT_TO_PX;
+                break;
+            case (INCHES):
+                return ppi * input;
+                break;
+            case (CM):
+                return ppi * INCH_TO_CM * input;
+                break;
+            default:
+                return input;
+            }
+        }
+
+        static float convertToPt(const float input, const TYPE units, const float ppi)
+        {
+
+            switch (units)
+            {
+            case (PT):
+                return input / PT_TO_PX;
+                break;
+            case (INCHES):
+                return (input * ppi) / PT_TO_PX;
+                break;
+            case (CM):
+                return (input * ppi * INCH_TO_CM) / PT_TO_PX;
+                break;
+            default:
+                return input;
+            }
+        }
+
+        static float convertToInches(const float input, const TYPE units, const float ppi)
+        {
+            switch (units)
+            {
+            case (PT):
+                return (input * PT_TO_PX) / ppi;
+                break;
+            case (PX):
+                return input / ppi;
+                break;
+            case (CM):
+                return input * INCH_TO_CM;
+                break;
+            default:
+                return input;
+            }
+        }
+
+        static float convertToCm(const float input, const TYPE units, const float ppi)
+        {
+            switch (units)
+            {
+            case (PT):
+                return (input * PT_TO_PX) / (ppi * INCH_TO_CM);
+                break;
+            case (INCHES):
+                return input / INCH_TO_CM;
+                break;
+            case (PX):
+                return input / (ppi * INCH_TO_CM);
+                break;
+            default:
+                return input;
+            }
+        }
+    };
+
+    struct LayoutOptions
+    {
+        static constexpr float DEFAULT_BOND_LENGTH = 1.6f;
+        float bondLength{DEFAULT_BOND_LENGTH};
+        UnitsOfMeasure::TYPE bondLengthUnit{UnitsOfMeasure::TYPE::PX};
+        float reactionComponentMarginSize{DEFAULT_BOND_LENGTH / 2};
+        UnitsOfMeasure::TYPE reactionComponentMarginSizeUnit{UnitsOfMeasure::TYPE::PX};
+        float ppi{72.0f};
+        float getMarginSizeInAngstroms() const
+        {
+            auto marginSizePt = UnitsOfMeasure::convertToPt(reactionComponentMarginSize, reactionComponentMarginSizeUnit, ppi);
+            auto bondLengthPt = UnitsOfMeasure::convertToPt(bondLength, bondLengthUnit, ppi);
+
+            return marginSizePt / bondLengthPt;
+        }
     };
 
 } // namespace indigo

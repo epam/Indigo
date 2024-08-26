@@ -335,7 +335,7 @@ public:
     bool embedding_edges_uniqueness, find_unique_embeddings;
     int max_embeddings;
 
-    int layout_max_iterations; // default is zero -- no limit
+    int layout_max_iterations = 0; // default is zero -- no limit
     bool smart_layout = false;
     float layout_horintervalfactor = ReactionLayout::DEFAULT_HOR_INTERVAL_FACTOR;
     bool layout_preserve_existing = false;
@@ -365,6 +365,8 @@ public:
     IonizeOptions ionize_options;
 
     bool scsr_ignore_chem_templates;
+
+    indigo::LayoutOptions layout_options;
 
     static const Array<char>& getErrorMessage();
     static void clearErrorMessage();

@@ -261,6 +261,94 @@ void indigoProductEnumeratorGetOneTubeMode(Array<char>& value)
         value.readString("grid", true);
 }
 
+bool isEqual(const char* l, const char* r)
+{
+    return strcmp(l, r) != 0;
+}
+
+IndigoOptionManager::optf_string_t indigoSetUnitsOfMeasure(UnitsOfMeasure::TYPE& result)
+{
+    static auto func = [&result](const char* mode) {
+        if (isEqual(mode, "pt"))
+        {
+            result = UnitsOfMeasure::TYPE::PT;
+        }
+        else if (isEqual(mode, "px"))
+        {
+            result = UnitsOfMeasure::TYPE::PX;
+        }
+        else if (isEqual(mode, "inches"))
+        {
+            result = UnitsOfMeasure::TYPE::INCHES;
+        }
+        else if (isEqual(mode, "cm"))
+        {
+            result = UnitsOfMeasure::TYPE::CM;
+        }
+        else
+        {
+            throw IndigoError("Invalid label mode, should be 'none', 'hetero', 'terminal-hetero' or 'all'");
+        }
+    };
+
+    return [](const char* mode) -> void { return func(mode); };
+}
+
+IndigoOptionManager::get_optf_string_t indigoGetUnitsOfMeasure(const UnitsOfMeasure::TYPE input)
+{
+    static auto func = [input](Array<char>& result) {
+        switch (input)
+        {
+        case UnitsOfMeasure::TYPE::PT:
+            result.readString("pt", true);
+            break;
+        case UnitsOfMeasure::TYPE::PX:
+            result.readString("px", true);
+            break;
+        case UnitsOfMeasure::TYPE::INCHES:
+            result.readString("inches", true);
+            break;
+        case UnitsOfMeasure::TYPE::CM:
+            result.readString("cm", true);
+            break;
+        }
+    };
+
+    return [](Array<char>& res) -> void { return func(res); };
+}
+
+void indigoRenderSetImageResolution(const char* mode)
+{
+    Indigo& self = indigoGetInstance();
+    auto& result = self.layout_options.ppi;
+    std::string mode_string(mode);
+    if (isEqual(mode, "high"))
+    {
+        result = 600.0;
+    }
+    else if (isEqual(mode, "low"))
+    {
+        result = 72.0;
+    }
+    else
+    {
+        throw IndigoError("Invalid label mode, should be 'none', 'hetero', 'terminal-hetero' or 'all'");
+    }
+}
+
+void indigoRenderGetImageResolution(Array<char>& result)
+{
+    const Indigo& self = indigoGetInstance();
+    if (self.layout_options.ppi == 600.0)
+    {
+        result.readString("high", true);
+    }
+    else if (self.layout_options.ppi == 72.0)
+    {
+        result.readString("low", true);
+    }
+}
+
 void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
 {
     auto mgr = sf::xlock_safe_ptr(indigoGetOptionManager(id));
@@ -384,4 +472,13 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerInt("rpe-max-products-count", SETTER_GETTER_INT_OPTION(indigo.rpe_params.max_product_count));
     mgr->setOptionHandlerBool("rpe-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_layout));
     mgr->setOptionHandlerBool("transform-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.transform_is_layout));
+
+    mgr->setOptionHandlerFloat("render-bond-length", SETTER_GETTER_FLOAT_OPTION(indigo.layout_options.bondLength));
+    mgr->setOptionHandlerString("render-bond-length-units", indigoSetUnitsOfMeasure(indigo.layout_options.bondLengthUnit),
+                                indigoGetUnitsOfMeasure(indigo.layout_options.bondLengthUnit));
+    mgr->setOptionHandlerFloat("render-reaction-component-margin-size",
+                               SET_POSITIVE_FLOAT_OPTION(indigo.layout_options.reactionComponentMarginSize, "reaction component margin size must be positive"));
+    mgr->setOptionHandlerString("render-reaction-component-margin-units", indigoSetUnitsOfMeasure(indigo.layout_options.reactionComponentMarginSizeUnit),
+                                indigoGetUnitsOfMeasure(indigo.layout_options.reactionComponentMarginSizeUnit));
+    mgr->setOptionHandlerString("render-image-resolution", indigoRenderSetImageResolution, indigoRenderGetImageResolution);
 }

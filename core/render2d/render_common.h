@@ -519,6 +519,7 @@ namespace indigo
         int xOffset;
         int yOffset;
         float bondLength;
+        UnitsOfMeasure::TYPE bondLengthUnit;
         int gridMarginX;
         int gridMarginY;
         int marginX;
@@ -578,6 +579,9 @@ namespace indigo
         bool agentsBelowArrow;
         Array<char> atomColorProp;
         std::unique_ptr<RenderCdxmlContext> cdxml_context;
+        float reactionComponentMarginSize;
+        UnitsOfMeasure::TYPE reactionComponentMarginSizeUnit;
+        float ppi;
 
     private:
         RenderOptions(const RenderOptions&);

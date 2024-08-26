@@ -33,6 +33,7 @@ namespace indigo
     {
     public:
         explicit ReactionLayout(BaseReaction& r, bool smart_layout = false);
+        explicit ReactionLayout(BaseReaction& r, bool smart_layout, const LayoutOptions& options);
 
         static constexpr float DEFAULT_HOR_INTERVAL_FACTOR = 1.4f;
 
@@ -42,23 +43,21 @@ namespace indigo
         void fixLayout();
         void processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_box, int side);
 
-        float bond_length;
-        float atom_label_width;
-        float plus_interval_factor;
-        float arrow_interval_factor;
-        float horizontal_interval_factor;
-        bool preserve_molecule_layout;
-        int max_iterations;
-        bool _smart_layout;
-        layout_orientation_value layout_orientation;
+        const float bond_length;
+        const float atom_label_width;
+        const float default_plus_size;
+        const float default_arrow_size;
+        const float reaction_margin_size;
+        bool preserve_molecule_layout = false;
+        int max_iterations = 0;
+        bool _smart_layout = false;
+        layout_orientation_value layout_orientation = UNCPECIFIED;
 
     private:
         void _updateMetadata();
         void _pushMol(Metalayout::LayoutLine& line, int id, bool is_agent = false);
         void _pushSpace(Metalayout::LayoutLine& line, float size);
         BaseMolecule& _getMol(int id);
-        void _shiftMol(const Metalayout::LayoutItem& item, const Vec2f& pos);
-        void _make();
 
         static BaseMolecule& cb_getMol(int id, void* context);
         static void cb_process(Metalayout::LayoutItem& item, const Vec2f& pos, void* context);

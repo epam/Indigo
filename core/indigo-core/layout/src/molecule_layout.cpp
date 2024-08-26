@@ -398,8 +398,8 @@ void MoleculeLayout::_make()
 Metalayout::LayoutItem& MoleculeLayout::_pushMol(Metalayout::LayoutLine& line, BaseMolecule& mol)
 {
     Metalayout::LayoutItem& item = line.items.push();
-    item.type = 0;
-    item.fragment = true;
+    item.type = Metalayout::LayoutItem::Type::EMolecule;
+    item.isMoleculeFragment = true;
     item.id = _map.size();
     _map.push(&mol);
     Metalayout::getBoundRect(item.min, item.max, mol);
@@ -452,7 +452,7 @@ void MoleculeLayout::make()
         _ml.cb_getMol = cb_getMol;
         _ml.cb_process = cb_process;
         _ml.prepare();
-        _ml.scaleSz();
+        _ml.scaleMoleculesSize();
         _ml.calcContentSize();
         _ml.process();
     }
