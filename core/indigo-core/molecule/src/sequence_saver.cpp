@@ -1082,9 +1082,6 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
     int rna_idx = 0;
     int chem_idx = 0;
     using MonomerInfo = std::tuple<HELMType, int, int>;
-    constexpr int polymer_type = 0;
-    constexpr int polymer_num = 1;
-    constexpr int monomer_num = 2;
     std::map<std::string, MonomerInfo> monomer_id_to_monomer_info;
     const auto& monomers = document.monomers();
     const auto& templates = document.templates();
