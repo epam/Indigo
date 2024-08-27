@@ -42,42 +42,6 @@ namespace indigo
     class BaseMolecule;
     class BaseReaction;
 
-    // PathwayLayoutItem is a struct that represents a reaction in the pathway
-    struct PathwayLayoutItem
-    {
-        std::pair<int, std::vector<int>> associatedReactionItems;
-        int number = -1;
-        double prelim = 0;
-        double mod = 0;
-        int ancestor = -1;
-        int thread = -1;
-        double change = 0;
-        double shift = 0;
-        double width = 0, height = 0;
-        double x = 0, y = 0;
-        std::vector<int> precursors;
-        int successor = -1;
-        int nextSibling = -1;
-        int prevSibling = -1;
-
-        int getFirstPrecursor() const
-        {
-            return precursors.empty() ? -1 : precursors.front();
-        }
-
-        int getLastPrecursor() const
-        {
-            return precursors.empty() ? -1 : precursors.back();
-        }
-
-        void clear()
-        {
-            number = -2;
-            prelim = mod = shift = change = 0;
-            ancestor = thread = -1;
-        }
-    };
-
     // PathwayReactionBuilder is a class that builds a pathway reaction tree from a list of reactions in O(N) time
     class PathwayReactionBuilder
     {
