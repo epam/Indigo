@@ -40,7 +40,7 @@ auto PathwayReactionBuilder::findPossibleSuccessorReactions(int reactionIdx)
     // find possible precursors
     std::map<int, std::vector<int>> matchedReactions;
     // iterate over products of the reaction
-    for (auto& product : _reactionDescriptors[reactionIdx].products)
+    for (auto& product : _reactionInchiDescriptors[reactionIdx].products)
     {
         // find all reactions that have this product as a reactant (successors)
         auto rtr_it = _reactantToReactions.find(product);
@@ -80,7 +80,7 @@ auto PathwayReactionBuilder::findPossibleSuccessorReactions(int reactionIdx)
 
 void PathwayReactionBuilder::buildInchiDescriptors(std::deque<Reaction>& reactions)
 {
-    _reactionDescriptors.clear();
+    _reactionInchiDescriptors.clear();
     InchiWrapper inchiWrapper;
     Array<char> inchi, inchiKey;
     for (auto& reaction : reactions)
@@ -101,10 +101,10 @@ void PathwayReactionBuilder::buildInchiDescriptors(std::deque<Reaction>& reactio
                 {
                     _reactantToReactions.emplace(std::piecewise_construct, std::forward_as_tuple(inchi_str),
                                                  std::forward_as_tuple(std::initializer_list<std::pair<const int, int>>{
-                                                     {static_cast<int>(_reactionDescriptors.size()), static_cast<int>(i)}}));
+                                                     {static_cast<int>(_reactionInchiDescriptors.size()), static_cast<int>(i)}}));
                 }
                 else
-                    rtr_it->second.insert(std::make_pair(static_cast<int>(_reactionDescriptors.size()), static_cast<int>(i)));
+                    rtr_it->second.insert(std::make_pair(static_cast<int>(_reactionInchiDescriptors.size()), static_cast<int>(i)));
             }
             break;
             case BaseReaction::PRODUCT:
@@ -114,16 +114,16 @@ void PathwayReactionBuilder::buildInchiDescriptors(std::deque<Reaction>& reactio
                 break;
             }
         }
-        _reactionDescriptors.push_back(rd);
+        _reactionInchiDescriptors.push_back(rd);
     }
 }
 
 void PathwayReactionBuilder::populatePossibleReactions()
 {
     // iterate over reactionDescriptors and fill possibleSuccessors
-    _reactionNodes.resize((int)_reactionDescriptors.size());
+    _reactionNodes.resize((int)_reactionInchiDescriptors.size());
     _reactionNodes.zerofill();
-    for (auto i = 0; i < _reactionDescriptors.size(); i++)
+    for (auto i = 0; i < _reactionInchiDescriptors.size(); i++)
     {
         _reactionNodes[i].reactionIdx = i;
         auto matchedReactions = findPossibleSuccessorReactions(i);

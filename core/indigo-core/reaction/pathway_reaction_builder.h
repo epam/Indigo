@@ -98,7 +98,7 @@ namespace indigo
         void populatePossibleReactions();
         auto findPossibleSuccessorReactions(int reactionIdx);
         auto getReactionComponents(const PathwayReaction::ReactionNode& rn, Reaction& reaction);
-        std::vector<ReactionInchiDescriptor> _reactionDescriptors;
+        std::vector<ReactionInchiDescriptor> _reactionInchiDescriptors;
         Array<PathwayReaction::ReactionNode> _reactionNodes;
         std::unordered_map<std::string, std::map<int, int>> _reactantToReactions;
         std::unordered_set<int> _ambigousSuccessorReactions; // reactions that have more than one possible successor
