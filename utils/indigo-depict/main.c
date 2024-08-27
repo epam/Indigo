@@ -245,6 +245,7 @@ enum
     OEXT_CML,
     OEXT_KET,
     OEXT_KER,
+    OEXT_RDR,
     OEXT_CDX,
     OEXT_CDX64,
     OEXT_CDR,
@@ -347,7 +348,7 @@ int parseParams(Params* p, int argc, char* argv[])
             strcasecmp(p->infile_ext, "seq") == 0 || strcasecmp(p->infile_ext, "fst") == 0)
             p->mode = MODE_SINGLE_MOLECULE;
         else if (strcasecmp(p->infile_ext, "rxn") == 0 || strcasecmp(p->infile_ext, "ker") == 0 || strcasecmp(p->infile_ext, "cdr") == 0 ||
-                 strcasecmp(p->infile_ext, "xmr") == 0 || strcasecmp(p->infile_ext, "r64") == 0)
+                 strcasecmp(p->infile_ext, "xmr") == 0 || strcasecmp(p->infile_ext, "r64") == 0 || strcasecmp(p->infile_ext, "rdr") == 0)
         {
             p->mode = MODE_SINGLE_REACTION;
         }
@@ -887,6 +888,8 @@ int main(int argc, char* argv[])
         p.out_ext = OEXT_KET;
     else if (strcmp(p.outfile_ext, "ker") == 0)
         p.out_ext = OEXT_KER;
+    else if (strcmp(p.outfile_ext, "rdr") == 0)
+        p.out_ext = OEXT_RDR;
     else if (strcmp(p.outfile_ext, "smi") == 0)
         p.out_ext = OEXT_SMI;
     else if (strcmp(p.outfile_ext, "cdxml") == 0)
@@ -1055,7 +1058,7 @@ int main(int argc, char* argv[])
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
-            indigoLayout(obj);
+            // indigoLayout(obj);
             if (p.out_ext == OEXT_CML)
                 indigoSaveCmlToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_RXN)

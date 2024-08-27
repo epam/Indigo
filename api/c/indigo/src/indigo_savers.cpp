@@ -35,9 +35,12 @@
 #include "reaction/reaction_cdxml_saver.h"
 #include "reaction/reaction_cml_saver.h"
 #include "reaction/reaction_json_saver.h"
+#include "reaction/pathway_reaction_json_saver.h"
 #include "reaction/rsmiles_saver.h"
 #include "reaction/rxnfile_loader.h"
 #include "reaction/rxnfile_saver.h"
+#include "reaction/pathway_reaction.h"
+
 #include <memory>
 
 #include "indigo_io.h"
@@ -706,12 +709,24 @@ CEXPORT int indigoSaveJson(int item, int output)
         }
         else if (IndigoBaseReaction::is(obj))
         {
-            ReactionJsonSaver saver(out);
-            self.initReactionJsonSaver(saver);
-            BaseReaction& rxn = obj.getBaseReaction();
-            saver.saveReaction(rxn);
-            out.flush();
-            return 1;
+            if (obj.type == IndigoObject::PATHWAY_REACTION)
+            {
+                PathwayReactionJsonSaver jn(out);
+                self.initReactionJsonSaver(jn);
+                BaseReaction& br = obj.getBaseReaction();
+                jn.saveReaction(dynamic_cast<PathwayReaction&>(br));
+                out.flush();
+                return 1;
+            }
+            else
+            {
+                ReactionJsonSaver saver(out);
+                self.initReactionJsonSaver(saver);
+                BaseReaction& rxn = obj.getBaseReaction();
+                saver.saveReaction(rxn);
+                out.flush();
+                return 1;
+            }
         }
         else if (IndigoKetDocument::is(obj))
         {

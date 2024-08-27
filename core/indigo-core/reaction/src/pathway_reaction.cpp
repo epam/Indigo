@@ -19,6 +19,7 @@
 #include <queue>
 
 #include "molecule/inchi_wrapper.h"
+#include "molecule/ket_commons.h"
 #include "reaction/pathway_reaction.h"
 #include "reaction/reaction.h"
 
@@ -34,25 +35,32 @@ PathwayReaction::~PathwayReaction()
 {
 }
 
-PathwayReaction::PathwayReaction(std::deque<Reaction>& reactions)
+PathwayReaction::PathwayReaction(std::deque<Reaction>& reactions, const Array<ReactionNode>& nodes)
 {
+    _reactionNodes.copy(nodes);
     for (size_t i = 0; i < reactions.size(); i++)
     {
+        auto& reactionComponents = _reactions.push();
         for (int j = reactions[i].begin(); j < reactions[i].end(); j = reactions[i].next(j))
         {
             auto molecule = std::make_unique<Molecule>();
             molecule->clone(reactions[i].getBaseMolecule(j));
             int id = _allMolecules.add(molecule.release());
             _addedBaseMolecule(id, reactions[i].getSideType(j), *_allMolecules[id]);
-            _reactions.expand(id + 1);
-            _reactions[id] = static_cast<int>(i);
+            reactionComponents.insert(j, id);
         }
     }
 }
 
-int PathwayReaction::reactionId(int moleculeId) const
+std::vector<int> PathwayReaction::getRootReactions() const
 {
-    return _reactions.at(moleculeId);
+    std::vector<int> root_reactions;
+    for (const auto& rn : _reactionNodes)
+    {
+        if (rn.successorReactions.size() == 0)
+            root_reactions.push_back(rn.reactionIdx);
+    }
+    return root_reactions;
 }
 
 int PathwayReaction::reactionsCount() const
@@ -63,128 +71,137 @@ int PathwayReaction::reactionsCount() const
 void PathwayReaction::clone(PathwayReaction& reaction)
 {
     BaseReaction::clone(reaction);
-    _reactions.copy(reaction._reactions);
+    _reactionNodes.copy(reaction._reactionNodes);
+    // copy reactions ObjArray
+    for (int i = 0; i < reaction._reactions.size(); i++)
+	{
+        auto& other = reaction._reactions[i];
+		auto& reactionComponents = _reactions.push();
+        reactionComponents.copy(other);
+	}
 }
 
-std::pair<std::vector<std::pair<int, Vec2f>>, std::vector<std::vector<Vec2f>>> PathwayReaction::makeTreePoints()
-{
-    auto reaction = this;
-    std::vector<std::string> inchiKeys(reaction->reactionsCount());
-    InchiWrapper inchiWrapper;
-    Array<char> inchi, inchiKey;
-    for (int i = reaction->begin(); i < reaction->end(); i = reaction->next(i))
-    {
-        auto& molecule = dynamic_cast<Molecule&>(reaction->getBaseMolecule(i));
-        inchiWrapper.saveMoleculeIntoInchi(molecule, inchi);
-        InchiWrapper::InChIKey(inchi.ptr(), inchiKey);
-        inchiKeys.at(i).assign(inchiKey.ptr(), inchiKey.size());
-    }
-
-    int finalProductId;
-    std::vector<std::vector<int>> reactantIdsByReactions(reaction->reactionsCount());
-    std::unordered_map<std::string, int> productIds;
-    for (int i = reaction->begin(); i < reaction->end(); i = reaction->next(i))
-    {
-        if (BaseReaction::REACTANT == reaction->getSideType(i))
-            reactantIdsByReactions.at(reaction->reactionId(i)).push_back(i);
-        else if (BaseReaction::PRODUCT == reaction->getSideType(i))
-        {
-            productIds.emplace(inchiKeys.at(i), i);
-            finalProductId = i;
-        }
-    }
-
-    std::unordered_map<int, Rect2f> sumBoxes;
-    std::stack<int> dfsStack;
-    dfsStack.push(finalProductId);
-    while (!dfsStack.empty())
-    {
-        auto stackSize = dfsStack.size();
-        auto id = dfsStack.top();
-
-        auto productIter = productIds.find(inchiKeys.at(id));
-        if (productIter == productIds.cend())
-        {
-            sumBoxes[id];
-            dfsStack.pop();
-            continue;
-        }
-
-        auto productId = productIter->second;
-        for (int reactantId : reactantIdsByReactions[reaction->reactionId(productId)])
-            if (!sumBoxes.count(reactantId))
-                dfsStack.push(reactantId);
-        if (dfsStack.size() > stackSize)
-            continue;
-
-        Vec2f rightTop(0, -2 * MARGIN);
-        for (int reactantId : reactantIdsByReactions[reaction->reactionId(productId)])
-        {
-            Rect2f box;
-            reaction->getBaseMolecule(reactantId).getBoundingBox(box);
-            rightTop.x = std::max(rightTop.x, box.width());
-            rightTop.y += std::max(box.height(), sumBoxes[reactantId].height()) + 2 * MARGIN;
-        }
-        sumBoxes[id] = {{}, rightTop};
-        dfsStack.pop();
-    }
-
-    std::unordered_map<int, Vec2f> points;
-    std::vector<std::vector<Vec2f>> arrows;
-    std::queue<int> bfsQueue;
-    bfsQueue.push(finalProductId);
-    Rect2f box;
-    reaction->getBaseMolecule(finalProductId).getBoundingBox(box);
-    float offsetX = box.width() / 2 + ARROW_WIDTH + MARGIN;
-    while (!bfsQueue.empty())
-    {
-        float nextOffsetX = 0;
-        auto size = bfsQueue.size();
-        for (size_t i = 0; i < size; i++)
-        {
-            auto id = bfsQueue.front();
-            bfsQueue.pop();
-
-            auto productIter = productIds.find(inchiKeys.at(id));
-            if (productIter == productIds.cend())
-                continue;
-
-            auto zero = points[id];
-            auto& reactantIds = reactantIdsByReactions[reaction->reactionId(productIter->second)];
-            float offsetY = sumBoxes[id].height() / 2;
-            Rect2f boxFront, boxBack;
-            reaction->getBaseMolecule(reactantIds.front()).getBoundingBox(boxFront);
-            reaction->getBaseMolecule(reactantIds.back()).getBoundingBox(boxBack);
-            offsetY -= -std::max(boxFront.height(), sumBoxes[reactantIds.front()].height()) / 4;
-            offsetY -= std::max(boxBack.height(), sumBoxes[reactantIds.back()].height()) / 4;
-            nextOffsetX = std::max(nextOffsetX, sumBoxes[id].width());
-
-            arrows.emplace_back().reserve(1 + reactantIds.size());
-            arrows.back().emplace_back(zero.x - offsetX + ARROW_WIDTH, zero.y);
-            for (int reactantId : reactantIds)
-            {
-                Rect2f box;
-                reaction->getBaseMolecule(reactantId).getBoundingBox(box);
-                float x = offsetX + sumBoxes[id].width() / 2 + MARGIN;
-                float y = -offsetY + std::max(box.height(), sumBoxes[reactantId].height()) / 2;
-                points[reactantId] = zero - Vec2f(x, y);
-                bfsQueue.push(reactantId);
-                offsetY -= std::max(box.height(), sumBoxes[reactantId].height()) + 2 * MARGIN;
-                arrows.back().emplace_back(zero.x - offsetX, zero.y - y);
-            }
-
-            if (arrows.back().size() > 2)
-            {
-                // Add spines. The first and the last reactant arrows "y" are the highest and the lowest.
-                arrows.back().emplace_back(zero.x - offsetX + ARROW_TAIL_WIDTH, arrows.back().back().y);
-                arrows.back().emplace_back(zero.x - offsetX + ARROW_TAIL_WIDTH, arrows.back()[1].y);
-            }
-        }
-        offsetX = nextOffsetX / 2 + ARROW_WIDTH + MARGIN;
-    }
-
-    return {std::piecewise_construct, std::forward_as_tuple(points.cbegin(), points.cend()), std::forward_as_tuple(arrows)};
-}
+//std::pair<std::vector<std::pair<int, Vec2f>>, std::vector<std::vector<Vec2f>>> PathwayReaction::makeTreePoints()
+//{
+//    auto reaction = this;
+//    std::vector<std::string> inchiKeys(reaction->reactionsCount());
+//    InchiWrapper inchiWrapper;
+//    Array<char> inchi, inchiKey;
+//    for (int i = reaction->begin(); i < reaction->end(); i = reaction->next(i))
+//    {
+//        auto& molecule = dynamic_cast<Molecule&>(reaction->getBaseMolecule(i));
+//        inchiWrapper.saveMoleculeIntoInchi(molecule, inchi);
+//        InchiWrapper::InChIKey(inchi.ptr(), inchiKey);
+//        inchiKeys.at(i).assign(inchiKey.ptr(), inchiKey.size());
+//    }
+//
+//    int finalProductId;
+//    std::vector<std::vector<int>> reactantIdsByReactions(reaction->reactionsCount()); // reaction index -> reactant molecule ids
+//    std::unordered_map<std::string, int> productIds;                                  // inchiKey -> product molecule id
+//    for (int i = reaction->begin(); i < reaction->end(); i = reaction->next(i))
+//    {
+//        if (BaseReaction::REACTANT == reaction->getSideType(i))
+//            reactantIdsByReactions.at(reaction->reactionId(i)).push_back(i);
+//        else if (BaseReaction::PRODUCT == reaction->getSideType(i))
+//        {
+//            productIds.emplace(inchiKeys.at(i), i);
+//            finalProductId = i;
+//        }
+//    }
+//
+//    std::unordered_map<int, Rect2f> sumBoxes;
+//    std::stack<int> dfsStack;
+//    dfsStack.push(finalProductId); // push last product
+//    while (!dfsStack.empty())
+//    {
+//        auto stackSize = dfsStack.size();
+//        auto id = dfsStack.top();
+//
+//        auto productIter = productIds.find(inchiKeys.at(id)); // take id from stack and find it in productIds by inchi key
+//        if (productIter == productIds.cend())
+//        {
+//            // dead end, add reactant to sumBoxes with empty bounding box
+//            sumBoxes[id];   // add reactant to sumBoxes with empty bounding box
+//            dfsStack.pop(); // pop reactant
+//            continue;
+//        }
+//
+//        auto productId = productIter->second;
+//        for (int reactantId : reactantIdsByReactions[reaction->reactionId(productId)]) // enumerate reactants of the reaction with productId
+//            if (!sumBoxes.count(reactantId)) // if reactant is not in sumBoxes, then push it to stack for further processing
+//                dfsStack.push(reactantId);
+//        if (dfsStack.size() > stackSize) // if there are reactants to process, then go while loop
+//            continue;
+//
+//        //
+//        Vec2f rightTop(0, -2 * MARGIN);
+//        for (int reactantId : reactantIdsByReactions[reaction->reactionId(productId)])
+//        {
+//            Rect2f box;
+//            reaction->getBaseMolecule(reactantId).getBoundingBox(box);
+//            rightTop.x = std::max(rightTop.x, box.width());
+//            rightTop.y += std::max(box.height(), sumBoxes[reactantId].height()) + 2 * MARGIN;
+//        }
+//        sumBoxes[id] = {{}, rightTop};
+//        dfsStack.pop();
+//    }
+//
+//    std::unordered_map<int, Vec2f> points;
+//    std::vector<std::vector<Vec2f>> arrows;
+//    std::queue<int> bfsQueue;
+//    bfsQueue.push(finalProductId);
+//    Rect2f box;
+//    reaction->getBaseMolecule(finalProductId).getBoundingBox(box);
+//    float offsetX = box.width() / 2 + ARROW_WIDTH + MARGIN;
+//    while (!bfsQueue.empty())
+//    {
+//        float nextOffsetX = 0;
+//        auto size = bfsQueue.size();
+//        for (size_t i = 0; i < size; i++)
+//        {
+//            auto id = bfsQueue.front();
+//            bfsQueue.pop();
+//
+//            auto productIter = productIds.find(inchiKeys.at(id));
+//            if (productIter == productIds.cend())
+//                continue;
+//
+//            auto zero = points[id];
+//            auto& reactantIds = reactantIdsByReactions[reaction->reactionId(productIter->second)];
+//            float offsetY = sumBoxes[id].height() / 2;
+//            Rect2f boxFront, boxBack;
+//            reaction->getBaseMolecule(reactantIds.front()).getBoundingBox(boxFront);
+//            reaction->getBaseMolecule(reactantIds.back()).getBoundingBox(boxBack);
+//            offsetY -= -std::max(boxFront.height(), sumBoxes[reactantIds.front()].height()) / 4;
+//            offsetY -= std::max(boxBack.height(), sumBoxes[reactantIds.back()].height()) / 4;
+//            nextOffsetX = std::max(nextOffsetX, sumBoxes[id].width());
+//
+//            arrows.emplace_back().reserve(1 + reactantIds.size());
+//            arrows.back().emplace_back(zero.x - offsetX + ARROW_WIDTH, zero.y);
+//            for (int reactantId : reactantIds)
+//            {
+//                Rect2f box;
+//                reaction->getBaseMolecule(reactantId).getBoundingBox(box);
+//                float x = offsetX + sumBoxes[id].width() / 2 + MARGIN;
+//                float y = -offsetY + std::max(box.height(), sumBoxes[reactantId].height()) / 2;
+//                points[reactantId] = zero - Vec2f(x, y);
+//                bfsQueue.push(reactantId);
+//                offsetY -= std::max(box.height(), sumBoxes[reactantId].height()) + 2 * MARGIN;
+//                arrows.back().emplace_back(zero.x - offsetX, zero.y - y);
+//            }
+//
+//            if (arrows.back().size() > 2)
+//            {
+//                // Add spines. The first and the last reactant arrows "y" are the highest and the lowest.
+//                arrows.back().emplace_back(zero.x - offsetX + ARROW_TAIL_WIDTH, arrows.back().back().y);
+//                arrows.back().emplace_back(zero.x - offsetX + ARROW_TAIL_WIDTH, arrows.back()[1].y);
+//            }
+//        }
+//        offsetX = nextOffsetX / 2 + ARROW_WIDTH + MARGIN;
+//    }
+//
+//    return {std::piecewise_construct, std::forward_as_tuple(points.cbegin(), points.cend()), std::forward_as_tuple(arrows)};
+//}
 
 BaseReaction* PathwayReaction::neu()
 {

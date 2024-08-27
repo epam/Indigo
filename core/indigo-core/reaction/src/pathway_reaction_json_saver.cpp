@@ -40,7 +40,7 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& rxn)
 
     std::vector<std::pair<int, Vec2f>> points;
     std::vector<std::vector<Vec2f>> arrows;
-    std::tie(points, arrows) = reaction->makeTreePoints();
+    // std::tie(points, arrows) = reaction->makeTreePoints();
     // Ensure the same order across different platforms.
     std::sort(points.begin(), points.end());
 

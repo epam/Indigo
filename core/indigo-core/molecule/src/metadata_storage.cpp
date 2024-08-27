@@ -29,6 +29,9 @@ int MetaDataStorage::addMetaObject(MetaObject* pobj)
     case KETImage::CID:
         _image_indexes.push() = index;
         break;
+    case KETReactionMultitailArrow::CID:
+		_multi_tail_indexes.push() = index;
+		break;
     default:
         break;
     }
@@ -67,6 +70,8 @@ int MetaDataStorage::getMetaObjectIndex(uint32_t meta_type, int index) const
     case KETImage::CID:
         return _image_indexes[index];
         break;
+    case KETReactionMultitailArrow::CID:
+        return _multi_tail_indexes[index];
     default:
         throw Error("Unknown meta type");
         break;
@@ -102,6 +107,9 @@ int MetaDataStorage::getMetaCount(uint32_t meta_type) const
     case KETImage::CID:
         return _image_indexes.size();
         break;
+    case KETReactionMultitailArrow::CID:
+		return _multi_tail_indexes.size();
+		break;
     default:
         break;
     }
@@ -112,9 +120,10 @@ void MetaDataStorage::resetReactionData()
 {
     _plus_indexes.clear();
     _arrow_indexes.clear();
+    _multi_tail_indexes.clear();
     for (int i = _meta_data.size() - 1; i >= 0; i--)
     {
-        if (_meta_data[i]->_class_id == KETReactionArrow::CID || _meta_data[i]->_class_id == KETReactionPlus::CID)
+        if (_meta_data[i]->_class_id == KETReactionArrow::CID || _meta_data[i]->_class_id == KETReactionPlus::CID || _meta_data[i]->_class_id == KETReactionMultitailArrow::CID)
             _meta_data.remove(i);
     }
 }

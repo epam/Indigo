@@ -31,8 +31,7 @@
 #include "reaction/reaction_json_loader.h"
 #include "reaction/rsmiles_loader.h"
 #include "reaction/rxnfile_loader.h"
-
-#include <string>
+#include "reaction/pathway_reaction_builder.h"
 
 using namespace indigo;
 
@@ -354,7 +353,9 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
                 reactions.emplace_back();
                 loader.loadReaction(reactions.back());
             }
-            return std::make_unique<PathwayReaction>(reactions);
+
+            PathwayReactionBuilder builder;
+            return builder.buildPathwayReaction(reactions);
         }
     }
 

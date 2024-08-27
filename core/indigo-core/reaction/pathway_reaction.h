@@ -23,8 +23,9 @@
 #pragma warning(disable : 4251)
 #endif
 
-#include "reaction/base_reaction.h"
 #include <deque>
+#include "base_cpp/array.h"
+#include "reaction/base_reaction.h"
 
 namespace indigo
 {
@@ -33,20 +34,42 @@ namespace indigo
 
     class DLLEXPORT PathwayReaction : public BaseReaction
     {
-        static constexpr float MARGIN = 1.f;
-        static constexpr float ARROW_HEAD_WIDTH = 2.5f;
-        static constexpr float ARROW_TAIL_WIDTH = 0.5f;
-        static constexpr float ARROW_WIDTH = ARROW_HEAD_WIDTH + ARROW_TAIL_WIDTH;
-
     public:
-        PathwayReaction();
-        PathwayReaction(std::deque<Reaction>&);
-        ~PathwayReaction() override;
+        struct SuccessorReaction
+		{
+            SuccessorReaction(int reactionIdx, Array<int>& ridxs) : reactionIdx(reactionIdx){
+                reactantIndices.copy(ridxs);
+            }
+            SuccessorReaction(const SuccessorReaction& other) : reactionIdx(other.reactionIdx){
+				reactantIndices.copy(other.reactantIndices);
+			}
+            SuccessorReaction& operator = (const SuccessorReaction& other)
+            {
+                reactionIdx = other.reactionIdx;
+                reactantIndices.copy(other.reactantIndices);
+                return *this;
+            }
+			int reactionIdx;
+			Array<int> reactantIndices;
+		};
 
-        int reactionId(int moleculeId) const;
+        struct ReactionNode
+        {
+            // we don't keep products and reactants here, because they are stored in the Reaction object at reactionIdx
+            int reactionIdx;
+            // vector of successor reactions indexes and their corresponding reactant indexes
+            ObjArray<SuccessorReaction> successorReactions;
+            // vector of precursor reactions indexes
+            Array<int> precursorReactionsIndexes;
+        };
+
+        PathwayReaction();
+        PathwayReaction(std::deque<Reaction>& reactions, const Array<ReactionNode>& nodes);
+        ~PathwayReaction() override;
+        std::vector<int> getRootReactions() const;
+
         int reactionsCount() const;
         void clone(PathwayReaction&);
-        std::pair<std::vector<std::pair<int, Vec2f>>, std::vector<std::vector<Vec2f>>> makeTreePoints();
 
         BaseReaction* neu() override;
         bool aromatize(const AromaticityOptions& options) override;
@@ -57,7 +80,8 @@ namespace indigo
         int _addBaseMolecule(int side) override;
 
     private:
-        Array<int> _reactions;
+        Array<ReactionNode> _reactionNodes;
+        ObjArray< RedBlackMap<int, int> > _reactions;
     };
 
 } // namespace indigo

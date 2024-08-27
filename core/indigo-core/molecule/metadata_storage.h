@@ -75,6 +75,7 @@ namespace indigo
         PtrArray<MetaObject> _meta_data; // TODO: should be replaced with list of unique_ptr
         Array<int> _plus_indexes;
         Array<int> _arrow_indexes;
+        Array<int> _multi_tail_indexes;
         Array<int> _simple_object_indexes;
         Array<int> _text_object_indexes;
         Array<int> _image_indexes;
