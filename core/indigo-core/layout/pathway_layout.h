@@ -59,7 +59,7 @@ namespace indigo
         }
     };
 
-    // PathwayLayout is a class which makes a tree layout of the reactions in O(N) time
+    // PathwayLayout is a class which makes a tree layout of the pathway reaction in O(N) time
     class PathwayLayout
     {
     public:
