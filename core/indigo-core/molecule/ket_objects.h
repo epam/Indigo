@@ -844,12 +844,12 @@ namespace indigo
             _ratio = ratio;
         };
 
-        const std::optional<float> probability() const
+        const std::optional<float>& probability() const
         {
             return _probability;
         };
 
-        const std::optional<float> ratio() const
+        const std::optional<float>& ratio() const
         {
             return _ratio;
         };

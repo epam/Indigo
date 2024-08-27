@@ -289,10 +289,16 @@ void KetDocument::collect_sequence_side(const std::string& start_monomer_id, boo
 
         if (auto side_it = connections.find(left_side ? "R1" : "R2"); side_it == connections.end())
             has_monomer_id = false;
-        else if (used_monomers.count(side_it->second.first) == 0)
+        else
+        {
             monomer_id = _monomer_ref_to_id.at(side_it->second.first);
-        else // This monomer already in sequence - this is cycle, connection should be stored as no-sequence
-            _non_sequence_connections.emplace_back(ap_to_connection.at(std::make_pair(side_it->second.first, side_it->second.second)));
+            if (used_monomers.count(monomer_id) != 0) // This monomer already in sequence - this is cycle, connection should be stored as no-sequence
+            {
+                if (left_side) // add only when go left to avoid duplicate
+                    _non_sequence_connections.emplace_back(ap_to_connection.at(std::make_pair(monomer_id, side_it->second.second)));
+                break;
+            }
+        }
         // When collect left side - base should be placed before sugar, when right - after
         if (!left_side || has_monomer_id)
         {
@@ -426,16 +432,18 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
         connectMonomerTo(mon_ref_2, ap_id_2, mon_ref_1, ap_id_1);
     }
 
+    auto it = _monomers_ids.begin();
     while (monomers.size() > 0)
     {
         std::string start_monomer_id = "";
-        for (auto& id : monomers)
+        // use _monomer_ids to follow original monomer order
+        while (it != _monomers_ids.end() && start_monomer_id.size() == 0)
         {
-            if (is_backbone_class(id_to_class.at(id)))
+            if (monomers.count(*it) > 0 && is_backbone_class(id_to_class.at(*it)))
             {
-                start_monomer_id = id;
-                break;
+                start_monomer_id = *it;
             }
+            it++;
         }
         if (start_monomer_id.size() == 0) // no backbone monomers left - create sequence for each monomers
         {
@@ -451,4 +459,12 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
         collect_sequence_side(start_monomer_id, false, monomers, used_monomers, sequence, ap_to_connection);
         collect_sequence_side(start_monomer_id, true, monomers, used_monomers, sequence, ap_to_connection);
     }
+}
+
+const std::string& KetDocument::monomerIdByRef(const std::string& ref)
+{
+    const auto& it = _monomer_ref_to_id.find(ref);
+    if (it == _monomer_ref_to_id.end())
+        throw Error("Monomer with ref %s not found", ref.c_str());
+    return it->second;
 }

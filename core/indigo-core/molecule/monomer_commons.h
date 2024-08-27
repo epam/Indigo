@@ -123,9 +123,17 @@ namespace indigo
 
     static const std::map<std::string, std::vector<std::string>> STANDARD_MIXED_PEPTIDES = {
         {"B", {"D", "N"}}, {"J", {"L", "I"}}, {"Z", {"E", "Q"}}, {"X", {"A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M",
-                                                                        "N", "O", "P", "G", "R", "S", "T", "U", "V", "W", "Y"}}};
+                                                                        "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "Y"}}};
     static const std::map<std::string, std::vector<std::string>> STANDARD_MIXED_BASES = {
         {"R", {"A", "G"}},      {"Y", {"C", "T"}},      {"M", {"A", "C"}},      {"K", {"G", "T"}},      {"S", {"G", "C"}},          {"W", {"A", "T"}},
         {"H", {"A", "C", "T"}}, {"B", {"C", "G", "T"}}, {"V", {"A", "C", "G"}}, {"D", {"A", "G", "T"}}, {"N", {"A", "C", "G", "T"}}};
+    static const std::map<std::set<std::string>, std::string> STANDARD_MIXED_PEPTIDES_TO_ALIAS = {
+        {{"D", "N"}, "B"},
+        {{"L", "I"}, "J"},
+        {{"E", "Q"}, "Z"},
+        {{"A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "Y"}, "X"}};
+    static const std::map<std::set<std::string>, std::string> STANDARD_MIXED_BASES_TO_ALIAS = {
+        {{"A", "G"}, "R"},      {{"C", "T"}, "Y"},      {{"A", "C"}, "M"},      {{"G", "T"}, "K"},      {{"G", "C"}, "S"},          {{"A", "T"}, "W"},
+        {{"A", "C", "T"}, "H"}, {{"C", "G", "T"}, "B"}, {{"A", "C", "G"}, "V"}, {{"A", "G", "T"}, "D"}, {{"A", "C", "G", "T"}, "N"}};
 }
 #endif

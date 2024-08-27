@@ -73,6 +73,7 @@ namespace indigo
         void loadFasta(KetDocument& document, const std::string& seq_type_str);
         void loadFasta(KetDocument& document, SeqType seq_type);
         void loadIdt(KetDocument& document);
+        void loadHELM(KetDocument& document);
 
     private:
         Vec3f getBackboneMonomerPosition();
@@ -98,7 +99,7 @@ namespace indigo
         int addTemplateAtom(BaseMolecule& mol, const char* alias, const char* monomer_class, int seq_id);
         void addTemplateBond(BaseMolecule& mol, int left_idx, int right_idx, bool branch = false);
 
-        void addTemplateConnection(KetDocument& document, std::size_t left_idx, std::size_t right_idx, bool branch = false);
+        void addMonomerConnection(KetDocument& document, std::size_t left_idx, std::size_t right_idx, bool branch = false);
 
         bool addMonomerTemplate(BaseMolecule& mol, MonomerClass mt, const std::string& alias);
         bool checkAddTemplate(BaseMolecule& mol, MonomerClass type, const std::string monomer);
@@ -106,9 +107,18 @@ namespace indigo
 
         static void check_monomer_place(std::string& idt_alias, IdtModification mon_mod, IdtModification alias_mod, bool has_prev_mon);
 
-        using MonomerInfo = std::tuple<std::string, std::string, std::string>;
+        using variant_template_opts = std::pair<bool, std::vector<std::pair<std::string, std::optional<float>>>>;
+        using MonomerInfo = std::tuple<std::string, std::string, std::string, variant_template_opts>;
 
-        MonomerInfo readHelmMonomer();
+        const std::string checkAddVariantMonomerTemplate(KetDocument& document, const std::string& alias, MonomerClass monomer_class,
+                                                         variant_template_opts& options);
+        size_t addKetMonomer(KetDocument& document, MonomerInfo info, MonomerClass monomer_class, const Vec3f& pos);
+        int readCount(std::string& count, Scanner& _scanner);
+
+        MonomerInfo readHelmMonomer(MonomerClass monomer_class = MonomerClass::Unknown);
+        std::string readHelmMonomerAlias();
+        std::string readHelmRepeating();
+        std::string readHelmAnnotation();
         std::string readHelmSimplePolymerName(std::string& polymer_name);
 
         Scanner& _scanner;
@@ -120,6 +130,8 @@ namespace indigo
         int _col;
         MonomerTemplateLibrary& _library;
         std::map<std::string, std::string> _alias_to_id;
+        int _unknown_variants_count;
+        std::map<variant_template_opts, std::string> _opts_to_template_id;
     };
 
 } // namespace indigo
