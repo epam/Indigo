@@ -1260,9 +1260,6 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& o
         _current = fragment;
     }
 
-    for (int i = 0; i < mol->meta().metaData().size(); ++i)
-        addMetaObject(*mol->meta().metaData()[i], ++_id);
-
     _current = parent;
     id = _id;
 }
@@ -1442,8 +1439,9 @@ void MoleculeCdxmlSaver::addArrow(int id, int arrow_type, const Vec2f& beg, cons
     addElement("arrow", id, end, beg, attrs);
 }
 
-void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
+Rect2f MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
 {
+    Rect2f result;
     PropertiesMap attrs;
     attrs.clear();
     switch (obj._class_id)
@@ -1451,6 +1449,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
     case KETReactionArrow::CID: {
         KETReactionArrow& ar = (KETReactionArrow&)(obj);
         addArrow(id, ar.getArrowType(), ar.getTail(), ar.getHead());
+        result = Rect2f(ar.getTail(), ar.getHead());
     }
     break;
     case KETReactionPlus::CID: {
@@ -1460,11 +1459,13 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
         Vec2f v1(rp.getPos().x, rp.getPos().y - PLUS_HALF_HEIGHT / _bond_length);
         Vec2f v2(rp.getPos().x, rp.getPos().y + PLUS_HALF_HEIGHT / _bond_length);
         addElement("graphic", id, v1, v2, attrs);
+        result = Rect2f(v1, v2);
     }
     break;
     case KETSimpleObject::CID: {
         KETSimpleObject& simple_obj = (KETSimpleObject&)obj;
         Rect2f bbox(simple_obj._coordinates.first, simple_obj._coordinates.second);
+        result = bbox;
         switch (simple_obj._mode)
         {
         case KETSimpleObject::EKETEllipse: {
@@ -1586,9 +1587,11 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
     case KETImage::CID: {
         const KETImage& image = static_cast<const KETImage&>(obj);
         addImage(id, image);
+        result = image.getBoundingBox();
     }
     break;
     }
+    return result;
 }
 
 void MoleculeCdxmlSaver::addText(const Vec2f& pos, const char* text)
@@ -2022,6 +2025,19 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
         if (rgrp.fragments.size())
             saveRGroup(rgrp.fragments, offset, i);
     }
+
+    for (int i = 0; i < bmol.meta().metaData().size(); ++i)
+    {
+        auto& mo = *bmol.meta().metaData()[i];
+        auto bbox = addMetaObject(*bmol.meta().metaData()[i], ++_id);
+        min_coord.min(Vec3f(bbox.left(), bbox.top(), 0));
+        max_coord.max(Vec3f(bbox.right(), bbox.bottom(), 0));
+    }
+
+    QS_DEF(Array<char>, buf);
+    ArrayOutput out(buf);
+    out.printf("%f %f %f %f", _scale * min_coord.x, -_scale * min_coord.y, _scale * max_coord.x, -_scale * max_coord.y);
+    buf.push(0);
 
     endPage();
     endDocument();
