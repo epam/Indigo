@@ -21,6 +21,7 @@
 #include <cstdint>
 
 #include "base_cpp/ptr_array.h"
+#include "common/math/algebra.h"
 
 namespace indigo
 {
@@ -32,6 +33,7 @@ namespace indigo
         }
         uint32_t _class_id;
         virtual MetaObject* clone() const = 0;
+        virtual void getBoundingBox(Rect2f& bbox) const = 0; 
         virtual ~MetaObject(){};
     };
 

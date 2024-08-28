@@ -94,6 +94,11 @@ namespace indigo
             _coordinates = coords;
         };
 
+        void getBoundingBox(Rect2f& bbox) const override
+        {
+            bbox = Rect2f(_coordinates.first, _coordinates.second);
+        }
+
         MetaObject* clone() const override
         {
             return new KETSimpleObject(_mode, _coordinates);
@@ -205,6 +210,11 @@ namespace indigo
             return new KETTextObject(_pos, _content);
         }
 
+        void getBoundingBox(Rect2f& bbox) const override
+        {
+            bbox = Rect2f(Vec2f(_pos.x, _pos.y), Vec2f(_pos.x, _pos.y));
+        }
+
         std::string _content;
         std::list<KETTextLine> _block;
         Vec3f _pos;
@@ -242,6 +252,11 @@ namespace indigo
         MetaObject* clone() const override
         {
             return new KETReactionArrow(_arrow_type, _begin, _end, _height);
+        }
+
+        void getBoundingBox(Rect2f& bbox) const override
+        {
+            bbox = Rect2f(_begin, _end);
         }
 
         int getArrowType() const
@@ -328,6 +343,23 @@ namespace indigo
             return _spine_end;
         }
 
+        void getBoundingBox(Rect2f& bbox) const override
+        {
+            float min_left = 0;
+            for (int i = 0; i < _tails.size(); ++i)
+            {
+                if (i == 0)
+                    min_left = _tails[i].x;
+                else
+                    min_left = std::min(min_left, _tails[i].x);
+            }
+
+            float max_top = _spine_begin.y;
+            float min_bottom = _spine_end.y;
+            float max_right = _head.x;
+            bbox = Rect2f(Vec2f(min_left, max_top), Vec2f(max_right, min_bottom));
+        }
+
     private:
         Vec2f _head;
         Array<Vec2f> _tails;
@@ -354,6 +386,11 @@ namespace indigo
         const auto& getPos() const
         {
             return _pos;
+        }
+
+        void getBoundingBox(Rect2f& bbox) const override
+        {
+            bbox = Rect2f(_pos, _pos);
         }
 
     private:
@@ -392,6 +429,11 @@ namespace indigo
         ImageFormat getFormat() const
         {
             return _image_format;
+        }
+
+        void getBoundingBox(Rect2f& bbox) const override
+        {
+            bbox = _bbox;
         }
 
     private:

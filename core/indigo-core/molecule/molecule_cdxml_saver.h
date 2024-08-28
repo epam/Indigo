@@ -106,7 +106,7 @@ namespace indigo
         void saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float scale);
         void saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum);
 
-        Rect2f addMetaObject(const MetaObject& obj, int id);
+        void addMetaObject(const MetaObject& obj, int id);
         void addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end);
         void addRetrosynteticArrow(int graphic_obj_id, int arrow_id, const Vec2f& arrow_beg, const Vec2f& arrow_end);
         void addImage(int id, const KETImage& image);

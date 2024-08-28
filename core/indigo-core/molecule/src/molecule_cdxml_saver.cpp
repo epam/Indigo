@@ -1439,9 +1439,8 @@ void MoleculeCdxmlSaver::addArrow(int id, int arrow_type, const Vec2f& beg, cons
     addElement("arrow", id, end, beg, attrs);
 }
 
-Rect2f MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
+void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
 {
-    Rect2f result;
     PropertiesMap attrs;
     attrs.clear();
     switch (obj._class_id)
@@ -1449,7 +1448,6 @@ Rect2f MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
     case KETReactionArrow::CID: {
         KETReactionArrow& ar = (KETReactionArrow&)(obj);
         addArrow(id, ar.getArrowType(), ar.getTail(), ar.getHead());
-        result = Rect2f(ar.getTail(), ar.getHead());
     }
     break;
     case KETReactionPlus::CID: {
@@ -1459,13 +1457,11 @@ Rect2f MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
         Vec2f v1(rp.getPos().x, rp.getPos().y - PLUS_HALF_HEIGHT / _bond_length);
         Vec2f v2(rp.getPos().x, rp.getPos().y + PLUS_HALF_HEIGHT / _bond_length);
         addElement("graphic", id, v1, v2, attrs);
-        result = Rect2f(v1, v2);
     }
     break;
     case KETSimpleObject::CID: {
         KETSimpleObject& simple_obj = (KETSimpleObject&)obj;
         Rect2f bbox(simple_obj._coordinates.first, simple_obj._coordinates.second);
-        result = bbox;
         switch (simple_obj._mode)
         {
         case KETSimpleObject::EKETEllipse: {
@@ -1587,11 +1583,9 @@ Rect2f MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
     case KETImage::CID: {
         const KETImage& image = static_cast<const KETImage&>(obj);
         addImage(id, image);
-        result = image.getBoundingBox();
     }
     break;
     }
-    return result;
 }
 
 void MoleculeCdxmlSaver::addText(const Vec2f& pos, const char* text)
@@ -1984,31 +1978,22 @@ void MoleculeCdxmlSaver::_validate(BaseMolecule& bmol)
 void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
 {
     _validate(bmol);
-    Vec3f min_coord, max_coord;
+    Vec2f min_coord, max_coord;
 
     _id = 0;
 
     if (bmol.have_xyz)
     {
-        for (int i = bmol.vertexBegin(); i != bmol.vertexEnd(); i = bmol.vertexNext(i))
-        {
-            Vec3f& pos = bmol.getAtomXyz(i);
-            if (i == bmol.vertexBegin())
-                min_coord = max_coord = pos;
-            else
-            {
-                min_coord.min(pos);
-                max_coord.max(pos);
-            }
-        }
-        // Add margins
-        max_coord.add(Vec3f(1, 1, 1));
-        min_coord.sub(Vec3f(1, 1, 1));
+        bmol.getBoundingBox(min_coord, max_coord);
     }
-    else
+
+    for (int i = 0; i < bmol.meta().metaData().size(); ++i)
     {
-        min_coord.set(0, 0, 0);
-        max_coord.set(0, 0, 0);
+        Rect2f bb;
+        auto& mo = *bmol.meta().metaData()[i];
+        mo.getBoundingBox(bb);
+        min_coord.min(bb.leftBottom());
+        max_coord.max(bb.rightTop());
     }
 
     beginDocument(NULL);
@@ -2016,7 +2001,7 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
     addDefaultColorTable();
     beginPage(NULL);
 
-    Vec2f offset(-min_coord.x, -max_coord.y);
+    Vec2f offset(-min_coord.x, min_coord.y);
 
     saveMoleculeFragment(bmol, offset, 1);
     for (int i = 1; i <= bmol.rgroups.getRGroupCount(); i++)
@@ -2029,9 +2014,7 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
     for (int i = 0; i < bmol.meta().metaData().size(); ++i)
     {
         auto& mo = *bmol.meta().metaData()[i];
-        auto bbox = addMetaObject(*bmol.meta().metaData()[i], ++_id);
-        min_coord.min(Vec3f(bbox.left(), bbox.top(), 0));
-        max_coord.max(Vec3f(bbox.right(), bbox.bottom(), 0));
+        addMetaObject(*bmol.meta().metaData()[i], ++_id);
     }
 
     QS_DEF(Array<char>, buf);
