@@ -5,7 +5,7 @@
                 "$ref": "monomer0"
             },
             {
-                "$ref": "variantMonomer-1"
+                "$ref": "ambiguousMonomer-1"
             },
             {
                 "$ref": "monomer2"
@@ -14,7 +14,7 @@
                 "$ref": "monomer3"
             },
             {
-                "$ref": "variantMonomer-4"
+                "$ref": "ambiguousMonomer-4"
             },
             {
                 "$ref": "monomer5"
@@ -23,7 +23,7 @@
                 "$ref": "monomer6"
             },
             {
-                "$ref": "variantMonomer-7"
+                "$ref": "ambiguousMonomer-7"
             }
         ],
         "connections": [
@@ -34,7 +34,7 @@
                     "attachmentPointId": "R3"
                 },
                 "endpoint2": {
-                    "monomerId": "variantMonomer-1",
+                    "monomerId": "ambiguousMonomer-1",
                     "attachmentPointId": "R1"
                 }
             },
@@ -67,7 +67,7 @@
                     "attachmentPointId": "R3"
                 },
                 "endpoint2": {
-                    "monomerId": "variantMonomer-4",
+                    "monomerId": "ambiguousMonomer-4",
                     "attachmentPointId": "R1"
                 }
             },
@@ -100,7 +100,7 @@
                     "attachmentPointId": "R3"
                 },
                 "endpoint2": {
-                    "monomerId": "variantMonomer-7",
+                    "monomerId": "ambiguousMonomer-7",
                     "attachmentPointId": "R1"
                 }
             }
@@ -125,10 +125,10 @@
                 "$ref": "monomerTemplate-P___Phosphate"
             },
             {
-                "$ref": "variantMonomerTemplate-N0"
+                "$ref": "ambiguousMonomerTemplate-N0"
             },
             {
-                "$ref": "variantMonomerTemplate-N"
+                "$ref": "ambiguousMonomerTemplate-N"
             }
         ]
     },
@@ -143,8 +143,8 @@
         "alias": "dR",
         "templateId": "dR___Deoxy-Ribose"
     },
-    "variantMonomer-1": {
-        "type": "variantMonomer",
+    "ambiguousMonomer-1": {
+        "type": "ambiguousMonomer",
         "id": "1",
         "position": {
             "x": 0.000000,
@@ -175,8 +175,8 @@
         "alias": "dR",
         "templateId": "dR___Deoxy-Ribose"
     },
-    "variantMonomer-4": {
-        "type": "variantMonomer",
+    "ambiguousMonomer-4": {
+        "type": "ambiguousMonomer",
         "id": "4",
         "position": {
             "x": 3.200000,
@@ -207,8 +207,8 @@
         "alias": "dR",
         "templateId": "dR___Deoxy-Ribose"
     },
-    "variantMonomer-7": {
-        "type": "variantMonomer",
+    "ambiguousMonomer-7": {
+        "type": "ambiguousMonomer",
         "id": "7",
         "position": {
             "x": 6.400000,
@@ -1271,8 +1271,8 @@
             }
         ]
     },
-    "variantMonomerTemplate-N0": {
-        "type": "variantMonomerTemplate",
+    "ambiguousMonomerTemplate-N0": {
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "N0",
         "name": "N0",
@@ -1295,8 +1295,8 @@
             }
         ]
     },
-    "variantMonomerTemplate-N": {
-        "type": "variantMonomerTemplate",
+    "ambiguousMonomerTemplate-N": {
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "N",
         "name": "N",

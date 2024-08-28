@@ -2,49 +2,49 @@
     "root": {
         "nodes": [
             {
-                "$ref": "variantMonomer-0"
+                "$ref": "ambiguousMonomer-0"
             },
             {
-                "$ref": "variantMonomer-1"
+                "$ref": "ambiguousMonomer-1"
             },
             {
-                "$ref": "variantMonomer-2"
+                "$ref": "ambiguousMonomer-2"
             },
             {
-                "$ref": "variantMonomer-3"
+                "$ref": "ambiguousMonomer-3"
             }
         ],
         "connections": [
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "variantMonomer-0",
+                    "monomerId": "ambiguousMonomer-0",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "variantMonomer-1",
+                    "monomerId": "ambiguousMonomer-1",
                     "attachmentPointId": "R1"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "variantMonomer-1",
+                    "monomerId": "ambiguousMonomer-1",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "variantMonomer-2",
+                    "monomerId": "ambiguousMonomer-2",
                     "attachmentPointId": "R1"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "variantMonomer-2",
+                    "monomerId": "ambiguousMonomer-2",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "variantMonomer-3",
+                    "monomerId": "ambiguousMonomer-3",
                     "attachmentPointId": "R1"
                 }
             }
@@ -117,21 +117,21 @@
                 "$ref": "monomerTemplate-Y___Tyrosine"
             },
             {
-                "$ref": "variantMonomerTemplate-B"
+                "$ref": "ambiguousMonomerTemplate-B"
             },
             {
-                "$ref": "variantMonomerTemplate-J"
+                "$ref": "ambiguousMonomerTemplate-J"
             },
             {
-                "$ref": "variantMonomerTemplate-Z"
+                "$ref": "ambiguousMonomerTemplate-Z"
             },
             {
-                "$ref": "variantMonomerTemplate-X"
+                "$ref": "ambiguousMonomerTemplate-X"
             }
         ]
     },
-    "variantMonomer-0": {
-        "type": "variantMonomer",
+    "ambiguousMonomer-0": {
+        "type": "ambiguousMonomer",
         "id": "0",
         "position": {
             "x": 0.000000,
@@ -140,8 +140,8 @@
         "seqid": 1,
         "templateId": "B"
     },
-    "variantMonomer-1": {
-        "type": "variantMonomer",
+    "ambiguousMonomer-1": {
+        "type": "ambiguousMonomer",
         "id": "1",
         "position": {
             "x": 1.600000,
@@ -150,8 +150,8 @@
         "seqid": 2,
         "templateId": "J"
     },
-    "variantMonomer-2": {
-        "type": "variantMonomer",
+    "ambiguousMonomer-2": {
+        "type": "ambiguousMonomer",
         "id": "2",
         "position": {
             "x": 3.200000,
@@ -160,8 +160,8 @@
         "seqid": 3,
         "templateId": "Z"
     },
-    "variantMonomer-3": {
-        "type": "variantMonomer",
+    "ambiguousMonomer-3": {
+        "type": "ambiguousMonomer",
         "id": "3",
         "position": {
             "x": 4.800000,
@@ -4661,8 +4661,8 @@
             }
         ]
     },
-    "variantMonomerTemplate-B": {
-        "type": "variantMonomerTemplate",
+    "ambiguousMonomerTemplate-B": {
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "B",
         "name": "B",
@@ -4675,8 +4675,8 @@
             }
         ]
     },
-    "variantMonomerTemplate-J": {
-        "type": "variantMonomerTemplate",
+    "ambiguousMonomerTemplate-J": {
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "J",
         "name": "J",
@@ -4689,8 +4689,8 @@
             }
         ]
     },
-    "variantMonomerTemplate-Z": {
-        "type": "variantMonomerTemplate",
+    "ambiguousMonomerTemplate-Z": {
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "Z",
         "name": "Z",
@@ -4703,8 +4703,8 @@
             }
         ]
     },
-    "variantMonomerTemplate-X": {
-        "type": "variantMonomerTemplate",
+    "ambiguousMonomerTemplate-X": {
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "X",
         "name": "X",

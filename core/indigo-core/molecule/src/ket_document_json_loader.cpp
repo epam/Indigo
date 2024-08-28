@@ -53,7 +53,7 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
                 {
                     parseMonomerTemplate(templ, document);
                 }
-                else if (templ_type == "variantMonomerTemplate")
+                else if (templ_type == "ambiguousMonomerTemplate")
                 {
                     parseVariantMonomerTemplate(templ, document);
                 }
@@ -87,7 +87,7 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
                 {
                     parseKetMonomer(ref, node, document);
                 }
-                else if (node_type == "variantMonomer")
+                else if (node_type == "ambiguousMonomer")
                 {
                     parseKetVariantMonomer(ref, node, document);
                 }

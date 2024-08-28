@@ -14,7 +14,7 @@
                 "$ref": "monomer3"
             },
             {
-                "$ref": "variantMonomer-4"
+                "$ref": "ambiguousMonomer-4"
             },
             {
                 "$ref": "monomer5"
@@ -32,7 +32,7 @@
                 "$ref": "monomer9"
             },
             {
-                "$ref": "variantMonomer-10"
+                "$ref": "ambiguousMonomer-10"
             }
         ],
         "connections": [
@@ -76,7 +76,7 @@
                     "attachmentPointId": "R3"
                 },
                 "endpoint2": {
-                    "monomerId": "variantMonomer-4",
+                    "monomerId": "ambiguousMonomer-4",
                     "attachmentPointId": "R1"
                 }
             },
@@ -142,7 +142,7 @@
                     "attachmentPointId": "R3"
                 },
                 "endpoint2": {
-                    "monomerId": "variantMonomer-10",
+                    "monomerId": "ambiguousMonomer-10",
                     "attachmentPointId": "R1"
                 }
             }
@@ -164,10 +164,10 @@
                 "$ref": "monomerTemplate-C___Cytosine"
             },
             {
-                "$ref": "variantMonomerTemplate-R"
+                "$ref": "ambiguousMonomerTemplate-R"
             },
             {
-                "$ref": "variantMonomerTemplate-S"
+                "$ref": "ambiguousMonomerTemplate-S"
             }
         ]
     },
@@ -215,8 +215,8 @@
         "alias": "dR",
         "templateId": "dR___Deoxy-Ribose"
     },
-    "variantMonomer-4": {
-        "type": "variantMonomer",
+    "ambiguousMonomer-4": {
+        "type": "ambiguousMonomer",
         "id": "4",
         "position": {
             "x": 3.200000,
@@ -280,8 +280,8 @@
         "alias": "dR",
         "templateId": "dR___Deoxy-Ribose"
     },
-    "variantMonomer-10": {
-        "type": "variantMonomer",
+    "ambiguousMonomer-10": {
+        "type": "ambiguousMonomer",
         "id": "10",
         "position": {
             "x": 9.600000,
@@ -1170,8 +1170,8 @@
             }
         ]
     },
-    "variantMonomerTemplate-R": {
-        "type": "variantMonomerTemplate",
+    "ambiguousMonomerTemplate-R": {
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "R",
         "name": "R",
@@ -1184,8 +1184,8 @@
             }
         ]
     },
-    "variantMonomerTemplate-S": {
-        "type": "variantMonomerTemplate",
+    "ambiguousMonomerTemplate-S": {
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "S",
         "name": "S",
