@@ -14,7 +14,7 @@
                 "$ref": "monomer3"
             },
             {
-                "$ref": "variantMonomer-4"
+                "$ref": "ambiguousMonomer-4"
             },
             {
                 "$ref": "monomer5"
@@ -32,7 +32,7 @@
                 "$ref": "monomer9"
             },
             {
-                "$ref": "variantMonomer-10"
+                "$ref": "ambiguousMonomer-10"
             }
         ],
         "connections": [
@@ -65,7 +65,7 @@
                     "attachmentPointId": "R3"
                 },
                 "endpoint2": {
-                    "monomerId": "variantMonomer-4",
+                    "monomerId": "ambiguousMonomer-4",
                     "attachmentPointId": "R1"
                 }
             },
@@ -131,7 +131,7 @@
                     "attachmentPointId": "R3"
                 },
                 "endpoint2": {
-                    "monomerId": "variantMonomer-10",
+                    "monomerId": "ambiguousMonomer-10",
                     "attachmentPointId": "R1"
                 }
             },
@@ -164,10 +164,10 @@
                 "$ref": "monomerTemplate-C___Cytosine"
             },
             {
-                "$ref": "variantMonomerTemplate-R"
+                "$ref": "ambiguousMonomerTemplate-R"
             },
             {
-                "$ref": "variantMonomerTemplate-S"
+                "$ref": "ambiguousMonomerTemplate-S"
             }
         ]
     },
@@ -215,7 +215,7 @@
         "alias": "dR",
         "templateId": "dR___Deoxy-Ribose"
     },
-    "variantMonomer-4": {
+    "ambiguousMonomer-4": {
         "type": "ambiguousMonomer",
         "id": "4",
         "position": {
@@ -280,7 +280,7 @@
         "alias": "dR",
         "templateId": "dR___Deoxy-Ribose"
     },
-    "variantMonomer-10": {
+    "ambiguousMonomer-10": {
         "type": "ambiguousMonomer",
         "id": "10",
         "position": {
@@ -1170,7 +1170,7 @@
             }
         ]
     },
-    "variantMonomerTemplate-R": {
+    "ambiguousMonomerTemplate-R": {
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "R",
@@ -1184,7 +1184,7 @@
             }
         ]
     },
-    "variantMonomerTemplate-S": {
+    "ambiguousMonomerTemplate-S": {
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "S",

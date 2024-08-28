@@ -942,7 +942,7 @@ namespace indigo
     public:
         DECL_ERROR;
 
-        inline static std::string ref_prefix = "variantMonomerTemplate-";
+        inline static std::string ref_prefix = "ambiguousMonomerTemplate-";
 
         KetVariantMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name, IdtAlias idt_alias,
                                   const std::vector<KetVariantMonomerOption>& options)
@@ -975,7 +975,7 @@ namespace indigo
     public:
         DECL_ERROR;
 
-        inline static std::string ref_prefix = "variantMonomer-";
+        inline static std::string ref_prefix = "ambiguousMonomer-";
 
         KetVariantMonomer(const std::string& id, const std::string& alias, const std::string& template_id)
             : KetBaseMonomer(MonomerType::VarianMonomer, id, alias, template_id)
