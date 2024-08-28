@@ -105,10 +105,10 @@ namespace indigo
         }
 
         void offset(const Vec2f& offset) override
-		{
-			_coordinates.first += offset;
-			_coordinates.second += offset;
-		}
+        {
+            _coordinates.first += offset;
+            _coordinates.second += offset;
+        }
 
         enum
         {
@@ -292,10 +292,10 @@ namespace indigo
         }
 
         void offset(const Vec2f& offset) override
-		{
-			_begin += offset;
-			_end += offset;
-		}
+        {
+            _begin += offset;
+            _end += offset;
+        }
 
     private:
         int _arrow_type;
@@ -380,11 +380,11 @@ namespace indigo
 
         void offset(const Vec2f& offset) override
         {
-			_head += offset;
-			_spine_begin += offset;
-			_spine_end += offset;
-			for (auto& tail : _tails)
-				tail += offset;
+            _head += offset;
+            _spine_begin += offset;
+            _spine_end += offset;
+            for (auto& tail : _tails)
+                tail += offset;
         }
 
     private:
@@ -469,9 +469,9 @@ namespace indigo
         }
 
         void offset(const Vec2f& offset) override
-		{
-            _bbox = Rect2f( _bbox.leftBottom() + offset, _bbox.rightTop() + offset);
-		}
+        {
+            _bbox = Rect2f(_bbox.leftBottom() + offset, _bbox.rightTop() + offset);
+        }
 
     private:
         Rect2f _bbox;
