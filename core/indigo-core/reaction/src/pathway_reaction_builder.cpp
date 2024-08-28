@@ -94,6 +94,7 @@ void PathwayReactionBuilder::buildInchiDescriptors(std::deque<Reaction>& reactio
             switch (reaction.getSideType(i))
             {
             case BaseReaction::REACTANT: {
+                rd.reactantIndexes.push_back(static_cast<int>(i));
                 std::string inchi_str(inchiKey.ptr(), inchiKey.size());
                 rd.reactants.insert(inchi_str);
                 auto rtr_it = _reactantToReactions.find(inchi_str);
@@ -109,6 +110,7 @@ void PathwayReactionBuilder::buildInchiDescriptors(std::deque<Reaction>& reactio
             break;
             case BaseReaction::PRODUCT:
                 rd.products.emplace_back(inchiKey.ptr(), inchiKey.size());
+                rd.productIndexes.push_back(static_cast<int>(i));
                 break;
             default:
                 break;
@@ -126,52 +128,29 @@ void PathwayReactionBuilder::populatePossibleReactions()
     for (auto i = 0; i < _reactionInchiDescriptors.size(); i++)
     {
         _reactionNodes[i].reactionIdx = i;
+
+        for (auto reactantIndex : _reactionInchiDescriptors[i].reactantIndexes)
+            _reactionNodes[i].reactantIndexes.insert(reactantIndex);
+        for (auto productIndex : _reactionInchiDescriptors[i].productIndexes)
+            _reactionNodes[i].productIndexes.insert(productIndex);
+
+        // collect products
         auto matchedReactions = findPossibleSuccessorReactions(i);
         for (auto& [j, val] : matchedReactions) // [j, val] - j is the index of the reaction, val is the vector of reactant indexes
         {
             Array<int> val_arr;
             val_arr.copy(val);
-            _reactionNodes[i].successorReactions.push(PathwayReaction::SuccessorReaction(j, val_arr));
-            _reactionNodes[j].precursorReactionsIndexes.push(i);
-            if (_reactionNodes[i].successorReactions.size() > 1 && _ambigousSuccessorReactions.count(i) == 0)
-                _ambigousSuccessorReactions.insert(i);
+            if (_reactionNodes[i].successorReactions.size() == 0)
+            {
+                _reactionNodes[i].successorReactions.push(PathwayReaction::SuccessorReaction(j, val_arr));
+                _reactionNodes[j].precursorReactionsIndexes.push(i);
+            }
+            else
+            {
+                // only one successor reaction is allowed. skip the reaction if there are more than one.
+            }
         }
     }
-}
-
-auto PathwayReactionBuilder::getReactionComponents(const PathwayReaction::ReactionNode& rn, Reaction& reaction)
-{
-    std::vector<int> products, reactants;
-    std::vector<std::vector<int>> incoming_reactants;
-
-    std::unordered_set<int> used_reactants;
-    // look up for incoming reactants from precursor reactions
-    for (auto precursor_idx : rn.precursorReactionsIndexes)
-    {
-        auto& precursor_rd = _reactionNodes[precursor_idx];
-        if (precursor_rd.successorReactions.size() == 1)
-        {
-            auto& reactant = precursor_rd.successorReactions[0].reactantIndices;
-            incoming_reactants.push_back(std::vector<int>(reactant.begin(), reactant.end()));
-            used_reactants.insert(reactant.begin(), reactant.end());
-        }
-    }
-
-    for (int i = reaction.begin(); i < reaction.end(); i = reaction.next(i))
-    {
-        switch (reaction.getSideType(i))
-        {
-        case BaseReaction::REACTANT:
-            if (used_reactants.count(i) == 0)
-                reactants.emplace_back(i);
-            break;
-        case BaseReaction::PRODUCT:
-            products.emplace_back(i);
-            break;
-        }
-    }
-    // return std::make_pair(products, reactants);
-    return 1;
 }
 
 std::unique_ptr<PathwayReaction> PathwayReactionBuilder::buildPathwayReaction(std::deque<Reaction>& reactions)
@@ -190,8 +169,9 @@ std::unique_ptr<PathwayReaction> PathwayReactionBuilder::buildPathwayReaction(st
     }
 
     auto pathway_reaction = std::make_unique<PathwayReaction>(reactions, _reactionNodes);
-    auto rr = pathway_reaction->getRootReactions();
-    std::cout << "Root reactions: " << rr.size() << std::endl;
-    // layout the reactions
+    pathway_reaction->getRootReactions();
+    // auto rr = pathway_reaction->getRootReactions();
+    // std::cout << "Root reactions: " << rr.size() << std::endl;
+    //  layout the reactions
     return pathway_reaction;
 }

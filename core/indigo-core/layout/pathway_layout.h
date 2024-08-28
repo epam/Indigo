@@ -26,7 +26,15 @@ namespace indigo
     // PathwayLayoutItem is a struct that represents a reaction in the pathway
     struct PathwayLayoutItem
     {
-        std::pair<int, std::vector<int>> associatedReactionItems;
+        int reactionIdx = -1;
+        std::pair<int, std::vector<int>> associatedReactionItems; // which components are involved into layout
+        int successor = -1;
+        std::vector<int> precursors;
+        double width = 0, height = 0;
+        double x = 0, y = 0;
+        int nextSibling = -1;
+        int prevSibling = -1;
+
         int number = -1;
         double prelim = 0;
         double mod = 0;
@@ -34,12 +42,6 @@ namespace indigo
         int thread = -1;
         double change = 0;
         double shift = 0;
-        double width = 0, height = 0;
-        double x = 0, y = 0;
-        std::vector<int> precursors;
-        int successor = -1;
-        int nextSibling = -1;
-        int prevSibling = -1;
 
         int getFirstPrecursor() const
         {
@@ -75,7 +77,6 @@ namespace indigo
         void make();
 
     private:
-
         double spacing(const PathwayLayoutItem& l, const PathwayLayoutItem& r, bool siblings)
         {
             return 0.5 * (l.width + r.width);
@@ -85,7 +86,7 @@ namespace indigo
 
         void determineDepths();
 
-        std::vector<PathwayLayoutItem> getLayoutItems() const;
+        std::vector<PathwayLayoutItem> PathwayLayout::getLayoutItems(const std::vector<PathwayReaction::ReactionNode>& nodes, int rootIndex);
 
         DECL_ERROR;
 
@@ -100,6 +101,10 @@ namespace indigo
         void executeShifts(std::vector<PathwayLayoutItem>& nodes, int nIndex);
         int ancestor(const std::vector<PathwayLayoutItem>& nodes, int vimIndex, int vIndex, int aIndex) const;
         void secondWalk(std::vector<PathwayLayoutItem>& nodes, int nIndex, double m, int depth);
+
+        std::vector<std::vector<int>> PathwayLayout::levelTraversalAndMapping(const std::vector<PathwayReaction::ReactionNode>& nodes, int rootIndex,
+                                                                         std::vector<PathwayLayoutItem>& layout_nodes,
+                                                                         std::unordered_map<int, int>& node_mapping);
 
         std::vector<double> _depths;
         int _maxDepth = 0;

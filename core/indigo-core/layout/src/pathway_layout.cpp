@@ -37,19 +37,67 @@ void PathwayLayout::determineDepths()
         _depths[i] += _depths[i - 1];
 }
 
-std::vector<PathwayLayoutItem> PathwayLayout::getLayoutItems() const
+#include <iostream>
+#include <queue>
+#include <vector>
+
+struct Node
 {
-    // convert _reactionNodes to std::vector<PathwayLayoutItem>
-    return std::vector<PathwayLayoutItem>();
+    std::vector<int> parent;
+    std::vector<int> children;
+};
+
+std::vector<std::vector<int>> PathwayLayout::levelTraversalAndMapping(const std::vector<PathwayReaction::ReactionNode>& nodes, int rootIndex,
+                                                                 std::vector<PathwayLayoutItem>& layout_nodes, std::unordered_map<int, int>& node_mapping)
+{
+    std::vector<std::vector<int>> levels;
+    std::queue<std::pair<int, int>> nodeQueue;
+
+    nodeQueue.push({rootIndex, 0});
+
+    while (!nodeQueue.empty())
+    {
+        auto [currentIndex, currentLevel] = nodeQueue.front();
+        nodeQueue.pop();
+        if (currentLevel >= levels.size())
+            levels.emplace_back();
+
+        levels[currentLevel].push_back(currentIndex);
+        // create layout node
+        auto& ln = layout_nodes.emplace_back();
+        // create mapping between node index and layout node index
+        node_mapping.emplace(currentIndex, layout_nodes.size() - 1);
+        // copy everything we can from the reaction node to the layout node
+
+        // bind reaction index to layout node
+        ln.reactionIdx = nodes[currentIndex].reactionIdx;
+
+        // here we add only products
+
+        ln.associatedReactionItems = nodes[currentIndex].;
+
+
+        for (int precursorIdx : nodes[currentIndex].precursorReactionsIndexes)
+            nodeQueue.push({precursorIdx, currentLevel + 1});
+    }
+    return levels;
+}
+
+std::vector<PathwayLayoutItem> PathwayLayout::getLayoutItems(const std::vector<PathwayReaction::ReactionNode>& nodes, int rootIndex)
+{
+    std::vector<PathwayLayoutItem> layoutNodes;
+    return layoutNodes;
 }
 
 // make layout
 void PathwayLayout::make()
 {
-    std::vector<PathwayLayoutItem> nodes;
     auto roots = _reaction.getRootReactions();
-    for (auto rootIndex : roots)
+    int rootIndex = 0;
+    for (auto rc : roots)
     {
+        auto nodes = getLayoutItems(rc);
+
         std::fill(_depths.begin(), _depths.end(), 0);
         _maxDepth = 0;
         firstWalk(nodes, rootIndex, 0, 1);

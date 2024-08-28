@@ -57,6 +57,8 @@ namespace indigo
         {
             // we don't keep products and reactants here, because they are stored in the Reaction object at reactionIdx
             int reactionIdx;
+            RedBlackSet<int> reactantIndexes;
+            RedBlackSet<int> productIndexes;
             // vector of successor reactions indexes and their corresponding reactant indexes
             ObjArray<SuccessorReaction> successorReactions;
             // vector of precursor reactions indexes
@@ -66,7 +68,8 @@ namespace indigo
         PathwayReaction();
         PathwayReaction(std::deque<Reaction>& reactions, const Array<ReactionNode>& nodes);
         ~PathwayReaction() override;
-        std::vector<int> getRootReactions() const;
+        std::vector<std::reference_wrapper<const ReactionNode>> getRootReactions() const;
+        const ObjArray<RedBlackMap<int, int>>& getReactionNodes() { return _reactions; }
 
         int reactionsCount() const;
         void clone(PathwayReaction&);

@@ -56,12 +56,14 @@ namespace indigo
         {
             std::unordered_set<std::string> reactants;
             std::vector<std::string> products;
+            // useful to collect it here to avoid look them up in the reaction object
+            std::vector<int> productIndexes;
+            std::vector<int> reactantIndexes;
         };
 
         void buildInchiDescriptors(std::deque<Reaction>& reactions);
         void populatePossibleReactions();
         auto findPossibleSuccessorReactions(int reactionIdx);
-        auto getReactionComponents(const PathwayReaction::ReactionNode& rn, Reaction& reaction);
         std::vector<ReactionInchiDescriptor> _reactionInchiDescriptors;
         Array<PathwayReaction::ReactionNode> _reactionNodes;
         std::unordered_map<std::string, std::map<int, int>> _reactantToReactions;
