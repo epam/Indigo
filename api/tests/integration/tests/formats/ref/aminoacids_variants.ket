@@ -131,7 +131,7 @@
         ]
     },
     "variantMonomer-0": {
-        "type": "variantMonomer",
+        "type": "ambiguousMonomer",
         "id": "0",
         "position": {
             "x": 0.000000,
@@ -141,7 +141,7 @@
         "templateId": "B"
     },
     "variantMonomer-1": {
-        "type": "variantMonomer",
+        "type": "ambiguousMonomer",
         "id": "1",
         "position": {
             "x": 1.600000,
@@ -151,7 +151,7 @@
         "templateId": "J"
     },
     "variantMonomer-2": {
-        "type": "variantMonomer",
+        "type": "ambiguousMonomer",
         "id": "2",
         "position": {
             "x": 3.200000,
@@ -161,7 +161,7 @@
         "templateId": "Z"
     },
     "variantMonomer-3": {
-        "type": "variantMonomer",
+        "type": "ambiguousMonomer",
         "id": "3",
         "position": {
             "x": 4.800000,
@@ -4662,7 +4662,7 @@
         ]
     },
     "variantMonomerTemplate-B": {
-        "type": "variantMonomerTemplate",
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "B",
         "name": "B",
@@ -4676,7 +4676,7 @@
         ]
     },
     "variantMonomerTemplate-J": {
-        "type": "variantMonomerTemplate",
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "J",
         "name": "J",
@@ -4690,7 +4690,7 @@
         ]
     },
     "variantMonomerTemplate-Z": {
-        "type": "variantMonomerTemplate",
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "Z",
         "name": "Z",
@@ -4704,7 +4704,7 @@
         ]
     },
     "variantMonomerTemplate-X": {
-        "type": "variantMonomerTemplate",
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "X",
         "name": "X",

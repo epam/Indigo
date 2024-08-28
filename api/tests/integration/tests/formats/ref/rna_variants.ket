@@ -102,7 +102,7 @@
         "templateId": "R___Ribose"
     },
     "variantMonomer-1": {
-        "type": "variantMonomer",
+        "type": "ambiguousMonomer",
         "id": "1",
         "position": {
             "x": 0.000000,
@@ -123,7 +123,7 @@
         "templateId": "R___Ribose"
     },
     "variantMonomer-3": {
-        "type": "variantMonomer",
+        "type": "ambiguousMonomer",
         "id": "3",
         "position": {
             "x": 3.200000,
@@ -1215,7 +1215,7 @@
         ]
     },
     "variantMonomerTemplate-K": {
-        "type": "variantMonomerTemplate",
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "K",
         "name": "K",
@@ -1229,7 +1229,7 @@
         ]
     },
     "variantMonomerTemplate-N": {
-        "type": "variantMonomerTemplate",
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "N",
         "name": "N",
