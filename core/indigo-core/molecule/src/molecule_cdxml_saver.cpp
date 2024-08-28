@@ -590,8 +590,8 @@ void MoleculeCdxmlSaver::addNodeToFragment(BaseMolecule& mol, XMLElement* fragme
     bool have_z = BaseMolecule::hasZCoord(mol);
     if (have_z)
     {
-        Vec3f offset(1, -1, -1);
-        pos3.add(offset);
+        pos3.x += offset.x;
+        pos3.y += offset.y;
         pos3.scale(_scale);
     }
 
@@ -1439,19 +1439,22 @@ void MoleculeCdxmlSaver::addArrow(int id, int arrow_type, const Vec2f& beg, cons
     addElement("arrow", id, end, beg, attrs);
 }
 
-void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
+void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2f& offset)
 {
     PropertiesMap attrs;
     attrs.clear();
-    switch (obj._class_id)
+    auto& cp_obj = *(obj.clone());
+    cp_obj.offset(offset);
+
+    switch (cp_obj._class_id)
     {
     case KETReactionArrow::CID: {
-        KETReactionArrow& ar = (KETReactionArrow&)(obj);
+        KETReactionArrow& ar = (KETReactionArrow&)(cp_obj);
         addArrow(id, ar.getArrowType(), ar.getTail(), ar.getHead());
     }
     break;
     case KETReactionPlus::CID: {
-        KETReactionPlus& rp = (KETReactionPlus&)(obj);
+        KETReactionPlus& rp = (KETReactionPlus&)(cp_obj);
         attrs.insert("GraphicType", "Symbol");
         attrs.insert("SymbolType", "Plus");
         Vec2f v1(rp.getPos().x, rp.getPos().y - PLUS_HALF_HEIGHT / _bond_length);
@@ -1460,7 +1463,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
     }
     break;
     case KETSimpleObject::CID: {
-        KETSimpleObject& simple_obj = (KETSimpleObject&)obj;
+        KETSimpleObject& simple_obj = (KETSimpleObject&)cp_obj;
         Rect2f bbox(simple_obj._coordinates.first, simple_obj._coordinates.second);
         switch (simple_obj._mode)
         {
@@ -1502,7 +1505,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
     }
     break;
     case KETTextObject::CID: {
-        const KETTextObject& ko = static_cast<const KETTextObject&>(obj);
+        const KETTextObject& ko = static_cast<const KETTextObject&>(cp_obj);
         // double text_offset_y = 0;
         int font_size = static_cast<int>(KETDefaultFontSize);
         CDXMLFontStyle font_face(0);
@@ -1581,7 +1584,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id)
     }
     break;
     case KETImage::CID: {
-        const KETImage& image = static_cast<const KETImage&>(obj);
+        const KETImage& image = static_cast<const KETImage&>(cp_obj);
         addImage(id, image);
     }
     break;
@@ -2001,8 +2004,7 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
     addDefaultColorTable();
     beginPage(NULL);
 
-    Vec2f offset(-min_coord.x, min_coord.y);
-
+    Vec2f offset(-min_coord.x, -max_coord.y);
     saveMoleculeFragment(bmol, offset, 1);
     for (int i = 1; i <= bmol.rgroups.getRGroupCount(); i++)
     {
@@ -2014,14 +2016,14 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
     for (int i = 0; i < bmol.meta().metaData().size(); ++i)
     {
         auto& mo = *bmol.meta().metaData()[i];
-        addMetaObject(*bmol.meta().metaData()[i], ++_id);
+        addMetaObject(*bmol.meta().metaData()[i], ++_id, offset);
     }
 
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     out.printf("%f %f %f %f", _scale * min_coord.x, -_scale * min_coord.y, _scale * max_coord.x, -_scale * max_coord.y);
     buf.push(0);
-
+    _page->SetAttribute("BoundingBox", buf.ptr());
     endPage();
     endDocument();
 }

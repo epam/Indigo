@@ -16,12 +16,12 @@
         <color r="1" g="0" b="1"/>
         <color r="0.5" g="0.5" b="0.5"/>
     </colortable>
-    <page HeightPages="1" WidthPages="1">
+    <page HeightPages="1" WidthPages="1" BoundingBox="439.795471 354.751007 503.250000 232.500000">
         <fragment id="4">
             <n id="29" NodeType="Fragment">
                 <fragment id="31">
-                    <n id="16" Element="8" NumHydrogens="1" p="141.163788 23.828014">
-                        <t p="141.163788 23.828014" LabelJustification="Left">
+                    <n id="16" Element="8" NumHydrogens="1" p="111.163788 -6.171985">
+                        <t p="111.163788 -6.171985" LabelJustification="Left">
                             <s font="3" size="10" face="96">OH</s>
                         </t>
                     </n>
@@ -34,18 +34,18 @@
             </n>
             <n id="30" NodeType="Fragment" BondOrdering="37 33">
                 <fragment id="35" ConnectionOrder="36 38">
-                    <n id="11" Element="7" NumHydrogens="1" p="64.038506 39.188835">
-                        <t p="64.038506 39.188835" LabelJustification="Left">
+                    <n id="11" Element="7" NumHydrogens="1" p="34.038506 9.188833">
+                        <t p="34.038506 9.188833" LabelJustification="Left">
                             <s font="3" size="10" face="96">NH</s>
                         </t>
                     </n>
                     <n id="36" NodeType="ExternalConnectionPoint"/>
-                    <n id="12" p="87.078613 23.828014" Geometry="Tetrahedral" BondOrdering="11 13 14 5" EnhancedStereoType="Absolute"/>
-                    <n id="13" p="86.180817 -10.770764"/>
-                    <n id="14" p="118.121399 39.188835"/>
+                    <n id="12" p="57.078609 -6.171985" Geometry="Tetrahedral" BondOrdering="11 13 14 5" EnhancedStereoType="Absolute"/>
+                    <n id="13" p="56.180820 -40.770763"/>
+                    <n id="14" p="88.121399 9.188833"/>
                     <n id="38" NodeType="ExternalConnectionPoint"/>
-                    <n id="15" Element="8" NumHydrogens="0" p="118.838654 66.853783">
-                        <t p="118.838654 66.853783" LabelJustification="Left">
+                    <n id="15" Element="8" NumHydrogens="0" p="88.838654 36.853783">
+                        <t p="88.838654 36.853783" LabelJustification="Left">
                             <s font="3" size="10" face="96">O</s>
                         </t>
                     </n>
@@ -60,12 +60,12 @@
                     <s>A</s>
                 </t>
             </n>
-            <n id="5" p="30.000000 107.252228"/>
-            <n id="6" p="81.909027 107.237663"/>
-            <n id="7" p="56.003639 92.248993"/>
-            <n id="8" p="81.909027 137.265961"/>
-            <n id="9" p="30.000000 137.400604"/>
-            <n id="10" p="56.069153 152.250992"/>
+            <n id="5" p="0.000000 77.252228"/>
+            <n id="6" p="51.909027 77.237663"/>
+            <n id="7" p="26.003637 62.248993"/>
+            <n id="8" p="51.909027 107.265961"/>
+            <n id="9" p="0.000000 107.400597"/>
+            <n id="10" p="26.069155 122.250992"/>
             <b id="17" B="7" E="5" Order="2"/>
             <b id="18" B="5" E="9"/>
             <b id="19" B="9" E="10" Order="2"/>
@@ -74,8 +74,8 @@
             <b id="22" B="6" E="7"/>
             <b id="33" B="30" E="29"/>
             <b id="37" B="7" E="30"/>
-            <graphic BoundingBox="81.909027 92.248993 81.909027 92.248993" GraphicType="Symbol" SymbolType="Absolute" FrameType="None">
-                <t p="81.909027 92.248993" Justification="Center" InterpretChemically="no">
+            <graphic BoundingBox="51.909027 62.248993 51.909027 62.248993" GraphicType="Symbol" SymbolType="Absolute" FrameType="None">
+                <t p="51.909027 62.248993" Justification="Center" InterpretChemically="no">
                     <s font="3" size="10" face="96">Chiral</s>
                 </t>
             </graphic>

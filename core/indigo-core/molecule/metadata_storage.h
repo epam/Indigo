@@ -33,7 +33,8 @@ namespace indigo
         }
         uint32_t _class_id;
         virtual MetaObject* clone() const = 0;
-        virtual void getBoundingBox(Rect2f& bbox) const = 0; 
+        virtual void getBoundingBox(Rect2f& bbox) const = 0;
+        virtual void offset( const Vec2f& offset ) = 0;
         virtual ~MetaObject(){};
     };
 
