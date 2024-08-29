@@ -128,7 +128,7 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
                     continue;
                 }
             }
-            molsaver.addMetaObject(obj, meta_ids[i]);
+            molsaver.addMetaObject(obj, meta_ids[i], offset);
         }
     }
     else
