@@ -1197,7 +1197,8 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
                 if (sa.subscript.size() != 0 && sa.subscript.ptr()[0] != 0)
                     continue;
                 // convert leaving atom H to rg-ref
-                auto& atom_to_ap = mol_atom_to_ap.try_emplace(mol_id).first;
+                auto res = mol_atom_to_ap.try_emplace(mol_id);
+                auto& atom_to_ap = res.first;
                 static std::string apid_prefix{'R'};
                 Array<int> leaving_atoms;
                 for (int ap_id = sa.attachment_points.begin(); ap_id != sa.attachment_points.end(); ap_id = sa.attachment_points.next(ap_id))
