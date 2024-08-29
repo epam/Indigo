@@ -256,6 +256,18 @@ const char* Element::toString(int element)
     return _instance()._element_parameters.at(element).name;
 }
 
+const char* Element::toString(int element, int isotope)
+{
+    if (element == ELEM_H)
+    {
+        if (isotope == DEUTERIUM)
+            return "D";
+        if (isotope == TRITIUM)
+            return "T";
+    }
+    return toString(element);
+}
+
 int Element::calcValenceOfAromaticAtom(int elem, int charge, int n_arom, int min_conn)
 {
     if (elem == ELEM_C)

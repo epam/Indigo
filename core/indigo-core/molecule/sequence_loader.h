@@ -82,7 +82,7 @@ namespace indigo
 
         void checkAddTemplate(BaseMolecule& mol, const MonomerTemplate& monomer_template);
 
-        const std::string& checkAddTemplate(KetDocument& document, MonomerClass monomer_class, const std::string alias);
+        const std::string& checkAddTemplate(KetDocument& document, MonomerClass monomer_class, const std::string& alias);
         void checkAddTemplate(KetDocument& document, const MonomerTemplate& monomer_template);
 
         void addAminoAcid(BaseMolecule& mol, char ch);
@@ -115,8 +115,8 @@ namespace indigo
         size_t addKetMonomer(KetDocument& document, MonomerInfo info, MonomerClass monomer_class, const Vec3f& pos);
         int readCount(std::string& count, Scanner& _scanner);
 
-        MonomerInfo readHelmMonomer(MonomerClass monomer_class = MonomerClass::Unknown);
-        std::string readHelmMonomerAlias();
+        MonomerInfo readHelmMonomer(KetDocument& document, MonomerClass monomer_class = MonomerClass::Unknown);
+        std::string readHelmMonomerAlias(KetDocument& document, MonomerClass monomer_class);
         std::string readHelmRepeating();
         std::string readHelmAnnotation();
         std::string readHelmSimplePolymerName(std::string& polymer_name);

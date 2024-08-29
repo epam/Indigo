@@ -184,6 +184,7 @@ namespace indigo
         DECL_ERROR;
 
         static const char* toString(int element);
+        static const char* toString(int element, int isotope);
         static int fromString(const char* name);
         static int fromString2(const char* name);
         static int fromChar(char c);

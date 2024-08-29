@@ -20,11 +20,14 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "layout/sequence_layout.h"
+#include "molecule/elements.h"
 #include "molecule/ket_document.h"
 #include "molecule/ket_objects.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_json_loader.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
+#include "molecule/smiles_saver.h"
 
 using namespace indigo;
 
@@ -1086,6 +1089,7 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
     const auto& monomers = document.monomers();
     const auto& templates = document.templates();
     const auto& variant_templates = document.variantTemplates();
+    std::map<std::string, std::map<int, std::string>> mol_atom_to_ap;
     for (auto& sequence : sequences)
     {
         int monomer_idx = 0;
@@ -1159,6 +1163,83 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
         }
         if (monomer_idx)
             helm_string += '}'; // Finish polymer
+        auto& molecules = document.jsonMolecules();
+        int molecule_idx = 0;
+        rapidjson::Document json{};
+        for (rapidjson::SizeType i = 0; i < molecules.Size(); i++)
+        {
+            const auto& molecule = molecules[i];
+            std::string mol_id = "mol" + std::to_string(molecule_idx++);
+            rapidjson::Value marr(rapidjson::kArrayType);
+            marr.PushBack(json.CopyFrom(molecule, json.GetAllocator()), json.GetAllocator());
+            MoleculeJsonLoader loader(marr);
+            BaseMolecule* pbmol;
+            Molecule mol;
+            QueryMolecule qmol;
+            try
+            {
+                loader.loadMolecule(mol);
+                pbmol = &mol;
+            }
+            catch (...)
+            {
+                loader.loadMolecule(qmol);
+                pbmol = &qmol;
+            }
+            // convert Sup sgroup without name attachment points to rg-labels
+            auto& sgroups = pbmol->sgroups;
+            for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+            {
+                auto& sgroup = sgroups.getSGroup(i);
+                if (sgroup.sgroup_type != SGroup::SG_TYPE_SUP)
+                    continue;
+                Superatom& sa = static_cast<Superatom&>(sgroup);
+                if (sa.subscript.size() != 0 && sa.subscript.ptr()[0] != 0)
+                    continue;
+                // convert leaving atom H to rg-ref
+                auto& atom_to_ap = mol_atom_to_ap.try_emplace(mol_id).first;
+                static std::string apid_prefix{'R'};
+                Array<int> leaving_atoms;
+                for (int ap_id = sa.attachment_points.begin(); ap_id != sa.attachment_points.end(); ap_id = sa.attachment_points.next(ap_id))
+                {
+                    auto& ap = sa.attachment_points.at(ap_id);
+                    std::string apid = apid_prefix + ap.apid.ptr();
+                    atom_to_ap->second.emplace(ap.aidx, apid);
+                    int leaving_atom = ap.lvidx;
+                    int ap_idx = std::stoi(ap.apid.ptr());
+                    if (pbmol == &mol)
+                    {
+                        mol.resetAtom(leaving_atom, ELEM_RSITE);
+                        mol.allowRGroupOnRSite(leaving_atom, ap_idx);
+                    }
+                    else
+                    {
+                        auto rsite = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RSITE, 0);
+                        qmol.resetAtom(leaving_atom, rsite.release());
+                        qmol.allowRGroupOnRSite(leaving_atom, ap_idx);
+                    }
+                }
+                sgroups.remove(i);
+            }
+            // generate smiles
+            std::string smiles;
+            StringOutput s_out(smiles);
+            SmilesSaver saver(s_out);
+            if (pbmol == &mol)
+                saver.saveMolecule(mol);
+            else
+                saver.saveQueryMolecule(qmol);
+            // save as chem
+            if (helm_string.size() > 0)
+                helm_string += '|';
+            helm_string += "CHEM";
+            polymer_idx = ++chem_idx;
+            helm_string += std::to_string(polymer_idx);
+            helm_string += "{[";
+            helm_string += smiles;
+            helm_string += '}';
+            monomer_id_to_monomer_info.emplace(std::make_pair(mol_id, std::make_tuple(HELMType::Chem, polymer_idx, 1)));
+        }
     }
     helm_string += '$';
     // Add connections
@@ -1170,12 +1251,16 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
             helm_string += '|';
         const auto& ep_1 = connection.ep1();
         const auto& ep_2 = connection.ep2();
-        if (!ep_1.hasStringProp("monomerId") || !ep_2.hasStringProp("monomerId"))
-            throw Error("Endpoint without monomer id");
-        const auto& monomer_id_1 = ep_1.getStringProp("monomerId");
-        const auto& monomer_id_2 = ep_2.getStringProp("monomerId");
-        auto [type_1, pol_num_1, mon_num_1] = monomer_id_to_monomer_info.at(document.monomerIdByRef(monomer_id_1));
-        auto [type_2, pol_num_2, mon_num_2] = monomer_id_to_monomer_info.at(document.monomerIdByRef(monomer_id_2));
+        if (!(ep_1.hasStringProp("monomerId") || ep_1.hasStringProp("moleculeId")) || !(ep_2.hasStringProp("monomerId") || ep_2.hasStringProp("moleculeId")))
+            throw Error("Endpoint without monomer or molecule id");
+        bool has_mon_id1 = ep_1.hasStringProp("monomerId");
+        bool has_mon_id2 = ep_2.hasStringProp("monomerId");
+        const auto& monomer_id_1 = has_mon_id1 ? ep_1.getStringProp("monomerId") : ep_1.getStringProp("moleculeId");
+        const auto& monomer_id_2 = has_mon_id2 ? ep_2.getStringProp("monomerId") : ep_2.getStringProp("moleculeId");
+        const auto& id1 = has_mon_id1 ? document.monomerIdByRef(monomer_id_1) : monomer_id_1;
+        const auto& id2 = has_mon_id2 ? document.monomerIdByRef(monomer_id_2) : monomer_id_2;
+        auto [type_1, pol_num_1, mon_num_1] = monomer_id_to_monomer_info.at(id1);
+        auto [type_2, pol_num_2, mon_num_2] = monomer_id_to_monomer_info.at(id2);
         connections_count++;
         helm_string += getStringFromHELMType(type_1);
         helm_string += std::to_string(pol_num_1);
@@ -1185,14 +1270,18 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
         helm_string += ',';
         helm_string += std::to_string(mon_num_1);
         helm_string += ":";
-        if (ep_1.hasStringProp("attachmentPointId"))
+        if (ep_1.hasStringProp("atomId"))
+            helm_string += mol_atom_to_ap.at(id1).at(std::stoi(ep_1.getStringProp("atomId")));
+        else if (ep_1.hasStringProp("attachmentPointId"))
             helm_string += ep_1.getStringProp("attachmentPointId");
         else
             helm_string += '?';
         helm_string += '-';
         helm_string += std::to_string(mon_num_2);
         helm_string += ':';
-        if (ep_2.hasStringProp("attachmentPointId"))
+        if (ep_2.hasStringProp("atomId"))
+            helm_string += mol_atom_to_ap.at(id2).at(std::stoi(ep_2.getStringProp("atomId")));
+        else if (ep_2.hasStringProp("attachmentPointId"))
             helm_string += ep_2.getStringProp("attachmentPointId");
         else
             helm_string += '?';
