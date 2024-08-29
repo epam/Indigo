@@ -720,6 +720,7 @@ void IndigoRenderer::setOptionsHandlers()
         mgr->setOptionHandlerBool("render-highlighted-labels-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.highlightedLabelsVisible));
         mgr->setOptionHandlerBool("render-bold-bond-detection", SETTER_GETTER_BOOL_OPTION(rp.rOpt.boldBondDetection));
 
+        mgr->setOptionHandlerFloat("render-bond-length", SETTER_GETTER_FLOAT_OPTION(rp.cnvOpt.bondLength));
         mgr->setOptionHandlerFloat("render-relative-thickness", SET_POSITIVE_FLOAT_OPTION(rp.relativeThickness, "relative thickness must be positive"));
         mgr->setOptionHandlerFloat("render-bond-line-width", SET_POSITIVE_FLOAT_OPTION(rp.bondLineWidthFactor, "bond line width factor must be positive"));
         mgr->setOptionHandlerFloat("render-comment-font-size", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.commentFontFactor));

@@ -581,7 +581,7 @@ namespace indigo
         std::unique_ptr<RenderCdxmlContext> cdxml_context;
         float reactionComponentMarginSize;
         UnitsOfMeasure::TYPE reactionComponentMarginSizeUnit;
-        float ppi;
+        int32_t ppi;
 
     private:
         RenderOptions(const RenderOptions&);

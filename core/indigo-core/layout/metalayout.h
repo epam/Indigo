@@ -146,7 +146,7 @@ namespace indigo
         static constexpr float INCH_TO_CM = 2.54f;
         static constexpr float PT_TO_PX = 1.333334f;
 
-        static float convertToPx(const float input, const TYPE units, const float ppi)
+        static float convertToPx(const float input, const TYPE units, const int32_t ppi)
         {
             switch (units)
             {
@@ -164,7 +164,7 @@ namespace indigo
             }
         }
 
-        static float convertToPt(const float input, const TYPE units, const float ppi)
+        static float convertToPt(const float input, const TYPE units, const int32_t ppi)
         {
 
             switch (units)
@@ -183,7 +183,7 @@ namespace indigo
             }
         }
 
-        static float convertToInches(const float input, const TYPE units, const float ppi)
+        static float convertToInches(const float input, const TYPE units, const int32_t ppi)
         {
             switch (units)
             {
@@ -201,7 +201,7 @@ namespace indigo
             }
         }
 
-        static float convertToCm(const float input, const TYPE units, const float ppi)
+        static float convertToCm(const float input, const TYPE units, const int32_t ppi)
         {
             switch (units)
             {
@@ -227,7 +227,7 @@ namespace indigo
         UnitsOfMeasure::TYPE bondLengthUnit{UnitsOfMeasure::TYPE::PX};
         float reactionComponentMarginSize{DEFAULT_BOND_LENGTH / 2};
         UnitsOfMeasure::TYPE reactionComponentMarginSizeUnit{UnitsOfMeasure::TYPE::PX};
-        float ppi{72.0f};
+        int32_t ppi{72};
         float getMarginSizeInAngstroms() const
         {
             auto marginSizePt = UnitsOfMeasure::convertToPt(reactionComponentMarginSize, reactionComponentMarginSizeUnit, ppi);

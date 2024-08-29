@@ -97,6 +97,14 @@ using namespace indigo;
     },                                                                                                                                                         \
         [](float& value) { value = option; }
 
+#define SET_POSITIVE_INT_OPTION(option, error)                                                                                                                 \
+    [](int32_t value) {                                                                                                                                        \
+        if (value <= 0)                                                                                                                                        \
+            throw IndigoError(error);                                                                                                                          \
+        option = value;                                                                                                                                        \
+    },                                                                                                                                                         \
+        [](int32_t& value) { value = option; }
+
 class DLLEXPORT IndigoOptionManager
 {
 public:
