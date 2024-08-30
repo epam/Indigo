@@ -21,6 +21,7 @@
 
 #include "molecule/inchi_wrapper.h"
 #include "reaction/pathway_reaction_builder.h"
+#include "layout/pathway_layout.h"
 #include "reaction/reaction.h"
 
 using namespace indigo;
@@ -31,13 +32,13 @@ PathwayReactionBuilder::~PathwayReactionBuilder()
 {
 }
 
-PathwayReactionBuilder::PathwayReactionBuilder()
+PathwayReactionBuilder::PathwayReactionBuilder() : _pathwayReaction(std::make_unique<PathwayReaction>())
 {
 }
 
-auto PathwayReactionBuilder::findPossibleSuccessorReactions(int reactionIdx)
+auto PathwayReactionBuilder::findSuccessorReactions(int reactionIdx)
 {
-    // find possible precursors
+    // key - reaction index, value - vector of reactant indexes
     std::map<int, std::vector<int>> matchedReactions;
     // iterate over products of the reaction
     for (auto& product : _reactionInchiDescriptors[reactionIdx].products)
@@ -78,23 +79,48 @@ auto PathwayReactionBuilder::findPossibleSuccessorReactions(int reactionIdx)
     return matchedReactions;
 }
 
+void PathwayReactionBuilder::buildReactions(std::deque<Reaction>& reactions)
+{
+    for (int i = 0; i < _reactionInchiDescriptors.size(); ++i)
+    {
+        auto& rid = _reactionInchiDescriptors[i];
+        auto [sri, sr] = _pathwayReaction->addReaction();
+        for (auto rci : rid.reactantIndexes)
+        {
+            auto mol_idx = _moleculeMapping.at(std::make_pair(i, rci));
+            sr.reactantIndexes.push(mol_idx);
+        }
+
+        for (auto pid : rid.productIndexes)
+        {
+            auto mol_idx = _moleculeMapping.at(std::make_pair(i, pid));
+            sr.productIndexes.push(mol_idx);
+        }
+    }
+}
+
 void PathwayReactionBuilder::buildInchiDescriptors(std::deque<Reaction>& reactions)
 {
     _reactionInchiDescriptors.clear();
     InchiWrapper inchiWrapper;
     Array<char> inchi, inchiKey;
-    for (auto& reaction : reactions)
+    for (int i = 0; i < reactions.size(); ++i)
     {
-        ReactionInchiDescriptor rd;
+        _pathwayReaction->addReactionNode();
+        auto& reaction = reactions[i];
+        ReactionInchiDescriptor& rd = _reactionInchiDescriptors.emplace_back();
         // iterate over molecules in the reaction, calculate inchiKeys for reactants and products
-        for (int i = reaction.begin(); i < reaction.end(); i = reaction.next(i))
+        for (int j = reaction.begin(); j < reaction.end(); j = reaction.next(j))
         {
-            inchiWrapper.saveMoleculeIntoInchi(reaction.getBaseMolecule(i).asMolecule(), inchi);
+            inchiWrapper.saveMoleculeIntoInchi(reaction.getBaseMolecule(j).asMolecule(), inchi);
             InchiWrapper::InChIKey(inchi.ptr(), inchiKey);
-            switch (reaction.getSideType(i))
+            switch (reaction.getSideType(j))
             {
             case BaseReaction::REACTANT: {
-                rd.reactantIndexes.push_back(static_cast<int>(i));
+                rd.reactantIndexes.push_back(static_cast<int>(j));
+                // copy reactant molecule to the pathway reaction, add mapping
+                _moleculeMapping.emplace(std::piecewise_construct, std::forward_as_tuple(i, j),
+                                         std::forward_as_tuple(_pathwayReaction->addMolecule(reaction.getBaseMolecule(j).asMolecule())));
                 std::string inchi_str(inchiKey.ptr(), inchiKey.size());
                 rd.reactants.insert(inchi_str);
                 auto rtr_it = _reactantToReactions.find(inchi_str);
@@ -102,48 +128,51 @@ void PathwayReactionBuilder::buildInchiDescriptors(std::deque<Reaction>& reactio
                 {
                     _reactantToReactions.emplace(std::piecewise_construct, std::forward_as_tuple(inchi_str),
                                                  std::forward_as_tuple(std::initializer_list<std::pair<const int, int>>{
-                                                     {static_cast<int>(_reactionInchiDescriptors.size()), static_cast<int>(i)}}));
+                                                     {i, static_cast<int>(j)}}));
                 }
                 else
-                    rtr_it->second.insert(std::make_pair(static_cast<int>(_reactionInchiDescriptors.size()), static_cast<int>(i)));
+                    rtr_it->second.insert(std::make_pair(static_cast<int>(i), static_cast<int>(j)));
             }
             break;
             case BaseReaction::PRODUCT:
                 rd.products.emplace_back(inchiKey.ptr(), inchiKey.size());
-                rd.productIndexes.push_back(static_cast<int>(i));
+                rd.productIndexes.push_back(static_cast<int>(j));
                 break;
             default:
                 break;
             }
         }
-        _reactionInchiDescriptors.push_back(rd);
     }
 }
 
-void PathwayReactionBuilder::populatePossibleReactions()
+void PathwayReactionBuilder::buildNodes(std::deque<Reaction>& reactions)
 {
-    // iterate over reactionDescriptors and fill possibleSuccessors
-    _reactionNodes.resize((int)_reactionInchiDescriptors.size());
-    _reactionNodes.zerofill();
+    // find all reactants of a reaction that match the products of the current reaction
     for (auto i = 0; i < _reactionInchiDescriptors.size(); i++)
     {
-        _reactionNodes[i].reactionIdx = i;
+        auto matching_successor = findSuccessorReactions(i);
+        _reactionInchiDescriptors[i].successor = matching_successor;
+        auto& productIndexes = _reactionInchiDescriptors[i].productIndexes;
+        for (auto j = 0; j < productIndexes.size(); ++j)
+        {
+            // copy reactant molecule to the pathway reaction, add mapping
+            auto pidx = productIndexes[j];
+            int mol_idx = matching_successor.empty()
+                              ? _pathwayReaction->addMolecule(reactions[i].getBaseMolecule(productIndexes[j]).asMolecule())
+                              : _moleculeMapping.at(std::make_pair(matching_successor.begin()->first, matching_successor.begin()->second[j]));
+            _moleculeMapping.emplace(std::piecewise_construct, std::forward_as_tuple(i, pidx), std::forward_as_tuple(mol_idx));
+        }
 
-        for (auto reactantIndex : _reactionInchiDescriptors[i].reactantIndexes)
-            _reactionNodes[i].reactantIndexes.insert(reactantIndex);
-        for (auto productIndex : _reactionInchiDescriptors[i].productIndexes)
-            _reactionNodes[i].productIndexes.insert(productIndex);
-
-        // collect products
-        auto matchedReactions = findPossibleSuccessorReactions(i);
-        for (auto& [j, val] : matchedReactions) // [j, val] - j is the index of the reaction, val is the vector of reactant indexes
+        for (auto& [j, val] : matching_successor) // [j, val] - j is the index of the reaction, val is the vector of reactant indexes
         {
             Array<int> val_arr;
             val_arr.copy(val);
-            if (_reactionNodes[i].successorReactions.size() == 0)
+            auto& rnodes = _pathwayReaction->getReactionNodes();
+            auto& rn = rnodes[i];
+            if (rn.successorReactions.size() == 0)
             {
-                _reactionNodes[i].successorReactions.push(PathwayReaction::SuccessorReaction(j, val_arr));
-                _reactionNodes[j].precursorReactionsIndexes.push(i);
+                rn.successorReactions.push(PathwayReaction::SuccessorReaction(j, val_arr));
+                rnodes[j].precursorReactionsIndexes.push(i);
             }
             else
             {
@@ -156,22 +185,11 @@ void PathwayReactionBuilder::populatePossibleReactions()
 std::unique_ptr<PathwayReaction> PathwayReactionBuilder::buildPathwayReaction(std::deque<Reaction>& reactions)
 {
     buildInchiDescriptors(reactions);
-    populatePossibleReactions();
-
-    if (_ambigousSuccessorReactions.size() > 0)
-    {
-        int product = 1;
-        for (auto ridx : _ambigousSuccessorReactions)
-            product *= static_cast<int>(_reactionNodes[ridx].successorReactions.size());
-        throw Error("Unable to build the pathway. The provided reaction set has multiple potential connection sites for products, resulting in %d possible "
-                    "combination pathways.",
-                    product);
-    }
-
-    auto pathway_reaction = std::make_unique<PathwayReaction>(reactions, _reactionNodes);
-    pathway_reaction->getRootReactions();
-    // auto rr = pathway_reaction->getRootReactions();
-    // std::cout << "Root reactions: " << rr.size() << std::endl;
-    //  layout the reactions
-    return pathway_reaction;
+    buildNodes(reactions);
+    buildReactions(reactions);
+    auto& rr = _pathwayReaction->getRootReactions();
+    PathwayLayout pl(*_pathwayReaction);
+    pl.make();
+    std::cout << "root nodes: " << rr.size() << std::endl;
+    return std::move(_pathwayReaction);
 }

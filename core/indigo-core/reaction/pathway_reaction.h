@@ -23,9 +23,9 @@
 #pragma warning(disable : 4251)
 #endif
 
-#include <deque>
 #include "base_cpp/array.h"
 #include "reaction/base_reaction.h"
+#include <deque>
 
 namespace indigo
 {
@@ -36,29 +36,48 @@ namespace indigo
     {
     public:
         struct SuccessorReaction
-		{
-            SuccessorReaction(int reactionIdx, Array<int>& ridxs) : reactionIdx(reactionIdx){
-                reactantIndices.copy(ridxs);
+        {
+            SuccessorReaction(int reactionIdx, Array<int>& ridxs) : reactionIdx(reactionIdx)
+            {
+                reactantIndexes.copy(ridxs);
             }
-            SuccessorReaction(const SuccessorReaction& other) : reactionIdx(other.reactionIdx){
-				reactantIndices.copy(other.reactantIndices);
-			}
-            SuccessorReaction& operator = (const SuccessorReaction& other)
+            SuccessorReaction(const SuccessorReaction& other) : reactionIdx(other.reactionIdx)
+            {
+                reactantIndexes.copy(other.reactantIndexes);
+            }
+            SuccessorReaction& operator=(const SuccessorReaction& other)
             {
                 reactionIdx = other.reactionIdx;
-                reactantIndices.copy(other.reactantIndices);
+                reactantIndexes.copy(other.reactantIndexes);
                 return *this;
             }
-			int reactionIdx;
-			Array<int> reactantIndices;
-		};
+            int reactionIdx;
+            Array<int> reactantIndexes;
+        };
+
+        struct SimpleReaction
+        {
+            SimpleReaction() = default;
+            SimpleReaction(const SimpleReaction& other)
+            {
+                reactantIndexes.copy(other.reactantIndexes);
+                productIndexes.copy(other.productIndexes);
+            }
+            Array<int> reactantIndexes;
+            Array<int> productIndexes;
+        };
 
         struct ReactionNode
         {
-            // we don't keep products and reactants here, because they are stored in the Reaction object at reactionIdx
+            ReactionNode() : reactionIdx(-1){};
+            ReactionNode(const ReactionNode& other)
+            {
+                reactionIdx = other.reactionIdx;
+                for (int i = 0; i < other.successorReactions.size(); ++i)
+                    successorReactions.push(other.successorReactions[i]);
+                precursorReactionsIndexes.copy(other.precursorReactionsIndexes);
+            }
             int reactionIdx;
-            RedBlackSet<int> reactantIndexes;
-            RedBlackSet<int> productIndexes;
             // vector of successor reactions indexes and their corresponding reactant indexes
             ObjArray<SuccessorReaction> successorReactions;
             // vector of precursor reactions indexes
@@ -66,25 +85,60 @@ namespace indigo
         };
 
         PathwayReaction();
-        PathwayReaction(std::deque<Reaction>& reactions, const Array<ReactionNode>& nodes);
         ~PathwayReaction() override;
+
         std::vector<std::reference_wrapper<const ReactionNode>> getRootReactions() const;
-        const ObjArray<RedBlackMap<int, int>>& getReactionNodes() { return _reactions; }
 
-        int reactionsCount() const;
+        auto& getReactionNodes()
+        {
+            return _reactionNodes;
+        }
+
+        const auto& getMolecules()
+        {
+            return _molecules;
+        }
+
+        const auto& getReactions()
+        {
+            return _reactions;
+        }
+
+        ReactionNode& addReactionNode()
+        {
+            ReactionNode rn;
+            rn.reactionIdx = static_cast<int>(_reactionNodes.size());
+            _reactionNodes.push(rn);
+            return _reactionNodes[_reactionNodes.size() - 1];
+        }
+
+        int addMolecule(BaseMolecule& mol)
+        {
+            std::unique_ptr<BaseMolecule> mol_copy(mol.neu());
+            mol_copy->clone(mol);
+            _molecules.add(mol_copy.release());
+            return static_cast<int>(_molecules.size() - 1);
+        }
+
+        std::pair<int, SimpleReaction&> addReaction()
+        {
+            SimpleReaction sr;
+            _reactions.push(sr);
+            return {static_cast<int>(_reactions.size() - 1), _reactions[_reactions.size() - 1]};
+        }
+
         void clone(PathwayReaction&);
-
         BaseReaction* neu() override;
         bool aromatize(const AromaticityOptions& options) override;
-
         DECL_ERROR;
 
     protected:
         int _addBaseMolecule(int side) override;
 
     private:
-        Array<ReactionNode> _reactionNodes;
-        ObjArray< RedBlackMap<int, int> > _reactions;
+        ObjArray<ReactionNode> _reactionNodes;
+        PtrArray<BaseMolecule> _molecules;
+        ObjArray<SimpleReaction> _reactions;
     };
 
 } // namespace indigo

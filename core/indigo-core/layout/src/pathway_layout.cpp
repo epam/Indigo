@@ -16,6 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <queue>
+
 #include "layout/pathway_layout.h"
 
 using namespace indigo;
@@ -37,18 +39,8 @@ void PathwayLayout::determineDepths()
         _depths[i] += _depths[i - 1];
 }
 
-#include <iostream>
-#include <queue>
-#include <vector>
-
-struct Node
-{
-    std::vector<int> parent;
-    std::vector<int> children;
-};
-
 std::vector<std::vector<int>> PathwayLayout::levelTraversalAndMapping(const std::vector<PathwayReaction::ReactionNode>& nodes, int rootIndex,
-                                                                 std::vector<PathwayLayoutItem>& layout_nodes, std::unordered_map<int, int>& node_mapping)
+                                                                      std::vector<PathwayLayoutItem>& layout_nodes, std::unordered_map<int, int>& node_mapping)
 {
     std::vector<std::vector<int>> levels;
     std::queue<std::pair<int, int>> nodeQueue;
@@ -63,19 +55,25 @@ std::vector<std::vector<int>> PathwayLayout::levelTraversalAndMapping(const std:
             levels.emplace_back();
 
         levels[currentLevel].push_back(currentIndex);
-        // create layout node
+
+        auto& cur_node = nodes[currentIndex];
+        // create layout node for products of current reaction
         auto& ln = layout_nodes.emplace_back();
+
         // create mapping between node index and layout node index
-        node_mapping.emplace(currentIndex, layout_nodes.size() - 1);
-        // copy everything we can from the reaction node to the layout node
+        node_mapping.emplace(currentIndex, static_cast<int>(layout_nodes.size()) - 1);
 
-        // bind reaction index to layout node
-        ln.reactionIdx = nodes[currentIndex].reactionIdx;
+        // add only products to the layout node
+        auto& products =  _reaction.getReactions()[currentIndex].productIndexes;
+        ln.associatedReactionItems.first = cur_node.reactionIdx;
+        // _reaction.
+        for (auto pidx : products)
+        {
+            ln.associatedReactionItems.second.push_back(pidx);
+        }
 
-        // here we add only products
 
-        ln.associatedReactionItems = nodes[currentIndex].;
-
+        // ln.associatedReactionItems = nodes[currentIndex].;
 
         for (int precursorIdx : nodes[currentIndex].precursorReactionsIndexes)
             nodeQueue.push({precursorIdx, currentLevel + 1});
@@ -83,7 +81,7 @@ std::vector<std::vector<int>> PathwayLayout::levelTraversalAndMapping(const std:
     return levels;
 }
 
-std::vector<PathwayLayoutItem> PathwayLayout::getLayoutItems(const std::vector<PathwayReaction::ReactionNode>& nodes, int rootIndex)
+std::vector<PathwayLayoutItem> PathwayLayout::getLayoutItems(const ObjArray<PathwayReaction::ReactionNode>& nodes, int rootIndex)
 {
     std::vector<PathwayLayoutItem> layoutNodes;
     return layoutNodes;
@@ -96,7 +94,7 @@ void PathwayLayout::make()
     int rootIndex = 0;
     for (auto rc : roots)
     {
-        auto nodes = getLayoutItems(rc);
+        auto nodes = getLayoutItems(_reaction.getReactionNodes(), rc.get().reactionIdx);
 
         std::fill(_depths.begin(), _depths.end(), 0);
         _maxDepth = 0;

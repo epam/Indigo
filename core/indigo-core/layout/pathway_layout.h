@@ -26,9 +26,12 @@ namespace indigo
     // PathwayLayoutItem is a struct that represents a reaction in the pathway
     struct PathwayLayoutItem
     {
-        int reactionIdx = -1;
-        std::pair<int, std::vector<int>> associatedReactionItems; // which components are involved into layout
+        // which components are involved into layout. 
+        // The first element is the index of the reaction, the second element is the index of the reaction component
+        std::pair<int, std::vector<int>> associatedReactionItems;
+        // successor component index (parent)
         int successor = -1;
+        // precursors component indexes (children)
         std::vector<int> precursors;
         double width = 0, height = 0;
         double x = 0, y = 0;
@@ -86,7 +89,8 @@ namespace indigo
 
         void determineDepths();
 
-        std::vector<PathwayLayoutItem> PathwayLayout::getLayoutItems(const std::vector<PathwayReaction::ReactionNode>& nodes, int rootIndex);
+        std::vector<PathwayLayoutItem> PathwayLayout::getLayoutItems(const ObjArray<PathwayReaction::ReactionNode>& nodes, int rootIndex);
+
 
         DECL_ERROR;
 

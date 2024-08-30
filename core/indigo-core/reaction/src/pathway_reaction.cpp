@@ -35,50 +35,40 @@ PathwayReaction::~PathwayReaction()
 {
 }
 
-PathwayReaction::PathwayReaction(std::deque<Reaction>& reactions, const Array<ReactionNode>& nodes)
-{
-    _reactionNodes.copy(nodes);
-    for (size_t i = 0; i < reactions.size(); i++)
-    {
-        auto& reactionComponents = _reactions.push();
-        for (int j = reactions[i].begin(); j < reactions[i].end(); j = reactions[i].next(j))
-        {
-            auto molecule = std::make_unique<Molecule>();
-            molecule->clone(reactions[i].getBaseMolecule(j));
-            int id = _allMolecules.add(molecule.release());
-            _addedBaseMolecule(id, reactions[i].getSideType(j), *_allMolecules[id]);
-            reactionComponents.insert(j, id);
-        }
-    }
-}
-
-
 std::vector<std::reference_wrapper<const PathwayReaction::ReactionNode>> PathwayReaction::getRootReactions() const
 {
     std::vector<std::reference_wrapper<const ReactionNode>> root_reactions;
-    for (const auto& rn : _reactionNodes)
+    for(int i = 0; i < _reactionNodes.size(); ++i )
     {
+        const auto& rn = _reactionNodes[i];
         if (rn.successorReactions.size() == 0)
             root_reactions.push_back(std::cref(rn));
     }
     return root_reactions;
 }
 
-int PathwayReaction::reactionsCount() const
-{
-    return _reactions.size();
-}
-
 void PathwayReaction::clone(PathwayReaction& reaction)
 {
     BaseReaction::clone(reaction);
-    _reactionNodes.copy(reaction._reactionNodes);
-    // copy reactions ObjArray
-    for (int i = 0; i < reaction._reactions.size(); i++)
+    for (int i = 0; i < _reactionNodes.size(); ++i)
+    {
+        auto& other = _reactionNodes[i];
+        auto& rn = reaction._reactionNodes.push();
+        rn.reactionIdx = other.reactionIdx;
+        rn.precursorReactionsIndexes.copy(other.precursorReactionsIndexes);
+        for (int j = 0; j < other.successorReactions.size(); ++j)
+		{
+			auto& sr = other.successorReactions[j];
+			rn.successorReactions.push(sr);
+		}
+    }
+
+    for (int i = 0; i < reaction._reactions.size(); ++i)
 	{
         auto& other = reaction._reactions[i];
-		auto& reactionComponents = _reactions.push();
-        reactionComponents.copy(other);
+		auto& rc = _reactions.push();
+        rc.productIndexes.copy(other.productIndexes);
+        rc.reactantIndexes.copy(other.reactantIndexes);
 	}
 }
 
