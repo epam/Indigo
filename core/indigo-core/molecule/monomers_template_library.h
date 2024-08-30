@@ -132,6 +132,10 @@ namespace indigo
             _bonds = other._bonds;
         }
 
+        int AddAtom(const std::string& label, Vec3f location);
+
+        int AddBond(int bond_type, int atom1, int atom2);
+
     private:
         enum class StringProps
         {

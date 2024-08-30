@@ -390,39 +390,51 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
     {
         auto& ep1 = connection.ep1();
         auto& ep2 = connection.ep2();
+        bool has_mol_1 = ep1.hasStringProp("moleculeId");
         bool has_mon_1 = ep1.hasStringProp("monomerId");
+        bool has_mol_2 = ep2.hasStringProp("moleculeId");
         bool has_mon_2 = ep2.hasStringProp("monomerId");
-        if (has_mon_1 != has_mon_2)
+        if ((has_mon_1 || has_mol_1) != (has_mon_2 || has_mol_2))
             throw Error("Connection with only one end point.");
-        if (!has_mon_1)
+        if (!(has_mon_1 || has_mol_1))
             throw Error("Connection with empty point.");
         bool has_ap_1 = ep1.hasStringProp("attachmentPointId");
+        bool has_atom_1 = ep1.hasStringProp("atomId");
         bool has_ap_2 = ep2.hasStringProp("attachmentPointId");
-        if (has_ap_1 != has_ap_2)
+        bool has_atom_2 = ep1.hasStringProp("atomId");
+        if ((has_ap_1 || has_atom_1) != (has_ap_2 || has_atom_2))
             throw Error("Connection with only one attachment point id.");
-        if (!has_ap_1)
+        if (!(has_ap_1 || has_atom_1))
             throw Error("Connection with empty attachment point.");
+        if ((has_mon_1 != has_ap_1) || (has_mon_2 != has_ap_2))
+            throw Error("Wrong connection point");
+        auto& mon_ref_1 = has_mon_1 ? ep1.getStringProp("monomerId") : ep1.getStringProp("moleculeId");
+        auto& mon_ref_2 = has_mon_2 ? ep2.getStringProp("monomerId") : ep2.getStringProp("moleculeId");
 
-        auto& mon_ref_1 = ep1.getStringProp("monomerId");
-        auto& mon_ref_2 = ep2.getStringProp("monomerId");
+        auto& mon_id_1 = has_mon_1 ? _monomer_ref_to_id.at(mon_ref_1) : mon_ref_1;
+        auto& mon_id_2 = has_mon_2 ? _monomer_ref_to_id.at(mon_ref_2) : mon_ref_2;
 
-        auto& mon_id_1 = _monomer_ref_to_id.at(mon_ref_1);
-        auto& mon_id_2 = _monomer_ref_to_id.at(mon_ref_2);
+        // molecules saved in helm as CHEM
+        if (has_mol_1)
+            id_to_class.emplace(mon_ref_1, MonomerClass::CHEM);
+        if (has_mol_1)
+            id_to_class.emplace(mon_ref_2, MonomerClass::CHEM);
 
         auto& mon1_class = id_to_class.at(mon_id_1);
         auto& mon2_class = id_to_class.at(mon_id_2);
 
-        auto& ap_id_1 = ep1.getStringProp("attachmentPointId");
-        auto& ap_id_2 = ep2.getStringProp("attachmentPointId");
+        auto& ap_id_1 = has_mon_1 ? ep1.getStringProp("attachmentPointId") : ep1.getStringProp("atomId");
+        auto& ap_id_2 = has_mon_1 ? ep2.getStringProp("attachmentPointId") : ep1.getStringProp("atomId");
 
         ap_to_connection.emplace(std::make_pair(mon_id_1, ap_id_1), connection);
         ap_to_connection.emplace(std::make_pair(mon_id_2, ap_id_2), connection);
 
         bool sequence_connection = false;
-        if (for_idt)
-            sequence_connection = isIdtConnection(mon1_class, ap_id_1, mon2_class, ap_id_2);
-        else
-            sequence_connection = isSimplePolymerConnection(mon1_class, ap_id_1, mon2_class, ap_id_2);
+        if (has_mon_1 && has_mon_2) // any connection to molecule is not in sequence
+            if (for_idt)
+                sequence_connection = isIdtConnection(mon1_class, ap_id_1, mon2_class, ap_id_2);
+            else
+                sequence_connection = isSimplePolymerConnection(mon1_class, ap_id_1, mon2_class, ap_id_2);
         if (!sequence_connection)
         {
             _non_sequence_connections.emplace_back(connection);

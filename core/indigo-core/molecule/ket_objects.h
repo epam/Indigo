@@ -774,6 +774,8 @@ namespace indigo
         {
             groupId,
             monomerId,
+            moleculeId,
+            atomId,
             attachmentPointId
         };
     };
