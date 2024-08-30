@@ -100,6 +100,8 @@ namespace indigo
 
         KetConnection& addConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
 
+        KetConnection& addConnection(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2);
+
         void connectMonomerTo(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2);
 
         const std::vector<KetConnection> connections() const

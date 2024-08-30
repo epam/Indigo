@@ -50,6 +50,7 @@ std::unique_ptr<KetBaseMonomer>& KetDocument::addMonomer(const std::string& id, 
     auto res = _monomers.emplace(id, std::make_unique<KetMonomer>(id, alias, template_id));
     if (!res.second)
         throw Error("Monomer with id='%s' already exists", id.c_str());
+    res.first->second->setAttachmentPoints(_templates.at(template_id).attachmentPoints());
     _monomer_ref_to_id.emplace(res.first->second->ref(), id);
     _monomers_ids.emplace_back(id);
     return res.first->second;
@@ -117,6 +118,7 @@ std::unique_ptr<KetBaseMonomer>& KetDocument::addVariantMonomer(const std::strin
     if (_monomers.find(id) != _monomers.end())
         throw Error("Variant monomer '%s' already exists.", id.c_str());
     auto it = _monomers.try_emplace(id, std::make_unique<KetVariantMonomer>(id, alias, template_id));
+    it.first->second->setAttachmentPoints(_variant_templates.at(template_id).attachmentPoints());
     _monomer_ref_to_id.emplace(it.first->second->ref(), id);
     _monomers_ids.emplace_back(id);
     return it.first->second;
@@ -153,6 +155,19 @@ BaseMolecule& KetDocument::getBaseMolecule()
 
 KetConnection& KetDocument::addConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
 {
+    _connections.emplace_back(ep1, ep2);
+    return *_connections.rbegin();
+}
+
+KetConnection& KetDocument::addConnection(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2)
+{
+    connectMonomerTo(mon1, ap1, mon2, ap2);
+    connectMonomerTo(mon2, ap2, mon1, ap1);
+    KetConnectionEndPoint ep1, ep2;
+    ep1.setStringProp("monomerId", mon1);
+    ep1.setStringProp("attachmentPointId", ap1);
+    ep2.setStringProp("monomerId", mon2);
+    ep2.setStringProp("attachmentPointId", ap2);
     _connections.emplace_back(ep1, ep2);
     return *_connections.rbegin();
 }
@@ -237,11 +252,13 @@ static bool isSimplePolymerConnection(MonomerClass cl1, const std::string& ap1, 
     if (((cl1 == MonomerClass::Phosphate && cl2 == MonomerClass::Sugar) || (cl2 == MonomerClass::Phosphate && cl1 == MonomerClass::Sugar)) &&
         ((ap1 == "R1" && ap2 == "R2") || (ap1 == "R2" && ap2 == "R1")))
         return true;
-    if ((cl1 == MonomerClass::DNA && cl2 == MonomerClass::Sugar && ap1 == "R2" && ap2 == "R1") ||
-        (cl2 == MonomerClass::DNA && cl1 == MonomerClass::Sugar && ap2 == "R2" && ap1 == "R1"))
+    if (((cl1 == MonomerClass::DNA || cl1 == MonomerClass::RNA) && (cl2 == MonomerClass::Phosphate || cl2 == MonomerClass::Sugar) &&
+         (ap1 == "R2" && ap2 == "R1")) ||
+        ((cl2 == MonomerClass::DNA || cl2 == MonomerClass::RNA) && (cl1 == MonomerClass::Phosphate || cl1 == MonomerClass::Sugar) &&
+         (ap2 == "R2" && ap1 == "R1")))
         return true;
-    if ((cl1 == MonomerClass::Phosphate && cl2 == MonomerClass::DNA && ap1 == "R2" && ap2 == "R1") ||
-        (cl2 == MonomerClass::Phosphate && cl1 == MonomerClass::DNA && ap2 == "R2" && ap1 == "R1"))
+    if (((cl1 == MonomerClass::DNA && cl2 == MonomerClass::DNA) || (cl1 == MonomerClass::RNA && cl2 == MonomerClass::RNA)) &&
+        ((ap1 == "R2" && ap2 == "R1") || (ap1 == "R1" && ap2 == "R2")))
         return true;
     return false;
 }
@@ -251,16 +268,8 @@ static bool isIdtConnection(MonomerClass cl1, const std::string& ap1, MonomerCla
     bool is_simple_pol_connection = isSimplePolymerConnection(cl1, ap1, cl2, ap2);
     if (is_simple_pol_connection)
         return true;
-    if ((cl1 == MonomerClass::CHEM || cl2 == MonomerClass::CHEM) && ((ap1 == "R1" && ap2 == "R2") || (ap1 == "R2" && ap2 == "R1")))
-        return true;
-    if (((cl1 == MonomerClass::Phosphate && cl2 == MonomerClass::Sugar) || (cl2 == MonomerClass::CHEM && cl1 == MonomerClass::Sugar)) &&
-        ((ap1 == "R1" && ap2 == "R2") || (ap1 == "R2" && ap2 == "R1")))
-        return true;
-    if ((cl1 == MonomerClass::DNA && cl2 == MonomerClass::Sugar && ap1 == "R2" && ap2 == "R1") ||
-        (cl2 == MonomerClass::DNA && cl1 == MonomerClass::Sugar && ap2 == "R2" && ap1 == "R1"))
-        return true;
-    if ((cl1 == MonomerClass::Phosphate && cl2 == MonomerClass::DNA && ap1 == "R2" && ap2 == "R1") ||
-        (cl2 == MonomerClass::Phosphate && cl1 == MonomerClass::DNA && ap2 == "R2" && ap1 == "R1"))
+    static const std::set<MonomerClass> idt_backbone = {MonomerClass::CHEM, MonomerClass::DNA, MonomerClass::RNA, MonomerClass::Sugar, MonomerClass::Phosphate};
+    if (idt_backbone.count(cl1) > 0 && idt_backbone.count(cl2) > 0 && ((ap1 == "R1" && ap2 == "R2") || (ap1 == "R2" && ap2 == "R1")))
         return true;
     if ((cl1 == MonomerClass::Phosphate && cl2 == MonomerClass::Phosphate) && ((ap1 == "R1" && ap2 == "R2") || (ap1 == "R2" && ap2 == "R1")))
         return true;

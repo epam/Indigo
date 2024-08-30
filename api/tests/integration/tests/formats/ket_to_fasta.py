@@ -26,6 +26,7 @@ files = [
     "1822-peptide",
     "1843-rna",
     "1950-mixed-seq",
+    "nucleotides",
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(

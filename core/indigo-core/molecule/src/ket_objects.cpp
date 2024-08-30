@@ -583,12 +583,13 @@ IMPL_ERROR(KetBaseMonomer, "Ket Base Monomer")
 void KetBaseMonomer::connectAttachmentPointTo(const std::string& ap_id, const std::string& monomer_ref, const std::string& other_ap_id)
 {
     if (_attachment_points.find(ap_id) == _attachment_points.end())
-        throw Error("Unknown attachment point '%s'", ap_id.c_str());
+        throw Error("Unknown attachment point '%s' in monomer %s", ap_id.c_str(), _alias.c_str());
     auto it = _connections.find(ap_id);
-    if (it != _connections.end())
-        throw Error("Monomer '%s' attachment point '%s' already connected to monomer'%s' attachment point '%s'", _id.c_str(), ap_id.c_str(),
+    if (it != _connections.end() && (it->second.first != monomer_ref || it->second.second != other_ap_id))
+        throw Error("Monomer '%s' attachment point '%s' already connected to monomer'%s' attachment point '%s'", _alias.c_str(), ap_id.c_str(),
                     it->second.first.c_str(), it->second.second.c_str());
-    _connections.try_emplace(ap_id, monomer_ref, other_ap_id);
+    if (it == _connections.end())
+        _connections.try_emplace(ap_id, monomer_ref, other_ap_id);
 }
 
 IMPL_ERROR(KetMonomer, "Ket Monomer")
