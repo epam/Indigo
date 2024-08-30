@@ -291,13 +291,8 @@ void SequenceLoader::addTemplateBond(BaseMolecule& mol, int left_idx, int right_
 
 void SequenceLoader::addMonomerConnection(KetDocument& document, std::size_t left_idx, std::size_t right_idx, bool branch)
 {
-    KetConnectionEndPoint ep1{};
-    ep1.setStringProp("monomerId", document.monomers().at(std::to_string(left_idx))->ref());
-    ep1.setStringProp("attachmentPointId", branch ? "R3" : "R2");
-    KetConnectionEndPoint ep2{};
-    ep2.setStringProp("monomerId", document.monomers().at(std::to_string(right_idx))->ref());
-    ep2.setStringProp("attachmentPointId", "R1");
-    document.addConnection(ep1, ep2);
+    document.addConnection(document.monomers().at(std::to_string(left_idx))->ref(), branch ? "R3" : "R2",
+                           document.monomers().at(std::to_string(right_idx))->ref(), "R1");
 }
 
 Vec3f SequenceLoader::getBackboneMonomerPosition()
@@ -401,7 +396,13 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
             checkAddTemplate(document, monomer_template);
             _alias_to_id.emplace(template_alias, template_id);
         }
-        document.addVariantMonomerTemplate("mixture", monomer, monomer, IdtAlias(), options);
+        auto& templ = document.addVariantMonomerTemplate("mixture", monomer, monomer, IdtAlias(), options);
+        static const std::map<std::string, KetAttachmentPoint> aa_aps{{"R1", -1}, {"R2", -1}};
+        static const std::map<std::string, KetAttachmentPoint> base_aps{{"R1", -1}};
+        if (seq_type == SeqType::PEPTIDESeq)
+            templ.setAttachmentPoints(aa_aps);
+        else
+            templ.setAttachmentPoints(base_aps);
         _alias_to_id.emplace(monomer, monomer);
     }
 
@@ -1117,7 +1118,9 @@ void SequenceLoader::loadIdt(KetDocument& document)
                             checkAddTemplate(document, monomer_template);
                             _alias_to_id.emplace(template_alias, template_id);
                         }
-                        document.addVariantMonomerTemplate("mixture", idt_alias, idt_alias, IdtAlias(), options);
+                        auto& templ = document.addVariantMonomerTemplate("mixture", idt_alias, idt_alias, IdtAlias(), options);
+                        static const std::map<std::string, KetAttachmentPoint> aps{{"R1", -1}};
+                        templ.setAttachmentPoints(aps);
                         _alias_to_id.emplace(idt_alias, idt_alias);
                     }
                     else if (ratios.has_value())
@@ -1300,7 +1303,7 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
         if (_scanner.isEOF())
             throw Error(unexpected_eod);
         if (ch != ']')
-            throw Error("Unexpected char. Expected ']' but found '%c'.", ch);
+            throw Error("Unexpected symbol. Expected ']' but found '%c'.", ch);
         if (smiles)
         {
             // Convert smiles to molecule
@@ -1383,7 +1386,7 @@ std::string SequenceLoader::readHelmRepeating()
         _scanner.skip(1);
         _scanner.readWord(name, "'");
         if (_scanner.lookNext() != '\'')
-            throw Error("Unexpected char. Expected ''' but found '%c'.", _scanner.lookNext());
+            throw Error("Unexpected symbol. Expected ''' but found '%c'.", _scanner.lookNext());
         _scanner.skip(1); // skip "'"
         repeating = name.ptr();
     }
@@ -1399,7 +1402,7 @@ std::string SequenceLoader::readHelmAnnotation()
         _scanner.skip(1);
         _scanner.readWord(name, "\"");
         if (_scanner.lookNext() != '"')
-            throw Error("Unexpected char. Expected '\"' but found '%c'.", _scanner.lookNext());
+            throw Error("Unexpected symbol. Expected '\"' but found '%c'.", _scanner.lookNext());
         _scanner.skip(1); // skip '"'
         annotation = name.ptr();
     }
@@ -1444,7 +1447,7 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
     if (ch == ',' || ch == '+' || ch == ':') // looks like variant
     {
         if (!was_bracket)
-            throw Error("Unexpected symbol %c. Variant monomers should be defined in ().");
+            throw Error("Unexpected symbol '%c'. Variant monomers should be defined in ().");
         std::string count;
         is_variant = true;
         ch = readCount(count, _scanner); // in ch==':' read conunt and return next char
@@ -1452,7 +1455,7 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
         if (ch == '+')
             is_mixture = true;
         else if (ch != ',')
-            throw Error("Unexpected symbol %c. Expected '+' or ','");
+            throw Error("Unexpected symbol. Expected '+' or ',' but found '%c'", ch);
         _scanner.skip(1);
 
         std::set<std::string> aliases;
@@ -1512,7 +1515,7 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
         if (ch == ')')
             _scanner.skip(1); // single monomer in () - branch monomer
         else
-            throw Error("Unmatched '('");
+            throw Error("Unexpected symbol. Expected ')' but found '%c'.", ch);
     return std::make_tuple(monomer_alias, repeating, annotation, options);
 }
 
@@ -1551,6 +1554,9 @@ const std::string SequenceLoader::checkAddVariantMonomerTemplate(KetDocument& do
         bool is_mixture = options.first;
         std::string subtype = is_mixture ? "mixture" : "alternatives";
         std::vector<KetVariantMonomerOption> opts;
+        std::set<std::string> vt_ap_names;
+        bool not_inited = true;
+        std::map<std::string, KetAttachmentPoint> att_points;
         for (auto& option : options.second)
         {
             auto& opt_template_id = _library.getMonomerTemplateIdByAlias(monomer_class, option.first);
@@ -1564,9 +1570,25 @@ const std::string SequenceLoader::checkAddVariantMonomerTemplate(KetDocument& do
                     opt.setProbability(option.second.value());
             auto& monomer_template = _library.getMonomerTemplateById(opt_template_id);
             checkAddTemplate(document, monomer_template);
+            std::set<std::string> ap_names;
+            for (auto& it : monomer_template.attachmentPoints())
+            {
+                ap_names.emplace(it.first);
+            }
+            if (not_inited)
+            {
+                vt_ap_names = ap_names;
+                att_points = monomer_template.attachmentPoints();
+            }
+            else
+            {
+                for (auto it : vt_ap_names)
+                    if (ap_names.count(it) == 0)
+                        vt_ap_names.erase(it);
+            }
         }
-
         auto& var_template = document.addVariantMonomerTemplate(subtype, alias, alias, IdtAlias(), opts);
+        var_template.setAttachmentPoints(att_points);
         template_id = alias;
         _opts_to_template_id.emplace(options, template_id);
     }
@@ -1640,7 +1662,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     throw Error("Polymer '%s' without number not allowed.", simple_polymer_name.c_str());
                 ch = _scanner.lookNext();
                 if (ch != '{')
-                    throw Error("Unexpected symbol. Expected '{' but found '%c'.", ch);
+                    throw Error(". Expected '{' but found '%c'.", ch);
                 _scanner.skip(1); // skip '{'
                 if (used_polymer_nums.count(simple_polymer_name))
                     throw Error("Simple polymer '%s' defined more than once.", simple_polymer_name.c_str());
@@ -1683,6 +1705,8 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     ch = _scanner.lookNext();
                     if (ch == '.')
                         _scanner.skip(1);
+                    else if (ch != '}')
+                        throw Error("Unexpected symbol. Expected '.' or '}' but found '%c'.", ch);
                 }
                 else // kHELMPolymerTypeRNA
                 {
@@ -1832,13 +1856,8 @@ void SequenceLoader::loadHELM(KetDocument& document)
             auto right_mon_it = right_polymer_nums->second.find(right_monomer_idx);
             if (right_mon_it == right_polymer_nums->second.end())
                 throw Error("Polymer '%s' does not contains monomer with number %d.", right_polymer.c_str(), right_monomer_idx);
-            KetConnectionEndPoint ep1{};
-            ep1.setStringProp("monomerId", document.monomers().at(std::to_string(left_mon_it->second))->ref());
-            ep1.setStringProp("attachmentPointId", left_ap);
-            KetConnectionEndPoint ep2{};
-            ep2.setStringProp("monomerId", document.monomers().at(std::to_string(right_mon_it->second))->ref());
-            ep2.setStringProp("attachmentPointId", right_ap);
-            document.addConnection(ep1, ep2);
+            document.addConnection(document.monomers().at(std::to_string(left_mon_it->second))->ref(), left_ap,
+                                   document.monomers().at(std::to_string(right_mon_it->second))->ref(), right_ap);
             if (_scanner.isEOF())
                 throw Error(unexpected_eod);
             ch = _scanner.readChar();
@@ -1849,7 +1868,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                 if (_scanner.isEOF())
                     throw Error(unexpected_eod);
                 if (_scanner.lookNext() != '"')
-                    throw Error("Unexpected char. Expected '\"' but found '%c'.", _scanner.lookNext());
+                    throw Error("Unexpected symbol. Expected '\"' but found '%c'.", _scanner.lookNext());
                 _scanner.skip(1); // skip '"'
                 if (_scanner.isEOF())
                     throw Error(unexpected_eod);

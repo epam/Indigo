@@ -848,6 +848,9 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
             std::string sugar;
             std::string base;
             std::string phosphate;
+            if (seq_string.size() > 0 && sequence.size() == 0)
+                modification = IdtModification::THREE_PRIME_END;
+
             if (monomer_class == MonomerClass::Phosphate)
             {
                 if (seq_string.size() > 0 && sequence.size()) // Inside the sequence
@@ -885,6 +888,8 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                         seq_string += '/';
                         seq_string += idt_alias;
                         seq_string += '/';
+                        if (modification == IdtModification::FIVE_PRIME_END)
+                            modification = IdtModification::INTERNAL;
                         continue;
                     }
                 }
