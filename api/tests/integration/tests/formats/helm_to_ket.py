@@ -70,6 +70,7 @@ helm_errors = {
     "PEPTIDE1{(A:1.5+C:aaaa)}$$$$V2.0": "Unexpected symbol. Expected '+' or ',' but found '.'",
     "RNA1{R(bla-bla-bla)p}$$$$V2.0": "Unexpected symbol. Expected ')' but found 'l'.",
     "PEPTIDE1{D-gGlu}$$$$V2.0": "Unexpected symbol. Expected '.' or '}' but found '-'.",
+    "PEPTIDE1{(A:+C:0.1)}$$$$V2.0": "Unexpected symbol. Expected digit but found '+'",
 }
 for helm_seq in sorted(helm_errors.keys()):
     error = helm_errors[helm_seq]

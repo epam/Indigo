@@ -1424,7 +1424,7 @@ int SequenceLoader::readCount(std::string& count, Scanner& _scanner)
             ch = _scanner.lookNext();
         }
         if (count.size() == 0)
-            throw Error("Invalid number.");
+            throw Error("Unexpected symbol. Expected digit but found '%c'", ch);
     }
     return ch;
 }
