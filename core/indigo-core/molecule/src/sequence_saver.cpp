@@ -1168,84 +1168,85 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
         }
         if (monomer_idx)
             helm_string += '}'; // Finish polymer
-        auto& molecules = document.jsonMolecules();
-        int molecule_idx = 0;
-        rapidjson::Document json{};
-        for (rapidjson::SizeType i = 0; i < molecules.Size(); i++)
+    }
+    auto& molecules = document.jsonMolecules();
+    int molecule_idx = 0;
+    rapidjson::Document json{};
+    for (rapidjson::SizeType i = 0; i < molecules.Size(); i++)
+    {
+        const auto& molecule = molecules[i];
+        std::string mol_id = "mol" + std::to_string(molecule_idx++);
+        rapidjson::Value marr(rapidjson::kArrayType);
+        marr.PushBack(json.CopyFrom(molecule, json.GetAllocator()), json.GetAllocator());
+        MoleculeJsonLoader loader(marr);
+        BaseMolecule* pbmol;
+        Molecule mol;
+        QueryMolecule qmol;
+        try
         {
-            const auto& molecule = molecules[i];
-            std::string mol_id = "mol" + std::to_string(molecule_idx++);
-            rapidjson::Value marr(rapidjson::kArrayType);
-            marr.PushBack(json.CopyFrom(molecule, json.GetAllocator()), json.GetAllocator());
-            MoleculeJsonLoader loader(marr);
-            BaseMolecule* pbmol;
-            Molecule mol;
-            QueryMolecule qmol;
-            try
-            {
-                loader.loadMolecule(mol);
-                pbmol = &mol;
-            }
-            catch (...)
-            {
-                loader.loadMolecule(qmol);
-                pbmol = &qmol;
-            }
-            // convert Sup sgroup without name attachment points to rg-labels
-            auto& sgroups = pbmol->sgroups;
-            for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
-            {
-                auto& sgroup = sgroups.getSGroup(i);
-                if (sgroup.sgroup_type != SGroup::SG_TYPE_SUP)
-                    continue;
-                Superatom& sa = static_cast<Superatom&>(sgroup);
-                if (sa.subscript.size() != 0 && sa.subscript.ptr()[0] != 0)
-                    continue;
-                // convert leaving atom H to rg-ref
-                auto res = mol_atom_to_ap.try_emplace(mol_id);
-                auto& atom_to_ap = res.first;
-                static std::string apid_prefix{'R'};
-                Array<int> leaving_atoms;
-                for (int ap_id = sa.attachment_points.begin(); ap_id != sa.attachment_points.end(); ap_id = sa.attachment_points.next(ap_id))
-                {
-                    auto& ap = sa.attachment_points.at(ap_id);
-                    std::string apid = apid_prefix + ap.apid.ptr();
-                    atom_to_ap->second.emplace(ap.aidx, apid);
-                    int leaving_atom = ap.lvidx;
-                    int ap_idx = std::stoi(ap.apid.ptr());
-                    if (pbmol == &mol)
-                    {
-                        mol.resetAtom(leaving_atom, ELEM_RSITE);
-                        mol.allowRGroupOnRSite(leaving_atom, ap_idx);
-                    }
-                    else
-                    {
-                        auto rsite = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RSITE, 0);
-                        qmol.resetAtom(leaving_atom, rsite.release());
-                        qmol.allowRGroupOnRSite(leaving_atom, ap_idx);
-                    }
-                }
-                sgroups.remove(i);
-            }
-            // generate smiles
-            std::string smiles;
-            StringOutput s_out(smiles);
-            SmilesSaver saver(s_out);
-            if (pbmol == &mol)
-                saver.saveMolecule(mol);
-            else
-                saver.saveQueryMolecule(qmol);
-            // save as chem
-            if (helm_string.size() > 0)
-                helm_string += '|';
-            helm_string += "CHEM";
-            polymer_idx = ++chem_idx;
-            helm_string += std::to_string(polymer_idx);
-            helm_string += "{[";
-            helm_string += smiles;
-            helm_string += '}';
-            monomer_id_to_monomer_info.emplace(std::make_pair(mol_id, std::make_tuple(HELMType::Chem, polymer_idx, 1)));
+            loader.loadMolecule(mol);
+            pbmol = &mol;
         }
+        catch (...)
+        {
+            loader.loadMolecule(qmol);
+            pbmol = &qmol;
+        }
+        // convert Sup sgroup without name attachment points to rg-labels
+        auto& sgroups = pbmol->sgroups;
+        for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+        {
+            auto& sgroup = sgroups.getSGroup(i);
+            if (sgroup.sgroup_type != SGroup::SG_TYPE_SUP)
+                continue;
+            Superatom& sa = static_cast<Superatom&>(sgroup);
+            if (sa.subscript.size() != 0 && sa.subscript.ptr()[0] != 0)
+                continue;
+            // convert leaving atom H to rg-ref
+            auto res = mol_atom_to_ap.try_emplace(mol_id);
+            auto& atom_to_ap = res.first;
+            static std::string apid_prefix{'R'};
+            Array<int> leaving_atoms;
+            for (int ap_id = sa.attachment_points.begin(); ap_id != sa.attachment_points.end(); ap_id = sa.attachment_points.next(ap_id))
+            {
+                auto& ap = sa.attachment_points.at(ap_id);
+                std::string apid = apid_prefix + ap.apid.ptr();
+                atom_to_ap->second.emplace(ap.aidx, apid);
+                int leaving_atom = ap.lvidx;
+                int ap_idx = std::stoi(ap.apid.ptr());
+                if (pbmol == &mol)
+                {
+                    mol.resetAtom(leaving_atom, ELEM_RSITE);
+                    mol.allowRGroupOnRSite(leaving_atom, ap_idx);
+                }
+                else
+                {
+                    auto rsite = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RSITE, 0);
+                    qmol.resetAtom(leaving_atom, rsite.release());
+                    qmol.allowRGroupOnRSite(leaving_atom, ap_idx);
+                }
+            }
+            sgroups.remove(i);
+        }
+        // generate smiles
+        std::string smiles;
+        StringOutput s_out(smiles);
+        SmilesSaver saver(s_out);
+        saver.separate_rsites = false;
+        if (pbmol == &mol)
+            saver.saveMolecule(mol);
+        else
+            saver.saveQueryMolecule(qmol);
+        // save as chem
+        if (helm_string.size() > 0)
+            helm_string += '|';
+        helm_string += "CHEM";
+        int polymer_idx = ++chem_idx;
+        helm_string += std::to_string(polymer_idx);
+        helm_string += "{[";
+        helm_string += smiles;
+        helm_string += "]}";
+        monomer_id_to_monomer_info.emplace(std::make_pair(mol_id, std::make_tuple(HELMType::Chem, polymer_idx, 1)));
     }
     helm_string += '$';
     // Add connections
