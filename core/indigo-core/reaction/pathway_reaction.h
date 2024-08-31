@@ -82,26 +82,44 @@ namespace indigo
             ObjArray<SuccessorReaction> successorReactions;
             // vector of precursor reactions indexes
             Array<int> precursorReactionsIndexes;
+            // utility information
+            RedBlackSet<int> derivedReactants;
+            ObjArray< Array<int> > derivedReactantGroups;
         };
 
         PathwayReaction();
         ~PathwayReaction() override;
 
-        std::vector<std::reference_wrapper<const ReactionNode>> getRootReactions() const;
+        std::vector<int> getRootReactions() const;
 
-        auto& getReactionNodes()
+        auto& getReactionNode(int node_idx)
         {
-            return _reactionNodes;
+            return _reactionNodes[node_idx];
         }
 
-        const auto& getMolecules()
+        int getReactionNodeCount() const
+		{
+			return static_cast<int>(_reactionNodes.size());
+		}
+
+        auto& getMolecule( int mol_idx )
         {
-            return _molecules;
+            return *_molecules[mol_idx];
         }
 
-        const auto& getReactions()
+        int getMoleculeCount() const
+		{
+			return static_cast<int>(_molecules.size());
+		}
+
+        const auto& getReaction(int reaction_idx)
         {
-            return _reactions;
+            return _reactions[reaction_idx];
+        }
+
+        int getReactionCount() const
+        {
+        	return static_cast<int>(_reactions.size());
         }
 
         ReactionNode& addReactionNode()

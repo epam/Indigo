@@ -35,15 +35,12 @@ PathwayReaction::~PathwayReaction()
 {
 }
 
-std::vector<std::reference_wrapper<const PathwayReaction::ReactionNode>> PathwayReaction::getRootReactions() const
+std::vector<int> PathwayReaction::getRootReactions() const
 {
-    std::vector<std::reference_wrapper<const ReactionNode>> root_reactions;
-    for(int i = 0; i < _reactionNodes.size(); ++i )
-    {
-        const auto& rn = _reactionNodes[i];
-        if (rn.successorReactions.size() == 0)
-            root_reactions.push_back(std::cref(rn));
-    }
+    std::vector<int> root_reactions;
+    for (int i = 0; i < _reactionNodes.size(); ++i)
+        if (_reactionNodes[i].successorReactions.size() == 0)
+            root_reactions.push_back(i);
     return root_reactions;
 }
 
@@ -57,19 +54,19 @@ void PathwayReaction::clone(PathwayReaction& reaction)
         rn.reactionIdx = other.reactionIdx;
         rn.precursorReactionsIndexes.copy(other.precursorReactionsIndexes);
         for (int j = 0; j < other.successorReactions.size(); ++j)
-		{
-			auto& sr = other.successorReactions[j];
-			rn.successorReactions.push(sr);
-		}
+        {
+            auto& sr = other.successorReactions[j];
+            rn.successorReactions.push(sr);
+        }
     }
 
     for (int i = 0; i < reaction._reactions.size(); ++i)
-	{
+    {
         auto& other = reaction._reactions[i];
-		auto& rc = _reactions.push();
+        auto& rc = _reactions.push();
         rc.productIndexes.copy(other.productIndexes);
         rc.reactantIndexes.copy(other.reactantIndexes);
-	}
+    }
 }
 
 BaseReaction* PathwayReaction::neu()

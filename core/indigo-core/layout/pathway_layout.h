@@ -23,98 +23,126 @@
 
 namespace indigo
 {
-    // PathwayLayoutItem is a struct that represents a reaction in the pathway
-    struct PathwayLayoutItem
+#include <algorithm>
+#include <cmath>
+#include <vector>
+
+#include <algorithm>
+#include <cmath>
+#include <vector>
+
+    class PathwayLayoutItem
     {
-        // which components are involved into layout. 
-        // The first element is the index of the reaction, the second element is the index of the reaction component
-        std::pair<int, std::vector<int>> associatedReactionItems;
-        // successor component index (parent)
-        int successor = -1;
-        // precursors component indexes (children)
-        std::vector<int> precursors;
-        double width = 0, height = 0;
-        double x = 0, y = 0;
-        int nextSibling = -1;
-        int prevSibling = -1;
-
-        int number = -1;
-        double prelim = 0;
-        double mod = 0;
-        int ancestor = -1;
-        int thread = -1;
-        double change = 0;
-        double shift = 0;
-
-        int getFirstPrecursor() const
+    public:
+        PathwayLayoutItem(PathwayReaction& reaction, int nodeIdx, int reactantIdx = -1)
+            : number(-2), prelim(0.0), mod(0.0), shift(0.0), change(0.0), width(0.0), height(0.0), x(0.0), y(0.0), ancestor(this),
+              thread(nullptr), children(), parent(nullptr), nextSibling(nullptr), prevSibling(nullptr)
         {
-            return precursors.empty() ? -1 : precursors.front();
+            auto& rn = reaction.getReactionNode(nodeIdx);
+            auto& sr = reaction.getReaction(rn.reactionIdx);
+            // create as a final reactant child
+            if (reactantIdx != -1)
+			{
+				auto& mol = reaction.getMolecule(reactantIdx);
+				Rect2f bbox;
+				mol.getBoundingBox(bbox);
+				molecules.push_back(std::make_pair(reactantIdx, bbox));
+				width += bbox.width();
+				height = std::max(bbox.height(), height);
+            }
+            else
+            {
+                for (auto pidx : sr.productIndexes)
+                {
+                    auto& mol = reaction.getMolecule(pidx);
+                    Rect2f bbox;
+                    mol.getBoundingBox(bbox);
+                    molecules.push_back(std::make_pair(pidx, bbox));
+                    width += bbox.width();
+                    height = std::max(bbox.height(), height);
+                }
+
+                // enumerate only final reactants here
+                // how to check if it is a final reactant?
+                // rn.precursorReactionsIndexes
+                for ( int i = 0; i < sr.reactantIndexes.size(); ++i)
+				{
+                    // check if it is a final reactant
+                    auto ridx = sr.reactantIndexes[i];
+                    PathwayLayoutItem* item = new PathwayLayoutItem(reaction, nodeIdx, ridx);
+                    children.push_back(item);
+                    item->parent = this;
+				}
+            }
+            // fill parent and children
         }
 
-        int getLastPrecursor() const
+        PathwayLayoutItem* getFirstChild()
         {
-            return precursors.empty() ? -1 : precursors.back();
+            return children.empty() ? nullptr : children.front();
+        }
+
+        PathwayLayoutItem* getLastChild()
+        {
+            return children.empty() ? nullptr : children.back();
         }
 
         void clear()
         {
             number = -2;
-            prelim = mod = shift = change = 0;
-            ancestor = thread = -1;
+            prelim = 0.0;
+            mod = shift = change = 0.0;
+            ancestor = thread = nullptr;
         }
+
+        // required for the layout algorithm
+        float width, height;
+        std::vector<PathwayLayoutItem*> children;
+        PathwayLayoutItem* parent;
+        PathwayLayoutItem* nextSibling;
+        PathwayLayoutItem* prevSibling;
+
+        // computed fields
+        int number;
+        float prelim, mod, shift, change;
+        float x, y;
+        PathwayLayoutItem* ancestor;
+        PathwayLayoutItem* thread;
+
+        // some data
+        std::vector< std::pair<int, Rect2f>> molecules;
     };
 
-    // PathwayLayout is a class which makes a tree layout of the pathway reaction in O(N) time
     class PathwayLayout
     {
-    public:
-        static constexpr float MARGIN = 1.f;
-        static constexpr float ARROW_HEAD_WIDTH = 2.5f;
-        static constexpr float ARROW_TAIL_WIDTH = 0.5f;
-        static constexpr float ARROW_WIDTH = ARROW_HEAD_WIDTH + ARROW_TAIL_WIDTH;
-
-        PathwayLayout(PathwayReaction& reaction) : _depths(10, 0.0), _reaction(reaction)
-        {
-        }
-        // make layout
-        void make();
-
-    private:
-        double spacing(const PathwayLayoutItem& l, const PathwayLayoutItem& r, bool siblings)
-        {
-            return 0.5 * (l.width + r.width);
-        }
-
-        void updateDepths(int depth, const PathwayLayoutItem& item);
-
-        void determineDepths();
-
-        std::vector<PathwayLayoutItem> PathwayLayout::getLayoutItems(const ObjArray<PathwayReaction::ReactionNode>& nodes, int rootIndex);
-
-
         DECL_ERROR;
 
+    public:
+        PathwayLayout(PathwayReaction& reaction) : _reaction(reaction), _depths(10, 0), _maxDepth(0)
+        {
+        }
+
+        void make();
+        void buildLayoutTree();
+
     private:
-        // firstWalk function calculates the preliminary x-coordinate of each node in the tree
-        void firstWalk(std::vector<PathwayLayoutItem>& nodes, int nIndex, int num, int depth);
-        // apportion function is used to calculate the preliminary x-coordinate of the children of a node
-        int apportion(std::vector<PathwayLayoutItem>& nodes, int vIndex, int aIndex);
-        int nextLeft(const std::vector<PathwayLayoutItem>& nodes, int nIndex) const;
-        int nextRight(const std::vector<PathwayLayoutItem>& nodes, int nIndex) const;
-        void moveSubtree(std::vector<PathwayLayoutItem>& nodes, int wmIndex, int wpIndex, double shift);
-        void executeShifts(std::vector<PathwayLayoutItem>& nodes, int nIndex);
-        int ancestor(const std::vector<PathwayLayoutItem>& nodes, int vimIndex, int vIndex, int aIndex) const;
-        void secondWalk(std::vector<PathwayLayoutItem>& nodes, int nIndex, double m, int depth);
+        float spacing(PathwayLayoutItem* l, PathwayLayoutItem* r, bool /*siblings*/);
+        PathwayLayoutItem* nextLeft(PathwayLayoutItem* n);
+        PathwayLayoutItem* nextRight(PathwayLayoutItem* n);
+        PathwayLayoutItem* ancestor(PathwayLayoutItem* vim, PathwayLayoutItem* v, PathwayLayoutItem* a);
+        void updateDepths(int depth, PathwayLayoutItem* item);
+        void determineDepths();
+        void firstWalk(PathwayLayoutItem* v, int num, int depth);
+        void secondWalk(PathwayLayoutItem* v, PathwayLayoutItem* p, float m, int depth);
 
-        std::vector<std::vector<int>> PathwayLayout::levelTraversalAndMapping(const std::vector<PathwayReaction::ReactionNode>& nodes, int rootIndex,
-                                                                         std::vector<PathwayLayoutItem>& layout_nodes,
-                                                                         std::unordered_map<int, int>& node_mapping);
-
-        std::vector<double> _depths;
-        int _maxDepth = 0;
+        PathwayLayoutItem* apportion(PathwayLayoutItem* v, PathwayLayoutItem* a);
+        void moveSubtree(PathwayLayoutItem* wm, PathwayLayoutItem* wp, float shift);
+        void executeShifts(PathwayLayoutItem* v);
         PathwayReaction& _reaction;
+        std::vector<float> _depths;
+        int _maxDepth;
+        std::vector<PathwayLayoutItem> _layoutItems;
     };
-
-} // namespace indigo
+}
 
 #endif

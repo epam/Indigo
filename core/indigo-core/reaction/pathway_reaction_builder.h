@@ -55,12 +55,12 @@ namespace indigo
 
         struct ReactionInchiDescriptor
         {
-            std::unordered_set<std::string> reactants;
+            // std::unordered_set<std::string> reactants;
             std::vector<std::string> products;
             // useful to collect it here to avoid look them up in the reaction object
             std::vector<int> productIndexes;
             std::vector<int> reactantIndexes;
-            std::map<int, std::vector<int>> successor; // productIndexes <-> successor
+            // std::map<int, std::vector<int>> successor; // productIndexes <-> successor
         };
 
         void buildInchiDescriptors(std::deque<Reaction>& reactions);
