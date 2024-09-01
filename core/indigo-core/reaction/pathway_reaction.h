@@ -83,8 +83,7 @@ namespace indigo
             // vector of precursor reactions indexes
             Array<int> precursorReactionsIndexes;
             // utility information
-            RedBlackSet<int> derivedReactants;
-            ObjArray< Array<int> > derivedReactantGroups;
+            RedBlackSet<int> successorReactants;
         };
 
         PathwayReaction();

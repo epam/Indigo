@@ -160,18 +160,20 @@ void PathwayReactionBuilder::buildNodes(std::deque<Reaction>& reactions)
             _moleculeMapping.emplace(std::piecewise_construct, std::forward_as_tuple(i, pidx), std::forward_as_tuple(mol_idx));
         }
 
-        for (auto& [j, val] : matching_successor) // [j, val] - j is the index of the reaction, val is the vector of reactant indexes
+        auto& rn = _pathwayReaction->getReactionNode(i);
+
+        for (auto& [j, val] : matching_successor) // [j, val] - j is the index of the matched sucessor reaction, val is the vector of reactant indexes
         {
             Array<int> val_arr;
             val_arr.copy(val);
-            auto& rn = _pathwayReaction->getReactionNode(i);
             if (rn.successorReactions.size() == 0)
             {
                 auto& rnj = _pathwayReaction->getReactionNode(j);
+                // check if the reactant is already in use as a successor
                 bool found = false;
                 for (auto ridx : val)
                 {
-                    found = rnj.derivedReactants.find(ridx);
+                    found = rnj.successorReactants.find(ridx);
                     if (found)
                         break;
                 }
@@ -179,21 +181,19 @@ void PathwayReactionBuilder::buildNodes(std::deque<Reaction>& reactions)
                 {
                     rn.successorReactions.push(PathwayReaction::SuccessorReaction(j, val_arr));
                     rnj.precursorReactionsIndexes.push(i);
-                    auto& drg = rnj.derivedReactantGroups.push();
                     for (auto ridx : val)
-                    {
-                        rnj.derivedReactants.find_or_insert(ridx);
-                        drg.push(ridx);
-                    }
+                        rnj.successorReactants.insert(ridx);
                 }
                 else
                 {
-                    // it's possible to connect a product to the same reactant more than one
+                    // it's impossible that a reactant has multiple precursors.
+                    // we can handle this case if needed.
                 }
             }
             else
             {
-                // only one successor reaction is allowed. skip the reaction if there are more than one.
+                // only one successor reaction is allowed for a reaction. 
+                // we can handle this case if needed.
             }
         }
     }
@@ -207,6 +207,7 @@ std::unique_ptr<PathwayReaction> PathwayReactionBuilder::buildPathwayReaction(st
     auto& rr = _pathwayReaction->getRootReactions();
     PathwayLayout pl(*_pathwayReaction);
     pl.make();
+
     std::cout << "root nodes: " << rr.size() << std::endl;
     return std::move(_pathwayReaction);
 }

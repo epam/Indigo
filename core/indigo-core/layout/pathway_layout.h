@@ -27,28 +27,24 @@ namespace indigo
 #include <cmath>
 #include <vector>
 
-#include <algorithm>
-#include <cmath>
-#include <vector>
-
     class PathwayLayoutItem
     {
     public:
         PathwayLayoutItem(PathwayReaction& reaction, int nodeIdx, int reactantIdx = -1)
-            : number(-2), prelim(0.0), mod(0.0), shift(0.0), change(0.0), width(0.0), height(0.0), x(0.0), y(0.0), ancestor(this),
-              thread(nullptr), children(), parent(nullptr), nextSibling(nullptr), prevSibling(nullptr)
+            : number(-2), prelim(0.0), mod(0.0), shift(0.0), change(0.0), width(0.0), height(0.0), x(0.0), y(0.0), ancestor(this), thread(nullptr), children(),
+              parent(nullptr), nextSibling(nullptr), prevSibling(nullptr)
         {
             auto& rn = reaction.getReactionNode(nodeIdx);
             auto& sr = reaction.getReaction(rn.reactionIdx);
             // create as a final reactant child
             if (reactantIdx != -1)
-			{
-				auto& mol = reaction.getMolecule(reactantIdx);
-				Rect2f bbox;
-				mol.getBoundingBox(bbox);
-				molecules.push_back(std::make_pair(reactantIdx, bbox));
-				width += bbox.width();
-				height = std::max(bbox.height(), height);
+            {
+                auto& mol = reaction.getMolecule(reactantIdx);
+                Rect2f bbox;
+                mol.getBoundingBox(bbox);
+                molecules.push_back(std::make_pair(reactantIdx, bbox));
+                width += bbox.width();
+                height = std::max(bbox.height(), height);
             }
             else
             {
@@ -62,19 +58,24 @@ namespace indigo
                     height = std::max(bbox.height(), height);
                 }
 
-                // enumerate only final reactants here
-                // how to check if it is a final reactant?
-                // rn.precursorReactionsIndexes
-                for ( int i = 0; i < sr.reactantIndexes.size(); ++i)
-				{
+                // add precursors free reactants as children
+                for (int i = 0; i < sr.reactantIndexes.size(); ++i)
+                {
                     // check if it is a final reactant
-                    auto ridx = sr.reactantIndexes[i];
-                    PathwayLayoutItem* item = new PathwayLayoutItem(reaction, nodeIdx, ridx);
-                    children.push_back(item);
-                    item->parent = this;
-				}
+                    if (!rn.successorReactants.find(i))
+                    {
+                        auto ridx = sr.reactantIndexes[i];
+                        PathwayLayoutItem* item = new PathwayLayoutItem(reaction, nodeIdx, ridx);
+                        children.push_back(item);
+                        item->parent = this;
+                        if (children.size() > 1)
+                        {
+                            children[children.size() - 2]->nextSibling = item;
+                            item->prevSibling = children[children.size() - 2];
+                        }
+                    }
+                }
             }
-            // fill parent and children
         }
 
         PathwayLayoutItem* getFirstChild()
@@ -90,8 +91,7 @@ namespace indigo
         void clear()
         {
             number = -2;
-            prelim = 0.0;
-            mod = shift = change = 0.0;
+            prelim = mod = shift = change = 0.0;
             ancestor = thread = nullptr;
         }
 
@@ -110,7 +110,7 @@ namespace indigo
         PathwayLayoutItem* thread;
 
         // some data
-        std::vector< std::pair<int, Rect2f>> molecules;
+        std::vector<std::pair<int, Rect2f>> molecules;
     };
 
     class PathwayLayout
@@ -123,26 +123,41 @@ namespace indigo
         }
 
         void make();
-        void buildLayoutTree();
 
     private:
-        float spacing(PathwayLayoutItem* l, PathwayLayoutItem* r, bool /*siblings*/);
-        PathwayLayoutItem* nextLeft(PathwayLayoutItem* n);
-        PathwayLayoutItem* nextRight(PathwayLayoutItem* n);
-        PathwayLayoutItem* ancestor(PathwayLayoutItem* vim, PathwayLayoutItem* v, PathwayLayoutItem* a);
+        float spacing(PathwayLayoutItem* l, PathwayLayoutItem* r, bool siblings)
+        {
+            return (l->height + r->height) / 2.0f;
+        }
+
         void updateDepths(int depth, PathwayLayoutItem* item);
+
         void determineDepths();
-        void firstWalk(PathwayLayoutItem* v, int num, int depth);
-        void secondWalk(PathwayLayoutItem* v, PathwayLayoutItem* p, float m, int depth);
+
+        void buildLayoutTree();
+
+        void firstWalk(PathwayLayoutItem* n, int num, int depth);
 
         PathwayLayoutItem* apportion(PathwayLayoutItem* v, PathwayLayoutItem* a);
+
+        PathwayLayoutItem* nextTop(PathwayLayoutItem* n);
+
+        PathwayLayoutItem* nextBottom(PathwayLayoutItem* n);
+
         void moveSubtree(PathwayLayoutItem* wm, PathwayLayoutItem* wp, float shift);
-        void executeShifts(PathwayLayoutItem* v);
-        PathwayReaction& _reaction;
+
+        void executeShifts(PathwayLayoutItem* n);
+
+        PathwayLayoutItem* ancestor(PathwayLayoutItem* vim, PathwayLayoutItem* v, PathwayLayoutItem* a);
+
+        void secondWalk(PathwayLayoutItem* n, PathwayLayoutItem* p, float m, int depth);
+
         std::vector<float> _depths;
-        int _maxDepth;
+        int _maxDepth = 0;
+        PathwayReaction& _reaction;
         std::vector<PathwayLayoutItem> _layoutItems;
     };
+
 }
 
 #endif
