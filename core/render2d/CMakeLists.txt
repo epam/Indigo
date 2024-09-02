@@ -41,7 +41,8 @@ endif()
 if (BUILD_STANDALONE)
     target_link_libraries(${PROJECT_NAME}
             PUBLIC rapidjson
-            PUBLIC cairo)
+            PUBLIC cairo
+            PUBLIC lunasvg)
 else ()
     find_package(Cairo REQUIRED)
     find_package(RapidJSON REQUIRED)
