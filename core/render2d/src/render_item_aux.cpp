@@ -24,6 +24,8 @@
 #include "render_context.h"
 #include "render_internal.h"
 #include <codecvt>
+#include <fstream>
+#include <lunasvg/lunasvg.h>
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -395,9 +397,26 @@ void RenderItemAuxiliary::_drawImage(const KETImage& img)
     scale(v2);
     if (img.getFormat() == KETImage::EKETPNG)
         _rc.drawPng(img.getData(), Rect2f(v1, v2));
-    else if (img.getFormat() == KETImage::EKETPNG)
+    else if (img.getFormat() == KETImage::EKETSVG)
     {
-        // TODO: implement SVG-rendering
+        auto document = lunasvg::Document::loadFromData(img.getData());
+        if (!document)
+            puts("document null");
+
+        auto bitmap = document->renderToBitmap();
+        if (bitmap.isNull())
+            puts("bitmap null");
+
+        bitmap.writeToPng("_drawImage.tmp");
+
+        std::ifstream pngFile("_drawImage.tmp", std::ios::binary | std::ios::in);
+        if (!pngFile)
+            puts("file error");
+        std::string pngData((std::istreambuf_iterator<char>(pngFile)), std::istreambuf_iterator<char>());
+        std::remove("_drawImage.tmp");
+        if (pngData.empty())
+            puts("data error");
+        _rc.drawPng(pngData, Rect2f(v1, v2));
     }
 }
 
