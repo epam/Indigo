@@ -27,11 +27,15 @@ IMPL_ERROR(PathwayLayout, "pathway_layout");
 void PathwayLayout::make()
 {
     buildLayoutTree();
-    auto rrs = _reaction.getRootReactions();
-    if (rrs.size())
+    auto roots = _reaction.getRootReactions();
+    _layoutRootItems.reserve(roots.size());
+    float total_height = 0;
+    // for (auto rri : roots)
     {
-        auto& li = _layoutItems[rrs[0]];
-        PathwayLayoutItem* root = &li;
+        auto rri = roots.back();
+        std::cout << "Root node: " << rri << std::endl;
+        auto& li_root = _layoutRootItems.emplace_back(rri);
+        PathwayLayoutItem* root = &_layoutItems[rri];
         _depths.clear();
         _depths.resize(10, 0);
         _maxDepth = 0;
@@ -39,13 +43,29 @@ void PathwayLayout::make()
         firstWalk(root, 0, 1);
         determineDepths();
         secondWalk(root, nullptr, -root->prelim, 0);
-
-        for (auto& li : _layoutItems)
+        li_root.li_items = traverse(root);
+        // calculating bounding box for the one pathway
+        auto& li_items = li_root.li_items;
+        Rect2f pw_bbox;
+        for (auto i = 0; i < li_items.size(); ++i)
         {
-            std::cout << "width: " << li.width << " height: " << li.height << std::endl;
-            std::cout << "x: " << li.x << " y: " << li.y << std::endl;
+            auto& li = *li_items[i];
+            Rect2f item_bbox(Vec2f(li.x - li.width / 2, li.y - li.height / 2), Vec2f(li.x + li.width / 2, li.y + li.height / 2));
+            std::cout << "bbox: " << item_bbox.left() << " " << item_bbox.bottom() << " " << item_bbox.right() << " " << item_bbox.top() << std::endl;
+            if (i)
+                pw_bbox.extend(item_bbox);
+            else
+                pw_bbox = item_bbox;
         }
+        li_root.offset.x = -pw_bbox.left();
+        li_root.offset.y = -pw_bbox.top() - total_height;
+        total_height += pw_bbox.height();
     }
+
+    for (auto& li_root : _layoutRootItems)
+        li_root.offset.y += total_height;
+
+    applyLayout();
 }
 
 void PathwayLayout::buildLayoutTree()
@@ -70,14 +90,11 @@ void PathwayLayout::buildLayoutTree()
             if (last_child != nullptr)
             {
                 last_child->nextSibling = &prec_li;
-				prec_li.prevSibling = last_child;
+                prec_li.prevSibling = last_child;
             }
             cur_li.children.push_back(&prec_li);
             prec_li.parent = &cur_li;
         }
-        std::cout << "reaction: " << i << " precursors:" << rn.precursorReactionsIndexes.size() << std::endl;
-        std::cout << "layout item: " << i << " children: " << cur_li.children.size() << std::endl;
-        // let's print siblings		
     }
 }
 
@@ -86,7 +103,7 @@ void PathwayLayout::updateDepths(int depth, PathwayLayoutItem* item)
     float d = item->height;
     if (_depths.size() <= depth)
         _depths.resize(3 * depth / 2);
-    _depths[depth] = std::max(_depths[depth], d);
+    _depths[depth] = std::max(_depths[depth], d + 5.0f);
     _maxDepth = std::max(_maxDepth, depth);
 }
 
@@ -146,7 +163,18 @@ void PathwayLayout::secondWalk(PathwayLayoutItem* n, PathwayLayoutItem* p, float
     n->clear();
 }
 
-PathwayLayoutItem* PathwayLayout::apportion(PathwayLayoutItem* v, PathwayLayoutItem* a)
+void PathwayLayout::applyLayout()
+{
+    // upload coordinates back to the reaction
+    for (auto& li_root : _layoutRootItems)
+    {
+        auto& li_items = li_root.li_items;
+        for (auto li : li_items)
+            li->applyLayout(li_root.offset);
+    }
+}
+
+PathwayLayout::PathwayLayoutItem* PathwayLayout::apportion(PathwayLayoutItem* v, PathwayLayoutItem* a)
 {
     PathwayLayoutItem* w = v->prevSibling;
     if (w != nullptr)
@@ -215,20 +243,40 @@ void PathwayLayout::executeShifts(PathwayLayoutItem* n)
     }
 }
 
-PathwayLayoutItem* PathwayLayout::nextTop(PathwayLayoutItem* n)
+PathwayLayout::PathwayLayoutItem* PathwayLayout::nextTop(PathwayLayoutItem* n)
 {
     PathwayLayoutItem* c = n->getFirstChild();
     return (c != nullptr) ? c : n->thread;
 }
 
-PathwayLayoutItem* PathwayLayout::nextBottom(PathwayLayoutItem* n)
+PathwayLayout::PathwayLayoutItem* PathwayLayout::nextBottom(PathwayLayoutItem* n)
 {
     PathwayLayoutItem* c = n->getLastChild();
     return (c != nullptr) ? c : n->thread;
 }
 
-PathwayLayoutItem* PathwayLayout::ancestor(PathwayLayoutItem* vim, PathwayLayoutItem* v, PathwayLayoutItem* a)
+PathwayLayout::PathwayLayoutItem* PathwayLayout::ancestor(PathwayLayoutItem* vim, PathwayLayoutItem* v, PathwayLayoutItem* a)
 {
     PathwayLayoutItem* p = v->parent;
     return (vim->ancestor->parent == p) ? vim->ancestor : a;
+}
+
+std::vector<PathwayLayout::PathwayLayoutItem*> PathwayLayout::traverse(PathwayLayoutItem* root)
+{
+    std::vector<PathwayLayoutItem*> result;
+    std::stack<PathwayLayoutItem*> stack;
+
+    if (root != nullptr)
+    {
+        stack.push(root);
+    }
+
+    while (!stack.empty())
+    {
+        PathwayLayoutItem* node = stack.top();
+        stack.pop();
+        result.push_back(node);
+        std::for_each(node->children.rbegin(), node->children.rend(), [&stack](PathwayLayoutItem* child) { stack.push(child); });
+    }
+    return result;
 }

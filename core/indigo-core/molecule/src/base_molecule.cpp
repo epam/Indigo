@@ -4481,6 +4481,12 @@ void BaseMolecule::setBondCIP(int bond_idx, CIPDesc cip)
     have_cip = true;
 }
 
+void BaseMolecule::offsetCoordinates(const Vec3f& offset)
+{
+	for (int i = 0; i < _xyz.size(); i++)
+        _xyz[i].add(offset);
+}
+
 void BaseMolecule::getBoundingBox(Vec2f& a, Vec2f& b) const
 {
     for (int atom_idx = 0; atom_idx < vertexCount(); ++atom_idx)

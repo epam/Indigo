@@ -57,22 +57,36 @@ namespace indigo
 
         struct SimpleReaction
         {
-            SimpleReaction() = default;
-            SimpleReaction(const SimpleReaction& other)
+            struct Plus
+            {
+                int metaIndex;
+                int componentIndex1;
+                int componentIndex2;
+            };
+
+            SimpleReaction() : arrowMetaIndex(-1)
+            {
+            }
+
+            SimpleReaction(const SimpleReaction& other) : arrowMetaIndex(other.arrowMetaIndex)
             {
                 reactantIndexes.copy(other.reactantIndexes);
                 productIndexes.copy(other.productIndexes);
+                pluses.copy(other.pluses);
             }
             Array<int> reactantIndexes;
             Array<int> productIndexes;
+            Array<Plus> pluses;
+            int arrowMetaIndex;
         };
 
         struct ReactionNode
         {
-            ReactionNode() : reactionIdx(-1){};
+            ReactionNode() : reactionIdx(-1), multiTailMetaIndex(-1){};
             ReactionNode(const ReactionNode& other)
             {
                 reactionIdx = other.reactionIdx;
+                multiTailMetaIndex = other.multiTailMetaIndex;
                 for (int i = 0; i < other.successorReactions.size(); ++i)
                     successorReactions.push(other.successorReactions[i]);
                 precursorReactionsIndexes.copy(other.precursorReactionsIndexes);
@@ -84,6 +98,7 @@ namespace indigo
             Array<int> precursorReactionsIndexes;
             // utility information
             RedBlackSet<int> successorReactants;
+            int multiTailMetaIndex;
         };
 
         PathwayReaction();
@@ -97,19 +112,19 @@ namespace indigo
         }
 
         int getReactionNodeCount() const
-		{
-			return static_cast<int>(_reactionNodes.size());
-		}
+        {
+            return static_cast<int>(_reactionNodes.size());
+        }
 
-        auto& getMolecule( int mol_idx )
+        auto& getMolecule(int mol_idx)
         {
             return *_molecules[mol_idx];
         }
 
         int getMoleculeCount() const
-		{
-			return static_cast<int>(_molecules.size());
-		}
+        {
+            return static_cast<int>(_molecules.size());
+        }
 
         const auto& getReaction(int reaction_idx)
         {
@@ -118,7 +133,7 @@ namespace indigo
 
         int getReactionCount() const
         {
-        	return static_cast<int>(_reactions.size());
+            return static_cast<int>(_reactions.size());
         }
 
         ReactionNode& addReactionNode()
