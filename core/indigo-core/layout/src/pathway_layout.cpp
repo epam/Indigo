@@ -29,10 +29,9 @@ void PathwayLayout::make()
     buildLayoutTree();
     auto roots = _reaction.getRootReactions();
     _layoutRootItems.reserve(roots.size());
-    float total_height = 0;
-    // for (auto rri : roots)
+    float yShift = 0;
+    for (auto rri : roots)
     {
-        auto rri = roots.back();
         std::cout << "Root node: " << rri << std::endl;
         auto& li_root = _layoutRootItems.emplace_back(rri);
         PathwayLayoutItem* root = &_layoutItems[rri];
@@ -44,6 +43,7 @@ void PathwayLayout::make()
         determineDepths();
         secondWalk(root, nullptr, -root->prelim, 0);
         li_root.li_items = traverse(root);
+        std::cout << "Number of items: " << li_root.li_items.size() << std::endl;
         // calculating bounding box for the one pathway
         auto& li_items = li_root.li_items;
         Rect2f pw_bbox;
@@ -57,13 +57,34 @@ void PathwayLayout::make()
             else
                 pw_bbox = item_bbox;
         }
-        li_root.offset.x = -pw_bbox.left();
-        li_root.offset.y = -pw_bbox.top() - total_height;
-        total_height += pw_bbox.height();
-    }
 
-    for (auto& li_root : _layoutRootItems)
-        li_root.offset.y += total_height;
+        li_root.bbox = pw_bbox;
+        if (rri == 5)
+        {
+            _log_file << "<svg width=\"" << pw_bbox.width() * 100 << "\" height=\"" << pw_bbox.height() * 100 << "\" xmlns=\"http://www.w3.org/2000/svg\">"
+                      << std::endl;
+            for (auto i = 0; i < li_items.size(); ++i)
+            {
+                auto& li = *li_items[i];
+                Rect2f item_bbox(Vec2f(li.x - li.width / 2, li.y - li.height / 2), Vec2f(li.x + li.width / 2, li.y + li.height / 2));
+                _log_file << "<rect width=\"" << item_bbox.width() * 100 << "\" height=\"" << item_bbox.height() * 100 << "\" x=\""
+                          << (item_bbox.left() - pw_bbox.left()) * 100 << "\" y=\"" << (pw_bbox.top() - item_bbox.top()) * 100 << "\" fill=\""
+                          << "blue"
+                          << "\"/>" << std::endl;
+            }
+
+            _log_file << "</svg>" << std::endl;
+            _log_file.close();
+        }
+
+        for (auto i = 0; i < li_items.size(); ++i)
+        {
+            auto& li = *li_items[i];
+            li.x -= pw_bbox.left();
+            li.y -= pw_bbox.bottom() + yShift;
+        }
+        yShift += pw_bbox.height();
+    }
 
     applyLayout();
 }
@@ -100,17 +121,19 @@ void PathwayLayout::buildLayoutTree()
 
 void PathwayLayout::updateDepths(int depth, PathwayLayoutItem* item)
 {
-    float d = item->height;
+    float d = item->width + 1.0f;
     if (_depths.size() <= depth)
         _depths.resize(3 * depth / 2);
-    _depths[depth] = std::max(_depths[depth], d + 5.0f);
+    _depths[depth] = std::max(_depths[depth], d);
     _maxDepth = std::max(_maxDepth, depth);
+    std::cout << "Depth: " << depth << " width: " << _depths[depth] << std::endl;
 }
 
 void PathwayLayout::determineDepths()
 {
+    _shifts = _depths;
     for (int i = 1; i < _maxDepth; ++i)
-        _depths[i] += _depths[i - 1];
+        _shifts[i] += _shifts[i - 1];
 }
 
 void PathwayLayout::firstWalk(PathwayLayoutItem* n, int num, int depth)
@@ -153,7 +176,10 @@ void PathwayLayout::firstWalk(PathwayLayoutItem* n, int num, int depth)
 void PathwayLayout::secondWalk(PathwayLayoutItem* n, PathwayLayoutItem* p, float m, int depth)
 {
     n->y = n->prelim + m;
-    n->x = -_depths[depth];
+
+    n->x = -(_shifts[depth] + _depths[depth + 1] / 2);
+
+    std::cout << "depth:" << depth << " n->x " << n->x << " width:" << n->width << std::endl;
 
     for (PathwayLayoutItem* c = n->getFirstChild(); c != nullptr; c = c->nextSibling)
     {
@@ -168,9 +194,10 @@ void PathwayLayout::applyLayout()
     // upload coordinates back to the reaction
     for (auto& li_root : _layoutRootItems)
     {
+        std::cout << " root:" << li_root.root_index << " count:" << li_root.li_items.size() << std::endl;
         auto& li_items = li_root.li_items;
         for (auto li : li_items)
-            li->applyLayout(li_root.offset);
+            li->applyLayout();
     }
 }
 

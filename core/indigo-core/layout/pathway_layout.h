@@ -24,6 +24,8 @@
 #include <list>
 #include <numeric>
 #include <vector>
+#include <fstream>
+#include <iostream>
 
 #include "reaction/pathway_reaction.h"
 
@@ -34,7 +36,7 @@ namespace indigo
         DECL_ERROR;
 
     public:
-        PathwayLayout(PathwayReaction& reaction) : _reaction(reaction), _depths(10, 0), _maxDepth(0)
+        PathwayLayout(PathwayReaction& reaction) : _reaction(reaction), _depths(10, 0), _maxDepth(0), _log_file("pathway.svg")
         {
         }
 
@@ -109,7 +111,7 @@ namespace indigo
                 ancestor = thread = nullptr;
             }
 
-            void applyLayout(const Vec2f& offset)
+            void applyLayout()
             {
                 if (molecules.size())
                 {
@@ -117,13 +119,14 @@ namespace indigo
                                                        [](float acc, const std::pair<int, Rect2f>& r) { return acc + r.second.width(); });
 
                     float spacing = molecules.size() > 1 ? (width - totalWidth) / (molecules.size() - 1) : (width - totalWidth) / 2;
-                    float currentX = x - width / 2;
-                    float currentY = y - height / 2;
+                    float currentX = x;
+                    float currentY = y;
                     for (auto& mol_desc : molecules)
                     {
                         auto& mol = reaction.getMolecule(mol_desc.first);
-                        Vec2f item_offset(currentX - mol_desc.second.left(), currentY - mol_desc.second.bottom());
-                        mol.offsetCoordinates(Vec3f(item_offset.x + offset.x, item_offset.y + offset.y, 0));
+                        std::cout << "mol index: " << mol_desc.first << std::endl;
+                        Vec2f item_offset(currentX - mol_desc.second.center().x, currentY - mol_desc.second.center().y);
+                        mol.offsetCoordinates(Vec3f(item_offset.x, item_offset.y, 0));
                         currentX += mol_desc.second.width() + spacing;
                     }
                 }
@@ -155,7 +158,7 @@ namespace indigo
             {
             }
             int root_index;
-            Vec2f offset;
+            Rect2f bbox;
             std::vector<PathwayLayout::PathwayLayoutItem*> li_items;
         };
 
@@ -168,9 +171,7 @@ namespace indigo
 
         float spacing(PathwayLayoutItem* top, PathwayLayoutItem* bottom, bool siblings)
         {
-            return (top->height + bottom->height) + 0.5f;
-            // return siblings ? (top->height + bottom->height) : std::max(top->width, bottom->width);  
-            // return (top->height + bottom->height) / 2.0f;
+            return 1.0f + (top->height + bottom->height) / 2.0f;
         }
 
         void updateDepths(int depth, PathwayLayoutItem* item);
@@ -198,10 +199,13 @@ namespace indigo
         void applyLayout();
 
         std::vector<float> _depths;
+        std::vector<float> _shifts;
+
         int _maxDepth = 0;
         PathwayReaction& _reaction;
         std::vector<PathwayLayoutItem> _layoutItems;
         std::vector<PathwayLayoutRootItem> _layoutRootItems;
+        std::ofstream _log_file;
     };
 
 }
