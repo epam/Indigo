@@ -298,7 +298,7 @@ void KetDocumentJsonLoader::parseKetMonomer(std::string& ref, rapidjson::Value& 
 void KetDocumentJsonLoader::parseKetVariantMonomer(std::string& ref, rapidjson::Value& json, KetDocument& document)
 {
     std::string template_id = json["templateId"].GetString();
-    auto& monomer = document.addVariantMonomer(json["id"].GetString(), template_id, template_id, ref);
+    auto& monomer = document.addVariantMonomer(json["id"].GetString(), json["alias"].GetString(), template_id, ref);
     monomer->parseOptsFromKet(json);
     if (json.HasMember("position"))
     {
@@ -333,6 +333,6 @@ void KetDocumentJsonLoader::parseVariantMonomerTemplate(const rapidjson::Value& 
         if (idt_alias.getBase().size() == 0)
             throw Error("Monomer template %s contains IDT alias without base.", id.c_str());
     }
-    auto& monomer_template = document.addVariantMonomerTemplate(json["subtype"].GetString(), id, json["name"].GetString(), idt_alias, options);
+    auto& monomer_template = document.addVariantMonomerTemplate(json["subtype"].GetString(), id, json["alias"].GetString(), idt_alias, options);
     monomer_template.parseOptsFromKet(json);
 }

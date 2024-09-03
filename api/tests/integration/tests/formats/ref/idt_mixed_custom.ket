@@ -151,6 +151,7 @@
             "y": -1.600000
         },
         "seqid": 0,
+        "alias": "(N1)",
         "templateId": "(N1)"
     },
     "monomer2": {
@@ -183,6 +184,7 @@
             "y": -1.600000
         },
         "seqid": 1,
+        "alias": "(N1)",
         "templateId": "(N1)"
     },
     "monomer5": {
@@ -215,6 +217,7 @@
             "y": -1.600000
         },
         "seqid": 2,
+        "alias": "N",
         "templateId": "N"
     },
     "monomerTemplate-A___Adenine": {
@@ -1275,7 +1278,7 @@
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "(N1)",
-        "name": "(N1)",
+        "alias": "(N1)",
         "options": [
             {
                 "templateId": "A___Adenine",
@@ -1299,7 +1302,7 @@
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "N",
-        "name": "N",
+        "alias": "N",
         "options": [
             {
                 "templateId": "A___Adenine"

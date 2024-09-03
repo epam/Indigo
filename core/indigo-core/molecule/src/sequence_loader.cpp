@@ -1608,8 +1608,10 @@ size_t SequenceLoader::addKetMonomer(KetDocument& document, MonomerInfo info, Mo
     if (options.second.size() > 0) // variant monomer
     {
         std::string template_id = checkAddVariantMonomerTemplate(document, alias, monomer_class, options);
+        const auto var_templ = document.variantTemplates().at(template_id);
+        alias = var_templ.alias();
         auto& monomer = document.addVariantMonomer(alias, template_id);
-        monomer->setAttachmentPoints(document.variantTemplates().at(template_id).attachmentPoints());
+        monomer->setAttachmentPoints(var_templ.attachmentPoints());
         monomer->setIntProp("seqid", _seq_id++);
         monomer->setPosition(pos);
     }
@@ -1744,7 +1746,6 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     if (ch == '.')
                     {
                         _scanner.skip(1);
-                        continue;
                     }
                     if (ch == '}')
                         continue;

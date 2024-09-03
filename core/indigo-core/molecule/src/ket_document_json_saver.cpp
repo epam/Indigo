@@ -306,6 +306,7 @@ void KetDocumentJsonSaver::saveVariantMonomer(JsonWriter& writer, const KetVaria
         writer.EndObject();
     }
     monomer.saveOptsToKet(writer);
+    saveStr(writer, "alias", monomer.alias());
     saveStr(writer, "templateId", monomer.templateId());
     writer.EndObject();
 }
@@ -317,7 +318,7 @@ void KetDocumentJsonSaver::saveVariantMonomerTemplate(JsonWriter& writer, const 
     saveStr(writer, "type", "ambiguousMonomerTemplate");
     saveStr(writer, "subtype", monomer_template.subtype());
     saveStr(writer, "id", monomer_template.id());
-    saveStr(writer, "name", monomer_template.name());
+    saveStr(writer, "alias", monomer_template.alias());
     writer.Key("options");
     writer.StartArray();
     for (auto& it : monomer_template.options())
