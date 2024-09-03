@@ -101,7 +101,7 @@ void PathwayLayout::buildLayoutTree()
 void PathwayLayout::updateDepths(int depth, PathwayLayoutItem* item)
 {
     float d = item->width + HORIZONTAL_SPACING;
-    if (_depths.size() <= depth)
+    if ((int)_depths.size() <= depth)
         _depths.resize(3 * depth / 2);
     _depths[depth] = std::max(_depths[depth], d);
     _maxDepth = std::max(_maxDepth, depth);

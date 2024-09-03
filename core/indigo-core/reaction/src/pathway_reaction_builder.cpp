@@ -81,7 +81,7 @@ auto PathwayReactionBuilder::findSuccessorReactions(int reactionIdx)
 
 void PathwayReactionBuilder::buildReactions(std::deque<Reaction>& reactions)
 {
-    for (int i = 0; i < _reactionInchiDescriptors.size(); ++i)
+    for (int i = 0; i < (int)_reactionInchiDescriptors.size(); ++i)
     {
         auto& rid = _reactionInchiDescriptors[i];
         auto [sri, sr] = _pathwayReaction->addReaction();
@@ -106,7 +106,7 @@ void PathwayReactionBuilder::buildInchiDescriptors(std::deque<Reaction>& reactio
     _reactionInchiDescriptors.clear();
     InchiWrapper inchiWrapper;
     Array<char> inchi, inchiKey;
-    for (int i = 0; i < reactions.size(); ++i)
+    for (int i = 0; i < (int)reactions.size(); ++i)
     {
         // add empty reaction nodes meanwhile calculating inchiKeys for reactants and products
         _pathwayReaction->addReactionNode();
@@ -147,7 +147,7 @@ void PathwayReactionBuilder::buildInchiDescriptors(std::deque<Reaction>& reactio
 void PathwayReactionBuilder::buildNodes(std::deque<Reaction>& reactions)
 {
     // find all reactants of a reaction that match the products of the current reaction
-    for (auto i = 0; i < _reactionInchiDescriptors.size(); i++)
+    for (int i = 0; i < (int)_reactionInchiDescriptors.size(); i++)
     {
         // looking for the reaction continuation
         auto matching_successor = findSuccessorReactions(i);
@@ -196,7 +196,7 @@ void PathwayReactionBuilder::buildNodes(std::deque<Reaction>& reactions)
             }
         }
 
-        for (auto j = 0; j < productIndexes.size(); ++j)
+        for (int j = 0; j < (int)productIndexes.size(); ++j)
         {
             auto pidx = productIndexes[j];
             int mol_idx = matching_successor.empty()
