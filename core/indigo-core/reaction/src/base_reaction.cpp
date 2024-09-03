@@ -19,6 +19,7 @@
 #include "reaction/base_reaction.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/molecule_dearom.h"
+#include "molecule/ket_commons.h"
 
 using namespace indigo;
 
@@ -492,4 +493,9 @@ void BaseReaction::unfoldHydrogens()
 MetaDataStorage& BaseReaction::meta()
 {
     return _meta;
+}
+
+int BaseReaction::multitaleCount() const
+{
+    return _meta.getMetaCount(KETReactionMultitailArrow::CID);
 }

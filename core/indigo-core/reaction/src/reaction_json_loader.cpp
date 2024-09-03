@@ -74,7 +74,7 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     rxn.meta().clone(_pmol->meta());
     _pmol->meta().resetMetaData();
 
-    int arrow_count = rxn.meta().getMetaCount(KETReactionArrow::CID);
+    int arrow_count = rxn.meta().getMetaCount(KETReactionArrow::CID) + rxn.meta().getMetaCount(KETReactionMultitailArrow::CID);
     if (arrow_count == 0)
         throw Error("No arrow in the reaction");
 

@@ -24,6 +24,7 @@
 #include "reaction/icr_loader.h"
 #include "reaction/icr_saver.h"
 #include "reaction/pathway_reaction.h"
+#include "reaction/pathway_reaction_builder.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_cdxml_loader.h"
@@ -31,7 +32,6 @@
 #include "reaction/reaction_json_loader.h"
 #include "reaction/rsmiles_loader.h"
 #include "reaction/rxnfile_loader.h"
-#include "reaction/pathway_reaction_builder.h"
 
 using namespace indigo;
 

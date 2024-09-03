@@ -45,10 +45,9 @@ ReactionMultistepDetector::ReactionMultistepDetector(BaseMolecule& bmol) : _bmol
     JsonWriter writer(true);
     writer.Reset(buffer);
     std::string str_json;
-    StringOutput output( str_json );
+    StringOutput output(str_json);
     MoleculeJsonSaver moleculeSaver(output);
     moleculeSaver.saveMolecule(bmol, writer);
-    std::cout << str_json << std::endl;
 }
 
 void ReactionMultistepDetector::buildReaction(BaseReaction& rxn)
@@ -291,7 +290,7 @@ void ReactionMultistepDetector::buildReaction(BaseReaction& rxn)
 }
 
 bool ReactionMultistepDetector::findPlusNeighbours(const Vec2f& plus_pos, const FLOAT_INT_PAIRS& mol_tops, const FLOAT_INT_PAIRS& mol_bottoms,
-                                            const FLOAT_INT_PAIRS& mol_lefts, const FLOAT_INT_PAIRS& mol_rights, std::pair<int, int>& connection)
+                                                   const FLOAT_INT_PAIRS& mol_lefts, const FLOAT_INT_PAIRS& mol_rights, std::pair<int, int>& connection)
 {
     auto plus_pos_y = std::make_pair(plus_pos.y, 0);
     auto plus_pos_x = std::make_pair(plus_pos.x, 0);

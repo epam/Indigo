@@ -30,8 +30,8 @@ int MetaDataStorage::addMetaObject(MetaObject* pobj)
         _image_indexes.push() = index;
         break;
     case KETReactionMultitailArrow::CID:
-		_multi_tail_indexes.push() = index;
-		break;
+        _multi_tail_indexes.push() = index;
+        break;
     default:
         break;
     }
@@ -108,8 +108,8 @@ int MetaDataStorage::getMetaCount(uint32_t meta_type) const
         return _image_indexes.size();
         break;
     case KETReactionMultitailArrow::CID:
-		return _multi_tail_indexes.size();
-		break;
+        return _multi_tail_indexes.size();
+        break;
     default:
         break;
     }
@@ -123,7 +123,8 @@ void MetaDataStorage::resetReactionData()
     _multi_tail_indexes.clear();
     for (int i = _meta_data.size() - 1; i >= 0; i--)
     {
-        if (_meta_data[i]->_class_id == KETReactionArrow::CID || _meta_data[i]->_class_id == KETReactionPlus::CID || _meta_data[i]->_class_id == KETReactionMultitailArrow::CID)
+        if (_meta_data[i]->_class_id == KETReactionArrow::CID || _meta_data[i]->_class_id == KETReactionPlus::CID ||
+            _meta_data[i]->_class_id == KETReactionMultitailArrow::CID)
             _meta_data.remove(i);
     }
 }

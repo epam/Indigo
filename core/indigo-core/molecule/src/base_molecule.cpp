@@ -4483,7 +4483,7 @@ void BaseMolecule::setBondCIP(int bond_idx, CIPDesc cip)
 
 void BaseMolecule::offsetCoordinates(const Vec3f& offset)
 {
-	for (int i = 0; i < _xyz.size(); i++)
+    for (int i = 0; i < _xyz.size(); i++)
         _xyz[i].add(offset);
 }
 

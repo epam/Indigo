@@ -32,14 +32,14 @@
 #include "molecule/sequence_saver.h"
 #include "molecule/smiles_saver.h"
 #include "reaction/canonical_rsmiles_saver.h"
+#include "reaction/pathway_reaction.h"
+#include "reaction/pathway_reaction_json_saver.h"
 #include "reaction/reaction_cdxml_saver.h"
 #include "reaction/reaction_cml_saver.h"
 #include "reaction/reaction_json_saver.h"
-#include "reaction/pathway_reaction_json_saver.h"
 #include "reaction/rsmiles_saver.h"
 #include "reaction/rxnfile_loader.h"
 #include "reaction/rxnfile_saver.h"
-#include "reaction/pathway_reaction.h"
 
 #include <memory>
 

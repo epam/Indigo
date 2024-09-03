@@ -24,9 +24,9 @@
 #pragma warning(disable : 4251)
 #endif
 
-#include <vector>
-#include <utility>
 #include <list>
+#include <utility>
+#include <vector>
 
 #include "base_cpp/exception.h"
 #include "molecule/ket_commons.h"

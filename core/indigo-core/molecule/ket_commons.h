@@ -484,7 +484,6 @@ namespace indigo
             if (sorted_pair.first > sorted_pair.second)
                 std::swap(sorted_pair.first, sorted_pair.second);
             auto c_val = pih(sorted_pair);
-            std::cout << "hash:" << c_val << std::endl;
             return c_val;
         }
     };

@@ -101,7 +101,8 @@ CEXPORT int indigoLayout(int object)
         else if (IndigoBaseReaction::is(obj))
         {
             BaseReaction& rxn = obj.getBaseReaction();
-            bool no_layout = rxn.intermediateCount() || rxn.specialConditionsCount() || rxn.meta().getNonChemicalMetaCount();
+            bool no_layout = rxn.intermediateCount() || rxn.specialConditionsCount() || rxn.meta().getNonChemicalMetaCount() ||
+                             obj.type == IndigoObject::PATHWAY_REACTION || rxn.multitaleCount();
             if (!no_layout)
             {
                 ReactionLayout rl(rxn, self.smart_layout);
