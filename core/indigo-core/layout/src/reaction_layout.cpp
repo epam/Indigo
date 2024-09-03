@@ -43,6 +43,7 @@ void ReactionLayout::fixLayout()
     Vec2f rmax{Vec2f::min_coord(), Vec2f::min_coord()}, pmin{Vec2f::max_coord(), Vec2f::max_coord()};
     Rect2f bb;
     // Calculate rightTop of reactant bounding box
+
     for (int i = _r.reactantBegin(); i != _r.reactantEnd(); i = _r.reactantNext(i))
     {
         _r.getBaseMolecule(i).getBoundingBox(bb);

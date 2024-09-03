@@ -24,13 +24,12 @@
 #pragma warning(disable : 4251)
 #endif
 
+#include <algorithm>
+#include <cmath>
 #include <deque>
 #include <list>
 #include <unordered_map>
 #include <utility>
-#include <vector>
-#include <algorithm>
-#include <cmath>
 #include <vector>
 
 #include "base_cpp/exception.h"
@@ -52,15 +51,12 @@ namespace indigo
         DECL_ERROR;
 
     private:
-
         struct ReactionInchiDescriptor
         {
-            // std::unordered_set<std::string> reactants;
             std::vector<std::string> products;
             // useful to collect it here to avoid look them up in the reaction object
             std::vector<int> productIndexes;
             std::vector<int> reactantIndexes;
-            // std::map<int, std::vector<int>> successor; // productIndexes <-> successor
         };
 
         void buildInchiDescriptors(std::deque<Reaction>& reactions);
@@ -68,11 +64,10 @@ namespace indigo
         auto findSuccessorReactions(int reactionIdx);
         void buildReactions(std::deque<Reaction>& reactions);
 
-
         std::vector<ReactionInchiDescriptor> _reactionInchiDescriptors;
         std::unordered_map<std::string, std::map<int, int>> _reactantToReactions;
         std::unique_ptr<PathwayReaction> _pathwayReaction;
-        std::unordered_map< std::pair<int,int>, int, pair_hash> _moleculeMapping;
+        std::unordered_map<std::pair<int, int>, int, pair_hash> _moleculeMapping;
     };
 
 } // namespace indigo

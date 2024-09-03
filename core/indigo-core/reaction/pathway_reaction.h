@@ -24,7 +24,7 @@
 #endif
 
 #include "base_cpp/array.h"
-#include "reaction/base_reaction.h"
+#include "reaction/reaction.h"
 #include <deque>
 
 namespace indigo
@@ -136,6 +136,12 @@ namespace indigo
             return static_cast<int>(_reactions.size());
         }
 
+        Reaction& asReaction() override
+        {
+            _rootReaction.clone(*this);
+            return _rootReaction;
+        }
+
         ReactionNode& addReactionNode()
         {
             ReactionNode rn;
@@ -171,6 +177,7 @@ namespace indigo
         ObjArray<ReactionNode> _reactionNodes;
         PtrArray<BaseMolecule> _molecules;
         ObjArray<SimpleReaction> _reactions;
+        Reaction _rootReaction;
     };
 
 } // namespace indigo

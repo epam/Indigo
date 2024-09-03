@@ -21,11 +21,12 @@
 
 #include <algorithm>
 #include <cmath>
+#include <fstream>
+#include <functional>
+#include <iostream>
 #include <list>
 #include <numeric>
 #include <vector>
-#include <fstream>
-#include <iostream>
 
 #include "reaction/pathway_reaction.h"
 
@@ -43,11 +44,19 @@ namespace indigo
         void make();
 
     private:
+        static constexpr float MARGIN = 1.f;
+        static constexpr float ARROW_HEAD_WIDTH = 2.5f;
+        static constexpr float ARROW_TAIL_LENGTH = 0.5f;
+        static constexpr float ARROW_LENGTH = ARROW_TAIL_LENGTH + ARROW_TAIL_LENGTH;
+        static constexpr float HORIZONTAL_SPACING = 3.5f;
+        static constexpr float VERTICAL_SPACING = 2.5f;
+        static constexpr float MULTIPATHWAY_VERTICAL_SPACING = 1.5f;
+
         struct PathwayLayoutItem
         {
             PathwayLayoutItem(PathwayReaction& pwr, int nodeIdx, int reactantIdx = -1)
-                : number(-2), prelim(0.0), mod(0.0), shift(0.0), change(0.0), width(0.0), height(0.0), x(0.0), y(0.0), ancestor(this), thread(nullptr),
-                  children(), parent(nullptr), nextSibling(nullptr), prevSibling(nullptr), reaction(pwr)
+                : number(-2), prelim(0.0), mod(0.0), shift(0.0), change(0.0), width(0.0), height(0.0), ancestor(this), thread(nullptr), children(),
+                  parent(nullptr), nextSibling(nullptr), prevSibling(nullptr), reaction(pwr)
             {
                 auto& rn = reaction.getReactionNode(nodeIdx);
                 auto& sr = reaction.getReaction(rn.reactionIdx);
@@ -68,6 +77,10 @@ namespace indigo
                         auto& mol = reaction.getMolecule(pidx);
                         Rect2f bbox;
                         mol.getBoundingBox(bbox);
+                        if (molecules.size())
+                        {
+                            width += MARGIN;
+                        }
                         molecules.push_back(std::make_pair(pidx, bbox));
                         width += bbox.width(); // add some spacing for plus
                         height = std::max(bbox.height(), height);
@@ -119,17 +132,21 @@ namespace indigo
                                                        [](float acc, const std::pair<int, Rect2f>& r) { return acc + r.second.width(); });
 
                     float spacing = molecules.size() > 1 ? (width - totalWidth) / (molecules.size() - 1) : (width - totalWidth) / 2;
-                    float currentX = x;
-                    float currentY = y;
+                    float currentX = bbox.left();
+                    float currentY = bbox.bottom();
                     for (auto& mol_desc : molecules)
                     {
                         auto& mol = reaction.getMolecule(mol_desc.first);
-                        std::cout << "mol index: " << mol_desc.first << std::endl;
-                        Vec2f item_offset(currentX - mol_desc.second.center().x, currentY - mol_desc.second.center().y);
+                        Vec2f item_offset(currentX - mol_desc.second.left(), currentY - mol_desc.second.bottom());
                         mol.offsetCoordinates(Vec3f(item_offset.x, item_offset.y, 0));
                         currentX += mol_desc.second.width() + spacing;
                     }
                 }
+            }
+
+            void setXY(float x, float y)
+            {
+                bbox = Rect2f(Vec2f(x - width, y - height / 2), Vec2f(x, y + height / 2));
             }
 
             // required for the layout algorithm
@@ -143,13 +160,16 @@ namespace indigo
             // computed fields
             int number;
             float prelim, mod, shift, change;
-            float x, y;
             PathwayLayoutItem* ancestor;
             PathwayLayoutItem* thread;
 
             // other data
             std::vector<std::pair<int, Rect2f>> molecules;
             PathwayReaction& reaction;
+            Rect2f bbox;
+
+        private:
+            // float x, y;
         };
 
         struct PathwayLayoutRootItem
@@ -162,16 +182,11 @@ namespace indigo
             std::vector<PathwayLayout::PathwayLayoutItem*> li_items;
         };
 
-        std::vector<PathwayLayoutItem*> traverse(PathwayLayoutItem* root);
-
-        void dumpLayoutItem(const PathwayLayout::PathwayLayoutItem& li)
-        {
-            std::cout << "Layout Item: " << li.x << " " << li.y << " " << li.width << " " << li.height << std::endl;
-        }
+        void traverse(PathwayLayoutItem* root, std::function<void(PathwayLayoutItem*)> node_processor);
 
         float spacing(PathwayLayoutItem* top, PathwayLayoutItem* bottom, bool siblings)
         {
-            return 1.0f + (top->height + bottom->height) / 2.0f;
+            return VERTICAL_SPACING + (top->height + bottom->height) / 2.0f;
         }
 
         void updateDepths(int depth, PathwayLayoutItem* item);

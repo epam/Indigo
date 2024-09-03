@@ -19,6 +19,7 @@
 #include <queue>
 
 #include "layout/pathway_layout.h"
+#include "molecule/ket_commons.h"
 
 using namespace indigo;
 
@@ -32,7 +33,6 @@ void PathwayLayout::make()
     float yShift = 0;
     for (auto rri : roots)
     {
-        std::cout << "Root node: " << rri << std::endl;
         auto& li_root = _layoutRootItems.emplace_back(rri);
         PathwayLayoutItem* root = &_layoutItems[rri];
         _depths.clear();
@@ -42,50 +42,29 @@ void PathwayLayout::make()
         firstWalk(root, 0, 1);
         determineDepths();
         secondWalk(root, nullptr, -root->prelim, 0);
-        li_root.li_items = traverse(root);
-        std::cout << "Number of items: " << li_root.li_items.size() << std::endl;
+
+        traverse(root, [&li_root](PathwayLayoutItem* item) { li_root.li_items.push_back(item); });
+
         // calculating bounding box for the one pathway
         auto& li_items = li_root.li_items;
         Rect2f pw_bbox;
         for (auto i = 0; i < li_items.size(); ++i)
         {
             auto& li = *li_items[i];
-            Rect2f item_bbox(Vec2f(li.x - li.width / 2, li.y - li.height / 2), Vec2f(li.x + li.width / 2, li.y + li.height / 2));
-            std::cout << "bbox: " << item_bbox.left() << " " << item_bbox.bottom() << " " << item_bbox.right() << " " << item_bbox.top() << std::endl;
             if (i)
-                pw_bbox.extend(item_bbox);
+                pw_bbox.extend(li.bbox);
             else
-                pw_bbox = item_bbox;
+                pw_bbox = li.bbox;
         }
 
         li_root.bbox = pw_bbox;
-        if (rri == 5)
-        {
-            _log_file << "<svg width=\"" << pw_bbox.width() * 100 << "\" height=\"" << pw_bbox.height() * 100 << "\" xmlns=\"http://www.w3.org/2000/svg\">"
-                      << std::endl;
-            for (auto i = 0; i < li_items.size(); ++i)
-            {
-                auto& li = *li_items[i];
-                Rect2f item_bbox(Vec2f(li.x - li.width / 2, li.y - li.height / 2), Vec2f(li.x + li.width / 2, li.y + li.height / 2));
-                _log_file << "<rect width=\"" << item_bbox.width() * 100 << "\" height=\"" << item_bbox.height() * 100 << "\" x=\""
-                          << (item_bbox.left() - pw_bbox.left()) * 100 << "\" y=\"" << (pw_bbox.top() - item_bbox.top()) * 100 << "\" fill=\""
-                          << "blue"
-                          << "\"/>" << std::endl;
-            }
-
-            _log_file << "</svg>" << std::endl;
-            _log_file.close();
-        }
-
         for (auto i = 0; i < li_items.size(); ++i)
         {
             auto& li = *li_items[i];
-            li.x -= pw_bbox.left();
-            li.y -= pw_bbox.bottom() + yShift;
+            li.bbox.offset(Vec2f(-pw_bbox.left(), -pw_bbox.bottom() + yShift));
         }
-        yShift += pw_bbox.height();
+        yShift += pw_bbox.height() + MULTIPATHWAY_VERTICAL_SPACING;
     }
-
     applyLayout();
 }
 
@@ -121,12 +100,11 @@ void PathwayLayout::buildLayoutTree()
 
 void PathwayLayout::updateDepths(int depth, PathwayLayoutItem* item)
 {
-    float d = item->width + 1.0f;
+    float d = item->width + HORIZONTAL_SPACING;
     if (_depths.size() <= depth)
         _depths.resize(3 * depth / 2);
     _depths[depth] = std::max(_depths[depth], d);
     _maxDepth = std::max(_maxDepth, depth);
-    std::cout << "Depth: " << depth << " width: " << _depths[depth] << std::endl;
 }
 
 void PathwayLayout::determineDepths()
@@ -175,29 +153,58 @@ void PathwayLayout::firstWalk(PathwayLayoutItem* n, int num, int depth)
 
 void PathwayLayout::secondWalk(PathwayLayoutItem* n, PathwayLayoutItem* p, float m, int depth)
 {
-    n->y = n->prelim + m;
-
-    n->x = -(_shifts[depth] + _depths[depth + 1] / 2);
-
-    std::cout << "depth:" << depth << " n->x " << n->x << " width:" << n->width << std::endl;
-
+    n->setXY(-_shifts[depth], n->prelim + m);
     for (PathwayLayoutItem* c = n->getFirstChild(); c != nullptr; c = c->nextSibling)
-    {
         secondWalk(c, n, m + n->mod, depth + 1);
-    }
-
     n->clear();
 }
 
 void PathwayLayout::applyLayout()
 {
     // upload coordinates back to the reaction
+    _reaction.meta().resetReactionData();
     for (auto& li_root : _layoutRootItems)
     {
-        std::cout << " root:" << li_root.root_index << " count:" << li_root.li_items.size() << std::endl;
         auto& li_items = li_root.li_items;
         for (auto li : li_items)
             li->applyLayout();
+
+        for (auto li : li_items)
+        {
+            // connect reactants with products
+            if (!li->children.empty())
+            {
+                Vec2f head = li->bbox.leftMiddle();
+                head.x -= MARGIN;
+                std::vector<Vec2f> tails, arrows;
+                arrows.push_back(head);
+                for (auto c : li->children)
+                {
+                    Vec2f tail = c->bbox.rightMiddle();
+                    auto tail_it = std::lower_bound(tails.begin(), tails.end(), tail, [](const Vec2f& a, const Vec2f& b) { return a.y > b.y; });
+                    tails.insert(tail_it, tail);
+                }
+                auto rigt_most_x = std::max_element(tails.begin(), tails.end(), [](const Vec2f& a, const Vec2f& b) { return a.x < b.x; })->x;
+                rigt_most_x += MARGIN;
+
+                std::for_each(tails.begin(), tails.end(), [rigt_most_x](Vec2f& v) { v.x = rigt_most_x; });
+                arrows.insert(arrows.end(), tails.begin(), tails.end());
+
+                // add spines
+                if (tails.size() > 1)
+                {
+                    Vec2f spineTop(tails.front().x + ARROW_TAIL_LENGTH, tails.front().y);
+                    Vec2f spineBottom(tails.back().x + ARROW_TAIL_LENGTH, tails.back().y);
+                    arrows.push_back(spineBottom);
+                    arrows.push_back(spineTop);
+                    _reaction.meta().addMetaObject(new KETReactionMultitailArrow(arrows.begin(), arrows.end()));
+                }
+                else if (tails.size())
+                {
+                    _reaction.meta().addMetaObject(new KETReactionArrow(KETReactionArrow::EOpenAngle, tails.front(), head));
+                }
+            }
+        }
     }
 }
 
@@ -288,22 +295,20 @@ PathwayLayout::PathwayLayoutItem* PathwayLayout::ancestor(PathwayLayoutItem* vim
     return (vim->ancestor->parent == p) ? vim->ancestor : a;
 }
 
-std::vector<PathwayLayout::PathwayLayoutItem*> PathwayLayout::traverse(PathwayLayoutItem* root)
+void PathwayLayout::traverse(PathwayLayoutItem* root, std::function<void(PathwayLayoutItem*)> node_processor)
 {
-    std::vector<PathwayLayoutItem*> result;
     std::stack<PathwayLayoutItem*> stack;
 
     if (root != nullptr)
-    {
         stack.push(root);
-    }
 
     while (!stack.empty())
     {
         PathwayLayoutItem* node = stack.top();
+        // call lambda here
         stack.pop();
-        result.push_back(node);
+        node_processor(node);
         std::for_each(node->children.rbegin(), node->children.rend(), [&stack](PathwayLayoutItem* child) { stack.push(child); });
     }
-    return result;
+    // return result;
 }

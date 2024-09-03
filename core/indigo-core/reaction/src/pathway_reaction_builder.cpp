@@ -65,7 +65,7 @@ auto PathwayReactionBuilder::findSuccessorReactions(int reactionIdx)
                                       std::inserter(intersection, intersection.begin()), [](const auto& a, const auto& b) { return a.first < b.first; });
 
                 for (auto& [key, values] : intersection)
-                    values.insert(values.end(), intersection.at(key).begin(), intersection.at(key).end());
+                    values.insert(values.end(), reactionReactantIndexes.at(key).begin(), reactionReactantIndexes.at(key).end());
 
                 matchedReactions = std::move(intersection);
                 // we need at least one reaction where all products are reactants
@@ -151,19 +151,13 @@ void PathwayReactionBuilder::buildNodes(std::deque<Reaction>& reactions)
         auto matching_successor = findSuccessorReactions(i);
         // iterate over products of the reaction
         auto& productIndexes = _reactionInchiDescriptors[i].productIndexes;
-        for (auto j = 0; j < productIndexes.size(); ++j)
-        {
-            auto pidx = productIndexes[j];
-            int mol_idx = matching_successor.empty()
-                              ? _pathwayReaction->addMolecule(reactions[i].getBaseMolecule(pidx).asMolecule())
-                              : _moleculeMapping.at(std::make_pair(matching_successor.begin()->first, matching_successor.begin()->second[j]));
-            _moleculeMapping.emplace(std::piecewise_construct, std::forward_as_tuple(i, pidx), std::forward_as_tuple(mol_idx));
-        }
 
         auto& rn = _pathwayReaction->getReactionNode(i);
-
-        for (auto& [j, val] : matching_successor) // [j, val] - j is the index of the matched sucessor reaction, val is the vector of reactant indexes
+        for (auto m_it = matching_successor.begin();
+             m_it != matching_successor.end();) // [j, val] - j is the index of the matched sucessor reaction, val is the vector of reactant indexes
         {
+            auto j = m_it->first;
+            auto& val = m_it->second;
             Array<int> val_arr;
             val_arr.copy(val);
             if (rn.successorReactions.size() == 0)
@@ -179,6 +173,7 @@ void PathwayReactionBuilder::buildNodes(std::deque<Reaction>& reactions)
                 }
                 if (!found)
                 {
+                    m_it++;
                     rn.successorReactions.push(PathwayReaction::SuccessorReaction(j, val_arr));
                     rnj.precursorReactionsIndexes.push(i);
                     for (auto ridx : val)
@@ -186,15 +181,26 @@ void PathwayReactionBuilder::buildNodes(std::deque<Reaction>& reactions)
                 }
                 else
                 {
+                    m_it = matching_successor.erase(m_it);
                     // it's impossible that a reactant has multiple precursors.
                     // we can handle this case if needed.
                 }
             }
             else
             {
-                // only one successor reaction is allowed for a reaction. 
+                m_it = matching_successor.erase(m_it);
+                // only one successor reaction is allowed for a reaction.
                 // we can handle this case if needed.
             }
+        }
+
+        for (auto j = 0; j < productIndexes.size(); ++j)
+        {
+            auto pidx = productIndexes[j];
+            int mol_idx = matching_successor.empty()
+                              ? _pathwayReaction->addMolecule(reactions[i].getBaseMolecule(pidx).asMolecule())
+                              : _moleculeMapping.at(std::make_pair(matching_successor.begin()->first, matching_successor.begin()->second[j]));
+            _moleculeMapping.emplace(std::piecewise_construct, std::forward_as_tuple(i, pidx), std::forward_as_tuple(mol_idx));
         }
     }
 }
@@ -207,7 +213,21 @@ std::unique_ptr<PathwayReaction> PathwayReactionBuilder::buildPathwayReaction(st
     auto& rr = _pathwayReaction->getRootReactions();
     PathwayLayout pl(*_pathwayReaction);
     pl.make();
+    if (rr.size())
+    {
+        auto& first_root = _pathwayReaction->getReaction(rr.back());
+        for (auto& idx : first_root.reactantIndexes)
+        {
+            auto& mol = _pathwayReaction->getMolecule(idx);
+            _pathwayReaction->addReactantCopy(mol, 0, 0);
+        }
 
-    std::cout << "root nodes: " << rr.size() << std::endl;
+        for (auto& idx : first_root.productIndexes)
+        {
+            auto& mol = _pathwayReaction->getMolecule(idx);
+            _pathwayReaction->addProductCopy(mol, 0, 0);
+        }
+    }
+
     return std::move(_pathwayReaction);
 }

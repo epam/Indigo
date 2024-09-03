@@ -40,7 +40,7 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& pwr)
 		auto& molecule = pwr.getMolecule(i);
 		merged->mergeWithMolecule(molecule, 0, 0);
     }
-
+    merged->meta().clone(pwr.meta());
     rapidjson::StringBuffer buffer;
     JsonWriter writer(pretty_json);
     writer.Reset(buffer);
@@ -48,43 +48,4 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& pwr)
     moleculeSaver.add_stereo_desc = add_stereo_desc;
     moleculeSaver.saveMolecule(*merged, writer);
     _output.printf("%s", buffer.GetString());
-
-    // auto reaction = std::make_unique<PathwayReaction>();
-    //reaction->clone(rxn);
-
-    //std::vector<std::pair<int, Vec2f>> points;
-    //std::vector<std::vector<Vec2f>> arrows;
-    //// std::tie(points, arrows) = reaction->makeTreePoints();
-    //// Ensure the same order across different platforms.
-    //std::sort(points.begin(), points.end());
-
-    //for (auto& p : points)
-    //{
-    //    auto& molecule = reaction->getBaseMolecule(p.first);
-    //    Rect2f box;
-    //    molecule.getBoundingBox(box);
-    //    auto offset = box.center();
-    //    offset.negate();
-    //    offset.add(p.second);
-    //    for (int j = molecule.vertexBegin(); j != molecule.vertexEnd(); j = molecule.vertexNext(j))
-    //    {
-    //        Vec3f& xyz = molecule.getAtomXyz(j);
-    //        xyz.add(offset);
-    //    }
-    //    merged->mergeWithMolecule(molecule, 0, 0);
-    //}
-
-    //for (auto& a : arrows)
-    //    if (a.size() > 2)
-    //        merged->meta().addMetaObject(new KETReactionMultitailArrow(a.begin(), a.end()));
-    //    else if (a.size() == 2)
-    //        merged->meta().addMetaObject(new KETReactionArrow(KETReactionArrow::EOpenAngle, a.back(), a.front()));
-
-    //rapidjson::StringBuffer buffer;
-    //JsonWriter writer(pretty_json);
-    //writer.Reset(buffer);
-    //MoleculeJsonSaver moleculeSaver(_output);
-    //moleculeSaver.add_stereo_desc = add_stereo_desc;
-    //moleculeSaver.saveMolecule(*merged, writer);
-    //_output.printf("%s", buffer.GetString());
 }
