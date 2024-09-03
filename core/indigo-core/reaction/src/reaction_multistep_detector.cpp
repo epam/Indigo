@@ -37,17 +37,8 @@ ReactionMultistepDetector::~ReactionMultistepDetector()
 {
 }
 
-#include "molecule/molecule_json_saver.h"
-
 ReactionMultistepDetector::ReactionMultistepDetector(BaseMolecule& bmol) : _bmol(bmol)
 {
-    rapidjson::StringBuffer buffer;
-    JsonWriter writer(true);
-    writer.Reset(buffer);
-    std::string str_json;
-    StringOutput output(str_json);
-    MoleculeJsonSaver moleculeSaver(output);
-    moleculeSaver.saveMolecule(bmol, writer);
 }
 
 void ReactionMultistepDetector::buildReaction(BaseReaction& rxn)

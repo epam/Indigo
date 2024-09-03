@@ -55,7 +55,7 @@ namespace indigo
         struct PathwayLayoutItem
         {
             PathwayLayoutItem(PathwayReaction& pwr, int nodeIdx, int reactantIdx = -1)
-                : number(-2), prelim(0.0), mod(0.0), shift(0.0), change(0.0), width(0.0), height(0.0), ancestor(this), thread(nullptr), children(),
+                : number(-1), prelim(0.0), mod(0.0), shift(0.0), change(0.0), width(0.0), height(0.0), ancestor(this), thread(nullptr), children(),
                   parent(nullptr), nextSibling(nullptr), prevSibling(nullptr), reaction(pwr)
             {
                 auto& rn = reaction.getReactionNode(nodeIdx);
@@ -119,7 +119,7 @@ namespace indigo
 
             void clear()
             {
-                number = -2;
+                number = -1;
                 prelim = mod = shift = change = 0.0;
                 ancestor = thread = nullptr;
             }
