@@ -174,7 +174,7 @@ void PathwayReactionBuilder::buildNodes(std::deque<Reaction>& reactions)
                 if (!found)
                 {
                     m_it++;
-                    rn.successorReactions.push(PathwayReaction::SuccessorReaction(j, val_arr));
+                    rn.successorReactions.push(j, val_arr);
                     rnj.precursorReactionsIndexes.push(i);
                     for (auto ridx : val)
                         rnj.successorReactants.insert(ridx);
