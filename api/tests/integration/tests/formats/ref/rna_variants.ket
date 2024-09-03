@@ -109,6 +109,7 @@
             "y": -1.600000
         },
         "seqid": 1,
+        "alias": "K",
         "templateId": "K"
     },
     "monomer2": {
@@ -130,6 +131,7 @@
             "y": -1.600000
         },
         "seqid": 2,
+        "alias": "N",
         "templateId": "N"
     },
     "monomer4": {
@@ -1218,7 +1220,7 @@
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "K",
-        "name": "K",
+        "alias": "K",
         "options": [
             {
                 "templateId": "G___Guanine"
@@ -1232,7 +1234,7 @@
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "N",
-        "name": "N",
+        "alias": "N",
         "options": [
             {
                 "templateId": "A___Adenine"

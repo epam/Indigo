@@ -19,4 +19,5 @@ Test 'PEPTIDE1{(A:+C:0.1)}$$$$V2.0': got expected error 'Unexpected symbol. Expe
 Test 'PEPTIDE1{(A:1.5+C:aaaa)}$$$$V2.0': got expected error 'Unexpected symbol. Expected '+' or ',' but found '.''
 Test 'PEPTIDE1{A'2'}$$$$V2.0': got expected error 'Repeating not supported now.'
 Test 'PEPTIDE1{D-gGlu}$$$$V2.0': got expected error 'Unexpected symbol. Expected '.' or '}' but found '-'.'
+Test 'RNA1{R(A).R(A)p}$$$$V2.0': got expected error 'Monomer template with class 'Phosphate' and alias 'R' not found in monomer librarys'
 Test 'RNA1{R(bla-bla-bla)p}$$$$V2.0': got expected error 'Unexpected symbol. Expected ')' but found 'l'.'
