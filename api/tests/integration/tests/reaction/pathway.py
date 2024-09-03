@@ -42,7 +42,7 @@ for filename in files:
     #     file.write(rxn_txt)
 
     rxn_ref = open(os.path.join(ref_path, filename) + ".ket", "r").read()
- 
+
     diff = find_diff(rxn_ref, rxn_txt)
     if not diff:
         print(filename + ".rdf:SUCCEED")
