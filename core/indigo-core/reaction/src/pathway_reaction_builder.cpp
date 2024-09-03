@@ -81,7 +81,7 @@ auto PathwayReactionBuilder::findSuccessorReactions(int reactionIdx)
 
 void PathwayReactionBuilder::buildReactions(std::deque<Reaction>& reactions)
 {
-    for (int i = 0; i < _reactionInchiDescriptors.size(); ++i)
+    for (size_t i = 0; i < _reactionInchiDescriptors.size(); ++i)
     {
         auto& rid = _reactionInchiDescriptors[i];
         auto [sri, sr] = _pathwayReaction->addReaction();

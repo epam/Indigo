@@ -48,7 +48,7 @@ void PathwayLayout::make()
         // calculating bounding box for the one pathway
         auto& li_items = li_root.li_items;
         Rect2f pw_bbox;
-        for (auto i = 0; i < li_items.size(); ++i)
+        for (size_t i = 0; i < li_items.size(); ++i)
         {
             auto& li = *li_items[i];
             if (i)
@@ -58,7 +58,7 @@ void PathwayLayout::make()
         }
 
         li_root.bbox = pw_bbox;
-        for (auto i = 0; i < li_items.size(); ++i)
+        for (size_t i = 0; i < li_items.size(); ++i)
         {
             auto& li = *li_items[i];
             li.bbox.offset(Vec2f(-pw_bbox.left(), -pw_bbox.bottom() + yShift));
