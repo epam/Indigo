@@ -1,4 +1,5 @@
 add_subdirectory(libpng)
+add_subdirectory(lunasvg)
 if (BUILD_STANDALONE)
     # InChI don't have a Conan package yet
     add_subdirectory(cppcodec)

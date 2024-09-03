@@ -38,11 +38,12 @@ if (RENDER_ENABLE_CJK)
         target_compile_definitions(${PROJECT_NAME} PRIVATE RENDER_ENABLE_CJK)
 endif()
 
+target_link_libraries(${PROJECT_NAME} PUBLIC lunasvg)
+
 if (BUILD_STANDALONE)
     target_link_libraries(${PROJECT_NAME}
             PUBLIC rapidjson
-            PUBLIC cairo
-            PUBLIC lunasvg)
+            PUBLIC cairo)
 else ()
     find_package(Cairo REQUIRED)
     find_package(RapidJSON REQUIRED)
