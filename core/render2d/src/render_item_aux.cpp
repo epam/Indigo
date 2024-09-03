@@ -25,7 +25,8 @@
 #include "render_internal.h"
 #include <codecvt>
 #include <fstream>
-#include <lunasvg/lunasvg.h>
+#include <lunasvg.h>
+#include <stb_image_write.h>
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -388,6 +389,16 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
     }
 }
 
+struct stbi_context
+{
+    std::string data;
+};
+
+void my_stbi_write_func(void *context, void *data, int size)
+{
+    static_cast<stbi_context*>(context)->data.assign(static_cast<const char*>(data), size);
+}
+
 void RenderItemAuxiliary::_drawImage(const KETImage& img)
 {
     auto& bb = img.getBoundingBox();
@@ -404,19 +415,13 @@ void RenderItemAuxiliary::_drawImage(const KETImage& img)
             puts("document null");
 
         auto bitmap = document->renderToBitmap();
-        if (bitmap.isNull())
+        if (!bitmap.valid())
             puts("bitmap null");
 
-        bitmap.writeToPng("_drawImage.tmp");
-
-        std::ifstream pngFile("_drawImage.tmp", std::ios::binary | std::ios::in);
-        if (!pngFile)
-            puts("file error");
-        std::string pngData((std::istreambuf_iterator<char>(pngFile)), std::istreambuf_iterator<char>());
-        std::remove("_drawImage.tmp");
-        if (pngData.empty())
-            puts("data error");
-        _rc.drawPng(pngData, Rect2f(v1, v2));
+        stbi_context context;
+        if (!stbi_write_png_to_func(my_stbi_write_func, &context, bitmap.width(), bitmap.height(), 4, bitmap.data(), 0))
+            puts("stbi error");
+        _rc.drawPng(context.data, Rect2f(v1, v2));
     }
 }
 
