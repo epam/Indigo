@@ -81,20 +81,22 @@ auto PathwayReactionBuilder::findSuccessorReactions(int reactionIdx)
 
 void PathwayReactionBuilder::buildReactions(std::deque<Reaction>& reactions)
 {
-    for (size_t i = 0; i < _reactionInchiDescriptors.size(); ++i)
+    for (int i = 0; i < _reactionInchiDescriptors.size(); ++i)
     {
         auto& rid = _reactionInchiDescriptors[i];
         auto [sri, sr] = _pathwayReaction->addReaction();
         for (auto rci : rid.reactantIndexes)
         {
-            auto mol_idx = _moleculeMapping.at(std::make_pair(i, rci));
-            sr.reactantIndexes.push(mol_idx);
+            auto rit = _moleculeMapping.find(std::make_pair(i, rci));
+            if (rit != _moleculeMapping.end())
+                sr.reactantIndexes.push(rit->second);
         }
 
         for (auto pid : rid.productIndexes)
         {
-            auto mol_idx = _moleculeMapping.at(std::make_pair(i, pid));
-            sr.productIndexes.push(mol_idx);
+            auto pit = _moleculeMapping.find(std::make_pair(i, pid));
+            if (pit != _moleculeMapping.end())
+                sr.productIndexes.push(pit->second);
         }
     }
 }
