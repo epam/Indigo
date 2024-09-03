@@ -18,8 +18,8 @@
 
 #include "reaction/base_reaction.h"
 #include "base_cpp/tlscont.h"
-#include "molecule/molecule_dearom.h"
 #include "molecule/ket_commons.h"
+#include "molecule/molecule_dearom.h"
 
 using namespace indigo;
 

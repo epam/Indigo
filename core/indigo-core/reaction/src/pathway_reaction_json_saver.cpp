@@ -37,8 +37,8 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& pwr)
     auto merged = std::make_unique<Molecule>();
     for (int i = 0; i < pwr.getMoleculeCount(); ++i)
     {
-		auto& molecule = pwr.getMolecule(i);
-		merged->mergeWithMolecule(molecule, 0, 0);
+        auto& molecule = pwr.getMolecule(i);
+        merged->mergeWithMolecule(molecule, 0, 0);
     }
     merged->meta().clone(pwr.meta());
     rapidjson::StringBuffer buffer;
