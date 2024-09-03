@@ -210,7 +210,7 @@ std::unique_ptr<PathwayReaction> PathwayReactionBuilder::buildPathwayReaction(st
     buildInchiDescriptors(reactions);
     buildNodes(reactions);
     buildReactions(reactions);
-    auto& rr = _pathwayReaction->getRootReactions();
+    const auto& rr = _pathwayReaction->getRootReactions();
     PathwayLayout pl(*_pathwayReaction);
     pl.make();
     if (rr.size())
