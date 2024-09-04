@@ -311,5 +311,4 @@ void PathwayLayout::traverse(PathwayLayoutItem* root, std::function<void(Pathway
         node_processor(node);
         std::for_each(node->children.rbegin(), node->children.rend(), [&stack](PathwayLayoutItem* child) { stack.push(child); });
     }
-    // return result;
 }
