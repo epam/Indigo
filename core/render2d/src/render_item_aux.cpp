@@ -25,13 +25,15 @@
 #include "render_internal.h"
 #include <codecvt>
 #include <fstream>
-#include <lunasvg.h>
-#include <stb_image_write.h>
 
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4996)
+#pragma warning(disable : 4251)
 #endif
+
+#include <lunasvg.h>
+#include <stb_image_write.h>
 
 using namespace indigo;
 
