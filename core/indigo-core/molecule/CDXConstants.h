@@ -16,10 +16,10 @@
 #ifndef QUADCONST
 #if defined(_X86_) && !defined(_CS3D) // All 3D projects uses the second QUADCONST definition for both MAC and Windows
 // littleEndian
-#define QUADCONST(a, b, c, d) (((long)((d)&0xff) << 24) | ((long)((c)&0xff) << 16) | ((long)((b)&0xff) << 8) | ((long)((a)&0xff)))
+#define QUADCONST(a, b, c, d) (((long)((d) & 0xff) << 24) | ((long)((c) & 0xff) << 16) | ((long)((b) & 0xff) << 8) | ((long)((a) & 0xff)))
 
 #else // defined( _X86_ ) && !defined( _CS3D )
-#define QUADCONST(a, b, c, d) (((long)((a)&0xff) << 24) | ((long)((b)&0xff) << 16) | ((long)((c)&0xff) << 8) | ((long)((d)&0xff)))
+#define QUADCONST(a, b, c, d) (((long)((a) & 0xff) << 24) | ((long)((b) & 0xff) << 16) | ((long)((c) & 0xff) << 8) | ((long)((d) & 0xff)))
 
 #endif //  defined( _X86_ ) && !defined( _CS3D )
 #endif // QUADCONST
@@ -297,7 +297,7 @@ enum CDXDatumID
     kCDXProp_WindowsMetafile,      // 0x0A63 A Microsoft Windows Metafile object. (Unformatted)
     kCDXProp_OLEObject,            // 0x0A64 An OLE object. (Unformatted)
     kCDXProp_EnhancedMetafile,     // 0x0A65 A Microsoft Windows Enhanced Metafile object. (Unformatted)
-    kCDXProp_GIF =0x0A6E,          // 0x0A6E
+    kCDXProp_GIF = 0x0A6E,         // 0x0A6E
     kCDXProp_TIFF,                 // 0x0A6F,
     kCDXProp_PNG,                  // 0x0A70
     kCDXProp_JPEG,                 // 0x0A71
