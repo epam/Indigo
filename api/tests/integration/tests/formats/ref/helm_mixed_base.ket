@@ -223,6 +223,7 @@
             "y": -1.600000
         },
         "seqid": 5,
+        "alias": "R",
         "templateId": "R"
     },
     "monomer5": {
@@ -288,6 +289,7 @@
             "y": -1.600000
         },
         "seqid": 11,
+        "alias": "S",
         "templateId": "S"
     },
     "monomerTemplate-dR___Deoxy-Ribose": {
@@ -1174,7 +1176,7 @@
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "R",
-        "name": "R",
+        "alias": "R",
         "options": [
             {
                 "templateId": "A___Adenine"
@@ -1188,7 +1190,7 @@
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "S",
-        "name": "S",
+        "alias": "S",
         "options": [
             {
                 "templateId": "G___Guanine"

@@ -138,6 +138,7 @@
             "y": -0.000000
         },
         "seqid": 1,
+        "alias": "B",
         "templateId": "B"
     },
     "ambiguousMonomer-1": {
@@ -148,6 +149,7 @@
             "y": -0.000000
         },
         "seqid": 2,
+        "alias": "J",
         "templateId": "J"
     },
     "ambiguousMonomer-2": {
@@ -158,6 +160,7 @@
             "y": -0.000000
         },
         "seqid": 3,
+        "alias": "Z",
         "templateId": "Z"
     },
     "ambiguousMonomer-3": {
@@ -168,6 +171,7 @@
             "y": -0.000000
         },
         "seqid": 4,
+        "alias": "X",
         "templateId": "X"
     },
     "monomerTemplate-D___Aspartic acid": {
@@ -4665,7 +4669,7 @@
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "B",
-        "name": "B",
+        "alias": "B",
         "options": [
             {
                 "templateId": "D___Aspartic acid"
@@ -4679,7 +4683,7 @@
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "J",
-        "name": "J",
+        "alias": "J",
         "options": [
             {
                 "templateId": "L___Leucine"
@@ -4693,7 +4697,7 @@
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "Z",
-        "name": "Z",
+        "alias": "Z",
         "options": [
             {
                 "templateId": "E___Glutamic acid"
@@ -4707,7 +4711,7 @@
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "X",
-        "name": "X",
+        "alias": "X",
         "options": [
             {
                 "templateId": "A___Alanine"
