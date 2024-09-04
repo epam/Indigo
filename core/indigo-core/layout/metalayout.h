@@ -118,7 +118,7 @@ namespace indigo
         // utility function to use in MoleculeLayout & ReactionLayout
         void adjustMol(BaseMolecule& mol, const Vec2f& min, const Vec2f& pos) const;
 
-        float horizontalIntervalFactor;
+        float reactionComponentMarginSize;
         float verticalIntervalFactor;
         float bondLength;
 
@@ -144,20 +144,28 @@ namespace indigo
         };
 
         static constexpr float INCH_TO_CM = 2.54f;
-        static constexpr float PT_TO_PX = 1.333334f;
+        static constexpr float INCH_TO_PT = 72.0f;
 
+        static float convertInchesToPx(const float inches, const int32_t ppi)
+        {
+            return inches * ppi;
+        }
+        static float convertPxToInches(const float pixels, const int32_t ppi)
+        {
+            return pixels / ppi;
+        }
         static float convertToPx(const float input, const TYPE units, const int32_t ppi)
         {
             switch (units)
             {
             case (PT):
-                return input * PT_TO_PX;
+                return convertInchesToPx(input / INCH_TO_PT, ppi);
                 break;
             case (INCHES):
-                return ppi * input;
+                return convertInchesToPx(input, ppi);
                 break;
             case (CM):
-                return ppi * INCH_TO_CM * input;
+                return convertInchesToPx(input / INCH_TO_CM, ppi);
                 break;
             default:
                 return input;
@@ -166,17 +174,16 @@ namespace indigo
 
         static float convertToPt(const float input, const TYPE units, const int32_t ppi)
         {
-
             switch (units)
             {
-            case (PT):
-                return input / PT_TO_PX;
+            case (PX):
+                return convertPxToInches(input, ppi) * INCH_TO_PT;
                 break;
             case (INCHES):
-                return (input * ppi) / PT_TO_PX;
+                return input * INCH_TO_PT;
                 break;
             case (CM):
-                return (input * ppi * INCH_TO_CM) / PT_TO_PX;
+                return (input * INCH_TO_PT) / INCH_TO_CM;
                 break;
             default:
                 return input;
@@ -188,13 +195,13 @@ namespace indigo
             switch (units)
             {
             case (PT):
-                return (input * PT_TO_PX) / ppi;
+                return input / INCH_TO_PT;
                 break;
             case (PX):
-                return input / ppi;
+                return convertPxToInches(input, ppi);
                 break;
             case (CM):
-                return input * INCH_TO_CM;
+                return input / INCH_TO_CM;
                 break;
             default:
                 return input;
@@ -206,13 +213,13 @@ namespace indigo
             switch (units)
             {
             case (PT):
-                return (input * PT_TO_PX) / (ppi * INCH_TO_CM);
+                return (input * INCH_TO_CM) / INCH_TO_PT;
                 break;
             case (INCHES):
-                return input / INCH_TO_CM;
+                return input * INCH_TO_CM;
                 break;
             case (PX):
-                return input / (ppi * INCH_TO_CM);
+                return convertPxToInches(input, ppi) * INCH_TO_CM;
                 break;
             default:
                 return input;
