@@ -31,10 +31,10 @@ void PathwayLayout::make()
     auto roots = _reaction.getRootReactions();
     _layoutRootItems.reserve(roots.size());
     float yShift = 0;
-    for (auto rri : roots)
+    for (auto rootIndexes : roots)
     {
-        auto& li_root = _layoutRootItems.emplace_back(rri);
-        PathwayLayoutItem* root = &_layoutItems[rri];
+        auto& rootItem = _layoutRootItems.emplace_back(rootIndexes);
+        PathwayLayoutItem* root = &_layoutItems[rootIndexes];
         _depths.clear();
         _depths.resize(10, 0);
         _maxDepth = 0;
@@ -43,27 +43,27 @@ void PathwayLayout::make()
         determineDepths();
         secondWalk(root, nullptr, -root->prelim, 0);
 
-        traverse(root, [&li_root](PathwayLayoutItem* item) { li_root.li_items.push_back(item); });
+        traverse(root, [&rootItem](PathwayLayoutItem* item) { rootItem.layoutItems.push_back(item); });
 
         // calculating bounding box for the one pathway
-        auto& li_items = li_root.li_items;
-        Rect2f pw_bbox;
-        for (size_t i = 0; i < li_items.size(); ++i)
+        auto& layoutItems = rootItem.layoutItems;
+        Rect2f pathwayBoundingBox;
+        for (size_t i = 0; i < layoutItems.size(); ++i)
         {
-            auto& li = *li_items[i];
+            auto& layoutItem = *layoutItems[i];
             if (i)
-                pw_bbox.extend(li.bbox);
+                pathwayBoundingBox.extend(layoutItem.boundingBox);
             else
-                pw_bbox = li.bbox;
+                pathwayBoundingBox = layoutItem.boundingBox;
         }
 
-        li_root.bbox = pw_bbox;
-        for (size_t i = 0; i < li_items.size(); ++i)
+        rootItem.boundingBox = pathwayBoundingBox;
+        for (size_t i = 0; i < layoutItems.size(); ++i)
         {
-            auto& li = *li_items[i];
-            li.bbox.offset(Vec2f(-pw_bbox.left(), -pw_bbox.bottom() + yShift));
+            auto& layoutItem = *layoutItems[i];
+            layoutItem.boundingBox.offset(Vec2f(-pathwayBoundingBox.left(), -pathwayBoundingBox.bottom() + yShift));
         }
-        yShift += pw_bbox.height() + MULTIPATHWAY_VERTICAL_SPACING;
+        yShift += pathwayBoundingBox.height() + MULTIPATHWAY_VERTICAL_SPACING;
     }
     applyLayout();
 }
@@ -79,21 +79,21 @@ void PathwayLayout::buildLayoutTree()
     // fill layout tree
     for (int i = 0; i < _reaction.getReactionNodeCount(); ++i)
     {
-        auto& rn = _reaction.getReactionNode(i);
+        auto& reactionNode = _reaction.getReactionNode(i);
 
-        auto& cur_li = _layoutItems[i];
+        auto& currentLayoutItem = _layoutItems[i];
         // add successor reactants to layout items
-        for (int j : rn.precursorReactionsIndexes)
+        for (int j : reactionNode.precursorReactionsIndexes)
         {
-            auto& prec_li = _layoutItems[j];
-            auto last_child = cur_li.getLastChild();
-            if (last_child != nullptr)
+            auto& precursorLayoutItem = _layoutItems[j];
+            auto lastChild = currentLayoutItem.getLastChild();
+            if (lastChild != nullptr)
             {
-                last_child->nextSibling = &prec_li;
-                prec_li.prevSibling = last_child;
+                lastChild->nextSibling = &precursorLayoutItem;
+                precursorLayoutItem.prevSibling = lastChild;
             }
-            cur_li.children.push_back(&prec_li);
-            prec_li.parent = &cur_li;
+            currentLayoutItem.children.push_back(&precursorLayoutItem);
+            precursorLayoutItem.parent = &currentLayoutItem;
         }
     }
 }
@@ -114,73 +114,73 @@ void PathwayLayout::determineDepths()
         _shifts[i] += _shifts[i - 1];
 }
 
-void PathwayLayout::firstWalk(PathwayLayoutItem* n, int num, int depth)
+void PathwayLayout::firstWalk(PathwayLayoutItem* node, int level, int depth)
 {
-    n->number = num;
-    updateDepths(depth, n);
+    node->levelTree = level;
+    updateDepths(depth, node);
 
-    if (n->children.empty())
+    if (node->children.empty())
     {
-        PathwayLayoutItem* l = n->prevSibling;
-        n->prelim = (l == nullptr) ? 0 : (l->prelim + spacing(l, n, true));
+        PathwayLayoutItem* layoutItem = node->prevSibling;
+        node->prelim = (layoutItem == nullptr) ? 0 : (layoutItem->prelim + spacing(layoutItem, node, true));
     }
     else
     {
-        PathwayLayoutItem* topMost = n->getFirstChild();
-        PathwayLayoutItem* bottomMost = n->getLastChild();
+        PathwayLayoutItem* topMost = node->getFirstChild();
+        PathwayLayoutItem* bottomMost = node->getLastChild();
         PathwayLayoutItem* defaultAncestor = topMost;
-        for (auto c : n->children)
+        for (auto child : node->children)
         {
-            firstWalk(c, num++, depth + 1);
-            defaultAncestor = apportion(c, defaultAncestor);
+            firstWalk(child, level++, depth + 1);
+            defaultAncestor = apportion(child, defaultAncestor);
         }
 
-        executeShifts(n);
+        executeShifts(node);
 
         float midpoint = (topMost->prelim + bottomMost->prelim) / 2.0f;
-        PathwayLayoutItem* top = n->prevSibling;
+        PathwayLayoutItem* top = node->prevSibling;
         if (top != nullptr)
         {
-            n->prelim = top->prelim + spacing(top, n, true);
-            n->mod = n->prelim - midpoint;
+            node->prelim = top->prelim + spacing(top, node, true);
+            node->mod = node->prelim - midpoint;
         }
         else
         {
-            n->prelim = midpoint;
+            node->prelim = midpoint;
         }
     }
 }
 
-void PathwayLayout::secondWalk(PathwayLayoutItem* n, PathwayLayoutItem* p, float m, int depth)
+void PathwayLayout::secondWalk(PathwayLayoutItem* node, PathwayLayoutItem* parent, float modifier, int depth)
 {
-    n->setXY(-_shifts[depth], n->prelim + m);
-    for (PathwayLayoutItem* c = n->getFirstChild(); c != nullptr; c = c->nextSibling)
-        secondWalk(c, n, m + n->mod, depth + 1);
-    n->clear();
+    node->setXY(-_shifts[depth], node->prelim + modifier);
+    for (PathwayLayoutItem* child = node->getFirstChild(); child != nullptr; child = child->nextSibling)
+        secondWalk(child, node, modifier + node->mod, depth + 1);
+    node->clear();
 }
 
 void PathwayLayout::applyLayout()
 {
     // upload coordinates back to the reaction
     _reaction.meta().resetReactionData();
-    for (auto& li_root : _layoutRootItems)
+    for (auto& rootItem : _layoutRootItems)
     {
-        auto& li_items = li_root.li_items;
-        for (auto li : li_items)
-            li->applyLayout();
+        auto& layoutItems = rootItem.layoutItems;
+        for (auto layoutItem : layoutItems)
+            layoutItem->applyLayout();
 
-        for (auto li : li_items)
+        for (auto layoutItem : layoutItems)
         {
             // connect reactants with products
-            if (!li->children.empty())
+            if (!layoutItem->children.empty())
             {
-                Vec2f head = li->bbox.leftMiddle();
+                Vec2f head = layoutItem->boundingBox.leftMiddle();
                 head.x -= MARGIN;
                 std::vector<Vec2f> tails, arrows;
                 arrows.push_back(head);
-                for (auto c : li->children)
+                for (auto child : layoutItem->children)
                 {
-                    Vec2f tail = c->bbox.rightMiddle();
+                    Vec2f tail = child->boundingBox.rightMiddle();
                     auto tail_it = std::lower_bound(tails.begin(), tails.end(), tail, [](const Vec2f& a, const Vec2f& b) { return a.y > b.y; });
                     tails.insert(tail_it, tail);
                 }
@@ -208,91 +208,92 @@ void PathwayLayout::applyLayout()
     }
 }
 
-PathwayLayout::PathwayLayoutItem* PathwayLayout::apportion(PathwayLayoutItem* v, PathwayLayoutItem* a)
+PathwayLayout::PathwayLayoutItem* PathwayLayout::apportion(PathwayLayoutItem* currentNode, PathwayLayoutItem* ancestorNode)
 {
-    PathwayLayoutItem* w = v->prevSibling;
-    if (w != nullptr)
+    PathwayLayoutItem* previousSibling = currentNode->prevSibling;
+    if (previousSibling != nullptr)
     {
-        PathwayLayoutItem *vip = v, *vim = w, *vop = v, *vom = v->parent->getFirstChild();
-        float sip = vip->mod, sim = vim->mod, sop = vop->mod, som = vom->mod;
-        PathwayLayoutItem* nr = nextBottom(vim);
-        PathwayLayoutItem* nl = nextTop(vip);
+        PathwayLayoutItem *innerNode = currentNode, *siblingInner = previousSibling, *outerNode = currentNode,
+                          *siblingOuter = currentNode->parent->getFirstChild();
+        float modInner = innerNode->mod, modSiblingInner = siblingInner->mod, modOuter = outerNode->mod, modSiblingOuter = siblingOuter->mod;
+        PathwayLayoutItem* nextLower = nextBottom(siblingInner);
+        PathwayLayoutItem* nextUpper = nextTop(innerNode);
 
-        while (nr != nullptr && nl != nullptr)
+        while (nextLower != nullptr && nextUpper != nullptr)
         {
-            vim = nr;
-            vip = nl;
-            vom = nextTop(vom);
-            vop = nextBottom(vop);
-            vop->ancestor = v;
-            float shift = (vim->prelim + sim) - (vip->prelim + sip) + spacing(vim, vip, false);
+            siblingInner = nextLower;
+            innerNode = nextUpper;
+            siblingOuter = nextTop(siblingOuter);
+            outerNode = nextBottom(outerNode);
+            outerNode->ancestor = currentNode;
+            float shift = (siblingInner->prelim + modSiblingInner) - (innerNode->prelim + modInner) + spacing(siblingInner, innerNode, false);
             if (shift > 0)
             {
-                moveSubtree(ancestor(vim, v, a), v, shift);
-                sip += shift;
-                sop += shift;
+                moveSubtree(ancestor(siblingInner, currentNode, ancestorNode), currentNode, shift);
+                modInner += shift;
+                modOuter += shift;
             }
-            sim += vim->mod;
-            sip += vip->mod;
-            som += vom->mod;
-            sop += vop->mod;
+            modSiblingInner += siblingInner->mod;
+            modInner += innerNode->mod;
+            modSiblingOuter += siblingOuter->mod;
+            modOuter += outerNode->mod;
 
-            nr = nextBottom(vim);
-            nl = nextTop(vip);
+            nextLower = nextBottom(siblingInner);
+            nextUpper = nextTop(innerNode);
         }
-        if (nr != nullptr && nextBottom(vop) == nullptr)
+        if (nextLower != nullptr && nextBottom(outerNode) == nullptr)
         {
-            vop->thread = nr;
-            vop->mod += sim - sop;
+            outerNode->thread = nextLower;
+            outerNode->mod += modSiblingInner - modOuter;
         }
-        if (nl != nullptr && nextTop(vom) == nullptr)
+        if (nextUpper != nullptr && nextTop(siblingOuter) == nullptr)
         {
-            vom->thread = nl;
-            vom->mod += sip - som;
-            a = v;
+            siblingOuter->thread = nextUpper;
+            siblingOuter->mod += modInner - modSiblingOuter;
+            ancestorNode = currentNode;
         }
     }
-    return a;
+    return ancestorNode;
 }
 
-void PathwayLayout::moveSubtree(PathwayLayoutItem* wm, PathwayLayoutItem* wp, float shift)
+void PathwayLayout::moveSubtree(PathwayLayoutItem* parent, PathwayLayoutItem* child, float shift)
 {
-    float subtrees = static_cast<float>(wp->number - wm->number);
-    wp->change -= shift / subtrees;
-    wp->shift += shift;
-    wm->change += shift / subtrees;
-    wp->prelim += shift;
-    wp->mod += shift;
+    float subtrees = static_cast<float>(child->levelTree - parent->levelTree);
+    child->change -= shift / subtrees;
+    child->shift += shift;
+    parent->change += shift / subtrees;
+    child->prelim += shift;
+    child->mod += shift;
 }
 
-void PathwayLayout::executeShifts(PathwayLayoutItem* n)
+void PathwayLayout::executeShifts(PathwayLayoutItem* node)
 {
     float shift = 0, change = 0;
-    for (PathwayLayoutItem* c = n->getLastChild(); c != nullptr; c = c->prevSibling)
+    for (PathwayLayoutItem* child = node->getLastChild(); child != nullptr; child = child->prevSibling)
     {
-        c->prelim += shift;
-        c->mod += shift;
-        change += c->change;
-        shift += c->shift + change;
+        child->prelim += shift;
+        child->mod += shift;
+        change += child->change;
+        shift += child->shift + change;
     }
 }
 
-PathwayLayout::PathwayLayoutItem* PathwayLayout::nextTop(PathwayLayoutItem* n)
+PathwayLayout::PathwayLayoutItem* PathwayLayout::nextTop(PathwayLayoutItem* node)
 {
-    PathwayLayoutItem* c = n->getFirstChild();
-    return (c != nullptr) ? c : n->thread;
+    PathwayLayoutItem* child = node->getFirstChild();
+    return (child != nullptr) ? child : node->thread;
 }
 
-PathwayLayout::PathwayLayoutItem* PathwayLayout::nextBottom(PathwayLayoutItem* n)
+PathwayLayout::PathwayLayoutItem* PathwayLayout::nextBottom(PathwayLayoutItem* node)
 {
-    PathwayLayoutItem* c = n->getLastChild();
-    return (c != nullptr) ? c : n->thread;
+    PathwayLayoutItem* child = node->getLastChild();
+    return (child != nullptr) ? child : node->thread;
 }
 
-PathwayLayout::PathwayLayoutItem* PathwayLayout::ancestor(PathwayLayoutItem* vim, PathwayLayoutItem* v, PathwayLayoutItem* a)
+PathwayLayout::PathwayLayoutItem* PathwayLayout::ancestor(PathwayLayoutItem* node1, PathwayLayoutItem* node2, PathwayLayoutItem* ancestor)
 {
-    PathwayLayoutItem* p = v->parent;
-    return (vim->ancestor->parent == p) ? vim->ancestor : a;
+    PathwayLayoutItem* p = node2->parent;
+    return (node1->ancestor->parent == p) ? node1->ancestor : ancestor;
 }
 
 void PathwayLayout::traverse(PathwayLayoutItem* root, std::function<void(PathwayLayoutItem*)> node_processor)
