@@ -218,6 +218,8 @@ namespace indigo
             return _intermediateCount;
         }
 
+        int multitaleCount() const;
+
         int reactantsCount() const
         {
             return _reactantCount;

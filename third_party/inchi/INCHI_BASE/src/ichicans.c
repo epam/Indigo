@@ -322,7 +322,7 @@ int UnmarkNonStereo( CANON_GLOBALS *pCG,
     AT_RANK nNeighborNumber[MAX_NUM_STEREO_ATOM_NEIGH];
     AT_RANK nPrevAtomRank, nPrevNeighRank;
 #ifdef FIX_OLEAN_SPIRO_CHIRALITY_DETECTION_BUG
-    int num_in_same_ring_system, nRingSystem, num_with_eq_neigh_in_same_ring_system = 0;
+    int num_in_same_ring_system = 0, nRingSystem, num_with_eq_neigh_in_same_ring_system = 0;
 #endif
 
 

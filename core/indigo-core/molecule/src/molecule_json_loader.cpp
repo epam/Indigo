@@ -1929,6 +1929,55 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
 
                 meta_interface.addMetaObject(new KETImage(Rect2f(lt, rb), image_format, mobj["data"].GetString()));
             }
+            else if (node_type == "multi-tailed-arrow")
+            {
+                if (mobj.HasMember("data"))
+                {
+                    auto& data_obj = mobj["data"];
+                    if (data_obj.HasMember("head"))
+                    {
+                        auto& head_obj = data_obj["head"];
+                        if (head_obj.HasMember("position"))
+                        {
+                            auto& head_pos = head_obj["position"];
+                            Vec2f head_position(head_pos["x"].GetFloat(), head_pos["y"].GetFloat());
+                            if (data_obj.HasMember("spine"))
+                            {
+                                auto& spine_obj = data_obj["spine"];
+                                if (spine_obj.HasMember("pos"))
+                                {
+                                    auto& spine_pos = spine_obj["pos"];
+                                    if (spine_pos.Size() == 2)
+                                    {
+                                        Vec2f spine_begin(spine_pos[0]["x"].GetFloat(), spine_pos[0]["y"].GetFloat());
+                                        Vec2f spine_end(spine_pos[1]["x"].GetFloat(), spine_pos[1]["y"].GetFloat());
+                                        if (data_obj.HasMember("tails"))
+                                        {
+                                            auto& tails = data_obj["tails"];
+                                            if (tails.HasMember("pos"))
+                                            {
+                                                auto& tails_pos_array = tails["pos"];
+                                                if (tails_pos_array.IsArray())
+                                                {
+                                                    Array<Vec2f> tails_array;
+                                                    for (auto it = tails_pos_array.Begin(); it != tails_pos_array.End(); ++it)
+                                                    {
+                                                        auto& tail_pos = *it;
+                                                        Vec2f tail_position(tail_pos["x"].GetFloat(), tail_pos["y"].GetFloat());
+                                                        tails_array.push(tail_position);
+                                                    }
+                                                    meta_interface.addMetaObject(
+                                                        new KETReactionMultitailArrow(head_position, tails_array, spine_begin, spine_end));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
