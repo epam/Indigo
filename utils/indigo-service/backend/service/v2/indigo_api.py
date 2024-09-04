@@ -900,7 +900,12 @@ def convert():
             query = True
 
         try_document = False
-        if data["output_format"] == "chemical/x-idt":
+        if data["output_format"] in (
+            "chemical/x-sequence",
+            "chemical/x-fasta",
+            "chemical/x-idt",
+            "chemical/x-helm",
+        ):
             try_document = True
 
         md = load_moldata(

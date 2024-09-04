@@ -2,49 +2,49 @@
     "root": {
         "nodes": [
             {
-                "$ref": "monomer0"
+                "$ref": "ambiguousMonomer-0"
             },
             {
-                "$ref": "monomer1"
+                "$ref": "ambiguousMonomer-1"
             },
             {
-                "$ref": "monomer2"
+                "$ref": "ambiguousMonomer-2"
             },
             {
-                "$ref": "monomer3"
+                "$ref": "ambiguousMonomer-3"
             }
         ],
         "connections": [
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer0",
+                    "monomerId": "ambiguousMonomer-0",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer1",
+                    "monomerId": "ambiguousMonomer-1",
                     "attachmentPointId": "R1"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer1",
+                    "monomerId": "ambiguousMonomer-1",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer2",
+                    "monomerId": "ambiguousMonomer-2",
                     "attachmentPointId": "R1"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer2",
+                    "monomerId": "ambiguousMonomer-2",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer3",
+                    "monomerId": "ambiguousMonomer-3",
                     "attachmentPointId": "R1"
                 }
             }
@@ -117,60 +117,60 @@
                 "$ref": "monomerTemplate-Y___Tyrosine"
             },
             {
-                "$ref": "variantMonomerTemplate-B"
+                "$ref": "ambiguousMonomerTemplate-B"
             },
             {
-                "$ref": "variantMonomerTemplate-J"
+                "$ref": "ambiguousMonomerTemplate-J"
             },
             {
-                "$ref": "variantMonomerTemplate-Z"
+                "$ref": "ambiguousMonomerTemplate-Z"
             },
             {
-                "$ref": "variantMonomerTemplate-X"
+                "$ref": "ambiguousMonomerTemplate-X"
             }
         ]
     },
-    "monomer0": {
-        "type": "monomer",
+    "ambiguousMonomer-0": {
+        "type": "ambiguousMonomer",
         "id": "0",
-        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -0.000000
         },
+        "seqid": 1,
         "alias": "B",
         "templateId": "B"
     },
-    "monomer1": {
-        "type": "monomer",
+    "ambiguousMonomer-1": {
+        "type": "ambiguousMonomer",
         "id": "1",
-        "seqid": 2,
         "position": {
             "x": 1.600000,
             "y": -0.000000
         },
+        "seqid": 2,
         "alias": "J",
         "templateId": "J"
     },
-    "monomer2": {
-        "type": "monomer",
+    "ambiguousMonomer-2": {
+        "type": "ambiguousMonomer",
         "id": "2",
-        "seqid": 3,
         "position": {
             "x": 3.200000,
             "y": -0.000000
         },
+        "seqid": 3,
         "alias": "Z",
         "templateId": "Z"
     },
-    "monomer3": {
-        "type": "monomer",
+    "ambiguousMonomer-3": {
+        "type": "ambiguousMonomer",
         "id": "3",
-        "seqid": 4,
         "position": {
             "x": 4.800000,
             "y": -0.000000
         },
+        "seqid": 4,
         "alias": "X",
         "templateId": "X"
     },
@@ -4665,11 +4665,11 @@
             }
         ]
     },
-    "variantMonomerTemplate-B": {
-        "type": "variantMonomerTemplate",
+    "ambiguousMonomerTemplate-B": {
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "B",
-        "name": "B",
+        "alias": "B",
         "options": [
             {
                 "templateId": "D___Aspartic acid"
@@ -4679,11 +4679,11 @@
             }
         ]
     },
-    "variantMonomerTemplate-J": {
-        "type": "variantMonomerTemplate",
+    "ambiguousMonomerTemplate-J": {
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "J",
-        "name": "J",
+        "alias": "J",
         "options": [
             {
                 "templateId": "L___Leucine"
@@ -4693,11 +4693,11 @@
             }
         ]
     },
-    "variantMonomerTemplate-Z": {
-        "type": "variantMonomerTemplate",
+    "ambiguousMonomerTemplate-Z": {
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "Z",
-        "name": "Z",
+        "alias": "Z",
         "options": [
             {
                 "templateId": "E___Glutamic acid"
@@ -4707,11 +4707,11 @@
             }
         ]
     },
-    "variantMonomerTemplate-X": {
-        "type": "variantMonomerTemplate",
+    "ambiguousMonomerTemplate-X": {
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "X",
-        "name": "X",
+        "alias": "X",
         "options": [
             {
                 "templateId": "A___Alanine"
@@ -4756,7 +4756,7 @@
                 "templateId": "P___Proline"
             },
             {
-                "templateId": "G___Glycine"
+                "templateId": "Q___Glutamine"
             },
             {
                 "templateId": "R___Arginine"

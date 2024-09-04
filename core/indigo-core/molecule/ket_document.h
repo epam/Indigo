@@ -100,6 +100,8 @@ namespace indigo
 
         KetConnection& addConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
 
+        KetConnection& addConnection(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2);
+
         void connectMonomerTo(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2);
 
         const std::vector<KetConnection> connections() const
@@ -171,6 +173,8 @@ namespace indigo
         {
             return _fasta_properties;
         };
+
+        const std::string& monomerIdByRef(const std::string& ref);
 
     protected:
         void collect_sequence_side(const std::string& monomer_id, bool left_side, std::set<std::string>& monomers, std::set<std::string>& used_monomers,

@@ -719,11 +719,10 @@ CEXPORT int indigoLoadHelm(int source, int library)
         IndigoObject& lib_obj = self.getObject(library);
         SequenceLoader loader(IndigoScanner::get(obj), IndigoMonomerLibrary::get(lib_obj));
 
-        std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
+        std::unique_ptr<IndigoKetDocument> docptr = std::make_unique<IndigoKetDocument>();
 
-        Molecule& mol = molptr->mol;
-        loader.loadHELM(mol);
-        return self.addObject(molptr.release());
+        loader.loadHELM(docptr->get());
+        return self.addObject(docptr.release());
     }
     INDIGO_END(-1);
 }

@@ -722,21 +722,8 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             }
             else if (anum != VALUE_UNKNOWN)
             {
-                buf.readString(Element::toString(anum), true);
+                buf.readString(Element::toString(anum, isotope), true);
                 radical = mol.getAtomRadical(i);
-                if (anum == ELEM_H)
-                {
-                    if (isotope == DEUTERIUM)
-                    {
-                        buf.clear();
-                        buf.appendString("D", true);
-                    }
-                    if (isotope == TRITIUM)
-                    {
-                        buf.clear();
-                        buf.appendString("T", true);
-                    }
-                }
             }
             else if (_pqmol)
             {

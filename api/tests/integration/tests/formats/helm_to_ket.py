@@ -36,6 +36,10 @@ helm_data = {
     "helm_annotations": 'BLOB1{BEAD}"Animated Polystyrene"|CHEM1{[hxy]"Annotation"}|RNA1{R(A"mutation")P.R(U)P.R(G)P}$$$$V2.0',
     "helm_chem_rna": "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:R1-3:R2$$$V2.0",
     "helm_rna_without_base": "RNA1{RP}$$$$V2.0",
+    "helm_mixed_base": "RNA1{[dR](A)P.[dR](A+G)P.[dR](A)P.[dR](G+C)}$$$$V2.0",
+    "helm_mixed_custom": "RNA1{[dR](A:10+C:20+G:30+T:50)P.[dR](A:10+C:20+G:30+T:50)P.[dR](A+C+G+T)}$$$$V2.0",
+    "aminoacids_variants": "PEPTIDE1{(D+N).(L+I).(E+Q).(A+C+D+E+F+G+H+I+K+L+M+N+O+P+Q+R+S+T+U+V+W+Y)}$$$$V2.0",
+    "helm_smiles": "PEPTIDE1{G.[[*]N[C@@H](C=O)C([*])=O |$_R1;;;;;;_R2;$|].C}|PEPTIDE2{G.[[*:1]N[C@@H](C=O)C([*:2])=O].C}$$$$",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -57,10 +61,17 @@ for filename in sorted(helm_data.keys()):
         print(diff)
 
 helm_errors = {
-    "PEPTIDE1{A'2'}$$$$V2.0": "Repeating do not supported now.",
+    "PEPTIDE1{A'2'}$$$$V2.0": "Repeating not supported now.",
     "CHEM1{[MCC]}|RNA1{R(A)P.R(C)P.R(G)P.R(T)P.R(U)P}$RNA1,PEPTIDE1,15:R2-1:R1$$$V2.0": "Polymer 'PEPTIDE1' not found.",
     "CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM10,PEPTIDE1,1:R2-1:R1$$$V2.0": "Polymer 'CHEM10' not found.",
     "CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM1,PEPTIDE1,1:R2-3:R1$$$V2.0": "Polymer 'PEPTIDE1' does not contains monomer with number 3.",
+    "CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM1,PEPTIDE1,1:R4-1:R1$$$V2.0": "Unknown attachment point 'R4' in monomer A6OH",
+    "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:R1-1:R2$$$V2.0": "Monomer 'R' attachment point 'R2' already connected to monomer'monomer3' attachment point 'R1'",
+    "PEPTIDE1{(A:1.5+C:aaaa)}$$$$V2.0": "Unexpected symbol. Expected '+' or ',' but found '.'",
+    "RNA1{R(bla-bla-bla)p}$$$$V2.0": "Unexpected symbol. Expected ')' but found 'l'.",
+    "PEPTIDE1{D-gGlu}$$$$V2.0": "Unexpected symbol. Expected '.' or '}' but found '-'.",
+    "PEPTIDE1{(A:+C:0.1)}$$$$V2.0": "Unexpected symbol. Expected digit but found '+'",
+    "RNA1{R(A).R(A)p}$$$$V2.0": "Monomer template with class 'Phosphate' and alias 'R' not found in monomer librarys",
 }
 for helm_seq in sorted(helm_errors.keys()):
     error = helm_errors[helm_seq]

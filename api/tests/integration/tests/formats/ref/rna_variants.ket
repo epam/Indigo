@@ -5,13 +5,13 @@
                 "$ref": "monomer0"
             },
             {
-                "$ref": "variantMonomer-1"
+                "$ref": "ambiguousMonomer-1"
             },
             {
                 "$ref": "monomer2"
             },
             {
-                "$ref": "variantMonomer-3"
+                "$ref": "ambiguousMonomer-3"
             },
             {
                 "$ref": "monomer4"
@@ -25,7 +25,7 @@
                     "attachmentPointId": "R3"
                 },
                 "endpoint2": {
-                    "monomerId": "variantMonomer-1",
+                    "monomerId": "ambiguousMonomer-1",
                     "attachmentPointId": "R1"
                 }
             },
@@ -36,7 +36,7 @@
                     "attachmentPointId": "R3"
                 },
                 "endpoint2": {
-                    "monomerId": "variantMonomer-3",
+                    "monomerId": "ambiguousMonomer-3",
                     "attachmentPointId": "R1"
                 }
             },
@@ -83,10 +83,10 @@
                 "$ref": "monomerTemplate-P___Phosphate"
             },
             {
-                "$ref": "variantMonomerTemplate-K"
+                "$ref": "ambiguousMonomerTemplate-K"
             },
             {
-                "$ref": "variantMonomerTemplate-N"
+                "$ref": "ambiguousMonomerTemplate-N"
             }
         ]
     },
@@ -101,14 +101,15 @@
         "alias": "R",
         "templateId": "R___Ribose"
     },
-    "variantMonomer-1": {
-        "type": "variantMonomer",
+    "ambiguousMonomer-1": {
+        "type": "ambiguousMonomer",
         "id": "1",
         "position": {
             "x": 0.000000,
             "y": -1.600000
         },
         "seqid": 1,
+        "alias": "K",
         "templateId": "K"
     },
     "monomer2": {
@@ -122,14 +123,15 @@
         "alias": "R",
         "templateId": "R___Ribose"
     },
-    "variantMonomer-3": {
-        "type": "variantMonomer",
+    "ambiguousMonomer-3": {
+        "type": "ambiguousMonomer",
         "id": "3",
         "position": {
             "x": 3.200000,
             "y": -1.600000
         },
         "seqid": 2,
+        "alias": "N",
         "templateId": "N"
     },
     "monomer4": {
@@ -1214,11 +1216,11 @@
             }
         ]
     },
-    "variantMonomerTemplate-K": {
-        "type": "variantMonomerTemplate",
+    "ambiguousMonomerTemplate-K": {
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "K",
-        "name": "K",
+        "alias": "K",
         "options": [
             {
                 "templateId": "G___Guanine"
@@ -1228,11 +1230,11 @@
             }
         ]
     },
-    "variantMonomerTemplate-N": {
-        "type": "variantMonomerTemplate",
+    "ambiguousMonomerTemplate-N": {
+        "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "N",
-        "name": "N",
+        "alias": "N",
         "options": [
             {
                 "templateId": "A___Adenine"

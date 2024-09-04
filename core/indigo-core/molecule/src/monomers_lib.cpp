@@ -96,8 +96,7 @@ namespace indigo
         static const std::unordered_map<std::string, MonomerClass> kStrMonomerType = {
             {kMonomerClassSUGAR, MonomerClass::Sugar},  {kMonomerClassPHOSPHATE, MonomerClass::Phosphate}, {kMonomerClassBASE, MonomerClass::Base},
             {kMonomerClassAA, MonomerClass::AminoAcid}, {kMonomerClassCHEM, MonomerClass::CHEM},           {kMonomerClassDNA, MonomerClass::DNA},
-            {kMonomerClassRNA, MonomerClass::RNA},
-        };
+            {kMonomerClassRNA, MonomerClass::RNA},      {kMonomerClassPEPTIDE, MonomerClass::AminoAcid}};
         return kStrMonomerType;
     }
 

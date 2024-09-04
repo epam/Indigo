@@ -39,9 +39,9 @@ std::string indigo::dibToPNG(const std::string& dib_data)
     int height = pbmi->biHeight;
     int bpp = pbmi->biBitCount;
 
-    if (bpp != 24)
+    if (bpp != 24 && bpp != 16)
     {
-        return ""; // Only handling 24-bit images here
+        return "";
     }
 
     uint8_t* pixels = (uint8_t*)(dib_data.data() + pbmi->biSize);
@@ -72,9 +72,24 @@ std::string indigo::dibToPNG(const std::string& dib_data)
     {
         for (int j = 0; j < width; j++)
         {
-            row_data[height - 1 - i][3 * j + 0] = pixels[(i * width + j) * 3 + 2];
-            row_data[height - 1 - i][3 * j + 1] = pixels[(i * width + j) * 3 + 1];
-            row_data[height - 1 - i][3 * j + 2] = pixels[(i * width + j) * 3 + 0];
+            if (bpp == 24)
+            {
+                row_data[height - 1 - i][3 * j + 0] = pixels[(i * width + j) * 3 + 2];
+                row_data[height - 1 - i][3 * j + 1] = pixels[(i * width + j) * 3 + 1];
+                row_data[height - 1 - i][3 * j + 2] = pixels[(i * width + j) * 3 + 0];
+            }
+            else if (bpp == 16)
+            {
+                uint16_t pixel = ((uint16_t*)pixels)[i * width + j];
+
+                uint8_t r = (pixel & 0x7C00) >> 7;
+                uint8_t g = (pixel & 0x3E0) >> 2;
+                uint8_t b = (pixel & 0x1F) << 3;
+
+                row_data[height - 1 - i][3 * j + 0] = r;
+                row_data[height - 1 - i][3 * j + 1] = g;
+                row_data[height - 1 - i][3 * j + 2] = b;
+            }
         }
         row_pointers[height - 1 - i] = row_data[height - 1 - i].data();
     }

@@ -55,7 +55,7 @@ idt_data = {
     "idt_52moera_sp_i2moera_sp": "/52MOErA/*/i2MOErA/*",
     "idt_unresolved": "/unr1//unr2/",
     "idt_unresolved_many": "/unr0/A/unr1/C/unr2/ACTG/unr3/G/unr4/",
-    "idt_unsplit": "/5UNSPLIT/A",
+    "idt_unsplit": "/5UNSPLIT//iUNSPLIT//3UNSPLIT/",
     "idt_mixed_std": "ARAS",
     "idt_mixed_custom": "(N1:10203050)(N1)N",
 }

@@ -20,11 +20,14 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "layout/sequence_layout.h"
+#include "molecule/elements.h"
 #include "molecule/ket_document.h"
 #include "molecule/ket_objects.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_json_loader.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
+#include "molecule/smiles_saver.h"
 
 using namespace indigo;
 
@@ -738,12 +741,15 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
 
 void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
 {
-    if (sf == SeqFormat::HELM)
-        throw Error("Not supported yet");
     std::vector<std::deque<std::string>> sequences;
     int seq_idx = 0;
     std::string seq_text;
-    if (sf == SeqFormat::IDT)
+    if (sf == SeqFormat::HELM)
+    {
+        doc.parseSimplePolymers(sequences, false);
+        seq_text = saveHELM(doc, sequences);
+    }
+    else if (sf == SeqFormat::IDT)
     {
         doc.parseSimplePolymers(sequences, true);
         saveIdt(doc, sequences, seq_text);
@@ -842,6 +848,9 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
             std::string sugar;
             std::string base;
             std::string phosphate;
+            if (seq_string.size() > 0 && sequence.size() == 0)
+                modification = IdtModification::THREE_PRIME_END;
+
             if (monomer_class == MonomerClass::Phosphate)
             {
                 if (seq_string.size() > 0 && sequence.size()) // Inside the sequence
@@ -879,6 +888,8 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                         seq_string += '/';
                         seq_string += idt_alias;
                         seq_string += '/';
+                        if (modification == IdtModification::FIVE_PRIME_END)
+                            modification = IdtModification::INTERNAL;
                         continue;
                     }
                 }
@@ -1047,4 +1058,247 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
             seq_text += "\n";
         seq_text += seq_string;
     }
+}
+
+static const char* get_helm_class(MonomerClass monomer_class)
+{
+    switch (monomer_class)
+    {
+    case MonomerClass::AminoAcid:
+        return kHELMPolymerTypePEPTIDE;
+    case MonomerClass::Base:
+    case MonomerClass::Sugar:
+    case MonomerClass::Phosphate:
+    case MonomerClass::RNA:
+    case MonomerClass::DNA:
+    case MonomerClass::Linker:
+    case MonomerClass::Terminator:
+        return kHELMPolymerTypeRNA;
+    case MonomerClass::Unknown:
+    case MonomerClass::CHEM:
+    default:
+        return kHELMPolymerTypeCHEM;
+        break;
+    }
+    return kHELMPolymerTypeCHEM;
+}
+
+std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::deque<std::string>> sequences)
+{
+    std::string helm_string = "";
+    int peptide_idx = 0;
+    int rna_idx = 0;
+    int chem_idx = 0;
+    using MonomerInfo = std::tuple<HELMType, int, int>;
+    std::map<std::string, MonomerInfo> monomer_id_to_monomer_info;
+    const auto& monomers = document.monomers();
+    const auto& templates = document.templates();
+    const auto& variant_templates = document.variantTemplates();
+    std::map<std::string, std::map<int, std::string>> mol_atom_to_ap;
+    for (auto& sequence : sequences)
+    {
+        int monomer_idx = 0;
+        int polymer_idx = -1;
+        std::string helm_polymer_class = "";
+        HELMType helm_type = HELMType::Unknown;
+        MonomerClass prev_monomer_class = MonomerClass::Unknown;
+        for (auto monomer_id : sequence)
+        {
+            const auto& monomer = monomers.at(monomer_id);
+            auto monomer_class = document.getMonomerClass(monomer_id);
+            if (monomer_idx == 0)
+            {
+                if (helm_string.size() > 0)
+                    helm_string += '|';
+                // start new polymer
+                std::string helm_polymer_class;
+                if (monomer->monomerType() == KetBaseMonomer::MonomerType::Monomer && templates.at(monomer->templateId()).hasStringProp("classHELM"))
+                    helm_polymer_class = templates.at(monomer->templateId()).getStringProp("classHELM");
+                else
+                    helm_polymer_class = get_helm_class(monomer_class);
+                helm_string += helm_polymer_class;
+                helm_type = getHELMTypeFromString(helm_polymer_class);
+                if (helm_polymer_class == kHELMPolymerTypePEPTIDE)
+                    polymer_idx = ++peptide_idx;
+                else if (helm_polymer_class == kHELMPolymerTypeRNA)
+                    polymer_idx = ++rna_idx;
+                else if (helm_polymer_class == kHELMPolymerTypeCHEM)
+                    polymer_idx = ++chem_idx;
+                helm_string += std::to_string(polymer_idx);
+                helm_string += '{';
+            }
+            if (monomer_idx && monomer_class != MonomerClass::Base &&
+                !((prev_monomer_class == MonomerClass::Base || prev_monomer_class == MonomerClass::Sugar) && monomer_class == MonomerClass::Phosphate))
+                helm_string += '.'; // separator between sugar and base and between sugar or base and phosphate
+            if (monomer_class == MonomerClass::Base && prev_monomer_class != MonomerClass::Sugar)
+                throw Error("Wrong monomer sequence: base monomer %s after %s monomer.", monomer->alias().c_str(),
+                            MonomerTemplate::MonomerClassToStr(prev_monomer_class).c_str());
+            if (monomer_class == MonomerClass::Base)
+                helm_string += '(';
+            if (monomer->monomerType() == KetBaseMonomer::MonomerType::Monomer)
+                add_monomer(helm_string, monomer->alias());
+            else if (monomer->monomerType() == KetBaseMonomer::MonomerType::VarianMonomer)
+            {
+                const auto& templ = variant_templates.at(monomer->templateId());
+                if (monomer_class != MonomerClass::Base)
+                    helm_string += '(';
+                std::string variants;
+                bool mixture = (templ.subtype() == "mixture");
+                for (const auto& option : templ.options())
+                {
+                    if (variants.size() > 0)
+                        variants += mixture ? '+' : ',';
+                    variants += templates.at(option.templateId()).getStringProp("alias");
+                    auto num = mixture ? option.ratio() : option.probability();
+                    if (num.has_value())
+                    {
+                        variants += ':';
+                        variants += std::to_string(static_cast<int>(round(num.value())));
+                    }
+                }
+                helm_string += variants;
+                if (monomer_class != MonomerClass::Base)
+                    helm_string += ')';
+            }
+            if (monomer_class == MonomerClass::Base)
+                helm_string += ')';
+            monomer_idx++;
+            monomer_id_to_monomer_info.emplace(std::make_pair(monomer_id, std::make_tuple(helm_type, polymer_idx, monomer_idx)));
+            prev_monomer_class = monomer_class;
+        }
+        if (monomer_idx)
+            helm_string += '}'; // Finish polymer
+    }
+    auto& molecules = document.jsonMolecules();
+    int molecule_idx = 0;
+    rapidjson::Document json{};
+    for (rapidjson::SizeType i = 0; i < molecules.Size(); i++)
+    {
+        const auto& molecule = molecules[i];
+        std::string mol_id = "mol" + std::to_string(molecule_idx++);
+        rapidjson::Value marr(rapidjson::kArrayType);
+        marr.PushBack(json.CopyFrom(molecule, json.GetAllocator()), json.GetAllocator());
+        MoleculeJsonLoader loader(marr);
+        BaseMolecule* pbmol;
+        Molecule mol;
+        QueryMolecule qmol;
+        try
+        {
+            loader.loadMolecule(mol);
+            pbmol = &mol;
+        }
+        catch (...)
+        {
+            loader.loadMolecule(qmol);
+            pbmol = &qmol;
+        }
+        // convert Sup sgroup without name attachment points to rg-labels
+        auto& sgroups = pbmol->sgroups;
+        for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+        {
+            auto& sgroup = sgroups.getSGroup(i);
+            if (sgroup.sgroup_type != SGroup::SG_TYPE_SUP)
+                continue;
+            Superatom& sa = static_cast<Superatom&>(sgroup);
+            if (sa.subscript.size() != 0 && sa.subscript.ptr()[0] != 0)
+                continue;
+            // convert leaving atom H to rg-ref
+            auto res = mol_atom_to_ap.try_emplace(mol_id);
+            auto& atom_to_ap = res.first;
+            static std::string apid_prefix{'R'};
+            Array<int> leaving_atoms;
+            for (int ap_id = sa.attachment_points.begin(); ap_id != sa.attachment_points.end(); ap_id = sa.attachment_points.next(ap_id))
+            {
+                auto& ap = sa.attachment_points.at(ap_id);
+                std::string apid = apid_prefix + ap.apid.ptr();
+                atom_to_ap->second.emplace(ap.aidx, apid);
+                int leaving_atom = ap.lvidx;
+                int ap_idx = std::stoi(ap.apid.ptr());
+                if (pbmol == &mol)
+                {
+                    mol.resetAtom(leaving_atom, ELEM_RSITE);
+                    mol.allowRGroupOnRSite(leaving_atom, ap_idx);
+                }
+                else
+                {
+                    auto rsite = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RSITE, 0);
+                    qmol.resetAtom(leaving_atom, rsite.release());
+                    qmol.allowRGroupOnRSite(leaving_atom, ap_idx);
+                }
+            }
+            sgroups.remove(i);
+        }
+        // generate smiles
+        std::string smiles;
+        StringOutput s_out(smiles);
+        SmilesSaver saver(s_out);
+        saver.separate_rsites = false;
+        if (pbmol == &mol)
+            saver.saveMolecule(mol);
+        else
+            saver.saveQueryMolecule(qmol);
+        // save as chem
+        if (helm_string.size() > 0)
+            helm_string += '|';
+        helm_string += "CHEM";
+        int polymer_idx = ++chem_idx;
+        helm_string += std::to_string(polymer_idx);
+        helm_string += "{[";
+        helm_string += smiles;
+        helm_string += "]}";
+        monomer_id_to_monomer_info.emplace(std::make_pair(mol_id, std::make_tuple(HELMType::Chem, polymer_idx, 1)));
+    }
+    helm_string += '$';
+    // Add connections
+    int connections_count = 0;
+    for (const auto& connection : document.nonSequenceConnections())
+    {
+        // add connection
+        if (connections_count)
+            helm_string += '|';
+        const auto& ep_1 = connection.ep1();
+        const auto& ep_2 = connection.ep2();
+        if (!(ep_1.hasStringProp("monomerId") || ep_1.hasStringProp("moleculeId")) || !(ep_2.hasStringProp("monomerId") || ep_2.hasStringProp("moleculeId")))
+            throw Error("Endpoint without monomer or molecule id");
+        bool has_mon_id1 = ep_1.hasStringProp("monomerId");
+        bool has_mon_id2 = ep_2.hasStringProp("monomerId");
+        const auto& monomer_id_1 = has_mon_id1 ? ep_1.getStringProp("monomerId") : ep_1.getStringProp("moleculeId");
+        const auto& monomer_id_2 = has_mon_id2 ? ep_2.getStringProp("monomerId") : ep_2.getStringProp("moleculeId");
+        const auto& id1 = has_mon_id1 ? document.monomerIdByRef(monomer_id_1) : monomer_id_1;
+        const auto& id2 = has_mon_id2 ? document.monomerIdByRef(monomer_id_2) : monomer_id_2;
+        auto [type_1, pol_num_1, mon_num_1] = monomer_id_to_monomer_info.at(id1);
+        auto [type_2, pol_num_2, mon_num_2] = monomer_id_to_monomer_info.at(id2);
+        connections_count++;
+        helm_string += getStringFromHELMType(type_1);
+        helm_string += std::to_string(pol_num_1);
+        helm_string += ',';
+        helm_string += getStringFromHELMType(type_2);
+        helm_string += std::to_string(pol_num_2);
+        helm_string += ',';
+        helm_string += std::to_string(mon_num_1);
+        helm_string += ":";
+        if (ep_1.hasStringProp("atomId"))
+            helm_string += mol_atom_to_ap.at(id1).at(std::stoi(ep_1.getStringProp("atomId")));
+        else if (ep_1.hasStringProp("attachmentPointId"))
+            helm_string += ep_1.getStringProp("attachmentPointId");
+        else
+            helm_string += '?';
+        helm_string += '-';
+        helm_string += std::to_string(mon_num_2);
+        helm_string += ':';
+        if (ep_2.hasStringProp("atomId"))
+            helm_string += mol_atom_to_ap.at(id2).at(std::stoi(ep_2.getStringProp("atomId")));
+        else if (ep_2.hasStringProp("attachmentPointId"))
+            helm_string += ep_2.getStringProp("attachmentPointId");
+        else
+            helm_string += '?';
+    }
+    helm_string += '$';
+    // Add polymer groups
+    helm_string += '$';
+    // Add ExtendedAnnotation
+    helm_string += '$';
+    // Add helm version
+    helm_string += "V2.0";
+    return helm_string;
 }
