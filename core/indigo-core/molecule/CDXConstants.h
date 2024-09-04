@@ -297,7 +297,7 @@ enum CDXDatumID
     kCDXProp_WindowsMetafile,      // 0x0A63 A Microsoft Windows Metafile object. (Unformatted)
     kCDXProp_OLEObject,            // 0x0A64 An OLE object. (Unformatted)
     kCDXProp_EnhancedMetafile,     // 0x0A65 A Microsoft Windows Enhanced Metafile object. (Unformatted)
-    kCDXProp_GIF,                  // 0x0A6E
+    kCDXProp_GIF =0x0A6E,          // 0x0A6E
     kCDXProp_TIFF,                 // 0x0A6F,
     kCDXProp_PNG,                  // 0x0A70
     kCDXProp_JPEG,                 // 0x0A71
