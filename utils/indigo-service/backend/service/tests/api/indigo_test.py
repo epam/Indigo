@@ -3493,6 +3493,55 @@ M  END
         result_idt = json.loads(result.text)["struct"]
         self.assertEqual(idt, result_idt)
 
+    def test_convert_helm(self):
+        fname = "helm_ambiguous"
+
+        lib_file = "monomer_library.ket"
+        lib_path = os.path.join(joinPathPy("structures/", __file__), lib_file)
+        with open(lib_path, "r") as file:
+            monomer_library = file.read()
+
+        helm_struct = "PEPTIDE1{(D,N,I)}|PEPTIDE2{(D+N+I)}$$$$V2.0"
+        # HELM to ket
+        headers, data = self.get_headers(
+            {
+                "struct": helm_struct,
+                "options": {"monomerLibrary": monomer_library},
+                "input_format": "chemical/x-helm",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_ket = json.loads(result.text)["struct"]
+
+        ref_prefix = os.path.join(joinPathPy("ref/", __file__), fname)
+        # write references
+        # with open(ref_prefix + ".ket", "w") as file:
+        #     file.write(result_ket)
+
+        # check
+        with open(ref_prefix + ".ket", "r") as file:
+            self.assertEqual(result_ket, file.read())
+
+        # Ket to HELM
+        headers, data = self.get_headers(
+            {
+                "struct": result_ket,
+                "options": {"monomerLibrary": monomer_library},
+                "input_format": "chemical/x-indigo-ket",
+                "output_format": "chemical/x-helm",
+            }
+        )
+
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_helm = json.loads(result.text)["struct"]
+        self.assertEqual(helm_struct, result_helm)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2, warnings="ignore")
