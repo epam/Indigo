@@ -351,7 +351,7 @@ public:
     void initMolfileSaver(MolfileSaver& saver);
     void initRxnfileSaver(RxnfileSaver& saver);
     void initMoleculeJsonSaver(MoleculeJsonSaver& saver);
-    void initReactionJsonSaver(ReactionJsonSaver& saver);
+    void initReactionJsonSaver(ReactionJsonSaver& saver) const;
     void initReactionJsonSaver(PathwayReactionJsonSaver& saver);
 
     bool preserve_ordering_in_serialize;

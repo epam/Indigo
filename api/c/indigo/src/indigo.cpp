@@ -207,10 +207,11 @@ void Indigo::initMoleculeJsonSaver(MoleculeJsonSaver& saver)
     saver.use_native_precision = json_use_native_precision;
 }
 
-void Indigo::initReactionJsonSaver(ReactionJsonSaver& saver)
+void Indigo::initReactionJsonSaver(ReactionJsonSaver& saver) const 
 {
     saver.add_stereo_desc = json_saving_add_stereo_desc;
     saver.pretty_json = json_saving_pretty;
+    saver.layout_options = layout_options;
 }
 
 void Indigo::initReactionJsonSaver(PathwayReactionJsonSaver& saver)

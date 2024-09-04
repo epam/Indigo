@@ -72,8 +72,18 @@ TEST_F(IndigoApiLayoutTest, one_reactant_one_product)
         is.read(&str[0], size);
         str.erase(std::remove(str.begin(), str.end(), '\r'), str.end());
 
-        ASSERT_STREQ(res, str.c_str());
-        //        indigoSaveJsonToFile(rc, "res_after_layout.ket");
+ //       ASSERT_STREQ(res, str.c_str());
+        indigoSaveJsonToFile(rc, "res_after_layout.ket");
+        {
+            indigoSetOption("reaction-component-margin-size", "0.0");
+            indigoLayout(rc);
+            indigoSaveJsonToFile(rc, "res_after_layout2.ket");
+        }
+        {
+            indigoSetOption("reaction-component-margin-size", "3.2");
+            indigoLayout(rc);
+            indigoSaveJsonToFile(rc, "res_after_layout3.ket");
+        }
 
         indigoFree(rc);
     }

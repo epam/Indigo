@@ -21,8 +21,10 @@
 #include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "reaction/reaction.h"
+#include <functional>
 #include <numeric>
 #include <stdio.h>
+using namespace std::placeholders;
 
 using namespace indigo;
 
@@ -33,9 +35,9 @@ ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
 }
 
 ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout, const LayoutOptions& options)
-    : bond_length(LayoutOptions::DEFAULT_BOND_LENGTH), default_plus_size(options.getMarginSizeInAngstroms()),
-      default_arrow_size(LayoutOptions::DEFAULT_BOND_LENGTH * 2), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout),
-      reaction_margin_size(options.getMarginSizeInAngstroms()), atom_label_width(0.0f), layout_orientation(UNCPECIFIED), max_iterations(0)
+    : bond_length(LayoutOptions::DEFAULT_BOND_LENGTH), default_plus_size(1), default_arrow_size(LayoutOptions::DEFAULT_BOND_LENGTH * 2),
+      preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout), reaction_margin_size(options.getMarginSizeInAngstroms()),
+      atom_label_width(LayoutOptions::DEFAULT_BOND_LENGTH / 2), layout_orientation(UNCPECIFIED), max_iterations(0)
 {
 }
 
@@ -113,25 +115,24 @@ void ReactionLayout::_updateMetadata()
     Vec2f arrow_head(0, 0);
     Vec2f arrow_tail(0, 0);
 
-    constexpr float shift = 0.0f;
     if (_r.productsCount() == 0)
     {
-        arrow_tail.x = react_box.right() + shift;
+        arrow_tail.x = react_box.right() + reaction_margin_size / 2;
         arrow_tail.y = react_box.middleY();
-        arrow_head.x = arrow_tail.x + shift;
+        arrow_head.x = arrow_tail.x + default_arrow_size;
         arrow_head.y = arrow_tail.y;
     }
     else if (_r.reactantsCount() == 0)
     {
-        arrow_head.x = product_box.left() - shift;
+        arrow_head.x = product_box.left() - reaction_margin_size / 2;
         arrow_head.y = product_box.middleY();
-        arrow_tail.x = arrow_head.x - shift;
+        arrow_tail.x = arrow_head.x - default_arrow_size;
         arrow_tail.y = arrow_head.y;
     }
     else
     {
-        const float ptab = first_single_product ? 2 * reaction_margin_size : reaction_margin_size;
-        const float rtab = last_single_reactant ? 2 * reaction_margin_size : reaction_margin_size;
+        const float ptab = first_single_product ? reaction_margin_size + bond_length / 2 : reaction_margin_size;
+        const float rtab = last_single_reactant ? reaction_margin_size + bond_length / 2 : reaction_margin_size;
 
         arrow_head.y = product_box.middleY();
         arrow_tail.y = react_box.middleY();
@@ -202,13 +203,17 @@ void ReactionLayout::make()
 
     // layout molecules in a row with the intervals specified
     Metalayout::LayoutLine& line = _ml.newLine();
-    for (int i = _r.reactantBegin(); i < _r.reactantEnd(); i = _r.reactantNext(i))
-    {
-        bool single_atom = _getMol(i).vertexCount() == 1;
-        if (i != _r.reactantBegin())
-            _pushSpace(line, default_plus_size + reaction_margin_size * 2);
-        _pushMol(line, i);
-    }
+    auto processReactionElements = [this, &line](int begin, int end, std::function<int(BaseReaction&, int)> next) {
+        for (int i = begin; i < end; i = next(_r, i))
+        {
+            bool single_atom = _getMol(i).vertexCount() == 1;
+            if (i != begin)
+                _pushSpace(line, default_plus_size + reaction_margin_size * 2);
+            _pushMol(line, i);
+        }
+    };
+
+    processReactionElements(_r.reactantBegin(), _r.reactantEnd(), &BaseReaction::reactantNext);
 
     if (_r.catalystCount())
     {
@@ -218,10 +223,11 @@ void ReactionLayout::make()
             auto& mol = _getMol(i);
             Rect2f bbox;
             mol.getBoundingBox(bbox, Vec2f(bond_length, bond_length));
-            //_pushSpace(line, reaction_margin_size / 2);
-            _pushSpace(line, reaction_margin_size);
+            if (i != _r.catalystBegin())
+                _pushSpace(line, reaction_margin_size);
+            //_pushSpace(line, reaction_margin_size);
             _pushMol(line, i, true);
-            _pushSpace(line, reaction_margin_size);
+            //_pushSpace(line, reaction_margin_size);
             //_pushSpace(line, reaction_margin_size / 2);
         }
         _pushSpace(line, reaction_margin_size);
@@ -229,16 +235,10 @@ void ReactionLayout::make()
     else
         _pushSpace(line, default_arrow_size + reaction_margin_size * 2);
 
-    for (int i = _r.productBegin(); i < _r.productEnd(); i = _r.productNext(i))
-    {
-        bool single_atom = _getMol(i).vertexCount() == 1;
-        if (i != _r.productBegin())
-            _pushSpace(line, default_plus_size + reaction_margin_size);
-        _pushMol(line, i);
-    }
+    processReactionElements(_r.productBegin(), _r.productEnd(), &BaseReaction::productNext);
 
     _ml.bondLength = bond_length;
-    _ml.horizontalIntervalFactor = reaction_margin_size;
+    _ml.reactionComponentMarginSize = reaction_margin_size;
     _ml.cb_getMol = cb_getMol;
     _ml.cb_process = cb_process;
     _ml.context = this;
@@ -249,17 +249,17 @@ void ReactionLayout::make()
     _updateMetadata();
 }
 
-void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_agent)
+void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_catalyst)
 {
     // Molecule label alligned to atom center by non-hydrogen
     // Hydrogen may be at left or at right H2O, PH3 - so add space before and after molecule
-    //_pushSpace(line, atom_label_width);
+    _pushSpace(line, atom_label_width);
     Metalayout::LayoutItem& item = line.items.push();
     item.type = Metalayout::LayoutItem::Type::EMolecule;
     item.isMoleculeFragment = true;
     item.id = id;
     auto& mol = _getMol(id);
-    if (is_agent)
+    if (is_catalyst)
     {
         item.verticalAlign = Metalayout::LayoutItem::ItemVerticalAlign::ETop;
     }
@@ -268,7 +268,7 @@ void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_agen
     mol.getBoundingBox(bbox);
     item.min.copy(bbox.leftBottom());
     item.max.copy(bbox.rightTop());
-    //_pushSpace(line, atom_label_width);
+    _pushSpace(line, atom_label_width);
 }
 
 void ReactionLayout::_pushSpace(Metalayout::LayoutLine& line, float size)

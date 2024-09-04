@@ -39,7 +39,7 @@ void Metalayout::LayoutLine::clear()
 
 IMPL_ERROR(Metalayout, "metalayout");
 
-Metalayout::Metalayout() : horizontalIntervalFactor(0.5f), verticalIntervalFactor(0.8f), bondLength(1.0f), _avel(1.0f), _scaleFactor(1.0f)
+Metalayout::Metalayout() : reactionComponentMarginSize(0.5f), verticalIntervalFactor(0.8f), bondLength(1.0f), _avel(1.0f), _scaleFactor(1.0f)
 {
     clear();
 }
@@ -100,7 +100,7 @@ void Metalayout::process()
             case LayoutItem::ItemVerticalAlign::ECenter:
                 break;
             case LayoutItem::ItemVerticalAlign::ETop:
-                offset.y += (bondLength + line.top_height) / 2;
+                offset.y += reactionComponentMarginSize + line.top_height / 2;
                 break;
             case LayoutItem::ItemVerticalAlign::EBottom:
                 offset.y -= (bondLength + line.bottom_height) / 2;
@@ -138,7 +138,7 @@ void Metalayout::calcContentSize()
                 break;
             }
         }
-        line.width += horizontalIntervalFactor * bondLength * (line.items.size() - 1);
+        line.width += reactionComponentMarginSize * bondLength * (line.items.size() - 1);
         _contentSize.x = std::max(_contentSize.x, line.width);
         _contentSize.y += line.height;
         if (regularWidth < line.width)
