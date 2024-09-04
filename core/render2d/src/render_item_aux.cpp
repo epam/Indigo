@@ -389,14 +389,14 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
     }
 }
 
-struct stbi_context
+struct StbiContext
 {
     std::string data;
 };
 
-void my_stbi_write_func(void *context, void *data, int size)
+void ketImageStbiWriteFunc(void* context, void* data, int size)
 {
-    static_cast<stbi_context*>(context)->data.assign(static_cast<const char*>(data), size);
+    static_cast<StbiContext*>(context)->data.assign(static_cast<const char*>(data), size);
 }
 
 void RenderItemAuxiliary::_drawImage(const KETImage& img)
@@ -412,16 +412,18 @@ void RenderItemAuxiliary::_drawImage(const KETImage& img)
     {
         auto document = lunasvg::Document::loadFromData(img.getData());
         if (!document)
-            puts("document null");
+            throw Error("RenderItemAuxiliary::_drawImage: loadFromData error");
 
         auto bitmap = document->renderToBitmap();
         if (!bitmap.valid())
-            puts("bitmap null");
+            throw Error("RenderItemAuxiliary::_drawImage: renderToBitmap error");
 
-        stbi_context context;
-        if (!stbi_write_png_to_func(my_stbi_write_func, &context, bitmap.width(), bitmap.height(), 4, bitmap.data(), 0))
-            puts("stbi error");
-        _rc.drawPng(context.data, Rect2f(v1, v2));
+        StbiContext stbiContext;
+        int rgbaChannels = 4, stride = 0;
+        if (!stbi_write_png_to_func(ketImageStbiWriteFunc, &stbiContext, bitmap.width(), bitmap.height(), rgbaChannels, bitmap.data(), stride))
+            throw Error("RenderItemAuxiliary::_drawImage: stbi_write_png_to_func error");
+
+        _rc.drawPng(stbiContext.data, Rect2f(v1, v2));
     }
 }
 
