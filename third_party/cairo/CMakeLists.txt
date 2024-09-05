@@ -16,6 +16,11 @@ set(CAIRO_HAS_EGL_FUNCTIONS 0)
 set(CAIRO_HAS_GLESV2_SURFACE  0)
 set(CAIRO_WIN32_STATIC_BUILD 0)
 
+if (MINGW)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=incompatible-pointer-types -Wno-error=int-conversion -Wno-error=implicit-int")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=incompatible-pointer-types -Wno-error=int-conversion -Wno-error=implicit-int")
+endif()
+
 if(UNIX OR APPLE OR MINGW)
     add_definitions(-DHAVE_STDINT_H -DCAIRO_HAS_PTHREAD -D_GNU_SOURCE -DHAVE_UINT64_T)
 endif()
