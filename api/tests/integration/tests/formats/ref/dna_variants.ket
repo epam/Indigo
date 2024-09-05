@@ -109,6 +109,7 @@
             "y": -1.600000
         },
         "seqid": 1,
+        "alias": "B",
         "templateId": "B"
     },
     "monomer2": {
@@ -130,6 +131,7 @@
             "y": -1.600000
         },
         "seqid": 2,
+        "alias": "N",
         "templateId": "N"
     },
     "monomer4": {
@@ -1201,7 +1203,7 @@
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "B",
-        "name": "B",
+        "alias": "B",
         "options": [
             {
                 "templateId": "C___Cytosine"
@@ -1218,7 +1220,7 @@
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "N",
-        "name": "N",
+        "alias": "N",
         "options": [
             {
                 "templateId": "A___Adenine"

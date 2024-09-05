@@ -151,6 +151,7 @@
             "y": -1.600000
         },
         "seqid": 2,
+        "alias": "N0",
         "templateId": "N0"
     },
     "monomer2": {
@@ -183,6 +184,7 @@
             "y": -1.600000
         },
         "seqid": 5,
+        "alias": "N0",
         "templateId": "N0"
     },
     "monomer5": {
@@ -215,6 +217,7 @@
             "y": -1.600000
         },
         "seqid": 8,
+        "alias": "N",
         "templateId": "N"
     },
     "monomerTemplate-dR___Deoxy-Ribose": {
@@ -1275,7 +1278,7 @@
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "N0",
-        "name": "N0",
+        "alias": "N0",
         "options": [
             {
                 "templateId": "A___Adenine",
@@ -1299,7 +1302,7 @@
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
         "id": "N",
-        "name": "N",
+        "alias": "N",
         "options": [
             {
                 "templateId": "A___Adenine"
