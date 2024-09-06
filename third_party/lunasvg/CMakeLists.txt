@@ -16,6 +16,7 @@ add_subdirectory(3rdparty/plutovg)
 
 target_compile_definitions(lunasvg PRIVATE LUNASVG_BUILD)
 if(NOT BUILD_SHARED_LIBS)
+# Originally in lunasvg the scope is set to PRIVATE. But it seems to be a bug.
     target_compile_definitions(lunasvg PUBLIC LUNASVG_BUILD_STATIC)
 endif()
 
