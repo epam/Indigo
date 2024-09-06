@@ -716,7 +716,7 @@ CEXPORT int bingoCheckMemoryFree()
 
 CEXPORT qword bingoProfNanoClock()
 {
-    return nanoClock();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 }
 
 CEXPORT void bingoProfIncTimer(const char* name, qword dt)

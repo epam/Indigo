@@ -26,7 +26,12 @@ files = [
     "1822-peptide",
     "1843-rna",
     "1950-mixed-seq",
+    "nucleotides",
 ]
+
+lib = indigo.loadMonomerLibraryFromFile(
+    os.path.join(ref_path, "monomer_library.ket")
+)
 
 files.sort()
 for filename in files:
@@ -35,7 +40,7 @@ for filename in files:
     #     file.write(mol.fasta())
     with open(os.path.join(ref_path, filename) + ".fasta", "r") as file:
         seq_ref = file.read()
-    seq = mol.fasta()
+    seq = mol.fasta(lib)
     diff = find_diff(seq_ref, seq)
     if not diff:
         print(filename + ".fasta:SUCCEED")

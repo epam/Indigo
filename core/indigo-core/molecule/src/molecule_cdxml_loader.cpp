@@ -16,7 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include "gzip/gzip_scanner.h"
+#include "lzw/lzw_decoder.h"
 #include <algorithm>
+#include <charconv>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
@@ -264,7 +267,19 @@ std::string CDXProperty::parseCDXINT16(int16_t val) const
         auto it = kCDXProp_Arrow_ArrowHeadTypeIntToStr.find((CDXArrowheadType)val);
         if (it != kCDXProp_Arrow_ArrowHeadTypeIntToStr.end())
             return it->second;
-        break;
+    }
+    break;
+    case kCDXProp_Arrow_ArrowHead_Tail:
+    case kCDXProp_Arrow_ArrowHead_Head: {
+        auto it = kCDXProp_Arrow_ArrowHeadIntToStr.find((CDXArrowheadHead)val);
+        if (it != kCDXProp_Arrow_ArrowHeadIntToStr.end())
+            return it->second;
+    }
+    break;
+    case kCDXProp_Line_Type: {
+        auto it = kLineTypeIntToStr.find((CDXLineType)val);
+        if (it != kLineTypeIntToStr.end())
+            return it->second;
     }
     default:
         break;
@@ -398,6 +413,7 @@ void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
     _id_to_node_index.clear();
     _id_to_bond_index.clear();
     _fragment_nodes.clear();
+    _images.clear();
     text_objects.clear();
     _pluses.clear();
     brackets.clear();
@@ -521,6 +537,9 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         mol.meta().addMetaObject(new KETReactionPlus(plus));
 
     // CDX contains graphic arrow wich id dublicate arrow/
+    for (const auto& image : _images)
+        mol.meta().addMetaObject(new KETImage(image.bbox, image.image_format, image.data, false));
+
     // Search arrows for arrow with coords same as in grapic arrow and if found - remove tis arrow gecause graphic arrow contains more specific type
     for (const auto& g_arrow : _graphic_arrows)
     {
@@ -529,7 +548,7 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         Vec2f p2(g_arr_info.second.x, g_arr_info.second.y);
         for (auto it = _arrows.begin(); it != _arrows.end(); it++)
         {
-            const auto& arr_info = (*it).first;
+            const auto& arr_info = (*it).second.first;
             Vec2f ap1(arr_info.first.x, arr_info.first.y);
             Vec2f ap2(arr_info.second.x, arr_info.second.y);
             if (fabsf(p1.x - ap1.x) < EPSILON && fabsf(p1.y - ap1.y) < EPSILON && fabsf(p2.x - ap2.x) < EPSILON && fabsf(p2.y - ap2.y) < EPSILON)
@@ -543,10 +562,10 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
 
     for (const auto& arrow : _arrows)
     {
-        const auto& arr_info = arrow.first;
+        const auto& arr_info = arrow.second.first;
         Vec2f v1(arr_info.first.x, arr_info.first.y);
         Vec2f v2(arr_info.second.x, arr_info.second.y);
-        mol.meta().addMetaObject(new KETReactionArrow(arrow.second, v1, v2));
+        mol.meta().addMetaObject(new KETReactionArrow(arrow.second.second, v1, v2));
     }
 
     for (const auto& prim : _primitives)
@@ -780,9 +799,17 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(BaseCDXElement& first_elem, bool n
 
     auto altgroup_lambda = [this](BaseCDXElement& elem) { _parseAltGroup(elem); };
 
-    std::unordered_map<std::string, std::function<void(BaseCDXElement & elem)>> cdxml_dispatcher = {
-        {"n", node_lambda},          {"b", bond_lambda},      {"fragment", fragment_lambda}, {"group", group_lambda}, {"bracketedgroup", bracketed_lambda},
-        {"graphic", graphic_lambda}, {"arrow", arrow_lambda}, {"altgroup", altgroup_lambda}};
+    auto embedded_object_lambda = [this](BaseCDXElement& elem) { this->_parseEmbeddedObject(elem); };
+
+    std::unordered_map<std::string, std::function<void(BaseCDXElement & elem)>> cdxml_dispatcher = {{"n", node_lambda},
+                                                                                                    {"b", bond_lambda},
+                                                                                                    {"fragment", fragment_lambda},
+                                                                                                    {"group", group_lambda},
+                                                                                                    {"bracketedgroup", bracketed_lambda},
+                                                                                                    {"graphic", graphic_lambda},
+                                                                                                    {"arrow", arrow_lambda},
+                                                                                                    {"altgroup", altgroup_lambda},
+                                                                                                    {"embeddedobject", embedded_object_lambda}};
 
     for (auto pelem = first_elem.copy(); pelem->hasContent(); pelem = pelem->nextSiblingElement())
     {
@@ -1421,6 +1448,44 @@ void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
     }
 }
 
+void MoleculeCdxmlLoader::_parseEmbeddedObject(BaseCDXElement& elem)
+{
+    std::pair<Vec2f, Vec2f> embedded_bbox;
+    std::string image_png;
+    std::vector<Bitmap> bitmaps;
+
+    // auto embdedded_box_lambda = [&embedded_bbox, this](const std::string& data) { this->parseSeg(data, embedded_bbox.first, embedded_bbox.second); };
+    auto emf_png_lambda = [&bitmaps, &embedded_bbox, this](const std::string& data) {
+        std::string image_bin;
+        hexLambda(image_bin)(data);
+        bitmaps = ripBitmapsFromEMF(image_bin);
+    };
+
+    auto emf64_png_lambda = [&bitmaps, &embedded_bbox, this](const std::string& data) {
+        std::string emf_base64, emf;
+        std::copy_if(data.begin(), data.end(), std::back_inserter(emf_base64), [](char c) { return c != '\n' && c != '\r'; });
+        // base64 decode
+        BufferScanner b64decode(emf_base64.c_str(), true);
+        b64decode.readAll(emf);
+        // lzw decompress and rip raster images
+        bitmaps = ripBitmapsFromEMF(_inflate(emf.data(), emf.size()));
+    };
+
+    std::unordered_map<std::string, std::function<void(const std::string&)>> embedded_dispatcher = {{"BoundingBox", segLambda(embedded_bbox.first, embedded_bbox.second)},
+                                                                                                    {"EnhancedMetafile", emf_png_lambda},
+                                                                                                    {"CompressedEnhancedMetafile", emf64_png_lambda},
+                                                                                                    {"PNG", hexLambda(image_png)}};
+
+    applyDispatcher(*elem.firstProperty().get(), embedded_dispatcher);
+
+    Rect2f emb_rect(embedded_bbox.first, embedded_bbox.second);
+    if (image_png.size())
+        _images.emplace_back(KETImage::EKETPNG, emb_rect, image_png);
+    else
+        for (const auto& dib : bitmaps)
+            _images.emplace_back(KETImage::EKETPNG, emb_rect, dibToPNG(dib.dibits));
+}
+
 void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
 {
     AutoInt superseded_id = 0;
@@ -1465,10 +1530,28 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
             case kCDXArrowType_Equilibrium:
                 ar_type = ReactionComponent::ARROW_EQUILIBRIUM_FILLED_HALF_BOW;
                 break;
+            case kCDXArrowType_FullHead:
+                ar_type = ReactionComponent::ARROW_FILLED_TRIANGLE;
+                break;
             default:
                 break;
             }
             _graphic_arrows.push_back(std::make_pair(std::make_pair(tail, head), ar_type));
+        }
+        else if (arrow_type == kCDXArrowType_RetroSynthetic && superseded_id != 0)
+        {
+            auto& head = graph_bbox.first;
+            auto& tail = graph_bbox.second;
+
+            auto arrow_it = _arrows.find(superseded_id);
+            if (arrow_it != _arrows.end())
+            {
+                _arrows.erase(arrow_it);
+            }
+            _retro_arrows_graph_id.emplace(superseded_id);
+
+            _graphic_arrows.push_back(
+                std::make_pair(std::make_pair(Vec2f(tail.x, tail.y), Vec2f(head.x, head.y)), ReactionComponent::ARROW_RETROSYNTHETIC));
         }
     }
     break;
@@ -1502,13 +1585,49 @@ void MoleculeCdxmlLoader::_parseArrow(BaseCDXElement& elem)
     std::string fill_type;
     std::string arrow_head;
     std::string head_type;
+    std::string arrow_tail;
+    AutoInt arrow_id = 0;
+    std::string no_go;
+    std::string line_type;
 
-    std::unordered_map<std::string, std::function<void(const std::string&)>> arrow_dispatcher = {
-        {"BoundingBox", bboxLambda(text_bbox)},  {"FillType", strLambda(fill_type)}, {"ArrowheadHead", strLambda(arrow_head)},
-        {"ArrowheadType", strLambda(head_type)}, {"Head3D", posLambda(end_pos)},     {"Tail3D", posLambda(begin_pos)}};
+    std::unordered_map<std::string, std::function<void(const std::string&)>> arrow_dispatcher = {{"BoundingBox", bboxLambda(text_bbox)},
+                                                                                                 {"FillType", strLambda(fill_type)},
+                                                                                                 {"ArrowheadHead", strLambda(arrow_head)},
+                                                                                                 {"ArrowheadType", strLambda(head_type)},
+                                                                                                 {"ArrowheadTail", strLambda(arrow_tail)},
+                                                                                                 {"Head3D", posLambda(end_pos)},
+                                                                                                 {"Tail3D", posLambda(begin_pos)},
+                                                                                                 {"id", intLambda(arrow_id)},
+                                                                                                 {"NoGo", strLambda(no_go)},
+                                                                                                 {"LineType", strLambda(line_type)}};
 
     applyDispatcher(*elem.firstProperty().get(), arrow_dispatcher);
-    _arrows.push_back(std::make_pair(std::make_pair(begin_pos, end_pos), 2));
+
+    if (!_retro_arrows_graph_id.count(arrow_id))
+    {
+        auto ar_type = ReactionComponent::ARROW_BASIC;
+        if (arrow_tail.size() == 0)
+        {
+            if (arrow_head == "Full")
+            {
+                if (no_go.size())
+                    ar_type = ReactionComponent::ARROW_FAILED;
+                else if (head_type == "Angle" && line_type == "Dashed")
+                {
+                    ar_type = ReactionComponent::ARROW_DASHED;
+                }
+            }
+        }
+        else if (arrow_head == arrow_tail)
+        {
+            if (arrow_head == "Full" && no_go.size() == 0 && line_type.size() == 0)
+            {
+                ar_type = ReactionComponent::ARROW_BOTH_ENDS_FILLED_TRIANGLE;
+            }
+        }
+
+        _arrows[arrow_id] = (std::make_pair(std::make_pair(begin_pos, end_pos), ar_type));
+    }
 }
 
 void MoleculeCdxmlLoader::_parseLabel(BaseCDXElement& elem, std::string& label)
@@ -1671,13 +1790,12 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
     Rect2f text_bbox;
 
     std::string label_justification, label_alignment;
-    auto label_justification_lambda = [&label_justification, this](const std::string& data) { label_justification = data; };
-    auto label_justification_alignment_lambda = [&label_alignment, this](const std::string& data) { label_alignment = data; };
 
     std::unordered_map<std::string, std::function<void(const std::string&)>> text_dispatcher = {{"p", posLambda(text_pos)},
+                                                                                                {"xyz", posLambda(text_pos)},
                                                                                                 {"BoundingBox", bboxLambda(text_bbox)},
-                                                                                                {"LabelJustification", label_justification_lambda},
-                                                                                                {"LabelAlignment", label_justification_alignment_lambda}};
+                                                                                                {"LabelJustification", strLambda(label_justification)},
+                                                                                                {"LabelAlignment", strLambda(label_alignment)}};
 
     AutoInt font_id, font_color_index, font_face;
     float font_size;
@@ -1858,4 +1976,70 @@ void MoleculeCdxmlLoader::_appendQueryAtom(const char* atom_label, std::unique_p
         atom.reset(cur_atom.release());
     else
         atom.reset(QueryMolecule::Atom::oder(atom.release(), cur_atom.release()));
+}
+
+void MoleculeCdxmlLoader::_gunzip(Scanner& scanner, Array<char>& dataBuf)
+{
+    // check GZip format
+    if (scanner.length() >= 2)
+    {
+        byte id[2];
+        long long pos = scanner.tell();
+
+        scanner.readCharsFix(2, (char*)id);
+        scanner.seek(pos, SEEK_SET);
+
+        if (id[0] == 0x1f && id[1] == 0x8b)
+        {
+            GZipScanner gzscanner(scanner);
+            gzscanner.readAll(dataBuf);
+            dataBuf.push('\0');
+            return;
+        }
+    }
+
+    scanner.readAll(dataBuf);
+    dataBuf.push('\0');
+}
+
+std::string MoleculeCdxmlLoader::_inflate(const char* data, size_t dataLength)
+{
+    z_stream zs; // Structure for zlib decompression
+    memset(&zs, 0, sizeof(zs));
+
+    if (inflateInit(&zs) != Z_OK)
+    {
+        throw Error("inflateInit failed while decompressing.");
+    }
+
+    zs.next_in = (Bytef*)data;
+    zs.avail_in = static_cast<uInt>(dataLength);
+
+    int ret;
+    char buffer[1024];
+    std::string decompressedData;
+
+    // Get decompressed data
+    do
+    {
+        zs.next_out = reinterpret_cast<Bytef*>(buffer);
+        zs.avail_out = sizeof(buffer);
+
+        ret = inflate(&zs, 0);
+        if (decompressedData.size() < zs.total_out)
+        {
+            decompressedData.append(buffer, zs.total_out - decompressedData.size());
+        }
+
+    } while (ret == Z_OK);
+
+    inflateEnd(&zs);
+
+    if (ret != Z_STREAM_END)
+    { // An error occurred that was not EOF
+        std::ostringstream oss;
+        throw Error("Exception during zlib decompression: %s", zs.msg);
+    }
+
+    return decompressedData;
 }

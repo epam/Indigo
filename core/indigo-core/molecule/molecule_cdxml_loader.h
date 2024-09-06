@@ -27,9 +27,11 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <charconv>
 
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
+#include "common/utils/emf_utils.h"
 #include "elements.h"
 #include "molecule/base_molecule.h"
 #include "molecule/ket_commons.h"
@@ -778,6 +780,15 @@ namespace indigo
     class MoleculeCdxmlLoader
     {
     public:
+        struct ImageDescriptor
+        {
+            ImageDescriptor(KETImage::ImageFormat iformat, Rect2f& rc, const std::string& raw_data) : image_format(iformat), bbox(rc), data(raw_data)
+            {
+            }
+            KETImage::ImageFormat image_format;
+            Rect2f bbox;
+            std::string data;
+        };
         struct EnhancedStereoCenter
         {
             EnhancedStereoCenter(int atom, int type_id, int group_num) : atom_idx(atom), type(type_id), group(group_num)
@@ -838,6 +849,23 @@ namespace indigo
             };
         }
 
+        auto hexLambda(std::string& binary)
+        {
+            return [this, &binary](const std::string& hex) {
+                binary.reserve(hex.size() / 2);
+
+                for (size_t i = 0; i < hex.size(); i += 2)
+                {
+                    unsigned char byte;
+                    auto [ptr, ec] = std::from_chars(hex.data() + i, hex.data() + i + 2, byte, 16);
+                    if (ec == std::errc())
+                        binary.push_back(static_cast<char>(byte));
+                    else
+                        throw std::runtime_error("Invalid hex digit");
+                }
+            };
+        }
+
         static auto intListLambda(std::vector<int>& vals)
         {
             return [&vals](const std::string& data) {
@@ -881,6 +909,7 @@ namespace indigo
         void _parseGraphic(BaseCDXElement& elem);
         void _parseArrow(BaseCDXElement& elem);
         void _parseAltGroup(BaseCDXElement& elem);
+        void _parseEmbeddedObject(BaseCDXElement& elem);
 
         int _addBond(Molecule& mol, const CdxmlBond& bond, int begin, int end);
         void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& new_bonds);
@@ -891,6 +920,8 @@ namespace indigo
         void _parseCDXMLPage(BaseCDXElement& elem);
         void _parseCDXMLElements(BaseCDXElement& elem, bool no_siblings = false, bool inside_fragment_node = false);
         void _parseFragmentAttributes(BaseCDXProperty& prop);
+        void _gunzip(Scanner& scanner, Array<char>& dataBuf);
+        std::string _inflate(const char* data, size_t dataLength);
 
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
         void _updateConnection(const CdxmlNode& node, int atom_idx);
@@ -902,8 +933,10 @@ namespace indigo
         std::unordered_map<int, std::size_t> _id_to_bond_index;
         std::vector<int> _fragment_nodes;
         std::vector<Vec2f> _pluses;
-        std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _arrows;
+        std::unordered_map<int, std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
         std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _graphic_arrows;
+        std::unordered_set<int> _retro_arrows_graph_id;
+        std::vector<ImageDescriptor> _images;
         std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _primitives;
 
         std::vector<EnhancedStereoCenter> _stereo_centers;

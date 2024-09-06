@@ -46,17 +46,20 @@ if (BUILD_STANDALONE)
             PUBLIC tinyxml2
             PUBLIC rapidjson
             PUBLIC inchi
-            PUBLIC cppcodec)
+            PUBLIC cppcodec
+            PUBLIC png)
 else()
     find_package(InChI REQUIRED)
     find_package(TinyXML2 REQUIRED)
     find_package(ZLIB REQUIRED)
     find_package(RapidJSON REQUIRED)
+    find_package(PNG REQUIRED)
     target_link_libraries(${PROJECT_NAME}
             PUBLIC InChI::InChI
             PUBLIC RapidJSON::RapidJSON
             PUBLIC TinyXML2::TinyXML2
-            PUBLIC ZLIB::ZLIB)
+            PUBLIC ZLIB::ZLIB
+            PUBLIC PNG::PNG)
 endif()
 target_include_directories(${PROJECT_NAME}
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/common

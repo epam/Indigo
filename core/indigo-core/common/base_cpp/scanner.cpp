@@ -285,6 +285,13 @@ bool Scanner::tryReadFloat(float& value)
     return true;
 }
 
+void Scanner::readWord(std::string& word, const char* delimiters)
+{
+    Array<char> buf;
+    readWord(buf, delimiters);
+    word = buf.ptr();
+}
+
 void Scanner::readWord(Array<char>& word, const char* delimiters)
 {
     word.clear();

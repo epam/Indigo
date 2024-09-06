@@ -153,6 +153,11 @@ namespace indigo
 
         // OPERATORS:
 
+        inline bool operator<(const Vec2f& a) const
+        {
+            return std::make_pair(x, y) < std::make_pair(a.x, a.y);
+        }
+
         inline Vec2f operator+(const Vec2f& a) const
         {
             return Vec2f(x + a.x, y + a.y);
@@ -365,6 +370,12 @@ namespace indigo
         {
             _leftBottom.min(second._leftBottom);
             _rightTop.max(second._rightTop);
+        }
+
+        inline void offset(const Vec2f& offset)
+        {
+            _leftBottom += offset;
+            _rightTop += offset;
         }
 
         inline float left() const

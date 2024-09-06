@@ -18,6 +18,7 @@
 
 #include "reaction/base_reaction.h"
 #include "base_cpp/tlscont.h"
+#include "molecule/ket_commons.h"
 #include "molecule/molecule_dearom.h"
 
 using namespace indigo;
@@ -391,6 +392,8 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<
 
     name.copy(other.name);
     _meta.clone(other._meta);
+
+    isRetrosynthetic = other.isRetrosynthetic;
 }
 
 void BaseReaction::_clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings)
@@ -490,4 +493,9 @@ void BaseReaction::unfoldHydrogens()
 MetaDataStorage& BaseReaction::meta()
 {
     return _meta;
+}
+
+int BaseReaction::multitaleCount() const
+{
+    return _meta.getMetaCount(KETReactionMultitailArrow::CID);
 }

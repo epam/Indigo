@@ -39,6 +39,9 @@ expected_exceptions = {
     "dna_mod": "Sequence saver: 'cdaC' nucleotide has no natural analog and cannot be saved into a sequence.",
 }
 
+# empty library - internal used for now
+lib = indigo.loadMonomerLibrary('{"root":{}}')
+
 files.sort()
 for filename in files:
     mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".mol"))
@@ -47,7 +50,7 @@ for filename in files:
     with open(os.path.join(ref_path, filename) + ".seq", "r") as file:
         seq_ref = file.read()
     try:
-        seq = mol.sequence()
+        seq = mol.sequence(lib)
         diff = find_diff(seq_ref, seq)
         if not diff:
             print(filename + ".seq:SUCCEED")

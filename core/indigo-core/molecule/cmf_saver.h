@@ -70,8 +70,8 @@ namespace indigo
         void _init();
         void _encode(byte symbol);
 
-        void _encodeAtom(Molecule& mol, int idx, const int* mapping);
-        void _encodeBond(Molecule& mol, int idx, const int* mapping);
+        void _encodeAtom(Molecule& mol, int idx, const Array<int>& mapping);
+        void _encodeBond(Molecule& mol, int idx, const Array<int>& mapping);
         void _encodeCycleNumer(int n);
 
         void _writeFloatInRange(Output& output, float v, float min, float range);

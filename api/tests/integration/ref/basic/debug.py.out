@@ -1,28 +1,28 @@
 *** Molecule ***
 #02: <molecule>
-#19: <AtomsIterator>
-  #18: <atom>
-  #18: <atom>
-  #18: <atom>
-  #18: <atom>
-  #18: <atom>
-  #18: <atom>
+#20: <AtomsIterator>
+  #19: <atom>
+  #19: <atom>
+  #19: <atom>
+  #19: <atom>
+  #19: <atom>
+  #19: <atom>
 *** Reaction ***
 #04: <reaction>
 #07: <reaction molecule iterator>
   #08: <reaction molecule>
-  #19: <AtomsIterator>
-    #18: <atom>
-    #18: <atom>
-    #18: <atom>
-    #18: <atom>
-    #18: <atom>
-    #18: <atom>
+  #20: <AtomsIterator>
+    #19: <atom>
+    #19: <atom>
+    #19: <atom>
+    #19: <atom>
+    #19: <atom>
+    #19: <atom>
   #08: <reaction molecule>
-  #19: <AtomsIterator>
-    #18: <atom>
-    #18: <atom>
-    #18: <atom>
-    #18: <atom>
-    #18: <atom>
-    #18: <atom>
+  #20: <AtomsIterator>
+    #19: <atom>
+    #19: <atom>
+    #19: <atom>
+    #19: <atom>
+    #19: <atom>
+    #19: <atom>

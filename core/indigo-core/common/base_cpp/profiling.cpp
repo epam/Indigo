@@ -33,7 +33,7 @@ using namespace indigo;
 // ProfilingTimer
 //
 
-ProfilingTimer::ProfilingTimer(int name_index) : _name_index(name_index), _start_time(nanoClock()), _dt(0)
+ProfilingTimer::ProfilingTimer(int name_index) : _name_index(name_index), _start_time(std::chrono::high_resolution_clock::now()), _dt(0)
 {
 }
 
@@ -48,7 +48,7 @@ qword ProfilingTimer::stop()
     {
         return 0;
     }
-    _dt = nanoClock() - _start_time;
+    _dt = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - _start_time).count();
     {
         auto inst = sf::xlock_safe_ptr(ProfilingSystem::getInstance());
         inst->addTimer(_name_index, _dt);
@@ -63,12 +63,12 @@ qword ProfilingTimer::getTime() const
     {
         return _dt;
     }
-    return nanoClock() - _start_time;
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - _start_time).count();
 }
 
 float ProfilingTimer::getTimeSec() const
 {
-    return nanoHowManySeconds(getTime());
+    return static_cast<float>(getTime()) / 1e9f;
 }
 
 //
@@ -211,13 +211,15 @@ void ProfilingSystem::_printTimerData(const Record::Data& data, Output& output) 
         output.printf("-\t0\t\t\t");
         return;
     }
-    float total_sec = nanoHowManySeconds(data.value);
-    float avg_ms = nanoHowManySeconds(data.value / data.count) * 1000;
-    float max_ms = nanoHowManySeconds(data.max_value) * 1000;
+
+    float total_sec = static_cast<float>(data.value) / 1e9f;
+
+    float avg_ms = (static_cast<float>(data.value) / static_cast<float>(data.count)) / 1e6f;
+    float max_ms = static_cast<float>(data.max_value) / 1e6f;
 
     double avg_value = (double)data.value / data.count;
     double sigma_sq = data.square_sum / data.count - avg_value * avg_value;
-    float sigma_ms = nanoHowManySeconds((qword)sqrt(sigma_sq)) * 1000;
+    float sigma_ms = static_cast<float>(sqrt(sigma_sq)) / 1e6f;
 
     output.printf("%0.2fs\t%0.0lf\t%0.1fms\t%0.1lfms\t%0.1fms", total_sec, (double)data.count, avg_ms, sigma_ms, max_ms);
 }
@@ -270,9 +272,9 @@ float ProfilingSystem::getLabelExecTime(const char* name, const bool total)
 
     if (total)
     {
-        return nanoHowManySeconds(_records[idx].total.value);
+        return static_cast<float>(_records[idx].total.value) / 1e9f;
     }
-    return nanoHowManySeconds(_records[idx].current.value);
+    return static_cast<float>(_records[idx].current.value) / 1e9f;
 }
 
 qword ProfilingSystem::getLabelValue(const char* name, const bool total)

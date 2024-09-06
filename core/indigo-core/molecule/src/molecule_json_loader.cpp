@@ -7,11 +7,13 @@
 #include "layout/molecule_layout.h"
 #include "molecule/elements.h"
 #include "molecule/ket_commons.h"
+#include "molecule/ket_document.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_sgroups.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_lib.h"
+#include "molecule/monomers_template_library.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
 
@@ -23,7 +25,12 @@ IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
-      _connection_array(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), _components_count(0), _is_library(false)
+      _connection_array(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), _components_count(0), _document()
+{
+    parse_ket(ket);
+}
+
+void MoleculeJsonLoader::parse_ket(Document& ket)
 {
     if (ket.HasMember("ket_version"))
     {
@@ -31,45 +38,42 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     }
 
     Value& root = ket["root"];
-    Value& nodes = root["nodes"];
-
-    if (nodes.Size() == 0)
+    if (root.HasMember("nodes"))
     {
-        _is_library = true;
-        MonomerTemplateLibrary::instance().clear();
-    }
+        Value& nodes = root["nodes"];
 
-    // rewind to first molecule node
-    for (rapidjson::SizeType i = 0; i < nodes.Size(); ++i)
-    {
-        if (nodes[i].HasMember("$ref"))
+        // rewind to first molecule node
+        for (rapidjson::SizeType i = 0; i < nodes.Size(); ++i)
         {
-            std::string node_name = nodes[i]["$ref"].GetString();
-            Value& node = ket[node_name.c_str()];
-            std::string node_type = node["type"].GetString();
-            if (node_type.compare("molecule") == 0)
+            if (nodes[i].HasMember("$ref"))
             {
-                _mol_nodes.PushBack(node, ket.GetAllocator());
+                std::string node_name = nodes[i]["$ref"].GetString();
+                Value& node = ket[node_name.c_str()];
+                std::string node_type = node["type"].GetString();
+                if (node_type.compare("molecule") == 0)
+                {
+                    _mol_nodes.PushBack(node, ket.GetAllocator());
+                }
+                else if (node_type.compare("rgroup") == 0 && node_name.size() > 2)
+                {
+                    std::string rg = "rg";
+                    int rg_num = std::atoi(node_name.substr(rg.size()).c_str());
+                    _rgroups.emplace_back(rg_num, node);
+                }
+                else if (node_type.compare("monomer") == 0)
+                {
+                    _monomer_array.PushBack(node, ket.GetAllocator());
+                }
+                else
+                    throw Error("Unknows node type: %s", node_type.c_str());
             }
-            else if (node_type.compare("rgroup") == 0 && node_name.size() > 2)
+            else if (nodes[i].HasMember("type"))
             {
-                std::string rg = "rg";
-                int rg_num = std::atoi(node_name.substr(rg.size()).c_str());
-                _rgroups.emplace_back(rg_num, node);
-            }
-            else if (node_type.compare("monomer") == 0)
-            {
-                _monomer_array.PushBack(node, ket.GetAllocator());
+                _meta_objects.PushBack(nodes[i], ket.GetAllocator());
             }
             else
-                throw Error("Unknows node type: %s", node_type.c_str());
+                throw Error("Unsupported node for molecule");
         }
-        else if (nodes[i].HasMember("type"))
-        {
-            _meta_objects.PushBack(nodes[i], ket.GetAllocator());
-        }
-        else
-            throw Error("Unsupported node for molecule");
     }
 
     if (root.HasMember("templates"))
@@ -97,10 +101,30 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     }
 }
 
+MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
+    : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
+      _connection_array(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), _components_count(0), _document()
+{
+    if (scanner.lookNext() == '{')
+    {
+        Array<char> buf;
+        scanner.readAll(buf);
+        buf.push(0);
+        char* ptr = buf.ptr();
+        if (!_document.Parse(ptr).HasParseError())
+        {
+            if (_document.HasMember("root"))
+            {
+                parse_ket(_document);
+            }
+        }
+    }
+}
+
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
     : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType), _connection_array(kArrayType), _pmol(0), _pqmol(0),
       ignore_noncritical_query_features(false), ignore_no_chiral_flag(false), skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0),
-      _components_count(0)
+      _components_count(0), _document()
 {
 }
 
@@ -1149,41 +1173,43 @@ static IdtAlias parseIdtAlias(const rapidjson::Value& parent)
         return IdtAlias(idt_alias_base);
 }
 
-void MoleculeJsonLoader::addToLibMonomerTemplate(const rapidjson::Value& mt_json, BaseMolecule& mol, int tgroup_id)
+void MoleculeJsonLoader::addMonomerTemplate(const rapidjson::Value& mt_json, MonomerTemplateLibrary* library, KetDocument* document)
 {
     if (!mt_json.HasMember("id"))
-        return; // Do we need exception here?
-    std::string monomer_class, class_HELM, id, full_name, alias, natural_analog;
-    id = mt_json["id"].GetString();
-    if (id.size() < 4)
-        return; // Skip templates from kMonomersBasicTemplates
-    if (mt_json.HasMember("class"))
-        monomer_class = mt_json["class"].GetString();
-    if (mt_json.HasMember("classHELM"))
-        class_HELM = mt_json["classHELM"].GetString();
-    if (mt_json.HasMember("fullName"))
-        full_name = mt_json["fullName"].GetString();
-    if (mt_json.HasMember("alias"))
-        alias = mt_json["alias"].GetString();
-    if (mt_json.HasMember("naturalAnalog"))
-        natural_analog = mt_json["naturalAnalog"].GetString();
+        throw Error("Monomer template without id");
+
+    std::string id = mt_json["id"].GetString();
+
+    if (!mt_json.HasMember("class"))
+        throw Error("Monomer template without class");
+    std::string monomer_class = mt_json["class"].GetString();
+
     bool unresolved = false;
     if (mt_json.HasMember("unresolved"))
         unresolved = mt_json["unresolved"].GetBool();
 
-    MonomerTemplate mon_template(id, MonomerTemplate::StrToMonomerClass(monomer_class), class_HELM, full_name, alias, natural_analog, unresolved,
-                                 mol.tgroups.getTGroup(tgroup_id));
-
+    IdtAlias idt_alias;
     if (mt_json.HasMember("idtAliases"))
     {
-        IdtAlias idt_alias = mol.tgroups.getTGroup(tgroup_id).idt_alias;
+        idt_alias = parseIdtAlias(mt_json);
         if (idt_alias.getBase().size() == 0)
             throw Error("Monomer template %s contains IDT alias without base.", id.c_str());
-        mon_template.setIdtAlias(idt_alias);
     }
     else if (unresolved)
     {
         throw Error("Unresoved monomer '%s' without IDT alias.", id.c_str());
+    }
+
+    auto& mon_template = library->addMonomerTemplate(id, monomer_class, idt_alias, unresolved);
+    mon_template.parseOptsFromKet(mt_json);
+
+    // parse atoms
+    mon_template.parseAtoms(mt_json["atoms"]);
+
+    // parse bonds
+    if (mt_json.HasMember("bonds"))
+    {
+        mon_template.parseBonds(mt_json["bonds"]);
     }
 
     if (mt_json.HasMember("attachmentPoints"))
@@ -1194,32 +1220,30 @@ void MoleculeJsonLoader::addToLibMonomerTemplate(const rapidjson::Value& mt_json
             auto& ap = att_points[i];
             std::string ap_type, label;
             int attachment_atom;
-            std::vector<int> leaving_group;
-            if (ap.HasMember("type"))
-                ap_type = ap["type"].GetString();
             if (ap.HasMember("label"))
                 label = ap["label"].GetString();
-            if (ap.HasMember("attachmentAtom"))
-                attachment_atom = ap["attachmentAtom"].GetInt();
+            attachment_atom = ap["attachmentAtom"].GetInt();
+            auto& att_point = mon_template.AddAttachmentPoint(label, attachment_atom);
+            att_point.parseOptsFromKet(ap);
             if (ap.HasMember("leavingGroup"))
             {
                 auto& lv = ap["leavingGroup"];
                 if (lv.HasMember("atoms"))
                 {
+                    std::vector<int> leaving_group;
                     auto& atoms = lv["atoms"];
                     for (SizeType i = 0; i < atoms.Size(); i++)
                     {
                         leaving_group.emplace_back(atoms[i].GetInt());
                     }
+                    att_point.setLeavingGroup(leaving_group);
                 }
             }
-            mon_template.AddAttachmentPoint(label, ap_type, attachment_atom, leaving_group);
         }
-        MonomerTemplateLibrary::instance().addMonomerTemplate(mon_template);
     }
 }
 
-void MoleculeJsonLoader::addToLibMonomerGroupTemplate(const rapidjson::Value& monomer_group_template)
+void MoleculeJsonLoader::addToLibMonomerGroupTemplate(MonomerTemplateLibrary& library, const rapidjson::Value& monomer_group_template)
 {
     if (monomer_group_template.HasMember("id"))
     {
@@ -1240,7 +1264,6 @@ void MoleculeJsonLoader::addToLibMonomerGroupTemplate(const rapidjson::Value& mo
                 throw Error("Group monomer template %s(id=%s) contains IDT alias without base.", name.c_str(), id.c_str());
         }
 
-        MonomerTemplateLibrary& library = MonomerTemplateLibrary::instance();
         if (idt_has_modifications)
             library.addMonomerGroupTemplate(
                 MonomerGroupTemplate(id, name, template_class, IdtAlias(idt_alias_base, idt_five_prime_end, idt_internal, idt_three_prime_end)));
@@ -1254,9 +1277,33 @@ void MoleculeJsonLoader::addToLibMonomerGroupTemplate(const rapidjson::Value& mo
             for (SizeType i = 0; i < templates.Size(); i++)
             {
                 std::string template_ref = templates[i]["$ref"].GetString();
-                mgt.addTemplate(_template_ref_to_id[template_ref]);
+                mgt.addTemplate(library, _template_ref_to_id[template_ref]);
             }
         }
+    }
+}
+
+void MoleculeJsonLoader::loadMonomerLibrary(MonomerTemplateLibrary& library)
+{
+    Molecule mol;
+    // Add monomer teplates
+    for (SizeType i = 0; i < _templates.Size(); i++)
+    {
+        auto& mt = _templates[i];
+        if (mt.HasMember("type") && mt["type"].GetString() == std::string("monomerTemplate"))
+        {
+            addMonomerTemplate(mt, &library, nullptr);
+        }
+    }
+
+    // Monomer group templates add after adding all monomers
+    for (SizeType i = 0; i < _templates.Size(); i++)
+    {
+        auto& mt = _templates[i];
+        // int tp = mt.GetType();
+        // Parse library
+        if (mt.HasMember("type") && mt["type"].GetString() == std::string("monomerGroupTemplate"))
+            addToLibMonomerGroupTemplate(library, mt);
     }
 }
 
@@ -1276,7 +1323,7 @@ std::string MoleculeJsonLoader::monomerTemplateClass(const rapidjson::Value& mon
     return result;
 }
 
-int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol)
+int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol, StereocentersOptions stereochemistry_options)
 {
     auto tg_idx = mol.tgroups.addTGroup();
     TGroup& tg = mol.tgroups.getTGroup(tg_idx);
@@ -1359,7 +1406,7 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
         if (monomer_template.HasMember("idtAliases"))
         {
 
-            tg.idt_alias = parseIdtAlias(monomer_template);
+            tg.idt_alias.readString(parseIdtAlias(monomer_template).getBase().c_str(), true);
         }
 
         if (monomer_template.HasMember("attachmentPoints"))
@@ -1595,23 +1642,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         auto& mt = _templates[i];
         // int tp = mt.GetType();
         if (mt.HasMember("type") && mt["type"].GetString() == std::string("monomerTemplate"))
-        {
-            int tgroup_id = parseMonomerTemplate(mt, mol);
-            if (_is_library)
-                addToLibMonomerTemplate(mt, mol, tgroup_id);
-        }
-    }
-    // Monomer group templates add after adding all monomers
-    if (_is_library)
-    {
-        for (SizeType i = 0; i < _templates.Size(); i++)
-        {
-            auto& mt = _templates[i];
-            // int tp = mt.GetType();
-            // Parse library
-            if (mt.HasMember("type") && mt["type"].GetString() == std::string("monomerGroupTemplate"))
-                addToLibMonomerGroupTemplate(mt);
-        }
+            int tgroup_id = parseMonomerTemplate(mt, mol, stereochemistry_options);
     }
 
     std::unordered_map<int, int> monomer_id_mapping;
@@ -1800,7 +1831,8 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
         {"elliptical-arc-arrow-filled-bow", ReactionComponent::ARROW_ELLIPTICAL_ARC_FILLED_BOW},
         {"elliptical-arc-arrow-filled-triangle", ReactionComponent::ARROW_ELLIPTICAL_ARC_FILLED_TRIANGLE},
         {"elliptical-arc-arrow-open-angle", ReactionComponent::ARROW_ELLIPTICAL_ARC_OPEN_ANGLE},
-        {"elliptical-arc-arrow-open-half-angle", ReactionComponent::ARROW_ELLIPTICAL_ARC_OPEN_HALF_ANGLE}};
+        {"elliptical-arc-arrow-open-half-angle", ReactionComponent::ARROW_ELLIPTICAL_ARC_OPEN_HALF_ANGLE},
+        {"retrosynthetic", ReactionComponent::ARROW_RETROSYNTHETIC}};
 
     if (meta_objects.IsArray())
     {
@@ -1899,6 +1931,72 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
                 const rapidjson::Value& plus_location = mobj["location"];
                 Vec2f plus_pos(plus_location[0].GetFloat(), plus_location[1].GetFloat());
                 meta_interface.addMetaObject(new KETReactionPlus(plus_pos));
+            }
+            else if (node_type == "image")
+            {
+                const rapidjson::Value& bbox_val = mobj["boundingBox"];
+                Vec2f lt(bbox_val["x"].GetFloat(), bbox_val["y"].GetFloat());
+                Vec2f rb(lt);
+                rb.add(Vec2f(bbox_val["width"].GetFloat(), -bbox_val["height"].GetFloat()));
+                std::string image_format_str = mobj["format"].GetString();
+                KETImage::ImageFormat image_format;
+                if (image_format_str == KImagePNG)
+                    image_format = KETImage::EKETPNG;
+                else if (image_format_str == KImageSVG)
+                    image_format = KETImage::EKETSVG;
+                else
+                    throw Exception("Unsupported image format: %s", image_format_str.c_str());
+
+                meta_interface.addMetaObject(new KETImage(Rect2f(lt, rb), image_format, mobj["data"].GetString()));
+            }
+            else if (node_type == "multi-tailed-arrow")
+            {
+                if (mobj.HasMember("data"))
+                {
+                    auto& data_obj = mobj["data"];
+                    if (data_obj.HasMember("head"))
+                    {
+                        auto& head_obj = data_obj["head"];
+                        if (head_obj.HasMember("position"))
+                        {
+                            auto& head_pos = head_obj["position"];
+                            Vec2f head_position(head_pos["x"].GetFloat(), head_pos["y"].GetFloat());
+                            if (data_obj.HasMember("spine"))
+                            {
+                                auto& spine_obj = data_obj["spine"];
+                                if (spine_obj.HasMember("pos"))
+                                {
+                                    auto& spine_pos = spine_obj["pos"];
+                                    if (spine_pos.Size() == 2)
+                                    {
+                                        Vec2f spine_begin(spine_pos[0]["x"].GetFloat(), spine_pos[0]["y"].GetFloat());
+                                        Vec2f spine_end(spine_pos[1]["x"].GetFloat(), spine_pos[1]["y"].GetFloat());
+                                        if (data_obj.HasMember("tails"))
+                                        {
+                                            auto& tails = data_obj["tails"];
+                                            if (tails.HasMember("pos"))
+                                            {
+                                                auto& tails_pos_array = tails["pos"];
+                                                if (tails_pos_array.IsArray())
+                                                {
+                                                    Array<Vec2f> tails_array;
+                                                    for (auto it = tails_pos_array.Begin(); it != tails_pos_array.End(); ++it)
+                                                    {
+                                                        auto& tail_pos = *it;
+                                                        Vec2f tail_position(tail_pos["x"].GetFloat(), tail_pos["y"].GetFloat());
+                                                        tails_array.push(tail_position);
+                                                    }
+                                                    meta_interface.addMetaObject(
+                                                        new KETReactionMultitailArrow(head_position, tails_array, spine_begin, spine_end));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -22,6 +22,7 @@
 #include "molecule/elements.h"
 #include "molecule/icm_loader.h"
 #include "molecule/icm_saver.h"
+#include "molecule/ket_document_json_saver.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/molecule_hash.h"
@@ -31,11 +32,14 @@
 #include "molecule/sdf_loader.h"
 #include "reaction/icr_loader.h"
 #include "reaction/icr_saver.h"
+#include "reaction/pathway_reaction.h"
+#include "reaction/pathway_reaction_json_saver.h"
 #include "reaction/reaction_hash.h"
 #include "reaction/reaction_json_saver.h"
 
 #include "indigo_array.h"
 #include "indigo_internal.h"
+#include "indigo_ket_document.h"
 #include "indigo_loaders.h"
 #include "indigo_molecule.h"
 #include "indigo_properties.h"
@@ -841,7 +845,7 @@ CEXPORT int indigoUnserialize(const byte* buf, int size)
             BufferScanner scanner(buf, size);
             IcrLoader loader(scanner);
             std::unique_ptr<IndigoReaction> ir = std::make_unique<IndigoReaction>();
-            loader.loadReaction(ir->rxn);
+            loader.loadReaction(ir->getReaction());
             return self.addObject(ir.release());
         }
         else
@@ -1602,10 +1606,26 @@ CEXPORT const char* indigoJson(int item)
         }
         else if (IndigoBaseReaction::is(obj))
         {
-            ReactionJsonSaver jn(out);
-            self.initReactionJsonSaver(jn);
-            BaseReaction& br = obj.getBaseReaction();
-            jn.saveReaction(br);
+            if (obj.type == IndigoObject::PATHWAY_REACTION)
+            {
+                PathwayReactionJsonSaver jn(out);
+                self.initReactionJsonSaver(jn);
+                BaseReaction& br = obj.getBaseReaction();
+                jn.saveReaction(dynamic_cast<PathwayReaction&>(br));
+            }
+            else
+            {
+                ReactionJsonSaver jn(out);
+                self.initReactionJsonSaver(jn);
+                BaseReaction& br = obj.getBaseReaction();
+                jn.saveReaction(br);
+            }
+        }
+        else if (IndigoKetDocument::is(obj))
+        {
+            KetDocumentJsonSaver js(out);
+            js.pretty_json = self.json_saving_pretty;
+            js.saveKetDocument(static_cast<IndigoKetDocument&>(obj).get());
         }
         out.writeChar(0);
         return tmp.string.ptr();
@@ -1628,6 +1648,11 @@ CEXPORT const char* indigoGetOriginalFormat(int item)
         {
             BaseReaction& rxn = obj.getBaseReaction();
             original_format = rxn.original_format;
+        }
+        else if (IndigoKetDocument::is(obj))
+        {
+            auto& doc = static_cast<IndigoKetDocument&>(obj).get();
+            original_format = doc.original_format;
         }
         else
             throw IndigoError("indigoSaveJson(): expected molecule, got %s", obj.debugInfo());

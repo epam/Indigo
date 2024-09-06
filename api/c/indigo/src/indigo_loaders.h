@@ -140,7 +140,7 @@ protected:
 class IndigoJSONMolecule : public IndigoObject
 {
 public:
-    IndigoJSONMolecule(rapidjson::Document& ket);
+    IndigoJSONMolecule(rapidjson::Document& ket, MonomerTemplateLibrary& library);
     ~IndigoJSONMolecule() override;
     Molecule& getMolecule() override;
     BaseMolecule& getBaseMolecule() override;

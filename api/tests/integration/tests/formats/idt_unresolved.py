@@ -19,9 +19,12 @@ indigo.setOption("ignore-stereochemistry-errors", True)
 
 print("*** IDT unresolved to misc. unsupported formats ***")
 
-mol = indigo.loadIdt("/i2AmPr/")
+lib = indigo.loadMonomerLibraryFromFile(
+    os.path.join(joinPathPy("ref/", __file__), "monomer_library.ket")
+)
+mol = indigo.loadIdt("/i2AmPr/", lib)
 try:
-    mol.sequence()
+    mol.sequence(lib)
 except IndigoException as e:
     print(getIndigoExceptionText(e))
 try:

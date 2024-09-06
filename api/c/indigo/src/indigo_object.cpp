@@ -49,6 +49,7 @@ IndigoObjectTypes::IndigoObjectTypes()
     emplace(IndigoObject::RDF_MOLECULE, "<RDFMolecule>");
     emplace(IndigoObject::RDF_REACTION, "<RDFReaction>");
     emplace(IndigoObject::RDF_LOADER, "<RDFLoader>");
+    emplace(IndigoObject::PATHWAY_REACTION, "<PathwayReaction>");
     emplace(IndigoObject::SMILES_MOLECULE, "<SmilesMolecule>");
     emplace(IndigoObject::SMILES_REACTION, "<SmilesReaction>");
     emplace(IndigoObject::MULTILINE_SMILES_LOADER, "<MultilineSmilesLoader>");
@@ -123,6 +124,8 @@ IndigoObjectTypes::IndigoObjectTypes()
     emplace(IndigoObject::GROSS_REACTION, "<GrossReaction>");
     emplace(IndigoObject::JSON_MOLECULE, "<JsonMolecule>");
     emplace(IndigoObject::JSON_REACTION, "<JsonReaction>");
+    emplace(IndigoObject::MONOMER_LIBRARY, "<MonomerLibrary>");
+    emplace(IndigoObject::KET_DOCUMENT, "<KetDocument>");
 
     if (size() != IndigoObject::INDIGO_OBJECT_LAST_TYPE - 1)
     {

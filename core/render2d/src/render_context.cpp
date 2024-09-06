@@ -510,6 +510,51 @@ void RenderContext::drawTextItemText(const TextItem& ti, const Vec3f& color, boo
     fontsDrawText(ti_mod, color, idle);
 }
 
+struct PngReadContext
+{
+    const unsigned char* data;
+    size_t size;
+    size_t offset;
+};
+
+cairo_status_t pngReadFunc(void* closure, unsigned char* data, unsigned int length)
+{
+    PngReadContext* context = static_cast<PngReadContext*>(closure);
+    if (context->offset + length > context->size)
+        return CAIRO_STATUS_READ_ERROR;
+    memcpy(data, context->data + context->offset, length);
+    context->offset += length;
+    return CAIRO_STATUS_SUCCESS;
+}
+
+void RenderContext::drawPng(const std::string& pngData, const Rect2f& bbox)
+{
+    PngReadContext context = {(const unsigned char*)pngData.data(), pngData.size(), 0};
+    cairo_surface_t* image = cairo_image_surface_create_from_png_stream(pngReadFunc, &context);
+
+    if (cairo_surface_status(image) != CAIRO_STATUS_SUCCESS)
+    {
+        cairo_surface_destroy(image);
+        return;
+    }
+
+    double imgWidth = cairo_image_surface_get_width(image);
+    double imgHeight = cairo_image_surface_get_height(image);
+
+    cairo_save(_cr);
+
+    cairo_translate(_cr, bbox.left(), bbox.bottom());
+    cairo_scale(_cr, bbox.width() / imgWidth, bbox.height() / imgHeight);
+
+    cairo_set_source_surface(_cr, image, 0, 0);
+    cairo_paint(_cr);
+
+    cairo_restore(_cr);
+    cairo_surface_destroy(image);
+    bbIncludePoint(bbox.leftTop());
+    bbIncludePoint(bbox.rightBottom());
+}
+
 void RenderContext::drawLine(const Vec2f& v0, const Vec2f& v1)
 {
     moveTo(v0);
@@ -1326,6 +1371,34 @@ void RenderContext::drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const floa
     lineTo(p);
     p.addScaled(n, width);
     lineTo(p);
+}
+
+void RenderContext::drawRetroSynthArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize)
+{
+    Vec2f d, n, pa(p1);
+    d.diff(p2, p1);
+    float len = d.length();
+    d.normalize();
+    n.copy(d);
+    n.rotate(-1, 0);
+
+    pa.addScaled(n, headwidth / 2);
+    Vec2f pb(pa);
+    pb.addScaled(d, len);
+    drawBar(pa, pb, width, headwidth);
+    n.negate();
+    pa.addScaled(n, headwidth);
+    pb.addScaled(n, headwidth);
+    drawBar(pa, pb, width, headwidth);
+
+    n.negate();
+    pb.addScaled(n, headwidth / 2);
+
+    drawArrowHeader(pb, d, width, (headwidth + width) * 2, headsize * 2);
+    checkPathNonEmpty();
+    bbIncludePath(false);
+    cairo_fill(_cr);
+    cairoCheckStatus();
 }
 
 void RenderContext::drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const bool is_bow,

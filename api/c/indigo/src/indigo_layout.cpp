@@ -101,10 +101,10 @@ CEXPORT int indigoLayout(int object)
         else if (IndigoBaseReaction::is(obj))
         {
             BaseReaction& rxn = obj.getBaseReaction();
-            bool no_layout = rxn.intermediateCount() || rxn.specialConditionsCount() || rxn.meta().getNonChemicalMetaCount();
+            bool no_layout = rxn.intermediateCount() || rxn.specialConditionsCount() || rxn.meta().getNonChemicalMetaCount() ||
+                             obj.type == IndigoObject::PATHWAY_REACTION || rxn.multitaleCount();
             if (!no_layout)
             {
-                rxn.meta().resetMetaData();
                 ReactionLayout rl(rxn, self.smart_layout);
                 rl.max_iterations = self.layout_max_iterations;
                 rl.layout_orientation = (layout_orientation_value)self.layout_orientation;

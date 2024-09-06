@@ -60,11 +60,11 @@ enum CDXDatumID
                                 // are CAS, Beilstein, Aldrich, and Merck. (CDXString)
     kCDXProp_Unused2, // 0x000D Indicates that this object (the reference object) is an alias to an object elsewhere in the document (the target object). The
                       // attributes and contained objects should be taken from the target object. (obsolete)
-    kCDXProp_RepresentsProperty, // 0x000E Indicates that this object represents some property in some other object. (CDXRepresentsProperty)
-    kCDXProp_IgnoreWarnings,     // 0x000F Signifies whether chemical warnings should be suppressed on this object. (CDXBooleanImplied)
-    kCDXProp_ChemicalWarning,    // 0x0010 A warning concerning possible chemical problems with this object. (CDXString)
-    kCDXProp_Visible,            // 0x0011 The object is visible if non-zero. (CDXBoolean)
-    kCDXProp_SupersededBy,       // 0x0012
+    kCDXProp_RepresentsProperty,    // 0x000E Indicates that this object represents some property in some other object. (CDXRepresentsProperty)
+    kCDXProp_IgnoreWarnings,        // 0x000F Signifies whether chemical warnings should be suppressed on this object. (CDXBooleanImplied)
+    kCDXProp_ChemicalWarning,       // 0x0010 A warning concerning possible chemical problems with this object. (CDXString)
+    kCDXProp_Visible,               // 0x0011 The object is visible if non-zero. (CDXBoolean)
+    kCDXProp_SupersededBy = 0x0013, // 0x0012 In the previous version of the CDXML specification. (CDXObjectID)
     // Fonts.
     kCDXProp_FontTable = 0x0100, // 0x0100 A list of fonts used in the document. (CDXFontTable)
 
@@ -297,7 +297,7 @@ enum CDXDatumID
     kCDXProp_WindowsMetafile,      // 0x0A63 A Microsoft Windows Metafile object. (Unformatted)
     kCDXProp_OLEObject,            // 0x0A64 An OLE object. (Unformatted)
     kCDXProp_EnhancedMetafile,     // 0x0A65 A Microsoft Windows Enhanced Metafile object. (Unformatted)
-    kCDXProp_GIF,                  // 0x0A6E
+    kCDXProp_GIF = 0x0A6E,         // 0x0A6E
     kCDXProp_TIFF,                 // 0x0A6F,
     kCDXProp_PNG,                  // 0x0A70
     kCDXProp_JPEG,                 // 0x0A71
@@ -1049,6 +1049,13 @@ enum CDXArrowheadType
     kCDXArrowheadType_Solid = 1,
     kCDXArrowheadType_Hollow,
     kCDXArrowheadType_Angled
+};
+
+enum CDXArrowheadHead
+{
+    kCDXArrowheadFull = 2,
+    kCDXArrowheadHalfLeft,
+    kCDXArrowheadHalfRight
 };
 
 #endif // _H_CDXConstants

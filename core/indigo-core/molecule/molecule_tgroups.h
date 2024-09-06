@@ -47,7 +47,7 @@ namespace indigo
         Array<char> tgroup_text_id;
         int tgroup_id;
         bool unresolved;
-        IdtAlias idt_alias;
+        Array<char> idt_alias;
 
         TGroup();
         ~TGroup();

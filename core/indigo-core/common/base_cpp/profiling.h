@@ -26,7 +26,6 @@
 #include <atomic>
 #include <safe_ptr.h>
 
-#include "base_c/nano.h"
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/os_sync_wrapper.h"
@@ -150,7 +149,8 @@ namespace indigo
 
     private:
         int _name_index;
-        qword _start_time, _dt;
+        std::chrono::time_point<std::chrono::high_resolution_clock> _start_time;
+        qword _dt;
     };
 }
 

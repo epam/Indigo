@@ -3,3 +3,6 @@ all_aminoacids.ket:SUCCEED
 rna_acgtu.ket:SUCCEED
 dna_acgtu.ket:SUCCEED
 spaces.ket:SUCCEED
+aminoacids_variants.ket:SUCCEED
+rna_variants.ket:SUCCEED
+dna_variants.ket:SUCCEED

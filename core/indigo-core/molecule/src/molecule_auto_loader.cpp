@@ -35,6 +35,7 @@
 #include "molecule/molfile_loader.h"
 #include "molecule/molfile_saver.h"
 #include "molecule/monomer_commons.h"
+#include "molecule/monomers_template_library.h"
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "molecule/sdf_loader.h"
@@ -437,9 +438,10 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
             long long start_pos = _scanner->tell();
             if (_scanner->length() > static_cast<long long>(kRNA.size()))
             {
+                MonomerTemplateLibrary lib;
                 std::vector<char> tag(kPeptide.size() + 1, 0);
                 _scanner->readCharsFix(static_cast<int>(kRNA.size()), tag.data());
-                SequenceLoader sl(*_scanner);
+                SequenceLoader sl(*_scanner, lib);
                 if (kRNA == tag.data())
                 {
                     sl.loadSequence(mol, SequenceLoader::SeqType::RNASeq);

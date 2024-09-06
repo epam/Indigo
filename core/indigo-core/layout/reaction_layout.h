@@ -38,6 +38,10 @@ namespace indigo
 
         void make();
 
+        // layout if reaction components are not in the places
+        void fixLayout();
+        void processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_box, int side);
+
         float bond_length;
         float atom_label_width;
         float plus_interval_factor;
@@ -49,6 +53,7 @@ namespace indigo
         layout_orientation_value layout_orientation;
 
     private:
+        void _updateMetadata();
         void _pushMol(Metalayout::LayoutLine& line, int id, bool is_agent = false);
         void _pushSpace(Metalayout::LayoutLine& line, float size);
         BaseMolecule& _getMol(int id);

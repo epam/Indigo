@@ -59,7 +59,7 @@ for filename in files:
 
     ket_result = ket.json()
 
-    # with open(os.path.join(ref_path, filename), "w") as file:
+    # with open(os.path.join(ref_path, filename + ".ket"), "w") as file:
     #    file.write(ket_result)
 
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
@@ -82,7 +82,7 @@ for filename in files:
 print("*** KET to CDXML ***")
 
 root_m = joinPathPy("molecules/", __file__)
-files = ["963-super", "macro/sa-mono"]
+files = ["963-super", "macro/sa-mono", "images"]
 
 files.sort()
 

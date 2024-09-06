@@ -467,12 +467,12 @@
     {
         "query_id": 94,
         "query_type": "compactreaction(0)",
-        "expected": "0dfc671e20ad38d756029497ccb28931"
+        "expected": "5788ecec3b5f9c0b4de4e51dbcfc70c0"
     },
     {
         "query_id": 95,
         "query_type": "compactreaction(0)",
-        "expected": "65058c95e213ad806e76b51b90c784cd"
+        "expected": "3dedff8b3a18a1f2d2894ae0465c7d52"
     },
     {
         "query_id": 96,
@@ -517,7 +517,7 @@
     {
         "query_id": 104,
         "query_type": "compactreaction(0)",
-        "expected": "f51ea169626b680133c09872f56543ff"
+        "expected": "e533de47ec159561440b3a66daaa6827"
     },
     {
         "query_id": 105,

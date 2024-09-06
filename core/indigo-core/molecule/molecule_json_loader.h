@@ -44,6 +44,9 @@ namespace indigo
     class SGroup;
     class Superatom;
     class MetaObjectsInterface;
+    class MonomerTemplateLibrary;
+    class KetDocument;
+    class KetMolecule;
 
     /*
      * Loader for JSON format
@@ -57,8 +60,10 @@ namespace indigo
         DECL_ERROR;
         explicit MoleculeJsonLoader(rapidjson::Document& ket);
         explicit MoleculeJsonLoader(rapidjson::Value& mol_nodes);
+        explicit MoleculeJsonLoader(Scanner& scanner);
 
         void loadMolecule(BaseMolecule& mol, bool load_arrows = false);
+        void loadMonomerLibrary(MonomerTemplateLibrary& library);
         StereocentersOptions stereochemistry_options;
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
         bool skip_3d_chirality;     // do not compute chirality from 3D coordinates
@@ -78,6 +83,7 @@ namespace indigo
                              //  = ATOM_ANY ('any')
 
         void loadMetaObjects(rapidjson::Value& meta_objects, MetaDataStorage& meta);
+        static int parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol, StereocentersOptions stereochemistry_options);
 
     protected:
         struct EnhancedStereoCenter
@@ -100,14 +106,14 @@ namespace indigo
         void parseProperties(const rapidjson::Value& props, BaseMolecule& mol);
         void setStereoFlagPosition(const rapidjson::Value& pos, int fragment_index, BaseMolecule& mol);
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
-        int parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol);
-        void addToLibMonomerTemplate(const rapidjson::Value& mt_json, BaseMolecule& mol, int tgroup_id);
-        void addToLibMonomerGroupTemplate(const rapidjson::Value& monomer_group_template);
-        std::string monomerTemplateClass(const rapidjson::Value& monomer_template);
+        static void addMonomerTemplate(const rapidjson::Value& mt_json, MonomerTemplateLibrary* library, KetDocument* document);
+        void addToLibMonomerGroupTemplate(MonomerTemplateLibrary& library, const rapidjson::Value& monomer_group_template);
+        static std::string monomerTemplateClass(const rapidjson::Value& monomer_template);
         std::string monomerMolClass(const std::string& class_name);
 
     private:
-        void fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol);
+        void parse_ket(rapidjson::Document& ket);
+        static void fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol);
         rapidjson::Value& _mol_nodes;
 
         RGroupDescriptionList _rgroups;
@@ -124,7 +130,7 @@ namespace indigo
         std::vector<EnhancedStereoCenter> _stereo_centers;
         std::string _ket_version;
         unsigned int _components_count;
-        bool _is_library;
+        rapidjson::Document _document;
     };
 
 } // namespace indigo

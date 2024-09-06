@@ -23,6 +23,7 @@
 #pragma warning(disable : 4251)
 #endif
 
+#include <chrono>
 #include <memory>
 #include <string>
 
@@ -64,7 +65,7 @@ namespace indigo
     private:
         std::string _message;
         int _mseconds;
-        qword _currentTime;
+        std::chrono::time_point<std::chrono::high_resolution_clock> _currentTime;
     };
 
     // Global thread-local cancellation handler

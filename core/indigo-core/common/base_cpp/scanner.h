@@ -87,6 +87,7 @@ namespace indigo
 
         // when delimiters = 0, any isspace() character is considered delimiter
         void readWord(Array<char>& word, const char* delimiters);
+        void readWord(std::string& word, const char* delimiters);
 
         bool findWord(const char* word);
         int findWord(ReusableObjArray<Array<char>>& words);

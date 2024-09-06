@@ -27,6 +27,7 @@
 #include "molecule/molecule_savers.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/monomer_commons.h"
+#include "molecule/monomers_template_library.h"
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
@@ -71,7 +72,7 @@ void printMappings(Array<int>& mapping)
 }
 
 MoleculeJsonSaver::MoleculeJsonSaver(Output& output)
-    : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false), use_native_precision(false), ket_version(KETVersion2)
+    : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false), use_native_precision(false), ket_version(KETVersion1)
 {
 }
 
@@ -678,18 +679,18 @@ void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, JsonWriter& writer)
         writer.EndArray();
     }
 }
+static void saveNativeFloat(JsonWriter& writer, float f_value)
+{
+    std::string val = std::to_string(f_value);
+    writer.RawValue(val.c_str(), val.length(), kStringType);
+}
 
 void MoleculeJsonSaver::writeFloat(JsonWriter& writer, float f_value)
 {
     if (use_native_precision)
-    {
-        std::string val = std::to_string(f_value);
-        writer.RawValue(val.c_str(), val.length(), kStringType);
-    }
+        saveNativeFloat(writer, f_value);
     else
-    {
         writer.Double(f_value);
-    }
 }
 
 void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
@@ -749,21 +750,8 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             }
             else if (anum != VALUE_UNKNOWN)
             {
-                buf.readString(Element::toString(anum), true);
+                buf.readString(Element::toString(anum, isotope), true);
                 radical = mol.getAtomRadical(i);
-                if (anum == ELEM_H)
-                {
-                    if (isotope == DEUTERIUM)
-                    {
-                        buf.clear();
-                        buf.appendString("D", true);
-                    }
-                    if (isotope == TRITIUM)
-                    {
-                        buf.clear();
-                        buf.appendString("T", true);
-                    }
-                }
             }
             else if (_pqmol)
             {
@@ -1208,33 +1196,21 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
         writer.Key("unresolved");
         writer.Bool(tg.unresolved);
 
-        if (tg.idt_alias.getBase().size()) // Save IDT alias only for unresolved
+        if (tg.idt_alias.size()) // Save IDT alias only for unresolved
         {
             writer.Key("idtAliases");
             writer.StartObject();
             writer.Key("base");
-            writer.String(tg.idt_alias.getBase().c_str());
-            if (tg.idt_alias.hasModifications())
-            {
-                writer.Key("modifications");
-                writer.StartObject();
-                writer.Key("endpoint5");
-                if (tg.idt_alias.hasModification(IdtModification::FIVE_PRIME_END))
-                    writer.String(tg.idt_alias.getModification(IdtModification::FIVE_PRIME_END).c_str());
-                else
-                    writer.String("");
-                writer.Key("internal");
-                if (tg.idt_alias.hasModification(IdtModification::INTERNAL))
-                    writer.String(tg.idt_alias.getModification(IdtModification::INTERNAL).c_str());
-                else
-                    writer.String("");
-                writer.Key("endpoint3");
-                if (tg.idt_alias.hasModification(IdtModification::THREE_PRIME_END))
-                    writer.String(tg.idt_alias.getModification(IdtModification::THREE_PRIME_END).c_str());
-                else
-                    writer.String("");
-                writer.EndObject();
-            }
+            writer.String(tg.idt_alias.ptr());
+            writer.Key("modifications");
+            writer.StartObject();
+            writer.Key("endpoint5");
+            writer.String(tg.idt_alias.ptr());
+            writer.Key("internal");
+            writer.String(tg.idt_alias.ptr());
+            writer.Key("endpoint3");
+            writer.String(tg.idt_alias.ptr());
+            writer.EndObject();
             writer.EndObject();
         }
     }
@@ -1786,7 +1762,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         {ReactionComponent::ARROW_EQUILIBRIUM_OPEN_ANGLE, "equilibrium-open-angle"},
         {ReactionComponent::ARROW_UNBALANCED_EQUILIBRIUM_FILLED_HALF_BOW, "unbalanced-equilibrium-filled-half-bow"},
         {ReactionComponent::ARROW_UNBALANCED_EQUILIBRIUM_LARGE_FILLED_HALF_BOW, "unbalanced-equilibrium-large-filled-half-bow"},
-        {ReactionComponent::ARROW_BOTH_ENDS_FILLED_TRIANGLE, "unbalanced-equilibrium-filled-half-triangle"}};
+        {ReactionComponent::ARROW_BOTH_ENDS_FILLED_TRIANGLE, "unbalanced-equilibrium-filled-half-triangle"},
+        {ReactionComponent::ARROW_RETROSYNTHETIC, "retrosynthetic"}};
 
     const auto& meta_objects = meta.metaData();
     for (int meta_index = 0; meta_index < meta_objects.size(); ++meta_index)
@@ -1804,7 +1781,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             // arrow mode
             writer.Key("mode");
             std::string arrow_mode = "open-angle";
-            auto at_it = _arrow_type2string.find(ar._arrow_type);
+            auto at_it = _arrow_type2string.find(ar.getArrowType());
             if (at_it != _arrow_type2string.end())
                 arrow_mode = at_it->second.c_str();
             writer.String(arrow_mode.c_str());
@@ -1812,11 +1789,101 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             // arrow coordinates
             writer.Key("pos");
             writer.StartArray();
-            writer.WritePoint(ar._begin);
-            writer.WritePoint(ar._end);
+            writer.StartObject();
+            writer.Key("x");
+            writer.Double(ar.getTail().x);
+            writer.Key("y");
+            writer.Double(ar.getTail().y);
+            writer.Key("z");
+            writer.Double(0);
+            writer.EndObject();
+
+            writer.StartObject();
+            writer.Key("x");
+            writer.Double(ar.getHead().x);
+            writer.Key("y");
+            writer.Double(ar.getHead().y);
+            writer.Key("z");
+            writer.Double(0);
+            writer.EndObject();
+
             writer.EndArray();  // arrow coordinates
             writer.EndObject(); // end data
             writer.EndObject(); // end node
+        }
+        break;
+        case KETReactionMultitailArrow::CID: {
+            KETReactionMultitailArrow& ar = (KETReactionMultitailArrow&)(*pobj);
+            writer.StartObject();
+            writer.Key("type");
+            writer.String("multi-tailed-arrow");
+            writer.Key("data");
+            writer.StartObject();
+
+            writer.Key("head");
+            writer.StartObject();
+            writer.Key("position");
+            writer.StartObject();
+            writer.Key("x");
+            writer.Double(ar.getHead().x);
+            writer.Key("y");
+            writer.Double(ar.getHead().y);
+            writer.Key("z");
+            writer.Double(0);
+            writer.EndObject();
+            writer.EndObject();
+
+            writer.Key("spine");
+            writer.StartObject();
+            writer.Key("pos");
+            writer.StartArray();
+
+            writer.StartObject();
+            writer.Key("x");
+            writer.Double(ar.getSpineBegin().x);
+            writer.Key("y");
+            writer.Double(ar.getSpineBegin().y);
+            writer.Key("z");
+            writer.Double(0);
+            writer.EndObject();
+
+            writer.StartObject();
+            writer.Key("x");
+            writer.Double(ar.getSpineEnd().x);
+            writer.Key("y");
+            writer.Double(ar.getSpineEnd().y);
+            writer.Key("z");
+            writer.Double(0);
+            writer.EndObject();
+
+            writer.EndArray();
+            writer.EndObject();
+
+            writer.Key("tails");
+            writer.StartObject();
+            writer.Key("pos");
+            writer.StartArray();
+
+            for (auto& t : ar.getTails())
+            {
+                writer.StartObject();
+                writer.Key("x");
+                writer.Double(t.x);
+                writer.Key("y");
+                writer.Double(t.y);
+                writer.Key("z");
+                writer.Double(0);
+                writer.EndObject();
+            }
+
+            writer.EndArray();
+            writer.EndObject();
+
+            writer.Key("zOrder");
+            writer.Int(0);
+
+            writer.EndObject();
+            writer.EndObject();
         }
         break;
         case KETReactionPlus::CID: {
@@ -1826,8 +1893,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             writer.String("plus");
             writer.Key("location");
             writer.StartArray();
-            writer.Double(rp._pos.x);
-            writer.Double(rp._pos.y);
+            writer.Double(rp.getPos().x);
+            writer.Double(rp.getPos().y);
             writer.Double(0);
             writer.EndArray();
             writer.EndObject();
@@ -1875,6 +1942,46 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
                 saveTextV1(writer, *ptext_obj);
             else
                 saveText(writer, *ptext_obj);
+            writer.EndObject(); // end node
+            break;
+        }
+        case KETImage::CID: {
+            auto image_obj = static_cast<const KETImage*>(pobj);
+            auto& bbox = image_obj->getBoundingBox();
+            writer.StartObject(); // start node
+            writer.Key("type");
+            writer.String("image");
+            writer.Key("format");
+            switch (image_obj->getFormat())
+            {
+            case KETImage::EKETPNG:
+                writer.String(KImagePNG);
+                break;
+            case KETImage::EKETSVG:
+                writer.String(KImageSVG);
+                break;
+            default:
+                throw Exception("Bad image format: %d", image_obj->getFormat());
+            }
+
+            writer.Key("boundingBox");
+
+            writer.StartObject(); // start bbox
+            writer.Key("x");
+            writer.Double(bbox.left());
+            writer.Key("y");
+            writer.Double(bbox.top());
+            writer.Key("z");
+            writer.Double(0);
+
+            writer.Key("width");
+            writer.Double(bbox.width());
+            writer.Key("height");
+            writer.Double(bbox.height());
+            writer.EndObject(); // end bbox
+
+            writer.Key("data");
+            writer.String(image_obj->getBase64().c_str());
             writer.EndObject(); // end node
             break;
         }

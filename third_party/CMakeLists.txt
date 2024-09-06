@@ -1,3 +1,4 @@
+add_subdirectory(libpng)
 if (BUILD_STANDALONE)
     # InChI don't have a Conan package yet
     add_subdirectory(cppcodec)
@@ -8,7 +9,6 @@ if (BUILD_STANDALONE)
 endif()
 if (BUILD_INDIGO OR BUILD_INDIGO_UTILS)
     if (BUILD_STANDALONE)
-        add_subdirectory(libpng)
         add_subdirectory(pixman)
         if (EMSCRIPTEN)
             add_subdirectory(freetype)

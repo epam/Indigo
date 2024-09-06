@@ -35,10 +35,17 @@ seq_tests = [
         "seq_data": "ACD\nEFG\r\nHIKLMN OPQRSRUVWY",
         "ref": "spaces",
     },
+    {"seq_type": "PEPTIDE", "seq_data": "BJZX", "ref": "aminoacids_variants"},
+    {"seq_type": "RNA", "seq_data": "KN", "ref": "rna_variants"},
+    {"seq_type": "DNA", "seq_data": "BN", "ref": "dna_variants"},
 ]
 
+lib = indigo.loadMonomerLibraryFromFile(
+    os.path.join(ref_path, "monomer_library.ket")
+)
+
 for seq in seq_tests:
-    mol = indigo.loadSequence(seq["seq_data"], seq["seq_type"])
+    mol = indigo.loadSequence(seq["seq_data"], seq["seq_type"], lib)
     filename = seq["ref"]
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
     #     file.write(mol.json())

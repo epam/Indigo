@@ -126,7 +126,8 @@ namespace indigo
     public:
         static bool checkSub(BaseMolecule& query, BaseMolecule& target, const int* mapping, bool reset_h_isotopes, Filter* stereocenters_vertex_filter = 0);
 
-        static bool isPyramidMappingRigid(const int* pyramid, int size, const int* mapping);
+        static bool isPyramidMappingRigid(const int* pyramid, int size, const Array<int>& mapping);
+
         static bool isPyramidMappingRigid(const int mapping[4]);
         static bool isPyramidMappingRigid_Sort(int* pyramid, const int* mapping);
 

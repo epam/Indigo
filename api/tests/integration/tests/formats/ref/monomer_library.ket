@@ -562,6 +562,9 @@
         "$ref": "monomerTemplate-pnT___PNA Thymine"
       },
       {
+        "$ref": "monomerTemplate-U___Selenocysteine"
+      },
+      {
         "$ref": "monomerTemplate-seC___SelenoCysteine"
       },
       {
@@ -608,6 +611,9 @@
       },
       {
         "$ref": "monomerTemplate-NMe___C-Terminal NMe"
+      },
+      {
+        "$ref": "monomerTemplate-O___Pyrrolysine"
       },
       {
         "$ref": "monomerTemplate-OMe___C-Terminal OMe"
@@ -42537,6 +42543,178 @@
     ],
     "naturalAnalogShort": "X"
   },
+  "monomerTemplate-U___Selenocysteine": {
+    "type": "monomerTemplate",
+    "atoms": [
+      {
+        "label": "N",
+        "location": [
+          14.558974596215561,
+          -10.200000000000001,
+          0
+        ]
+      },
+      {
+        "label": "C",
+        "location": [
+          15.425,
+          -9.700000000000001,
+          0
+        ],
+        "stereoLabel": "abs"
+      },
+      {
+        "label": "C",
+        "location": [
+          16.291025403784438,
+          -10.200000000000003,
+          0
+        ]
+      },
+      {
+        "label": "O",
+        "location": [
+          17.15705080756888,
+          -9.700000000000003,
+          0
+        ]
+      },
+      {
+        "label": "O",
+        "location": [
+          16.291025403784438,
+          -11.200000000000003,
+          0
+        ]
+      },
+      {
+        "label": "H",
+        "location": [
+          13.692949192431122,
+          -9.700000000000001,
+          0
+        ]
+      },
+      {
+        "label": "C",
+        "location": [
+          15.425,
+          -8.700000000000001,
+          0
+        ]
+      },
+      {
+        "label": "Se",
+        "location": [
+          14.558974596215563,
+          -8.2,
+          0
+        ]
+      },
+      {
+        "label": "H",
+        "location": [
+          14.558974596215563,
+          -7.2,
+          0
+        ]
+      }
+    ],
+    "bonds": [
+      {
+        "type": 1,
+        "atoms": [
+          0,
+          1
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          1,
+          2
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          2,
+          3
+        ]
+      },
+      {
+        "type": 2,
+        "atoms": [
+          2,
+          4
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          0,
+          5
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          1,
+          6
+        ],
+        "stereo": 1
+      },
+      {
+        "type": 1,
+        "atoms": [
+          6,
+          7
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          7,
+          8
+        ]
+      }
+    ],
+    "class": "AminoAcid",
+    "classHELM": "PEPTIDE",
+    "id": "U___Selenocysteine",
+    "fullName": "Selenocysteine",
+    "alias": "U",
+    "attachmentPoints": [
+      {
+        "attachmentAtom": 0,
+        "leavingGroup": {
+          "atoms": [
+            5
+          ]
+        },
+        "type": "left"
+      },
+      {
+        "attachmentAtom": 2,
+        "leavingGroup": {
+          "atoms": [
+            3
+          ]
+        },
+        "type": "right"
+      },
+      {
+        "attachmentAtom": 7,
+        "leavingGroup": {
+          "atoms": [
+            8
+          ]
+        },
+        "type": "side"
+      }
+    ],
+    "naturalAnalogShort": "U"
+  },
   "monomerTemplate-seC___SelenoCysteine": {
     "type": "monomerTemplate",
     "atoms": [
@@ -46247,6 +46425,328 @@
       }
     ],
     "naturalAnalogShort": "X"
+  },
+  "monomerTemplate-O___Pyrrolysine": {
+    "type": "monomerTemplate",
+    "atoms": [
+      {
+        "label": "H",
+        "location": [
+          -2.0487,
+          -3.86,
+          0
+        ]
+      },
+      {
+        "label": "N",
+        "location": [
+          -1.0256,
+          -4.4508,
+          0
+        ]
+      },
+      {
+        "label": "C",
+        "location": [
+          -0.0024,
+          -3.86,
+          0
+        ],
+        "stereoLabel": "abs"
+      },
+      {
+        "label": "C",
+        "location": [
+          1.0208,
+          -4.4508,
+          0
+        ]
+      },
+      {
+        "label": "O",
+        "location": [
+          2.0439,
+          -3.86,
+          0
+        ]
+      },
+      {
+        "label": "O",
+        "location": [
+          1.0208,
+          -5.6322,
+          0
+        ]
+      },
+      {
+        "label": "C",
+        "location": [
+          -0.0024,
+          -2.6786,
+          0
+        ]
+      },
+      {
+        "label": "C",
+        "location": [
+          0.5883,
+          -1.6554,
+          0
+        ]
+      },
+      {
+        "label": "C",
+        "location": [
+          -0.0024,
+          -0.6322,
+          0
+        ]
+      },
+      {
+        "label": "C",
+        "location": [
+          0.5883,
+          0.3909,
+          0
+        ]
+      },
+      {
+        "label": "N",
+        "location": [
+          -0.0024,
+          1.4141,
+          0
+        ]
+      },
+      {
+        "label": "C",
+        "location": [
+          0.5883,
+          2.4373,
+          0
+        ]
+      },
+      {
+        "label": "C",
+        "location": [
+          -0.0024,
+          3.4604,
+          0
+        ],
+        "stereoLabel": "abs"
+      },
+      {
+        "label": "O",
+        "location": [
+          1.7698,
+          2.4373,
+          0
+        ]
+      },
+      {
+        "label": "C",
+        "location": [
+          -1.1768,
+          3.5839,
+          0
+        ]
+      },
+      {
+        "label": "C",
+        "location": [
+          -1.4223,
+          4.739,
+          0
+        ]
+      },
+      {
+        "label": "C",
+        "location": [
+          -0.3997,
+          5.3294,
+          0
+        ]
+      },
+      {
+        "label": "N",
+        "location": [
+          0.4779,
+          4.5392,
+          0
+        ]
+      },
+      {
+        "label": "C",
+        "location": [
+          -2.0122,
+          2.7484,
+          0
+        ]
+      }
+    ],
+    "bonds": [
+      {
+        "type": 1,
+        "atoms": [
+          0,
+          1
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          1,
+          2
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          2,
+          3
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          3,
+          4
+        ]
+      },
+      {
+        "type": 2,
+        "atoms": [
+          3,
+          5
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          2,
+          6
+        ],
+        "stereo": 1
+      },
+      {
+        "type": 1,
+        "atoms": [
+          6,
+          7
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          7,
+          8
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          8,
+          9
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          9,
+          10
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          10,
+          11
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          11,
+          12
+        ]
+      },
+      {
+        "type": 2,
+        "atoms": [
+          11,
+          13
+        ]
+      },
+      {
+        "type": 2,
+        "atoms": [
+          16,
+          17
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          15,
+          16
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          14,
+          15
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          12,
+          14
+        ],
+        "stereo": 1
+      },
+      {
+        "type": 1,
+        "atoms": [
+          17,
+          12
+        ]
+      },
+      {
+        "type": 1,
+        "atoms": [
+          14,
+          18
+        ]
+      }
+    ],
+    "class": "AminoAcid",
+    "classHELM": "PEPTIDE",
+    "id": "O___Pyrrolysine",
+    "fullName": "Pyrrolysine",
+    "alias": "O",
+    "attachmentPoints": [
+      {
+        "attachmentAtom": 1,
+        "leavingGroup": {
+          "atoms": [
+            0
+          ]
+        },
+        "type": "left"
+      },
+      {
+        "attachmentAtom": 3,
+        "leavingGroup": {
+          "atoms": [
+            4
+          ]
+        },
+        "type": "right"
+      }
+    ],
+    "naturalAnalogShort": "O"
   },
   "monomerTemplate-OMe___C-Terminal OMe": {
     "type": "monomerTemplate",

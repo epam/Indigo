@@ -21,7 +21,9 @@
 #endif
 
 #include "molecule/ket_commons.h"
+#include "base_cpp/scanner.h"
 #include "molecule/monomer_commons.h"
+#include <cppcodec/base64_default_rfc4648.hpp>
 
 namespace indigo
 {
@@ -300,15 +302,30 @@ namespace indigo
 
         auto style_lambda = styleLambda(_font_styles);
 
-        DispatchMapKVP text_obj_dispatcher = {{"boundingBox", bbox_lambda},     {"alignment", alignLambda(_alignment)}, {KETFontBoldStr, style_lambda},
+        DispatchMapKVP text_obj_dispatcher = {{"boundingBox", bbox_lambda},      {"alignment", alignLambda(_alignment)}, {KETFontBoldStr, style_lambda},
                                               {KETFontItalicStr, style_lambda},  {KETFontSubscriptStr, style_lambda},    {KETFontSuperscriptStr, style_lambda},
                                               {"indent", indentLambda(_indent)}, {"font", fontLambda(_font_styles)},     {"paragraphs", paragraphs_lambda}};
 
         applyDispatcher(text_obj, text_obj_dispatcher);
     }
 
-}
+    KETImage::KETImage(const Rect2f& bbox, KETImage::ImageFormat format, const std::string& data, bool is_base64)
+        : MetaObject(CID), _bbox(bbox), _image_format(format)
+    {
+        if (is_base64)
+        {
+            BufferScanner b64decode(data.c_str(), true);
+            b64decode.readAll(_image_data);
+        }
+        else
+            _image_data = data;
+    }
 
+    std::string KETImage::getBase64() const
+    {
+        return base64::encode(_image_data.c_str(), _image_data.size());
+    }
+}
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif

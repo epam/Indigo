@@ -42,6 +42,8 @@ namespace indigo
     const auto KETFontSuperscriptStrV1 = "SUPERSCRIPT";
     const auto KETFontSubscriptStrV1 = "SUBSCRIPT";
     const auto KETFontCustomSizeStrV1 = "CUSTOM_FONT_SIZE";
+    const auto KImagePNG = "image/png";
+    const auto KImageSVG = "image/svg+xml";
 
     const auto KETFontBoldStr = "bold";
     const auto KETFontItalicStr = "italic";
@@ -206,9 +208,20 @@ namespace indigo
             _coordinates = coords;
         };
 
+        void getBoundingBox(Rect2f& bbox) const override
+        {
+            bbox = Rect2f(_coordinates.first, _coordinates.second);
+        }
+
         MetaObject* clone() const override
         {
             return new KETSimpleObject(_mode, _coordinates);
+        }
+
+        void offset(const Vec2f& offset) override
+        {
+            _coordinates.first += offset;
+            _coordinates.second += offset;
         }
 
         enum
@@ -478,6 +491,16 @@ namespace indigo
         }
 
     private:
+        void getBoundingBox(Rect2f& bbox) const override
+        {
+            bbox = _bbox;
+        }
+
+        void offset(const Vec2f& offset) override
+        {
+            _bbox.offset(offset);
+        }
+
         std::string _content;
         std::list<KETTextParagraph> _block;
         Rect2f _bbox;
@@ -509,6 +532,7 @@ namespace indigo
             EEllipticalArcFilledTriangle,
             EEllipticalArcOpenAngle,
             EEllipticalArcOpenHalfAngle,
+            ERetrosynthetic
         };
 
         KETReactionArrow(int arrow_type, const Vec2f& begin, const Vec2f& end, float height = 0)
@@ -519,10 +543,131 @@ namespace indigo
             return new KETReactionArrow(_arrow_type, _begin, _end, _height);
         }
 
+        void getBoundingBox(Rect2f& bbox) const override
+        {
+            bbox = Rect2f(_begin, _end);
+        }
+
+        int getArrowType() const
+        {
+            return _arrow_type;
+        }
+
+        float getHeight() const
+        {
+            return _height;
+        }
+
+        const auto& getHead() const
+        {
+            return _end;
+        }
+
+        const auto& getTail() const
+        {
+            return _begin;
+        }
+
+        void offset(const Vec2f& offset) override
+        {
+            _begin += offset;
+            _end += offset;
+        }
+
+    private:
         int _arrow_type;
         float _height;
         Vec2f _begin;
         Vec2f _end;
+    };
+
+    class KETReactionMultitailArrow : public MetaObject
+    {
+        static const int CORRECT_CONSTRUCTOR_PARAMETERS_SIZE = 5;
+        static const int CORRECT_HEAD_SIZE = 1;
+        static const int CORRECT_TAIL_SIZE = 2;
+
+    public:
+        static const std::uint32_t CID = "KET reaction multitail arrow"_hash;
+
+        template <typename Iterator>
+        KETReactionMultitailArrow(Iterator&& begin, Iterator&& end) : MetaObject(CID)
+        {
+            auto distanceBetweenBeginAndEnd = std::distance(begin, end);
+            if (distanceBetweenBeginAndEnd < CORRECT_CONSTRUCTOR_PARAMETERS_SIZE)
+                throw Exception("KETReactionMultitailArrow: invalid arguments");
+
+            _head = *begin++;
+            _tails.reserve(static_cast<int>(distanceBetweenBeginAndEnd) - CORRECT_HEAD_SIZE - CORRECT_TAIL_SIZE);
+            while (begin != end)
+                _tails.push(*begin++);
+            _spine_begin = _tails.pop();
+            _spine_end = _tails.pop();
+        }
+
+        KETReactionMultitailArrow(Vec2f head, const Array<Vec2f>& tails, Vec2f spine_begin, Vec2f spine_end)
+            : MetaObject(CID), _head(head), _spine_begin(spine_begin), _spine_end(spine_end)
+        {
+            if (tails.size() < CORRECT_TAIL_SIZE)
+                throw Exception("KETReactionMultitailArrow: invalid arguments");
+            _tails.copy(tails);
+        }
+
+        MetaObject* clone() const override
+        {
+            return new KETReactionMultitailArrow(_head, _tails, _spine_begin, _spine_end);
+        }
+
+        auto getHead() const
+        {
+            return _head;
+        }
+
+        auto& getTails() const
+        {
+            return _tails;
+        }
+
+        auto getSpineBegin() const
+        {
+            return _spine_begin;
+        }
+
+        auto getSpineEnd() const
+        {
+            return _spine_end;
+        }
+
+        void getBoundingBox(Rect2f& bbox) const override
+        {
+            float min_left = 0;
+            for (int i = 0; i < _tails.size(); ++i)
+            {
+                if (i == 0)
+                    min_left = _tails[i].x;
+                else
+                    min_left = std::min(min_left, _tails[i].x);
+            }
+
+            float max_top = _spine_begin.y;
+            float min_bottom = _spine_end.y;
+            float max_right = _head.x;
+            bbox = Rect2f(Vec2f(min_left, max_top), Vec2f(max_right, min_bottom));
+        }
+
+        void offset(const Vec2f& offset) override
+        {
+            _head += offset;
+            _spine_begin += offset;
+            _spine_end += offset;
+            for (auto& tail : _tails)
+                tail += offset;
+        }
+
+    private:
+        Vec2f _head;
+        Array<Vec2f> _tails;
+        Vec2f _spine_begin, _spine_end;
     };
 
     class KETReactionPlus : public MetaObject
@@ -542,7 +687,73 @@ namespace indigo
             EKETRectangle,
             EKETLine
         };
+        const auto& getPos() const
+        {
+            return _pos;
+        }
+
+        void getBoundingBox(Rect2f& bbox) const override
+        {
+            bbox = Rect2f(_pos, _pos);
+        }
+
+        void offset(const Vec2f& offset) override
+        {
+            _pos += offset;
+        }
+
+    private:
         Vec2f _pos;
+    };
+
+    class KETImage : public MetaObject
+    {
+    public:
+        enum ImageFormat
+        {
+            EKETPNG,
+            EKETSVG
+        };
+
+        static const std::uint32_t CID = "KET embedded image"_hash;
+        KETImage(const Rect2f& bbox, KETImage::ImageFormat format, const std::string& data, bool is_base64 = true);
+
+        MetaObject* clone() const override
+        {
+            return new KETImage(_bbox, _image_format, getBase64());
+        }
+
+        auto& getBoundingBox() const
+        {
+            return _bbox;
+        }
+
+        std::string getBase64() const;
+
+        const std::string& getData() const
+        {
+            return _image_data;
+        }
+
+        ImageFormat getFormat() const
+        {
+            return _image_format;
+        }
+
+        void getBoundingBox(Rect2f& bbox) const override
+        {
+            bbox = _bbox;
+        }
+
+        void offset(const Vec2f& offset) override
+        {
+            _bbox = Rect2f(_bbox.leftBottom() + offset, _bbox.rightTop() + offset);
+        }
+
+    private:
+        Rect2f _bbox;
+        std::string _image_data;
+        ImageFormat _image_format;
     };
 
     struct MolSumm
@@ -578,7 +789,8 @@ namespace indigo
             ARROW_ELLIPTICAL_ARC_FILLED_BOW,
             ARROW_ELLIPTICAL_ARC_FILLED_TRIANGLE,
             ARROW_ELLIPTICAL_ARC_OPEN_ANGLE,
-            ARROW_ELLIPTICAL_ARC_OPEN_HALF_ANGLE
+            ARROW_ELLIPTICAL_ARC_OPEN_HALF_ANGLE,
+            ARROW_RETROSYNTHETIC,
         };
 
         enum
@@ -628,10 +840,8 @@ namespace indigo
             if (sorted_pair.first > sorted_pair.second)
                 std::swap(sorted_pair.first, sorted_pair.second);
             auto c_val = pih(sorted_pair);
-            std::cout << "hash:" << c_val << std::endl;
             return c_val;
         }
     };
-
 }
 #endif

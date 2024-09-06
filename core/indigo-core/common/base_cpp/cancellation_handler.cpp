@@ -18,7 +18,6 @@
 
 #include "base_cpp/cancellation_handler.h"
 
-#include "base_c/nano.h"
 #include "base_cpp/output.h"
 
 using namespace indigo;
@@ -29,7 +28,7 @@ std::shared_ptr<CancellationHandler>& CancellationHandler::cancellation_handler(
     return _cancellation_handler;
 }
 
-TimeoutCancellationHandler::TimeoutCancellationHandler(int mseconds) : _mseconds(mseconds), _currentTime(nanoClock())
+TimeoutCancellationHandler::TimeoutCancellationHandler(int mseconds) : _mseconds(mseconds), _currentTime(std::chrono::high_resolution_clock::now())
 {
 }
 
@@ -37,8 +36,8 @@ bool TimeoutCancellationHandler::isCancelled()
 {
     if (_mseconds > 0)
     {
-        qword dif_time = nanoClock() - _currentTime;
-        if (static_cast<long>(nanoHowManySeconds(dif_time)) * 1000 > _mseconds)
+        qword dif_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - _currentTime).count();
+        if (dif_time > _mseconds)
         {
             StringOutput mes_out(_message);
             mes_out.printf("The operation timed out: %d ms", _mseconds);
@@ -56,7 +55,7 @@ const char* TimeoutCancellationHandler::cancelledRequestMessage()
 void TimeoutCancellationHandler::reset(int mseconds)
 {
     _mseconds = mseconds;
-    _currentTime = nanoClock();
+    _currentTime = std::chrono::high_resolution_clock::now();
 }
 
 std::shared_ptr<CancellationHandler>& indigo::getCancellationHandler()

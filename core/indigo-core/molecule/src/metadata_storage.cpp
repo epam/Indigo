@@ -26,6 +26,12 @@ int MetaDataStorage::addMetaObject(MetaObject* pobj)
     case KETReactionArrow::CID:
         _arrow_indexes.push() = index;
         break;
+    case KETImage::CID:
+        _image_indexes.push() = index;
+        break;
+    case KETReactionMultitailArrow::CID:
+        _multi_tail_indexes.push() = index;
+        break;
     default:
         break;
     }
@@ -61,6 +67,11 @@ int MetaDataStorage::getMetaObjectIndex(uint32_t meta_type, int index) const
     case KETReactionArrow::CID:
         return _arrow_indexes[index];
         break;
+    case KETImage::CID:
+        return _image_indexes[index];
+        break;
+    case KETReactionMultitailArrow::CID:
+        return _multi_tail_indexes[index];
     default:
         throw Error("Unknown meta type");
         break;
@@ -74,7 +85,7 @@ const MetaObject& MetaDataStorage::getMetaObject(uint32_t meta_type, int index) 
 
 int MetaDataStorage::getNonChemicalMetaCount() const
 {
-    return getMetaCount(KETTextObject::CID) + getMetaCount(KETSimpleObject::CID);
+    return getMetaCount(KETTextObject::CID) + getMetaCount(KETSimpleObject::CID) + getMetaCount(KETImage::CID);
 }
 
 int MetaDataStorage::getMetaCount(uint32_t meta_type) const
@@ -93,6 +104,12 @@ int MetaDataStorage::getMetaCount(uint32_t meta_type) const
     case KETReactionArrow::CID:
         return _arrow_indexes.size();
         break;
+    case KETImage::CID:
+        return _image_indexes.size();
+        break;
+    case KETReactionMultitailArrow::CID:
+        return _multi_tail_indexes.size();
+        break;
     default:
         break;
     }
@@ -103,9 +120,11 @@ void MetaDataStorage::resetReactionData()
 {
     _plus_indexes.clear();
     _arrow_indexes.clear();
+    _multi_tail_indexes.clear();
     for (int i = _meta_data.size() - 1; i >= 0; i--)
     {
-        if (_meta_data[i]->_class_id == KETReactionArrow::CID || _meta_data[i]->_class_id == KETReactionPlus::CID)
+        if (_meta_data[i]->_class_id == KETReactionArrow::CID || _meta_data[i]->_class_id == KETReactionPlus::CID ||
+            _meta_data[i]->_class_id == KETReactionMultitailArrow::CID)
             _meta_data.remove(i);
     }
 }

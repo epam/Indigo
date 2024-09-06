@@ -32,6 +32,9 @@ fasta_files = [
     {"file": "break_rna", "seq_type": "RNA"},
     {"file": "comment", "seq_type": "PEPTIDE"},
     {"file": "test_1881", "seq_type": "PEPTIDE"},
+    {"file": "aminoacids_variants", "seq_type": "PEPTIDE"},
+    {"file": "rna_variants", "seq_type": "RNA"},
+    {"file": "dna_variants", "seq_type": "DNA"},
 ]
 
 
@@ -41,11 +44,15 @@ def remove_prefix(s, prefix="com.epam.indigo.IndigoException: "):
     return s
 
 
+lib = indigo.loadMonomerLibraryFromFile(
+    os.path.join(ref_path, "monomer_library.ket")
+)
+
 for desc in fasta_files:
     filename = desc["file"]
     try:
         mol = indigo.loadFastaFromFile(
-            os.path.join(root, filename + ".fasta"), desc["seq_type"]
+            os.path.join(root, filename + ".fasta"), desc["seq_type"], lib
         )
         # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
         #     file.write(mol.json())

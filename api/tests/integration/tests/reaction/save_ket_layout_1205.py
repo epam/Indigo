@@ -18,9 +18,13 @@ indigo = Indigo()
 r1 = indigo.loadReactionFromFile(
     joinPathPy("reactions/issue_1205.rxn", __file__)
 )
+ket_out = r1.json()
+
+# with open(joinPathPy("reactions/issue_1205.ket", __file__), "w") as file:
+#     file.write(ket_out)
+
 with open(joinPathPy("reactions/issue_1205.ket", __file__), "r") as file:
     ket_ref = file.read()
-ket_out = r1.json()
 diff = find_diff(ket_ref, ket_out)
 if diff:
     print("Difference found:\n", diff)

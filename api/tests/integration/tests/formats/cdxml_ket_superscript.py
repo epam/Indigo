@@ -26,3 +26,9 @@ mol_subscript = indigo.loadMoleculeFromFile(
 )
 
 print(mol_subscript.json())
+
+mol_3d_structure = indigo.loadMoleculeFromFile(
+    joinPathPy("cdxml/1944-3D_Structure.cdxml", __file__)
+)
+
+print(mol_3d_structure.json())

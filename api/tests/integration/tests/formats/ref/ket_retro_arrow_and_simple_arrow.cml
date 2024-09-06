@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<cml>
+<reaction>
+<reactantList>
+<molecule>
+    <atomArray>
+        <atom id="a0" elementType="O" x2="12.6749" y2="-5.87002"/>
+        <atom id="a1" elementType="C" x2="13.5409" y2="-6.37002"/>
+        <atom id="a2" elementType="O" x2="14.407" y2="-5.87002"/>
+    </atomArray>
+    <bondArray>
+        <bond atomRefs2="a0 a1" order="1"/>
+        <bond atomRefs2="a1 a2" order="1"/>
+    </bondArray>
+</molecule>
+</reactantList>
+<productList>
+<molecule>
+    <atomArray>
+        <atom id="a0" elementType="C" x2="20.5624" y2="-5.20058"/>
+        <atom id="a1" elementType="C" x2="21.3714" y2="-5.78838"/>
+        <atom id="a2" elementType="C" x2="21.0624" y2="-6.73946"/>
+        <atom id="a3" elementType="C" x2="20.0624" y2="-6.73946"/>
+        <atom id="a4" elementType="C" x2="19.7535" y2="-5.78838"/>
+    </atomArray>
+    <bondArray>
+        <bond atomRefs2="a0 a4" order="1"/>
+        <bond atomRefs2="a4 a3" order="1"/>
+        <bond atomRefs2="a3 a2" order="1"/>
+        <bond atomRefs2="a2 a1" order="1"/>
+        <bond atomRefs2="a1 a0" order="1"/>
+    </bondArray>
+</molecule>
+</productList>
+</reaction>
+</cml>

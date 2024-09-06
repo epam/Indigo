@@ -26,6 +26,7 @@
 #include <cstring>
 #include <new>
 #include <utility>
+#include <vector>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
@@ -165,6 +166,11 @@ namespace indigo
         int sizeInBytes() const
         {
             return _length * sizeof(T);
+        }
+
+        void copy(const std::vector<T> other)
+        {
+            copy(other.data(), static_cast<int>(other.size()));
         }
 
         void copy(const Array<T>& other)
@@ -376,6 +382,16 @@ namespace indigo
         }
 
         T* end()
+        {
+            return _array + _length;
+        }
+
+        T* begin() const
+        {
+            return _array;
+        }
+
+        T* end() const
         {
             return _array + _length;
         }

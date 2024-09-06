@@ -23,10 +23,10 @@
         ],
         "templates": [
             {
-                "$ref": "monomerTemplate-dRib"
+                "$ref": "monomerTemplate-dR___Deoxy-Ribose"
             },
             {
-                "$ref": "monomerTemplate-Ade"
+                "$ref": "monomerTemplate-A___Adenine"
             }
         ]
     },
@@ -35,36 +35,35 @@
         "id": "0",
         "seqid": 0,
         "position": {
-            "x": 0.0,
-            "y": -0.0
+            "x": 0.000000,
+            "y": -0.000000
         },
         "alias": "dR",
-        "templateId": "dRib"
+        "templateId": "dR___Deoxy-Ribose"
     },
     "monomer1": {
         "type": "monomer",
         "id": "1",
         "seqid": 0,
         "position": {
-            "x": 0.0,
-            "y": -1.600000023841858
+            "x": 0.000000,
+            "y": -1.600000
         },
         "alias": "A",
-        "templateId": "Ade"
+        "templateId": "A___Adenine"
     },
-    "monomerTemplate-dRib": {
+    "monomerTemplate-dR___Deoxy-Ribose": {
         "type": "monomerTemplate",
-        "id": "dRib",
+        "id": "dR___Deoxy-Ribose",
         "class": "Sugar",
         "classHELM": "RNA",
-        "alias": "dR",
-        "name": "dRib",
         "fullName": "Deoxy-Ribose",
+        "alias": "dR",
         "naturalAnalogShort": "R",
-        "naturalAnalog": "Rib",
         "attachmentPoints": [
             {
                 "attachmentAtom": 8,
+                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         9
@@ -73,6 +72,7 @@
             },
             {
                 "attachmentAtom": 5,
+                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         10
@@ -81,6 +81,7 @@
             },
             {
                 "attachmentAtom": 2,
+                "type": "side",
                 "leavingGroup": {
                     "atoms": [
                         7
@@ -92,92 +93,92 @@
             {
                 "label": "O",
                 "location": [
-                    -0.8787999749183655,
-                    -1.2079999446868897,
-                    0.0
+                    -0.878800,
+                    -1.208000,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.3668000102043152,
-                    0.20190000534057618,
-                    0.0
+                    -0.366800,
+                    0.201900,
+                    0.000000
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "C",
                 "location": [
-                    0.30379998683929446,
-                    -2.13070011138916,
-                    0.0
+                    0.303800,
+                    -2.130700,
+                    0.000000
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "C",
                 "location": [
-                    1.1323000192642213,
-                    0.15060000121593476,
-                    0.0
+                    1.132300,
+                    0.150600,
+                    0.000000
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "C",
                 "location": [
-                    1.5468000173568726,
-                    -1.2910000085830689,
-                    0.0
+                    1.546800,
+                    -1.291000,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    2.051500082015991,
-                    1.333799958229065,
-                    0.0
+                    2.051500,
+                    1.333800,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -1.2080999612808228,
-                    1.4416999816894532,
-                    0.0
+                    -1.208100,
+                    1.441700,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    0.262800008058548,
-                    -3.329900026321411,
-                    0.0
+                    0.262800,
+                    -3.329900,
+                    0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    -2.7049999237060549,
-                    1.333799958229065,
-                    0.0
+                    -2.705000,
+                    1.333800,
+                    0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -3.3787999153137209,
-                    2.32669997215271,
-                    0.0
+                    -3.378800,
+                    2.326700,
+                    0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    3.240299940109253,
-                    1.1708999872207642,
-                    0.0
+                    3.240300,
+                    1.170900,
+                    0.000000
                 ]
             }
         ],
@@ -264,19 +265,18 @@
             }
         ]
     },
-    "monomerTemplate-Ade": {
+    "monomerTemplate-A___Adenine": {
         "type": "monomerTemplate",
-        "id": "Ade",
+        "id": "A___Adenine",
         "class": "Base",
         "classHELM": "RNA",
-        "alias": "A",
-        "name": "Ade",
         "fullName": "Adenine",
+        "alias": "A",
         "naturalAnalogShort": "A",
-        "naturalAnalog": "Ade",
         "attachmentPoints": [
             {
                 "attachmentAtom": 6,
+                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         10
@@ -288,89 +288,89 @@
             {
                 "label": "C",
                 "location": [
-                    0.7141363024711609,
-                    0.172292098402977,
-                    0.0
+                    1.035400,
+                    0.249800,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.05462583899497986,
-                    -0.5200490355491638,
-                    0.0
+                    -0.079200,
+                    -0.754000,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -1.0385116338729859,
-                    -0.200432687997818,
-                    0.0
+                    -1.505700,
+                    -0.290600,
+                    0.000000
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    -1.2537044286727906,
-                    0.8115247488021851,
-                    0.0
+                    -1.817700,
+                    1.176600,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.4849422574043274,
-                    1.5038658380508423,
-                    0.0
+                    -0.703100,
+                    2.180400,
+                    0.000000
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    0.4990125596523285,
-                    1.1842495203018189,
-                    0.0
+                    0.723500,
+                    1.717000,
+                    0.000000
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    -1.6464310884475709,
-                    -1.0369253158569337,
-                    0.0
+                    -2.387100,
+                    -1.503400,
+                    0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -1.0382357835769654,
-                    -1.8738317489624024,
-                    0.0
+                    -1.505300,
+                    -2.716800,
+                    0.000000
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    -0.054280977696180347,
-                    -1.5540775060653687,
-                    0.0
+                    -0.078700,
+                    -2.253200,
+                    0.000000
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    1.5013829469680787,
-                    -0.08338717371225357,
-                    0.0
+                    2.176800,
+                    -0.120900,
+                    0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -2.474095344543457,
-                    -1.0369253158569337,
-                    0.0
+                    -3.587100,
+                    -1.503400,
+                    0.000000
                 ]
             }
         ],

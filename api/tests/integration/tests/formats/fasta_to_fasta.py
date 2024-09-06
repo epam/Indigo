@@ -30,16 +30,20 @@ fasta_files = [
     {"file": "multiseq", "seq_type": "DNA"},
 ]
 
+lib = indigo.loadMonomerLibraryFromFile(
+    os.path.join(ref_path, "monomer_library.ket")
+)
+
 for desc in fasta_files:
     filename = desc["file"]
     mol = indigo.loadFastaFromFile(
-        os.path.join(root, filename + ".fasta"), desc["seq_type"]
+        os.path.join(root, filename + ".fasta"), desc["seq_type"], lib
     )
     # with open(os.path.join(ref_path, filename) + ".fasta", "w") as file:
     #     file.write(mol.fasta())
     with open(os.path.join(ref_path, filename) + ".fasta", "r") as file:
         fasta_ref = file.read()
-    fasta = mol.fasta()
+    fasta = mol.fasta(lib)
     diff = find_diff(fasta_ref, fasta)
     if not diff:
         print(filename + ".fasta:SUCCEED")

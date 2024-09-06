@@ -49,12 +49,12 @@ namespace indigo
     private:
         ReactionCdxmlSaver(const ReactionCdxmlSaver&); // no implicit copy
 
-        void _addPlusses(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver);
-        void _addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, int arrow_id);
+        void _addPluses(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver);
+        void _addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, int arrow_id, std::unordered_map<int, int>& retro_arrows_graph_id);
         void _addScheme(MoleculeCdxmlSaver& molsaver);
         void _closeScheme(MoleculeCdxmlSaver& molsaver);
         void _addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, std::vector<int>& mol_ids, std::vector<std::map<int, int>>& nodes_ids,
-                      const std::pair<int, int>& arrow_id);
+                      const std::pair<int, int>& arrow_id, std::unordered_map<int, int>& retro_arrows_graph_id);
         void _generateCdxmlObjIds(BaseReaction& rxn, std::vector<int>& mol_ids, std::vector<int>& meta_ids, std::vector<std::map<int, int>>& nodes_ids);
         void _addTitle(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver);
         int _id;
