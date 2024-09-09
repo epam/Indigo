@@ -28,7 +28,11 @@
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4996)
+#pragma warning(disable : 4251)
 #endif
+
+#include <lunasvg.h>
+#include <stb_image_write.h>
 
 using namespace indigo;
 
@@ -386,6 +390,16 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
     }
 }
 
+struct StbiContext
+{
+    std::string data;
+};
+
+void ketImageStbiWriteFunc(void* context, void* data, int size)
+{
+    static_cast<StbiContext*>(context)->data.assign(static_cast<const char*>(data), size);
+}
+
 void RenderItemAuxiliary::_drawImage(const KETImage& img)
 {
     auto& bb = img.getBoundingBox();
@@ -395,9 +409,22 @@ void RenderItemAuxiliary::_drawImage(const KETImage& img)
     scale(v2);
     if (img.getFormat() == KETImage::EKETPNG)
         _rc.drawPng(img.getData(), Rect2f(v1, v2));
-    else if (img.getFormat() == KETImage::EKETPNG)
+    else if (img.getFormat() == KETImage::EKETSVG)
     {
-        // TODO: implement SVG-rendering
+        auto document = lunasvg::Document::loadFromData(img.getData());
+        if (!document)
+            throw Error("RenderItemAuxiliary::_drawImage: loadFromData error");
+
+        auto bitmap = document->renderToBitmap();
+        if (!bitmap.valid())
+            throw Error("RenderItemAuxiliary::_drawImage: renderToBitmap error");
+
+        StbiContext stbiContext;
+        int rgbaChannels = 4, stride = 0;
+        if (!stbi_write_png_to_func(ketImageStbiWriteFunc, &stbiContext, bitmap.width(), bitmap.height(), rgbaChannels, bitmap.data(), stride))
+            throw Error("RenderItemAuxiliary::_drawImage: stbi_write_png_to_func error");
+
+        _rc.drawPng(stbiContext.data, Rect2f(v1, v2));
     }
 }
 

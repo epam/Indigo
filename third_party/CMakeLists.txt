@@ -1,4 +1,10 @@
 add_subdirectory(libpng)
+
+option(BUILD_SHARED_LIBS OFF)
+add_subdirectory(lunasvg)
+target_include_directories(lunasvg INTERFACE lunasvg/3rdparty/stb)
+target_compile_definitions(lunasvg INTERFACE STB_IMAGE_WRITE_IMPLEMENTATION)
+
 if (BUILD_STANDALONE)
     # InChI don't have a Conan package yet
     add_subdirectory(cppcodec)

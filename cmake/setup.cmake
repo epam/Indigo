@@ -57,6 +57,9 @@ if (UNIX OR MINGW)
     string(APPEND CMAKE_C_FLAGS " -fvisibility=hidden $ENV{CFLAGS}")
     string(APPEND CMAKE_CXX_FLAGS " -fvisibility=hidden -fvisibility-inlines-hidden $ENV{CXXFLAGS}")
 
+    set(CMAKE_C_FLAGS_DEBUG "-g3")
+    set(CMAKE_CXX_FLAGS_DEBUG "-g3")
+
     if(BUILD_STANDALONE AND NOT EMSCRIPTEN)
         if (CMAKE_CXX_COMPILER_ID STREQUAL GNU)
             string(APPEND CMAKE_CXX_FLAGS " -static-libstdc++")
