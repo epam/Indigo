@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <limits>
 
 #include "base_c/defs.h"
@@ -28,8 +29,8 @@
 
 #define SQR(x) ((x) * (x))
 
-#define DEG2RAD(x) ((x)*M_PI / 180)
-#define RAD2DEG(x) ((x)*180 / M_PI)
+#define DEG2RAD(x) ((x) * M_PI / 180)
+#define RAD2DEG(x) ((x) * 180 / M_PI)
 #define HYPOT(a, b) (sqrt((a) * (a) + (b) * (b)))
 
 namespace indigo
@@ -291,6 +292,36 @@ namespace indigo
         }
     };
 
+    inline bool rayIntersectsSegment(const Vec2f& beg, const Vec2f& end, const Vec2f& a, const Vec2f& b)
+    {
+        Vec2f ray = end - beg;
+
+        // Vector of the segment
+        Vec2f segment = a - b;
+
+        // Calculate the cross products
+        float cross1 = Vec2f::cross(ray, segment);
+        if (abs(cross1) < 1e-6)
+        {
+            // Parallel segments
+            return false;
+        }
+
+        // Compute the cross product of vectors (beg - a) and (beg - b)
+        Vec2f vecBA = beg - a;
+        Vec2f vecBB = beg - b;
+
+        float t = Vec2f::cross(vecBA, segment) / cross1;
+        if (t < 0)
+        {
+            // Intersection is behind the starting point
+            return false;
+        }
+
+        float u = Vec2f::cross(vecBA, ray) / cross1;
+        return (u >= 0 && u <= 1);
+    }
+
     struct Rect2f
     {
 
@@ -327,18 +358,32 @@ namespace indigo
 
         inline bool rayIntersectsRect(const Vec2f& begin, const Vec2f& end)
         {
-            Vec2f v = end - begin;
-            Vec2f vr(v.y, -v.x); // perpendicular vector
-            auto lb = _leftBottom - begin;
-            auto lt = leftTop() - begin;
-            auto rt = _rightTop - begin;
-            auto rb = rightBottom() - begin;
-            // same_sign means no intersection
-            bool same_sign = std::signbit(Vec2f::dot(vr, lb)) == std::signbit(Vec2f::dot(vr, lt)) &&
-                             std::signbit(Vec2f::dot(vr, lt)) == std::signbit(Vec2f::dot(vr, rt)) &&
-                             std::signbit(Vec2f::dot(vr, rt)) == std::signbit(Vec2f::dot(vr, rb));
+            auto lb = _leftBottom;
+            auto lt = leftTop();
+            auto rt = _rightTop;
+            auto rb = rightBottom();
+            return rayIntersectsSegment(begin, end, lb, lt) || rayIntersectsSegment(begin, end, lt, rt) || rayIntersectsSegment(begin, end, rt, rb) ||
+                   rayIntersectsSegment(begin, end, rb, lb);
+            //         Vec2f v = end - begin;
+            //         Vec2f vr(v.y, -v.x); // rotate 90 degrees clockwise
+            //         // same_sign means no intersection
+            //         auto lb_sign = std::signbit(Vec2f::dot(vr, lb));
+            //         auto lt_sign = std::signbit(Vec2f::dot(vr, lt));
+            //         auto rt_sign = std::signbit(Vec2f::dot(vr, rt));
+            //         auto rb_sign = std::signbit(Vec2f::dot(vr, rb));
 
-            return !same_sign && Vec2f::cross(lb, vr) > 0 && Vec2f::cross(lt, vr) > 0 && Vec2f::cross(rt, vr) > 0 && Vec2f::cross(rb, vr) > 0;
+            //         bool same_sign = lb_sign == lt_sign && lt_sign == rt_sign && rt_sign == rb_sign;
+            //         int count = 0;
+            //         if (Vec2f::cross(v, lb) > 0)
+            //             count++;
+            // if (Vec2f::cross(v, lt) > 0)
+            //             count++;
+            // if (Vec2f::cross(v, rt) > 0)
+            //             count++;
+            //         if (Vec2f::cross(v, rb) > 0)
+            //             count++;
+
+            //         return !same_sign && Vec2f::cross(lb, vr) > 0 && count < 4;
         }
 
         inline double pointDistance(const Vec2f& pt)

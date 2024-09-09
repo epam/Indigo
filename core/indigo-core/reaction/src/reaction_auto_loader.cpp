@@ -303,18 +303,37 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
                             loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
                             loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
                             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+                            std::unique_ptr<BaseReaction> reaction;
                             if (query)
                             {
-                                auto reaction = std::make_unique<QueryReaction>();
+                                reaction = std::make_unique<QueryReaction>();
                                 loader.loadReaction(*reaction);
-                                return reaction;
                             }
                             else
                             {
-                                auto reaction = std::make_unique<Reaction>();
+                                reaction = std::make_unique<Reaction>();
                                 loader.loadReaction(*reaction);
-                                return reaction;
                             }
+                            // TODO: to be removed. This is just for test.
+                            if (reaction->reactionBlocksCount() > 1 && reaction->intermediateCount() == 0)
+                            {
+                                std::deque<Reaction> reactions;
+                                for (int i = 0; i < reaction->reactionBlocksCount(); i++)
+                                {
+                                    auto& rc = reactions.emplace_back();
+                                    auto& rb = reaction->reactionBlock(i);
+                                    for (int j = 0; j < rb.reactants.size(); j++)
+                                        rc.addReactantCopy(reaction->getBaseMolecule(rb.reactants[j]), 0, 0);
+                                    for (int j = 0; j < rb.products.size(); j++)
+                                        rc.addProductCopy(reaction->getBaseMolecule(rb.products[j]), 0, 0);
+                                }
+                                PathwayReactionBuilder prb;
+                                auto pwr = prb.buildPathwayReaction(reactions);
+                                reaction->meta().resetReactionData();
+                                pwr->meta().clone(reaction->meta());
+                                return pwr;
+                            }
+                            return reaction;
                         }
                     }
                     return nullptr;

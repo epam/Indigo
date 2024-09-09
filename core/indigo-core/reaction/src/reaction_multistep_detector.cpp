@@ -215,6 +215,11 @@ void ReactionMultistepDetector::buildReaction(BaseReaction& rxn)
         }
     }
 
+    for (auto& csb : _component_summ_blocks)
+    {
+        rxn.meta().addMetaObject(new KETSimpleObject(KETSimpleObject::EKETRectangle, std::make_pair(csb.bbox.leftBottom(), csb.bbox.rightTop())));
+    }
+
     // handle arrows
     for (int i = 0; i < rxn.meta().getMetaCount(KETReactionArrow::CID); ++i)
     {
@@ -270,9 +275,14 @@ void ReactionMultistepDetector::buildReaction(BaseReaction& rxn)
             // idx_cs_min_reac -> idx_cs_min_prod
             csb_min_reac.arrows_to.push_back(idx_cs_min_prod);
             for (auto ri : csb_min_reac.indexes)
+            {
                 rb.reactants.push(_reaction_components[ri].index);
+            }
+
             for (auto pi : csb_min_prod.indexes)
+            {
                 rb.products.push(_reaction_components[pi].index);
+            }
         }
     }
 
@@ -380,6 +390,7 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
 {
     // _reaction_components -> allMolecules
     // _component_summ_blocks ->
+    std::unordered_map<int, int> mol_mapping;
     for (auto& rc : _reaction_components)
     {
         if (rc.component_type == ReactionComponent::MOLECULE)
@@ -388,21 +399,30 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
             switch (csb.role)
             {
             case BaseReaction::REACTANT:
-                rxn.addReactantCopy(*rc.molecule, 0, 0);
+                mol_mapping.emplace(rc.index, rxn.addReactantCopy(*rc.molecule, 0, 0));
                 break;
             case BaseReaction::PRODUCT:
-                rxn.addProductCopy(*rc.molecule, 0, 0);
+                mol_mapping.emplace(rc.index, rxn.addProductCopy(*rc.molecule, 0, 0));
                 break;
             case BaseReaction::INTERMEDIATE:
-                rxn.addIntermediateCopy(*rc.molecule, 0, 0);
+                mol_mapping.emplace(rc.index, rxn.addIntermediateCopy(*rc.molecule, 0, 0));
                 break;
             case BaseReaction::UNDEFINED:
-                rxn.addUndefinedCopy(*rc.molecule, 0, 0);
+                mol_mapping.emplace(rc.index, rxn.addUndefinedCopy(*rc.molecule, 0, 0));
                 break;
             case BaseReaction::CATALYST:
-                rxn.addCatalystCopy(*rc.molecule, 0, 0);
+                mol_mapping.emplace(rc.index, rxn.addCatalystCopy(*rc.molecule, 0, 0));
                 break;
             }
         }
+    }
+
+    for (int i = 0; i < rxn.reactionBlocksCount(); ++i)
+    {
+        auto& rb = rxn.reactionBlock(i);
+        for (auto& ridx : rb.reactants)
+            ridx = mol_mapping.at(ridx);
+        for (auto& pidx : rb.products)
+            pidx = mol_mapping.at(pidx);
     }
 }
