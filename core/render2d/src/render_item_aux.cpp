@@ -24,7 +24,6 @@
 #include "render_context.h"
 #include "render_internal.h"
 #include <codecvt>
-#include <fstream>
 
 #ifdef _MSC_VER
 #pragma warning(push)
