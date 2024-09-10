@@ -58,6 +58,7 @@ idt_data = {
     "idt_unsplit": "/5UNSPLIT//iUNSPLIT//3UNSPLIT/",
     "idt_mixed_std": "ARAS",
     "idt_mixed_custom": "(N1:10203050)(N1)N",
+    "idt_rna_dna_mixed_custom": "r(R1:50003000)(R1)",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -99,6 +100,7 @@ idt_errors = {
     "/52MOErA/*/3Phos/": "Symbol '*' could be placed only between two nucleotides/nucleosides.",
     "/52MOErA//32MOErA/*": "Monomer /32MOErA/ doesn't have phosphate, so '*' couldn't be applied.",
     "/3Phos/*": "Symbol '*' could be placed only between two nucleotides/nucleosides.",
+    "r(B1:50003000)(B1)": "Unknown mixed base 'B1'",
 }
 for idt_seq in sorted(idt_errors.keys()):
     error = idt_errors[idt_seq]

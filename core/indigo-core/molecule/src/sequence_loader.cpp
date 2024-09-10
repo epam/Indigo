@@ -1093,8 +1093,10 @@ void SequenceLoader::loadIdt(KetDocument& document)
                             mixed_base = mixed_base[0];
                         }
                     }
-                    if (sugar == "R")
+                    if (sugar == "R" && RNA_DNA_MIXED_BASES.count(mixed_base) == 0)
+                    {
                         idt_alias = 'r' + idt_alias;
+                    }
                     if (!document.hasVariantMonomerTemplate(idt_alias))
                     {
                         auto it = STANDARD_MIXED_BASES.find(mixed_base);
