@@ -110,7 +110,7 @@ for filename in files:
         print(diff)
 
 print("*** Reaction CDXML to KET ***")
-indigo.setOption('ignore-stereochemistry-errors', True)
+indigo.setOption("ignore-stereochemistry-errors", True)
 
 root_cdxml = joinPathPy("reactions/cdxml/", __file__)
 ref_path = joinPathPy("ref/", __file__)
