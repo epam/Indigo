@@ -198,13 +198,28 @@ void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json
     if (mt_json.HasMember("attachmentPoints"))
     {
         auto& att_points = mt_json["attachmentPoints"];
+        int side_count = 0;
         for (SizeType i = 0; i < att_points.Size(); i++)
         {
             auto& ap = att_points[i];
-            std::string ap_type, label;
+            std::string label = "R";
             int attachment_atom;
-            if (ap.HasMember("label"))
+            if (ap.HasMember("type"))
+            {
+                std::string t = ap["type"].GetString();
+                if (t == "left")
+                    label = "R1";
+                else if (t == "right")
+                    label = "R2";
+                else if (t == "side")
+                    label += '3' + side_count++;
+                else
+                    throw Error("Unknown attachment point type %s", t.c_str());
+            }
+            else if (ap.HasMember("label"))
                 label = ap["label"].GetString();
+            else
+                label += '1' + i;
             attachment_atom = ap["attachmentAtom"].GetInt();
             auto& att_point = mon_template.AddAttachmentPoint(label, attachment_atom);
             att_point.parseOptsFromKet(ap);

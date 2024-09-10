@@ -34,6 +34,7 @@
             {
                 "attachmentAtom": 0,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         1
@@ -43,6 +44,7 @@
             {
                 "attachmentAtom": 0,
                 "type": "right",
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         3

@@ -159,6 +159,7 @@
             {
                 "attachmentAtom": 4,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         5
@@ -168,6 +169,7 @@
             {
                 "attachmentAtom": 1,
                 "type": "right",
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         3
@@ -418,6 +420,7 @@
             {
                 "attachmentAtom": 4,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         7
@@ -427,6 +430,7 @@
             {
                 "attachmentAtom": 0,
                 "type": "right",
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         6
@@ -436,6 +440,7 @@
             {
                 "attachmentAtom": 3,
                 "type": "side",
+                "label": "R3",
                 "leavingGroup": {
                     "atoms": [
                         8
