@@ -112,7 +112,7 @@ for filename in files:
 print("*** Reaction CDXML to KET ***")
 indigo.setOption("ignore-stereochemistry-errors", True)
 
-root_cdxml = joinPathPy("reactions/cdxml/", __file__)
+root_cdxml = joinPathPy("reactions/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
 files = [
