@@ -11,3 +11,5 @@ multi_overlap.cdxml:SUCCEED
 multi_overlap.ket:SUCCEED
 *** KET to CDXML ***
 963-super.cdxml:SUCCEED
+*** Reaction CDXML to KET ***
+2333-EnhancedStereochemistry.ket:SUCCEED

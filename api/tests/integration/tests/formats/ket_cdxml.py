@@ -125,6 +125,8 @@ for filename in files:
     try:
         reaction = indigo.loadReaction(cdxml_str)
         ket_result = reaction.json()
+        # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+        #     file.write(ket_result)
         with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
             ket_ref = file.read()
         diff = find_diff(ket_ref, ket_result)
