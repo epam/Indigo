@@ -1692,7 +1692,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     continue;
                 }
                 const auto& monomer_class = MonomerTemplates::getStrToMonomerType().at(simple_polymer_type);
-                auto monomer_info = readHelmMonomer(document, monomer_class);
+                auto monomer_info = readHelmMonomer(document, monomer_class == MonomerClass::RNA ? MonomerClass::Sugar : monomer_class);
                 if (monomer_class == MonomerClass::CHEM)
                 {
                     ch = _scanner.lookNext();
