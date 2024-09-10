@@ -63,6 +63,7 @@ idt_data = {
     "idt_more_than_80_chars": "/52MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//i2MOErA//3Phos/",
     "idt_mixed_std": "ARAS",
     "idt_mixed_custom": "(N1:10203050)(N1)N",
+    "idt_rna_dna_mixed_custom": "r(R1:50003000)(R1)",
 }
 
 for filename in sorted(idt_data.keys()):
