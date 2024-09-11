@@ -55,6 +55,11 @@ indigo.setOption("render-output-format", "png")
 renderer.renderToFile(rea, joinPathPy("out/single_arrow.png", __file__))
 print(checkImageSimilarity("single_arrow.png"))
 
+rea = indigo.loadReactionFromFile(joinPathPy("reactions/multitail_arrow.ket", __file__))
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(rea, joinPathPy("out/multitail_arrow.png", __file__))
+print(checkImageSimilarity("multitail_arrow.png"))
+
 indigo.setOption("render-background-color", "255, 255, 255")
 mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/images.ket", __file__))
 indigo.setOption("render-output-format", "png")
