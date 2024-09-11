@@ -286,9 +286,9 @@ void RenderItemAuxiliary::_drawArrow(const KETReactionMultitailArrow& ar)
     }
 
     spineBeg += Vec2f(-radius, radius);
-    _rc.drawArc(spineBeg, radius, -M_PI / 2, 0);
+    _rc.drawArc(spineBeg, radius, -static_cast<float>(M_PI) / 2.f, .0f);
     spineEnd += Vec2f(-radius, -radius);
-    _rc.drawArc(spineEnd, radius, 0, M_PI / 2);
+    _rc.drawArc(spineEnd, radius, .0f, static_cast<float>(M_PI) / 2.f);
 }
 
 void RenderItemAuxiliary::_drawArrow()
