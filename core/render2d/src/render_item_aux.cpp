@@ -262,6 +262,35 @@ void RenderItemAuxiliary::_drawArrow(const KETReactionArrow& ar)
     }
 }
 
+void RenderItemAuxiliary::_drawArrow(const KETReactionMultitailArrow& ar)
+{
+    const float radius = KETReactionMultitailArrow::TAIL_ARC_RADIUS;
+    // In order to avoid a slight gap, that becomes apparent with the highest zoom.
+    const float gap = .01f;
+
+    Vec2f arrowBeg = {ar.getSpineBegin().x, ar.getHead().y}, arrowEnd = ar.getHead();
+    scale(arrowBeg);
+    scale(arrowEnd);
+    _rc.drawArrow(arrowBeg, arrowEnd, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+
+    Vec2f spineBeg = ar.getSpineBegin(), spineEnd = ar.getSpineEnd();
+    scale(spineBeg);
+    scale(spineEnd);
+    _rc.drawLine(spineBeg + Vec2f(.0, radius - gap), spineEnd + Vec2f(.0, -radius + gap));
+
+    for (int i = 0; i < ar.getTails().size(); i++)
+    {
+        auto tail = ar.getTails().at(i);
+        scale(tail);
+        _rc.drawLine(tail, {spineBeg.x - (i == 0 || i == ar.getTails().size() - 1 ? radius - gap : 0), tail.y});
+    }
+
+    spineBeg += Vec2f(-radius, radius);
+    _rc.drawArc(spineBeg, radius, -M_PI / 2, 0);
+    spineEnd += Vec2f(-radius, -radius);
+    _rc.drawArc(spineEnd, radius, 0, M_PI / 2);
+}
+
 void RenderItemAuxiliary::_drawArrow()
 {
     _rc.setSingleSource(CWC_BASE);
@@ -377,6 +406,11 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
             break;
             case KETReactionArrow::CID: {
                 const KETReactionArrow& ar = static_cast<const KETReactionArrow&>(mobj);
+                _drawArrow(ar);
+            }
+            break;
+            case KETReactionMultitailArrow::CID: {
+                const KETReactionMultitailArrow& ar = static_cast<const KETReactionMultitailArrow&>(mobj);
                 _drawArrow(ar);
             }
             break;
