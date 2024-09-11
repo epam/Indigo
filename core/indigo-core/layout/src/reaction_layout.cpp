@@ -64,7 +64,7 @@ void ReactionLayout::fixLayout()
         rl.preserve_molecule_layout = true;
         rl.make();
     }
-    else if (_r.meta().getMetaCount(KETReactionArrow::CID) == 0)
+    else if (_r.meta().getMetaCount(KETReactionArrow::CID) == 0 && _r.meta().getMetaCount(KETReactionMultitailArrow::CID) == 0)
         _updateMetadata();
 }
 

@@ -397,7 +397,9 @@ namespace indigo
     {
     public:
         static const std::uint32_t CID = "KET reaction plus"_hash;
-        KETReactionPlus(const Vec2f& pos) : MetaObject(CID), _pos(pos){};
+        KETReactionPlus(const Vec2f& pos) : MetaObject(CID), _pos(pos){
+            std::cout << "plus" << std::endl;
+        };
 
         MetaObject* clone() const override
         {
@@ -488,6 +490,7 @@ namespace indigo
         std::vector<int> indexes;
         int role;
         std::vector<int> arrows_to;
+        std::vector<int> arrows_from;
     };
 
     struct ReactionComponent
@@ -514,6 +517,7 @@ namespace indigo
             ARROW_ELLIPTICAL_ARC_OPEN_ANGLE,
             ARROW_ELLIPTICAL_ARC_OPEN_HALF_ANGLE,
             ARROW_RETROSYNTHETIC,
+            ARROW_MULTITAIL
         };
 
         enum

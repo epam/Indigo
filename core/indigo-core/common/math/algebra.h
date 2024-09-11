@@ -386,7 +386,7 @@ namespace indigo
             //         return !same_sign && Vec2f::cross(lb, vr) > 0 && count < 4;
         }
 
-        inline double pointDistance(const Vec2f& pt)
+        inline float pointDistance(const Vec2f& pt)
         {
             if (pt.x <= left())
             {

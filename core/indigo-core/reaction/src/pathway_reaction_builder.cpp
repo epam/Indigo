@@ -79,7 +79,7 @@ auto PathwayReactionBuilder::findSuccessorReactions(int reactionIdx)
     return matchedReactions;
 }
 
-void PathwayReactionBuilder::buildReactions(std::deque<Reaction>& reactions)
+void PathwayReactionBuilder::buildReactions()
 {
     for (int i = 0; i < (int)_reactionInchiDescriptors.size(); ++i)
     {
@@ -211,7 +211,7 @@ std::unique_ptr<PathwayReaction> PathwayReactionBuilder::buildPathwayReaction(st
 {
     buildInchiDescriptors(reactions);
     buildNodes(reactions);
-    buildReactions(reactions);
+    buildReactions();
     const auto& rr = _pathwayReaction->getRootReactions();
     PathwayLayout pl(*_pathwayReaction);
     pl.make();
