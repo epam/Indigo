@@ -55,7 +55,9 @@ indigo.setOption("render-output-format", "png")
 renderer.renderToFile(rea, joinPathPy("out/single_arrow.png", __file__))
 print(checkImageSimilarity("single_arrow.png"))
 
-rea = indigo.loadReactionFromFile(joinPathPy("reactions/multitail_arrow.ket", __file__))
+rea = indigo.loadReactionFromFile(
+    joinPathPy("reactions/multitail_arrow.ket", __file__)
+)
 indigo.setOption("render-output-format", "png")
 renderer.renderToFile(rea, joinPathPy("out/multitail_arrow.png", __file__))
 print(checkImageSimilarity("multitail_arrow.png"))
