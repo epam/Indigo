@@ -28,6 +28,7 @@
 #include "base_cpp/red_black.h"
 
 #include <sstream>
+#include <stdint.h>
 
 using namespace indigo;
 

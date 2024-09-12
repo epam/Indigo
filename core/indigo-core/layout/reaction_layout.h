@@ -44,7 +44,7 @@ namespace indigo
         void processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_box, int side);
 
         const float bond_length;
-        const float atom_label_width;
+        const float atom_label_margin;
         const float default_plus_size;
         const float default_arrow_size;
         const float reaction_margin_size;

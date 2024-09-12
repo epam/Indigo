@@ -23,6 +23,7 @@
 #include <rapidjson/writer.h>
 
 #include "base_cpp/exception.h"
+#include "layout/metalayout.h"
 #include "molecule/ket_commons.h"
 
 namespace indigo

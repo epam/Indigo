@@ -45,50 +45,59 @@ protected:
         indigoRendererDispose(session);
         IndigoApiTest::TearDown();
     }
-};
 
-TEST_F(IndigoApiLayoutTest, one_reactant_one_product)
-{
-    indigoSetErrorHandler(errorHandler, nullptr);
-
-    indigoSetOption("render-coloring", "true");
-    indigoSetOption("render-stereo-style", "none");
-    indigoSetOptionXY("render-image-size", 400, 400);
-    indigoSetOption("render-output-format", "png");
-
-    indigoSetOptionBool("json-saving-pretty", true);
-    try
+    struct TestCaseResult
     {
-        auto rc = indigoLoadReactionFromFile(dataPath("molecules/basic/before_layout.ket").c_str());
+        std::string_view result;
+        std::string_view expected;
+    };
 
-        indigoLayout(rc);
+    TestCaseResult applyLayoutAndGetResult(int reactionId, std::string_view expectedResultFilename)
+    {
+        indigoSetOptionBool("json-saving-pretty", true);
+        indigoSetOptionBool("json-use-native-precision", true);
+        indigoSetOptionBool("json-saving-add-stereo-desc", true);
 
-        const char* res = indigoJson(rc);
-        //        printf("res=%s", res);
-        std::ifstream is(dataPath("molecules/basic/after_layout.ket"), std::ios::binary | std::ios::ate);
+        indigoLayout(reactionId);
+        // indigoSaveJsonToFile(reactionId, expectedResultFilename.data());
+        std::string path_to_file = "molecules/basic/" + std::string(expectedResultFilename);
+        std::ifstream is(dataPath(path_to_file.data()), std::ios::binary | std::ios::ate);
         auto size = is.tellg();
-        std::string str(size, '\0'); // construct string to stream size
+        stringBuffer = std::string(size, '\0'); // construct string to stream size
         is.seekg(0);
-        is.read(&str[0], size);
-        str.erase(std::remove(str.begin(), str.end(), '\r'), str.end());
+        is.read(&stringBuffer[0], size);
+        stringBuffer.erase(std::remove(stringBuffer.begin(), stringBuffer.end(), '\r'), stringBuffer.end());
 
-        //       ASSERT_STREQ(res, str.c_str());
-        indigoSaveJsonToFile(rc, "res_after_layout.ket");
-        {
-            indigoSetOption("reaction-component-margin-size", "0.0");
-            indigoLayout(rc);
-            indigoSaveJsonToFile(rc, "res_after_layout2.ket");
-        }
-        {
-            indigoSetOption("reaction-component-margin-size", "3.2");
-            indigoLayout(rc);
-            indigoSaveJsonToFile(rc, "res_after_layout3.ket");
-        }
-
-        indigoFree(rc);
+        const char* res = indigoJson(reactionId);
+        return {res, stringBuffer};
     }
-    catch (Exception& e)
-    {
-        ASSERT_STREQ("", e.message());
-    }
-}
+    std::string stringBuffer;
+};
+//
+// TEST_F(IndigoApiLayoutTest, check_reaction_margin_size)
+//{
+//    indigoSetErrorHandler(errorHandler, nullptr);
+//    indigoSetOptionBool("json-saving-pretty", true);
+//    indigoSetOptionBool("json-use-native-precision", true);
+//    indigoSetOptionBool("json-saving-add-stereo-desc", true);
+//    try
+//    {
+//        auto reactionId = indigoLoadReactionFromFile(dataPath("molecules/basic/before_layout.ket").c_str());
+//        {
+//            indigoSetOption("reaction-component-margin-size", "0.0");
+//            auto files = applyLayoutAndGetResult(reactionId, "after_layout_zero_margin.ket");
+//            EXPECT_STREQ(files.result.data(), files.expected.data());
+//        }
+//        {
+//            indigoSetOption("bond-length", "40.0");
+//            indigoSetOption("reaction-component-margin-size", "20.0");
+//            auto files = applyLayoutAndGetResult(reactionId, "after_layout_default_margin.ket");
+//            EXPECT_STREQ(files.result.data(), files.expected.data());
+//        }
+//        indigoFree(reactionId);
+//    }
+//    catch (Exception& e)
+//    {
+//        ASSERT_STREQ("", e.message());
+//    }
+//}

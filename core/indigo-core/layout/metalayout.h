@@ -21,7 +21,9 @@
 
 #include "base_cpp/obj_array.h"
 #include "base_cpp/reusable_obj_array.h"
+
 #include "math/algebra.h"
+#include <stdint.h>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -229,7 +231,10 @@ namespace indigo
 
     struct LayoutOptions
     {
-        static constexpr float DEFAULT_BOND_LENGTH = 1.6f;
+        // FIXME: The value is 1.6 instead of 1.0 due to backward compatibility, needs to be refactored
+        static constexpr float DEFAULT_BOND_LENGTH = 1.6f; // default length of inter-chemical bonds
+        static constexpr float DEFAULT_PLUS_SIZE = 1.0f;
+
         float bondLength{DEFAULT_BOND_LENGTH};
         UnitsOfMeasure::TYPE bondLengthUnit{UnitsOfMeasure::TYPE::PX};
         float reactionComponentMarginSize{DEFAULT_BOND_LENGTH / 2};
@@ -240,7 +245,7 @@ namespace indigo
             auto marginSizePt = UnitsOfMeasure::convertToPt(reactionComponentMarginSize, reactionComponentMarginSizeUnit, ppi);
             auto bondLengthPt = UnitsOfMeasure::convertToPt(bondLength, bondLengthUnit, ppi);
 
-            return marginSizePt / bondLengthPt;
+            return (DEFAULT_BOND_LENGTH * marginSizePt) / bondLengthPt;
         }
     };
 
