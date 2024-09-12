@@ -8,6 +8,7 @@
 #include "molecule/elements.h"
 #include "molecule/ket_commons.h"
 #include "molecule/ket_document.h"
+#include "molecule/ket_document_json_loader.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_sgroups.h"
@@ -1168,76 +1169,6 @@ static IdtAlias parseIdtAlias(const rapidjson::Value& parent)
         return IdtAlias(idt_alias_base);
 }
 
-void MoleculeJsonLoader::addMonomerTemplate(const rapidjson::Value& mt_json, MonomerTemplateLibrary* library, KetDocument* document)
-{
-    if (!mt_json.HasMember("id"))
-        throw Error("Monomer template without id");
-
-    std::string id = mt_json["id"].GetString();
-
-    if (!mt_json.HasMember("class"))
-        throw Error("Monomer template without class");
-    std::string monomer_class = mt_json["class"].GetString();
-
-    bool unresolved = false;
-    if (mt_json.HasMember("unresolved"))
-        unresolved = mt_json["unresolved"].GetBool();
-
-    IdtAlias idt_alias;
-    if (mt_json.HasMember("idtAliases"))
-    {
-        idt_alias = parseIdtAlias(mt_json);
-        if (idt_alias.getBase().size() == 0)
-            throw Error("Monomer template %s contains IDT alias without base.", id.c_str());
-    }
-    else if (unresolved)
-    {
-        throw Error("Unresoved monomer '%s' without IDT alias.", id.c_str());
-    }
-
-    auto& mon_template = library->addMonomerTemplate(id, monomer_class, idt_alias, unresolved);
-    mon_template.parseOptsFromKet(mt_json);
-
-    // parse atoms
-    mon_template.parseAtoms(mt_json["atoms"]);
-
-    // parse bonds
-    if (mt_json.HasMember("bonds"))
-    {
-        mon_template.parseBonds(mt_json["bonds"]);
-    }
-
-    if (mt_json.HasMember("attachmentPoints"))
-    {
-        auto& att_points = mt_json["attachmentPoints"];
-        for (SizeType i = 0; i < att_points.Size(); i++)
-        {
-            auto& ap = att_points[i];
-            std::string ap_type, label;
-            int attachment_atom;
-            if (ap.HasMember("label"))
-                label = ap["label"].GetString();
-            attachment_atom = ap["attachmentAtom"].GetInt();
-            auto& att_point = mon_template.AddAttachmentPoint(label, attachment_atom);
-            att_point.parseOptsFromKet(ap);
-            if (ap.HasMember("leavingGroup"))
-            {
-                auto& lv = ap["leavingGroup"];
-                if (lv.HasMember("atoms"))
-                {
-                    std::vector<int> leaving_group;
-                    auto& atoms = lv["atoms"];
-                    for (SizeType i = 0; i < atoms.Size(); i++)
-                    {
-                        leaving_group.emplace_back(atoms[i].GetInt());
-                    }
-                    att_point.setLeavingGroup(leaving_group);
-                }
-            }
-        }
-    }
-}
-
 void MoleculeJsonLoader::addToLibMonomerGroupTemplate(MonomerTemplateLibrary& library, const rapidjson::Value& monomer_group_template)
 {
     if (monomer_group_template.HasMember("id"))
@@ -1287,7 +1218,7 @@ void MoleculeJsonLoader::loadMonomerLibrary(MonomerTemplateLibrary& library)
         auto& mt = _templates[i];
         if (mt.HasMember("type") && mt["type"].GetString() == std::string("monomerTemplate"))
         {
-            addMonomerTemplate(mt, &library, nullptr);
+            KetDocumentJsonLoader::parseMonomerTemplate(mt, library);
         }
     }
 
