@@ -69,9 +69,15 @@ namespace indigo
     KetAttachmentPoint& MonomerTemplate::AddAttachmentPoint(const std::string& label, int att_atom)
     {
         std::string ap_id = label.size() != 0 ? label : "R" + std::to_string(1 + _attachment_points.size());
-        auto it = _attachment_points.emplace(ap_id, att_atom);
+        auto& ap = AddAttachmentPointId(ap_id, att_atom);
         if (label.size())
-            it.first->second.setStringProp("label", label);
+            ap.setStringProp("label", label);
+        return ap;
+    }
+
+    KetAttachmentPoint& MonomerTemplate::AddAttachmentPointId(const std::string& id, int att_atom)
+    {
+        auto it = _attachment_points.emplace(id, att_atom);
         return it.first->second;
     }
 
