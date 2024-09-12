@@ -27,8 +27,8 @@
 #include "base_cpp/os_sync_wrapper.h"
 #include "base_cpp/red_black.h"
 
+#include <cstdint>
 #include <sstream>
-#include <stdint.h>
 
 using namespace indigo;
 

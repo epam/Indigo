@@ -23,7 +23,7 @@
 #include "base_cpp/reusable_obj_array.h"
 
 #include "math/algebra.h"
-#include <stdint.h>
+#include <cstdint>
 
 #ifdef _WIN32
 #pragma warning(push)
