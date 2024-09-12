@@ -142,6 +142,7 @@
             {
                 "attachmentAtom": 9,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         10
@@ -151,6 +152,7 @@
             {
                 "attachmentAtom": 5,
                 "type": "right",
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         11
@@ -160,6 +162,7 @@
             {
                 "attachmentAtom": 2,
                 "type": "side",
+                "label": "R3",
                 "leavingGroup": {
                     "atoms": [
                         8
@@ -432,6 +435,7 @@
             {
                 "attachmentAtom": 0,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         1
@@ -441,6 +445,7 @@
             {
                 "attachmentAtom": 0,
                 "type": "right",
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         3
@@ -533,6 +538,7 @@
             {
                 "attachmentAtom": 6,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         10

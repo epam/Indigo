@@ -4724,7 +4724,7 @@
     },
     "ambiguousMonomerTemplate-B": {
         "type": "ambiguousMonomerTemplate",
-        "subtype": "mixture",
+        "subtype": "alternatives",
         "id": "B",
         "alias": "B",
         "options": [
@@ -4738,7 +4738,7 @@
     },
     "ambiguousMonomerTemplate-J": {
         "type": "ambiguousMonomerTemplate",
-        "subtype": "mixture",
+        "subtype": "alternatives",
         "id": "J",
         "alias": "J",
         "options": [
@@ -4752,7 +4752,7 @@
     },
     "ambiguousMonomerTemplate-Z": {
         "type": "ambiguousMonomerTemplate",
-        "subtype": "mixture",
+        "subtype": "alternatives",
         "id": "Z",
         "alias": "Z",
         "options": [
@@ -4766,7 +4766,7 @@
     },
     "ambiguousMonomerTemplate-X": {
         "type": "ambiguousMonomerTemplate",
-        "subtype": "mixture",
+        "subtype": "alternatives",
         "id": "X",
         "alias": "X",
         "options": [

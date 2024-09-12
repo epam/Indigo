@@ -85,6 +85,7 @@
         "attachmentPoints": [
             {
                 "attachmentAtom": 1,
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         0
@@ -93,6 +94,7 @@
             },
             {
                 "attachmentAtom": 4,
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         6
