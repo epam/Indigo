@@ -149,7 +149,7 @@
         "seqid": 1,
         "position": {
             "x": 0.000000,
-            "y": -1.000000
+            "y": -1.600000
         },
         "alias": "hxy",
         "templateId": "hxy___Hexynyl alcohol"
@@ -160,7 +160,7 @@
         "seqid": 2,
         "position": {
             "x": 0.000000,
-            "y": -2.000000
+            "y": -3.200000
         },
         "alias": "R",
         "templateId": "R___Ribose"
@@ -171,7 +171,7 @@
         "seqid": 3,
         "position": {
             "x": 0.000000,
-            "y": -3.000000
+            "y": -4.800000
         },
         "alias": "A",
         "templateId": "A___Adenine"
@@ -181,8 +181,8 @@
         "id": "3",
         "seqid": 4,
         "position": {
-            "x": 1.000000,
-            "y": -2.000000
+            "x": 1.600000,
+            "y": -3.200000
         },
         "alias": "P",
         "templateId": "P___Phosphate"
@@ -192,8 +192,8 @@
         "id": "4",
         "seqid": 5,
         "position": {
-            "x": 2.000000,
-            "y": -2.000000
+            "x": 3.200000,
+            "y": -3.200000
         },
         "alias": "R",
         "templateId": "R___Ribose"
@@ -203,8 +203,8 @@
         "id": "5",
         "seqid": 6,
         "position": {
-            "x": 2.000000,
-            "y": -3.000000
+            "x": 3.200000,
+            "y": -4.800000
         },
         "alias": "U",
         "templateId": "U___Uracil"
@@ -214,8 +214,8 @@
         "id": "6",
         "seqid": 7,
         "position": {
-            "x": 3.000000,
-            "y": -2.000000
+            "x": 4.800000,
+            "y": -3.200000
         },
         "alias": "P",
         "templateId": "P___Phosphate"
@@ -225,8 +225,8 @@
         "id": "7",
         "seqid": 8,
         "position": {
-            "x": 4.000000,
-            "y": -2.000000
+            "x": 6.400000,
+            "y": -3.200000
         },
         "alias": "R",
         "templateId": "R___Ribose"
@@ -236,8 +236,8 @@
         "id": "8",
         "seqid": 9,
         "position": {
-            "x": 4.000000,
-            "y": -3.000000
+            "x": 6.400000,
+            "y": -4.800000
         },
         "alias": "G",
         "templateId": "G___Guanine"
@@ -247,8 +247,8 @@
         "id": "9",
         "seqid": 10,
         "position": {
-            "x": 5.000000,
-            "y": -2.000000
+            "x": 8.000000,
+            "y": -3.200000
         },
         "alias": "P",
         "templateId": "P___Phosphate"

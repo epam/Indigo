@@ -81,7 +81,7 @@
         "seqid": 2,
         "position": {
             "x": 0.000000,
-            "y": -1.000000
+            "y": -1.600000
         },
         "alias": "R",
         "templateId": "R___Ribose"
@@ -92,7 +92,7 @@
         "seqid": 3,
         "position": {
             "x": 0.000000,
-            "y": -2.000000
+            "y": -3.200000
         },
         "alias": "U",
         "templateId": "U___Uracil"
@@ -102,8 +102,8 @@
         "id": "3",
         "seqid": 4,
         "position": {
-            "x": 1.000000,
-            "y": -1.000000
+            "x": 1.600000,
+            "y": -1.600000
         },
         "alias": "P",
         "templateId": "P___Phosphate"
