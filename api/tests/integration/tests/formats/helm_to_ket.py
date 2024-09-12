@@ -41,6 +41,7 @@ helm_data = {
     "aminoacids_variants": "PEPTIDE1{(D+N).(L+I).(E+Q).(A+C+D+E+F+G+H+I+K+L+M+N+O+P+Q+R+S+T+U+V+W+Y)}$$$$V2.0",
     "helm_smiles": "PEPTIDE1{G.[[*]N[C@@H](C=O)C([*])=O |$_R1;;;;;;_R2;$|].C}|PEPTIDE2{G.[[*:1]N[C@@H](C=O)C([*:2])=O].C}$$$$",
     "helm_smiles_sugar": "RNA1{[C([*:3])[C@@H](O[*:2])CO[*:1]](A)P}$$$$V2.0",
+    "helm_no_left_ap": "PEPTIDE1{[DACys].C}$$$$V2.0",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(

@@ -387,6 +387,7 @@
             {
                 "attachmentAtom": 0,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         8
@@ -396,6 +397,7 @@
             {
                 "attachmentAtom": 6,
                 "type": "right",
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         7
@@ -548,6 +550,7 @@
             {
                 "attachmentAtom": 3,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         4
@@ -557,6 +560,7 @@
             {
                 "attachmentAtom": 0,
                 "type": "right",
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         15
@@ -566,6 +570,7 @@
             {
                 "attachmentAtom": 8,
                 "type": "side",
+                "label": "R3",
                 "leavingGroup": {
                     "atoms": [
                         16
@@ -854,6 +859,7 @@
             {
                 "attachmentAtom": 3,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         4
@@ -863,6 +869,7 @@
             {
                 "attachmentAtom": 0,
                 "type": "right",
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         9
@@ -872,6 +879,7 @@
             {
                 "attachmentAtom": 7,
                 "type": "side",
+                "label": "R3",
                 "leavingGroup": {
                     "atoms": [
                         10
@@ -1056,6 +1064,7 @@
             {
                 "attachmentAtom": 3,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         4
@@ -1065,6 +1074,7 @@
             {
                 "attachmentAtom": 0,
                 "type": "right",
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         9
@@ -1074,6 +1084,7 @@
             {
                 "attachmentAtom": 8,
                 "type": "side",
+                "label": "R3",
                 "leavingGroup": {
                     "atoms": [
                         10
@@ -1258,6 +1269,7 @@
             {
                 "attachmentAtom": 6,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         8
@@ -1267,6 +1279,7 @@
             {
                 "attachmentAtom": 0,
                 "type": "right",
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         7
@@ -1276,6 +1289,7 @@
             {
                 "attachmentAtom": 9,
                 "type": "side",
+                "label": "R3",
                 "leavingGroup": {
                     "atoms": [
                         10
@@ -1460,6 +1474,7 @@
             {
                 "attachmentAtom": 4,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         5
@@ -1469,6 +1484,7 @@
             {
                 "attachmentAtom": 1,
                 "type": "right",
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         3
@@ -1576,6 +1592,7 @@
             {
                 "attachmentAtom": 5,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         8
@@ -1585,6 +1602,7 @@
             {
                 "attachmentAtom": 0,
                 "type": "right",
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         7
@@ -1594,6 +1612,7 @@
             {
                 "attachmentAtom": 4,
                 "type": "side",
+                "label": "R3",
                 "leavingGroup": {
                     "atoms": [
                         9
@@ -1778,6 +1797,7 @@
             {
                 "attachmentAtom": 0,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         6
@@ -1787,6 +1807,7 @@
             {
                 "attachmentAtom": 3,
                 "type": "right",
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         5
@@ -1911,6 +1932,7 @@
             {
                 "attachmentAtom": 3,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         4
@@ -1920,6 +1942,7 @@
             {
                 "attachmentAtom": 0,
                 "type": "right",
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         7
@@ -1929,6 +1952,7 @@
             {
                 "attachmentAtom": 6,
                 "type": "side",
+                "label": "R3",
                 "leavingGroup": {
                     "atoms": [
                         8
@@ -2083,6 +2107,7 @@
             {
                 "attachmentAtom": 6,
                 "type": "left",
+                "label": "R1",
                 "leavingGroup": {
                     "atoms": [
                         7
@@ -2092,6 +2117,7 @@
             {
                 "attachmentAtom": 2,
                 "type": "right",
+                "label": "R2",
                 "leavingGroup": {
                     "atoms": [
                         3
