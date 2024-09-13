@@ -769,7 +769,8 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                 auto monomer_alias = monomer->alias();
                 if (monomer_class == MonomerClass::CHEM)
                     throw Error("Can't save chem '%s' to sequence format", monomer_alias.c_str());
-                if (monomer_class == MonomerClass::Sugar || monomer_class == MonomerClass::Phosphate)
+                if (monomer_class == MonomerClass::Sugar || monomer_class == MonomerClass::Phosphate ||
+                    (monomer_class == MonomerClass::Base && sequence.size() == 1))
                     continue;
 
                 if (monomer_alias.size() > 1 ||
@@ -778,8 +779,23 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                     (monomer_class == MonomerClass::Base && STANDARD_NUCLEOTIDES.count(monomer_alias) == 0 && STANDARD_MIXED_BASES.count(monomer_alias) == 0))
                 {
                     const auto& monomer_template = doc.templates().at(monomer->templateId());
-                    if (monomer_template.hasStringProp("naturalAnalogShort"))
-                        monomer_alias = monomer_template.getStringProp("naturalAnalogShort");
+                    std::string short_analog;
+                    if (monomer_template.hasStringProp("naturalAnalog"))
+                    {
+                        std::string analog = monomer_template.getStringProp("naturalAnalog");
+                        short_analog = monomerAliasByName(MonomerTemplate::MonomerClassToStr(monomer_class), analog);
+                        if (short_analog == analog && analog.size() > 1)
+                            short_analog = "";
+                    }
+                    if (short_analog.size() == 0 && monomer_template.hasStringProp("naturalAnalogShort"))
+                    {
+                        short_analog = monomer_template.getStringProp("naturalAnalogShort");
+                    }
+
+                    if (short_analog.size() == 1)
+                        monomer_alias = short_analog;
+                    else if (monomer_class == MonomerClass::AminoAcid)
+                        monomer_alias = "X";
                     else
                         throw Error("Can't save '%s' to sequence format", monomer_alias.c_str());
                 }
