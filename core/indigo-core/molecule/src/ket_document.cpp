@@ -410,7 +410,7 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
         bool has_ap_1 = ep1.hasStringProp("attachmentPointId");
         bool has_atom_1 = ep1.hasStringProp("atomId");
         bool has_ap_2 = ep2.hasStringProp("attachmentPointId");
-        bool has_atom_2 = ep1.hasStringProp("atomId");
+        bool has_atom_2 = ep2.hasStringProp("atomId");
         if ((has_ap_1 || has_atom_1) != (has_ap_2 || has_atom_2))
             throw Error("Connection with only one attachment point id.");
         if (!(has_ap_1 || has_atom_1))
@@ -433,7 +433,7 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
         auto& mon2_class = id_to_class.at(mon_id_2);
 
         auto& ap_id_1 = has_mon_1 ? ep1.getStringProp("attachmentPointId") : ep1.getStringProp("atomId");
-        auto& ap_id_2 = has_mon_1 ? ep2.getStringProp("attachmentPointId") : ep1.getStringProp("atomId");
+        auto& ap_id_2 = has_mon_2 ? ep2.getStringProp("attachmentPointId") : ep2.getStringProp("atomId");
 
         ap_to_connection.emplace(std::make_pair(mon_id_1, ap_id_1), connection);
         ap_to_connection.emplace(std::make_pair(mon_id_2, ap_id_2), connection);
