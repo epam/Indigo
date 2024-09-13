@@ -1201,7 +1201,7 @@
     },
     "ambiguousMonomerTemplate-B": {
         "type": "ambiguousMonomerTemplate",
-        "subtype": "mixture",
+        "subtype": "alternatives",
         "id": "B",
         "alias": "B",
         "options": [
@@ -1218,7 +1218,7 @@
     },
     "ambiguousMonomerTemplate-N": {
         "type": "ambiguousMonomerTemplate",
-        "subtype": "mixture",
+        "subtype": "alternatives",
         "id": "N",
         "alias": "N",
         "options": [
