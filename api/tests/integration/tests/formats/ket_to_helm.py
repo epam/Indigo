@@ -47,7 +47,7 @@ helm_data = {
     "aminoacids_variants": "PEPTIDE1{(D+N).(L+I).(E+Q).(A+C+D+E+F+G+H+I+K+L+M+N+O+P+Q+R+S+T+U+V+W+Y)}$$$$V2.0",
     "dna_variants": "RNA1{[dR](C+G+T)P.[dR](A+C+G+T)}$$$$V2.0",
     "rna_variants": "RNA1{R(G+T)P.R(A+C+G+T)}$$$$V2.0",
-    "helm_monomer_molecule": "PEPTIDE1{A}|PEPTIDE2{G}|CHEM1{[C(N[*:2])=C[*:1] |$;;_R2;;_R1$|]}$CHEM1,PEPTIDE1,1:R2-1:R1$$$V2.0",
+    "helm_monomer_molecule": "PEPTIDE1{A}|PEPTIDE2{G}|CHEM1{[C(N[*:2])=C[*:1] |$;;_R2;;_R1$|]}$CHEM1,PEPTIDE1,1:R2-1:R1|PEPTIDE2,CHEM1,1:R2-1:R1$$$V2.0",
 }
 
 for filename in sorted(helm_data.keys()):
