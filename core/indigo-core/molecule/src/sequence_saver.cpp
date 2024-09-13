@@ -1148,7 +1148,12 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
                 {
                     if (variants.size() > 0)
                         variants += mixture ? '+' : ',';
-                    variants += templates.at(option.templateId()).getStringProp("alias");
+                    auto alias = templates.at(option.templateId()).getStringProp("alias");
+                    if (alias.size() > 1)
+                        variants += '[';
+                    variants += alias;
+                    if (alias.size() > 1)
+                        variants += ']';
                     auto num = mixture ? option.ratio() : option.probability();
                     if (num.has_value())
                     {
