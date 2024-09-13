@@ -369,24 +369,24 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
         _alias_to_id.emplace(monomer, checkAddTemplate(document, monomer_class, monomer));
     else if (!document.hasVariantMonomerTemplate(monomer))
     {
-        std::optional<std::reference_wrapper<const std::vector<std::string>>> mixture;
+        std::optional<std::reference_wrapper<const std::vector<std::string>>> alternatives;
         if (seq_type == SeqType::PEPTIDESeq)
         {
             const auto& it = STANDARD_MIXED_PEPTIDES.find(monomer);
             if (it == STANDARD_MIXED_PEPTIDES.end())
                 throw Error("Unknown mixed peptide '%s'", monomer.c_str());
-            mixture.emplace(std::cref(it->second));
+            alternatives.emplace(std::cref(it->second));
         }
         else
         {
             const auto& it = STANDARD_MIXED_BASES.find(monomer);
             if (it == STANDARD_MIXED_BASES.end())
                 throw Error("Unknown mixed base '%s'", monomer.c_str());
-            mixture.emplace(std::cref(it->second));
+            alternatives.emplace(std::cref(it->second));
         }
 
         std::vector<KetVariantMonomerOption> options;
-        for (auto template_alias : mixture.value().get())
+        for (auto template_alias : alternatives.value().get())
         {
             auto& template_id = _library.getMonomerTemplateIdByAlias(monomer_class, template_alias);
             if (template_id.size() == 0)
@@ -396,7 +396,7 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
             checkAddTemplate(document, monomer_template);
             _alias_to_id.emplace(template_alias, template_id);
         }
-        auto& templ = document.addVariantMonomerTemplate("mixture", monomer, monomer, IdtAlias(), options);
+        auto& templ = document.addVariantMonomerTemplate("alternatives", monomer, monomer, IdtAlias(), options);
         static const std::map<std::string, KetAttachmentPoint> aa_aps{{"R1", -1}, {"R2", -1}};
         static const std::map<std::string, KetAttachmentPoint> base_aps{{"R1", -1}};
         if (seq_type == SeqType::PEPTIDESeq)
