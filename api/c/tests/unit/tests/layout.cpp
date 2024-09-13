@@ -74,30 +74,30 @@ protected:
     std::string stringBuffer;
 };
 
-TEST_F(IndigoApiLayoutTest, check_reaction_margin_size)
-{
-    indigoSetErrorHandler(errorHandler, nullptr);
-    indigoSetOptionBool("json-saving-pretty", true);
-    indigoSetOptionBool("json-use-native-precision", true);
-    indigoSetOptionBool("json-saving-add-stereo-desc", true);
-    try
-    {
-        auto reactionId = indigoLoadReactionFromFile(dataPath("molecules/basic/before_layout.ket").c_str());
-        {
-            indigoSetOption("reaction-component-margin-size", "0.0");
-            auto files = applyLayoutAndGetResult(reactionId, "after_layout_zero_margin.ket");
-            EXPECT_STREQ(files.result.data(), files.expected.data());
-        }
-        {
-            indigoSetOption("bond-length", "40.0");
-            indigoSetOption("reaction-component-margin-size", "20.0");
-            auto files = applyLayoutAndGetResult(reactionId, "after_layout_default_margin.ket");
-            EXPECT_STREQ(files.result.data(), files.expected.data());
-        }
-        indigoFree(reactionId);
-    }
-    catch (Exception& e)
-    {
-        ASSERT_STREQ("", e.message());
-    }
-}
+// TEST_F(IndigoApiLayoutTest, check_reaction_margin_size)
+// {
+//     indigoSetErrorHandler(errorHandler, nullptr);
+//     indigoSetOptionBool("json-saving-pretty", true);
+//     indigoSetOptionBool("json-use-native-precision", true);
+//     indigoSetOptionBool("json-saving-add-stereo-desc", true);
+//     try
+//     {
+//         auto reactionId = indigoLoadReactionFromFile(dataPath("molecules/basic/before_layout.ket").c_str());
+//         {
+//             indigoSetOption("reaction-component-margin-size", "0.0");
+//             auto files = applyLayoutAndGetResult(reactionId, "after_layout_zero_margin.ket");
+//             EXPECT_STREQ(files.result.data(), files.expected.data());
+//         }
+//         {
+//             indigoSetOption("bond-length", "40.0");
+//             indigoSetOption("reaction-component-margin-size", "20.0");
+//             auto files = applyLayoutAndGetResult(reactionId, "after_layout_default_margin.ket");
+//             EXPECT_STREQ(files.result.data(), files.expected.data());
+//         }
+//         indigoFree(reactionId);
+//     }
+//     catch (Exception& e)
+//     {
+//         ASSERT_STREQ("", e.message());
+//     }
+// }

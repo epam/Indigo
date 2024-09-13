@@ -1575,9 +1575,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 writer.StartObject();
                 const auto& pos = mol->getAtomXyz(i);
                 writer.Key("x");
-                writer.Double(pos.x);
+                writeFloat(writer, pos.x);
                 writer.Key("y");
-                writer.Double(pos.y);
+                writeFloat(writer, pos.y);
                 writer.EndObject(); // pos
 
                 // find template
