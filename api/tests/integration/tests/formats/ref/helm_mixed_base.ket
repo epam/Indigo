@@ -164,10 +164,10 @@
                 "$ref": "monomerTemplate-C___Cytosine"
             },
             {
-                "$ref": "ambiguousMonomerTemplate-R"
+                "$ref": "ambiguousMonomerTemplate-Var0"
             },
             {
-                "$ref": "ambiguousMonomerTemplate-S"
+                "$ref": "ambiguousMonomerTemplate-Var1"
             }
         ]
     },
@@ -223,8 +223,8 @@
             "y": -1.600000
         },
         "seqid": 5,
-        "alias": "R",
-        "templateId": "R"
+        "alias": "Var0",
+        "templateId": "Var0"
     },
     "monomer5": {
         "type": "monomer",
@@ -289,8 +289,8 @@
             "y": -1.600000
         },
         "seqid": 11,
-        "alias": "S",
-        "templateId": "S"
+        "alias": "Var1",
+        "templateId": "Var1"
     },
     "monomerTemplate-dR___Deoxy-Ribose": {
         "type": "monomerTemplate",
@@ -1172,11 +1172,11 @@
             }
         ]
     },
-    "ambiguousMonomerTemplate-R": {
+    "ambiguousMonomerTemplate-Var0": {
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
-        "id": "R",
-        "alias": "R",
+        "id": "Var0",
+        "alias": "Var0",
         "options": [
             {
                 "templateId": "A___Adenine"
@@ -1186,11 +1186,11 @@
             }
         ]
     },
-    "ambiguousMonomerTemplate-S": {
+    "ambiguousMonomerTemplate-Var1": {
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
-        "id": "S",
-        "alias": "S",
+        "id": "Var1",
+        "alias": "Var1",
         "options": [
             {
                 "templateId": "G___Guanine"
