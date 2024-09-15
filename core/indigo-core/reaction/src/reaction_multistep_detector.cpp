@@ -95,7 +95,7 @@ void ReactionMultistepDetector::createSummBlocks()
         int arrow_type = arrow.getArrowType();
         bool reverseReactionOrder = arrow_type == KETReactionArrow::ERetrosynthetic;
         const Vec2f& arr_begin = !reverseReactionOrder ? arrow.getTail() : arrow.getHead();
-        const Vec2f& arr_end = !reverseReactionOrder ? arrow.getTail() : arrow.getHead();
+        const Vec2f& arr_end = !reverseReactionOrder ? arrow.getHead() : arrow.getTail();
         Rect2f bbox(arr_begin - ARROW_BBOX_SHIFT, arr_end + ARROW_BBOX_SHIFT);
         _reaction_components.emplace_back(arrow_type, bbox, i, std::unique_ptr<BaseMolecule>(nullptr));
         _reaction_components.back().coordinates.push_back(arr_begin);
@@ -460,8 +460,8 @@ bool ReactionMultistepDetector::findPlusNeighbours(const Vec2f& plus_pos, const 
     if (rights_row_it != rights_row.end() && lefts_row_it != lefts_row.end())
     {
         min_distance_h = std::min(std::fabs(rights_row_it->first - plus_pos_x.first), std::fabs(plus_pos_x.first - lefts_row_it->first));
-        connection.first = lefts_row_it->second;
-        connection.second = rights_row_it->second;
+        connection.second = lefts_row_it->second;
+        connection.first = rights_row_it->second;
         result = _reaction_components[connection.first].component_type == ReactionComponent::MOLECULE &&
                  _reaction_components[connection.second].component_type == ReactionComponent::MOLECULE;
     }
