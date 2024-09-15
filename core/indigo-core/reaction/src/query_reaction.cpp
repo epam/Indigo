@@ -180,6 +180,13 @@ int QueryReaction::_addBaseMolecule(int side)
     return idx;
 }
 
+std::unique_ptr<BaseReaction> QueryReaction::getBaseReaction(int index)
+{
+    std::unique_ptr<BaseReaction> query_reaction;
+    query_reaction->clone(*this);
+    return query_reaction;
+}
+
 bool QueryReaction::aromatize(const AromaticityOptions& options)
 {
     bool arom_found = false;

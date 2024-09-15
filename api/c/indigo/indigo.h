@@ -323,6 +323,7 @@ CEXPORT int indigoIterateProducts(int reaction);
 CEXPORT int indigoIterateCatalysts(int reaction);
 // Returns an iterator for reactants, products, and catalysts.
 CEXPORT int indigoIterateMolecules(int reaction);
+CEXPORT int indigoIterateReactions(int reaction);
 
 CEXPORT int indigoSaveRxnfile(int reaction, int output);
 CEXPORT int indigoSaveRxnfileToFile(int reaction, const char* filename);

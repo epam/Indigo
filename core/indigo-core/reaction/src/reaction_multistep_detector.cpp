@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include "reaction/reaction_multistep_detector.h"
+#include "reaction/pathway_reaction.h"
 #include "reaction/reaction.h"
 
 using namespace indigo;
@@ -235,13 +236,12 @@ void ReactionMultistepDetector::createSummBlocks()
     }
 }
 
-void ReactionMultistepDetector::buildReaction(BaseReaction& rxn)
+void ReactionMultistepDetector::detectReaction()
 {
     createSummBlocks();
     detectArrows();
-    detectMultitailArrows(rxn);
+    detectMultitailArrows();
     // _component_summ_blocks, _reaction_components - result
-    constructMultipleArrowReaction(rxn);
 }
 
 void ReactionMultistepDetector::detectArrows()
@@ -303,11 +303,11 @@ void ReactionMultistepDetector::detectArrows()
     }
 }
 
-void ReactionMultistepDetector::detectMultitailArrows(BaseReaction& rxn)
+void ReactionMultistepDetector::detectMultitailArrows()
 {
-    for (int i = 0; i < rxn.meta().getMetaCount(KETReactionMultitailArrow::CID); ++i)
+    for (int i = 0; i < _bmol.meta().getMetaCount(KETReactionMultitailArrow::CID); ++i)
     {
-        auto& multi = (const KETReactionMultitailArrow&)rxn.meta().getMetaObject(KETReactionMultitailArrow::CID, i);
+        auto& multi = (const KETReactionMultitailArrow&)_bmol.meta().getMetaObject(KETReactionMultitailArrow::CID, i);
         float min_dist_prod = -1;
         int idx_cs_min_prod = -1;
         auto& arr_begin = multi.getHead();
@@ -348,12 +348,11 @@ void ReactionMultistepDetector::detectMultitailArrows(BaseReaction& rxn)
             }
         }
 
-        auto& rb = rxn.addReactionBlock();
-
         // TODO: add upper limit
         if (min_dist_prod > 0)
         {
             auto& csb_min_prod = _component_summ_blocks[idx_cs_min_prod];
+            PathwayComponent pwc;
             for (int j = 0; j < min_dist_reactants.size(); ++j)
             {
                 auto& reac = min_dist_reactants[j];
@@ -361,8 +360,8 @@ void ReactionMultistepDetector::detectMultitailArrows(BaseReaction& rxn)
                 {
                     if (j == 0)
                     {
-                        auto& rc_arrow = _reaction_components[_moleculeCount + rxn.meta().getMetaCount(KETReactionPlus::CID) +
-                                                              rxn.meta().getMetaCount(KETReactionArrow::CID) + i];
+                        auto& rc_arrow = _reaction_components[_moleculeCount + _bmol.meta().getMetaCount(KETReactionPlus::CID) +
+                                                              _bmol.meta().getMetaCount(KETReactionArrow::CID) + i];
                         rc_arrow.summ_block_idx = ReactionComponent::CONNECTED; // mark arrow as connected
                         if (csb_min_prod.role == BaseReaction::UNDEFINED)
                             csb_min_prod.role = BaseReaction::PRODUCT;
@@ -381,18 +380,6 @@ void ReactionMultistepDetector::detectMultitailArrows(BaseReaction& rxn)
                     csb_min_prod.arrows_from.push_back(reac.second);
                 }
             }
-
-            //for (auto prod_idx : csb_min_prod.indexes)
-            //    rb.products.push(prod_idx);
-
-            //for (auto& reac : min_dist_reactants)
-            //{
-            //    if (reac.first > 0)
-            //    {
-            //        for (auto reac_idx : _component_summ_blocks[reac.second].indexes)
-            //            rb.reactants.push(reac_idx);
-            //    }
-            //}
         }
     }
 }
@@ -493,13 +480,116 @@ bool ReactionMultistepDetector::findPlusNeighbours(const Vec2f& plus_pos, const 
     return result;
 }
 
+void ReactionMultistepDetector::constructPathwayReaction(PathwayReaction& rxn)
+{
+    std::unordered_map<int, int> rc_to_molecule;
+    std::vector<std::set<int>> csb_to_reaction;
+    std::vector<std::pair<std::vector<int>, std::vector<int>>> csb_reactions;
+    std::vector<std::unordered_map<int, int>> csb_to_reactant_indexes;
+
+    for (int i = 0; i < _component_summ_blocks.size(); ++i)
+    {
+        csb_to_reaction.emplace_back();
+        auto& csb = _component_summ_blocks[i];
+        if (csb.role == BaseReaction::PRODUCT || csb.role == BaseReaction::INTERMEDIATE)
+        {
+            // one product = one reaction, one reaction node
+            // map reactionNode <> csb_reaction
+            auto& rcidx_to_reactant = csb_to_reactant_indexes.emplace_back();
+            rxn.addReactionNode();
+            csb_to_reaction.back().emplace((int)csb_reactions.size());
+            csb_reactions.emplace_back().second.push_back(i); // add csb as product
+
+            auto [sri, sr] = rxn.addReaction();
+            // add products
+            for (auto rc_idx : csb.indexes)
+            {
+                auto& rc = _reaction_components[rc_idx];
+                auto it_copied = rc_to_molecule.find(rc_idx);
+                int mol_idx = -1;
+                if (it_copied != rc_to_molecule.end())
+                    mol_idx = it_copied->second;
+                else
+                {
+                    mol_idx = rxn.addMolecule(*rc.molecule);
+                    rc_to_molecule.emplace(rc_idx, mol_idx);
+                }
+                sr.productIndexes.push(mol_idx);
+            }
+
+            // add reactants
+            for (auto reactant_idx : csb.arrows_from)
+            {
+                csb_reactions.back().first.push_back(reactant_idx);
+                auto& csb_reactant = _component_summ_blocks[reactant_idx];
+                for (auto rc_idx : csb_reactant.indexes)
+                {
+                    auto& rc = _reaction_components[rc_idx];
+                    auto it_copied = rc_to_molecule.find(rc_idx);
+                    int mol_idx = -1;
+                    if (it_copied != rc_to_molecule.end())
+                        mol_idx = it_copied->second;
+                    else
+                    {
+                        mol_idx = rxn.addMolecule(*rc.molecule);
+                        rc_to_molecule.emplace(rc_idx, mol_idx);
+                    }
+                    rcidx_to_reactant.emplace(rc_idx, (int)sr.reactantIndexes.size());
+                    sr.reactantIndexes.push(mol_idx);
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < csb_reactions.size(); ++i)
+    {
+        auto& csb_reaction = csb_reactions[i];
+        auto& rn = rxn.getReactionNode(i);
+        // find which reactions the products' summblocks are connected to
+        // normally we have only one summblock here
+        for (auto csb_product_idx : csb_reaction.second)
+        {
+            auto& csb_product = _component_summ_blocks[csb_product_idx];
+            for (auto reactant_csb_idx : csb_product.arrows_to)
+            {
+                // look up for reactions where the reactant_csb_idx summ block presents
+                auto successors = csb_to_reaction[reactant_csb_idx];
+                // remove the current reaction
+                successors.erase(i); // remove the current reaction
+                // add successor reactions
+                for (auto reac_idx : successors)
+                    rn.successorReactionIndexes.push(reac_idx);
+            }
+        }
+
+        for (auto csb_reactant_idx : csb_reaction.first)
+        {
+            auto& csb_reactant = _component_summ_blocks[csb_reactant_idx];
+            auto precursors = csb_to_reaction[csb_reactant_idx];
+            for (auto reac_idx : precursors)
+                rn.precursorReactionIndexes.push(reac_idx);
+
+            if (csb_reactant.arrows_from.size())
+            {
+                auto& rcidx_to_reactant = csb_to_reactant_indexes[i];
+                for (auto ridx : csb_reactant.indexes)
+                {
+                    auto rcidx_it = rcidx_to_reactant.find(ridx);
+                    if (rcidx_it != rcidx_to_reactant.end())
+                        rn.connectedReactants.insert(rcidx_it->second);
+                }
+            }
+        }
+    }
+}
+
 void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn)
 {
     // _reaction_components -> allMolecules
     // _component_summ_blocks ->
     std::unordered_map<int, int> copied_components;
-    for ( int i = 0; i < _component_summ_blocks.size(); ++i )
-	{
+    for (int i = 0; i < _component_summ_blocks.size(); ++i)
+    {
         auto& csb = _component_summ_blocks[i];
         auto& rb = rxn.addReactionBlock();
         for (auto idx : csb.indexes)
@@ -540,8 +630,8 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
         {
             auto& csb_product = _component_summ_blocks[csb_index];
             for (auto pidx : csb_product.indexes)
-			{
-				auto& rc = _reaction_components[pidx];
+            {
+                auto& rc = _reaction_components[pidx];
                 auto it_copied = copied_components.find(pidx);
                 int mol_idx = -1;
                 if (it_copied != copied_components.end())
@@ -550,14 +640,14 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
                 }
                 else
                 {
-                    if( csb_product.role == BaseReaction::PRODUCT)
+                    if (csb_product.role == BaseReaction::PRODUCT)
                         mol_idx = rxn.addProductCopy(*rc.molecule, 0, 0);
                     else if (csb_product.role == BaseReaction::INTERMEDIATE)
                         mol_idx = rxn.addIntermediateCopy(*rc.molecule, 0, 0);
                     copied_components.emplace(pidx, mol_idx);
                 }
-                rb.products.push( mol_idx );
-			}
+                rb.products.push(mol_idx);
+            }
         }
-	}
+    }
 }

@@ -783,7 +783,7 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
     }
 }
 
-void indigo::MoleculeJsonLoader::parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol)
+void MoleculeJsonLoader::parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol)
 {
     for (rapidjson::SizeType i = 0; i < highlight.Size(); ++i)
     {

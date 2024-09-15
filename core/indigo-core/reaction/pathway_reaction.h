@@ -35,26 +35,6 @@ namespace indigo
     class DLLEXPORT PathwayReaction : public BaseReaction
     {
     public:
-        struct SuccessorReaction
-        {
-            SuccessorReaction(int reactionIdx, Array<int>& ridxs) : reactionIdx(reactionIdx)
-            {
-                reactantIndexes.copy(ridxs);
-            }
-            SuccessorReaction(const SuccessorReaction& other) : reactionIdx(other.reactionIdx)
-            {
-                reactantIndexes.copy(other.reactantIndexes);
-            }
-            SuccessorReaction& operator=(const SuccessorReaction& other)
-            {
-                reactionIdx = other.reactionIdx;
-                reactantIndexes.copy(other.reactantIndexes);
-                return *this;
-            }
-            int reactionIdx;
-            Array<int> reactantIndexes;
-        };
-
         struct SimpleReaction
         {
             struct Plus
@@ -87,22 +67,28 @@ namespace indigo
             {
                 reactionIdx = other.reactionIdx;
                 multiTailMetaIndex = other.multiTailMetaIndex;
-                for (int i = 0; i < other.successorReactions.size(); ++i)
-                    successorReactions.push(other.successorReactions[i]);
-                precursorReactionsIndexes.copy(other.precursorReactionsIndexes);
+                for (int i = 0; i < other.successorReactionIndexes.size(); ++i)
+                    successorReactionIndexes.push(other.successorReactionIndexes[i]);
+                precursorReactionIndexes.copy(other.precursorReactionIndexes);
             }
             int reactionIdx;
             // vector of successor reactions indexes and their corresponding reactant indexes
-            ObjArray<SuccessorReaction> successorReactions;
+            Array<int> successorReactionIndexes;
             // vector of precursor reactions indexes
-            Array<int> precursorReactionsIndexes;
+            Array<int> precursorReactionIndexes;
             // utility information
-            RedBlackSet<int> successorReactants;
+            RedBlackSet<int> connectedReactants; // where the precursors' products are connected to
             int multiTailMetaIndex;
         };
 
         PathwayReaction();
         ~PathwayReaction() override;
+
+        std::unique_ptr<BaseReaction> getBaseReaction(int index) override
+        {
+            std::unique_ptr<BaseReaction> reaction;
+            return reaction;
+        }
 
         std::vector<int> getRootReactions() const;
 
@@ -142,6 +128,63 @@ namespace indigo
             return _rootReaction;
         }
 
+        void copyToReaction(BaseReaction& reaction)
+        {
+            reaction.clear();
+            reaction.meta().clone(meta());
+            // collect roles
+            std::map<int, int> mol_roles;
+            for (int i = 0; i < _reactions.size(); ++i)
+            {
+                auto& reac = _reactions[i];
+                for (auto mol_idx : reac.productIndexes)
+                {
+                    auto product_it = mol_roles.find(mol_idx);
+                    if (product_it != mol_roles.end())
+                    {
+                        if (product_it->second == REACTANT)
+                            product_it->second = INTERMEDIATE;
+                    }
+                    else
+                        mol_roles.emplace(mol_idx, PRODUCT);
+                }
+
+                for (auto mol_idx : reac.reactantIndexes)
+                {
+                    auto reactant_it = mol_roles.find(mol_idx);
+                    if (reactant_it != mol_roles.end())
+                    {
+                        if (reactant_it->second == PRODUCT)
+                            reactant_it->second = INTERMEDIATE;
+                    }
+                    else
+                        mol_roles.emplace(mol_idx, REACTANT);
+                }
+            }
+
+            // copy molecules into Reaction
+            for (auto& kvp : mol_roles)
+            {
+                switch (kvp.second)
+                {
+                case PRODUCT:
+                    reaction.addProductCopy(*_molecules[kvp.first], 0, 0);
+                    break;
+                case REACTANT:
+                    reaction.addReactantCopy(*_molecules[kvp.first], 0, 0);
+                    break;
+                case INTERMEDIATE:
+                    reaction.addIntermediateCopy(*_molecules[kvp.first], 0, 0);
+                    break;
+                }
+            }
+        }
+
+        bool isPathwayReaction() override
+        {
+            return true;
+        }
+
         ReactionNode& addReactionNode()
         {
             ReactionNode rn;
@@ -177,7 +220,7 @@ namespace indigo
         ObjArray<ReactionNode> _reactionNodes;
         PtrArray<BaseMolecule> _molecules;
         ObjArray<SimpleReaction> _reactions;
-        Reaction _rootReaction;
+        Reaction _rootReaction; // copy of root reaction
     };
 
 } // namespace indigo

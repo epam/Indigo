@@ -60,8 +60,8 @@ namespace indigo
         rapidjson::Value _molecule;
         MoleculeJsonLoader _loader;
 
-        Reaction* _prxn;
-        QueryReaction* _pqrxn;
+        // Reaction* _prxn;
+        // QueryReaction* _pqrxn;
         Molecule _mol;
         QueryMolecule _qmol;
         BaseMolecule* _pmol;

@@ -38,6 +38,8 @@ namespace indigo
 
         void make();
 
+        void makePathwayFromSimple();
+
         // layout if reaction components are not in the places
         void fixLayout();
         void processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_box, int side);
@@ -53,6 +55,7 @@ namespace indigo
         layout_orientation_value layout_orientation;
 
     private:
+        void _makePathway();
         void _updateMetadata();
         void _pushMol(Metalayout::LayoutLine& line, int id, bool is_agent = false);
         void _pushSpace(Metalayout::LayoutLine& line, float size);

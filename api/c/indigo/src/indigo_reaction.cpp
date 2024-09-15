@@ -226,37 +226,49 @@ IndigoReactionIter::~IndigoReactionIter()
 
 int IndigoReactionIter::_begin()
 {
-    if (_subtype == REACTANTS)
+    switch (_subtype)
+    {
+    case REACTANTS:
         return _rxn.reactantBegin();
-    if (_subtype == PRODUCTS)
+    case PRODUCTS:
         return _rxn.productBegin();
-    if (_subtype == CATALYSTS)
+    case CATALYSTS:
         return _rxn.catalystBegin();
-
+    case REACTIONS:
+        return _rxn.reactionBegin();
+    }
     return _rxn.begin();
 }
 
 int IndigoReactionIter::_end()
 {
-    if (_subtype == REACTANTS)
+    switch (_subtype)
+    {
+    case REACTANTS:
         return _rxn.reactantEnd();
-    if (_subtype == PRODUCTS)
+    case PRODUCTS:
         return _rxn.productEnd();
-    if (_subtype == CATALYSTS)
+    case CATALYSTS:
         return _rxn.catalystEnd();
-
+    case REACTIONS:
+        return _rxn.reactionEnd();
+    }
     return _rxn.end();
 }
 
 int IndigoReactionIter::_next(int i)
 {
-    if (_subtype == REACTANTS)
+    switch (_subtype)
+    {
+    case REACTANTS:
         return _rxn.reactantNext(i);
-    if (_subtype == PRODUCTS)
+    case PRODUCTS:
         return _rxn.productNext(i);
-    if (_subtype == CATALYSTS)
+    case CATALYSTS:
         return _rxn.catalystNext(i);
-
+    case REACTIONS:
+        return _rxn.reactionNext(i);
+    }
     return _rxn.next(i);
 }
 
@@ -272,7 +284,13 @@ IndigoObject* IndigoReactionIter::next()
     if (_idx == _end())
         return 0;
 
-    if (_map)
+    if (_subtype == REACTION)
+    {
+        auto reaction = new IndigoReaction();
+        reaction->init( _rxn.getBaseReaction(_idx));
+        return reaction;
+    }
+    else if (_map)
     {
         return new IndigoReactionMolecule(_rxn, *_map, _idx);
     }
@@ -427,6 +445,11 @@ CEXPORT int indigoIterateCatalysts(int reaction)
 CEXPORT int indigoIterateMolecules(int reaction)
 {
     return _indigoIterateReaction(reaction, IndigoReactionIter::MOLECULES);
+}
+
+CEXPORT int indigoIterateReactions(int reaction)
+{
+    return _indigoIterateReaction(reaction, IndigoReactionIter::REACTIONS);
 }
 
 CEXPORT int indigoCreateReaction(void)

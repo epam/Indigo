@@ -48,6 +48,7 @@ namespace indigo
         PathwayReactionBuilder();
         ~PathwayReactionBuilder();
         std::unique_ptr<PathwayReaction> buildPathwayReaction(std::deque<Reaction>& reactions);
+        static void buildRootReaction(PathwayReaction& reaction);
         DECL_ERROR;
 
     private:

@@ -39,7 +39,7 @@ std::vector<int> PathwayReaction::getRootReactions() const
 {
     std::vector<int> root_reactions;
     for (int i = 0; i < _reactionNodes.size(); ++i)
-        if (_reactionNodes[i].successorReactions.size() == 0)
+        if (_reactionNodes[i].successorReactionIndexes.size() == 0)
             root_reactions.push_back(i);
     return root_reactions;
 }
@@ -52,11 +52,11 @@ void PathwayReaction::clone(PathwayReaction& reaction)
         auto& other = _reactionNodes[i];
         auto& rn = reaction._reactionNodes.push();
         rn.reactionIdx = other.reactionIdx;
-        rn.precursorReactionsIndexes.copy(other.precursorReactionsIndexes);
-        for (int j = 0; j < other.successorReactions.size(); ++j)
+        rn.precursorReactionIndexes.copy(other.precursorReactionIndexes);
+        for (int j = 0; j < other.successorReactionIndexes.size(); ++j)
         {
-            auto& sr = other.successorReactions[j];
-            rn.successorReactions.push(sr);
+            auto& sr = other.successorReactionIndexes[j];
+            rn.successorReactionIndexes.push(sr);
         }
     }
 

@@ -26,8 +26,10 @@
 
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
+#include "reaction/pathway_reaction.h"
 #include "reaction/reaction_json_loader.h"
 #include "reaction/reaction_multistep_detector.h"
+#include "reaction/pathway_reaction_builder.h"
 
 using namespace indigo;
 using namespace rapidjson;
@@ -35,7 +37,7 @@ using namespace rapidjson;
 IMPL_ERROR(ReactionJsonLoader, "reaction KET loader");
 
 ReactionJsonLoader::ReactionJsonLoader(Document& ket)
-    : _loader(ket), _molecule(kArrayType), _prxn(nullptr), _pqrxn(nullptr), ignore_noncritical_query_features(false)
+    : _loader(ket), _molecule(kArrayType), ignore_noncritical_query_features(false)
 {
     ignore_bad_valence = false;
 }
@@ -52,22 +54,15 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     _loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
 
     if (rxn.isQueryReaction())
-        _pqrxn = &rxn.asQueryReaction();
-    else
-        _prxn = &rxn.asReaction();
-
-    if (_prxn)
-    {
-        _pmol = &_mol;
-        _loader.loadMolecule(_mol, true);
-    }
-    else if (_pqrxn)
     {
         _loader.loadMolecule(_qmol, true);
         _pmol = &_qmol;
     }
     else
-        throw Error("unknown reaction type: %s", typeid(rxn).name());
+    {
+        _pmol = &_mol;
+        _loader.loadMolecule(_mol, true);
+    }
 
     rxn.original_format = BaseMolecule::KET;
 
@@ -81,7 +76,13 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     if (arrow_count > 1 || multi_count > 0)
     {
         ReactionMultistepDetector md(*_pmol);
-        md.buildReaction(rxn);
+        md.detectReaction();
+        if (multi_count)
+        {
+            md.constructPathwayReaction(static_cast<PathwayReaction&>(rxn));
+            PathwayReactionBuilder::buildRootReaction(static_cast<PathwayReaction&>(rxn));
+        } else
+            md.constructMultipleArrowReaction(rxn);
     }
     else
         parseOneArrowReaction(rxn);

@@ -103,7 +103,7 @@ namespace indigo
 
         MetaDataStorage& meta();
 
-        bool isMultistep()
+        int reactionsCount()
         {
             return _reactionBlocks.size();
         }
@@ -190,10 +190,27 @@ namespace indigo
         {
             return _nextElement(side, -1);
         }
+
         int sideNext(int side, int index)
         {
             return _nextElement(side, index);
         }
+
+        virtual int reactionBegin()
+        {
+            return _reactionBlocks.size() ? 0 : 1;
+        }
+
+        virtual int reactionEnd()
+        {
+            return _reactionBlocks.size();
+        }
+
+        virtual int reactionNext(int i)
+        {
+            return ++i;
+        }
+
         // dkuzminov: we either need to have a parameter "side" for method sideEnd() or we should exclude the set of "different" xxxEnd methods for sake of the
         // single "end" method
         int sideEnd()
@@ -276,11 +293,14 @@ namespace indigo
         virtual Reaction& asReaction();
         virtual QueryReaction& asQueryReaction();
         virtual bool isQueryReaction();
+        virtual bool isPathwayReaction();
 
         BaseMolecule& getBaseMolecule(int index)
         {
             return *_allMolecules.at(index);
         }
+
+        virtual std::unique_ptr<BaseReaction> getBaseReaction(int index) = 0;
 
         int getAAM(int index, int atom);
         int getReactingCenter(int index, int bond);

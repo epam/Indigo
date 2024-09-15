@@ -131,7 +131,8 @@ public:
         REACTANTS,
         PRODUCTS,
         CATALYSTS,
-        MOLECULES
+        MOLECULES,
+        REACTIONS
     };
 
     IndigoReactionIter(BaseReaction& rxn, MonomersProperties& map, int subtype);

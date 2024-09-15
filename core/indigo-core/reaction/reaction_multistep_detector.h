@@ -36,13 +36,16 @@ namespace indigo
 
     class BaseMolecule;
     class BaseReaction;
+    class PathwayReaction;
 
     class ReactionMultistepDetector
     {
     public:
         ReactionMultistepDetector(BaseMolecule& mol);
         ~ReactionMultistepDetector();
-        void buildReaction(BaseReaction& rxn);
+        void detectReaction();
+        void constructMultipleArrowReaction(BaseReaction& rxn);
+        void constructPathwayReaction(PathwayReaction& rxn);
 
         typedef std::pair<float, int> FLOAT_INT_PAIR;
         typedef std::vector<FLOAT_INT_PAIR> FLOAT_INT_PAIRS;
@@ -53,9 +56,8 @@ namespace indigo
 
     private:
         void createSummBlocks();
-        void constructMultipleArrowReaction(BaseReaction& rxn);
         void detectArrows();
-        void detectMultitailArrows(BaseReaction& rxn);
+        void detectMultitailArrows();
 
         bool findPlusNeighbours(const Vec2f& plus_pos, const FLOAT_INT_PAIRS& mol_tops, const FLOAT_INT_PAIRS& mol_bottoms, const FLOAT_INT_PAIRS& mol_lefts,
                                 const FLOAT_INT_PAIRS& mol_rights, std::pair<int, int>& connection);
@@ -64,6 +66,7 @@ namespace indigo
         std::vector<ReactionComponent> _reaction_components;
         std::vector<MolSumm> _component_summ_blocks;
         std::list<MolSumm> _component_summ_blocks_list;
+
         int _moleculeCount;
     };
 

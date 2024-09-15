@@ -415,6 +415,11 @@ bool BaseReaction::isQueryReaction()
     return false;
 }
 
+bool BaseReaction::isPathwayReaction()
+{
+    return false;
+}
+
 void BaseReaction::remove(int i)
 {
     int side = _types[i];

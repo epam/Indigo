@@ -15,14 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+#include <numeric>
+#include <stdio.h>
 
 #include "layout/reaction_layout.h"
 #include "layout/molecule_layout.h"
 #include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "reaction/reaction.h"
-#include <numeric>
-#include <stdio.h>
+#include "reaction/pathway_reaction_builder.h"
+#include "reaction/reaction_multistep_detector.h"
 
 using namespace indigo;
 
@@ -175,11 +177,40 @@ void ReactionLayout::processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_b
     }
 }
 
+void ReactionLayout::makePathwayFromSimple()
+{
+    std::deque<Reaction> reactions;
+    for (int i = 0; i < _r.reactionBlocksCount(); i++)
+    {
+        auto& rc = reactions.emplace_back();
+        auto& rb = _r.reactionBlock(i);
+        for (int j = 0; j < rb.reactants.size(); j++)
+            rc.addReactantCopy(_r.getBaseMolecule(rb.reactants[j]), 0, 0);
+        for (int j = 0; j < rb.products.size(); j++)
+            rc.addProductCopy(_r.getBaseMolecule(rb.products[j]), 0, 0);
+    }
+    PathwayReactionBuilder prb;
+    auto pwr = prb.buildPathwayReaction(reactions);
+    _r.meta().resetReactionData();
+    pwr->meta().clone(_r.meta());
+    pwr->copyToReaction(_r);
+}
+
 void ReactionLayout::make()
 {
     int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
     int simple_count = _r.meta().getNonChemicalMetaCount();
-    if (arrows_count > 1 || simple_count)
+    int multi_count = _r.meta().getMetaCount(KETReactionMultitailArrow::CID);
+    if (simple_count)
+        return;
+
+    if (_r.reactionBlocksCount() > 1 && _r.intermediateCount() == 0 && multi_count == 0)
+    {
+        makePathwayFromSimple();
+        return;
+    }
+
+    if (arrows_count > 1)
         return; // not implemented yet
 
     const auto kHalfBondLength = bond_length / 2;

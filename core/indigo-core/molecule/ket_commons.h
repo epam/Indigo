@@ -398,7 +398,6 @@ namespace indigo
     public:
         static const std::uint32_t CID = "KET reaction plus"_hash;
         KETReactionPlus(const Vec2f& pos) : MetaObject(CID), _pos(pos){
-            std::cout << "plus" << std::endl;
         };
 
         MetaObject* clone() const override
@@ -491,6 +490,12 @@ namespace indigo
         int role;
         std::vector<int> arrows_to;
         std::vector<int> arrows_from;
+    };
+
+    struct PathwayComponent
+    {
+        int product_csb_idx;
+        std::vector<int> reactant_csb_indexes;
     };
 
     struct ReactionComponent

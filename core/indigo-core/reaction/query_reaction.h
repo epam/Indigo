@@ -52,6 +52,7 @@ namespace indigo
         bool aromatize(const AromaticityOptions& options) override;
 
         BaseReaction* neu() override;
+        std::unique_ptr<BaseReaction> getBaseReaction(int index) override;
 
         QueryReaction& asQueryReaction() override;
         bool isQueryReaction() override;

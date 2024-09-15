@@ -63,6 +63,8 @@ namespace indigo
 
         Reaction& asReaction() override;
 
+        std::unique_ptr<BaseReaction> getBaseReaction(int index) override;
+
         /*
         void dearomatizeBonds();
         void aromatizeQueryBonds();

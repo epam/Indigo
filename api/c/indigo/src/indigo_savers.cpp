@@ -770,9 +770,8 @@ CEXPORT int indigoSaveCml(int item, int output)
         }
         if (IndigoBaseReaction::is(obj))
         {
-            Reaction& rxn = obj.getReaction();
+            auto& rxn = obj.getBaseReaction();
             ReactionCmlSaver saver(out);
-
             saver.saveReaction(rxn);
             out.flush();
             return 1;

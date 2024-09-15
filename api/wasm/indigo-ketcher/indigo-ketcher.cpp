@@ -208,6 +208,19 @@ namespace indigo
                 print_js(outputFormat.c_str());
                 result = _checkResultString(indigoToString(buffer.id));
             }
+            else if (outputFormat == "rdf" || outputFormat == "chemical/x-rdf")
+            {
+                auto buffer = IndigoObject(_checkResult(indigoWriteBuffer()));
+                auto comp_it = IndigoObject(_checkResult(indigoIterateComponents(id())));
+                while (indigoHasNext(comp_it.id))
+                {
+                    const auto frag = IndigoObject(_checkResult(indigoNext(comp_it.id)));
+                    const auto mol = IndigoObject(_checkResult(indigoClone(frag.id)));
+                    indigoSdfAppend(buffer.id, mol.id);
+                }
+                print_js(outputFormat.c_str());
+                result = _checkResultString(indigoToString(buffer.id));
+            }
             else
             {
                 std::stringstream ss;
