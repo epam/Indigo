@@ -1058,7 +1058,7 @@ int main(int argc, char* argv[])
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
-            indigoLayout(obj);
+            // indigoLayout(obj);
             if (p.out_ext == OEXT_CML)
                 indigoSaveCmlToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_RXN)
@@ -1087,6 +1087,19 @@ int main(int argc, char* argv[])
                     fprintf(stderr, "can not write: %s\n", p.outfile);
                     return -1;
                 }
+            }
+            else if (p.out_ext == OEXT_RDR)
+            {
+                writer = indigoWriteFile(p.outfile);
+                indigoRdfHeader(writer);
+                auto it_id = indigoIterateReactions(obj);
+                while (indigoHasNext(it_id))
+                {
+                    const auto robj = indigoNext(it_id);
+                    const auto rxn_id = indigoClone(robj);
+                    auto rc = indigoRdfAppend(writer, rxn_id);
+                }
+                indigoFree(writer);
             }
             else
             {

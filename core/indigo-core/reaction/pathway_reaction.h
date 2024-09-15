@@ -86,7 +86,12 @@ namespace indigo
 
         std::unique_ptr<BaseReaction> getBaseReaction(int index) override
         {
-            std::unique_ptr<BaseReaction> reaction;
+            std::unique_ptr<BaseReaction> reaction(new Reaction());
+            auto& sr = _reactions[index];
+            for (auto pidx : sr.productIndexes)
+                reaction->addProductCopy(*_molecules[pidx],0,0);
+            for (auto ridx : sr.reactantIndexes)
+                reaction->addReactantCopy(*_molecules[ridx], 0, 0);
             return reaction;
         }
 
@@ -211,6 +216,22 @@ namespace indigo
         void clone(PathwayReaction&);
         BaseReaction* neu() override;
         bool aromatize(const AromaticityOptions& options) override;
+
+        int reactionBegin() override
+        {
+            return _reactions.size() ? 0 : 1;
+        }
+
+        int reactionEnd() override
+        {
+            return _reactions.size();
+        }
+
+        int reactionNext(int i) override
+        {
+            return ++i;
+        }
+
         DECL_ERROR;
 
     protected:

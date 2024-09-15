@@ -456,6 +456,14 @@ def save_moldata(
             sdfSaver.append(frag.clone())
         sdfSaver.close()
         return buffer.toString()
+    elif output_format == "chemical/x-rdf":
+        buffer = indigo.writeBuffer()
+        rdfSaver = indigo.createSaver(buffer, "rdf")
+        buffer.rdfHeader()
+        for reac in md.struct.iterateReactions():
+            rdfSaver.append(reac.clone())
+        rdfSaver.close()
+        return buffer.toString()
     raise HttpException("Format %s is not supported" % output_format, 400)
 
 

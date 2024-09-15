@@ -18,12 +18,12 @@
 #include <numeric>
 #include <stdio.h>
 
-#include "layout/reaction_layout.h"
 #include "layout/molecule_layout.h"
+#include "layout/reaction_layout.h"
 #include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
-#include "reaction/reaction.h"
 #include "reaction/pathway_reaction_builder.h"
+#include "reaction/reaction.h"
 #include "reaction/reaction_multistep_detector.h"
 
 using namespace indigo;
@@ -42,25 +42,37 @@ void ReactionLayout::fixLayout()
     if (arrows_count > 1 || simple_count)
         return;
 
-    Vec2f rmax{Vec2f::min_coord(), Vec2f::min_coord()}, pmin{Vec2f::max_coord(), Vec2f::max_coord()};
     Rect2f bb;
     // Calculate rightTop of reactant bounding box
-
+    bool invalid_layout = false;
+    float cur_left = 0, cur_right = 0;
     for (int i = _r.reactantBegin(); i != _r.reactantEnd(); i = _r.reactantNext(i))
     {
         _r.getBaseMolecule(i).getBoundingBox(bb);
-        rmax.max(bb.rightTop());
+        if (i == 0 || (bb.left() > cur_left && bb.right() > cur_right))
+        {
+            cur_left = bb.left();
+            cur_right = bb.right();
+        }
+        else
+            invalid_layout = true;
     }
 
     // Calculate leftBottom of product bounding box
     for (int i = _r.productBegin(); i != _r.productEnd(); i = _r.productNext(i))
     {
         _r.getBaseMolecule(i).getBoundingBox(bb);
-        pmin.min(bb.leftBottom());
+        if (bb.left() > cur_left && bb.right() > cur_right)
+        {
+            cur_left = bb.left();
+            cur_right = bb.right();
+        }
+        else
+            invalid_layout = true;
     }
 
     // if left side of product bb at left of right side of reactant bb - fix layout
-    if (rmax.x > pmin.x)
+    if (invalid_layout)
     {
         ReactionLayout rl(_r, true);
         rl.preserve_molecule_layout = true;

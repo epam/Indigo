@@ -198,11 +198,13 @@ namespace indigo
 
         virtual int reactionBegin()
         {
-            return _reactionBlocks.size() ? 0 : 1;
+            return 0;
         }
 
         virtual int reactionEnd()
         {
+            if (_reactionBlocks.size() == 0)
+                return 1;
             return _reactionBlocks.size();
         }
 

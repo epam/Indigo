@@ -509,7 +509,7 @@ class IndigoObject:
         )
 
     def iterateReactions(self):
-        """Reaction method iterates molecules
+        """Reaction method iterates reactions
 
         Returns:
             IndigoObject: reaction iterator

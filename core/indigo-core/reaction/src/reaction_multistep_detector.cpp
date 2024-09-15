@@ -591,62 +591,65 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
     for (int i = 0; i < _component_summ_blocks.size(); ++i)
     {
         auto& csb = _component_summ_blocks[i];
-        auto& rb = rxn.addReactionBlock();
-        for (auto idx : csb.indexes)
+        if (csb.indexes.size() && csb.role != BaseReaction::PRODUCT)
         {
-            auto& rc = _reaction_components[idx];
-            int mol_idx = -1;
-            auto it_copied = copied_components.find(idx);
-            if (it_copied != copied_components.end())
-                mol_idx = it_copied->second;
-            switch (csb.role)
+            auto& rb = rxn.addReactionBlock();
+            for (auto idx : csb.indexes)
             {
-            case BaseReaction::INTERMEDIATE:
-                if (mol_idx < 0)
-                {
-                    mol_idx = rxn.addIntermediateCopy(*rc.molecule, 0, 0);
-                    copied_components.emplace(idx, mol_idx);
-                }
-                rb.reactants.push(mol_idx);
-                break;
-            case BaseReaction::REACTANT:
-                if (mol_idx < 0)
-                {
-                    mol_idx = rxn.addReactantCopy(*rc.molecule, 0, 0);
-                    copied_components.emplace(idx, mol_idx);
-                }
-                rb.reactants.push(mol_idx);
-                break;
-            case BaseReaction::UNDEFINED:
-                copied_components.emplace(idx, rxn.addUndefinedCopy(*rc.molecule, 0, 0));
-                break;
-            default:
-                // skip products here
-                break;
-            }
-        }
-
-        for (auto csb_index : csb.arrows_to)
-        {
-            auto& csb_product = _component_summ_blocks[csb_index];
-            for (auto pidx : csb_product.indexes)
-            {
-                auto& rc = _reaction_components[pidx];
-                auto it_copied = copied_components.find(pidx);
+                auto& rc = _reaction_components[idx];
                 int mol_idx = -1;
+                auto it_copied = copied_components.find(idx);
                 if (it_copied != copied_components.end())
-                {
                     mol_idx = it_copied->second;
-                }
-                else
+                switch (csb.role)
                 {
-                    if (csb_product.role == BaseReaction::PRODUCT)
-                        mol_idx = rxn.addProductCopy(*rc.molecule, 0, 0);
-                    else if (csb_product.role == BaseReaction::INTERMEDIATE)
+                case BaseReaction::INTERMEDIATE:
+                    if (mol_idx < 0)
+                    {
                         mol_idx = rxn.addIntermediateCopy(*rc.molecule, 0, 0);
-                    copied_components.emplace(pidx, mol_idx);
+                        copied_components.emplace(idx, mol_idx);
+                    }
+                    rb.reactants.push(mol_idx);
+                    break;
+                case BaseReaction::REACTANT:
+                    if (mol_idx < 0)
+                    {
+                        mol_idx = rxn.addReactantCopy(*rc.molecule, 0, 0);
+                        copied_components.emplace(idx, mol_idx);
+                    }
+                    rb.reactants.push(mol_idx);
+                    break;
+                case BaseReaction::UNDEFINED:
+                    copied_components.emplace(idx, rxn.addUndefinedCopy(*rc.molecule, 0, 0));
+                    break;
+                default:
+                    // skip products here
+                    break;
                 }
-                rb.products.push(mol_idx);
+            }
+
+            for (auto csb_index : csb.arrows_to)
+            {
+                auto& csb_product = _component_summ_blocks[csb_index];
+                for (auto pidx : csb_product.indexes)
+                {
+                    auto& rc = _reaction_components[pidx];
+                    auto it_copied = copied_components.find(pidx);
+                    int mol_idx = -1;
+                    if (it_copied != copied_components.end())
+                    {
+                        mol_idx = it_copied->second;
+                    }
+                    else
+                    {
+                        if (csb_product.role == BaseReaction::PRODUCT)
+                            mol_idx = rxn.addProductCopy(*rc.molecule, 0, 0);
+                        else if (csb_product.role == BaseReaction::INTERMEDIATE)
+                            mol_idx = rxn.addIntermediateCopy(*rc.molecule, 0, 0);
+                        copied_components.emplace(pidx, mol_idx);
+                    }
+                    rb.products.push(mol_idx);
+                }
             }
         }
     }

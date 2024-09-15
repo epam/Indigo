@@ -195,7 +195,7 @@ namespace indigo
                 print_js(outputFormat.c_str());
                 result = _checkResultString(indigoJson(id()));
             }
-            else if (outputFormat == "sdf" || outputFormat == "chemical/x-sdf")
+            else if (outputFormat == "rdf" || outputFormat == "chemical/x-rdf")
             {
                 auto buffer = IndigoObject(_checkResult(indigoWriteBuffer()));
                 auto comp_it = IndigoObject(_checkResult(indigoIterateComponents(id())));
@@ -208,15 +208,16 @@ namespace indigo
                 print_js(outputFormat.c_str());
                 result = _checkResultString(indigoToString(buffer.id));
             }
-            else if (outputFormat == "rdf" || outputFormat == "chemical/x-rdf")
+            else if (outputFormat == "sdf" || outputFormat == "chemical/x-sdf")
             {
                 auto buffer = IndigoObject(_checkResult(indigoWriteBuffer()));
-                auto comp_it = IndigoObject(_checkResult(indigoIterateComponents(id())));
-                while (indigoHasNext(comp_it.id))
+                auto reac_it = IndigoObject(_checkResult(indigoIterateReactions(id())));
+                indigoRdfHeader(buffer.id);
+                while (indigoHasNext(reac_it.id))
                 {
-                    const auto frag = IndigoObject(_checkResult(indigoNext(comp_it.id)));
-                    const auto mol = IndigoObject(_checkResult(indigoClone(frag.id)));
-                    indigoSdfAppend(buffer.id, mol.id);
+                    const auto reac_obj = IndigoObject(_checkResult(indigoNext(reac_it.id)));
+                    const auto reac = IndigoObject(_checkResult(indigoClone(reac_obj.id)));
+                    indigoRdfAppend(buffer.id, mol.id);
                 }
                 print_js(outputFormat.c_str());
                 result = _checkResultString(indigoToString(buffer.id));
