@@ -210,7 +210,13 @@ namespace indigo
 
         virtual int reactionNext(int i)
         {
-            return ++i;
+            while (++i < _reactionBlocks.size())
+            {
+                auto& rb = _reactionBlocks[i];
+                if (rb.products.size() || rb.reactants.size())
+                    break;
+            }
+            return i;
         }
 
         // dkuzminov: we either need to have a parameter "side" for method sideEnd() or we should exclude the set of "different" xxxEnd methods for sake of the
