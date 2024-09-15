@@ -194,12 +194,15 @@ void ReactionLayout::makePathwayFromSimple()
     std::deque<Reaction> reactions;
     for (int i = 0; i < _r.reactionBlocksCount(); i++)
     {
-        auto& rc = reactions.emplace_back();
         auto& rb = _r.reactionBlock(i);
-        for (int j = 0; j < rb.reactants.size(); j++)
-            rc.addReactantCopy(_r.getBaseMolecule(rb.reactants[j]), 0, 0);
-        for (int j = 0; j < rb.products.size(); j++)
-            rc.addProductCopy(_r.getBaseMolecule(rb.products[j]), 0, 0);
+        if (rb.products.size() || rb.reactants.size())
+        {
+            auto& rc = reactions.emplace_back();
+            for (int j = 0; j < rb.reactants.size(); j++)
+                rc.addReactantCopy(_r.getBaseMolecule(rb.reactants[j]), 0, 0);
+            for (int j = 0; j < rb.products.size(); j++)
+                rc.addProductCopy(_r.getBaseMolecule(rb.products[j]), 0, 0);
+        }
     }
     PathwayReactionBuilder prb;
     auto pwr = prb.buildPathwayReaction(reactions);

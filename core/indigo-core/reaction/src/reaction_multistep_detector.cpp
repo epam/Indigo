@@ -591,9 +591,9 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
     for (int i = 0; i < _component_summ_blocks.size(); ++i)
     {
         auto& csb = _component_summ_blocks[i];
+        auto& rb = rxn.addReactionBlock();
         if (csb.indexes.size() && csb.role != BaseReaction::PRODUCT)
         {
-            auto& rb = rxn.addReactionBlock();
             for (auto idx : csb.indexes)
             {
                 auto& rc = _reaction_components[idx];
