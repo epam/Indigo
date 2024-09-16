@@ -1094,9 +1094,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         }
                     }
                     if (sugar == "R" && RNA_DNA_MIXED_BASES.count(mixed_base) == 0)
-                    {
                         idt_alias = 'r' + idt_alias;
-                    }
                     if (!document.hasVariantMonomerTemplate(idt_alias))
                     {
                         auto it = STANDARD_MIXED_BASES.find(mixed_base);
@@ -1106,7 +1104,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         std::vector<KetVariantMonomerOption> options;
                         for (auto template_alias : it->second)
                         {
-                            if (sugar == "r" && template_alias == "T") // U instead of T for RNA
+                            if (sugar == "R" && template_alias == "T") // U instead of T for RNA
                                 template_alias = "U";
                             auto& template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Base, template_alias);
                             if (template_id.size() == 0)
@@ -1125,8 +1123,11 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         templ.setAttachmentPoints(aps);
                         _alias_to_id.emplace(idt_alias, idt_alias);
                     }
-                    else if (ratios.has_value())
-                        throw Error("Variant monomer %s redefinion", idt_alias.c_str());
+                    else
+                    {
+                        if (ratios.has_value())
+                            throw Error("Variant monomer %s redefinion", idt_alias.c_str());
+                    }
                 }
                 base = idt_alias;
 
