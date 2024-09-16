@@ -125,6 +125,7 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
     std::unique_ptr<CDXReader> cdx_reader = _is_binary ? std::make_unique<CDXReader>(_scanner) : std::make_unique<CDXMLReader>(_scanner);
     cdx_reader->process();
     MoleculeCdxmlLoader loader(_scanner, _is_binary);
+    loader.stereochemistry_options = stereochemistry_options;
     loader.parseCDXMLAttributes(*cdx_reader->rootElement()->firstProperty());
 
     for (auto page_elem = cdx_reader->rootElement()->firstChildElement(); page_elem->hasContent(); page_elem = page_elem->nextSiblingElement())
