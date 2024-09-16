@@ -423,7 +423,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
     }
 }
 
-void ketImageStbiWriteFunc(void* context, void* data, int size)
+void lunasvgWrite(void* context, void* data, int size)
 {
     static_cast<std::string*>(context)->assign(static_cast<const char*>(data), size);
 }
@@ -447,11 +447,11 @@ void RenderItemAuxiliary::_drawImage(const KETImage& img)
         if (bitmap.isNull())
             throw Error("RenderItemAuxiliary::_drawImage: renderToBitmap error");
 
-        std::string stbiContext;
-        if (!bitmap.writeToPng(ketImageStbiWriteFunc, &stbiContext))
+        std::string lunasvgClosure;
+        if (!bitmap.writeToPng(lunasvgWrite, &lunasvgClosure))
             throw Error("RenderItemAuxiliary::_drawImage: stbi_write_png_to_func error");
 
-        _rc.drawPng(stbiContext, Rect2f(v1, v2));
+        _rc.drawPng(lunasvgClosure, Rect2f(v1, v2));
     }
 }
 
