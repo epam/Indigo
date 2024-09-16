@@ -835,7 +835,8 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
     {
         std::string seq_string;
         IdtModification modification = IdtModification::FIVE_PRIME_END;
-        std::set<std::string> custom_variants;
+        std::map<std::string, std::string> custom_variants;
+        char custom_amb_monomers = 0;
         while (sequence.size() > 0)
         {
             auto monomer_id = sequence.front();
@@ -932,41 +933,81 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                 auto base_id = sequence.front();
                 if (doc.getMonomerClass(base_id) == MonomerClass::Base)
                 {
-                    base = monomers.at(base_id)->alias();
+                    const auto& base_monomer = *monomers.at(base_id);
+                    base = base_monomer.alias();
                     sequence.pop_front();
                     if (IDT_STANDARD_BASES.count(base) == 0 && STANDARD_MIXED_BASES.count(base) == 0)
                         standard_base = false;
-                    if (base.back() == ')')
+                    if (base_monomer.monomerType() == KetBaseMonomer::MonomerType::VarianMonomer)
                     {
                         variant_base = true;
-                        if (custom_variants.count(base) == 0)
+                        std::string template_id = monomers.at(base_id)->templateId();
+                        if (custom_variants.count(template_id) > 0)
                         {
-                            custom_variants.emplace(base);
-                            std::array<float, 4> ratios;
-                            for (auto& option : doc.variantTemplates().at(monomers.at(base_id)->templateId()).options())
+                            base = custom_variants.at(template_id);
+                        }
+                        else
+                        {
+                            std::array<float, 4> ratios{0, 0, 0, 0};
+                            bool has_ratio = false;
+                            std::set<std::string> aliases;
+                            std::string s_aliases;
+                            for (auto& option : doc.variantTemplates().at(template_id).options())
                             {
                                 auto& opt_alias = doc.templates().at(option.templateId()).getStringProp("alias");
+                                aliases.emplace(opt_alias);
+                                if (s_aliases.size() > 0)
+                                    s_aliases += ", ";
+                                s_aliases += opt_alias;
                                 const auto& it = IDT_BASE_TO_RATIO_IDX.find(opt_alias);
                                 if (it == IDT_BASE_TO_RATIO_IDX.end())
-                                    throw Error("Cannot save IDT - unknown mnomer template %s", opt_alias.c_str());
+                                    throw Error("Cannot save IDT - unknown monomer template %s", opt_alias.c_str());
                                 auto ratio = option.ratio();
-                                if (!ratio.has_value())
+
+                                if (ratio.has_value())
+                                {
+                                    ratios[it->second] = ratio.value();
+                                    has_ratio = true;
+                                }
+                                else if (has_ratio)
                                     throw Error("Cannot save IDT - variant monomer template '%s' use template '%s' without ratio.", base.c_str(),
                                                 opt_alias.c_str());
-                                ratios[it->second] = ratio.value();
                             }
-                            base.pop_back(); // remove ')'
-                            base += ':';
-                            // add ratios
-                            for (auto r : ratios)
+                            if (STANDARD_MIXED_BASES_TO_ALIAS.count(aliases) == 0)
+                                throw Error("Cannot save IDT - unknown mixture of monomers %s", s_aliases.c_str());
+                            base = STANDARD_MIXED_BASES_TO_ALIAS.at(aliases);
+                            if (RNA_DNA_MIXED_BASES.count(base) == 0)
                             {
-                                int ir = static_cast<int>(std::round(r));
-                                std::string sr = std::to_string(ir);
-                                if (sr.size() < 2)
-                                    sr = '0' + sr;
-                                base += sr;
+                                if (base[0] == 'r')
+                                {
+                                    base.erase(base.begin());
+                                    if (sugar != "R")
+                                        throw Error("Cannot save IDT - RNA ambigous base connected to DNA sugar.");
+                                }
+                                else if (sugar == "R")
+                                    throw Error("Cannot save IDT - DNA ambigous base connected to RNA sugar.");
                             }
-                            base += ')';
+                            if (has_ratio)
+                            {
+                                std::string base_short = '(' + base;
+                                base_short += '1' + custom_amb_monomers++;
+                                base = base_short;
+                                base += ':';
+                                // add ratios
+                                for (auto r : ratios)
+                                {
+                                    int ir = static_cast<int>(std::round(r));
+                                    std::string sr = std::to_string(ir);
+                                    if (sr.size() < 2)
+                                        sr = '0' + sr;
+                                    base += sr;
+                                }
+                                base += ')';
+                                base_short += ')';
+                                custom_variants.emplace(template_id, base_short);
+                            }
+                            else
+                                custom_variants.emplace(template_id, base);
                         }
                     }
                 }
