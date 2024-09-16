@@ -1296,7 +1296,7 @@
     },
     "ambiguousMonomerTemplate-R": {
         "type": "ambiguousMonomerTemplate",
-        "subtype": "mixture",
+        "subtype": "alternatives",
         "id": "R",
         "alias": "R",
         "options": [
