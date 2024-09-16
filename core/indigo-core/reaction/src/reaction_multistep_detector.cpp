@@ -353,7 +353,7 @@ void ReactionMultistepDetector::detectMultitailArrows()
         {
             auto& csb_min_prod = _component_summ_blocks[idx_cs_min_prod];
             PathwayComponent pwc;
-            for (int j = 0; j < min_dist_reactants.size(); ++j)
+            for (int j = 0; j < (int)min_dist_reactants.size(); ++j)
             {
                 auto& reac = min_dist_reactants[j];
                 if (reac.first > 0)
@@ -487,7 +487,7 @@ void ReactionMultistepDetector::constructPathwayReaction(PathwayReaction& rxn)
     std::vector<std::pair<std::vector<int>, std::vector<int>>> csb_reactions;
     std::vector<std::unordered_map<int, int>> csb_to_reactant_indexes;
 
-    for (int i = 0; i < _component_summ_blocks.size(); ++i)
+    for (int i = 0; i < (int)_component_summ_blocks.size(); ++i)
     {
         csb_to_reaction.emplace_back();
         auto& csb = _component_summ_blocks[i];
@@ -541,7 +541,7 @@ void ReactionMultistepDetector::constructPathwayReaction(PathwayReaction& rxn)
         }
     }
 
-    for (int i = 0; i < csb_reactions.size(); ++i)
+    for (int i = 0; i < (int)csb_reactions.size(); ++i)
     {
         auto& csb_reaction = csb_reactions[i];
         auto& rn = rxn.getReactionNode(i);
@@ -588,7 +588,7 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
     // _reaction_components -> allMolecules
     // _component_summ_blocks ->
     std::unordered_map<int, int> copied_components;
-    for (int i = 0; i < _component_summ_blocks.size(); ++i)
+    for (int i = 0; i < (int)_component_summ_blocks.size(); ++i)
     {
         auto& csb = _component_summ_blocks[i];
         auto& rb = rxn.addReactionBlock();
