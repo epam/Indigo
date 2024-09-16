@@ -32,7 +32,6 @@
 #endif
 
 #include <lunasvg.h>
-#include <stb_image_write.h>
 
 using namespace indigo;
 
