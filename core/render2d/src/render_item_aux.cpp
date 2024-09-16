@@ -439,6 +439,21 @@ void RenderItemAuxiliary::_drawImage(const KETImage& img)
         _rc.drawPng(img.getData(), Rect2f(v1, v2));
     else if (img.getFormat() == KETImage::EKETSVG)
     {
+        auto document = lunasvg::Document::loadFromData(img.getData());
+        if (!document)
+            throw Error("RenderItemAuxiliary::_drawImage: loadFromData error");
+
+        auto bitmap = document->renderToBitmap();
+        if (!bitmap.valid())
+            throw Error("RenderItemAuxiliary::_drawImage: renderToBitmap error");
+        bitmap.convertToRGBA();
+
+        std::string stbiContext;
+        const int rgbaChannels = 4, stride = 0;
+        if (!stbi_write_png_to_func(ketImageStbiWriteFunc, &stbiContext, bitmap.width(), bitmap.height(), rgbaChannels, bitmap.data(), stride))
+            throw Error("RenderItemAuxiliary::_drawImage: stbi_write_png_to_func error");
+
+        _rc.drawPng(stbiContext, Rect2f(v1, v2));
     }
 }
 
