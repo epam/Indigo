@@ -403,7 +403,7 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
             templ.setAttachmentPoints(aa_aps);
         else
             templ.setAttachmentPoints(base_aps);
-        _alias_to_id.emplace(monomer, monomer);
+        _var_alias_to_id.emplace(monomer, monomer);
     }
 
     std::string sugar_alias = seq_type == SeqType::RNASeq ? "R" : "dR";
@@ -439,9 +439,9 @@ void SequenceLoader::addAminoAcid(KetDocument& document, const std::string& mono
 {
     Vec3f pos(_col * MoleculeLayout::DEFAULT_BOND_LENGTH, -MoleculeLayout::DEFAULT_BOND_LENGTH * _row, 0);
     auto amino_idx = document.monomers().size();
-    auto& amino_acid = variant ? document.addVariantMonomer(monomer, _alias_to_id.at(monomer)) : document.addMonomer(monomer, _alias_to_id.at(monomer));
+    auto& amino_acid = variant ? document.addVariantMonomer(monomer, _var_alias_to_id.at(monomer)) : document.addMonomer(monomer, _alias_to_id.at(monomer));
     if (variant)
-        amino_acid->setAttachmentPoints(document.variantTemplates().at(_alias_to_id.at(monomer)).attachmentPoints());
+        amino_acid->setAttachmentPoints(document.variantTemplates().at(_var_alias_to_id.at(monomer)).attachmentPoints());
     else
         amino_acid->setAttachmentPoints(document.templates().at(_alias_to_id.at(monomer)).attachmentPoints());
     amino_acid->setIntProp("seqid", _seq_id);
@@ -468,9 +468,9 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
     {
         auto nuc_base_idx = document.monomers().size();
         auto& base =
-            variant ? document.addVariantMonomer(base_alias, _alias_to_id.at(base_alias)) : document.addMonomer(base_alias, _alias_to_id.at(base_alias));
+            variant ? document.addVariantMonomer(base_alias, _var_alias_to_id.at(base_alias)) : document.addMonomer(base_alias, _alias_to_id.at(base_alias));
         if (variant)
-            base->setAttachmentPoints(document.variantTemplates().at(base_alias).attachmentPoints());
+            base->setAttachmentPoints(document.variantTemplates().at(_var_alias_to_id.at(base_alias)).attachmentPoints());
         else
             base->setAttachmentPoints(document.templates().at(_alias_to_id.at(base_alias)).attachmentPoints());
         base->setIntProp("seqid", _seq_id);
@@ -1123,7 +1123,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         auto& templ = document.addVariantMonomerTemplate("mixture", idt_alias, idt_alias, IdtAlias(), options);
                         static const std::map<std::string, KetAttachmentPoint> aps{{"R1", -1}};
                         templ.setAttachmentPoints(aps);
-                        _alias_to_id.emplace(idt_alias, idt_alias);
+                        _var_alias_to_id.emplace(idt_alias, idt_alias);
                     }
                     else if (ratios.has_value())
                         throw Error("Variant monomer %s redefinion", idt_alias.c_str());
