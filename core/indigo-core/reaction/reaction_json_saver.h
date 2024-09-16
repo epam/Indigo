@@ -43,6 +43,7 @@ namespace indigo
         void saveReaction(BaseReaction& rxn);
         bool add_stereo_desc;
         bool pretty_json;
+        bool use_native_precision;
         DECL_ERROR;
 
     protected:

@@ -276,9 +276,9 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         }
 
         writer.Key("x");
-        writer.Double(dsg.display_pos.x);
+        writeFloat(writer, dsg.display_pos.x);
         writer.Key("y");
-        writer.Double(dsg.display_pos.y);
+        writeFloat(writer, dsg.display_pos.y);
 
         if (!dsg.detached)
         {
@@ -662,7 +662,7 @@ void MoleculeJsonSaver::writeFloat(JsonWriter& writer, float f_value)
     if (use_native_precision)
         saveNativeFloat(writer, f_value);
     else
-        writer.Double(f_value);
+        writeFloat(writer, f_value);
 }
 
 void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
@@ -1575,9 +1575,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 writer.StartObject();
                 const auto& pos = mol->getAtomXyz(i);
                 writer.Key("x");
-                writer.Double(pos.x);
+                writeFloat(writer, pos.x);
                 writer.Key("y");
-                writer.Double(pos.y);
+                writeFloat(writer, pos.y);
                 writer.EndObject(); // pos
 
                 // find template
@@ -1635,11 +1635,11 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 writer.Key("stereoFlagPosition");
                 writer.StartObject();
                 writer.Key("x");
-                writer.Double(flag_pos.x);
+                writeFloat(writer, flag_pos.x);
                 writer.Key("y");
-                writer.Double(flag_pos.y);
+                writeFloat(writer, flag_pos.y);
                 writer.Key("z");
-                writer.Double(flag_pos.z);
+                writeFloat(writer, flag_pos.z);
                 writer.EndObject();
             }
             writer.EndObject();
@@ -1753,18 +1753,18 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.StartArray();
             writer.StartObject();
             writer.Key("x");
-            writer.Double(ar.getTail().x);
+            writeFloat(writer, ar.getTail().x);
             writer.Key("y");
-            writer.Double(ar.getTail().y);
+            writeFloat(writer, ar.getTail().y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
 
             writer.StartObject();
             writer.Key("x");
-            writer.Double(ar.getHead().x);
+            writeFloat(writer, ar.getHead().x);
             writer.Key("y");
-            writer.Double(ar.getHead().y);
+            writeFloat(writer, ar.getHead().y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
@@ -1787,9 +1787,9 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.Key("position");
             writer.StartObject();
             writer.Key("x");
-            writer.Double(ar.getHead().x);
+            writeFloat(writer, ar.getHead().x);
             writer.Key("y");
-            writer.Double(ar.getHead().y);
+            writeFloat(writer, ar.getHead().y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
@@ -1802,18 +1802,18 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
 
             writer.StartObject();
             writer.Key("x");
-            writer.Double(ar.getSpineBegin().x);
+            writeFloat(writer, ar.getSpineBegin().x);
             writer.Key("y");
-            writer.Double(ar.getSpineBegin().y);
+            writeFloat(writer, ar.getSpineBegin().y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
 
             writer.StartObject();
             writer.Key("x");
-            writer.Double(ar.getSpineEnd().x);
+            writeFloat(writer, ar.getSpineEnd().x);
             writer.Key("y");
-            writer.Double(ar.getSpineEnd().y);
+            writeFloat(writer, ar.getSpineEnd().y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
@@ -1830,9 +1830,9 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             {
                 writer.StartObject();
                 writer.Key("x");
-                writer.Double(t.x);
+                writeFloat(writer, t.x);
                 writer.Key("y");
-                writer.Double(t.y);
+                writeFloat(writer, t.y);
                 writer.Key("z");
                 writer.Double(0);
                 writer.EndObject();
@@ -1855,8 +1855,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.String("plus");
             writer.Key("location");
             writer.StartArray();
-            writer.Double(rp.getPos().x);
-            writer.Double(rp.getPos().y);
+            writeFloat(writer, rp.getPos().x);
+            writeFloat(writer, rp.getPos().y);
             writer.Double(0);
             writer.EndArray();
             writer.EndObject();
@@ -1890,9 +1890,9 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             // point1
             writer.StartObject();
             writer.Key("x");
-            writer.Double(coords.first.x);
+            writeFloat(writer, coords.first.x);
             writer.Key("y");
-            writer.Double(coords.first.y);
+            writeFloat(writer, coords.first.y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
@@ -1900,9 +1900,9 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             // point2
             writer.StartObject();
             writer.Key("x");
-            writer.Double(coords.second.x);
+            writeFloat(writer, coords.second.x);
             writer.Key("y");
-            writer.Double(coords.second.y);
+            writeFloat(writer, coords.second.y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
@@ -1927,11 +1927,11 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.Key("position");
             writer.StartObject();
             writer.Key("x");
-            writer.Double(simple_obj->_pos.x);
+            writeFloat(writer, simple_obj->_pos.x);
             writer.Key("y");
-            writer.Double(simple_obj->_pos.y);
+            writeFloat(writer, simple_obj->_pos.y);
             writer.Key("z");
-            writer.Double(simple_obj->_pos.z);
+            writeFloat(writer, simple_obj->_pos.z);
             writer.EndObject(); // end position
             writer.EndObject(); // end data
             writer.EndObject(); // end node
@@ -1960,16 +1960,16 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
 
             writer.StartObject(); // start bbox
             writer.Key("x");
-            writer.Double(bbox.left());
+            writeFloat(writer, bbox.left());
             writer.Key("y");
-            writer.Double(bbox.top());
+            writeFloat(writer, bbox.top());
             writer.Key("z");
             writer.Double(0);
 
             writer.Key("width");
-            writer.Double(bbox.width());
+            writeFloat(writer, bbox.width());
             writer.Key("height");
-            writer.Double(bbox.height());
+            writeFloat(writer, bbox.height());
             writer.EndObject(); // end bbox
 
             writer.Key("data");
