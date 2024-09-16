@@ -15,6 +15,9 @@ sys.path.append(
 from env_indigo import *
 
 indigo = Indigo()
+indigo.setOption("json-saving-pretty", True)
+indigo.setOption("json-use-native-precision", True)
+
 r1 = indigo.loadReactionFromFile(
     joinPathPy("reactions/issue_1205.rxn", __file__)
 )

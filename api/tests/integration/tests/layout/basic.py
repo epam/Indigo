@@ -19,12 +19,14 @@ if not os.path.exists(joinPathPy("out", __file__)):
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
 
+upd = False
+
 print("*** Reaction layout testing ***")
 test = indigo.loadReaction(
     "ClCC1CO1>>CN(CC1CO1)S(=O)(=O)C(F)(F)C(F)(F)C(F)(F)C(F)(F)F"
 )
 test.layout()
-res = reactionLayoutDiff(indigo, test, "test1.rxn")
+res = reactionLayoutDiff(indigo, test, "test1.rxn", update=upd)
 test.saveRxnfile(joinPathPy("out/test1.rxn", __file__))
 print("  Result: {}".format(res))
 
@@ -71,7 +73,7 @@ m = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/sgroups/datasgroup.mol", __file__)
 )
 m.layout()
-res = moleculeLayoutDiff(indigo, m, "test_sgroup.mol")
+res = moleculeLayoutDiff(indigo, m, "test_sgroup.mol", update=upd)
 print("  Result: {}".format(res))
 m.saveMolfile(joinPathPy("out/test_sgroup.mol", __file__))
 
@@ -79,7 +81,7 @@ print("*** Reaction layout for data sgroups ***")
 ref = joinPathPy("molecules/sgroups/reaction_datasgroup.rxn", __file__)
 test = indigo.loadReactionFromFile(ref)
 test.layout()
-res = reactionLayoutDiff(indigo, test, "test_sgroup.rxn")
+res = reactionLayoutDiff(indigo, test, "test_sgroup.rxn", update=upd)
 print("  Result: {}".format(res))
 test.saveRxnfile(joinPathPy("out/test_sgroup.rxn", __file__))
 
@@ -89,7 +91,7 @@ m = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/mol-ind-468.mol", __file__)
 )
 m.layout()
-res = moleculeLayoutDiff(indigo, m, "mol-ind-468.mol")
+res = moleculeLayoutDiff(indigo, m, "mol-ind-468.mol", update=upd)
 print("  Result: {}".format(res))
 m.saveMolfile(joinPathPy("out/mol-ind-468.mol", __file__))
 
@@ -100,7 +102,7 @@ m = indigo.loadMolecule(
 )
 m.layout()
 # print(m.molfile())
-res = moleculeLayoutDiff(indigo, m, "mol-indsp-93.mol")
+res = moleculeLayoutDiff(indigo, m, "mol-indsp-93.mol", update=upd)
 print("  Result: {}".format(res))
 m.saveMolfile(joinPathPy("out/mol-indsp-93.mol", __file__))
 
@@ -114,9 +116,9 @@ mol2 = mol.clone()
 sub = mol.getSubmolecule(atoms)
 sub.layout()  # IND-617 -> bug: exception
 
-res = moleculeLayoutDiff(indigo, mol, "ind-617-test-fixed-1.mol")
+res = moleculeLayoutDiff(indigo, mol, "ind-617-test-fixed-1.mol", update=upd)
 print("  mol Result: {}".format(res))
-res = moleculeLayoutDiff(indigo, mol2, "ind-617-test-fixed-2.mol")
+res = moleculeLayoutDiff(indigo, mol2, "ind-617-test-fixed-2.mol", update=upd)
 print("  mol2 Result: {}".format(res))
 mol2.saveMolfile(joinPathPy("out/ind-617-test-fixed-2.mol", __file__))
 mol.saveMolfile(joinPathPy("out/ind-617-test-fixed-1.mol", __file__))

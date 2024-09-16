@@ -203,11 +203,31 @@ def dist_vec(a, b):
     return sqrt(sum((a - b) ** 2 for a, b in zip(a, b)))
 
 
-def moleculeLayoutDiff(indigo, mol, ref, delta=0.01, ref_is_file=True):
+def moleculeLayoutDiff(
+    indigo,
+    mol,
+    ref,
+    delta=0.01,
+    ref_is_file=True,
+    update=False,
+    update_format="mol",
+):
     if ref_is_file:
         ref_name = getRefFilepath2(ref)
+        if update:
+            if update_format == "mol":
+                txt = mol.molfile()
+            elif update_format == "ket":
+                txt = mol.json()
+            with open(ref_name, "w") as file:
+                file.write(txt)
         m2 = indigo.loadMoleculeFromFile(ref_name)
     else:
+        if update:
+            if update_format == "mol":
+                print(mol.molfile())
+            elif update_format == "ket":
+                print(mol.json())
         m2 = indigo.loadMolecule(ref)
 
     error_buf = []
@@ -242,11 +262,32 @@ def moleculeLayoutDiff(indigo, mol, ref, delta=0.01, ref_is_file=True):
     return "Success"
 
 
-def reactionLayoutDiff(indigo, rxn, ref, delta=0.001, ref_is_file=True):
+def reactionLayoutDiff(
+    indigo,
+    rxn,
+    ref,
+    delta=0.001,
+    ref_is_file=True,
+    update=False,
+    update_format="mol",
+):
     if ref_is_file:
         ref_name = getRefFilepath2(ref)
+        if update:
+            if update_format == "mol":
+                txt = rxn.rxnfile()
+            elif update_format == "ket":
+                txt = rxn.json()
+            with open(ref_name, "w") as file:
+                file.write(txt)
         r2 = indigo.loadReactionFromFile(ref_name)
     else:
+        if update:
+            if update_format == "mol":
+                print(rxn.rxnfile())
+            elif update_format == "ket":
+                print(rxn.json())
+            print("ref=\n", ref)
         r2 = indigo.loadReaction(ref)
     error_buf = []
     for m in rxn.iterateMolecules():
