@@ -662,7 +662,7 @@ void MoleculeJsonSaver::writeFloat(JsonWriter& writer, float f_value)
     if (use_native_precision)
         saveNativeFloat(writer, f_value);
     else
-        writeFloat(writer, f_value);
+        writer.Double(f_value);
 }
 
 void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
