@@ -89,7 +89,7 @@ namespace indigo
             std::unique_ptr<BaseReaction> reaction(new Reaction());
             auto& sr = _reactions[index];
             for (auto pidx : sr.productIndexes)
-                reaction->addProductCopy(*_molecules[pidx],0,0);
+                reaction->addProductCopy(*_molecules[pidx], 0, 0);
             for (auto ridx : sr.reactantIndexes)
                 reaction->addReactantCopy(*_molecules[ridx], 0, 0);
             return reaction;

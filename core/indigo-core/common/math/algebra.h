@@ -364,26 +364,6 @@ namespace indigo
             auto rb = rightBottom();
             return rayIntersectsSegment(begin, end, lb, lt) || rayIntersectsSegment(begin, end, lt, rt) || rayIntersectsSegment(begin, end, rt, rb) ||
                    rayIntersectsSegment(begin, end, rb, lb);
-            //         Vec2f v = end - begin;
-            //         Vec2f vr(v.y, -v.x); // rotate 90 degrees clockwise
-            //         // same_sign means no intersection
-            //         auto lb_sign = std::signbit(Vec2f::dot(vr, lb));
-            //         auto lt_sign = std::signbit(Vec2f::dot(vr, lt));
-            //         auto rt_sign = std::signbit(Vec2f::dot(vr, rt));
-            //         auto rb_sign = std::signbit(Vec2f::dot(vr, rb));
-
-            //         bool same_sign = lb_sign == lt_sign && lt_sign == rt_sign && rt_sign == rb_sign;
-            //         int count = 0;
-            //         if (Vec2f::cross(v, lb) > 0)
-            //             count++;
-            // if (Vec2f::cross(v, lt) > 0)
-            //             count++;
-            // if (Vec2f::cross(v, rt) > 0)
-            //             count++;
-            //         if (Vec2f::cross(v, rb) > 0)
-            //             count++;
-
-            //         return !same_sign && Vec2f::cross(lb, vr) > 0 && count < 4;
         }
 
         inline float pointDistance(const Vec2f& pt)

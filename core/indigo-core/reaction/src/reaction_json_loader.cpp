@@ -24,20 +24,19 @@
 #include <tuple>
 #include <vector>
 
+#include "reaction/pathway_reaction.h"
+#include "reaction/pathway_reaction_builder.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
-#include "reaction/pathway_reaction.h"
 #include "reaction/reaction_json_loader.h"
 #include "reaction/reaction_multistep_detector.h"
-#include "reaction/pathway_reaction_builder.h"
 
 using namespace indigo;
 using namespace rapidjson;
 
 IMPL_ERROR(ReactionJsonLoader, "reaction KET loader");
 
-ReactionJsonLoader::ReactionJsonLoader(Document& ket)
-    : _loader(ket), _molecule(kArrayType), ignore_noncritical_query_features(false)
+ReactionJsonLoader::ReactionJsonLoader(Document& ket) : _loader(ket), _molecule(kArrayType), ignore_noncritical_query_features(false)
 {
     ignore_bad_valence = false;
 }
@@ -81,7 +80,8 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
         {
             md.constructPathwayReaction(static_cast<PathwayReaction&>(rxn));
             PathwayReactionBuilder::buildRootReaction(static_cast<PathwayReaction&>(rxn));
-        } else
+        }
+        else
             md.constructMultipleArrowReaction(rxn);
     }
     else

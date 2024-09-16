@@ -287,7 +287,7 @@ IndigoObject* IndigoReactionIter::next()
     if (_subtype == REACTION)
     {
         auto reaction = new IndigoReaction();
-        reaction->init( _rxn.getBaseReaction(_idx));
+        reaction->init(_rxn.getBaseReaction(_idx));
         return reaction;
     }
     else if (_map)

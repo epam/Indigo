@@ -227,7 +227,6 @@ void PathwayReactionBuilder::buildRootReaction(PathwayReaction& reaction)
     }
 }
 
-
 std::unique_ptr<PathwayReaction> PathwayReactionBuilder::buildPathwayReaction(std::deque<Reaction>& reactions)
 {
     buildInchiDescriptors(reactions);

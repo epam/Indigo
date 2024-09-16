@@ -397,8 +397,7 @@ namespace indigo
     {
     public:
         static const std::uint32_t CID = "KET reaction plus"_hash;
-        KETReactionPlus(const Vec2f& pos) : MetaObject(CID), _pos(pos){
-        };
+        KETReactionPlus(const Vec2f& pos) : MetaObject(CID), _pos(pos){};
 
         MetaObject* clone() const override
         {
