@@ -449,7 +449,7 @@ void RenderItemAuxiliary::_drawImage(const KETImage& img)
 
         std::string lunasvgClosure;
         if (!bitmap.writeToPng(lunasvgWrite, &lunasvgClosure))
-            throw Error("RenderItemAuxiliary::_drawImage: stbi_write_png_to_func error");
+            throw Error("RenderItemAuxiliary::_drawImage: writeToPng error");
 
         _rc.drawPng(lunasvgClosure, Rect2f(v1, v2));
     }
