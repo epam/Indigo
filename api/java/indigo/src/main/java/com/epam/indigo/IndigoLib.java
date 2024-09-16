@@ -246,6 +246,8 @@ public interface IndigoLib extends Library {
 
     int indigoIterateMolecules(int reaction);
 
+    int indigoIterateReactions(int reaction);
+
     int indigoSaveRxnfile(int reaction, int output);
 
     int indigoSaveRxnfileToFile(int reaction, String filename);

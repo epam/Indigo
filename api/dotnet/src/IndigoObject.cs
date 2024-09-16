@@ -238,6 +238,12 @@ namespace com.epam.indigo
             return new IndigoObject(dispatcher, dispatcher.checkResult(IndigoLib.indigoIterateMolecules(self)), this);
         }
 
+        public IEnumerable iterateReactions()
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(IndigoLib.indigoIterateReactions(self)), this);
+        }
+
         public string rxnfile()
         {
             dispatcher.setSessionID();

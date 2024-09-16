@@ -221,6 +221,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
                 dispatcher, Indigo.checkResult(this, lib.indigoIterateMolecules(self)), this);
     }
 
+    public IndigoObject iterateReactions() {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher, Indigo.checkResult(this, lib.indigoIterateReactions(self)), this);
+    }
+
     public String rxnfile() {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoRxnfile(self));
