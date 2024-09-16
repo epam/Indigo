@@ -62,7 +62,7 @@ target_include_directories(lunasvg PUBLIC
     $<INSTALL_INTERFACE:include/lunasvg>
 )
 
-target_link_libraries(lunasvg PRIVATE plutovg::plutovg)
+target_link_libraries(lunasvg PUBLIC plutovg::plutovg)
 target_compile_definitions(lunasvg PRIVATE LUNASVG_BUILD)
 if(NOT BUILD_SHARED_LIBS)
     target_compile_definitions(lunasvg PUBLIC LUNASVG_BUILD_STATIC)
