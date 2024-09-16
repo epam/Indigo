@@ -444,13 +444,11 @@ void RenderItemAuxiliary::_drawImage(const KETImage& img)
             throw Error("RenderItemAuxiliary::_drawImage: loadFromData error");
 
         auto bitmap = document->renderToBitmap();
-        if (!bitmap.valid())
+        if (bitmap.isNull())
             throw Error("RenderItemAuxiliary::_drawImage: renderToBitmap error");
-        bitmap.convertToRGBA();
 
         std::string stbiContext;
-        const int rgbaChannels = 4, stride = 0;
-        if (!stbi_write_png_to_func(ketImageStbiWriteFunc, &stbiContext, bitmap.width(), bitmap.height(), rgbaChannels, bitmap.data(), stride))
+        if (!bitmap.writeToPng(ketImageStbiWriteFunc, &stbiContext))
             throw Error("RenderItemAuxiliary::_drawImage: stbi_write_png_to_func error");
 
         _rc.drawPng(stbiContext, Rect2f(v1, v2));
