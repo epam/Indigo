@@ -310,7 +310,7 @@ void ReactionMultistepDetector::detectMultitailArrows()
         auto& multi = (const KETReactionMultitailArrow&)_bmol.meta().getMetaObject(KETReactionMultitailArrow::CID, i);
         float min_dist_prod = -1;
         int idx_cs_min_prod = -1;
-        auto& arr_begin = multi.getHead();
+        auto arr_begin = multi.getHead();
         auto arr_end = arr_begin;
         arr_end.x = multi.getSpineBegin().x;
         auto& tails = multi.getTails();
