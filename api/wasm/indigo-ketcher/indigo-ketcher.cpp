@@ -217,7 +217,7 @@ namespace indigo
                 {
                     const auto reac_obj = IndigoObject(_checkResult(indigoNext(reac_it.id)));
                     const auto reac = IndigoObject(_checkResult(indigoClone(reac_obj.id)));
-                    indigoRdfAppend(buffer.id, mol.id);
+                    indigoRdfAppend(buffer.id, reac.id);
                 }
                 print_js(outputFormat.c_str());
                 result = _checkResultString(indigoToString(buffer.id));
