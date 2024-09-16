@@ -131,10 +131,10 @@
                 "$ref": "ambiguousMonomerTemplate-Var0"
             },
             {
-                "$ref": "ambiguousMonomerTemplate-N1"
+                "$ref": "ambiguousMonomerTemplate-Var1"
             },
             {
-                "$ref": "ambiguousMonomerTemplate-N"
+                "$ref": "ambiguousMonomerTemplate-Var2"
             }
         ]
     },
@@ -190,8 +190,8 @@
             "y": -1.600000
         },
         "seqid": 5,
-        "alias": "N1",
-        "templateId": "N1"
+        "alias": "Var1",
+        "templateId": "Var1"
     },
     "monomer5": {
         "type": "monomer",
@@ -223,8 +223,8 @@
             "y": -1.600000
         },
         "seqid": 8,
-        "alias": "N",
-        "templateId": "N"
+        "alias": "Var2",
+        "templateId": "Var2"
     },
     "monomerTemplate-dR___Deoxy-Ribose": {
         "type": "monomerTemplate",
@@ -1515,11 +1515,11 @@
             }
         ]
     },
-    "ambiguousMonomerTemplate-N1": {
+    "ambiguousMonomerTemplate-Var1": {
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
-        "id": "N1",
-        "alias": "N1",
+        "id": "Var1",
+        "alias": "Var1",
         "options": [
             {
                 "templateId": "A___Adenine",
@@ -1539,11 +1539,11 @@
             }
         ]
     },
-    "ambiguousMonomerTemplate-N": {
+    "ambiguousMonomerTemplate-Var2": {
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
-        "id": "N",
-        "alias": "N",
+        "id": "Var2",
+        "alias": "Var2",
         "options": [
             {
                 "templateId": "A___Adenine"
