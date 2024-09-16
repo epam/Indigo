@@ -60,7 +60,7 @@ protected:
 
         indigoLayout(reactionId);
         std::string path_to_file = "molecules/basic/" + std::string(expectedResultFilename);
-        indigoSaveJsonToFile(reactionId, dataPath(path_to_file.data()).c_str());
+        // indigoSaveJsonToFile(reactionId, dataPath(path_to_file.data()).c_str());
         std::ifstream is(dataPath(path_to_file.data()), std::ios::binary | std::ios::ate);
         auto size = is.tellg();
         stringBuffer = std::string(size, '\0'); // construct string to stream size
