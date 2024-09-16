@@ -1,6 +1,6 @@
 *** KET to HELM ***
-aminoacids_variants.ket:SUCCEED
 dna_variants.ket:SUCCEED
+helm_aminoacids_variants.ket:SUCCEED
 helm_annotations.ket:SUCCEED
 helm_chem_peptide.ket:SUCCEED
 helm_chem_rna.ket:SUCCEED

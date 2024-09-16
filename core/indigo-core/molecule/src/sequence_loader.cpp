@@ -369,24 +369,24 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
         _alias_to_id.emplace(monomer, checkAddTemplate(document, monomer_class, monomer));
     else if (!document.hasVariantMonomerTemplate(monomer))
     {
-        std::optional<std::reference_wrapper<const std::vector<std::string>>> mixture;
+        std::optional<std::reference_wrapper<const std::vector<std::string>>> alternatives;
         if (seq_type == SeqType::PEPTIDESeq)
         {
             const auto& it = STANDARD_MIXED_PEPTIDES.find(monomer);
             if (it == STANDARD_MIXED_PEPTIDES.end())
                 throw Error("Unknown mixed peptide '%s'", monomer.c_str());
-            mixture.emplace(std::cref(it->second));
+            alternatives.emplace(std::cref(it->second));
         }
         else
         {
             const auto& it = STANDARD_MIXED_BASES.find(monomer);
             if (it == STANDARD_MIXED_BASES.end())
                 throw Error("Unknown mixed base '%s'", monomer.c_str());
-            mixture.emplace(std::cref(it->second));
+            alternatives.emplace(std::cref(it->second));
         }
 
         std::vector<KetVariantMonomerOption> options;
-        for (auto template_alias : mixture.value().get())
+        for (auto template_alias : alternatives.value().get())
         {
             auto& template_id = _library.getMonomerTemplateIdByAlias(monomer_class, template_alias);
             if (template_id.size() == 0)
@@ -396,7 +396,7 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
             checkAddTemplate(document, monomer_template);
             _alias_to_id.emplace(template_alias, template_id);
         }
-        auto& templ = document.addVariantMonomerTemplate("mixture", monomer, monomer, IdtAlias(), options);
+        auto& templ = document.addVariantMonomerTemplate("alternatives", monomer, monomer, IdtAlias(), options);
         static const std::map<std::string, KetAttachmentPoint> aa_aps{{"R1", -1}, {"R2", -1}};
         static const std::map<std::string, KetAttachmentPoint> base_aps{{"R1", -1}};
         if (seq_type == SeqType::PEPTIDESeq)
@@ -1094,9 +1094,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         }
                     }
                     if (sugar == "R" && RNA_DNA_MIXED_BASES.count(mixed_base) == 0)
-                    {
                         idt_alias = 'r' + idt_alias;
-                    }
                     if (!document.hasVariantMonomerTemplate(idt_alias))
                     {
                         auto it = STANDARD_MIXED_BASES.find(mixed_base);
@@ -1106,7 +1104,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         std::vector<KetVariantMonomerOption> options;
                         for (auto template_alias : it->second)
                         {
-                            if (sugar == "r" && template_alias == "T") // U instead of T for RNA
+                            if (sugar == "R" && template_alias == "T") // U instead of T for RNA
                                 template_alias = "U";
                             auto& template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Base, template_alias);
                             if (template_id.size() == 0)
@@ -1125,8 +1123,11 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         templ.setAttachmentPoints(aps);
                         _alias_to_id.emplace(idt_alias, idt_alias);
                     }
-                    else if (ratios.has_value())
-                        throw Error("Variant monomer %s redefinion", idt_alias.c_str());
+                    else
+                    {
+                        if (ratios.has_value())
+                            throw Error("Variant monomer %s redefinion", idt_alias.c_str());
+                    }
                 }
                 base = idt_alias;
 
@@ -1488,7 +1489,7 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
         if (monomer_class == MonomerClass::AminoAcid)
         {
             if (STANDARD_MIXED_PEPTIDES_TO_ALIAS.count(aliases) > 0)
-                if (is_mixture && no_counts)
+                if (!is_mixture && no_counts)
                     monomer_alias = STANDARD_MIXED_PEPTIDES_TO_ALIAS.at(aliases);
                 else
                     monomer_alias = STANDARD_MIXED_PEPTIDES_TO_ALIAS.at(aliases) + std::to_string(_unknown_variants_count++);
@@ -1497,8 +1498,8 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
         }
         else if (monomer_class == MonomerClass::Base)
         {
-            if (is_mixture && STANDARD_MIXED_BASES_TO_ALIAS.count(aliases) > 0)
-                if (is_mixture && no_counts)
+            if (!is_mixture && STANDARD_MIXED_BASES_TO_ALIAS.count(aliases) > 0)
+                if (!is_mixture && no_counts)
                     monomer_alias = STANDARD_MIXED_BASES_TO_ALIAS.at(aliases);
                 else
                     monomer_alias = STANDARD_MIXED_BASES_TO_ALIAS.at(aliases) + std::to_string(_unknown_variants_count++);
