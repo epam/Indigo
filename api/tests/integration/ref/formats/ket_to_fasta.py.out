@@ -2,4 +2,5 @@
 1822-peptide.fasta:SUCCEED
 1843-rna.fasta:SUCCEED
 1950-mixed-seq.fasta:SUCCEED
+2341-no-analog.fasta:SUCCEED
 nucleotides.fasta:SUCCEED
