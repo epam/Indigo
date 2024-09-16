@@ -123,13 +123,13 @@
                 "$ref": "ambiguousMonomerTemplate-Var0"
             },
             {
-                "$ref": "ambiguousMonomerTemplate-J"
+                "$ref": "ambiguousMonomerTemplate-J1"
             },
             {
-                "$ref": "ambiguousMonomerTemplate-Z"
+                "$ref": "ambiguousMonomerTemplate-Z2"
             },
             {
-                "$ref": "ambiguousMonomerTemplate-X"
+                "$ref": "ambiguousMonomerTemplate-X3"
             }
         ]
     },
@@ -152,8 +152,8 @@
             "y": -0.000000
         },
         "seqid": 2,
-        "alias": "J",
-        "templateId": "J"
+        "alias": "J1",
+        "templateId": "J1"
     },
     "ambiguousMonomer-2": {
         "type": "ambiguousMonomer",
@@ -163,8 +163,8 @@
             "y": -0.000000
         },
         "seqid": 3,
-        "alias": "Z",
-        "templateId": "Z"
+        "alias": "Z2",
+        "templateId": "Z2"
     },
     "ambiguousMonomer-3": {
         "type": "ambiguousMonomer",
@@ -174,8 +174,8 @@
             "y": -0.000000
         },
         "seqid": 4,
-        "alias": "X",
-        "templateId": "X"
+        "alias": "X3",
+        "templateId": "X3"
     },
     "monomerTemplate-Dha___2-aminoprop-2-enoic acid": {
         "type": "monomerTemplate",
@@ -4813,11 +4813,11 @@
             }
         ]
     },
-    "ambiguousMonomerTemplate-J": {
+    "ambiguousMonomerTemplate-J1": {
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
-        "id": "J",
-        "alias": "J",
+        "id": "J1",
+        "alias": "J1",
         "options": [
             {
                 "templateId": "L___Leucine"
@@ -4827,11 +4827,11 @@
             }
         ]
     },
-    "ambiguousMonomerTemplate-Z": {
+    "ambiguousMonomerTemplate-Z2": {
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
-        "id": "Z",
-        "alias": "Z",
+        "id": "Z2",
+        "alias": "Z2",
         "options": [
             {
                 "templateId": "E___Glutamic acid"
@@ -4841,11 +4841,11 @@
             }
         ]
     },
-    "ambiguousMonomerTemplate-X": {
+    "ambiguousMonomerTemplate-X3": {
         "type": "ambiguousMonomerTemplate",
         "subtype": "mixture",
-        "id": "X",
-        "alias": "X",
+        "id": "X3",
+        "alias": "X3",
         "options": [
             {
                 "templateId": "A___Alanine"
