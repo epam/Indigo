@@ -198,15 +198,30 @@ void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json
     if (mt_json.HasMember("attachmentPoints"))
     {
         auto& att_points = mt_json["attachmentPoints"];
+        int side_count = 0;
         for (SizeType i = 0; i < att_points.Size(); i++)
         {
             auto& ap = att_points[i];
-            std::string ap_type, label;
+            std::string id = "R";
             int attachment_atom;
-            if (ap.HasMember("label"))
-                label = ap["label"].GetString();
+            if (ap.HasMember("type"))
+            {
+                std::string t = ap["type"].GetString();
+                if (t == "left")
+                    id = "R1";
+                else if (t == "right")
+                    id = "R2";
+                else if (t == "side")
+                    id += '3' + side_count++;
+                else
+                    throw Error("Unknown attachment point type %s", t.c_str());
+            }
+            else if (ap.HasMember("label"))
+                id = ap["label"].GetString();
+            else
+                id += '1' + i;
             attachment_atom = ap["attachmentAtom"].GetInt();
-            auto& att_point = mon_template.AddAttachmentPoint(label, attachment_atom);
+            auto& att_point = mon_template.AddAttachmentPointId(id, attachment_atom);
             att_point.parseOptsFromKet(ap);
             if (ap.HasMember("leavingGroup"))
             {
@@ -298,7 +313,7 @@ void KetDocumentJsonLoader::parseKetMonomer(std::string& ref, rapidjson::Value& 
 void KetDocumentJsonLoader::parseKetVariantMonomer(std::string& ref, rapidjson::Value& json, KetDocument& document)
 {
     std::string template_id = json["templateId"].GetString();
-    auto& monomer = document.addVariantMonomer(json["id"].GetString(), template_id, template_id, ref);
+    auto& monomer = document.addVariantMonomer(json["id"].GetString(), json["alias"].GetString(), template_id, ref);
     monomer->parseOptsFromKet(json);
     if (json.HasMember("position"))
     {
@@ -333,6 +348,6 @@ void KetDocumentJsonLoader::parseVariantMonomerTemplate(const rapidjson::Value& 
         if (idt_alias.getBase().size() == 0)
             throw Error("Monomer template %s contains IDT alias without base.", id.c_str());
     }
-    auto& monomer_template = document.addVariantMonomerTemplate(json["subtype"].GetString(), id, json["name"].GetString(), idt_alias, options);
+    auto& monomer_template = document.addVariantMonomerTemplate(json["subtype"].GetString(), id, json["alias"].GetString(), idt_alias, options);
     monomer_template.parseOptsFromKet(json);
 }

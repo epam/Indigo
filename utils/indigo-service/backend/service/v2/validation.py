@@ -33,6 +33,7 @@ class InputFormatSchema(Schema):
         "chemical/x-dna-fasta",
         "chemical/x-fasta",
         "chemical/x-idt",
+        "chemical/x-helm",
     )
     input_format = fields.Str(missing=None, validate=OneOf(struct_mime_types))
 

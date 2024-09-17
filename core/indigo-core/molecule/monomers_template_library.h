@@ -82,6 +82,8 @@ namespace indigo
 
         KetAttachmentPoint& AddAttachmentPoint(const std::string& label, int att_atom);
 
+        KetAttachmentPoint& AddAttachmentPointId(const std::string& id, int att_atom);
+
         const KetAttachmentPoint& getAttachmenPointById(const std::string& att_point_id);
 
         std::unique_ptr<TGroup> getTGroup() const;

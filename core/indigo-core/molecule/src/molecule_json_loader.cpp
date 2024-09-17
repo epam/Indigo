@@ -8,6 +8,7 @@
 #include "molecule/elements.h"
 #include "molecule/ket_commons.h"
 #include "molecule/ket_document.h"
+#include "molecule/ket_document_json_loader.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_sgroups.h"
@@ -1168,76 +1169,6 @@ static IdtAlias parseIdtAlias(const rapidjson::Value& parent)
         return IdtAlias(idt_alias_base);
 }
 
-void MoleculeJsonLoader::addMonomerTemplate(const rapidjson::Value& mt_json, MonomerTemplateLibrary* library, KetDocument* document)
-{
-    if (!mt_json.HasMember("id"))
-        throw Error("Monomer template without id");
-
-    std::string id = mt_json["id"].GetString();
-
-    if (!mt_json.HasMember("class"))
-        throw Error("Monomer template without class");
-    std::string monomer_class = mt_json["class"].GetString();
-
-    bool unresolved = false;
-    if (mt_json.HasMember("unresolved"))
-        unresolved = mt_json["unresolved"].GetBool();
-
-    IdtAlias idt_alias;
-    if (mt_json.HasMember("idtAliases"))
-    {
-        idt_alias = parseIdtAlias(mt_json);
-        if (idt_alias.getBase().size() == 0)
-            throw Error("Monomer template %s contains IDT alias without base.", id.c_str());
-    }
-    else if (unresolved)
-    {
-        throw Error("Unresoved monomer '%s' without IDT alias.", id.c_str());
-    }
-
-    auto& mon_template = library->addMonomerTemplate(id, monomer_class, idt_alias, unresolved);
-    mon_template.parseOptsFromKet(mt_json);
-
-    // parse atoms
-    mon_template.parseAtoms(mt_json["atoms"]);
-
-    // parse bonds
-    if (mt_json.HasMember("bonds"))
-    {
-        mon_template.parseBonds(mt_json["bonds"]);
-    }
-
-    if (mt_json.HasMember("attachmentPoints"))
-    {
-        auto& att_points = mt_json["attachmentPoints"];
-        for (SizeType i = 0; i < att_points.Size(); i++)
-        {
-            auto& ap = att_points[i];
-            std::string ap_type, label;
-            int attachment_atom;
-            if (ap.HasMember("label"))
-                label = ap["label"].GetString();
-            attachment_atom = ap["attachmentAtom"].GetInt();
-            auto& att_point = mon_template.AddAttachmentPoint(label, attachment_atom);
-            att_point.parseOptsFromKet(ap);
-            if (ap.HasMember("leavingGroup"))
-            {
-                auto& lv = ap["leavingGroup"];
-                if (lv.HasMember("atoms"))
-                {
-                    std::vector<int> leaving_group;
-                    auto& atoms = lv["atoms"];
-                    for (SizeType i = 0; i < atoms.Size(); i++)
-                    {
-                        leaving_group.emplace_back(atoms[i].GetInt());
-                    }
-                    att_point.setLeavingGroup(leaving_group);
-                }
-            }
-        }
-    }
-}
-
 void MoleculeJsonLoader::addToLibMonomerGroupTemplate(MonomerTemplateLibrary& library, const rapidjson::Value& monomer_group_template)
 {
     if (monomer_group_template.HasMember("id"))
@@ -1287,7 +1218,7 @@ void MoleculeJsonLoader::loadMonomerLibrary(MonomerTemplateLibrary& library)
         auto& mt = _templates[i];
         if (mt.HasMember("type") && mt["type"].GetString() == std::string("monomerTemplate"))
         {
-            addMonomerTemplate(mt, &library, nullptr);
+            KetDocumentJsonLoader::parseMonomerTemplate(mt, library);
         }
     }
 
@@ -1928,6 +1859,55 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
                     throw Exception("Unsupported image format: %s", image_format_str.c_str());
 
                 meta_interface.addMetaObject(new KETImage(Rect2f(lt, rb), image_format, mobj["data"].GetString()));
+            }
+            else if (node_type == "multi-tailed-arrow")
+            {
+                if (mobj.HasMember("data"))
+                {
+                    auto& data_obj = mobj["data"];
+                    if (data_obj.HasMember("head"))
+                    {
+                        auto& head_obj = data_obj["head"];
+                        if (head_obj.HasMember("position"))
+                        {
+                            auto& head_pos = head_obj["position"];
+                            Vec2f head_position(head_pos["x"].GetFloat(), head_pos["y"].GetFloat());
+                            if (data_obj.HasMember("spine"))
+                            {
+                                auto& spine_obj = data_obj["spine"];
+                                if (spine_obj.HasMember("pos"))
+                                {
+                                    auto& spine_pos = spine_obj["pos"];
+                                    if (spine_pos.Size() == 2)
+                                    {
+                                        Vec2f spine_begin(spine_pos[0]["x"].GetFloat(), spine_pos[0]["y"].GetFloat());
+                                        Vec2f spine_end(spine_pos[1]["x"].GetFloat(), spine_pos[1]["y"].GetFloat());
+                                        if (data_obj.HasMember("tails"))
+                                        {
+                                            auto& tails = data_obj["tails"];
+                                            if (tails.HasMember("pos"))
+                                            {
+                                                auto& tails_pos_array = tails["pos"];
+                                                if (tails_pos_array.IsArray())
+                                                {
+                                                    Array<Vec2f> tails_array;
+                                                    for (auto it = tails_pos_array.Begin(); it != tails_pos_array.End(); ++it)
+                                                    {
+                                                        auto& tail_pos = *it;
+                                                        Vec2f tail_position(tail_pos["x"].GetFloat(), tail_pos["y"].GetFloat());
+                                                        tails_array.push(tail_position);
+                                                    }
+                                                    meta_interface.addMetaObject(
+                                                        new KETReactionMultitailArrow(head_position, tails_array, spine_begin, spine_end));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

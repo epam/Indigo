@@ -28,7 +28,11 @@
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4996)
+#pragma warning(disable : 4251)
 #endif
+
+#include <lunasvg.h>
+#include <stb_image_write.h>
 
 using namespace indigo;
 
@@ -258,6 +262,35 @@ void RenderItemAuxiliary::_drawArrow(const KETReactionArrow& ar)
     }
 }
 
+void RenderItemAuxiliary::_drawArrow(const KETReactionMultitailArrow& ar)
+{
+    const float radius = KETReactionMultitailArrow::TAIL_ARC_RADIUS;
+    // In order to avoid a slight gap, that becomes apparent with the highest zoom.
+    const float gap = .01f;
+
+    Vec2f arrowBeg = {ar.getSpineBegin().x, ar.getHead().y}, arrowEnd = ar.getHead();
+    scale(arrowBeg);
+    scale(arrowEnd);
+    _rc.drawArrow(arrowBeg, arrowEnd, _settings.metaLineWidth, _settings.arrowHeadWidth, _settings.arrowHeadSize);
+
+    Vec2f spineBeg = ar.getSpineBegin(), spineEnd = ar.getSpineEnd();
+    scale(spineBeg);
+    scale(spineEnd);
+    _rc.drawLine(spineBeg + Vec2f(.0, radius - gap), spineEnd + Vec2f(.0, -radius + gap));
+
+    for (int i = 0; i < ar.getTails().size(); i++)
+    {
+        auto tail = ar.getTails().at(i);
+        scale(tail);
+        _rc.drawLine(tail, {spineBeg.x - (i == 0 || i == ar.getTails().size() - 1 ? radius - gap : 0), tail.y});
+    }
+
+    spineBeg += Vec2f(-radius, radius);
+    _rc.drawArc(spineBeg, radius, -static_cast<float>(M_PI) / 2.f, .0f);
+    spineEnd += Vec2f(-radius, -radius);
+    _rc.drawArc(spineEnd, radius, .0f, static_cast<float>(M_PI) / 2.f);
+}
+
 void RenderItemAuxiliary::_drawArrow()
 {
     _rc.setSingleSource(CWC_BASE);
@@ -376,6 +409,11 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                 _drawArrow(ar);
             }
             break;
+            case KETReactionMultitailArrow::CID: {
+                const KETReactionMultitailArrow& ar = static_cast<const KETReactionMultitailArrow&>(mobj);
+                _drawArrow(ar);
+            }
+            break;
             case KETImage::CID: {
                 const KETImage& img = static_cast<const KETImage&>(mobj);
                 _drawImage(img);
@@ -384,6 +422,16 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
             }
         }
     }
+}
+
+struct StbiContext
+{
+    std::string data;
+};
+
+void ketImageStbiWriteFunc(void* context, void* data, int size)
+{
+    static_cast<StbiContext*>(context)->data.assign(static_cast<const char*>(data), size);
 }
 
 void RenderItemAuxiliary::_drawImage(const KETImage& img)
@@ -395,9 +443,22 @@ void RenderItemAuxiliary::_drawImage(const KETImage& img)
     scale(v2);
     if (img.getFormat() == KETImage::EKETPNG)
         _rc.drawPng(img.getData(), Rect2f(v1, v2));
-    else if (img.getFormat() == KETImage::EKETPNG)
+    else if (img.getFormat() == KETImage::EKETSVG)
     {
-        // TODO: implement SVG-rendering
+        auto document = lunasvg::Document::loadFromData(img.getData());
+        if (!document)
+            throw Error("RenderItemAuxiliary::_drawImage: loadFromData error");
+
+        auto bitmap = document->renderToBitmap();
+        if (!bitmap.valid())
+            throw Error("RenderItemAuxiliary::_drawImage: renderToBitmap error");
+
+        StbiContext stbiContext;
+        int rgbaChannels = 4, stride = 0;
+        if (!stbi_write_png_to_func(ketImageStbiWriteFunc, &stbiContext, bitmap.width(), bitmap.height(), rgbaChannels, bitmap.data(), stride))
+            throw Error("RenderItemAuxiliary::_drawImage: stbi_write_png_to_func error");
+
+        _rc.drawPng(stbiContext.data, Rect2f(v1, v2));
     }
 }
 

@@ -313,6 +313,8 @@ namespace indigo
     public:
         static const std::uint32_t CID = "KET reaction multitail arrow"_hash;
 
+        static constexpr float TAIL_ARC_RADIUS = .15f;
+
         template <typename Iterator>
         KETReactionMultitailArrow(Iterator&& begin, Iterator&& end) : MetaObject(CID)
         {
@@ -563,7 +565,6 @@ namespace indigo
             if (sorted_pair.first > sorted_pair.second)
                 std::swap(sorted_pair.first, sorted_pair.second);
             auto c_val = pih(sorted_pair);
-            std::cout << "hash:" << c_val << std::endl;
             return c_val;
         }
     };

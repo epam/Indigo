@@ -946,9 +946,9 @@ namespace indigo
 
         inline static std::string ref_prefix = "ambiguousMonomerTemplate-";
 
-        KetVariantMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name, IdtAlias idt_alias,
+        KetVariantMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& alias, IdtAlias idt_alias,
                                   const std::vector<KetVariantMonomerOption>& options)
-            : KetBaseMonomerTemplate(TemplateType::VariantMonomerTemplate, id, MonomerClass::Unknown, idt_alias), _subtype(subtype), _name(name),
+            : KetBaseMonomerTemplate(TemplateType::VariantMonomerTemplate, id, MonomerClass::Unknown, idt_alias), _subtype(subtype), _alias(alias),
               _options(options){};
 
         const std::string& subtype() const
@@ -956,9 +956,9 @@ namespace indigo
             return _subtype;
         };
 
-        const std::string& name() const
+        const std::string& alias() const
         {
-            return _name;
+            return _alias;
         };
 
         const std::vector<KetVariantMonomerOption>& options() const
@@ -968,7 +968,7 @@ namespace indigo
 
     private:
         std::string _subtype;
-        std::string _name;
+        std::string _alias;
         std::vector<KetVariantMonomerOption> _options;
     };
 

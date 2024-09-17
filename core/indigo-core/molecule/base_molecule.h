@@ -534,6 +534,7 @@ namespace indigo
         void getBoundingBox(Rect2f& bbox) const;
         void getBoundingBox(Rect2f& bbox, const Vec2f& minbox) const;
         void getBoundingBox(Vec2f& a, Vec2f& b) const;
+        void offsetCoordinates(const Vec3f& offset);
 
         // aliases
         bool isAlias(int atom_idx) const;

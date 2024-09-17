@@ -372,6 +372,12 @@ namespace indigo
             _rightTop.max(second._rightTop);
         }
 
+        inline void offset(const Vec2f& offset)
+        {
+            _leftBottom += offset;
+            _rightTop += offset;
+        }
+
         inline float left() const
         {
             return _leftBottom.x;

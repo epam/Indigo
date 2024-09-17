@@ -23,7 +23,8 @@
 #pragma warning(disable : 4251)
 #endif
 
-#include "reaction/base_reaction.h"
+#include "base_cpp/array.h"
+#include "reaction/reaction.h"
 #include <deque>
 
 namespace indigo
@@ -33,31 +34,150 @@ namespace indigo
 
     class DLLEXPORT PathwayReaction : public BaseReaction
     {
-        static constexpr float MARGIN = 1.f;
-        static constexpr float ARROW_HEAD_WIDTH = 2.5f;
-        static constexpr float ARROW_TAIL_WIDTH = 0.5f;
-        static constexpr float ARROW_WIDTH = ARROW_HEAD_WIDTH + ARROW_TAIL_WIDTH;
-
     public:
+        struct SuccessorReaction
+        {
+            SuccessorReaction(int reactionIdx, Array<int>& ridxs) : reactionIdx(reactionIdx)
+            {
+                reactantIndexes.copy(ridxs);
+            }
+            SuccessorReaction(const SuccessorReaction& other) : reactionIdx(other.reactionIdx)
+            {
+                reactantIndexes.copy(other.reactantIndexes);
+            }
+            SuccessorReaction& operator=(const SuccessorReaction& other)
+            {
+                reactionIdx = other.reactionIdx;
+                reactantIndexes.copy(other.reactantIndexes);
+                return *this;
+            }
+            int reactionIdx;
+            Array<int> reactantIndexes;
+        };
+
+        struct SimpleReaction
+        {
+            struct Plus
+            {
+                int metaIndex;
+                int componentIndex1;
+                int componentIndex2;
+            };
+
+            SimpleReaction() : arrowMetaIndex(-1)
+            {
+            }
+
+            SimpleReaction(const SimpleReaction& other) : arrowMetaIndex(other.arrowMetaIndex)
+            {
+                reactantIndexes.copy(other.reactantIndexes);
+                productIndexes.copy(other.productIndexes);
+                pluses.copy(other.pluses);
+            }
+            Array<int> reactantIndexes;
+            Array<int> productIndexes;
+            Array<Plus> pluses;
+            int arrowMetaIndex;
+        };
+
+        struct ReactionNode
+        {
+            ReactionNode() : reactionIdx(-1), multiTailMetaIndex(-1){};
+            ReactionNode(const ReactionNode& other)
+            {
+                reactionIdx = other.reactionIdx;
+                multiTailMetaIndex = other.multiTailMetaIndex;
+                for (int i = 0; i < other.successorReactions.size(); ++i)
+                    successorReactions.push(other.successorReactions[i]);
+                precursorReactionsIndexes.copy(other.precursorReactionsIndexes);
+            }
+            int reactionIdx;
+            // vector of successor reactions indexes and their corresponding reactant indexes
+            ObjArray<SuccessorReaction> successorReactions;
+            // vector of precursor reactions indexes
+            Array<int> precursorReactionsIndexes;
+            // utility information
+            RedBlackSet<int> successorReactants;
+            int multiTailMetaIndex;
+        };
+
         PathwayReaction();
-        PathwayReaction(std::deque<Reaction>&);
         ~PathwayReaction() override;
 
-        int reactionId(int moleculeId) const;
-        int reactionsCount() const;
-        void clone(PathwayReaction&);
-        std::pair<std::vector<std::pair<int, Vec2f>>, std::vector<std::vector<Vec2f>>> makeTreePoints();
+        std::vector<int> getRootReactions() const;
 
+        auto& getReactionNode(int node_idx)
+        {
+            return _reactionNodes[node_idx];
+        }
+
+        int getReactionNodeCount() const
+        {
+            return static_cast<int>(_reactionNodes.size());
+        }
+
+        auto& getMolecule(int mol_idx)
+        {
+            return *_molecules[mol_idx];
+        }
+
+        int getMoleculeCount() const
+        {
+            return static_cast<int>(_molecules.size());
+        }
+
+        const auto& getReaction(int reaction_idx)
+        {
+            return _reactions[reaction_idx];
+        }
+
+        int getReactionCount() const
+        {
+            return static_cast<int>(_reactions.size());
+        }
+
+        Reaction& asReaction() override
+        {
+            _rootReaction.clone(*this);
+            return _rootReaction;
+        }
+
+        ReactionNode& addReactionNode()
+        {
+            ReactionNode rn;
+            rn.reactionIdx = static_cast<int>(_reactionNodes.size());
+            _reactionNodes.push(rn);
+            return _reactionNodes[_reactionNodes.size() - 1];
+        }
+
+        int addMolecule(BaseMolecule& mol)
+        {
+            std::unique_ptr<BaseMolecule> mol_copy(mol.neu());
+            mol_copy->clone(mol);
+            _molecules.add(mol_copy.release());
+            return static_cast<int>(_molecules.size() - 1);
+        }
+
+        std::pair<int, SimpleReaction&> addReaction()
+        {
+            SimpleReaction sr;
+            _reactions.push(sr);
+            return {static_cast<int>(_reactions.size() - 1), _reactions[_reactions.size() - 1]};
+        }
+
+        void clone(PathwayReaction&);
         BaseReaction* neu() override;
         bool aromatize(const AromaticityOptions& options) override;
-
         DECL_ERROR;
 
     protected:
         int _addBaseMolecule(int side) override;
 
     private:
-        Array<int> _reactions;
+        ObjArray<ReactionNode> _reactionNodes;
+        PtrArray<BaseMolecule> _molecules;
+        ObjArray<SimpleReaction> _reactions;
+        Reaction _rootReaction;
     };
 
 } // namespace indigo
