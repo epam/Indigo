@@ -1215,7 +1215,9 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
                     if (num.has_value())
                     {
                         variants += ':';
-                        variants += std::to_string(static_cast<int>(round(num.value())));
+                        std::ostringstream ss;
+                        ss << num.value();
+                        variants += ss.str();
                     }
                 }
                 helm_string += variants;
