@@ -34,6 +34,7 @@ namespace indigo
     class Output;
     class BaseMolecule;
     class KetDocument;
+    class KetBaseMonomer;
 
     class DLLEXPORT SequenceSaver
     {
@@ -68,6 +69,7 @@ namespace indigo
     private:
         std::string getMonomerAlias(BaseMolecule& mol, int atom_idx);
         std::string getHelmPolymerClass(BaseMolecule& mol, int atom_idx);
+        void add_monomer(KetDocument& document, const std::unique_ptr<KetBaseMonomer>& monomer, std::string& helm_string);
         SequenceSaver(const SequenceSaver&); // no implicit copy
         Output& _output;
         const MonomerTemplates& _mon_lib;
