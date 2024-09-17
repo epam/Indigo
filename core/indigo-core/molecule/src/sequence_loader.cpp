@@ -1420,9 +1420,16 @@ int SequenceLoader::readCount(std::string& count, Scanner& _scanner)
     {
         _scanner.skip(1);
         ch = _scanner.lookNext();
-        while (std::isdigit(ch) && !_scanner.isEOF())
+        while ((std::isdigit(ch) || ch == '.') && !_scanner.isEOF())
         {
             _scanner.skip(1);
+            if (ch == '.')
+            {
+                if (count.size() == 0)
+                    count += '0';
+                else if (count.find(ch, 0) != count.npos) // second dot
+                    throw Error("Enexpected symbol. Second dot in number");
+            }
             count += ch;
             ch = _scanner.lookNext();
         }
