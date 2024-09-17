@@ -211,12 +211,14 @@ void Indigo::initReactionJsonSaver(ReactionJsonSaver& saver)
 {
     saver.add_stereo_desc = json_saving_add_stereo_desc;
     saver.pretty_json = json_saving_pretty;
+    saver.use_native_precision = json_use_native_precision;
 }
 
 void Indigo::initReactionJsonSaver(PathwayReactionJsonSaver& saver)
 {
     saver.add_stereo_desc = json_saving_add_stereo_desc;
     saver.pretty_json = json_saving_pretty;
+    saver.use_native_precision = json_use_native_precision;
 }
 
 void Indigo::initRxnfileSaver(RxnfileSaver& saver)

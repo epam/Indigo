@@ -42,20 +42,38 @@ void ReactionLayout::fixLayout()
 
     Vec2f rmax{Vec2f::min_coord(), Vec2f::min_coord()}, pmin{Vec2f::max_coord(), Vec2f::max_coord()};
     Rect2f bb;
-    // Calculate rightTop of reactant bounding box
-    for (int i = _r.reactantBegin(); i != _r.reactantEnd(); i = _r.reactantNext(i))
+    if (_r.isRetrosyntetic())
     {
-        _r.getBaseMolecule(i).getBoundingBox(bb);
-        rmax.max(bb.rightTop());
-    }
+        // Calculate rightTop of product bounding box
+        for (int i = _r.productBegin(); i != _r.productEnd(); i = _r.productNext(i))
+        {
+            _r.getBaseMolecule(i).getBoundingBox(bb);
+            rmax.max(bb.rightTop());
+        }
 
-    // Calculate leftBottom of product bounding box
-    for (int i = _r.productBegin(); i != _r.productEnd(); i = _r.productNext(i))
+        // Calculate leftBottom of reactant bounding box
+        for (int i = _r.reactantBegin(); i != _r.reactantEnd(); i = _r.reactantNext(i))
+        {
+            _r.getBaseMolecule(i).getBoundingBox(bb);
+            pmin.min(bb.leftBottom());
+        }
+    }
+    else
     {
-        _r.getBaseMolecule(i).getBoundingBox(bb);
-        pmin.min(bb.leftBottom());
-    }
+        // Calculate rightTop of reactant bounding box
+        for (int i = _r.reactantBegin(); i != _r.reactantEnd(); i = _r.reactantNext(i))
+        {
+            _r.getBaseMolecule(i).getBoundingBox(bb);
+            rmax.max(bb.rightTop());
+        }
 
+        // Calculate leftBottom of product bounding box
+        for (int i = _r.productBegin(); i != _r.productEnd(); i = _r.productNext(i))
+        {
+            _r.getBaseMolecule(i).getBoundingBox(bb);
+            pmin.min(bb.leftBottom());
+        }
+    }
     // if left side of product bb at left of right side of reactant bb - fix layout
     if (rmax.x > pmin.x)
     {
