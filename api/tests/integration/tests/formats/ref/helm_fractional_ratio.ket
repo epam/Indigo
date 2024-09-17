@@ -1,0 +1,475 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "ambiguousMonomer-0"
+            }
+        ],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-A___Alanine"
+            },
+            {
+                "$ref": "monomerTemplate-C___Cysteine"
+            },
+            {
+                "$ref": "monomerTemplate-G___Glycine"
+            },
+            {
+                "$ref": "ambiguousMonomerTemplate-Var0"
+            }
+        ]
+    },
+    "ambiguousMonomer-0": {
+        "type": "ambiguousMonomer",
+        "id": "0",
+        "position": {
+            "x": 0.000000,
+            "y": -0.000000
+        },
+        "seqid": 1,
+        "alias": "Var0",
+        "templateId": "Var0"
+    },
+    "monomerTemplate-A___Alanine": {
+        "type": "monomerTemplate",
+        "id": "A___Alanine",
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "fullName": "Alanine",
+        "alias": "A",
+        "naturalAnalogShort": "A",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 0,
+                "type": "left",
+                "leavingGroup": {
+                    "atoms": [
+                        6
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 3,
+                "type": "right",
+                "leavingGroup": {
+                    "atoms": [
+                        5
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "N",
+                "location": [
+                    -1.254900,
+                    -0.392000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.272000,
+                    0.263300,
+                    0.000000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.310300,
+                    1.739300,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.052300,
+                    -0.392000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.082900,
+                    -1.572200,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    2.035300,
+                    0.263300,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -2.333400,
+                    0.090500,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    0
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    3
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    6
+                ]
+            }
+        ]
+    },
+    "monomerTemplate-C___Cysteine": {
+        "type": "monomerTemplate",
+        "id": "C___Cysteine",
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "fullName": "Cysteine",
+        "alias": "C",
+        "naturalAnalogShort": "C",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 4,
+                "type": "left",
+                "leavingGroup": {
+                    "atoms": [
+                        7
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 0,
+                "type": "right",
+                "leavingGroup": {
+                    "atoms": [
+                        6
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 3,
+                "type": "side",
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    1.445700,
+                    -1.133300,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.145300,
+                    -0.384000,
+                    0.000000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.143000,
+                    1.116800,
+                    0.000000
+                ]
+            },
+            {
+                "label": "S",
+                "location": [
+                    -1.157300,
+                    1.866100,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    -1.155100,
+                    -1.133300,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.447500,
+                    -2.333300,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    2.484200,
+                    -0.532000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -2.194200,
+                    -0.533100,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -1.159100,
+                    3.066100,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 2,
+                "atoms": [
+                    5,
+                    0
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    6
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    7
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    8
+                ]
+            }
+        ]
+    },
+    "monomerTemplate-G___Glycine": {
+        "type": "monomerTemplate",
+        "id": "G___Glycine",
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "fullName": "Glycine",
+        "alias": "G",
+        "naturalAnalogShort": "G",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 4,
+                "type": "left",
+                "leavingGroup": {
+                    "atoms": [
+                        5
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 1,
+                "type": "right",
+                "leavingGroup": {
+                    "atoms": [
+                        3
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    -0.336300,
+                    0.534600,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.992900,
+                    -0.110700,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.078200,
+                    -1.289000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.970900,
+                    0.552000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    -1.326000,
+                    -0.110700,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -2.379700,
+                    0.423800,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    5
+                ]
+            }
+        ]
+    },
+    "ambiguousMonomerTemplate-Var0": {
+        "type": "ambiguousMonomerTemplate",
+        "subtype": "mixture",
+        "id": "Var0",
+        "alias": "Var0",
+        "options": [
+            {
+                "templateId": "A___Alanine",
+                "ratio": 1.500000
+            },
+            {
+                "templateId": "C___Cysteine",
+                "ratio": 0.100000
+            },
+            {
+                "templateId": "G___Glycine",
+                "ratio": 3.000000
+            }
+        ]
+    }
+}
