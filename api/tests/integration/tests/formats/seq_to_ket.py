@@ -36,7 +36,7 @@ seq_tests = [
         "ref": "spaces",
     },
     {"seq_type": "PEPTIDE", "seq_data": "BJZX", "ref": "aminoacids_variants"},
-    {"seq_type": "RNA", "seq_data": "KN", "ref": "rna_variants"},
+    {"seq_type": "RNA", "seq_data": "RKN", "ref": "rna_variants"},
     {"seq_type": "DNA", "seq_data": "BN", "ref": "dna_variants"},
 ]
 
