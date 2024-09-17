@@ -93,3 +93,18 @@ for reaction, test_case_filename in reaction_types:
         else:
             print(filename + ":FAILED")
             print(diff)
+
+print("issue 2318")
+indigo.setOption("json-use-native-precision", "1")
+fname = os.path.join(root_rea, "ket_retro_arrow.ket")
+rxn = indigo.loadReactionFromFile(fname)
+# with open(fname, "w") as file:
+#     file.write(rxn.json())
+with open(fname, "r") as file:
+    ref_json = file.read()
+diff = find_diff(ref_json, rxn.json())
+if not diff:
+    print(filename + ":SUCCEED")
+else:
+    print(filename + ":FAILED")
+    print(diff)

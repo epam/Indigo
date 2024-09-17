@@ -50,7 +50,7 @@ namespace indigo
         void saveMolecule(BaseMolecule& bmol);
         void saveMolecule(BaseMolecule& bmol, JsonWriter& writer);
 
-        static void saveMetaData(JsonWriter& writer, MetaDataStorage& meta);
+        void saveMetaData(JsonWriter& writer, MetaDataStorage& meta);
         static std::string monomerId(const TGroup& tg);
         static std::string monomerKETClass(const std::string& class_name);
         static std::string monomerHELMClass(const std::string& class_name);
