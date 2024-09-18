@@ -73,7 +73,10 @@ def stereo_desc_test(py_file, out_queue):
         os.path.join(joinPathPy("reactions/", __file__), filename)
     )
 
+    indigo.setOption("json-use-native-precision", True)
     ketfile = joinPathPy(os.path.join(ref_path, "crazystereo.ket"), __file__)
+    # with open(ketfile, "w") as file:
+    #     file.write(rxn.json())
     with open(ketfile, "r") as file:
         ket_ref = file.read()
         diff = find_diff(ket_ref, rxn.json())

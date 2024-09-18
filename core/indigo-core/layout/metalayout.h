@@ -21,7 +21,9 @@
 
 #include "base_cpp/obj_array.h"
 #include "base_cpp/reusable_obj_array.h"
+
 #include "math/algebra.h"
+#include <cstdint>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -44,6 +46,11 @@ namespace indigo
                 ETop,
                 EBottom
             };
+            enum class Type
+            {
+                EMolecule = 0,
+                ESpace = 1
+            };
 
             LayoutItem()
             {
@@ -53,9 +60,9 @@ namespace indigo
             void clear()
             {
                 verticalAlign = ItemVerticalAlign::ECenter;
-                type = 0;
+                type = Type::EMolecule;
                 id = 0;
-                fragment = false;
+                isMoleculeFragment = false;
                 min.zero();
                 max.zero();
                 scaledSize.zero();
@@ -63,9 +70,9 @@ namespace indigo
                 scaleFactor.zero();
                 minScaledSize.zero();
             }
-            int type;
+            Type type;
             int id;
-            bool fragment;
+            bool isMoleculeFragment;
             ItemVerticalAlign verticalAlign;
 
             Vec2f min, max;
@@ -93,16 +100,15 @@ namespace indigo
         Metalayout();
         void clear();
         bool isEmpty() const;
-        void prepare();
+        void prepare(); // calculates averageBondLength and scaleFactor
         float getAverageBondLength() const;
         float getScaleFactor() const;
         const Vec2f& getContentSize() const;
-        void setScaleFactor();
         void process();
         LayoutLine& newLine();
         static void getBoundRect(Vec2f& min, Vec2f& max, BaseMolecule& mol);
         void calcContentSize();
-        void scaleSz();
+        void scaleMoleculesSize();
 
         void* context;
         void (*cb_process)(LayoutItem& item, const Vec2f& pos, void* context);
@@ -112,9 +118,9 @@ namespace indigo
         static float getTotalMoleculeClosestDist(BaseMolecule& mol);
 
         // utility function to use in MoleculeLayout & ReactionLayout
-        void adjustMol(BaseMolecule& mol, const Vec2f& min, const Vec2f& pos);
+        void adjustMol(BaseMolecule& mol, const Vec2f& min, const Vec2f& pos) const;
 
-        float horizontalIntervalFactor;
+        float reactionComponentMarginSize;
         float verticalIntervalFactor;
         float bondLength;
 
@@ -127,6 +133,120 @@ namespace indigo
         float _getAverageBondLength();
 
         ReusableObjArray<LayoutLine> _layout;
+    };
+
+    struct UnitsOfMeasure
+    {
+        enum TYPE
+        {
+            PT,
+            PX,
+            INCH,
+            CM
+        };
+
+        static constexpr float INCH_TO_CM = 2.54f;
+        static constexpr float INCH_TO_PT = 72.0f;
+
+        static float convertInchesToPx(const float inches, const int32_t ppi)
+        {
+            return inches * ppi;
+        }
+        static float convertPxToInches(const float pixels, const int32_t ppi)
+        {
+            return pixels / ppi;
+        }
+        static float convertToPx(const float input, const TYPE units, const int32_t ppi)
+        {
+            switch (units)
+            {
+            case (PT):
+                return convertInchesToPx(input / INCH_TO_PT, ppi);
+                break;
+            case (INCH):
+                return convertInchesToPx(input, ppi);
+                break;
+            case (CM):
+                return convertInchesToPx(input / INCH_TO_CM, ppi);
+                break;
+            default:
+                return input;
+            }
+        }
+
+        static float convertToPt(const float input, const TYPE units, const int32_t ppi)
+        {
+            switch (units)
+            {
+            case (PX):
+                return convertPxToInches(input, ppi) * INCH_TO_PT;
+                break;
+            case (INCH):
+                return input * INCH_TO_PT;
+                break;
+            case (CM):
+                return (input * INCH_TO_PT) / INCH_TO_CM;
+                break;
+            default:
+                return input;
+            }
+        }
+
+        static float convertToInches(const float input, const TYPE units, const int32_t ppi)
+        {
+            switch (units)
+            {
+            case (PT):
+                return input / INCH_TO_PT;
+                break;
+            case (PX):
+                return convertPxToInches(input, ppi);
+                break;
+            case (CM):
+                return input / INCH_TO_CM;
+                break;
+            default:
+                return input;
+            }
+        }
+
+        static float convertToCm(const float input, const TYPE units, const int32_t ppi)
+        {
+            switch (units)
+            {
+            case (PT):
+                return (input * INCH_TO_CM) / INCH_TO_PT;
+                break;
+            case (INCH):
+                return input * INCH_TO_CM;
+                break;
+            case (PX):
+                return convertPxToInches(input, ppi) * INCH_TO_CM;
+                break;
+            default:
+                return input;
+            }
+        }
+    };
+
+    struct LayoutOptions
+    {
+        // FIXME: The value is 1.6 instead of 1.0 due to backward compatibility, needs to be refactored
+        static constexpr float DEFAULT_BOND_LENGTH = 1.6f; // default length of inter-chemical bonds
+        static constexpr float DEFAULT_PLUS_SIZE = 1.0f;
+
+        float bondLength{DEFAULT_BOND_LENGTH};
+        UnitsOfMeasure::TYPE bondLengthUnit{UnitsOfMeasure::TYPE::PX};
+        float reactionComponentMarginSize{DEFAULT_BOND_LENGTH / 2};
+        UnitsOfMeasure::TYPE reactionComponentMarginSizeUnit{UnitsOfMeasure::TYPE::PX};
+        int32_t ppi{72};
+        float getMarginSizeInAngstroms() const
+        {
+            auto marginSizePt = UnitsOfMeasure::convertToPt(reactionComponentMarginSize, reactionComponentMarginSizeUnit, ppi);
+            auto bondLengthPt = UnitsOfMeasure::convertToPt(bondLength, bondLengthUnit, ppi);
+
+            return (DEFAULT_BOND_LENGTH * marginSizePt) / bondLengthPt;
+        }
     };
 
 } // namespace indigo

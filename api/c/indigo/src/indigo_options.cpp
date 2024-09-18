@@ -261,6 +261,62 @@ void indigoProductEnumeratorGetOneTubeMode(Array<char>& value)
         value.readString("grid", true);
 }
 
+bool isEqual(const char* l, const char* r)
+{
+    return strcmp(l, r) != 0;
+}
+
+IndigoOptionManager::optf_string_t indigoSetUnitsOfMeasure(UnitsOfMeasure::TYPE& result)
+{
+    static auto func = [&result](const char* mode) {
+        if (isEqual(mode, "pt"))
+        {
+            result = UnitsOfMeasure::TYPE::PT;
+        }
+        else if (isEqual(mode, "px"))
+        {
+            result = UnitsOfMeasure::TYPE::PX;
+        }
+        else if (isEqual(mode, "inch"))
+        {
+            result = UnitsOfMeasure::TYPE::INCH;
+        }
+        else if (isEqual(mode, "cm"))
+        {
+            result = UnitsOfMeasure::TYPE::CM;
+        }
+        else
+        {
+            throw IndigoError("Invalid size unit, should be 'px', 'pt', 'inch' or 'all'");
+        }
+    };
+
+    return [](const char* mode) -> void { return func(mode); };
+}
+
+IndigoOptionManager::get_optf_string_t indigoGetUnitsOfMeasure(const UnitsOfMeasure::TYPE input)
+{
+    static auto func = [input](Array<char>& result) {
+        switch (input)
+        {
+        case UnitsOfMeasure::TYPE::PT:
+            result.readString("pt", true);
+            break;
+        case UnitsOfMeasure::TYPE::PX:
+            result.readString("px", true);
+            break;
+        case UnitsOfMeasure::TYPE::INCH:
+            result.readString("inch", true);
+            break;
+        case UnitsOfMeasure::TYPE::CM:
+            result.readString("cm", true);
+            break;
+        }
+    };
+
+    return [](Array<char>& res) -> void { return func(res); };
+}
+
 void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
 {
     auto mgr = sf::xlock_safe_ptr(indigoGetOptionManager(id));
@@ -384,4 +440,12 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerInt("rpe-max-products-count", SETTER_GETTER_INT_OPTION(indigo.rpe_params.max_product_count));
     mgr->setOptionHandlerBool("rpe-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_layout));
     mgr->setOptionHandlerBool("transform-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.transform_is_layout));
+
+    mgr->setOptionHandlerFloat("bond-length", SET_POSITIVE_FLOAT_OPTION(indigo.layout_options.bondLength, "bond length must be positive"));
+    mgr->setOptionHandlerString("bond-length-unit", indigoSetUnitsOfMeasure(indigo.layout_options.bondLengthUnit),
+                                indigoGetUnitsOfMeasure(indigo.layout_options.bondLengthUnit));
+    mgr->setOptionHandlerFloat("reaction-component-margin-size", SETTER_GETTER_FLOAT_OPTION(indigo.layout_options.reactionComponentMarginSize));
+    mgr->setOptionHandlerString("reaction-component-margin-size-unit", indigoSetUnitsOfMeasure(indigo.layout_options.reactionComponentMarginSizeUnit),
+                                indigoGetUnitsOfMeasure(indigo.layout_options.reactionComponentMarginSizeUnit));
+    mgr->setOptionHandlerInt("image-resolution", SET_POSITIVE_INT_OPTION(indigo.layout_options.ppi, "image resolution ppi must be positive"));
 }

@@ -70,7 +70,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 
     std::unique_ptr<BaseReaction> reaction(rxn.neu());
     reaction->clone(rxn);
-    ReactionLayout rl(*reaction);
+    ReactionLayout rl(*reaction, false, layout_options);
     rl.fixLayout();
 
     // merge

@@ -74,14 +74,6 @@ IndigoRenderer::~IndigoRenderer()
 {
 }
 
-#define SET_POSITIVE_FLOAT_OPTION(option, error)                                                                                                               \
-    [](float value) {                                                                                                                                          \
-        if (value <= 0.0f)                                                                                                                                     \
-            throw IndigoError(error);                                                                                                                          \
-        option = value;                                                                                                                                        \
-    },                                                                                                                                                         \
-        [](float& value) { value = option; }
-
 #define CHECK_AND_SETTER_GETTER_COLOR_OPTION(option)                                                                                                           \
     [](float r, float g, float b) {                                                                                                                            \
         CHECKRGB(r, g, b);                                                                                                                                     \
@@ -689,9 +681,17 @@ void IndigoRenderer::setOptionsHandlers()
     if (!options_set)
     {
         auto mgr = sf::xlock_safe_ptr(indigoGetOptionManager(indigo_id));
+        options_set = true;
 
 #define rp indigoRendererGetInstance().renderParams
 #define cdxmlContext getCdxmlContext()
+#define indigo indigoGetInstance()
+
+        rp.cnvOpt.bondLength = indigo.layout_options.bondLength;
+        rp.cnvOpt.bondLengthUnit = indigo.layout_options.bondLengthUnit;
+        rp.rOpt.reactionComponentMarginSize = indigo.layout_options.reactionComponentMarginSize;
+        rp.rOpt.reactionComponentMarginSizeUnit = indigo.layout_options.reactionComponentMarginSizeUnit;
+        rp.rOpt.ppi = indigo.layout_options.ppi;
 
         mgr->setOptionHandlerInt("render-comment-offset", SETTER_GETTER_INT_OPTION(rp.cnvOpt.commentOffset));
         mgr->setOptionHandlerInt("render-image-width", SETTER_GETTER_INT_OPTION(rp.cnvOpt.width));
@@ -757,7 +757,5 @@ void IndigoRenderer::setOptionsHandlers()
         mgr->setOptionHandlerString("render-cdxml-title-face", SETTER_GETTER_STR_OPTION(cdxmlContext.titleFace));
 
         mgr->setOptionHandlerVoid("reset-render-options", indigoRenderResetOptions);
-
-        options_set = true;
     }
 }

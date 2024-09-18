@@ -178,7 +178,7 @@ void SequenceLayout::calculateCoordinates(SequenceLayoutMap& layout_sequence)
             for (auto& col : row.second)
             {
                 int x_int = col.first - base_col;
-                Vec3f v(MoleculeLayout::DEFAULT_BOND_LENGTH * x_int, -MoleculeLayout::DEFAULT_BOND_LENGTH * y_int, 0);
+                Vec3f v(LayoutOptions::DEFAULT_BOND_LENGTH * x_int, -LayoutOptions::DEFAULT_BOND_LENGTH * y_int, 0);
                 _molecule.setAtomXyz(col.second, v);
             }
         }

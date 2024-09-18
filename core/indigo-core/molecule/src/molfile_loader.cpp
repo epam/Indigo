@@ -2244,10 +2244,10 @@ bool MolfileLoader::_expandNucleotide(int nuc_atom_idx, int tg_idx, std::unorder
             if (!_bmol->getMiddlePoint(nuc_atom_idx, right_idx, sugar_pos))
             {
                 sugar_pos.copy(_bmol->getAtomXyz(nuc_atom_idx));
-                sugar_pos.x += MoleculeLayout::DEFAULT_BOND_LENGTH;
+                sugar_pos.x += LayoutOptions::DEFAULT_BOND_LENGTH;
             }
             base_pos.copy(sugar_pos);
-            base_pos.y -= MoleculeLayout::DEFAULT_BOND_LENGTH;
+            base_pos.y -= LayoutOptions::DEFAULT_BOND_LENGTH;
             _bmol->setAtomXyz(sugar_idx, sugar_pos);
             _bmol->setAtomXyz(base_idx, base_pos);
             // set seqid

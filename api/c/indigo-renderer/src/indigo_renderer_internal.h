@@ -36,7 +36,7 @@ public:
 private:
     void setOptionsHandlers();
 
-    bool options_set = false;
+    std::atomic<bool> options_set = false;
 };
 
 class IndigoHDCOutput : public IndigoObject
