@@ -130,6 +130,7 @@ namespace indigo
         int _col;
         MonomerTemplateLibrary& _library;
         std::map<std::string, std::string> _alias_to_id;
+        std::map<std::string, std::string> _var_alias_to_id;
         int _unknown_variants_count;
         std::map<variant_template_opts, std::string> _opts_to_template_id;
     };

@@ -46,7 +46,8 @@ void ReactionLayout::fixLayout()
     // Calculate rightTop of reactant bounding box
     bool invalid_layout = false;
     float cur_left = 0, cur_right = 0;
-    for (int i = _r.reactantBegin(); i != _r.reactantEnd(); i = _r.reactantNext(i))
+    for (int i = _r.isRetrosyntetic() ? _r.productBegin() : _r.reactantBegin(); i != _r.isRetrosyntetic() ? _r.productEnd() : _r.reactantEnd();
+         i = _r.isRetrosyntetic() ? _r.productNext(i) : _r.reactantNext(i))
     {
         _r.getBaseMolecule(i).getBoundingBox(bb);
         if (i == 0 || (bb.left() > cur_left && bb.right() > cur_right))
@@ -59,7 +60,8 @@ void ReactionLayout::fixLayout()
     }
 
     // Calculate leftBottom of product bounding box
-    for (int i = _r.productBegin(); i != _r.productEnd(); i = _r.productNext(i))
+    for (int i = _r.isRetrosyntetic() ? _r.reactantBegin() : _r.productBegin(); i != _r.isRetrosyntetic() ? _r.reactantEnd() : _r.productEnd();
+         i = _r.isRetrosyntetic() ? _r.reactantNext(i) : _r.productNext(i))
     {
         _r.getBaseMolecule(i).getBoundingBox(bb);
         if (bb.left() > cur_left && bb.right() > cur_right)

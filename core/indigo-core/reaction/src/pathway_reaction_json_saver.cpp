@@ -28,7 +28,7 @@ using namespace indigo;
 
 IMPL_ERROR(PathwayReactionJsonSaver, "pathway reaction KET saver");
 
-PathwayReactionJsonSaver::PathwayReactionJsonSaver(Output& output) : _output(output), add_stereo_desc(), pretty_json()
+PathwayReactionJsonSaver::PathwayReactionJsonSaver(Output& output) : _output(output), add_stereo_desc(), pretty_json(), use_native_precision(false)
 {
 }
 
@@ -46,6 +46,7 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& pwr)
     writer.Reset(buffer);
     MoleculeJsonSaver moleculeSaver(_output);
     moleculeSaver.add_stereo_desc = add_stereo_desc;
+    moleculeSaver.use_native_precision = use_native_precision;
     moleculeSaver.saveMolecule(*merged, writer);
     _output.printf("%s", buffer.GetString());
 }
