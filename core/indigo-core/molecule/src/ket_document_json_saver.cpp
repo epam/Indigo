@@ -458,7 +458,7 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
         auto& monomer = monomers.at(it);
         if (monomer->monomerType() == KetBaseMonomer::MonomerType::Monomer)
             saveMonomer(writer, *static_cast<KetMonomer*>(monomer.get()));
-        else if (monomer->monomerType() == KetBaseMonomer::MonomerType::VarianMonomer)
+        else if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
             saveVariantMonomer(writer, *static_cast<KetVariantMonomer*>(monomer.get()));
         else
             throw Error("Unknown monomer type");
