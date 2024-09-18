@@ -141,7 +141,7 @@ namespace indigo
         {
             PT,
             PX,
-            INCHES,
+            INCH,
             CM
         };
 
@@ -163,7 +163,7 @@ namespace indigo
             case (PT):
                 return convertInchesToPx(input / INCH_TO_PT, ppi);
                 break;
-            case (INCHES):
+            case (INCH):
                 return convertInchesToPx(input, ppi);
                 break;
             case (CM):
@@ -181,7 +181,7 @@ namespace indigo
             case (PX):
                 return convertPxToInches(input, ppi) * INCH_TO_PT;
                 break;
-            case (INCHES):
+            case (INCH):
                 return input * INCH_TO_PT;
                 break;
             case (CM):
@@ -217,7 +217,7 @@ namespace indigo
             case (PT):
                 return (input * INCH_TO_CM) / INCH_TO_PT;
                 break;
-            case (INCHES):
+            case (INCH):
                 return input * INCH_TO_CM;
                 break;
             case (PX):

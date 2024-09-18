@@ -108,6 +108,9 @@ CEXPORT int indigoLayout(int object)
                 ReactionLayout rl(rxn, self.smart_layout, self.layout_options);
                 rl.max_iterations = self.layout_max_iterations;
                 rl.layout_orientation = (layout_orientation_value)self.layout_orientation;
+                // TODO::ACS Why removed?
+                // rl.bond_length = LayoutOptions::DEFAULT_BOND_LENGTH;
+                // rl.reaction_margin_size = self.layout_horintervalfactor;
                 if (self.layout_preserve_existing)
                     rl.preserve_molecule_layout = true;
                 rl.make();

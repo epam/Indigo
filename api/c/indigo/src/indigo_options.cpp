@@ -277,9 +277,9 @@ IndigoOptionManager::optf_string_t indigoSetUnitsOfMeasure(UnitsOfMeasure::TYPE&
         {
             result = UnitsOfMeasure::TYPE::PX;
         }
-        else if (isEqual(mode, "inches"))
+        else if (isEqual(mode, "inch"))
         {
-            result = UnitsOfMeasure::TYPE::INCHES;
+            result = UnitsOfMeasure::TYPE::INCH;
         }
         else if (isEqual(mode, "cm"))
         {
@@ -287,7 +287,7 @@ IndigoOptionManager::optf_string_t indigoSetUnitsOfMeasure(UnitsOfMeasure::TYPE&
         }
         else
         {
-            throw IndigoError("Invalid label mode, should be 'none', 'hetero', 'terminal-hetero' or 'all'");
+            throw IndigoError("Invalid size unit, should be 'px', 'pt', 'inch' or 'all'");
         }
     };
 
@@ -305,8 +305,8 @@ IndigoOptionManager::get_optf_string_t indigoGetUnitsOfMeasure(const UnitsOfMeas
         case UnitsOfMeasure::TYPE::PX:
             result.readString("px", true);
             break;
-        case UnitsOfMeasure::TYPE::INCHES:
-            result.readString("inches", true);
+        case UnitsOfMeasure::TYPE::INCH:
+            result.readString("inch", true);
             break;
         case UnitsOfMeasure::TYPE::CM:
             result.readString("cm", true);
