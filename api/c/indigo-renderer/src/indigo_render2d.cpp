@@ -20,8 +20,8 @@
 #include "base_cpp/scanner.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
-#include "reaction/query_reaction.h"
 #include "reaction/pathway_reaction.h"
+#include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
 #include "render_cdxml.h"
 

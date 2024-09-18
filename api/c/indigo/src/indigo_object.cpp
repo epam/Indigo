@@ -22,8 +22,8 @@
 
 #include "base_cpp/output.h"
 #include "base_cpp/properties_map.h"
-#include "reaction/reaction.h"
 #include "reaction/pathway_reaction.h"
+#include "reaction/reaction.h"
 
 #include "indigo_internal.h"
 
