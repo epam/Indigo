@@ -29,6 +29,10 @@
 #include "molecule/monomers_template_library.h"
 #include "molecule/smiles_saver.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#endif
+
 using namespace indigo;
 
 IMPL_ERROR(SequenceSaver, "Sequence saver");
@@ -278,7 +282,7 @@ std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
     return seq_string;
 }
 
-static inline void add_monomer(std::string& helm_string, const std::string& monomer_alias)
+static inline void add_monomer_str(std::string& helm_string, const std::string& monomer_alias)
 {
     if (monomer_alias.size() == 1)
         helm_string += monomer_alias;
@@ -386,7 +390,7 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
             }
             if (monomer_idx)
                 helm_string += '.'; // separator between monomers
-            add_monomer(helm_string, monomer_alias);
+            add_monomer_str(helm_string, monomer_alias);
             monomer_idx++;
             atom_idx_to_monomer_info.emplace(std::make_pair(atom_idx, std::make_tuple(helm_type, polymer_idx, monomer_idx)));
 
@@ -409,7 +413,7 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
                         if (mon_class == kMonomerClassBASE)
                         {
                             helm_string += '('; // branch monomers in ()
-                            add_monomer(helm_string, monomerAliasByName(mon_class, mol.getTemplateAtom(nei_atom_idx)));
+                            add_monomer_str(helm_string, monomerAliasByName(mon_class, mol.getTemplateAtom(nei_atom_idx)));
                             monomer_idx++;
                             atom_idx_to_monomer_info.emplace(std::make_pair(nei_atom_idx, std::make_tuple(helm_type, polymer_idx, monomer_idx)));
                             used_atoms.emplace(nei_atom_idx);
@@ -425,7 +429,7 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
                 }
                 if (phosphate.size())
                 {
-                    add_monomer(helm_string, phosphate);
+                    add_monomer_str(helm_string, phosphate);
                     monomer_idx++;
                     atom_idx_to_monomer_info.emplace(std::make_pair(phosphate_idx, std::make_tuple(helm_type, polymer_idx, monomer_idx)));
                     used_atoms.emplace(phosphate_idx);
@@ -954,7 +958,7 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                     sequence.pop_front();
                     if (IDT_STANDARD_BASES.count(base) == 0 && STANDARD_MIXED_BASES.count(base) == 0)
                         standard_base = false;
-                    if (base_monomer.monomerType() == KetBaseMonomer::MonomerType::VarianMonomer)
+                    if (base_monomer.monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
                     {
                         variant_base = true;
                         std::string template_id = monomers.at(base_id)->templateId();
@@ -1140,6 +1144,50 @@ static const char* get_helm_class(MonomerClass monomer_class)
     return kHELMPolymerTypeCHEM;
 }
 
+void SequenceSaver::add_monomer(KetDocument& document, const std::unique_ptr<KetBaseMonomer>& monomer, std::string& helm_string)
+{
+    std::string monomer_str;
+    const auto& mon_templ = document.templates().at(monomer->templateId());
+    if (_library.monomerTemplates().count(mon_templ.id()) > 0)
+    {
+        monomer_str = _library.monomerTemplates().at(mon_templ.id()).getStringProp("alias");
+    }
+    else
+    {
+        // monomer not in library - generate smiles
+        auto tgroup = mon_templ.getTGroup();
+        auto* pmol = static_cast<Molecule*>(tgroup->fragment.get());
+
+        // convert Sup sgroup without name attachment points to rg-labels
+        auto& sgroups = pmol->sgroups;
+        for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+        {
+            auto& sgroup = sgroups.getSGroup(i);
+            if (sgroup.sgroup_type != SGroup::SG_TYPE_SUP)
+                continue;
+            Superatom& sa = static_cast<Superatom&>(sgroup);
+            for (int ap_id = sa.attachment_points.begin(); ap_id != sa.attachment_points.end(); ap_id = sa.attachment_points.next(ap_id))
+            {
+                auto& ap = sa.attachment_points.at(ap_id);
+                int leaving_atom = ap.lvidx;
+                int ap_idx = getAttachmentOrder(ap.apid.ptr()) + 1;
+                pmol->resetAtom(leaving_atom, ELEM_RSITE);
+                pmol->allowRGroupOnRSite(leaving_atom, ap_idx);
+            }
+            sgroups.remove(i);
+        }
+        std::string smiles;
+        StringOutput s_out(monomer_str);
+        SmilesSaver saver(s_out);
+        saver.separate_rsites = false;
+        saver.saveMolecule(*pmol);
+    }
+    if (monomer_str.size() == 1)
+        helm_string += monomer_str;
+    else
+        helm_string += '[' + monomer_str + ']';
+}
+
 std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::deque<std::string>> sequences)
 {
     std::string helm_string = "";
@@ -1193,8 +1241,8 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
             if (monomer_class == MonomerClass::Base)
                 helm_string += '(';
             if (monomer->monomerType() == KetBaseMonomer::MonomerType::Monomer)
-                add_monomer(helm_string, monomer->alias());
-            else if (monomer->monomerType() == KetBaseMonomer::MonomerType::VarianMonomer)
+                add_monomer(document, monomer, helm_string);
+            else if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
             {
                 const auto& templ = variant_templates.at(monomer->templateId());
                 if (monomer_class != MonomerClass::Base)
@@ -1270,7 +1318,6 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
             auto res = mol_atom_to_ap.try_emplace(mol_id);
             auto& atom_to_ap = res.first;
             static std::string apid_prefix{'R'};
-            Array<int> leaving_atoms;
             for (int ap_id = sa.attachment_points.begin(); ap_id != sa.attachment_points.end(); ap_id = sa.attachment_points.next(ap_id))
             {
                 auto& ap = sa.attachment_points.at(ap_id);
@@ -1366,3 +1413,7 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
     helm_string += "V2.0";
     return helm_string;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
