@@ -32,7 +32,6 @@
 #endif
 
 #include <lunasvg.h>
-#include <stb_image_write.h>
 
 using namespace indigo;
 
@@ -424,14 +423,9 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
     }
 }
 
-struct StbiContext
+void lunasvgWrite(void* context, void* data, int size)
 {
-    std::string data;
-};
-
-void ketImageStbiWriteFunc(void* context, void* data, int size)
-{
-    static_cast<StbiContext*>(context)->data.assign(static_cast<const char*>(data), size);
+    static_cast<std::string*>(context)->assign(static_cast<const char*>(data), size);
 }
 
 void RenderItemAuxiliary::_drawImage(const KETImage& img)
@@ -450,15 +444,14 @@ void RenderItemAuxiliary::_drawImage(const KETImage& img)
             throw Error("RenderItemAuxiliary::_drawImage: loadFromData error");
 
         auto bitmap = document->renderToBitmap();
-        if (!bitmap.valid())
+        if (bitmap.isNull())
             throw Error("RenderItemAuxiliary::_drawImage: renderToBitmap error");
 
-        StbiContext stbiContext;
-        int rgbaChannels = 4, stride = 0;
-        if (!stbi_write_png_to_func(ketImageStbiWriteFunc, &stbiContext, bitmap.width(), bitmap.height(), rgbaChannels, bitmap.data(), stride))
-            throw Error("RenderItemAuxiliary::_drawImage: stbi_write_png_to_func error");
+        std::string lunasvgClosure;
+        if (!bitmap.writeToPng(lunasvgWrite, &lunasvgClosure))
+            throw Error("RenderItemAuxiliary::_drawImage: writeToPng error");
 
-        _rc.drawPng(stbiContext.data, Rect2f(v1, v2));
+        _rc.drawPng(lunasvgClosure, Rect2f(v1, v2));
     }
 }
 
