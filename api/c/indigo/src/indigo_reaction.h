@@ -99,7 +99,6 @@ public:
     std::unique_ptr<BaseReaction> rxn;
 };
 
-
 class DLLEXPORT IndigoQueryReaction : public IndigoBaseReaction
 {
 public:

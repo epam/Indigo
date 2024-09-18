@@ -23,11 +23,11 @@
 #include "indigo_mapping.h"
 #include "indigo_molecule.h"
 #include "reaction/canonical_rsmiles_saver.h"
+#include "reaction/pathway_reaction.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/reaction_automapper.h"
 #include "reaction/rsmiles_loader.h"
 #include "reaction/rxnfile_saver.h"
-#include "reaction/pathway_reaction.h"
 #include <memory>
 
 //
@@ -63,7 +63,6 @@ const char* IndigoBaseReaction::debugInfo() const
 //
 // IndigoPathwayReaction
 //
-
 
 IndigoPathwayReaction::IndigoPathwayReaction() : IndigoBaseReaction(REACTION)
 {
@@ -461,17 +460,17 @@ CEXPORT int indigoLoadReaction(int source)
         auto rxn = loader.loadReaction(false);
         std::unique_ptr<IndigoBaseReaction> rxnptr;
         if (rxn->isPathwayReaction())
-		{
-			auto pwr = std::make_unique<IndigoPathwayReaction>();
+        {
+            auto pwr = std::make_unique<IndigoPathwayReaction>();
             pwr->init(std::move(rxn));
             rxnptr = std::move(pwr);
-		}
-		else
-		{
-			auto reaction = std::make_unique<IndigoReaction>();
+        }
+        else
+        {
+            auto reaction = std::make_unique<IndigoReaction>();
             reaction->init(std::move(rxn));
             rxnptr = std::move(reaction);
-		}
+        }
 
         return self.addObject(rxnptr.release());
     }

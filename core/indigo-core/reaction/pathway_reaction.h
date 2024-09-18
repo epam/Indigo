@@ -129,7 +129,7 @@ namespace indigo
 
         int reactionsCount() override
         {
-			return _reactions.size();
+            return _reactions.size();
         }
 
         Reaction& asReaction() override

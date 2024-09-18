@@ -247,7 +247,7 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
 bool ReactionMultistepDetector::detectArrows()
 {
     int arrow_count = _bmol.meta().getMetaCount(KETReactionArrow::CID);
-    if ( arrow_count == 0)
+    if (arrow_count == 0)
         return false;
     for (int i = 0; i < arrow_count; ++i)
     {
@@ -311,8 +311,8 @@ bool ReactionMultistepDetector::detectMultitailArrows()
 {
     int pathway_count = _bmol.meta().getMetaCount(KETReactionMultitailArrow::CID);
 
-    if ( pathway_count == 0)
-		return false;
+    if (pathway_count == 0)
+        return false;
 
     bool bad_pathway = false;
 
@@ -361,7 +361,7 @@ bool ReactionMultistepDetector::detectMultitailArrows()
 
         for (auto& [min_dist, idx_cs_min_prod] : min_dist_reactants)
         {
-            if ( min_dist < 0)
+            if (min_dist < 0)
                 bad_pathway = true;
         }
 
@@ -404,14 +404,14 @@ bool ReactionMultistepDetector::detectMultitailArrows()
         }
     }
     for (auto& csb : _component_summ_blocks)
-	{
+    {
         // no undefined components allowed
         if (csb.role == BaseReaction::UNDEFINED)
         {
             csb.role = BaseReaction::REACTANT;
             bad_pathway = true;
         }
-	}
+    }
     return !bad_pathway;
 }
 
@@ -687,48 +687,44 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
 
 void indigo::ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
 {
-    for ( auto& csb : _component_summ_blocks )
+    for (auto& csb : _component_summ_blocks)
     {
         switch (csb.role)
         {
-            case BaseReaction::PRODUCT:
-			{
-				for (auto idx : csb.indexes)
-				{
-					auto& rc = _reaction_components[idx];
-					rxn.addProductCopy(*rc.molecule, 0, 0);
-				}
-			}
+        case BaseReaction::PRODUCT: {
+            for (auto idx : csb.indexes)
+            {
+                auto& rc = _reaction_components[idx];
+                rxn.addProductCopy(*rc.molecule, 0, 0);
+            }
+        }
+        break;
+        case BaseReaction::REACTANT: {
+            for (auto idx : csb.indexes)
+            {
+                auto& rc = _reaction_components[idx];
+                rxn.addReactantCopy(*rc.molecule, 0, 0);
+            }
+        }
+        break;
+        case BaseReaction::INTERMEDIATE: {
+            for (auto idx : csb.indexes)
+            {
+                auto& rc = _reaction_components[idx];
+                rxn.addIntermediateCopy(*rc.molecule, 0, 0);
+            }
+        }
+        break;
+        case BaseReaction::UNDEFINED: {
+            for (auto idx : csb.indexes)
+            {
+                auto& rc = _reaction_components[idx];
+                rxn.addUndefinedCopy(*rc.molecule, 0, 0);
+            }
+        }
+        break;
+        default:
             break;
-			case BaseReaction::REACTANT:
-                {
-                for (auto idx : csb.indexes)
-					{
-						auto& rc = _reaction_components[idx];
-						rxn.addReactantCopy(*rc.molecule, 0, 0);
-					}
-				}
-                break;
-			case BaseReaction::INTERMEDIATE:
-				{
-				for (auto idx : csb.indexes)
-					{
-						auto& rc = _reaction_components[idx];
-						rxn.addIntermediateCopy(*rc.molecule, 0, 0);
-					}
-				}
-				break;
-			case BaseReaction::UNDEFINED:
-				{
-				for (auto idx : csb.indexes)
-					{
-						auto& rc = _reaction_components[idx];
-						rxn.addUndefinedCopy(*rc.molecule, 0, 0);
-					}
-				}
-				break;
-			default:
-				break;
-		}
+        }
     }
 }

@@ -70,12 +70,12 @@ void PathwayReaction::_cloneSub(BaseReaction& other)
     }
 
     for (int i = 0; i < other_pwr._molecules.size(); ++i)
-	{
-		auto other_molecule = other_pwr._molecules[i];
+    {
+        auto other_molecule = other_pwr._molecules[i];
         addMolecule(*other_molecule);
-	}
+    }
 
-	_rootReaction.clone(other_pwr._rootReaction);
+    _rootReaction.clone(other_pwr._rootReaction);
 }
 
 BaseReaction* PathwayReaction::neu()
@@ -86,9 +86,9 @@ BaseReaction* PathwayReaction::neu()
 void PathwayReaction::clear()
 {
     BaseReaction::clear();
-	_reactionNodes.clear();
-	_reactions.clear();
-	_rootReaction.clear();
+    _reactionNodes.clear();
+    _reactions.clear();
+    _rootReaction.clear();
     _molecules.clear();
 }
 
