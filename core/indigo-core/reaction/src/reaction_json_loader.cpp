@@ -75,14 +75,19 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     if (arrow_count > 1 || multi_count > 0)
     {
         ReactionMultistepDetector md(*_pmol);
-        md.detectReaction();
-        if (multi_count)
+        switch (md.detectReaction())
         {
+        case ReactionMultistepDetector::ReactionType::EPathwayReaction:
             md.constructPathwayReaction(static_cast<PathwayReaction&>(rxn));
             PathwayReactionBuilder::buildRootReaction(static_cast<PathwayReaction&>(rxn));
-        }
-        else
+            break;
+        case ReactionMultistepDetector::ReactionType::EMutistepReaction:
             md.constructMultipleArrowReaction(rxn);
+            break;
+        case ReactionMultistepDetector::ReactionType::ESimpleReaction:
+            md.constructSimpleArrowReaction(rxn);
+            break;
+        }
     }
     else
         parseOneArrowReaction(rxn);

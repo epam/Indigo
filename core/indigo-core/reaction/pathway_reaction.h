@@ -127,6 +127,11 @@ namespace indigo
             return static_cast<int>(_reactions.size());
         }
 
+        int reactionsCount() override
+        {
+			return _reactions.size();
+        }
+
         Reaction& asReaction() override
         {
             _rootReaction.clone(*this);
@@ -190,6 +195,11 @@ namespace indigo
             return true;
         }
 
+        PathwayReaction& asPathwayReaction() override
+        {
+            return *this;
+        }
+
         ReactionNode& addReactionNode()
         {
             ReactionNode rn;
@@ -213,7 +223,6 @@ namespace indigo
             return {static_cast<int>(_reactions.size() - 1), _reactions[_reactions.size() - 1]};
         }
 
-        void clone(PathwayReaction&);
         BaseReaction* neu() override;
         bool aromatize(const AromaticityOptions& options) override;
 
@@ -232,10 +241,13 @@ namespace indigo
             return ++i;
         }
 
+        void clear() override;
+
         DECL_ERROR;
 
     protected:
         int _addBaseMolecule(int side) override;
+        void _cloneSub(BaseReaction& other) override;
 
     private:
         ObjArray<ReactionNode> _reactionNodes;

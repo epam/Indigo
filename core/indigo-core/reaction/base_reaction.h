@@ -36,6 +36,7 @@ namespace indigo
     class Reaction;
     class QueryReaction;
     class BaseReaction;
+    class PathwayReaction;
 
     struct SpecialCondition
     {
@@ -102,11 +103,6 @@ namespace indigo
         virtual ~BaseReaction();
 
         MetaDataStorage& meta();
-
-        int reactionsCount()
-        {
-            return _reactionBlocks.size();
-        }
 
         // 'neu' means 'new' in German
         virtual BaseReaction* neu() = 0;
@@ -194,6 +190,11 @@ namespace indigo
         int sideNext(int side, int index)
         {
             return _nextElement(side, index);
+        }
+
+        virtual int reactionsCount()
+        {
+            return _reactionBlocks.size();
         }
 
         virtual int reactionBegin()
@@ -300,6 +301,7 @@ namespace indigo
         // poor man's dynamic casting
         virtual Reaction& asReaction();
         virtual QueryReaction& asQueryReaction();
+        virtual PathwayReaction& asPathwayReaction();
         virtual bool isQueryReaction();
         virtual bool isPathwayReaction();
 
@@ -389,6 +391,7 @@ namespace indigo
         bool isRetrosynthetic = false;
 
         virtual void _clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings);
+        virtual void _cloneSub(BaseReaction& other);
     };
 
 } // namespace indigo

@@ -21,6 +21,7 @@
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "reaction/query_reaction.h"
+#include "reaction/pathway_reaction.h"
 #include "reaction/reaction.h"
 #include "render_cdxml.h"
 
@@ -469,6 +470,8 @@ CEXPORT int indigoRender(int object, int output)
         {
             if (obj.getBaseReaction().isQueryReaction())
                 rp.rxn.reset(new QueryReaction());
+            else if (obj.getBaseReaction().isPathwayReaction())
+                rp.rxn.reset(new PathwayReaction());
             else
                 rp.rxn.reset(new Reaction());
             rp.rxn->clone(self.getObject(object).getBaseReaction(), 0, 0, 0);

@@ -41,10 +41,19 @@ namespace indigo
     class ReactionMultistepDetector
     {
     public:
+        enum class ReactionType
+        {
+            ESimpleReaction,
+            EMutistepReaction,
+            EPathwayReaction
+        };
+
         ReactionMultistepDetector(BaseMolecule& mol);
         ~ReactionMultistepDetector();
-        void detectReaction();
+        ReactionType detectReaction();
         void constructMultipleArrowReaction(BaseReaction& rxn);
+        void constructSimpleArrowReaction(BaseReaction& rxn);
+
         void constructPathwayReaction(PathwayReaction& rxn);
 
         typedef std::pair<float, int> FLOAT_INT_PAIR;
@@ -56,8 +65,8 @@ namespace indigo
 
     private:
         void createSummBlocks();
-        void detectArrows();
-        void detectMultitailArrows();
+        bool detectArrows();
+        bool detectMultitailArrows();
 
         bool findPlusNeighbours(const Vec2f& plus_pos, const FLOAT_INT_PAIRS& mol_tops, const FLOAT_INT_PAIRS& mol_bottoms, const FLOAT_INT_PAIRS& mol_lefts,
                                 const FLOAT_INT_PAIRS& mol_rights, std::pair<int, int>& connection);

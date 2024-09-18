@@ -23,6 +23,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/properties_map.h"
 #include "reaction/reaction.h"
+#include "reaction/pathway_reaction.h"
 
 #include "indigo_internal.h"
 
@@ -223,6 +224,11 @@ MonomersProperties& IndigoObject::getMonomersProperties()
 Reaction& IndigoObject::getReaction()
 {
     throw IndigoError("%s is not a reaction", debugInfo());
+}
+
+PathwayReaction& IndigoObject::getPathwayReaction()
+{
+    throw IndigoError("%s is not a pathway reaction", debugInfo());
 }
 
 BaseReaction& IndigoObject::getBaseReaction()

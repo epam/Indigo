@@ -308,8 +308,15 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
                             std::unique_ptr<BaseReaction> reaction;
                             if (is_pathway)
                             {
-                                reaction = std::make_unique<PathwayReaction>();
-                                loader.loadReaction(*reaction);
+                                auto pwr = std::make_unique<PathwayReaction>();
+                                loader.loadReaction(*pwr);
+                                if (pwr->reactionsCount() == 0) // something went wrong
+                                {
+                                    reaction = std::make_unique<Reaction>();
+                                    reaction->clone(*pwr);
+                                }
+                                else
+                                    reaction = std::move(pwr);
                             }
                             else if (query)
                             {

@@ -57,6 +57,7 @@ namespace indigo
     class BaseReaction;
     class QueryReaction;
     class Reaction;
+    class PathwayReaction;
     class Output;
     class Scanner;
     class SdfLoader;
@@ -190,6 +191,7 @@ public:
     virtual BaseReaction& getBaseReaction();
     virtual QueryReaction& getQueryReaction();
     virtual Reaction& getReaction();
+    virtual PathwayReaction& getPathwayReaction();
 
     virtual IndigoObject* clone();
 
