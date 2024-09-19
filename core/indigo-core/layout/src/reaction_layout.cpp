@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+#include <functional>
 #include <numeric>
 #include <stdio.h>
-#include <functional>
 
 #include "layout/molecule_layout.h"
 #include "layout/reaction_layout.h"
