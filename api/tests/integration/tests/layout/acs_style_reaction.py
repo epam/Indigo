@@ -1,4 +1,4 @@
-import errno
+import difflib
 import os
 import sys
 
@@ -7,7 +7,12 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import Indigo, joinPathPy, reactionLayoutDiff
+from env_indigo import Indigo, joinPathPy, reactionLayoutDiff  # noqa
+
+
+def find_diff(a, b):
+    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
+
 
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
@@ -47,3 +52,19 @@ res = reactionLayoutDiff(
     update_format="ket",
 )
 print("  Result: {}".format(res))
+
+print("\n*** 2389 wrong margin ***")
+rxn = indigo.loadReaction("CN.CO>CC.CC>CF.CP")
+rxn.layout()
+filename = "acs_issue_2389.ket"
+with open(os.path.join(ref, filename), "w") as file:
+    file.write(rxn.json())
+with open(os.path.join(ref, filename), "r") as file:
+    ket_ref = file.read()
+ket = rxn.json()
+diff = find_diff(ket_ref, ket)
+if not diff:
+    print(filename + ".ket:SUCCEED")
+else:
+    print(filename + ".ket:FAILED")
+    print(diff)

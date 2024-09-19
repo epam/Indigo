@@ -95,7 +95,7 @@ namespace indigo
         BIOVIA_STEREO_DOWN = 6,
     };
 
-    enum layout_orientation_value
+    enum LAYOUT_ORIENTATION
     {
         UNCPECIFIED,
         HORIZONTAL,
