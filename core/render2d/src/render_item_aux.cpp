@@ -263,6 +263,7 @@ void RenderItemAuxiliary::_drawArrow(const KETReactionArrow& ar)
 
 void RenderItemAuxiliary::_drawArrow(const KETReactionMultitailArrow& ar)
 {
+    _rc.setLineWidth(_settings.bondLineWidth);
     const float radius = KETReactionMultitailArrow::TAIL_ARC_RADIUS;
     // In order to avoid a slight gap, that becomes apparent with the highest zoom.
     const float gap = .01f;

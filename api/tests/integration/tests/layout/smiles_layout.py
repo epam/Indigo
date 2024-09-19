@@ -31,8 +31,8 @@ for filename in files:
     rea.layout()
     ket = rea.json()
 
-    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #     file.write(ket)
+    with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+        file.write(ket)
 
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
         ket_ref = file.read()
