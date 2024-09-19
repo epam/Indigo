@@ -17,6 +17,7 @@
  ***************************************************************************/
 #include <numeric>
 #include <stdio.h>
+#include <functional>
 
 #include "layout/molecule_layout.h"
 #include "layout/reaction_layout.h"
@@ -26,11 +27,20 @@
 #include "reaction/reaction.h"
 #include "reaction/reaction_multistep_detector.h"
 
+using namespace std::placeholders;
 using namespace indigo;
 
 ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
-    : bond_length(MoleculeLayout::DEFAULT_BOND_LENGTH), plus_interval_factor(1), arrow_interval_factor(2), preserve_molecule_layout(false), _r(r),
-      _smart_layout(smart_layout), horizontal_interval_factor(DEFAULT_HOR_INTERVAL_FACTOR), atom_label_width(1.3f), layout_orientation(UNCPECIFIED),
+    : bond_length(LayoutOptions::DEFAULT_BOND_LENGTH), default_plus_size(1), default_arrow_size(2), preserve_molecule_layout(false), _r(r),
+      _smart_layout(smart_layout), reaction_margin_size(DEFAULT_HOR_INTERVAL_FACTOR), atom_label_margin(1.3f), layout_orientation(UNCPECIFIED),
+      max_iterations(0)
+{
+}
+
+ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout, const LayoutOptions& options)
+    : bond_length(LayoutOptions::DEFAULT_BOND_LENGTH), default_plus_size(LayoutOptions::DEFAULT_PLUS_SIZE),
+      default_arrow_size(LayoutOptions::DEFAULT_BOND_LENGTH * 2), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout),
+      reaction_margin_size(options.getMarginSizeInAngstroms()), atom_label_margin(LayoutOptions::DEFAULT_BOND_LENGTH / 2), layout_orientation(UNCPECIFIED),
       max_iterations(0)
 {
 }
@@ -122,28 +132,27 @@ void ReactionLayout::_updateMetadata()
     for (const auto& plus_offset : pluses)
         _r.meta().addMetaObject(new KETReactionPlus(plus_offset));
 
+    // calculate arrow size and position
     Vec2f arrow_head(0, 0);
     Vec2f arrow_tail(0, 0);
-
-    constexpr float shift = 1.0f;
     if (_r.productsCount() == 0)
     {
-        arrow_tail.x = react_box.right() + shift;
+        arrow_tail.x = react_box.right() + reaction_margin_size + atom_label_margin;
         arrow_tail.y = react_box.middleY();
-        arrow_head.x = arrow_tail.x + shift;
+        arrow_head.x = arrow_tail.x + default_arrow_size + atom_label_margin;
         arrow_head.y = arrow_tail.y;
     }
     else if (_r.reactantsCount() == 0)
     {
-        arrow_head.x = product_box.left() - shift;
+        arrow_head.x = product_box.left() - reaction_margin_size - atom_label_margin;
         arrow_head.y = product_box.middleY();
-        arrow_tail.x = arrow_head.x - shift;
+        arrow_tail.x = arrow_head.x - default_arrow_size - atom_label_margin;
         arrow_tail.y = arrow_head.y;
     }
     else
     {
-        const float ptab = first_single_product ? 2.0f : 1.0f;
-        const float rtab = last_single_reactant ? 2.0f : 1.0f;
+        const float ptab = /*first_single_product ? reaction_margin_size * 2 :*/ reaction_margin_size + atom_label_margin;
+        const float rtab = /*last_single_reactant ? reaction_margin_size * 2 :*/ reaction_margin_size + atom_label_margin;
 
         arrow_head.y = product_box.middleY();
         arrow_tail.y = react_box.middleY();
@@ -231,9 +240,7 @@ void ReactionLayout::make()
     if (arrows_count > 1)
         return; // not implemented yet
 
-    const auto kHalfBondLength = bond_length / 2;
-    const auto kDoubleBondLength = bond_length * 2;
-    // update layout of molecules, if needed
+    //  update layout of molecules, if needed
     if (!preserve_molecule_layout)
     {
         for (int i = _r.begin(); i < _r.end(); i = _r.next(i))
@@ -248,62 +255,66 @@ void ReactionLayout::make()
 
     // layout molecules in a row with the intervals specified
     Metalayout::LayoutLine& line = _ml.newLine();
-    for (int i = _r.reactantBegin(); i < _r.reactantEnd(); i = _r.reactantNext(i))
-    {
-        bool single_atom = _getMol(i).vertexCount() == 1;
-        if (i != _r.reactantBegin())
-            _pushSpace(line, plus_interval_factor);
-        _pushMol(line, i);
-    }
+    auto processReactionElements = [this, &line](int begin, int end, std::function<int(BaseReaction&, int)> next) {
+        for (int i = begin; i < end; i = next(_r, i))
+        {
+            bool single_atom = _getMol(i).vertexCount() == 1;
+            if (i != begin)
+            {
+                _pushSpace(line, reaction_margin_size);
+                _pushSpace(line, default_plus_size);
+            }
+            _pushMol(line, i);
+        }
+    };
+
+    processReactionElements(_r.reactantBegin(), _r.reactantEnd(), &BaseReaction::reactantNext);
 
     if (_r.catalystCount())
     {
+
+        _pushSpace(line, reaction_margin_size);
+        _pushSpace(line, reaction_margin_size);
         for (int i = _r.catalystBegin(); i < _r.catalystEnd(); i = _r.catalystNext(i))
         {
             auto& mol = _getMol(i);
             Rect2f bbox;
-            mol.getBoundingBox(bbox, Vec2f(kDoubleBondLength, kDoubleBondLength));
-            _pushSpace(line, bbox.width() / 2);
+            mol.getBoundingBox(bbox, Vec2f(bond_length, bond_length));
+            if (i != _r.catalystBegin())
+                _pushSpace(line, reaction_margin_size);
             _pushMol(line, i, true);
         }
-        _pushSpace(line, bond_length);
+        _pushSpace(line, reaction_margin_size);
+        _pushSpace(line, reaction_margin_size);
     }
     else
-        _pushSpace(line, arrow_interval_factor);
+        _pushSpace(line, default_arrow_size + reaction_margin_size * 2);
 
-    _pushSpace(line, bond_length);
-
-    for (int i = _r.productBegin(); i < _r.productEnd(); i = _r.productNext(i))
-    {
-        bool single_atom = _getMol(i).vertexCount() == 1;
-        if (i != _r.productBegin())
-            _pushSpace(line, plus_interval_factor);
-        _pushMol(line, i);
-    }
+    processReactionElements(_r.productBegin(), _r.productEnd(), &BaseReaction::productNext);
 
     _ml.bondLength = bond_length;
-    _ml.horizontalIntervalFactor = horizontal_interval_factor;
+    _ml.reactionComponentMarginSize = reaction_margin_size;
     _ml.cb_getMol = cb_getMol;
     _ml.cb_process = cb_process;
     _ml.context = this;
     _ml.prepare();
-    _ml.scaleSz();
+    _ml.scaleMoleculesSize();
     _ml.calcContentSize();
     _ml.process();
     _updateMetadata();
 }
 
-void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_agent)
+void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_catalyst)
 {
     // Molecule label alligned to atom center by non-hydrogen
     // Hydrogen may be at left or at right H2O, PH3 - so add space before and after molecule
-    _pushSpace(line, atom_label_width);
+    _pushSpace(line, atom_label_margin);
     Metalayout::LayoutItem& item = line.items.push();
-    item.type = 0;
-    item.fragment = true;
+    item.type = Metalayout::LayoutItem::Type::EMolecule;
+    item.isMoleculeFragment = true;
     item.id = id;
     auto& mol = _getMol(id);
-    if (is_agent)
+    if (is_catalyst)
     {
         item.verticalAlign = Metalayout::LayoutItem::ItemVerticalAlign::ETop;
     }
@@ -312,14 +323,14 @@ void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_agen
     mol.getBoundingBox(bbox);
     item.min.copy(bbox.leftBottom());
     item.max.copy(bbox.rightTop());
-    _pushSpace(line, atom_label_width);
+    _pushSpace(line, atom_label_margin);
 }
 
 void ReactionLayout::_pushSpace(Metalayout::LayoutLine& line, float size)
 {
     Metalayout::LayoutItem& item = line.items.push();
-    item.type = 1;
-    item.fragment = false;
+    item.type = Metalayout::LayoutItem::Type::ESpace;
+    item.isMoleculeFragment = false;
     item.scaledSize.set(size, 0);
 }
 
@@ -335,12 +346,12 @@ BaseMolecule& ReactionLayout::cb_getMol(int id, void* context)
 
 void ReactionLayout::cb_process(Metalayout::LayoutItem& item, const Vec2f& pos, void* context)
 {
-    Vec2f pos2;
-    pos2.copy(pos);
-    pos2.y -= item.scaledSize.y / 2;
-    if (item.fragment)
+    if (item.isMoleculeFragment)
     {
-        ReactionLayout* layout = (ReactionLayout*)context;
+        Vec2f pos2;
+        pos2.copy(pos);
+        pos2.y -= item.scaledSize.y / 2;
+        auto layout = (ReactionLayout*)context;
         layout->_ml.adjustMol(layout->_getMol(item.id), item.min, pos2);
     }
 }

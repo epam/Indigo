@@ -656,7 +656,7 @@ namespace indigo
         enum class MonomerType
         {
             Monomer,
-            VarianMonomer,
+            AmbiguousMonomer,
         };
 
         KetBaseMonomer(MonomerType monomer_type, const std::string& id, const std::string& alias, const std::string& template_id)
@@ -980,7 +980,7 @@ namespace indigo
         inline static std::string ref_prefix = "ambiguousMonomer-";
 
         KetVariantMonomer(const std::string& id, const std::string& alias, const std::string& template_id)
-            : KetBaseMonomer(MonomerType::VarianMonomer, id, alias, template_id)
+            : KetBaseMonomer(MonomerType::AmbiguousMonomer, id, alias, template_id)
         {
             _ref = ref_prefix + _id;
         };

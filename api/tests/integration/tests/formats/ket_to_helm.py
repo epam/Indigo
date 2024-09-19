@@ -49,6 +49,8 @@ helm_data = {
     "rna_variants": "RNA1{R(A,G)P.R(G,T)P.R(A,C,G,T)}$$$$V2.0",
     "helm_monomer_molecule": "PEPTIDE1{A}|PEPTIDE2{G}|CHEM1{[C(N[*:2])=C[*:1] |$;;_R2;;_R1$|]}$CHEM1,PEPTIDE1,1:R2-1:R1|PEPTIDE2,CHEM1,1:R2-1:R1$$$V2.0",
     "helm_fractional_ratio": "PEPTIDE1{(A:1.5+C:.1+G:3.)}$$$$V2.0",
+    "helm_smiles": "PEPTIDE1{G.[[*:1]NC(C(=O)[*:2])C=O |$_R1;;;;;_R2;;$|].C}|PEPTIDE2{G.[[*:1]NC(C(=O)[*:2])C=O |$_R1;;;;;_R2;;$|].C}$$$$V2.0",
+    "helm_smiles_sugar": "RNA1{[C(C(CO[*:1])O[*:2])[*:3] |$;;;;_R1;;_R2;_R3$|](A)P}$$$$V2.0",
 }
 
 for filename in sorted(helm_data.keys()):

@@ -27,6 +27,7 @@
 #include "base_cpp/os_sync_wrapper.h"
 #include "base_cpp/red_black.h"
 
+#include <cstdint>
 #include <sstream>
 
 using namespace indigo;
@@ -88,6 +89,22 @@ using namespace indigo;
         value.copy(option);                                                                                                                                    \
         value.push(0);                                                                                                                                         \
     }
+
+#define SET_POSITIVE_FLOAT_OPTION(option, error)                                                                                                               \
+    [](float value) {                                                                                                                                          \
+        if (value <= 0.0f)                                                                                                                                     \
+            throw IndigoError(error);                                                                                                                          \
+        option = value;                                                                                                                                        \
+    },                                                                                                                                                         \
+        [](float& value) { value = option; }
+
+#define SET_POSITIVE_INT_OPTION(option, error)                                                                                                                 \
+    [](int32_t value) {                                                                                                                                        \
+        if (value <= 0)                                                                                                                                        \
+            throw IndigoError(error);                                                                                                                          \
+        option = value;                                                                                                                                        \
+    },                                                                                                                                                         \
+        [](int32_t& value) { value = option; }
 
 class DLLEXPORT IndigoOptionManager
 {

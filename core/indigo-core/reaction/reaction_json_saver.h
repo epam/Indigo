@@ -23,6 +23,7 @@
 #include <rapidjson/writer.h>
 
 #include "base_cpp/exception.h"
+#include "layout/metalayout.h"
 #include "molecule/ket_commons.h"
 
 namespace indigo
@@ -44,6 +45,7 @@ namespace indigo
         bool add_stereo_desc;
         bool pretty_json;
         bool use_native_precision;
+        indigo::LayoutOptions layout_options;
         DECL_ERROR;
 
     protected:

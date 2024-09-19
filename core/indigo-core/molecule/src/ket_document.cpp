@@ -22,6 +22,10 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#endif
+
 using namespace indigo;
 
 IMPL_ERROR(KetDocument, "Ket Document")
@@ -330,7 +334,7 @@ MonomerClass KetDocument::getMonomerClass(const KetBaseMonomer& monomer) const
 {
     if (monomer.monomerType() == KetBaseMonomer::MonomerType::Monomer)
         return _templates.at(monomer.templateId()).monomerClass();
-    else if (monomer.monomerType() == KetBaseMonomer::MonomerType::VarianMonomer)
+    else if (monomer.monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
         return _variant_templates.at(monomer.templateId()).monomerClass();
     else
         throw Error("Unknonwn monomer type");
@@ -489,3 +493,7 @@ const std::string& KetDocument::monomerIdByRef(const std::string& ref)
         throw Error("Monomer with ref %s not found", ref.c_str());
     return it->second;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
