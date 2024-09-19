@@ -139,7 +139,6 @@ void ReactionLayout::_updateMetadata()
     // calculate arrow size and position
     Vec2f arrow_head(0, 0);
     Vec2f arrow_tail(0, 0);
-    printf("reaction_margin_size=%f\n", reaction_margin_size);
     if (_r.productsCount() == 0)
     {
         arrow_tail.x = react_box.right() + reaction_margin_size + atom_label_margin;
