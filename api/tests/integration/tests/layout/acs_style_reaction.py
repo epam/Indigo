@@ -26,8 +26,8 @@ rxn = indigo.loadReactionFromFile(os.path.join(root, "acs_before_layout.ket"))
 indigo.setOption("reaction-component-margin-size", "0.0")
 rxn.layout()
 
-with open(os.path.join(ref, "acs_after_layout_zero_margin.ket"), "w") as file:
-    file.write(rxn.json())
+# with open(os.path.join(ref, "acs_after_layout_zero_margin.ket"), "w") as file:
+#     file.write(rxn.json())
 
 res = reactionLayoutDiff(
     indigo,
@@ -44,8 +44,8 @@ indigo.setOption("bond-length", "40.0")
 indigo.setOption("reaction-component-margin-size", "20.0")
 rxn.layout()
 
-with open(os.path.join(ref, "acs_after_layout_default_margin.ket"), "w") as file:
-    file.write(rxn.json())
+# with open(os.path.join(ref, "acs_after_layout_default_margin.ket"), "w") as file:
+#     file.write(rxn.json())
 
 res = reactionLayoutDiff(
     indigo,
