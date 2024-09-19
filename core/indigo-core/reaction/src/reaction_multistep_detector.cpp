@@ -656,7 +656,10 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
             {
                 auto r_it = copied_components.find(ridx);
                 if (r_it != copied_components.end())
+                {
+                    std::cout << "reaction:" << i << " reactant:" << r_it->second << std::endl;
                     rb.reactants.push(r_it->second);
+                }
             }
 
             // add products
@@ -665,7 +668,10 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
             {
                 auto p_it = copied_components.find(pidx);
                 if (p_it != copied_components.end())
+                {
+                    std::cout << "reaction:" << i << " product:" << p_it->second << std::endl;
                     rb.products.push(p_it->second);
+                }
             }
         }
     }
