@@ -186,6 +186,12 @@ namespace indigo
                 case INTERMEDIATE:
                     reaction.addIntermediateCopy(*_molecules[kvp.first], 0, 0);
                     break;
+                case CATALYST:
+					reaction.addCatalystCopy(*_molecules[kvp.first], 0, 0);
+					break;
+                case UNDEFINED:
+                    reaction.addUndefinedCopy(*_molecules[kvp.first], 0, 0);
+                    break;
                 }
             }
         }

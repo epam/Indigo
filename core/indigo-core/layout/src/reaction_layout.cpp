@@ -39,7 +39,8 @@ void ReactionLayout::fixLayout()
 {
     int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
     int simple_count = _r.meta().getMetaCount(KETSimpleObject::CID) + _r.meta().getMetaCount(KETTextObject::CID);
-    if (arrows_count > 1 || simple_count)
+    int multi_count = _r.meta().getMetaCount(KETReactionMultitailArrow::CID);
+    if (arrows_count > 1 || simple_count || multi_count)
         return;
 
     Rect2f bb;
@@ -209,7 +210,7 @@ void ReactionLayout::makePathwayFromSimple()
     PathwayReactionBuilder prb;
     auto pwr = prb.buildPathwayReaction(reactions);
     _r.meta().resetReactionData();
-    pwr->meta().clone(_r.meta());
+    pwr->meta().append(_r.meta());
     pwr->copyToReaction(_r);
 }
 
