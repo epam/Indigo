@@ -621,65 +621,51 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
     for (int i = 0; i < (int)_component_summ_blocks.size(); ++i)
     {
         auto& csb = _component_summ_blocks[i];
-        auto& rb = rxn.addReactionBlock();
-        if (csb.indexes.size() && csb.role != BaseReaction::PRODUCT)
+        for (auto idx : csb.indexes)
         {
-            for (auto idx : csb.indexes)
-            {
-                auto& rc = _reaction_components[idx];
-                int mol_idx = -1;
-                auto it_copied = copied_components.find(idx);
-                if (it_copied != copied_components.end())
-                    mol_idx = it_copied->second;
+            auto& rc = _reaction_components[idx];
+            if (!copied_components.count(idx))
                 switch (csb.role)
                 {
                 case BaseReaction::INTERMEDIATE:
-                    if (mol_idx < 0)
-                    {
-                        mol_idx = rxn.addIntermediateCopy(*rc.molecule, 0, 0);
-                        copied_components.emplace(idx, mol_idx);
-                    }
-                    rb.reactants.push(mol_idx);
+                    copied_components.emplace(idx, rxn.addIntermediateCopy(*rc.molecule, 0, 0));
                     break;
                 case BaseReaction::REACTANT:
-                    if (mol_idx < 0)
-                    {
-                        mol_idx = rxn.addReactantCopy(*rc.molecule, 0, 0);
-                        copied_components.emplace(idx, mol_idx);
-                    }
-                    rb.reactants.push(mol_idx);
+                    copied_components.emplace(idx, rxn.addReactantCopy(*rc.molecule, 0, 0));
+                    break;
+                case BaseReaction::PRODUCT:
+                    copied_components.emplace(idx, rxn.addProductCopy(*rc.molecule, 0, 0));
                     break;
                 case BaseReaction::UNDEFINED:
                     copied_components.emplace(idx, rxn.addUndefinedCopy(*rc.molecule, 0, 0));
                     break;
                 default:
-                    // skip products here
                     break;
                 }
+        }
+    }
+
+    for (int i = 0; i < (int)_component_summ_blocks.size(); ++i)
+    {
+        auto& csb = _component_summ_blocks[i];
+        for (auto csb_index : csb.arrows_to)
+        {
+            auto& rb = rxn.addReactionBlock();
+            // add reactants
+            for (auto ridx : csb.indexes)
+            {
+                auto r_it = copied_components.find(ridx);
+                if (r_it != copied_components.end())
+                    rb.reactants.push(r_it->second);
             }
 
-            for (auto csb_index : csb.arrows_to)
+            // add products
+            auto& csb_product = _component_summ_blocks[csb_index];
+            for (auto pidx : csb_product.indexes)
             {
-                auto& csb_product = _component_summ_blocks[csb_index];
-                for (auto pidx : csb_product.indexes)
-                {
-                    auto& rc = _reaction_components[pidx];
-                    auto it_copied = copied_components.find(pidx);
-                    int mol_idx = -1;
-                    if (it_copied != copied_components.end())
-                    {
-                        mol_idx = it_copied->second;
-                    }
-                    else
-                    {
-                        if (csb_product.role == BaseReaction::PRODUCT)
-                            mol_idx = rxn.addProductCopy(*rc.molecule, 0, 0);
-                        else if (csb_product.role == BaseReaction::INTERMEDIATE)
-                            mol_idx = rxn.addIntermediateCopy(*rc.molecule, 0, 0);
-                        copied_components.emplace(pidx, mol_idx);
-                    }
-                    rb.products.push(mol_idx);
-                }
+                auto p_it = copied_components.find(pidx);
+                if (p_it != copied_components.end())
+                    rb.products.push(p_it->second);
             }
         }
     }

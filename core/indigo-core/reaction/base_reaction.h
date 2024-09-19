@@ -199,7 +199,14 @@ namespace indigo
 
         virtual int reactionBegin()
         {
-            return 0;
+            int i = 0;
+            for (; i < _reactionBlocks.size(); ++i)
+            {
+                auto& rb = _reactionBlocks[i];
+                if (rb.products.size() || rb.reactants.size())
+                    break;
+            }
+            return i;
         }
 
         virtual int reactionEnd()
