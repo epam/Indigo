@@ -22,6 +22,10 @@
 #include "layout/metalayout.h"
 #include "reaction/base_reaction.h"
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
+
 namespace indigo
 {
 
@@ -45,15 +49,20 @@ namespace indigo
         void fixLayout();
         void processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_box, int side);
 
-        const float bond_length;
-        const float atom_label_margin;
-        const float default_plus_size;
-        const float default_arrow_size;
-        const float reaction_margin_size;
-        bool preserve_molecule_layout = false;
-        int max_iterations = 0;
-        bool _smart_layout = false;
-        layout_orientation_value layout_orientation = UNCPECIFIED;
+        void setMaxIterations(int count)
+        {
+            max_iterations = count;
+        };
+
+        void setLayoutOrientation(LAYOUT_ORIENTATION orientation)
+        {
+            layout_orientation = orientation;
+        };
+
+        void setPreserveMoleculeLayout(bool preserve)
+        {
+            preserve_molecule_layout = preserve;
+        };
 
     private:
         void _makePathway();
@@ -67,10 +76,24 @@ namespace indigo
 
         ReactionLayout(const ReactionLayout& r); // no implicit copy
 
+        const float bond_length;
+        const float atom_label_margin;
+        const float default_plus_size;
+        const float default_arrow_size;
+        const float reaction_margin_size;
+        bool preserve_molecule_layout = false;
+        int max_iterations = 0;
+        bool _smart_layout = false;
+        LAYOUT_ORIENTATION layout_orientation = UNCPECIFIED;
+
         BaseReaction& _r;
         Metalayout _ml;
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

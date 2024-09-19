@@ -27,6 +27,10 @@
 #include "reaction/reaction.h"
 #include "reaction/reaction_multistep_detector.h"
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
+
 using namespace std::placeholders;
 using namespace indigo;
 
@@ -258,11 +262,12 @@ void ReactionLayout::make()
     auto processReactionElements = [this, &line](int begin, int end, std::function<int(BaseReaction&, int)> next) {
         for (int i = begin; i < end; i = next(_r, i))
         {
-            bool single_atom = _getMol(i).vertexCount() == 1;
+            // bool single_atom = _getMol(i).vertexCount() == 1;
             if (i != begin)
             {
                 _pushSpace(line, reaction_margin_size);
                 _pushSpace(line, default_plus_size);
+                _pushSpace(line, reaction_margin_size);
             }
             _pushMol(line, i);
         }
@@ -355,3 +360,7 @@ void ReactionLayout::cb_process(Metalayout::LayoutItem& item, const Vec2f& pos, 
         layout->_ml.adjustMol(layout->_getMol(item.id), item.min, pos2);
     }
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
