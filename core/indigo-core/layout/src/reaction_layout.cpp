@@ -25,6 +25,10 @@
 #include <numeric>
 #include <stdio.h>
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
+
 using namespace std::placeholders;
 using namespace indigo;
 
@@ -135,6 +139,7 @@ void ReactionLayout::_updateMetadata()
     // calculate arrow size and position
     Vec2f arrow_head(0, 0);
     Vec2f arrow_tail(0, 0);
+    printf("reaction_margin_size=%f\n", reaction_margin_size);
     if (_r.productsCount() == 0)
     {
         arrow_tail.x = react_box.right() + reaction_margin_size + atom_label_margin;
@@ -226,11 +231,12 @@ void ReactionLayout::make()
     auto processReactionElements = [this, &line](int begin, int end, std::function<int(BaseReaction&, int)> next) {
         for (int i = begin; i < end; i = next(_r, i))
         {
-            bool single_atom = _getMol(i).vertexCount() == 1;
+            // bool single_atom = _getMol(i).vertexCount() == 1;
             if (i != begin)
             {
                 _pushSpace(line, reaction_margin_size);
                 _pushSpace(line, default_plus_size);
+                _pushSpace(line, reaction_margin_size);
             }
             _pushMol(line, i);
         }
@@ -323,3 +329,7 @@ void ReactionLayout::cb_process(Metalayout::LayoutItem& item, const Vec2f& pos, 
         layout->_ml.adjustMol(layout->_getMol(item.id), item.min, pos2);
     }
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

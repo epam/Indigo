@@ -167,7 +167,7 @@ namespace indigo
         bool _flipped; // component was flipped after attaching
 
         int max_iterations;
-        layout_orientation_value layout_orientation;
+        LAYOUT_ORIENTATION layout_orientation;
 
         bool preserve_existing_layout;
 

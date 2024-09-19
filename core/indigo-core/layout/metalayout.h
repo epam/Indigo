@@ -233,7 +233,7 @@ namespace indigo
     {
         // FIXME: The value is 1.6 instead of 1.0 due to backward compatibility, needs to be refactored
         static constexpr float DEFAULT_BOND_LENGTH = 1.6f; // default length of inter-chemical bonds
-        static constexpr float DEFAULT_PLUS_SIZE = 1.0f;
+        static constexpr float DEFAULT_PLUS_SIZE = DEFAULT_BOND_LENGTH / 2;
 
         float bondLength{DEFAULT_BOND_LENGTH};
         UnitsOfMeasure::TYPE bondLengthUnit{UnitsOfMeasure::TYPE::PX};

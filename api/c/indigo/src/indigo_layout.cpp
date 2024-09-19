@@ -59,7 +59,7 @@ CEXPORT int indigoLayout(int object)
 
                 ml.max_iterations = self.layout_max_iterations;
                 ml.bond_length = LayoutOptions::DEFAULT_BOND_LENGTH;
-                ml.layout_orientation = (layout_orientation_value)self.layout_orientation;
+                ml.layout_orientation = (LAYOUT_ORIENTATION)self.layout_orientation;
                 if (self.layout_preserve_existing || mol->hasAtropoStereoBonds())
                     ml.respect_existing_layout = true;
 
@@ -106,13 +106,13 @@ CEXPORT int indigoLayout(int object)
             if (!no_layout)
             {
                 ReactionLayout rl(rxn, self.smart_layout, self.layout_options);
-                rl.max_iterations = self.layout_max_iterations;
-                rl.layout_orientation = (layout_orientation_value)self.layout_orientation;
+                rl.setMaxIterations(self.layout_max_iterations);
+                rl.setLayoutOrientation((LAYOUT_ORIENTATION)self.layout_orientation);
                 // TODO::ACS Why removed?
                 // rl.bond_length = LayoutOptions::DEFAULT_BOND_LENGTH;
                 // rl.reaction_margin_size = self.layout_horintervalfactor;
                 if (self.layout_preserve_existing)
-                    rl.preserve_molecule_layout = true;
+                    rl.setPreserveMoleculeLayout(true);
                 rl.make();
                 try
                 {
