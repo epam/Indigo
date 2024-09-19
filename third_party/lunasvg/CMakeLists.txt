@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.15)
 
 set(LUNASVG_VERSION_MAJOR 3)
 set(LUNASVG_VERSION_MINOR 0)
