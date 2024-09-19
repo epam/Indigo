@@ -301,7 +301,7 @@ namespace indigo
 
         // Calculate the cross products
         float cross1 = Vec2f::cross(ray, segment);
-        if (abs(cross1) < 1e-6)
+        if (fabs(cross1) < 1e-6)
         {
             // Parallel segments
             return false;
