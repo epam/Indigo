@@ -343,11 +343,11 @@ bool ReactionMultistepDetector::detectMultitailArrows()
 
             for (int j = 0; j < tails.size(); ++j)
             {
-                auto& arr_begin = tails[j];
+                auto arr_begin = tails[j];
                 auto arr_end = arr_begin;
-                arr_end.x = multi.getSpineBegin().x;
+                arr_begin.x = multi.getSpineBegin().x;
 
-                if (csb.bbox.rayIntersectsRect(arr_begin, arr_end))
+                if (csb.bbox.rayIntersectsRect(arr_end, arr_begin))
                 {
                     auto dist = csb.bbox.pointDistance(arr_begin);
                     if (min_dist_reactants[j].first < 0 || dist < min_dist_reactants[j].first)
@@ -359,7 +359,7 @@ bool ReactionMultistepDetector::detectMultitailArrows()
             }
         }
 
-        for (auto& [min_dist, idx_cs_min_prod] : min_dist_reactants)
+        for (auto& [min_dist, idx_cs_min_rc] : min_dist_reactants)
         {
             if (min_dist < 0)
                 bad_pathway = true;
