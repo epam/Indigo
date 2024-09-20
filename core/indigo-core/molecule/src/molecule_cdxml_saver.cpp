@@ -29,6 +29,7 @@
 #include "molecule/molecule_cdxml_loader.h"
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
+#include "utils/image_not_supported.h"
 
 #include <codecvt>
 #include <fstream>
@@ -1334,7 +1335,12 @@ void MoleculeCdxmlSaver::addImage(int id, const KETImage& image)
     out.printf("%f %f %f %f", _bond_length * bbox.left(), -_bond_length * bbox.bottom(), _bond_length * bbox.right(), -_bond_length * bbox.top());
     buf.push(0);
     attrs.insert("BoundingBox", buf.ptr());
-    attrs.insert("PNG", stringToHex(image.getData()));
+    if (image.getFormat() == KETImage::EKETPNG)
+        attrs.insert("PNG", stringToHex(image.getData()));
+    else if (image.getFormat() == KETImage::EKETSVG)
+        attrs.insert("PNG", IMAGE_NOT_SUPPORTED_PNG);
+    else
+        throw Error("MoleculeCdxmlSaver::addImage: Unknown image format");
     emb_object.readString("embeddedobject", true);
     addCustomElement(id, emb_object, attrs);
 }
