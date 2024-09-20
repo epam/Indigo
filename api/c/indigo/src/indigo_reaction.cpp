@@ -64,7 +64,7 @@ const char* IndigoBaseReaction::debugInfo() const
 // IndigoPathwayReaction
 //
 
-IndigoPathwayReaction::IndigoPathwayReaction() : IndigoBaseReaction(REACTION)
+IndigoPathwayReaction::IndigoPathwayReaction() : IndigoBaseReaction(PATHWAY_REACTION)
 {
     init();
 }
