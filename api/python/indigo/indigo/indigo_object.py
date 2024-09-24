@@ -508,6 +508,18 @@ class IndigoObject:
             IndigoLib.checkResult(self._lib().indigoIterateMolecules(self.id)),
         )
 
+    def iterateReactions(self):
+        """Reaction method iterates reactions
+
+        Returns:
+            IndigoObject: reaction iterator
+        """
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(self._lib().indigoIterateReactions(self.id)),
+        )
+
     def saveRxnfile(self, filename):
         """Reaction method saves the reaction into an RXN file
 

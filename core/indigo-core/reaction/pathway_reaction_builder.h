@@ -48,6 +48,7 @@ namespace indigo
         PathwayReactionBuilder();
         ~PathwayReactionBuilder();
         std::unique_ptr<PathwayReaction> buildPathwayReaction(std::deque<Reaction>& reactions);
+        static void buildRootReaction(PathwayReaction& reaction);
         DECL_ERROR;
 
     private:
@@ -62,7 +63,7 @@ namespace indigo
         void buildInchiDescriptors(std::deque<Reaction>& reactions);
         void buildNodes(std::deque<Reaction>& reactions);
         auto findSuccessorReactions(int reactionIdx);
-        void buildReactions(std::deque<Reaction>& reactions);
+        void buildReactions();
 
         std::vector<ReactionInchiDescriptor> _reactionInchiDescriptors;
         std::unordered_map<std::string, std::map<int, int>> _reactantToReactions;

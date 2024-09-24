@@ -93,7 +93,7 @@ namespace indigo
                     for (int i = 0; i < simpleReaction.reactantIndexes.size(); ++i)
                     {
                         // check if it is a final reactant
-                        if (!reactionNode.successorReactants.find(i))
+                        if (!reactionNode.connectedReactants.find(i))
                         {
                             auto ridx = simpleReaction.reactantIndexes[i];
                             reactantsNoPrecursors.emplace_back(reaction, nodeIdx, ridx);

@@ -392,11 +392,15 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<
 
     name.copy(other.name);
     _meta.clone(other._meta);
-
     isRetrosynthetic = other.isRetrosynthetic;
+    _cloneSub(other);
 }
 
 void BaseReaction::_clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings)
+{
+}
+
+void BaseReaction::_cloneSub(BaseReaction& other)
 {
 }
 
@@ -410,7 +414,17 @@ QueryReaction& BaseReaction::asQueryReaction()
     throw Error("asQueryReaction(): not a QueryReaction");
 }
 
+PathwayReaction& BaseReaction::asPathwayReaction()
+{
+    throw Error("asPathwayReaction(): not a PathwayReaction");
+}
+
 bool BaseReaction::isQueryReaction()
+{
+    return false;
+}
+
+bool BaseReaction::isPathwayReaction()
 {
     return false;
 }

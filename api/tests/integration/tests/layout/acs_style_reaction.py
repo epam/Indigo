@@ -30,6 +30,10 @@ print("\n*** test zero margin ***")
 rxn = indigo.loadReactionFromFile(os.path.join(root, "acs_before_layout.ket"))
 indigo.setOption("reaction-component-margin-size", "0.0")
 rxn.layout()
+
+# with open(os.path.join(ref, "acs_after_layout_zero_margin.ket"), "w") as file:
+#     file.write(rxn.json())
+
 res = reactionLayoutDiff(
     indigo,
     rxn,
@@ -44,6 +48,10 @@ rxn = indigo.loadReactionFromFile(os.path.join(root, "acs_before_layout.ket"))
 indigo.setOption("bond-length", "40.0")
 indigo.setOption("reaction-component-margin-size", "20.0")
 rxn.layout()
+
+# with open(os.path.join(ref, "acs_after_layout_default_margin.ket"), "w") as file:
+#     file.write(rxn.json())
+
 res = reactionLayoutDiff(
     indigo,
     rxn,
@@ -57,8 +65,8 @@ print("\n*** 2389 wrong margin ***")
 rxn = indigo.loadReaction("CN.CO>CC.CC>CF.CP")
 rxn.layout()
 filename = "acs_issue_2389.ket"
-with open(os.path.join(ref, filename), "w") as file:
-    file.write(rxn.json())
+# with open(os.path.join(ref, filename), "w") as file:
+#     file.write(rxn.json())
 with open(os.path.join(ref, filename), "r") as file:
     ket_ref = file.read()
 ket = rxn.json()

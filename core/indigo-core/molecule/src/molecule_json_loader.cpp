@@ -784,7 +784,7 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
     }
 }
 
-void indigo::MoleculeJsonLoader::parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol)
+void MoleculeJsonLoader::parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol)
 {
     for (rapidjson::SizeType i = 0; i < highlight.Size(); ++i)
     {
@@ -1733,7 +1733,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     ml.layout_orientation = UNCPECIFIED;
     ml.updateSGroups();
     loadMetaObjects(_meta_objects, mol.meta());
-    int arrows_count = mol.meta().getMetaCount(KETReactionArrow::CID);
+    int arrows_count = mol.meta().getMetaCount(KETReactionArrow::CID) + mol.meta().getMetaCount(KETReactionMultitailArrow::CID);
     if (arrows_count && !load_arrows)
         throw Error("Not a molecule. Found %d arrows.", arrows_count);
 }

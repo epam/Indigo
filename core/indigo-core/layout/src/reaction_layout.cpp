@@ -15,15 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-
-#include "layout/reaction_layout.h"
-#include "layout/molecule_layout.h"
-#include "molecule/ket_commons.h"
-#include "molecule/molecule.h"
-#include "reaction/reaction.h"
 #include <functional>
 #include <numeric>
 #include <stdio.h>
+
+#include "layout/molecule_layout.h"
+#include "layout/reaction_layout.h"
+#include "molecule/ket_commons.h"
+#include "molecule/molecule.h"
+#include "reaction/pathway_reaction_builder.h"
+#include "reaction/reaction.h"
+#include "reaction/reaction_multistep_detector.h"
 
 #ifdef _MSC_VER
 #pragma warning(push, 4)
@@ -51,51 +53,49 @@ void ReactionLayout::fixLayout()
 {
     int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
     int simple_count = _r.meta().getMetaCount(KETSimpleObject::CID) + _r.meta().getMetaCount(KETTextObject::CID);
-    if (arrows_count > 1 || simple_count)
+    int multi_count = _r.meta().getMetaCount(KETReactionMultitailArrow::CID);
+    if (arrows_count > 1 || simple_count || multi_count)
         return;
 
-    Vec2f rmax{Vec2f::min_coord(), Vec2f::min_coord()}, pmin{Vec2f::max_coord(), Vec2f::max_coord()};
     Rect2f bb;
-    if (_r.isRetrosyntetic())
+    // Calculate rightTop of reactant bounding box
+    bool invalid_layout = false;
+    float cur_left = 0, cur_right = 0;
+    for (int i = _r.isRetrosyntetic() ? _r.productBegin() : _r.reactantBegin(); i != (_r.isRetrosyntetic() ? _r.productEnd() : _r.reactantEnd());
+         i = _r.isRetrosyntetic() ? _r.productNext(i) : _r.reactantNext(i))
     {
-        // Calculate rightTop of product bounding box
-        for (int i = _r.productBegin(); i != _r.productEnd(); i = _r.productNext(i))
+        _r.getBaseMolecule(i).getBoundingBox(bb);
+        if (i == 0 || (bb.left() > cur_left && bb.right() > cur_right))
         {
-            _r.getBaseMolecule(i).getBoundingBox(bb);
-            rmax.max(bb.rightTop());
+            cur_left = bb.left();
+            cur_right = bb.right();
         }
-
-        // Calculate leftBottom of reactant bounding box
-        for (int i = _r.reactantBegin(); i != _r.reactantEnd(); i = _r.reactantNext(i))
-        {
-            _r.getBaseMolecule(i).getBoundingBox(bb);
-            pmin.min(bb.leftBottom());
-        }
+        else
+            invalid_layout = true;
     }
-    else
+
+    // Calculate leftBottom of product bounding box
+    for (int i = _r.isRetrosyntetic() ? _r.reactantBegin() : _r.productBegin(); i != (_r.isRetrosyntetic() ? _r.reactantEnd() : _r.productEnd());
+         i = _r.isRetrosyntetic() ? _r.reactantNext(i) : _r.productNext(i))
     {
-        // Calculate rightTop of reactant bounding box
-        for (int i = _r.reactantBegin(); i != _r.reactantEnd(); i = _r.reactantNext(i))
+        _r.getBaseMolecule(i).getBoundingBox(bb);
+        if (bb.left() > cur_left && bb.right() > cur_right)
         {
-            _r.getBaseMolecule(i).getBoundingBox(bb);
-            rmax.max(bb.rightTop());
+            cur_left = bb.left();
+            cur_right = bb.right();
         }
-
-        // Calculate leftBottom of product bounding box
-        for (int i = _r.productBegin(); i != _r.productEnd(); i = _r.productNext(i))
-        {
-            _r.getBaseMolecule(i).getBoundingBox(bb);
-            pmin.min(bb.leftBottom());
-        }
+        else
+            invalid_layout = true;
     }
+
     // if left side of product bb at left of right side of reactant bb - fix layout
-    if (rmax.x > pmin.x)
+    if (invalid_layout)
     {
         ReactionLayout rl(_r, true);
         rl.preserve_molecule_layout = true;
         rl.make();
     }
-    else if (_r.meta().getMetaCount(KETReactionArrow::CID) == 0)
+    else if (_r.meta().getMetaCount(KETReactionArrow::CID) == 0 && _r.meta().getMetaCount(KETReactionMultitailArrow::CID) == 0)
         _updateMetadata();
 }
 
@@ -205,11 +205,43 @@ void ReactionLayout::processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_b
     }
 }
 
+void ReactionLayout::makePathwayFromSimple()
+{
+    std::deque<Reaction> reactions;
+    for (int i = 0; i < _r.reactionBlocksCount(); i++)
+    {
+        auto& rb = _r.reactionBlock(i);
+        if (rb.products.size() || rb.reactants.size())
+        {
+            auto& rc = reactions.emplace_back();
+            for (int j = 0; j < rb.reactants.size(); j++)
+                rc.addReactantCopy(_r.getBaseMolecule(rb.reactants[j]), 0, 0);
+            for (int j = 0; j < rb.products.size(); j++)
+                rc.addProductCopy(_r.getBaseMolecule(rb.products[j]), 0, 0);
+        }
+    }
+    PathwayReactionBuilder prb;
+    auto pwr = prb.buildPathwayReaction(reactions);
+    _r.meta().resetReactionData();
+    pwr->meta().append(_r.meta());
+    pwr->copyToReaction(_r);
+}
+
 void ReactionLayout::make()
 {
     int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
     int simple_count = _r.meta().getNonChemicalMetaCount();
-    if (arrows_count > 1 || simple_count)
+    int multi_count = _r.meta().getMetaCount(KETReactionMultitailArrow::CID);
+    if (simple_count)
+        return;
+
+    if (_r.reactionBlocksCount() > 1 && _r.intermediateCount() == 0 && multi_count == 0)
+    {
+        makePathwayFromSimple();
+        return;
+    }
+
+    if (arrows_count > 1)
         return; // not implemented yet
 
     //  update layout of molecules, if needed

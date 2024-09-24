@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+#include <algorithm>
+#include <vector>
 
 #include "base_cpp/cancellation_handler.h"
 #include "indigo_internal.h"
@@ -22,10 +24,9 @@
 #include "indigo_reaction.h"
 #include "layout/molecule_cleaner_2d.h"
 #include "layout/molecule_layout.h"
+#include "layout/pathway_layout.h"
 #include "layout/reaction_layout.h"
 #include "reaction/base_reaction.h"
-#include <algorithm>
-#include <vector>
 
 CEXPORT int indigoLayout(int object)
 {
@@ -101,9 +102,12 @@ CEXPORT int indigoLayout(int object)
         else if (IndigoBaseReaction::is(obj))
         {
             BaseReaction& rxn = obj.getBaseReaction();
-            bool no_layout = rxn.intermediateCount() || rxn.specialConditionsCount() || rxn.meta().getNonChemicalMetaCount() ||
-                             obj.type == IndigoObject::PATHWAY_REACTION || rxn.multitaleCount();
-            if (!no_layout)
+            if (rxn.isPathwayReaction())
+            {
+                PathwayLayout pl(static_cast<PathwayReaction&>(rxn));
+                pl.make();
+            }
+            else
             {
                 ReactionLayout rl(rxn, self.smart_layout, self.layout_options);
                 rl.setMaxIterations(self.layout_max_iterations);

@@ -60,7 +60,9 @@ for filename in files:
     ket_result = ket.json()
 
     # with open(os.path.join(ref_path, filename + ".ket"), "w") as file:
-    #    file.write(ket_result)
+    #     file.write(ket_result)
+    # with open(os.path.join(ref_path, filename + ".cdxml"), "w") as file:
+    #     file.write(cdxml_text)
 
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
         ket_ref = file.read()
@@ -95,8 +97,8 @@ for filename in files:
         print(getIndigoExceptionText(e))
         raise SystemExit
     cdxml_text = ket.cdxml()
-    # with open(os.path.join(ref_path, filename) + ".cdxml", "w") as file:
-    #   file.write(cdxml_text)
+    with open(os.path.join(ref_path, filename) + ".cdxml", "w") as file:
+        file.write(cdxml_text)
 
     indigo.loadMolecule(
         cdxml_text

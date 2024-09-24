@@ -80,10 +80,9 @@ void PathwayLayout::buildLayoutTree()
     for (int i = 0; i < _reaction.getReactionNodeCount(); ++i)
     {
         auto& reactionNode = _reaction.getReactionNode(i);
-
         auto& currentLayoutItem = _layoutItems[i];
         // add successor reactants to layout items
-        for (int j : reactionNode.precursorReactionsIndexes)
+        for (int j : reactionNode.precursorReactionIndexes)
         {
             auto& precursorLayoutItem = _layoutItems[j];
             auto lastChild = currentLayoutItem.getLastChild();

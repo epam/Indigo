@@ -62,8 +62,8 @@
         <graphic id="35" SupersededBy="19" GraphicType="Line" ArrowType="RetroSynthetic" HeadSize="600" BoundingBox="342.628632 179.100693 291.835754 179.100693"/>
         <arrow id="22" BoundingBox="548.343567 174.181381 494.575592 174.181381" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="548.343567 174.181381 0.000000" Tail3D="494.575592 174.181381 0.000000"/>
         <scheme>
-            <step ReactionStepReactants="9" ReactionStepProducts="4" ReactionStepArrows="35"/>
-            <step ReactionStepReactants="4" ReactionStepProducts="13" ReactionStepArrows="22"/>
+            <step ReactionStepReactants="4" ReactionStepProducts="13" ReactionStepArrows="35"/>
+            <step ReactionStepReactants="9" ReactionStepProducts="4" ReactionStepArrows="22"/>
         </scheme>
     </page>
 </CDXML>

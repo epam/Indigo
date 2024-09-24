@@ -34,7 +34,7 @@ ReactionCmlSaver::~ReactionCmlSaver()
 {
 }
 
-void ReactionCmlSaver::saveReaction(Reaction& rxn)
+void ReactionCmlSaver::saveReaction(BaseReaction& rxn)
 {
     if (!skip_cml_tag)
     {
@@ -61,21 +61,21 @@ void ReactionCmlSaver::saveReaction(Reaction& rxn)
     {
         _output.printf("<reactantList>\n");
         for (i = rxn.reactantBegin(); i != rxn.reactantEnd(); i = rxn.reactantNext(i))
-            molsaver.saveMolecule(rxn.getMolecule(i));
+            molsaver.saveMolecule(rxn.getBaseMolecule(i).asMolecule());
         _output.printf("</reactantList>\n");
     }
     if (rxn.productsCount() > 0)
     {
         _output.printf("<productList>\n");
         for (i = rxn.productBegin(); i != rxn.productEnd(); i = rxn.productNext(i))
-            molsaver.saveMolecule(rxn.getMolecule(i));
+            molsaver.saveMolecule(rxn.getBaseMolecule(i).asMolecule());
         _output.printf("</productList>\n");
     }
     if (rxn.catalystCount() > 0)
     {
         _output.printf("<spectatorList>\n");
         for (i = rxn.catalystBegin(); i != rxn.catalystEnd(); i = rxn.catalystNext(i))
-            molsaver.saveMolecule(rxn.getMolecule(i));
+            molsaver.saveMolecule(rxn.getBaseMolecule(i).asMolecule());
         _output.printf("</spectatorList>\n");
     }
     _output.printf("</reaction>\n");

@@ -332,6 +332,8 @@ class IndigoLib:
         IndigoLib.lib.indigoIterateCatalysts.argtypes = [c_int]
         IndigoLib.lib.indigoIterateMolecules.restype = c_int
         IndigoLib.lib.indigoIterateMolecules.argtypes = [c_int]
+        IndigoLib.lib.indigoIterateReactions.restype = c_int
+        IndigoLib.lib.indigoIterateReactions.argtypes = [c_int]
         IndigoLib.lib.indigoSaveRxnfileToFile.restype = c_int
         IndigoLib.lib.indigoSaveRxnfileToFile.argtypes = [c_int, c_char_p]
         IndigoLib.lib.indigoRxnfile.restype = c_char_p

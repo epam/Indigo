@@ -490,6 +490,13 @@ namespace indigo
         std::vector<int> indexes;
         int role;
         std::vector<int> arrows_to;
+        std::vector<int> arrows_from;
+    };
+
+    struct PathwayComponent
+    {
+        int product_csb_idx;
+        std::vector<int> reactant_csb_indexes;
     };
 
     struct ReactionComponent
@@ -516,6 +523,7 @@ namespace indigo
             ARROW_ELLIPTICAL_ARC_OPEN_ANGLE,
             ARROW_ELLIPTICAL_ARC_OPEN_HALF_ANGLE,
             ARROW_RETROSYNTHETIC,
+            ARROW_MULTITAIL
         };
 
         enum

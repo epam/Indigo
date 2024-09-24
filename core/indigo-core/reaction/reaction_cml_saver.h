@@ -26,6 +26,7 @@ namespace indigo
 
     class Output;
     class Reaction;
+    class BaseReaction;
 
     class ReactionCmlSaver
     {
@@ -33,7 +34,7 @@ namespace indigo
         explicit ReactionCmlSaver(Output& output);
         ~ReactionCmlSaver();
 
-        void saveReaction(Reaction& rxn);
+        void saveReaction(BaseReaction& rxn);
         bool skip_cml_tag; // skips <?xml> and <cml> tags
 
         DECL_ERROR;

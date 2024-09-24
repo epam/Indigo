@@ -85,8 +85,12 @@ for reaction, test_case_filename in reaction_types:
 
         print("output format: " + format_name)
 
+        # with open(os.path.join(ref_path, filename), "w") as file:
+        #     file.write(parsed_format)
+
         with open(os.path.join(ref_path, filename), "r") as file:
             format_ref = file.read()
+
         diff = find_diff(format_ref, parsed_format)
         if not diff:
             print(filename + ":SUCCEED")

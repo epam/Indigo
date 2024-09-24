@@ -303,6 +303,9 @@ namespace com.epam.indigo
         public static extern int indigoIterateMolecules(int reader);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoIterateReactions(int reader);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoSaveRxnfile(int reaction, int output);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
