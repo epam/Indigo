@@ -195,7 +195,7 @@ namespace indigo
                 print_js(outputFormat.c_str());
                 result = _checkResultString(indigoJson(id()));
             }
-            else if (outputFormat == "rdf" || outputFormat == "chemical/x-rdf")
+            else if (outputFormat == "sdf" || outputFormat == "chemical/x-sdf")
             {
                 auto buffer = IndigoObject(_checkResult(indigoWriteBuffer()));
                 auto comp_it = IndigoObject(_checkResult(indigoIterateComponents(id())));
@@ -208,7 +208,7 @@ namespace indigo
                 print_js(outputFormat.c_str());
                 result = _checkResultString(indigoToString(buffer.id));
             }
-            else if (outputFormat == "sdf" || outputFormat == "chemical/x-sdf")
+            else if (outputFormat == "rdf" || outputFormat == "chemical/x-rdf")
             {
                 auto buffer = IndigoObject(_checkResult(indigoWriteBuffer()));
                 auto reac_it = IndigoObject(_checkResult(indigoIterateReactions(id())));
