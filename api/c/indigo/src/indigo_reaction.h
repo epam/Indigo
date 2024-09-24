@@ -65,7 +65,7 @@ public:
     IndigoReaction();
     ~IndigoReaction() override;
 
-    void init(std::unique_ptr<BaseReaction>&& = {});
+    void init(std::unique_ptr<BaseReaction>&& reaction = {});
     BaseReaction& getBaseReaction() override;
     Reaction& getReaction() override;
     const char* getName() override;

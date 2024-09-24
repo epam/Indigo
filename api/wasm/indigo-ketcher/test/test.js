@@ -989,6 +989,29 @@ M  END
         });
     }
 
+    {
+        test("layout", "pathway", () => {
+            var fs = require('fs');
+            const pathway = fs.readFileSync("pathway.ket");
+            let options = new indigo.MapStringString();
+            options.set('aromatize-skip-superatoms', 'true');
+            options.set('dearomatize-on-load', 'false');
+            options.set('gross-formula-add-rsites', 'true');
+            options.set('ignore-no-chiral-flag', 'false');
+            options.set('ignore-stereochemistry-errors', 'true');
+            options.set('input-format', "chemical/x-unknown");
+            options.set('mass-skip-error-on-pseudoatoms', 'false');
+            options.set('output-content-type', "application/json");
+            options.set('smart-layout', 'true');
+            let ket = JSON.parse(indigo.layout(pathway, "ket", options)).struct;            
+            // fs.writeFileSync("pathway_layout.ket", ket);
+            const ket_ref = fs.readFileSync("pathway_layout.ket");
+            assert.equal(ket, ket_ref.toString().trim());
+            options.delete();
+            assert(true);
+        });
+    }
+
     // Run tests
     run();
 });
