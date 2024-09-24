@@ -430,7 +430,7 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
         // molecules saved in helm as CHEM
         if (has_mol_1)
             id_to_class.emplace(mon_ref_1, MonomerClass::CHEM);
-        if (has_mol_1)
+        if (has_mol_2)
             id_to_class.emplace(mon_ref_2, MonomerClass::CHEM);
 
         auto& mon1_class = id_to_class.at(mon_id_1);
