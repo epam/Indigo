@@ -182,7 +182,7 @@ namespace indigo
             std::vector<PathwayLayout::PathwayLayoutItem*> layoutItems;
         };
 
-        void traverse(PathwayLayoutItem* root, std::function<void(PathwayLayoutItem*)> node_processor);
+        void traverse(PathwayLayoutItem* root, std::function<void(PathwayLayoutItem*, int)> node_processor);
 
         float spacing(PathwayLayoutItem* top, PathwayLayoutItem* bottom, bool siblings)
         {

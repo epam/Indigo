@@ -43,7 +43,9 @@ void PathwayLayout::make()
         determineDepths();
         secondWalk(root, nullptr, -root->prelim, 0);
 
-        traverse(root, [&rootItem](PathwayLayoutItem* item) { rootItem.layoutItems.push_back(item); });
+        traverse(root, [&rootItem](PathwayLayoutItem* item, int level) {
+            rootItem.layoutItems.push_back(item);
+        });
 
         // calculating bounding box for the one pathway
         auto& layoutItems = rootItem.layoutItems;
@@ -295,19 +297,25 @@ PathwayLayout::PathwayLayoutItem* PathwayLayout::ancestor(PathwayLayoutItem* nod
     return (node1->ancestor->parent == p) ? node1->ancestor : ancestor;
 }
 
-void PathwayLayout::traverse(PathwayLayoutItem* root, std::function<void(PathwayLayoutItem*)> node_processor)
+void PathwayLayout::traverse(PathwayLayoutItem* root, std::function<void(PathwayLayoutItem*, int)> node_processor)
 {
-    std::stack<PathwayLayoutItem*> stack;
+    std::queue<std::pair<PathwayLayoutItem*, int>> queue;
 
     if (root != nullptr)
-        stack.push(root);
+        queue.push({root, 0});
 
-    while (!stack.empty())
+    while (!queue.empty())
     {
-        PathwayLayoutItem* node = stack.top();
-        // call lambda here
-        stack.pop();
-        node_processor(node);
-        std::for_each(node->children.rbegin(), node->children.rend(), [&stack](PathwayLayoutItem* child) { stack.push(child); });
+        auto nodeInfo = queue.front();
+        PathwayLayoutItem* node = nodeInfo.first;
+        int level = nodeInfo.second;
+        queue.pop();
+
+        node_processor(node, level);
+
+        for (auto child : node->children)
+        {
+            queue.push({child, level + 1});
+        }
     }
 }
