@@ -295,6 +295,9 @@ public:
     // Method that returns temporary buffer that can be returned from Indigo C API methods
     static TmpData& getThreadTmpData();
 
+    static IndigoOptionManager::optf_string_t setUnitsOfMeasure(UnitsOfMeasure::TYPE& result);
+    static IndigoOptionManager::get_optf_string_t getUnitsOfMeasure(const UnitsOfMeasure::TYPE& input);
+
     ProductEnumeratorParams rpe_params;
     MoleculeFingerprintParameters fp_params;
     PtrArray<TautomerRule> tautomer_rules;
@@ -339,7 +342,6 @@ public:
 
     int layout_max_iterations = 0; // default is zero -- no limit
     bool smart_layout = false;
-    float layout_horintervalfactor = ReactionLayout::DEFAULT_HOR_INTERVAL_FACTOR;
     bool layout_preserve_existing = false;
 
     int layout_orientation = 0;

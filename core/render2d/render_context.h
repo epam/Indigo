@@ -46,7 +46,7 @@ namespace indigo
 
         void checkPathNonEmpty() const;
 
-        RenderContext(const RenderOptions& opt, float sf, float lwf);
+        RenderContext(const RenderOptions& opt, float relativeThickness, float bondLineWidthFactor);
         void setDefaultScale(float scale);
         void setHDC(PVOID hdc);
         int getMaxPageSize() const;
@@ -82,6 +82,7 @@ namespace indigo
         void fillHex(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3, const Vec2f& v4, const Vec2f& v5);
         void fillQuad(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3);
         void fillQuadStripes(const Vec2f& v0r, const Vec2f& v0l, const Vec2f& v1r, const Vec2f& v1l, int cnt);
+        void fillQuadStripesSpacing(const Vec2f& v0r, const Vec2f& v0l, const Vec2f& v1r, const Vec2f& v1l, float spacing);
         void fillPentagon(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3, const Vec2f& v4);
         void drawQuad(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3);
         void drawTriangleZigzag(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, int cnt);
