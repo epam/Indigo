@@ -295,9 +295,6 @@ public:
     // Method that returns temporary buffer that can be returned from Indigo C API methods
     static TmpData& getThreadTmpData();
 
-    static IndigoOptionManager::optf_string_t setUnitsOfMeasure(UnitsOfMeasure::TYPE& result);
-    static IndigoOptionManager::get_optf_string_t getUnitsOfMeasure(const UnitsOfMeasure::TYPE& input);
-
     ProductEnumeratorParams rpe_params;
     MoleculeFingerprintParameters fp_params;
     PtrArray<TautomerRule> tautomer_rules;

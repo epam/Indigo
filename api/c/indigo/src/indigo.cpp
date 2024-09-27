@@ -504,56 +504,6 @@ void IndigoPluginContext::validate()
 //
 // Options registrator
 //
-IndigoOptionManager::optf_string_t Indigo::setUnitsOfMeasure(UnitsOfMeasure::TYPE& result)
-{
-    static thread_local auto func = [&result](const char* mode) {
-        if (strcmp(mode, "pt") == 0)
-        {
-            result = UnitsOfMeasure::TYPE::PT;
-        }
-        else if (strcmp(mode, "px") == 0)
-        {
-            result = UnitsOfMeasure::TYPE::PX;
-        }
-        else if (strcmp(mode, "inch") == 0)
-        {
-            result = UnitsOfMeasure::TYPE::INCH;
-        }
-        else if (strcmp(mode, "cm") == 0)
-        {
-            result = UnitsOfMeasure::TYPE::CM;
-        }
-        else
-        {
-            throw IndigoError("Invalid size unit, should be 'px', 'pt', 'inch' or 'all'");
-        }
-    };
-
-    return [](const char* mode) -> void { return func(mode); };
-}
-
-IndigoOptionManager::get_optf_string_t Indigo::getUnitsOfMeasure(const UnitsOfMeasure::TYPE& input)
-{
-    static thread_local auto func = [&input](Array<char>& result) {
-        switch (input)
-        {
-        case UnitsOfMeasure::TYPE::PT:
-            result.readString("pt", true);
-            break;
-        case UnitsOfMeasure::TYPE::PX:
-            result.readString("px", true);
-            break;
-        case UnitsOfMeasure::TYPE::INCH:
-            result.readString("inch", true);
-            break;
-        case UnitsOfMeasure::TYPE::CM:
-            result.readString("cm", true);
-            break;
-        }
-    };
-
-    return [](Array<char>& res) -> void { return func(res); };
-}
 
 //
 // Debug methods

@@ -791,20 +791,16 @@ void IndigoRenderer::setOptionsHandlers()
 
         // ACS style options
         mgr->setOptionHandlerFloat("render-font-size", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.fontSize));
-        mgr->setOptionHandlerString("render-font-size-unit", Indigo::setUnitsOfMeasure(rp.rOpt.fontSizeUnit), Indigo::getUnitsOfMeasure(rp.rOpt.fontSizeUnit));
+        mgr->setOptionHandlerString("render-font-size-unit", SETTER_GETTER_UNIT_OPTION(rp.rOpt.fontSizeUnit));
         mgr->setOptionHandlerFloat("render-font-size-sub", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.fontSizeSub));
-        mgr->setOptionHandlerString("render-font-size-sub-unit", Indigo::setUnitsOfMeasure(rp.rOpt.fontSizeSubUnit),
-                                    Indigo::getUnitsOfMeasure(rp.rOpt.fontSizeSubUnit));
+        mgr->setOptionHandlerString("render-font-size-sub-unit", SETTER_GETTER_UNIT_OPTION(rp.rOpt.fontSizeSubUnit));
         mgr->setOptionHandlerFloat("render-bond-thickness", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.bondThickness));
-        mgr->setOptionHandlerString("render-bond-thickness-unit", Indigo::setUnitsOfMeasure(rp.rOpt.bondThicknessUnit),
-                                    Indigo::getUnitsOfMeasure(rp.rOpt.bondThicknessUnit));
+        mgr->setOptionHandlerString("render-bond-thickness-unit", SETTER_GETTER_UNIT_OPTION(rp.rOpt.bondThicknessUnit));
         mgr->setOptionHandlerFloat("render-bond-spacing", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.bondSpacing));
         mgr->setOptionHandlerFloat("render-stereo-bond-width", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.stereoBondWidth));
-        mgr->setOptionHandlerString("render-stereo-bond-width-unit", Indigo::setUnitsOfMeasure(rp.rOpt.stereoBondWidthUnit),
-                                    Indigo::getUnitsOfMeasure(rp.rOpt.stereoBondWidthUnit));
+        mgr->setOptionHandlerString("render-stereo-bond-width-unit", SETTER_GETTER_UNIT_OPTION(rp.rOpt.stereoBondWidthUnit));
         mgr->setOptionHandlerFloat("render-hash-spacing", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.hashSpacing));
-        mgr->setOptionHandlerString("render-hash-spacing-unit", Indigo::setUnitsOfMeasure(rp.rOpt.hashSpacingUnit),
-                                    Indigo::getUnitsOfMeasure(rp.rOpt.hashSpacingUnit));
+        mgr->setOptionHandlerString("render-hash-spacing-unit", SETTER_GETTER_UNIT_OPTION(rp.rOpt.hashSpacingUnit));
         mgr->setOptionHandlerFloat("render-output-sheet-width", SETTER_GETTER_FLOAT_OPTION(rp.cnvOpt.outputSheetWidth));
         mgr->setOptionHandlerFloat("render-output-sheet-height", SETTER_GETTER_FLOAT_OPTION(rp.cnvOpt.outputSheetHeight));
     }

@@ -387,10 +387,8 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerBool("transform-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.transform_is_layout));
 
     mgr->setOptionHandlerFloat("bond-length", SET_POSITIVE_FLOAT_OPTION(indigo.layout_options.bondLength, "bond length must be positive"));
-    mgr->setOptionHandlerString("bond-length-unit", Indigo::setUnitsOfMeasure(indigo.layout_options.bondLengthUnit),
-                                Indigo::getUnitsOfMeasure(indigo.layout_options.bondLengthUnit));
+    mgr->setOptionHandlerString("bond-length-unit", SETTER_GETTER_UNIT_OPTION(indigo.layout_options.bondLengthUnit));
     mgr->setOptionHandlerFloat("reaction-component-margin-size", SETTER_GETTER_FLOAT_OPTION(indigo.layout_options.reactionComponentMarginSize));
-    mgr->setOptionHandlerString("reaction-component-margin-size-unit", Indigo::setUnitsOfMeasure(indigo.layout_options.reactionComponentMarginSizeUnit),
-                                Indigo::getUnitsOfMeasure(indigo.layout_options.reactionComponentMarginSizeUnit));
+    mgr->setOptionHandlerString("reaction-component-margin-size-unit", SETTER_GETTER_UNIT_OPTION(indigo.layout_options.reactionComponentMarginSizeUnit));
     mgr->setOptionHandlerInt("image-resolution", SET_POSITIVE_INT_OPTION(indigo.layout_options.ppi, "image resolution ppi must be positive"));
 }
