@@ -7,7 +7,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import Indigo, IndigoRenderer, joinPathPy  # noqa
+from env_indigo import Indigo, IndigoRenderer, isIronPython, joinPathPy  # noqa
 from rendering import checkImageSimilarity
 
 if not os.path.exists(joinPathPy("out", __file__)):
