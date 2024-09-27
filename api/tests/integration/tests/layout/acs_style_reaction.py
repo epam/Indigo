@@ -18,7 +18,6 @@ indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
 indigo.setOption("json-saving-pretty", "1")
 indigo.setOption("json-use-native-precision", "1")
-indigo.setOption("json-saving-add-stereo-desc", "1")
 
 root = joinPathPy("reactions/", __file__)
 ref = joinPathPy("ref/", __file__)
