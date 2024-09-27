@@ -86,7 +86,7 @@ Metalayout::LayoutLine& Metalayout::newLine()
 void Metalayout::process()
 {
     Vec2f pos;
-    static const auto atomLabelMarginVertical = bondLength / 2;
+    const auto atomLabelMarginVertical = bondLength / 2;
     for (int i = 0; i < _layout.size(); ++i)
     {
         LayoutLine& line = _layout[i];
