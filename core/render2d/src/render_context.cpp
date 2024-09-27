@@ -669,9 +669,9 @@ void RenderContext::fillQuadStripesSpacing(const Vec2f& v0r, const Vec2f& v0l, c
     float dl_len = dl.lengthSqr();
 
     dr.normalize();
-    dr.scale(abs(dr.vsin(v)) * spacing);
+    dr.scale(std::fabs(dr.vsin(v)) * spacing);
     dl.normalize();
-    dl.scale(abs(dl.vsin(v)) * spacing);
+    dl.scale(std::fabs(dl.vsin(v)) * spacing);
 
     while (true)
     {
