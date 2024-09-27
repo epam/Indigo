@@ -22,13 +22,14 @@ S-R diff.mol:SUCCEED
 StereochemComplexTester_AllAbs.mol:SUCCEED
 all-trans-inositol.mol:SUCCEED
 atom_any.mol:SUCCEED
+cip_bonds.mol:SUCCEED
+cip_high_load.mol:SUCCEED
 cis.mol:SUCCEED
 different stereo 2.mol:SUCCEED
 different stereo 3.mol:SUCCEED
 different stereo 4.mol:SUCCEED
 different stereo 5.mol:SUCCEED
 different stereo.mol:SUCCEED
-ketcher.mol:SUCCEED
 stereo-different-ketcher-marvin.mol:SUCCEED
 stereo-different-ketcher-marvin2.mol:SUCCEED
 t4_R.mol:SUCCEED
