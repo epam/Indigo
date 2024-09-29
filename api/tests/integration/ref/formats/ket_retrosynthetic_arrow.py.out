@@ -76,4 +76,6 @@ ket_simple_arrow_retro_arrow_sum_of_products.smarts:SUCCEED
 output format: CML
 ket_simple_arrow_retro_arrow_sum_of_products.cml:SUCCEED
 issue 2318
-ket_simple_arrow_retro_arrow_sum_of_products.cml:SUCCEED
+ket_retro_arrow.ket:SUCCEED
+issue 2417
+ket_retro_arrow.ket:SUCCEED
