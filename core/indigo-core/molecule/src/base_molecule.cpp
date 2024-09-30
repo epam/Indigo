@@ -280,9 +280,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     {
         try
         {
-            auto aidx = mapping[mol._cip_atoms.key(i)];
-            if (aidx >= 0)
-                _cip_atoms.insert(aidx, mol._cip_atoms.value(i));
+            _cip_atoms.insert(mapping[mol._cip_atoms.key(i)], mol._cip_atoms.value(i));
         }
         catch (Exception&)
         {
@@ -293,9 +291,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     {
         try
         {
-            auto eidx = edge_mapping[mol._cip_bonds.key(i)];
-            if (eidx >= 0)
-                _cip_bonds.insert(eidx, mol._cip_bonds.value(i));
+            _cip_bonds.insert(mapping[mol._cip_bonds.key(i)], mol._cip_bonds.value(i));
         }
         catch (Exception&)
         {
