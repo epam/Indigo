@@ -191,7 +191,7 @@ void RenderOptions::clearRenderOptions()
     showCycles = false;
     agentsBelowArrow = true;
     atomColorProp.clear();
-    ppi = 72;
+    ppi = LayoutOptions::DEFAULT_PPI;
     fontSize = -1;
     fontSizeUnit = UnitsOfMeasure::PT;
     fontSizeSub = -1;

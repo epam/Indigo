@@ -259,6 +259,7 @@ namespace indigo
         static constexpr float DEFAULT_BOND_LENGTH = 1.6f; // default length of inter-chemical bonds
         static constexpr float DEFAULT_PLUS_SIZE = DEFAULT_BOND_LENGTH / 2;
         static constexpr float DEFAULT_BOND_LENGTH_PX = 100.0f; // 100 pixel
+        static constexpr int32_t DEFAULT_PPI = 72;
 
         float bondLength{DEFAULT_BOND_LENGTH_PX};
         UnitsOfMeasure::TYPE bondLengthUnit{UnitsOfMeasure::TYPE::PX};
@@ -271,7 +272,7 @@ namespace indigo
             bondLengthUnit = UnitsOfMeasure::TYPE::PX;
             reactionComponentMarginSize = DEFAULT_BOND_LENGTH_PX / 2;
             reactionComponentMarginSizeUnit = UnitsOfMeasure::TYPE::PX;
-            ppi = 72;
+            ppi = DEFAULT_PPI;
         };
         float getBondLengthPx()
         {

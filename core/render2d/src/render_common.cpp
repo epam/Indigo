@@ -311,19 +311,20 @@ void RenderSettings::init(float relativeThickness, float bondLineWidthFactor, Ac
         if (acs->hashSpacingAngstrom > 0)
             hashSpacing = acs->hashSpacingAngstrom;
     }
+    static constexpr float TWO_DIV_THREE = 2.0f / 3.0f;
     fzz[FONT_SIZE_LABEL] = label_font_size;
     if (acs != nullptr && acs->fontSizeSubAngstrom > 0)
         fzz[FONT_SIZE_ATTR] = acs->fontSizeAngstrom;
     else
-        fzz[FONT_SIZE_ATTR] = label_font_size * 2 / 3.0f; // unit * 8; // Subscript
+        fzz[FONT_SIZE_ATTR] = label_font_size * TWO_DIV_THREE; // unit * 8; // Subscript
     fzz[FONT_SIZE_RGROUP_LOGIC] = label_font_size;
-    fzz[FONT_SIZE_RGROUP_LOGIC_INDEX] = label_font_size * 2 / 3.0f; // unit * 8;
-    fzz[FONT_SIZE_INDICES] = label_font_size / 2.0f;                // unit * 6;
-    fzz[FONT_SIZE_ATTACHMENT_POINT_INDEX] = label_font_size / 2.0f; // unit * 6;
-    fzz[FONT_SIZE_RSITE_ATTACHMENT_INDEX] = label_font_size / 2.0f; // unit * 6;
-    fzz[FONT_SIZE_COMMENT] = 0;                                     // not used, value taken from RenderOptions.commentFontFactor
-    fzz[FONT_SIZE_TITLE] = 0;                                       // not used, value taken from RenderOptions.titleFontFactor
-    fzz[FONT_SIZE_DATA_SGROUP] = label_font_size * 2 / 3.0f;        // unit * 8;
+    fzz[FONT_SIZE_RGROUP_LOGIC_INDEX] = label_font_size * TWO_DIV_THREE; // unit * 8;
+    fzz[FONT_SIZE_INDICES] = label_font_size / 2.0f;                     // unit * 6;
+    fzz[FONT_SIZE_ATTACHMENT_POINT_INDEX] = label_font_size / 2.0f;      // unit * 6;
+    fzz[FONT_SIZE_RSITE_ATTACHMENT_INDEX] = label_font_size / 2.0f;      // unit * 6;
+    fzz[FONT_SIZE_COMMENT] = 0;                                          // not used, value taken from RenderOptions.commentFontFactor
+    fzz[FONT_SIZE_TITLE] = 0;                                            // not used, value taken from RenderOptions.titleFontFactor
+    fzz[FONT_SIZE_DATA_SGROUP] = label_font_size * TWO_DIV_THREE;        // unit * 8;
 
     upperIndexShift = -0.4f;
     lowerIndexShift = 0.4f;
