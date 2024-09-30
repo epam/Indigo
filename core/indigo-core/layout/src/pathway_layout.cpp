@@ -40,7 +40,7 @@ void PathwayLayout::make()
 
         traverse(root, [&rootItem, &depths](PathwayLayoutItem* item, int level) {
             int item_index = (int)rootItem.layoutItems.size();
-            if (depths.size() > level)
+            if ((int)depths.size() > level)
             {
                 depths[level].first = std::max(depths[level].first, item->width);
                 depths[level].second.push_back(item_index);
