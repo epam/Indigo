@@ -172,7 +172,7 @@ void PathwayLayout::firstWalk(PathwayLayoutItem* node, int level, int depth)
 
 void PathwayLayout::secondWalk(PathwayLayoutItem* node, PathwayLayoutItem* parent, float modifier, int depth)
 {
-    node->setXY(-_shifts[depth], node->prelim + modifier);
+    node->setXY(-_shifts[depth], -node->prelim - modifier);
     for (PathwayLayoutItem* child = node->getFirstChild(); child != nullptr; child = child->nextSibling)
         secondWalk(child, node, modifier + node->mod, depth + 1);
     node->clear();
