@@ -455,6 +455,7 @@ CEXPORT int indigoLoadReaction(int source)
         loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
+        loader.layout_options = self.layout_options;
         auto rxn = loader.loadReaction(false);
         std::unique_ptr<IndigoBaseReaction> rxnptr;
         if (rxn->isPathwayReaction())

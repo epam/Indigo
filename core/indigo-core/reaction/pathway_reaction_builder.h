@@ -40,6 +40,7 @@ namespace indigo
 {
     class BaseMolecule;
     class BaseReaction;
+    struct LayoutOptions;
 
     // PathwayReactionBuilder is a class that builds a pathway reaction tree from a list of reactions
     class PathwayReactionBuilder
@@ -47,7 +48,7 @@ namespace indigo
     public:
         PathwayReactionBuilder();
         ~PathwayReactionBuilder();
-        std::unique_ptr<PathwayReaction> buildPathwayReaction(std::deque<Reaction>& reactions);
+        std::unique_ptr<PathwayReaction> buildPathwayReaction(std::deque<Reaction>& reactions, LayoutOptions& options);
         static void buildRootReaction(PathwayReaction& reaction);
         DECL_ERROR;
 

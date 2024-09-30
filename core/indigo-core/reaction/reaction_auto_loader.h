@@ -25,6 +25,7 @@
 #endif
 
 #include "base_cpp/array.h"
+#include "layout/metalayout.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_stereocenter_options.h"
 
@@ -60,6 +61,7 @@ namespace indigo
         bool dearomatize_on_load;
         int treat_stereo_as;
         AromaticityOptions arom_options;
+        LayoutOptions layout_options;
 
         DECL_ERROR;
 

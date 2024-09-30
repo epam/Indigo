@@ -104,7 +104,7 @@ CEXPORT int indigoLayout(int object)
             BaseReaction& rxn = obj.getBaseReaction();
             if (rxn.isPathwayReaction())
             {
-                PathwayLayout pl(static_cast<PathwayReaction&>(rxn));
+                PathwayLayout pl(static_cast<PathwayReaction&>(rxn), self.layout_options);
                 pl.make();
             }
             else

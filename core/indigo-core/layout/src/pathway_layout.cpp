@@ -33,19 +33,37 @@ void PathwayLayout::make()
     float yShift = 0;
     for (auto rootIndexes : roots)
     {
+        // collect items for the one pathway
         auto& rootItem = _layoutRootItems.emplace_back(rootIndexes);
         PathwayLayoutItem* root = &_layoutItems[rootIndexes];
-        _depths.clear();
-        _depths.resize(10, 0);
-        _maxDepth = 0;
+        std::vector<std::pair<float, std::vector<int>>> depths;
 
+        traverse(root, [&rootItem, &depths](PathwayLayoutItem* item, int level) {
+            int item_index = (int)rootItem.layoutItems.size();
+            if (depths.size() > level)
+            {
+                depths[level].first = std::max(depths[level].first, item->width);
+                depths[level].second.push_back(item_index);
+            }
+            else
+                depths.emplace_back(item->width, std::initializer_list<int>{item_index});
+            rootItem.layoutItems.push_back(item);
+        });
+
+        // update widths
+        for (auto& depth : depths)
+        {
+            for (auto index : depth.second)
+                rootItem.layoutItems[index]->width = depth.first;
+        }
+
+        // layout the one pathway
+        _depths.clear();
+        _depths.resize(depths.size(), 0);
+        _maxDepth = 0;
         firstWalk(root, 0, 1);
         determineDepths();
         secondWalk(root, nullptr, -root->prelim, 0);
-
-        traverse(root, [&rootItem](PathwayLayoutItem* item, int level) {
-            rootItem.layoutItems.push_back(item);
-        });
 
         // calculating bounding box for the one pathway
         auto& layoutItems = rootItem.layoutItems;
@@ -101,7 +119,7 @@ void PathwayLayout::buildLayoutTree()
 
 void PathwayLayout::updateDepths(int depth, PathwayLayoutItem* item)
 {
-    float d = item->width + HORIZONTAL_SPACING;
+    float d = item->width + _default_arrow_size + _reaction_margin_size * 2; // calculate section size
     if ((int)_depths.size() <= depth)
         _depths.resize(3 * depth / 2);
     _depths[depth] = std::max(_depths[depth], d);
@@ -176,7 +194,7 @@ void PathwayLayout::applyLayout()
             if (!layoutItem->children.empty())
             {
                 Vec2f head = layoutItem->boundingBox.leftMiddle();
-                head.x -= MARGIN;
+                head.x -= _reaction_margin_size;
                 std::vector<Vec2f> tails, arrows;
                 arrows.push_back(head);
                 for (auto child : layoutItem->children)
@@ -186,7 +204,7 @@ void PathwayLayout::applyLayout()
                     tails.insert(tail_it, tail);
                 }
                 auto rigt_most_x = std::max_element(tails.begin(), tails.end(), [](const Vec2f& a, const Vec2f& b) { return a.x < b.x; })->x;
-                rigt_most_x += MARGIN;
+                rigt_most_x += _reaction_margin_size;
 
                 std::for_each(tails.begin(), tails.end(), [rigt_most_x](Vec2f& v) { v.x = rigt_most_x; });
                 arrows.insert(arrows.end(), tails.begin(), tails.end());
@@ -202,7 +220,7 @@ void PathwayLayout::applyLayout()
                 }
                 else if (tails.size())
                 {
-                    _reaction.meta().addMetaObject(new KETReactionArrow(KETReactionArrow::EOpenAngle, tails.front(), head));
+                    _reaction.meta().addMetaObject(new KETReactionArrow(KETReactionArrow::EFilledTriangle, tails.front(), head));
                 }
             }
         }

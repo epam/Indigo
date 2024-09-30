@@ -28,6 +28,7 @@
 #include <numeric>
 #include <vector>
 
+#include "layout/metalayout.h"
 #include "reaction/pathway_reaction.h"
 
 namespace indigo
@@ -42,18 +43,17 @@ namespace indigo
         DECL_ERROR;
 
     public:
-        PathwayLayout(PathwayReaction& reaction) : _reaction(reaction), _depths(10, 0), _maxDepth(0)
+        PathwayLayout(PathwayReaction& reaction, const LayoutOptions& options)
+            : _reaction(reaction), _depths(10, 0), _maxDepth(0), _bond_length(options.bondLength), _default_arrow_size((float)options.bondLength * 6.5f),
+              _reaction_margin_size(options.reactionComponentMarginSize)
         {
         }
 
         void make();
 
     private:
-        static constexpr float MARGIN = 1.f;
-        static constexpr float ARROW_HEAD_WIDTH = 2.5f;
+        static constexpr float MARGIN = 1.0f;
         static constexpr float ARROW_TAIL_LENGTH = 0.5f;
-        static constexpr float ARROW_LENGTH = ARROW_TAIL_LENGTH + ARROW_TAIL_LENGTH;
-        static constexpr float HORIZONTAL_SPACING = 3.5f;
         static constexpr float VERTICAL_SPACING = 2.5f;
         static constexpr float MULTIPATHWAY_VERTICAL_SPACING = 1.5f;
 
@@ -135,12 +135,12 @@ namespace indigo
                                                        [](float acc, const std::pair<int, Rect2f>& r) { return acc + r.second.width(); });
 
                     float spacing = molecules.size() > 1 ? (width - totalWidth) / (molecules.size() - 1) : (width - totalWidth) / 2;
-                    float currentX = boundingBox.left();
-                    float currentY = boundingBox.bottom();
+                    float currentX = boundingBox.center().x;
+                    float currentY = boundingBox.center().y;
                     for (auto& mol_desc : molecules)
                     {
                         auto& mol = reaction.getMolecule(mol_desc.first);
-                        Vec2f item_offset(currentX - mol_desc.second.left(), currentY - mol_desc.second.bottom());
+                        Vec2f item_offset(currentX - mol_desc.second.center().x, currentY - mol_desc.second.center().y);
                         mol.offsetCoordinates(Vec3f(item_offset.x, item_offset.y, 0));
                         currentX += mol_desc.second.width() + spacing;
                     }
@@ -220,6 +220,10 @@ namespace indigo
         PathwayReaction& _reaction;
         std::vector<PathwayLayoutItem> _layoutItems;
         std::vector<PathwayLayoutRootItem> _layoutRootItems;
+
+        const float _bond_length;
+        const float _default_arrow_size;
+        const float _reaction_margin_size;
     };
 }
 

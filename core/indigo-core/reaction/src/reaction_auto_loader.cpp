@@ -369,7 +369,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
             }
 
             PathwayReactionBuilder builder;
-            return builder.buildPathwayReaction(reactions);
+            return builder.buildPathwayReaction(reactions, layout_options);
         }
     }
 
