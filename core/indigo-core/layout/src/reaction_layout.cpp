@@ -103,17 +103,35 @@ void ReactionLayout::_updateMetadata()
     Rect2f react_box, product_box, catalyst_box;
     bool last_single_reactant = false;
     bool first_single_product = false;
+    bool is_retrosyntetic = _r.isRetrosyntetic();
     if (_r.reactantsCount() > 0)
     {
-        processSideBoxes(pluses, react_box, BaseReaction::REACTANT);
-        for (int i = _r.reactantBegin(); i != _r.reactantEnd(); i = _r.reactantNext(i))
-            last_single_reactant = _r.getBaseMolecule(i).vertexCount() == 1;
+        if (is_retrosyntetic)
+        {
+            processSideBoxes(pluses, react_box, BaseReaction::PRODUCT);
+            for (int i = _r.productBegin(); i != _r.productEnd(); i = _r.productNext(i))
+                last_single_reactant = _r.getBaseMolecule(i).vertexCount() == 1;
+        }
+        else
+        {
+            processSideBoxes(pluses, react_box, BaseReaction::REACTANT);
+            for (int i = _r.reactantBegin(); i != _r.reactantEnd(); i = _r.reactantNext(i))
+                last_single_reactant = _r.getBaseMolecule(i).vertexCount() == 1;
+        }
     }
 
     if (_r.productsCount() > 0)
     {
-        processSideBoxes(pluses, product_box, BaseReaction::PRODUCT);
-        first_single_product = _r.getBaseMolecule(_r.productBegin()).vertexCount() == 1;
+        if (is_retrosyntetic)
+        {
+            processSideBoxes(pluses, product_box, BaseReaction::REACTANT);
+            first_single_product = _r.getBaseMolecule(_r.reactantBegin()).vertexCount() == 1;
+        }
+        else
+        {
+            processSideBoxes(pluses, product_box, BaseReaction::PRODUCT);
+            first_single_product = _r.getBaseMolecule(_r.productBegin()).vertexCount() == 1;
+        }
     }
 
     if (_r.catalystCount() > 0)
@@ -126,14 +144,16 @@ void ReactionLayout::_updateMetadata()
     Vec2f arrow_tail(0, 0);
 
     constexpr float shift = 1.0f;
-    if (_r.productsCount() == 0)
+    int prod_count = is_retrosyntetic ? _r.reactantsCount() : _r.productsCount();
+    int react_count = is_retrosyntetic ? _r.productsCount() : _r.reactantsCount();
+    if (prod_count == 0)
     {
         arrow_tail.x = react_box.right() + shift;
         arrow_tail.y = react_box.middleY();
         arrow_head.x = arrow_tail.x + shift;
         arrow_head.y = arrow_tail.y;
     }
-    else if (_r.reactantsCount() == 0)
+    else if (react_count == 0)
     {
         arrow_head.x = product_box.left() - shift;
         arrow_head.y = product_box.middleY();
@@ -216,13 +236,19 @@ void ReactionLayout::make()
 
     // layout molecules in a row with the intervals specified
     Metalayout::LayoutLine& line = _ml.newLine();
-    for (int i = _r.reactantBegin(); i < _r.reactantEnd(); i = _r.reactantNext(i))
-    {
-        bool single_atom = _getMol(i).vertexCount() == 1;
-        if (i != _r.reactantBegin())
-            _pushSpace(line, plus_interval_factor);
-        _pushMol(line, i);
-    }
+    auto processReactionElements = [this, &line](int begin, int end, std::function<int(BaseReaction&, int)> next) {
+        for (int i = begin; i < end; i = next(_r, i))
+        {
+            if (i != begin)
+                _pushSpace(line, plus_interval_factor);
+            _pushMol(line, i);
+        }
+    };
+
+    if (_r.isRetrosyntetic())
+        processReactionElements(_r.productBegin(), _r.productEnd(), &BaseReaction::productNext);
+    else
+        processReactionElements(_r.reactantBegin(), _r.reactantEnd(), &BaseReaction::reactantNext);
 
     if (_r.catalystCount())
     {
@@ -241,13 +267,10 @@ void ReactionLayout::make()
 
     _pushSpace(line, bond_length);
 
-    for (int i = _r.productBegin(); i < _r.productEnd(); i = _r.productNext(i))
-    {
-        bool single_atom = _getMol(i).vertexCount() == 1;
-        if (i != _r.productBegin())
-            _pushSpace(line, plus_interval_factor);
-        _pushMol(line, i);
-    }
+    if (_r.isRetrosyntetic())
+        processReactionElements(_r.reactantBegin(), _r.reactantEnd(), &BaseReaction::reactantNext);
+    else
+        processReactionElements(_r.productBegin(), _r.productEnd(), &BaseReaction::productNext);
 
     _ml.bondLength = bond_length;
     _ml.horizontalIntervalFactor = horizontal_interval_factor;
