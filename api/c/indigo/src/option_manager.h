@@ -106,6 +106,37 @@ using namespace indigo;
     },                                                                                                                                                         \
         [](int32_t& value) { value = option; }
 
+#define SETTER_GETTER_UNIT_OPTION(option)                                                                                                                      \
+    [](const char* mode) {                                                                                                                                     \
+        if (strcmp(mode, "pt") == 0)                                                                                                                           \
+            option = UnitsOfMeasure::TYPE::PT;                                                                                                                 \
+        else if (strcmp(mode, "px") == 0)                                                                                                                      \
+            option = UnitsOfMeasure::TYPE::PX;                                                                                                                 \
+        else if (strcmp(mode, "inch") == 0)                                                                                                                    \
+            option = UnitsOfMeasure::TYPE::INCH;                                                                                                               \
+        else if (strcmp(mode, "cm") == 0)                                                                                                                      \
+            option = UnitsOfMeasure::TYPE::CM;                                                                                                                 \
+        else                                                                                                                                                   \
+            throw IndigoError("Invalid size unit, should be 'px', 'pt', 'inch' or 'all'");                                                                     \
+    },                                                                                                                                                         \
+        [](Array<char>& result) {                                                                                                                              \
+            switch (option)                                                                                                                                    \
+            {                                                                                                                                                  \
+            case UnitsOfMeasure::TYPE::PT:                                                                                                                     \
+                result.readString("pt", true);                                                                                                                 \
+                break;                                                                                                                                         \
+            case UnitsOfMeasure::TYPE::PX:                                                                                                                     \
+                result.readString("px", true);                                                                                                                 \
+                break;                                                                                                                                         \
+            case UnitsOfMeasure::TYPE::INCH:                                                                                                                   \
+                result.readString("inch", true);                                                                                                               \
+                break;                                                                                                                                         \
+            case UnitsOfMeasure::TYPE::CM:                                                                                                                     \
+                result.readString("cm", true);                                                                                                                 \
+                break;                                                                                                                                         \
+            }                                                                                                                                                  \
+        }
+
 class DLLEXPORT IndigoOptionManager
 {
 public:

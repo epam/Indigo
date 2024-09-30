@@ -119,11 +119,26 @@ void RenderContext::storeAndDestroyMetafile(bool discard)
 
 CP_DEF(RenderContext);
 
-RenderContext::RenderContext(const RenderOptions& ropt, float sf, float lwf)
+RenderContext::RenderContext(const RenderOptions& ropt, float relativeThickness, float bondLineWidthFactor)
     : CP_INIT, TL_CP_GET(_fontfamily), TL_CP_GET(transforms), metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _meta_hdc(NULL), opt(ropt),
-      _pattern(NULL)
+      _pattern(NULL), _settings()
 {
-    _settings.init(sf, lwf);
+    AcsOptions acs;
+    if (ropt.fontSize > 0)
+        acs.fontSizeAngstrom = UnitsOfMeasure::convertToPx(ropt.fontSize, ropt.fontSizeUnit, ropt.ppi) / ropt.bond_length_px;
+    if (ropt.fontSizeSub > 0)
+        acs.fontSizeSubAngstrom = UnitsOfMeasure::convertToPx(ropt.fontSizeSub, ropt.fontSizeSubUnit, ropt.ppi) / ropt.bond_length_px;
+    if (ropt.bondThickness > 0)
+        acs.bondThicknessAngstrom = UnitsOfMeasure::convertToPx(ropt.bondThickness, ropt.bondThicknessUnit, ropt.ppi) / LayoutOptions::DEFAULT_BOND_LENGTH_PX;
+    if (ropt.stereoBondWidth > 0)
+        acs.stereoBondWidthAngstrom =
+            UnitsOfMeasure::convertToPx(ropt.stereoBondWidth, ropt.stereoBondWidthUnit, ropt.ppi) / LayoutOptions::DEFAULT_BOND_LENGTH_PX;
+    if (ropt.hashSpacing > 0)
+        acs.hashSpacingAngstrom = UnitsOfMeasure::convertToPx(ropt.hashSpacing, ropt.hashSpacingUnit, ropt.ppi) / LayoutOptions::DEFAULT_BOND_LENGTH_PX;
+    if (ropt.bondSpacing > 0)
+        acs.bondSpacing = ropt.bondSpacing;
+    _settings.init(relativeThickness, bondLineWidthFactor, &acs);
+
     bprintf(_fontfamily, "Arial");
     bbmin.x = bbmin.y = 1;
     bbmax.x = bbmax.y = -1;
@@ -633,6 +648,37 @@ void RenderContext::fillQuadStripes(const Vec2f& v0r, const Vec2f& v0l, const Ve
     {
         r.add(dr);
         l.add(dl);
+        moveTo(r);
+        lineTo(l);
+    }
+    checkPathNonEmpty();
+    bbIncludePath(true);
+    cairo_stroke(_cr);
+    cairoCheckStatus();
+}
+
+void RenderContext::fillQuadStripesSpacing(const Vec2f& v0r, const Vec2f& v0l, const Vec2f& v1r, const Vec2f& v1l, float spacing)
+{
+    Vec2f r(v0r), dr;
+    Vec2f l(v0l), dl;
+    Vec2f v;
+    dr.diff(v1r, v0r);
+    dl.diff(v1l, v0l);
+    v.diff(v1l, v1r);
+    float dr_len = dr.lengthSqr();
+    float dl_len = dl.lengthSqr();
+
+    dr.normalize();
+    dr.scale(std::fabs(dr.vsin(v)) * spacing);
+    dl.normalize();
+    dl.scale(std::fabs(dl.vsin(v)) * spacing);
+
+    while (true)
+    {
+        r.add(dr);
+        l.add(dl);
+        if (Vec2f::distSqr(v0r, r) > dr_len || Vec2f::distSqr(v0l, l) > dl_len)
+            break;
         moveTo(r);
         lineTo(l);
     }

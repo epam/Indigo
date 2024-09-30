@@ -27,7 +27,7 @@ namespace indigo
     class RenderSingle : Render
     {
     public:
-        RenderSingle(RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet);
+        RenderSingle(RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength);
         ~RenderSingle() override;
         void draw();
 

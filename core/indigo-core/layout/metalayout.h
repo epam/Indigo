@@ -26,7 +26,7 @@
 #include <cstdint>
 
 #ifdef _WIN32
-#pragma warning(push)
+#pragma warning(push, 4)
 #pragma warning(disable : 4251)
 #endif
 
@@ -120,9 +120,9 @@ namespace indigo
         // utility function to use in MoleculeLayout & ReactionLayout
         void adjustMol(BaseMolecule& mol, const Vec2f& min, const Vec2f& pos) const;
 
-        float reactionComponentMarginSize;
+        float reactionComponentMarginSize; // in angstrom
         float verticalIntervalFactor;
-        float bondLength;
+        float bondLength; // in angstrom
 
         DECL_ERROR;
 
@@ -227,6 +227,30 @@ namespace indigo
                 return input;
             }
         }
+        static float convertPtTo(float pt, UnitsOfMeasure::TYPE unit, int32_t ppi)
+        {
+            switch (unit)
+            {
+            case UnitsOfMeasure::CM:
+                return UnitsOfMeasure::convertToCm(pt, UnitsOfMeasure::PT, ppi);
+                break;
+            case UnitsOfMeasure::PT:
+                return pt;
+                break;
+            case UnitsOfMeasure::INCH:
+                return UnitsOfMeasure::convertToInches(pt, UnitsOfMeasure::PT, ppi);
+                break;
+            case UnitsOfMeasure::PX:
+                return UnitsOfMeasure::convertToPx(pt, UnitsOfMeasure::PT, ppi);
+                break;
+            }
+            throw Exception("Unknown unit of measure: %d", unit);
+        };
+
+        static float convertToAngstrom(float input, TYPE units, int32_t ppi, float bond_length_px)
+        {
+            return convertToPx(input, units, ppi) / bond_length_px;
+        };
     };
 
     struct LayoutOptions
@@ -234,19 +258,42 @@ namespace indigo
         // FIXME: The value is 1.6 instead of 1.0 due to backward compatibility, needs to be refactored
         static constexpr float DEFAULT_BOND_LENGTH = 1.6f; // default length of inter-chemical bonds
         static constexpr float DEFAULT_PLUS_SIZE = DEFAULT_BOND_LENGTH / 2;
+        static constexpr float DEFAULT_BOND_LENGTH_PX = 100.0f; // 100 pixel
+        static constexpr int32_t DEFAULT_PPI = 72;
 
-        float bondLength{DEFAULT_BOND_LENGTH};
+        float bondLength{DEFAULT_BOND_LENGTH_PX};
         UnitsOfMeasure::TYPE bondLengthUnit{UnitsOfMeasure::TYPE::PX};
-        float reactionComponentMarginSize{DEFAULT_BOND_LENGTH / 2};
+        float reactionComponentMarginSize{DEFAULT_BOND_LENGTH_PX / 2};
         UnitsOfMeasure::TYPE reactionComponentMarginSizeUnit{UnitsOfMeasure::TYPE::PX};
         int32_t ppi{72};
+        void reset()
+        {
+            bondLength = DEFAULT_BOND_LENGTH_PX;
+            bondLengthUnit = UnitsOfMeasure::TYPE::PX;
+            reactionComponentMarginSize = DEFAULT_BOND_LENGTH_PX / 2;
+            reactionComponentMarginSizeUnit = UnitsOfMeasure::TYPE::PX;
+            ppi = DEFAULT_PPI;
+        };
+        float getBondLengthPx()
+        {
+            return UnitsOfMeasure::convertToPx(bondLength, bondLengthUnit, ppi);
+        };
+        void setBondLengthPx(float value)
+        {
+            bondLength = UnitsOfMeasure::convertPtTo(UnitsOfMeasure::INCH_TO_PT * value / ppi, bondLengthUnit, ppi);
+        };
         float getMarginSizeInAngstroms() const
         {
             auto marginSizePt = UnitsOfMeasure::convertToPt(reactionComponentMarginSize, reactionComponentMarginSizeUnit, ppi);
             auto bondLengthPt = UnitsOfMeasure::convertToPt(bondLength, bondLengthUnit, ppi);
 
             return (DEFAULT_BOND_LENGTH * marginSizePt) / bondLengthPt;
-        }
+        };
+        void setMarginSizeInAngstroms(float value)
+        {
+            float angs_to_pt = UnitsOfMeasure::convertToPt(bondLength, bondLengthUnit, ppi) / DEFAULT_BOND_LENGTH;
+            reactionComponentMarginSize = UnitsOfMeasure::convertPtTo(value * angs_to_pt, reactionComponentMarginSizeUnit, ppi);
+        };
     };
 
 } // namespace indigo

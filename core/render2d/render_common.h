@@ -40,6 +40,8 @@ namespace indigo
     class QueryMolecule;
     class QueryReaction;
     class Output;
+    class RenderOptions;
+    struct AcsOptions;
 
     enum DINGO_MODE
     {
@@ -404,7 +406,7 @@ namespace indigo
     {
     public:
         RenderSettings();
-        void init(float sf, float lwf);
+        void init(float relativeThickness, float bondLineWidthFactor, AcsOptions* acs = nullptr);
 
         CP_DECL;
         TL_CP_DECL(Array<double>, bondDashAromatic);
@@ -440,6 +442,8 @@ namespace indigo
         float graphItemDigitHeight;
         float graphItemSignLineWidth;
         float graphItemPlusEdge;
+        float stereoBondSpace;
+        float hashSpacing;
 
         float fzz[FONT_SIZE_COUNT];
 
@@ -518,7 +522,7 @@ namespace indigo
         int maxHeight;
         int xOffset;
         int yOffset;
-        float bondLength;
+        float bondLength; // in pixels
         UnitsOfMeasure::TYPE bondLengthUnit;
         int gridMarginX;
         int gridMarginY;
@@ -531,6 +535,8 @@ namespace indigo
         COMMENT_POS commentPos;
         MultilineTextLayout commentAlign;
         MultilineTextLayout titleAlign;
+        float outputSheetWidth;
+        float outputSheetHeight;
 
         int gridColumnNumber;
 
@@ -542,7 +548,7 @@ namespace indigo
     {
     public:
         RenderOptions();
-        void clear();
+        void clearRenderOptions();
 
         Vec3f backgroundColor;
         Vec3f baseColor;
@@ -579,12 +585,35 @@ namespace indigo
         bool agentsBelowArrow;
         Array<char> atomColorProp;
         std::unique_ptr<RenderCdxmlContext> cdxml_context;
-        float reactionComponentMarginSize;
-        UnitsOfMeasure::TYPE reactionComponentMarginSizeUnit;
+        // ACS settings
+        float bond_length_px;
         int32_t ppi;
+        float fontSize;
+        UnitsOfMeasure::TYPE fontSizeUnit;
+        float fontSizeSub;
+        UnitsOfMeasure::TYPE fontSizeSubUnit;
+        float bondThickness;
+        UnitsOfMeasure::TYPE bondThicknessUnit;
+        float bondSpacing;
+        float stereoBondWidth;
+        UnitsOfMeasure::TYPE stereoBondWidthUnit;
+        float hashSpacing;
+        UnitsOfMeasure::TYPE hashSpacingUnit;
 
     private:
         RenderOptions(const RenderOptions&);
+    };
+
+    struct AcsOptions
+    {
+        AcsOptions();
+        void clear();
+        float bondSpacing;
+        float fontSizeAngstrom;
+        float fontSizeSubAngstrom;
+        float bondThicknessAngstrom;
+        float stereoBondWidthAngstrom;
+        float hashSpacingAngstrom;
     };
 
 } // namespace indigo

@@ -71,7 +71,7 @@ with open(os.path.join(ref, filename), "r") as file:
 ket = rxn.json()
 diff = find_diff(ket_ref, ket)
 if not diff:
-    print(filename + ".ket:SUCCEED")
+    print(filename + ":SUCCEED")
 else:
-    print(filename + ".ket:FAILED")
+    print(filename + ":FAILED")
     print(diff)
