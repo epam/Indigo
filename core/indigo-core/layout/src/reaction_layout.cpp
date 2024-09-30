@@ -158,7 +158,6 @@ void ReactionLayout::_updateMetadata()
     Vec2f arrow_head(0, 0);
     Vec2f arrow_tail(0, 0);
 
-    constexpr float shift = 1.0f;
     int prod_count = is_retrosyntetic ? _r.reactantsCount() : _r.productsCount();
     int react_count = is_retrosyntetic ? _r.productsCount() : _r.reactantsCount();
     if (prod_count == 0)
