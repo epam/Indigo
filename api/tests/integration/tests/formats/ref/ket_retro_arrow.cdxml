@@ -18,11 +18,11 @@
     </colortable>
     <page HeightPages="1" WidthPages="1">
         <fragment id="4">
-            <n id="5" p="457.394043 272.249969"/>
-            <n id="6" p="457.394043 242.250031"/>
-            <n id="7" p="431.413330 227.250031"/>
-            <n id="8" Element="7" NumHydrogens="2" p="483.374756 227.250031">
-                <t p="483.374756 227.250031" LabelJustification="Left">
+            <n id="5" p="65.569229 36.000000"/>
+            <n id="6" p="65.569229 -12.000000"/>
+            <n id="7" p="24.000000 -36.000000"/>
+            <n id="8" Element="7" NumHydrogens="2" p="107.138428 -36.000000">
+                <t p="107.138428 -36.000000" LabelJustification="Left">
                     <s font="3" size="10" face="96">NH</s>
                     <s font="3" size="10" face="32">2</s>
                 </t>
@@ -32,22 +32,22 @@
             <b id="18" B="6" E="8"/>
         </fragment>
         <fragment id="9">
-            <n id="10" Element="8" NumHydrogens="1" p="599.624939 242.250031">
-                <t p="599.624939 242.250031" LabelJustification="Left">
+            <n id="10" Element="8" NumHydrogens="1" p="299.138458 -12.000000">
+                <t p="299.138458 -12.000000" LabelJustification="Left">
                     <s font="3" size="10" face="96">OH</s>
                 </t>
             </n>
-            <n id="11" p="625.604858 257.250000"/>
-            <n id="12" Element="8" NumHydrogens="1" p="651.586670 242.250031">
-                <t p="651.586670 242.250031" LabelJustification="Left">
+            <n id="11" p="340.707672 12.000000"/>
+            <n id="12" Element="8" NumHydrogens="1" p="382.276886 -12.000000">
+                <t p="382.276886 -12.000000" LabelJustification="Left">
                     <s font="3" size="10" face="96">OH</s>
                 </t>
             </n>
             <b id="19" B="10" E="11"/>
             <b id="20" B="11" E="12"/>
         </fragment>
-        <arrow id="13" BoundingBox="562.505432 245.250000 510.712555 245.250000" FillType="None" ArrowheadHead="Full" ArrowheadType="Angle" HeadSize="600" ArrowheadCenterSize="600" ArrowheadWidth="150" ArrowShaftSpacing="600" Head3D="562.005432 245.250000 0.000000" Tail3D="511.212555 245.250000 0.000000"/>
-        <graphic id="21" SupersededBy="13" GraphicType="Line" ArrowType="RetroSynthetic" HeadSize="600" BoundingBox="562.005432 245.250000 511.212555 245.250000"/>
+        <arrow id="13" BoundingBox="251.138443 -0.000000 155.138428 -0.000000" FillType="None" ArrowheadHead="Full" ArrowheadType="Angle" HeadSize="600" ArrowheadCenterSize="600" ArrowheadWidth="150" ArrowShaftSpacing="600" Head3D="250.638443 0.000000 0.000000" Tail3D="155.638428 0.000000 0.000000"/>
+        <graphic id="21" SupersededBy="13" GraphicType="Line" ArrowType="RetroSynthetic" HeadSize="600" BoundingBox="250.638443 0.000000 155.638428 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4" ReactionStepProducts="9" ReactionStepArrows="21"/>
         </scheme>
