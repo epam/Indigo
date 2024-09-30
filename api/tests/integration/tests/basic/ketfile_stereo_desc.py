@@ -31,12 +31,13 @@ def stereo_desc_test(py_file, out_queue):
             os.path.join(ref_path, filename[:-4] + ".ket"), __file__
         )
         mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))
-        with open(ketfile, "r") as file:
-            ket_ref = file.read()
         mol_json_no_cip = mol.json()
         indigo.setOption("json-saving-add-stereo-desc", True)
         mol_json_cip = mol.json()
-
+        # with open(ketfile, "w") as file:
+        #     file.write(mol_json_cip)
+        with open(ketfile, "r") as file:
+            ket_ref = file.read()
         diff = find_diff(ket_ref, mol_json_cip)
         if not diff:
             diff = find_diff(mol_json_no_cip, mol_json_cip)
