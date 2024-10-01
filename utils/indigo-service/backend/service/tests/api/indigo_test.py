@@ -1495,6 +1495,59 @@ M  END""",
         # )
         # self.assertEqual(400, result.status_code)
 
+    def test_render_coloring(self):
+        headers, data = self.get_headers(
+            {
+                "struct": "NO.PF",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        ket = json.loads(result.text)["struct"]
+        ref_path = joinPathPy("ref/", __file__)
+        headers, data = self.get_headers(
+            {
+                "output_format": "image/png",
+                "options": {
+                    "render-coloring": False,
+                },
+                "struct": ket,
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/render",
+            headers=headers,
+            data=data,
+        )
+        fname = "render-coloring-false.png"
+        with open(os.path.join(ref_path, fname), "wb") as file:
+            file.write(result.content)
+        with open(os.path.join(ref_path, fname), "rb") as file:
+            ref = file.read()
+            self.assertEqual(result.content, ref)
+        headers, data = self.get_headers(
+            {
+                "output_format": "image/png",
+                "options": {
+                    "render-coloring": True,
+                },
+                "struct": ket,
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/render",
+            headers=headers,
+            data=data,
+        )
+        fname = "render-coloring-true.png"
+        with open(os.path.join(ref_path, fname), "wb") as file:
+            file.write(result.content)
+        with open(os.path.join(ref_path, fname), "rb") as file:
+            ref = file.read()
+            self.assertEqual(result.content, ref)
+
     def test_json_aromatize_correct(self):
         formats = (
             "chemical/x-mdl-molfile",
