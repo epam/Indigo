@@ -3529,7 +3529,22 @@ M  END
 
         # check
         with open(ref_prefix + ".ket", "r") as file:
-            self.assertEqual(result_ket, file.read())
+            ref_ket = file.read()
+        self.assertEqual(result_ket, ref_ket)
+
+        # check autodetect IDT
+        headers, data = self.get_headers(
+            {
+                "struct": idt,
+                "options": {"monomerLibrary": monomer_library},
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_ket = json.loads(result.text)["struct"]
+        self.assertEqual(result_ket, ref_ket)
 
         # Ket to IDT
         headers, data = self.get_headers(
@@ -3578,7 +3593,23 @@ M  END
 
         # check
         with open(ref_prefix + ".ket", "r") as file:
-            self.assertEqual(result_ket, file.read())
+            ref_ket = file.read()
+        self.assertEqual(result_ket, ref_ket)
+
+        # HELM autodetect
+        headers, data = self.get_headers(
+            {
+                "struct": helm_struct,
+                "options": {"monomerLibrary": monomer_library},
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_ket = json.loads(result.text)["struct"]
+        self.assertEqual(result_ket, ref_ket)
 
         # Ket to HELM
         headers, data = self.get_headers(

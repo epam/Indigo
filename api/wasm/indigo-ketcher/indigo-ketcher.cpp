@@ -443,6 +443,23 @@ namespace indigo
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
                 }
                 exceptionMessages.emplace_back(indigoGetLastError());
+
+                if (library >= 0)
+                {
+                    print_js("try as IDT");
+                    objectId = indigoLoadIdtFromString(data.c_str(), library);
+                    if (objectId >= 0)
+                    {
+                        return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                    }
+
+                    print_js("try as HELM");
+                    objectId = indigoLoadHelmFromString(data.c_str(), library);
+                    if (objectId >= 0)
+                    {
+                        return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                    }
+                }
             }
             exceptionMessages.emplace_back(indigoGetLastError());
             // Let's try query molecule
