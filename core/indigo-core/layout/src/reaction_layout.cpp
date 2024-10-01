@@ -233,15 +233,17 @@ void ReactionLayout::make()
 {
     int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
     int simple_count = _r.meta().getNonChemicalMetaCount();
-    int multi_count = _r.meta().getMetaCount(KETReactionMultitailArrow::CID);
     if (simple_count)
         return;
 
+    /*
+    int multi_count = _r.meta().getMetaCount(KETReactionMultitailArrow::CID);
     if (_r.reactionBlocksCount() > 1 && _r.intermediateCount() == 0 && multi_count == 0)
     {
         makePathwayFromSimple();
         return;
     }
+    */
 
     if (arrows_count > 1)
         return; // not implemented yet
