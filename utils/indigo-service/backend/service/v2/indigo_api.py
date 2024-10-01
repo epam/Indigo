@@ -1740,7 +1740,6 @@ def render():
 
     # indigo = md.struct._session
     # indigo = indigo_init(data["options"])
-    indigo.setOption("render-coloring", True)
     content_type = data["output_format"]
     if "render-output-format" in data["options"]:
         rof = data["options"]["render-output-format"]
