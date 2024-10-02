@@ -7,8 +7,8 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
-from rendering import *
+from env_indigo import Indigo, IndigoRenderer, isIronPython, joinPathPy
+from rendering import checkImageSimilarity
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
@@ -215,6 +215,19 @@ M  RGP  2   7   1   9   2
 M  END
 """
 )
+
+print("Test issue 2070 attachment point width")
+
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+indigo.setOption("render-bond-thickness", 5)
+fname = joinPathPy("molecules/r1-2ap-aal.mol", __file__)
+mol = indigo.loadMoleculeFromFile(fname)
+qmol = indigo.loadQueryMoleculeFromFile(fname)
+png_file = "rgroups/issue_2070.png"
+renderer.renderToFile(mol, joinPathPy("out/" + png_file, __file__))
+print(checkImageSimilarity(png_file))
+
 
 if isIronPython():
     renderer.Dispose()
