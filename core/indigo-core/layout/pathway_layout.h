@@ -53,7 +53,8 @@ namespace indigo
 
         PathwayLayout(PathwayReaction& reaction, const LayoutOptions& options)
             : _reaction(reaction), _depths(MAX_DEPTHS, 0), _maxDepth(0), _bond_length(options.bondLength),
-              _default_arrow_size((float)options.bondLength * ARROW_LENGTH_FACTOR), _reaction_margin_size(options.reactionComponentMarginSize)
+              _default_arrow_size((float)options.bondLength * ARROW_LENGTH_FACTOR / options.ppi),
+              _reaction_margin_size(options.reactionComponentMarginSize / options.ppi)
         {
         }
 
@@ -72,8 +73,8 @@ namespace indigo
                 if (reactantIdx != -1)
                 {
                     auto& mol = reaction.getMolecule(reactantIdx);
-                    MoleculeLayout molLayout(mol, true);
-                    molLayout.make();
+                    // MoleculeLayout molLayout(mol, true);
+                    // molLayout.make();
                     Rect2f boundingBox;
                     mol.getBoundingBox(boundingBox);
                     molecules.push_back(std::make_pair(reactantIdx, boundingBox));
@@ -85,8 +86,8 @@ namespace indigo
                     for (auto pidx : simpleReaction.productIndexes)
                     {
                         auto& mol = reaction.getMolecule(pidx);
-                        MoleculeLayout molLayout(mol, true);
-                        molLayout.make();
+                        // MoleculeLayout molLayout(mol, true);
+                        // molLayout.make();
                         Rect2f boundingBox;
                         mol.getBoundingBox(boundingBox);
                         molecules.push_back(std::make_pair(pidx, boundingBox));
@@ -135,21 +136,23 @@ namespace indigo
 
             void applyLayout()
             {
-                if (molecules.size())
+                if (!molecules.empty())
                 {
                     float totalWidth = std::accumulate(molecules.begin(), molecules.end(), 0.0f,
                                                        [](float acc, const std::pair<int, Rect2f>& r) { return acc + r.second.width(); });
+                    float margin = COMPONENTS_MARGIN * (molecules.size() - 1);
+                    float blockWidth = totalWidth + margin;
 
-                    float spacing = molecules.size() > 1 ? (width - totalWidth) / (molecules.size() - 1) : (width - totalWidth) / 2;
-                    float currentX = boundingBox.left();
+                    float startX = boundingBox.left() + (boundingBox.width() - blockWidth) / 2;
+                    float currentX = startX;
                     float currentY = boundingBox.center().y;
+
                     for (auto& mol_desc : molecules)
                     {
                         auto& mol = reaction.getMolecule(mol_desc.first);
-                        currentX += mol_desc.second.width() / 2;
-                        Vec2f item_offset(currentX - mol_desc.second.center().x, currentY - mol_desc.second.center().y);
+                        Vec2f item_offset(currentX + mol_desc.second.width() / 2 - mol_desc.second.center().x, currentY - mol_desc.second.center().y);
                         mol.offsetCoordinates(Vec3f(item_offset.x, item_offset.y, 0));
-                        currentX += mol_desc.second.width() / 2 + spacing;
+                        currentX += mol_desc.second.width() + COMPONENTS_MARGIN;
                     }
                 }
             }
