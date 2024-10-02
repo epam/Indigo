@@ -399,10 +399,26 @@ def load_moldata(
                         md.struct = indigo.loadQueryReaction(molstr)
                         md.is_query = True
                     except IndigoException:
-                        raise HttpException(
-                            "struct data not recognized as molecule, query, reaction or reaction query",
-                            400,
-                        )
+                        if library is None:
+                            raise HttpException(
+                                "struct data not recognized as molecule, query, reaction or reaction query",
+                                400,
+                            )
+                        else:  # has library try to load IDT and HELM
+                            try:
+                                md.struct = indigo.loadIdt(molstr, library)
+                                md.is_rxn = False
+                            except IndigoException:
+                                try:
+                                    md.struct = indigo.loadHelm(
+                                        molstr, library
+                                    )
+                                except IndigoException:
+                                    raise HttpException(
+                                        "struct data not recognized as molecule, query, reaction or reaction query",
+                                        400,
+                                    )
+
     return md
 
 
