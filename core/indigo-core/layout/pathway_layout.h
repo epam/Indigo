@@ -85,6 +85,8 @@ namespace indigo
                     for (auto pidx : simpleReaction.productIndexes)
                     {
                         auto& mol = reaction.getMolecule(pidx);
+                        MoleculeLayout molLayout(mol, true);
+                        molLayout.make();
                         Rect2f boundingBox;
                         mol.getBoundingBox(boundingBox);
                         molecules.push_back(std::make_pair(pidx, boundingBox));
