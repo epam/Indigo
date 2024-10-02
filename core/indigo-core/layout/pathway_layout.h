@@ -28,6 +28,8 @@
 #include <numeric>
 #include <vector>
 
+#include "layout/metalayout.h"
+#include "layout/molecule_layout.h"
 #include "reaction/pathway_reaction.h"
 
 namespace indigo
@@ -42,21 +44,23 @@ namespace indigo
         DECL_ERROR;
 
     public:
-        PathwayLayout(PathwayReaction& reaction) : _reaction(reaction), _depths(10, 0), _maxDepth(0)
+        static constexpr float COMPONENTS_MARGIN = 1.0f;
+        static constexpr float ARROW_TAIL_LENGTH = 0.5f;
+        static constexpr float VERTICAL_SPACING = 2.5f;
+        static constexpr float MULTIPATHWAY_VERTICAL_SPACING = 1.5f;
+        static constexpr float ARROW_LENGTH_FACTOR = 6.5f;
+        static constexpr int MAX_DEPTHS = 10;
+
+        PathwayLayout(PathwayReaction& reaction, const LayoutOptions& options)
+            : _reaction(reaction), _depths(MAX_DEPTHS, 0), _maxDepth(0), _bond_length(options.bondLength),
+              _default_arrow_size((float)options.bondLength * ARROW_LENGTH_FACTOR / options.ppi),
+              _reaction_margin_size(options.reactionComponentMarginSize / options.ppi)
         {
         }
 
         void make();
 
     private:
-        static constexpr float MARGIN = 1.f;
-        static constexpr float ARROW_HEAD_WIDTH = 2.5f;
-        static constexpr float ARROW_TAIL_LENGTH = 0.5f;
-        static constexpr float ARROW_LENGTH = ARROW_TAIL_LENGTH + ARROW_TAIL_LENGTH;
-        static constexpr float HORIZONTAL_SPACING = 3.5f;
-        static constexpr float VERTICAL_SPACING = 2.5f;
-        static constexpr float MULTIPATHWAY_VERTICAL_SPACING = 1.5f;
-
         struct PathwayLayoutItem
         {
             PathwayLayoutItem(PathwayReaction& pwr, int nodeIdx, int reactantIdx = -1)
@@ -69,6 +73,8 @@ namespace indigo
                 if (reactantIdx != -1)
                 {
                     auto& mol = reaction.getMolecule(reactantIdx);
+                    // MoleculeLayout molLayout(mol, true);
+                    // molLayout.make();
                     Rect2f boundingBox;
                     mol.getBoundingBox(boundingBox);
                     molecules.push_back(std::make_pair(reactantIdx, boundingBox));
@@ -80,10 +86,10 @@ namespace indigo
                     for (auto pidx : simpleReaction.productIndexes)
                     {
                         auto& mol = reaction.getMolecule(pidx);
+                        // MoleculeLayout molLayout(mol, true);
+                        // molLayout.make();
                         Rect2f boundingBox;
                         mol.getBoundingBox(boundingBox);
-                        if (molecules.size())
-                            width += MARGIN;
                         molecules.push_back(std::make_pair(pidx, boundingBox));
                         width += boundingBox.width(); // add some spacing for plus
                         height = std::max(boundingBox.height(), height);
@@ -108,6 +114,7 @@ namespace indigo
                         }
                     }
                 }
+                width += COMPONENTS_MARGIN * molecules.size();
             }
 
             PathwayLayoutItem* getFirstChild()
@@ -129,20 +136,23 @@ namespace indigo
 
             void applyLayout()
             {
-                if (molecules.size())
+                if (!molecules.empty())
                 {
                     float totalWidth = std::accumulate(molecules.begin(), molecules.end(), 0.0f,
                                                        [](float acc, const std::pair<int, Rect2f>& r) { return acc + r.second.width(); });
+                    float margin = COMPONENTS_MARGIN * (molecules.size() - 1);
+                    float blockWidth = totalWidth + margin;
 
-                    float spacing = molecules.size() > 1 ? (width - totalWidth) / (molecules.size() - 1) : (width - totalWidth) / 2;
-                    float currentX = boundingBox.left();
-                    float currentY = boundingBox.bottom();
+                    float startX = boundingBox.left() + (boundingBox.width() - blockWidth) / 2;
+                    float currentX = startX;
+                    float currentY = boundingBox.center().y;
+
                     for (auto& mol_desc : molecules)
                     {
                         auto& mol = reaction.getMolecule(mol_desc.first);
-                        Vec2f item_offset(currentX - mol_desc.second.left(), currentY - mol_desc.second.bottom());
+                        Vec2f item_offset(currentX + mol_desc.second.width() / 2 - mol_desc.second.center().x, currentY - mol_desc.second.center().y);
                         mol.offsetCoordinates(Vec3f(item_offset.x, item_offset.y, 0));
-                        currentX += mol_desc.second.width() + spacing;
+                        currentX += mol_desc.second.width() + COMPONENTS_MARGIN;
                     }
                 }
             }
@@ -182,7 +192,7 @@ namespace indigo
             std::vector<PathwayLayout::PathwayLayoutItem*> layoutItems;
         };
 
-        void traverse(PathwayLayoutItem* root, std::function<void(PathwayLayoutItem*)> node_processor);
+        void traverse(PathwayLayoutItem* root, std::function<void(PathwayLayoutItem*, int)> node_processor);
 
         float spacing(PathwayLayoutItem* top, PathwayLayoutItem* bottom, bool siblings)
         {
@@ -220,6 +230,10 @@ namespace indigo
         PathwayReaction& _reaction;
         std::vector<PathwayLayoutItem> _layoutItems;
         std::vector<PathwayLayoutRootItem> _layoutRootItems;
+
+        const float _bond_length;
+        const float _default_arrow_size;
+        const float _reaction_margin_size;
     };
 }
 

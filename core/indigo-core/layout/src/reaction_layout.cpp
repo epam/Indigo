@@ -39,13 +39,15 @@ ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
       _smart_layout(smart_layout), reaction_margin_size(DEFAULT_HOR_INTERVAL_FACTOR), atom_label_margin(1.3f), layout_orientation(UNCPECIFIED),
       max_iterations(0)
 {
+    _options.bondLength = bond_length;
+    _options.reactionComponentMarginSize = reaction_margin_size;
 }
 
 ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout, const LayoutOptions& options)
     : bond_length(LayoutOptions::DEFAULT_BOND_LENGTH), default_plus_size(LayoutOptions::DEFAULT_PLUS_SIZE),
       default_arrow_size(LayoutOptions::DEFAULT_BOND_LENGTH * 2), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout),
       reaction_margin_size(options.getMarginSizeInAngstroms()), atom_label_margin(LayoutOptions::DEFAULT_BOND_LENGTH / 2), layout_orientation(UNCPECIFIED),
-      max_iterations(0)
+      max_iterations(0), _options(options)
 {
 }
 
@@ -242,7 +244,7 @@ void ReactionLayout::makePathwayFromSimple()
         }
     }
     PathwayReactionBuilder prb;
-    auto pwr = prb.buildPathwayReaction(reactions);
+    auto pwr = prb.buildPathwayReaction(reactions, _options);
     _r.meta().resetReactionData();
     pwr->meta().append(_r.meta());
     pwr->copyToReaction(_r);
@@ -252,15 +254,17 @@ void ReactionLayout::make()
 {
     int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
     int simple_count = _r.meta().getNonChemicalMetaCount();
-    int multi_count = _r.meta().getMetaCount(KETReactionMultitailArrow::CID);
     if (simple_count)
         return;
 
+    /*
+    int multi_count = _r.meta().getMetaCount(KETReactionMultitailArrow::CID);
     if (_r.reactionBlocksCount() > 1 && _r.intermediateCount() == 0 && multi_count == 0)
     {
         makePathwayFromSimple();
         return;
     }
+    */
 
     if (arrows_count > 1)
         return; // not implemented yet

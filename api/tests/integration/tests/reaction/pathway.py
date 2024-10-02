@@ -41,7 +41,7 @@ for filename in files:
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
     #     file.write(rxn_txt)
 
-    rxn_ref = open(os.path.join(ref_path, filename) + ".ket", "r").read()
+    rxn_ref = open(getRefFilepath(filename + ".ket"), "r").read()
 
     diff = find_diff(rxn_ref, rxn_txt)
     if not diff:

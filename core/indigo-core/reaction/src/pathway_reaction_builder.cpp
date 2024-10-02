@@ -41,7 +41,8 @@ auto PathwayReactionBuilder::findSuccessorReactions(int reactionIdx)
     // key - reaction index, value - vector of reactant indexes
     std::map<int, std::vector<int>> matchedReactions;
     // iterate over products of the reaction
-    for (auto& product : _reactionInchiDescriptors[reactionIdx].products)
+    auto& products = _reactionInchiDescriptors[reactionIdx].products;
+    for (auto& product : products)
     {
         // find all reactions that have this product as a reactant (successors)
         auto rtr_it = _reactantToReactions.find(product);
@@ -72,6 +73,11 @@ auto PathwayReactionBuilder::findSuccessorReactions(int reactionIdx)
                 if (matchedReactions.empty())
                     break;
             }
+        }
+        else
+        {
+            matchedReactions.clear();
+            break;
         }
     }
     // remove the reaction itself from the set of possible precursors
@@ -227,12 +233,12 @@ void PathwayReactionBuilder::buildRootReaction(PathwayReaction& reaction)
     }
 }
 
-std::unique_ptr<PathwayReaction> PathwayReactionBuilder::buildPathwayReaction(std::deque<Reaction>& reactions)
+std::unique_ptr<PathwayReaction> PathwayReactionBuilder::buildPathwayReaction(std::deque<Reaction>& reactions, LayoutOptions& options)
 {
     buildInchiDescriptors(reactions);
     buildNodes(reactions);
     buildReactions();
-    PathwayLayout pl(*_pathwayReaction);
+    PathwayLayout pl(*_pathwayReaction, options);
     pl.make();
     buildRootReaction(*_pathwayReaction);
     return std::move(_pathwayReaction);

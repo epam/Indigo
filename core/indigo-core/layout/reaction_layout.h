@@ -85,7 +85,7 @@ namespace indigo
         int max_iterations = 0;
         bool _smart_layout = false;
         LAYOUT_ORIENTATION layout_orientation = UNCPECIFIED;
-
+        LayoutOptions _options;
         BaseReaction& _r;
         Metalayout _ml;
     };
