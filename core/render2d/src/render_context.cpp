@@ -859,7 +859,7 @@ void RenderContext::drawAttachmentPoint(RenderItemAttachmentPoint& ri, bool idle
     setSingleSource(ri.color);
     if (ri.highlighted && opt.highlightColorEnable)
         setSingleSource(opt.highlightColor);
-    setLineWidth(_settings.unit);
+    setLineWidth(_settings.bondLineWidth);
     moveTo(ri.p0);
     lineTo(ri.p1);
     checkPathNonEmpty();
