@@ -1485,8 +1485,10 @@ void MoleculeRenderInternal::_determineStereoGroupsMode()
             tiChiral.fontsize = FONT_SIZE_LABEL;
             _cw.setTextItemSize(tiChiral);
             Rect2f bbox;
+            Vec2f pos;
             _mol->getBoundingBox(bbox);
-            tiChiral.bbp.set(bbox.left() + (_max.x - _min.x) * _scale - tiChiral.bbsz.x, -bbox.top() - tiChiral.bbsz.y * 2);
+            _objCoordTransform(pos, Vec2f(bbox.left(), bbox.top()));
+            tiChiral.bbp.set(pos.x + (_max.x - _min.x) * _scale - tiChiral.bbsz.x, pos.y - tiChiral.bbsz.y * 2);
             _cw.setSingleSource(CWC_BASE);
             _cw.drawTextItemText(tiChiral, _idle);
             return;
