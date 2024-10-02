@@ -7,8 +7,8 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
-from rendering import *
+from env_indigo import Indigo, IndigoRenderer, isIronPython, joinPathPy  # noqa
+from rendering import checkImageSimilarity  # noqa
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
@@ -67,6 +67,18 @@ renderRxnfile(
 )
 renderRxnfile(joinPathPy("reactions/epoxy.rxn", __file__), "epoxy")
 print("Done")
+
+print("issue 2457 wrong chiral label position")
+indigo.resetOptions()
+indigo.setOption("ignore-stereochemistry-errors", "true")
+indigo.setOption("render-background-color", "255, 255, 255")
+indigo.setOption("render-output-format", "png")
+fname = "issue_2457"
+png_fname = fname + ".png"
+ket_fname = joinPathPy("reactions/%s.ket" % fname, __file__)
+rxn = indigo.loadReactionFromFile(ket_fname)
+renderer.renderToFile(rxn, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
 
 if isIronPython():
     renderer.Dispose()
