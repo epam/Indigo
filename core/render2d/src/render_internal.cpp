@@ -29,6 +29,10 @@
 #include "reaction/reaction.h"
 #include "render_context.h"
 
+#ifdef _WIN32
+#pragma warning(push, 4)
+#endif
+
 using namespace indigo;
 
 #define BOND_STEREO_BOLD 10001
@@ -148,10 +152,10 @@ static bool _isBondWide(const BondDescr& bd)
 
 RenderOptions::RenderOptions()
 {
-    clear();
+    clearRenderOptions();
 }
 
-void RenderOptions::clear()
+void RenderOptions::clearRenderOptions()
 {
     baseColor.set(0, 0, 0);
     backgroundColor.set(-1, -1, -1);
@@ -187,6 +191,33 @@ void RenderOptions::clear()
     showCycles = false;
     agentsBelowArrow = true;
     atomColorProp.clear();
+    ppi = LayoutOptions::DEFAULT_PPI;
+    fontSize = -1;
+    fontSizeUnit = UnitsOfMeasure::PT;
+    fontSizeSub = -1;
+    fontSizeSubUnit = UnitsOfMeasure::PT;
+    bondThickness = -1;
+    bondThicknessUnit = UnitsOfMeasure::PT;
+    bondSpacing = -1;
+    stereoBondWidth = -1;
+    stereoBondWidthUnit = UnitsOfMeasure::PT;
+    hashSpacing = -1;
+    hashSpacingUnit = UnitsOfMeasure::PT;
+}
+
+AcsOptions::AcsOptions()
+{
+    clear();
+}
+
+void AcsOptions::clear()
+{
+    bondSpacing = -1;
+    fontSizeAngstrom = -1;
+    fontSizeSubAngstrom = -1;
+    bondThicknessAngstrom = -1;
+    stereoBondWidthAngstrom = -1;
+    hashSpacingAngstrom = -1;
 }
 
 IMPL_ERROR(MoleculeRenderInternal, "molecule render internal");
@@ -3859,7 +3890,7 @@ void MoleculeRenderInternal::_adjustAngle(Vec2f& l, const BondEnd& be1, const Bo
     const Vec2f& p1 = _ad(be1.aid).pos;
     const Vec2f& p2 = _ad(be2.aid).pos;
     const double len = Vec2f::dist(p1, p2);
-    double w = _settings.bondSpace;
+    double w = _settings.stereoBondSpace;
     double tgb = w / len;
     double csb = sqrt(1 / (1 + tgb * tgb));
     double snb = tgb * csb;
@@ -3878,7 +3909,7 @@ void MoleculeRenderInternal::_adjustAngle(Vec2f& l, const BondEnd& be1, const Bo
 void MoleculeRenderInternal::_bondBoldStereo(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
 {
     Vec2f r0(be1.p), l0(be1.p), r1(be2.p), l1(be2.p);
-    float w = _settings.bondSpace;
+    float w = _settings.stereoBondSpace;
     l0.addScaled(bd.norm, -w);
     r0.addScaled(bd.norm, w);
     l1.addScaled(bd.norm, -w);
@@ -3944,23 +3975,27 @@ void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, cons
         _bondBoldStereo(bd, be1, be2);
         return;
     }
-    Vec2f l(be2.p), r(be2.p);
-    float w = _settings.bondSpace;
-    l.addScaled(bd.norm, -w);
-    r.addScaled(bd.norm, w);
-    bd.extP = bd.extN = w;
 
     float lw = _cw.currentLineWidth();
-    Vec2f r0(be1.p), l0(be1.p);
-    l0.addScaled(bd.norm, -lw / 2);
-    r0.addScaled(bd.norm, lw / 2);
-
     if (bd.stereodir == 0)
     {
         _cw.drawLine(be1.p, be2.p);
         bd.extP = bd.extN = lw / 2;
+        return;
     }
-    else if (bd.stereodir == BOND_UP)
+
+    // stereo bonds
+    Vec2f l(be2.p), r(be2.p);
+    float w = _settings.stereoBondSpace;
+    l.addScaled(bd.norm, -w);
+    r.addScaled(bd.norm, w);
+    bd.extP = bd.extN = w;
+
+    Vec2f r0(be1.p), l0(be1.p);
+    l0.addScaled(bd.norm, -lw / 2);
+    r0.addScaled(bd.norm, lw / 2);
+
+    if (bd.stereodir == BOND_UP)
     {
         if (_ad(be2.aid).showLabel == false && !bd.isShort)
         {
@@ -3975,8 +4010,16 @@ void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, cons
     }
     else if (bd.stereodir == BOND_DOWN)
     {
-        int stripeCnt = std::max((int)((len) / lw / 2), 4);
-        _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
+        int constexpr min_count = 4;
+        if (_settings.hashSpacing > 0 && (int)(len / _settings.hashSpacing) > min_count)
+        {
+            _cw.fillQuadStripesSpacing(r0, l0, r, l, _settings.hashSpacing);
+        }
+        else
+        {
+            int stripeCnt = std::max((int)((len) / lw / 2), min_count);
+            _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
+        }
     }
     else if (bd.stereodir == BOND_EITHER)
     {
@@ -4334,3 +4377,7 @@ void MoleculeRenderInternal::_precalcScale()
     }
     _scale = std::max(_scale, float(max_output_length) / ((float)10.0 * scale_modificator));
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif

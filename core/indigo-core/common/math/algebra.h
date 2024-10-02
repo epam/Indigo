@@ -159,6 +159,11 @@ namespace indigo
             return std::make_pair(x, y) < std::make_pair(a.x, a.y);
         }
 
+        inline float operator*(const Vec2f& a) const
+        {
+            return x * a.x + y * a.y;
+        }
+
         inline Vec2f operator+(const Vec2f& a) const
         {
             return Vec2f(x + a.x, y + a.y);
@@ -205,6 +210,24 @@ namespace indigo
             x /= t;
             y /= t;
             return *this;
+        }
+
+        inline float vcos(const Vec2f& a) const
+        {
+            float scalar = *this * a;
+            float ta = length() * a.length();
+            if (ta < EPSILON)
+                ta = EPSILON;
+            return scalar / ta;
+        }
+
+        inline float vsin(const Vec2f& a) const
+        {
+            float scalar = *this * a;
+            float ta = lengthSqr() * a.lengthSqr();
+            if (ta < EPSILON)
+                ta = EPSILON;
+            return sqrt(1 - scalar * scalar / ta);
         }
 
         DLLEXPORT bool normalize();

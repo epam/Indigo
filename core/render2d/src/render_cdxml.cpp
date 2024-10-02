@@ -64,7 +64,8 @@ void _getBounds(RenderParams& params, BaseMolecule& mol, Vec2f& min, Vec2f& max,
 
     float bond_length = 1;
     if (params.cnvOpt.bondLength > 0)
-        bond_length = params.cnvOpt.bondLength / 100.0f;
+        bond_length =
+            UnitsOfMeasure::convertToPx(params.cnvOpt.bondLength, params.cnvOpt.bondLengthUnit, params.rOpt.ppi) / LayoutOptions::DEFAULT_BOND_LENGTH_PX;
 
     scale = bond_length / avg_bond_length;
 

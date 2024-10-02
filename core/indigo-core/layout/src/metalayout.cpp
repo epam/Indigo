@@ -20,6 +20,10 @@
 #include "base_cpp/tlscont.h"
 #include "molecule/molecule.h"
 
+#ifdef _WIN32
+#pragma warning(push, 4)
+#endif
+
 using namespace indigo;
 
 Metalayout::LayoutLine::LayoutLine()
@@ -86,7 +90,7 @@ Metalayout::LayoutLine& Metalayout::newLine()
 void Metalayout::process()
 {
     Vec2f pos;
-    static const auto atomLabelMarginVertical = bondLength / 2;
+    const auto atomLabelMarginVertical = bondLength / 2;
     for (int i = 0; i < _layout.size(); ++i)
     {
         LayoutLine& line = _layout[i];
@@ -328,3 +332,7 @@ void Metalayout::adjustMol(BaseMolecule& mol, const Vec2f& min, const Vec2f& pos
         }
     }
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif

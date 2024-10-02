@@ -28,12 +28,15 @@
 #include "layout/reaction_layout.h"
 #include "reaction/base_reaction.h"
 
+#ifdef _WIN32
+#pragma warning(push, 4)
+#endif
+
 CEXPORT int indigoLayout(int object)
 {
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(object);
-        int i;
 
         if (IndigoBaseMolecule::is(obj))
         {
@@ -79,7 +82,7 @@ CEXPORT int indigoLayout(int object)
                     catch (Exception e)
                     {
                     }
-                    for (i = 1; i <= mol->rgroups.getRGroupCount(); i++)
+                    for (int i = 1; i <= mol->rgroups.getRGroupCount(); i++)
                     {
                         RGroup& rgp = mol->rgroups.getRGroup(i);
 
@@ -112,9 +115,6 @@ CEXPORT int indigoLayout(int object)
                 ReactionLayout rl(rxn, self.smart_layout, self.layout_options);
                 rl.setMaxIterations(self.layout_max_iterations);
                 rl.setLayoutOrientation((LAYOUT_ORIENTATION)self.layout_orientation);
-                // TODO::ACS Why removed?
-                // rl.bond_length = LayoutOptions::DEFAULT_BOND_LENGTH;
-                // rl.reaction_margin_size = self.layout_horintervalfactor;
                 if (self.layout_preserve_existing)
                     rl.setPreserveMoleculeLayout(true);
                 rl.make();
@@ -197,3 +197,7 @@ CEXPORT int indigoClean2d(int object)
     }
     INDIGO_END(-1);
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif

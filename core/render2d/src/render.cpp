@@ -33,9 +33,8 @@ using namespace indigo;
 
 IMPL_ERROR(Render, "Render");
 
-Render::Render(RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet)
-    : minMarg(2), _rc(rc), _settings(rc.getRenderSettings()), _cnvOpt(cnvOpt), _opt(rc.opt), _factory(factory), _bondLength(bondLength),
-      _bondLengthSet(bondLengthSet)
+Render::Render(RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength)
+    : minMarg(2), _rc(rc), _settings(rc.getRenderSettings()), _cnvOpt(cnvOpt), _opt(rc.opt), _factory(factory), _bondLength(bondLength)
 {
 }
 
@@ -86,7 +85,7 @@ float Render::_getScale(int w, int h)
 
 float Render::_getMaxScale(int w, int h)
 {
-    float s = (float)(_bondLength > 0 ? _bondLength : 100);
+    float s = (float)_bondLength > 0 ? _bondLength : LayoutOptions::DEFAULT_BOND_LENGTH_PX;
     int maxWidth = _getMaxWidth();
     int maxHeight = _getMaxHeight();
     int defaultWidth = _getDefaultWidth(s);

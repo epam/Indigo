@@ -18,7 +18,6 @@ indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
 indigo.setOption("json-saving-pretty", "1")
 indigo.setOption("json-use-native-precision", "1")
-indigo.setOption("json-saving-add-stereo-desc", "1")
 
 root = joinPathPy("reactions/", __file__)
 ref = joinPathPy("ref/", __file__)
@@ -72,7 +71,7 @@ with open(os.path.join(ref, filename), "r") as file:
 ket = rxn.json()
 diff = find_diff(ket_ref, ket)
 if not diff:
-    print(filename + ".ket:SUCCEED")
+    print(filename + ":SUCCEED")
 else:
-    print(filename + ".ket:FAILED")
+    print(filename + ":FAILED")
     print(diff)

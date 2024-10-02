@@ -76,7 +76,7 @@ namespace indigo
 
         ReactionLayout(const ReactionLayout& r); // no implicit copy
 
-        const float bond_length;
+        const float bond_length; // in angstrom
         const float atom_label_margin;
         const float default_plus_size;
         const float default_arrow_size;
