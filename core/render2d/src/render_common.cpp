@@ -309,7 +309,7 @@ void RenderSettings::init(float relativeThickness, float bondLineWidthFactor, Ac
         if (acs->stereoBondWidthAngstrom > 0)
             stereoBondSpace = acs->stereoBondWidthAngstrom / 2.0f;
         if (acs->hashSpacingAngstrom > 0)
-            hashSpacing = acs->hashSpacingAngstrom;
+            hashSpacing = acs->hashSpacingAngstrom + bondLineWidth;
     }
     static constexpr float TWO_DIV_THREE = 2.0f / 3.0f;
     fzz[FONT_SIZE_LABEL] = label_font_size;

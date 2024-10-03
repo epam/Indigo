@@ -129,12 +129,11 @@ RenderContext::RenderContext(const RenderOptions& ropt, float relativeThickness,
     if (ropt.fontSizeSub > 0)
         acs.fontSizeSubAngstrom = UnitsOfMeasure::convertToPx(ropt.fontSizeSub, ropt.fontSizeSubUnit, ropt.ppi) / ropt.bond_length_px;
     if (ropt.bondThickness > 0)
-        acs.bondThicknessAngstrom = UnitsOfMeasure::convertToPx(ropt.bondThickness, ropt.bondThicknessUnit, ropt.ppi) / LayoutOptions::DEFAULT_BOND_LENGTH_PX;
+        acs.bondThicknessAngstrom = UnitsOfMeasure::convertToPx(ropt.bondThickness, ropt.bondThicknessUnit, ropt.ppi) / ropt.bond_length_px;
     if (ropt.stereoBondWidth > 0)
-        acs.stereoBondWidthAngstrom =
-            UnitsOfMeasure::convertToPx(ropt.stereoBondWidth, ropt.stereoBondWidthUnit, ropt.ppi) / LayoutOptions::DEFAULT_BOND_LENGTH_PX;
+        acs.stereoBondWidthAngstrom = UnitsOfMeasure::convertToPx(ropt.stereoBondWidth, ropt.stereoBondWidthUnit, ropt.ppi) / ropt.bond_length_px;
     if (ropt.hashSpacing > 0)
-        acs.hashSpacingAngstrom = UnitsOfMeasure::convertToPx(ropt.hashSpacing, ropt.hashSpacingUnit, ropt.ppi) / LayoutOptions::DEFAULT_BOND_LENGTH_PX;
+        acs.hashSpacingAngstrom = UnitsOfMeasure::convertToPx(ropt.hashSpacing, ropt.hashSpacingUnit, ropt.ppi) / ropt.bond_length_px;
     if (ropt.bondSpacing > 0)
         acs.bondSpacing = ropt.bondSpacing;
     _settings.init(relativeThickness, bondLineWidthFactor, &acs);
