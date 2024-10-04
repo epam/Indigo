@@ -80,6 +80,19 @@ rxn = indigo.loadReactionFromFile(ket_fname)
 renderer.renderToFile(rxn, joinPathPy("out/" + png_fname, __file__))
 print(checkImageSimilarity(png_fname))
 
+print("issue 2444 wrong arrow and plus width")
+indigo.resetOptions()
+indigo.setOption("ignore-stereochemistry-errors", "true")
+indigo.setOption("render-background-color", "255, 255, 255")
+indigo.setOption("render-output-format", "png")
+indigo.setOption("render-bond-thickness", "10")
+fname = "issue_2444"
+png_fname = fname + ".png"
+ket_fname = joinPathPy("reactions/%s.ket" % fname, __file__)
+rxn = indigo.loadReactionFromFile(ket_fname)
+renderer.renderToFile(rxn, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()

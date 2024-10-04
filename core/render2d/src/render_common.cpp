@@ -293,6 +293,7 @@ void RenderSettings::init(float relativeThickness, float bondLineWidthFactor, Ac
     bondLineWidth = bondLineWidthFactor * unit;
     bondSpace = 2.5f * unit;
     stereoBondSpace = bondSpace;
+    hashSpacing = -1;
 
     float label_font_size = unit * 12;
     if (acs != nullptr)
@@ -377,7 +378,10 @@ void RenderSettings::init(float relativeThickness, float bondLineWidthFactor, Ac
     layoutMarginHorizontal = 0.4f;
     layoutMarginVertical = 0.6f;
     plusSize = 0.5;
-    metaLineWidth = 1.0 / 16;
+    if (acs != nullptr && acs->bondThicknessAngstrom > 0)
+        metaLineWidth = bondLineWidth; // new behavior: plus and arrow width same as bond width
+    else
+        metaLineWidth = 1.0 / 16;
     arrowLength = 3 * plusSize;
     arrowHeadWidth = plusSize / 2;
     arrowHeadSize = plusSize / 2;
