@@ -4015,13 +4015,14 @@ void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, cons
     else if (bd.stereodir == BOND_DOWN)
     {
         int constexpr min_count = 4;
-        if (_settings.hashSpacing > 0 && (int)(len / _settings.hashSpacing) > min_count)
+        auto count = len / (_settings.hashSpacing > 0 ? _settings.hashSpacing : (lw * 2));
+        if (_settings.hashSpacing > 0 && count > min_count)
         {
             _cw.fillQuadStripesSpacing(r0, l0, r, l, _settings.hashSpacing);
         }
         else
         {
-            int stripeCnt = std::max((int)((len) / lw / 2), min_count);
+            int stripeCnt = std::max((int)count, min_count);
             _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
         }
     }
