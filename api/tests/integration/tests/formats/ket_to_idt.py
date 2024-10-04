@@ -65,6 +65,7 @@ idt_data = {
     "idt_mixed_custom": "(N1:10203050)(N1)N",
     "idt_rna_dna_mixed_custom": "r(R1:50003000)(R1)",
     "idt_mixed_ketcher": "KrK(K1:00003070)r(K2:00003070)",
+    "idt_issue_2257": "/3ThioMC3-D/",
 }
 
 for filename in sorted(idt_data.keys()):

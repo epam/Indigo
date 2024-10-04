@@ -15,6 +15,7 @@ idt_i2moera_32moera.ket:SUCCEED
 idt_i2moera_sp.ket:SUCCEED
 idt_i2moera_sp_32moera.ket:SUCCEED
 idt_i2moera_t.ket:SUCCEED
+idt_issue_2257.ket:SUCCEED
 idt_many_molecules.ket:SUCCEED
 idt_mixed.ket:SUCCEED
 idt_mixed_custom.ket:SUCCEED
