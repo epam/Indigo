@@ -175,6 +175,7 @@ const AppPropertiesSearch = ({params}) => {
                       {res.library_id} #<var>{res.id}</var>
                     </h3>
                     <img alt={res.id} src={res.img}></img>
+                    <div><pre>{JSON.stringify(res.properties, null, 2) }</pre></div>
                   </li>
                 ))}
                 {shouldShowButton && (

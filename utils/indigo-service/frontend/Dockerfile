@@ -3,7 +3,6 @@ RUN apt update && \
     apt upgrade -y
 #RUN npm install -g yarn
 RUN mkdir -p /var/ui
-#TODO download from git
 COPY ./ui/build /var/ui
 
 FROM nginx:latest
@@ -17,7 +16,7 @@ RUN cd /opt && \
 RUN mv /opt /var/www/ui
 
 
-COPY ../../../Indigo/utils/indigo-service/frontend/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Clean
 RUN apt autoremove -y && \
