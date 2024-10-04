@@ -443,7 +443,7 @@ namespace indigo
         float graphItemSignLineWidth;
         float graphItemPlusEdge;
         float stereoBondSpace;
-        float hashSpacing;
+        float hashSpacing = -1;
 
         float fzz[FONT_SIZE_COUNT];
 
