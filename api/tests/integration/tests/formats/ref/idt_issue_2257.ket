@@ -1,0 +1,236 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "monomer0"
+            }
+        ],
+        "connections": [],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-SS3___Dipropanol-disulfide"
+            }
+        ]
+    },
+    "monomer0": {
+        "type": "monomer",
+        "id": "0",
+        "position": {
+            "x": 14.424999999999997,
+            "y": -5.899999999999998
+        },
+        "alias": "SS3",
+        "templateId": "SS3___Dipropanol-disulfide"
+    },
+    "monomerTemplate-SS3___Dipropanol-disulfide": {
+        "type": "monomerTemplate",
+        "atoms": [
+            {
+                "label": "H",
+                "location": [
+                    -6.8609,
+                    -0.665,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -5.862,
+                    0,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -4.5166,
+                    -0.6653,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -3.2673,
+                    0.1663,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.922,
+                    -0.499,
+                    0
+                ]
+            },
+            {
+                "label": "S",
+                "location": [
+                    -0.6726,
+                    0.3327,
+                    0
+                ]
+            },
+            {
+                "label": "S",
+                "location": [
+                    0.6726,
+                    -0.3327,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.922,
+                    0.499,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.2673,
+                    -0.1663,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    4.5166,
+                    0.6653,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    5.862,
+                    0,
+                    0
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    6.8609,
+                    0.665,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    5,
+                    6
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    7
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    7,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    8,
+                    9
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    9,
+                    10
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    10,
+                    11
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    5
+                ]
+            }
+        ],
+        "class": "CHEM",
+        "classHELM": "CHEM",
+        "id": "SS3___Dipropanol-disulfide",
+        "fullName": "Dipropanol-disulfide",
+        "alias": "SS3",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 1,
+                "leavingGroup": {
+                    "atoms": [
+                        0
+                    ]
+                },
+                "type": "left"
+            },
+            {
+                "attachmentAtom": 10,
+                "leavingGroup": {
+                    "atoms": [
+                        11
+                    ]
+                },
+                "type": "right"
+            }
+        ],
+        "idtAliases": {
+            "base": "ThioMC3-D",
+            "modifications": {
+                "endpoint3": "3ThioMC3-D"
+            }
+        }
+    }
+}
