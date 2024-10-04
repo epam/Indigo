@@ -869,8 +869,12 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
             std::string sugar;
             std::string base;
             std::string phosphate;
-            if (seq_string.size() > 0 && sequence.size() == 0)
-                modification = IdtModification::THREE_PRIME_END;
+            IdtModification possible_modification = modification;
+            if (sequence.size() == 0) // last monomer
+                if (seq_string.size() > 0)
+                    modification = IdtModification::THREE_PRIME_END;
+                else // corner case - only one monomer
+                    possible_modification = IdtModification::THREE_PRIME_END;
 
             if (monomer_class == MonomerClass::Phosphate)
             {
@@ -898,17 +902,25 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
             }
             else if (monomer_class == MonomerClass::CHEM || monomer_class == MonomerClass::DNA || monomer_class == MonomerClass::RNA)
             {
+                auto write_name = [&](const IdtAlias& idtAlias) -> bool {
+                    bool has_modification = idtAlias.hasModification(modification);
+                    if (has_modification || (possible_modification != modification && idtAlias.hasModification(possible_modification)))
+                    {
+                        const std::string& idt_alias =
+                            has_modification ? idtAlias.getModification(modification) : idtAlias.getModification(possible_modification);
+                        seq_string += '/';
+                        seq_string += idt_alias;
+                        seq_string += '/';
+                        return true;
+                    }
+                    return false;
+                };
                 // Try to find in library
                 const std::string& lib_monomer_id = _library.getMonomerTemplateIdByAlias(monomer_class, monomer);
                 if (lib_monomer_id.size()) // Monomer in library
                 {
-                    const MonomerTemplate& templ = _library.getMonomerTemplateById(lib_monomer_id);
-                    if (templ.idtAlias().hasModification(modification))
+                    if (write_name(_library.getMonomerTemplateById(lib_monomer_id).idtAlias()))
                     {
-                        const std::string& idt_alias = templ.idtAlias().getModification(modification);
-                        seq_string += '/';
-                        seq_string += idt_alias;
-                        seq_string += '/';
                         if (modification == IdtModification::FIVE_PRIME_END)
                             modification = IdtModification::INTERNAL;
                         continue;
@@ -917,12 +929,8 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
 
                 // Check template for IdtAlias
                 auto& monomer_template = doc.getMonomerTemplate(monomers.at(monomer_id)->templateId());
-
-                if (monomer_template.idtAlias().hasModification(modification))
+                if (write_name(monomer_template.idtAlias()))
                 {
-                    seq_string.push_back('/');
-                    seq_string.append(monomer_template.idtAlias().getModification(modification));
-                    seq_string.push_back('/');
                     modification = IdtModification::INTERNAL;
                     continue;
                 }
