@@ -64,11 +64,30 @@ print("****** Changed ACS settings *****")
 indigo.setOption("bond-length", "1.2")
 indigo.setOption("bond-length-unit", "inch")
 indigo.setOption("render-bond-spacing", "0.5")
-indigo.setOption("render-hash-spacing", "15")
+indigo.setOption("render-hash-spacing", "10")
 indigo.setOption("render-stereo-bond-width", "30")
 indigo.setOption("render-font-size", "20")
 renderer.renderToFile(mol, joinPathPy("out/acs_style_changed.png", __file__))
 print(checkImageSimilarity("acs_style_changed.png"))
+
+print("****** Issue 2447 wrong stereobond width *****")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+indigo.setOption("ignore-stereochemistry-errors", "true")
+indigo.setOption("bond-length-unit", "px")
+indigo.setOption("bond-length", "40")
+indigo.setOption("render-bond-thickness", "2")
+indigo.setOption("render-bond-thickness-unit", "px")
+indigo.setOption("render-stereo-bond-width", "6")
+indigo.setOption("render-stereo-bond-width-unit", "px")
+indigo.setOption("render-hash-spacing", "1.2")
+indigo.setOption("render-hash-spacing-unit", "px")
+name = "issue_2447"
+fname = name + ".ket"
+mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/" + fname, __file__))
+pngname = name + ".png"
+renderer.renderToFile(mol, joinPathPy("out/" + pngname, __file__))
+print(checkImageSimilarity(pngname))
 
 if isIronPython():
     renderer.Dispose()
