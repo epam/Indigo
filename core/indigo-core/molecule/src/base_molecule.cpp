@@ -4097,8 +4097,8 @@ void BaseMolecule::getAtomsCenterPoint(Array<int>& atoms, Vec2f& res)
 void BaseMolecule::getAtomsCenterPoint(Vec2f& res)
 {
     Array<int> atoms;
-    for ( auto i : vertices())
-		atoms.push(i);
+    for (auto i : vertices())
+        atoms.push(i);
     getAtomsCenterPoint(atoms, res);
 }
 
