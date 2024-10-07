@@ -41,7 +41,7 @@
     "typescript": "^4.5.2",
     "web-vitals": "^2.1.4",
     "webpack": "^5.95.0",
-    "webpack-bundle-analyzer": "^3.9.0"
+    "webpack-bundle-analyzer": "^4.10.2"
   },
   "scripts": {
     "start:standalone": "cross-env MODE=standalone ENABLE_POLYMER_EDITOR=false react-app-rewired start",
