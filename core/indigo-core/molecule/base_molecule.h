@@ -475,6 +475,10 @@ namespace indigo
 
         void getSGroupAtomsCenterPoint(SGroup& sgroup, Vec2f& res);
         void getAtomsCenterPoint(Array<int>& atoms, Vec2f& res);
+        void getAtomsCenterPoint(Vec2f& res);
+        float getBondsMeanLength();
+
+        void scale(const Vec2f& center, float scale);
 
         void getAtomSymbol(int v, Array<char>& output);
 
