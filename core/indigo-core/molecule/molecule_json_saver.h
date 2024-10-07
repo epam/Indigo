@@ -71,6 +71,7 @@ namespace indigo
         void saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, JsonWriter& writer);
         void saveFragment(BaseMolecule& fragment, JsonWriter& writer);
         void saveMonomerTemplate(TGroup& tg, JsonWriter& writer);
+        void saveAmbiguousMonomerTemplate(TGroup& tg, JsonWriter& writer);
         void saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writer);
         void saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter& writer);
 

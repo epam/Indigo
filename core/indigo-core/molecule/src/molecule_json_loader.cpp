@@ -60,6 +60,10 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
                 {
                     _monomer_array.PushBack(node, ket.GetAllocator());
                 }
+                else if (node_type.compare("ambiguousMonomer") == 0)
+                {
+                    _monomer_array.PushBack(node, ket.GetAllocator());
+                }
                 else
                     throw Error("Unknows node type: %s", node_type.c_str());
             }
@@ -1254,6 +1258,7 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
     auto tg_idx = mol.tgroups.addTGroup();
     TGroup& tg = mol.tgroups.getTGroup(tg_idx);
     tg.tgroup_id = tg_idx + 1;
+    tg.ambiguous = false;
     Value one_tgroup(kArrayType);
     Document data;
     rapidjson::Value monomer_template_cp;
@@ -1445,6 +1450,52 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
     return tg_idx;
 }
 
+void MoleculeJsonLoader::parseAmbiguousMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol)
+{
+    auto tg_idx = mol.tgroups.addTGroup();
+    TGroup& tg = mol.tgroups.getTGroup(tg_idx);
+    tg.tgroup_id = tg_idx + 1;
+    tg.ambiguous = true;
+    if (monomer_template.HasMember("id"))
+    {
+        std::string id = monomer_template["id"].GetString();
+        tg.tgroup_text_id.appendString(id.c_str(), true);
+    }
+    if (monomer_template.HasMember("idtAliases"))
+
+        tg.idt_alias.readString(parseIdtAlias(monomer_template).getBase().c_str(), true);
+    if (monomer_template.HasMember("subtype"))
+        tg.mixture = strcmp(monomer_template["subtype"].GetString(), "mixture") == 0;
+    else
+        tg.mixture = true;
+    if (monomer_template.HasMember("alias"))
+        tg.tgroup_alias.readString(monomer_template["alias"].GetString(), true);
+
+    if (monomer_template.HasMember("options"))
+    {
+        auto& options = monomer_template["options"];
+        int att_index = 0;
+        const char* num_name = tg.mixture ? "ratio" : "probability";
+        for (SizeType i = 0; i < options.Size(); i++)
+        {
+            auto& option = options[i];
+            auto& alias = tg.aliases.push();
+            const char* template_id = option["templateId"].GetString();
+            alias.readString(template_id, true);
+            if (i == 0)
+            {
+                auto& templ = _templates[_id_to_template.at(template_id)];
+                tg.tgroup_class.readString(templ["class"].GetString(), true);
+            }
+            auto& ratio = tg.ratios.push();
+            if (option.HasMember(num_name))
+                ratio = option[num_name].GetFloat();
+            else
+                ratio = -1;
+        }
+    }
+}
+
 std::string MoleculeJsonLoader::monomerMolClass(const std::string& class_name)
 {
     auto mclass = class_name;
@@ -1568,7 +1619,9 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         auto& mt = _templates[i];
         // int tp = mt.GetType();
         if (mt.HasMember("type") && mt["type"].GetString() == std::string("monomerTemplate"))
-            int tgroup_id = parseMonomerTemplate(mt, mol, stereochemistry_options);
+            parseMonomerTemplate(mt, mol, stereochemistry_options);
+        else if (mt.HasMember("type") && mt["type"].GetString() == std::string("ambiguousMonomerTemplate"))
+            parseAmbiguousMonomerTemplate(mt, mol);
     }
 
     std::unordered_map<int, int> monomer_id_mapping;

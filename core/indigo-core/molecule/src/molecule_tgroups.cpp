@@ -118,8 +118,18 @@ void TGroup::copy(const TGroup& other)
     tgroup_id = other.tgroup_id;
     unresolved = other.unresolved;
     idt_alias.copy(other.idt_alias);
-    fragment.reset(other.fragment->neu());
-    fragment->clone(*other.fragment.get(), 0, 0);
+    if (!other.ambiguous)
+    {
+        fragment.reset(other.fragment->neu());
+        fragment->clone(*other.fragment.get(), 0, 0);
+    }
+    ambiguous = other.ambiguous;
+    mixture = other.mixture;
+    for (int i = 0; i < other.aliases.size(); i++)
+    {
+        aliases.push().copy(other.aliases[i]);
+    }
+    ratios.copy(other.ratios);
 }
 
 IMPL_ERROR(MoleculeTGroups, "molecule tgroups");
