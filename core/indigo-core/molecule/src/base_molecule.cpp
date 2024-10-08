@@ -4113,7 +4113,9 @@ float BaseMolecule::getBondsMeanLength()
         float bondLength = std::hypot(v1.x - v2.x, v1.y - v2.y);
         bondSum += bondLength;
     }
-    return static_cast<float>(bondSum / edgeCount());
+    if (edgeCount())
+        bondSum /= edgeCount();
+    return static_cast<float>(bondSum);
 }
 
 void BaseMolecule::scale(const Vec2f& center, float scale)
