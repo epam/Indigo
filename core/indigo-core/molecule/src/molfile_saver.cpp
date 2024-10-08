@@ -1168,6 +1168,8 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     TGroup& tgroup = mol.tgroups.getTGroup(tg_idx);
+    if (tgroup.ambiguous)
+        throw Error("Ambiguous monomer cannot be saved to molfile.");
     std::string natreplace;
     if (tgroup.tgroup_natreplace.size() > 0)
         natreplace = tgroup.tgroup_natreplace.ptr();
