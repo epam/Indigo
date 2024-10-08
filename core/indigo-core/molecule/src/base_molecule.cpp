@@ -2996,6 +2996,8 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
         tg_idx = tgroups.findTGroup(getTemplateAtom(idx));
 
     TGroup& tgroup = tgroups.getTGroup(tg_idx);
+    if (tgroup.ambiguous)
+        throw Error("Ambiguous monomer cannot be transform to SGroup.");
     fragment.clear();
     fragment.clone(*tgroup.fragment.get());
 

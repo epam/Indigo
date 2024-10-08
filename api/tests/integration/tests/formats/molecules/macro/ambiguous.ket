@@ -1,0 +1,449 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "monomer4"
+            }
+        ],
+        "connections": [],
+        "templates": [
+            {
+                "$ref": "ambiguousMonomerTemplate-alternatives__D___Aspartic acid__N___Asparagine_"
+            },
+            {
+                "$ref": "monomerTemplate-D___Aspartic acid"
+            },
+            {
+                "$ref": "monomerTemplate-N___Asparagine"
+            }
+        ]
+    },
+    "monomer4": {
+        "type": "ambiguousMonomer",
+        "id": "4",
+        "position": {
+            "x": 7.966666686534882,
+            "y": -6.075
+        },
+        "alias": "B",
+        "templateId": "alternatives__D___Aspartic acid__N___Asparagine_"
+    },
+    "ambiguousMonomerTemplate-alternatives__D___Aspartic acid__N___Asparagine_": {
+        "type": "ambiguousMonomerTemplate",
+        "id": "alternatives__D___Aspartic acid__N___Asparagine_",
+        "alias": "B",
+        "subtype": "alternatives",
+        "options": [
+            {
+                "templateId": "D___Aspartic acid"
+            },
+            {
+                "templateId": "N___Asparagine"
+            }
+        ]
+    },
+    "monomerTemplate-D___Aspartic acid": {
+        "type": "monomerTemplate",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    1.631,
+                    -1.5578,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.6327,
+                    -2.7392,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.3507,
+                    -0.8201,
+                    0
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "N",
+                "location": [
+                    -0.9295,
+                    -1.5578,
+                    0
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -1.9525,
+                    -0.9669,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.3485,
+                    0.6575,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.9317,
+                    1.3952,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -1.9542,
+                    0.8032,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -0.9335,
+                    2.5766,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    2.6534,
+                    -0.9658,
+                    0
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    0.0851,
+                    3.1751,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 2,
+                "atoms": [
+                    1,
+                    0
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    5
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    5,
+                    6
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    6,
+                    7
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    9
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    8,
+                    10
+                ]
+            }
+        ],
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "id": "D___Aspartic acid",
+        "fullName": "Aspartic acid",
+        "alias": "D",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        4
+                    ]
+                },
+                "type": "left"
+            },
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        9
+                    ]
+                },
+                "type": "right"
+            },
+            {
+                "attachmentAtom": 8,
+                "leavingGroup": {
+                    "atoms": [
+                        10
+                    ]
+                },
+                "type": "side"
+            }
+        ],
+        "naturalAnalogShort": "D"
+    },
+    "monomerTemplate-N___Asparagine": {
+        "type": "monomerTemplate",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    1.8929,
+                    -1.4175,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.8947,
+                    -2.5989,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.6127,
+                    -0.6799,
+                    0
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "N",
+                "location": [
+                    -0.6676,
+                    -1.4175,
+                    0
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -1.6907,
+                    -0.8266,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.6104,
+                    0.7978,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.6698,
+                    1.5354,
+                    0
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    -1.6922,
+                    0.9434,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -0.6716,
+                    2.7168,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    2.9153,
+                    -0.8255,
+                    0
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -2.5341,
+                    1.7724,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 2,
+                "atoms": [
+                    1,
+                    0
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    5
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    5,
+                    6
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    7
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    6,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    9
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    7,
+                    10
+                ]
+            }
+        ],
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "id": "N___Asparagine",
+        "fullName": "Asparagine",
+        "alias": "N",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        4
+                    ]
+                },
+                "type": "left"
+            },
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        9
+                    ]
+                },
+                "type": "right"
+            },
+            {
+                "attachmentAtom": 7,
+                "leavingGroup": {
+                    "atoms": [
+                        10
+                    ]
+                },
+                "type": "side"
+            }
+        ],
+        "naturalAnalogShort": "N"
+    }
+}
