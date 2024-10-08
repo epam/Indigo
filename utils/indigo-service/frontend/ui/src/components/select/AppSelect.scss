@@ -1,5 +1,33 @@
 @import '../../styles/mixins.scss';
 
-select {
+.select {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.select .select-dropdown {
+  position: relative;
+}
+
+.select select {
   @include app-field;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.select .select-arrow  {
+  position: absolute;
+  right: 10px;
+  top: 7px;
+  width: 7px;
+  height: 7px;
+  border-color: #231F20;
+  border-style: solid;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+
+.select .select-title {
+  @include app-field-title;
 }

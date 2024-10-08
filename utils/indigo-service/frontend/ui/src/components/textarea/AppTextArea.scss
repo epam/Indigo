@@ -1,0 +1,16 @@
+@import '../../styles/mixins.scss';
+
+.textarea {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.textarea textarea {
+  @include app-field;
+  padding-top: 2px;
+}
+
+.textarea .textarea-title {
+  @include app-field-title;
+}

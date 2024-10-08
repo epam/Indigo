@@ -1,0 +1,15 @@
+@import '../../styles/mixins.scss';
+
+.input {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.input input {
+  @include app-field;
+}
+
+.input .input-title {
+  @include app-field-title;
+}
