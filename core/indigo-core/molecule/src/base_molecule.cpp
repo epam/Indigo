@@ -4116,7 +4116,7 @@ float BaseMolecule::getBondsMeanLength()
     return static_cast<float>(bondSum / edgeCount());
 }
 
-void indigo::BaseMolecule::scale(const Vec2f& center, float scale)
+void BaseMolecule::scale(const Vec2f& center, float scale)
 {
     for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
     {
