@@ -15,6 +15,7 @@ const AppPropertiesSearch = ({params}) => {
   const [searchCount, setSearchCount] = useState(null);
   const [limit, setLimit] = useState(20);
   const [offset] = useState(20);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getParams = (molFile) => {
     if (params.options === undefined) {
@@ -92,20 +93,28 @@ const AppPropertiesSearch = ({params}) => {
 
   const {0: search, 2: error} = useFetch(() => {
     async function callMe() {
-      const lib_response = await libUpdate();
-      const molFile = lib_response.molFile;
-      const data = lib_response.data;
+      setResult(null);
+      setSearchImg('');
+      setIsLoading(true);
+      try {
+        const lib_response = await libUpdate();
+        const molFile = lib_response.molFile;
+        const data = lib_response.data;
 
-      if (data.state === 'SUCCESS') {
-        setSearchCount(data.result.count);
-      }
+        if (data.state === 'SUCCESS') {
+          setSearchCount(data.result.count);
+        }
 
-      const isEmpty = molFile.split('\n').length <= 6;
-      if (!isEmpty) {
-        const {data: searchImg} = await ApiService.render({query: molFile});
-        setSearchImg(searchImg);
+        const isEmpty = molFile.split('\n').length <= 6;
+        if (!isEmpty) {
+          const {data: searchImg} = await ApiService.render({query: molFile});
+          setSearchImg(searchImg);
+        }
+        setLimit(20)
+        setIsLoading(false);
+      } catch (e) {
+        setIsLoading(false);
       }
-      setLimit(20)
     }
 
     callMe();
@@ -147,6 +156,7 @@ const AppPropertiesSearch = ({params}) => {
             className="get-results-block"
           >
           <header className="query">
+            {isLoading && <div className="loader"></div>}
             {error && (
               <h2 style={{color: 'red', margin: '15px auto'}}>
                 An error occurred: {error}

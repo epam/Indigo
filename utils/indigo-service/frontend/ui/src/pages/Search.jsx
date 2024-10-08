@@ -32,12 +32,14 @@ const Search = () => {
               </div>
                 <form className="execute-search-form">
                   <Block title="Execute search" number="2">
-                    <SearchStorageFieldset />
-                    <AppTypeFieldset
-                      updateType={updateTypeParams}
-                      params={searchParams}
-                    />
-                    <AppSearchLibrariesTable updateLibIds={updateLibParams}/>
+                    <div className="execute-search-form-content-wrapper">
+                      <SearchStorageFieldset />
+                      <AppTypeFieldset
+                        updateType={updateTypeParams}
+                        params={searchParams}
+                      />
+                      <AppSearchLibrariesTable updateLibIds={updateLibParams}/>
+                    </div>
                   </Block>
                 </form>
             </div>

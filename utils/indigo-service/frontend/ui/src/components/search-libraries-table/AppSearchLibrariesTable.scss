@@ -1,7 +1,9 @@
 @import '../../styles/variables';
 
 fieldset.libraries-fieldset {
+  max-height: 140px;
   border-bottom: 1px #E1E5EA solid !important;
+  overflow: auto;
 }
 
 .checkbox-wrapper {
