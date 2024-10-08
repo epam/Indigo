@@ -23,7 +23,7 @@
 
 using namespace indigo;
 
-TGroup::TGroup() : unresolved(false)
+TGroup::TGroup() : unresolved(false), ambiguous(false)
 {
 }
 
@@ -34,6 +34,7 @@ TGroup::~TGroup()
 void TGroup::clear()
 {
     unresolved = false;
+    ambiguous = false;
 }
 
 int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* /*context*/)
@@ -49,6 +50,11 @@ int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* /*context*/)
     if (tg1.unresolved && !tg2.unresolved)
         return 1;
     else if (!tg1.unresolved && tg2.unresolved)
+        return -1;
+
+    if (tg1.ambiguous && !tg2.ambiguous)
+        return 1;
+    else if (!tg1.ambiguous && tg2.ambiguous)
         return -1;
 
     lgrps.clear();
