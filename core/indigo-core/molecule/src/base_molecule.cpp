@@ -4096,6 +4096,41 @@ void BaseMolecule::getAtomsCenterPoint(Array<int>& atoms, Vec2f& res)
         res.scale(1.0f / atoms.size());
 }
 
+void BaseMolecule::getAtomsCenterPoint(Vec2f& res)
+{
+    Array<int> atoms;
+    for (auto i : vertices())
+        atoms.push(i);
+    getAtomsCenterPoint(atoms, res);
+}
+
+float BaseMolecule::getBondsMeanLength()
+{
+    double bondSum = 0.0;
+    for (auto j : edges())
+    {
+        const Edge& edge = getEdge(j);
+        auto& v1 = getAtomXyz(edge.beg);
+        auto& v2 = getAtomXyz(edge.end);
+        float bondLength = std::hypot(v1.x - v2.x, v1.y - v2.y);
+        bondSum += bondLength;
+    }
+    if (edgeCount())
+        bondSum /= edgeCount();
+    return static_cast<float>(bondSum);
+}
+
+void BaseMolecule::scale(const Vec2f& center, float scale)
+{
+    for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
+    {
+        Vec3f& p = getAtomXyz(i);
+        p.x = center.x + (p.x - center.x) * scale;
+        p.y = center.y + (p.y - center.y) * scale;
+        p.z *= scale;
+    }
+}
+
 void BaseMolecule::getAtomSymbol(int v, Array<char>& result)
 {
     if (isPseudoAtom(v))

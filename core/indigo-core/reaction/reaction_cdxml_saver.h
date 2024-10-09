@@ -56,6 +56,8 @@ namespace indigo
         void _addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver, std::vector<int>& mol_ids, std::vector<std::map<int, int>>& nodes_ids,
                       const std::pair<int, int>& arrow_id, std::unordered_map<int, int>& retro_arrows_graph_id);
         void _generateCdxmlObjIds(BaseReaction& rxn, std::vector<int>& mol_ids, std::vector<int>& meta_ids, std::vector<std::map<int, int>>& nodes_ids);
+        void _generateMolNodeIds(BaseMolecule& mol, int mol_index, std::vector<int>& mol_ids, std::vector<std::map<int, int>>& nodes_ids);
+
         void _addTitle(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver);
         int _id;
         bool _is_binary;
