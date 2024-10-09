@@ -549,7 +549,7 @@ jobs:
           mkdir -p ${{ github.workspace }}/tmp/dotnet && tar zxf dotnet.tar.gz -C ${{ github.workspace }}/tmp/dotnet
       - name: Install dotnet 6 linux
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
-        run: apt install -y dotnet-sdk-6.0
+        run: sudo apt install -y dotnet-sdk-6.0
       - name: Prepare UNIX
         if: ${{ !startsWith(matrix.os, 'windows') }}
         run: |
