@@ -547,10 +547,12 @@ jobs:
         run: |
           curl -Lo dotnet.tar.gz https://download.visualstudio.microsoft.com/download/pr/270b615f-5281-4c58-980f-d9f7a08db642/3e874492a9cb0d5b87195c596b46d609/dotnet-sdk-6.0.421-osx-x64.tar.gz
           mkdir -p ${{ github.workspace }}/tmp/dotnet && tar zxf dotnet.tar.gz -C ${{ github.workspace }}/tmp/dotnet
+      - name: Install dotnet 6 linux
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        run: apt install -y dotnet-sdk-6.0
       - name: Prepare UNIX
         if: ${{ !startsWith(matrix.os, 'windows') }}
         run: |
-          apt install -y dotnet-sdk-6.0
           cd IronPython
           unzip IronPython.3.4.0.zip
           cd ../tmp
