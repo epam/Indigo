@@ -93,6 +93,18 @@ rxn = indigo.loadReactionFromFile(ket_fname)
 renderer.renderToFile(rxn, joinPathPy("out/" + png_fname, __file__))
 print(checkImageSimilarity(png_fname))
 
+print("issue 2512 two short equilibrium half arrows")
+indigo.resetOptions()
+indigo.setOption("ignore-stereochemistry-errors", "true")
+indigo.setOption("render-background-color", "255, 255, 255")
+indigo.setOption("render-output-format", "png")
+fname = "issue_2512"
+png_fname = fname + ".png"
+ket_fname = joinPathPy("reactions/%s.ket" % fname, __file__)
+rxn = indigo.loadReactionFromFile(ket_fname)
+renderer.renderToFile(rxn, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()
