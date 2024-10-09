@@ -25,12 +25,6 @@ const AppSearchLibrariesTable = ({updateLibIds}) => {
     setCheckStates(updatedCheckState);
   };
 
-  const checkedLen = () => checkStates.filter(Boolean).length;
-
-  const handleCheckAllState = (state) => {
-    setCheckStates(new Array(libraries.length).fill(state));
-  };
-
   useEffect(() => {
     updateLibIds(
       libraries.filter((_, id) => checkStates[id]).map((lib) => lib.id)
@@ -45,43 +39,22 @@ const AppSearchLibrariesTable = ({updateLibIds}) => {
 
   return (
     <>
-      <fieldset>
-        <legend>Libraries</legend>
-        <table className="libs">
-          <thead>
-          <tr>
-            <th className="check">
-              <input
-                className={
-                  checkedLen() < libraries.length ? 'intermediate' : ''
-                }
-                type="checkbox"
-                checked={checkedLen() > 0}
-                onChange={(event) =>
-                  handleCheckAllState(event.target.checked)
-                }
-              />
-            </th>
-            <th className="lib-name">Name</th>
-            <th className="count">Size</th>
-          </tr>
-          </thead>
-          <tbody>
+      <fieldset className="libraries-fieldset">
+        <legend>Source dataset:</legend>
+        <div>
           {libraries.map(({name, structures_count}, i) => (
-            <tr key={i}>
-              <td className="check">
-                <input
-                  type="checkbox"
-                  checked={checkStates[i] || false}
-                  onChange={() => handleCheckState(i)}
-                />
-              </td>
-              <td className="lib-name">{name}</td>
-              <td className="count">{structures_count}</td>
-            </tr>
+            <div className="checkbox-wrapper">
+              <input
+                type="checkbox"
+                className="app-checkbox"
+                checked={checkStates[i] || false}
+                onChange={() => handleCheckState(i)}
+              />
+              <div className="checkbox-title">{ name }</div>
+            </div>
           ))}
-          </tbody>
-        </table>
+
+        </div>
       </fieldset>
     </>
   );

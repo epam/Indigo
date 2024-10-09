@@ -4,10 +4,10 @@ import AppNavbar from "./components/navbar/AppNavbar";
 
 const App = () => {
     return (
-        <>
+        <div className="app-wrapper">
             <AppNavbar/>
             <AppRouter/>
-        </>
+        </div>
     )
 }
 

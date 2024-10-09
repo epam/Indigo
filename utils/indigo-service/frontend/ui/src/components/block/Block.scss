@@ -1,0 +1,34 @@
+.block {
+  width: 100%;
+  height: 100%;
+  box-shadow: 0px 2px 5px 0px #67688426;
+}
+
+.block-header {
+  display: flex;
+  align-items: center;
+  background-color: #F3F8F9;
+  height: 36px;
+  padding: 9px 16px;
+  color: #167782;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 8px 8px 0 0;
+}
+
+.block-header-number {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background-color: #167782;
+  color: white;
+}
+
+.block-body {
+  width: 100%;
+  height: calc(100% - 36px);
+}

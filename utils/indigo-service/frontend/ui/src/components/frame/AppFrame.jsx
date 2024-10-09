@@ -16,6 +16,7 @@ const getHiddenButtonsConfig = () => {
     }, {})
 }
 
+const standaloneStructServiceProvider = new StandaloneStructServiceProvider();
 
 const AppFrame = () => {
     const hiddenButtonsConfig = getHiddenButtonsConfig()
@@ -28,7 +29,7 @@ const AppFrame = () => {
                     }}
                     buttons={hiddenButtonsConfig}
                     staticResourcesUrl={process.env.PUBLIC_URL}
-                    structServiceProvider={new StandaloneStructServiceProvider()}
+                    structServiceProvider={standaloneStructServiceProvider}
                     onInit={(ketcher) => {
                         ;(global).ketcher = ketcher
                         window.parent.postMessage(
