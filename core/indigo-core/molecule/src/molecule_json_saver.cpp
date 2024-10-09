@@ -1192,6 +1192,42 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     writer.EndObject();
 }
 
+void MoleculeJsonSaver::saveAmbiguousMonomerTemplate(TGroup& tg, JsonWriter& writer)
+{
+    std::string template_id("ambiguousMonomerTemplate-");
+    std::string tg_id(monomerId(tg));
+    std::string template_class(monomerKETClass(tg.tgroup_class.ptr()));
+    std::string helm_class(monomerHELMClass(tg.tgroup_class.ptr()));
+    template_id += tg_id;
+    writer.Key(template_id.c_str());
+    writer.StartObject();
+    writer.Key("type");
+    writer.String("ambiguousMonomerTemplate");
+    writer.Key("subtype");
+    writer.String(tg.mixture ? "mixture" : "alternatives");
+    writer.Key("id");
+    writer.String(tg_id.c_str());
+    writer.Key("alias");
+    writer.String(tg.tgroup_alias.ptr());
+    writer.Key("options");
+    writer.StartArray();
+    const char* num_name = tg.mixture ? "ratio" : "probability";
+    for (int i = 0; i < tg.aliases.size(); i++)
+    {
+        writer.StartObject();
+        writer.Key("templateId");
+        writer.String(tg.aliases[i].ptr());
+        writer.EndObject();
+        if (tg.ratios[i] >= 0)
+        {
+            writer.Key(num_name);
+            saveNativeFloat(writer, tg.ratios[i]);
+        }
+    }
+    writer.EndArray();
+    writer.EndObject();
+}
+
 void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter& writer)
 {
     std::map<std::string, int> sorted_attachment_points;
@@ -1561,7 +1597,8 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 writer.Key((std::string("monomer") + std::to_string(mon_id)).c_str());
                 writer.StartObject();
                 writer.Key("type");
-                writer.String("monomer");
+                int temp_idx = mol->getTemplateAtomTemplateIndex(i);
+                writer.String(temp_idx > -1 && bmol.tgroups.getTGroup(temp_idx).ambiguous ? "ambiguousMonomer" : "monomer");
                 writer.Key("id");
                 writer.String(std::to_string(mon_id).c_str());
                 auto seqid = mol->getTemplateAtomSeqid(i);
@@ -1585,7 +1622,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 auto alias = mol->getTemplateAtom(i);
                 writer.String(alias);
                 auto mon_class = mol->getTemplateAtomClass(i);
-                int temp_idx = mol->getTemplateAtomTemplateIndex(i);
                 if (temp_idx > -1)
                 {
                     auto& tg = bmol.tgroups.getTGroup(temp_idx);
@@ -1613,7 +1649,10 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     for (int i = mol->tgroups.begin(); i != mol->tgroups.end(); i = mol->tgroups.next(i))
     {
         TGroup& tg = mol->tgroups.getTGroup(i);
-        saveMonomerTemplate(tg, writer);
+        if (tg.ambiguous)
+            saveAmbiguousMonomerTemplate(tg, writer);
+        else
+            saveMonomerTemplate(tg, writer);
     }
 
     // save molecules

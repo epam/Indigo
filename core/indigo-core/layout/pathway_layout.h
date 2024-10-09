@@ -49,11 +49,13 @@ namespace indigo
         static constexpr float VERTICAL_SPACING = 2.5f;
         static constexpr float MULTIPATHWAY_VERTICAL_SPACING = 1.5f;
         static constexpr float ARROW_LENGTH_FACTOR = 6.5f;
+        static constexpr float MIN_BOND_MEAN = 0.01f;
+
         static constexpr int MAX_DEPTHS = 10;
 
         PathwayLayout(PathwayReaction& reaction, const LayoutOptions& options)
-            : _reaction(reaction), _depths(MAX_DEPTHS, 0), _maxDepth(0), _bond_length(options.bondLength),
-              _default_arrow_size((float)options.bondLength * ARROW_LENGTH_FACTOR / options.ppi),
+            : _reaction(reaction), _depths(MAX_DEPTHS, 0), _maxDepth(0), _bond_length(options.DEFAULT_BOND_LENGTH),
+              _default_arrow_size((float)options.DEFAULT_BOND_LENGTH * ARROW_LENGTH_FACTOR),
               _reaction_margin_size(options.reactionComponentMarginSize / options.ppi)
         {
         }
@@ -63,7 +65,7 @@ namespace indigo
     private:
         struct PathwayLayoutItem
         {
-            PathwayLayoutItem(PathwayReaction& pwr, int nodeIdx, int reactantIdx = -1)
+            PathwayLayoutItem(PathwayReaction& pwr, int nodeIdx, float bondLength, int reactantIdx = -1)
                 : levelTree(-1), prelim(0.0), mod(0.0), shift(0.0), change(0.0), width(0.0), height(0.0), ancestor(this), thread(nullptr), children(),
                   parent(nullptr), nextSibling(nullptr), prevSibling(nullptr), reaction(pwr)
             {
@@ -73,8 +75,18 @@ namespace indigo
                 if (reactantIdx != -1)
                 {
                     auto& mol = reaction.getMolecule(reactantIdx);
-                    // MoleculeLayout molLayout(mol, true);
-                    // molLayout.make();
+                    auto mean = mol.getBondsMeanLength();
+                    if (mean < MIN_BOND_MEAN)
+                    {
+                        MoleculeLayout molLayout(mol, true);
+                        molLayout.make();
+                    }
+                    else
+                    {
+                        Vec2f center;
+                        mol.getAtomsCenterPoint(center);
+                        mol.scale(center, bondLength / mean);
+                    }
                     Rect2f boundingBox;
                     mol.getBoundingBox(boundingBox);
                     molecules.push_back(std::make_pair(reactantIdx, boundingBox));
@@ -86,8 +98,19 @@ namespace indigo
                     for (auto pidx : simpleReaction.productIndexes)
                     {
                         auto& mol = reaction.getMolecule(pidx);
-                        // MoleculeLayout molLayout(mol, true);
-                        // molLayout.make();
+                        auto mean = mol.getBondsMeanLength();
+                        if (mean < MIN_BOND_MEAN)
+                        {
+                            MoleculeLayout molLayout(mol, true);
+                            molLayout.make();
+                        }
+                        else
+                        {
+                            Vec2f center;
+                            mol.getAtomsCenterPoint(center);
+                            mol.scale(center, bondLength / mean);
+                        }
+
                         Rect2f boundingBox;
                         mol.getBoundingBox(boundingBox);
                         molecules.push_back(std::make_pair(pidx, boundingBox));
@@ -102,7 +125,7 @@ namespace indigo
                         if (!reactionNode.connectedReactants.find(i))
                         {
                             auto ridx = simpleReaction.reactantIndexes[i];
-                            reactantsNoPrecursors.emplace_back(reaction, nodeIdx, ridx);
+                            reactantsNoPrecursors.emplace_back(reaction, nodeIdx, bondLength, ridx);
                             PathwayLayoutItem* item = &reactantsNoPrecursors.back();
                             children.push_back(item);
                             item->parent = this;

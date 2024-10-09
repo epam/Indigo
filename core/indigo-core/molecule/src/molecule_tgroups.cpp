@@ -23,7 +23,7 @@
 
 using namespace indigo;
 
-TGroup::TGroup() : unresolved(false)
+TGroup::TGroup() : unresolved(false), ambiguous(false)
 {
 }
 
@@ -34,6 +34,7 @@ TGroup::~TGroup()
 void TGroup::clear()
 {
     unresolved = false;
+    ambiguous = false;
 }
 
 int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* /*context*/)
@@ -49,6 +50,11 @@ int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* /*context*/)
     if (tg1.unresolved && !tg2.unresolved)
         return 1;
     else if (!tg1.unresolved && tg2.unresolved)
+        return -1;
+
+    if (tg1.ambiguous && !tg2.ambiguous)
+        return 1;
+    else if (!tg1.ambiguous && tg2.ambiguous)
         return -1;
 
     lgrps.clear();
@@ -118,8 +124,18 @@ void TGroup::copy(const TGroup& other)
     tgroup_id = other.tgroup_id;
     unresolved = other.unresolved;
     idt_alias.copy(other.idt_alias);
-    fragment.reset(other.fragment->neu());
-    fragment->clone(*other.fragment.get(), 0, 0);
+    if (!other.ambiguous)
+    {
+        fragment.reset(other.fragment->neu());
+        fragment->clone(*other.fragment.get(), 0, 0);
+    }
+    ambiguous = other.ambiguous;
+    mixture = other.mixture;
+    for (int i = 0; i < other.aliases.size(); i++)
+    {
+        aliases.push().copy(other.aliases[i]);
+    }
+    ratios.copy(other.ratios);
 }
 
 IMPL_ERROR(MoleculeTGroups, "molecule tgroups");

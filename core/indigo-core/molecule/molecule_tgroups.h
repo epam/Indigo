@@ -48,6 +48,10 @@ namespace indigo
         int tgroup_id;
         bool unresolved;
         Array<char> idt_alias;
+        bool ambiguous;
+        bool mixture;
+        ObjArray<Array<char>> aliases;
+        Array<float> ratios;
 
         TGroup();
         ~TGroup();
