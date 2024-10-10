@@ -33,13 +33,13 @@ setup(
         "Source Code": "https://github.com/epam/indigo/",
     },
     download_url="https://pypi.org/project/bingo_elastic",
-    python_requires=">=3.7",
+    python_requires=">=3.9",
     packages=["bingo_elastic", "bingo_elastic.model"],
     install_requires=["epam.indigo==1.25.0.rc1", "elasticsearch==7.16.2"],
     extras_require={
         "async": ["elasticsearch[async]==7.16.2"],
         "dev": [
-            'pylint==2.17.7; python_version=="3.7"',
+            'pylint==2.17.7; python_version=="3.9"',
             'pylint==3.1.0; python_version>="3.10"',
             "pytest",
             "wheel",

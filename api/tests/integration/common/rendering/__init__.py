@@ -87,7 +87,7 @@ class ImageHash(object):
             self.image = Image.open(self.image_path)
             width, height = self.image.size
             image = self.image.resize(
-                (self.hash_size, self.hash_size), Image.ANTIALIAS
+                (self.hash_size, self.hash_size), Image.LANCZOS
             )
             # image.show()
             allchannelpixels = [
