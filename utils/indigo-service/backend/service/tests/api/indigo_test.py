@@ -484,7 +484,7 @@ chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, chemical/x-idt, ch
             "ValidationError: {'input_format': ['Must be one of: %s']}"
             % formats
         )
-        self.assertEquals(
+        self.assertEqual(
             expected_text,
             result.text,
         )
@@ -502,7 +502,7 @@ chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, chemical/x-idt, ch
             "ValidationError: {'output_format': ['Must be one of: %s']}"
             % formats
         )
-        self.assertEquals(
+        self.assertEqual(
             expected_text,
             result.text,
         )
@@ -2163,7 +2163,7 @@ M  END
         # )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEquals("16.0424604", result_data["molecular-weight"])
+        self.assertEqual("16.0424604", result_data["molecular-weight"])
 
     def test_calculate_components_mol(self):
         headers, data = self.get_headers(
