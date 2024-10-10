@@ -102,9 +102,15 @@ int PathwayReaction::_addBaseMolecule(int side)
 bool PathwayReaction::aromatize(const AromaticityOptions& options)
 {
     bool arom_found = false;
-    for (int i = begin(); i < end(); i = next(i))
-    {
-        arom_found |= MoleculeAromatizer::aromatizeBonds(*(Molecule*)_allMolecules[i], options);
-    }
+    for (int i = 0; i < _molecules.size(); ++i)
+		arom_found |= _molecules[i]->aromatize(options);
+    return arom_found;
+}
+
+bool PathwayReaction::dearomatize(const AromaticityOptions& options)
+{
+    bool arom_found = false;
+    for (int i = 0; i < _molecules.size(); ++i)
+        arom_found |= _molecules[i]->dearomatize(options);
     return arom_found;
 }

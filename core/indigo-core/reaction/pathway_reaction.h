@@ -231,6 +231,8 @@ namespace indigo
 
         BaseReaction* neu() override;
         bool aromatize(const AromaticityOptions& options) override;
+        bool dearomatize(const AromaticityOptions& options) override;
+
 
         int reactionBegin() override
         {

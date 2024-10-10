@@ -507,24 +507,53 @@ CEXPORT int indigoUnfoldHydrogens(int item)
         {
             BaseReaction& rxn = obj.getBaseReaction();
             bool has_coords = false;
-            bool only_selected = false;
-            for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-                if (MoleculeHasCoords(rxn.getBaseMolecule(i)))
-                {
-                    has_coords = true;
-                    break;
-                }
-
-            for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-                if (rxn.getBaseMolecule(i).countSelectedAtoms() > 0)
-                {
-                    only_selected = true;
-                    break;
-                }
-
-            for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+            bool selected_only = false;
+            if (rxn.isPathwayReaction())
             {
-                UnfoldAndLayoutHydrogens(rxn.getBaseMolecule(i), only_selected, has_coords);
+                auto& pwr = rxn.asPathwayReaction();
+                for (int i = 0; i < pwr.getMoleculeCount(); ++i)
+                {
+                    if (MoleculeHasCoords(rxn.getBaseMolecule(i)))
+                    {
+                        has_coords = true;
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < pwr.getMoleculeCount(); ++i)
+                {
+                    if (pwr.getMolecule(i).countSelectedAtoms() > 0)
+                    {
+                        selected_only = true;
+                        break;
+                    }
+                }
+
+                for (int i = 0; i < pwr.getMoleculeCount(); ++i)
+                {
+                    UnfoldAndLayoutHydrogens(rxn.getBaseMolecule(i), selected_only, has_coords);
+                }
+            }
+            else
+            {
+                for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+                    if (MoleculeHasCoords(rxn.getBaseMolecule(i)))
+                    {
+                        has_coords = true;
+                        break;
+                    }
+
+                for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+                    if (rxn.getBaseMolecule(i).countSelectedAtoms() > 0)
+                    {
+                        selected_only = true;
+                        break;
+                    }
+
+                for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+                {
+                    UnfoldAndLayoutHydrogens(rxn.getBaseMolecule(i), selected_only, has_coords);
+                }
             }
         }
         else
@@ -566,18 +595,39 @@ CEXPORT int indigoFoldUnfoldHydrogens(int item)
         else if (IndigoBaseReaction::is(obj))
         {
             BaseReaction& brxn = obj.getBaseReaction();
-            for (int i = brxn.begin(); i != brxn.end(); i = brxn.next(i))
-                if (brxn.getBaseMolecule(i).countSelectedAtoms() > 0)
+            if (brxn.isPathwayReaction())
+            {
+                auto& pwr = brxn.asPathwayReaction();
+                for (int i = 0; i < pwr.getMoleculeCount(); ++i)
                 {
-                    selected_only = true;
-                    break;
+                    if (pwr.getMolecule(i).countSelectedAtoms() > 0)
+                    {
+                        selected_only = true;
+                        break;
+                    }
                 }
-            for (int i = brxn.begin(); i != brxn.end(); i = brxn.next(i))
-                if (hasConvertableToImplicitHydrogen(brxn.getBaseMolecule(i), selected_only))
-                {
-                    fold = true;
-                    break;
-                }
+                for (int i = 0; i < pwr.getMoleculeCount(); ++i)
+                    if (hasConvertableToImplicitHydrogen(pwr.getMolecule(i), selected_only))
+                    {
+                        fold = true;
+                        break;
+                    }
+            }
+            else
+            {
+                for (int i = brxn.begin(); i != brxn.end(); i = brxn.next(i))
+                    if (brxn.getBaseMolecule(i).countSelectedAtoms() > 0)
+                    {
+                        selected_only = true;
+                        break;
+                    }
+                for (int i = brxn.begin(); i != brxn.end(); i = brxn.next(i))
+                    if (hasConvertableToImplicitHydrogen(brxn.getBaseMolecule(i), selected_only))
+                    {
+                        fold = true;
+                        break;
+                    }
+            }
         }
         else
         {
@@ -634,18 +684,34 @@ CEXPORT int indigoFoldHydrogens(int item)
         }
         else if (IndigoBaseReaction::is(obj))
         {
-            int i;
             BaseReaction& rxn = obj.getBaseReaction();
             bool selected_only = false;
-            for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-                if (rxn.getBaseMolecule(i).countSelectedAtoms() > 0)
+            if (rxn.isPathwayReaction())
+            {
+                auto& pwr = rxn.asPathwayReaction();
+                for (int i = 0; i < pwr.getMoleculeCount(); ++i)
                 {
-                    selected_only = true;
-                    break;
+                    if (pwr.getMolecule(i).countSelectedAtoms() > 0)
+                    {
+                        selected_only = true;
+                        break;
+                    }
                 }
+                for (int i = 0; i < pwr.getMoleculeCount(); ++i)
+                    _removeHydrogens(pwr.getMolecule(i), selected_only);
+            }
+            else
+            {
+                for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+                    if (rxn.getBaseMolecule(i).countSelectedAtoms() > 0)
+                    {
+                        selected_only = true;
+                        break;
+                    }
 
-            for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-                _removeHydrogens(rxn.getBaseMolecule(i), selected_only);
+                for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+                    _removeHydrogens(rxn.getBaseMolecule(i), selected_only);
+            }
         }
         else
             throw IndigoError("indigoFoldHydrogens(): %s given", obj.debugInfo());
