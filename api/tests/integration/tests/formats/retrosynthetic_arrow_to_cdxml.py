@@ -12,7 +12,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import Indigo, joinPathPy  # noqa
 
 indigo = Indigo()
 indigo.setOption("ignore-stereochemistry-errors", True)
@@ -32,6 +32,7 @@ reaction_types = [
     ("R1 => R2 -> R3", "ket_retro_arrow_and_simple_arrow"),
     ("R1 => R2 => R3", "ket_two_retro_arrows"),
     ("R1 -> R2 => R3 + R4", "ket_simple_arrow_retro_arrow_sum_of_products"),
+    ("retro diagonal", "retro_arrow_diagonal"),
 ]
 
 

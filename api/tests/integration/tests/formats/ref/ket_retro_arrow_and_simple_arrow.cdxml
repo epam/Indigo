@@ -58,8 +58,8 @@
             <b id="33" B="16" E="15"/>
             <b id="34" B="15" E="14"/>
         </fragment>
-        <arrow id="19" BoundingBox="343.128632 179.100693 291.335754 179.100693" FillType="None" ArrowheadHead="Full" ArrowheadType="Angle" HeadSize="600" ArrowheadCenterSize="600" ArrowheadWidth="150" ArrowShaftSpacing="600" Head3D="342.628632 179.100693 0.000000" Tail3D="291.835754 179.100693 0.000000"/>
-        <graphic id="35" SupersededBy="19" GraphicType="Line" ArrowType="RetroSynthetic" HeadSize="600" BoundingBox="342.628632 179.100693 291.835754 179.100693"/>
+        <arrow id="19" BoundingBox="343.128632 179.100693 291.335754 179.100693" FillType="None" ArrowheadHead="Full" ArrowheadType="Angle" HeadSize="600" ArrowheadCenterSize="600" ArrowheadWidth="150" ArrowShaftSpacing="600" Head3D="343.128632 179.100693 0.000000" Tail3D="291.335754 179.100693 0.000000"/>
+        <graphic id="35" SupersededBy="19" GraphicType="Line" ArrowType="RetroSynthetic" HeadSize="600" BoundingBox="343.128632 179.100693 291.335754 179.100693"/>
         <arrow id="22" BoundingBox="548.343567 174.181381 494.575592 174.181381" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="548.343567 174.181381 0.000000" Tail3D="494.575592 174.181381 0.000000"/>
         <scheme>
             <step ReactionStepReactants="4" ReactionStepProducts="13" ReactionStepArrows="35"/>
