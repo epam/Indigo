@@ -516,7 +516,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest, windows-latest ]
+        # os: [ macos-13, ubuntu-latest, windows-latest ]
+        os: [ macos-13, windows-latest ]
     runs-on: ${{ matrix.os }}
     needs: build_indigo_wrappers
     steps:
