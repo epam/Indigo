@@ -31,8 +31,8 @@
             <b id="13" B="6" E="7"/>
             <b id="14" B="6" E="8"/>
         </fragment>
-        <arrow id="9" BoundingBox="590.515442 241.919342 571.765442 241.919342" FillType="None" ArrowheadHead="Full" ArrowheadType="Angle" HeadSize="600" ArrowheadCenterSize="600" ArrowheadWidth="150" ArrowShaftSpacing="600" Head3D="590.015442 241.919342 0.000000" Tail3D="572.265442 241.919342 0.000000"/>
-        <graphic id="15" SupersededBy="9" GraphicType="Line" ArrowType="RetroSynthetic" HeadSize="600" BoundingBox="590.015442 241.919342 572.265442 241.919342"/>
+        <arrow id="9" BoundingBox="590.515442 241.919342 571.765442 241.919342" FillType="None" ArrowheadHead="Full" ArrowheadType="Angle" HeadSize="600" ArrowheadCenterSize="600" ArrowheadWidth="150" ArrowShaftSpacing="600" Head3D="590.515442 241.919342 0.000000" Tail3D="571.765442 241.919342 0.000000"/>
+        <graphic id="15" SupersededBy="9" GraphicType="Line" ArrowType="RetroSynthetic" HeadSize="600" BoundingBox="590.515442 241.919342 571.765442 241.919342"/>
         <scheme>
             <step ReactionStepReactants="4" ReactionStepArrows="15"/>
         </scheme>
