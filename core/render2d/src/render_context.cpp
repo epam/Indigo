@@ -1337,11 +1337,20 @@ void RenderContext::drawEquillibriumHalf(const Vec2f& p1, const Vec2f& p2, const
     n.negate();
     pa.addScaled(n, headwidth);
     pb.addScaled(n, headwidth);
+    const float default_shift = headsize * 2.0f;
+    float shift = default_shift;
+    if ((len - shift * 2.0f) < default_shift)
+    {
+        if (len < default_shift * 2.0f)
+            shift = len / 4.0f; // too short arrow - shift will be 1/4 of arrow length, short part - 1/2
+        else
+            shift = (len - default_shift) / 2.0f; // short part of arrow will be headsize*2
+    }
     if (is_unbalanced)
-        pa.addScaled(d, headsize * 2);
+        pa.addScaled(d, shift);
     d.negate();
     if (is_unbalanced)
-        pb.addScaled(d, headsize * 2);
+        pb.addScaled(d, shift);
     drawHalfArrowHeader(pa, d, width, headwidth * width_scale, headsize, arrow_type);
     drawBar(pb, pa, width, margin);
     checkPathNonEmpty();
