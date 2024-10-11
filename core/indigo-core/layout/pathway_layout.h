@@ -87,8 +87,9 @@ namespace indigo
                     auto mean = mol.getBondsMeanLength();
                     if (!pwl.isPreserveMoleculeLayout() || mean < MIN_BOND_MEAN)
                     {
-                        MoleculeLayout molLayout(mol, true);
-                        molLayout.make();
+                        MoleculeLayout ml(mol, true);
+                        ml.bond_length = bondLength;
+                        ml.make();
                     }
                     else
                     {
@@ -110,8 +111,9 @@ namespace indigo
                         auto mean = mol.getBondsMeanLength();
                         if (!pwl.isPreserveMoleculeLayout() || mean < MIN_BOND_MEAN)
                         {
-                            MoleculeLayout molLayout(mol, true);
-                            molLayout.make();
+                            MoleculeLayout ml(mol, true);
+                            ml.bond_length = bondLength;
+                            ml.make();
                         }
                         else
                         {
