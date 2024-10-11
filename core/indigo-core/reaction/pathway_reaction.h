@@ -233,7 +233,6 @@ namespace indigo
         bool aromatize(const AromaticityOptions& options) override;
         bool dearomatize(const AromaticityOptions& options) override;
 
-
         int reactionBegin() override
         {
             return _reactions.size() ? 0 : 1;

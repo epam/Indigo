@@ -103,7 +103,7 @@ bool PathwayReaction::aromatize(const AromaticityOptions& options)
 {
     bool arom_found = false;
     for (int i = 0; i < _molecules.size(); ++i)
-		arom_found |= _molecules[i]->aromatize(options);
+        arom_found |= _molecules[i]->aromatize(options);
     return arom_found;
 }
 
