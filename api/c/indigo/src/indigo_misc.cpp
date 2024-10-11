@@ -513,7 +513,7 @@ CEXPORT int indigoUnfoldHydrogens(int item)
                 auto& pwr = rxn.asPathwayReaction();
                 for (int i = 0; i < pwr.getMoleculeCount(); ++i)
                 {
-                    if (MoleculeHasCoords(rxn.getBaseMolecule(i)))
+                    if (MoleculeHasCoords(pwr.getMolecule(i)))
                     {
                         has_coords = true;
                         break;
@@ -531,7 +531,7 @@ CEXPORT int indigoUnfoldHydrogens(int item)
 
                 for (int i = 0; i < pwr.getMoleculeCount(); ++i)
                 {
-                    UnfoldAndLayoutHydrogens(rxn.getBaseMolecule(i), selected_only, has_coords);
+                    UnfoldAndLayoutHydrogens(pwr.getMolecule(i), selected_only, has_coords);
                 }
             }
             else
