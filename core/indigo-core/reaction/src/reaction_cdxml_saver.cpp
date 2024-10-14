@@ -98,6 +98,7 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
     std::unordered_map<int, int> retro_arrows_graph_id;
 
     int arrow_count = rxn.meta().getMetaCount(KETReactionArrow::CID);
+    int multi_count = rxn.meta().getMetaCount(KETReactionMultitailArrow::CID);
     if (arrow_count)
     {
         for (int i = 0; i < arrow_count; ++i)
@@ -106,7 +107,7 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
             arrow_ids.emplace_back(meta_ids[array_index], arrow_count > 1 ? array_index : -1);
         }
     }
-    else
+    else if (!multi_count)
         arrow_ids.emplace_back(++_id, -1);
 
     Vec2f offset(0, 0);
@@ -148,10 +149,13 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
         _addArrow(rxn, molsaver, arrow_ids.front().first, retro_arrows_graph_id);
     }
 
-    _addScheme(molsaver);
-    for (const auto& ar_id : arrow_ids)
-        _addStep(rxn, molsaver, mol_ids, nodes_ids, ar_id, retro_arrows_graph_id);
-    _closeScheme(molsaver);
+    if (arrow_ids.size())
+    {
+        _addScheme(molsaver);
+        for (const auto& ar_id : arrow_ids)
+            _addStep(rxn, molsaver, mol_ids, nodes_ids, ar_id, retro_arrows_graph_id);
+        _closeScheme(molsaver);
+    }
 
     if (rxn.name.size() > 0)
     {

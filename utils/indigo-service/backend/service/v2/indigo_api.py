@@ -475,7 +475,6 @@ def save_moldata(
     elif output_format == "chemical/x-rdf":
         buffer = indigo.writeBuffer()
         rdfSaver = indigo.createSaver(buffer, "rdf")
-        buffer.rdfHeader()
         for reac in md.struct.iterateReactions():
             rdfSaver.append(reac.clone())
         rdfSaver.close()
