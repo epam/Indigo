@@ -918,10 +918,9 @@ CEXPORT int indigoSaveCdx(int item, int output)
         if (IndigoBaseReaction::is(obj))
         {
             ReactionCdxmlSaver saver(out, true);
-            if (obj.type == IndigoObject::REACTION)
+            if (obj.type == IndigoObject::REACTION || obj.type == IndigoObject::PATHWAY_REACTION)
             {
-                Reaction& rxn = obj.getReaction();
-                saver.saveReaction(rxn);
+                saver.saveReaction(obj.getBaseReaction());
             }
             else if (obj.type == IndigoObject::QUERY_REACTION)
             {

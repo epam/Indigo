@@ -27,11 +27,11 @@
                     <s font="3" size="10" face="96">F</s>
                 </t>
             </n>
-            <b id="82" B="5" E="6"/>
-            <b id="83" B="6" E="8"/>
-            <b id="84" B="8" E="7"/>
-            <b id="85" B="7" E="5"/>
-            <b id="86" B="8" E="9"/>
+            <b id="81" B="5" E="6"/>
+            <b id="82" B="6" E="8"/>
+            <b id="83" B="8" E="7"/>
+            <b id="84" B="7" E="5"/>
+            <b id="85" B="8" E="9"/>
         </fragment>
         <fragment id="10">
             <n id="11" p="32.496799 -319.927460"/>
@@ -42,10 +42,10 @@
                     <s font="3" size="10" face="96">Cl</s>
                 </t>
             </n>
-            <b id="87" B="11" E="12"/>
-            <b id="88" B="12" E="13"/>
-            <b id="89" B="13" E="11"/>
-            <b id="90" B="13" E="14"/>
+            <b id="86" B="11" E="12"/>
+            <b id="87" B="12" E="13"/>
+            <b id="88" B="13" E="11"/>
+            <b id="89" B="13" E="14"/>
         </fragment>
         <fragment id="15">
             <n id="16" p="56.530365 -244.927460"/>
@@ -53,11 +53,11 @@
             <n id="18" p="95.391624 -216.419952"/>
             <n id="19" p="32.510906 -171.001831"/>
             <n id="20" p="17.664314 -216.419952"/>
-            <b id="91" B="16" E="20"/>
-            <b id="92" B="20" E="19" Order="2"/>
-            <b id="93" B="19" E="17"/>
-            <b id="94" B="17" E="18" Order="2"/>
-            <b id="95" B="18" E="16"/>
+            <b id="90" B="16" E="20"/>
+            <b id="91" B="20" E="19" Order="2"/>
+            <b id="92" B="19" E="17"/>
+            <b id="93" B="17" E="18" Order="2"/>
+            <b id="94" B="18" E="16"/>
         </fragment>
         <fragment id="21">
             <n id="22" p="15.000014 -71.996552"/>
@@ -66,12 +66,12 @@
             <n id="25" p="98.055954 -23.976444"/>
             <n id="26" p="15.000014 -23.760437"/>
             <n id="27" p="56.712799 -0.000000"/>
-            <b id="96" B="24" E="22" Order="2"/>
-            <b id="97" B="22" E="26"/>
-            <b id="98" B="26" E="27" Order="2"/>
-            <b id="99" B="27" E="25"/>
-            <b id="100" B="25" E="23" Order="2"/>
-            <b id="101" B="23" E="24"/>
+            <b id="95" B="24" E="22" Order="2"/>
+            <b id="96" B="22" E="26"/>
+            <b id="97" B="26" E="27" Order="2"/>
+            <b id="98" B="27" E="25"/>
+            <b id="99" B="25" E="23" Order="2"/>
+            <b id="100" B="23" E="24"/>
         </fragment>
         <fragment id="28">
             <n id="29" p="589.452209 -401.047791"/>
@@ -82,10 +82,10 @@
                     <s font="3" size="10" face="96">OH</s>
                 </t>
             </n>
-            <b id="102" B="29" E="30"/>
-            <b id="103" B="30" E="31"/>
-            <b id="104" B="31" E="29"/>
-            <b id="105" B="31" E="32"/>
+            <b id="101" B="29" E="30"/>
+            <b id="102" B="30" E="31"/>
+            <b id="103" B="31" E="29"/>
+            <b id="104" B="31" E="32"/>
         </fragment>
         <fragment id="33">
             <n id="34" p="636.713684 -151.983093"/>
@@ -94,12 +94,12 @@
             <n id="37" p="719.850952 -103.982376"/>
             <n id="38" p="719.850952 -151.983093"/>
             <n id="39" p="678.282349 -175.983444"/>
-            <b id="106" B="39" E="34"/>
-            <b id="107" B="34" E="35"/>
-            <b id="108" B="35" E="36"/>
-            <b id="109" B="36" E="37"/>
-            <b id="110" B="37" E="38"/>
-            <b id="111" B="38" E="39"/>
+            <b id="105" B="39" E="34"/>
+            <b id="106" B="34" E="35"/>
+            <b id="107" B="35" E="36"/>
+            <b id="108" B="36" E="37"/>
+            <b id="109" B="37" E="38"/>
+            <b id="110" B="38" E="39"/>
         </fragment>
         <fragment id="40">
             <n id="41" p="716.201233 -404.136536"/>
@@ -112,11 +112,11 @@
                     <s font="3" size="10" face="32">2</s>
                 </t>
             </n>
-            <b id="112" B="41" E="42"/>
-            <b id="113" B="42" E="44"/>
-            <b id="114" B="44" E="43"/>
-            <b id="115" B="43" E="41"/>
-            <b id="116" B="42" E="45"/>
+            <b id="111" B="41" E="42"/>
+            <b id="112" B="42" E="44"/>
+            <b id="113" B="44" E="43"/>
+            <b id="114" B="43" E="41"/>
+            <b id="115" B="42" E="45"/>
         </fragment>
         <fragment id="46">
             <n id="47" p="520.592224 -457.951599"/>
@@ -129,12 +129,12 @@
                     <s font="3" size="10" face="96">SH</s>
                 </t>
             </n>
-            <b id="117" B="47" E="51"/>
-            <b id="118" B="51" E="50" Order="2"/>
-            <b id="119" B="50" E="48"/>
-            <b id="120" B="48" E="49" Order="2"/>
-            <b id="121" B="49" E="47"/>
-            <b id="122" B="47" E="52"/>
+            <b id="116" B="47" E="51"/>
+            <b id="117" B="51" E="50" Order="2"/>
+            <b id="118" B="50" E="48"/>
+            <b id="119" B="48" E="49" Order="2"/>
+            <b id="120" B="49" E="47"/>
+            <b id="121" B="47" E="52"/>
         </fragment>
         <fragment id="53">
             <n id="54" p="560.527771 -97.888901"/>
@@ -147,11 +147,11 @@
                     <s font="3" size="10" face="32">2</s>
                 </t>
             </n>
-            <b id="123" B="54" E="55"/>
-            <b id="124" B="55" E="57"/>
-            <b id="125" B="57" E="56"/>
-            <b id="126" B="56" E="54"/>
-            <b id="127" B="55" E="58"/>
+            <b id="122" B="54" E="55"/>
+            <b id="123" B="55" E="57"/>
+            <b id="124" B="57" E="56"/>
+            <b id="125" B="56" E="54"/>
+            <b id="126" B="55" E="58"/>
         </fragment>
         <fragment id="59">
             <n id="60" Element="8" NumHydrogens="1" p="1346.596313 -354.060089">
@@ -190,26 +190,23 @@
             <n id="69" p="1215.336182 -286.346893" Geometry="Tetrahedral" BondOrdering="63 68 70 60" EnhancedStereoType="Absolute"/>
             <n id="70" p="1215.336182 -332.018585" Geometry="Tetrahedral" BondOrdering="64 69 71 60" EnhancedStereoType="Absolute"/>
             <n id="71" p="1171.930054 -354.050476"/>
-            <b id="128" B="65" E="71"/>
-            <b id="129" B="70" E="64"/>
-            <b id="130" B="64" E="66"/>
-            <b id="131" B="66" E="67"/>
-            <b id="132" B="67" E="68"/>
-            <b id="133" B="68" E="69"/>
-            <b id="134" B="69" E="70"/>
-            <b id="135" B="70" E="71" Display="WedgeBegin"/>
-            <b id="136" B="66" E="60" Display="WedgedHashBegin"/>
-            <b id="137" B="67" E="61" Display="WedgedHashBegin"/>
-            <b id="138" B="68" E="62" Display="WedgedHashBegin"/>
-            <b id="139" B="69" E="63" Display="WedgedHashBegin"/>
+            <b id="127" B="65" E="71"/>
+            <b id="128" B="70" E="64"/>
+            <b id="129" B="64" E="66"/>
+            <b id="130" B="66" E="67"/>
+            <b id="131" B="67" E="68"/>
+            <b id="132" B="68" E="69"/>
+            <b id="133" B="69" E="70"/>
+            <b id="134" B="70" E="71" Display="WedgeBegin"/>
+            <b id="135" B="66" E="60" Display="WedgedHashBegin"/>
+            <b id="136" B="67" E="61" Display="WedgedHashBegin"/>
+            <b id="137" B="68" E="62" Display="WedgedHashBegin"/>
+            <b id="138" B="69" E="63" Display="WedgedHashBegin"/>
             <graphic BoundingBox="1346.596313 -354.060089 1346.596313 -354.060089" GraphicType="Symbol" SymbolType="Absolute" FrameType="None">
                 <t p="1346.596313 -354.060089" Justification="Center" InterpretChemically="no">
                     <s font="3" size="10" face="96">Chiral</s>
                 </t>
             </graphic>
         </fragment>
-        <scheme>
-            <step ReactionStepReactants="4 10 15 21 28" ReactionStepProducts="33" ReactionStepArrows="81"/>
-        </scheme>
     </page>
 </CDXML>

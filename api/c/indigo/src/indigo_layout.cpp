@@ -108,6 +108,7 @@ CEXPORT int indigoLayout(int object)
             if (rxn.isPathwayReaction())
             {
                 PathwayLayout pl(static_cast<PathwayReaction&>(rxn), self.layout_options);
+                pl.setPreserveMoleculeLayout(false);
                 pl.make();
             }
             else
@@ -184,10 +185,15 @@ CEXPORT int indigoClean2d(int object)
             if (IndigoBaseReaction::is(obj))
             {
                 BaseReaction& rxn = obj.getBaseReaction();
-                for (int i = rxn.begin(); i < rxn.end(); i = rxn.next(i))
+                if (rxn.isPathwayReaction())
                 {
-                    MoleculeCleaner2d::clean(rxn.getBaseMolecule(i));
+                    auto& pwr = rxn.asPathwayReaction();
+                    for (int i = 0; i < pwr.getMoleculeCount(); i++)
+                        MoleculeCleaner2d::clean(pwr.getMolecule(i));
                 }
+                else
+                    for (int i = rxn.begin(); i < rxn.end(); i = rxn.next(i))
+                        MoleculeCleaner2d::clean(rxn.getBaseMolecule(i));
             }
             else
                 throw IndigoError("Clean2d can be executed only for molecules but %s was provided", obj.debugInfo());
