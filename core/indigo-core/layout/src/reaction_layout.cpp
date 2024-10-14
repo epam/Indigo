@@ -56,7 +56,7 @@ void ReactionLayout::fixLayout()
     int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
     int simple_count = _r.meta().getMetaCount(KETSimpleObject::CID) + _r.meta().getMetaCount(KETTextObject::CID);
     int multi_count = _r.meta().getMetaCount(KETReactionMultitailArrow::CID);
-    if (arrows_count > 1 || simple_count || multi_count)
+    if (arrows_count || simple_count || multi_count)
         return;
 
     Rect2f bb;

@@ -56,18 +56,27 @@ namespace indigo
         PathwayLayout(PathwayReaction& reaction, const LayoutOptions& options)
             : _reaction(reaction), _depths(MAX_DEPTHS, 0), _maxDepth(0), _bond_length(options.DEFAULT_BOND_LENGTH),
               _default_arrow_size((float)options.DEFAULT_BOND_LENGTH * ARROW_LENGTH_FACTOR),
-              _reaction_margin_size(options.reactionComponentMarginSize / options.ppi)
+              _reaction_margin_size(options.reactionComponentMarginSize / options.ppi), _preserve_molecule_layout(true)
         {
         }
 
         void make();
+        void setPreserveMoleculeLayout(bool preserve)
+        {
+            _preserve_molecule_layout = preserve;
+        };
+
+        bool isPreserveMoleculeLayout() const
+        {
+            return _preserve_molecule_layout;
+        };
 
     private:
         struct PathwayLayoutItem
         {
-            PathwayLayoutItem(PathwayReaction& pwr, int nodeIdx, float bondLength, int reactantIdx = -1)
+            PathwayLayoutItem(PathwayReaction& pwr, const PathwayLayout& pwl, int nodeIdx, float bondLength, int reactantIdx = -1)
                 : levelTree(-1), prelim(0.0), mod(0.0), shift(0.0), change(0.0), width(0.0), height(0.0), ancestor(this), thread(nullptr), children(),
-                  parent(nullptr), nextSibling(nullptr), prevSibling(nullptr), reaction(pwr)
+                  parent(nullptr), nextSibling(nullptr), prevSibling(nullptr), reaction(pwr), boundingBox()
             {
                 auto& reactionNode = reaction.getReactionNode(nodeIdx);
                 auto& simpleReaction = reaction.getReaction(reactionNode.reactionIdx);
@@ -76,10 +85,11 @@ namespace indigo
                 {
                     auto& mol = reaction.getMolecule(reactantIdx);
                     auto mean = mol.getBondsMeanLength();
-                    if (mean < MIN_BOND_MEAN)
+                    if (!pwl.isPreserveMoleculeLayout() || mean < MIN_BOND_MEAN)
                     {
-                        MoleculeLayout molLayout(mol, true);
-                        molLayout.make();
+                        MoleculeLayout ml(mol, true);
+                        ml.bond_length = bondLength;
+                        ml.make();
                     }
                     else
                     {
@@ -99,10 +109,11 @@ namespace indigo
                     {
                         auto& mol = reaction.getMolecule(pidx);
                         auto mean = mol.getBondsMeanLength();
-                        if (mean < MIN_BOND_MEAN)
+                        if (!pwl.isPreserveMoleculeLayout() || mean < MIN_BOND_MEAN)
                         {
-                            MoleculeLayout molLayout(mol, true);
-                            molLayout.make();
+                            MoleculeLayout ml(mol, true);
+                            ml.bond_length = bondLength;
+                            ml.make();
                         }
                         else
                         {
@@ -125,7 +136,7 @@ namespace indigo
                         if (!reactionNode.connectedReactants.find(i))
                         {
                             auto ridx = simpleReaction.reactantIndexes[i];
-                            reactantsNoPrecursors.emplace_back(reaction, nodeIdx, bondLength, ridx);
+                            reactantsNoPrecursors.emplace_back(reaction, pwl, nodeIdx, bondLength, ridx);
                             PathwayLayoutItem* item = &reactantsNoPrecursors.back();
                             children.push_back(item);
                             item->parent = this;
@@ -257,6 +268,7 @@ namespace indigo
         const float _bond_length;
         const float _default_arrow_size;
         const float _reaction_margin_size;
+        bool _preserve_molecule_layout;
     };
 }
 

@@ -27,7 +27,6 @@ IMPL_ERROR(PathwayLayout, "pathway_layout");
 
 void PathwayLayout::make()
 {
-
     buildLayoutTree();
     auto roots = _reaction.getRootReactions();
     _layoutRootItems.reserve(roots.size());
@@ -95,7 +94,7 @@ void PathwayLayout::buildLayoutTree()
     _layoutItems.reserve(_reaction.getReactionNodeCount());
 
     for (int i = 0; i < _reaction.getReactionNodeCount(); ++i)
-        _layoutItems.emplace_back(_reaction, i, _bond_length);
+        _layoutItems.emplace_back(_reaction, *this, i, _bond_length);
 
     // fill layout tree
     for (int i = 0; i < _reaction.getReactionNodeCount(); ++i)
