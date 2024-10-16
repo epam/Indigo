@@ -88,6 +88,7 @@ namespace indigo
         LayoutOptions _options;
         BaseReaction& _r;
         Metalayout _ml;
+        float _font_size;
     };
 
 } // namespace indigo

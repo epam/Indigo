@@ -37,113 +37,6 @@ using namespace indigo;
 
 #define BOND_STEREO_BOLD 10001
 
-static bool ElementHygrodenOnLeft[] = {
-    false, // filler
-    false, // ELEM_H
-    false, // ELEM_He
-    false, // ELEM_Li
-    false, // ELEM_Be
-    false, // ELEM_B
-    false, // ELEM_C
-    false, // ELEM_N
-    true,  // ELEM_O
-    true,  // ELEM_F
-    false, // ELEM_Ne
-    false, // ELEM_Na
-    false, // ELEM_Mg
-    false, // ELEM_Al
-    false, // ELEM_Si
-    false, // ELEM_P
-    true,  // ELEM_S
-    true,  // ELEM_Cl
-    false, // ELEM_Ar
-    false, // ELEM_K
-    false, // ELEM_Ca
-    false, // ELEM_Sc
-    false, // ELEM_Ti
-    false, // ELEM_V
-    false, // ELEM_Cr
-    false, // ELEM_Mn
-    false, // ELEM_Fe
-    false, // ELEM_Co
-    false, // ELEM_Ni
-    false, // ELEM_Cu
-    false, // ELEM_Zn
-    false, // ELEM_Ga
-    false, // ELEM_Ge
-    false, // ELEM_As
-    true,  // ELEM_Se
-    true,  // ELEM_Br
-    false, // ELEM_Kr
-    false, // ELEM_Rb
-    false, // ELEM_Sr
-    false, // ELEM_Y
-    false, // ELEM_Zr
-    false, // ELEM_Nb
-    false, // ELEM_Mo
-    false, // ELEM_Tc
-    false, // ELEM_Ru
-    false, // ELEM_Rh
-    false, // ELEM_Pd
-    false, // ELEM_Ag
-    false, // ELEM_Cd
-    false, // ELEM_In
-    false, // ELEM_Sn
-    false, // ELEM_Sb
-    false, // ELEM_Te
-    true,  // ELEM_I
-    false, // ELEM_Xe
-    false, // ELEM_Cs
-    false, // ELEM_Ba
-    false, // ELEM_La
-    false, // ELEM_Ce
-    false, // ELEM_Pr
-    false, // ELEM_Nd
-    false, // ELEM_Pm
-    false, // ELEM_Sm
-    false, // ELEM_Eu
-    false, // ELEM_Gd
-    false, // ELEM_Tb
-    false, // ELEM_Dy
-    false, // ELEM_Ho
-    false, // ELEM_Er
-    false, // ELEM_Tm
-    false, // ELEM_Yb
-    false, // ELEM_Lu
-    false, // ELEM_Hf
-    false, // ELEM_Ta
-    false, // ELEM_W
-    false, // ELEM_Re
-    false, // ELEM_Os
-    false, // ELEM_Ir
-    false, // ELEM_Pt
-    false, // ELEM_Au
-    false, // ELEM_Hg
-    false, // ELEM_Tl
-    false, // ELEM_Pb
-    false, // ELEM_Bi
-    false, // ELEM_Po
-    false, // ELEM_At
-    false, // ELEM_Rn
-    false, // ELEM_Fr
-    false, // ELEM_Ra
-    false, // ELEM_Ac
-    false, // ELEM_Th
-    false, // ELEM_Pa
-    false, // ELEM_U
-    false, // ELEM_Np
-    false, // ELEM_Pu
-    false, // ELEM_Am
-    false, // ELEM_Cm
-    false, // ELEM_Bk
-    false, // ELEM_Cf
-    false, // ELEM_Es
-    false, // ELEM_Fm
-    false, // ELEM_Md
-    false, // ELEM_No
-    false  // ELEM_Lr
-};
-
 static bool _isBondWide(const BondDescr& bd)
 {
     return bd.type == BOND_DOUBLE || bd.type == BOND_TRIPLE || bd.queryType == _BOND_DOUBLE_OR_AROMATIC || bd.queryType == _BOND_SINGLE_OR_AROMATIC ||
@@ -1618,7 +1511,7 @@ void MoleculeRenderInternal::_initHydroPos(int aid)
 {
     AtomDesc& ad = _ad(aid);
     const Vertex& v = _mol->getVertex(aid);
-    if (v.degree() == 0 && ElementHygrodenOnLeft[ad.label])
+    if (v.degree() == 0 && ElementHygrodenOnLeft(ad.label))
     {
         ad.implHPosWeights[HYDRO_POS_RIGHT] = 0.2f; // weights are relative, absoute values don't matter
         ad.implHPosWeights[HYDRO_POS_LEFT] = 0.3f;

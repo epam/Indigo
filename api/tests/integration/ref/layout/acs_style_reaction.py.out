@@ -16,3 +16,6 @@
 
 *** 2389 wrong margin ***
 acs_issue_2389.ket:SUCCEED
+
+*** 2458 catalist margins margin ***
+acs_issue_2458.ket:SUCCEED

@@ -28,6 +28,7 @@
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
 #include "math/algebra.h"
+#include "molecule/elements.h"
 #include "molecule/metadata_storage.h"
 #include "molecule/molecule_allene_stereo.h"
 #include "molecule/molecule_arom.h"
@@ -539,6 +540,9 @@ namespace indigo
         void getBoundingBox(Rect2f& bbox, const Vec2f& minbox) const;
         void getBoundingBox(Vec2f& a, Vec2f& b) const;
         void offsetCoordinates(const Vec3f& offset);
+        void getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE label_mode, Vec2f& bottom_left, Vec2f& top_right);
+        void getBoundingBox(float font_size, LABEL_MODE label_mode, Vec2f& bottom_left, Vec2f& top_right);
+        void getBoundingBox(float font_size, LABEL_MODE label_mode, Rect2f& bbox);
 
         // aliases
         bool isAlias(int atom_idx) const;
