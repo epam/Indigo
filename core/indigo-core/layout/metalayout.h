@@ -308,7 +308,7 @@ namespace indigo
 
         void setMarginSizeInAngstroms(float value)
         {
-            float angs_to_pt = UnitsOfMeasure::convertToPt(bondLength, bondLengthUnit, ppi) / DEFAULT_BOND_LENGTH;
+            float angs_to_pt = UnitsOfMeasure::convertToPt(bondLength, bondLengthUnit, ppi);
             reactionComponentMarginSize = UnitsOfMeasure::convertPtTo(value * angs_to_pt, reactionComponentMarginSizeUnit, ppi);
         };
 
