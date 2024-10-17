@@ -23,6 +23,7 @@
 #include "base_cpp/reusable_obj_array.h"
 
 #include "math/algebra.h"
+#include "molecule/elements.h"
 #include <cstdint>
 
 #ifdef _WIN32
@@ -259,6 +260,7 @@ namespace indigo
         static constexpr float DEFAULT_BOND_LENGTH = 1.6f; // default length of inter-chemical bonds
         static constexpr float DEFAULT_PLUS_SIZE = DEFAULT_BOND_LENGTH / 2;
         static constexpr float DEFAULT_BOND_LENGTH_PX = 100.0f; // 100 pixel
+        static constexpr float DEFAULT_FONT_SIZE_PX = DEFAULT_BOND_LENGTH_PX * 0.4f;
         static constexpr int32_t DEFAULT_PPI = 72;
 
         float bondLength{DEFAULT_BOND_LENGTH_PX};
@@ -266,6 +268,12 @@ namespace indigo
         float reactionComponentMarginSize{DEFAULT_BOND_LENGTH_PX / 2};
         UnitsOfMeasure::TYPE reactionComponentMarginSizeUnit{UnitsOfMeasure::TYPE::PX};
         int32_t ppi{72};
+        float fontSize{-1};
+        UnitsOfMeasure::TYPE fontSizeUnit{UnitsOfMeasure::PT};
+        float fontSizeSub{-1};
+        UnitsOfMeasure::TYPE fontSizeSubUnit{UnitsOfMeasure::PT};
+        LABEL_MODE labelMode{LABEL_MODE_TERMINAL_HETERO};
+
         void reset()
         {
             bondLength = DEFAULT_BOND_LENGTH_PX;
@@ -273,26 +281,43 @@ namespace indigo
             reactionComponentMarginSize = DEFAULT_BOND_LENGTH_PX / 2;
             reactionComponentMarginSizeUnit = UnitsOfMeasure::TYPE::PX;
             ppi = DEFAULT_PPI;
+            fontSize = -1;
+            fontSizeUnit = UnitsOfMeasure::PT;
+            fontSizeSub = -1;
+            fontSizeSubUnit = UnitsOfMeasure::PT;
+            labelMode = LABEL_MODE_TERMINAL_HETERO;
         };
+
         float getBondLengthPx()
         {
             return UnitsOfMeasure::convertToPx(bondLength, bondLengthUnit, ppi);
         };
+
         void setBondLengthPx(float value)
         {
             bondLength = UnitsOfMeasure::convertPtTo(UnitsOfMeasure::INCH_TO_PT * value / ppi, bondLengthUnit, ppi);
         };
+
         float getMarginSizeInAngstroms() const
         {
             auto marginSizePt = UnitsOfMeasure::convertToPt(reactionComponentMarginSize, reactionComponentMarginSizeUnit, ppi);
             auto bondLengthPt = UnitsOfMeasure::convertToPt(bondLength, bondLengthUnit, ppi);
 
-            return (DEFAULT_BOND_LENGTH * marginSizePt) / bondLengthPt;
+            return marginSizePt / bondLengthPt;
         };
+
         void setMarginSizeInAngstroms(float value)
         {
             float angs_to_pt = UnitsOfMeasure::convertToPt(bondLength, bondLengthUnit, ppi) / DEFAULT_BOND_LENGTH;
             reactionComponentMarginSize = UnitsOfMeasure::convertPtTo(value * angs_to_pt, reactionComponentMarginSizeUnit, ppi);
+        };
+
+        float getFontSizeInAngstroms() const
+        {
+            auto fontSizePt = UnitsOfMeasure::convertToPt(fontSize, fontSizeUnit, ppi);
+            auto bondLengthPt = UnitsOfMeasure::convertToPt(bondLength, bondLengthUnit, ppi);
+
+            return fontSizePt / bondLengthPt;
         };
     };
 
