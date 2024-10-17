@@ -95,12 +95,11 @@ indigo.setOption("render-label-mode", "terminal-hetero")
 rxn.layout()
 # with open(os.path.join(ref, filename), "w") as file:
 #     file.write(rxn.json())
-with open(os.path.join(ref, filename), "r") as file:
-    ket_ref = file.read()
-ket = rxn.json()
-diff = find_diff(ket_ref, ket)
-if not diff:
-    print(filename + ":SUCCEED")
-else:
-    print(filename + ":FAILED")
-    print(diff)
+res = reactionLayoutDiff(
+    indigo,
+    rxn,
+    filename,
+    update=upd,
+    update_format="ket",
+)
+print("  Result: {}".format(res))
