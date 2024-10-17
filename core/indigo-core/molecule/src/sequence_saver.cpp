@@ -782,18 +782,27 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                      STANDARD_MIXED_PEPTIDES.count(monomer_alias) == 0) ||
                     (monomer_class == MonomerClass::Base && STANDARD_NUCLEOTIDES.count(monomer_alias) == 0 && STANDARD_MIXED_BASES.count(monomer_alias) == 0))
                 {
-                    const auto& monomer_template = doc.templates().at(monomer->templateId());
                     std::string short_analog;
-                    if (monomer_template.hasStringProp("naturalAnalog"))
+                    auto get_analog = [&short_analog, &monomer_class](const KetBaseMonomerTemplate& monomer_template) {
+                        if (monomer_template.hasStringProp("naturalAnalog"))
+                        {
+                            std::string analog = monomer_template.getStringProp("naturalAnalog");
+                            short_analog = monomerAliasByName(MonomerTemplate::MonomerClassToStr(monomer_class), analog);
+                            if (short_analog == analog && analog.size() > 1)
+                                short_analog = "";
+                        }
+                        if (short_analog.size() == 0 && monomer_template.hasStringProp("naturalAnalogShort"))
+                        {
+                            short_analog = monomer_template.getStringProp("naturalAnalogShort");
+                        }
+                    };
+                    if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
+                        get_analog(doc.variantTemplates().at(monomer->templateId()));
+                    else if (monomer->monomerType() == KetBaseMonomer::MonomerType::Monomer)
+                        get_analog(doc.templates().at(monomer->templateId()));
+                    else
                     {
-                        std::string analog = monomer_template.getStringProp("naturalAnalog");
-                        short_analog = monomerAliasByName(MonomerTemplate::MonomerClassToStr(monomer_class), analog);
-                        if (short_analog == analog && analog.size() > 1)
-                            short_analog = "";
-                    }
-                    if (short_analog.size() == 0 && monomer_template.hasStringProp("naturalAnalogShort"))
-                    {
-                        short_analog = monomer_template.getStringProp("naturalAnalogShort");
+                        throw Error("Unknown monomer type.");
                     }
 
                     if (short_analog.size() == 1)
@@ -980,7 +989,10 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                             bool has_ratio = false;
                             std::set<std::string> aliases;
                             std::string s_aliases;
-                            for (auto& option : doc.variantTemplates().at(template_id).options())
+                            const auto& ambiguous_template = doc.variantTemplates().at(template_id);
+                            if (ambiguous_template.subtype() != "mixture")
+                                throw Error("Cannot save IDT - only mixture supported but found %s.", ambiguous_template.subtype().c_str());
+                            for (auto& option : ambiguous_template.options())
                             {
                                 auto& opt_alias = doc.templates().at(option.templateId()).getStringProp("alias");
                                 aliases.emplace(opt_alias);
