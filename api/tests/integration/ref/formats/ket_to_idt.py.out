@@ -36,7 +36,7 @@ Test ket-to-idt-alternatives-base: got expected error 'Cannot save IDT - only mi
 Test ket-to-idt-invalid-last-phosphate: got expected error 'Sequence saver: Cannot save molecule in IDT format - phosphate R cannot be last monomer in sequence.'
 Test ket-to-idt-invalid-nucleotide: got expected error 'IDT alias for group sugar:m2e2r base:z8c3G phosphate:mepo2 not found.'
 Test ket-to-idt-invalid-posphates: got expected error 'Sequence saver: Cannot save in IDT format - nonstandard connection found.'
-Test ket-to-idt-invalid-sugar: got expected error 'IDT alias for sugar:m2e2r not found.'
+Test ket-to-idt-invalid-sugar: got expected error 'Cannot save molecule in IDT format - sugar whithout base.'
 Test ket-to-idt-invalid-sugar-base: got expected error 'IDT alias for group sugar:m2e2r base:z8c3G not found.'
 Test ket-to-idt-invalid-sugar-phosphate: got expected error 'IDT alias for group sugar:m2e2r phosphate:mepo2 not found.'
 Test ket-to-idt-peptide: got expected error 'Sequence saver: Cannot save molecule in IDT format - expected sugar but found AminoAcid monomer DPhe4C.'
