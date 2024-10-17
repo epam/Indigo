@@ -1052,6 +1052,10 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                     }
                 }
             }
+            else
+            {
+                throw Error("Cannot save molecule in IDT format - sugar whithout base.");
+            }
 
             if (sequence.size() > 0)
             { // process phosphate
