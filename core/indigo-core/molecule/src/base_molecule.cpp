@@ -4528,6 +4528,229 @@ void BaseMolecule::offsetCoordinates(const Vec3f& offset)
         _xyz[i].add(offset);
 }
 
+void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE label_mode, Vec2f& bottom_left, Vec2f& top_right)
+{
+    Vec2f vec = _xyz[atom_idx].projectZ();
+    bottom_left = top_right = vec;
+    if (font_size <= EPSILON)
+        return;
+
+    float symbol_size = font_size * 0.6f;
+
+    if (isPseudoAtom(atom_idx) || isTemplateAtom(atom_idx))
+    {
+        const char* str = isPseudoAtom(atom_idx) ? getPseudoAtom(atom_idx) : getTemplateAtom(atom_idx);
+        size_t len = strlen(str);
+        Vec2f shift(len * symbol_size / 2.0f, symbol_size); // TODO: Add pseudoatom parsing
+        bottom_left.sub(shift);
+        top_right.add(shift);
+    }
+    else
+    {
+
+        int charge = getAtomCharge(atom_idx);
+        int isotope = getAtomIsotope(atom_idx);
+        int radical = -1;
+        int valence = getExplicitValence(atom_idx);
+        bool query = isQueryMolecule();
+        int implicit_h = 0;
+        const Vertex& vertex = getVertex(atom_idx);
+        int atomNumber = getAtomNumber(atom_idx);
+        int label = 0;
+        bool atom_regular = !query || QueryMolecule::queryAtomIsRegular(asQueryMolecule(), atom_idx);
+
+        if (!isRSite(atom_idx))
+        {
+            if (atom_regular)
+                label = atomNumber;
+            radical = getAtomRadical_NoThrow(atom_idx, -1);
+            if (!query)
+                implicit_h = asMolecule().getImplicitH_NoThrow(atom_idx, 0);
+        }
+
+        bool plainCarbon = label == ELEM_C && charge == (query ? CHARGE_UNKNOWN : 0) && isotope == (query ? -1 : 0) && radical <= 0 && valence == -1;
+        bool showLabel = true;
+        if (label_mode == LABEL_MODE_ALL || vertex.degree() == 0)
+            ;
+        else if (label_mode == LABEL_MODE_NONE)
+            showLabel = false;
+        else if (plainCarbon && (label_mode == LABEL_MODE_HETERO || vertex.degree() > 1))
+        {
+            showLabel = false;
+            if (vertex.degree() == 2)
+            {
+                int k1 = vertex.neiBegin();
+                int k2 = vertex.neiNext(k1);
+                if (getBondOrder(vertex.neiEdge(k1)) == getBondOrder(vertex.neiEdge(k2)))
+                {
+                    int a1 = vertex.neiVertex(k1);
+                    int a2 = vertex.neiVertex(k2);
+                    Vec2f vk1(_xyz[a1].x, _xyz[a1].y);
+                    Vec2f vk2(_xyz[a2].x, _xyz[a2].y);
+                    Vec2f dir_k1, dir_k2;
+                    dir_k1.diff(vec, vk1);
+                    dir_k1.normalize();
+                    dir_k2.diff(vec, vk2);
+                    dir_k2.normalize();
+                    float dot = Vec2f::dot(dir_k1, dir_k2);
+                    if (dot < -0.97)
+                        showLabel = true;
+                }
+            }
+        }
+        if (showLabel)
+        {
+            // calc label size
+            size_t len = 0;
+            if (query && !atom_regular)
+            {
+                Array<int> list;
+                int atom_type = QueryMolecule::parseQueryAtom(asQueryMolecule(), atom_idx, list);
+                switch (atom_type)
+                {
+                case QueryMolecule::QUERY_ATOM_A:
+                case QueryMolecule::QUERY_ATOM_X:
+                case QueryMolecule::QUERY_ATOM_Q:
+                case QueryMolecule::QUERY_ATOM_M:
+                    len = 1;
+                    break;
+                case QueryMolecule::QUERY_ATOM_AH:
+                case QueryMolecule::QUERY_ATOM_XH:
+                case QueryMolecule::QUERY_ATOM_QH:
+                case QueryMolecule::QUERY_ATOM_MH:
+                case QueryMolecule::QUERY_ATOM_SINGLE:
+                    len = 2;
+                    break;
+                case QueryMolecule::QUERY_ATOM_LIST:
+                case QueryMolecule::QUERY_ATOM_NOTLIST:
+                    len = 1 + list.size() / 2;
+                    for (int i = 0; i < list.size(); i++)
+                    {
+                        len += strlen(Element::toString(list[i]));
+                    }
+                    break;
+                }
+            }
+            else
+            {
+                len = strlen(Element::toString(label));
+            }
+            Vec2f shift(len * symbol_size / 2.0f, symbol_size);
+            bottom_left.sub(shift);
+            top_right.add(shift);
+            // Add isotope at left
+            if (isotope > 0 && !(label = ELEM_H && (isotope == DEUTERIUM || isotope == TRITIUM)))
+            {
+                if (isotope > 99)
+                    len = 3;
+                else if (isotope > 9)
+                    len = 2;
+                else
+                    len = 1;
+                bottom_left.x -= len * symbol_size;
+            }
+            // Add valence at right
+            if (valence > 0)
+            {
+                static constexpr int count[] = {
+                    1, // 0
+                    1, // I
+                    2, // II
+                    3, // III
+                    2, // IV
+                    1, // V
+                    2, // VI
+                    3, // VII
+                    4, // VIII
+                    2, // IX
+                    1, // X
+
+                };
+                top_right.x += count[valence] * symbol_size;
+            }
+            // Add charge at right
+            if (charge != 0)
+            {
+                if (abs(charge) > 9)
+                    len = 3;
+                else if (abs(charge) > 1)
+                    len = 2;
+                else
+                    len = 1;
+                top_right.x += len * symbol_size;
+            }
+            if (implicit_h > 0)
+            {
+                // add implicit H size
+                if (implicit_h > 1)
+                    len = 2;
+                else
+                    len = 1;
+                bool h_at_right = true;
+                if (vertex.degree() == 0)
+                {
+                    if (ElementHygrodenOnLeft(label))
+                        h_at_right = false;
+                }
+                else
+                {
+                    constexpr float min_sin = 0.49f;
+                    float right_weight = 0.3f;
+                    float left_weight = 0.2f;
+                    float left_sin = 0, right_sin = 0;
+                    for (int j = vertex.neiBegin(); j < vertex.neiEnd(); j = vertex.neiNext(j))
+                    {
+                        Vec2f d = _xyz[vertex.neiVertex(j)].projectZ();
+                        d.sub(vec);
+                        d.normalize();
+                        if (d.x > 0)
+                            right_sin = std::max(right_sin, d.x);
+                        else
+                            left_sin = std::max(left_sin, -d.x);
+                    }
+                    if (left_sin > min_sin)
+                        left_weight -= left_sin;
+                    if (right_sin > min_sin)
+                        right_weight -= right_sin;
+                    if (left_weight > right_weight)
+                        h_at_right = false;
+                }
+                if (h_at_right)
+                    top_right.x += len * symbol_size;
+                else
+                    bottom_left.x -= len * symbol_size;
+            }
+        }
+    }
+    // process AAM
+}
+
+void BaseMolecule::getBoundingBox(float font_size, LABEL_MODE label_mode, Vec2f& bottom_left, Vec2f& top_right)
+{
+    Vec2f atom_bottom_left, atom_top_right;
+    for (int atom_idx = 0; atom_idx < vertexCount(); ++atom_idx)
+    {
+        getAtomBoundingBox(atom_idx, font_size, label_mode, atom_bottom_left, atom_top_right);
+        if (!atom_idx)
+        {
+            bottom_left = atom_bottom_left;
+            top_right = atom_top_right;
+        }
+        else
+        {
+            bottom_left.min(atom_bottom_left);
+            top_right.max(atom_top_right);
+        }
+    }
+}
+
+void BaseMolecule::getBoundingBox(float font_size, LABEL_MODE label_mode, Rect2f& bbox)
+{
+    Vec2f a, b;
+    getBoundingBox(font_size, label_mode, a, b);
+    bbox = Rect2f(a, b);
+}
+
 void BaseMolecule::getBoundingBox(Vec2f& a, Vec2f& b) const
 {
     for (int atom_idx = 0; atom_idx < vertexCount(); ++atom_idx)

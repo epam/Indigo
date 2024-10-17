@@ -186,54 +186,6 @@ void indigoRenderGetStereoStyle(Array<char>& value)
     }
 }
 
-void indigoRenderSetLabelMode(const char* mode)
-{
-    std::string mode_string(mode);
-    LABEL_MODE result;
-    if (mode_string == "none")
-    {
-        result = LABEL_MODE_NONE;
-    }
-    else if (mode_string == "hetero")
-    {
-        result = LABEL_MODE_HETERO;
-    }
-    else if (mode_string == "terminal-hetero")
-    {
-        result = LABEL_MODE_TERMINAL_HETERO;
-    }
-    else if (mode_string == "all")
-    {
-        result = LABEL_MODE_ALL;
-    }
-    else
-    {
-        throw IndigoError("Invalid label mode, should be 'none', 'hetero', 'terminal-hetero' or 'all'");
-    }
-    RenderParams& rp = indigoRendererGetInstance().renderParams;
-    rp.rOpt.labelMode = result;
-}
-
-void indigoRenderGetLabelMode(Array<char>& value)
-{
-    RenderParams& rp = indigoRendererGetInstance().renderParams;
-    switch (rp.rOpt.labelMode)
-    {
-    case LABEL_MODE_NONE:
-        value.readString("none", true);
-        break;
-    case LABEL_MODE_HETERO:
-        value.readString("hetero", true);
-        break;
-    case LABEL_MODE_TERMINAL_HETERO:
-        value.readString("terminal-hetero", true);
-        break;
-    case LABEL_MODE_ALL:
-        value.readString("all", true);
-        break;
-    }
-}
-
 void indigoRenderSetCatalystsPlacement(const char* mode)
 {
     int result;
@@ -454,6 +406,11 @@ static void setParams(RenderParams& rp, LayoutOptions& layout_options)
     rp.cnvOpt.bondLength = layout_options.bondLength;
     rp.cnvOpt.bondLengthUnit = layout_options.bondLengthUnit;
     rp.rOpt.ppi = layout_options.ppi;
+    rp.rOpt.fontSize = layout_options.fontSize;
+    rp.rOpt.fontSizeUnit = layout_options.fontSizeUnit;
+    rp.rOpt.fontSizeSub = layout_options.fontSizeSub;
+    rp.rOpt.fontSizeSubUnit = layout_options.fontSizeSubUnit;
+    rp.rOpt.labelMode = layout_options.labelMode;
     rp.rOpt.bond_length_px = layout_options.bondLength > EPSILON ? layout_options.getBondLengthPx() : LayoutOptions::DEFAULT_BOND_LENGTH_PX;
     if (rp.cnvOpt.outputSheetWidth > 0)
     {
@@ -732,7 +689,6 @@ void IndigoRenderer::setOptionsHandlers()
 
         mgr->setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat, indigoRenderGetOutputFormat);
 
-        mgr->setOptionHandlerString("render-label-mode", indigoRenderSetLabelMode, indigoRenderGetLabelMode);
         mgr->setOptionHandlerString("render-comment", SETTER_GETTER_STR_OPTION(rp.cnvOpt.comment));
         mgr->setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition, indigoRenderGetCommentPosition);
         mgr->setOptionHandlerString("render-stereo-style", indigoRenderSetStereoStyle, indigoRenderGetStereoStyle);
@@ -790,10 +746,6 @@ void IndigoRenderer::setOptionsHandlers()
         mgr->setOptionHandlerVoid("reset-render-options", indigoRenderResetOptions);
 
         // ACS style options
-        mgr->setOptionHandlerFloat("render-font-size", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.fontSize));
-        mgr->setOptionHandlerString("render-font-size-unit", SETTER_GETTER_UNIT_OPTION(rp.rOpt.fontSizeUnit));
-        mgr->setOptionHandlerFloat("render-font-size-sub", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.fontSizeSub));
-        mgr->setOptionHandlerString("render-font-size-sub-unit", SETTER_GETTER_UNIT_OPTION(rp.rOpt.fontSizeSubUnit));
         mgr->setOptionHandlerFloat("render-bond-thickness", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.bondThickness));
         mgr->setOptionHandlerString("render-bond-thickness-unit", SETTER_GETTER_UNIT_OPTION(rp.rOpt.bondThicknessUnit));
         mgr->setOptionHandlerFloat("render-bond-spacing", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.bondSpacing));

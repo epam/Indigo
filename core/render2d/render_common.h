@@ -54,13 +54,6 @@ namespace indigo
         MODE_PRN,
         MODE_CDXML
     };
-    enum LABEL_MODE
-    {
-        LABEL_MODE_NONE,
-        LABEL_MODE_HETERO,
-        LABEL_MODE_TERMINAL_HETERO,
-        LABEL_MODE_ALL
-    };
     enum STEREO_STYLE
     {
         STEREO_STYLE_EXT,
