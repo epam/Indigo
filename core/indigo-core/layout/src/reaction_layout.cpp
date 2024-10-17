@@ -37,17 +37,19 @@ using namespace indigo;
 ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
     : bond_length(LayoutOptions::DEFAULT_BOND_LENGTH), default_plus_size(1), default_arrow_size(2), preserve_molecule_layout(false), _r(r),
       _smart_layout(smart_layout), reaction_margin_size(DEFAULT_HOR_INTERVAL_FACTOR), atom_label_margin(1.3f), layout_orientation(UNCPECIFIED),
-      max_iterations(0)
+      max_iterations(0), _font_size(-1)
 {
     _options.bondLength = bond_length;
     _options.reactionComponentMarginSize = reaction_margin_size;
 }
 
 ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout, const LayoutOptions& options)
-    : bond_length(LayoutOptions::DEFAULT_BOND_LENGTH), default_plus_size(LayoutOptions::DEFAULT_PLUS_SIZE),
+    : bond_length(options.fontSize > EPSILON ? 1 : LayoutOptions::DEFAULT_BOND_LENGTH), default_plus_size(LayoutOptions::DEFAULT_PLUS_SIZE),
       default_arrow_size(LayoutOptions::DEFAULT_BOND_LENGTH * 2), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout),
-      reaction_margin_size(options.getMarginSizeInAngstroms()), atom_label_margin(LayoutOptions::DEFAULT_BOND_LENGTH / 2), layout_orientation(UNCPECIFIED),
-      max_iterations(0), _options(options)
+      reaction_margin_size(options.fontSize > EPSILON ? options.getMarginSizeInAngstroms()
+                                                      : LayoutOptions::DEFAULT_BOND_LENGTH * options.getMarginSizeInAngstroms()),
+      atom_label_margin(LayoutOptions::DEFAULT_BOND_LENGTH / 2), layout_orientation(UNCPECIFIED), max_iterations(0), _options(options),
+      _font_size(options.getFontSizeInAngstroms())
 {
 }
 
@@ -178,8 +180,9 @@ void ReactionLayout::_updateMetadata()
     }
     else
     {
-        const float ptab = /*first_single_product ? reaction_margin_size * 2 :*/ reaction_margin_size + atom_label_margin;
-        const float rtab = /*last_single_reactant ? reaction_margin_size * 2 :*/ reaction_margin_size + atom_label_margin;
+        const float ptab = /*first_single_product ? reaction_margin_size * 2 :*/ reaction_margin_size + (_font_size < EPSILON ? atom_label_margin : 0);
+        const float rtab = /*last_single_reactant ? reaction_margin_size * 2 :*/ reaction_margin_size + (_font_size < EPSILON ? atom_label_margin : 0);
+        ;
 
         arrow_head.y = product_box.middleY();
         arrow_tail.y = react_box.middleY();
@@ -208,7 +211,11 @@ void ReactionLayout::processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_b
         BaseMolecule& mol = _r.getBaseMolecule(i);
 
         Rect2f box;
-        mol.getBoundingBox(box);
+        // If have font size calc bounding box with labes
+        if (_font_size > EPSILON)
+            mol.getBoundingBox(_font_size, _options.labelMode, box);
+        else
+            mol.getBoundingBox(box);
         if (i == begin)
             type_box.copy(box);
         else
@@ -310,9 +317,6 @@ void ReactionLayout::make()
         _pushSpace(line, reaction_margin_size);
         for (int i = _r.catalystBegin(); i < _r.catalystEnd(); i = _r.catalystNext(i))
         {
-            auto& mol = _getMol(i);
-            Rect2f bbox;
-            mol.getBoundingBox(bbox, Vec2f(bond_length, bond_length));
             if (i != _r.catalystBegin())
                 _pushSpace(line, reaction_margin_size);
             _pushMol(line, i, true);
@@ -344,7 +348,8 @@ void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_cata
 {
     // Molecule label alligned to atom center by non-hydrogen
     // Hydrogen may be at left or at right H2O, PH3 - so add space before and after molecule
-    _pushSpace(line, atom_label_margin);
+    if (_font_size < EPSILON)
+        _pushSpace(line, atom_label_margin);
     Metalayout::LayoutItem& item = line.items.push();
     item.type = Metalayout::LayoutItem::Type::EMolecule;
     item.isMoleculeFragment = true;
@@ -354,12 +359,16 @@ void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_cata
     {
         item.verticalAlign = Metalayout::LayoutItem::ItemVerticalAlign::ETop;
     }
-
     Rect2f bbox;
-    mol.getBoundingBox(bbox);
+    // If have font size calc bounding box with labes
+    if (_font_size > EPSILON)
+        mol.getBoundingBox(_font_size, _options.labelMode, bbox);
+    else
+        mol.getBoundingBox(bbox);
     item.min.copy(bbox.leftBottom());
     item.max.copy(bbox.rightTop());
-    _pushSpace(line, atom_label_margin);
+    if (_font_size < EPSILON)
+        _pushSpace(line, atom_label_margin);
 }
 
 void ReactionLayout::_pushSpace(Metalayout::LayoutLine& line, float size)

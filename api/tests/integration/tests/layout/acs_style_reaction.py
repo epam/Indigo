@@ -75,3 +75,31 @@ if not diff:
 else:
     print(filename + ":FAILED")
     print(diff)
+
+
+print("\n*** 2458 catalist margins margin ***")
+filename = "acs_issue_2458.ket"
+rxn = indigo.loadReactionFromFile(os.path.join(root, filename))
+indigo.resetOptions()
+indigo.setOption("molfile-saving-skip-date", "1")
+indigo.setOption("json-saving-pretty", "1")
+indigo.setOption("json-use-native-precision", "1")
+indigo.setOption("smart-layout", "true")
+indigo.setOption("dearomatize-on-load", "false")
+indigo.setOption("render-font-size", "10")
+indigo.setOption("render-font-size-unit", "pt")
+indigo.setOption("image-resolution", "600")
+indigo.setOption("bond-length-unit", "pt")
+indigo.setOption("bond-length", "14.4")
+indigo.setOption("render-label-mode", "terminal-hetero")
+rxn.layout()
+# with open(os.path.join(ref, filename), "w") as file:
+#     file.write(rxn.json())
+res = reactionLayoutDiff(
+    indigo,
+    rxn,
+    filename,
+    update=upd,
+    update_format="ket",
+)
+print("  Result: {}".format(res))
