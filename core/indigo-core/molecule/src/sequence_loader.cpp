@@ -1081,16 +1081,31 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     if (mixed_base.back() == ')')
                     {
                         mixed_base = idt_alias.substr(1, idt_alias.size() - 2);
+                        auto check_mixed_base = [](const std::string& base) {
+                            if (base.size() < 2)
+                                return;
+                            auto count = base.substr(1, base.size() - 1);
+                            for (auto ch : count)
+                            {
+                                if (!std::isdigit(ch))
+                                    throw Error("Invalid mixed base - only numerical index allowed.");
+                            }
+                        };
                         if (auto pos = mixed_base.find(':'); pos != std::string::npos)
                         {
                             auto ratios_str = mixed_base.substr(pos + 1, mixed_base.size() - pos - 1);
                             mixed_base = mixed_base.substr(0, pos);
+                            check_mixed_base(mixed_base);
                             if (ratios_str.size() != 8)
                                 throw Exception("Invalid IDT variant monomer %s", idt_alias.c_str());
                             ratios.emplace(std::array<float, 4>{std::stof(ratios_str.substr(0, 2)), std::stof(ratios_str.substr(2, 2)),
                                                                 std::stof(ratios_str.substr(4, 2)), std::stof(ratios_str.substr(6, 2))});
                             idt_alias = '(' + mixed_base + ')';
                             mixed_base = mixed_base[0];
+                        }
+                        else
+                        {
+                            check_mixed_base(mixed_base);
                         }
                     }
                     if (sugar == "R" && RNA_DNA_MIXED_BASES.count(mixed_base) == 0)
