@@ -559,7 +559,7 @@ void ReactionMultistepDetector::constructPathwayReaction(PathwayReaction& rxn)
     std::vector<std::set<int>> csb_to_reaction;
     std::vector<std::unordered_map<int, int>> csb_to_reactant_indexes;
 
-    for (int i = 0; i < _component_summ_blocks.size(); ++i)
+    for (int i = 0; i < (int)_component_summ_blocks.size(); ++i)
     {
         csb_to_reaction.emplace_back();
         auto& csb = _component_summ_blocks[i];
