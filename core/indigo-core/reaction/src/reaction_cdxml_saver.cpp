@@ -363,7 +363,7 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
     }
     else
     {
-        if (rxn.reactionBlocksCount())
+        if (rxn.reactionBlocksCount() && arrow_id.second < rxn.reactionBlocksCount())
         {
             auto& rb = rxn.reactionBlock(arrow_id.second);
             auto& reactants = rxn.isRetrosyntetic() ? rb.products : rb.reactants;
@@ -390,7 +390,7 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
     }
     else
     {
-        if (rxn.reactionBlocksCount())
+        if (rxn.reactionBlocksCount() && arrow_id.second < rxn.reactionBlocksCount())
         {
             auto& rb = rxn.reactionBlock(arrow_id.second);
             auto& products = rxn.isRetrosyntetic() ? rb.reactants : rb.products;
