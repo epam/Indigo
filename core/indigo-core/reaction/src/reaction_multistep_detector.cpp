@@ -439,8 +439,8 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
                 }
                 csb_min_reac.reaction_idx = i;
             }
-			else
-				bad_pathway = true;
+            else
+                bad_pathway = true;
         }
     }
     for (auto& csb : _component_summ_blocks)
@@ -539,7 +539,7 @@ bool ReactionMultistepDetector::findPlusNeighbours(const Vec2f& plus_pos, const 
 
     if (tops_col_it != tops_col.end() && bottoms_col_it != bottoms_col.end())
     {
-        min_distance_v = std::min(tops_col_it->first - plus_pos_y.first, bottoms_col_it->first - plus_pos_y.first);
+        min_distance_v = std::min(std::fabs(tops_col_it->first - plus_pos_y.first), std::fabs(bottoms_col_it->first - plus_pos_y.first));
         if (!result || min_distance_v < min_distance_h)
         {
             connection.first = tops_col_it->second;

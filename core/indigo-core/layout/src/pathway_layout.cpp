@@ -78,12 +78,12 @@ void PathwayLayout::make()
         }
 
         rootItem.boundingBox = pathwayBoundingBox;
+        yShift += pathwayBoundingBox.height() + MULTIPATHWAY_VERTICAL_SPACING;
         for (size_t i = 0; i < layoutItems.size(); ++i)
         {
             auto& layoutItem = *layoutItems[i];
-            layoutItem.boundingBox.offset(Vec2f(-pathwayBoundingBox.left(), -pathwayBoundingBox.bottom() + yShift));
+            layoutItem.boundingBox.offset(Vec2f(-pathwayBoundingBox.left(), -pathwayBoundingBox.bottom() - yShift));
         }
-        yShift += pathwayBoundingBox.height() + MULTIPATHWAY_VERTICAL_SPACING;
     }
     applyLayout();
 }
