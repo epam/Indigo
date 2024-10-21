@@ -79,7 +79,8 @@ namespace indigo
                   parent(nullptr), nextSibling(nullptr), prevSibling(nullptr), reaction(pwr), boundingBox()
             {
                 auto& reactionNode = reaction.getReactionNode(nodeIdx);
-                auto& simpleReaction = reaction.getReaction(reactionNode.reactionIdx);
+                reactionIndex = reactionNode.reactionIdx;
+                auto& simpleReaction = reaction.getReaction(reactionIndex);
                 // create as a final reactant child
                 if (reactantIdx != -1)
                 {
@@ -214,6 +215,7 @@ namespace indigo
             std::vector<std::pair<int, Rect2f>> molecules;
             PathwayReaction& reaction;
             Rect2f boundingBox;
+            int reactionIndex;
         };
 
         struct PathwayLayoutRootItem

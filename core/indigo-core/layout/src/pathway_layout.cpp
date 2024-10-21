@@ -178,10 +178,21 @@ void PathwayLayout::secondWalk(PathwayLayoutItem* node, PathwayLayoutItem* paren
     node->clear();
 }
 
+void insertSorted(std::vector<std::pair<int, std::unique_ptr<MetaObject>>>& objs, std::pair<int, std::unique_ptr<MetaObject>> newPair)
+{
+    auto it = std::lower_bound(objs.begin(), objs.end(), newPair,
+                               [](const std::pair<int, std::unique_ptr<MetaObject>>& element, const std::pair<int, std::unique_ptr<MetaObject>>& value) {
+                                   return element.first < value.first;
+                               });
+
+    objs.emplace(it, std::move(newPair));
+}
+
 void PathwayLayout::applyLayout()
 {
     // upload coordinates back to the reaction
     _reaction.meta().resetReactionData();
+    std::vector<std::pair<int, std::unique_ptr<MetaObject>>> metaArrows;
     for (auto& rootItem : _layoutRootItems)
     {
         auto& layoutItems = rootItem.layoutItems;
@@ -212,19 +223,24 @@ void PathwayLayout::applyLayout()
                 // add spines
                 if (tails.size() > 1)
                 {
-                    Vec2f spineTop(tails.front().x + ARROW_TAIL_LENGTH, tails.front().y);
-                    Vec2f spineBottom(tails.back().x + ARROW_TAIL_LENGTH, tails.back().y);
+                    Vec2f spineTop(tails.front().x + ARROW_TAIL_LENGTH * _bond_length, tails.front().y);
+                    Vec2f spineBottom(tails.back().x + ARROW_TAIL_LENGTH * _bond_length, tails.back().y);
                     arrows.push_back(spineBottom);
                     arrows.push_back(spineTop);
-                    _reaction.meta().addMetaObject(new KETReactionMultitailArrow(arrows.begin(), arrows.end()));
+                    insertSorted(metaArrows,
+                                 std::make_pair(layoutItem->reactionIndex, std::make_unique<KETReactionMultitailArrow>(arrows.begin(), arrows.end())));
                 }
                 else if (tails.size())
                 {
-                    _reaction.meta().addMetaObject(new KETReactionArrow(KETReactionArrow::EFilledTriangle, tails.front(), head));
+                    insertSorted(metaArrows, std::make_pair(layoutItem->reactionIndex,
+                                                            std::make_unique<KETReactionArrow>(KETReactionArrow::EFilledTriangle, tails.front(), head)));
                 }
             }
         }
     }
+
+    for (auto& arrow : metaArrows)
+        _reaction.meta().addMetaObject(arrow.second.release());
 }
 
 PathwayLayout::PathwayLayoutItem* PathwayLayout::apportion(PathwayLayoutItem* currentNode, PathwayLayoutItem* ancestorNode)

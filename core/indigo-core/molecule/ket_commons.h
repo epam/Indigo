@@ -483,12 +483,13 @@ namespace indigo
 
     struct MolSumm
     {
-        MolSumm() : bbox(Vec2f(0, 0), Vec2f(0, 0)), role(BaseReaction::UNDEFINED){};
-        MolSumm(const Rect2f& box) : bbox(box), role(BaseReaction::UNDEFINED){};
+        MolSumm() : bbox(Vec2f(0, 0), Vec2f(0, 0)), role(BaseReaction::UNDEFINED), reaction_idx(-1){};
+        MolSumm(const Rect2f& box) : bbox(box), role(BaseReaction::UNDEFINED), reaction_idx(-1){};
 
         Rect2f bbox;
         std::vector<int> indexes;
         int role;
+        int reaction_idx;
         std::vector<int> arrows_to;
         std::vector<int> arrows_from;
     };

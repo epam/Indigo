@@ -65,8 +65,10 @@ namespace indigo
 
     private:
         void createSummBlocks();
-        bool detectArrows();
-        bool detectMultitailArrows();
+        void sortSummblocks();
+
+        bool mapReactionComponents();
+        bool mapMultitailReactionComponents();
 
         bool findPlusNeighbours(const Vec2f& plus_pos, const FLOAT_INT_PAIRS& mol_tops, const FLOAT_INT_PAIRS& mol_bottoms, const FLOAT_INT_PAIRS& mol_lefts,
                                 const FLOAT_INT_PAIRS& mol_rights, std::pair<int, int>& connection);
