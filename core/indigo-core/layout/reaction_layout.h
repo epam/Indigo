@@ -47,6 +47,7 @@ namespace indigo
 
         // layout if reaction components are not in the places
         static bool hasAnyIntersect(const std::vector<Rect2f>& bblist);
+        static bool validVerticalRange(const std::vector<Rect2f>& bblist);
 
         void fixLayout();
         void processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_box, int side);

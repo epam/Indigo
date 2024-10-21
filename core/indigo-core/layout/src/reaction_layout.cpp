@@ -87,6 +87,16 @@ bool ReactionLayout::hasAnyIntersect(const std::vector<Rect2f>& bblist)
     return false;
 }
 
+bool ReactionLayout::validVerticalRange(const std::vector<Rect2f>& bblist)
+{
+    if (bblist.empty())
+        return true;
+
+    float max_start = std::max_element(bblist.begin(), bblist.end(), [](const Rect2f& a, const Rect2f& b) { return a.bottom() < b.bottom(); })->bottom();
+    float min_end = std::min_element(bblist.begin(), bblist.end(), [](const Rect2f& a, const Rect2f& b) { return a.top() < b.top(); })->top();
+    return max_start <= min_end;
+}
+
 void ReactionLayout::fixLayout()
 {
     int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
@@ -130,7 +140,7 @@ void ReactionLayout::fixLayout()
     }
 
     if (!invalid_layout)
-        invalid_layout = hasAnyIntersect(bboxes);
+        invalid_layout = hasAnyIntersect(bboxes) || !validVerticalRange(bboxes);
 
     // if left side of product bb at left of right side of reactant bb - fix layout
     if (invalid_layout)

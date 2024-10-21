@@ -25,6 +25,7 @@ ref_path = joinPathPy("ref/", __file__)
 
 files = [
     "2531-bad-layout",
+    "2485-bad-layout",
 ]
 
 files.sort()
