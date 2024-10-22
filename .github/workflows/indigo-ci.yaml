@@ -314,7 +314,7 @@ jobs:
           path: dist/
       - name: Test Linux
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
-        uses: uraimo/run-on-arch-action@v2.0.5
+        uses: uraimo/run-on-arch-action@v2.8.1
         with:
           arch: aarch64
           distro: ubuntu20.04
@@ -446,7 +446,7 @@ jobs:
           path: dist/
       - name: Test Linux
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
-        uses: uraimo/run-on-arch-action@v2.0.5
+        uses: uraimo/run-on-arch-action@v2.8.1
         with:
           arch: aarch64
           distro: ubuntu20.04
