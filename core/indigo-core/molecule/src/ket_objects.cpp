@@ -641,7 +641,7 @@ const KetConnection::TYPE KetConnection::connType() const
     else if (_connection_type == KetConnectionHydro)
         return TYPE::HYDROGEN;
     else
-        throw Error("Unknown connection type '%s'.", _connection_type);
+        throw Error("Unknown connection type '%s'.", _connection_type.c_str());
 }
 
 const std::map<std::string, int>& KetConnection::getStringPropStrToIdx() const
