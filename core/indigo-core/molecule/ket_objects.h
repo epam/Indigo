@@ -784,10 +784,21 @@ namespace indigo
     {
     public:
         DECL_ERROR;
+        enum class TYPE
+        {
+            SINGLE,
+            HYDROGEN
+        };
+
+        KetConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) : _connection_type(conn_type), _ep1(ep1), _ep2(ep2){};
+
+        KetConnection(TYPE conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
 
         KetConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) : _connection_type("single"), _ep1(ep1), _ep2(ep2){};
 
         const std::map<std::string, int>& getStringPropStrToIdx() const override;
+
+        const TYPE connType() const;
 
         inline const std::string connectionType() const
         {

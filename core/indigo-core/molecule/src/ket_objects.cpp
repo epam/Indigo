@@ -619,6 +619,31 @@ const std::map<std::string, int>& KetConnectionEndPoint::getStringPropStrToIdx()
 
 IMPL_ERROR(KetConnection, "Ket Connection")
 
+KetConnection::KetConnection(KetConnection::TYPE conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) : _ep1(ep1), _ep2(ep2)
+{
+    switch (conn_type)
+    {
+    case TYPE::SINGLE:
+        _connection_type = KetConnectionSingle;
+        break;
+    case TYPE::HYDROGEN:
+        _connection_type = KetConnectionHydro;
+        break;
+    default:
+        throw Error("Unknown connection type %d.", conn_type);
+    }
+}
+
+const KetConnection::TYPE KetConnection::connType() const
+{
+    if (_connection_type == KetConnectionSingle)
+        return TYPE::SINGLE;
+    else if (_connection_type == KetConnectionHydro)
+        return TYPE::HYDROGEN;
+    else
+        throw Error("Unknown connection type '%s'.", _connection_type);
+}
+
 const std::map<std::string, int>& KetConnection::getStringPropStrToIdx() const
 {
     static std::map<std::string, int> str_to_idx{

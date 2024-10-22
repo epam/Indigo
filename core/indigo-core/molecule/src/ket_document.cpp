@@ -157,6 +157,12 @@ BaseMolecule& KetDocument::getBaseMolecule()
     return *molecule.value().get();
 }
 
+KetConnection& KetDocument::addConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
+{
+    _connections.emplace_back(conn_type, ep1, ep2);
+    return *_connections.rbegin();
+}
+
 KetConnection& KetDocument::addConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
 {
     _connections.emplace_back(ep1, ep2);
@@ -165,14 +171,26 @@ KetConnection& KetDocument::addConnection(KetConnectionEndPoint ep1, KetConnecti
 
 KetConnection& KetDocument::addConnection(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2)
 {
-    connectMonomerTo(mon1, ap1, mon2, ap2);
-    connectMonomerTo(mon2, ap2, mon1, ap1);
     KetConnectionEndPoint ep1, ep2;
     ep1.setStringProp("monomerId", mon1);
-    ep1.setStringProp("attachmentPointId", ap1);
     ep2.setStringProp("monomerId", mon2);
-    ep2.setStringProp("attachmentPointId", ap2);
-    _connections.emplace_back(ep1, ep2);
+    if (ap1 == HelmHydrogenPair && ap2 == HelmHydrogenPair)
+    {
+        _connections.emplace_back(KetConnection::TYPE::HYDROGEN, ep1, ep2);
+    }
+    else if (ap1 == HelmHydrogenPair || ap2 == HelmHydrogenPair)
+    {
+        throw Error("Wrong hydrogen connection - both attachment point should be '%s' but got '%s' and '%s'.", HelmHydrogenPair.c_str(), ap1.c_str(),
+                    ap2.c_str());
+    }
+    else
+    {
+        connectMonomerTo(mon1, ap1, mon2, ap2);
+        connectMonomerTo(mon2, ap2, mon1, ap1);
+        ep1.setStringProp("attachmentPointId", ap1);
+        ep2.setStringProp("attachmentPointId", ap2);
+        _connections.emplace_back(ep1, ep2);
+    }
     return *_connections.rbegin();
 }
 
@@ -411,6 +429,11 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
             throw Error("Connection with only one end point.");
         if (!(has_mon_1 || has_mol_1))
             throw Error("Connection with empty point.");
+        if (connection.connType() == KetConnection::TYPE::HYDROGEN)
+        {
+            _non_sequence_connections.emplace_back(connection);
+            continue;
+        }
         bool has_ap_1 = ep1.hasStringProp("attachmentPointId");
         bool has_atom_1 = ep1.hasStringProp("atomId");
         bool has_ap_2 = ep2.hasStringProp("attachmentPointId");

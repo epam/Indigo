@@ -3,6 +3,7 @@ helm_aminoacids_variants.ket:SUCCEED
 helm_annotations.ket:SUCCEED
 helm_chem_peptide.ket:SUCCEED
 helm_chem_rna.ket:SUCCEED
+helm_chem_rna_hydro.ket:SUCCEED
 helm_fractional_ratio.ket:SUCCEED
 helm_mixed_base.ket:SUCCEED
 helm_mixed_custom.ket:SUCCEED

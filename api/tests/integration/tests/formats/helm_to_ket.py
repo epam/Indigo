@@ -43,6 +43,7 @@ helm_data = {
     "helm_smiles_sugar": "RNA1{[C([*:3])[C@@H](O[*:2])CO[*:1]](A)P}$$$$V2.0",
     "helm_no_left_ap": "PEPTIDE1{[DACys].C}$$$$V2.0",
     "helm_fractional_ratio": "PEPTIDE1{(A:1.5+C:0.1+G:3)}$$$$V2.0",
+    "helm_chem_rna_hydro": "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:pair-3:pair$$$V2.0",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(

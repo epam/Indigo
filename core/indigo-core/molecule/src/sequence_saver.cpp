@@ -1416,6 +1416,8 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
             helm_string += mol_atom_to_ap.at(id1).at(std::stoi(ep_1.getStringProp("atomId")));
         else if (ep_1.hasStringProp("attachmentPointId"))
             helm_string += ep_1.getStringProp("attachmentPointId");
+        else if (connection.connType() == KetConnection::TYPE::HYDROGEN)
+            helm_string += HelmHydrogenPair;
         else
             helm_string += '?';
         helm_string += '-';
@@ -1425,6 +1427,8 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
             helm_string += mol_atom_to_ap.at(id2).at(std::stoi(ep_2.getStringProp("atomId")));
         else if (ep_2.hasStringProp("attachmentPointId"))
             helm_string += ep_2.getStringProp("attachmentPointId");
+        else if (connection.connType() == KetConnection::TYPE::HYDROGEN)
+            helm_string += HelmHydrogenPair;
         else
             helm_string += '?';
     }

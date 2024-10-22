@@ -4,6 +4,7 @@ helm_aminoacids_variants.ket:SUCCEED
 helm_annotations.ket:SUCCEED
 helm_chem_peptide.ket:SUCCEED
 helm_chem_rna.ket:SUCCEED
+helm_chem_rna_hydro.ket:SUCCEED
 helm_connetion_separator.ket:SUCCEED
 helm_cycled_polymer.ket:SUCCEED
 helm_fractional_ratio.ket FAILED : expected 'PEPTIDE1{(A:1.5+C:.1+G:3.)}$$$$V2.0', got 'PEPTIDE1{(A:1.5+C:0.1+G:3)}$$$$V2.0'

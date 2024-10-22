@@ -109,16 +109,16 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
         {
             Value& connection = connections[i];
             std::string connection_type = connection["connectionType"].GetString();
-            if (connection_type == "single")
+            if (connection_type == KetConnectionSingle || connection_type == KetConnectionHydro)
             {
                 KetConnectionEndPoint ep1, ep2;
                 ep1.parseOptsFromKet(connection["endpoint1"]);
                 ep2.parseOptsFromKet(connection["endpoint2"]);
-                auto& conn = document.addConnection(ep1, ep2);
+                auto& conn = document.addConnection(connection_type, ep1, ep2);
                 conn.parseOptsFromKet(connection);
             }
             else
-                throw Error("Unknows connection type: %s", connection_type.c_str());
+                throw Error("Unknown connection type: %s", connection_type.c_str());
         }
     }
 }
