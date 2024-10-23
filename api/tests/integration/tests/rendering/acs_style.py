@@ -67,6 +67,7 @@ indigo.setOption("render-bond-spacing", "0.5")
 indigo.setOption("render-hash-spacing", "10")
 indigo.setOption("render-stereo-bond-width", "30")
 indigo.setOption("render-font-size", "20")
+indigo.setOption("render-font-size-sub", "30")
 renderer.renderToFile(mol, joinPathPy("out/acs_style_changed.png", __file__))
 print(checkImageSimilarity("acs_style_changed.png"))
 
@@ -88,6 +89,7 @@ mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/" + fname, __file__))
 pngname = name + ".png"
 renderer.renderToFile(mol, joinPathPy("out/" + pngname, __file__))
 print(checkImageSimilarity(pngname))
+
 
 if isIronPython():
     renderer.Dispose()
