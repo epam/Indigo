@@ -62,7 +62,7 @@ namespace indigo
     protected:
         void saveRoot(BaseMolecule& mol, JsonWriter& writer);
         void saveMoleculeReference(int mol_id, JsonWriter& writer);
-        void saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer);
+        void saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer, bool hydrogen = false);
         int getMonomerNumber(int mon_idx);
 
         void writeFloat(JsonWriter& writer, float f_value);

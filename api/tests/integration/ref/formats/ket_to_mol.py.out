@@ -4,6 +4,7 @@ accl_no_class.ket:SUCCEED
 acgt_1412.ket:SUCCEED
 anacyclamide.ket:SUCCEED
 chem.ket:SUCCEED
+chem_rna_hydro.ket:SUCCEED
 conj_no_class.ket:SUCCEED
 conjugate.ket:SUCCEED
 cysteine.ket:SUCCEED

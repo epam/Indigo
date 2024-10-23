@@ -98,6 +98,8 @@ namespace indigo
             return _templates_ids;
         };
 
+        KetConnection& addConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
+
         KetConnection& addConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
 
         KetConnection& addConnection(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2);

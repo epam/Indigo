@@ -1369,7 +1369,7 @@ int MoleculeJsonSaver::getMonomerNumber(int mon_idx)
     return -1;
 }
 
-void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer)
+void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer, bool hydrogen)
 {
     writer.Key(ep.c_str());
     writer.StartObject();
@@ -1383,7 +1383,7 @@ void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, i
             writer.Key("attachmentPointId");
             writer.String(convertAPToHELM(conn_it->second).c_str());
         }
-        else
+        else if (!hydrogen) // Hydrogen connection has no attachment point
             throw Error("Attachment point not found!!!");
     }
     else
@@ -1539,10 +1539,11 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
                 // save connections between templates or atoms
                 writer.StartObject();
                 writer.Key("connectionType");
-                writer.String(mol.getBondOrder(i) == _BOND_HYDROGEN ? "hydrogen" : "single");
+                bool hydrogen = mol.getBondOrder(i) == _BOND_HYDROGEN;
+                writer.String(hydrogen ? "hydrogen" : "single");
                 // save endpoints
-                saveEndpoint(mol, "endpoint1", e.beg, e.end, writer);
-                saveEndpoint(mol, "endpoint2", e.end, e.beg, writer);
+                saveEndpoint(mol, "endpoint1", e.beg, e.end, writer, hydrogen);
+                saveEndpoint(mol, "endpoint2", e.end, e.beg, writer, hydrogen);
                 writer.EndObject(); // connection
             }
         }

@@ -68,6 +68,7 @@ files = [
     ("macro/sa-mono", "auto"),
     ("macro/R2R3R4", "auto"),
     ("5amd", "2000"),
+    ("chem_rna_hydro", "3000"),
 ]
 
 files.sort(key=lambda x: x[0])
