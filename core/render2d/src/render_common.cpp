@@ -315,7 +315,7 @@ void RenderSettings::init(float relativeThickness, float bondLineWidthFactor, Ac
     static constexpr float TWO_DIV_THREE = 2.0f / 3.0f;
     fzz[FONT_SIZE_LABEL] = label_font_size;
     if (acs != nullptr && acs->fontSizeSubAngstrom > 0)
-        fzz[FONT_SIZE_ATTR] = acs->fontSizeAngstrom;
+        fzz[FONT_SIZE_ATTR] = acs->fontSizeSubAngstrom;
     else
         fzz[FONT_SIZE_ATTR] = label_font_size * TWO_DIV_THREE; // unit * 8; // Subscript
     fzz[FONT_SIZE_RGROUP_LOGIC] = label_font_size;
