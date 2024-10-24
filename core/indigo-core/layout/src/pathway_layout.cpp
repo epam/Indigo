@@ -109,21 +109,23 @@ void PathwayLayout::buildLayoutTree()
         for (int j = 0; j < simpleReaction.reactantIndexes.size(); ++j)
         {
             // check if it is a final reactant
-            auto& rm = _reaction.getMolecule(simpleReaction.reactantIndexes[j]);
             auto pcr = reactionNode.connectedReactants.at2(j);
-            if (pcr && !already_added.count(*pcr))
+            if (pcr)
             {
-                // add connected child
-                already_added.insert(*pcr);
-                auto& precursorLayoutItem = _layoutItems[*pcr];
-                auto lastChild = currentLayoutItem.getLastChild();
-                if (lastChild != nullptr)
+                if (!already_added.count(*pcr))
                 {
-                    lastChild->nextSibling = &precursorLayoutItem;
-                    precursorLayoutItem.prevSibling = lastChild;
+                    // add connected child
+                    already_added.insert(*pcr);
+                    auto& precursorLayoutItem = _layoutItems[*pcr];
+                    auto lastChild = currentLayoutItem.getLastChild();
+                    if (lastChild != nullptr)
+                    {
+                        lastChild->nextSibling = &precursorLayoutItem;
+                        precursorLayoutItem.prevSibling = lastChild;
+                    }
+                    currentLayoutItem.children.push_back(&precursorLayoutItem);
+                    precursorLayoutItem.parent = &currentLayoutItem;
                 }
-                currentLayoutItem.children.push_back(&precursorLayoutItem);
-                precursorLayoutItem.parent = &currentLayoutItem;
             }
             else
             {

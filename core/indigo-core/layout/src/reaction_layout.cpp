@@ -124,6 +124,7 @@ void ReactionLayout::fixLayout()
             invalid_layout = true;
     }
 
+    bool first_after_arrow = true;
     // Calculate leftBottom of product bounding box
     for (int i = _r.isRetrosyntetic() ? _r.reactantBegin() : _r.productBegin(); i != (_r.isRetrosyntetic() ? _r.reactantEnd() : _r.productEnd());
          i = _r.isRetrosyntetic() ? _r.reactantNext(i) : _r.productNext(i))
@@ -132,11 +133,23 @@ void ReactionLayout::fixLayout()
         bboxes.push_back(bb);
         if (bb.left() > cur_left && bb.right() > cur_right)
         {
+            if (first_after_arrow)
+            {
+                first_after_arrow = false;
+                if (bb.left() - cur_left < default_arrow_size)
+                {
+                    invalid_layout = true;
+                    break;
+                }
+            }
             cur_left = bb.left();
             cur_right = bb.right();
         }
         else
+        {
             invalid_layout = true;
+            break;
+        }
     }
 
     if (!invalid_layout)

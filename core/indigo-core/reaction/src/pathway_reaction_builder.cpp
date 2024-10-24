@@ -166,8 +166,6 @@ void PathwayReactionBuilder::buildNodes(std::deque<Reaction>& reactions)
         {
             auto j = m_it->first;
             auto& val = m_it->second;
-            Array<int> val_arr;
-            val_arr.copy(val);
             if (rn.successorReactionIndexes.size() == 0)
             {
                 auto& rnj = _pathwayReaction->getReactionNode(j);
