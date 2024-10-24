@@ -38,7 +38,7 @@ void PathwayLayout::make()
         PathwayLayoutItem* root = &_layoutItems[rootIndexes];
         std::vector<std::pair<float, std::vector<int>>> depths;
 
-        traverse(root, [&rootItem, &depths](PathwayLayoutItem* item, int level) {
+        traverse(root, [&rootItem, &depths, this](PathwayLayoutItem* item, int level) {
             int item_index = (int)rootItem.layoutItems.size();
             if ((int)depths.size() > level)
             {
@@ -78,12 +78,12 @@ void PathwayLayout::make()
         }
 
         rootItem.boundingBox = pathwayBoundingBox;
+        yShift += pathwayBoundingBox.height() + MULTIPATHWAY_VERTICAL_SPACING;
         for (size_t i = 0; i < layoutItems.size(); ++i)
         {
             auto& layoutItem = *layoutItems[i];
-            layoutItem.boundingBox.offset(Vec2f(-pathwayBoundingBox.left(), -pathwayBoundingBox.bottom() + yShift));
+            layoutItem.boundingBox.offset(Vec2f(-pathwayBoundingBox.left(), -pathwayBoundingBox.bottom() - yShift));
         }
-        yShift += pathwayBoundingBox.height() + MULTIPATHWAY_VERTICAL_SPACING;
     }
     applyLayout();
 }
@@ -100,19 +100,47 @@ void PathwayLayout::buildLayoutTree()
     for (int i = 0; i < _reaction.getReactionNodeCount(); ++i)
     {
         auto& reactionNode = _reaction.getReactionNode(i);
+        auto& simpleReaction = _reaction.getReaction(i);
+
         auto& currentLayoutItem = _layoutItems[i];
         // add successor reactants to layout items
-        for (int j : reactionNode.precursorReactionIndexes)
+
+        std::unordered_set<int> already_added;
+        for (int j = 0; j < simpleReaction.reactantIndexes.size(); ++j)
         {
-            auto& precursorLayoutItem = _layoutItems[j];
-            auto lastChild = currentLayoutItem.getLastChild();
-            if (lastChild != nullptr)
+            // check if it is a final reactant
+            auto pcr = reactionNode.connectedReactants.at2(j);
+            if (pcr)
             {
-                lastChild->nextSibling = &precursorLayoutItem;
-                precursorLayoutItem.prevSibling = lastChild;
+                if (!already_added.count(*pcr))
+                {
+                    // add connected child
+                    already_added.insert(*pcr);
+                    auto& precursorLayoutItem = _layoutItems[*pcr];
+                    auto lastChild = currentLayoutItem.getLastChild();
+                    if (lastChild != nullptr)
+                    {
+                        lastChild->nextSibling = &precursorLayoutItem;
+                        precursorLayoutItem.prevSibling = lastChild;
+                    }
+                    currentLayoutItem.children.push_back(&precursorLayoutItem);
+                    precursorLayoutItem.parent = &currentLayoutItem;
+                }
             }
-            currentLayoutItem.children.push_back(&precursorLayoutItem);
-            precursorLayoutItem.parent = &currentLayoutItem;
+            else
+            {
+                // add free reactant without precursors
+                auto ridx = simpleReaction.reactantIndexes[j];
+                currentLayoutItem.reactantsNoPrecursors.emplace_back(_reaction, *this, i, _bond_length, ridx);
+                PathwayLayoutItem* item = &currentLayoutItem.reactantsNoPrecursors.back();
+                currentLayoutItem.children.push_back(item);
+                item->parent = &currentLayoutItem;
+                if (currentLayoutItem.children.size() > 1)
+                {
+                    currentLayoutItem.children[currentLayoutItem.children.size() - 2]->nextSibling = item;
+                    item->prevSibling = currentLayoutItem.children[currentLayoutItem.children.size() - 2];
+                }
+            }
         }
     }
 }
@@ -141,13 +169,14 @@ void PathwayLayout::firstWalk(PathwayLayoutItem* node, int level, int depth)
     if (node->children.empty())
     {
         PathwayLayoutItem* layoutItem = node->prevSibling;
-        node->prelim = (layoutItem == nullptr) ? 0 : (layoutItem->prelim + spacing(layoutItem, node, true));
+        node->prelim = layoutItem ? layoutItem->prelim + spacing(layoutItem, node, true) : 0;
     }
     else
     {
         PathwayLayoutItem* topMost = node->getFirstChild();
         PathwayLayoutItem* bottomMost = node->getLastChild();
         PathwayLayoutItem* defaultAncestor = topMost;
+
         for (auto child : node->children)
         {
             firstWalk(child, level++, depth + 1);
@@ -178,10 +207,21 @@ void PathwayLayout::secondWalk(PathwayLayoutItem* node, PathwayLayoutItem* paren
     node->clear();
 }
 
+void insertSorted(std::vector<std::pair<int, std::unique_ptr<MetaObject>>>& objs, std::pair<int, std::unique_ptr<MetaObject>> newPair)
+{
+    auto it = std::lower_bound(objs.begin(), objs.end(), newPair,
+                               [](const std::pair<int, std::unique_ptr<MetaObject>>& element, const std::pair<int, std::unique_ptr<MetaObject>>& value) {
+                                   return element.first < value.first;
+                               });
+
+    objs.emplace(it, std::move(newPair));
+}
+
 void PathwayLayout::applyLayout()
 {
     // upload coordinates back to the reaction
     _reaction.meta().resetReactionData();
+    std::vector<std::pair<int, std::unique_ptr<MetaObject>>> metaArrows;
     for (auto& rootItem : _layoutRootItems)
     {
         auto& layoutItems = rootItem.layoutItems;
@@ -212,38 +252,43 @@ void PathwayLayout::applyLayout()
                 // add spines
                 if (tails.size() > 1)
                 {
-                    Vec2f spineTop(tails.front().x + ARROW_TAIL_LENGTH, tails.front().y);
-                    Vec2f spineBottom(tails.back().x + ARROW_TAIL_LENGTH, tails.back().y);
+                    Vec2f spineTop(tails.front().x + ARROW_TAIL_LENGTH * _bond_length, tails.front().y);
+                    Vec2f spineBottom(tails.back().x + ARROW_TAIL_LENGTH * _bond_length, tails.back().y);
                     arrows.push_back(spineBottom);
                     arrows.push_back(spineTop);
-                    _reaction.meta().addMetaObject(new KETReactionMultitailArrow(arrows.begin(), arrows.end()));
+                    insertSorted(metaArrows,
+                                 std::make_pair(layoutItem->reactionIndex, std::make_unique<KETReactionMultitailArrow>(arrows.begin(), arrows.end())));
                 }
                 else if (tails.size())
                 {
-                    _reaction.meta().addMetaObject(new KETReactionArrow(KETReactionArrow::EFilledTriangle, tails.front(), head));
+                    insertSorted(metaArrows, std::make_pair(layoutItem->reactionIndex,
+                                                            std::make_unique<KETReactionArrow>(KETReactionArrow::EFilledTriangle, tails.front(), head)));
                 }
             }
         }
     }
+
+    for (auto& arrow : metaArrows)
+        _reaction.meta().addMetaObject(arrow.second.release());
 }
 
 PathwayLayout::PathwayLayoutItem* PathwayLayout::apportion(PathwayLayoutItem* currentNode, PathwayLayoutItem* ancestorNode)
 {
     PathwayLayoutItem* previousSibling = currentNode->prevSibling;
-    if (previousSibling != nullptr)
+    if (previousSibling)
     {
         PathwayLayoutItem *innerNode = currentNode, *siblingInner = previousSibling, *outerNode = currentNode,
                           *siblingOuter = currentNode->parent->getFirstChild();
         float modInner = innerNode->mod, modSiblingInner = siblingInner->mod, modOuter = outerNode->mod, modSiblingOuter = siblingOuter->mod;
-        PathwayLayoutItem* nextLower = nextBottom(siblingInner);
-        PathwayLayoutItem* nextUpper = nextTop(innerNode);
+        PathwayLayoutItem* next_lower = nextLower(siblingInner);
+        PathwayLayoutItem* next_upper = nextUpper(innerNode);
 
-        while (nextLower != nullptr && nextUpper != nullptr)
+        while (next_lower && next_upper)
         {
-            siblingInner = nextLower;
-            innerNode = nextUpper;
-            siblingOuter = nextTop(siblingOuter);
-            outerNode = nextBottom(outerNode);
+            siblingInner = next_lower;
+            innerNode = next_upper;
+            siblingOuter = nextUpper(siblingOuter);
+            outerNode = nextLower(outerNode);
             outerNode->ancestor = currentNode;
             float shift = (siblingInner->prelim + modSiblingInner) - (innerNode->prelim + modInner) + spacing(siblingInner, innerNode, false);
             if (shift > 0)
@@ -257,17 +302,17 @@ PathwayLayout::PathwayLayoutItem* PathwayLayout::apportion(PathwayLayoutItem* cu
             modSiblingOuter += siblingOuter->mod;
             modOuter += outerNode->mod;
 
-            nextLower = nextBottom(siblingInner);
-            nextUpper = nextTop(innerNode);
+            next_lower = nextLower(siblingInner);
+            next_upper = nextUpper(innerNode);
         }
-        if (nextLower != nullptr && nextBottom(outerNode) == nullptr)
+        if (next_lower != nullptr && nextLower(outerNode) == nullptr)
         {
-            outerNode->thread = nextLower;
+            outerNode->thread = next_lower;
             outerNode->mod += modSiblingInner - modOuter;
         }
-        if (nextUpper != nullptr && nextTop(siblingOuter) == nullptr)
+        if (next_upper != nullptr && nextUpper(siblingOuter) == nullptr)
         {
-            siblingOuter->thread = nextUpper;
+            siblingOuter->thread = next_upper;
             siblingOuter->mod += modInner - modSiblingOuter;
             ancestorNode = currentNode;
         }
@@ -297,13 +342,13 @@ void PathwayLayout::executeShifts(PathwayLayoutItem* node)
     }
 }
 
-PathwayLayout::PathwayLayoutItem* PathwayLayout::nextTop(PathwayLayoutItem* node)
+PathwayLayout::PathwayLayoutItem* PathwayLayout::nextUpper(PathwayLayoutItem* node)
 {
     PathwayLayoutItem* child = node->getFirstChild();
     return (child != nullptr) ? child : node->thread;
 }
 
-PathwayLayout::PathwayLayoutItem* PathwayLayout::nextBottom(PathwayLayoutItem* node)
+PathwayLayout::PathwayLayoutItem* PathwayLayout::nextLower(PathwayLayoutItem* node)
 {
     PathwayLayoutItem* child = node->getLastChild();
     return (child != nullptr) ? child : node->thread;
@@ -332,8 +377,6 @@ void PathwayLayout::traverse(PathwayLayoutItem* root, std::function<void(Pathway
         node_processor(node, level);
 
         for (auto child : node->children)
-        {
             queue.push({child, level + 1});
-        }
     }
 }
