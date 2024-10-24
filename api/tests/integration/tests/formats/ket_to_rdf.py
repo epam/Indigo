@@ -36,6 +36,7 @@ files = [
     "pathway8",
     "pathway9",
     "pathway10",
+    "pathway11",
 ]
 
 files.sort()
