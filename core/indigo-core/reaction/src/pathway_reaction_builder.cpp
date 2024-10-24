@@ -185,7 +185,7 @@ void PathwayReactionBuilder::buildNodes(std::deque<Reaction>& reactions)
                     rn.successorReactionIndexes.push(j);
                     rnj.precursorReactionIndexes.push(i);
                     for (auto ridx : val)
-                        rnj.connectedReactants.insert(ridx);
+                        rnj.connectedReactants.insert(ridx, i);
                 }
                 else
                 {
@@ -218,7 +218,7 @@ void PathwayReactionBuilder::buildRootReaction(PathwayReaction& reaction)
     const auto& root_reactions = reaction.getRootReactions();
     if (root_reactions.size())
     {
-        auto& first_root = reaction.getReaction(root_reactions.back());
+        auto& first_root = reaction.getReaction(root_reactions.front());
         for (auto& idx : first_root.reactantIndexes)
         {
             auto& mol = reaction.getMolecule(idx);

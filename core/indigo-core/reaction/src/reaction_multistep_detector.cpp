@@ -262,16 +262,13 @@ void ReactionMultistepDetector::sortSummblocks()
     // Update arrows_to and arrows_from with new indices
     for (auto& block : _component_summ_blocks)
     {
-        for (auto& arrow : block.arrows_to)
-        {
+        auto update_arrow = [&](int& arrow) {
             if (arrow >= 0 && arrow < static_cast<int>(old_to_new.size()))
                 arrow = old_to_new[arrow];
-        }
-        for (auto& arrow : block.arrows_from)
-        {
-            if (arrow >= 0 && arrow < static_cast<int>(old_to_new.size()))
-                arrow = old_to_new[arrow];
-        }
+        };
+
+        std::for_each(block.arrows_to.begin(), block.arrows_to.end(), update_arrow);
+        std::for_each(block.arrows_from.begin(), block.arrows_from.end(), update_arrow);
     }
 }
 
@@ -556,19 +553,19 @@ void ReactionMultistepDetector::constructPathwayReaction(PathwayReaction& rxn)
     std::unordered_map<int, int> rc_to_molecule;
     std::vector<std::pair<std::vector<int>, std::vector<int>>> csb_reactions;
 
-    std::vector<std::set<int>> csb_to_reaction;
+    std::vector<int> csb_product_to_reaction;
     std::vector<std::unordered_map<int, int>> csb_to_reactant_indexes;
 
     for (int i = 0; i < (int)_component_summ_blocks.size(); ++i)
     {
-        csb_to_reaction.emplace_back();
+        csb_product_to_reaction.push_back(-1);
         auto& csb = _component_summ_blocks[i];
         if (csb.role == BaseReaction::PRODUCT || csb.role == BaseReaction::INTERMEDIATE)
         {
             // one product = one reaction, one reaction node
             // map reactionNode <> csb_reaction
             auto& rcidx_to_reactant = csb_to_reactant_indexes.emplace_back();
-            csb_to_reaction.back().emplace((int)csb_reactions.size());
+            csb_product_to_reaction.back() = (int)csb_reactions.size();
             csb_reactions.emplace_back().second.push_back(i); // add csb as product
 
             auto [sri, sr] = rxn.addReaction();
@@ -623,31 +620,28 @@ void ReactionMultistepDetector::constructPathwayReaction(PathwayReaction& rxn)
             auto& csb_product = _component_summ_blocks[csb_product_idx];
             for (auto reactant_csb_idx : csb_product.arrows_to)
             {
-                // look up for reactions where the reactant_csb_idx summ block presents
-                auto successors = csb_to_reaction[reactant_csb_idx];
-                // remove the current reaction
-                successors.erase(i); // remove the current reaction
-                // add successor reactions
-                for (auto reac_idx : successors)
+                // look up for reactions where the product plays a role of reactant
+                auto reac_idx = csb_product_to_reaction[reactant_csb_idx];
+                if( reac_idx >= 0 && reac_idx != i )
                     rn.successorReactionIndexes.push(reac_idx);
             }
         }
 
+        // iterate reactant summ blocks
         for (auto csb_reactant_idx : csb_reaction.first)
         {
             auto& csb_reactant = _component_summ_blocks[csb_reactant_idx];
-            auto precursors = csb_to_reaction[csb_reactant_idx];
-            for (auto reac_idx : precursors)
-                rn.precursorReactionIndexes.push(reac_idx);
-
-            if (csb_reactant.arrows_from.size())
+            // find reactions where the reactant plays a role of product
+            auto reac_idx = csb_product_to_reaction[csb_reactant_idx];
+            if (reac_idx >= 0 && reac_idx != i)
             {
+                rn.precursorReactionIndexes.push(reac_idx);
                 auto& rcidx_to_reactant = csb_to_reactant_indexes[i];
                 for (auto ridx : csb_reactant.indexes)
                 {
                     auto rcidx_it = rcidx_to_reactant.find(ridx);
                     if (rcidx_it != rcidx_to_reactant.end())
-                        rn.connectedReactants.insert(rcidx_it->second);
+                        rn.connectedReactants.insert(rcidx_it->second, reac_idx);
                 }
             }
         }

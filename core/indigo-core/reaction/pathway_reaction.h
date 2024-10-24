@@ -77,7 +77,7 @@ namespace indigo
             // vector of precursor reactions indexes
             Array<int> precursorReactionIndexes;
             // utility information
-            RedBlackSet<int> connectedReactants; // where the precursors' products are connected to
+            RedBlackMap<int, int> connectedReactants; // where the precursors' products are connected to
             int multiTailMetaIndex;
         };
 

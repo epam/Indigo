@@ -24,6 +24,8 @@
 #include "base_cpp/scanner.h"
 #include "molecule/monomer_commons.h"
 #include <cppcodec/base64_default_rfc4648.hpp>
+#include "molecule/smiles_saver.h"
+#include "base_cpp/output.h"
 
 namespace indigo
 {
@@ -131,6 +133,16 @@ namespace indigo
             break;
         }
         return res;
+    }
+
+    std::string getDebugSmiles(BaseMolecule& mol)
+    {
+        Array<char> out_buffer;
+        ArrayOutput output(out_buffer);
+        SmilesSaver saver(output);
+        saver.saveMolecule(mol.asMolecule());
+        out_buffer.push('\0');
+        return out_buffer.ptr();
     }
 
     KETImage::KETImage(const Rect2f& bbox, KETImage::ImageFormat format, const std::string& data, bool is_base64)

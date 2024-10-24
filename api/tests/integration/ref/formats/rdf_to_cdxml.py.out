@@ -1,6 +1,8 @@
 *** RDF to CDXML ***
 pathway1.cdxml:SUCCEED
 pathway10.cdxml:SUCCEED
+  scanner: can't open file C:/Users/MAPU/source/repos/Indigo/api/tests/integration/tests/formats/reactions/rdf\pathway11.rdf. Error: No such file or directory
+pathway11.cdxml:SUCCEED
 pathway2.cdxml:SUCCEED
 pathway3.cdxml:SUCCEED
 pathway4.cdxml:SUCCEED

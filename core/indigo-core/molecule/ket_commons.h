@@ -578,5 +578,6 @@ namespace indigo
         }
     };
 
+    std::string getDebugSmiles(BaseMolecule& mol);
 }
 #endif

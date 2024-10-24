@@ -29,7 +29,7 @@ jobs:
              git fetch --tags -f
       - name: Check
         run: |
-          python3 -m pip install -r api/python/requirements_dev.txt
+          python3 -m pip install -r api/python/requirements_dev.txt --break-system-packages
           .ci/static_analysis_check.sh
 
   build_indigo_libs_x86_64:
@@ -208,7 +208,7 @@ jobs:
           name: indigo-libs-macos-aarch64
           path: dist/
       - name: Install Python test dependencies
-        run: python3 -m pip install -r api/python/requirements_dev.txt
+        run: python3 -m pip install -r api/python/requirements_dev.txt --break-system-packages
       - name: Build wrappers
         run: |
           mkdir build
@@ -314,10 +314,10 @@ jobs:
           path: dist/
       - name: Test Linux
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
-        uses: uraimo/run-on-arch-action@v2.0.5
+        uses: uraimo/run-on-arch-action@v2.8.1
         with:
           arch: aarch64
-          distro: ubuntu22.04
+          distro: ubuntu20.04
           githubToken: ${{ github.token }}
           run: |
             apt update
@@ -364,7 +364,7 @@ jobs:
           python-version: '3.9'
           architecture: x86
       - name: Install Pillow
-        run: python -m pip install Pillow 
+        run: python -m pip install Pillow --break-system-packages
       - name: Install wrappers Windows
         if: ${{ startsWith(matrix.os, 'windows') }}
         run: Get-ChildItem dist -Filter *win32*.whl -Recurse | % { python -m pip install $_.FullName --break-system-packages }
@@ -446,10 +446,10 @@ jobs:
           path: dist/
       - name: Test Linux
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
-        uses: uraimo/run-on-arch-action@v2.0.5
+        uses: uraimo/run-on-arch-action@v2.8.1
         with:
           arch: aarch64
-          distro: ubuntu22.04
+          distro: ubuntu20.04
           githubToken: ${{ github.token }}
           run: |
             apt update
@@ -548,6 +548,11 @@ jobs:
         run: |
           curl -Lo dotnet.tar.gz https://download.visualstudio.microsoft.com/download/pr/270b615f-5281-4c58-980f-d9f7a08db642/3e874492a9cb0d5b87195c596b46d609/dotnet-sdk-6.0.421-osx-x64.tar.gz
           mkdir -p ${{ github.workspace }}/tmp/dotnet && tar zxf dotnet.tar.gz -C ${{ github.workspace }}/tmp/dotnet
+      - name: Install dotnet 6 linux
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        run: |
+          sudo apt update
+          sudo apt install -y dotnet-host dotnet-sdk-6.0
       - name: Prepare UNIX
         if: ${{ !startsWith(matrix.os, 'windows') }}
         run: |
@@ -1037,7 +1042,7 @@ jobs:
           docker run --rm -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" -v /home:/home epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
       - name: Install dev dependencies
         run: |
-          pip install -r bingo/tests/requirements.txt
+          pip install -r bingo/tests/requirements.txt --break-system-packages
       - name: Run Bingo tests
         run: |
           export PYTHONPATH=${{ github.workspace }}/bingo/bingo-elastic/python
