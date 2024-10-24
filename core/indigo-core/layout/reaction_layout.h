@@ -67,6 +67,11 @@ namespace indigo
             preserve_molecule_layout = preserve;
         };
 
+        inline float ReactionMarginSize() const
+        {
+            return reaction_margin_size + (_font_size < EPSILON ? atom_label_margin : 0);
+        };
+
     private:
         struct SweepEvent
         {
@@ -105,7 +110,7 @@ namespace indigo
         LayoutOptions _options;
         BaseReaction& _r;
         Metalayout _ml;
-        float _font_size;
+        const float _font_size;
     };
 
 } // namespace indigo
