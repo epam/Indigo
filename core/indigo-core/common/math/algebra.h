@@ -63,7 +63,7 @@ namespace indigo
 
         static constexpr auto min_coord()
         {
-            return std::numeric_limits<decltype(x)>::min();
+            return std::numeric_limits<decltype(x)>::lowest();
         }
 
         static constexpr auto max_coord()
