@@ -355,9 +355,9 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
 
     bool bad_pathway = false;
 
-    for (int i = 0; i < pathway_count; ++i)
+    for (int pathway_idx = 0; pathway_idx < pathway_count; ++pathway_idx)
     {
-        auto& multi = (const KETReactionMultitailArrow&)_bmol.meta().getMetaObject(KETReactionMultitailArrow::CID, i);
+        auto& multi = (const KETReactionMultitailArrow&)_bmol.meta().getMetaObject(KETReactionMultitailArrow::CID, pathway_idx);
         float min_dist_prod = -1;
         int idx_cs_min_prod = -1;
         auto arr_begin = multi.getHead();
@@ -404,9 +404,9 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
         else
         {
             auto& csb_min_prod = _component_summ_blocks[idx_cs_min_prod];
-            csb_min_prod.reaction_idx = i;
-            auto& rc_arrow =
-                _reaction_components[_moleculeCount + _bmol.meta().getMetaCount(KETReactionPlus::CID) + _bmol.meta().getMetaCount(KETReactionArrow::CID) + i];
+            csb_min_prod.reaction_idx = pathway_idx;
+            auto& rc_arrow = _reaction_components[_moleculeCount + _bmol.meta().getMetaCount(KETReactionPlus::CID) +
+                                                  _bmol.meta().getMetaCount(KETReactionArrow::CID) + pathway_idx];
             rc_arrow.summ_block_idx = ReactionComponent::CONNECTED; // mark arrow as connected
             if (csb_min_prod.role == BaseReaction::UNDEFINED)
                 csb_min_prod.role = BaseReaction::PRODUCT;
@@ -434,7 +434,7 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
                     csb_min_reac.arrows_to.push_back(idx_cs_min_prod);
                     _component_summ_blocks[idx_cs_min_prod].arrows_from.push_back(reac.second);
                 }
-                csb_min_reac.reaction_idx = i;
+                csb_min_reac.reaction_idx = pathway_idx;
             }
             else
                 bad_pathway = true;
