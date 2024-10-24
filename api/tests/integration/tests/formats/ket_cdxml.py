@@ -28,6 +28,7 @@ files = [
     "multi_overlap",
     "961-text_size",
     "generic",
+    "2558-missed",
 ]
 
 files.sort()

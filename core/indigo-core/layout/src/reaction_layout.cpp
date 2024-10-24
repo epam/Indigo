@@ -53,6 +53,50 @@ ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout, const LayoutO
 {
 }
 
+bool ReactionLayout::hasAnyIntersect(const std::vector<Rect2f>& bblist)
+{
+    std::vector<SweepEvent> events;
+    events.reserve(bblist.size() * 2);
+    for (const auto& rect : bblist)
+    {
+        events.emplace_back(SweepEvent{rect.left(), true, rect.bottom(), rect.top()});
+        events.emplace_back(SweepEvent{rect.left() + rect.width(), false, rect.bottom(), rect.top()});
+    }
+    std::sort(events.begin(), events.end());
+    std::set<std::pair<float, float>> active;
+    for (const auto& event : events)
+    {
+        if (event.is_start)
+        {
+            auto it = active.lower_bound({event.y_start, event.y_end});
+            if (it != active.begin())
+            {
+                auto prev = std::prev(it);
+                if (prev->second > event.y_start)
+                    return true;
+            }
+            if (it != active.end() && it->first < event.y_end)
+                return true;
+            active.emplace(event.y_start, event.y_end);
+        }
+        else
+        {
+            active.erase({event.y_start, event.y_end});
+        }
+    }
+    return false;
+}
+
+bool ReactionLayout::validVerticalRange(const std::vector<Rect2f>& bblist)
+{
+    if (bblist.empty())
+        return true;
+
+    float max_start = std::max_element(bblist.begin(), bblist.end(), [](const Rect2f& a, const Rect2f& b) { return a.bottom() < b.bottom(); })->bottom();
+    float min_end = std::min_element(bblist.begin(), bblist.end(), [](const Rect2f& a, const Rect2f& b) { return a.top() < b.top(); })->top();
+    return max_start <= min_end;
+}
+
 void ReactionLayout::fixLayout()
 {
     int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
@@ -63,6 +107,7 @@ void ReactionLayout::fixLayout()
 
     Vec2f rmax{Vec2f::min_coord(), Vec2f::min_coord()}, pmin{Vec2f::max_coord(), Vec2f::max_coord()};
     Rect2f bb;
+    std::vector<Rect2f> bboxes;
     // Calculate rightTop of reactant bounding box
     bool invalid_layout = false;
     float cur_left = 0, cur_right = 0;
@@ -71,6 +116,7 @@ void ReactionLayout::fixLayout()
     {
         _r.getBaseMolecule(i).getBoundingBox(bb);
         rmax.max(bb.rightTop());
+        bboxes.push_back(bb);
         if (i == 0 || (bb.left() > cur_left && bb.right() > cur_right))
         {
             cur_left = bb.left();
@@ -80,22 +126,40 @@ void ReactionLayout::fixLayout()
             invalid_layout = true;
     }
 
+    bool first_after_arrow = true;
     // Calculate leftBottom of product bounding box
     for (int i = _r.isRetrosyntetic() ? _r.reactantBegin() : _r.productBegin(); i != (_r.isRetrosyntetic() ? _r.reactantEnd() : _r.productEnd());
          i = _r.isRetrosyntetic() ? _r.reactantNext(i) : _r.productNext(i))
     {
         _r.getBaseMolecule(i).getBoundingBox(bb);
         pmin.min(bb.leftBottom());
+        bboxes.push_back(bb);
         if (bb.left() > cur_left && bb.right() > cur_right)
         {
+            if (first_after_arrow)
+            {
+                first_after_arrow = false;
+                if (bb.left() - cur_left < default_arrow_size)
+                {
+                    invalid_layout = true;
+                    break;
+                }
+            }
             cur_left = bb.left();
             cur_right = bb.right();
         }
         else
+        {
             invalid_layout = true;
+            break;
+        }
     }
 
     float arrow_len = pmin.x - rmax.x - (2 * ReactionMarginSize());
+
+    if (!invalid_layout)
+        invalid_layout = hasAnyIntersect(bboxes) || !validVerticalRange(bboxes);
+
     // if left side of product bb at left of right side of reactant bb - fix layout
     if (invalid_layout || arrow_len != default_arrow_size)
     {

@@ -48,7 +48,7 @@ namespace indigo
         static constexpr float ARROW_TAIL_LENGTH = 0.5f;
         static constexpr float VERTICAL_SPACING = 2.5f;
         static constexpr float MULTIPATHWAY_VERTICAL_SPACING = 1.5f;
-        static constexpr float ARROW_LENGTH_FACTOR = 6.5f;
+        static constexpr float ARROW_LENGTH_FACTOR = 7.0f;
         static constexpr float MIN_BOND_MEAN = 0.01f;
 
         static constexpr int MAX_DEPTHS = 10;
@@ -79,7 +79,7 @@ namespace indigo
                   parent(nullptr), nextSibling(nullptr), prevSibling(nullptr), reaction(pwr), boundingBox()
             {
                 auto& reactionNode = reaction.getReactionNode(nodeIdx);
-                auto& simpleReaction = reaction.getReaction(reactionNode.reactionIdx);
+                reactionIndex = reactionNode.reactionIdx;
                 // create as a final reactant child
                 if (reactantIdx != -1)
                 {
@@ -105,6 +105,7 @@ namespace indigo
                 }
                 else
                 {
+                    auto& simpleReaction = reaction.getReaction(reactionIndex);
                     for (auto pidx : simpleReaction.productIndexes)
                     {
                         auto& mol = reaction.getMolecule(pidx);
@@ -127,25 +128,6 @@ namespace indigo
                         molecules.push_back(std::make_pair(pidx, boundingBox));
                         width += boundingBox.width(); // add some spacing for plus
                         height = std::max(boundingBox.height(), height);
-                    }
-
-                    // add precursors free reactants as children
-                    for (int i = 0; i < simpleReaction.reactantIndexes.size(); ++i)
-                    {
-                        // check if it is a final reactant
-                        if (!reactionNode.connectedReactants.find(i))
-                        {
-                            auto ridx = simpleReaction.reactantIndexes[i];
-                            reactantsNoPrecursors.emplace_back(reaction, pwl, nodeIdx, bondLength, ridx);
-                            PathwayLayoutItem* item = &reactantsNoPrecursors.back();
-                            children.push_back(item);
-                            item->parent = this;
-                            if (children.size() > 1)
-                            {
-                                children[children.size() - 2]->nextSibling = item;
-                                item->prevSibling = children[children.size() - 2];
-                            }
-                        }
                     }
                 }
                 width += COMPONENTS_MARGIN * molecules.size();
@@ -214,6 +196,7 @@ namespace indigo
             std::vector<std::pair<int, Rect2f>> molecules;
             PathwayReaction& reaction;
             Rect2f boundingBox;
+            int reactionIndex;
         };
 
         struct PathwayLayoutRootItem
@@ -243,9 +226,9 @@ namespace indigo
 
         PathwayLayoutItem* apportion(PathwayLayoutItem* currentNode, PathwayLayoutItem* ancestorNode);
 
-        PathwayLayoutItem* nextTop(PathwayLayoutItem* node);
+        PathwayLayoutItem* nextUpper(PathwayLayoutItem* node);
 
-        PathwayLayoutItem* nextBottom(PathwayLayoutItem* node);
+        PathwayLayoutItem* nextLower(PathwayLayoutItem* node);
 
         void moveSubtree(PathwayLayoutItem* parent, PathwayLayoutItem* wp, float shift);
 
