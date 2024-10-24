@@ -286,9 +286,9 @@ bool ReactionMultistepDetector::mapReactionComponents()
     int arrow_count = _bmol.meta().getMetaCount(KETReactionArrow::CID);
     if (arrow_count == 0)
         return false;
-    for (int i = 0; i < arrow_count; ++i)
+    for (int reaction_index = 0; reaction_index < arrow_count; ++reaction_index)
     {
-        auto& arrow = (const KETReactionArrow&)_bmol.meta().getMetaObject(KETReactionArrow::CID, i);
+        auto& arrow = (const KETReactionArrow&)_bmol.meta().getMetaObject(KETReactionArrow::CID, reaction_index);
         int arrow_type = arrow.getArrowType();
         bool reverseReactionOrder = arrow_type == KETReactionArrow::ERetrosynthetic;
         const Vec2f& arr_begin = !reverseReactionOrder ? arrow.getTail() : arrow.getHead();
@@ -322,7 +322,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
         // TODO: add upper limit
         if (min_dist_prod > 0 && min_dist_reac > 0) // if both ends present
         {
-            auto& rc_arrow = _reaction_components[_moleculeCount + _bmol.meta().getMetaCount(KETReactionPlus::CID) + i];
+            auto& rc_arrow = _reaction_components[_moleculeCount + _bmol.meta().getMetaCount(KETReactionPlus::CID) + reaction_index];
             rc_arrow.summ_block_idx = ReactionComponent::CONNECTED; // mark arrow as connected
             auto& csb_min_prod = _component_summ_blocks[idx_cs_min_prod];
             if (csb_min_prod.role == BaseReaction::UNDEFINED)
@@ -339,8 +339,8 @@ bool ReactionMultistepDetector::mapReactionComponents()
             // idx_cs_min_reac <-> idx_cs_min_prod
             csb_min_reac.arrows_to.push_back(idx_cs_min_prod);
             csb_min_prod.arrows_from.push_back(idx_cs_min_reac);
-            csb_min_reac.reaction_idx = i;
-            csb_min_prod.reaction_idx = i;
+            csb_min_reac.reaction_idx = reaction_index;
+            csb_min_prod.reaction_idx = reaction_index;
         }
     }
     return arrow_count > 1;
