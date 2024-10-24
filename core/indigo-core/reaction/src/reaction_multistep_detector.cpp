@@ -622,7 +622,7 @@ void ReactionMultistepDetector::constructPathwayReaction(PathwayReaction& rxn)
             {
                 // look up for reactions where the product plays a role of reactant
                 auto reac_idx = csb_product_to_reaction[reactant_csb_idx];
-                if( reac_idx >= 0 && reac_idx != i )
+                if (reac_idx >= 0 && reac_idx != i)
                     rn.successorReactionIndexes.push(reac_idx);
             }
         }

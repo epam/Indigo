@@ -21,11 +21,11 @@
 #endif
 
 #include "molecule/ket_commons.h"
+#include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "molecule/monomer_commons.h"
-#include <cppcodec/base64_default_rfc4648.hpp>
 #include "molecule/smiles_saver.h"
-#include "base_cpp/output.h"
+#include <cppcodec/base64_default_rfc4648.hpp>
 
 namespace indigo
 {
