@@ -46,6 +46,9 @@ namespace indigo
         void makePathwayFromSimple();
 
         // layout if reaction components are not in the places
+        static bool hasAnyIntersect(const std::vector<Rect2f>& bblist);
+        static bool validVerticalRange(const std::vector<Rect2f>& bblist);
+
         void fixLayout();
         void processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_box, int side);
 
@@ -65,6 +68,20 @@ namespace indigo
         };
 
     private:
+        struct SweepEvent
+        {
+            float x;
+            bool is_start;
+            float y_start, y_end;
+
+            bool operator<(const SweepEvent& other) const
+            {
+                if (x != other.x)
+                    return x < other.x;
+                return is_start > other.is_start;
+            }
+        };
+
         void _makePathway();
         void _updateMetadata();
         void _pushMol(Metalayout::LayoutLine& line, int id, bool is_agent = false);
