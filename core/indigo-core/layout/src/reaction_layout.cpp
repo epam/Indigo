@@ -105,6 +105,7 @@ void ReactionLayout::fixLayout()
     if (arrows_count || simple_count || multi_count)
         return;
 
+    Vec2f rmax{Vec2f::min_coord(), Vec2f::min_coord()}, pmin{Vec2f::max_coord(), Vec2f::max_coord()};
     Rect2f bb;
     std::vector<Rect2f> bboxes;
     // Calculate rightTop of reactant bounding box
@@ -115,6 +116,7 @@ void ReactionLayout::fixLayout()
     {
         _r.getBaseMolecule(i).getBoundingBox(bb);
         bboxes.push_back(bb);
+        rmax.max(bb.rightTop());
         if (i == 0 || (bb.left() > cur_left && bb.right() > cur_right))
         {
             cur_left = bb.left();
@@ -131,6 +133,7 @@ void ReactionLayout::fixLayout()
     {
         _r.getBaseMolecule(i).getBoundingBox(bb);
         bboxes.push_back(bb);
+        pmin.min(bb.leftBottom());
         if (bb.left() > cur_left && bb.right() > cur_right)
         {
             if (first_after_arrow)
@@ -155,8 +158,9 @@ void ReactionLayout::fixLayout()
     if (!invalid_layout)
         invalid_layout = hasAnyIntersect(bboxes) || !validVerticalRange(bboxes);
 
+    float arrow_len = pmin.x - rmax.x - (2 * ReactionMarginSize());
     // if left side of product bb at left of right side of reactant bb - fix layout
-    if (invalid_layout)
+    if (invalid_layout || arrow_len != default_arrow_size)
     {
         ReactionLayout rl(_r, true);
         rl.preserve_molecule_layout = true;
@@ -243,22 +247,18 @@ void ReactionLayout::_updateMetadata()
     }
     else
     {
-        const float ptab = /*first_single_product ? reaction_margin_size * 2 :*/ reaction_margin_size + (_font_size < EPSILON ? atom_label_margin : 0);
-        const float rtab = /*last_single_reactant ? reaction_margin_size * 2 :*/ reaction_margin_size + (_font_size < EPSILON ? atom_label_margin : 0);
-        ;
-
         arrow_head.y = product_box.middleY();
         arrow_tail.y = react_box.middleY();
 
         if (product_box.left() > react_box.right())
         {
-            arrow_head.x = product_box.left() - ptab;
-            arrow_tail.x = react_box.right() + rtab;
+            arrow_head.x = product_box.left() - ReactionMarginSize();
+            arrow_tail.x = react_box.right() + ReactionMarginSize();
         }
         else
         {
-            arrow_head.x = react_box.right() + rtab;
-            arrow_tail.x = product_box.left() - ptab;
+            arrow_head.x = react_box.right() + ReactionMarginSize();
+            arrow_tail.x = product_box.left() - ReactionMarginSize();
         }
     }
     _r.meta().addMetaObject(new KETReactionArrow(arrow_type, arrow_tail, arrow_head, arrow_height));
