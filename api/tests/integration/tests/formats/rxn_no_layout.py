@@ -7,7 +7,7 @@ sys.path.append(
     )
 )
 
-from env_indigo import *  # noqa
+from env_indigo import Indigo, joinPathPy  # noqa
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
