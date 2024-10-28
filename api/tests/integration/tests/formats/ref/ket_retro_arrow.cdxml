@@ -32,22 +32,22 @@
             <b id="18" B="6" E="8"/>
         </fragment>
         <fragment id="9">
-            <n id="10" Element="8" NumHydrogens="1" p="299.138458 -12.000000">
-                <t p="299.138458 -12.000000" LabelJustification="Left">
+            <n id="10" Element="8" NumHydrogens="1" p="251.138443 -12.000000">
+                <t p="251.138443 -12.000000" LabelJustification="Left">
                     <s font="3" size="10" face="96">OH</s>
                 </t>
             </n>
-            <n id="11" p="340.707672 12.000000"/>
-            <n id="12" Element="8" NumHydrogens="1" p="382.276886 -12.000000">
-                <t p="382.276886 -12.000000" LabelJustification="Left">
+            <n id="11" p="292.707642 12.000000"/>
+            <n id="12" Element="8" NumHydrogens="1" p="334.276886 -12.000000">
+                <t p="334.276886 -12.000000" LabelJustification="Left">
                     <s font="3" size="10" face="96">OH</s>
                 </t>
             </n>
             <b id="19" B="10" E="11"/>
             <b id="20" B="11" E="12"/>
         </fragment>
-        <arrow id="13" BoundingBox="251.138443 -0.000000 155.138428 -0.000000" FillType="None" ArrowheadHead="Full" ArrowheadType="Angle" HeadSize="600" ArrowheadCenterSize="600" ArrowheadWidth="150" ArrowShaftSpacing="600" Head3D="251.138443 -0.000000 0.000000" Tail3D="155.138428 -0.000000 0.000000"/>
-        <graphic id="21" SupersededBy="13" GraphicType="Line" ArrowType="RetroSynthetic" HeadSize="600" BoundingBox="251.138443 -0.000000 155.138428 -0.000000"/>
+        <arrow id="13" BoundingBox="203.138458 -0.000000 155.138428 -0.000000" FillType="None" ArrowheadHead="Full" ArrowheadType="Angle" HeadSize="600" ArrowheadCenterSize="600" ArrowheadWidth="150" ArrowShaftSpacing="600" Head3D="203.138458 -0.000000 0.000000" Tail3D="155.138428 -0.000000 0.000000"/>
+        <graphic id="21" SupersededBy="13" GraphicType="Line" ArrowType="RetroSynthetic" HeadSize="600" BoundingBox="203.138458 -0.000000 155.138428 -0.000000"/>
         <scheme>
             <step ReactionStepReactants="4" ReactionStepProducts="9" ReactionStepArrows="21"/>
         </scheme>
