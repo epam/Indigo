@@ -4,9 +4,9 @@
 <reactantList>
 <molecule>
     <atomArray>
-        <atom id="a0" elementType="O" x2="9.97128" y2="0.4"/>
-        <atom id="a1" elementType="C" x2="11.3569" y2="-0.4"/>
-        <atom id="a2" elementType="O" x2="12.7426" y2="0.4"/>
+        <atom id="a0" elementType="O" x2="8.37128" y2="0.4"/>
+        <atom id="a1" elementType="C" x2="9.75692" y2="-0.4"/>
+        <atom id="a2" elementType="O" x2="11.1426" y2="0.4"/>
     </atomArray>
     <bondArray>
         <bond atomRefs2="a0 a1" order="1"/>

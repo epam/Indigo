@@ -45,7 +45,7 @@ ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
 
 ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout, const LayoutOptions& options)
     : bond_length(options.fontSize > EPSILON ? 1 : LayoutOptions::DEFAULT_BOND_LENGTH), default_plus_size(LayoutOptions::DEFAULT_PLUS_SIZE),
-      default_arrow_size(LayoutOptions::DEFAULT_BOND_LENGTH * 2), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout),
+      default_arrow_size(LayoutOptions::DEFAULT_BOND_LENGTH), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout),
       reaction_margin_size(options.fontSize > EPSILON ? options.getMarginSizeInAngstroms()
                                                       : LayoutOptions::DEFAULT_BOND_LENGTH * options.getMarginSizeInAngstroms()),
       atom_label_margin(LayoutOptions::DEFAULT_BOND_LENGTH / 2), layout_orientation(UNCPECIFIED), max_iterations(0), _options(options),

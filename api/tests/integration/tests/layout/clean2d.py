@@ -17,6 +17,7 @@ if not os.path.exists(joinPathPy("out", __file__)):
             raise
 
 indigo = Indigo()
+indigo.resetOptions()
 indigo.setOption("molfile-saving-skip-date", "1")
 indigo.setOption("treat-x-as-pseudoatom", "1")
 
