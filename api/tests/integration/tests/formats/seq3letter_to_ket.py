@@ -52,6 +52,7 @@ for filename in files:
 
 seq3_errors = {
     "ala": "Given string cannot be interpreted as a valid three letter sequence because of incorrect formatting.",
+    "ALA": "Given string cannot be interpreted as a valid three letter sequence because of incorrect formatting.",
     "Al a": "Given string cannot be interpreted as a valid three letter sequence because of incorrect formatting.",
 }
 for seq3 in sorted(seq3_errors.keys()):

@@ -2050,7 +2050,7 @@ void SequenceLoader::load3LetterSequence(KetDocument& document)
         {
             std::string alias = monomerAliasByName(kMonomerClassAminoAcid, monomer);
             if (alias == monomer) // alias not found
-                throw Error("Unknown monomer name '%s'.", monomer);
+                throw Error("Unknown monomer name '%s'.", monomer.c_str());
             addMonomer(document, alias, SeqType::PEPTIDESeq);
         }
     }
