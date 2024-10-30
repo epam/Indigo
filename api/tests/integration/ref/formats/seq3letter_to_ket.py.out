@@ -1,0 +1,4 @@
+*** 3 LETTER SEQUENCE to KET ***
+peptides_3letter : SUCCEED
+Test 'Al a': got expected error 'Given string cannot be interpreted as a valid three letter sequence because of incorrect formatting.'
+Test 'ala': got expected error 'Given string cannot be interpreted as a valid three letter sequence because of incorrect formatting.'

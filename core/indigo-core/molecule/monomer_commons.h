@@ -23,6 +23,7 @@ namespace indigo
     const auto kMonomerClassAminoAcid = "AminoAcid";
     const auto kMonomerClassDAminoAcid = "D-AminoAcid";
     const auto kMonomerClassPEPTIDE = "PEPTIDE";
+    const auto kMonomerClassPEPTIDE_3_LETTER = "PEPTIDE-3-LETTER";
 
     // nucleic classes
     const auto kMonomerClassDNA = "DNA";
@@ -138,5 +139,7 @@ namespace indigo
         {{"A", "C", "U"}, "rH"}, {{"C", "G", "T"}, "B"},      {{"C", "G", "U"}, "rB"},     {{"A", "C", "G"}, "V"}, {{"A", "G", "T"}, "D"},
         {{"A", "G", "U"}, "rD"}, {{"A", "C", "G", "T"}, "N"}, {{"A", "C", "G", "U"}, "rN"}};
     static const std::set<std::string> RNA_DNA_MIXED_BASES = {"R", "M", "S", "V"};
+    static const std::map<std::string, std::string> STANDARD_MIXED_PEPTIDES_ALIAS_TO_NAME = {{"B", "Asx"}, {"J", "Xle"}, {"X", "Xaa"}, {"Z", "Glx"}};
+    static const std::map<std::string, std::string> STANDARD_MIXED_PEPTIDES_NAME_TO_ALIAS = {{"Asx", "B"}, {"Xle", "J"}, {"Xaa", "X"}, {"Glx", "Z"}};
 }
 #endif

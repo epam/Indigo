@@ -616,6 +616,25 @@ CEXPORT int indigoSaveSequence(int item, int output, int library)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoSaveSequence3Letter(int item, int output, int library)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        Output& out = IndigoOutput::get(self.getObject(output));
+        if (IndigoKetDocument::is(obj))
+        {
+            IndigoObject& lib_obj = self.getObject(library);
+            SequenceSaver saver(out, IndigoMonomerLibrary::get(lib_obj));
+            saver.saveKetDocument(static_cast<IndigoKetDocument&>(obj).get(), SequenceSaver::SeqFormat::Sequence3);
+            out.flush();
+            return 1;
+        }
+        throw IndigoError("indigoSaveSequence(): expected molecule, got %s", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
 CEXPORT int indigoSaveFasta(int item, int output, int library)
 {
     INDIGO_BEGIN

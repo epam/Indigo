@@ -74,6 +74,7 @@ namespace indigo
         void loadFasta(KetDocument& document, SeqType seq_type);
         void loadIdt(KetDocument& document);
         void loadHELM(KetDocument& document);
+        void load3LetterSequence(KetDocument& document);
 
     private:
         Vec3f getBackboneMonomerPosition();

@@ -758,7 +758,7 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
         doc.parseSimplePolymers(sequences, true);
         saveIdt(doc, sequences, seq_text);
     }
-    else if (sf == SeqFormat::FASTA || sf == SeqFormat::Sequence)
+    else if (sf == SeqFormat::FASTA || sf == SeqFormat::Sequence || sf == SeqFormat::Sequence3)
     {
         auto& monomers = doc.monomers();
         doc.parseSimplePolymers(sequences, false);
@@ -807,10 +807,21 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
 
                     if (short_analog.size() == 1)
                         monomer_alias = short_analog;
-                    else if (monomer_class == MonomerClass::AminoAcid)
+                    else if (monomer_class == MonomerClass::AminoAcid && sf != SeqFormat::Sequence3)
                         monomer_alias = "X";
                     else
                         throw Error("Can't save '%s' to sequence format", monomer_alias.c_str());
+                }
+                if (sf == SeqFormat::Sequence3)
+                {
+                    if (monomer_class != MonomerClass::AminoAcid)
+                        throw Error("Only amino acids can be saved as three letter amino acid codes.");
+                    if (STANDARD_PEPTIDES.count(monomer_alias) > 0)
+                        monomer_alias = monomerNameByAlias(kMonomerClassAminoAcid, monomer_alias);
+                    else if (STANDARD_MIXED_PEPTIDES_ALIAS_TO_NAME.count(monomer_alias) > 0)
+                        monomer_alias = STANDARD_MIXED_PEPTIDES_ALIAS_TO_NAME.at(monomer_alias);
+                    else
+                        throw Error("Unknown amino acid '%s'.", monomer_alias.c_str());
                 }
                 seq_string += monomer_alias;
             }
@@ -837,7 +848,7 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                     seq_text += fasta_header;
                 }
                 else if (seq_text.size())
-                    seq_text += sf == SeqFormat::Sequence ? " " : "\n";
+                    seq_text += sf == SeqFormat::Sequence || sf == SeqFormat::Sequence3 ? " " : "\n";
 
                 seq_text += seq_string.substr(0, SEQ_LINE_LENGTH);
                 for (size_t format_ind = SEQ_LINE_LENGTH; format_ind < seq_string.size(); format_ind += SEQ_LINE_LENGTH)
