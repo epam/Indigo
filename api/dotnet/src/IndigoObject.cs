@@ -92,7 +92,7 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoSequence(self, library.self));
         }
 
-        public string sequence3(IndigoObject library)
+        public string sequence3Letter(IndigoObject library)
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoSequence3Letter(self, library.self));

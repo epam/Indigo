@@ -82,7 +82,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoSequence(self, library.self));
     }
 
-    public String sequence3(IndigoObject library) {
+    public String sequence3Letter(IndigoObject library) {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoSequence3Letter(self, library.self));
     }
