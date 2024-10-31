@@ -12,7 +12,7 @@ helm_mixed_base.ket:SUCCEED
 helm_mixed_custom.ket:SUCCEED
 helm_molecule_2418.ket:SUCCEED
 helm_monomer_molecule.ket:SUCCEED
-helm_monomer_molecule_direct.ket FAILED : expected 'PEPTIDE1{A}|PEPTIDE2{G}|CHEM1{[C(N[*:2])=C[*:1] |$;;_R2;;_R1$|]}$CHEM1,PEPTIDE1,1:R2-1:R1|PEPTIDE2,CHEM1,1:R2-1:R1$$$V2.0', got 'PEPTIDE1{A}|CHEM1{[C(=C)N[*:1] |$;;;_R1$|]}$PEPTIDE1,CHEM1,1:R2-1:R1$$$V2.0'
+helm_monomer_molecule_direct.ket:SUCCEED
 helm_multi_char_rna.ket:SUCCEED
 helm_peptide.ket:SUCCEED
 helm_rna_without_base.ket:SUCCEED
