@@ -144,6 +144,10 @@ namespace indigo
             {
                 result = _checkResultString(indigoSequence(id(), library));
             }
+            else if (outputFormat == "sequence-3-letter" || outputFormat == "chemical/x-sequence-3-letter")
+            {
+                result = _checkResultString(indigoSequence3Letter(id(), library));
+            }
             else if (outputFormat == "fasta" || outputFormat == "chemical/x-fasta")
             {
                 result = _checkResultString(indigoFasta(id(), library));
@@ -343,8 +347,10 @@ namespace indigo
     IndigoKetcherObject loadMoleculeOrReaction(const std::string& data, const std::map<std::string, std::string>& options, int library = -1,
                                                bool use_document = false)
     {
-        static std::unordered_map<std::string, std::string> seq_formats = {
-            {"chemical/x-peptide-sequence", "PEPTIDE"}, {"chemical/x-rna-sequence", "RNA"}, {"chemical/x-dna-sequence", "DNA"}};
+        static std::unordered_map<std::string, std::string> seq_formats = {{"chemical/x-peptide-sequence", "PEPTIDE"},
+                                                                           {"chemical/x-peptide-sequence-3-letter", "PEPTIDE-3-LETTER"},
+                                                                           {"chemical/x-rna-sequence", "RNA"},
+                                                                           {"chemical/x-dna-sequence", "DNA"}};
 
         static std::unordered_map<std::string, std::string> fasta_formats = {
             {"chemical/x-peptide-fasta", "PEPTIDE"}, {"chemical/x-rna-fasta", "RNA"}, {"chemical/x-dna-fasta", "DNA"}};

@@ -3434,6 +3434,33 @@ class IndigoObject:
             self._lib().indigoSequence(self.id, library.id)
         )
 
+    def saveSequence3Letter(self, filename, library):
+        """Saves macromolecule to monomers 3 letter sequence file
+
+        Args:
+            filename (str): full file path to the output file
+
+        Returns:
+            int: 1 if file is saved successfully
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSaveSequence3LetterToFile(
+                self.id, filename.encode(), library.id
+            )
+        )
+
+    def sequence3Letter(self, library):
+        """Molecule or reaction method returns monomer 3 letter sequence for the structure
+
+        Returns:
+            str: sequence string
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoSequence3Letter(self.id, library.id)
+        )
+
     def saveFasta(self, filename, library):
         """Saves macromolecule to FASTA file
 

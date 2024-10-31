@@ -44,7 +44,8 @@ namespace indigo
             Sequence,
             FASTA,
             IDT,
-            HELM
+            HELM,
+            Sequence3,
         };
 
         static constexpr uint32_t SEQ_LINE_LENGTH = 80;

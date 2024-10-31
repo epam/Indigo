@@ -1938,6 +1938,8 @@ void SequenceLoader::loadSequence(KetDocument& document, const std::string& seq_
         loadSequence(document, SeqType::RNASeq);
     else if (seq_type_str == kMonomerClassPEPTIDE)
         loadSequence(document, SeqType::PEPTIDESeq);
+    else if (seq_type_str == kMonomerClassPEPTIDE_3_LETTER)
+        load3LetterSequence(document);
     else
         throw Error("Bad sequence type: %s", seq_type_str.c_str());
 }
@@ -2003,6 +2005,55 @@ void SequenceLoader::loadSequence(KetDocument& document, SeqType seq_type)
 
     if (invalid_symbols.size())
         throw Error("Invalid symbols in the sequence: %s", invalid_symbols.c_str());
+}
+
+// Load 3 letter amino acid sequence like AlaCys
+void SequenceLoader::load3LetterSequence(KetDocument& document)
+{
+    _seq_id = 0;
+    _last_monomer_idx = -1;
+    _row = 0;
+    _col = 0;
+    static const char* wrong_format = "Given string cannot be interpreted as a valid three letter sequence because of incorrect formatting.";
+    while (!_scanner.isEOF())
+    {
+        auto ch = _scanner.readChar();
+        if (ch == '\n' || ch == '\r')
+            continue;
+
+        if (ch == ' ')
+        {
+            _seq_id = 0;
+            _col = 0;
+            _row++;
+            continue;
+        }
+
+        // monomer name is uppercase then two lowercase letter
+        if (!std::isalpha(ch) || !std::isupper(ch))
+            throw Error(wrong_format);
+        std::string monomer(1, ch);
+        for (auto i = 0; i < 2; i++) // read two chars
+        {
+            if (_scanner.isEOF())
+                throw Error(wrong_format);
+            ch = _scanner.readChar();
+            if (!std::isalpha(ch) || !std::islower(ch))
+                throw Error(wrong_format);
+            monomer += ch;
+        }
+        if (STANDARD_MIXED_PEPTIDES_NAME_TO_ALIAS.count(monomer) > 0)
+        {
+            addMonomer(document, STANDARD_MIXED_PEPTIDES_NAME_TO_ALIAS.at(monomer), SeqType::PEPTIDESeq, true);
+        }
+        else
+        {
+            std::string alias = monomerAliasByName(kMonomerClassAminoAcid, monomer);
+            if (alias == monomer) // alias not found
+                throw Error("Unknown monomer name '%s'.", monomer.c_str());
+            addMonomer(document, alias, SeqType::PEPTIDESeq);
+        }
+    }
 }
 
 void SequenceLoader::loadFasta(KetDocument& document, const std::string& seq_type_str)

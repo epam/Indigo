@@ -92,6 +92,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoSequence(self, library.self));
         }
 
+        public string sequence3Letter(IndigoObject library)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoSequence3Letter(self, library.self));
+        }
+
         public string fasta(IndigoObject library)
         {
             dispatcher.setSessionID();
@@ -115,6 +121,14 @@ namespace com.epam.indigo
             dispatcher.setSessionID();
             int s = dispatcher.checkResult(IndigoLib.indigoWriteFile(filename));
             dispatcher.checkResult(IndigoLib.indigoSaveSequenceToFile(self, s, library.self));
+            dispatcher.checkResult(IndigoLib.indigoFree(s));
+        }
+
+        public void saveSequence3LetterToFile(string filename, IndigoObject library)
+        {
+            dispatcher.setSessionID();
+            int s = dispatcher.checkResult(IndigoLib.indigoWriteFile(filename));
+            dispatcher.checkResult(IndigoLib.indigoSaveSequence3LetterToFile(self, s, library.self));
             dispatcher.checkResult(IndigoLib.indigoFree(s));
         }
 

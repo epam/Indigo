@@ -905,6 +905,14 @@ class IndigoLib:
             c_char_p,
             c_int,
         ]
+        IndigoLib.lib.indigoSequence3Letter.restype = c_char_p
+        IndigoLib.lib.indigoSequence3Letter.argtypes = [c_int, c_int]
+        IndigoLib.lib.indigoSaveSequence3LetterToFile.restype = c_int
+        IndigoLib.lib.indigoSaveSequence3LetterToFile.argtypes = [
+            c_int,
+            c_char_p,
+            c_int,
+        ]
         IndigoLib.lib.indigoFasta.restype = c_char_p
         IndigoLib.lib.indigoFasta.argtypes = [c_int, c_int]
         IndigoLib.lib.indigoSaveFastaToFile.restype = c_int
