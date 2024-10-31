@@ -1319,6 +1319,25 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
     auto& molecules = document.jsonMolecules();
     int molecule_idx = 0;
     rapidjson::Document json{};
+    std::map<std::string, std::vector<int>> molecules_connections;
+    if (molecules.Size() > 0)
+    {
+        auto process_ep = [&molecules_connections](const KetConnectionEndPoint& ep) {
+            if (ep.hasStringProp("moleculeId"))
+            {
+                const auto& mol_id = ep.getStringProp("moleculeId");
+                if (molecules_connections.count(mol_id) == 0)
+                    molecules_connections.try_emplace(mol_id);
+                if (ep.hasStringProp("atomId"))
+                    molecules_connections.at(mol_id).push_back(std::stoi(ep.getStringProp("atomId")));
+            }
+        };
+        for (const auto& connection : document.nonSequenceConnections())
+        {
+            process_ep(connection.ep1());
+            process_ep(connection.ep2());
+        }
+    }
     for (rapidjson::SizeType i = 0; i < molecules.Size(); i++)
     {
         const auto& molecule = molecules[i];
@@ -1341,6 +1360,7 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
         }
         // convert Sup sgroup without name attachment points to rg-labels
         auto& sgroups = pbmol->sgroups;
+        int ap_count = 0;
         for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
         {
             auto& sgroup = sgroups.getSGroup(i);
@@ -1355,6 +1375,7 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
             static std::string apid_prefix{'R'};
             for (int ap_id = sa.attachment_points.begin(); ap_id != sa.attachment_points.end(); ap_id = sa.attachment_points.next(ap_id))
             {
+                ap_count++;
                 auto& ap = sa.attachment_points.at(ap_id);
                 std::string apid = apid_prefix + ap.apid.ptr();
                 atom_to_ap->second.emplace(ap.aidx, apid);
@@ -1373,6 +1394,23 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
                 }
             }
             sgroups.remove(i);
+        }
+        // check direct monomer to molecule connections without attachment point
+        if (molecules_connections.count(mol_id) > 0 && ap_count == 0)
+        {
+            int ap_idx = 1;
+            auto res = mol_atom_to_ap.try_emplace(mol_id);
+            auto& atom_to_ap = res.first;
+            static std::string apid_prefix{'R'};
+            for (auto atom_id : molecules_connections.at(mol_id))
+            {
+                std::string apid = apid_prefix + std::to_string(ap_idx);
+                atom_to_ap->second.emplace(atom_id, apid);
+                // add leaving atom and set it as R-site
+                auto leaving_atom = pbmol->addAtom(ELEM_RSITE);
+                pbmol->addBond(atom_id, leaving_atom, BOND_SINGLE);
+                pbmol->allowRGroupOnRSite(leaving_atom, ap_idx++);
+            }
         }
         // generate smiles
         std::string smiles;
