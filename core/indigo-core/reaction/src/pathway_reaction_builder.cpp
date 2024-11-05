@@ -127,7 +127,7 @@ void PathwayReactionBuilder::buildInchiDescriptors(std::deque<Reaction>& reactio
         int reactionIndex = static_cast<int>(_reactionInchiDescriptors.size());
         _pathwayReaction->addReactionNode();
         ReactionInchiDescriptor& rd = _reactionInchiDescriptors.emplace_back();
-        
+
         for (auto prop_idx : reaction.properties().elements())
         {
             auto key = reaction.properties().key(prop_idx);

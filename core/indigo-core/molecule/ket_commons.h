@@ -133,7 +133,6 @@ namespace indigo
         std::list<KetTextStyle> text_styles;
     };
 
-
     class KETTextObject : public MetaObject
     {
     public:

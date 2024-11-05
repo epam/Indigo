@@ -327,7 +327,7 @@ namespace indigo
         Array<int>& getAAMArray(int index);
         Array<int>& getReactingCenterArray(int index);
         Array<int>& getInversionArray(int index);
-        
+
         void clearAAM();
 
         int addReactant();
