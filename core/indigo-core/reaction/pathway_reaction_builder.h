@@ -59,6 +59,7 @@ namespace indigo
             // useful to collect it here to avoid look them up in the reaction object
             std::vector<int> productIndexes;
             std::vector<int> reactantIndexes;
+            std::vector<std::pair<std::string, std::string>> properties;
         };
 
         void buildInchiDescriptors(std::deque<Reaction>& reactions);
@@ -70,6 +71,7 @@ namespace indigo
         std::unordered_map<std::string, std::map<int, int>> _reactantToReactions;
         std::unique_ptr<PathwayReaction> _pathwayReaction;
         std::unordered_map<std::pair<int, int>, int, pair_hash> _moleculeMapping;
+        static constexpr auto kPropNA = "Not available";
     };
 
 } // namespace indigo

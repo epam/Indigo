@@ -110,19 +110,6 @@ namespace indigo
         int atom_idx;
     };
 
-    struct CdxmlKetTextStyle
-    {
-        std::size_t offset;
-        std::size_t size;
-        std::list<std::string> styles;
-    };
-
-    struct CdxmlKetTextLine
-    {
-        std::string text;
-        std::list<CdxmlKetTextStyle> text_styles;
-    };
-
     struct CdxmlNode
     {
         CdxmlNode()

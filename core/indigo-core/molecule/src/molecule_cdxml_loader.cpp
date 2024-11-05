@@ -1714,7 +1714,7 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
     writer.Key("blocks");
     writer.StartArray();
 
-    std::list<CdxmlKetTextLine> ket_text_lines;
+    std::list<KetTextLine> ket_text_lines;
     ket_text_lines.emplace_back();
     for (auto text_style = elem.firstChildElement(); text_style->hasContent(); text_style = text_style->nextSiblingElement())
     {
@@ -1801,7 +1801,6 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
     writer.Key("entityMap");
     writer.StartObject();
     writer.EndObject();
-
     writer.EndObject();
 
     Vec3f tpos(text_pos);

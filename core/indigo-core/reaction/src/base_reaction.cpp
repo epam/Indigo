@@ -392,6 +392,7 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<
 
     name.copy(other.name);
     _meta.clone(other._meta);
+    _properties.copy(other._properties);
     isRetrosynthetic = other.isRetrosynthetic;
     _cloneSub(other);
 }
@@ -507,6 +508,11 @@ void BaseReaction::unfoldHydrogens()
 MetaDataStorage& BaseReaction::meta()
 {
     return _meta;
+}
+
+PropertiesMap& BaseReaction::properties()
+{
+    return _properties;
 }
 
 int BaseReaction::multitaleCount() const

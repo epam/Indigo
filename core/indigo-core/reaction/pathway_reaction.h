@@ -53,23 +53,34 @@ namespace indigo
                 reactantIndexes.copy(other.reactantIndexes);
                 productIndexes.copy(other.productIndexes);
                 pluses.copy(other.pluses);
+                properties.copy(other.properties);
             }
             Array<int> reactantIndexes;
             Array<int> productIndexes;
             Array<Plus> pluses;
             int arrowMetaIndex;
+            RedBlackStringObjMap<Array<char>> properties;
         };
 
         struct ReactionNode
         {
-            ReactionNode() : reactionIdx(-1), multiTailMetaIndex(-1){};
+            ReactionNode() : reactionIdx(-1), multiTailMetaIndex(-1), text_width(0)
+            {
+            }
+
             ReactionNode(const ReactionNode& other)
             {
                 reactionIdx = other.reactionIdx;
                 multiTailMetaIndex = other.multiTailMetaIndex;
+                text_width = other.text_width;
                 for (int i = 0; i < other.successorReactionIndexes.size(); ++i)
                     successorReactionIndexes.push(other.successorReactionIndexes[i]);
                 precursorReactionIndexes.copy(other.precursorReactionIndexes);
+
+                for (int i = 0; i < other.name_text.size(); ++i)
+                    name_text.push().copy(other.name_text[i]);
+                for (int i = 0; i < other.conditions_text.size(); ++i)
+                    conditions_text.push().copy(other.conditions_text[i]);
             }
             int reactionIdx;
             // vector of successor reactions indexes and their corresponding reactant indexes
@@ -79,6 +90,9 @@ namespace indigo
             // utility information
             RedBlackMap<int, int> connectedReactants; // where the precursors' products are connected to
             int multiTailMetaIndex;
+            ObjArray<Array<char>> name_text;
+            ObjArray<Array<char>> conditions_text;
+            float text_width;
         };
 
         PathwayReaction();

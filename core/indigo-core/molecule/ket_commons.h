@@ -120,6 +120,20 @@ namespace indigo
         std::pair<Vec2f, Vec2f> _coordinates;
     };
 
+    struct KetTextStyle
+    {
+        std::size_t offset;
+        std::size_t size;
+        std::list<std::string> styles;
+    };
+
+    struct KetTextLine
+    {
+        std::string text;
+        std::list<KetTextStyle> text_styles;
+    };
+
+
     class KETTextObject : public MetaObject
     {
     public:
