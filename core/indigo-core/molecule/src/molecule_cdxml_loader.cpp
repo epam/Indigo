@@ -1184,7 +1184,13 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, BaseCDXElement& elem)
 
     auto pos_lambda = [&node, this](const std::string& data) { this->parsePos(data, node.pos); };
 
-    auto stereo_lambda = [&node](const std::string& data) { node.stereo = kCIPStereochemistryCharToIndex.at(data.front()); };
+    auto stereo_lambda = [&node](const std::string& data) {
+        const auto it = kCIPStereochemistryCharToIndex.find(data.front());
+        if (it != kCIPStereochemistryCharToIndex.end())
+            node.stereo = it->second;
+        else
+            node.stereo = CIPStereochemistry::Undetermined;
+    };
 
     auto node_type_lambda = [&node](const std::string& data) {
         node.type = KNodeTypeNameToInt.at(data);
