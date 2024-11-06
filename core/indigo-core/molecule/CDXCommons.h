@@ -1266,7 +1266,24 @@ namespace indigo
                                                                          {kCDXBracketUsage_Anypolymer, "Anypolymer"}};
 
     const std::vector<char> kCIPStereochemistryIndexToChar = {'U', 'N', 'R', 'S', 'r', 's', 'u'};
-    const std::unordered_map<char, uint8_t> kCIPStereochemistryCharToIndex = {{'U', 0}, {'N', 1}, {'R', 2}, {'S', 3}, {'r', 4}, {'s', 5}, {'u', 6}};
+    namespace CIPStereochemistry
+    {
+        enum
+        {
+            Undetermined = 0,
+            Symmetric,
+            Asymmetric_R,
+            Asymmetric_S,
+            Pseudoasymmetric_r,
+            Pseudoasymmetric_s,
+            Unspecified
+        };
+    }
+    const std::unordered_map<char, uint8_t> kCIPStereochemistryCharToIndex = {
+        {'U', CIPStereochemistry::Undetermined}, {'N', CIPStereochemistry::Symmetric},          {'R', CIPStereochemistry::Asymmetric_R},
+        {'S', CIPStereochemistry::Asymmetric_S}, {'r', CIPStereochemistry::Pseudoasymmetric_r}, {'s', CIPStereochemistry::Pseudoasymmetric_s},
+        {'u', CIPStereochemistry::Unspecified},
+    };
 
     const std::vector<char> kCIPBondStereochemistryIndexToChar = {'U', 'N', 'E', 'Z'};
     const std::unordered_map<char, uint8_t> kCIPBondStereochemistryCharToIndex = {{'U', 0}, {'N', 1}, {'E', 2}, {'Z', 3}};
