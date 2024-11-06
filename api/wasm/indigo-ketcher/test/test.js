@@ -480,8 +480,8 @@ M  END
             var fs = require('fs');
             const cdx_data = fs.readFileSync("test64.cdx");
             const ket = indigo.convert(cdx_data, "ket", options);
-            const ket_data = indigo.convert(fs.readFileSync("test64.ket"), "ket", options);
-            fs.writeFileSync("test64a.ket", ket);
+            const ket_data = fs.readFileSync("test64.ket").toString();
+            fs.writeFileSync("test64a1.ket", ket_data);
             assert.equal(ket, ket_data);
             options.delete();
         });
