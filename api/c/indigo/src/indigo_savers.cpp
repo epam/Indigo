@@ -630,7 +630,7 @@ CEXPORT int indigoSaveSequence3Letter(int item, int output, int library)
             out.flush();
             return 1;
         }
-        throw IndigoError("indigoSaveSequence(): expected molecule, got %s", obj.debugInfo());
+        throw IndigoError("indigoSaveSequence3Letter(): expected document, got %s", obj.debugInfo());
     }
     INDIGO_END(-1);
 }

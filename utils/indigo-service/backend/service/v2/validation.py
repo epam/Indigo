@@ -26,6 +26,7 @@ class InputFormatSchema(Schema):
         "chemical/x-sdf",
         "chemical/x-rdf",
         "chemical/x-peptide-sequence",
+        "chemical/x-peptide-sequence-3-letter",
         "chemical/x-rna-sequence",
         "chemical/x-dna-sequence",
         "chemical/x-sequence",

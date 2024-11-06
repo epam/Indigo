@@ -478,8 +478,9 @@ M  END\n",
 chemical/x-daylight-smiles, chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, \
 chemical/x-iupac, chemical/x-daylight-smarts, chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, \
 chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-rdf, chemical/x-peptide-sequence, \
-chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, chemical/x-peptide-fasta, \
-chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, chemical/x-idt, chemical/x-helm."
+chemical/x-peptide-sequence-3-letter, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, \
+chemical/x-peptide-fasta, chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, \
+chemical/x-idt, chemical/x-helm."
         expected_text = (
             "ValidationError: {'input_format': ['Must be one of: %s']}"
             % formats
@@ -3277,6 +3278,33 @@ M  END
             self.url_prefix + "/convert", headers=headers, data=data
         )
 
+        peptide_3 = "AlaCysGlyThrSec"
+        headers, data = self.get_headers(
+            {
+                "struct": peptide_3,
+                "options": {"monomerLibrary": monomer_library},
+                "input_format": "chemical/x-peptide-sequence-3-letter",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result_ket_3 = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
+                "struct": json.loads(result_ket_3.text)["struct"],
+                "options": {"monomerLibrary": monomer_library},
+                "output_format": "chemical/x-peptide-sequence-3-letter",
+            }
+        )
+        result_peptide_3 = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        self.assertEqual(
+            json.loads(result_peptide_3.text)["struct"], peptide_3
+        )
+
         headers, data = self.get_headers(
             {
                 "struct": "ACDEFGHIKLMNOPQRSRUVWY",
@@ -3314,6 +3342,7 @@ M  END
         with open(os.path.join(ref_path, "peptide_ref") + ".ket", "r") as file:
             peptide_ref = file.read()
             self.assertEqual(result_peptide.text, peptide_ref)
+            self.assertEqual(result_ket_3.text, peptide_ref)
 
     def test_convert_fasta(self):
         ref_path = joinPathPy("ref/", __file__)
