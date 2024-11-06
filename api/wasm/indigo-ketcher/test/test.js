@@ -840,6 +840,28 @@ M  END
     }
 
     {
+        test("PEPTIDE-3-LETTER", "basic", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("monomerLibrary", monomersLib);
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-peptide-sequence-3-letter");
+            const peptide_seq_ref = "AlaCysAspGluPheGlyHisIleLysLeuMetAsnPylProGlnArgSerArgSecValTrpTyr";
+            const peptide_ket = indigo.convert(peptide_seq_ref, "ket", options);
+            // fs.writeFileSync("peptide_ref.ket", peptide_ket);
+            const peptide_ket_ref = fs.readFileSync("peptide_ref.ket");
+            assert.equal(peptide_ket, peptide_ket_ref.toString());
+
+            options.set("input-format", "application/json");
+            options.set("output-content-type", "chemical/x-peptide-sequence-3-letter");
+            const peptide_seq = indigo.convert(peptide_ket_ref.toString(), "chemical/x-peptide-sequence-3-letter", options);
+            assert.equal(peptide_seq, peptide_seq_ref);
+            options.delete();
+        });
+    }
+
+    {
         test("RNA", "basic", () => {
             var fs = require('fs');
             let options = new indigo.MapStringString();

@@ -478,8 +478,9 @@ M  END\n",
 chemical/x-daylight-smiles, chemical/x-cml, chemical/x-inchi, chemical/x-inchi-key, \
 chemical/x-iupac, chemical/x-daylight-smarts, chemical/x-inchi-aux, chemical/x-chemaxon-cxsmiles, \
 chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-rdf, chemical/x-peptide-sequence, \
-chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, chemical/x-peptide-fasta, \
-chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, chemical/x-idt, chemical/x-helm."
+chemical/x-peptide-sequence-3-letter, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, \
+chemical/x-peptide-fasta, chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, \
+chemical/x-idt, chemical/x-helm."
         expected_text = (
             "ValidationError: {'input_format': ['Must be one of: %s']}"
             % formats
@@ -3279,6 +3280,18 @@ M  END
 
         headers, data = self.get_headers(
             {
+                "struct": "AlaCysGlyThrSec",
+                "options": {"monomerLibrary": monomer_library},
+                "input_format": "chemical/x-peptide-sequence-3-letter",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result_peptide_3 = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
                 "struct": "ACDEFGHIKLMNOPQRSRUVWY",
                 "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-peptide-sequence",
@@ -3314,6 +3327,7 @@ M  END
         with open(os.path.join(ref_path, "peptide_ref") + ".ket", "r") as file:
             peptide_ref = file.read()
             self.assertEqual(result_peptide.text, peptide_ref)
+            self.assertEqual(result_peptide_3.text, peptide_ref)
 
     def test_convert_fasta(self):
         ref_path = joinPathPy("ref/", __file__)

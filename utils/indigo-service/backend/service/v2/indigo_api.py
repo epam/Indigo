@@ -335,6 +335,10 @@ def load_moldata(
         md.struct = indigo.loadSequence(molstr, "PEPTIDE", library)
         md.is_rxn = False
         md.is_query = False
+    elif input_format == "chemical/x-peptide-sequence-3-letter":
+        md.struct = indigo.loadSequence(molstr, "PEPTIDE-3-LETTER", library)
+        md.is_rxn = False
+        md.is_query = False
     elif input_format == "chemical/x-rna-sequence":
         md.struct = indigo.loadSequence(molstr, "RNA", library)
         md.is_rxn = False
@@ -431,6 +435,8 @@ def save_moldata(
         return md.struct.json()
     elif output_format == "chemical/x-sequence":
         return md.struct.sequence(library)
+    elif output_format == "chemical/x-peptide-sequence-3-letter":
+        return md.struct.sequence3Letter(library)
     elif output_format == "chemical/x-fasta":
         return md.struct.fasta(library)
     elif output_format == "chemical/x-idt":
@@ -928,6 +934,7 @@ def convert():
             "chemical/x-fasta",
             "chemical/x-idt",
             "chemical/x-helm",
+            "chemical/x-peptide-sequence-3-letter, ",
         ):
             try_document = True
 
