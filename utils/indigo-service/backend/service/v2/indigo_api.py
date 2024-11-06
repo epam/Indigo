@@ -934,7 +934,7 @@ def convert():
             "chemical/x-fasta",
             "chemical/x-idt",
             "chemical/x-helm",
-            "chemical/x-peptide-sequence-3-letter, ",
+            "chemical/x-peptide-sequence-3-letter",
         ):
             try_document = True
 

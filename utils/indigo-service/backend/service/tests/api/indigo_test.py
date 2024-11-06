@@ -3278,16 +3278,31 @@ M  END
             self.url_prefix + "/convert", headers=headers, data=data
         )
 
+        peptide_3 = "AlaCysGlyThrSec"
         headers, data = self.get_headers(
             {
-                "struct": "AlaCysGlyThrSec",
+                "struct": peptide_3,
                 "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-peptide-sequence-3-letter",
                 "output_format": "chemical/x-indigo-ket",
             }
         )
+        result_ket_3 = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
+                "struct": json.loads(result_ket_3.text)["struct"],
+                "options": {"monomerLibrary": monomer_library},
+                "output_format": "chemical/x-peptide-sequence-3-letter",
+            }
+        )
         result_peptide_3 = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
+        )
+        self.assertEqual(
+            json.loads(result_peptide_3.text)["struct"], peptide_3
         )
 
         headers, data = self.get_headers(
@@ -3327,7 +3342,7 @@ M  END
         with open(os.path.join(ref_path, "peptide_ref") + ".ket", "r") as file:
             peptide_ref = file.read()
             self.assertEqual(result_peptide.text, peptide_ref)
-            self.assertEqual(result_peptide_3.text, peptide_ref)
+            self.assertEqual(result_ket_3.text, peptide_ref)
 
     def test_convert_fasta(self):
         ref_path = joinPathPy("ref/", __file__)

@@ -848,9 +848,9 @@ M  END
             options.set("output-content-type", "application/json");
             options.set("input-format", "chemical/x-peptide-sequence-3-letter");
             const peptide_seq_ref = "AlaCysAspGluPheGlyHisIleLysLeuMetAsnPylProGlnArgSerArgSecValTrpTyr";
-            const peptide_ket = indigo.convert(peptide_seq_ref, "ket", options);
-            // fs.writeFileSync("peptide_ref.ket", peptide_ket);
-            const peptide_ket_ref = fs.readFileSync("peptide_ref.ket");
+            const peptide_ket = JSON.parse(indigo.convert(peptide_seq_ref, "ket", options)).struct;
+            // fs.writeFileSync("peptide_ref_3_letter.ket", peptide_ket);
+            const peptide_ket_ref = fs.readFileSync("peptide_ref_3_letter.ket");
             assert.equal(peptide_ket, peptide_ket_ref.toString());
 
             options.set("input-format", "application/json");
