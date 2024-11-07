@@ -480,8 +480,8 @@ M  END
             var fs = require('fs');
             const cdx_data = fs.readFileSync("test64.cdx");
             const ket = indigo.convert(cdx_data, "ket", options);
-            const ket_data = indigo.convert(fs.readFileSync("test64.ket"), "ket", options);
-            fs.writeFileSync("test64a.ket", ket);
+            const ket_data = fs.readFileSync("test64.ket").toString();
+            fs.writeFileSync("test64a1.ket", ket_data);
             assert.equal(ket, ket_data);
             options.delete();
         });
@@ -835,6 +835,28 @@ M  END
             // fs.writeFileSync("peptide_ref.seq", peptide_seq);
             const peptide_seq_ref1 = fs.readFileSync("peptide_ref.seq");
             assert.equal(peptide_seq, peptide_seq_ref1.toString());
+            options.delete();
+        });
+    }
+
+    {
+        test("PEPTIDE-3-LETTER", "basic", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("monomerLibrary", monomersLib);
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-peptide-sequence-3-letter");
+            const peptide_seq_ref = "AlaCysAspGluPheGlyHisIleLysLeuMetAsnPylProGlnArgSerArgSecValTrpTyr";
+            const peptide_ket = JSON.parse(indigo.convert(peptide_seq_ref, "ket", options)).struct;
+            // fs.writeFileSync("peptide_ref_3_letter.ket", peptide_ket);
+            const peptide_ket_ref = fs.readFileSync("peptide_ref_3_letter.ket");
+            assert.equal(peptide_ket, peptide_ket_ref.toString());
+
+            options.set("input-format", "application/json");
+            options.set("output-content-type", "chemical/x-peptide-sequence-3-letter");
+            const peptide_seq = indigo.convert(peptide_ket_ref.toString(), "chemical/x-peptide-sequence-3-letter", options);
+            assert.equal(peptide_seq, peptide_seq_ref);
             options.delete();
         });
     }
