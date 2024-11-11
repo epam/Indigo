@@ -22,6 +22,8 @@
 #include <exception>
 #include <functional>
 #include <rapidjson/document.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
 #include <string>
 #include <unordered_map>
 
@@ -157,72 +159,7 @@ namespace indigo
 
         static const std::uint32_t CID = "Simple text object"_hash;
 
-        SimpleTextObject(const Vec3f& pos, const std::string& content) : MetaObject(CID)
-        {
-            using namespace rapidjson;
-            _pos = pos;
-            _content = content;
-            Document data;
-            data.Parse(content.c_str());
-            if (data.HasMember("blocks"))
-            {
-                Value& blocks = data["blocks"];
-                for (rapidjson::SizeType i = 0; i < blocks.Size(); ++i)
-                {
-                    SimpleTextLine text_line;
-                    if (blocks[i].HasMember("text"))
-                    {
-                        text_line.text = blocks[i]["text"].GetString();
-                        text_line.styles.emplace(0, std::initializer_list<std::pair<int, bool>>{});
-                        text_line.styles.emplace(text_line.text.size(), std::initializer_list<std::pair<int, bool>>{});
-                        if (blocks[i].HasMember("inlineStyleRanges"))
-                        {
-                            Value& style_ranges = blocks[i]["inlineStyleRanges"];
-                            for (rapidjson::SizeType j = 0; j < style_ranges.Size(); ++j)
-                            {
-                                int style_begin = style_ranges[j]["offset"].GetInt();
-                                int style_end = style_begin + style_ranges[j]["length"].GetInt();
-                                int style_code = -1;
-
-                                std::string style = style_ranges[j]["style"].GetString();
-                                auto it = KTextStylesMap.find(style);
-                                if (it != KTextStylesMap.end())
-                                {
-                                    style_code = it->second;
-                                }
-                                else
-                                {
-                                    const std::string KCustomFontSize = "CUSTOM_FONT_SIZE_";
-                                    const std::string KCustomFontUnits = "px";
-                                    if (style.find(KCustomFontSize) == 0)
-                                    {
-                                        style_code =
-                                            std::stoi(style.substr(KCustomFontSize.size(), style.size() - KCustomFontSize.size() - KCustomFontUnits.size()));
-                                    }
-                                }
-                                const auto it_begin = text_line.styles.find(style_begin);
-                                const auto it_end = text_line.styles.find(style_end);
-
-                                if (it_begin == text_line.styles.end())
-                                    text_line.styles.emplace(style_begin, std::initializer_list<std::pair<int, bool>>{{style_code, true}});
-                                else
-                                {
-                                    it_begin->second.emplace(style_code, true);
-                                }
-
-                                if (it_end == text_line.styles.end())
-                                    text_line.styles.emplace(style_end, std::initializer_list<std::pair<int, bool>>{{style_code, false}});
-                                else
-                                {
-                                    it_end->second.emplace(style_code, false);
-                                }
-                            }
-                        }
-                    }
-                    _block.push_back(text_line);
-                }
-            }
-        }
+        SimpleTextObject(const Vec3f& pos, const std::string& content);
 
         MetaObject* clone() const override
         {
@@ -243,6 +180,19 @@ namespace indigo
         std::string _content;
         std::list<SimpleTextLine> _block;
         Vec3f _pos;
+    };
+
+    class SimpleTextObjectBuilder
+    {
+    public:
+        SimpleTextObjectBuilder();
+        void addLine(const SimpleTextLine& line);
+        void finalize();
+        std::string getJsonString() const;
+
+    private:
+        rapidjson::Writer<rapidjson::StringBuffer> _writer;
+        rapidjson::StringBuffer _buffer;
     };
 
     class ReactionArrowObject : public MetaObject

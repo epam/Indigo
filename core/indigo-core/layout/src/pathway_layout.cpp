@@ -161,7 +161,7 @@ void PathwayLayout::buildLayoutTree()
             {
                 auto adjustHeight = (targetHeight - totalHeight) / (currentLayoutItem.children.size() - 1);
                 for (auto& child : currentLayoutItem.children)
-                    child->height += adjustHeight * 1.5f; // should be 2.0f
+                    child->height += adjustHeight * TEXT_ADJUSTMENT; // should be 2.0f
             }
         }
     }
@@ -338,9 +338,8 @@ void PathwayLayout::applyLayout()
         _reaction.meta().addMetaObject(arrow.second.release());
 }
 
-void PathwayLayout::generateKETTextBlocks(Writer<StringBuffer>& writer, const ObjArray<Array<char>>& props, const std::string& style, float& height)
+void PathwayLayout::generateKETTextBlocks(SimpleTextObjectBuilder& tob, const ObjArray<Array<char>>& props, const std::string& style, float& height)
 {
-    std::list<SimpleTextLine> lines;
     for (int i = 0; i < props.size(); ++i)
     {
         if (height > _text_height)
@@ -354,41 +353,7 @@ void PathwayLayout::generateKETTextBlocks(Writer<StringBuffer>& writer, const Ob
             ts.offset = 0;
             ts.size = textLine.text.size();
             ts.styles.push_back(style);
-            lines.push_back(textLine);
-        }
-    }
-
-    if (lines.size())
-    {
-        for (const auto& line : lines)
-        {
-            writer.StartObject();
-            writer.Key("text");
-            writer.String(line.text.c_str());
-            writer.Key("inlineStyleRanges");
-            writer.StartArray();
-            for (const auto& ts : line.text_styles)
-            {
-                for (const auto& style_str : ts.styles)
-                {
-                    writer.StartObject();
-                    writer.Key("offset");
-                    writer.Int(static_cast<int>(ts.offset));
-                    writer.Key("length");
-                    writer.Int(static_cast<int>(ts.size));
-                    writer.Key("style");
-                    writer.String(style_str.c_str());
-                    writer.EndObject();
-                }
-            }
-            writer.EndArray();
-            writer.Key("entityRanges");
-            writer.StartArray();
-            writer.EndArray();
-            writer.Key("data");
-            writer.StartObject();
-            writer.EndObject();
-            writer.EndObject();
+            tob.addLine(textLine);
         }
     }
 }
@@ -396,22 +361,13 @@ void PathwayLayout::generateKETTextBlocks(Writer<StringBuffer>& writer, const Ob
 void PathwayLayout::addMetaText(PathwayReaction::ReactionNode& node, const Vec2f text_pos_bl, float text_height_limit)
 {
     // add text meta-object
-    StringBuffer s;
-    Writer<StringBuffer> writer(s);
-    writer.StartObject();
-    writer.Key("blocks");
-    writer.StartArray();
+    SimpleTextObjectBuilder tob;
     auto height_limit = text_height_limit;
-    generateKETTextBlocks(writer, node.name_text, KFontBoldStr, height_limit);
-    generateKETTextBlocks(writer, node.conditions_text, KFontItalicStr, height_limit);
-
-    writer.EndArray();
-    writer.Key("entityMap");
-    writer.StartObject();
-    writer.EndObject();
-    writer.EndObject();
+    generateKETTextBlocks(tob, node.name_text, KFontBoldStr, height_limit);
+    generateKETTextBlocks(tob, node.conditions_text, KFontItalicStr, height_limit);
+    tob.finalize();
     Vec3f text_pos_lr(text_pos_bl.x, text_pos_bl.y + _text_height / 2 + (text_height_limit - height_limit), 0.0f);
-    _reaction.meta().addMetaObject(new SimpleTextObject(text_pos_lr, s.GetString()));
+    _reaction.meta().addMetaObject(new SimpleTextObject(text_pos_lr, tob.getJsonString()));
 }
 
 std::vector<std::string> PathwayLayout::splitText(const std::string& text, float max_width, std::function<float(char ch)> symbol_width)

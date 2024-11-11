@@ -26,8 +26,6 @@
 #include <iostream>
 #include <list>
 #include <numeric>
-#include <rapidjson/stringbuffer.h>
-#include <rapidjson/writer.h>
 #include <vector>
 
 #include "layout/metalayout.h"
@@ -54,6 +52,7 @@ namespace indigo
         static constexpr float MULTIPATHWAY_VERTICAL_SPACING = 1.5f;
         static constexpr float ARROW_LENGTH_FACTOR = 7.0f;
         static constexpr float MIN_BOND_MEAN = 0.01f;
+        static constexpr float TEXT_ADJUSTMENT = 1.5f;
 
         static constexpr int MAX_DEPTHS = 10;
         static constexpr int MAX_SYMBOLS = 30;
@@ -77,6 +76,8 @@ namespace indigo
         {
             return _preserve_molecule_layout;
         };
+
+        void generateKETTextBlocks(SimpleTextObjectBuilder& tob, const ObjArray<Array<char>>& props, const std::string& style, float& height);
 
     private:
         struct PathwayLayoutItem
@@ -248,8 +249,6 @@ namespace indigo
         void secondWalk(PathwayLayoutItem* node, PathwayLayoutItem* parent, float modifier, int depth);
 
         void applyLayout();
-        void generateKETTextBlocks(rapidjson::Writer<rapidjson::StringBuffer>& writer, const ObjArray<Array<char>>& props, const std::string& style,
-                                   float& max_height);
         void addMetaText(PathwayReaction::ReactionNode& node, const Vec2f text_pos_bl, float text_height_limit);
         std::vector<std::string> splitText(const std::string& text, float max_width, std::function<float(char ch)> symbol_width);
 
