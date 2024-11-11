@@ -2033,11 +2033,14 @@ void SequenceLoader::load3LetterSequence(KetDocument& document)
         if (!std::isalpha(ch) || !std::isupper(ch))
             throw Error(wrong_format);
         std::string monomer(1, ch);
-        for (auto i = 0; i < 2; i++) // read two chars
+        for (auto i = 0; i < 2;) // read two chars
         {
             if (_scanner.isEOF())
                 throw Error(wrong_format);
             ch = _scanner.readChar();
+            if (ch == '\n' || ch == '\r')
+                continue;
+            i++;
             if (!std::isalpha(ch) || !std::islower(ch))
                 throw Error(wrong_format);
             monomer += ch;

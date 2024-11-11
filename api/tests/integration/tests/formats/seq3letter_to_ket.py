@@ -27,7 +27,10 @@ print("*** 3 LETTER SEQUENCE to KET ***")
 
 ref_path = joinPathPy("ref/", __file__)
 
-files = ["peptides_3letter"]
+files = [
+    "peptides_3letter",
+    "peptides_3letter_line_break",
+]
 
 
 lib = indigo.loadMonomerLibraryFromFile(
