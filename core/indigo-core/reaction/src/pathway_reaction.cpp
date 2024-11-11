@@ -19,7 +19,7 @@
 #include <queue>
 
 #include "molecule/inchi_wrapper.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 #include "reaction/pathway_reaction.h"
 #include "reaction/reaction.h"
 

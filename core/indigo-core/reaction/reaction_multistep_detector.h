@@ -29,7 +29,7 @@
 #include <vector>
 
 #include "base_cpp/exception.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 
 namespace indigo
 {

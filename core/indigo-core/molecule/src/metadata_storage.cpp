@@ -1,6 +1,6 @@
 #include "molecule/metadata_storage.h"
 #include "base_c/defs.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 
 using namespace indigo;
 
@@ -14,22 +14,22 @@ int MetaDataStorage::addMetaObject(MetaObject* pobj)
 
     switch (pobj->_class_id)
     {
-    case KETTextObject::CID:
+    case SimpleTextObject::CID:
         _text_object_indexes.push() = index;
         break;
-    case KETSimpleObject::CID:
+    case SimpleGraphicsObject::CID:
         _simple_object_indexes.push() = index;
         break;
-    case KETReactionPlus::CID:
+    case ReactionPlusObject::CID:
         _plus_indexes.push() = index;
         break;
-    case KETReactionArrow::CID:
+    case ReactionArrowObject::CID:
         _arrow_indexes.push() = index;
         break;
-    case KETImage::CID:
+    case EmbeddedImageObject::CID:
         _image_indexes.push() = index;
         break;
-    case KETReactionMultitailArrow::CID:
+    case ReactionMultitailArrowObject::CID:
         _multi_tail_indexes.push() = index;
         break;
     default:
@@ -55,22 +55,22 @@ int MetaDataStorage::getMetaObjectIndex(uint32_t meta_type, int index) const
 {
     switch (meta_type)
     {
-    case KETTextObject::CID:
+    case SimpleTextObject::CID:
         return _text_object_indexes[index];
         break;
-    case KETSimpleObject::CID:
+    case SimpleGraphicsObject::CID:
         return _simple_object_indexes[index];
         break;
-    case KETReactionPlus::CID:
+    case ReactionPlusObject::CID:
         return _plus_indexes[index];
         break;
-    case KETReactionArrow::CID:
+    case ReactionArrowObject::CID:
         return _arrow_indexes[index];
         break;
-    case KETImage::CID:
+    case EmbeddedImageObject::CID:
         return _image_indexes[index];
         break;
-    case KETReactionMultitailArrow::CID:
+    case ReactionMultitailArrowObject::CID:
         return _multi_tail_indexes[index];
     default:
         throw Error("Unknown meta type");
@@ -85,29 +85,29 @@ const MetaObject& MetaDataStorage::getMetaObject(uint32_t meta_type, int index) 
 
 int MetaDataStorage::getNonChemicalMetaCount() const
 {
-    return getMetaCount(KETTextObject::CID) + getMetaCount(KETSimpleObject::CID) + getMetaCount(KETImage::CID);
+    return getMetaCount(SimpleTextObject::CID) + getMetaCount(SimpleGraphicsObject::CID) + getMetaCount(EmbeddedImageObject::CID);
 }
 
 int MetaDataStorage::getMetaCount(uint32_t meta_type) const
 {
     switch (meta_type)
     {
-    case KETTextObject::CID:
+    case SimpleTextObject::CID:
         return _text_object_indexes.size();
         break;
-    case KETSimpleObject::CID:
+    case SimpleGraphicsObject::CID:
         return _simple_object_indexes.size();
         break;
-    case KETReactionPlus::CID:
+    case ReactionPlusObject::CID:
         return _plus_indexes.size();
         break;
-    case KETReactionArrow::CID:
+    case ReactionArrowObject::CID:
         return _arrow_indexes.size();
         break;
-    case KETImage::CID:
+    case EmbeddedImageObject::CID:
         return _image_indexes.size();
         break;
-    case KETReactionMultitailArrow::CID:
+    case ReactionMultitailArrowObject::CID:
         return _multi_tail_indexes.size();
         break;
     default:
@@ -123,8 +123,8 @@ void MetaDataStorage::resetReactionData()
     _multi_tail_indexes.clear();
     for (int i = _meta_data.size() - 1; i >= 0; i--)
     {
-        if (_meta_data[i]->_class_id == KETReactionArrow::CID || _meta_data[i]->_class_id == KETReactionPlus::CID ||
-            _meta_data[i]->_class_id == KETReactionMultitailArrow::CID)
+        if (_meta_data[i]->_class_id == ReactionArrowObject::CID || _meta_data[i]->_class_id == ReactionPlusObject::CID ||
+            _meta_data[i]->_class_id == ReactionMultitailArrowObject::CID)
             _meta_data.remove(i);
     }
 }

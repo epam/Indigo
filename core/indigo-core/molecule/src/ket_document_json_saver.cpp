@@ -19,7 +19,7 @@
 #include <memory>
 #include <set>
 
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 #include "molecule/ket_document.h"
 #include "molecule/ket_document_json_saver.h"
 #include "molecule/monomers_template_library.h"

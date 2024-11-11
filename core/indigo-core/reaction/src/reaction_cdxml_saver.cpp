@@ -19,7 +19,7 @@
 #include <string>
 
 #include "base_cpp/output.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 #include "molecule/molecule_cdxml_saver.h"
 #include "reaction/pathway_reaction.h"
 #include "reaction/reaction.h"
@@ -97,13 +97,13 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
     std::vector<std::pair<int, int>> arrow_ids;
     std::unordered_map<int, int> retro_arrows_graph_id;
 
-    int arrow_count = rxn.meta().getMetaCount(KETReactionArrow::CID);
-    int multi_count = rxn.meta().getMetaCount(KETReactionMultitailArrow::CID);
+    int arrow_count = rxn.meta().getMetaCount(ReactionArrowObject::CID);
+    int multi_count = rxn.meta().getMetaCount(ReactionMultitailArrowObject::CID);
     if (arrow_count)
     {
         for (int i = 0; i < arrow_count; ++i)
         {
-            int array_index = rxn.meta().getMetaObjectIndex(KETReactionArrow::CID, i);
+            int array_index = rxn.meta().getMetaObjectIndex(ReactionArrowObject::CID, i);
             arrow_ids.emplace_back(meta_ids[array_index], arrow_count > 1 ? array_index : -1);
         }
     }
@@ -130,10 +130,10 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
         for (int i = 0; i < rxn.meta().metaData().size(); ++i)
         {
             auto& obj = *rxn.meta().metaData()[i];
-            if (obj._class_id == KETReactionArrow::CID)
+            if (obj._class_id == ReactionArrowObject::CID)
             {
-                KETReactionArrow& arrow = (KETReactionArrow&)(obj);
-                if (arrow.getArrowType() == KETReactionArrow::ERetrosynthetic)
+                ReactionArrowObject& arrow = (ReactionArrowObject&)(obj);
+                if (arrow.getArrowType() == ReactionArrowObject::ERetrosynthetic)
                 {
                     molsaver.addRetrosynteticArrow(++_id, meta_ids[i], arrow.getTail(), arrow.getHead());
                     retro_arrows_graph_id[meta_ids[i]] = _id;
@@ -309,7 +309,7 @@ void ReactionCdxmlSaver::_addArrow(BaseReaction& rxn, MoleculeCdxmlSaver& molsav
         retro_arrows_graph_id[arrow_id] = _id;
     }
     else
-        molsaver.addArrow(arrow_id, KETReactionArrow::EOpenAngle, p2, p1);
+        molsaver.addArrow(arrow_id, ReactionArrowObject::EOpenAngle, p2, p1);
 }
 
 void ReactionCdxmlSaver::_addScheme(MoleculeCdxmlSaver& molsaver)

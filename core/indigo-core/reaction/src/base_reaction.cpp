@@ -18,7 +18,7 @@
 
 #include "reaction/base_reaction.h"
 #include "base_cpp/tlscont.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 #include "molecule/molecule_dearom.h"
 
 using namespace indigo;
@@ -517,5 +517,5 @@ PropertiesMap& BaseReaction::properties()
 
 int BaseReaction::multitaleCount() const
 {
-    return _meta.getMetaCount(KETReactionMultitailArrow::CID);
+    return _meta.getMetaCount(ReactionMultitailArrowObject::CID);
 }

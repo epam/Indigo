@@ -25,7 +25,7 @@
 #include "layout/molecule_layout.h"
 #include "layout/sequence_layout.h"
 #include "molecule/elements.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 #include "molecule/ket_document.h"
 #include "molecule/molecule.h"
 #include "molecule/monomer_commons.h"

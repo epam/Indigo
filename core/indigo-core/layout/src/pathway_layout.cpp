@@ -318,18 +318,18 @@ void PathwayLayout::applyLayout()
                     arrows.push_back(spineBottom);
                     arrows.push_back(spineTop);
                     insertSorted(metaObjects,
-                                 std::make_pair(layoutItem->reactionIndex, std::make_unique<KETReactionMultitailArrow>(arrows.begin(), arrows.end())));
+                                 std::make_pair(layoutItem->reactionIndex, std::make_unique<ReactionMultitailArrowObject>(arrows.begin(), arrows.end())));
                     text_height_limit = spineTop.y - head.y - _reaction_margin_size;
                 }
                 else if (tails.size())
                 {
                     insertSorted(metaObjects, std::make_pair(layoutItem->reactionIndex,
-                                                             std::make_unique<KETReactionArrow>(KETReactionArrow::EFilledTriangle, tails.front(), head)));
+                                                             std::make_unique<ReactionArrowObject>(ReactionArrowObject::EFilledTriangle, tails.front(), head)));
                     textPos_bl.x = tails.front().x + (_default_arrow_size - node.text_width) / 2;
                 }
 
                 if (node.name_text.size() || node.conditions_text.size())
-                    addKETText(_reaction.getReactionNode(layoutItem->reactionIndex), textPos_bl, text_height_limit);
+                    addMetaText(_reaction.getReactionNode(layoutItem->reactionIndex), textPos_bl, text_height_limit);
             }
         }
     }
@@ -340,13 +340,13 @@ void PathwayLayout::applyLayout()
 
 void PathwayLayout::generateKETTextBlocks(Writer<StringBuffer>& writer, const ObjArray<Array<char>>& props, const std::string& style, float& height)
 {
-    std::list<KetTextLine> lines;
+    std::list<SimpleTextLine> lines;
     for (int i = 0; i < props.size(); ++i)
     {
         if (height > _text_height)
         {
             height -= _text_height;
-            KetTextLine textLine;
+            SimpleTextLine textLine;
             textLine.text = props[i].ptr();
             if (height < _text_height && props.size() - i > 1)
                 textLine.text += "...";
@@ -393,17 +393,17 @@ void PathwayLayout::generateKETTextBlocks(Writer<StringBuffer>& writer, const Ob
     }
 }
 
-void PathwayLayout::addKETText(PathwayReaction::ReactionNode& node, const Vec2f text_pos_bl, float text_height_limit)
+void PathwayLayout::addMetaText(PathwayReaction::ReactionNode& node, const Vec2f text_pos_bl, float text_height_limit)
 {
-    // add KET text meta-object
+    // add text meta-object
     StringBuffer s;
     Writer<StringBuffer> writer(s);
     writer.StartObject();
     writer.Key("blocks");
     writer.StartArray();
     auto height_limit = text_height_limit;
-    generateKETTextBlocks(writer, node.name_text, KETFontBoldStr, height_limit);
-    generateKETTextBlocks(writer, node.conditions_text, KETFontItalicStr, height_limit);
+    generateKETTextBlocks(writer, node.name_text, KFontBoldStr, height_limit);
+    generateKETTextBlocks(writer, node.conditions_text, KFontItalicStr, height_limit);
 
     writer.EndArray();
     writer.Key("entityMap");
@@ -411,7 +411,7 @@ void PathwayLayout::addKETText(PathwayReaction::ReactionNode& node, const Vec2f 
     writer.EndObject();
     writer.EndObject();
     Vec3f text_pos_lr(text_pos_bl.x, text_pos_bl.y + _text_height / 2 + (text_height_limit - height_limit), 0.0f);
-    _reaction.meta().addMetaObject(new KETTextObject(text_pos_lr, s.GetString()));
+    _reaction.meta().addMetaObject(new SimpleTextObject(text_pos_lr, s.GetString()));
 }
 
 std::vector<std::string> PathwayLayout::splitText(const std::string& text, float max_width, std::function<float(char ch)> symbol_width)

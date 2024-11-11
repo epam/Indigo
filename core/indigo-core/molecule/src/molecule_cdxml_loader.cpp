@@ -428,7 +428,7 @@ void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     _parseCDXMLPage(*root);
 
     _parseCollections(mol);
-    int arrows_count = mol.meta().getMetaCount(KETReactionArrow::CID);
+    int arrows_count = mol.meta().getMetaCount(ReactionArrowObject::CID);
     if (arrows_count && !load_arrows && _has_scheme)
         throw Error("Not a molecule. Found %d arrows.", arrows_count);
 }
@@ -509,13 +509,13 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         _addBracket(mol, brk);
 
     for (const auto& to : text_objects)
-        mol.meta().addMetaObject(new KETTextObject(to.first, to.second));
+        mol.meta().addMetaObject(new SimpleTextObject(to.first, to.second));
 
     for (const auto& plus : _pluses)
-        mol.meta().addMetaObject(new KETReactionPlus(plus));
+        mol.meta().addMetaObject(new ReactionPlusObject(plus));
 
     for (const auto& image : _images)
-        mol.meta().addMetaObject(new KETImage(image.bbox, image.image_format, image.data, false));
+        mol.meta().addMetaObject(new EmbeddedImageObject(image.bbox, image.image_format, image.data, false));
 
     // CDX contains draphic arrow wich id dublicate arrow/
     // Search arrows for arrow with coords same as in grapic arrow and if found - remove tis arrow gecause graphic arrow contains more specific type
@@ -535,7 +535,7 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
                 break;
             }
         }
-        mol.meta().addMetaObject(new KETReactionArrow(g_arrow.second, p1, p2));
+        mol.meta().addMetaObject(new ReactionArrowObject(g_arrow.second, p1, p2));
     }
 
     for (const auto& arrow : _arrows)
@@ -543,13 +543,13 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         const auto& arr_info = arrow.second.first;
         Vec2f v1(arr_info.first.x, arr_info.first.y);
         Vec2f v2(arr_info.second.x, arr_info.second.y);
-        mol.meta().addMetaObject(new KETReactionArrow(arrow.second.second, v1, v2));
+        mol.meta().addMetaObject(new ReactionArrowObject(arrow.second.second, v1, v2));
     }
 
     for (const auto& prim : _primitives)
     {
         if (prim.second == kCDXGraphicType_Rectangle)
-            mol.meta().addMetaObject(new KETSimpleObject(KETSimpleObject::EKETRectangle, prim.first));
+            mol.meta().addMetaObject(new SimpleGraphicsObject(SimpleGraphicsObject::ERectangle, prim.first));
     }
 }
 
@@ -1500,10 +1500,10 @@ void MoleculeCdxmlLoader::_parseEmbeddedObject(BaseCDXElement& elem)
 
     Rect2f emb_rect(embedded_bbox.first, embedded_bbox.second);
     if (image_png.size())
-        _images.emplace_back(KETImage::EKETPNG, emb_rect, image_png);
+        _images.emplace_back(EmbeddedImageObject::EKETPNG, emb_rect, image_png);
     else
         for (const auto& dib : bitmaps)
-            _images.emplace_back(KETImage::EKETPNG, emb_rect, dibToPNG(dib.dibits));
+            _images.emplace_back(EmbeddedImageObject::EKETPNG, emb_rect, dibToPNG(dib.dibits));
 }
 
 void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
@@ -1714,7 +1714,7 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
     writer.Key("blocks");
     writer.StartArray();
 
-    std::list<KetTextLine> ket_text_lines;
+    std::list<SimpleTextLine> ket_text_lines;
     ket_text_lines.emplace_back();
     for (auto text_style = elem.firstChildElement(); text_style->hasContent(); text_style = text_style->nextSiblingElement())
     {
@@ -1753,16 +1753,16 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
             else
             {
                 if (fs.is_bold)
-                    ket_text_style.styles.push_back(KETFontBoldStr);
+                    ket_text_style.styles.push_back(KFontBoldStr);
                 if (fs.is_italic)
-                    ket_text_style.styles.push_back(KETFontItalicStr);
+                    ket_text_style.styles.push_back(KFontItalicStr);
                 if (fs.is_superscript)
-                    ket_text_style.styles.push_back(KETFontSuperscriptStr);
+                    ket_text_style.styles.push_back(KFontSuperscriptStr);
                 if (fs.is_subscript)
-                    ket_text_style.styles.push_back(KETFontSubscriptStr);
+                    ket_text_style.styles.push_back(KFontSubscriptStr);
             }
-            if (font_size > 0 && (int)font_size != KETDefaultFontSize)
-                ket_text_style.styles.push_back(std::string(KETFontCustomSizeStr) + "_" + std::to_string((int)ceil(font_size)) + "px");
+            if (font_size > 0 && (int)font_size != KDefaultFontSize)
+                ket_text_style.styles.push_back(std::string(KFontCustomSizeStr) + "_" + std::to_string((int)ceil(font_size)) + "px");
         }
     }
 

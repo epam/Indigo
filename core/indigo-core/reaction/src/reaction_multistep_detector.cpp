@@ -15,11 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+#include <numeric>
 
-#include "reaction/reaction_multistep_detector.h"
 #include "reaction/pathway_reaction.h"
 #include "reaction/reaction.h"
-#include <numeric>
+#include "reaction/reaction_multistep_detector.h"
 
 using namespace indigo;
 
@@ -76,9 +76,9 @@ void ReactionMultistepDetector::createSummBlocks()
         _reaction_components.emplace_back(ReactionComponent::MOLECULE, bbox, i, std::move(component));
     }
 
-    for (int i = 0; i < _bmol.meta().getMetaCount(KETReactionPlus::CID); ++i)
+    for (int i = 0; i < _bmol.meta().getMetaCount(ReactionPlusObject::CID); ++i)
     {
-        auto& plus = (const KETReactionPlus&)_bmol.meta().getMetaObject(KETReactionPlus::CID, i);
+        auto& plus = (const ReactionPlusObject&)_bmol.meta().getMetaObject(ReactionPlusObject::CID, i);
         const auto& plus_pos = plus.getPos();
         Rect2f bbox(plus_pos - PLUS_BBOX_SHIFT, plus_pos + PLUS_BBOX_SHIFT);
         _reaction_components.emplace_back(ReactionComponent::PLUS, bbox, i, std::unique_ptr<BaseMolecule>(nullptr));
@@ -90,11 +90,11 @@ void ReactionMultistepDetector::createSummBlocks()
         mol_rights.emplace_back(bbox.right(), index);
     }
 
-    for (int i = 0; i < _bmol.meta().getMetaCount(KETReactionArrow::CID); ++i)
+    for (int i = 0; i < _bmol.meta().getMetaCount(ReactionArrowObject::CID); ++i)
     {
-        auto& arrow = (const KETReactionArrow&)_bmol.meta().getMetaObject(KETReactionArrow::CID, i);
+        auto& arrow = (const ReactionArrowObject&)_bmol.meta().getMetaObject(ReactionArrowObject::CID, i);
         int arrow_type = arrow.getArrowType();
-        bool reverseReactionOrder = arrow_type == KETReactionArrow::ERetrosynthetic;
+        bool reverseReactionOrder = arrow_type == ReactionArrowObject::ERetrosynthetic;
         const Vec2f& arr_begin = !reverseReactionOrder ? arrow.getTail() : arrow.getHead();
         const Vec2f& arr_end = !reverseReactionOrder ? arrow.getHead() : arrow.getTail();
         Rect2f bbox(arr_begin - ARROW_BBOX_SHIFT, arr_end + ARROW_BBOX_SHIFT);
@@ -108,9 +108,9 @@ void ReactionMultistepDetector::createSummBlocks()
         mol_rights.emplace_back(bbox.right(), index);
     }
 
-    for (int i = 0; i < _bmol.meta().getMetaCount(KETReactionMultitailArrow::CID); ++i)
+    for (int i = 0; i < _bmol.meta().getMetaCount(ReactionMultitailArrowObject::CID); ++i)
     {
-        auto& multi = (const KETReactionMultitailArrow&)_bmol.meta().getMetaObject(KETReactionMultitailArrow::CID, i);
+        auto& multi = (const ReactionMultitailArrowObject&)_bmol.meta().getMetaObject(ReactionMultitailArrowObject::CID, i);
         auto& tails = multi.getTails();
         Rect2f bbox(Vec2f(tails.top().x, tails.top().y), Vec2f(multi.getHead().x, multi.getSpineBegin().y));
         _reaction_components.emplace_back(ReactionComponent::ARROW_MULTITAIL, bbox, i, std::unique_ptr<BaseMolecule>(nullptr));
@@ -133,9 +133,9 @@ void ReactionMultistepDetector::createSummBlocks()
     std::sort(mol_lefts.begin(), mol_lefts.end(), pair_comp_des);
     std::sort(mol_rights.begin(), mol_rights.end(), pair_comp_asc);
 
-    for (int i = 0; i < _bmol.meta().getMetaCount(KETReactionPlus::CID); ++i)
+    for (int i = 0; i < _bmol.meta().getMetaCount(ReactionPlusObject::CID); ++i)
     {
-        auto& plus = static_cast<const KETReactionPlus&>(_bmol.meta().getMetaObject(KETReactionPlus::CID, i));
+        auto& plus = static_cast<const ReactionPlusObject&>(_bmol.meta().getMetaObject(ReactionPlusObject::CID, i));
         auto& plus_pos = plus.getPos();
         std::pair<int, int> plus_connection; // (component1_index, component2_index)
 
@@ -283,14 +283,14 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
 
 bool ReactionMultistepDetector::mapReactionComponents()
 {
-    int arrow_count = _bmol.meta().getMetaCount(KETReactionArrow::CID);
+    int arrow_count = _bmol.meta().getMetaCount(ReactionArrowObject::CID);
     if (arrow_count == 0)
         return false;
     for (int reaction_index = 0; reaction_index < arrow_count; ++reaction_index)
     {
-        auto& arrow = (const KETReactionArrow&)_bmol.meta().getMetaObject(KETReactionArrow::CID, reaction_index);
+        auto& arrow = (const ReactionArrowObject&)_bmol.meta().getMetaObject(ReactionArrowObject::CID, reaction_index);
         int arrow_type = arrow.getArrowType();
-        bool reverseReactionOrder = arrow_type == KETReactionArrow::ERetrosynthetic;
+        bool reverseReactionOrder = arrow_type == ReactionArrowObject::ERetrosynthetic;
         const Vec2f& arr_begin = !reverseReactionOrder ? arrow.getTail() : arrow.getHead();
         const Vec2f& arr_end = !reverseReactionOrder ? arrow.getHead() : arrow.getTail();
 
@@ -322,7 +322,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
         // TODO: add upper limit
         if (min_dist_prod > 0 && min_dist_reac > 0) // if both ends present
         {
-            auto& rc_arrow = _reaction_components[_moleculeCount + _bmol.meta().getMetaCount(KETReactionPlus::CID) + reaction_index];
+            auto& rc_arrow = _reaction_components[_moleculeCount + _bmol.meta().getMetaCount(ReactionPlusObject::CID) + reaction_index];
             rc_arrow.summ_block_idx = ReactionComponent::CONNECTED; // mark arrow as connected
             auto& csb_min_prod = _component_summ_blocks[idx_cs_min_prod];
             if (csb_min_prod.role == BaseReaction::UNDEFINED)
@@ -348,7 +348,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
 
 bool ReactionMultistepDetector::mapMultitailReactionComponents()
 {
-    int pathway_count = _bmol.meta().getMetaCount(KETReactionMultitailArrow::CID);
+    int pathway_count = _bmol.meta().getMetaCount(ReactionMultitailArrowObject::CID);
 
     if (pathway_count == 0)
         return false;
@@ -357,7 +357,7 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
 
     for (int pathway_idx = 0; pathway_idx < pathway_count; ++pathway_idx)
     {
-        auto& multi = (const KETReactionMultitailArrow&)_bmol.meta().getMetaObject(KETReactionMultitailArrow::CID, pathway_idx);
+        auto& multi = (const ReactionMultitailArrowObject&)_bmol.meta().getMetaObject(ReactionMultitailArrowObject::CID, pathway_idx);
         float min_dist_prod = -1;
         int idx_cs_min_prod = -1;
         auto arr_begin = multi.getHead();
@@ -405,8 +405,8 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
         {
             auto& csb_min_prod = _component_summ_blocks[idx_cs_min_prod];
             csb_min_prod.reaction_idx = pathway_idx;
-            auto& rc_arrow = _reaction_components[_moleculeCount + _bmol.meta().getMetaCount(KETReactionPlus::CID) +
-                                                  _bmol.meta().getMetaCount(KETReactionArrow::CID) + pathway_idx];
+            auto& rc_arrow = _reaction_components[_moleculeCount + _bmol.meta().getMetaCount(ReactionPlusObject::CID) +
+                                                  _bmol.meta().getMetaCount(ReactionArrowObject::CID) + pathway_idx];
             rc_arrow.summ_block_idx = ReactionComponent::CONNECTED; // mark arrow as connected
             if (csb_min_prod.role == BaseReaction::UNDEFINED)
                 csb_min_prod.role = BaseReaction::PRODUCT;

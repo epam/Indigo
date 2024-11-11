@@ -32,7 +32,7 @@
 
 #include "layout/metalayout.h"
 #include "layout/molecule_layout.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 #include "reaction/pathway_reaction.h"
 
 namespace indigo
@@ -250,7 +250,7 @@ namespace indigo
         void applyLayout();
         void generateKETTextBlocks(rapidjson::Writer<rapidjson::StringBuffer>& writer, const ObjArray<Array<char>>& props, const std::string& style,
                                    float& max_height);
-        void addKETText(PathwayReaction::ReactionNode& node, const Vec2f text_pos_bl, float text_height_limit);
+        void addMetaText(PathwayReaction::ReactionNode& node, const Vec2f text_pos_bl, float text_height_limit);
         std::vector<std::string> splitText(const std::string& text, float max_width, std::function<float(char ch)> symbol_width);
 
         std::vector<float> _depths;
