@@ -27,8 +27,8 @@
 #include <memory>
 
 #include "base_cpp/properties_map.h"
-#include "meta_commons.h"
 #include "math/algebra.h"
+#include "meta_commons.h"
 
 typedef unsigned short int UINT16;
 typedef int INT32;
