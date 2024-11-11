@@ -30,7 +30,7 @@ files = [
     "pathway9",
     "pathway10",
     "pathway11",
-    "pathway12"
+    "pathway12",
 ]
 
 for filename in files:

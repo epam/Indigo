@@ -338,7 +338,7 @@ void PathwayLayout::applyLayout()
         _reaction.meta().addMetaObject(arrow.second.release());
 }
 
-void PathwayLayout::generateKETTextBlocks(SimpleTextObjectBuilder& tob, const ObjArray<Array<char>>& props, const std::string& style, float& height)
+void PathwayLayout::generateTextBlocks(SimpleTextObjectBuilder& tob, const ObjArray<Array<char>>& props, const std::string& style, float& height)
 {
     for (int i = 0; i < props.size(); ++i)
     {
@@ -363,8 +363,8 @@ void PathwayLayout::addMetaText(PathwayReaction::ReactionNode& node, const Vec2f
     // add text meta-object
     SimpleTextObjectBuilder tob;
     auto height_limit = text_height_limit;
-    generateKETTextBlocks(tob, node.name_text, KFontBoldStr, height_limit);
-    generateKETTextBlocks(tob, node.conditions_text, KFontItalicStr, height_limit);
+    generateTextBlocks(tob, node.name_text, KFontBoldStr, height_limit);
+    generateTextBlocks(tob, node.conditions_text, KFontItalicStr, height_limit);
     tob.finalize();
     Vec3f text_pos_lr(text_pos_bl.x, text_pos_bl.y + _text_height / 2 + (text_height_limit - height_limit), 0.0f);
     _reaction.meta().addMetaObject(new SimpleTextObject(text_pos_lr, tob.getJsonString()));

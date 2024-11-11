@@ -77,7 +77,7 @@ namespace indigo
             return _preserve_molecule_layout;
         };
 
-        void generateKETTextBlocks(SimpleTextObjectBuilder& tob, const ObjArray<Array<char>>& props, const std::string& style, float& height);
+        void generateTextBlocks(SimpleTextObjectBuilder& tob, const ObjArray<Array<char>>& props, const std::string& style, float& height);
 
     private:
         struct PathwayLayoutItem
