@@ -541,7 +541,7 @@ namespace indigo
 
         bool use_document = false;
         static const std::set<std::string> document_formats{
-            "sequence", "chemical/x-sequence", "chemical/x-peptide-sequence-3-letter", , "fasta", "chemical/x-fasta", "idt", "chemical/x-idt",
+            "sequence", "chemical/x-sequence", "chemical/x-peptide-sequence-3-letter", "fasta", "chemical/x-fasta", "idt", "chemical/x-idt",
             "helm",     "chemical/x-helm"};
         if ((input_format == "ket" || input_format == "application/json") && outputFormat.size() > 0 && document_formats.count(outputFormat) > 0)
             use_document = true;
