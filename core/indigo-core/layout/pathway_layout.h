@@ -57,6 +57,8 @@ namespace indigo
         static constexpr int MAX_DEPTHS = 10;
         static constexpr int MAX_SYMBOLS = 30;
         static constexpr int MIN_LINES_COUNT = 9;
+        static constexpr auto REACTION_CONDITIONS = "Reaction Conditions";
+        static constexpr auto REACTION_NAME = "Name";
 
         PathwayLayout(PathwayReaction& reaction, const LayoutOptions& options)
             : _reaction(reaction), _depths(MAX_DEPTHS, 0), _maxDepth(0), _bond_length(options.DEFAULT_BOND_LENGTH),

@@ -176,7 +176,7 @@ void PathwayLayout::copyTextPropertiesToNode(const PathwayReaction::SimpleReacti
     auto italicWidthLambda = [text_max_width](char ch) { return text_max_width / MAX_SYMBOLS; }; // TODO: implement italic font width
     for (auto prop_idx = props.begin(); prop_idx != props.end(); prop_idx = props.next(prop_idx))
     {
-        if (props.key(prop_idx) == std::string("Name"))
+        if (props.key(prop_idx) == std::string(REACTION_NAME))
         {
             auto splitted_name = splitText(props.value(prop_idx).ptr(), text_max_width, boldWidthLambda);
             for (auto& line : splitted_name)
@@ -186,7 +186,7 @@ void PathwayLayout::copyTextPropertiesToNode(const PathwayReaction::SimpleReacti
                                                                             [&boldWidthLambda](float sum, char ch) { return sum + boldWidthLambda(ch); }));
             }
         }
-        else if (props.key(prop_idx) == std::string("Reaction Conditions"))
+        else if (props.key(prop_idx) == std::string(REACTION_CONDITIONS))
         {
             auto splitted_conditions = splitText(props.value(prop_idx).ptr(), text_max_width, italicWidthLambda);
             for (auto& line : splitted_conditions)

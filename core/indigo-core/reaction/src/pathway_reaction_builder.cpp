@@ -107,7 +107,7 @@ void PathwayReactionBuilder::buildReactions()
 
         for (auto& prop : rid.properties)
         {
-            if (prop.second.size() && prop.second != "Not available")
+            if (prop.second.size() && prop.second != kPropNA)
             {
                 auto prop_idx = sr.properties.insert(prop.first.c_str());
                 sr.properties.value(prop_idx).readString(prop.second.c_str(), true);
