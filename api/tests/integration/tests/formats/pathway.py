@@ -15,7 +15,7 @@ sys.path.append(
 from env_indigo import *
 
 indigo = Indigo()
-input_path = joinPathPy("reactions/", __file__)
+input_path = joinPathPy("reactions/rdf", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
 files = [

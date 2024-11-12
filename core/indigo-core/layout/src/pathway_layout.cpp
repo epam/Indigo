@@ -21,7 +21,6 @@
 #include "layout/pathway_layout.h"
 
 using namespace indigo;
-using namespace rapidjson;
 
 IMPL_ERROR(PathwayLayout, "pathway_layout");
 
