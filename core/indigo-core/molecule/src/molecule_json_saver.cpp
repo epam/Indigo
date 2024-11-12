@@ -20,7 +20,6 @@
 #include <set>
 
 #include "layout/molecule_layout.h"
-#include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_json_saver.h"
@@ -1773,8 +1772,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
         auto pobj = meta_objects[meta_index];
         switch (pobj->_class_id)
         {
-        case KETReactionArrow::CID: {
-            KETReactionArrow& ar = (KETReactionArrow&)(*pobj);
+        case ReactionArrowObject::CID: {
+            ReactionArrowObject& ar = (ReactionArrowObject&)(*pobj);
             writer.StartObject();
             writer.Key("type");
             writer.String("arrow");
@@ -1814,8 +1813,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.EndObject(); // end node
         }
         break;
-        case KETReactionMultitailArrow::CID: {
-            KETReactionMultitailArrow& ar = (KETReactionMultitailArrow&)(*pobj);
+        case ReactionMultitailArrowObject::CID: {
+            ReactionMultitailArrowObject& ar = (ReactionMultitailArrowObject&)(*pobj);
             writer.StartObject();
             writer.Key("type");
             writer.String("multi-tailed-arrow");
@@ -1888,8 +1887,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.EndObject();
         }
         break;
-        case KETReactionPlus::CID: {
-            KETReactionPlus& rp = (KETReactionPlus&)(*pobj);
+        case ReactionPlusObject::CID: {
+            ReactionPlusObject& rp = (ReactionPlusObject&)(*pobj);
             writer.StartObject();
             writer.Key("type");
             writer.String("plus");
@@ -1902,8 +1901,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.EndObject();
         }
         break;
-        case KETSimpleObject::CID: {
-            auto simple_obj = (KETSimpleObject*)pobj;
+        case SimpleGraphicsObject::CID: {
+            auto simple_obj = (SimpleGraphicsObject*)pobj;
             writer.StartObject();
             writer.Key("type");
             writer.String("simpleObject");
@@ -1912,13 +1911,13 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.Key("mode");
             switch (simple_obj->_mode)
             {
-            case KETSimpleObject::EKETEllipse:
+            case SimpleGraphicsObject::EEllipse:
                 writer.String("ellipse");
                 break;
-            case KETSimpleObject::EKETRectangle:
+            case SimpleGraphicsObject::ERectangle:
                 writer.String("rectangle");
                 break;
-            case KETSimpleObject::EKETLine:
+            case SimpleGraphicsObject::ELine:
                 writer.String("line");
                 break;
             }
@@ -1955,8 +1954,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.EndObject();
             break;
         }
-        case KETTextObject::CID: {
-            auto simple_obj = (KETTextObject*)pobj;
+        case SimpleTextObject::CID: {
+            auto simple_obj = (SimpleTextObject*)pobj;
             writer.StartObject();
             writer.Key("type");
             writer.String("text");
@@ -1977,8 +1976,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.EndObject(); // end node
             break;
         }
-        case KETImage::CID: {
-            auto image_obj = static_cast<const KETImage*>(pobj);
+        case EmbeddedImageObject::CID: {
+            auto image_obj = static_cast<const EmbeddedImageObject*>(pobj);
             auto& bbox = image_obj->getBoundingBox();
             writer.StartObject(); // start node
             writer.Key("type");
@@ -1986,10 +1985,10 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.Key("format");
             switch (image_obj->getFormat())
             {
-            case KETImage::EKETPNG:
+            case EmbeddedImageObject::EKETPNG:
                 writer.String(KImagePNG);
                 break;
-            case KETImage::EKETSVG:
+            case EmbeddedImageObject::EKETSVG:
                 writer.String(KImageSVG);
                 break;
             default:

@@ -67,8 +67,8 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
 
     rxn.meta().clone(_pmol->meta());
 
-    int arrow_count = rxn.meta().getMetaCount(KETReactionArrow::CID);
-    int multi_count = rxn.meta().getMetaCount(KETReactionMultitailArrow::CID);
+    int arrow_count = rxn.meta().getMetaCount(ReactionArrowObject::CID);
+    int multi_count = rxn.meta().getMetaCount(ReactionMultitailArrowObject::CID);
     if (arrow_count == 0 && multi_count == 0)
         throw Error("No arrow in the reaction");
 
@@ -133,15 +133,15 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
         components.emplace_back(bbox, ReactionFragmentType::MOLECULE, std::move(mol));
     }
 
-    auto& arrow = (const KETReactionArrow&)rxn.meta().getMetaObject(KETReactionArrow::CID, 0);
-    bool reverseReactionOrder = arrow.getArrowType() == KETReactionArrow::ERetrosynthetic;
+    auto& arrow = (const ReactionArrowObject&)rxn.meta().getMetaObject(ReactionArrowObject::CID, 0);
+    bool reverseReactionOrder = arrow.getArrowType() == ReactionArrowObject::ERetrosynthetic;
 
     if (reverseReactionOrder)
         rxn.setIsRetrosyntetic();
 
-    for (int i = 0; i < rxn.meta().getMetaCount(KETTextObject::CID); ++i)
+    for (int i = 0; i < rxn.meta().getMetaCount(SimpleTextObject::CID); ++i)
     {
-        auto& text = (const KETTextObject&)rxn.meta().getMetaObject(KETTextObject::CID, i);
+        auto& text = (const SimpleTextObject&)rxn.meta().getMetaObject(SimpleTextObject::CID, i);
         Rect2f bbox(Vec2f(text._pos.x, text._pos.y), Vec2f(text._pos.x, text._pos.y)); // change to real text box later
         components.emplace_back(bbox, ReactionFragmentType::TEXT, nullptr);
     }
@@ -160,11 +160,11 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
                 int side = !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
                 switch (side)
                 {
-                case KETReagentUpArea:
-                case KETReagentDownArea:
+                case KReagentUpArea:
+                case KReagentDownArea:
                     rxn.addCatalystCopy(cmol, 0, 0);
                     break;
-                case KETProductArea:
+                case KProductArea:
                     rxn.addProductCopy(cmol, 0, 0);
                     break;
                 default:
@@ -179,7 +179,7 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
             const auto& bbox = std::get<BBOX_IDX>(comp);
             Vec2f pt(bbox.center());
             int side = !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
-            if (side == KETReagentUpArea || side == KETReagentDownArea)
+            if (side == KReagentUpArea || side == KReagentDownArea)
             {
                 rxn.addSpecialCondition(text_meta_idx, bbox);
                 break;

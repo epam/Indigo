@@ -21,7 +21,7 @@
 
 #include "layout/molecule_layout.h"
 #include "layout/reaction_layout.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 #include "molecule/molecule.h"
 #include "reaction/pathway_reaction_builder.h"
 #include "reaction/reaction.h"
@@ -99,9 +99,9 @@ bool ReactionLayout::validVerticalRange(const std::vector<Rect2f>& bblist)
 
 void ReactionLayout::fixLayout()
 {
-    int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
-    int simple_count = _r.meta().getMetaCount(KETSimpleObject::CID) + _r.meta().getMetaCount(KETTextObject::CID);
-    int multi_count = _r.meta().getMetaCount(KETReactionMultitailArrow::CID);
+    int arrows_count = _r.meta().getMetaCount(ReactionArrowObject::CID);
+    int simple_count = _r.meta().getMetaCount(SimpleGraphicsObject::CID) + _r.meta().getMetaCount(SimpleTextObject::CID);
+    int multi_count = _r.meta().getMetaCount(ReactionMultitailArrowObject::CID);
     if (arrows_count || simple_count || multi_count)
         return;
 
@@ -166,17 +166,17 @@ void ReactionLayout::fixLayout()
         rl.preserve_molecule_layout = true;
         rl.make();
     }
-    else if (_r.meta().getMetaCount(KETReactionArrow::CID) == 0 && _r.meta().getMetaCount(KETReactionMultitailArrow::CID) == 0)
+    else if (_r.meta().getMetaCount(ReactionArrowObject::CID) == 0 && _r.meta().getMetaCount(ReactionMultitailArrowObject::CID) == 0)
         _updateMetadata();
 }
 
 void ReactionLayout::_updateMetadata()
 {
     float arrow_height = 0;
-    int arrow_type = KETReactionArrow::EOpenAngle;
-    if (_r.meta().getMetaCount(KETReactionArrow::CID) > 0)
+    int arrow_type = ReactionArrowObject::EOpenAngle;
+    if (_r.meta().getMetaCount(ReactionArrowObject::CID) > 0)
     {
-        auto& ra = static_cast<const KETReactionArrow&>(_r.meta().getMetaObject(KETReactionArrow::CID, 0));
+        auto& ra = static_cast<const ReactionArrowObject&>(_r.meta().getMetaObject(ReactionArrowObject::CID, 0));
         // remember arrow type & height
         arrow_type = ra.getArrowType();
         arrow_height = ra.getHeight();
@@ -223,7 +223,7 @@ void ReactionLayout::_updateMetadata()
         processSideBoxes(pluses, catalyst_box, BaseReaction::CATALYST);
 
     for (const auto& plus_offset : pluses)
-        _r.meta().addMetaObject(new KETReactionPlus(plus_offset));
+        _r.meta().addMetaObject(new ReactionPlusObject(plus_offset));
 
     // calculate arrow size and position
     Vec2f arrow_head(0, 0);
@@ -261,7 +261,7 @@ void ReactionLayout::_updateMetadata()
             arrow_tail.x = product_box.left() - ReactionMarginSize();
         }
     }
-    _r.meta().addMetaObject(new KETReactionArrow(arrow_type, arrow_tail, arrow_head, arrow_height));
+    _r.meta().addMetaObject(new ReactionArrowObject(arrow_type, arrow_tail, arrow_head, arrow_height));
 }
 
 void ReactionLayout::processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_box, int side)
@@ -322,7 +322,7 @@ void ReactionLayout::makePathwayFromSimple()
 
 void ReactionLayout::make()
 {
-    int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
+    int arrows_count = _r.meta().getMetaCount(ReactionArrowObject::CID);
     int simple_count = _r.meta().getNonChemicalMetaCount();
     if (simple_count)
         return;

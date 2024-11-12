@@ -1318,7 +1318,7 @@ std::string stringToHex(const std::string& input)
     return hexStream.str();
 }
 
-void MoleculeCdxmlSaver::addImage(int id, const KETImage& image)
+void MoleculeCdxmlSaver::addImage(int id, const EmbeddedImageObject& image)
 {
     PropertiesMap attrs;
     Array<char> emb_object;
@@ -1328,9 +1328,9 @@ void MoleculeCdxmlSaver::addImage(int id, const KETImage& image)
     out.printf("%f %f %f %f", _bond_length * bbox.left(), -_bond_length * bbox.bottom(), _bond_length * bbox.right(), -_bond_length * bbox.top());
     buf.push(0);
     attrs.insert("BoundingBox", buf.ptr());
-    if (image.getFormat() == KETImage::EKETPNG)
+    if (image.getFormat() == EmbeddedImageObject::EKETPNG)
         attrs.insert("PNG", stringToHex(image.getData()));
-    else if (image.getFormat() == KETImage::EKETSVG)
+    else if (image.getFormat() == EmbeddedImageObject::EKETSVG)
         attrs.insert("PNG", IMAGE_NOT_SUPPORTED_PNG);
     else
         throw Error("MoleculeCdxmlSaver::addImage: Unknown image format");
@@ -1347,81 +1347,81 @@ void MoleculeCdxmlSaver::addArrow(int id, int arrow_type, const Vec2f& beg, cons
     attrs.insert("ArrowheadWidth", "563");
     switch (arrow_type)
     {
-    case KETReactionArrow::EOpenAngle:
+    case ReactionArrowObject::EOpenAngle:
         attrs.insert("ArrowheadHead", "Full");
         attrs.insert("ArrowheadCenterSize", "25");
         break;
-    case KETReactionArrow::EFilledTriangle:
+    case ReactionArrowObject::EFilledTriangle:
         attrs.insert("ArrowheadHead", "Full");
         attrs.insert("ArrowheadCenterSize", "2250");
         break;
 
-    case KETReactionArrow::EFilledBow:
+    case ReactionArrowObject::EFilledBow:
         attrs.insert("ArrowheadHead", "Full");
         attrs.insert("ArrowheadCenterSize", "1125");
         break;
 
-    case KETReactionArrow::EDashedOpenAngle:
+    case ReactionArrowObject::EDashedOpenAngle:
         attrs.insert("ArrowheadHead", "Full");
         attrs.insert("ArrowheadCenterSize", "25");
         attrs.insert("LineType", "Dashed");
         break;
 
-    case KETReactionArrow::EFailed:
+    case ReactionArrowObject::EFailed:
         attrs.insert("ArrowheadHead", "Full");
         attrs.insert("ArrowheadCenterSize", "1125");
         attrs.insert("NoGo", "Cross");
         break;
 
-    case KETReactionArrow::EBothEndsFilledTriangle:
+    case ReactionArrowObject::EBothEndsFilledTriangle:
         attrs.insert("ArrowheadCenterSize", "2250");
         attrs.insert("ArrowheadHead", "Full");
         attrs.insert("ArrowheadTail", "Full");
         break;
 
-    case KETReactionArrow::EEquilibriumFilledHalfBow:
+    case ReactionArrowObject::EEquilibriumFilledHalfBow:
         attrs.insert("ArrowheadHead", "HalfLeft");
         attrs.insert("ArrowheadTail", "HalfLeft");
         attrs.insert("ArrowheadCenterSize", "1125");
         attrs.insert("ArrowShaftSpacing", "300");
         break;
 
-    case KETReactionArrow::EEquilibriumFilledTriangle:
+    case ReactionArrowObject::EEquilibriumFilledTriangle:
         attrs.insert("ArrowheadHead", "HalfLeft");
         attrs.insert("ArrowheadTail", "HalfLeft");
         attrs.insert("ArrowheadCenterSize", "2250");
         attrs.insert("ArrowShaftSpacing", "300");
         break;
 
-    case KETReactionArrow::EEquilibriumOpenAngle:
+    case ReactionArrowObject::EEquilibriumOpenAngle:
         attrs.insert("ArrowheadHead", "HalfLeft");
         attrs.insert("ArrowheadTail", "HalfLeft");
         attrs.insert("ArrowheadCenterSize", "25");
         attrs.insert("ArrowShaftSpacing", "300");
         break;
 
-    case KETReactionArrow::EUnbalancedEquilibriumFilledHalfBow:
+    case ReactionArrowObject::EUnbalancedEquilibriumFilledHalfBow:
         break;
 
-    case KETReactionArrow::EUnbalancedEquilibriumLargeFilledHalfBow:
+    case ReactionArrowObject::EUnbalancedEquilibriumLargeFilledHalfBow:
         break;
 
-    case KETReactionArrow::EUnbalancedEquilibriumOpenHalfAngle:
+    case ReactionArrowObject::EUnbalancedEquilibriumOpenHalfAngle:
         break;
 
-    case KETReactionArrow::EUnbalancedEquilibriumFilledHalfTriangle:
+    case ReactionArrowObject::EUnbalancedEquilibriumFilledHalfTriangle:
         break;
 
-    case KETReactionArrow::EEllipticalArcFilledBow:
+    case ReactionArrowObject::EEllipticalArcFilledBow:
         break;
 
-    case KETReactionArrow::EEllipticalArcFilledTriangle:
+    case ReactionArrowObject::EEllipticalArcFilledTriangle:
         break;
 
-    case KETReactionArrow::EEllipticalArcOpenAngle:
+    case ReactionArrowObject::EEllipticalArcOpenAngle:
         break;
 
-    case KETReactionArrow::EEllipticalArcOpenHalfAngle:
+    case ReactionArrowObject::EEllipticalArcOpenHalfAngle:
         break;
 
     default:
@@ -1447,13 +1447,13 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
 
     switch (cp_obj._class_id)
     {
-    case KETReactionArrow::CID: {
-        KETReactionArrow& ar = (KETReactionArrow&)(cp_obj);
+    case ReactionArrowObject::CID: {
+        ReactionArrowObject& ar = (ReactionArrowObject&)(cp_obj);
         addArrow(id, ar.getArrowType(), ar.getTail(), ar.getHead());
     }
     break;
-    case KETReactionPlus::CID: {
-        KETReactionPlus& rp = (KETReactionPlus&)(cp_obj);
+    case ReactionPlusObject::CID: {
+        ReactionPlusObject& rp = (ReactionPlusObject&)(cp_obj);
         attrs.insert("GraphicType", "Symbol");
         attrs.insert("SymbolType", "Plus");
         Vec2f v1(rp.getPos().x, rp.getPos().y - PLUS_HALF_HEIGHT / _bond_length);
@@ -1461,12 +1461,12 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
         addElement("graphic", id, v1, v2, attrs);
     }
     break;
-    case KETSimpleObject::CID: {
-        KETSimpleObject& simple_obj = (KETSimpleObject&)cp_obj;
+    case SimpleGraphicsObject::CID: {
+        SimpleGraphicsObject& simple_obj = (SimpleGraphicsObject&)cp_obj;
         Rect2f bbox(simple_obj._coordinates.first, simple_obj._coordinates.second);
         switch (simple_obj._mode)
         {
-        case KETSimpleObject::EKETEllipse: {
+        case SimpleGraphicsObject::EEllipse: {
             auto ecenter = bbox.center();
             Vec2f maj_axis, min_axis;
             if (bbox.width() > bbox.height())
@@ -1493,20 +1493,20 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
             attrs.insert("GraphicType", "Oval");
         }
         break;
-        case KETSimpleObject::EKETRectangle:
+        case SimpleGraphicsObject::ERectangle:
             attrs.insert("GraphicType", "Rectangle");
             break;
-        case KETSimpleObject::EKETLine:
+        case SimpleGraphicsObject::ELine:
             attrs.insert("GraphicType", "Line");
             break;
         }
         addElement("graphic", id, bbox.leftBottom(), bbox.rightTop(), attrs);
     }
     break;
-    case KETTextObject::CID: {
-        const KETTextObject& ko = static_cast<const KETTextObject&>(cp_obj);
+    case SimpleTextObject::CID: {
+        const SimpleTextObject& ko = static_cast<const SimpleTextObject&>(cp_obj);
         // double text_offset_y = 0;
-        int font_size = static_cast<int>(KETDefaultFontSize);
+        int font_size = static_cast<int>(KDefaultFontSize);
         CDXMLFontStyle font_face(0);
         for (auto& text_item : ko._block)
         {
@@ -1543,22 +1543,22 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
                 {
                     switch (text_style.first)
                     {
-                    case KETTextObject::EPlain:
+                    case SimpleTextObject::EPlain:
                         break;
-                    case KETTextObject::EBold:
+                    case SimpleTextObject::EBold:
                         font_face.is_bold = text_style.second;
                         break;
-                    case KETTextObject::EItalic:
+                    case SimpleTextObject::EItalic:
                         font_face.is_italic = text_style.second;
                         break;
-                    case KETTextObject::ESuperScript:
+                    case SimpleTextObject::ESuperScript:
                         font_face.is_superscript = text_style.second;
                         break;
-                    case KETTextObject::ESubScript:
+                    case SimpleTextObject::ESubScript:
                         font_face.is_subscript = text_style.second;
                         break;
                     default:
-                        font_size = text_style.second ? text_style.first : static_cast<int>(KETDefaultFontSize);
+                        font_size = text_style.second ? text_style.first : static_cast<int>(KDefaultFontSize);
                         break;
                     }
                 }
@@ -1582,8 +1582,8 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
         }
     }
     break;
-    case KETImage::CID: {
-        const KETImage& image = static_cast<const KETImage&>(cp_obj);
+    case EmbeddedImageObject::CID: {
+        const EmbeddedImageObject& image = static_cast<const EmbeddedImageObject&>(cp_obj);
         addImage(id, image);
     }
     break;

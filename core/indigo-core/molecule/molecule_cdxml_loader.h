@@ -33,7 +33,7 @@
 #include "common/utils/emf_utils.h"
 #include "elements.h"
 #include "molecule/base_molecule.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
 
@@ -108,19 +108,6 @@ namespace indigo
         int bond_id;
         int point_id;
         int atom_idx;
-    };
-
-    struct CdxmlKetTextStyle
-    {
-        std::size_t offset;
-        std::size_t size;
-        std::list<std::string> styles;
-    };
-
-    struct CdxmlKetTextLine
-    {
-        std::string text;
-        std::list<CdxmlKetTextStyle> text_styles;
     };
 
     struct CdxmlNode
@@ -780,10 +767,10 @@ namespace indigo
     public:
         struct ImageDescriptor
         {
-            ImageDescriptor(KETImage::ImageFormat iformat, Rect2f& rc, const std::string& raw_data) : image_format(iformat), bbox(rc), data(raw_data)
+            ImageDescriptor(EmbeddedImageObject::ImageFormat iformat, Rect2f& rc, const std::string& raw_data) : image_format(iformat), bbox(rc), data(raw_data)
             {
             }
-            KETImage::ImageFormat image_format;
+            EmbeddedImageObject::ImageFormat image_format;
             Rect2f bbox;
             std::string data;
         };

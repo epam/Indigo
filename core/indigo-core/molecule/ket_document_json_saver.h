@@ -30,7 +30,7 @@
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
 #include "molecule/json_writer.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 
 namespace indigo
 {

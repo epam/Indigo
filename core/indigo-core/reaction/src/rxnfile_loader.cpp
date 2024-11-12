@@ -54,6 +54,18 @@ void RxnfileLoader::loadQueryReaction(QueryReaction& rxn)
     _loadReaction();
 }
 
+void indigo::RxnfileLoader::loadReaction(Reaction& reaction, PropertiesMap& props)
+{
+    loadReaction(reaction);
+    reaction.properties().copy(props);
+}
+
+void indigo::RxnfileLoader::loadQueryReaction(QueryReaction& reaction, PropertiesMap& props)
+{
+    loadQueryReaction(reaction);
+    reaction.properties().copy(props);
+}
+
 void RxnfileLoader::_loadReaction()
 {
     _brxn->clear();

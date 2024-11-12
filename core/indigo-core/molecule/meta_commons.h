@@ -16,12 +16,14 @@
  * limitations under the License.
  ***************************************************************************/
 
-#ifndef __ket_commons_h__
-#define __ket_commons_h__
+#ifndef __meta_commons_h__
+#define __meta_commons_h__
 
 #include <exception>
 #include <functional>
 #include <rapidjson/document.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
 #include <string>
 #include <unordered_map>
 
@@ -34,20 +36,20 @@
 
 namespace indigo
 {
-    const double KETDefaultFontSize = 13;
-    const double KETFontScaleFactor = 47;
-    const auto KETFontBoldStr = "BOLD";
-    const auto KETFontItalicStr = "ITALIC";
-    const auto KETFontSuperscriptStr = "SUPERSCRIPT";
-    const auto KETFontSubscriptStr = "SUBSCRIPT";
-    const auto KETFontCustomSizeStr = "CUSTOM_FONT_SIZE";
+    const double KDefaultFontSize = 13;
+    const double KFontScaleFactor = 47;
+    const auto KFontBoldStr = "BOLD";
+    const auto KFontItalicStr = "ITALIC";
+    const auto KFontSuperscriptStr = "SUPERSCRIPT";
+    const auto KFontSubscriptStr = "SUBSCRIPT";
+    const auto KFontCustomSizeStr = "CUSTOM_FONT_SIZE";
     const auto KImagePNG = "image/png";
     const auto KImageSVG = "image/svg+xml";
 
-    const uint8_t KETReactantArea = 0;
-    const uint8_t KETReagentUpArea = 1;
-    const uint8_t KETReagentDownArea = 2;
-    const uint8_t KETProductArea = 3;
+    const uint8_t KReactantArea = 0;
+    const uint8_t KReagentUpArea = 1;
+    const uint8_t KReagentDownArea = 2;
+    const uint8_t KProductArea = 3;
     const Vec2f MIN_MOL_SIZE = {0.5, 0.5};
 
     struct compareFunction
@@ -84,11 +86,11 @@ namespace indigo
 
     std::string convertAPFromHELM(const std::string& atp_id_str);
 
-    class KETSimpleObject : public MetaObject
+    class SimpleGraphicsObject : public MetaObject
     {
     public:
-        static const std::uint32_t CID = "KET simple object"_hash;
-        KETSimpleObject(int mode, const std::pair<Vec2f, Vec2f>& coords) : MetaObject(CID)
+        static const std::uint32_t CID = "Metadata simple object"_hash;
+        SimpleGraphicsObject(int mode, const std::pair<Vec2f, Vec2f>& coords) : MetaObject(CID)
         {
             _mode = mode;
             _coordinates = coords;
@@ -101,7 +103,7 @@ namespace indigo
 
         MetaObject* clone() const override
         {
-            return new KETSimpleObject(_mode, _coordinates);
+            return new SimpleGraphicsObject(_mode, _coordinates);
         }
 
         void offset(const Vec2f& offset) override
@@ -112,15 +114,28 @@ namespace indigo
 
         enum
         {
-            EKETEllipse,
-            EKETRectangle,
-            EKETLine
+            EEllipse,
+            ERectangle,
+            ELine
         };
         int _mode;
         std::pair<Vec2f, Vec2f> _coordinates;
     };
 
-    class KETTextObject : public MetaObject
+    struct SimpleTextStyle
+    {
+        std::size_t offset;
+        std::size_t size;
+        std::list<std::string> styles;
+    };
+
+    struct SimpleTextLine
+    {
+        std::string text;
+        std::list<SimpleTextStyle> text_styles;
+    };
+
+    class SimpleTextObject : public MetaObject
     {
     public:
         enum
@@ -134,86 +149,21 @@ namespace indigo
         };
 
         const std::unordered_map<std::string, int> KTextStylesMap{
-            {KETFontBoldStr, EBold}, {KETFontItalicStr, EItalic}, {KETFontSuperscriptStr, ESuperScript}, {KETFontSubscriptStr, ESubScript}};
+            {KFontBoldStr, EBold}, {KFontItalicStr, EItalic}, {KFontSuperscriptStr, ESuperScript}, {KFontSubscriptStr, ESubScript}};
 
-        struct KETTextLine
+        struct SimpleTextLine
         {
             std::string text;
             std::map<std::size_t, FONT_STYLE_SET> styles;
         };
 
-        static const std::uint32_t CID = "KET text object"_hash;
+        static const std::uint32_t CID = "Simple text object"_hash;
 
-        KETTextObject(const Vec3f& pos, const std::string& content) : MetaObject(CID)
-        {
-            using namespace rapidjson;
-            _pos = pos;
-            _content = content;
-            Document data;
-            data.Parse(content.c_str());
-            if (data.HasMember("blocks"))
-            {
-                Value& blocks = data["blocks"];
-                for (rapidjson::SizeType i = 0; i < blocks.Size(); ++i)
-                {
-                    KETTextLine text_line;
-                    if (blocks[i].HasMember("text"))
-                    {
-                        text_line.text = blocks[i]["text"].GetString();
-                        text_line.styles.emplace(0, std::initializer_list<std::pair<int, bool>>{});
-                        text_line.styles.emplace(text_line.text.size(), std::initializer_list<std::pair<int, bool>>{});
-                        if (blocks[i].HasMember("inlineStyleRanges"))
-                        {
-                            Value& style_ranges = blocks[i]["inlineStyleRanges"];
-                            for (rapidjson::SizeType j = 0; j < style_ranges.Size(); ++j)
-                            {
-                                int style_begin = style_ranges[j]["offset"].GetInt();
-                                int style_end = style_begin + style_ranges[j]["length"].GetInt();
-                                int style_code = -1;
-
-                                std::string style = style_ranges[j]["style"].GetString();
-                                auto it = KTextStylesMap.find(style);
-                                if (it != KTextStylesMap.end())
-                                {
-                                    style_code = it->second;
-                                }
-                                else
-                                {
-                                    const std::string KCustomFontSize = "CUSTOM_FONT_SIZE_";
-                                    const std::string KCustomFontUnits = "px";
-                                    if (style.find(KCustomFontSize) == 0)
-                                    {
-                                        style_code =
-                                            std::stoi(style.substr(KCustomFontSize.size(), style.size() - KCustomFontSize.size() - KCustomFontUnits.size()));
-                                    }
-                                }
-                                const auto it_begin = text_line.styles.find(style_begin);
-                                const auto it_end = text_line.styles.find(style_end);
-
-                                if (it_begin == text_line.styles.end())
-                                    text_line.styles.emplace(style_begin, std::initializer_list<std::pair<int, bool>>{{style_code, true}});
-                                else
-                                {
-                                    it_begin->second.emplace(style_code, true);
-                                }
-
-                                if (it_end == text_line.styles.end())
-                                    text_line.styles.emplace(style_end, std::initializer_list<std::pair<int, bool>>{{style_code, false}});
-                                else
-                                {
-                                    it_end->second.emplace(style_code, false);
-                                }
-                            }
-                        }
-                    }
-                    _block.push_back(text_line);
-                }
-            }
-        }
+        SimpleTextObject(const Vec3f& pos, const std::string& content);
 
         MetaObject* clone() const override
         {
-            return new KETTextObject(_pos, _content);
+            return new SimpleTextObject(_pos, _content);
         }
 
         void getBoundingBox(Rect2f& bbox) const override
@@ -228,14 +178,27 @@ namespace indigo
         }
 
         std::string _content;
-        std::list<KETTextLine> _block;
+        std::list<SimpleTextLine> _block;
         Vec3f _pos;
     };
 
-    class KETReactionArrow : public MetaObject
+    class SimpleTextObjectBuilder
     {
     public:
-        static const std::uint32_t CID = "KET reaction arrow"_hash;
+        SimpleTextObjectBuilder();
+        void addLine(const SimpleTextLine& line);
+        void finalize();
+        std::string getJsonString() const;
+
+    private:
+        rapidjson::Writer<rapidjson::StringBuffer> _writer;
+        rapidjson::StringBuffer _buffer;
+    };
+
+    class ReactionArrowObject : public MetaObject
+    {
+    public:
+        static const std::uint32_t CID = "Reaction arrow object"_hash;
         enum
         {
             EOpenAngle = 2,
@@ -258,12 +221,12 @@ namespace indigo
             ERetrosynthetic
         };
 
-        KETReactionArrow(int arrow_type, const Vec2f& begin, const Vec2f& end, float height = 0)
+        ReactionArrowObject(int arrow_type, const Vec2f& begin, const Vec2f& end, float height = 0)
             : MetaObject(CID), _arrow_type(arrow_type), _begin(begin), _end(end), _height(height){};
 
         MetaObject* clone() const override
         {
-            return new KETReactionArrow(_arrow_type, _begin, _end, _height);
+            return new ReactionArrowObject(_arrow_type, _begin, _end, _height);
         }
 
         void getBoundingBox(Rect2f& bbox) const override
@@ -304,23 +267,23 @@ namespace indigo
         Vec2f _end;
     };
 
-    class KETReactionMultitailArrow : public MetaObject
+    class ReactionMultitailArrowObject : public MetaObject
     {
         static const int CORRECT_CONSTRUCTOR_PARAMETERS_SIZE = 5;
         static const int CORRECT_HEAD_SIZE = 1;
         static const int CORRECT_TAIL_SIZE = 2;
 
     public:
-        static const std::uint32_t CID = "KET reaction multitail arrow"_hash;
+        static const std::uint32_t CID = "Reaction multitail arrow object"_hash;
 
         static constexpr float TAIL_ARC_RADIUS = .15f;
 
         template <typename Iterator>
-        KETReactionMultitailArrow(Iterator&& begin, Iterator&& end) : MetaObject(CID)
+        ReactionMultitailArrowObject(Iterator&& begin, Iterator&& end) : MetaObject(CID)
         {
             auto distanceBetweenBeginAndEnd = std::distance(begin, end);
             if (distanceBetweenBeginAndEnd < CORRECT_CONSTRUCTOR_PARAMETERS_SIZE)
-                throw Exception("KETReactionMultitailArrow: invalid arguments");
+                throw Exception("ReactionMultitailArrowObject: invalid arguments");
 
             _head = *begin++;
             _tails.reserve(static_cast<int>(distanceBetweenBeginAndEnd) - CORRECT_HEAD_SIZE - CORRECT_TAIL_SIZE);
@@ -330,17 +293,17 @@ namespace indigo
             _spine_end = _tails.pop();
         }
 
-        KETReactionMultitailArrow(Vec2f head, const Array<Vec2f>& tails, Vec2f spine_begin, Vec2f spine_end)
+        ReactionMultitailArrowObject(Vec2f head, const Array<Vec2f>& tails, Vec2f spine_begin, Vec2f spine_end)
             : MetaObject(CID), _head(head), _spine_begin(spine_begin), _spine_end(spine_end)
         {
             if (tails.size() < CORRECT_TAIL_SIZE)
-                throw Exception("KETReactionMultitailArrow: invalid arguments");
+                throw Exception("ReactionMultitailArrowObject: invalid arguments");
             _tails.copy(tails);
         }
 
         MetaObject* clone() const override
         {
-            return new KETReactionMultitailArrow(_head, _tails, _spine_begin, _spine_end);
+            return new ReactionMultitailArrowObject(_head, _tails, _spine_begin, _spine_end);
         }
 
         auto getHead() const
@@ -395,15 +358,15 @@ namespace indigo
         Vec2f _spine_begin, _spine_end;
     };
 
-    class KETReactionPlus : public MetaObject
+    class ReactionPlusObject : public MetaObject
     {
     public:
-        static const std::uint32_t CID = "KET reaction plus"_hash;
-        KETReactionPlus(const Vec2f& pos) : MetaObject(CID), _pos(pos){};
+        static const std::uint32_t CID = "Reaction plus object"_hash;
+        ReactionPlusObject(const Vec2f& pos) : MetaObject(CID), _pos(pos){};
 
         MetaObject* clone() const override
         {
-            return new KETReactionPlus(_pos);
+            return new ReactionPlusObject(_pos);
         }
 
         enum
@@ -431,7 +394,7 @@ namespace indigo
         Vec2f _pos;
     };
 
-    class KETImage : public MetaObject
+    class EmbeddedImageObject : public MetaObject
     {
     public:
         enum ImageFormat
@@ -440,12 +403,12 @@ namespace indigo
             EKETSVG
         };
 
-        static const std::uint32_t CID = "KET embedded image"_hash;
-        KETImage(const Rect2f& bbox, KETImage::ImageFormat format, const std::string& data, bool is_base64 = true);
+        static const std::uint32_t CID = "Embedded image object"_hash;
+        EmbeddedImageObject(const Rect2f& bbox, EmbeddedImageObject::ImageFormat format, const std::string& data, bool is_base64 = true);
 
         MetaObject* clone() const override
         {
-            return new KETImage(_bbox, _image_format, getBase64());
+            return new EmbeddedImageObject(_bbox, _image_format, getBase64());
         }
 
         auto& getBoundingBox() const
