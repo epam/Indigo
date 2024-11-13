@@ -797,7 +797,7 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                         }
                     };
                     if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
-                        get_analog(doc.variantTemplates().at(monomer->templateId()));
+                        get_analog(doc.ambiguousTemplates().at(monomer->templateId()));
                     else if (monomer->monomerType() == KetBaseMonomer::MonomerType::Monomer)
                         get_analog(doc.templates().at(monomer->templateId()));
                     else
@@ -867,7 +867,7 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
 void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string>> sequences, std::string& seq_text)
 {
     auto& monomer_templates = doc.templates();
-    auto& variant_monomer_templates = doc.variantTemplates();
+    auto& variant_monomer_templates = doc.ambiguousTemplates();
     auto& monomers = doc.monomers();
     if (doc.nonSequenceConnections().size() > 0)
         throw Error("Cannot save in IDT format - nonstandard connection found.");
@@ -1000,7 +1000,7 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                             bool has_ratio = false;
                             std::set<std::string> aliases;
                             std::string s_aliases;
-                            const auto& ambiguous_template = doc.variantTemplates().at(template_id);
+                            const auto& ambiguous_template = doc.ambiguousTemplates().at(template_id);
                             if (ambiguous_template.subtype() != "mixture")
                                 throw Error("Cannot save IDT - only mixture supported but found %s.", ambiguous_template.subtype().c_str());
                             for (auto& option : ambiguous_template.options())
@@ -1021,7 +1021,7 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                                     has_ratio = true;
                                 }
                                 else if (has_ratio)
-                                    throw Error("Cannot save IDT - variant monomer template '%s' use template '%s' without ratio.", base.c_str(),
+                                    throw Error("Cannot save IDT - ambiguous monomer template '%s' use template '%s' without ratio.", base.c_str(),
                                                 opt_alias.c_str());
                             }
                             if (STANDARD_MIXED_BASES_TO_ALIAS.count(aliases) == 0)
@@ -1233,7 +1233,7 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
     std::map<std::string, MonomerInfo> monomer_id_to_monomer_info;
     const auto& monomers = document.monomers();
     const auto& templates = document.templates();
-    const auto& variant_templates = document.variantTemplates();
+    const auto& variant_templates = document.ambiguousTemplates();
     std::map<std::string, std::map<int, std::string>> mol_atom_to_ap;
     for (auto& sequence : sequences)
     {

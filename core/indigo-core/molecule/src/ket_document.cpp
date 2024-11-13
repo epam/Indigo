@@ -96,42 +96,42 @@ void KetDocument::addMonomerTemplate(const MonomerTemplate& monomer_template)
     it.first->second.copy(monomer_template);
 }
 
-KetVariantMonomerTemplate& KetDocument::addVariantMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name,
-                                                                  IdtAlias idt_alias, std::vector<KetVariantMonomerOption>& options)
+KetAmbiguousMonomerTemplate& KetDocument::addAmbiguousMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name,
+                                                                      IdtAlias idt_alias, std::vector<KetAmbiguousMonomerOption>& options)
 {
-    if (_variant_templates.find(id) != _variant_templates.end())
+    if (_ambiguous_templates.find(id) != _ambiguous_templates.end())
         throw Error("Variant monomer template '%s' already exists.", id.c_str());
-    _variant_templates_ids.emplace_back(id);
-    auto it = _variant_templates.try_emplace(id, subtype, id, name, idt_alias, options);
-    _template_id_to_type.emplace(id, KetBaseMonomerTemplate::TemplateType::VariantMonomerTemplate);
+    _ambiguous_templates_ids.emplace_back(id);
+    auto it = _ambiguous_templates.try_emplace(id, subtype, id, name, idt_alias, options);
+    _template_id_to_type.emplace(id, KetBaseMonomerTemplate::TemplateType::AmbiguousMonomerTemplate);
     return it.first->second;
 };
 
-std::unique_ptr<KetBaseMonomer>& KetDocument::addVariantMonomer(const std::string& id, const std::string& alias, const std::string& template_id,
-                                                                const std::string& ref)
+std::unique_ptr<KetBaseMonomer>& KetDocument::addAmbiguousMonomer(const std::string& id, const std::string& alias, const std::string& template_id,
+                                                                  const std::string& ref)
 {
-    auto& mon = addVariantMonomer(id, alias, template_id);
+    auto& mon = addAmbiguousMonomer(id, alias, template_id);
     _monomer_ref_to_id.erase(mon->ref());
     mon->setRef(ref);
     _monomer_ref_to_id.emplace(ref, id);
     return mon;
 };
 
-std::unique_ptr<KetBaseMonomer>& KetDocument::addVariantMonomer(const std::string& id, const std::string& alias, const std::string& template_id)
+std::unique_ptr<KetBaseMonomer>& KetDocument::addAmbiguousMonomer(const std::string& id, const std::string& alias, const std::string& template_id)
 {
     if (_monomers.find(id) != _monomers.end())
         throw Error("Variant monomer '%s' already exists.", id.c_str());
-    auto it = _monomers.try_emplace(id, std::make_unique<KetVariantMonomer>(id, alias, template_id));
-    it.first->second->setAttachmentPoints(_variant_templates.at(template_id).attachmentPoints());
+    auto it = _monomers.try_emplace(id, std::make_unique<KetAmbiguousMonomer>(id, alias, template_id));
+    it.first->second->setAttachmentPoints(_ambiguous_templates.at(template_id).attachmentPoints());
     _monomer_ref_to_id.emplace(it.first->second->ref(), id);
     _monomers_ids.emplace_back(id);
     return it.first->second;
 };
 
-std::unique_ptr<KetBaseMonomer>& KetDocument::addVariantMonomer(const std::string& alias, const std::string& template_id)
+std::unique_ptr<KetBaseMonomer>& KetDocument::addAmbiguousMonomer(const std::string& alias, const std::string& template_id)
 {
     std::string id = std::to_string(_monomers.size());
-    return addVariantMonomer(id, alias, template_id);
+    return addAmbiguousMonomer(id, alias, template_id);
 }
 
 BaseMolecule& KetDocument::getBaseMolecule()
@@ -203,9 +203,9 @@ void KetDocument::connectMonomerTo(const std::string& mon1, const std::string& a
     it->second->connectAttachmentPointTo(ap1, mon2, ap2);
 }
 
-void KetDocument::processVariantMonomerTemplates()
+void KetDocument::processAmbiguousMonomerTemplates()
 {
-    for (auto& it : _variant_templates)
+    for (auto& it : _ambiguous_templates)
     {
         // check that all options has same option
         bool has_ratio = false;
@@ -353,7 +353,7 @@ MonomerClass KetDocument::getMonomerClass(const KetBaseMonomer& monomer) const
     if (monomer.monomerType() == KetBaseMonomer::MonomerType::Monomer)
         return _templates.at(monomer.templateId()).monomerClass();
     else if (monomer.monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
-        return _variant_templates.at(monomer.templateId()).monomerClass();
+        return _ambiguous_templates.at(monomer.templateId()).monomerClass();
     else
         throw Error("Unknonwn monomer type");
 }
@@ -382,8 +382,8 @@ const KetBaseMonomerTemplate& KetDocument::getMonomerTemplate(const std::string&
 {
     if (_template_id_to_type.at(template_id) == KetBaseMonomerTemplate::TemplateType::MonomerTemplate)
         return _templates.at(template_id);
-    else if (_template_id_to_type.at(template_id) == KetBaseMonomerTemplate::TemplateType::VariantMonomerTemplate)
-        return _variant_templates.at(template_id);
+    else if (_template_id_to_type.at(template_id) == KetBaseMonomerTemplate::TemplateType::AmbiguousMonomerTemplate)
+        return _ambiguous_templates.at(template_id);
     else
         throw Error("Unknonwn monomer template type");
 }

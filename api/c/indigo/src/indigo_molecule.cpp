@@ -35,6 +35,7 @@
 #include "molecule/molecule_gross_formula.h"
 #include "molecule/molecule_inchi.h"
 #include "molecule/molecule_json_loader.h"
+#include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_mass.h"
 #include "molecule/molecule_name_parser.h"
 #include "molecule/molecule_savers.h"
@@ -102,11 +103,14 @@ BaseMolecule& IndigoMolecule::getBaseMolecule()
     return mol;
 }
 
-const char* IndigoMolecule::getName()
+BaseMolecule& IndigoMolecule::getBaseMolecule()
 {
-    if (mol.name.ptr() == 0)
-        return "";
-    return mol.name.ptr();
+    return mol;
+}
+
+KetDocument& IndigoMolecule::getKetDocument()
+{
+    return getBaseMolecule().getKetDocument();
 }
 
 IndigoMolecule* IndigoMolecule::cloneFrom(IndigoObject& obj)
@@ -549,9 +553,16 @@ CEXPORT int indigoLoadKetDocument(int source)
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(source);
-        auto& scanner = IndigoScanner::get(obj);
         std::string json_str;
-        scanner.readAll(json_str);
+        if (IndigoBaseMolecule::is(obj))
+        {
+            json_str = indigoJson(source);
+        }
+        else
+        {
+            auto& scanner = IndigoScanner::get(obj);
+            scanner.readAll(json_str);
+        }
         std::unique_ptr<IndigoKetDocument> docptr = std::make_unique<IndigoKetDocument>();
         KetDocumentJsonLoader loader{};
         loader.parseJson(json_str, docptr->get());

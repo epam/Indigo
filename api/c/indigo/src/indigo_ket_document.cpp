@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include "indigo_ket_document.h"
+#include "molecule/ket_document_json_loader.h"
 
 //
 // IndigoKetDocument

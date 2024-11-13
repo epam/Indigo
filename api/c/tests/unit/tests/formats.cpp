@@ -18,6 +18,7 @@
 
 #include <gtest/gtest.h>
 
+#include "molecule/ket_document.h"
 #include <molecule/molecule_mass.h>
 
 #include <indigo.h>
