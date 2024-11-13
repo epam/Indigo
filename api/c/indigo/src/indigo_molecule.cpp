@@ -103,14 +103,16 @@ BaseMolecule& IndigoMolecule::getBaseMolecule()
     return mol;
 }
 
-BaseMolecule& IndigoMolecule::getBaseMolecule()
-{
-    return mol;
-}
-
 KetDocument& IndigoMolecule::getKetDocument()
 {
     return getBaseMolecule().getKetDocument();
+}
+
+const char* IndigoMolecule::getName()
+{
+    if (mol.name.ptr() == 0)
+        return "";
+    return mol.name.ptr();
 }
 
 IndigoMolecule* IndigoMolecule::cloneFrom(IndigoObject& obj)
