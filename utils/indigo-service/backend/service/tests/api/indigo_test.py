@@ -1787,8 +1787,8 @@ M  END
             data=data,
         )
         fname = "render-eleptical-arrow.png"
-        with open(os.path.join(ref_path, fname), "wb") as file:
-            file.write(result.content)
+        # with open(os.path.join(ref_path, fname), "wb") as file:
+        #     file.write(result.content)
         with open(os.path.join(ref_path, fname), "rb") as file:
             ref = file.read()
             self.assertEqual(result.content, ref)

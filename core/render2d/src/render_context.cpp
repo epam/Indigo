@@ -1036,7 +1036,7 @@ void RenderContext::drawPlus(const Vec2f& pos, const float linewidth, const floa
 
 void RenderContext::drawHalfEllipse(const Vec2f& v1, const Vec2f& v2, const float height, const bool is_negative)
 {
-    float h = abs(height);
+    float h = std::fabs(height);
     double angle1 = height > 0 ? -M_PI : 0;
     double angle2 = height > 0 ? 0 : M_PI;
     Vec2f d;
