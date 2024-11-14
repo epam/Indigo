@@ -214,7 +214,7 @@ def imago_upload_post():
                 - error
                 properties:
                     error:
-                    type: string
+                        type: string
         400:
             description: A problem with supplied client data
             schema:
@@ -223,7 +223,7 @@ def imago_upload_post():
                 - error
                 properties:
                     error:
-                    type: string
+                        type: string
         415:
             description: Supplied image format are not supported
             schema:
@@ -232,7 +232,7 @@ def imago_upload_post():
                 - error
                 properties:
                     error:
-                    type: string
+                        type: string
         5XX:
             description: 'Internal service error'
             schema:
@@ -241,7 +241,7 @@ def imago_upload_post():
                 - error
                 properties:
                     error:
-                    type: string
+                        type: string
     """
     args = []
     full_mime_type = request.headers.get("Content-Type")
@@ -363,14 +363,14 @@ def upload_status_get(upload_id):
                 id: UploadResponce
                 properties:
                     state:
-                    type: string
-                    example: SUCCESS
+                        type: string
+                        example: SUCCESS
                     metadata:
-                    type: object
-                    properties:
-                        mol_str:
-                            type: string
-                            description: "Mol file in string format"
+                        type: object
+                        properties:
+                            mol_str:
+                                type: string
+                                description: "Mol file in string format"
         400:
             schema:
                 $ref: "#/definitions/imago_imagoupload_post_Error"
