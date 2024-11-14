@@ -177,30 +177,30 @@ def imago_upload_post():
         - image/tiff,
         - image/bmp,
         - image/cmu-raster,
-        - image/x-portable-bitmap'
+        - image/x-portable-bitmap,
     parameters:
         - name: image_request
-            in: body
-            description: 'Image to process in Imago'
-            required: true
-            type: string
-            format: binary
+          in: body
+          description: 'Image to process in Imago'
+          required: true
+          type: string
+          format: binary
         - name: version
-            in: json_request
-            description: 'Version of Imago'
-            type: string
+          in: json_request
+          description: 'Version of Imago'
+          type: string
         - name: settings
-            in: json_request
-            description: 'Settings for Imago'
-            type: json
+          in: json_request
+          description: 'Settings for Imago'
+          type: json
         - name: action
-            in: json_request
-            description: "Determines logic of POST request: send image or wait until settings passed"
-            type: string
+          in: json_request
+          description: "Determines logic of POST request: send image or wait until settings passed"
+          type: string
         - name: expire
-            in: json_request
-            description: "Time for image POST requeust to expire during waiting for settings"
-            type: float
+          in: json_request
+          description: "Time for image POST requeust to expire during waiting for settings"
+          type: float
     responses:
         200:
             description: 'Task id for obtaining molecule'
@@ -416,14 +416,14 @@ def upload_status_post(upload_id):
     description: 'Pass settings to Imago and proccess uploaded image'
     parameters:
         - name: action
-            in: json_request
-            required: true
-            type: string
-            description: 'Parameter to run Imago with passed properties'
+          in: json_request
+          required: true
+          type: string
+          description: 'Parameter to run Imago with passed properties'
         - name: settings
-            in: json_request
-            type: object
-            description: 'Parameters for Imago in JSON'
+          in: json_request
+          type: object
+          description: 'Parameters for Imago in JSON'
     responses:
         200:
             description: 'Image processed'
