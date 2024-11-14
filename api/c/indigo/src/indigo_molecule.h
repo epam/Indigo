@@ -91,6 +91,8 @@ public:
     Molecule& getMolecule() override;
     const Molecule& getMolecule() const override;
 
+    KetDocument& getKetDocument() override;
+
     const char* getName() override;
 
     static IndigoMolecule* cloneFrom(IndigoObject& obj);

@@ -36,6 +36,7 @@
 
 #include "layout/reaction_layout.h"
 
+#include "molecule/ket_document.h"
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_gross_formula.h"
 #include "molecule/molecule_ionize.h"
@@ -187,6 +188,8 @@ public:
     virtual QueryMolecule& getQueryMolecule();
     virtual Molecule& getMolecule();
     virtual const Molecule& getMolecule() const;
+
+    virtual KetDocument& getKetDocument();
 
     virtual BaseReaction& getBaseReaction();
     virtual QueryReaction& getQueryReaction();

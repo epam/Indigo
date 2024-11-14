@@ -652,9 +652,9 @@ const std::map<std::string, int>& KetConnection::getStringPropStrToIdx() const
     return str_to_idx;
 }
 
-IMPL_ERROR(KetVariantMonomer, "Ket Variant Monomer")
+IMPL_ERROR(KetAmbiguousMonomer, "Ket Variant Monomer")
 
-const std::map<std::string, int>& KetVariantMonomer::getIntPropStrToIdx() const
+const std::map<std::string, int>& KetAmbiguousMonomer::getIntPropStrToIdx() const
 {
     static std::map<std::string, int> str_to_idx{
         {"seqid", toUType(IntProps::seqid)},
@@ -662,7 +662,7 @@ const std::map<std::string, int>& KetVariantMonomer::getIntPropStrToIdx() const
     return str_to_idx;
 }
 
-const std::map<std::string, int>& KetVariantMonomer::getStringPropStrToIdx() const
+const std::map<std::string, int>& KetAmbiguousMonomer::getStringPropStrToIdx() const
 {
     static std::map<std::string, int> str_to_idx{
         {"alias", toUType(StringProps::alias)},
