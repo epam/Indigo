@@ -1671,7 +1671,6 @@ M  END
         )
 
     def test_render_eleptical_arrow(self):
-
         ket = """{
     "root": {
         "nodes": [
