@@ -385,6 +385,7 @@ namespace indigo
             objectId = indigoLoadSequenceFromString(data.c_str(), seq_it->second.c_str(), library);
             if (objectId >= 0)
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            exceptionMessages.emplace_back(indigoGetLastError());
         }
         else if (input_format != options.end() && fasta_formats.count(input_format->second))
         {
@@ -392,6 +393,7 @@ namespace indigo
             objectId = indigoLoadFastaFromString(data.c_str(), fasta_it->second.c_str(), library);
             if (objectId >= 0)
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            exceptionMessages.emplace_back(indigoGetLastError());
         }
         else if (input_format != options.end() && input_format->second == "chemical/x-idt")
         {
