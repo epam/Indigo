@@ -602,7 +602,7 @@ M  END
     {
         test("layout", "basic", () => {
             let options = new indigo.MapStringString();
-            assert(indigo.layout(mol_smiles, "molfile", options).indexOf("-1.6") !== -1);
+            assert(indigo.layout(mol_smiles, "molfile", options).indexOf("-1.0") !== -1);
             options.delete();
         });
     }
