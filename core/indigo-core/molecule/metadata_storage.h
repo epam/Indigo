@@ -21,6 +21,7 @@
 #include <cstdint>
 
 #include "base_cpp/ptr_array.h"
+#include "base_cpp/ptr_pool.h"
 #include "common/math/algebra.h"
 
 namespace indigo
@@ -49,7 +50,7 @@ namespace indigo
         {
         }
 
-        int addMetaObject(MetaObject* pobj);
+        int addMetaObject(MetaObject* pobj, bool explicit_reaction_object = false);
 
         void resetMetaData()
         {
@@ -59,11 +60,12 @@ namespace indigo
             _simple_object_indexes.clear();
             _text_object_indexes.clear();
             _image_indexes.clear();
+            _explicit_reaction_object_indexes.clear();
         }
 
         void resetReactionData();
 
-        const PtrArray<MetaObject>& metaData() const
+        const PtrPool<MetaObject>& metaData() const
         {
             return _meta_data;
         }
@@ -75,13 +77,14 @@ namespace indigo
         int getMetaObjectIndex(uint32_t meta_type, int index) const;
 
     protected:
-        PtrArray<MetaObject> _meta_data; // TODO: should be replaced with list of unique_ptr
+        PtrPool<MetaObject> _meta_data; // TODO: should be replaced with list of unique_ptr
         Array<int> _plus_indexes;
         Array<int> _arrow_indexes;
         Array<int> _multi_tail_indexes;
         Array<int> _simple_object_indexes;
         Array<int> _text_object_indexes;
         Array<int> _image_indexes;
+        Array<int> _explicit_reaction_object_indexes;
     };
 }
 #endif

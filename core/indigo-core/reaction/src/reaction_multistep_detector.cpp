@@ -646,6 +646,54 @@ void ReactionMultistepDetector::constructPathwayReaction(PathwayReaction& rxn)
             }
         }
     }
+    detectPathwayMetadata(rxn);
+}
+
+void ReactionMultistepDetector::detectPathwayMetadata(PathwayReaction& rxn)
+{
+    for (int i = 0; i < rxn.meta().getMetaCount(ReactionArrowObject::CID); ++i)
+    {
+        auto& arrow = static_cast<const ReactionArrowObject&>(rxn.meta().getMetaObject(ReactionArrowObject::CID, i));
+        Vec2f box_rt = arrow.getHead();
+        box_rt.y += (arrow.getHead() - arrow.getTail()).length() / 2;
+        Rect2f lookup_box(arrow.getTail(), box_rt);
+    }
+
+    for (int i = 0; i < rxn.meta().getMetaCount(ReactionMultitailArrowObject::CID); ++i)
+    {
+        auto& multi_arrow = static_cast<const ReactionMultitailArrowObject&>(rxn.meta().getMetaObject(ReactionMultitailArrowObject::CID, i));
+        Rect2f lookup_box(multi_arrow.getHead(), multi_arrow.getSpineBegin());
+    }
+}
+
+void ReactionMultistepDetector::collectMetadata(PathwayReaction& rxn, const Rect2f& bbox)
+{
+    for (int i = 0; i < rxn.meta().getMetaCount(SimpleTextObject::CID); ++i)
+    {
+        auto& text = static_cast<const SimpleTextObject&>(rxn.meta().getMetaObject(SimpleTextObject::CID, i));
+        Rect2f text_bbox;
+        text.getBoundingBox(text_bbox);
+        if (bbox.intersects(text_bbox))
+            collectProperties(rxn, text);
+    }
+}
+
+void ReactionMultistepDetector::collectProperties(PathwayReaction& rxn, const SimpleTextObject& text_obj)
+{
+    for (const auto& line : text_obj.getLines())
+    {
+        for (const auto& [key, value] : line.styles)
+        {
+            if (value.count(std::make_pair(SimpleTextObject::EBold, true)))
+            {
+                rxn.properties().insert("");
+            }
+
+            if (value.count(std::make_pair(SimpleTextObject::EItalic, true)))
+            {
+            }
+        }
+    }
 }
 
 void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn)

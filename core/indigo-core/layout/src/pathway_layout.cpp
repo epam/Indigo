@@ -366,7 +366,7 @@ void PathwayLayout::addMetaText(PathwayReaction::ReactionNode& node, const Vec2f
     generateTextBlocks(tob, node.conditions_text, KFontItalicStr, height_limit);
     tob.finalize();
     Vec3f text_pos_lr(text_pos_bl.x, text_pos_bl.y + _text_height / 2 + (text_height_limit - height_limit), 0.0f);
-    _reaction.meta().addMetaObject(new SimpleTextObject(text_pos_lr, tob.getJsonString()));
+    _reaction.meta().addMetaObject(new SimpleTextObject(text_pos_lr, tob.getJsonString()), true);
 }
 
 std::vector<std::string> PathwayLayout::splitText(const std::string& text, float max_width, std::function<float(char ch)> symbol_width)

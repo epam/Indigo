@@ -177,6 +177,11 @@ namespace indigo
             _pos.y += offset.y;
         }
 
+        const auto& getLines() const
+		{
+			return _block;
+		}
+
         std::string _content;
         std::list<SimpleTextLine> _block;
         Vec3f _pos;
