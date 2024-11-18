@@ -178,9 +178,9 @@ namespace indigo
         }
 
         const auto& getLines() const
-		{
-			return _block;
-		}
+        {
+            return _block;
+        }
 
         std::string _content;
         std::list<SimpleTextLine> _block;

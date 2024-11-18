@@ -694,7 +694,7 @@ void ReactionMultistepDetector::collectMetadata(int reaction_idx, PathwayReactio
         }
     }
     if (text_idx >= 0)
-		collectProperties(sr, static_cast<const SimpleTextObject&>(rxn.meta().getMetaObject(SimpleTextObject::CID, text_idx)));
+        collectProperties(sr, static_cast<const SimpleTextObject&>(rxn.meta().getMetaObject(SimpleTextObject::CID, text_idx)));
 }
 
 void ReactionMultistepDetector::collectProperties(PathwayReaction::SimpleReaction& sr, const SimpleTextObject& text_obj)
@@ -717,13 +717,13 @@ void ReactionMultistepDetector::collectProperties(PathwayReaction::SimpleReactio
     if (name.size())
     {
         int id = sr.properties.insert(PathwayLayout::REACTION_NAME);
-        sr.properties.value(id).readString(name.c_str(), true);        
+        sr.properties.value(id).readString(name.c_str(), true);
     }
 
     if (condition.size())
     {
         int id = sr.properties.insert(PathwayLayout::REACTION_CONDITIONS);
-        sr.properties.value(id).readString(condition.c_str(), true);        
+        sr.properties.value(id).readString(condition.c_str(), true);
     }
 }
 
