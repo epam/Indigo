@@ -1786,11 +1786,12 @@ M  END
             data=data,
         )
         fname = "render-eleptical-arrow.png"
-        # with open(os.path.join(ref_path, fname), "wb") as file:
-        #     file.write(result.content)
+        data = result.content
+        with open(os.path.join(ref_path, fname), "wb") as file:
+            file.write(data)
         with open(os.path.join(ref_path, fname), "rb") as file:
             ref = file.read()
-            self.assertEqual(result.content, ref)
+            self.assertEqual(data, ref)
 
     def test_check_stereo(self):
         # up
