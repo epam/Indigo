@@ -4535,7 +4535,9 @@ void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE 
     if (font_size <= EPSILON)
         return;
 
-    float symbol_size = font_size * 0.6f;
+    float constexpr WIDTH_FACTOR = 0.7f; // width of font symbols
+
+    float symbol_size = font_size * WIDTH_FACTOR;
 
     if (isPseudoAtom(atom_idx) || isTemplateAtom(atom_idx))
     {
