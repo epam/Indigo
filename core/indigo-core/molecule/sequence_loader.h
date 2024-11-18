@@ -93,9 +93,9 @@ namespace indigo
         void addMonomer(KetDocument& mol, const std::string& monomer, SeqType seq_type, bool mixed = false);
         void addAminoAcid(KetDocument& document, const std::string& monomer, bool mixed = false);
         void addNucleotideTemplates(KetDocument& document, const std::string& base_alias, const std::string& sugar_alias, const std::string& phosphate_alias,
-                                    bool variant = false);
+                                    bool ambiguous = false);
         void addNucleotide(KetDocument& document, const std::string& base_alias, const std::string& sugar_alias, const std::string& phosphate_alias,
-                           bool phosphate_at_left = true, bool variant = false);
+                           bool phosphate_at_left = true, bool ambiguous = false);
 
         int addTemplateAtom(BaseMolecule& mol, const char* alias, const char* monomer_class, int seq_id);
         void addTemplateBond(BaseMolecule& mol, int left_idx, int right_idx, bool branch = false);
@@ -108,11 +108,11 @@ namespace indigo
 
         static void check_monomer_place(std::string& idt_alias, IdtModification mon_mod, IdtModification alias_mod, bool has_prev_mon);
 
-        using variant_template_opts = std::pair<bool, std::vector<std::pair<std::string, std::optional<float>>>>;
-        using MonomerInfo = std::tuple<std::string, std::string, std::string, variant_template_opts>;
+        using ambiguous_template_opts = std::pair<bool, std::vector<std::pair<std::string, std::optional<float>>>>;
+        using MonomerInfo = std::tuple<std::string, std::string, std::string, ambiguous_template_opts>;
 
-        const std::string checkAddVariantMonomerTemplate(KetDocument& document, const std::string& alias, MonomerClass monomer_class,
-                                                         variant_template_opts& options);
+        const std::string checkAddAmbiguousMonomerTemplate(KetDocument& document, const std::string& alias, MonomerClass monomer_class,
+                                                           ambiguous_template_opts& options);
         size_t addKetMonomer(KetDocument& document, MonomerInfo info, MonomerClass monomer_class, const Vec3f& pos);
         int readCount(std::string& count, Scanner& _scanner);
 
@@ -132,8 +132,8 @@ namespace indigo
         MonomerTemplateLibrary& _library;
         std::map<std::string, std::string> _alias_to_id;
         std::map<std::string, std::string> _var_alias_to_id;
-        int _unknown_variants_count;
-        std::map<variant_template_opts, std::string> _opts_to_template_id;
+        int _unknown_ambiguous_count;
+        std::map<ambiguous_template_opts, std::string> _opts_to_template_id;
     };
 
 } // namespace indigo

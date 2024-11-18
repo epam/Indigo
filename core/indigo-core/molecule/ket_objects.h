@@ -800,6 +800,7 @@ namespace indigo
 
         const TYPE connType() const;
 
+        // connection type could be "single" or "hydrogen"
         inline const std::string connectionType() const
         {
             return _connection_type;
@@ -836,11 +837,11 @@ namespace indigo
         std::optional<std::string> _id;
     };
 
-    class DLLEXPORT KetVariantMonomerOption : public KetObjWithProps
+    class DLLEXPORT KetAmbiguousMonomerOption : public KetObjWithProps
     {
     public:
         DECL_ERROR;
-        KetVariantMonomerOption(const std::string& templateId) : _templateId(templateId){};
+        KetAmbiguousMonomerOption(const std::string& templateId) : _templateId(templateId){};
 
         const std::string& templateId() const
         {
@@ -881,7 +882,7 @@ namespace indigo
         enum class TemplateType
         {
             MonomerTemplate,
-            VariantMonomerTemplate
+            AmbiguousMonomerTemplate
         };
 
         KetBaseMonomerTemplate(TemplateType template_type, const std::string& id, MonomerClass monomer_class, IdtAlias idt_alias)
@@ -950,16 +951,16 @@ namespace indigo
         IdtAlias _idt_alias;
     };
 
-    class DLLEXPORT KetVariantMonomerTemplate : public KetBaseMonomerTemplate
+    class DLLEXPORT KetAmbiguousMonomerTemplate : public KetBaseMonomerTemplate
     {
     public:
         DECL_ERROR;
 
         inline static std::string ref_prefix = "ambiguousMonomerTemplate-";
 
-        KetVariantMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& alias, IdtAlias idt_alias,
-                                  const std::vector<KetVariantMonomerOption>& options)
-            : KetBaseMonomerTemplate(TemplateType::VariantMonomerTemplate, id, MonomerClass::Unknown, idt_alias), _subtype(subtype), _alias(alias),
+        KetAmbiguousMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& alias, IdtAlias idt_alias,
+                                    const std::vector<KetAmbiguousMonomerOption>& options)
+            : KetBaseMonomerTemplate(TemplateType::AmbiguousMonomerTemplate, id, MonomerClass::Unknown, idt_alias), _subtype(subtype), _alias(alias),
               _options(options){};
 
         const std::string& subtype() const
@@ -972,7 +973,7 @@ namespace indigo
             return _alias;
         };
 
-        const std::vector<KetVariantMonomerOption>& options() const
+        const std::vector<KetAmbiguousMonomerOption>& options() const
         {
             return _options;
         };
@@ -980,17 +981,17 @@ namespace indigo
     private:
         std::string _subtype;
         std::string _alias;
-        std::vector<KetVariantMonomerOption> _options;
+        std::vector<KetAmbiguousMonomerOption> _options;
     };
 
-    class DLLEXPORT KetVariantMonomer : public KetBaseMonomer
+    class DLLEXPORT KetAmbiguousMonomer : public KetBaseMonomer
     {
     public:
         DECL_ERROR;
 
         inline static std::string ref_prefix = "ambiguousMonomer-";
 
-        KetVariantMonomer(const std::string& id, const std::string& alias, const std::string& template_id)
+        KetAmbiguousMonomer(const std::string& id, const std::string& alias, const std::string& template_id)
             : KetBaseMonomer(MonomerType::AmbiguousMonomer, id, alias, template_id)
         {
             _ref = ref_prefix + _id;

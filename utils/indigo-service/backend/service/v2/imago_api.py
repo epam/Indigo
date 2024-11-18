@@ -177,30 +177,30 @@ def imago_upload_post():
         - image/tiff,
         - image/bmp,
         - image/cmu-raster,
-        - image/x-portable-bitmap'
+        - image/x-portable-bitmap,
     parameters:
         - name: image_request
-            in: body
-            description: 'Image to process in Imago'
-            required: true
-            type: string
-            format: binary
+          in: body
+          description: 'Image to process in Imago'
+          required: true
+          type: string
+          format: binary
         - name: version
-            in: json_request
-            description: 'Version of Imago'
-            type: string
+          in: json_request
+          description: 'Version of Imago'
+          type: string
         - name: settings
-            in: json_request
-            description: 'Settings for Imago'
-            type: json
+          in: json_request
+          description: 'Settings for Imago'
+          type: json
         - name: action
-            in: json_request
-            description: "Determines logic of POST request: send image or wait until settings passed"
-            type: string
+          in: json_request
+          description: "Determines logic of POST request: send image or wait until settings passed"
+          type: string
         - name: expire
-            in: json_request
-            description: "Time for image POST requeust to expire during waiting for settings"
-            type: float
+          in: json_request
+          description: "Time for image POST requeust to expire during waiting for settings"
+          type: float
     responses:
         200:
             description: 'Task id for obtaining molecule'
@@ -211,37 +211,37 @@ def imago_upload_post():
             schema:
                 id: Error
                 required:
-                - error
+                    - error
                 properties:
                     error:
-                    type: string
+                        type: string
         400:
             description: A problem with supplied client data
             schema:
                 id: Error
                 required:
-                - error
+                    - error
                 properties:
                     error:
-                    type: string
+                        type: string
         415:
             description: Supplied image format are not supported
             schema:
                 id: Error
                 required:
-                - error
+                    - error
                 properties:
                     error:
-                    type: string
+                        type: string
         5XX:
             description: 'Internal service error'
             schema:
                 id: Error
                 required:
-                - error
+                    - error
                 properties:
                     error:
-                    type: string
+                        type: string
     """
     args = []
     full_mime_type = request.headers.get("Content-Type")
@@ -360,25 +360,25 @@ def upload_status_get(upload_id):
         200:
             description: 'Result JSON with mol file as string'
             schema:
-                id: UploadResponce
+                id: UploadResponse
                 properties:
                     state:
-                    type: string
-                    example: SUCCESS
+                        type: string
+                        example: SUCCESS
                     metadata:
-                    type: object
-                    properties:
-                        mol_str:
-                            type: string
-                            description: "Mol file in string format"
+                        type: object
+                        properties:
+                            mol_str:
+                                type: string
+                                description: "Mol file in string format"
         400:
             schema:
-                $ref: "#/definitions/imago_imagoupload_post_Error"
+                $ref: "#/definitions/Error"
 
         5XX:
             description: Internal service error
             schema:
-                $ref: "#/definitions/imago_imagoupload_post_Error"
+                $ref: "#/definitions/Error"
 
     """
     imago_api_logger.info("[REQUEST] GET /imago/uploads/{0}".format(upload_id))
@@ -413,39 +413,39 @@ def upload_status_post(upload_id):
     ---
     tags:
         - imago
-    description: 'Pass settings to Imago and proccess uploaded image'
+    description: 'Pass settings to Imago and process uploaded image'
     parameters:
         - name: action
-            in: json_request
-            required: true
-            type: string
-            description: 'Parameter to run Imago with passed properties'
+          in: json_request
+          required: true
+          type: string
+          description: 'Parameter to run Imago with passed properties'
         - name: settings
-            in: json_request
-            type: object
-            description: 'Parameters for Imago in JSON'
+          in: json_request
+          type: object
+          description: 'Parameters for Imago in JSON'
     responses:
         200:
             description: 'Image processed'
             schema:
-                    $ref: "#/definitions/imago_imagouploadstatus_get_UploadResponce"
+                    $ref: "#/definitions/UploadResponse"
         204:
             description: 'Imago not recognized image'
             schema:
-                $ref: "#/definitions/imago_imagoupload_post_Error"
+                $ref: "#/definitions/Error"
         400:
             description: A problem with supplied client data
             schema:
-                $ref: "#/definitions/imago_imagoupload_post_Error"
+                $ref: "#/definitions/Error"
         410:
-            description: Image are not availabe because of time limit
+            description: Image are not available because of time limit
             schema:
-                $ref: "#/definitions/imago_imagoupload_post_Error"
+                $ref: "#/definitions/Error"
 
         5XX:
             description: Internal service error
             schema:
-                $ref: "#/definitions/imago_imagoupload_post_Error"
+                $ref: "#/definitions/Error"
 
     """
     params = request.args

@@ -109,7 +109,7 @@ def search_post():
         - bingo
     responses:
         200:
-        description: search results
+            description: search results
     """
     libraries_api_logger.info(
         "[REQUEST] POST /search {0}".format(request.data)

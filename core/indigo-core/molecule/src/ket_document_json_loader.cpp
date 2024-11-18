@@ -61,7 +61,7 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
                     throw Error("Unknows template type: %s", templ_type.c_str());
             }
         }
-        document.processVariantMonomerTemplates();
+        document.processAmbiguousMonomerTemplates();
     }
     if (root.HasMember("nodes"))
     {
@@ -313,7 +313,7 @@ void KetDocumentJsonLoader::parseKetMonomer(std::string& ref, rapidjson::Value& 
 void KetDocumentJsonLoader::parseKetVariantMonomer(std::string& ref, rapidjson::Value& json, KetDocument& document)
 {
     std::string template_id = json["templateId"].GetString();
-    auto& monomer = document.addVariantMonomer(json["id"].GetString(), json["alias"].GetString(), template_id, ref);
+    auto& monomer = document.addAmbiguousMonomer(json["id"].GetString(), json["alias"].GetString(), template_id, ref);
     monomer->parseOptsFromKet(json);
     if (json.HasMember("position"))
     {
@@ -323,13 +323,13 @@ void KetDocumentJsonLoader::parseKetVariantMonomer(std::string& ref, rapidjson::
         location.y = coords["y"].GetFloat();
         monomer->setPosition(location);
     }
-    auto& variant_monomer_template = document.variantTemplates().at(template_id);
+    auto& variant_monomer_template = document.ambiguousTemplates().at(template_id);
     monomer->setAttachmentPoints(variant_monomer_template.attachmentPoints());
 }
 
 void KetDocumentJsonLoader::parseVariantMonomerTemplate(const rapidjson::Value& json, KetDocument& document)
 {
-    std::vector<KetVariantMonomerOption> options;
+    std::vector<KetAmbiguousMonomerOption> options;
     auto& opts = json["options"];
     for (SizeType i = 0; i < opts.Size(); i++)
     {
@@ -348,6 +348,6 @@ void KetDocumentJsonLoader::parseVariantMonomerTemplate(const rapidjson::Value& 
         if (idt_alias.getBase().size() == 0)
             throw Error("Monomer template %s contains IDT alias without base.", id.c_str());
     }
-    auto& monomer_template = document.addVariantMonomerTemplate(json["subtype"].GetString(), id, json["alias"].GetString(), idt_alias, options);
+    auto& monomer_template = document.addAmbiguousMonomerTemplate(json["subtype"].GetString(), id, json["alias"].GetString(), idt_alias, options);
     monomer_template.parseOptsFromKet(json);
 }

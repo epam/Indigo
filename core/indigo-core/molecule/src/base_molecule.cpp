@@ -23,9 +23,12 @@
 #include "graph/dfs_walk.h"
 #include "molecule/elements.h"
 #include "molecule/inchi_wrapper.h"
+#include "molecule/ket_document.h"
+#include "molecule/ket_document_json_loader.h"
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_exact_substructure_matcher.h"
+#include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/query_molecule.h"
@@ -4994,6 +4997,30 @@ std::string BaseMolecule::getAtomDescription(int idx)
     Array<char> description;
     getAtomDescription(idx, description);
     return std::string(description.ptr(), description.size());
+}
+
+KetDocument& BaseMolecule::getKetDocument()
+{
+    // static thread_local std::optional<std::unique_ptr<KetDocument>> document; // Temporary until direct conversion to document supported
+    if (!_document.has_value() || _edit_revision != _document_revision)
+    {
+        if (_edit_revision != _document_revision)
+            _document.reset();
+        // save to ket
+        std::string json;
+        StringOutput out(json);
+        MoleculeJsonSaver saver(out);
+        saver.saveMolecule(*this);
+        // load document from ket
+        rapidjson::Document data;
+        /*auto& res*/ std::ignore = data.Parse(json.c_str());
+        // if res.hasParseError()
+        _document.emplace(std::make_unique<KetDocument>());
+        KetDocumentJsonLoader loader{};
+        loader.parseJson(json, *_document.value().get());
+        _document_revision = _edit_revision;
+    }
+    return *_document.value().get();
 }
 
 #ifdef _MSC_VER

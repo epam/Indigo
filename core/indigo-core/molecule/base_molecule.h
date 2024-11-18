@@ -120,6 +120,7 @@ namespace indigo
     class Molecule;
     class QueryMolecule;
     class MetaDataStorage;
+    class KetDocument;
 
     class DLLEXPORT BaseMolecule : public Graph
     {
@@ -550,6 +551,8 @@ namespace indigo
         void setAlias(int atom_idx, const char* alias);
         void removeAlias(int atom_idx);
 
+        KetDocument& getKetDocument();
+
         DECL_ERROR;
 
     protected:
@@ -620,6 +623,9 @@ namespace indigo
 
         RedBlackObjMap<int, Array<char>> aliases;
         RedBlackObjMap<int, PropertiesMap> _properties;
+
+        std::optional<std::unique_ptr<KetDocument>> _document;
+        int _document_revision;
     };
 
 } // namespace indigo

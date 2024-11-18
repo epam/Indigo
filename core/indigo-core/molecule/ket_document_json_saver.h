@@ -39,8 +39,8 @@ namespace indigo
     class MonomerTemplate;
     class KetMolecule;
     class KetMonomer;
-    class KetVariantMonomer;
-    class KetVariantMonomerTemplate;
+    class KetAmbiguousMonomer;
+    class KetAmbiguousMonomerTemplate;
     class KetDocument;
 
     class DLLEXPORT KetDocumentJsonSaver
@@ -61,8 +61,8 @@ namespace indigo
     protected:
         static void saveMolecule(JsonWriter& writer, const std::string& ref, const KetMolecule& molecule);
         static void saveMonomer(JsonWriter& writer, const KetMonomer& monomer);
-        static void saveVariantMonomer(JsonWriter& writer, const KetVariantMonomer& monomer);
-        static void saveVariantMonomerTemplate(JsonWriter& writer, const KetVariantMonomerTemplate& monomer_template);
+        static void saveVariantMonomer(JsonWriter& writer, const KetAmbiguousMonomer& monomer);
+        static void saveVariantMonomerTemplate(JsonWriter& writer, const KetAmbiguousMonomerTemplate& monomer_template);
 
         DECL_ERROR;
 
