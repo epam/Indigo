@@ -106,6 +106,7 @@ namespace indigo
                 reaction->addProductCopy(*_molecules[pidx], 0, 0);
             for (auto ridx : sr.reactantIndexes)
                 reaction->addReactantCopy(*_molecules[ridx], 0, 0);
+            reaction->properties().copy(sr.properties);
             return reaction;
         }
 
@@ -131,7 +132,7 @@ namespace indigo
             return static_cast<int>(_molecules.size());
         }
 
-        const auto& getReaction(int reaction_idx)
+        auto& getReaction(int reaction_idx)
         {
             return _reactions[reaction_idx];
         }

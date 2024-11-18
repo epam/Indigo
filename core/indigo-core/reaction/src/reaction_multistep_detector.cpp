@@ -17,6 +17,7 @@
  ***************************************************************************/
 #include <numeric>
 
+#include "layout/pathway_layout.h"
 #include "reaction/pathway_reaction.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_multistep_detector.h"
@@ -651,48 +652,78 @@ void ReactionMultistepDetector::constructPathwayReaction(PathwayReaction& rxn)
 
 void ReactionMultistepDetector::detectPathwayMetadata(PathwayReaction& rxn)
 {
+    int ridx = 0;
     for (int i = 0; i < rxn.meta().getMetaCount(ReactionArrowObject::CID); ++i)
     {
         auto& arrow = static_cast<const ReactionArrowObject&>(rxn.meta().getMetaObject(ReactionArrowObject::CID, i));
         Vec2f box_rt = arrow.getHead();
         box_rt.y += (arrow.getHead() - arrow.getTail()).length() / 2;
         Rect2f lookup_box(arrow.getTail(), box_rt);
+        auto& sr = rxn.getReaction(ridx);
+        collectMetadata(ridx, rxn, lookup_box);
+        ridx++;
     }
 
     for (int i = 0; i < rxn.meta().getMetaCount(ReactionMultitailArrowObject::CID); ++i)
     {
         auto& multi_arrow = static_cast<const ReactionMultitailArrowObject&>(rxn.meta().getMetaObject(ReactionMultitailArrowObject::CID, i));
         Rect2f lookup_box(multi_arrow.getHead(), multi_arrow.getSpineBegin());
+        collectMetadata(ridx, rxn, lookup_box);
+        ridx++;
     }
 }
 
-void ReactionMultistepDetector::collectMetadata(PathwayReaction& rxn, const Rect2f& bbox)
+void ReactionMultistepDetector::collectMetadata(int reaction_idx, PathwayReaction& rxn, const Rect2f& bbox)
 {
+    auto& sr = rxn.getReaction(reaction_idx);
+    float min_dist;
+    int text_idx = -1;
     for (int i = 0; i < rxn.meta().getMetaCount(SimpleTextObject::CID); ++i)
     {
         auto& text = static_cast<const SimpleTextObject&>(rxn.meta().getMetaObject(SimpleTextObject::CID, i));
         Rect2f text_bbox;
         text.getBoundingBox(text_bbox);
         if (bbox.intersects(text_bbox))
-            collectProperties(rxn, text);
-    }
-}
-
-void ReactionMultistepDetector::collectProperties(PathwayReaction& rxn, const SimpleTextObject& text_obj)
-{
-    for (const auto& line : text_obj.getLines())
-    {
-        for (const auto& [key, value] : line.styles)
         {
-            if (value.count(std::make_pair(SimpleTextObject::EBold, true)))
+            auto dist = Vec2f::dist(bbox.leftBottom(), text_bbox.leftBottom());
+            if (text_idx < 0 || dist < min_dist)
             {
-                rxn.properties().insert("");
-            }
-
-            if (value.count(std::make_pair(SimpleTextObject::EItalic, true)))
-            {
+                text_idx = i;
+                min_dist = dist;
             }
         }
+    }
+    if (text_idx >= 0)
+		collectProperties(sr, static_cast<const SimpleTextObject&>(rxn.meta().getMetaObject(SimpleTextObject::CID, text_idx)));
+}
+
+void ReactionMultistepDetector::collectProperties(PathwayReaction::SimpleReaction& sr, const SimpleTextObject& text_obj)
+{
+    std::string name, condition;
+    bool is_condition = false;
+    for (const auto& line : text_obj.getLines())
+    {
+        if (line.text.size())
+        {
+            if (is_condition)
+                condition += line.text;
+            else
+                name += line.text;
+        }
+        else
+            is_condition = true;
+    }
+
+    if (name.size())
+    {
+        int id = sr.properties.insert(PathwayLayout::REACTION_NAME);
+        sr.properties.value(id).readString(name.c_str(), true);        
+    }
+
+    if (condition.size())
+    {
+        int id = sr.properties.insert(PathwayLayout::REACTION_CONDITIONS);
+        sr.properties.value(id).readString(condition.c_str(), true);        
     }
 }
 

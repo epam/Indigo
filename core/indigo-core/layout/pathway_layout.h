@@ -64,7 +64,7 @@ namespace indigo
             : _reaction(reaction), _depths(MAX_DEPTHS, 0), _maxDepth(0), _bond_length(options.DEFAULT_BOND_LENGTH),
               _default_arrow_size((float)options.DEFAULT_BOND_LENGTH * ARROW_LENGTH_FACTOR),
               _reaction_margin_size(options.reactionComponentMarginSize / options.ppi), _preserve_molecule_layout(true),
-              _text_height((float)options.DEFAULT_BOND_LENGTH * TEXT_LINE_HEIGHT)
+              _text_line_height((float)options.DEFAULT_BOND_LENGTH * TEXT_LINE_HEIGHT)
         {
         }
 
@@ -108,7 +108,7 @@ namespace indigo
                         mol.scale(center, bondLength / mean);
                     }
                     Rect2f boundingBox;
-                    mol.getBoundingBox(boundingBox);
+                    mol.getBoundingBox(boundingBox, Vec2f(bondLength, bondLength));
                     molecules.push_back(std::make_pair(reactantIdx, boundingBox));
                     width = boundingBox.width();
                     height = boundingBox.height();
@@ -263,7 +263,7 @@ namespace indigo
         std::vector<PathwayLayoutRootItem> _layoutRootItems;
 
         const float _bond_length;
-        const float _text_height;
+        const float _text_line_height;
         const float _default_arrow_size;
         const float _reaction_margin_size;
         bool _preserve_molecule_layout;

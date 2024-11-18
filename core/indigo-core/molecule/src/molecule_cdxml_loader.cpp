@@ -509,7 +509,7 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         _addBracket(mol, brk);
 
     for (const auto& to : text_objects)
-        mol.meta().addMetaObject(new SimpleTextObject(to.first, to.second));
+        mol.meta().addMetaObject(new SimpleTextObject(to.pos, to.size, to.text));
 
     for (const auto& plus : _pluses)
         mol.meta().addMetaObject(new ReactionPlusObject(plus));
@@ -1683,7 +1683,7 @@ void MoleculeCdxmlLoader::_parseLabel(BaseCDXElement& elem, std::string& label)
     }
 }
 
-void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair<Vec3f, std::string>>& text_parsed)
+void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<CdxmlText>& text_parsed)
 {
     Vec3f text_pos;
     auto text_coordinates_lambda = [&text_pos, this](const std::string& data) { this->parsePos(data, text_pos); };
@@ -1816,8 +1816,7 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
     std::string txt = s.GetString();
     if (!is_valid_utf8(txt))
         txt = latin1_to_utf8(txt);
-
-    text_parsed.emplace_back(tpos, txt.c_str());
+    text_parsed.emplace_back(tpos, Vec2f(text_bbox.width(), text_bbox.height()), txt.c_str());
 }
 
 void MoleculeCdxmlLoader::_parseBracket(CdxmlBracket& bracket, BaseCDXProperty& prop)

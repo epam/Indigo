@@ -152,15 +152,18 @@ void PathwayLayout::buildLayoutTree()
 
             auto totalHeight = std::accumulate(currentLayoutItem.children.begin(), currentLayoutItem.children.end(), 0.0f,
                                                [](float summ, const PathwayLayoutItem* item) { return summ + item->height; });
+            auto totalSpacing = (currentLayoutItem.children.size() - 1) * VERTICAL_SPACING;
             totalHeight -= currentLayoutItem.children.front()->height / 2;
             totalHeight -= currentLayoutItem.children.back()->height / 2;
             totalHeight /= 2.0f;
-            float targetHeight = totalLines * _text_height + _reaction_margin_size;
+            float targetHeight = totalLines * _text_line_height + _reaction_margin_size;
             if (totalHeight < targetHeight)
             {
-                auto adjustHeight = (targetHeight - totalHeight) / (currentLayoutItem.children.size() - 1);
                 for (auto& child : currentLayoutItem.children)
-                    child->height += adjustHeight * TEXT_ADJUSTMENT; // should be 2.0f
+                {
+                    child->height *= (targetHeight - totalSpacing / 2);
+                    child->height /= totalHeight;
+                }
             }
         }
     }
@@ -197,7 +200,7 @@ void PathwayLayout::copyTextPropertiesToNode(const PathwayReaction::SimpleReacti
         }
     }
 
-    if (node.name_text.size())
+    if (node.name_text.size() && node.conditions_text.size())
         node.name_text.push().readString("", true);
 }
 
@@ -306,7 +309,7 @@ void PathwayLayout::applyLayout()
                 arrows.insert(arrows.end(), tails.begin(), tails.end());
 
                 // add spines
-                float text_height_limit = MIN_LINES_COUNT * _text_height;
+                float text_height_limit = MIN_LINES_COUNT * _text_line_height;
                 auto& node = _reaction.getReactionNode(layoutItem->reactionIndex);
                 Vec2f textPos_bl(0, head.y);
                 if (tails.size() > 1)
@@ -341,12 +344,12 @@ void PathwayLayout::generateTextBlocks(SimpleTextObjectBuilder& tob, const ObjAr
 {
     for (int i = 0; i < props.size(); ++i)
     {
-        if (height > _text_height)
+        if (std::ceil(height * 1000) >= std::ceil(_text_line_height * 1000))
         {
-            height -= _text_height;
+            height -= _text_line_height;
             SimpleTextLine textLine;
             textLine.text = props[i].ptr();
-            if (height < _text_height && props.size() - i > 1)
+            if (std::ceil(height * 1000) < std::ceil(_text_line_height * 1000) && props.size() - i > 1)
                 textLine.text += "...";
             auto& ts = textLine.text_styles.emplace_back();
             ts.offset = 0;
@@ -365,8 +368,9 @@ void PathwayLayout::addMetaText(PathwayReaction::ReactionNode& node, const Vec2f
     generateTextBlocks(tob, node.name_text, KFontBoldStr, height_limit);
     generateTextBlocks(tob, node.conditions_text, KFontItalicStr, height_limit);
     tob.finalize();
-    Vec3f text_pos_lr(text_pos_bl.x, text_pos_bl.y + _text_height / 2 + (text_height_limit - height_limit), 0.0f);
-    _reaction.meta().addMetaObject(new SimpleTextObject(text_pos_lr, tob.getJsonString()), true);
+    auto text_height = _text_line_height / 2 + (text_height_limit - height_limit);
+    Vec3f text_pos_tr(text_pos_bl.x, text_pos_bl.y + text_height, 0.0f);
+    _reaction.meta().addMetaObject(new SimpleTextObject(text_pos_tr, Vec2f(node.text_width, text_height), tob.getJsonString()), true);
 }
 
 std::vector<std::string> PathwayLayout::splitText(const std::string& text, float max_width, std::function<float(char ch)> symbol_width)

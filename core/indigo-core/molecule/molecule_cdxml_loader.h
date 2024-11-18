@@ -176,6 +176,16 @@ namespace indigo
         bool is_superatom;
     };
 
+    struct CdxmlText
+    {
+        CdxmlText(const Vec3f& pos, const Vec2f& size, const std::string& text) : pos(pos), size(size), text(text)
+        {
+        }
+        std::string text;
+        Vec3f pos;
+        Vec2f size;
+    };
+
     class BaseCDXProperty
     {
     public:
@@ -805,7 +815,7 @@ namespace indigo
         std::vector<CdxmlNode> nodes;
         std::vector<CdxmlBond> bonds;
         std::vector<CdxmlBracket> brackets;
-        std::vector<std::pair<Vec3f, std::string>> text_objects;
+        std::vector<CdxmlText> text_objects;
 
         static const int SCALE = 30;
 
@@ -820,7 +830,7 @@ namespace indigo
         void _parseBond(CdxmlBond& bond, BaseCDXProperty& prop);
 
         void _parseBracket(CdxmlBracket& bracket, BaseCDXProperty& prop);
-        void _parseText(BaseCDXElement& elem, std::vector<std::pair<Vec3f, std::string>>& text_parsed);
+        void _parseText(BaseCDXElement& elem, std::vector<CdxmlText>& text_parsed);
         void _parseLabel(BaseCDXElement& elem, std::string& label);
 
         void _parseGraphic(BaseCDXElement& elem);

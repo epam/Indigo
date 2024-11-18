@@ -159,16 +159,16 @@ namespace indigo
 
         static const std::uint32_t CID = "Simple text object"_hash;
 
-        SimpleTextObject(const Vec3f& pos, const std::string& content);
+        SimpleTextObject(const Vec3f& pos, const Vec2f& sz, const std::string& content);
 
         MetaObject* clone() const override
         {
-            return new SimpleTextObject(_pos, _content);
+            return new SimpleTextObject(_pos, _size, _content);
         }
 
         void getBoundingBox(Rect2f& bbox) const override
         {
-            bbox = Rect2f(Vec2f(_pos.x, _pos.y), Vec2f(_pos.x, _pos.y));
+            bbox = Rect2f(Vec2f(_pos.x, _pos.y), Vec2f(_pos.x + _size.x, _pos.y - _size.y));
         }
 
         void offset(const Vec2f& offset) override
@@ -185,6 +185,7 @@ namespace indigo
         std::string _content;
         std::list<SimpleTextLine> _block;
         Vec3f _pos;
+        Vec2f _size;
     };
 
     class SimpleTextObjectBuilder

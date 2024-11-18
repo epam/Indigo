@@ -162,10 +162,11 @@ namespace indigo
         return base64::encode(_image_data.c_str(), _image_data.size());
     }
 
-    SimpleTextObject::SimpleTextObject(const Vec3f& pos, const std::string& content) : MetaObject(CID)
+    SimpleTextObject::SimpleTextObject(const Vec3f& pos, const Vec2f& sz, const std::string& content) : MetaObject(CID)
     {
         using namespace rapidjson;
         _pos = pos;
+        _size = sz;
         _content = content;
         Document data;
         data.Parse(content.c_str());
