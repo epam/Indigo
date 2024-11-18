@@ -75,6 +75,7 @@ namespace indigo
 
         const MetaObject& getMetaObject(uint32_t meta_type, int index) const;
         int getMetaObjectIndex(uint32_t meta_type, int index) const;
+        void addExplicitReactionObjectIndex(int index);
 
     protected:
         PtrPool<MetaObject> _meta_data; // TODO: should be replaced with list of unique_ptr

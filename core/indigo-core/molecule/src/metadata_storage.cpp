@@ -84,6 +84,11 @@ int MetaDataStorage::getMetaObjectIndex(uint32_t meta_type, int index) const
     }
 }
 
+void MetaDataStorage::addExplicitReactionObjectIndex(int index)
+{
+    _explicit_reaction_object_indexes.push(index);
+}
+
 const MetaObject& MetaDataStorage::getMetaObject(uint32_t meta_type, int index) const
 {
     return *_meta_data[getMetaObjectIndex(meta_type, index)];
