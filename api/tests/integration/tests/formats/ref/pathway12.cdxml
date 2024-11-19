@@ -350,10 +350,13 @@
         <t id="124" p="717.609985 67.050308" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">&lt;&gt;</s>
         </t>
-        <t id="127" p="717.609985 419.567566" Justification="Left" InterpretChemically="no">
+        <t id="127" p="717.609985 402.287537" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">ABCDEFGHIJKLMNOPQRSTUVWXYZABCD</s>
         </t>
-        <t id="127" p="717.609985 419.567566" Justification="Left" InterpretChemically="no"/>
+        <t id="127" p="717.609985 402.287537" Justification="Left" InterpretChemically="no"/>
+        <t id="127" p="717.609985 402.287537" Justification="Left" InterpretChemically="no">
+            <s font="4" size="8.66667" face="3">AbcdefghijklmnopqrstuvWxyzabcd</s>
+        </t>
         <t id="130" p="119.666656 474.960876" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
@@ -382,28 +385,31 @@
         <t id="133" p="1144.441162 856.820068" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">ABCDEFGHIJKLMNOPQRSTUVWXYZABCD</s>
         </t>
-        <t id="136" p="594.422852 839.540039" Justification="Left" InterpretChemically="no">
+        <t id="136" p="594.422852 822.260071" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="136" p="594.422852 839.540039" Justification="Left" InterpretChemically="no">
+        <t id="136" p="594.422852 822.260071" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="136" p="594.422852 839.540039" Justification="Left" InterpretChemically="no">
+        <t id="136" p="594.422852 822.260071" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="136" p="594.422852 839.540039" Justification="Left" InterpretChemically="no">
+        <t id="136" p="594.422852 822.260071" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="136" p="594.422852 839.540039" Justification="Left" InterpretChemically="no">
+        <t id="136" p="594.422852 822.260071" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="136" p="594.422852 839.540039" Justification="Left" InterpretChemically="no">
+        <t id="136" p="594.422852 822.260071" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="136" p="594.422852 839.540039" Justification="Left" InterpretChemically="no">
+        <t id="136" p="594.422852 822.260071" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="136" p="594.422852 839.540039" Justification="Left" InterpretChemically="no">
+        <t id="136" p="594.422852 822.260071" Justification="Left" InterpretChemically="no">
+            <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
+        </t>
+        <t id="136" p="594.422852 822.260071" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890...</s>
         </t>
         <arrow id="139" BoundingBox="434.833099 535.440918 98.833290 535.440918" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="434.833099 535.440918 0.000000" Tail3D="98.833290 535.440918 0.000000"/>

@@ -346,12 +346,12 @@ void PathwayLayout::generateTextBlocks(SimpleTextObjectBuilder& tob, const ObjAr
 {
     for (int i = 0; i < props.size(); ++i)
     {
-        if (std::ceil(height * 1000) >= std::ceil(_text_line_height * 1000))
+        if (std::round(height * 1000) >= std::round(_text_line_height * 1000))
         {
             height -= _text_line_height;
             SimpleTextLine textLine;
             textLine.text = props[i].ptr();
-            if (std::ceil(height * 1000) < std::ceil(_text_line_height * 1000) && props.size() - i > 1)
+            if (std::round(height * 1000) < std::round(_text_line_height * 1000) && props.size() - i > 1)
                 textLine.text += "...";
             auto& ts = textLine.text_styles.emplace_back();
             ts.offset = 0;

@@ -497,35 +497,41 @@
         <t id="158" p="2565.886719 506.979736" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">or KI. base e.g. K2CO3</s>
         </t>
-        <t id="161" p="1866.994995 193.476547" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1866.994995 176.196548" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Published reaction</s>
         </t>
-        <t id="161" p="1866.994995 193.476547" Justification="Left" InterpretChemically="no"/>
-        <t id="161" p="1866.994995 193.476547" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1866.994995 176.196548" Justification="Left" InterpretChemically="no"/>
+        <t id="161" p="1866.994995 176.196548" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">Stage 1: 14 h, Copper(II)</s>
         </t>
-        <t id="161" p="1866.994995 193.476547" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1866.994995 176.196548" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">chloride, Dimethylformamide,</s>
         </t>
-        <t id="161" p="1866.994995 193.476547" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1866.994995 176.196548" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">Dichloromethane, CK2O3   </s>
         </t>
-        <t id="161" p="1866.994995 193.476547" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1866.994995 176.196548" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">Potassium carbonate | Stage 2</s>
         </t>
-        <t id="161" p="1866.994995 193.476547" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1866.994995 176.196548" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">5 h, 80 degree, acid, Dy(3+)</s>
         </t>
-        <t id="161" p="1866.994995 193.476547" Justification="Left" InterpretChemically="no">
-            <s font="4" size="8.66667" face="3">salt C3Dy1F9O9S3,...</s>
+        <t id="161" p="1866.994995 176.196548" Justification="Left" InterpretChemically="no">
+            <s font="4" size="8.66667" face="3">salt C3Dy1F9O9S3,</s>
         </t>
-        <t id="164" p="1866.994995 803.202942" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1866.994995 176.196548" Justification="Left" InterpretChemically="no">
+            <s font="4" size="8.66667" face="3">Dichloromethane, Acetonitrile</s>
+        </t>
+        <t id="164" p="1866.994995 785.922974" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Addition of dihalomethane to</s>
         </t>
-        <t id="164" p="1866.994995 803.202942" Justification="Left" InterpretChemically="no">
+        <t id="164" p="1866.994995 785.922974" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">aldehyde</s>
         </t>
-        <t id="164" p="1866.994995 803.202942" Justification="Left" InterpretChemically="no"/>
+        <t id="164" p="1866.994995 785.922974" Justification="Left" InterpretChemically="no"/>
+        <t id="164" p="1866.994995 785.922974" Justification="Left" InterpretChemically="no">
+            <s font="4" size="8.66667" face="3">SmI2.THF</s>
+        </t>
         <t id="167" p="1117.378784 875.876282" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Ozonolysis</s>
         </t>
