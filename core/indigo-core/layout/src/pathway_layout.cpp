@@ -171,6 +171,8 @@ void PathwayLayout::buildLayoutTree()
 
 void PathwayLayout::copyTextPropertiesToNode(const PathwayReaction::SimpleReaction& reaction, PathwayReaction::ReactionNode& node)
 {
+    node.name_text.clear();
+    node.conditions_text.clear();
     auto& props = reaction.properties;
     // split text labels and put them into the reaction node name_text and conditions_text
     auto text_max_width = _default_arrow_size - _reaction_margin_size * 2;
@@ -386,6 +388,12 @@ std::vector<std::string> PathwayLayout::splitText(const std::string& text, float
 
         while (current_pos < text.size() && width + symbol_width(text[current_pos]) <= max_width)
         {
+            if (text[current_pos] == '\n')
+            {
+                last_break_pos = current_pos;
+                ++current_pos;
+                break;
+            }
             width += symbol_width(text[current_pos]);
             if (std::isspace(text[current_pos]) || std::ispunct(text[current_pos]))
             {
