@@ -712,7 +712,7 @@ void ReactionMultistepDetector::collectProperties(PathwayReaction::SimpleReactio
             if (is_condition)
             {
                 if (condition.size())
-					condition += "\n";
+                    condition += "\n";
                 condition += line.text;
             }
             else
