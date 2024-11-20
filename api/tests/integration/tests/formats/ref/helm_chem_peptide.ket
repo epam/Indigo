@@ -239,7 +239,7 @@
         "seqid": 2,
         "position": {
             "x": 0.000000,
-            "y": -1.600000
+            "y": -1.000000
         },
         "alias": "W",
         "templateId": "W___Tryptophan"
@@ -249,8 +249,8 @@
         "id": "2",
         "seqid": 3,
         "position": {
-            "x": 1.600000,
-            "y": -1.600000
+            "x": 1.000000,
+            "y": -1.000000
         },
         "alias": "N",
         "templateId": "N___Asparagine"
@@ -260,8 +260,8 @@
         "id": "3",
         "seqid": 4,
         "position": {
-            "x": 3.200000,
-            "y": -1.600000
+            "x": 2.000000,
+            "y": -1.000000
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"
@@ -271,8 +271,8 @@
         "id": "4",
         "seqid": 5,
         "position": {
-            "x": 4.800000,
-            "y": -1.600000
+            "x": 3.000000,
+            "y": -1.000000
         },
         "alias": "Pen",
         "templateId": "Pen___penicillamine (3-mercaptovaline)"
@@ -282,8 +282,8 @@
         "id": "5",
         "seqid": 6,
         "position": {
-            "x": 6.400000,
-            "y": -1.600000
+            "x": 4.000000,
+            "y": -1.000000
         },
         "alias": "G",
         "templateId": "G___Glycine"
@@ -293,8 +293,8 @@
         "id": "6",
         "seqid": 7,
         "position": {
-            "x": 8.000000,
-            "y": -1.600000
+            "x": 5.000000,
+            "y": -1.000000
         },
         "alias": "Orn",
         "templateId": "Orn___L-ornithine"
@@ -304,8 +304,8 @@
         "id": "7",
         "seqid": 8,
         "position": {
-            "x": 9.600000,
-            "y": -1.600000
+            "x": 6.000000,
+            "y": -1.000000
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"
@@ -315,8 +315,8 @@
         "id": "8",
         "seqid": 9,
         "position": {
-            "x": 11.200000,
-            "y": -1.600000
+            "x": 7.000000,
+            "y": -1.000000
         },
         "alias": "A",
         "templateId": "A___Alanine"
@@ -326,8 +326,8 @@
         "id": "9",
         "seqid": 10,
         "position": {
-            "x": 12.800000,
-            "y": -1.600000
+            "x": 8.000000,
+            "y": -1.000000
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"
@@ -337,8 +337,8 @@
         "id": "10",
         "seqid": 11,
         "position": {
-            "x": 14.400001,
-            "y": -1.600000
+            "x": 9.000000,
+            "y": -1.000000
         },
         "alias": "G",
         "templateId": "G___Glycine"
@@ -348,8 +348,8 @@
         "id": "11",
         "seqid": 12,
         "position": {
-            "x": 16.000000,
-            "y": -1.600000
+            "x": 10.000000,
+            "y": -1.000000
         },
         "alias": "S",
         "templateId": "S___Serine"
@@ -359,8 +359,8 @@
         "id": "12",
         "seqid": 13,
         "position": {
-            "x": 17.600000,
-            "y": -1.600000
+            "x": 11.000000,
+            "y": -1.000000
         },
         "alias": "G",
         "templateId": "G___Glycine"
@@ -370,8 +370,8 @@
         "id": "13",
         "seqid": 14,
         "position": {
-            "x": 19.200001,
-            "y": -1.600000
+            "x": 12.000000,
+            "y": -1.000000
         },
         "alias": "Cap",
         "templateId": "Cap___gamma-amino-beta-hydroxycyclohexanepentanoic acid"
