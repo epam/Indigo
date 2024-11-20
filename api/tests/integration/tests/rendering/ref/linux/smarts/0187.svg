@@ -41,8 +41,8 @@
 <path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 0.242637 0.00000976443 L 0.757363 0.00000976443 " transform="matrix(100, 0, 0, 100, 19.998047, 26.616211)"/>
 <g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
 <use xlink:href="#glyph-0-1" x="48.800781" y="21.355469"/>
-<use xlink:href="#glyph-0-2" x="62.134115" y="21.355469"/>
-<use xlink:href="#glyph-0-3" x="76.964845" y="21.355469"/>
+<use xlink:href="#glyph-0-2" x="62.134117" y="21.355469"/>
+<use xlink:href="#glyph-0-3" x="76.964848" y="21.355469"/>
 </g>
 <g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
 <use xlink:href="#glyph-1-1" x="6.65625" y="40.375"/>
