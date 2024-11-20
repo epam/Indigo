@@ -697,7 +697,7 @@ void ReactionMultistepDetector::collectMetadata(int reaction_idx, PathwayReactio
     {
         collectProperties(sr, static_cast<const SimpleTextObject&>(rxn.meta().getMetaObject(SimpleTextObject::CID, text_idx)));
         int meta_id = rxn.meta().getMetaObjectIndex(SimpleTextObject::CID, text_idx);
-        rxn.meta().addExplicitReactionObjectIndex(reaction_idx);
+        rxn.meta().addExplicitReactionObjectIndex(meta_id);
     }
 }
 
