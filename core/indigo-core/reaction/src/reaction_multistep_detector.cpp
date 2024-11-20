@@ -435,7 +435,7 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
                     csb_min_reac.arrows_to.push_back(idx_cs_min_prod);
                     _component_summ_blocks[idx_cs_min_prod].arrows_from.push_back(reac.second);
                 }
-                csb_min_reac.reaction_idx = pathway_idx + _bmol.meta().getMetaCount(ReactionArrowObject::CID);
+                // csb_min_reac.reaction_idx = pathway_idx + _bmol.meta().getMetaCount(ReactionArrowObject::CID);
             }
             else
                 bad_pathway = true;
@@ -570,6 +570,7 @@ void ReactionMultistepDetector::constructPathwayReaction(PathwayReaction& rxn)
             csb_reactions.emplace_back().second.push_back(i); // add csb as product
 
             auto [sri, sr] = rxn.addReaction();
+            sr.arrowMetaIndex = csb.reaction_idx;
             // add products
             for (auto rc_idx : csb.indexes)
             {
@@ -652,24 +653,30 @@ void ReactionMultistepDetector::constructPathwayReaction(PathwayReaction& rxn)
 
 void ReactionMultistepDetector::detectPathwayMetadata(PathwayReaction& rxn)
 {
-    int ridx = 0;
-    for (int i = 0; i < rxn.meta().getMetaCount(ReactionArrowObject::CID); ++i)
-    {
-        auto& arrow = static_cast<const ReactionArrowObject&>(rxn.meta().getMetaObject(ReactionArrowObject::CID, i));
-        Vec2f box_rt = arrow.getHead();
-        box_rt.y += (arrow.getHead() - arrow.getTail()).length() / 2;
-        Rect2f lookup_box(arrow.getTail(), box_rt);
-        auto& sr = rxn.getReaction(ridx);
-        collectMetadata(ridx, rxn, lookup_box);
-        ridx++;
-    }
+    auto arrow_count = rxn.meta().getMetaCount(ReactionArrowObject::CID);
+    auto multi_count = rxn.meta().getMetaCount(ReactionMultitailArrowObject::CID);
 
-    for (int i = 0; i < rxn.meta().getMetaCount(ReactionMultitailArrowObject::CID); ++i)
+    for (int i = 0; i < rxn.getReactionCount(); ++i)
     {
-        auto& multi_arrow = static_cast<const ReactionMultitailArrowObject&>(rxn.meta().getMetaObject(ReactionMultitailArrowObject::CID, i));
-        Rect2f lookup_box(multi_arrow.getHead(), multi_arrow.getSpineBegin());
-        collectMetadata(ridx, rxn, lookup_box);
-        ridx++;
+        auto& sr = rxn.getReaction(i);
+        if (sr.arrowMetaIndex >= 0)
+        {
+            if (arrow_count && sr.arrowMetaIndex < arrow_count)
+            {
+                auto& arrow = static_cast<const ReactionArrowObject&>(rxn.meta().getMetaObject(ReactionArrowObject::CID, sr.arrowMetaIndex));
+                Vec2f box_rt = arrow.getHead();
+                box_rt.y += (arrow.getHead() - arrow.getTail()).length() / 2;
+                Rect2f lookup_box(arrow.getTail(), box_rt);
+                collectMetadata(i, rxn, lookup_box);
+            }
+            else
+            {
+                auto& multi_arrow = static_cast<const ReactionMultitailArrowObject&>(
+                    rxn.meta().getMetaObject(ReactionMultitailArrowObject::CID, sr.arrowMetaIndex - arrow_count));
+                Rect2f lookup_box(multi_arrow.getHead(), multi_arrow.getSpineBegin());
+                collectMetadata(i, rxn, lookup_box);
+            }
+        }
     }
 }
 

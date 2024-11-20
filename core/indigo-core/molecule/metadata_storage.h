@@ -22,6 +22,7 @@
 
 #include "base_cpp/ptr_array.h"
 #include "base_cpp/ptr_pool.h"
+#include "base_cpp/red_black.h"
 #include "common/math/algebra.h"
 
 namespace indigo
@@ -85,7 +86,7 @@ namespace indigo
         Array<int> _simple_object_indexes;
         Array<int> _text_object_indexes;
         Array<int> _image_indexes;
-        Array<int> _explicit_reaction_object_indexes;
+        RedBlackSet<int> _explicit_reaction_object_indexes;
     };
 }
 #endif

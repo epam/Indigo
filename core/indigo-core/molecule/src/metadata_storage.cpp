@@ -39,7 +39,7 @@ int MetaDataStorage::addMetaObject(MetaObject* pobj, bool explicit_reaction_obje
         break;
     }
     if (explicit_reaction_object && !isReactionObject(pobj->_class_id))
-        _explicit_reaction_object_indexes.push(index);
+        _explicit_reaction_object_indexes.find_or_insert(index);
     return index;
 }
 
@@ -48,7 +48,11 @@ void MetaDataStorage::append(const MetaDataStorage& other)
     const auto& meta = other.metaData();
     for (int i = 0; i < meta.size(); i++)
         addMetaObject(meta[i]->clone());
-    _explicit_reaction_object_indexes.copy(other._explicit_reaction_object_indexes);
+    for (auto it = other._explicit_reaction_object_indexes.begin(); it != other._explicit_reaction_object_indexes.end();
+        it = other._explicit_reaction_object_indexes.next(it))
+    {
+        _explicit_reaction_object_indexes.insert(other._explicit_reaction_object_indexes.key(it));
+    }
 }
 
 void MetaDataStorage::clone(const MetaDataStorage& other)
@@ -86,7 +90,7 @@ int MetaDataStorage::getMetaObjectIndex(uint32_t meta_type, int index) const
 
 void MetaDataStorage::addExplicitReactionObjectIndex(int index)
 {
-    _explicit_reaction_object_indexes.push(index);
+    _explicit_reaction_object_indexes.find_or_insert(index);
 }
 
 const MetaObject& MetaDataStorage::getMetaObject(uint32_t meta_type, int index) const
@@ -136,8 +140,8 @@ void MetaDataStorage::resetReactionData()
         if (isReactionObject(_meta_data[i]->_class_id))
             _meta_data.remove(i);
 
-    for (auto i : _explicit_reaction_object_indexes)
-        _meta_data.remove(i);
+    for (auto it = _explicit_reaction_object_indexes.begin(); it != _explicit_reaction_object_indexes.end(); it = _explicit_reaction_object_indexes.next(it) )
+        _meta_data.remove(_explicit_reaction_object_indexes.key(it));
 
     _explicit_reaction_object_indexes.clear();
 }

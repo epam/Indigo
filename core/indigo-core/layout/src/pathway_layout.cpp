@@ -352,7 +352,13 @@ void PathwayLayout::generateTextBlocks(SimpleTextObjectBuilder& tob, const ObjAr
             SimpleTextLine textLine;
             textLine.text = props[i].ptr();
             if (std::round(height * 1000) < std::round(_text_line_height * 1000) && props.size() - i > 1)
-                textLine.text += "...";
+            {
+                const std::string ellipsis = "...";
+                if (textLine.text.size() >= ellipsis.size())
+                    textLine.text.replace(textLine.text.size() - ellipsis.size(), ellipsis.size(), ellipsis);
+                else
+                    textLine.text.append(ellipsis);
+            }
             auto& ts = textLine.text_styles.emplace_back();
             ts.offset = 0;
             ts.size = textLine.text.size();
@@ -390,16 +396,23 @@ std::vector<std::string> PathwayLayout::splitText(const std::string& text, float
         {
             if (text[current_pos] == '\n')
             {
-                last_break_pos = current_pos;
-                ++current_pos;
                 break;
             }
+
             width += symbol_width(text[current_pos]);
+
             if (std::isspace(text[current_pos]) || std::ispunct(text[current_pos]))
             {
                 last_break_pos = current_pos;
             }
             ++current_pos;
+        }
+
+        if (text[current_pos] == '\n')
+        {
+            result.push_back(text.substr(start, current_pos - start));
+            start = current_pos + 1;
+            continue;
         }
 
         if (current_pos == text.size())

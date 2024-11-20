@@ -329,7 +329,7 @@
             <s font="4" size="8.66667" face="2">123456789012345678901234567890</s>
         </t>
         <t id="118" p="1641.976074 245.940735" Justification="Left" InterpretChemically="no">
-            <s font="4" size="8.66667" face="2">123456789012345678901234567890...</s>
+            <s font="4" size="8.66667" face="2">123456789012345678901234567...</s>
         </t>
         <t id="121" p="1173.973877 366.900757" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
@@ -410,7 +410,7 @@
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
         <t id="136" p="594.422852 976.300720" Justification="Left" InterpretChemically="no">
-            <s font="4" size="8.66667" face="1">123456789012345678901234567890...</s>
+            <s font="4" size="8.66667" face="1">123456789012345678901234567...</s>
         </t>
         <arrow id="139" BoundingBox="434.833099 684.791870 98.833290 684.791870" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="434.833099 684.791870 0.000000" Tail3D="98.833290 684.791870 0.000000"/>
         <arrow id="151" BoundingBox="1977.976196 413.654114 1641.976074 413.654114" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="1977.976196 413.654114 0.000000" Tail3D="1641.976074 413.654114 0.000000"/>
