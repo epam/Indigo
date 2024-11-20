@@ -148,7 +148,7 @@
         "type": "ambiguousMonomer",
         "id": "1",
         "position": {
-            "x": 1.600000,
+            "x": 1.000000,
             "y": -0.000000
         },
         "seqid": 2,
@@ -159,7 +159,7 @@
         "type": "ambiguousMonomer",
         "id": "2",
         "position": {
-            "x": 3.200000,
+            "x": 2.000000,
             "y": -0.000000
         },
         "seqid": 3,
@@ -170,7 +170,7 @@
         "type": "ambiguousMonomer",
         "id": "3",
         "position": {
-            "x": 4.800000,
+            "x": 3.000000,
             "y": -0.000000
         },
         "seqid": 4,
