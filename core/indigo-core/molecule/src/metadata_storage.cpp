@@ -49,7 +49,7 @@ void MetaDataStorage::append(const MetaDataStorage& other)
     for (int i = 0; i < meta.size(); i++)
         addMetaObject(meta[i]->clone());
     for (auto it = other._explicit_reaction_object_indexes.begin(); it != other._explicit_reaction_object_indexes.end();
-        it = other._explicit_reaction_object_indexes.next(it))
+         it = other._explicit_reaction_object_indexes.next(it))
     {
         _explicit_reaction_object_indexes.insert(other._explicit_reaction_object_indexes.key(it));
     }
@@ -140,7 +140,7 @@ void MetaDataStorage::resetReactionData()
         if (isReactionObject(_meta_data[i]->_class_id))
             _meta_data.remove(i);
 
-    for (auto it = _explicit_reaction_object_indexes.begin(); it != _explicit_reaction_object_indexes.end(); it = _explicit_reaction_object_indexes.next(it) )
+    for (auto it = _explicit_reaction_object_indexes.begin(); it != _explicit_reaction_object_indexes.end(); it = _explicit_reaction_object_indexes.next(it))
         _meta_data.remove(_explicit_reaction_object_indexes.key(it));
 
     _explicit_reaction_object_indexes.clear();
