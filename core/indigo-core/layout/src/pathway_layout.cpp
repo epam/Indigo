@@ -157,7 +157,7 @@ void PathwayLayout::buildLayoutTree()
             totalHeight -= currentLayoutItem.children.back()->height / 2;
             totalHeight /= 2.0f;
             float targetHeight = totalLines * _text_line_height + _reaction_margin_size;
-            if (totalHeight < targetHeight)
+            if (totalHeight + totalSpacing / 2 < targetHeight)
             {
                 for (auto& child : currentLayoutItem.children)
                 {
@@ -329,7 +329,7 @@ void PathwayLayout::applyLayout()
                 {
                     insertSorted(metaObjects, std::make_pair(layoutItem->reactionIndex,
                                                              std::make_unique<ReactionArrowObject>(ReactionArrowObject::EFilledTriangle, tails.front(), head)));
-                    textPos_bl.x = tails.front().x + (_default_arrow_size - node.text_width) / 2;
+                    textPos_bl.x = tails.front().x + (_default_arrow_size - node.text_width - _reaction_margin_size * 2) / 2;
                 }
 
                 if (node.name_text.size() || node.conditions_text.size())
@@ -370,9 +370,9 @@ void PathwayLayout::addMetaText(PathwayReaction::ReactionNode& node, const Vec2f
     generateTextBlocks(tob, node.name_text, KFontBoldStr, height_limit);
     generateTextBlocks(tob, node.conditions_text, KFontItalicStr, height_limit);
     tob.finalize();
-    auto text_height = _text_line_height / 2 + (text_height_limit - height_limit);
-    Vec3f text_pos_tr(text_pos_bl.x, text_pos_bl.y + text_height, 0.0f);
-    _reaction.meta().addMetaObject(new SimpleTextObject(text_pos_tr, Vec2f(node.text_width, text_height), tob.getJsonString()), true);
+    auto text_height = _text_line_height * tob.getLineCounter();
+    Vec3f text_pos_tl(text_pos_bl.x, text_pos_bl.y - _text_line_height / 2.0f + text_height + _reaction_margin_size, 0.0f);
+    _reaction.meta().addMetaObject(new SimpleTextObject(text_pos_tl, Vec2f(node.text_width, text_height), tob.getJsonString()), true);
 }
 
 std::vector<std::string> PathwayLayout::splitText(const std::string& text, float max_width, std::function<float(char ch)> symbol_width)

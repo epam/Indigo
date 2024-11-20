@@ -195,10 +195,12 @@ namespace indigo
         void addLine(const SimpleTextLine& line);
         void finalize();
         std::string getJsonString() const;
+        int getLineCounter() const;
 
     private:
         rapidjson::Writer<rapidjson::StringBuffer> _writer;
         rapidjson::StringBuffer _buffer;
+        int _line_counter;
     };
 
     class ReactionArrowObject : public MetaObject

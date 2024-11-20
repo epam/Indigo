@@ -230,12 +230,13 @@ namespace indigo
         }
     }
 
-    SimpleTextObjectBuilder::SimpleTextObjectBuilder() : _writer(_buffer)
+    SimpleTextObjectBuilder::SimpleTextObjectBuilder() : _writer(_buffer), _line_counter(0)
     {
     }
 
     void SimpleTextObjectBuilder::addLine(const SimpleTextLine& line)
     {
+        _line_counter++;
         if (_buffer.GetLength() == 0)
         {
             _writer.StartObject();
@@ -286,6 +287,11 @@ namespace indigo
         if (_buffer.GetLength() > 0)
             result = _buffer.GetString();
         return result;
+    }
+
+    int SimpleTextObjectBuilder::getLineCounter() const
+    {
+        return _line_counter;
     }
 }
 
