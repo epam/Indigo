@@ -350,15 +350,15 @@ void PathwayLayout::generateTextBlocks(SimpleTextObjectBuilder& tob, const ObjAr
 {
     for (int i = 0; i < props.size(); ++i)
     {
-        if (std::round(height * 1000) >= std::round(_text_line_height * 1000))
+        if (std::round(height * ROUNDING_FACTOR) >= std::round(_text_line_height * ROUNDING_FACTOR))
         {
             height -= _text_line_height;
             SimpleTextLine textLine;
             textLine.text = props[i].ptr();
-            if (std::round(height * 1000) < std::round(_text_line_height * 1000) && props.size() - i > 1)
+            if (std::round(height * ROUNDING_FACTOR) < std::round(_text_line_height * ROUNDING_FACTOR) && props.size() - i > 1)
             {
                 const std::string ellipsis = "...";
-                if (textLine.text.size() >= ellipsis.size())
+                if (textLine.text.size() >= ellipsis.size() && (textLine.text.size() + ellipsis.size()) > MAX_SYMBOLS)
                     textLine.text.replace(textLine.text.size() - ellipsis.size(), ellipsis.size(), ellipsis);
                 else
                     textLine.text.append(ellipsis);
@@ -399,24 +399,14 @@ std::vector<std::string> PathwayLayout::splitText(const std::string& text, float
         while (current_pos < text.size() && width + symbol_width(text[current_pos]) < max_width)
         {
             if (text[current_pos] == '\n')
-            {
                 break;
-            }
 
             width += symbol_width(text[current_pos]);
 
             if (std::isspace(text[current_pos]) || std::ispunct(text[current_pos]))
-            {
                 last_break_pos = current_pos;
-            }
-            ++current_pos;
-        }
 
-        if (text[current_pos] == '\n' || text[current_pos] == ' ')
-        {
-            result.push_back(text.substr(start, current_pos - start));
-            start = current_pos + 1;
-            continue;
+            ++current_pos;
         }
 
         if (current_pos == text.size())
@@ -425,20 +415,32 @@ std::vector<std::string> PathwayLayout::splitText(const std::string& text, float
             break;
         }
 
-        if (last_break_pos > start)
+        if (text[current_pos] == '\n' || text[current_pos] == ' ')
         {
-            result.push_back(text.substr(start, last_break_pos - start));
-            start = last_break_pos + 1;
-            while (start < text.size() && std::isspace(text[start]))
-            {
-                ++start;
-            }
+            // if the line ends with a space or a new line
+            result.push_back(text.substr(start, current_pos - start));
+            start = current_pos + 1;
         }
-        else
+        else if (std::ispunct(text[current_pos]) || last_break_pos == start)
         {
+            // if the line ends with a punctuation
             result.push_back(text.substr(start, current_pos - start));
             start = current_pos;
         }
+        else if (last_break_pos > start)
+        {
+            // last break position is found
+            if (std::isspace(text[last_break_pos]))
+                result.push_back(text.substr(start, last_break_pos - start));
+            else
+                result.push_back(text.substr(start, last_break_pos - start + 1));
+
+            start = last_break_pos + 1;
+        }
+
+        // skip spaces after break to avoid next line starting with space
+        while (start < text.size() && std::isspace(text[start]))
+            ++start;
     }
 
     return result;

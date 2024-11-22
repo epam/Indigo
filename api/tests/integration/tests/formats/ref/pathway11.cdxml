@@ -514,7 +514,7 @@
             <s font="4" size="8.66667" face="3">Potassium carbonate | Stage 2:</s>
         </t>
         <t id="161" p="1247.496704 119.420479" Justification="Left" InterpretChemically="no">
-            <s font="4" size="8.66667" face="3">5 h, 80 degree, acid, Dy(3+)</s>
+            <s font="4" size="8.66667" face="3">5 h, 80 degree, acid, Dy(3+)-</s>
         </t>
         <t id="161" p="1247.496704 119.420479" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">salt C3Dy1F9O9S3,</s>
@@ -532,14 +532,14 @@
         <t id="164" p="1247.496704 544.744507" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">SmI2.THF</s>
         </t>
-        <t id="167" p="730.497253 615.989075" Justification="Left" InterpretChemically="no">
+        <t id="167" p="727.691711 615.989075" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Ozonolysis</s>
         </t>
-        <t id="167" p="730.497253 615.989075" Justification="Left" InterpretChemically="no"/>
-        <t id="167" p="730.497253 615.989075" Justification="Left" InterpretChemically="no">
-            <s font="4" size="8.66667" face="3">O3.MeOH.CH2Cl2.PPh3 or Me2S</s>
+        <t id="167" p="727.691711 615.989075" Justification="Left" InterpretChemically="no"/>
+        <t id="167" p="727.691711 615.989075" Justification="Left" InterpretChemically="no">
+            <s font="4" size="8.66667" face="3">O3.MeOH.CH2Cl2.PPh3 or Me2S.</s>
         </t>
-        <t id="167" p="730.497253 615.989075" Justification="Left" InterpretChemically="no">
+        <t id="167" p="727.691711 615.989075" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">low temperature</s>
         </t>
         <t id="170" p="242.335175 626.789062" Justification="Left" InterpretChemically="no">

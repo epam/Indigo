@@ -57,6 +57,7 @@ namespace indigo
         static constexpr int MAX_DEPTHS = 10;
         static constexpr int MAX_SYMBOLS = 30;
         static constexpr int MIN_LINES_COUNT = 9;
+        static constexpr int ROUNDING_FACTOR = 1000;
         static constexpr auto REACTION_CONDITIONS = "Reaction Conditions";
         static constexpr auto REACTION_NAME = "Name";
         static constexpr auto REACTION_PROPERTY_NA = "Not available";
