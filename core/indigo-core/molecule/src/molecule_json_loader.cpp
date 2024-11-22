@@ -18,6 +18,10 @@
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
+
 using namespace rapidjson;
 using namespace indigo;
 using namespace std;
@@ -26,7 +30,8 @@ IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
-      _connection_array(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), components_count(0), _document()
+      _connection_array(kArrayType), _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), components_count(0),
+      _document()
 {
     parse_ket(ket);
 }
@@ -63,6 +68,10 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
                 else if (node_type.compare("ambiguousMonomer") == 0)
                 {
                     _monomer_array.PushBack(node, ket.GetAllocator());
+                }
+                else if (node_type == "monomerShape")
+                {
+                    _monomer_shapes.PushBack(node, ket.GetAllocator());
                 }
                 else
                     throw Error("Unknows node type: %s", node_type.c_str());
@@ -103,7 +112,8 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
 
 MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
     : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
-      _connection_array(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), components_count(0), _document()
+      _connection_array(kArrayType), _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), components_count(0),
+      _document()
 {
     if (scanner.lookNext() == '{')
     {
@@ -122,9 +132,9 @@ MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
 }
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
-    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType), _connection_array(kArrayType), _pmol(0), _pqmol(0),
-      ignore_noncritical_query_features(false), ignore_no_chiral_flag(false), skip_3d_chirality(false), treat_x_as_pseudoatom(false), treat_stereo_as(0),
-      components_count(0), _document()
+    : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType), _connection_array(kArrayType),
+      _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), ignore_no_chiral_flag(false), skip_3d_chirality(false),
+      treat_x_as_pseudoatom(false), treat_stereo_as(0), components_count(0), _document()
 {
 }
 
@@ -1323,7 +1333,6 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
                 }
                 tg.tgroup_name.readString(tg_name.c_str(), true);
             }
-            bool unresolved = false;
             if (monomer_template.HasMember("unresolved"))
                 tg.unresolved = monomer_template["unresolved"].GetBool();
         }
@@ -1474,7 +1483,6 @@ void MoleculeJsonLoader::parseAmbiguousMonomerTemplate(const rapidjson::Value& m
     if (monomer_template.HasMember("options"))
     {
         auto& options = monomer_template["options"];
-        int att_index = 0;
         const char* num_name = tg.mixture ? "ratio" : "probability";
         for (SizeType i = 0; i < options.Size(); i++)
         {
@@ -1651,6 +1659,22 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             mol.asMolecule().setTemplateAtomClass(idx, monomerMolClass(monomerTemplateClass(_templates[temp_it->second])).c_str());
             mol.asMolecule().setTemplateAtomTemplateIndex(idx, temp_it->second);
         }
+    }
+
+    for (SizeType i = 0; i < _monomer_shapes.Size(); i++)
+    {
+        auto& shape = _monomer_shapes[i];
+        Vec2f position;
+        const Value& coords = shape["position"];
+        position.x = coords["x"].GetFloat();
+        position.y = coords["y"].GetFloat();
+        std::vector<std::string> monomers;
+        auto& mons = shape["monomers"];
+        for (SizeType j = 0; j < mons.Size(); j++)
+        {
+            monomers.emplace_back(mons[j].GetString());
+        }
+        mol.monomer_shapes.emplace_back(shape["id"].GetString(), shape["collapsed"].GetBool(), shape["shape"].GetString(), position, monomers);
     }
 
     std::vector<int> ignore_cistrans(mol.edgeCount());
@@ -1967,3 +1991,7 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
         }
     }
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

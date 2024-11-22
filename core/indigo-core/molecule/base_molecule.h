@@ -121,6 +121,7 @@ namespace indigo
     class QueryMolecule;
     class MetaDataStorage;
     class KetDocument;
+    class KetMonomerShape;
 
     class DLLEXPORT BaseMolecule : public Graph
     {
@@ -552,6 +553,8 @@ namespace indigo
         void removeAlias(int atom_idx);
 
         KetDocument& getKetDocument();
+
+        std::vector<KetMonomerShape> monomer_shapes;
 
         DECL_ERROR;
 

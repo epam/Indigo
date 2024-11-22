@@ -684,6 +684,7 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
     name.copy(other.name);
     original_format = other.original_format;
     copyProperties(other, *mapping);
+    monomer_shapes = other.monomer_shapes;
 }
 
 void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
@@ -717,6 +718,7 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
     name.copy(other.name);
     original_format = other.original_format;
     copyProperties(other, mapping);
+    monomer_shapes = other.monomer_shapes;
 }
 
 void BaseMolecule::mergeWithMolecule(BaseMolecule& other, Array<int>* mapping, int skip_flags)

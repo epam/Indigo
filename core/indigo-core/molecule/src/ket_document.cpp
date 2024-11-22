@@ -23,7 +23,7 @@
 #include "molecule/molecule_json_loader.h"
 
 #ifdef _MSC_VER
-#pragma warning(push)
+#pragma warning(push, 4)
 #endif
 
 using namespace indigo;
@@ -146,7 +146,8 @@ BaseMolecule& KetDocument::getBaseMolecule()
         saver.saveKetDocument(*this);
         // load molecule from ket
         rapidjson::Document data;
-        auto& res = data.Parse(json.c_str());
+        std::ignore = data.Parse(json.c_str());
+        // auto& res = data.Parse(json.c_str());
         // if res.hasParseError()
         MoleculeJsonLoader loader(data);
         loader.stereochemistry_options.ignore_errors = true;
@@ -213,19 +214,19 @@ void KetDocument::processAmbiguousMonomerTemplates()
         auto& options = it.second.options();
         if (options.size() == 0)
             continue;
-        for (auto& it : options)
+        for (auto& opt_it : options)
         {
-            if (it.ratio().has_value())
+            if (opt_it.ratio().has_value())
                 has_ratio = true;
-            if (it.probability().has_value())
+            if (opt_it.probability().has_value())
                 has_probability = true;
         }
         if (has_ratio && has_probability)
             throw Error("Variant monomer template '%s' has options with both ratio and probability set.", it.first.c_str());
         MonomerClass monomer_class = _templates.at(options[0].templateId()).monomerClass();
-        for (auto& it : options)
+        for (auto& opt_it : options)
         {
-            if (_templates.at(it.templateId()).monomerClass() != monomer_class)
+            if (_templates.at(opt_it.templateId()).monomerClass() != monomer_class)
             {
                 monomer_class = MonomerClass::Unknown;
                 break;
@@ -234,11 +235,11 @@ void KetDocument::processAmbiguousMonomerTemplates()
         it.second.setMonomerClass(monomer_class);
         // calc attachment points
         std::map<std::string, KetAttachmentPoint> var_att_points;
-        for (auto it : options)
+        for (auto opt_it : options)
         {
-            if ((it.ratio().has_value() && it.ratio().value() == 0) || (it.probability().has_value() && it.probability().value() == 0))
+            if ((opt_it.ratio().has_value() && opt_it.ratio().value() == 0) || (opt_it.probability().has_value() && opt_it.probability().value() == 0))
                 continue;
-            auto& opt_att_points = _templates.at(it.templateId()).attachmentPoints();
+            auto& opt_att_points = _templates.at(opt_it.templateId()).attachmentPoints();
             if (var_att_points.size() == 0) // first option
             {
                 var_att_points = opt_att_points;
@@ -416,7 +417,6 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
     }
 
     std::map<std::pair<std::string, std::string>, const KetConnection&> ap_to_connection;
-    int conn_idx = 0;
     for (auto& connection : _connections)
     {
         auto& ep1 = connection.ep1();
