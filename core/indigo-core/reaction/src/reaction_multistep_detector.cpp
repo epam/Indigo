@@ -340,7 +340,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
             // idx_cs_min_reac <-> idx_cs_min_prod
             csb_min_reac.arrows_to.push_back(idx_cs_min_prod);
             csb_min_prod.arrows_from.push_back(idx_cs_min_reac);
-            csb_min_reac.reaction_idx = reaction_index;
+            // csb_min_reac.reaction_idx = reaction_index;
             csb_min_prod.reaction_idx = reaction_index;
         }
     }
@@ -733,17 +733,11 @@ void ReactionMultistepDetector::collectProperties(PathwayReaction::SimpleReactio
             is_condition = true;
     }
 
-    if (name.size())
-    {
-        int id = sr.properties.insert(PathwayLayout::REACTION_NAME);
-        sr.properties.value(id).readString(name.c_str(), true);
-    }
+    int id = sr.properties.insert(PathwayLayout::REACTION_NAME);
+    sr.properties.value(id).readString(name.empty() ? PathwayLayout::REACTION_PROPERTY_NA : name.c_str(), true);
 
-    if (condition.size())
-    {
-        int id = sr.properties.insert(PathwayLayout::REACTION_CONDITIONS);
-        sr.properties.value(id).readString(condition.c_str(), true);
-    }
+    id = sr.properties.insert(PathwayLayout::REACTION_CONDITIONS);
+    sr.properties.value(id).readString(condition.empty() ? PathwayLayout::REACTION_PROPERTY_NA : condition.c_str(), true);
 }
 
 void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn)
@@ -804,7 +798,7 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
     }
 }
 
-void indigo::ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
+void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
 {
     for (auto& csb : _component_summ_blocks)
     {

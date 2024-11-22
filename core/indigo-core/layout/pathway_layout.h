@@ -59,6 +59,7 @@ namespace indigo
         static constexpr int MIN_LINES_COUNT = 9;
         static constexpr auto REACTION_CONDITIONS = "Reaction Conditions";
         static constexpr auto REACTION_NAME = "Name";
+        static constexpr auto REACTION_PROPERTY_NA = "Not available";
 
         PathwayLayout(PathwayReaction& reaction, const LayoutOptions& options)
             : _reaction(reaction), _depths(MAX_DEPTHS, 0), _maxDepth(0), _bond_length(options.DEFAULT_BOND_LENGTH),

@@ -304,9 +304,7 @@
             <b id="255" B="115" E="116"/>
             <b id="256" B="116" E="117"/>
         </fragment>
-        <t id="118" p="1125.922607 226.056747" Justification="Left" InterpretChemically="no">
-            <s font="4" size="8.66667" face="2">123456789012345678901234567890</s>
-        </t>
+        <t id="118" p="1125.922607 226.056747" Justification="Left" InterpretChemically="no"/>
         <t id="118" p="1125.922607 226.056747" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="2">123456789012345678901234567890</s>
         </t>

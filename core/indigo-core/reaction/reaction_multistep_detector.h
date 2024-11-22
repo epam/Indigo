@@ -53,7 +53,6 @@ namespace indigo
         ReactionType detectReaction();
         void constructMultipleArrowReaction(BaseReaction& rxn);
         void constructSimpleArrowReaction(BaseReaction& rxn);
-
         void constructPathwayReaction(PathwayReaction& rxn);
         void detectPathwayMetadata(PathwayReaction& rxn);
         void collectMetadata(int reaction_idx, PathwayReaction& rxn, const Rect2f& bbox);
