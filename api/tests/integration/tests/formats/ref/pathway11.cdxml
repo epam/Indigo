@@ -492,10 +492,10 @@
         </t>
         <t id="158" p="1711.179077 348.282501" Justification="Left" InterpretChemically="no"/>
         <t id="158" p="1711.179077 348.282501" Justification="Left" InterpretChemically="no">
-            <s font="4" size="8.66667" face="3">KOH. toluene. PTC. catalyst</s>
+            <s font="4" size="8.66667" face="3">KOH. toluene. PTC. catalyst or</s>
         </t>
         <t id="158" p="1711.179077 348.282501" Justification="Left" InterpretChemically="no">
-            <s font="4" size="8.66667" face="3">or KI. base e.g. K2CO3</s>
+            <s font="4" size="8.66667" face="3">KI. base e.g. K2CO3</s>
         </t>
         <t id="161" p="1247.496704 119.420479" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Published reaction</s>
@@ -511,7 +511,7 @@
             <s font="4" size="8.66667" face="3">Dichloromethane, CK2O3   </s>
         </t>
         <t id="161" p="1247.496704 119.420479" Justification="Left" InterpretChemically="no">
-            <s font="4" size="8.66667" face="3">Potassium carbonate | Stage 2</s>
+            <s font="4" size="8.66667" face="3">Potassium carbonate | Stage 2:</s>
         </t>
         <t id="161" p="1247.496704 119.420479" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">5 h, 80 degree, acid, Dy(3+)</s>
