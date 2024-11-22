@@ -396,7 +396,7 @@ std::vector<std::string> PathwayLayout::splitText(const std::string& text, float
         size_t last_break_pos = start;
         size_t current_pos = start;
 
-        while (current_pos < text.size() && width + symbol_width(text[current_pos]) <= max_width)
+        while (current_pos < text.size() && width + symbol_width(text[current_pos]) < max_width)
         {
             if (text[current_pos] == '\n')
             {
