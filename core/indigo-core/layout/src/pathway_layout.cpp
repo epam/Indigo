@@ -412,7 +412,7 @@ std::vector<std::string> PathwayLayout::splitText(const std::string& text, float
             ++current_pos;
         }
 
-        if (text[current_pos] == '\n')
+        if (text[current_pos] == '\n' || text[current_pos] == ' ')
         {
             result.push_back(text.substr(start, current_pos - start));
             start = current_pos + 1;
