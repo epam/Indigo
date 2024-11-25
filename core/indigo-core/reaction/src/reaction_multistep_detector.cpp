@@ -17,6 +17,7 @@
  ***************************************************************************/
 #include <numeric>
 
+#include "layout/pathway_layout.h"
 #include "reaction/pathway_reaction.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_multistep_detector.h"
@@ -339,7 +340,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
             // idx_cs_min_reac <-> idx_cs_min_prod
             csb_min_reac.arrows_to.push_back(idx_cs_min_prod);
             csb_min_prod.arrows_from.push_back(idx_cs_min_reac);
-            csb_min_reac.reaction_idx = reaction_index;
+            // csb_min_reac.reaction_idx = reaction_index;
             csb_min_prod.reaction_idx = reaction_index;
         }
     }
@@ -404,7 +405,7 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
         else
         {
             auto& csb_min_prod = _component_summ_blocks[idx_cs_min_prod];
-            csb_min_prod.reaction_idx = pathway_idx;
+            csb_min_prod.reaction_idx = pathway_idx + _bmol.meta().getMetaCount(ReactionArrowObject::CID);
             auto& rc_arrow = _reaction_components[_moleculeCount + _bmol.meta().getMetaCount(ReactionPlusObject::CID) +
                                                   _bmol.meta().getMetaCount(ReactionArrowObject::CID) + pathway_idx];
             rc_arrow.summ_block_idx = ReactionComponent::CONNECTED; // mark arrow as connected
@@ -434,7 +435,7 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
                     csb_min_reac.arrows_to.push_back(idx_cs_min_prod);
                     _component_summ_blocks[idx_cs_min_prod].arrows_from.push_back(reac.second);
                 }
-                csb_min_reac.reaction_idx = pathway_idx;
+                // csb_min_reac.reaction_idx = pathway_idx + _bmol.meta().getMetaCount(ReactionArrowObject::CID);
             }
             else
                 bad_pathway = true;
@@ -569,6 +570,7 @@ void ReactionMultistepDetector::constructPathwayReaction(PathwayReaction& rxn)
             csb_reactions.emplace_back().second.push_back(i); // add csb as product
 
             auto [sri, sr] = rxn.addReaction();
+            sr.arrowMetaIndex = csb.reaction_idx;
             // add products
             for (auto rc_idx : csb.indexes)
             {
@@ -646,6 +648,96 @@ void ReactionMultistepDetector::constructPathwayReaction(PathwayReaction& rxn)
             }
         }
     }
+    detectPathwayMetadata(rxn);
+}
+
+void ReactionMultistepDetector::detectPathwayMetadata(PathwayReaction& rxn)
+{
+    auto arrow_count = rxn.meta().getMetaCount(ReactionArrowObject::CID);
+    auto multi_count = rxn.meta().getMetaCount(ReactionMultitailArrowObject::CID);
+
+    for (int i = 0; i < rxn.getReactionCount(); ++i)
+    {
+        auto& sr = rxn.getReaction(i);
+        if (sr.arrowMetaIndex >= 0)
+        {
+            if (arrow_count && sr.arrowMetaIndex < arrow_count)
+            {
+                auto& arrow = static_cast<const ReactionArrowObject&>(rxn.meta().getMetaObject(ReactionArrowObject::CID, sr.arrowMetaIndex));
+                Vec2f box_rt = arrow.getHead();
+                box_rt.y += (arrow.getHead() - arrow.getTail()).length() / 2;
+                Rect2f lookup_box(arrow.getTail(), box_rt);
+                collectMetadata(i, rxn, lookup_box);
+            }
+            else
+            {
+                auto& multi_arrow = static_cast<const ReactionMultitailArrowObject&>(
+                    rxn.meta().getMetaObject(ReactionMultitailArrowObject::CID, sr.arrowMetaIndex - arrow_count));
+                Rect2f lookup_box(multi_arrow.getHead(), multi_arrow.getSpineBegin());
+                collectMetadata(i, rxn, lookup_box);
+            }
+        }
+    }
+}
+
+void ReactionMultistepDetector::collectMetadata(int reaction_idx, PathwayReaction& rxn, const Rect2f& bbox)
+{
+    auto& sr = rxn.getReaction(reaction_idx);
+    float min_dist;
+    int text_idx = -1;
+    for (int i = 0; i < rxn.meta().getMetaCount(SimpleTextObject::CID); ++i)
+    {
+        auto& text = static_cast<const SimpleTextObject&>(rxn.meta().getMetaObject(SimpleTextObject::CID, i));
+        Rect2f text_bbox;
+        text.getBoundingBox(text_bbox);
+        if (bbox.intersects(text_bbox))
+        {
+            auto dist = Vec2f::dist(bbox.leftBottom(), text_bbox.leftBottom());
+            if (text_idx < 0 || dist < min_dist)
+            {
+                text_idx = i;
+                min_dist = dist;
+            }
+        }
+    }
+    if (text_idx >= 0)
+    {
+        collectProperties(sr, static_cast<const SimpleTextObject&>(rxn.meta().getMetaObject(SimpleTextObject::CID, text_idx)));
+        int meta_id = rxn.meta().getMetaObjectIndex(SimpleTextObject::CID, text_idx);
+        rxn.meta().addExplicitReactionObjectIndex(meta_id);
+    }
+}
+
+void ReactionMultistepDetector::collectProperties(PathwayReaction::SimpleReaction& sr, const SimpleTextObject& text_obj)
+{
+    std::string name, condition;
+    bool is_condition = false;
+    for (const auto& line : text_obj.getLines())
+    {
+        if (line.text.size())
+        {
+            if (is_condition)
+            {
+                if (condition.size())
+                    condition += "\n";
+                condition += line.text;
+            }
+            else
+            {
+                if (name.size())
+                    name += "\n";
+                name += line.text;
+            }
+        }
+        else
+            is_condition = true;
+    }
+
+    int id = sr.properties.insert(PathwayLayout::REACTION_NAME);
+    sr.properties.value(id).readString(name.empty() ? PathwayLayout::REACTION_PROPERTY_NA : name.c_str(), true);
+
+    id = sr.properties.insert(PathwayLayout::REACTION_CONDITIONS);
+    sr.properties.value(id).readString(condition.empty() ? PathwayLayout::REACTION_PROPERTY_NA : condition.c_str(), true);
 }
 
 void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn)
@@ -706,7 +798,7 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
     }
 }
 
-void indigo::ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
+void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
 {
     for (auto& csb : _component_summ_blocks)
     {

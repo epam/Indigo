@@ -6,11 +6,14 @@ using namespace indigo;
 
 IMPL_ERROR(MetaDataStorage, "metadata storage");
 
-int MetaDataStorage::addMetaObject(MetaObject* pobj)
+bool isReactionObject(uint32_t class_id)
 {
-    int index = _meta_data.size();
-    _meta_data.expand(index + 1);
-    _meta_data.set(index, pobj);
+    return class_id == ReactionArrowObject::CID || class_id == ReactionPlusObject::CID || class_id == ReactionMultitailArrowObject::CID;
+}
+
+int MetaDataStorage::addMetaObject(MetaObject* pobj, bool explicit_reaction_object)
+{
+    int index = _meta_data.add(pobj);
 
     switch (pobj->_class_id)
     {
@@ -35,6 +38,8 @@ int MetaDataStorage::addMetaObject(MetaObject* pobj)
     default:
         break;
     }
+    if (explicit_reaction_object && !isReactionObject(pobj->_class_id))
+        _explicit_reaction_object_indexes.find_or_insert(index);
     return index;
 }
 
@@ -43,6 +48,11 @@ void MetaDataStorage::append(const MetaDataStorage& other)
     const auto& meta = other.metaData();
     for (int i = 0; i < meta.size(); i++)
         addMetaObject(meta[i]->clone());
+    for (auto it = other._explicit_reaction_object_indexes.begin(); it != other._explicit_reaction_object_indexes.end();
+         it = other._explicit_reaction_object_indexes.next(it))
+    {
+        _explicit_reaction_object_indexes.insert(other._explicit_reaction_object_indexes.key(it));
+    }
 }
 
 void MetaDataStorage::clone(const MetaDataStorage& other)
@@ -76,6 +86,11 @@ int MetaDataStorage::getMetaObjectIndex(uint32_t meta_type, int index) const
         throw Error("Unknown meta type");
         break;
     }
+}
+
+void MetaDataStorage::addExplicitReactionObjectIndex(int index)
+{
+    _explicit_reaction_object_indexes.find_or_insert(index);
 }
 
 const MetaObject& MetaDataStorage::getMetaObject(uint32_t meta_type, int index) const
@@ -122,9 +137,11 @@ void MetaDataStorage::resetReactionData()
     _arrow_indexes.clear();
     _multi_tail_indexes.clear();
     for (int i = _meta_data.size() - 1; i >= 0; i--)
-    {
-        if (_meta_data[i]->_class_id == ReactionArrowObject::CID || _meta_data[i]->_class_id == ReactionPlusObject::CID ||
-            _meta_data[i]->_class_id == ReactionMultitailArrowObject::CID)
+        if (isReactionObject(_meta_data[i]->_class_id))
             _meta_data.remove(i);
-    }
+
+    for (auto it = _explicit_reaction_object_indexes.begin(); it != _explicit_reaction_object_indexes.end(); it = _explicit_reaction_object_indexes.next(it))
+        _meta_data.remove(_explicit_reaction_object_indexes.key(it));
+
+    _explicit_reaction_object_indexes.clear();
 }

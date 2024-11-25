@@ -152,15 +152,18 @@ void PathwayLayout::buildLayoutTree()
 
             auto totalHeight = std::accumulate(currentLayoutItem.children.begin(), currentLayoutItem.children.end(), 0.0f,
                                                [](float summ, const PathwayLayoutItem* item) { return summ + item->height; });
+            auto totalSpacing = (currentLayoutItem.children.size() - 1) * VERTICAL_SPACING;
             totalHeight -= currentLayoutItem.children.front()->height / 2;
             totalHeight -= currentLayoutItem.children.back()->height / 2;
             totalHeight /= 2.0f;
-            float targetHeight = totalLines * _text_height + _reaction_margin_size;
-            if (totalHeight < targetHeight)
+            float targetHeight = totalLines * _text_line_height + _reaction_margin_size;
+            if (totalHeight + totalSpacing / 2 < targetHeight)
             {
-                auto adjustHeight = (targetHeight - totalHeight) / (currentLayoutItem.children.size() - 1);
                 for (auto& child : currentLayoutItem.children)
-                    child->height += adjustHeight * TEXT_ADJUSTMENT; // should be 2.0f
+                {
+                    child->height *= (targetHeight - totalSpacing / 2);
+                    child->height /= totalHeight;
+                }
             }
         }
     }
@@ -168,6 +171,8 @@ void PathwayLayout::buildLayoutTree()
 
 void PathwayLayout::copyTextPropertiesToNode(const PathwayReaction::SimpleReaction& reaction, PathwayReaction::ReactionNode& node)
 {
+    node.name_text.clear();
+    node.conditions_text.clear();
     auto& props = reaction.properties;
     // split text labels and put them into the reaction node name_text and conditions_text
     auto text_max_width = _default_arrow_size - _reaction_margin_size * 2;
@@ -175,9 +180,13 @@ void PathwayLayout::copyTextPropertiesToNode(const PathwayReaction::SimpleReacti
     auto italicWidthLambda = [text_max_width](char ch) { return text_max_width / MAX_SYMBOLS; }; // TODO: implement italic font width
     for (auto prop_idx = props.begin(); prop_idx != props.end(); prop_idx = props.next(prop_idx))
     {
+        std::string prop_val = props.value(prop_idx).ptr();
+        if (prop_val == REACTION_PROPERTY_NA)
+            continue;
+
         if (props.key(prop_idx) == std::string(REACTION_NAME))
         {
-            auto splitted_name = splitText(props.value(prop_idx).ptr(), text_max_width, boldWidthLambda);
+            auto splitted_name = splitText(prop_val, text_max_width, boldWidthLambda);
             for (auto& line : splitted_name)
             {
                 node.name_text.push().readString(line.c_str(), true);
@@ -187,7 +196,7 @@ void PathwayLayout::copyTextPropertiesToNode(const PathwayReaction::SimpleReacti
         }
         else if (props.key(prop_idx) == std::string(REACTION_CONDITIONS))
         {
-            auto splitted_conditions = splitText(props.value(prop_idx).ptr(), text_max_width, italicWidthLambda);
+            auto splitted_conditions = splitText(prop_val, text_max_width, italicWidthLambda);
             for (auto& line : splitted_conditions)
             {
                 node.conditions_text.push().readString(line.c_str(), true);
@@ -197,7 +206,7 @@ void PathwayLayout::copyTextPropertiesToNode(const PathwayReaction::SimpleReacti
         }
     }
 
-    if (node.name_text.size())
+    if (node.conditions_text.size())
         node.name_text.push().readString("", true);
 }
 
@@ -306,7 +315,7 @@ void PathwayLayout::applyLayout()
                 arrows.insert(arrows.end(), tails.begin(), tails.end());
 
                 // add spines
-                float text_height_limit = MIN_LINES_COUNT * _text_height;
+                float text_height_limit = MIN_LINES_COUNT * _text_line_height;
                 auto& node = _reaction.getReactionNode(layoutItem->reactionIndex);
                 Vec2f textPos_bl(0, head.y);
                 if (tails.size() > 1)
@@ -324,7 +333,7 @@ void PathwayLayout::applyLayout()
                 {
                     insertSorted(metaObjects, std::make_pair(layoutItem->reactionIndex,
                                                              std::make_unique<ReactionArrowObject>(ReactionArrowObject::EFilledTriangle, tails.front(), head)));
-                    textPos_bl.x = tails.front().x + (_default_arrow_size - node.text_width) / 2;
+                    textPos_bl.x = tails.front().x + (_default_arrow_size - node.text_width - _reaction_margin_size * 2) / 2;
                 }
 
                 if (node.name_text.size() || node.conditions_text.size())
@@ -341,13 +350,19 @@ void PathwayLayout::generateTextBlocks(SimpleTextObjectBuilder& tob, const ObjAr
 {
     for (int i = 0; i < props.size(); ++i)
     {
-        if (height > _text_height)
+        if (std::round(height * ROUNDING_FACTOR) >= std::round(_text_line_height * ROUNDING_FACTOR))
         {
-            height -= _text_height;
+            height -= _text_line_height;
             SimpleTextLine textLine;
             textLine.text = props[i].ptr();
-            if (height < _text_height && props.size() - i > 1)
-                textLine.text += "...";
+            if (std::round(height * ROUNDING_FACTOR) < std::round(_text_line_height * ROUNDING_FACTOR) && props.size() - i > 1)
+            {
+                const std::string ellipsis = "...";
+                if (textLine.text.size() >= ellipsis.size() && (textLine.text.size() + ellipsis.size()) > MAX_SYMBOLS)
+                    textLine.text.replace(textLine.text.size() - ellipsis.size(), ellipsis.size(), ellipsis);
+                else
+                    textLine.text.append(ellipsis);
+            }
             auto& ts = textLine.text_styles.emplace_back();
             ts.offset = 0;
             ts.size = textLine.text.size();
@@ -365,8 +380,9 @@ void PathwayLayout::addMetaText(PathwayReaction::ReactionNode& node, const Vec2f
     generateTextBlocks(tob, node.name_text, KFontBoldStr, height_limit);
     generateTextBlocks(tob, node.conditions_text, KFontItalicStr, height_limit);
     tob.finalize();
-    Vec3f text_pos_lr(text_pos_bl.x, text_pos_bl.y + _text_height / 2 + (text_height_limit - height_limit), 0.0f);
-    _reaction.meta().addMetaObject(new SimpleTextObject(text_pos_lr, tob.getJsonString()));
+    auto text_height = _text_line_height * tob.getLineCounter();
+    Vec3f text_pos_tl(text_pos_bl.x, text_pos_bl.y - _text_line_height / 2.0f + text_height + _reaction_margin_size, 0.0f);
+    _reaction.meta().addMetaObject(new SimpleTextObject(text_pos_tl, Vec2f(node.text_width, text_height), tob.getJsonString()), true);
 }
 
 std::vector<std::string> PathwayLayout::splitText(const std::string& text, float max_width, std::function<float(char ch)> symbol_width)
@@ -380,13 +396,16 @@ std::vector<std::string> PathwayLayout::splitText(const std::string& text, float
         size_t last_break_pos = start;
         size_t current_pos = start;
 
-        while (current_pos < text.size() && width + symbol_width(text[current_pos]) <= max_width)
+        while (current_pos < text.size() && width + symbol_width(text[current_pos]) < max_width)
         {
+            if (text[current_pos] == '\n')
+                break;
+
             width += symbol_width(text[current_pos]);
+
             if (std::isspace(text[current_pos]) || std::ispunct(text[current_pos]))
-            {
                 last_break_pos = current_pos;
-            }
+
             ++current_pos;
         }
 
@@ -396,20 +415,32 @@ std::vector<std::string> PathwayLayout::splitText(const std::string& text, float
             break;
         }
 
-        if (last_break_pos > start)
+        if (text[current_pos] == '\n' || text[current_pos] == ' ')
         {
-            result.push_back(text.substr(start, last_break_pos - start));
-            start = last_break_pos + 1;
-            while (start < text.size() && std::isspace(text[start]))
-            {
-                ++start;
-            }
+            // if the line ends with a space or a new line
+            result.push_back(text.substr(start, current_pos - start));
+            start = current_pos + 1;
         }
-        else
+        else if (std::ispunct(text[current_pos]) || last_break_pos == start)
         {
+            // if the line ends with a punctuation
             result.push_back(text.substr(start, current_pos - start));
             start = current_pos;
         }
+        else if (last_break_pos > start)
+        {
+            // last break position is found
+            if (std::isspace(text[last_break_pos]))
+                result.push_back(text.substr(start, last_break_pos - start));
+            else
+                result.push_back(text.substr(start, last_break_pos - start + 1));
+
+            start = last_break_pos + 1;
+        }
+
+        // skip spaces after break to avoid next line starting with space
+        while (start < text.size() && std::isspace(text[start]))
+            ++start;
     }
 
     return result;

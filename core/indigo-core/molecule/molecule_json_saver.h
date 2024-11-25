@@ -66,6 +66,8 @@ namespace indigo
         int getMonomerNumber(int mon_idx);
 
         void writeFloat(JsonWriter& writer, float f_value);
+        void writePos(JsonWriter& writer, const Vec3f& pos);
+
         void saveAtoms(BaseMolecule& mol, JsonWriter& writer);
         void saveBonds(BaseMolecule& mol, JsonWriter& writer);
         void saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, JsonWriter& writer);

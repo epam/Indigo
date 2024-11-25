@@ -71,7 +71,6 @@ namespace indigo
         std::unordered_map<std::string, std::map<int, int>> _reactantToReactions;
         std::unique_ptr<PathwayReaction> _pathwayReaction;
         std::unordered_map<std::pair<int, int>, int, pair_hash> _moleculeMapping;
-        static constexpr auto kPropNA = "Not available";
     };
 
 } // namespace indigo

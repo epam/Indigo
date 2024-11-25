@@ -664,6 +664,18 @@ void MoleculeJsonSaver::writeFloat(JsonWriter& writer, float f_value)
         writer.Double(f_value);
 }
 
+void indigo::MoleculeJsonSaver::writePos(JsonWriter& writer, const Vec3f& pos)
+{
+    writer.StartObject();
+    writer.Key("x");
+    writeFloat(writer, pos.x);
+    writer.Key("y");
+    writeFloat(writer, pos.y);
+    writer.Key("z");
+    writeFloat(writer, pos.z);
+    writer.EndObject();
+}
+
 void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<char>, buf);
@@ -1609,8 +1621,8 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 }
                 // location
                 writer.Key("position");
-                writer.StartObject();
                 const auto& pos = mol->getAtomXyz(i);
+                writer.StartObject();
                 writer.Key("x");
                 writeFloat(writer, pos.x);
                 writer.Key("y");
@@ -1964,14 +1976,19 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             writer.Key("content");
             writer.String(simple_obj->_content.c_str());
             writer.Key("position");
-            writer.StartObject();
-            writer.Key("x");
-            writeFloat(writer, simple_obj->_pos.x);
-            writer.Key("y");
-            writeFloat(writer, simple_obj->_pos.y);
-            writer.Key("z");
-            writeFloat(writer, simple_obj->_pos.z);
-            writer.EndObject(); // end position
+            writePos(writer, simple_obj->_pos);
+
+            writer.Key("pos");
+            writer.StartArray();
+            Vec2f pos_bbox(simple_obj->_pos.x, simple_obj->_pos.y);
+            writePos(writer, pos_bbox);
+            pos_bbox.y -= simple_obj->_size.y;
+            writePos(writer, pos_bbox);
+            pos_bbox.x += simple_obj->_size.x;
+            writePos(writer, pos_bbox);
+            pos_bbox.y += simple_obj->_size.y;
+            writePos(writer, pos_bbox);
+            writer.EndArray();
             writer.EndObject(); // end data
             writer.EndObject(); // end node
             break;

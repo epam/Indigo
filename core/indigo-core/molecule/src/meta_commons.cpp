@@ -162,10 +162,11 @@ namespace indigo
         return base64::encode(_image_data.c_str(), _image_data.size());
     }
 
-    SimpleTextObject::SimpleTextObject(const Vec3f& pos, const std::string& content) : MetaObject(CID)
+    SimpleTextObject::SimpleTextObject(const Vec3f& pos, const Vec2f& sz, const std::string& content) : MetaObject(CID)
     {
         using namespace rapidjson;
         _pos = pos;
+        _size = sz;
         _content = content;
         Document data;
         data.Parse(content.c_str());
@@ -229,12 +230,13 @@ namespace indigo
         }
     }
 
-    SimpleTextObjectBuilder::SimpleTextObjectBuilder() : _writer(_buffer)
+    SimpleTextObjectBuilder::SimpleTextObjectBuilder() : _writer(_buffer), _line_counter(0)
     {
     }
 
     void SimpleTextObjectBuilder::addLine(const SimpleTextLine& line)
     {
+        _line_counter++;
         if (_buffer.GetLength() == 0)
         {
             _writer.StartObject();
@@ -285,6 +287,11 @@ namespace indigo
         if (_buffer.GetLength() > 0)
             result = _buffer.GetString();
         return result;
+    }
+
+    int SimpleTextObjectBuilder::getLineCounter() const
+    {
+        return _line_counter;
     }
 }
 

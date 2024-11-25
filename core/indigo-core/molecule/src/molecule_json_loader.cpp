@@ -1867,7 +1867,19 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
                         text_origin.x = sobj["position"]["x"].GetFloat();
                         text_origin.y = sobj["position"]["y"].GetFloat();
                         text_origin.z = sobj["position"]["z"].GetFloat();
-                        meta_interface.addMetaObject(new SimpleTextObject(text_origin, content));
+                        Vec2f text_size;
+                        if (sobj.HasMember("pos"))
+                        {
+                            auto pos = sobj["pos"].GetArray();
+                            if (pos.Size())
+                            {
+                                Vec2f lt(pos[0]["x"].GetFloat(), pos[0]["y"].GetFloat());
+                                Vec2f rb(pos[2]["x"].GetFloat(), pos[2]["y"].GetFloat());
+                                text_size.x = rb.x - lt.x;
+                                text_size.y = lt.y - rb.y;
+                            }
+                        }
+                        meta_interface.addMetaObject(new SimpleTextObject(text_origin, text_size, content));
                     }
                 }
             }

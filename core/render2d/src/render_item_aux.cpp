@@ -546,10 +546,12 @@ float RenderItemAuxiliary::_getMaxHeight(const SimpleTextObject::SimpleTextLine&
     int first_index = -1;
     int second_index = -1;
     FONT_STYLE_SET current_styles;
-    float sz = 0;
     TextItem ti;
     ti.size = KDefaultFontSize / KFontScaleFactor; // default size
     ti.ritype = RenderItem::RIT_TITLE;
+    // ti.text.readString("!", true);
+    _rc.setTextItemSize(ti);
+    float sz = (float)ti.bbsz.y;
     for (auto& kvp : tl.styles)
     {
         if (first_index == -1)

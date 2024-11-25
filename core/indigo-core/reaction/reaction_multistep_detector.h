@@ -53,8 +53,10 @@ namespace indigo
         ReactionType detectReaction();
         void constructMultipleArrowReaction(BaseReaction& rxn);
         void constructSimpleArrowReaction(BaseReaction& rxn);
-
         void constructPathwayReaction(PathwayReaction& rxn);
+        void detectPathwayMetadata(PathwayReaction& rxn);
+        void collectMetadata(int reaction_idx, PathwayReaction& rxn, const Rect2f& bbox);
+        void collectProperties(PathwayReaction::SimpleReaction& sr, const SimpleTextObject& text_obj);
 
         typedef std::pair<float, int> FLOAT_INT_PAIR;
         typedef std::vector<FLOAT_INT_PAIR> FLOAT_INT_PAIRS;
