@@ -43,6 +43,8 @@ set(EMCC_FLAGS_SEPARATE
 set(EMCC_FLAGS
         ${EMCC_COMMON_FLAGS}
         -s SINGLE_FILE=1
+        -s EXPORT_ES6=1
+        -s USE_ES6_IMPORT_META=1
         )
 
 set(TARGET_FILES
