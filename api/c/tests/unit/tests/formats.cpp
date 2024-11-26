@@ -294,7 +294,10 @@ TEST_F(IndigoApiFormatsTest, idt_to_ket)
     obj = indigoLoadIdtFromString("ARAS", library);
     indigoSetOptionBool("json-saving-pretty", true);
     const char* res = indigoJson(obj);
-    // printf("res=%s", res);
+    // std::ofstream os(dataPath("molecules/basic/idt_mixed_std.ket"), std::ios::out | std::ios::binary);
+    // os.write(res, std::strlen(res));
+    // os.close();
+
     std::ifstream is(dataPath("molecules/basic/idt_mixed_std.ket"), std::ios::binary | std::ios::ate);
     auto size = is.tellg();
     std::string str(size, '\0'); // construct string to stream size
