@@ -257,7 +257,7 @@ bool SequenceLoader::addMonomer(BaseMolecule& mol, char ch, SeqType seq_type)
 
 void SequenceLoader::addAminoAcid(BaseMolecule& mol, char ch)
 {
-    Vec3f pos(_col * LayoutOptions::DEFAULT_BOND_LENGTH, -LayoutOptions::DEFAULT_BOND_LENGTH * _row, 0);
+    Vec3f pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
     std::string aa(1, ch);
     int amino_idx = mol.asMolecule().addAtom(-1);
     mol.asMolecule().setTemplateAtom(amino_idx, monomerNameByAlias(kMonomerClassAA, aa).c_str());
@@ -297,7 +297,7 @@ void SequenceLoader::addMonomerConnection(KetDocument& document, std::size_t lef
 
 Vec3f SequenceLoader::getBackboneMonomerPosition()
 {
-    return Vec3f(_col * LayoutOptions::DEFAULT_BOND_LENGTH, -LayoutOptions::DEFAULT_BOND_LENGTH * _row, 0);
+    return Vec3f(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
 }
 
 void SequenceLoader::addNucleotide(BaseMolecule& mol, std::string base, const std::string& sugar_alias, const std::string& phosphate_alias,
@@ -314,7 +314,7 @@ void SequenceLoader::addNucleotide(BaseMolecule& mol, std::string base, const st
     if (base.size() > 0)
     {
         int nuc_base_idx = addTemplateAtom(mol, base.c_str(), kMonomerClassBASE, _seq_id);
-        Vec3f base_coord(pos.x, pos.y - LayoutOptions::DEFAULT_BOND_LENGTH, 0);
+        Vec3f base_coord(pos.x, pos.y - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, 0);
         mol.asMolecule().setAtomXyz(nuc_base_idx, base_coord);
 
         // connect nucleobase to the sugar
@@ -330,7 +330,7 @@ void SequenceLoader::addNucleotide(BaseMolecule& mol, std::string base, const st
                 // add phosphate
                 int phosphate_idx = addTemplateAtom(mol, phosphate_alias.c_str(), kMonomerClassPHOSPHATE, _seq_id - 1);
 
-                Vec3f phosphate_coord(pos.x - LayoutOptions::DEFAULT_BOND_LENGTH, pos.y, 0);
+                Vec3f phosphate_coord(pos.x - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, pos.y, 0);
                 mol.asMolecule().setAtomXyz(phosphate_idx, phosphate_coord);
 
                 addTemplateBond(mol, _last_monomer_idx, phosphate_idx); // connect phosphate to the previous monomer
@@ -342,7 +342,7 @@ void SequenceLoader::addNucleotide(BaseMolecule& mol, std::string base, const st
             // add phosphate
             int phosphate_idx = addTemplateAtom(mol, phosphate_alias.c_str(), kMonomerClassPHOSPHATE, _seq_id);
 
-            Vec3f phosphate_coord(pos.x + LayoutOptions::DEFAULT_BOND_LENGTH, pos.y, 0);
+            Vec3f phosphate_coord(pos.x + LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, pos.y, 0);
             mol.asMolecule().setAtomXyz(phosphate_idx, phosphate_coord);
 
             if (_last_monomer_idx >= 0)
@@ -437,7 +437,7 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
 
 void SequenceLoader::addAminoAcid(KetDocument& document, const std::string& monomer, bool ambiguous)
 {
-    Vec3f pos(_col * LayoutOptions::DEFAULT_BOND_LENGTH, -LayoutOptions::DEFAULT_BOND_LENGTH * _row, 0);
+    Vec3f pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
     auto amino_idx = document.monomers().size();
     auto& amino_acid = ambiguous ? document.addAmbiguousMonomer(monomer, _var_alias_to_id.at(monomer)) : document.addMonomer(monomer, _alias_to_id.at(monomer));
     if (ambiguous)
@@ -474,7 +474,7 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
         else
             base->setAttachmentPoints(document.templates().at(_alias_to_id.at(base_alias)).attachmentPoints());
         base->setIntProp("seqid", _seq_id);
-        Vec3f base_coord(pos.x, pos.y - LayoutOptions::DEFAULT_BOND_LENGTH, 0);
+        Vec3f base_coord(pos.x, pos.y - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, 0);
         base->setPosition(base_coord);
 
         // connect nucleobase to the sugar
@@ -492,7 +492,7 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
                 auto& phosphate = document.addMonomer(phosphate_alias, _alias_to_id.at(phosphate_alias));
                 phosphate->setAttachmentPoints(document.templates().at(_alias_to_id.at(phosphate_alias)).attachmentPoints());
                 phosphate->setIntProp("seqid", _seq_id - 1);
-                Vec3f phosphate_coord(pos.x - LayoutOptions::DEFAULT_BOND_LENGTH, pos.y, 0);
+                Vec3f phosphate_coord(pos.x - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, pos.y, 0);
                 phosphate->setPosition(phosphate_coord);
 
                 addMonomerConnection(document, _last_monomer_idx, phosphate_idx); // connect phosphate to the previous monomer
@@ -506,7 +506,7 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
             auto& phosphate = document.addMonomer(phosphate_alias, _alias_to_id.at(phosphate_alias));
             phosphate->setAttachmentPoints(document.templates().at(_alias_to_id.at(phosphate_alias)).attachmentPoints());
             phosphate->setIntProp("seqid", _seq_id);
-            Vec3f phosphate_coord(pos.x + LayoutOptions::DEFAULT_BOND_LENGTH, pos.y, 0);
+            Vec3f phosphate_coord(pos.x + LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, pos.y, 0);
             phosphate->setPosition(phosphate_coord);
 
             if (_last_monomer_idx >= 0)
@@ -1702,7 +1702,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
             else if (ch != '}')
             {
                 monomer_idx++;
-                Vec3f pos(_col * LayoutOptions::DEFAULT_BOND_LENGTH, -LayoutOptions::DEFAULT_BOND_LENGTH * _row, 0);
+                Vec3f pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
                 _col++;
                 if (simple_polymer_type == kHELMPolymerTypeUnknown)
                 {
@@ -1762,7 +1762,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                         monomer_idx++;
                         auto base_info = readHelmMonomer(document, MonomerClass::Base);
                         ch = _scanner.lookNext();
-                        Vec3f base_pos(pos.x, pos.y - LayoutOptions::DEFAULT_BOND_LENGTH, 0);
+                        Vec3f base_pos(pos.x, pos.y - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, 0);
                         auto base_idx = addKetMonomer(document, base_info, MonomerClass::Base, base_pos);
                         cur_polymer_map->second[monomer_idx] = base_idx;
                         if (monomer_idx > 1)
@@ -1776,7 +1776,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                         continue;
                     auto phosphate_info = readHelmMonomer(document, MonomerClass::Phosphate);
                     monomer_idx++;
-                    Vec3f phosphate_pos(_col * LayoutOptions::DEFAULT_BOND_LENGTH, -LayoutOptions::DEFAULT_BOND_LENGTH * _row, 0);
+                    Vec3f phosphate_pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
                     _col++;
                     auto phosphate_idx = addKetMonomer(document, phosphate_info, MonomerClass::Phosphate, phosphate_pos);
                     cur_polymer_map->second[monomer_idx] = phosphate_idx;

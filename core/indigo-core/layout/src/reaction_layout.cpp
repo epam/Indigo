@@ -162,7 +162,7 @@ void ReactionLayout::fixLayout()
     // if left side of product bb at left of right side of reactant bb - fix layout
     if (invalid_layout || arrow_len != default_arrow_size)
     {
-        ReactionLayout rl(_r, true);
+        ReactionLayout rl(_r, true, _options);
         rl.preserve_molecule_layout = true;
         rl.make();
     }

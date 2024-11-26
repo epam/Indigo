@@ -584,7 +584,7 @@
         "seqid": 0,
         "position": {
             "x": 0.000000,
-            "y": -1.000000
+            "y": -1.500000
         },
         "alias": "A",
         "templateId": "A___Adenine"
@@ -594,7 +594,7 @@
         "id": "2",
         "seqid": 0,
         "position": {
-            "x": 1.000000,
+            "x": 1.500000,
             "y": -0.000000
         },
         "alias": "P",
@@ -605,7 +605,7 @@
         "id": "3",
         "seqid": 1,
         "position": {
-            "x": 2.000000,
+            "x": 3.000000,
             "y": -0.000000
         },
         "alias": "dR",
@@ -616,8 +616,8 @@
         "id": "4",
         "seqid": 1,
         "position": {
-            "x": 2.000000,
-            "y": -1.000000
+            "x": 3.000000,
+            "y": -1.500000
         },
         "alias": "C",
         "templateId": "C___Cytosine"
@@ -627,7 +627,7 @@
         "id": "5",
         "seqid": 1,
         "position": {
-            "x": 3.000000,
+            "x": 4.500000,
             "y": -0.000000
         },
         "alias": "P",
@@ -638,7 +638,7 @@
         "id": "6",
         "seqid": 2,
         "position": {
-            "x": 4.000000,
+            "x": 6.000000,
             "y": -0.000000
         },
         "alias": "dR",
@@ -649,8 +649,8 @@
         "id": "7",
         "seqid": 2,
         "position": {
-            "x": 4.000000,
-            "y": -1.000000
+            "x": 6.000000,
+            "y": -1.500000
         },
         "alias": "T",
         "templateId": "T___Thymine"
@@ -660,7 +660,7 @@
         "id": "8",
         "seqid": 2,
         "position": {
-            "x": 5.000000,
+            "x": 7.500000,
             "y": -0.000000
         },
         "alias": "P",
@@ -671,7 +671,7 @@
         "id": "9",
         "seqid": 3,
         "position": {
-            "x": 6.000000,
+            "x": 9.000000,
             "y": -0.000000
         },
         "alias": "dR",
@@ -682,8 +682,8 @@
         "id": "10",
         "seqid": 3,
         "position": {
-            "x": 6.000000,
-            "y": -1.000000
+            "x": 9.000000,
+            "y": -1.500000
         },
         "alias": "G",
         "templateId": "G___Guanine"
@@ -694,7 +694,7 @@
         "seqid": 0,
         "position": {
             "x": 0.000000,
-            "y": -2.000000
+            "y": -3.000000
         },
         "alias": "MOE",
         "templateId": "MOE___2'-O-Methoxyethyl ribose"
@@ -705,7 +705,7 @@
         "seqid": 0,
         "position": {
             "x": 0.000000,
-            "y": -3.000000
+            "y": -4.500000
         },
         "alias": "A",
         "templateId": "A___Adenine"
@@ -715,8 +715,8 @@
         "id": "13",
         "seqid": 0,
         "position": {
-            "x": 1.000000,
-            "y": -2.000000
+            "x": 1.500000,
+            "y": -3.000000
         },
         "alias": "sP",
         "templateId": "sP___Phosporothioate"
@@ -726,8 +726,8 @@
         "id": "14",
         "seqid": 1,
         "position": {
-            "x": 2.000000,
-            "y": -2.000000
+            "x": 3.000000,
+            "y": -3.000000
         },
         "alias": "dR",
         "templateId": "dR___Deoxy-Ribose"
@@ -737,8 +737,8 @@
         "id": "15",
         "seqid": 1,
         "position": {
-            "x": 2.000000,
-            "y": -3.000000
+            "x": 3.000000,
+            "y": -4.500000
         },
         "alias": "A",
         "templateId": "A___Adenine"
@@ -748,8 +748,8 @@
         "id": "16",
         "seqid": 1,
         "position": {
-            "x": 3.000000,
-            "y": -2.000000
+            "x": 4.500000,
+            "y": -3.000000
         },
         "alias": "P",
         "templateId": "P___Phosphate"
@@ -759,8 +759,8 @@
         "id": "17",
         "seqid": 2,
         "position": {
-            "x": 4.000000,
-            "y": -2.000000
+            "x": 6.000000,
+            "y": -3.000000
         },
         "alias": "dR",
         "templateId": "dR___Deoxy-Ribose"
@@ -770,8 +770,8 @@
         "id": "18",
         "seqid": 2,
         "position": {
-            "x": 4.000000,
-            "y": -3.000000
+            "x": 6.000000,
+            "y": -4.500000
         },
         "alias": "U",
         "templateId": "U___Uracil"
@@ -781,8 +781,8 @@
         "id": "19",
         "seqid": 2,
         "position": {
-            "x": 5.000000,
-            "y": -2.000000
+            "x": 7.500000,
+            "y": -3.000000
         },
         "alias": "P",
         "templateId": "P___Phosphate"
@@ -793,7 +793,7 @@
         "seqid": 0,
         "position": {
             "x": 0.000000,
-            "y": -4.000000
+            "y": -6.000000
         },
         "alias": "dR",
         "templateId": "dR___Deoxy-Ribose"
@@ -804,7 +804,7 @@
         "seqid": 0,
         "position": {
             "x": 0.000000,
-            "y": -5.000000
+            "y": -7.500000
         },
         "alias": "A",
         "templateId": "A___Adenine"
@@ -814,8 +814,8 @@
         "id": "22",
         "seqid": 0,
         "position": {
-            "x": 1.000000,
-            "y": -4.000000
+            "x": 1.500000,
+            "y": -6.000000
         },
         "alias": "P",
         "templateId": "P___Phosphate"
@@ -825,8 +825,8 @@
         "id": "23",
         "seqid": 1,
         "position": {
-            "x": 2.000000,
-            "y": -4.000000
+            "x": 3.000000,
+            "y": -6.000000
         },
         "alias": "dR",
         "templateId": "dR___Deoxy-Ribose"
@@ -836,8 +836,8 @@
         "id": "24",
         "seqid": 1,
         "position": {
-            "x": 2.000000,
-            "y": -5.000000
+            "x": 3.000000,
+            "y": -7.500000
         },
         "alias": "C",
         "templateId": "C___Cytosine"
@@ -847,8 +847,8 @@
         "id": "25",
         "seqid": 1,
         "position": {
-            "x": 3.000000,
-            "y": -4.000000
+            "x": 4.500000,
+            "y": -6.000000
         },
         "alias": "P",
         "templateId": "P___Phosphate"
@@ -858,8 +858,8 @@
         "id": "26",
         "seqid": 2,
         "position": {
-            "x": 4.000000,
-            "y": -4.000000
+            "x": 6.000000,
+            "y": -6.000000
         },
         "alias": "MOE",
         "templateId": "MOE___2'-O-Methoxyethyl ribose"
@@ -869,8 +869,8 @@
         "id": "27",
         "seqid": 2,
         "position": {
-            "x": 4.000000,
-            "y": -5.000000
+            "x": 6.000000,
+            "y": -7.500000
         },
         "alias": "5meC",
         "templateId": "5meC___5-methyl-cytidine"
@@ -880,8 +880,8 @@
         "id": "28",
         "seqid": 2,
         "position": {
-            "x": 5.000000,
-            "y": -4.000000
+            "x": 7.500000,
+            "y": -6.000000
         },
         "alias": "P",
         "templateId": "P___Phosphate"
@@ -891,8 +891,8 @@
         "id": "29",
         "seqid": 3,
         "position": {
-            "x": 6.000000,
-            "y": -4.000000
+            "x": 9.000000,
+            "y": -6.000000
         },
         "alias": "P",
         "templateId": "P___Phosphate"
@@ -903,7 +903,7 @@
         "seqid": 0,
         "position": {
             "x": 0.000000,
-            "y": -6.000000
+            "y": -9.000000
         },
         "alias": "dR",
         "templateId": "dR___Deoxy-Ribose"
@@ -914,7 +914,7 @@
         "seqid": 0,
         "position": {
             "x": 0.000000,
-            "y": -7.000000
+            "y": -10.500000
         },
         "alias": "T",
         "templateId": "T___Thymine"
@@ -924,8 +924,8 @@
         "id": "32",
         "seqid": 0,
         "position": {
-            "x": 1.000000,
-            "y": -6.000000
+            "x": 1.500000,
+            "y": -9.000000
         },
         "alias": "P",
         "templateId": "P___Phosphate"
@@ -935,8 +935,8 @@
         "id": "33",
         "seqid": 1,
         "position": {
-            "x": 2.000000,
-            "y": -6.000000
+            "x": 3.000000,
+            "y": -9.000000
         },
         "alias": "dR",
         "templateId": "dR___Deoxy-Ribose"
@@ -946,8 +946,8 @@
         "id": "34",
         "seqid": 1,
         "position": {
-            "x": 2.000000,
-            "y": -7.000000
+            "x": 3.000000,
+            "y": -10.500000
         },
         "alias": "A",
         "templateId": "A___Adenine"
@@ -957,8 +957,8 @@
         "id": "35",
         "seqid": 1,
         "position": {
-            "x": 3.000000,
-            "y": -6.000000
+            "x": 4.500000,
+            "y": -9.000000
         },
         "alias": "P",
         "templateId": "P___Phosphate"
@@ -968,8 +968,8 @@
         "id": "36",
         "seqid": 2,
         "position": {
-            "x": 4.000000,
-            "y": -6.000000
+            "x": 6.000000,
+            "y": -9.000000
         },
         "alias": "dR",
         "templateId": "dR___Deoxy-Ribose"
@@ -979,8 +979,8 @@
         "id": "37",
         "seqid": 2,
         "position": {
-            "x": 4.000000,
-            "y": -7.000000
+            "x": 6.000000,
+            "y": -10.500000
         },
         "alias": "C",
         "templateId": "C___Cytosine"
@@ -990,8 +990,8 @@
         "id": "38",
         "seqid": 2,
         "position": {
-            "x": 5.000000,
-            "y": -6.000000
+            "x": 7.500000,
+            "y": -9.000000
         },
         "alias": "P",
         "templateId": "P___Phosphate"
@@ -1001,8 +1001,8 @@
         "id": "39",
         "seqid": 3,
         "position": {
-            "x": 6.000000,
-            "y": -6.000000
+            "x": 9.000000,
+            "y": -9.000000
         },
         "alias": "dR",
         "templateId": "dR___Deoxy-Ribose"
@@ -1012,8 +1012,8 @@
         "id": "40",
         "seqid": 3,
         "position": {
-            "x": 6.000000,
-            "y": -7.000000
+            "x": 9.000000,
+            "y": -10.500000
         },
         "alias": "G",
         "templateId": "G___Guanine"
