@@ -125,7 +125,7 @@ CEXPORT int indigoReactionProductEnumerate(int reaction, int monomers)
             Reaction& out_reaction = out_reactions[k];
             if (has_coord && self.rpe_params.is_layout)
             {
-                ReactionLayout layout(out_reaction, self.smart_layout);
+                ReactionLayout layout(out_reaction, self.smart_layout, self.layout_options);
                 layout.setLayoutOrientation((LAYOUT_ORIENTATION)self.layout_orientation);
                 layout.make();
                 out_reaction.markStereocenterBonds();
