@@ -258,6 +258,7 @@ namespace indigo
     {
         // FIXME: The value is 1.6 instead of 1.0 due to backward compatibility, needs to be refactored
         static constexpr float DEFAULT_BOND_LENGTH = 1.0f; // default length of inter-chemical bonds
+        static constexpr float DEFAULT_MONOMER_BOND_LENGTH = 1.5f; // default length of inter-chemical bonds
         static constexpr float DEFAULT_PLUS_SIZE = DEFAULT_BOND_LENGTH / 2;
         static constexpr float DEFAULT_BOND_LENGTH_PX = 100.0f; // 100 pixel
         static constexpr float DEFAULT_FONT_SIZE_PX = DEFAULT_BOND_LENGTH_PX * 0.4f;

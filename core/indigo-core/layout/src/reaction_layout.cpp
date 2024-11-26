@@ -34,6 +34,15 @@
 using namespace std::placeholders;
 using namespace indigo;
 
+ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
+    : bond_length(LayoutOptions::DEFAULT_BOND_LENGTH), default_plus_size(1), default_arrow_size(2), preserve_molecule_layout(false), _r(r),
+      _smart_layout(smart_layout), reaction_margin_size(DEFAULT_HOR_INTERVAL_FACTOR), atom_label_margin(1.3f), layout_orientation(UNCPECIFIED),
+      max_iterations(0), _font_size(-1)
+{
+    _options.bondLength = bond_length;
+    _options.reactionComponentMarginSize = reaction_margin_size;
+}
+
 ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout, const LayoutOptions& options)
     : bond_length(options.fontSize > EPSILON ? 1 : LayoutOptions::DEFAULT_BOND_LENGTH), default_plus_size(LayoutOptions::DEFAULT_PLUS_SIZE),
       default_arrow_size(LayoutOptions::DEFAULT_BOND_LENGTH), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout),
