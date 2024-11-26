@@ -36,7 +36,7 @@ namespace indigo
     class ReactionLayout
     {
     public:
-        explicit ReactionLayout(BaseReaction& r, bool smart_layout);
+        explicit ReactionLayout(BaseReaction& r, bool smart_layout = false);
 
         explicit ReactionLayout(BaseReaction& r, bool smart_layout, const LayoutOptions& options);
 
