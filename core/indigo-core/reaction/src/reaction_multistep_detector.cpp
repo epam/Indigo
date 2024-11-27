@@ -733,11 +733,17 @@ void ReactionMultistepDetector::collectProperties(PathwayReaction::SimpleReactio
             is_condition = true;
     }
 
-    int id = sr.properties.insert(PathwayLayout::REACTION_NAME);
-    sr.properties.value(id).readString(name.empty() ? PathwayLayout::REACTION_PROPERTY_NA : name.c_str(), true);
+    if (name.size())
+    {
+        int id = sr.properties.insert(PathwayLayout::REACTION_NAME);
+        sr.properties.value(id).readString(name.c_str(), true);
+    }
 
-    id = sr.properties.insert(PathwayLayout::REACTION_CONDITIONS);
-    sr.properties.value(id).readString(condition.empty() ? PathwayLayout::REACTION_PROPERTY_NA : condition.c_str(), true);
+    if (condition.size())
+    {
+        int id = sr.properties.insert(PathwayLayout::REACTION_CONDITIONS);
+        sr.properties.value(id).readString(condition.c_str(), true);
+    }
 }
 
 void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn)

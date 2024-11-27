@@ -256,8 +256,6 @@ $MOL
 M  END
 $DTYPE Name
 $DATUM Published reaction
-$DTYPE Reaction Conditions
-$DATUM Not available
 $RFMT
 $RXN
 
