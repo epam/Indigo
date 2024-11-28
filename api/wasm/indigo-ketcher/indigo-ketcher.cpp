@@ -542,9 +542,16 @@ namespace indigo
             input_format = it->second;
 
         bool use_document = false;
-        static const std::set<std::string> document_formats{
-            "sequence", "chemical/x-sequence", "chemical/x-peptide-sequence-3-letter", "fasta", "chemical/x-fasta", "idt", "chemical/x-idt",
-            "helm",     "chemical/x-helm"};
+        static const std::set<std::string> document_formats{"sequence",
+                                                            "chemical/x-sequence",
+                                                            "peptide-sequence-3-letter",
+                                                            "chemical/x-peptide-sequence-3-letter",
+                                                            "fasta",
+                                                            "chemical/x-fasta",
+                                                            "idt",
+                                                            "chemical/x-idt",
+                                                            "helm",
+                                                            "chemical/x-helm"};
         if ((input_format == "ket" || input_format == "application/json") && outputFormat.size() > 0 && document_formats.count(outputFormat) > 0)
             use_document = true;
         IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy, library, use_document);
