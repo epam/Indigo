@@ -1722,7 +1722,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     for (int shape_idx = 0; shape_idx < mol->monomer_shapes.size(); ++shape_idx)
     {
         auto& monomer_shape = *mol->monomer_shapes[shape_idx];
-        writer.Key((KetMonomerShape::ref_prefix + std::to_string(shape_idx++)).c_str());
+        writer.Key((KetMonomerShape::ref_prefix + std::to_string(shape_idx)).c_str());
         writer.StartObject();
         writer.Key("type");
         writer.String("monomerShape");
