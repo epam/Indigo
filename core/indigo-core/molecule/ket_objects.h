@@ -1017,6 +1017,61 @@ namespace indigo
     public:
     private:
     };
+
+    class DLLEXPORT KetMonomerShape : public KetObjWithProps
+    {
+    public:
+        DECL_ERROR;
+
+        inline static std::string ref_prefix = "monomerShape-";
+
+        enum class shape_type
+        {
+            generic,
+            antibody,
+            double_helix,
+            globular_protein
+        };
+
+        KetMonomerShape(const std::string& id, bool collapsed, const std::string& shape, Vec2f position, const std::vector<std::string>& monomers);
+
+        const std::string& id() const
+        {
+            return _id;
+        }
+
+        bool collapsed() const
+        {
+            return _collapsed;
+        }
+
+        shape_type shape() const
+        {
+            return _shape;
+        }
+
+        static shape_type strToShapeType(std::string shape);
+
+        static std::string shapeTypeToStr(shape_type shape);
+
+        Vec2f position() const
+        {
+            return _position;
+        }
+
+        const std::vector<std::string>& monomers() const
+        {
+            return _monomers;
+        }
+
+    private:
+        std::string _id;
+        bool _collapsed;
+        shape_type _shape;
+        Vec2f _position;
+        std::vector<std::string> _monomers;
+    };
+
 }
 
 #ifdef _MSC_VER

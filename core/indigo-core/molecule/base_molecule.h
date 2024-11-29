@@ -27,6 +27,7 @@
 #include "base_cpp/properties_map.h"
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
+#include "ket_objects.h"
 #include "math/algebra.h"
 #include "molecule/elements.h"
 #include "molecule/metadata_storage.h"
@@ -553,6 +554,8 @@ namespace indigo
 
         KetDocument& getKetDocument();
 
+        PtrArray<KetMonomerShape> monomer_shapes;
+
         DECL_ERROR;
 
     protected:
@@ -624,7 +627,7 @@ namespace indigo
         RedBlackObjMap<int, Array<char>> aliases;
         RedBlackObjMap<int, PropertiesMap> _properties;
 
-        std::optional<std::unique_ptr<KetDocument>> _document;
+        KetDocument* _document;
         int _document_revision;
     };
 

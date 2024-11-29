@@ -26,12 +26,16 @@
 #include "rapidjson/document.h"
 #include "rapidjson/error/en.h"
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
+
 using namespace indigo;
 using namespace rapidjson;
 
 IMPL_ERROR(KetDocumentJsonLoader, "KetDocument json loader");
 
-void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& document, lib_ref library)
+void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& document, lib_ref /* library */)
 {
     Document data;
     auto& ket = data.Parse(json_str.c_str());
@@ -90,6 +94,10 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
                 else if (node_type == "ambiguousMonomer")
                 {
                     parseKetVariantMonomer(ref, node, document);
+                }
+                else if (node_type == "monomerShape")
+                {
+                    parseKetMonomerShape(ref, node, document);
                 }
                 else
                     throw Error("Unknows node type: %s", node_type.c_str());
@@ -202,26 +210,26 @@ void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json
         for (SizeType i = 0; i < att_points.Size(); i++)
         {
             auto& ap = att_points[i];
-            std::string id = "R";
+            std::string ap_id = "R";
             int attachment_atom;
             if (ap.HasMember("type"))
             {
                 std::string t = ap["type"].GetString();
                 if (t == "left")
-                    id = "R1";
+                    ap_id = "R1";
                 else if (t == "right")
-                    id = "R2";
+                    ap_id = "R2";
                 else if (t == "side")
-                    id += '3' + side_count++;
+                    ap_id += '3' + static_cast<char>(side_count++);
                 else
                     throw Error("Unknown attachment point type %s", t.c_str());
             }
             else if (ap.HasMember("label"))
-                id = ap["label"].GetString();
+                ap_id = ap["label"].GetString();
             else
-                id += '1' + i;
+                ap_id += '1' + static_cast<char>(i);
             attachment_atom = ap["attachmentAtom"].GetInt();
-            auto& att_point = mon_template.AddAttachmentPointId(id, attachment_atom);
+            auto& att_point = mon_template.AddAttachmentPointId(ap_id, attachment_atom);
             att_point.parseOptsFromKet(ap);
             if (ap.HasMember("leavingGroup"))
             {
@@ -230,9 +238,9 @@ void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json
                 {
                     std::vector<int> leaving_group;
                     auto& atoms = lv["atoms"];
-                    for (SizeType i = 0; i < atoms.Size(); i++)
+                    for (SizeType j = 0; j < atoms.Size(); j++)
                     {
-                        leaving_group.emplace_back(atoms[i].GetInt());
+                        leaving_group.emplace_back(atoms[j].GetInt());
                     }
                     att_point.setLeavingGroup(leaving_group);
                 }
@@ -289,7 +297,7 @@ void KetDocumentJsonLoader::parseKetMolecule(std::string& ref, rapidjson::Value&
     // }
 }
 
-void KetDocumentJsonLoader::parseKetRgroup(std::string& ref, rapidjson::Value& json, KetDocument& document)
+void KetDocumentJsonLoader::parseKetRgroup(std::string& /* ref */, rapidjson::Value& /* json */, KetDocument& /* document */)
 {
 }
 
@@ -351,3 +359,22 @@ void KetDocumentJsonLoader::parseVariantMonomerTemplate(const rapidjson::Value& 
     auto& monomer_template = document.addAmbiguousMonomerTemplate(json["subtype"].GetString(), id, json["alias"].GetString(), idt_alias, options);
     monomer_template.parseOptsFromKet(json);
 }
+
+void KetDocumentJsonLoader::parseKetMonomerShape(std::string& /* ref */, rapidjson::Value& json, KetDocument& document)
+{
+    Vec2f position;
+    const Value& coords = json["position"];
+    position.x = coords["x"].GetFloat();
+    position.y = coords["y"].GetFloat();
+    std::vector<std::string> monomers;
+    auto& mons = json["monomers"];
+    for (SizeType i = 0; i < mons.Size(); i++)
+    {
+        monomers.emplace_back(mons[i].GetString());
+    }
+    document.addMonomerShape(json["id"].GetString(), json["collapsed"].GetBool(), json["shape"].GetString(), position, monomers);
+}
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

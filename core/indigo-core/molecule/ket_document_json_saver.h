@@ -63,6 +63,7 @@ namespace indigo
         static void saveMonomer(JsonWriter& writer, const KetMonomer& monomer);
         static void saveVariantMonomer(JsonWriter& writer, const KetAmbiguousMonomer& monomer);
         static void saveVariantMonomerTemplate(JsonWriter& writer, const KetAmbiguousMonomerTemplate& monomer_template);
+        static void saveMonomerShape(JsonWriter& writer, const KetMonomerShape& monomer_shape);
 
         DECL_ERROR;
 

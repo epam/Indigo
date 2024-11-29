@@ -188,6 +188,16 @@ namespace indigo
 
         const std::string& monomerIdByRef(const std::string& ref);
 
+        void addMonomerShape(const std::string& id, bool collapsed, const std::string& shape, Vec2f position, const std::vector<std::string>& monomers)
+        {
+            _monomer_shapes.emplace_back(id, collapsed, shape, position, monomers);
+        }
+
+        const std::vector<KetMonomerShape>& monomerShapes() const
+        {
+            return _monomer_shapes;
+        }
+
     protected:
         void collect_sequence_side(const std::string& monomer_id, bool left_side, std::set<std::string>& monomers, std::set<std::string>& used_monomers,
                                    std::deque<std::string>& sequence, std::map<std::pair<std::string, std::string>, const KetConnection&>& ap_to_connection);
@@ -210,6 +220,7 @@ namespace indigo
         rapidjson::Value _json_molecules;
         rapidjson::Document _json_document;
         std::vector<std::string> _fasta_properties;
+        std::vector<KetMonomerShape> _monomer_shapes;
     };
 }
 
