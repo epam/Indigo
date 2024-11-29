@@ -166,7 +166,8 @@ void ReactionLayout::fixLayout()
         rl.preserve_molecule_layout = true;
         for (int i = _r.begin(); i < _r.end(); i = _r.next(i))
         {
-            if (Metalayout::getTotalMoleculeBondLength(_r.getBaseMolecule(i)) < _options.bondLength)
+            auto& mol = _r.getBaseMolecule(i);
+            if (mol.vertexCount() > 1 && Metalayout::getTotalMoleculeBondLength(mol) <= +0.0f)
             {
                 rl.preserve_molecule_layout = false;
                 break;
@@ -231,7 +232,7 @@ void ReactionLayout::_updateMetadata()
     if (_r.catalystCount() > 0)
     {
         processSideBoxes(pluses, catalyst_box, BaseReaction::CATALYST);
-        arrow_length = catalyst_box.width(); // 4 = 2 margins from left and right
+        arrow_length = catalyst_box.width();
     }
 
     for (const auto& plus_offset : pluses)
@@ -439,7 +440,7 @@ void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_cata
     if (_font_size > EPSILON)
         mol.getBoundingBox(_font_size, _options.labelMode, bbox);
     else
-        mol.getBoundingBox(bbox);
+        mol.getBoundingBox(bbox, Vec2f(atom_label_margin, atom_label_margin));
     item.min.copy(bbox.leftBottom());
     item.max.copy(bbox.rightTop());
     if (_font_size < EPSILON)
