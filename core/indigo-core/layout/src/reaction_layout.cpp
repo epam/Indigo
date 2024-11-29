@@ -164,6 +164,14 @@ void ReactionLayout::fixLayout()
     {
         ReactionLayout rl(_r, true, _options);
         rl.preserve_molecule_layout = true;
+        for (int i = _r.begin(); i < _r.end(); i = _r.next(i))
+        {
+            if (Metalayout::getTotalMoleculeBondLength(_r.getBaseMolecule(i)) < _options.bondLength)
+            {
+                rl.preserve_molecule_layout = false;
+                break;
+            }
+        }
         rl.make();
     }
     else if (_r.meta().getMetaCount(ReactionArrowObject::CID) == 0 && _r.meta().getMetaCount(ReactionMultitailArrowObject::CID) == 0)
@@ -219,8 +227,12 @@ void ReactionLayout::_updateMetadata()
         }
     }
 
+    float arrow_length = default_arrow_size;
     if (_r.catalystCount() > 0)
+    {
         processSideBoxes(pluses, catalyst_box, BaseReaction::CATALYST);
+        arrow_length = catalyst_box.width(); // 4 = 2 margins from left and right
+    }
 
     for (const auto& plus_offset : pluses)
         _r.meta().addMetaObject(new ReactionPlusObject(plus_offset));
@@ -233,16 +245,16 @@ void ReactionLayout::_updateMetadata()
     int react_count = is_retrosyntetic ? _r.productsCount() : _r.reactantsCount();
     if (prod_count == 0)
     {
-        arrow_tail.x = react_box.right() + reaction_margin_size + atom_label_margin;
+        arrow_tail.x = react_box.right() + ReactionMarginSize();
         arrow_tail.y = react_box.middleY();
-        arrow_head.x = arrow_tail.x + default_arrow_size + atom_label_margin;
+        arrow_head.x = arrow_tail.x + arrow_length + reaction_margin_size * 4; // 4 = 2 margins from left and right
         arrow_head.y = arrow_tail.y;
     }
     else if (react_count == 0)
     {
-        arrow_head.x = product_box.left() - reaction_margin_size - atom_label_margin;
+        arrow_head.x = product_box.left() - ReactionMarginSize();
         arrow_head.y = product_box.middleY();
-        arrow_tail.x = arrow_head.x - default_arrow_size - atom_label_margin;
+        arrow_tail.x = arrow_head.x - arrow_length - reaction_margin_size * 4; // 4 = 2 margins from left and right
         arrow_tail.y = arrow_head.y;
     }
     else
