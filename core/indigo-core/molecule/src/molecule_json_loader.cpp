@@ -1674,7 +1674,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         {
             monomers.emplace_back(mons[j].GetString());
         }
-        mol.monomer_shapes.add( new KetMonomerShape(shape["id"].GetString(), shape["collapsed"].GetBool(), shape["shape"].GetString(), position, monomers));
+        mol.monomer_shapes.add(new KetMonomerShape(shape["id"].GetString(), shape["collapsed"].GetBool(), shape["shape"].GetString(), position, monomers));
     }
 
     std::vector<int> ignore_cistrans(mol.edgeCount());
