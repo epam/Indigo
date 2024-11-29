@@ -1518,13 +1518,12 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
         }
     }
 
-    int shape_idx = 0;
     // save references to monomer shapes
-    for (auto i : mol.monomer_shapes)
+    for (int shape_idx = 0; shape_idx < mol.monomer_shapes.size(); ++shape_idx)
     {
         writer.StartObject();
         writer.Key("$ref");
-        writer.String((KetMonomerShape::ref_prefix + std::to_string(shape_idx++)).c_str());
+        writer.String((KetMonomerShape::ref_prefix + std::to_string(shape_idx)).c_str());
         writer.EndObject();
     }
 
@@ -1708,9 +1707,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     }
 
     // save monomer shapes
-    int shape_idx = 0;
-    for (auto& monomer_shape : mol->monomer_shapes)
+    for (int shape_idx = 0; shape_idx < mol->monomer_shapes.size(); ++shape_idx)
     {
+        auto& monomer_shape = *mol->monomer_shapes[shape_idx];
         writer.Key((KetMonomerShape::ref_prefix + std::to_string(shape_idx++)).c_str());
         writer.StartObject();
         writer.Key("type");
@@ -1732,9 +1731,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
         writer.Key("monomers");
         writer.StartArray();
         for (auto& monomer_id : monomer_shape.monomers())
-        {
             writer.String(monomer_id);
-        }
         writer.EndArray();
         writer.EndObject();
     }
