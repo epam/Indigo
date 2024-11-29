@@ -12,7 +12,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import Indigo, joinPathPy  # noqa
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
@@ -42,3 +42,32 @@ for filename in files:
     else:
         print(filename + ".ket:FAILED")
         print(diff)
+
+
+def check_res(filename, format, ket_ref, ket):
+    diff = find_diff(ket_ref, ket)
+    if not diff:
+        print("{}.ket {}: SUCCEED".format(filename, format))
+    else:
+        print("{}.ket {}: FAILED".format(filename, format))
+        print(diff)
+
+
+indigo.setOption("json-use-native-precision", True)
+files = [
+    "monomer_shape",
+]
+formats = {
+    "mol": indigo.loadMolecule,
+    "doc": indigo.loadKetDocument,
+}
+for filename in sorted(files):
+    for format, loader in formats.items():
+        file_path = os.path.join(ref_path, filename)
+        with open("{}_{}.ket".format(file_path, format), "r") as file:
+            ket_ref = file.read()
+        mol = loader(ket_ref)
+        # with open("{}_{}.ket".format(file_path, format), "w") as file:
+        #     file.write(mol.json())
+        ket = mol.json()
+        check_res(filename, "molecule", ket_ref, ket)

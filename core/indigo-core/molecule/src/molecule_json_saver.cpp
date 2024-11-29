@@ -33,6 +33,10 @@
 #include "molecule/smiles_saver.h"
 #include <base_cpp/scanner.h>
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
+
 using namespace indigo;
 using namespace rapidjson;
 
@@ -1447,7 +1451,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
 
     getSGroupAtoms(mol, _s_neighbors);
     // save mol references
-    int mol_id = 0;
+    // int mol_id = 0;
     for (int idx = 0; idx < mol.countComponents(_s_neighbors); ++idx)
     {
         Filter filt(mol.getDecomposition().ptr(), Filter::EQ, idx);
@@ -1480,9 +1484,9 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
                 {
                     Array<int> sub_comp_mapping, mapping_cp, inv_sub_comp_mapping;
                     mapping_cp.copy(inv_mapping);
-                    Filter filt(sub_mol->getDecomposition().ptr(), Filter::EQ, sub_idx);
+                    Filter filter(sub_mol->getDecomposition().ptr(), Filter::EQ, sub_idx);
                     std::unique_ptr<BaseMolecule> sub_mol_component(sub_mol->neu());
-                    sub_mol_component->makeSubmolecule(*sub_mol, filt, &sub_comp_mapping, &inv_sub_comp_mapping);
+                    sub_mol_component->makeSubmolecule(*sub_mol, filter, &sub_comp_mapping, &inv_sub_comp_mapping);
                     _no_template_molecules.emplace_back(std::move(sub_mol_component));
                     mergeMappings(mapping_cp, inv_sub_comp_mapping);
                     _mappings.push().copy(mapping_cp);
@@ -1524,6 +1528,15 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
             writer.EndObject();
             _monomers_enum.emplace(i, mon_idx++);
         }
+    }
+
+    // save references to monomer shapes
+    for (int shape_idx = 0; shape_idx < mol.monomer_shapes.size(); ++shape_idx)
+    {
+        writer.StartObject();
+        writer.Key("$ref");
+        writer.String((KetMonomerShape::ref_prefix + std::to_string(shape_idx)).c_str());
+        writer.EndObject();
     }
 
     writer.EndArray(); // nodes
@@ -1703,6 +1716,36 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
         auto& rgrp = mol->rgroups.getRGroup(i);
         if (rgrp.fragments.size())
             saveRGroup(rgrp.fragments, i, writer);
+    }
+
+    // save monomer shapes
+    for (int shape_idx = 0; shape_idx < mol->monomer_shapes.size(); ++shape_idx)
+    {
+        auto& monomer_shape = *mol->monomer_shapes[shape_idx];
+        writer.Key((KetMonomerShape::ref_prefix + std::to_string(shape_idx++)).c_str());
+        writer.StartObject();
+        writer.Key("type");
+        writer.String("monomerShape");
+        writer.Key("id");
+        writer.String(monomer_shape.id());
+        writer.Key("collapsed");
+        writer.Bool(monomer_shape.collapsed());
+        writer.Key("shape");
+        writer.String(KetMonomerShape::shapeTypeToStr(monomer_shape.shape()).c_str());
+        writer.Key("position");
+        Vec2f pos = monomer_shape.position();
+        writer.StartObject();
+        writer.Key("x");
+        saveNativeFloat(writer, pos.x);
+        writer.Key("y");
+        saveNativeFloat(writer, pos.y);
+        writer.EndObject();
+        writer.Key("monomers");
+        writer.StartArray();
+        for (auto& monomer_id : monomer_shape.monomers())
+            writer.String(monomer_id);
+        writer.EndArray();
+        writer.EndObject();
     }
 
     writer.EndObject();
@@ -2036,3 +2079,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
         }
     }
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

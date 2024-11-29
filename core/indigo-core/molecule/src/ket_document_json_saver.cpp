@@ -25,6 +25,10 @@
 #include "molecule/monomers_template_library.h"
 #include <base_cpp/scanner.h>
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
+
 using namespace indigo;
 using namespace rapidjson;
 
@@ -343,9 +347,36 @@ void KetDocumentJsonSaver::saveVariantMonomerTemplate(JsonWriter& writer, const 
     writer.EndObject();
 }
 
+void KetDocumentJsonSaver::saveMonomerShape(JsonWriter& writer, const KetMonomerShape& monomer_shape)
+{
+    writer.Key(get_ref(monomer_shape));
+    writer.StartObject();
+    saveStr(writer, "type", "monomerShape");
+    saveStr(writer, "id", monomer_shape.id());
+    writer.Key("collapsed");
+    writer.Bool(monomer_shape.collapsed());
+    saveStr(writer, "shape", KetMonomerShape::shapeTypeToStr(monomer_shape.shape()).c_str());
+    writer.Key("position");
+    Vec2f pos = monomer_shape.position();
+    writer.StartObject();
+    writer.Key("x");
+    saveNativeFloat(writer, pos.x);
+    writer.Key("y");
+    saveNativeFloat(writer, pos.y);
+    writer.EndObject();
+    writer.Key("monomers");
+    writer.StartArray();
+    for (auto& monomer_id : monomer_shape.monomers())
+    {
+        writer.String(monomer_id);
+    }
+    writer.EndArray();
+    writer.EndObject();
+}
+
 void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument& document)
 {
-    auto& molecules = document.molecules();
+    // auto& molecules = document.molecules();
     auto& monomers = document.monomers();
     auto& connections = document.connections();
     auto& templates = document.templates();
@@ -381,6 +412,13 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
     {
         writer.StartObject();
         saveStr(writer, "$ref", monomers.at(id)->ref());
+        writer.EndObject();
+    }
+    for (auto& shape : document.monomerShapes())
+    {
+
+        writer.StartObject();
+        saveStr(writer, "$ref", get_ref(shape));
         writer.EndObject();
     }
     auto& meta_objects = document.metaObjects();
@@ -470,6 +508,9 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
     for (auto& it : document.ambiguousTemplatesIds())
         saveVariantMonomerTemplate(writer, variant_templates.at(it));
 
+    for (auto& shape : document.monomerShapes())
+        saveMonomerShape(writer, shape);
+
     writer.EndObject(); // end
 }
 
@@ -482,3 +523,7 @@ void KetDocumentJsonSaver::saveKetDocument(const KetDocument& document)
     std::stringstream result;
     _output.writeString(string_buffer.GetString());
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
