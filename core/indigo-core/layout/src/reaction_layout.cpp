@@ -246,16 +246,16 @@ void ReactionLayout::_updateMetadata()
     int react_count = is_retrosyntetic ? _r.productsCount() : _r.reactantsCount();
     if (prod_count == 0)
     {
-        arrow_tail.x = react_box.right() + reaction_margin_size * 2;
+        arrow_tail.x = react_box.right() + ReactionMarginSize();
         arrow_tail.y = react_box.middleY();
-        arrow_head.x = arrow_tail.x + arrow_length + reaction_margin_size * 4; // 4 = 2 margins from left and right
+        arrow_head.x = arrow_tail.x + arrow_length + ReactionMarginSize() * 2;
         arrow_head.y = arrow_tail.y;
     }
     else if (react_count == 0)
     {
-        arrow_head.x = product_box.left() - reaction_margin_size * 2;
+        arrow_head.x = product_box.left() - ReactionMarginSize();
         arrow_head.y = product_box.middleY();
-        arrow_tail.x = arrow_head.x - arrow_length - reaction_margin_size * 4; // 4 = 2 margins from left and right
+        arrow_tail.x = arrow_head.x - arrow_length - ReactionMarginSize() * 2;
         arrow_tail.y = arrow_head.y;
     }
     else
@@ -288,10 +288,10 @@ void ReactionLayout::processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_b
 
         Rect2f box;
         // If have font size calc bounding box with labes
-        if (_font_size > EPSILON)
-            mol.getBoundingBox(_font_size, _options.labelMode, box);
+        if (_font_size < EPSILON)
+            mol.getBoundingBox(box, Vec2f(atom_label_margin, atom_label_margin));
         else
-            mol.getBoundingBox(box);
+            mol.getBoundingBox(_font_size, _options.labelMode, box);
         if (i == begin)
             type_box.copy(box);
         else
@@ -437,10 +437,10 @@ void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_cata
     }
     Rect2f bbox;
     // If have font size calc bounding box with labes
-    if (_font_size > EPSILON)
-        mol.getBoundingBox(_font_size, _options.labelMode, bbox);
-    else
+    if (_font_size < EPSILON)
         mol.getBoundingBox(bbox, Vec2f(atom_label_margin, atom_label_margin));
+    else
+        mol.getBoundingBox(_font_size, _options.labelMode, bbox);
     item.min.copy(bbox.leftBottom());
     item.max.copy(bbox.rightTop());
     if (_font_size < EPSILON)
