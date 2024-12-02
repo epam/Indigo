@@ -90,7 +90,6 @@ Metalayout::LayoutLine& Metalayout::newLine()
 void Metalayout::process()
 {
     Vec2f pos;
-    const auto atomLabelMarginVertical = bondLength / 2;
     for (int i = 0; i < _layout.size(); ++i)
     {
         LayoutLine& line = _layout[i];
@@ -107,7 +106,7 @@ void Metalayout::process()
                 break;
             case LayoutItem::ItemVerticalAlign::ETop:
                 // catalyst
-                offset.y += reactionComponentMarginSize + atomLabelMarginVertical + shiftToAlignAboveVerticalCenter;
+                offset.y += reactionComponentMarginSize + shiftToAlignAboveVerticalCenter;
                 break;
             case LayoutItem::ItemVerticalAlign::EBottom:
                 offset.y -= (bondLength + line.bottom_height) / 2;

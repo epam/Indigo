@@ -164,6 +164,15 @@ void ReactionLayout::fixLayout()
     {
         ReactionLayout rl(_r, true, _options);
         rl.preserve_molecule_layout = true;
+        for (int i = _r.begin(); i < _r.end(); i = _r.next(i))
+        {
+            auto& mol = _r.getBaseMolecule(i);
+            if (mol.vertexCount() > 1 && Metalayout::getTotalMoleculeBondLength(mol) <= +0.0f)
+            {
+                rl.preserve_molecule_layout = false;
+                break;
+            }
+        }
         rl.make();
     }
     else if (_r.meta().getMetaCount(ReactionArrowObject::CID) == 0 && _r.meta().getMetaCount(ReactionMultitailArrowObject::CID) == 0)
@@ -219,8 +228,12 @@ void ReactionLayout::_updateMetadata()
         }
     }
 
+    float arrow_length = default_arrow_size;
     if (_r.catalystCount() > 0)
+    {
         processSideBoxes(pluses, catalyst_box, BaseReaction::CATALYST);
+        arrow_length = catalyst_box.width();
+    }
 
     for (const auto& plus_offset : pluses)
         _r.meta().addMetaObject(new ReactionPlusObject(plus_offset));
@@ -233,16 +246,16 @@ void ReactionLayout::_updateMetadata()
     int react_count = is_retrosyntetic ? _r.productsCount() : _r.reactantsCount();
     if (prod_count == 0)
     {
-        arrow_tail.x = react_box.right() + reaction_margin_size + atom_label_margin;
+        arrow_tail.x = react_box.right() + ReactionMarginSize();
         arrow_tail.y = react_box.middleY();
-        arrow_head.x = arrow_tail.x + default_arrow_size + atom_label_margin;
+        arrow_head.x = arrow_tail.x + arrow_length + ReactionMarginSize() * 2;
         arrow_head.y = arrow_tail.y;
     }
     else if (react_count == 0)
     {
-        arrow_head.x = product_box.left() - reaction_margin_size - atom_label_margin;
+        arrow_head.x = product_box.left() - ReactionMarginSize();
         arrow_head.y = product_box.middleY();
-        arrow_tail.x = arrow_head.x - default_arrow_size - atom_label_margin;
+        arrow_tail.x = arrow_head.x - arrow_length - ReactionMarginSize() * 2;
         arrow_tail.y = arrow_head.y;
     }
     else
@@ -275,10 +288,10 @@ void ReactionLayout::processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_b
 
         Rect2f box;
         // If have font size calc bounding box with labes
-        if (_font_size > EPSILON)
-            mol.getBoundingBox(_font_size, _options.labelMode, box);
+        if (_font_size < EPSILON)
+            mol.getBoundingBox(box, Vec2f(atom_label_margin, atom_label_margin));
         else
-            mol.getBoundingBox(box);
+            mol.getBoundingBox(_font_size, _options.labelMode, box);
         if (i == begin)
             type_box.copy(box);
         else
@@ -424,10 +437,10 @@ void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_cata
     }
     Rect2f bbox;
     // If have font size calc bounding box with labes
-    if (_font_size > EPSILON)
-        mol.getBoundingBox(_font_size, _options.labelMode, bbox);
+    if (_font_size < EPSILON)
+        mol.getBoundingBox(bbox, Vec2f(atom_label_margin, atom_label_margin));
     else
-        mol.getBoundingBox(bbox);
+        mol.getBoundingBox(_font_size, _options.labelMode, bbox);
     item.min.copy(bbox.leftBottom());
     item.max.copy(bbox.rightTop());
     if (_font_size < EPSILON)
