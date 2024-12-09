@@ -1243,7 +1243,13 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, BaseCDXElement& elem)
         }
     };
 
-    auto stereo_lambda = [&node](const std::string& data) { node.stereo = kCIPStereochemistryCharToIndex.at(data.front()); };
+    auto stereo_lambda = [&node](const std::string& data) {
+        const auto it = kCIPStereochemistryCharToIndex.find(data.front());
+        if (it != kCIPStereochemistryCharToIndex.end())
+            node.stereo = it->second;
+        else
+            node.stereo = CIPStereochemistry::Undetermined;
+    };
 
     auto node_type_lambda = [&node](const std::string& data) {
         node.type = KNodeTypeNameToInt.at(data);
@@ -1472,10 +1478,11 @@ void MoleculeCdxmlLoader::_parseEmbeddedObject(BaseCDXElement& elem)
         bitmaps = ripBitmapsFromEMF(_inflate(emf.data(), emf.size()));
     };
 
-    std::unordered_map<std::string, std::function<void(const std::string&)>> embedded_dispatcher = {{"BoundingBox", segLambda(embedded_bbox.first, embedded_bbox.second)},
-                                                                                                    {"EnhancedMetafile", emf_png_lambda},
-                                                                                                    {"CompressedEnhancedMetafile", emf64_png_lambda},
-                                                                                                    {"PNG", hexLambda(image_png)}};
+    std::unordered_map<std::string, std::function<void(const std::string&)>> embedded_dispatcher = {
+        {"BoundingBox", segLambda(embedded_bbox.first, embedded_bbox.second)},
+        {"EnhancedMetafile", emf_png_lambda},
+        {"CompressedEnhancedMetafile", emf64_png_lambda},
+        {"PNG", hexLambda(image_png)}};
 
     applyDispatcher(*elem.firstProperty().get(), embedded_dispatcher);
 
@@ -1551,8 +1558,7 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
             }
             _retro_arrows_graph_id.emplace(superseded_id);
 
-            _graphic_arrows.push_back(
-                std::make_pair(std::make_pair(Vec2f(tail.x, tail.y), Vec2f(head.x, head.y)), ReactionComponent::ARROW_RETROSYNTHETIC));
+            _graphic_arrows.push_back(std::make_pair(std::make_pair(Vec2f(tail.x, tail.y), Vec2f(head.x, head.y)), ReactionComponent::ARROW_RETROSYNTHETIC));
         }
     }
     break;

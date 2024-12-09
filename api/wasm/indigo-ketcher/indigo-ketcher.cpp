@@ -144,7 +144,7 @@ namespace indigo
             {
                 result = _checkResultString(indigoSequence(id(), library));
             }
-            else if (outputFormat == "sequence-3-letter" || outputFormat == "chemical/x-sequence-3-letter")
+            else if (outputFormat == "peptide-sequence-3-letter" || outputFormat == "chemical/x-peptide-sequence-3-letter")
             {
                 result = _checkResultString(indigoSequence3Letter(id(), library));
             }
@@ -540,9 +540,10 @@ namespace indigo
             input_format = it->second;
 
         bool use_document = false;
-        if (input_format == "ket" && outputFormat.size() > 0 &&
-            (outputFormat == "sequence" || outputFormat == "chemical/x-sequence" || outputFormat == "fasta" || outputFormat == "chemical/x-fasta" ||
-             outputFormat == "idt" || outputFormat == "chemical/x-idt" || outputFormat == "helm" || outputFormat == "chemical/x-helm"))
+        static const std::set<std::string> document_formats{
+            "sequence", "chemical/x-sequence", "chemical/x-peptide-sequence-3-letter", "fasta", "chemical/x-fasta", "idt", "chemical/x-idt",
+            "helm",     "chemical/x-helm"};
+        if ((input_format == "ket" || input_format == "application/json") && outputFormat.size() > 0 && document_formats.count(outputFormat) > 0)
             use_document = true;
         IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy, library, use_document);
 
