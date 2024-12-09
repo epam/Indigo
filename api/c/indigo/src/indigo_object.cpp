@@ -241,6 +241,11 @@ QueryReaction& IndigoObject::getQueryReaction()
     throw IndigoError("%s is not a query reaction", debugInfo());
 }
 
+KetDocument& IndigoObject::getKetDocument()
+{
+    throw IndigoError("%s is not a ket document", debugInfo());
+}
+
 IndigoObject* IndigoObject::next()
 {
     throw IndigoError("%s is not iterable", debugInfo());

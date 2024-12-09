@@ -19,11 +19,15 @@
 #include <memory>
 #include <set>
 
-#include "molecule/ket_commons.h"
 #include "molecule/ket_document.h"
 #include "molecule/ket_document_json_saver.h"
+#include "molecule/meta_commons.h"
 #include "molecule/monomers_template_library.h"
 #include <base_cpp/scanner.h>
+
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
 
 using namespace indigo;
 using namespace rapidjson;
@@ -288,7 +292,7 @@ void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const Monomer
     writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveVariantMonomer(JsonWriter& writer, const KetVariantMonomer& monomer)
+void KetDocumentJsonSaver::saveVariantMonomer(JsonWriter& writer, const KetAmbiguousMonomer& monomer)
 {
     writer.Key(monomer.ref());
     writer.StartObject();
@@ -311,7 +315,7 @@ void KetDocumentJsonSaver::saveVariantMonomer(JsonWriter& writer, const KetVaria
     writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveVariantMonomerTemplate(JsonWriter& writer, const KetVariantMonomerTemplate& monomer_template)
+void KetDocumentJsonSaver::saveVariantMonomerTemplate(JsonWriter& writer, const KetAmbiguousMonomerTemplate& monomer_template)
 {
     writer.Key(get_ref(monomer_template));
     writer.StartObject();
@@ -343,13 +347,40 @@ void KetDocumentJsonSaver::saveVariantMonomerTemplate(JsonWriter& writer, const 
     writer.EndObject();
 }
 
+void KetDocumentJsonSaver::saveMonomerShape(JsonWriter& writer, const KetMonomerShape& monomer_shape)
+{
+    writer.Key(get_ref(monomer_shape));
+    writer.StartObject();
+    saveStr(writer, "type", "monomerShape");
+    saveStr(writer, "id", monomer_shape.id());
+    writer.Key("collapsed");
+    writer.Bool(monomer_shape.collapsed());
+    saveStr(writer, "shape", KetMonomerShape::shapeTypeToStr(monomer_shape.shape()).c_str());
+    writer.Key("position");
+    Vec2f pos = monomer_shape.position();
+    writer.StartObject();
+    writer.Key("x");
+    saveNativeFloat(writer, pos.x);
+    writer.Key("y");
+    saveNativeFloat(writer, pos.y);
+    writer.EndObject();
+    writer.Key("monomers");
+    writer.StartArray();
+    for (auto& monomer_id : monomer_shape.monomers())
+    {
+        writer.String(monomer_id);
+    }
+    writer.EndArray();
+    writer.EndObject();
+}
+
 void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument& document)
 {
-    auto& molecules = document.molecules();
+    // auto& molecules = document.molecules();
     auto& monomers = document.monomers();
     auto& connections = document.connections();
     auto& templates = document.templates();
-    auto& variant_templates = document.variantTemplates();
+    auto& variant_templates = document.ambiguousTemplates();
     writer.StartObject(); // start
     writer.Key("root");
     writer.StartObject();
@@ -383,6 +414,13 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
         saveStr(writer, "$ref", monomers.at(id)->ref());
         writer.EndObject();
     }
+    for (auto& shape : document.monomerShapes())
+    {
+
+        writer.StartObject();
+        saveStr(writer, "$ref", get_ref(shape));
+        writer.EndObject();
+    }
     auto& meta_objects = document.metaObjects();
     for (rapidjson::SizeType i = 0; i < meta_objects.Size(); i++)
     {
@@ -410,7 +448,7 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
         }
         writer.EndArray(); // connections
     }
-    if (document.templatesIds().size() + document.variantTemplatesIds().size() > 0)
+    if (document.templatesIds().size() + document.ambiguousTemplatesIds().size() > 0)
     {
         writer.Key("templates");
         writer.StartArray();
@@ -423,12 +461,12 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
                 writer.EndObject();
             }
         }
-        if (document.variantTemplatesIds().size() > 0)
+        if (document.ambiguousTemplatesIds().size() > 0)
         {
-            for (auto& it : document.variantTemplatesIds())
+            for (auto& it : document.ambiguousTemplatesIds())
             {
                 writer.StartObject();
-                saveStr(writer, "$ref", KetVariantMonomerTemplate::ref_prefix + it);
+                saveStr(writer, "$ref", KetAmbiguousMonomerTemplate::ref_prefix + it);
                 writer.EndObject();
             }
         }
@@ -459,7 +497,7 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
         if (monomer->monomerType() == KetBaseMonomer::MonomerType::Monomer)
             saveMonomer(writer, *static_cast<KetMonomer*>(monomer.get()));
         else if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
-            saveVariantMonomer(writer, *static_cast<KetVariantMonomer*>(monomer.get()));
+            saveVariantMonomer(writer, *static_cast<KetAmbiguousMonomer*>(monomer.get()));
         else
             throw Error("Unknown monomer type");
     }
@@ -467,8 +505,11 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
     for (auto& it : document.templatesIds())
         saveMonomerTemplate(writer, templates.at(it));
 
-    for (auto& it : document.variantTemplatesIds())
+    for (auto& it : document.ambiguousTemplatesIds())
         saveVariantMonomerTemplate(writer, variant_templates.at(it));
+
+    for (auto& shape : document.monomerShapes())
+        saveMonomerShape(writer, shape);
 
     writer.EndObject(); // end
 }
@@ -482,3 +523,7 @@ void KetDocumentJsonSaver::saveKetDocument(const KetDocument& document)
     std::stringstream result;
     _output.writeString(string_buffer.GetString());
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

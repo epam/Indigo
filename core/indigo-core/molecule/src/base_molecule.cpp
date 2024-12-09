@@ -23,9 +23,12 @@
 #include "graph/dfs_walk.h"
 #include "molecule/elements.h"
 #include "molecule/inchi_wrapper.h"
+#include "molecule/ket_document.h"
+#include "molecule/ket_document_json_loader.h"
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_exact_substructure_matcher.h"
+#include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/query_molecule.h"
@@ -40,13 +43,13 @@ using namespace indigo;
 
 IMPL_ERROR(BaseMolecule, "molecule");
 
-BaseMolecule::BaseMolecule() : original_format(BaseMolecule::UNKNOWN)
+BaseMolecule::BaseMolecule() : original_format(BaseMolecule::UNKNOWN), _document(new KetDocument), _edit_revision(0)
 {
-    _edit_revision = 0;
 }
 
 BaseMolecule::~BaseMolecule()
 {
+    delete _document;
 }
 
 Molecule& BaseMolecule::asMolecule()
@@ -106,6 +109,8 @@ void BaseMolecule::clear()
     _meta.resetMetaData();
     clearCIP();
     aliases.clear();
+    delete _document;
+    _document = new KetDocument();
 }
 
 bool BaseMolecule::hasCoord(BaseMolecule& mol)
@@ -681,6 +686,8 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
     name.copy(other.name);
     original_format = other.original_format;
     copyProperties(other, *mapping);
+    for (int i = 0; i < other.monomer_shapes.size(); ++i)
+        monomer_shapes.add(new KetMonomerShape(*other.monomer_shapes[i]));
 }
 
 void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
@@ -714,6 +721,8 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
     name.copy(other.name);
     original_format = other.original_format;
     copyProperties(other, mapping);
+    for (int j = 0; j < other.monomer_shapes.size(); ++j)
+        monomer_shapes.add(new KetMonomerShape(*other.monomer_shapes[j]));
 }
 
 void BaseMolecule::mergeWithMolecule(BaseMolecule& other, Array<int>* mapping, int skip_flags)
@@ -4535,7 +4544,9 @@ void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE 
     if (font_size <= EPSILON)
         return;
 
-    float symbol_size = font_size * 0.6f;
+    float constexpr WIDTH_FACTOR = 0.7f; // width of font symbols
+
+    float symbol_size = font_size * WIDTH_FACTOR;
 
     if (isPseudoAtom(atom_idx) || isTemplateAtom(atom_idx))
     {
@@ -4994,6 +5005,33 @@ std::string BaseMolecule::getAtomDescription(int idx)
     Array<char> description;
     getAtomDescription(idx, description);
     return std::string(description.ptr(), description.size());
+}
+
+KetDocument& BaseMolecule::getKetDocument()
+{
+    // static thread_local std::optional<std::unique_ptr<KetDocument>> document; // Temporary until direct conversion to document supported
+    if (_document || _edit_revision != _document_revision)
+    {
+        if (_edit_revision != _document_revision)
+        {
+            delete _document;
+            _document = nullptr;
+        }
+        // save to ket
+        std::string json;
+        StringOutput out(json);
+        MoleculeJsonSaver saver(out);
+        saver.saveMolecule(*this);
+        // load document from ket
+        rapidjson::Document data;
+        /*auto& res*/ std::ignore = data.Parse(json.c_str());
+        // if res.hasParseError()
+        _document = new KetDocument;
+        KetDocumentJsonLoader loader{};
+        loader.parseJson(json, *_document);
+        _document_revision = _edit_revision;
+    }
+    return *_document;
 }
 
 #ifdef _MSC_VER

@@ -21,7 +21,7 @@
 
 #include "layout/molecule_layout.h"
 #include "layout/reaction_layout.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 #include "molecule/molecule.h"
 #include "reaction/pathway_reaction_builder.h"
 #include "reaction/reaction.h"
@@ -99,9 +99,9 @@ bool ReactionLayout::validVerticalRange(const std::vector<Rect2f>& bblist)
 
 void ReactionLayout::fixLayout()
 {
-    int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
-    int simple_count = _r.meta().getMetaCount(KETSimpleObject::CID) + _r.meta().getMetaCount(KETTextObject::CID);
-    int multi_count = _r.meta().getMetaCount(KETReactionMultitailArrow::CID);
+    int arrows_count = _r.meta().getMetaCount(ReactionArrowObject::CID);
+    int simple_count = _r.meta().getMetaCount(SimpleGraphicsObject::CID) + _r.meta().getMetaCount(SimpleTextObject::CID);
+    int multi_count = _r.meta().getMetaCount(ReactionMultitailArrowObject::CID);
     if (arrows_count || simple_count || multi_count)
         return;
 
@@ -162,21 +162,30 @@ void ReactionLayout::fixLayout()
     // if left side of product bb at left of right side of reactant bb - fix layout
     if (invalid_layout || arrow_len != default_arrow_size)
     {
-        ReactionLayout rl(_r, true);
+        ReactionLayout rl(_r, true, _options);
         rl.preserve_molecule_layout = true;
+        for (int i = _r.begin(); i < _r.end(); i = _r.next(i))
+        {
+            auto& mol = _r.getBaseMolecule(i);
+            if (mol.vertexCount() > 1 && Metalayout::getTotalMoleculeBondLength(mol) <= +0.0f)
+            {
+                rl.preserve_molecule_layout = false;
+                break;
+            }
+        }
         rl.make();
     }
-    else if (_r.meta().getMetaCount(KETReactionArrow::CID) == 0 && _r.meta().getMetaCount(KETReactionMultitailArrow::CID) == 0)
+    else if (_r.meta().getMetaCount(ReactionArrowObject::CID) == 0 && _r.meta().getMetaCount(ReactionMultitailArrowObject::CID) == 0)
         _updateMetadata();
 }
 
 void ReactionLayout::_updateMetadata()
 {
     float arrow_height = 0;
-    int arrow_type = KETReactionArrow::EOpenAngle;
-    if (_r.meta().getMetaCount(KETReactionArrow::CID) > 0)
+    int arrow_type = ReactionArrowObject::EOpenAngle;
+    if (_r.meta().getMetaCount(ReactionArrowObject::CID) > 0)
     {
-        auto& ra = static_cast<const KETReactionArrow&>(_r.meta().getMetaObject(KETReactionArrow::CID, 0));
+        auto& ra = static_cast<const ReactionArrowObject&>(_r.meta().getMetaObject(ReactionArrowObject::CID, 0));
         // remember arrow type & height
         arrow_type = ra.getArrowType();
         arrow_height = ra.getHeight();
@@ -219,11 +228,15 @@ void ReactionLayout::_updateMetadata()
         }
     }
 
+    float arrow_length = default_arrow_size;
     if (_r.catalystCount() > 0)
+    {
         processSideBoxes(pluses, catalyst_box, BaseReaction::CATALYST);
+        arrow_length = catalyst_box.width();
+    }
 
     for (const auto& plus_offset : pluses)
-        _r.meta().addMetaObject(new KETReactionPlus(plus_offset));
+        _r.meta().addMetaObject(new ReactionPlusObject(plus_offset));
 
     // calculate arrow size and position
     Vec2f arrow_head(0, 0);
@@ -233,16 +246,16 @@ void ReactionLayout::_updateMetadata()
     int react_count = is_retrosyntetic ? _r.productsCount() : _r.reactantsCount();
     if (prod_count == 0)
     {
-        arrow_tail.x = react_box.right() + reaction_margin_size + atom_label_margin;
+        arrow_tail.x = react_box.right() + ReactionMarginSize();
         arrow_tail.y = react_box.middleY();
-        arrow_head.x = arrow_tail.x + default_arrow_size + atom_label_margin;
+        arrow_head.x = arrow_tail.x + arrow_length + ReactionMarginSize() * 2;
         arrow_head.y = arrow_tail.y;
     }
     else if (react_count == 0)
     {
-        arrow_head.x = product_box.left() - reaction_margin_size - atom_label_margin;
+        arrow_head.x = product_box.left() - ReactionMarginSize();
         arrow_head.y = product_box.middleY();
-        arrow_tail.x = arrow_head.x - default_arrow_size - atom_label_margin;
+        arrow_tail.x = arrow_head.x - arrow_length - ReactionMarginSize() * 2;
         arrow_tail.y = arrow_head.y;
     }
     else
@@ -261,7 +274,7 @@ void ReactionLayout::_updateMetadata()
             arrow_tail.x = product_box.left() - ReactionMarginSize();
         }
     }
-    _r.meta().addMetaObject(new KETReactionArrow(arrow_type, arrow_tail, arrow_head, arrow_height));
+    _r.meta().addMetaObject(new ReactionArrowObject(arrow_type, arrow_tail, arrow_head, arrow_height));
 }
 
 void ReactionLayout::processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_box, int side)
@@ -275,10 +288,10 @@ void ReactionLayout::processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_b
 
         Rect2f box;
         // If have font size calc bounding box with labes
-        if (_font_size > EPSILON)
-            mol.getBoundingBox(_font_size, _options.labelMode, box);
+        if (_font_size < EPSILON)
+            mol.getBoundingBox(box, Vec2f(atom_label_margin, atom_label_margin));
         else
-            mol.getBoundingBox(box);
+            mol.getBoundingBox(_font_size, _options.labelMode, box);
         if (i == begin)
             type_box.copy(box);
         else
@@ -322,7 +335,7 @@ void ReactionLayout::makePathwayFromSimple()
 
 void ReactionLayout::make()
 {
-    int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
+    int arrows_count = _r.meta().getMetaCount(ReactionArrowObject::CID);
     int simple_count = _r.meta().getNonChemicalMetaCount();
     if (simple_count)
         return;
@@ -424,10 +437,10 @@ void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_cata
     }
     Rect2f bbox;
     // If have font size calc bounding box with labes
-    if (_font_size > EPSILON)
-        mol.getBoundingBox(_font_size, _options.labelMode, bbox);
+    if (_font_size < EPSILON)
+        mol.getBoundingBox(bbox, Vec2f(atom_label_margin, atom_label_margin));
     else
-        mol.getBoundingBox(bbox);
+        mol.getBoundingBox(_font_size, _options.labelMode, bbox);
     item.min.copy(bbox.leftBottom());
     item.max.copy(bbox.rightTop());
     if (_font_size < EPSILON)

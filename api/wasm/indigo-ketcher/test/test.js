@@ -602,7 +602,7 @@ M  END
     {
         test("layout", "basic", () => {
             let options = new indigo.MapStringString();
-            assert(indigo.layout(mol_smiles, "molfile", options).indexOf("-1.6") !== -1);
+            assert(indigo.layout(mol_smiles, "molfile", options).indexOf("-1.0") !== -1);
             options.delete();
         });
     }
@@ -857,6 +857,9 @@ M  END
             options.set("output-content-type", "chemical/x-peptide-sequence-3-letter");
             const peptide_seq = indigo.convert(peptide_ket_ref.toString(), "chemical/x-peptide-sequence-3-letter", options);
             assert.equal(peptide_seq, peptide_seq_ref);
+            options.set("output-content-type", "peptide-sequence-3-letter");
+            const peptide_seq1 = indigo.convert(peptide_ket_ref.toString(), "peptide-sequence-3-letter", options);
+            assert.equal(peptide_seq1, peptide_seq_ref);
             options.delete();
         });
     }

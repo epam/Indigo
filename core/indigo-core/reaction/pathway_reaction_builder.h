@@ -33,7 +33,7 @@
 #include <vector>
 
 #include "base_cpp/exception.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 #include "reaction/pathway_reaction.h"
 
 namespace indigo
@@ -59,6 +59,7 @@ namespace indigo
             // useful to collect it here to avoid look them up in the reaction object
             std::vector<int> productIndexes;
             std::vector<int> reactantIndexes;
+            std::vector<std::pair<std::string, std::string>> properties;
         };
 
         void buildInchiDescriptors(std::deque<Reaction>& reactions);

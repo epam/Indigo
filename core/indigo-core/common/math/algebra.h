@@ -379,6 +379,11 @@ namespace indigo
             return _leftBottom.x < pt.x && _leftBottom.y < pt.y && _rightTop.x > pt.x && _rightTop.y > pt.y;
         }
 
+        inline bool intersects(const Rect2f& other) const
+        {
+            return !(right() < other.left() || left() > other.right() || top() < other.bottom() || bottom() > other.top());
+        }
+
         inline bool rayIntersectsRect(const Vec2f& begin, const Vec2f& end)
         {
             auto lb = _leftBottom;

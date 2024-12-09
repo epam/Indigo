@@ -1,8 +1,10 @@
 *** KET to RDF ***
+2404-metadata_detect.rdf:SUCCEED
 multi.rdf:SUCCEED
 pathway1.rdf:SUCCEED
 pathway10.rdf:SUCCEED
 pathway11.rdf:SUCCEED
+pathway12.rdf:SUCCEED
 pathway2.rdf:SUCCEED
 pathway3.rdf:SUCCEED
 pathway4.rdf:SUCCEED

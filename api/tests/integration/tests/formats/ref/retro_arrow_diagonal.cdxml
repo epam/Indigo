@@ -18,24 +18,24 @@
     </colortable>
     <page HeightPages="1" WidthPages="1">
         <fragment id="4">
-            <n id="5" p="285.001495 379.648621"/>
-            <n id="6" p="300.013123 425.851379"/>
-            <n id="7" p="309.290314 397.464417"/>
-            <n id="8" p="269.989868 425.851379"/>
-            <n id="9" p="260.709686 397.464417"/>
-            <b id="31" B="5" E="9"/>
-            <b id="32" B="9" E="8" Order="2"/>
-            <b id="33" B="8" E="6"/>
-            <b id="34" B="6" E="7" Order="2"/>
-            <b id="35" B="7" E="5"/>
+            <n id="5" p="132.731216 127.724121"/>
+            <n id="6" p="162.768768 127.724121"/>
+            <n id="7" p="147.751511 101.775887"/>
+            <b id="31" B="5" E="6"/>
+            <b id="32" B="6" E="7"/>
+            <b id="33" B="7" E="5"/>
         </fragment>
-        <fragment id="10">
-            <n id="11" p="132.731216 127.724121"/>
-            <n id="12" p="162.768768 127.724121"/>
-            <n id="13" p="147.751511 101.775887"/>
-            <b id="36" B="11" E="12"/>
-            <b id="37" B="12" E="13"/>
-            <b id="38" B="13" E="11"/>
+        <fragment id="8">
+            <n id="9" p="285.001495 379.648621"/>
+            <n id="10" p="300.013123 425.851379"/>
+            <n id="11" p="309.290314 397.464417"/>
+            <n id="12" p="269.989868 425.851379"/>
+            <n id="13" p="260.709686 397.464417"/>
+            <b id="34" B="9" E="13"/>
+            <b id="35" B="13" E="12" Order="2"/>
+            <b id="36" B="12" E="10"/>
+            <b id="37" B="10" E="11" Order="2"/>
+            <b id="38" B="11" E="9"/>
         </fragment>
         <fragment id="14">
             <n id="15" p="297.966217 263.926453"/>
@@ -58,8 +58,8 @@
         <arrow id="28" BoundingBox="311.227356 247.500000 423.000000 247.500000" FillType="None" ArrowheadHead="Full" ArrowheadType="Angle" HeadSize="600" ArrowheadCenterSize="600" ArrowheadWidth="150" ArrowShaftSpacing="600" Head3D="311.227356 247.500000 0.000000" Tail3D="423.000000 247.500000 0.000000"/>
         <graphic id="45" SupersededBy="28" GraphicType="Line" ArrowType="RetroSynthetic" HeadSize="600" BoundingBox="311.227356 247.500000 423.000000 247.500000"/>
         <scheme>
-            <step ReactionStepReactants="10" ReactionStepProducts="14" ReactionStepArrows="22"/>
-            <step ReactionStepReactants="14" ReactionStepProducts="4" ReactionStepArrows="44"/>
+            <step ReactionStepReactants="4" ReactionStepProducts="14" ReactionStepArrows="22"/>
+            <step ReactionStepReactants="14" ReactionStepProducts="8" ReactionStepArrows="44"/>
             <step ReactionStepReactants="14" ReactionStepProducts="19" ReactionStepArrows="45"/>
         </scheme>
     </page>

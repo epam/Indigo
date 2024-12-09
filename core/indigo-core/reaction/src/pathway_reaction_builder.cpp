@@ -104,6 +104,12 @@ void PathwayReactionBuilder::buildReactions()
             if (pit != _moleculeMapping.end())
                 sr.productIndexes.push(pit->second);
         }
+
+        for (auto& prop : rid.properties)
+        {
+            auto prop_idx = sr.properties.insert(prop.first.c_str());
+            sr.properties.value(prop_idx).readString(prop.second.c_str(), true);
+        }
     }
 }
 
@@ -112,12 +118,20 @@ void PathwayReactionBuilder::buildInchiDescriptors(std::deque<Reaction>& reactio
     _reactionInchiDescriptors.clear();
     InchiWrapper inchiWrapper;
     Array<char> inchi, inchiKey;
-    for (int i = 0; i < (int)reactions.size(); ++i)
+    for (auto& reaction : reactions)
     {
         // add empty reaction nodes meanwhile calculating inchiKeys for reactants and products
+        int reactionIndex = static_cast<int>(_reactionInchiDescriptors.size());
         _pathwayReaction->addReactionNode();
-        auto& reaction = reactions[i];
         ReactionInchiDescriptor& rd = _reactionInchiDescriptors.emplace_back();
+
+        for (auto prop_idx : reaction.properties().elements())
+        {
+            auto key = reaction.properties().key(prop_idx);
+            auto value = reaction.properties().value(prop_idx);
+            rd.properties.emplace_back(key, value);
+        }
+
         // iterate over molecules in the reaction, calculate inchiKeys for reactants and products
         for (int j = reaction.begin(); j < reaction.end(); j = reaction.next(j))
         {
@@ -127,16 +141,16 @@ void PathwayReactionBuilder::buildInchiDescriptors(std::deque<Reaction>& reactio
             {
             case BaseReaction::REACTANT: {
                 rd.reactantIndexes.push_back(static_cast<int>(j));
-                _moleculeMapping.emplace(std::piecewise_construct, std::forward_as_tuple(i, j),
+                _moleculeMapping.emplace(std::piecewise_construct, std::forward_as_tuple(reactionIndex, j),
                                          std::forward_as_tuple(_pathwayReaction->addMolecule(reaction.getBaseMolecule(j).asMolecule())));
                 std::string inchi_str(inchiKey.ptr(), inchiKey.size());
                 auto rtr_it = _reactantToReactions.find(inchi_str);
                 auto ridx = static_cast<int>(rd.reactantIndexes.size() - 1);
                 if (rtr_it == _reactantToReactions.end())
                     _reactantToReactions.emplace(std::piecewise_construct, std::forward_as_tuple(inchi_str),
-                                                 std::forward_as_tuple(std::initializer_list<std::pair<const int, int>>{{i, ridx}}));
+                                                 std::forward_as_tuple(std::initializer_list<std::pair<const int, int>>{{reactionIndex, ridx}}));
                 else
-                    rtr_it->second.insert(std::make_pair(static_cast<int>(i), ridx));
+                    rtr_it->second.insert(std::make_pair(reactionIndex, ridx));
             }
             break;
             case BaseReaction::PRODUCT:

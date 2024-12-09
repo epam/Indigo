@@ -26,6 +26,7 @@ ref_path = joinPathPy("ref/", __file__)
 
 files = [
     "multi",
+    "2404-metadata_detect",
     "pathway1",
     "pathway2",
     "pathway3",
@@ -37,6 +38,7 @@ files = [
     "pathway9",
     "pathway10",
     "pathway11",
+    "pathway12",
 ]
 
 files.sort()

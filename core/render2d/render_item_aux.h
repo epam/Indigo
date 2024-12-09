@@ -19,12 +19,11 @@
 #ifndef __render_item_aux_h__
 #define __render_item_aux_h__
 
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 #include "render_item.h"
 
 namespace indigo
 {
-
     class RenderItemAuxiliary : public RenderItemBase
     {
     public:
@@ -101,12 +100,12 @@ namespace indigo
         void _drawMeta(bool idle);
         void _drawPlus();
         void _drawArrow();
-        void _drawArrow(const KETReactionArrow& ar);
-        void _drawArrow(const KETReactionMultitailArrow& ar);
-        void _drawImage(const KETImage& img);
+        void _drawArrow(const ReactionArrowObject& ar);
+        void _drawArrow(const ReactionMultitailArrowObject& ar);
+        void _drawImage(const EmbeddedImageObject& img);
         void _renderIdle();
-        void _renderSimpleObject(const KETSimpleObject& simple);
-        float _getMaxHeight(const KETTextObject::KETTextParagraph& tl);
+        void _renderSimpleObject(const SimpleGraphicsObject& simple);
+        float _getMaxHeight(const SimpleTextObject::KETTextParagraph& tl);
     };
 
 } // namespace indigo

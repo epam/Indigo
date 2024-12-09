@@ -20,7 +20,7 @@
 
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 #include "molecule/molecule_cdxml_loader.h"
 #include "molecule/parse_utils.h"
 #include "reaction/reaction.h"
@@ -203,9 +203,9 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                 rxn.addCatalystCopy(*_pmol, 0, 0);
             else
             {
-                for (int i = 0; i < _pmol->meta().getMetaCount(KETTextObject::CID); ++i)
+                for (int i = 0; i < _pmol->meta().getMetaCount(SimpleTextObject::CID); ++i)
                 {
-                    auto& text = (KETTextObject&)_pmol->meta().getMetaObject(KETTextObject::CID, i);
+                    auto& text = (SimpleTextObject&)_pmol->meta().getMetaObject(SimpleTextObject::CID, i);
                     int idx = rxn.meta().addMetaObject(text.clone());
                     rxn.addSpecialCondition(
                         idx, Rect2f(Vec2f(text.boundingBox().left(), text.boundingBox().top()), Vec2f(text.boundingBox().left(), text.boundingBox().top())));

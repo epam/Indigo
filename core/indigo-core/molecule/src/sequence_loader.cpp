@@ -25,8 +25,8 @@
 #include "layout/molecule_layout.h"
 #include "layout/sequence_layout.h"
 #include "molecule/elements.h"
-#include "molecule/ket_commons.h"
 #include "molecule/ket_document.h"
+#include "molecule/meta_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
@@ -39,7 +39,7 @@ IMPL_ERROR(SequenceLoader, "SEQUENCE loader");
 
 SequenceLoader::SequenceLoader(Scanner& scanner, MonomerTemplateLibrary& library)
     : _scanner(scanner), _mon_lib(MonomerTemplates::_instance()), _seq_id(0), _last_monomer_idx(-1), _row(-1), _col(0), _library(library),
-      _unknown_variants_count(0)
+      _unknown_ambiguous_count(0)
 {
 }
 
@@ -257,7 +257,7 @@ bool SequenceLoader::addMonomer(BaseMolecule& mol, char ch, SeqType seq_type)
 
 void SequenceLoader::addAminoAcid(BaseMolecule& mol, char ch)
 {
-    Vec3f pos(_col * LayoutOptions::DEFAULT_BOND_LENGTH, -LayoutOptions::DEFAULT_BOND_LENGTH * _row, 0);
+    Vec3f pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
     std::string aa(1, ch);
     int amino_idx = mol.asMolecule().addAtom(-1);
     mol.asMolecule().setTemplateAtom(amino_idx, monomerNameByAlias(kMonomerClassAA, aa).c_str());
@@ -297,7 +297,7 @@ void SequenceLoader::addMonomerConnection(KetDocument& document, std::size_t lef
 
 Vec3f SequenceLoader::getBackboneMonomerPosition()
 {
-    return Vec3f(_col * LayoutOptions::DEFAULT_BOND_LENGTH, -LayoutOptions::DEFAULT_BOND_LENGTH * _row, 0);
+    return Vec3f(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
 }
 
 void SequenceLoader::addNucleotide(BaseMolecule& mol, std::string base, const std::string& sugar_alias, const std::string& phosphate_alias,
@@ -314,7 +314,7 @@ void SequenceLoader::addNucleotide(BaseMolecule& mol, std::string base, const st
     if (base.size() > 0)
     {
         int nuc_base_idx = addTemplateAtom(mol, base.c_str(), kMonomerClassBASE, _seq_id);
-        Vec3f base_coord(pos.x, pos.y - LayoutOptions::DEFAULT_BOND_LENGTH, 0);
+        Vec3f base_coord(pos.x, pos.y - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, 0);
         mol.asMolecule().setAtomXyz(nuc_base_idx, base_coord);
 
         // connect nucleobase to the sugar
@@ -330,7 +330,7 @@ void SequenceLoader::addNucleotide(BaseMolecule& mol, std::string base, const st
                 // add phosphate
                 int phosphate_idx = addTemplateAtom(mol, phosphate_alias.c_str(), kMonomerClassPHOSPHATE, _seq_id - 1);
 
-                Vec3f phosphate_coord(pos.x - LayoutOptions::DEFAULT_BOND_LENGTH, pos.y, 0);
+                Vec3f phosphate_coord(pos.x - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, pos.y, 0);
                 mol.asMolecule().setAtomXyz(phosphate_idx, phosphate_coord);
 
                 addTemplateBond(mol, _last_monomer_idx, phosphate_idx); // connect phosphate to the previous monomer
@@ -342,7 +342,7 @@ void SequenceLoader::addNucleotide(BaseMolecule& mol, std::string base, const st
             // add phosphate
             int phosphate_idx = addTemplateAtom(mol, phosphate_alias.c_str(), kMonomerClassPHOSPHATE, _seq_id);
 
-            Vec3f phosphate_coord(pos.x + LayoutOptions::DEFAULT_BOND_LENGTH, pos.y, 0);
+            Vec3f phosphate_coord(pos.x + LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, pos.y, 0);
             mol.asMolecule().setAtomXyz(phosphate_idx, phosphate_coord);
 
             if (_last_monomer_idx >= 0)
@@ -367,7 +367,7 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
     MonomerClass monomer_class = seq_type == SeqType::PEPTIDESeq ? MonomerClass::AminoAcid : MonomerClass::Base;
     if (!mixed)
         _alias_to_id.emplace(monomer, checkAddTemplate(document, monomer_class, monomer));
-    else if (!document.hasVariantMonomerTemplate(monomer))
+    else if (!document.hasAmbiguousMonomerTemplate(monomer))
     {
         std::optional<std::reference_wrapper<const std::vector<std::string>>> alternatives;
         if (seq_type == SeqType::PEPTIDESeq)
@@ -385,7 +385,7 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
             alternatives.emplace(std::cref(it->second));
         }
 
-        std::vector<KetVariantMonomerOption> options;
+        std::vector<KetAmbiguousMonomerOption> options;
         for (auto template_alias : alternatives.value().get())
         {
             auto& template_id = _library.getMonomerTemplateIdByAlias(monomer_class, template_alias);
@@ -396,7 +396,7 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
             checkAddTemplate(document, monomer_template);
             _alias_to_id.emplace(template_alias, template_id);
         }
-        auto& templ = document.addVariantMonomerTemplate("alternatives", monomer, monomer, IdtAlias(), options);
+        auto& templ = document.addAmbiguousMonomerTemplate("alternatives", monomer, monomer, IdtAlias(), options);
         static const std::map<std::string, KetAttachmentPoint> aa_aps{{"R1", -1}, {"R2", -1}};
         static const std::map<std::string, KetAttachmentPoint> base_aps{{"R1", -1}};
         if (seq_type == SeqType::PEPTIDESeq)
@@ -435,13 +435,13 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
     _col++;
 }
 
-void SequenceLoader::addAminoAcid(KetDocument& document, const std::string& monomer, bool variant)
+void SequenceLoader::addAminoAcid(KetDocument& document, const std::string& monomer, bool ambiguous)
 {
-    Vec3f pos(_col * LayoutOptions::DEFAULT_BOND_LENGTH, -LayoutOptions::DEFAULT_BOND_LENGTH * _row, 0);
+    Vec3f pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
     auto amino_idx = document.monomers().size();
-    auto& amino_acid = variant ? document.addVariantMonomer(monomer, _var_alias_to_id.at(monomer)) : document.addMonomer(monomer, _alias_to_id.at(monomer));
-    if (variant)
-        amino_acid->setAttachmentPoints(document.variantTemplates().at(_var_alias_to_id.at(monomer)).attachmentPoints());
+    auto& amino_acid = ambiguous ? document.addAmbiguousMonomer(monomer, _var_alias_to_id.at(monomer)) : document.addMonomer(monomer, _alias_to_id.at(monomer));
+    if (ambiguous)
+        amino_acid->setAttachmentPoints(document.ambiguousTemplates().at(_var_alias_to_id.at(monomer)).attachmentPoints());
     else
         amino_acid->setAttachmentPoints(document.templates().at(_alias_to_id.at(monomer)).attachmentPoints());
     amino_acid->setIntProp("seqid", _seq_id);
@@ -452,7 +452,7 @@ void SequenceLoader::addAminoAcid(KetDocument& document, const std::string& mono
 }
 
 void SequenceLoader::addNucleotide(KetDocument& document, const std::string& base_alias, const std::string& sugar_alias, const std::string& phosphate_alias,
-                                   bool phosphate_at_left, bool variant)
+                                   bool phosphate_at_left, bool ambiguous)
 {
     Vec3f pos = getBackboneMonomerPosition();
 
@@ -467,14 +467,14 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
     if (base_alias.size() > 0)
     {
         auto nuc_base_idx = document.monomers().size();
-        auto& base =
-            variant ? document.addVariantMonomer(base_alias, _var_alias_to_id.at(base_alias)) : document.addMonomer(base_alias, _alias_to_id.at(base_alias));
-        if (variant)
-            base->setAttachmentPoints(document.variantTemplates().at(_var_alias_to_id.at(base_alias)).attachmentPoints());
+        auto& base = ambiguous ? document.addAmbiguousMonomer(base_alias, _var_alias_to_id.at(base_alias))
+                               : document.addMonomer(base_alias, _alias_to_id.at(base_alias));
+        if (ambiguous)
+            base->setAttachmentPoints(document.ambiguousTemplates().at(_var_alias_to_id.at(base_alias)).attachmentPoints());
         else
             base->setAttachmentPoints(document.templates().at(_alias_to_id.at(base_alias)).attachmentPoints());
         base->setIntProp("seqid", _seq_id);
-        Vec3f base_coord(pos.x, pos.y - LayoutOptions::DEFAULT_BOND_LENGTH, 0);
+        Vec3f base_coord(pos.x, pos.y - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, 0);
         base->setPosition(base_coord);
 
         // connect nucleobase to the sugar
@@ -492,7 +492,7 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
                 auto& phosphate = document.addMonomer(phosphate_alias, _alias_to_id.at(phosphate_alias));
                 phosphate->setAttachmentPoints(document.templates().at(_alias_to_id.at(phosphate_alias)).attachmentPoints());
                 phosphate->setIntProp("seqid", _seq_id - 1);
-                Vec3f phosphate_coord(pos.x - LayoutOptions::DEFAULT_BOND_LENGTH, pos.y, 0);
+                Vec3f phosphate_coord(pos.x - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, pos.y, 0);
                 phosphate->setPosition(phosphate_coord);
 
                 addMonomerConnection(document, _last_monomer_idx, phosphate_idx); // connect phosphate to the previous monomer
@@ -506,7 +506,7 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
             auto& phosphate = document.addMonomer(phosphate_alias, _alias_to_id.at(phosphate_alias));
             phosphate->setAttachmentPoints(document.templates().at(_alias_to_id.at(phosphate_alias)).attachmentPoints());
             phosphate->setIntProp("seqid", _seq_id);
-            Vec3f phosphate_coord(pos.x + LayoutOptions::DEFAULT_BOND_LENGTH, pos.y, 0);
+            Vec3f phosphate_coord(pos.x + LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, pos.y, 0);
             phosphate->setPosition(phosphate_coord);
 
             if (_last_monomer_idx >= 0)
@@ -949,7 +949,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                 if (ch != ')')
                     throw Error("Unexpected end of data");
                 if (cur_token == "")
-                    throw Error("Invalid variant monomer: empty string.");
+                    throw Error("Invalid ambiguous monomer: empty string.");
                 cur_token += ch;
                 break;
             }
@@ -1017,7 +1017,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
             std::string single_monomer_alias = "";
             std::string single_monomer_class;
             bool unresolved = false;
-            bool variant_monomer = false;
+            bool ambiguous_monomer = false;
 
             if (token.first.back() == '/')
             {
@@ -1062,11 +1062,11 @@ void SequenceLoader::loadIdt(KetDocument& document)
             }
 
             if (STANDARD_MIXED_BASES.count(idt_alias) != 0 || idt_alias.back() == ')')
-                variant_monomer = true;
+                ambiguous_monomer = true;
 
-            if (idt_alias.size() == 1 || variant_monomer)
+            if (idt_alias.size() == 1 || ambiguous_monomer)
             {
-                if (IDT_STANDARD_BASES.count(idt_alias) == 0 && !variant_monomer)
+                if (IDT_STANDARD_BASES.count(idt_alias) == 0 && !ambiguous_monomer)
                 {
                     if (invalid_symbols.size())
                         invalid_symbols += ',';
@@ -1074,7 +1074,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     continue;
                 }
 
-                if (variant_monomer)
+                if (ambiguous_monomer)
                 {
                     auto mixed_base = idt_alias;
                     std::optional<std::array<float, 4>> ratios;
@@ -1097,7 +1097,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                             mixed_base = mixed_base.substr(0, pos);
                             check_mixed_base(mixed_base);
                             if (ratios_str.size() != 8)
-                                throw Exception("Invalid IDT variant monomer %s", idt_alias.c_str());
+                                throw Exception("Invalid IDT ambiguous monomer %s", idt_alias.c_str());
                             ratios.emplace(std::array<float, 4>{std::stof(ratios_str.substr(0, 2)), std::stof(ratios_str.substr(2, 2)),
                                                                 std::stof(ratios_str.substr(4, 2)), std::stof(ratios_str.substr(6, 2))});
                             idt_alias = '(' + mixed_base + ')';
@@ -1110,13 +1110,13 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     }
                     if (sugar == "R" && RNA_DNA_MIXED_BASES.count(mixed_base) == 0)
                         idt_alias = 'r' + idt_alias;
-                    if (!document.hasVariantMonomerTemplate(idt_alias))
+                    if (!document.hasAmbiguousMonomerTemplate(idt_alias))
                     {
                         auto it = STANDARD_MIXED_BASES.find(mixed_base);
                         if (it == STANDARD_MIXED_BASES.end())
                             throw Error("Unknown mixed base '%s'", mixed_base.c_str());
 
-                        std::vector<KetVariantMonomerOption> options;
+                        std::vector<KetAmbiguousMonomerOption> options;
                         for (auto template_alias : it->second)
                         {
                             if (sugar == "R" && template_alias == "T") // U instead of T for RNA
@@ -1133,7 +1133,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                             checkAddTemplate(document, monomer_template);
                             _alias_to_id.emplace(template_alias, template_id);
                         }
-                        auto& templ = document.addVariantMonomerTemplate("mixture", idt_alias, idt_alias, IdtAlias(), options);
+                        auto& templ = document.addAmbiguousMonomerTemplate("mixture", idt_alias, idt_alias, IdtAlias(), options);
                         static const std::map<std::string, KetAttachmentPoint> aps{{"R1", -1}};
                         templ.setAttachmentPoints(aps);
                         _var_alias_to_id.emplace(idt_alias, idt_alias);
@@ -1141,7 +1141,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     else
                     {
                         if (ratios.has_value())
-                            throw Error("Variant monomer %s redefinion", idt_alias.c_str());
+                            throw Error("Ambiguous monomer %s redefinion", idt_alias.c_str());
                     }
                 }
                 base = idt_alias;
@@ -1162,7 +1162,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                 }
 
                 _alias_to_id.emplace(sugar, checkAddTemplate(document, MonomerClass::Sugar, sugar));
-                if (base.size() > 0 && !variant_monomer)
+                if (base.size() > 0 && !ambiguous_monomer)
                     _alias_to_id.emplace(base, checkAddTemplate(document, MonomerClass::Base, base));
                 if (phosphate.size() > 0)
                     _alias_to_id.emplace(phosphate, checkAddTemplate(document, MonomerClass::Phosphate, phosphate));
@@ -1270,7 +1270,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                 _last_monomer_idx = static_cast<int>(monomer_idx);
             }
             else
-                addNucleotide(document, base, sugar, phosphate, false, variant_monomer);
+                addNucleotide(document, base, sugar, phosphate, false, ambiguous_monomer);
 
             _seq_id++;
             _col++;
@@ -1333,7 +1333,7 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
             ml.layout_orientation = UNCPECIFIED;
             ml.make();
             // create template based on molecule
-            monomer_alias = "Mod" + std::to_string(_unknown_variants_count++);
+            monomer_alias = "Mod" + std::to_string(_unknown_ambiguous_count++);
             auto& mon_template = document.addMonomerTemplate(monomer_alias, MonomerTemplate::MonomerClassToStr(monomer_class), IdtAlias());
             mon_template.setStringProp("alias", monomer_alias);
             std::map<int, int> rgroups;
@@ -1457,7 +1457,7 @@ int SequenceLoader::readCount(std::string& count, Scanner& _scanner)
 SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& document, MonomerClass monomer_class)
 {
     std::string monomer_alias, repeating, annotation;
-    variant_template_opts options;
+    ambiguous_template_opts options;
     int ch = _scanner.lookNext();
     bool was_bracket = false;
     if (ch == '(')
@@ -1467,14 +1467,14 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
     }
     monomer_alias = readHelmMonomerAlias(document, monomer_class);
     ch = _scanner.lookNext();
-    bool is_variant = false;
+    bool is_ambiguous = false;
 
-    if (ch == ',' || ch == '+' || ch == ':') // looks like variant
+    if (ch == ',' || ch == '+' || ch == ':') // looks like ambiguous
     {
         if (!was_bracket)
-            throw Error("Unexpected symbol '%c'. Variant monomers should be defined in ().");
+            throw Error("Unexpected symbol '%c'. Ambiguous monomers should be defined in ().");
         std::string count;
-        is_variant = true;
+        is_ambiguous = true;
         ch = readCount(count, _scanner); // in ch==':' read conunt and return next char
         bool is_mixture = false;
         if (ch == '+')
@@ -1500,12 +1500,12 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
                 break;
             opt_alias = readHelmMonomerAlias(document, monomer_class);
             if (aliases.count(opt_alias) > 0)
-                throw Error("Ivalid variant monomer. Monomer '%s' repeated more than once.", opt_alias.c_str());
+                throw Error("Ivalid ambiguous monomer. Monomer '%s' repeated more than once.", opt_alias.c_str());
             ch = readCount(count, _scanner);
             if (is_mixture && ch != '+' && ch != ')')
-                throw Error("Invalid variant monomer. Expected '+' but found '%c'", ch);
+                throw Error("Invalid ambiguous monomer. Expected '+' but found '%c'", ch);
             else if (!is_mixture && ch != ',' && ch != ')')
-                throw Error("Invalid variant monomer. Expected ',' but found '%c'", ch);
+                throw Error("Invalid ambiguous monomer. Expected ',' but found '%c'", ch);
             _scanner.skip(1); // skip delimiter or ')'
         }
         if (monomer_class == MonomerClass::AminoAcid)
@@ -1514,9 +1514,9 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
                 if (!is_mixture && no_counts)
                     monomer_alias = STANDARD_MIXED_PEPTIDES_TO_ALIAS.at(aliases);
                 else
-                    monomer_alias = STANDARD_MIXED_PEPTIDES_TO_ALIAS.at(aliases) + std::to_string(_unknown_variants_count++);
+                    monomer_alias = STANDARD_MIXED_PEPTIDES_TO_ALIAS.at(aliases) + std::to_string(_unknown_ambiguous_count++);
             else
-                monomer_alias = "Var" + std::to_string(_unknown_variants_count++);
+                monomer_alias = "Var" + std::to_string(_unknown_ambiguous_count++);
         }
         else if (monomer_class == MonomerClass::Base)
         {
@@ -1524,19 +1524,19 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
                 if (!is_mixture && no_counts)
                     monomer_alias = STANDARD_MIXED_BASES_TO_ALIAS.at(aliases);
                 else
-                    monomer_alias = STANDARD_MIXED_BASES_TO_ALIAS.at(aliases) + std::to_string(_unknown_variants_count++);
+                    monomer_alias = STANDARD_MIXED_BASES_TO_ALIAS.at(aliases) + std::to_string(_unknown_ambiguous_count++);
             else
-                monomer_alias = "Var" + std::to_string(_unknown_variants_count++);
+                monomer_alias = "Var" + std::to_string(_unknown_ambiguous_count++);
         }
         else
         {
-            monomer_alias = "Var" + std::to_string(_unknown_variants_count++);
+            monomer_alias = "Var" + std::to_string(_unknown_ambiguous_count++);
         }
     }
     repeating = readHelmRepeating();
     annotation = readHelmAnnotation();
     ch = _scanner.lookNext();
-    if (was_bracket && !is_variant) // for variants ')' already processed
+    if (was_bracket && !is_ambiguous) // for variants ')' already processed
         if (ch == ')')
             _scanner.skip(1); // single monomer in () - branch monomer
         else
@@ -1565,8 +1565,8 @@ std::string SequenceLoader::readHelmSimplePolymerName(std::string& polymer_name)
     return polymer_type;
 }
 
-const std::string SequenceLoader::checkAddVariantMonomerTemplate(KetDocument& document, const std::string& alias, MonomerClass monomer_class,
-                                                                 variant_template_opts& options)
+const std::string SequenceLoader::checkAddAmbiguousMonomerTemplate(KetDocument& document, const std::string& alias, MonomerClass monomer_class,
+                                                                   ambiguous_template_opts& options)
 {
     std::string template_id;
     const auto& it = _opts_to_template_id.find(options);
@@ -1578,7 +1578,7 @@ const std::string SequenceLoader::checkAddVariantMonomerTemplate(KetDocument& do
     {
         bool is_mixture = options.first;
         std::string subtype = is_mixture ? "mixture" : "alternatives";
-        std::vector<KetVariantMonomerOption> opts;
+        std::vector<KetAmbiguousMonomerOption> opts;
         std::set<std::string> vt_ap_names;
         bool not_inited = true;
         std::map<std::string, KetAttachmentPoint> att_points;
@@ -1612,7 +1612,7 @@ const std::string SequenceLoader::checkAddVariantMonomerTemplate(KetDocument& do
                         vt_ap_names.erase(it);
             }
         }
-        auto& var_template = document.addVariantMonomerTemplate(subtype, alias, alias, IdtAlias(), opts);
+        auto& var_template = document.addAmbiguousMonomerTemplate(subtype, alias, alias, IdtAlias(), opts);
         var_template.setAttachmentPoints(att_points);
         template_id = alias;
         _opts_to_template_id.emplace(options, template_id);
@@ -1630,12 +1630,12 @@ size_t SequenceLoader::addKetMonomer(KetDocument& document, MonomerInfo info, Mo
     if (repeating.size() > 0)
         throw Error("Repeating not supported now.");
     auto monomer_idx = document.monomers().size();
-    if (options.second.size() > 0) // variant monomer
+    if (options.second.size() > 0) // ambiguous monomer
     {
-        std::string template_id = checkAddVariantMonomerTemplate(document, alias, monomer_class, options);
-        const auto var_templ = document.variantTemplates().at(template_id);
+        std::string template_id = checkAddAmbiguousMonomerTemplate(document, alias, monomer_class, options);
+        const auto var_templ = document.ambiguousTemplates().at(template_id);
         alias = var_templ.alias();
-        auto& monomer = document.addVariantMonomer(alias, template_id);
+        auto& monomer = document.addAmbiguousMonomer(alias, template_id);
         monomer->setAttachmentPoints(var_templ.attachmentPoints());
         monomer->setIntProp("seqid", _seq_id++);
         monomer->setPosition(pos);
@@ -1660,7 +1660,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
     std::string simple_polymer_type = "";
     int monomer_idx = 0;
     int prev_monomer_template_atom_idx = -1;
-    _unknown_variants_count = 0;
+    _unknown_ambiguous_count = 0;
     using polymer_map = std::map<std::string, std::map<int, size_t>>;
     polymer_map used_polymer_nums;
     polymer_map::iterator cur_polymer_map;
@@ -1702,7 +1702,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
             else if (ch != '}')
             {
                 monomer_idx++;
-                Vec3f pos(_col * LayoutOptions::DEFAULT_BOND_LENGTH, -LayoutOptions::DEFAULT_BOND_LENGTH * _row, 0);
+                Vec3f pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
                 _col++;
                 if (simple_polymer_type == kHELMPolymerTypeUnknown)
                 {
@@ -1762,7 +1762,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                         monomer_idx++;
                         auto base_info = readHelmMonomer(document, MonomerClass::Base);
                         ch = _scanner.lookNext();
-                        Vec3f base_pos(pos.x, pos.y - LayoutOptions::DEFAULT_BOND_LENGTH, 0);
+                        Vec3f base_pos(pos.x, pos.y - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, 0);
                         auto base_idx = addKetMonomer(document, base_info, MonomerClass::Base, base_pos);
                         cur_polymer_map->second[monomer_idx] = base_idx;
                         if (monomer_idx > 1)
@@ -1776,7 +1776,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                         continue;
                     auto phosphate_info = readHelmMonomer(document, MonomerClass::Phosphate);
                     monomer_idx++;
-                    Vec3f phosphate_pos(_col * LayoutOptions::DEFAULT_BOND_LENGTH, -LayoutOptions::DEFAULT_BOND_LENGTH * _row, 0);
+                    Vec3f phosphate_pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
                     _col++;
                     auto phosphate_idx = addKetMonomer(document, phosphate_info, MonomerClass::Phosphate, phosphate_pos);
                     cur_polymer_map->second[monomer_idx] = phosphate_idx;

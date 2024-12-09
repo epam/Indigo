@@ -21,7 +21,6 @@
 #include "base_cpp/queue.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tree.h"
-#include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_sgroups.h"
 #include "molecule/query_molecule.h"

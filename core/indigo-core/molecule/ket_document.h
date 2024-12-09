@@ -56,17 +56,17 @@ namespace indigo
         MonomerTemplate& addMonomerTemplate(const std::string& id, const std::string& monomer_class, IdtAlias idt_alias, bool unresolved = false);
         void addMonomerTemplate(const MonomerTemplate& monomer_template);
 
-        KetVariantMonomerTemplate& addVariantMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name, IdtAlias idt_alias,
-                                                             std::vector<KetVariantMonomerOption>& options);
-        std::unique_ptr<KetBaseMonomer>& addVariantMonomer(const std::string& alias, const std::string& template_id);
-        std::unique_ptr<KetBaseMonomer>& addVariantMonomer(const std::string& id, const std::string& alias, const std::string& template_id);
-        std::unique_ptr<KetBaseMonomer>& addVariantMonomer(const std::string& id, const std::string& alias, const std::string& template_id,
-                                                           const std::string& ref);
+        KetAmbiguousMonomerTemplate& addAmbiguousMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name, IdtAlias idt_alias,
+                                                                 std::vector<KetAmbiguousMonomerOption>& options);
+        std::unique_ptr<KetBaseMonomer>& addAmbiguousMonomer(const std::string& alias, const std::string& template_id);
+        std::unique_ptr<KetBaseMonomer>& addAmbiguousMonomer(const std::string& id, const std::string& alias, const std::string& template_id);
+        std::unique_ptr<KetBaseMonomer>& addAmbiguousMonomer(const std::string& id, const std::string& alias, const std::string& template_id,
+                                                             const std::string& ref);
 
         using molecules_map = std::map<std::string, KetMolecule>;
         using templates_map = std::map<std::string, MonomerTemplate>;
         using monomers_map = std::map<std::string, std::unique_ptr<KetBaseMonomer>>;
-        using variant_templates_map = std::map<std::string, KetVariantMonomerTemplate>;
+        using ambiguous_templates_map = std::map<std::string, KetAmbiguousMonomerTemplate>;
 
         inline const molecules_map& molecules() const
         {
@@ -111,6 +111,10 @@ namespace indigo
             return _connections;
         };
 
+        // Return list of connections between simple polimers
+        // i.e. non-backbone and not sugar-base connections
+        // connections that create a cycle place here too
+        // parseSimplePolymers should be called to fill this list
         const std::vector<KetConnection> nonSequenceConnections() const
         {
             return _non_sequence_connections;
@@ -118,25 +122,31 @@ namespace indigo
 
         int original_format;
 
-        const variant_templates_map& variantTemplates() const
+        const ambiguous_templates_map& ambiguousTemplates() const
         {
-            return _variant_templates;
+            return _ambiguous_templates;
         };
 
-        const std::vector<std::string>& variantTemplatesIds() const
+        const std::vector<std::string>& ambiguousTemplatesIds() const
         {
-            return _variant_templates_ids;
+            return _ambiguous_templates_ids;
         };
 
         BaseMolecule& getBaseMolecule();
 
-        bool hasVariantMonomerTemplate(const std::string& id) const
+        bool hasAmbiguousMonomerTemplate(const std::string& id) const
         {
-            return _variant_templates.find(id) != _variant_templates.end();
+            return _ambiguous_templates.find(id) != _ambiguous_templates.end();
         };
 
-        void processVariantMonomerTemplates();
+        void processAmbiguousMonomerTemplates();
 
+        // Parse list of monomer and ist of connections stored in document and return list of simple polimers in term of HELM
+        // Each simple polymer represented as list of monomer IDs.
+        // Monomers connected from m[i] R2 to m[i+1] R1 for peptides
+        // For RNA/DNA monomer placed in order Sugar-Base-Phosphate-Sugar... with standard connections
+        // Each CHEM returned as separate simple polymer
+        // Also store non-standard or creating cycle connections in nonSequenceConnections list
         void parseSimplePolymers(std::vector<std::deque<std::string>>& sequences, bool for_idt = false);
 
         MonomerClass getMonomerClass(const KetBaseMonomer& monomer) const;
@@ -178,6 +188,16 @@ namespace indigo
 
         const std::string& monomerIdByRef(const std::string& ref);
 
+        void addMonomerShape(const std::string& id, bool collapsed, const std::string& shape, Vec2f position, const std::vector<std::string>& monomers)
+        {
+            _monomer_shapes.emplace_back(id, collapsed, shape, position, monomers);
+        }
+
+        const std::vector<KetMonomerShape>& monomerShapes() const
+        {
+            return _monomer_shapes;
+        }
+
     protected:
         void collect_sequence_side(const std::string& monomer_id, bool left_side, std::set<std::string>& monomers, std::set<std::string>& used_monomers,
                                    std::deque<std::string>& sequence, std::map<std::pair<std::string, std::string>, const KetConnection&>& ap_to_connection);
@@ -190,8 +210,8 @@ namespace indigo
         std::map<std::string, std::string> _monomer_ref_to_id;
         templates_map _templates;
         std::vector<std::string> _templates_ids;
-        variant_templates_map _variant_templates;
-        std::vector<std::string> _variant_templates_ids;
+        ambiguous_templates_map _ambiguous_templates;
+        std::vector<std::string> _ambiguous_templates_ids;
         std::vector<KetConnection> _connections;
         std::vector<KetConnection> _non_sequence_connections;
         std::map<std::string, KetBaseMonomerTemplate::TemplateType> _template_id_to_type;
@@ -200,6 +220,7 @@ namespace indigo
         rapidjson::Value _json_molecules;
         rapidjson::Document _json_document;
         std::vector<std::string> _fasta_properties;
+        std::vector<KetMonomerShape> _monomer_shapes;
     };
 }
 

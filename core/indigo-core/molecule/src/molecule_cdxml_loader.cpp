@@ -449,7 +449,7 @@ void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     _parseCDXMLPage(*root);
 
     _parseCollections(mol);
-    int arrows_count = mol.meta().getMetaCount(KETReactionArrow::CID);
+    int arrows_count = mol.meta().getMetaCount(ReactionArrowObject::CID);
     if (arrows_count && !load_arrows && _has_scheme)
         throw Error("Not a molecule. Found %d arrows.", arrows_count);
 }
@@ -529,17 +529,15 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
     for (auto& brk : brackets)
         _addBracket(mol, brk);
 
-    for (const auto& to : text_objects)
-        mol.meta().addMetaObject(new KETTextObject(to.first, to.second));
     for (const auto& kto : ket_text_objects)
-        mol.meta().addMetaObject(new KETTextObject(kto));
+        mol.meta().addMetaObject(new SimpleTextObject(kto));
 
     for (const auto& plus : _pluses)
-        mol.meta().addMetaObject(new KETReactionPlus(plus));
+        mol.meta().addMetaObject(new ReactionPlusObject(plus));
 
     // CDX contains graphic arrow wich id dublicate arrow/
     for (const auto& image : _images)
-        mol.meta().addMetaObject(new KETImage(image.bbox, image.image_format, image.data, false));
+        mol.meta().addMetaObject(new EmbeddedImageObject(image.bbox, image.image_format, image.data, false));
 
     // Search arrows for arrow with coords same as in grapic arrow and if found - remove tis arrow gecause graphic arrow contains more specific type
     for (const auto& g_arrow : _graphic_arrows)
@@ -558,7 +556,7 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
                 break;
             }
         }
-        mol.meta().addMetaObject(new KETReactionArrow(g_arrow.second, p1, p2));
+        mol.meta().addMetaObject(new ReactionArrowObject(g_arrow.second, p1, p2));
     }
 
     for (const auto& arrow : _arrows)
@@ -566,13 +564,13 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         const auto& arr_info = arrow.second.first;
         Vec2f v1(arr_info.first.x, arr_info.first.y);
         Vec2f v2(arr_info.second.x, arr_info.second.y);
-        mol.meta().addMetaObject(new KETReactionArrow(arrow.second.second, v1, v2));
+        mol.meta().addMetaObject(new ReactionArrowObject(arrow.second.second, v1, v2));
     }
 
     for (const auto& prim : _primitives)
     {
         if (prim.second == kCDXGraphicType_Rectangle)
-            mol.meta().addMetaObject(new KETSimpleObject(KETSimpleObject::EKETRectangle, prim.first));
+            mol.meta().addMetaObject(new SimpleGraphicsObject(SimpleGraphicsObject::ERectangle, prim.first));
     }
 }
 
@@ -1488,10 +1486,10 @@ void MoleculeCdxmlLoader::_parseEmbeddedObject(BaseCDXElement& elem)
 
     Rect2f emb_rect(embedded_bbox.first, embedded_bbox.second);
     if (image_png.size())
-        _images.emplace_back(KETImage::EKETPNG, emb_rect, image_png);
+        _images.emplace_back(EmbeddedImageObject::EKETPNG, emb_rect, image_png);
     else
         for (const auto& dib : bitmaps)
-            _images.emplace_back(KETImage::EKETPNG, emb_rect, dibToPNG(dib.dibits));
+            _images.emplace_back(EmbeddedImageObject::EKETPNG, emb_rect, dibToPNG(dib.dibits));
 }
 
 void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
@@ -1653,7 +1651,7 @@ void MoleculeCdxmlLoader::_parseLabel(BaseCDXElement& elem, std::string& label)
     }
 }
 
-void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vector<KETTextObject>& text_objects)
+void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vector<SimpleTextObject>& text_objects)
 {
     Vec2f text_pos;
     Rect2f text_bbox;
@@ -1662,7 +1660,7 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
     std::string label_justification, label_alignment, text_justification;
     AutoInt font_id, font_color_index, font_face;
     float font_size;
-    KETTextObject kto;
+    SimpleTextObject kto;
 
     std::unordered_map<std::string, std::function<void(const std::string&)>> text_dispatcher = {
         {"p", posLambda(text_pos)},
@@ -1700,7 +1698,7 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
 
             // add paragraph
             if (kto.block().empty())
-                kto.block().push_back(KETTextObject::KETTextParagraph());
+                kto.block().push_back(SimpleTextObject::KETTextParagraph());
 
             // break parts into separate paragraphs if CR presents
             auto lines = split_with_empty(style_text, '\n');
@@ -1708,7 +1706,7 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
             {
                 if (i)
                 {
-                    kto.block().push_back(KETTextObject::KETTextParagraph());
+                    kto.block().push_back(SimpleTextObject::KETTextParagraph());
                 }
 
                 const auto& part = lines[i];
@@ -1746,7 +1744,7 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
                     }
 
                     // set fss font size
-                    if (font_size > 0 && (int)font_size != KETDefaultFontSize)
+                    if (font_size > 0 && (int)font_size != KDefaultFontSize)
                         fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::ESize, static_cast<uint32_t>(font_size)),
                                     std::forward_as_tuple(true));
 
@@ -1803,7 +1801,6 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
                                                                                                 {"BoundingBox", bboxLambda(text_bbox)},
                                                                                                 {"LabelJustification", strLambda(label_justification)},
                                                                                                 {"LabelAlignment", strLambda(label_alignment)}};
-
     AutoInt font_id, font_color_index, font_face;
     float font_size;
 
@@ -1826,7 +1823,8 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
     writer.Key("blocks");
     writer.StartArray();
 
-    std::list<CdxmlKetTextLine> ket_text_lines;
+    std::list<SimpleTextLine> ket_text_lines;
+    ket_text_lines.emplace_back();
     for (auto text_style = elem.firstChildElement(); text_style->hasContent(); text_style = text_style->nextSiblingElement())
     {
         std::string text_element = text_style->name();
@@ -1856,7 +1854,6 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
                     auto& ket_text_style = ket_text_line.text_styles.back();
 
                     auto initial_size = label_part.size();
-
                     ket_text_style.offset = ket_text_line.text.size();
                     ket_text_style.size = label_part.size();
                     ket_text_line.text += label_part;
@@ -1876,16 +1873,16 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
                     else
                     {
                         if (fs.is_bold)
-                            ket_text_style.styles.push_back(KETFontBoldStrV1);
+                            ket_text_style.styles.push_back(KFontBoldStrV1);
                         if (fs.is_italic)
-                            ket_text_style.styles.push_back(KETFontItalicStrV1);
+                            ket_text_style.styles.push_back(KFontItalicStrV1);
                         if (fs.is_superscript)
-                            ket_text_style.styles.push_back(KETFontSuperscriptStrV1);
+                            ket_text_style.styles.push_back(KFontSuperscriptStrV1);
                         if (fs.is_subscript)
-                            ket_text_style.styles.push_back(KETFontSubscriptStrV1);
+                            ket_text_style.styles.push_back(KFontSubscriptStrV1);
                     }
-                    if (font_size > 0 && (int)font_size != KETDefaultFontSize)
-                        ket_text_style.styles.push_back(std::string(KETFontCustomSizeStrV1) + "_" + std::to_string((int)ceil(font_size)) + "px");
+                    if (font_size > 0 && (int)font_size != KDefaultFontSize)
+                        ket_text_style.styles.push_back(std::string(KFontCustomSizeStrV1) + "_" + std::to_string((int)ceil(font_size)) + "px");
                 }
             }
         }
@@ -1926,7 +1923,6 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair
     writer.Key("entityMap");
     writer.StartObject();
     writer.EndObject();
-
     writer.EndObject();
 
     if (text_bbox.width() > 0 && text_bbox.height() > 0)

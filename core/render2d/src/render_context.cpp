@@ -18,7 +18,7 @@
 
 #include "render_context.h"
 #include "base_cpp/output.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 
 #include <limits.h>
 
@@ -1036,7 +1036,7 @@ void RenderContext::drawPlus(const Vec2f& pos, const float linewidth, const floa
 
 void RenderContext::drawHalfEllipse(const Vec2f& v1, const Vec2f& v2, const float height, const bool is_negative)
 {
-    float h = abs(height);
+    float h = std::fabs(height);
     double angle1 = height > 0 ? -M_PI : 0;
     double angle2 = height > 0 ? 0 : M_PI;
     Vec2f d;
@@ -1166,17 +1166,17 @@ void RenderContext::drawEllipticalArrow(const Vec2f& p1, const Vec2f& p2, const 
     n_orig.negate();
     switch (arrow_type)
     {
-    case KETReactionArrow::EEllipticalArcFilledBow:
+    case ReactionArrowObject::EEllipticalArcFilledBow:
         drawArrowHeader(p2, n_orig, width, headwidth, headsize, true);
         break;
 
-    case KETReactionArrow::EEllipticalArcFilledTriangle:
+    case ReactionArrowObject::EEllipticalArcFilledTriangle:
         drawTriangleArrowHeader(p2, n_orig, width, headwidth, headsize);
         break;
-    case KETReactionArrow::EEllipticalArcOpenAngle:
+    case ReactionArrowObject::EEllipticalArcOpenAngle:
         drawArrowHeader(p2, n_orig, width, headwidth, headsize);
         break;
-    case KETReactionArrow::EEllipticalArcOpenHalfAngle:
+    case ReactionArrowObject::EEllipticalArcOpenHalfAngle:
         drawHalfArrowHeader(p2, n_orig, width, headwidth, headsize);
         break;
     }

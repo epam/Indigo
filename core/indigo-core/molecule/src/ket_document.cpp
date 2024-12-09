@@ -23,7 +23,7 @@
 #include "molecule/molecule_json_loader.h"
 
 #ifdef _MSC_VER
-#pragma warning(push)
+#pragma warning(push, 4)
 #endif
 
 using namespace indigo;
@@ -96,42 +96,42 @@ void KetDocument::addMonomerTemplate(const MonomerTemplate& monomer_template)
     it.first->second.copy(monomer_template);
 }
 
-KetVariantMonomerTemplate& KetDocument::addVariantMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name,
-                                                                  IdtAlias idt_alias, std::vector<KetVariantMonomerOption>& options)
+KetAmbiguousMonomerTemplate& KetDocument::addAmbiguousMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name,
+                                                                      IdtAlias idt_alias, std::vector<KetAmbiguousMonomerOption>& options)
 {
-    if (_variant_templates.find(id) != _variant_templates.end())
+    if (_ambiguous_templates.find(id) != _ambiguous_templates.end())
         throw Error("Variant monomer template '%s' already exists.", id.c_str());
-    _variant_templates_ids.emplace_back(id);
-    auto it = _variant_templates.try_emplace(id, subtype, id, name, idt_alias, options);
-    _template_id_to_type.emplace(id, KetBaseMonomerTemplate::TemplateType::VariantMonomerTemplate);
+    _ambiguous_templates_ids.emplace_back(id);
+    auto it = _ambiguous_templates.try_emplace(id, subtype, id, name, idt_alias, options);
+    _template_id_to_type.emplace(id, KetBaseMonomerTemplate::TemplateType::AmbiguousMonomerTemplate);
     return it.first->second;
 };
 
-std::unique_ptr<KetBaseMonomer>& KetDocument::addVariantMonomer(const std::string& id, const std::string& alias, const std::string& template_id,
-                                                                const std::string& ref)
+std::unique_ptr<KetBaseMonomer>& KetDocument::addAmbiguousMonomer(const std::string& id, const std::string& alias, const std::string& template_id,
+                                                                  const std::string& ref)
 {
-    auto& mon = addVariantMonomer(id, alias, template_id);
+    auto& mon = addAmbiguousMonomer(id, alias, template_id);
     _monomer_ref_to_id.erase(mon->ref());
     mon->setRef(ref);
     _monomer_ref_to_id.emplace(ref, id);
     return mon;
 };
 
-std::unique_ptr<KetBaseMonomer>& KetDocument::addVariantMonomer(const std::string& id, const std::string& alias, const std::string& template_id)
+std::unique_ptr<KetBaseMonomer>& KetDocument::addAmbiguousMonomer(const std::string& id, const std::string& alias, const std::string& template_id)
 {
     if (_monomers.find(id) != _monomers.end())
         throw Error("Variant monomer '%s' already exists.", id.c_str());
-    auto it = _monomers.try_emplace(id, std::make_unique<KetVariantMonomer>(id, alias, template_id));
-    it.first->second->setAttachmentPoints(_variant_templates.at(template_id).attachmentPoints());
+    auto it = _monomers.try_emplace(id, std::make_unique<KetAmbiguousMonomer>(id, alias, template_id));
+    it.first->second->setAttachmentPoints(_ambiguous_templates.at(template_id).attachmentPoints());
     _monomer_ref_to_id.emplace(it.first->second->ref(), id);
     _monomers_ids.emplace_back(id);
     return it.first->second;
 };
 
-std::unique_ptr<KetBaseMonomer>& KetDocument::addVariantMonomer(const std::string& alias, const std::string& template_id)
+std::unique_ptr<KetBaseMonomer>& KetDocument::addAmbiguousMonomer(const std::string& alias, const std::string& template_id)
 {
     std::string id = std::to_string(_monomers.size());
-    return addVariantMonomer(id, alias, template_id);
+    return addAmbiguousMonomer(id, alias, template_id);
 }
 
 BaseMolecule& KetDocument::getBaseMolecule()
@@ -146,7 +146,8 @@ BaseMolecule& KetDocument::getBaseMolecule()
         saver.saveKetDocument(*this);
         // load molecule from ket
         rapidjson::Document data;
-        auto& res = data.Parse(json.c_str());
+        std::ignore = data.Parse(json.c_str());
+        // auto& res = data.Parse(json.c_str());
         // if res.hasParseError()
         MoleculeJsonLoader loader(data);
         loader.stereochemistry_options.ignore_errors = true;
@@ -203,9 +204,9 @@ void KetDocument::connectMonomerTo(const std::string& mon1, const std::string& a
     it->second->connectAttachmentPointTo(ap1, mon2, ap2);
 }
 
-void KetDocument::processVariantMonomerTemplates()
+void KetDocument::processAmbiguousMonomerTemplates()
 {
-    for (auto& it : _variant_templates)
+    for (auto& it : _ambiguous_templates)
     {
         // check that all options has same option
         bool has_ratio = false;
@@ -213,19 +214,19 @@ void KetDocument::processVariantMonomerTemplates()
         auto& options = it.second.options();
         if (options.size() == 0)
             continue;
-        for (auto& it : options)
+        for (auto& opt_it : options)
         {
-            if (it.ratio().has_value())
+            if (opt_it.ratio().has_value())
                 has_ratio = true;
-            if (it.probability().has_value())
+            if (opt_it.probability().has_value())
                 has_probability = true;
         }
         if (has_ratio && has_probability)
             throw Error("Variant monomer template '%s' has options with both ratio and probability set.", it.first.c_str());
         MonomerClass monomer_class = _templates.at(options[0].templateId()).monomerClass();
-        for (auto& it : options)
+        for (auto& opt_it : options)
         {
-            if (_templates.at(it.templateId()).monomerClass() != monomer_class)
+            if (_templates.at(opt_it.templateId()).monomerClass() != monomer_class)
             {
                 monomer_class = MonomerClass::Unknown;
                 break;
@@ -234,11 +235,11 @@ void KetDocument::processVariantMonomerTemplates()
         it.second.setMonomerClass(monomer_class);
         // calc attachment points
         std::map<std::string, KetAttachmentPoint> var_att_points;
-        for (auto it : options)
+        for (auto opt_it : options)
         {
-            if ((it.ratio().has_value() && it.ratio().value() == 0) || (it.probability().has_value() && it.probability().value() == 0))
+            if ((opt_it.ratio().has_value() && opt_it.ratio().value() == 0) || (opt_it.probability().has_value() && opt_it.probability().value() == 0))
                 continue;
-            auto& opt_att_points = _templates.at(it.templateId()).attachmentPoints();
+            auto& opt_att_points = _templates.at(opt_it.templateId()).attachmentPoints();
             if (var_att_points.size() == 0) // first option
             {
                 var_att_points = opt_att_points;
@@ -353,7 +354,7 @@ MonomerClass KetDocument::getMonomerClass(const KetBaseMonomer& monomer) const
     if (monomer.monomerType() == KetBaseMonomer::MonomerType::Monomer)
         return _templates.at(monomer.templateId()).monomerClass();
     else if (monomer.monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
-        return _variant_templates.at(monomer.templateId()).monomerClass();
+        return _ambiguous_templates.at(monomer.templateId()).monomerClass();
     else
         throw Error("Unknonwn monomer type");
 }
@@ -382,8 +383,8 @@ const KetBaseMonomerTemplate& KetDocument::getMonomerTemplate(const std::string&
 {
     if (_template_id_to_type.at(template_id) == KetBaseMonomerTemplate::TemplateType::MonomerTemplate)
         return _templates.at(template_id);
-    else if (_template_id_to_type.at(template_id) == KetBaseMonomerTemplate::TemplateType::VariantMonomerTemplate)
-        return _variant_templates.at(template_id);
+    else if (_template_id_to_type.at(template_id) == KetBaseMonomerTemplate::TemplateType::AmbiguousMonomerTemplate)
+        return _ambiguous_templates.at(template_id);
     else
         throw Error("Unknonwn monomer template type");
 }
@@ -416,7 +417,6 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
     }
 
     std::map<std::pair<std::string, std::string>, const KetConnection&> ap_to_connection;
-    int conn_idx = 0;
     for (auto& connection : _connections)
     {
         auto& ep1 = connection.ep1();

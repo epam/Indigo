@@ -23,7 +23,7 @@
 #include <rapidjson/document.h>
 
 #include "base_cpp/exception.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_stereocenter_options.h"

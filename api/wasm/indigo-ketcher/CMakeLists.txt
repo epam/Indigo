@@ -38,6 +38,8 @@ set(EMCC_COMMON_FLAGS
 set(EMCC_FLAGS_SEPARATE
         ${EMCC_COMMON_FLAGS}
         -s SINGLE_FILE=0
+        -s EXPORT_ES6=1
+        -s USE_ES6_IMPORT_META=1
         )
 
 set(EMCC_FLAGS

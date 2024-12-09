@@ -142,6 +142,7 @@ IndigoReaction::~IndigoReaction()
 void IndigoReaction::init(std::unique_ptr<BaseReaction>&& reaction)
 {
     rxn = reaction ? std::move(reaction) : std::make_unique<Reaction>();
+    _properties.copy(rxn->properties());
 }
 
 Reaction& IndigoReaction::getReaction()

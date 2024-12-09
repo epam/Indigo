@@ -355,7 +355,6 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
             {
                 rdf_loader.readNext();
                 BufferScanner reaction_scanner(rdf_loader.data);
-
                 RxnfileLoader loader(reaction_scanner);
                 loader.stereochemistry_options = stereochemistry_options;
                 loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
@@ -363,9 +362,8 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
                 loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
                 loader.treat_stereo_as = treat_stereo_as;
                 loader.ignore_bad_valence = ignore_bad_valence;
-
                 reactions.emplace_back();
-                loader.loadReaction(reactions.back());
+                loader.loadReaction(reactions.back(), rdf_loader.properties);
             }
 
             PathwayReactionBuilder builder;

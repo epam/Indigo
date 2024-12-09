@@ -103,6 +103,7 @@ namespace indigo
         virtual ~BaseReaction();
 
         MetaDataStorage& meta();
+        PropertiesMap& properties();
 
         // 'neu' means 'new' in German
         virtual BaseReaction* neu() = 0;
@@ -384,7 +385,7 @@ namespace indigo
 
         Array<int> _types;
         Array<SpecialCondition> _specialConditions;
-
+        PropertiesMap _properties;
         int _reactantCount;
         int _productCount;
         int _catalystCount;

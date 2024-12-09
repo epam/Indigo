@@ -34,7 +34,7 @@
 #include "common/utils/emf_utils.h"
 #include "elements.h"
 #include "molecule/base_molecule.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
 
@@ -111,19 +111,6 @@ namespace indigo
         int atom_idx;
     };
 
-    struct CdxmlKetTextStyle
-    {
-        std::size_t offset;
-        std::size_t size;
-        std::list<std::string> styles;
-    };
-
-    struct CdxmlKetTextLine
-    {
-        std::string text;
-        std::list<CdxmlKetTextStyle> text_styles;
-    };
-
     struct CdxmlNode
     {
         CdxmlNode()
@@ -189,6 +176,16 @@ namespace indigo
         int repeat_pattern;
         std::string label;
         bool is_superatom;
+    };
+
+    struct CdxmlText
+    {
+        CdxmlText(const Vec3f& pos, const Vec2f& size, const std::string& text) : pos(pos), size(size), text(text)
+        {
+        }
+        std::string text;
+        Vec3f pos;
+        Vec2f size;
     };
 
     class BaseCDXProperty
@@ -780,15 +777,17 @@ namespace indigo
     class MoleculeCdxmlLoader
     {
     public:
+        static const int SCALE = 30;
         struct ImageDescriptor
         {
-            ImageDescriptor(KETImage::ImageFormat iformat, Rect2f& rc, const std::string& raw_data) : image_format(iformat), bbox(rc), data(raw_data)
+            ImageDescriptor(EmbeddedImageObject::ImageFormat iformat, Rect2f& rc, const std::string& raw_data) : image_format(iformat), bbox(rc), data(raw_data)
             {
             }
-            KETImage::ImageFormat image_format;
+            EmbeddedImageObject::ImageFormat image_format;
             Rect2f bbox;
             std::string data;
         };
+
         struct EnhancedStereoCenter
         {
             EnhancedStereoCenter(int atom, int type_id, int group_num) : atom_idx(atom), type(type_id), group(group_num)
@@ -883,12 +882,10 @@ namespace indigo
         std::vector<CdxmlNode> nodes;
         std::vector<CdxmlBond> bonds;
         std::vector<CdxmlBracket> brackets;
-        std::vector<std::pair<Rect2f, std::string>> text_objects;
-        std::vector<KETTextObject> ket_text_objects;
+        std::vector<SimpleTextObject> ket_text_objects;
         std::map<int, std::string> font_table;
         std::vector<uint32_t> color_table;
-
-        static const int SCALE = 30;
+        std::vector<CdxmlText> text_objects;
 
     protected:
         void _initMolecule(BaseMolecule& mol);
@@ -902,7 +899,7 @@ namespace indigo
 
         void _parseBracket(CdxmlBracket& bracket, BaseCDXProperty& prop);
         void _parseText(BaseCDXElement& elem, std::vector<std::pair<Rect2f, std::string>>& text_parsed);
-        void _parseTextToKetObject(BaseCDXElement& elem, std::vector<KETTextObject>& text_objects);
+        void _parseTextToKetObject(BaseCDXElement& elem, std::vector<SimpleTextObject>& text_objects);
 
         void _parseLabel(BaseCDXElement& elem, std::string& label);
 

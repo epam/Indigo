@@ -41,12 +41,12 @@ void RenderItemReaction::init()
     if (rxn == NULL)
         throw Error("reaction not set");
 
-    int arrows_count = rxn->meta().getMetaCount(KETReactionArrow::CID);
-    int multi_count = rxn->meta().getMetaCount(KETReactionMultitailArrow::CID);
+    int arrows_count = rxn->meta().getMetaCount(ReactionArrowObject::CID);
+    int multi_count = rxn->meta().getMetaCount(ReactionMultitailArrowObject::CID);
     if (rxn->begin() >= rxn->end() && !arrows_count && !multi_count) // no reactants or products
         return;
 
-    int simple_count = rxn->meta().getMetaCount(KETSimpleObject::CID) + rxn->meta().getMetaCount(KETTextObject::CID);
+    int simple_count = rxn->meta().getMetaCount(SimpleGraphicsObject::CID) + rxn->meta().getMetaCount(SimpleTextObject::CID);
     if (arrows_count || simple_count || multi_count)
     {
         initWithMeta();

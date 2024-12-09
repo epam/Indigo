@@ -31,7 +31,7 @@
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/json_writer.h"
-#include "molecule/ket_commons.h"
+#include "molecule/meta_commons.h"
 #include "molecule/monomers_lib.h"
 #include "molecule/query_molecule.h"
 
@@ -55,12 +55,12 @@ namespace indigo
         static void parseFormatMode(const char* version_str, KETVersion& version);
         static void saveFormatMode(KETVersion& version, Array<char>& output);
 
-        static void saveTextV1(JsonWriter& writer, const KETTextObject& text_obj);
-        static void saveText(JsonWriter& writer, const KETTextObject& text_obj);
-        static void saveAlignment(JsonWriter& writer, KETTextObject::TextAlignment alignment);
-        static void saveIndent(JsonWriter& writer, const KETTextObject::KETTextIndent& indent);
+        static void saveTextV1(JsonWriter& writer, const SimpleTextObject& text_obj);
+        static void saveText(JsonWriter& writer, const SimpleTextObject& text_obj);
+        static void saveAlignment(JsonWriter& writer, SimpleTextObject::TextAlignment alignment);
+        static void saveIndent(JsonWriter& writer, const SimpleTextObject::KETTextIndent& indent);
         static void saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET& fss);
-        static void saveParagraphs(JsonWriter& writer, const std::list<KETTextObject::KETTextParagraph>& paragraphs);
+        static void saveParagraphs(JsonWriter& writer, const std::list<SimpleTextObject::KETTextParagraph>& paragraphs);
         static void saveParts(JsonWriter& writer, const std::map<std::size_t, FONT_STYLE_SET>& fss_map, const std::string& text);
         static std::string monomerId(const TGroup& tg);
         static std::string monomerKETClass(const std::string& class_name);
@@ -77,6 +77,8 @@ namespace indigo
         int getMonomerNumber(int mon_idx);
 
         void writeFloat(JsonWriter& writer, float f_value);
+        void writePos(JsonWriter& writer, const Vec3f& pos);
+
         void saveAtoms(BaseMolecule& mol, JsonWriter& writer);
         void saveBonds(BaseMolecule& mol, JsonWriter& writer);
         void saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, JsonWriter& writer);

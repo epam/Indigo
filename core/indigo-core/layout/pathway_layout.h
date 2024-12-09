@@ -30,6 +30,7 @@
 
 #include "layout/metalayout.h"
 #include "layout/molecule_layout.h"
+#include "molecule/meta_commons.h"
 #include "reaction/pathway_reaction.h"
 
 namespace indigo
@@ -45,18 +46,27 @@ namespace indigo
 
     public:
         static constexpr float COMPONENTS_MARGIN = 1.0f;
+        static constexpr float TEXT_LINE_HEIGHT = 0.36f;
         static constexpr float ARROW_TAIL_LENGTH = 0.5f;
         static constexpr float VERTICAL_SPACING = 2.5f;
         static constexpr float MULTIPATHWAY_VERTICAL_SPACING = 1.5f;
         static constexpr float ARROW_LENGTH_FACTOR = 7.0f;
         static constexpr float MIN_BOND_MEAN = 0.01f;
+        static constexpr float TEXT_ADJUSTMENT = 1.5f;
 
         static constexpr int MAX_DEPTHS = 10;
+        static constexpr int MAX_SYMBOLS = 30;
+        static constexpr int MIN_LINES_COUNT = 9;
+        static constexpr int ROUNDING_FACTOR = 1000;
+        static constexpr auto REACTION_CONDITIONS = "Reaction Conditions";
+        static constexpr auto REACTION_NAME = "Name";
+        static constexpr auto REACTION_PROPERTY_NA = "Not available";
 
         PathwayLayout(PathwayReaction& reaction, const LayoutOptions& options)
             : _reaction(reaction), _depths(MAX_DEPTHS, 0), _maxDepth(0), _bond_length(options.DEFAULT_BOND_LENGTH),
               _default_arrow_size((float)options.DEFAULT_BOND_LENGTH * ARROW_LENGTH_FACTOR),
-              _reaction_margin_size(options.reactionComponentMarginSize / options.ppi), _preserve_molecule_layout(true)
+              _reaction_margin_size(options.reactionComponentMarginSize / options.ppi), _preserve_molecule_layout(true),
+              _text_line_height((float)options.DEFAULT_BOND_LENGTH * TEXT_LINE_HEIGHT)
         {
         }
 
@@ -70,6 +80,8 @@ namespace indigo
         {
             return _preserve_molecule_layout;
         };
+
+        void generateTextBlocks(SimpleTextObjectBuilder& tob, const ObjArray<Array<char>>& props, const std::string& style, float& height);
 
     private:
         struct PathwayLayoutItem
@@ -98,7 +110,7 @@ namespace indigo
                         mol.scale(center, bondLength / mean);
                     }
                     Rect2f boundingBox;
-                    mol.getBoundingBox(boundingBox);
+                    mol.getBoundingBox(boundingBox, Vec2f(bondLength, bondLength));
                     molecules.push_back(std::make_pair(reactantIdx, boundingBox));
                     width = boundingBox.width();
                     height = boundingBox.height();
@@ -222,6 +234,8 @@ namespace indigo
 
         void buildLayoutTree();
 
+        void copyTextPropertiesToNode(const PathwayReaction::SimpleReaction& reaction, PathwayReaction::ReactionNode& node);
+
         void firstWalk(PathwayLayoutItem* node, int num, int depth);
 
         PathwayLayoutItem* apportion(PathwayLayoutItem* currentNode, PathwayLayoutItem* ancestorNode);
@@ -239,6 +253,8 @@ namespace indigo
         void secondWalk(PathwayLayoutItem* node, PathwayLayoutItem* parent, float modifier, int depth);
 
         void applyLayout();
+        void addMetaText(PathwayReaction::ReactionNode& node, const Vec2f text_pos_bl, float text_height_limit);
+        std::vector<std::string> splitText(const std::string& text, float max_width, std::function<float(char ch)> symbol_width);
 
         std::vector<float> _depths;
         std::vector<float> _shifts;
@@ -249,6 +265,7 @@ namespace indigo
         std::vector<PathwayLayoutRootItem> _layoutRootItems;
 
         const float _bond_length;
+        const float _text_line_height;
         const float _default_arrow_size;
         const float _reaction_margin_size;
         bool _preserve_molecule_layout;

@@ -20,7 +20,6 @@
 #include <set>
 
 #include "layout/molecule_layout.h"
-#include "molecule/ket_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_json_saver.h"
@@ -33,6 +32,10 @@
 #include "molecule/smiles_loader.h"
 #include "molecule/smiles_saver.h"
 #include <base_cpp/scanner.h>
+
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
 
 using namespace indigo;
 using namespace rapidjson;
@@ -691,6 +694,18 @@ void MoleculeJsonSaver::writeFloat(JsonWriter& writer, float f_value)
         saveNativeFloat(writer, f_value);
     else
         writer.Double(f_value);
+}
+
+void indigo::MoleculeJsonSaver::writePos(JsonWriter& writer, const Vec3f& pos)
+{
+    writer.StartObject();
+    writer.Key("x");
+    writeFloat(writer, pos.x);
+    writer.Key("y");
+    writeFloat(writer, pos.y);
+    writer.Key("z");
+    writeFloat(writer, pos.z);
+    writer.EndObject();
 }
 
 void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
@@ -1474,7 +1489,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
 
     getSGroupAtoms(mol, _s_neighbors);
     // save mol references
-    int mol_id = 0;
+    // int mol_id = 0;
     for (int idx = 0; idx < mol.countComponents(_s_neighbors); ++idx)
     {
         Filter filt(mol.getDecomposition().ptr(), Filter::EQ, idx);
@@ -1507,9 +1522,9 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
                 {
                     Array<int> sub_comp_mapping, mapping_cp, inv_sub_comp_mapping;
                     mapping_cp.copy(inv_mapping);
-                    Filter filt(sub_mol->getDecomposition().ptr(), Filter::EQ, sub_idx);
+                    Filter filter(sub_mol->getDecomposition().ptr(), Filter::EQ, sub_idx);
                     std::unique_ptr<BaseMolecule> sub_mol_component(sub_mol->neu());
-                    sub_mol_component->makeSubmolecule(*sub_mol, filt, &sub_comp_mapping, &inv_sub_comp_mapping);
+                    sub_mol_component->makeSubmolecule(*sub_mol, filter, &sub_comp_mapping, &inv_sub_comp_mapping);
                     _no_template_molecules.emplace_back(std::move(sub_mol_component));
                     mergeMappings(mapping_cp, inv_sub_comp_mapping);
                     _mappings.push().copy(mapping_cp);
@@ -1551,6 +1566,15 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
             writer.EndObject();
             _monomers_enum.emplace(i, mon_idx++);
         }
+    }
+
+    // save references to monomer shapes
+    for (int shape_idx = 0; shape_idx < mol.monomer_shapes.size(); ++shape_idx)
+    {
+        writer.StartObject();
+        writer.Key("$ref");
+        writer.String((KetMonomerShape::ref_prefix + std::to_string(shape_idx)).c_str());
+        writer.EndObject();
     }
 
     writer.EndArray(); // nodes
@@ -1648,8 +1672,8 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 }
                 // location
                 writer.Key("position");
-                writer.StartObject();
                 const auto& pos = mol->getAtomXyz(i);
+                writer.StartObject();
                 writer.Key("x");
                 writeFloat(writer, pos.x);
                 writer.Key("y");
@@ -1732,6 +1756,36 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
             saveRGroup(rgrp.fragments, i, writer);
     }
 
+    // save monomer shapes
+    for (int shape_idx = 0; shape_idx < mol->monomer_shapes.size(); ++shape_idx)
+    {
+        auto& monomer_shape = *mol->monomer_shapes[shape_idx];
+        writer.Key((KetMonomerShape::ref_prefix + std::to_string(shape_idx)).c_str());
+        writer.StartObject();
+        writer.Key("type");
+        writer.String("monomerShape");
+        writer.Key("id");
+        writer.String(monomer_shape.id());
+        writer.Key("collapsed");
+        writer.Bool(monomer_shape.collapsed());
+        writer.Key("shape");
+        writer.String(KetMonomerShape::shapeTypeToStr(monomer_shape.shape()).c_str());
+        writer.Key("position");
+        Vec2f pos = monomer_shape.position();
+        writer.StartObject();
+        writer.Key("x");
+        saveNativeFloat(writer, pos.x);
+        writer.Key("y");
+        saveNativeFloat(writer, pos.y);
+        writer.EndObject();
+        writer.Key("monomers");
+        writer.StartArray();
+        for (auto& monomer_id : monomer_shape.monomers())
+            writer.String(monomer_id);
+        writer.EndArray();
+        writer.EndObject();
+    }
+
     writer.EndObject();
 }
 
@@ -1811,8 +1865,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         auto pobj = meta_objects[meta_index];
         switch (pobj->_class_id)
         {
-        case KETReactionArrow::CID: {
-            KETReactionArrow& ar = (KETReactionArrow&)(*pobj);
+        case ReactionArrowObject::CID: {
+            ReactionArrowObject& ar = (ReactionArrowObject&)(*pobj);
             writer.StartObject();
             writer.Key("type");
             writer.String("arrow");
@@ -1852,8 +1906,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             writer.EndObject(); // end node
         }
         break;
-        case KETReactionMultitailArrow::CID: {
-            KETReactionMultitailArrow& ar = (KETReactionMultitailArrow&)(*pobj);
+        case ReactionMultitailArrowObject::CID: {
+            ReactionMultitailArrowObject& ar = (ReactionMultitailArrowObject&)(*pobj);
             writer.StartObject();
             writer.Key("type");
             writer.String("multi-tailed-arrow");
@@ -1926,8 +1980,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             writer.EndObject();
         }
         break;
-        case KETReactionPlus::CID: {
-            KETReactionPlus& rp = (KETReactionPlus&)(*pobj);
+        case ReactionPlusObject::CID: {
+            ReactionPlusObject& rp = (ReactionPlusObject&)(*pobj);
             writer.StartObject();
             writer.Key("type");
             writer.String("plus");
@@ -1940,8 +1994,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             writer.EndObject();
         }
         break;
-        case KETSimpleObject::CID: {
-            auto simple_obj = (KETSimpleObject*)pobj;
+        case SimpleGraphicsObject::CID: {
+            auto simple_obj = (SimpleGraphicsObject*)pobj;
             writer.StartObject();
             writer.Key("type");
             writer.String("simpleObject");
@@ -1950,13 +2004,13 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             writer.Key("mode");
             switch (simple_obj->_mode)
             {
-            case KETSimpleObject::EKETEllipse:
+            case SimpleGraphicsObject::EEllipse:
                 writer.String("ellipse");
                 break;
-            case KETSimpleObject::EKETRectangle:
+            case SimpleGraphicsObject::ERectangle:
                 writer.String("rectangle");
                 break;
-            case KETSimpleObject::EKETLine:
+            case SimpleGraphicsObject::ELine:
                 writer.String("line");
                 break;
             }
@@ -1973,8 +2027,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             writer.EndObject();
             break;
         }
-        case KETTextObject::CID: {
-            auto ptext_obj = (KETTextObject*)pobj;
+        case SimpleTextObject::CID: {
+            auto ptext_obj = (SimpleTextObject*)pobj;
             writer.StartObject();
             writer.Key("type");
             writer.String("text");
@@ -1985,8 +2039,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             writer.EndObject(); // end node
             break;
         }
-        case KETImage::CID: {
-            auto image_obj = static_cast<const KETImage*>(pobj);
+        case EmbeddedImageObject::CID: {
+            auto image_obj = static_cast<const EmbeddedImageObject*>(pobj);
             auto& bbox = image_obj->getBoundingBox();
             writer.StartObject(); // start node
             writer.Key("type");
@@ -1994,10 +2048,10 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             writer.Key("format");
             switch (image_obj->getFormat())
             {
-            case KETImage::EKETPNG:
+            case EmbeddedImageObject::EKETPNG:
                 writer.String(KImagePNG);
                 break;
-            case KETImage::EKETSVG:
+            case EmbeddedImageObject::EKETSVG:
                 writer.String(KImageSVG);
                 break;
             default:
@@ -2029,7 +2083,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
     }
 }
 
-void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const KETTextObject& text_obj)
+void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const SimpleTextObject& text_obj)
 {
     writer.Key("data");
     writer.StartObject();
@@ -2051,7 +2105,7 @@ void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const KETTextObject& text
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveText(JsonWriter& writer, const KETTextObject& text_obj)
+void MoleculeJsonSaver::saveText(JsonWriter& writer, const SimpleTextObject& text_obj)
 {
     writer.Key("boundingBox");
     writer.WriteRect(text_obj.boundingBox());
@@ -2073,19 +2127,19 @@ void MoleculeJsonSaver::saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET&
         switch (fs.first.getFontStyle())
         {
         case KETFontStyle::FontStyle::EBold:
-            writer.Key(KETFontBoldStr);
+            writer.Key(KFontBoldStr);
             writer.Bool(fs.second);
             break;
         case KETFontStyle::FontStyle::EItalic:
-            writer.Key(KETFontItalicStr);
+            writer.Key(KFontItalicStr);
             writer.Bool(fs.second);
             break;
         case KETFontStyle::FontStyle::ESubScript:
-            writer.Key(KETFontSubscriptStr);
+            writer.Key(KFontSubscriptStr);
             writer.Bool(fs.second);
             break;
         case KETFontStyle::FontStyle::ESuperScript:
-            writer.Key(KETFontSuperscriptStr);
+            writer.Key(KFontSuperscriptStr);
             writer.Bool(fs.second);
             break;
         case KETFontStyle::FontStyle::ENone:
@@ -2109,18 +2163,18 @@ void MoleculeJsonSaver::saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET&
                 switch (fs_font.first.getFontStyle())
                 {
                 case KETFontStyle::FontStyle::EColor: {
-                    writer.Key(KETFontColorStr);
+                    writer.Key(KFontColorStr);
                     std::stringstream ss;
                     ss << "#" << std::hex << fs_font.first.getUInt().value();
                     writer.String(ss.str());
                 }
                 break;
                 case KETFontStyle::FontStyle::EFamily:
-                    writer.Key(KETFontFamilyStr);
+                    writer.Key(KFontFamilyStr);
                     writer.String(fs_font.first.getString().value());
                     break;
                 case KETFontStyle::FontStyle::ESize:
-                    writer.Key(KETFontSizeStr);
+                    writer.Key(KFontSizeStr);
                     writer.Uint(fs_font.first.getUInt().value());
                     break;
                 }
@@ -2129,7 +2183,7 @@ void MoleculeJsonSaver::saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET&
     }
 }
 
-void MoleculeJsonSaver::saveParagraphs(JsonWriter& writer, const std::list<KETTextObject::KETTextParagraph>& paragraphs)
+void MoleculeJsonSaver::saveParagraphs(JsonWriter& writer, const std::list<SimpleTextObject::KETTextParagraph>& paragraphs)
 {
     writer.Key("paragraphs");
     writer.StartArray();
@@ -2175,7 +2229,7 @@ void MoleculeJsonSaver::saveParts(JsonWriter& writer, const std::map<std::size_t
     }
 }
 
-void MoleculeJsonSaver::saveIndent(JsonWriter& writer, const KETTextObject::KETTextIndent& indent)
+void MoleculeJsonSaver::saveIndent(JsonWriter& writer, const SimpleTextObject::KETTextIndent& indent)
 {
     if (indent.first_line.has_value() || indent.left.has_value() || indent.right.has_value())
     {
@@ -2202,24 +2256,27 @@ void MoleculeJsonSaver::saveIndent(JsonWriter& writer, const KETTextObject::KETT
     }
 }
 
-void MoleculeJsonSaver::saveAlignment(JsonWriter& writer, KETTextObject::TextAlignment alignment)
+void MoleculeJsonSaver::saveAlignment(JsonWriter& writer, SimpleTextObject::TextAlignment alignment)
 {
     std::string alignment_str;
     switch (alignment)
     {
-    case KETTextObject::TextAlignment::ELeft:
-        alignment_str = KETAlignmentLeft;
+    case SimpleTextObject::TextAlignment::ELeft:
+        alignment_str = KAlignmentLeft;
         break;
-    case KETTextObject::TextAlignment::ERight:
-        alignment_str = KETAlignmentRight;
+    case SimpleTextObject::TextAlignment::ERight:
+        alignment_str = KAlignmentRight;
         break;
-    case KETTextObject::TextAlignment::ECenter:
-        alignment_str = KETAlignmentCenter;
+    case SimpleTextObject::TextAlignment::ECenter:
+        alignment_str = KAlignmentCenter;
         break;
-    case KETTextObject::TextAlignment::EJustify:
-        alignment_str = KETAlignmentJustify;
+    case SimpleTextObject::TextAlignment::EJustify:
+        alignment_str = KAlignmentJustify;
         break;
     }
     writer.Key("alignment");
     writer.String(alignment_str.c_str());
 }
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
