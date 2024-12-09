@@ -1,4 +1,6 @@
 *** KET to CDXML to KET ***
+2558-missed.cdxml:SUCCEED
+2558-missed.ket:SUCCEED
 961-text_size.cdxml:SUCCEED
 961-text_size.ket:SUCCEED
 agents.cdxml:SUCCEED
@@ -13,3 +15,5 @@ multi_overlap.ket:SUCCEED
 963-super.cdxml:SUCCEED
 images.cdxml:SUCCEED
 macro/sa-mono.cdxml:SUCCEED
+*** Reaction CDXML to KET ***
+2333-EnhancedStereochemistry.ket:SUCCEED

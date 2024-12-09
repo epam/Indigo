@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "axios": "^1.4.0",
-    "ketcher-react": "^2.12.0",
-    "ketcher-standalone": "^2.12.0",
+    "axios": "^1.7.4",
+    "ketcher-react": "^2.25.0-rc.5",
+    "ketcher-standalone": "^2.25.0-rc.5",
+    "ketcher-core": "^2.25.0-rc.5",
     "normalize.css": "^8.0.1",
     "react": "^18.2.0",
     "react-app-polyfill": "^2.0.0",
@@ -39,8 +40,8 @@
     "stylelint": "13.13.1",
     "typescript": "^4.5.2",
     "web-vitals": "^2.1.4",
-    "webpack": "^5.84.1",
-    "webpack-bundle-analyzer": "^3.9.0"
+    "webpack": "^5.95.0",
+    "webpack-bundle-analyzer": "^4.10.2"
   },
   "scripts": {
     "start:standalone": "cross-env MODE=standalone ENABLE_POLYMER_EDITOR=false react-app-rewired start",

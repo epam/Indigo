@@ -1,13 +1,13 @@
 attrs==23.1.0
-black==23.3.0
-certifi==2023.7.22
+black==24.3.0
+certifi==2024.7.4
 charset-normalizer==3.1.0
 httpx==0.24.1
 iniconfig==2.0.0
 isort==5.12.0
 mypy==1.3.0
 packaging==23.1
-Pillow==10.0.1
+Pillow==10.3.0
 pluggy==1.0.0
 py==1.11.0
 pylint==2.17.4
@@ -15,8 +15,8 @@ pyparsing==3.0.9
 PyPDF2==3.0.1
 pyproject-flake8==6.0.0.post1
 pytest==7.3.1
-requests==2.31.0
+requests==2.32.2
 toml==0.10.2
 types-Pillow==9.5.0.4
 types-requests==2.31.0.0
-urllib3==2.0.2
+urllib3==2.2.2

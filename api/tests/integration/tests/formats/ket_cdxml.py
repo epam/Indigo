@@ -28,6 +28,7 @@ files = [
     "multi_overlap",
     "961-text_size",
     "generic",
+    "2558-missed",
 ]
 
 files.sort()
@@ -60,7 +61,9 @@ for filename in files:
     ket_result = ket.json()
 
     # with open(os.path.join(ref_path, filename + ".ket"), "w") as file:
-    #    file.write(ket_result)
+    #     file.write(ket_result)
+    # with open(os.path.join(ref_path, filename + ".cdxml"), "w") as file:
+    #     file.write(cdxml_text)
 
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
         ket_ref = file.read()
@@ -95,8 +98,8 @@ for filename in files:
         print(getIndigoExceptionText(e))
         raise SystemExit
     cdxml_text = ket.cdxml()
-    # with open(os.path.join(ref_path, filename) + ".cdxml", "w") as file:
-    #   file.write(cdxml_text)
+    with open(os.path.join(ref_path, filename) + ".cdxml", "w") as file:
+        file.write(cdxml_text)
 
     indigo.loadMolecule(
         cdxml_text
@@ -109,3 +112,32 @@ for filename in files:
     else:
         print(filename + ".cdxml:FAILED")
         print(diff)
+
+print("*** Reaction CDXML to KET ***")
+indigo.setOption("ignore-stereochemistry-errors", True)
+
+root_cdxml = joinPathPy("reactions/", __file__)
+ref_path = joinPathPy("ref/", __file__)
+
+files = [
+    "2333-EnhancedStereochemistry",
+]
+
+for filename in files:
+    with open(os.path.join(root_cdxml, filename + ".cdxml"), "r") as file:
+        cdxml_str = file.read()
+    try:
+        reaction = indigo.loadReaction(cdxml_str)
+        ket_result = reaction.json()
+        # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+        #     file.write(ket_result)
+        with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
+            ket_ref = file.read()
+        diff = find_diff(ket_ref, ket_result)
+        if not diff:
+            print(filename + ".ket:SUCCEED")
+        else:
+            print(filename + ".ket:FAILED")
+            print(diff)
+    except IndigoException as e:
+        print(e)

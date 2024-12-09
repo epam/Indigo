@@ -36,6 +36,7 @@ namespace indigo
     class Reaction;
     class QueryReaction;
     class BaseReaction;
+    class PathwayReaction;
 
     struct SpecialCondition
     {
@@ -81,11 +82,9 @@ namespace indigo
         {
             reactants.copy(other.reactants);
             products.copy(other.products);
-            arrow_index = other.arrow_index;
         }
         Array<int> reactants;
         Array<int> products;
-        int arrow_index;
     };
 
     class DLLEXPORT BaseReaction : public NonCopyable
@@ -104,11 +103,6 @@ namespace indigo
         virtual ~BaseReaction();
 
         MetaDataStorage& meta();
-
-        bool isMultistep()
-        {
-            return _reactionBlocks.size();
-        }
 
         // 'neu' means 'new' in German
         virtual BaseReaction* neu() = 0;
@@ -192,10 +186,47 @@ namespace indigo
         {
             return _nextElement(side, -1);
         }
+
         int sideNext(int side, int index)
         {
             return _nextElement(side, index);
         }
+
+        virtual int reactionsCount()
+        {
+            return _reactionBlocks.size();
+        }
+
+        virtual int reactionBegin()
+        {
+            int i = 0;
+            for (; i < _reactionBlocks.size(); ++i)
+            {
+                auto& rb = _reactionBlocks[i];
+                if (rb.products.size() || rb.reactants.size())
+                    break;
+            }
+            return i;
+        }
+
+        virtual int reactionEnd()
+        {
+            if (_reactionBlocks.size() == 0)
+                return 1;
+            return _reactionBlocks.size();
+        }
+
+        virtual int reactionNext(int i)
+        {
+            while (++i < _reactionBlocks.size())
+            {
+                auto& rb = _reactionBlocks[i];
+                if (rb.products.size() || rb.reactants.size())
+                    break;
+            }
+            return i;
+        }
+
         // dkuzminov: we either need to have a parameter "side" for method sideEnd() or we should exclude the set of "different" xxxEnd methods for sake of the
         // single "end" method
         int sideEnd()
@@ -271,18 +302,22 @@ namespace indigo
         // Returns true if some bonds were changed
         virtual bool aromatize(const AromaticityOptions& options) = 0;
         // Returns true if all bonds were dearomatized
-        bool dearomatize(const AromaticityOptions& options);
+        virtual bool dearomatize(const AromaticityOptions& options);
         void unfoldHydrogens();
 
         // poor man's dynamic casting
         virtual Reaction& asReaction();
         virtual QueryReaction& asQueryReaction();
+        virtual PathwayReaction& asPathwayReaction();
         virtual bool isQueryReaction();
+        virtual bool isPathwayReaction();
 
         BaseMolecule& getBaseMolecule(int index)
         {
             return *_allMolecules.at(index);
         }
+
+        virtual std::unique_ptr<BaseReaction> getBaseReaction(int index) = 0;
 
         int getAAM(int index, int atom);
         int getReactingCenter(int index, int bond);
@@ -363,6 +398,7 @@ namespace indigo
         bool isRetrosynthetic = false;
 
         virtual void _clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings);
+        virtual void _cloneSub(BaseReaction& other);
     };
 
 } // namespace indigo

@@ -19,11 +19,16 @@
 #include "render_common.h"
 #include "base_cpp/array.h"
 #include "base_cpp/obj_array.h"
+#include "layout/molecule_layout.h"
 #include "math/algebra.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
+
+#ifdef _WIN32
+#pragma warning(push, 4)
+#endif
 
 using namespace indigo;
 
@@ -282,22 +287,45 @@ RenderSettings::RenderSettings()
     init(1.0f, 1.0f);
 }
 
-void RenderSettings::init(float sf, float lwf)
+void RenderSettings::init(float relativeThickness, float bondLineWidthFactor, AcsOptions* acs)
 {
-    unit = sf / 30;
-    bondLineWidth = lwf * unit;
+    unit = relativeThickness / 30; // 1/30
+    bondLineWidth = bondLineWidthFactor * unit;
     bondSpace = 2.5f * unit;
+    stereoBondSpace = bondSpace;
+    hashSpacing = -1;
 
-    fzz[FONT_SIZE_LABEL] = unit * 12;
-    fzz[FONT_SIZE_ATTR] = unit * 8;
-    fzz[FONT_SIZE_RGROUP_LOGIC] = unit * 12;
-    fzz[FONT_SIZE_RGROUP_LOGIC_INDEX] = unit * 8;
-    fzz[FONT_SIZE_INDICES] = unit * 6;
-    fzz[FONT_SIZE_ATTACHMENT_POINT_INDEX] = unit * 6;
-    fzz[FONT_SIZE_RSITE_ATTACHMENT_INDEX] = unit * 6;
-    fzz[FONT_SIZE_COMMENT] = 0; // not used, value taken from RenderOptions.commentFontFactor
-    fzz[FONT_SIZE_TITLE] = 0;   // not used, value taken from RenderOptions.titleFontFactor
-    fzz[FONT_SIZE_DATA_SGROUP] = unit * 8;
+    float label_font_size = unit * 12;
+    if (acs != nullptr)
+    {
+        if (acs->bondThicknessAngstrom > 0)
+            bondLineWidth = acs->bondThicknessAngstrom * bondLineWidthFactor * relativeThickness;
+        if (acs->fontSizeAngstrom > 0)
+            label_font_size = acs->fontSizeAngstrom;
+        if (acs->bondSpacing > 0)
+        {
+            bondSpace = acs->bondSpacing / 2.0f;
+            stereoBondSpace = bondSpace;
+        }
+        if (acs->stereoBondWidthAngstrom > 0)
+            stereoBondSpace = acs->stereoBondWidthAngstrom / 2.0f;
+        if (acs->hashSpacingAngstrom > 0)
+            hashSpacing = acs->hashSpacingAngstrom + bondLineWidth;
+    }
+    static constexpr float TWO_DIV_THREE = 2.0f / 3.0f;
+    fzz[FONT_SIZE_LABEL] = label_font_size;
+    if (acs != nullptr && acs->fontSizeSubAngstrom > 0)
+        fzz[FONT_SIZE_ATTR] = acs->fontSizeSubAngstrom;
+    else
+        fzz[FONT_SIZE_ATTR] = label_font_size * TWO_DIV_THREE; // unit * 8; // Subscript
+    fzz[FONT_SIZE_RGROUP_LOGIC] = label_font_size;
+    fzz[FONT_SIZE_RGROUP_LOGIC_INDEX] = label_font_size * TWO_DIV_THREE; // unit * 8;
+    fzz[FONT_SIZE_INDICES] = label_font_size / 2.0f;                     // unit * 6;
+    fzz[FONT_SIZE_ATTACHMENT_POINT_INDEX] = label_font_size / 2.0f;      // unit * 6;
+    fzz[FONT_SIZE_RSITE_ATTACHMENT_INDEX] = label_font_size / 2.0f;      // unit * 6;
+    fzz[FONT_SIZE_COMMENT] = 0;                                          // not used, value taken from RenderOptions.commentFontFactor
+    fzz[FONT_SIZE_TITLE] = 0;                                            // not used, value taken from RenderOptions.titleFontFactor
+    fzz[FONT_SIZE_DATA_SGROUP] = label_font_size * TWO_DIV_THREE;        // unit * 8;
 
     upperIndexShift = -0.4f;
     lowerIndexShift = 0.4f;
@@ -350,7 +378,10 @@ void RenderSettings::init(float sf, float lwf)
     layoutMarginHorizontal = 0.4f;
     layoutMarginVertical = 0.6f;
     plusSize = 0.5;
-    metaLineWidth = 1.0 / 16;
+    if (acs != nullptr && acs->bondThicknessAngstrom > 0)
+        metaLineWidth = bondLineWidth; // new behavior: plus and arrow width same as bond width
+    else
+        metaLineWidth = 1.0 / 16;
     arrowLength = 3 * plusSize;
     arrowHeadWidth = plusSize / 2;
     arrowHeadSize = plusSize / 2;
@@ -384,6 +415,8 @@ void CanvasOptions::clear()
     comment.clear();
     titleProp.clear();
     titleProp.appendString("^NAME", true);
+    outputSheetWidth = -1;
+    outputSheetHeight = -1;
 }
 
 //
@@ -431,3 +464,7 @@ float MultilineTextLayout::getAnchorPoint(float area_x, float area_width, float 
     float bbox_x = area_x + (area_width - text_width) * getBboxRelativeOffset();
     return bbox_x + text_width * getInboxRelativeOffset();
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif

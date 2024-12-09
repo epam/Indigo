@@ -41,7 +41,8 @@ auto PathwayReactionBuilder::findSuccessorReactions(int reactionIdx)
     // key - reaction index, value - vector of reactant indexes
     std::map<int, std::vector<int>> matchedReactions;
     // iterate over products of the reaction
-    for (auto& product : _reactionInchiDescriptors[reactionIdx].products)
+    auto& products = _reactionInchiDescriptors[reactionIdx].products;
+    for (auto& product : products)
     {
         // find all reactions that have this product as a reactant (successors)
         auto rtr_it = _reactantToReactions.find(product);
@@ -73,13 +74,18 @@ auto PathwayReactionBuilder::findSuccessorReactions(int reactionIdx)
                     break;
             }
         }
+        else
+        {
+            matchedReactions.clear();
+            break;
+        }
     }
     // remove the reaction itself from the set of possible precursors
     matchedReactions.erase(reactionIdx);
     return matchedReactions;
 }
 
-void PathwayReactionBuilder::buildReactions(std::deque<Reaction>& reactions)
+void PathwayReactionBuilder::buildReactions()
 {
     for (int i = 0; i < (int)_reactionInchiDescriptors.size(); ++i)
     {
@@ -160,26 +166,24 @@ void PathwayReactionBuilder::buildNodes(std::deque<Reaction>& reactions)
         {
             auto j = m_it->first;
             auto& val = m_it->second;
-            Array<int> val_arr;
-            val_arr.copy(val);
-            if (rn.successorReactions.size() == 0)
+            if (rn.successorReactionIndexes.size() == 0)
             {
                 auto& rnj = _pathwayReaction->getReactionNode(j);
                 // check if the reactant is already in use as a successor
                 bool found = false;
                 for (auto ridx : val)
                 {
-                    found = rnj.successorReactants.find(ridx);
+                    found = rnj.connectedReactants.find(ridx);
                     if (found)
                         break;
                 }
                 if (!found)
                 {
                     m_it++;
-                    rn.successorReactions.push(j, val_arr);
-                    rnj.precursorReactionsIndexes.push(i);
+                    rn.successorReactionIndexes.push(j);
+                    rnj.precursorReactionIndexes.push(i);
                     for (auto ridx : val)
-                        rnj.successorReactants.insert(ridx);
+                        rnj.connectedReactants.insert(ridx, i);
                 }
                 else
                 {
@@ -207,29 +211,33 @@ void PathwayReactionBuilder::buildNodes(std::deque<Reaction>& reactions)
     }
 }
 
-std::unique_ptr<PathwayReaction> PathwayReactionBuilder::buildPathwayReaction(std::deque<Reaction>& reactions)
+void PathwayReactionBuilder::buildRootReaction(PathwayReaction& reaction)
 {
-    buildInchiDescriptors(reactions);
-    buildNodes(reactions);
-    buildReactions(reactions);
-    const auto& rr = _pathwayReaction->getRootReactions();
-    PathwayLayout pl(*_pathwayReaction);
-    pl.make();
-    if (rr.size())
+    const auto& root_reactions = reaction.getRootReactions();
+    if (root_reactions.size())
     {
-        auto& first_root = _pathwayReaction->getReaction(rr.back());
+        auto& first_root = reaction.getReaction(root_reactions.front());
         for (auto& idx : first_root.reactantIndexes)
         {
-            auto& mol = _pathwayReaction->getMolecule(idx);
-            _pathwayReaction->addReactantCopy(mol, 0, 0);
+            auto& mol = reaction.getMolecule(idx);
+            reaction.addReactantCopy(mol, 0, 0);
         }
 
         for (auto& idx : first_root.productIndexes)
         {
-            auto& mol = _pathwayReaction->getMolecule(idx);
-            _pathwayReaction->addProductCopy(mol, 0, 0);
+            auto& mol = reaction.getMolecule(idx);
+            reaction.addProductCopy(mol, 0, 0);
         }
     }
+}
 
+std::unique_ptr<PathwayReaction> PathwayReactionBuilder::buildPathwayReaction(std::deque<Reaction>& reactions, LayoutOptions& options)
+{
+    buildInchiDescriptors(reactions);
+    buildNodes(reactions);
+    buildReactions();
+    PathwayLayout pl(*_pathwayReaction, options);
+    pl.make();
+    buildRootReaction(*_pathwayReaction);
     return std::move(_pathwayReaction);
 }

@@ -4,9 +4,9 @@
 <reactantList>
 <molecule>
     <atomArray>
-        <atom id="a0" elementType="O" x2="19.9875" y2="-8.075"/>
-        <atom id="a1" elementType="C" x2="20.8535" y2="-8.575"/>
-        <atom id="a2" elementType="O" x2="21.7196" y2="-8.075"/>
+        <atom id="a0" elementType="O" x2="8.37128" y2="0.4"/>
+        <atom id="a1" elementType="C" x2="9.75692" y2="-0.4"/>
+        <atom id="a2" elementType="O" x2="11.1426" y2="0.4"/>
     </atomArray>
     <bondArray>
         <bond atomRefs2="a0 a1" order="1"/>
@@ -17,10 +17,10 @@
 <productList>
 <molecule>
     <atomArray>
-        <atom id="a0" elementType="C" x2="15.2465" y2="-9.075"/>
-        <atom id="a1" elementType="C" x2="15.2465" y2="-8.075"/>
-        <atom id="a2" elementType="C" x2="14.3804" y2="-7.575"/>
-        <atom id="a3" elementType="N" x2="16.1125" y2="-7.575"/>
+        <atom id="a0" elementType="C" x2="2.18564" y2="-1.2"/>
+        <atom id="a1" elementType="C" x2="2.18564" y2="0.4"/>
+        <atom id="a2" elementType="C" x2="0.8" y2="1.2"/>
+        <atom id="a3" elementType="N" x2="3.57128" y2="1.2"/>
     </atomArray>
     <bondArray>
         <bond atomRefs2="a0 a1" order="1"/>

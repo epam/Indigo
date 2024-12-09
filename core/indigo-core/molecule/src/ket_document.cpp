@@ -22,6 +22,10 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#endif
+
 using namespace indigo;
 
 IMPL_ERROR(KetDocument, "Ket Document")
@@ -153,6 +157,12 @@ BaseMolecule& KetDocument::getBaseMolecule()
     return *molecule.value().get();
 }
 
+KetConnection& KetDocument::addConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
+{
+    _connections.emplace_back(conn_type, ep1, ep2);
+    return *_connections.rbegin();
+}
+
 KetConnection& KetDocument::addConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
 {
     _connections.emplace_back(ep1, ep2);
@@ -161,14 +171,26 @@ KetConnection& KetDocument::addConnection(KetConnectionEndPoint ep1, KetConnecti
 
 KetConnection& KetDocument::addConnection(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2)
 {
-    connectMonomerTo(mon1, ap1, mon2, ap2);
-    connectMonomerTo(mon2, ap2, mon1, ap1);
     KetConnectionEndPoint ep1, ep2;
     ep1.setStringProp("monomerId", mon1);
-    ep1.setStringProp("attachmentPointId", ap1);
     ep2.setStringProp("monomerId", mon2);
-    ep2.setStringProp("attachmentPointId", ap2);
-    _connections.emplace_back(ep1, ep2);
+    if (ap1 == HelmHydrogenPair && ap2 == HelmHydrogenPair)
+    {
+        _connections.emplace_back(KetConnection::TYPE::HYDROGEN, ep1, ep2);
+    }
+    else if (ap1 == HelmHydrogenPair || ap2 == HelmHydrogenPair)
+    {
+        throw Error("Wrong hydrogen connection - both attachment point should be '%s' but got '%s' and '%s'.", HelmHydrogenPair.c_str(), ap1.c_str(),
+                    ap2.c_str());
+    }
+    else
+    {
+        connectMonomerTo(mon1, ap1, mon2, ap2);
+        connectMonomerTo(mon2, ap2, mon1, ap1);
+        ep1.setStringProp("attachmentPointId", ap1);
+        ep2.setStringProp("attachmentPointId", ap2);
+        _connections.emplace_back(ep1, ep2);
+    }
     return *_connections.rbegin();
 }
 
@@ -330,7 +352,7 @@ MonomerClass KetDocument::getMonomerClass(const KetBaseMonomer& monomer) const
 {
     if (monomer.monomerType() == KetBaseMonomer::MonomerType::Monomer)
         return _templates.at(monomer.templateId()).monomerClass();
-    else if (monomer.monomerType() == KetBaseMonomer::MonomerType::VarianMonomer)
+    else if (monomer.monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
         return _variant_templates.at(monomer.templateId()).monomerClass();
     else
         throw Error("Unknonwn monomer type");
@@ -407,10 +429,15 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
             throw Error("Connection with only one end point.");
         if (!(has_mon_1 || has_mol_1))
             throw Error("Connection with empty point.");
+        if (connection.connType() == KetConnection::TYPE::HYDROGEN)
+        {
+            _non_sequence_connections.emplace_back(connection);
+            continue;
+        }
         bool has_ap_1 = ep1.hasStringProp("attachmentPointId");
         bool has_atom_1 = ep1.hasStringProp("atomId");
         bool has_ap_2 = ep2.hasStringProp("attachmentPointId");
-        bool has_atom_2 = ep1.hasStringProp("atomId");
+        bool has_atom_2 = ep2.hasStringProp("atomId");
         if ((has_ap_1 || has_atom_1) != (has_ap_2 || has_atom_2))
             throw Error("Connection with only one attachment point id.");
         if (!(has_ap_1 || has_atom_1))
@@ -426,14 +453,14 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
         // molecules saved in helm as CHEM
         if (has_mol_1)
             id_to_class.emplace(mon_ref_1, MonomerClass::CHEM);
-        if (has_mol_1)
+        if (has_mol_2)
             id_to_class.emplace(mon_ref_2, MonomerClass::CHEM);
 
         auto& mon1_class = id_to_class.at(mon_id_1);
         auto& mon2_class = id_to_class.at(mon_id_2);
 
         auto& ap_id_1 = has_mon_1 ? ep1.getStringProp("attachmentPointId") : ep1.getStringProp("atomId");
-        auto& ap_id_2 = has_mon_1 ? ep2.getStringProp("attachmentPointId") : ep1.getStringProp("atomId");
+        auto& ap_id_2 = has_mon_2 ? ep2.getStringProp("attachmentPointId") : ep2.getStringProp("atomId");
 
         ap_to_connection.emplace(std::make_pair(mon_id_1, ap_id_1), connection);
         ap_to_connection.emplace(std::make_pair(mon_id_2, ap_id_2), connection);
@@ -489,3 +516,7 @@ const std::string& KetDocument::monomerIdByRef(const std::string& ref)
         throw Error("Monomer with ref %s not found", ref.c_str());
     return it->second;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

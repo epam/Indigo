@@ -1,15 +1,21 @@
 import './AppSelect.scss';
 
 
-const AppSelect = ({options, onChange}) => {
+const AppSelect = ({ options, title, value, onChange }) => {
     return (
-        <select onChange={(event) => onChange(event.target.value)}>
+      <div className="select">
+        <div class="select-title">{ title }</div>
+        <div class="select-dropdown">
+          <select value={value} onChange={(event) => onChange(event.target.value)}>
             {options.map(({name, value}) => (
-                <option value={value} key={value}>
-                    {name}
-                </option>
+              <option value={value} key={value}>
+                {name}
+              </option>
             ))}
-        </select>
+          </select>
+          <div className="select-arrow"></div>
+        </div>
+      </div>
     );
 };
 

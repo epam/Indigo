@@ -15,56 +15,158 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-
-#include "layout/reaction_layout.h"
-#include "layout/molecule_layout.h"
-#include "molecule/ket_commons.h"
-#include "molecule/molecule.h"
-#include "reaction/reaction.h"
+#include <functional>
 #include <numeric>
 #include <stdio.h>
 
+#include "layout/molecule_layout.h"
+#include "layout/reaction_layout.h"
+#include "molecule/ket_commons.h"
+#include "molecule/molecule.h"
+#include "reaction/pathway_reaction_builder.h"
+#include "reaction/reaction.h"
+#include "reaction/reaction_multistep_detector.h"
+
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
+
+using namespace std::placeholders;
 using namespace indigo;
 
 ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
-    : bond_length(MoleculeLayout::DEFAULT_BOND_LENGTH), plus_interval_factor(1), arrow_interval_factor(2), preserve_molecule_layout(false), _r(r),
-      _smart_layout(smart_layout), horizontal_interval_factor(DEFAULT_HOR_INTERVAL_FACTOR), atom_label_width(1.3f), layout_orientation(UNCPECIFIED),
-      max_iterations(0)
+    : bond_length(LayoutOptions::DEFAULT_BOND_LENGTH), default_plus_size(1), default_arrow_size(2), preserve_molecule_layout(false), _r(r),
+      _smart_layout(smart_layout), reaction_margin_size(DEFAULT_HOR_INTERVAL_FACTOR), atom_label_margin(1.3f), layout_orientation(UNCPECIFIED),
+      max_iterations(0), _font_size(-1)
 {
+    _options.bondLength = bond_length;
+    _options.reactionComponentMarginSize = reaction_margin_size;
+}
+
+ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout, const LayoutOptions& options)
+    : bond_length(options.fontSize > EPSILON ? 1 : LayoutOptions::DEFAULT_BOND_LENGTH), default_plus_size(LayoutOptions::DEFAULT_PLUS_SIZE),
+      default_arrow_size(LayoutOptions::DEFAULT_BOND_LENGTH), preserve_molecule_layout(false), _r(r), _smart_layout(smart_layout),
+      reaction_margin_size(options.fontSize > EPSILON ? options.getMarginSizeInAngstroms()
+                                                      : LayoutOptions::DEFAULT_BOND_LENGTH * options.getMarginSizeInAngstroms()),
+      atom_label_margin(LayoutOptions::DEFAULT_BOND_LENGTH / 2), layout_orientation(UNCPECIFIED), max_iterations(0), _options(options),
+      _font_size(options.getFontSizeInAngstroms())
+{
+}
+
+bool ReactionLayout::hasAnyIntersect(const std::vector<Rect2f>& bblist)
+{
+    std::vector<SweepEvent> events;
+    events.reserve(bblist.size() * 2);
+    for (const auto& rect : bblist)
+    {
+        events.emplace_back(SweepEvent{rect.left(), true, rect.bottom(), rect.top()});
+        events.emplace_back(SweepEvent{rect.left() + rect.width(), false, rect.bottom(), rect.top()});
+    }
+    std::sort(events.begin(), events.end());
+    std::set<std::pair<float, float>> active;
+    for (const auto& event : events)
+    {
+        if (event.is_start)
+        {
+            auto it = active.lower_bound({event.y_start, event.y_end});
+            if (it != active.begin())
+            {
+                auto prev = std::prev(it);
+                if (prev->second > event.y_start)
+                    return true;
+            }
+            if (it != active.end() && it->first < event.y_end)
+                return true;
+            active.emplace(event.y_start, event.y_end);
+        }
+        else
+        {
+            active.erase({event.y_start, event.y_end});
+        }
+    }
+    return false;
+}
+
+bool ReactionLayout::validVerticalRange(const std::vector<Rect2f>& bblist)
+{
+    if (bblist.empty())
+        return true;
+
+    float max_start = std::max_element(bblist.begin(), bblist.end(), [](const Rect2f& a, const Rect2f& b) { return a.bottom() < b.bottom(); })->bottom();
+    float min_end = std::min_element(bblist.begin(), bblist.end(), [](const Rect2f& a, const Rect2f& b) { return a.top() < b.top(); })->top();
+    return max_start <= min_end;
 }
 
 void ReactionLayout::fixLayout()
 {
     int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
     int simple_count = _r.meta().getMetaCount(KETSimpleObject::CID) + _r.meta().getMetaCount(KETTextObject::CID);
-    if (arrows_count > 1 || simple_count)
+    int multi_count = _r.meta().getMetaCount(KETReactionMultitailArrow::CID);
+    if (arrows_count || simple_count || multi_count)
         return;
 
     Vec2f rmax{Vec2f::min_coord(), Vec2f::min_coord()}, pmin{Vec2f::max_coord(), Vec2f::max_coord()};
     Rect2f bb;
+    std::vector<Rect2f> bboxes;
     // Calculate rightTop of reactant bounding box
-
-    for (int i = _r.reactantBegin(); i != _r.reactantEnd(); i = _r.reactantNext(i))
+    bool invalid_layout = false;
+    float cur_left = 0, cur_right = 0;
+    for (int i = _r.isRetrosyntetic() ? _r.productBegin() : _r.reactantBegin(); i != (_r.isRetrosyntetic() ? _r.productEnd() : _r.reactantEnd());
+         i = _r.isRetrosyntetic() ? _r.productNext(i) : _r.reactantNext(i))
     {
         _r.getBaseMolecule(i).getBoundingBox(bb);
+        bboxes.push_back(bb);
         rmax.max(bb.rightTop());
+        if (i == 0 || (bb.left() > cur_left && bb.right() > cur_right))
+        {
+            cur_left = bb.left();
+            cur_right = bb.right();
+        }
+        else
+            invalid_layout = true;
     }
 
+    bool first_after_arrow = true;
     // Calculate leftBottom of product bounding box
-    for (int i = _r.productBegin(); i != _r.productEnd(); i = _r.productNext(i))
+    for (int i = _r.isRetrosyntetic() ? _r.reactantBegin() : _r.productBegin(); i != (_r.isRetrosyntetic() ? _r.reactantEnd() : _r.productEnd());
+         i = _r.isRetrosyntetic() ? _r.reactantNext(i) : _r.productNext(i))
     {
         _r.getBaseMolecule(i).getBoundingBox(bb);
+        bboxes.push_back(bb);
         pmin.min(bb.leftBottom());
+        if (bb.left() > cur_left && bb.right() > cur_right)
+        {
+            if (first_after_arrow)
+            {
+                first_after_arrow = false;
+                if (bb.left() - cur_left < default_arrow_size)
+                {
+                    invalid_layout = true;
+                    break;
+                }
+            }
+            cur_left = bb.left();
+            cur_right = bb.right();
+        }
+        else
+        {
+            invalid_layout = true;
+            break;
+        }
     }
 
+    if (!invalid_layout)
+        invalid_layout = hasAnyIntersect(bboxes) || !validVerticalRange(bboxes);
+
+    float arrow_len = pmin.x - rmax.x - (2 * ReactionMarginSize());
     // if left side of product bb at left of right side of reactant bb - fix layout
-    if (rmax.x > pmin.x)
+    if (invalid_layout || arrow_len != default_arrow_size)
     {
         ReactionLayout rl(_r, true);
         rl.preserve_molecule_layout = true;
         rl.make();
     }
-    else if (_r.meta().getMetaCount(KETReactionArrow::CID) == 0)
+    else if (_r.meta().getMetaCount(KETReactionArrow::CID) == 0 && _r.meta().getMetaCount(KETReactionMultitailArrow::CID) == 0)
         _updateMetadata();
 }
 
@@ -86,17 +188,35 @@ void ReactionLayout::_updateMetadata()
     Rect2f react_box, product_box, catalyst_box;
     bool last_single_reactant = false;
     bool first_single_product = false;
+    bool is_retrosyntetic = _r.isRetrosyntetic();
     if (_r.reactantsCount() > 0)
     {
-        processSideBoxes(pluses, react_box, BaseReaction::REACTANT);
-        for (int i = _r.reactantBegin(); i != _r.reactantEnd(); i = _r.reactantNext(i))
-            last_single_reactant = _r.getBaseMolecule(i).vertexCount() == 1;
+        if (is_retrosyntetic)
+        {
+            processSideBoxes(pluses, react_box, BaseReaction::PRODUCT);
+            for (int i = _r.productBegin(); i != _r.productEnd(); i = _r.productNext(i))
+                last_single_reactant = _r.getBaseMolecule(i).vertexCount() == 1;
+        }
+        else
+        {
+            processSideBoxes(pluses, react_box, BaseReaction::REACTANT);
+            for (int i = _r.reactantBegin(); i != _r.reactantEnd(); i = _r.reactantNext(i))
+                last_single_reactant = _r.getBaseMolecule(i).vertexCount() == 1;
+        }
     }
 
     if (_r.productsCount() > 0)
     {
-        processSideBoxes(pluses, product_box, BaseReaction::PRODUCT);
-        first_single_product = _r.getBaseMolecule(_r.productBegin()).vertexCount() == 1;
+        if (is_retrosyntetic)
+        {
+            processSideBoxes(pluses, product_box, BaseReaction::REACTANT);
+            first_single_product = _r.getBaseMolecule(_r.reactantBegin()).vertexCount() == 1;
+        }
+        else
+        {
+            processSideBoxes(pluses, product_box, BaseReaction::PRODUCT);
+            first_single_product = _r.getBaseMolecule(_r.productBegin()).vertexCount() == 1;
+        }
     }
 
     if (_r.catalystCount() > 0)
@@ -105,41 +225,40 @@ void ReactionLayout::_updateMetadata()
     for (const auto& plus_offset : pluses)
         _r.meta().addMetaObject(new KETReactionPlus(plus_offset));
 
+    // calculate arrow size and position
     Vec2f arrow_head(0, 0);
     Vec2f arrow_tail(0, 0);
 
-    constexpr float shift = 1.0f;
-    if (_r.productsCount() == 0)
+    int prod_count = is_retrosyntetic ? _r.reactantsCount() : _r.productsCount();
+    int react_count = is_retrosyntetic ? _r.productsCount() : _r.reactantsCount();
+    if (prod_count == 0)
     {
-        arrow_tail.x = react_box.right() + shift;
+        arrow_tail.x = react_box.right() + reaction_margin_size + atom_label_margin;
         arrow_tail.y = react_box.middleY();
-        arrow_head.x = arrow_tail.x + shift;
+        arrow_head.x = arrow_tail.x + default_arrow_size + atom_label_margin;
         arrow_head.y = arrow_tail.y;
     }
-    else if (_r.reactantsCount() == 0)
+    else if (react_count == 0)
     {
-        arrow_head.x = product_box.left() - shift;
+        arrow_head.x = product_box.left() - reaction_margin_size - atom_label_margin;
         arrow_head.y = product_box.middleY();
-        arrow_tail.x = arrow_head.x - shift;
+        arrow_tail.x = arrow_head.x - default_arrow_size - atom_label_margin;
         arrow_tail.y = arrow_head.y;
     }
     else
     {
-        const float ptab = first_single_product ? 2.0f : 1.0f;
-        const float rtab = last_single_reactant ? 2.0f : 1.0f;
-
         arrow_head.y = product_box.middleY();
         arrow_tail.y = react_box.middleY();
 
         if (product_box.left() > react_box.right())
         {
-            arrow_head.x = product_box.left() - ptab;
-            arrow_tail.x = react_box.right() + rtab;
+            arrow_head.x = product_box.left() - ReactionMarginSize();
+            arrow_tail.x = react_box.right() + ReactionMarginSize();
         }
         else
         {
-            arrow_head.x = react_box.right() + rtab;
-            arrow_tail.x = product_box.left() - ptab;
+            arrow_head.x = react_box.right() + ReactionMarginSize();
+            arrow_tail.x = product_box.left() - ReactionMarginSize();
         }
     }
     _r.meta().addMetaObject(new KETReactionArrow(arrow_type, arrow_tail, arrow_head, arrow_height));
@@ -155,7 +274,11 @@ void ReactionLayout::processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_b
         BaseMolecule& mol = _r.getBaseMolecule(i);
 
         Rect2f box;
-        mol.getBoundingBox(box);
+        // If have font size calc bounding box with labes
+        if (_font_size > EPSILON)
+            mol.getBoundingBox(_font_size, _options.labelMode, box);
+        else
+            mol.getBoundingBox(box);
         if (i == begin)
             type_box.copy(box);
         else
@@ -175,16 +298,48 @@ void ReactionLayout::processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_b
     }
 }
 
+void ReactionLayout::makePathwayFromSimple()
+{
+    std::deque<Reaction> reactions;
+    for (int i = 0; i < _r.reactionBlocksCount(); i++)
+    {
+        auto& rb = _r.reactionBlock(i);
+        if (rb.products.size() || rb.reactants.size())
+        {
+            auto& rc = reactions.emplace_back();
+            for (int j = 0; j < rb.reactants.size(); j++)
+                rc.addReactantCopy(_r.getBaseMolecule(rb.reactants[j]), 0, 0);
+            for (int j = 0; j < rb.products.size(); j++)
+                rc.addProductCopy(_r.getBaseMolecule(rb.products[j]), 0, 0);
+        }
+    }
+    PathwayReactionBuilder prb;
+    auto pwr = prb.buildPathwayReaction(reactions, _options);
+    _r.meta().resetReactionData();
+    pwr->meta().append(_r.meta());
+    pwr->copyToReaction(_r);
+}
+
 void ReactionLayout::make()
 {
     int arrows_count = _r.meta().getMetaCount(KETReactionArrow::CID);
     int simple_count = _r.meta().getNonChemicalMetaCount();
-    if (arrows_count > 1 || simple_count)
+    if (simple_count)
+        return;
+
+    /*
+    int multi_count = _r.meta().getMetaCount(KETReactionMultitailArrow::CID);
+    if (_r.reactionBlocksCount() > 1 && _r.intermediateCount() == 0 && multi_count == 0)
+    {
+        makePathwayFromSimple();
+        return;
+    }
+    */
+
+    if (arrows_count > 1)
         return; // not implemented yet
 
-    const auto kHalfBondLength = bond_length / 2;
-    const auto kDoubleBondLength = bond_length * 2;
-    // update layout of molecules, if needed
+    //  update layout of molecules, if needed
     if (!preserve_molecule_layout)
     {
         for (int i = _r.begin(); i < _r.end(); i = _r.next(i))
@@ -199,78 +354,91 @@ void ReactionLayout::make()
 
     // layout molecules in a row with the intervals specified
     Metalayout::LayoutLine& line = _ml.newLine();
-    for (int i = _r.reactantBegin(); i < _r.reactantEnd(); i = _r.reactantNext(i))
-    {
-        bool single_atom = _getMol(i).vertexCount() == 1;
-        if (i != _r.reactantBegin())
-            _pushSpace(line, plus_interval_factor);
-        _pushMol(line, i);
-    }
+    auto processReactionElements = [this, &line](int begin, int end, std::function<int(BaseReaction&, int)> next) {
+        for (int i = begin; i < end; i = next(_r, i))
+        {
+            // bool single_atom = _getMol(i).vertexCount() == 1;
+            if (i != begin)
+            {
+                _pushSpace(line, reaction_margin_size);
+                _pushSpace(line, default_plus_size);
+                _pushSpace(line, reaction_margin_size);
+            }
+            _pushMol(line, i);
+        }
+    };
+
+    if (_r.isRetrosyntetic())
+        processReactionElements(_r.productBegin(), _r.productEnd(), &BaseReaction::productNext);
+    else
+        processReactionElements(_r.reactantBegin(), _r.reactantEnd(), &BaseReaction::reactantNext);
 
     if (_r.catalystCount())
     {
+
+        _pushSpace(line, reaction_margin_size);
+        _pushSpace(line, reaction_margin_size);
         for (int i = _r.catalystBegin(); i < _r.catalystEnd(); i = _r.catalystNext(i))
         {
-            auto& mol = _getMol(i);
-            Rect2f bbox;
-            mol.getBoundingBox(bbox, Vec2f(kDoubleBondLength, kDoubleBondLength));
-            _pushSpace(line, bbox.width() / 2);
+            if (i != _r.catalystBegin())
+                _pushSpace(line, reaction_margin_size);
             _pushMol(line, i, true);
         }
-        _pushSpace(line, bond_length);
+        _pushSpace(line, reaction_margin_size);
+        _pushSpace(line, reaction_margin_size);
     }
     else
-        _pushSpace(line, arrow_interval_factor);
+        _pushSpace(line, default_arrow_size + reaction_margin_size * 2);
 
-    _pushSpace(line, bond_length);
-
-    for (int i = _r.productBegin(); i < _r.productEnd(); i = _r.productNext(i))
-    {
-        bool single_atom = _getMol(i).vertexCount() == 1;
-        if (i != _r.productBegin())
-            _pushSpace(line, plus_interval_factor);
-        _pushMol(line, i);
-    }
+    if (_r.isRetrosyntetic())
+        processReactionElements(_r.reactantBegin(), _r.reactantEnd(), &BaseReaction::reactantNext);
+    else
+        processReactionElements(_r.productBegin(), _r.productEnd(), &BaseReaction::productNext);
 
     _ml.bondLength = bond_length;
-    _ml.horizontalIntervalFactor = horizontal_interval_factor;
+    _ml.reactionComponentMarginSize = reaction_margin_size;
     _ml.cb_getMol = cb_getMol;
     _ml.cb_process = cb_process;
     _ml.context = this;
     _ml.prepare();
-    _ml.scaleSz();
+    _ml.scaleMoleculesSize();
     _ml.calcContentSize();
     _ml.process();
     _updateMetadata();
 }
 
-void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_agent)
+void ReactionLayout::_pushMol(Metalayout::LayoutLine& line, int id, bool is_catalyst)
 {
     // Molecule label alligned to atom center by non-hydrogen
     // Hydrogen may be at left or at right H2O, PH3 - so add space before and after molecule
-    _pushSpace(line, atom_label_width);
+    if (_font_size < EPSILON)
+        _pushSpace(line, atom_label_margin);
     Metalayout::LayoutItem& item = line.items.push();
-    item.type = 0;
-    item.fragment = true;
+    item.type = Metalayout::LayoutItem::Type::EMolecule;
+    item.isMoleculeFragment = true;
     item.id = id;
     auto& mol = _getMol(id);
-    if (is_agent)
+    if (is_catalyst)
     {
         item.verticalAlign = Metalayout::LayoutItem::ItemVerticalAlign::ETop;
     }
-
     Rect2f bbox;
-    mol.getBoundingBox(bbox);
+    // If have font size calc bounding box with labes
+    if (_font_size > EPSILON)
+        mol.getBoundingBox(_font_size, _options.labelMode, bbox);
+    else
+        mol.getBoundingBox(bbox);
     item.min.copy(bbox.leftBottom());
     item.max.copy(bbox.rightTop());
-    _pushSpace(line, atom_label_width);
+    if (_font_size < EPSILON)
+        _pushSpace(line, atom_label_margin);
 }
 
 void ReactionLayout::_pushSpace(Metalayout::LayoutLine& line, float size)
 {
     Metalayout::LayoutItem& item = line.items.push();
-    item.type = 1;
-    item.fragment = false;
+    item.type = Metalayout::LayoutItem::Type::ESpace;
+    item.isMoleculeFragment = false;
     item.scaledSize.set(size, 0);
 }
 
@@ -286,12 +454,16 @@ BaseMolecule& ReactionLayout::cb_getMol(int id, void* context)
 
 void ReactionLayout::cb_process(Metalayout::LayoutItem& item, const Vec2f& pos, void* context)
 {
-    Vec2f pos2;
-    pos2.copy(pos);
-    pos2.y -= item.scaledSize.y / 2;
-    if (item.fragment)
+    if (item.isMoleculeFragment)
     {
-        ReactionLayout* layout = (ReactionLayout*)context;
+        Vec2f pos2;
+        pos2.copy(pos);
+        pos2.y -= item.scaledSize.y / 2;
+        auto layout = (ReactionLayout*)context;
         layout->_ml.adjustMol(layout->_getMol(item.id), item.min, pos2);
     }
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

@@ -986,6 +986,55 @@ M  END
             assert.equal(idt, res_idt);
             options.delete();
             save_options.delete();
+            // check autodetect
+            let ad_options = new indigo.MapStringString();
+            ad_options.set("output-content-type", "application/json");
+            ad_options.set("monomerLibrary", monomersLib);
+            const res2 = indigo.convert(idt, "ket", ad_options);
+            const res2_ket = JSON.parse(res2).struct;
+            assert.equal(res2_ket, res_ket_ref.toString().trim());
+            ad_options.delete()
+        });
+    }
+
+    {
+        test("HELM", "basic", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            // test autodetect
+            options.set("output-content-type", "application/json");
+            options.set("monomerLibrary", monomersLib);
+            const helm = "RNA1{P.[mR](A)[sP].[mR](G)P.[dR](C)P.[MOE](A)P.P}$$$$V2.0";
+            const res = indigo.convert(helm, "ket", options);
+            const res_ket = JSON.parse(res).struct;
+            // fs.writeFileSync("helm_maxmgc.ket", res_ket);
+            const res_ket_ref = fs.readFileSync("helm_maxmgc.ket");
+            assert.equal(res_ket, res_ket_ref.toString().trim());
+            options.delete();
+        });
+    }
+
+    {
+        test("layout", "pathway", () => {
+            var fs = require('fs');
+            const pathway = fs.readFileSync("pathway.ket");
+            let options = new indigo.MapStringString();
+            options.set('aromatize-skip-superatoms', 'true');
+            options.set('dearomatize-on-load', 'false');
+            options.set('gross-formula-add-rsites', 'true');
+            options.set('ignore-no-chiral-flag', 'false');
+            options.set('ignore-stereochemistry-errors', 'true');
+            options.set('input-format', "chemical/x-unknown");
+            options.set('mass-skip-error-on-pseudoatoms', 'false');
+            options.set('output-content-type', "application/json");
+            options.set('smart-layout', 'true');
+            let ket = JSON.parse(indigo.layout(pathway, "ket", options)).struct;            
+            // fs.writeFileSync("pathway_layout.ket", ket);
+            const ket_ref = fs.readFileSync("pathway_layout.ket");
+            assert.equal(ket, ket_ref.toString().trim());
+            options.delete();
+            assert(true);
         });
     }
 

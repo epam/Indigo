@@ -14,11 +14,11 @@ Short summary of problem here
 1. Use Indigo library (Bingo cartridge). Describe environment
 2. Add script or SQL to reproduce the issue
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
-
 **Actual behavior**
 A clear and concise description of what the bug is.
+
+**Expected behavior**
+A clear and concise description of what you expected to happen.
 
 **Environment details:**
  - Back-end version

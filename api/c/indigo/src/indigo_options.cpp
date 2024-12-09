@@ -149,13 +149,13 @@ static void indigoGetEmbeddingUniqueness(Array<char>& value)
 static void indigoSetLayoutHorIntervalFactor(float value)
 {
     Indigo& self = indigoGetInstance();
-    self.layout_horintervalfactor = value;
+    self.layout_options.setMarginSizeInAngstroms(value);
 }
 
 static void indigoGetLayoutHorIntervalFactor(float& value)
 {
     Indigo& self = indigoGetInstance();
-    value = self.layout_horintervalfactor;
+    value = self.layout_options.getMarginSizeInAngstroms();
 }
 
 static void indigoSetAromaticityModel(const char* model)
@@ -249,6 +249,7 @@ static void indigoResetBasicOptions()
     Indigo& self = indigoGetInstance();
     self.standardize_options.reset();
     self.ionize_options = IonizeOptions();
+    self.layout_options.reset();
     self.init();
 }
 
@@ -270,6 +271,54 @@ void indigoProductEnumeratorGetOneTubeMode(Array<char>& value)
         value.readString("one-tube", true);
     else
         value.readString("grid", true);
+}
+
+void indigoRenderSetLabelMode(const char* mode)
+{
+    std::string mode_string(mode);
+    LABEL_MODE result;
+    if (mode_string == "none")
+    {
+        result = LABEL_MODE_NONE;
+    }
+    else if (mode_string == "hetero")
+    {
+        result = LABEL_MODE_HETERO;
+    }
+    else if (mode_string == "terminal-hetero")
+    {
+        result = LABEL_MODE_TERMINAL_HETERO;
+    }
+    else if (mode_string == "all")
+    {
+        result = LABEL_MODE_ALL;
+    }
+    else
+    {
+        throw IndigoError("Invalid label mode, should be 'none', 'hetero', 'terminal-hetero' or 'all'");
+    }
+    LayoutOptions& layout_options = indigoGetInstance().layout_options;
+    layout_options.labelMode = result;
+}
+
+void indigoRenderGetLabelMode(Array<char>& value)
+{
+    LayoutOptions& layout_options = indigoGetInstance().layout_options;
+    switch (layout_options.labelMode)
+    {
+    case LABEL_MODE_NONE:
+        value.readString("none", true);
+        break;
+    case LABEL_MODE_HETERO:
+        value.readString("hetero", true);
+        break;
+    case LABEL_MODE_TERMINAL_HETERO:
+        value.readString("terminal-hetero", true);
+        break;
+    case LABEL_MODE_ALL:
+        value.readString("all", true);
+        break;
+    }
 }
 
 void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
@@ -396,4 +445,15 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerInt("rpe-max-products-count", SETTER_GETTER_INT_OPTION(indigo.rpe_params.max_product_count));
     mgr->setOptionHandlerBool("rpe-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.is_layout));
     mgr->setOptionHandlerBool("transform-layout", SETTER_GETTER_BOOL_OPTION(indigo.rpe_params.transform_is_layout));
+
+    mgr->setOptionHandlerFloat("bond-length", SET_POSITIVE_FLOAT_OPTION(indigo.layout_options.bondLength, "bond length must be positive"));
+    mgr->setOptionHandlerString("bond-length-unit", SETTER_GETTER_UNIT_OPTION(indigo.layout_options.bondLengthUnit));
+    mgr->setOptionHandlerFloat("reaction-component-margin-size", SETTER_GETTER_FLOAT_OPTION(indigo.layout_options.reactionComponentMarginSize));
+    mgr->setOptionHandlerString("reaction-component-margin-size-unit", SETTER_GETTER_UNIT_OPTION(indigo.layout_options.reactionComponentMarginSizeUnit));
+    mgr->setOptionHandlerInt("image-resolution", SET_POSITIVE_INT_OPTION(indigo.layout_options.ppi, "image resolution ppi must be positive"));
+    mgr->setOptionHandlerFloat("render-font-size", SETTER_GETTER_FLOAT_OPTION(indigo.layout_options.fontSize));
+    mgr->setOptionHandlerString("render-font-size-unit", SETTER_GETTER_UNIT_OPTION(indigo.layout_options.fontSizeUnit));
+    mgr->setOptionHandlerFloat("render-font-size-sub", SETTER_GETTER_FLOAT_OPTION(indigo.layout_options.fontSizeSub));
+    mgr->setOptionHandlerString("render-font-size-sub-unit", SETTER_GETTER_UNIT_OPTION(indigo.layout_options.fontSizeSubUnit));
+    mgr->setOptionHandlerString("render-label-mode", indigoRenderSetLabelMode, indigoRenderGetLabelMode);
 }

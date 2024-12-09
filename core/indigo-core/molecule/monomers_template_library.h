@@ -82,6 +82,8 @@ namespace indigo
 
         KetAttachmentPoint& AddAttachmentPoint(const std::string& label, int att_atom);
 
+        KetAttachmentPoint& AddAttachmentPointId(const std::string& id, int att_atom);
+
         const KetAttachmentPoint& getAttachmenPointById(const std::string& att_point_id);
 
         std::unique_ptr<TGroup> getTGroup() const;
@@ -255,6 +257,11 @@ namespace indigo
 
         const std::string& getIdtAliasByModification(IdtModification modification, const std::string sugar_id, const std::string base_id,
                                                      const std::string phosphate_id);
+
+        const std::map<std::string, MonomerTemplate>& monomerTemplates()
+        {
+            return _monomer_templates;
+        };
 
     private:
         std::map<std::string, MonomerTemplate> _monomer_templates;

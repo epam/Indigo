@@ -16,6 +16,7 @@ from env_indigo import *  # noqa
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
+indigo.setOption("json-use-native-precision", True)
 
 print("*** SMILES LAYOUT ***")
 

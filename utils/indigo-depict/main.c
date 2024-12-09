@@ -1089,6 +1089,19 @@ int main(int argc, char* argv[])
                     return -1;
                 }
             }
+            else if (p.out_ext == OEXT_RDR)
+            {
+                writer = indigoWriteFile(p.outfile);
+                indigoRdfHeader(writer);
+                auto it_id = indigoIterateReactions(obj);
+                while (indigoHasNext(it_id))
+                {
+                    const auto robj = indigoNext(it_id);
+                    const auto rxn_id = indigoClone(robj);
+                    auto rc = indigoRdfAppend(writer, rxn_id);
+                }
+                indigoFree(writer);
+            }
             else
             {
                 indigoSaveJsonToFile(obj, p.outfile);

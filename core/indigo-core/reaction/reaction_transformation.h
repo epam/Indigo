@@ -47,7 +47,7 @@ namespace indigo
         bool layout_flag;
 
         bool smart_layout;
-        layout_orientation_value layout_orientation;
+        LAYOUT_ORIENTATION layout_orientation;
 
         CancellationHandler* cancellation;
 

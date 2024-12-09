@@ -21,7 +21,9 @@
 #include "base_cpp/output.h"
 #include "molecule/ket_commons.h"
 #include "molecule/molecule_cdxml_saver.h"
+#include "reaction/pathway_reaction.h"
 #include "reaction/reaction.h"
+
 #include "reaction/reaction_cdxml_saver.h"
 
 using namespace indigo;
@@ -76,7 +78,6 @@ ReactionCdxmlSaver::~ReactionCdxmlSaver()
 
 void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
 {
-    int i;
     std::vector<int> mol_ids;
     std::vector<int> meta_ids;
 
@@ -97,6 +98,7 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
     std::unordered_map<int, int> retro_arrows_graph_id;
 
     int arrow_count = rxn.meta().getMetaCount(KETReactionArrow::CID);
+    int multi_count = rxn.meta().getMetaCount(KETReactionMultitailArrow::CID);
     if (arrow_count)
     {
         for (int i = 0; i < arrow_count; ++i)
@@ -105,13 +107,23 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
             arrow_ids.emplace_back(meta_ids[array_index], arrow_count > 1 ? array_index : -1);
         }
     }
-    else
+    else if (!multi_count)
         arrow_ids.emplace_back(++_id, -1);
 
     Vec2f offset(0, 0);
 
-    for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
-        molsaver.saveMoleculeFragment(rxn.getBaseMolecule(i), offset, 1, mol_ids[i], _id, nodes_ids[i]);
+    if (rxn.isPathwayReaction())
+    {
+        auto& pw = rxn.asPathwayReaction();
+        for (int i = 0; i < pw.getMoleculeCount(); ++i)
+        {
+            auto& mol = pw.getMolecule(i);
+            molsaver.saveMoleculeFragment(mol, offset, 1, mol_ids[i], _id, nodes_ids[i]);
+        }
+    }
+    else
+        for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+            molsaver.saveMoleculeFragment(rxn.getBaseMolecule(i), offset, 1, mol_ids[i], _id, nodes_ids[i]);
 
     if (rxn.meta().metaData().size()) // we have metadata
     {
@@ -137,10 +149,13 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
         _addArrow(rxn, molsaver, arrow_ids.front().first, retro_arrows_graph_id);
     }
 
-    _addScheme(molsaver);
-    for (const auto& ar_id : arrow_ids)
-        _addStep(rxn, molsaver, mol_ids, nodes_ids, ar_id, retro_arrows_graph_id);
-    _closeScheme(molsaver);
+    if (arrow_ids.size())
+    {
+        _addScheme(molsaver);
+        for (const auto& ar_id : arrow_ids)
+            _addStep(rxn, molsaver, mol_ids, nodes_ids, ar_id, retro_arrows_graph_id);
+        _closeScheme(molsaver);
+    }
 
     if (rxn.name.size() > 0)
     {
@@ -348,7 +363,7 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
     }
     else
     {
-        if (rxn.reactionBlocksCount())
+        if (rxn.reactionBlocksCount() && arrow_id.second < rxn.reactionBlocksCount())
         {
             auto& rb = rxn.reactionBlock(arrow_id.second);
             auto& reactants = rxn.isRetrosyntetic() ? rb.products : rb.reactants;
@@ -375,7 +390,7 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
     }
     else
     {
-        if (rxn.reactionBlocksCount())
+        if (rxn.reactionBlocksCount() && arrow_id.second < rxn.reactionBlocksCount())
         {
             auto& rb = rxn.reactionBlock(arrow_id.second);
             auto& products = rxn.isRetrosyntetic() ? rb.reactants : rb.products;
@@ -455,16 +470,21 @@ void ReactionCdxmlSaver::_addStep(BaseReaction& rxn, MoleculeCdxmlSaver& molsave
 void ReactionCdxmlSaver::_generateCdxmlObjIds(BaseReaction& rxn, std::vector<int>& mol_ids, std::vector<int>& meta_ids,
                                               std::vector<std::map<int, int>>& nodes_ids)
 {
-    for (auto i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+    if (rxn.isPathwayReaction())
     {
-        mol_ids.push_back(++_id);
-
-        BaseMolecule& mol = rxn.getBaseMolecule(i);
-        nodes_ids.push_back({});
-
-        for (auto j = mol.vertexBegin(); j != mol.vertexEnd(); j = mol.vertexNext(j))
-            nodes_ids[i].emplace(j, ++_id);
+        auto& pw = rxn.asPathwayReaction();
+        for (int i = 0; i < pw.getMoleculeCount(); ++i)
+        {
+            auto& mol = pw.getMolecule(i);
+            _generateMolNodeIds(mol, i, mol_ids, nodes_ids);
+        }
     }
+    else
+        for (auto i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+        {
+            BaseMolecule& mol = rxn.getBaseMolecule(i);
+            _generateMolNodeIds(mol, i, mol_ids, nodes_ids);
+        }
 
     // generate ids for meta objects. 1 node and 1 extra object. text or graphics
     for (auto i = 0; i < rxn.meta().metaData().size(); ++i)
@@ -475,6 +495,15 @@ void ReactionCdxmlSaver::_generateCdxmlObjIds(BaseReaction& rxn, std::vector<int
         _id += 2;
         nodes_ids[r_id].emplace(r_id, _id);
     }
+}
+
+void ReactionCdxmlSaver::_generateMolNodeIds(BaseMolecule& mol, int mol_index, std::vector<int>& mol_ids, std::vector<std::map<int, int>>& nodes_ids)
+{
+    mol_ids.push_back(++_id);
+    nodes_ids.push_back({});
+
+    for (auto j = mol.vertexBegin(); j != mol.vertexEnd(); j = mol.vertexNext(j))
+        nodes_ids[mol_index].emplace(j, ++_id);
 }
 
 void ReactionCdxmlSaver::_addTitle(BaseReaction& rxn, MoleculeCdxmlSaver& molsaver)

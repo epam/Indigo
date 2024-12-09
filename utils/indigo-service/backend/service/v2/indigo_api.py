@@ -399,10 +399,26 @@ def load_moldata(
                         md.struct = indigo.loadQueryReaction(molstr)
                         md.is_query = True
                     except IndigoException:
-                        raise HttpException(
-                            "struct data not recognized as molecule, query, reaction or reaction query",
-                            400,
-                        )
+                        if library is None:
+                            raise HttpException(
+                                "struct data not recognized as molecule, query, reaction or reaction query",
+                                400,
+                            )
+                        else:  # has library try to load IDT and HELM
+                            try:
+                                md.struct = indigo.loadIdt(molstr, library)
+                                md.is_rxn = False
+                            except IndigoException:
+                                try:
+                                    md.struct = indigo.loadHelm(
+                                        molstr, library
+                                    )
+                                except IndigoException:
+                                    raise HttpException(
+                                        "struct data not recognized as molecule, query, reaction or reaction query",
+                                        400,
+                                    )
+
     return md
 
 
@@ -455,6 +471,13 @@ def save_moldata(
         for frag in md.struct.iterateComponents():
             sdfSaver.append(frag.clone())
         sdfSaver.close()
+        return buffer.toString()
+    elif output_format == "chemical/x-rdf":
+        buffer = indigo.writeBuffer()
+        rdfSaver = indigo.createSaver(buffer, "rdf")
+        for reac in md.struct.iterateReactions():
+            rdfSaver.append(reac.clone())
+        rdfSaver.close()
         return buffer.toString()
     raise HttpException("Format %s is not supported" % output_format, 400)
 
@@ -1732,7 +1755,6 @@ def render():
 
     # indigo = md.struct._session
     # indigo = indigo_init(data["options"])
-    indigo.setOption("render-coloring", True)
     content_type = data["output_format"]
     if "render-output-format" in data["options"]:
         rof = data["options"]["render-output-format"]

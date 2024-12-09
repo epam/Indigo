@@ -15,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+#include <algorithm>
+#include <vector>
 
 #include "base_cpp/cancellation_handler.h"
 #include "indigo_internal.h"
@@ -22,17 +24,19 @@
 #include "indigo_reaction.h"
 #include "layout/molecule_cleaner_2d.h"
 #include "layout/molecule_layout.h"
+#include "layout/pathway_layout.h"
 #include "layout/reaction_layout.h"
 #include "reaction/base_reaction.h"
-#include <algorithm>
-#include <vector>
+
+#ifdef _WIN32
+#pragma warning(push, 4)
+#endif
 
 CEXPORT int indigoLayout(int object)
 {
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(object);
-        int i;
 
         if (IndigoBaseMolecule::is(obj))
         {
@@ -58,8 +62,8 @@ CEXPORT int indigoLayout(int object)
                 }
 
                 ml.max_iterations = self.layout_max_iterations;
-                ml.bond_length = MoleculeLayout::DEFAULT_BOND_LENGTH;
-                ml.layout_orientation = (layout_orientation_value)self.layout_orientation;
+                ml.bond_length = LayoutOptions::DEFAULT_BOND_LENGTH;
+                ml.layout_orientation = (LAYOUT_ORIENTATION)self.layout_orientation;
                 if (self.layout_preserve_existing || mol->hasAtropoStereoBonds())
                     ml.respect_existing_layout = true;
 
@@ -78,7 +82,7 @@ CEXPORT int indigoLayout(int object)
                     catch (Exception e)
                     {
                     }
-                    for (i = 1; i <= mol->rgroups.getRGroupCount(); i++)
+                    for (int i = 1; i <= mol->rgroups.getRGroupCount(); i++)
                     {
                         RGroup& rgp = mol->rgroups.getRGroup(i);
 
@@ -101,17 +105,19 @@ CEXPORT int indigoLayout(int object)
         else if (IndigoBaseReaction::is(obj))
         {
             BaseReaction& rxn = obj.getBaseReaction();
-            bool no_layout = rxn.intermediateCount() || rxn.specialConditionsCount() || rxn.meta().getNonChemicalMetaCount() ||
-                             obj.type == IndigoObject::PATHWAY_REACTION || rxn.multitaleCount();
-            if (!no_layout)
+            if (rxn.isPathwayReaction())
             {
-                ReactionLayout rl(rxn, self.smart_layout);
-                rl.max_iterations = self.layout_max_iterations;
-                rl.layout_orientation = (layout_orientation_value)self.layout_orientation;
-                rl.bond_length = MoleculeLayout::DEFAULT_BOND_LENGTH;
-                rl.horizontal_interval_factor = self.layout_horintervalfactor;
+                PathwayLayout pl(static_cast<PathwayReaction&>(rxn), self.layout_options);
+                pl.setPreserveMoleculeLayout(false);
+                pl.make();
+            }
+            else
+            {
+                ReactionLayout rl(rxn, self.smart_layout, self.layout_options);
+                rl.setMaxIterations(self.layout_max_iterations);
+                rl.setLayoutOrientation((LAYOUT_ORIENTATION)self.layout_orientation);
                 if (self.layout_preserve_existing)
-                    rl.preserve_molecule_layout = true;
+                    rl.setPreserveMoleculeLayout(true);
                 rl.make();
                 try
                 {
@@ -179,10 +185,15 @@ CEXPORT int indigoClean2d(int object)
             if (IndigoBaseReaction::is(obj))
             {
                 BaseReaction& rxn = obj.getBaseReaction();
-                for (int i = rxn.begin(); i < rxn.end(); i = rxn.next(i))
+                if (rxn.isPathwayReaction())
                 {
-                    MoleculeCleaner2d::clean(rxn.getBaseMolecule(i));
+                    auto& pwr = rxn.asPathwayReaction();
+                    for (int i = 0; i < pwr.getMoleculeCount(); i++)
+                        MoleculeCleaner2d::clean(pwr.getMolecule(i));
                 }
+                else
+                    for (int i = rxn.begin(); i < rxn.end(); i = rxn.next(i))
+                        MoleculeCleaner2d::clean(rxn.getBaseMolecule(i));
             }
             else
                 throw IndigoError("Clean2d can be executed only for molecules but %s was provided", obj.debugInfo());
@@ -192,3 +203,7 @@ CEXPORT int indigoClean2d(int object)
     }
     INDIGO_END(-1);
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif

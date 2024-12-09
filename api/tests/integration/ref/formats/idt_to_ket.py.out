@@ -22,6 +22,7 @@ idt_mixed_std.ket:SUCCEED
 idt_mod_phosphates.ket:SUCCEED
 idt_modifications.ket:SUCCEED
 idt_prefix_suffix.ket:SUCCEED
+idt_rna_dna_mixed_custom.ket:SUCCEED
 idt_single_nucleoside.ket:SUCCEED
 idt_std_phosphates.ket:SUCCEED
 idt_t_i2moera.ket:SUCCEED
@@ -29,6 +30,7 @@ idt_unresolved.ket:SUCCEED
 idt_unresolved_many.ket:SUCCEED
 idt_unsplit.ket:SUCCEED
 Test '!+A-$#12w12r23e32e33': got expected error 'Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3'
+Test '(YY:00330067)': got expected error 'Invalid mixed base - only numerical index allowed.'
 Test '+/5Phos/A': got expected error 'Sugar prefix could not be used with modified monomer.'
 Test '/': got expected error 'Unexpected end of data'
 Test '//': got expected error 'Invalid modification: empty string.'
@@ -46,5 +48,6 @@ Test 'Ar/3Phos/': got expected error 'Sugar prefix could not be used with modifi
 Test 'T/52MOErA/': got expected error 'IDT alias '52MOErA' cannot be used at three prime end.'
 Test 'T/5Phos/': got expected error 'IDT alias '5Phos' cannot be used at three prime end.'
 Test 'm/5Phos/A': got expected error 'Sugar prefix could not be used with modified monomer.'
+Test 'r(B1:50003000)(B1)': got expected error 'Unknown mixed base 'B1''
 Test 'r+A': got expected error 'Sugar prefix 'r' whithout base.'
 Test 'r/5Phos/A': got expected error 'Sugar prefix could not be used with modified monomer.'

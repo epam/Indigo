@@ -44,7 +44,8 @@ void ReactionJsonSaver::_getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max
     max_vec.scale(scale);
 }
 
-ReactionJsonSaver::ReactionJsonSaver(Output& output) : _output(output), add_stereo_desc(false), pretty_json(false), ket_version{1, 0, 0}
+ReactionJsonSaver::ReactionJsonSaver(Output& output)
+    : _output(output), add_stereo_desc(false), pretty_json(false), use_native_precision(false), ket_version{1, 0, 0}
 {
 }
 
@@ -57,6 +58,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
     MoleculeJsonSaver json_saver(_output);
     json_saver.add_stereo_desc = add_stereo_desc;
     json_saver.ket_version = ket_version;
+    json_saver.use_native_precision = use_native_precision;
     std::unique_ptr<BaseMolecule> merged;
     if (rxn.isQueryReaction())
     {
@@ -69,7 +71,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 
     std::unique_ptr<BaseReaction> reaction(rxn.neu());
     reaction->clone(rxn);
-    ReactionLayout rl(*reaction);
+    ReactionLayout rl(*reaction, false, layout_options);
     rl.fixLayout();
 
     // merge

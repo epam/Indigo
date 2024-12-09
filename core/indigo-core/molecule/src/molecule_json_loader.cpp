@@ -8,6 +8,7 @@
 #include "molecule/elements.h"
 #include "molecule/ket_commons.h"
 #include "molecule/ket_document.h"
+#include "molecule/ket_document_json_loader.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
 #include "molecule/molecule_sgroups.h"
@@ -61,6 +62,10 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
                     _rgroups.emplace_back(rg_num, node);
                 }
                 else if (node_type.compare("monomer") == 0)
+                {
+                    _monomer_array.PushBack(node, ket.GetAllocator());
+                }
+                else if (node_type.compare("ambiguousMonomer") == 0)
                 {
                     _monomer_array.PushBack(node, ket.GetAllocator());
                 }
@@ -788,7 +793,7 @@ void MoleculeJsonLoader::parseBonds(const rapidjson::Value& bonds, BaseMolecule&
     }
 }
 
-void indigo::MoleculeJsonLoader::parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol)
+void MoleculeJsonLoader::parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol)
 {
     for (rapidjson::SizeType i = 0; i < highlight.Size(); ++i)
     {
@@ -1173,76 +1178,6 @@ static IdtAlias parseIdtAlias(const rapidjson::Value& parent)
         return IdtAlias(idt_alias_base);
 }
 
-void MoleculeJsonLoader::addMonomerTemplate(const rapidjson::Value& mt_json, MonomerTemplateLibrary* library, KetDocument* document)
-{
-    if (!mt_json.HasMember("id"))
-        throw Error("Monomer template without id");
-
-    std::string id = mt_json["id"].GetString();
-
-    if (!mt_json.HasMember("class"))
-        throw Error("Monomer template without class");
-    std::string monomer_class = mt_json["class"].GetString();
-
-    bool unresolved = false;
-    if (mt_json.HasMember("unresolved"))
-        unresolved = mt_json["unresolved"].GetBool();
-
-    IdtAlias idt_alias;
-    if (mt_json.HasMember("idtAliases"))
-    {
-        idt_alias = parseIdtAlias(mt_json);
-        if (idt_alias.getBase().size() == 0)
-            throw Error("Monomer template %s contains IDT alias without base.", id.c_str());
-    }
-    else if (unresolved)
-    {
-        throw Error("Unresoved monomer '%s' without IDT alias.", id.c_str());
-    }
-
-    auto& mon_template = library->addMonomerTemplate(id, monomer_class, idt_alias, unresolved);
-    mon_template.parseOptsFromKet(mt_json);
-
-    // parse atoms
-    mon_template.parseAtoms(mt_json["atoms"]);
-
-    // parse bonds
-    if (mt_json.HasMember("bonds"))
-    {
-        mon_template.parseBonds(mt_json["bonds"]);
-    }
-
-    if (mt_json.HasMember("attachmentPoints"))
-    {
-        auto& att_points = mt_json["attachmentPoints"];
-        for (SizeType i = 0; i < att_points.Size(); i++)
-        {
-            auto& ap = att_points[i];
-            std::string ap_type, label;
-            int attachment_atom;
-            if (ap.HasMember("label"))
-                label = ap["label"].GetString();
-            attachment_atom = ap["attachmentAtom"].GetInt();
-            auto& att_point = mon_template.AddAttachmentPoint(label, attachment_atom);
-            att_point.parseOptsFromKet(ap);
-            if (ap.HasMember("leavingGroup"))
-            {
-                auto& lv = ap["leavingGroup"];
-                if (lv.HasMember("atoms"))
-                {
-                    std::vector<int> leaving_group;
-                    auto& atoms = lv["atoms"];
-                    for (SizeType i = 0; i < atoms.Size(); i++)
-                    {
-                        leaving_group.emplace_back(atoms[i].GetInt());
-                    }
-                    att_point.setLeavingGroup(leaving_group);
-                }
-            }
-        }
-    }
-}
-
 void MoleculeJsonLoader::addToLibMonomerGroupTemplate(MonomerTemplateLibrary& library, const rapidjson::Value& monomer_group_template)
 {
     if (monomer_group_template.HasMember("id"))
@@ -1292,7 +1227,7 @@ void MoleculeJsonLoader::loadMonomerLibrary(MonomerTemplateLibrary& library)
         auto& mt = _templates[i];
         if (mt.HasMember("type") && mt["type"].GetString() == std::string("monomerTemplate"))
         {
-            addMonomerTemplate(mt, &library, nullptr);
+            KetDocumentJsonLoader::parseMonomerTemplate(mt, library);
         }
     }
 
@@ -1328,6 +1263,7 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
     auto tg_idx = mol.tgroups.addTGroup();
     TGroup& tg = mol.tgroups.getTGroup(tg_idx);
     tg.tgroup_id = tg_idx + 1;
+    tg.ambiguous = false;
     Value one_tgroup(kArrayType);
     Document data;
     rapidjson::Value monomer_template_cp;
@@ -1519,6 +1455,52 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
     return tg_idx;
 }
 
+void MoleculeJsonLoader::parseAmbiguousMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol)
+{
+    auto tg_idx = mol.tgroups.addTGroup();
+    TGroup& tg = mol.tgroups.getTGroup(tg_idx);
+    tg.tgroup_id = tg_idx + 1;
+    tg.ambiguous = true;
+    if (monomer_template.HasMember("id"))
+    {
+        std::string id = monomer_template["id"].GetString();
+        tg.tgroup_text_id.appendString(id.c_str(), true);
+    }
+    if (monomer_template.HasMember("idtAliases"))
+
+        tg.idt_alias.readString(parseIdtAlias(monomer_template).getBase().c_str(), true);
+    if (monomer_template.HasMember("subtype"))
+        tg.mixture = strcmp(monomer_template["subtype"].GetString(), "mixture") == 0;
+    else
+        tg.mixture = true;
+    if (monomer_template.HasMember("alias"))
+        tg.tgroup_alias.readString(monomer_template["alias"].GetString(), true);
+
+    if (monomer_template.HasMember("options"))
+    {
+        auto& options = monomer_template["options"];
+        int att_index = 0;
+        const char* num_name = tg.mixture ? "ratio" : "probability";
+        for (SizeType i = 0; i < options.Size(); i++)
+        {
+            auto& option = options[i];
+            auto& alias = tg.aliases.push();
+            const char* template_id = option["templateId"].GetString();
+            alias.readString(template_id, true);
+            if (i == 0)
+            {
+                auto& templ = _templates[_id_to_template.at(template_id)];
+                tg.tgroup_class.readString(templ["class"].GetString(), true);
+            }
+            auto& ratio = tg.ratios.push();
+            if (option.HasMember(num_name))
+                ratio = option[num_name].GetFloat();
+            else
+                ratio = -1;
+        }
+    }
+}
+
 std::string MoleculeJsonLoader::monomerMolClass(const std::string& class_name)
 {
     auto mclass = class_name;
@@ -1642,7 +1624,9 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         auto& mt = _templates[i];
         // int tp = mt.GetType();
         if (mt.HasMember("type") && mt["type"].GetString() == std::string("monomerTemplate"))
-            int tgroup_id = parseMonomerTemplate(mt, mol, stereochemistry_options);
+            parseMonomerTemplate(mt, mol, stereochemistry_options);
+        else if (mt.HasMember("type") && mt["type"].GetString() == std::string("ambiguousMonomerTemplate"))
+            parseAmbiguousMonomerTemplate(mt, mol);
     }
 
     std::unordered_map<int, int> monomer_id_mapping;
@@ -1771,7 +1755,8 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         if (ep1.HasMember("monomerId"))
         {
             id1 = monomer_id_mapping.at(extract_id(ep1["monomerId"].GetString(), "monomer"));
-            atp1 = convertAPFromHELM(ep1["attachmentPointId"].GetString());
+            if (order == BOND_SINGLE)
+                atp1 = convertAPFromHELM(ep1["attachmentPointId"].GetString());
         }
         else if (ep1.HasMember("moleculeId") && ep1.HasMember("atomId"))
         {
@@ -1784,7 +1769,8 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         if (ep2.HasMember("monomerId"))
         {
             id2 = monomer_id_mapping.at(extract_id(ep2["monomerId"].GetString(), "monomer"));
-            atp2 = convertAPFromHELM(ep2["attachmentPointId"].GetString());
+            if (order == BOND_SINGLE)
+                atp2 = convertAPFromHELM(ep2["attachmentPointId"].GetString());
         }
         else if (ep2.HasMember("moleculeId") && ep2.HasMember("atomId"))
         {
@@ -1807,7 +1793,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     ml.layout_orientation = UNCPECIFIED;
     ml.updateSGroups();
     loadMetaObjects(_meta_objects, mol.meta());
-    int arrows_count = mol.meta().getMetaCount(KETReactionArrow::CID);
+    int arrows_count = mol.meta().getMetaCount(KETReactionArrow::CID) + mol.meta().getMetaCount(KETReactionMultitailArrow::CID);
     if (arrows_count && !load_arrows)
         throw Error("Not a molecule. Found %d arrows.", arrows_count);
 }

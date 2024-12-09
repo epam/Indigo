@@ -22,6 +22,10 @@
 #include "layout/metalayout.h"
 #include "reaction/base_reaction.h"
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
+
 namespace indigo
 {
 
@@ -33,42 +37,86 @@ namespace indigo
     {
     public:
         explicit ReactionLayout(BaseReaction& r, bool smart_layout = false);
+        explicit ReactionLayout(BaseReaction& r, bool smart_layout, const LayoutOptions& options);
 
         static constexpr float DEFAULT_HOR_INTERVAL_FACTOR = 1.4f;
 
         void make();
 
+        void makePathwayFromSimple();
+
         // layout if reaction components are not in the places
+        static bool hasAnyIntersect(const std::vector<Rect2f>& bblist);
+        static bool validVerticalRange(const std::vector<Rect2f>& bblist);
+
         void fixLayout();
         void processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_box, int side);
 
-        float bond_length;
-        float atom_label_width;
-        float plus_interval_factor;
-        float arrow_interval_factor;
-        float horizontal_interval_factor;
-        bool preserve_molecule_layout;
-        int max_iterations;
-        bool _smart_layout;
-        layout_orientation_value layout_orientation;
+        void setMaxIterations(int count)
+        {
+            max_iterations = count;
+        };
+
+        void setLayoutOrientation(LAYOUT_ORIENTATION orientation)
+        {
+            layout_orientation = orientation;
+        };
+
+        void setPreserveMoleculeLayout(bool preserve)
+        {
+            preserve_molecule_layout = preserve;
+        };
+
+        inline float ReactionMarginSize() const
+        {
+            return reaction_margin_size + (_font_size < EPSILON ? atom_label_margin : 0);
+        };
 
     private:
+        struct SweepEvent
+        {
+            float x;
+            bool is_start;
+            float y_start, y_end;
+
+            bool operator<(const SweepEvent& other) const
+            {
+                if (x != other.x)
+                    return x < other.x;
+                return is_start > other.is_start;
+            }
+        };
+
+        void _makePathway();
         void _updateMetadata();
         void _pushMol(Metalayout::LayoutLine& line, int id, bool is_agent = false);
         void _pushSpace(Metalayout::LayoutLine& line, float size);
         BaseMolecule& _getMol(int id);
-        void _shiftMol(const Metalayout::LayoutItem& item, const Vec2f& pos);
-        void _make();
 
         static BaseMolecule& cb_getMol(int id, void* context);
         static void cb_process(Metalayout::LayoutItem& item, const Vec2f& pos, void* context);
 
         ReactionLayout(const ReactionLayout& r); // no implicit copy
 
+        const float bond_length; // in angstrom
+        const float atom_label_margin;
+        const float default_plus_size;
+        const float default_arrow_size;
+        const float reaction_margin_size;
+        bool preserve_molecule_layout = false;
+        int max_iterations = 0;
+        bool _smart_layout = false;
+        LAYOUT_ORIENTATION layout_orientation = UNCPECIFIED;
+        LayoutOptions _options;
         BaseReaction& _r;
         Metalayout _ml;
+        const float _font_size;
     };
 
 } // namespace indigo
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

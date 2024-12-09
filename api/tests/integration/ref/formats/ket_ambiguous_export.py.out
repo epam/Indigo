@@ -1,0 +1,10 @@
+Test mol v2000
+molecule: Ambiguous monomer cannot be transform to SGroup.
+Test mol v3000
+molfile saver: Ambiguous monomer cannot be saved to molfile.
+Test cdxml
+molecule: Ambiguous monomer cannot be transform to SGroup.
+Test cml
+molecule: Ambiguous monomer cannot be transform to SGroup.
+Test smiles
+*

@@ -229,6 +229,10 @@ CEXPORT int indigoSaveSequence(int molecule, int output, int library);
 CEXPORT int indigoSaveSequenceToFile(int molecule, const char* filename, int library);
 CEXPORT const char* indigoSequence(int molecule, int library);
 
+CEXPORT int indigoSaveSequence3Letter(int molecule, int output, int library);
+CEXPORT int indigoSaveSequence3LetterToFile(int molecule, const char* filename, int library);
+CEXPORT const char* indigoSequence3Letter(int molecule, int library);
+
 CEXPORT int indigoSaveFasta(int molecule, int output, int library);
 CEXPORT int indigoSaveFastaToFile(int molecule, const char* filename, int library);
 CEXPORT const char* indigoFasta(int molecule, int library);
@@ -323,6 +327,7 @@ CEXPORT int indigoIterateProducts(int reaction);
 CEXPORT int indigoIterateCatalysts(int reaction);
 // Returns an iterator for reactants, products, and catalysts.
 CEXPORT int indigoIterateMolecules(int reaction);
+CEXPORT int indigoIterateReactions(int reaction);
 
 CEXPORT int indigoSaveRxnfile(int reaction, int output);
 CEXPORT int indigoSaveRxnfileToFile(int reaction, const char* filename);

@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <limits>
 
 #include "base_c/defs.h"
@@ -62,7 +63,7 @@ namespace indigo
 
         static constexpr auto min_coord()
         {
-            return std::numeric_limits<decltype(x)>::min();
+            return std::numeric_limits<decltype(x)>::lowest();
         }
 
         static constexpr auto max_coord()
@@ -158,6 +159,11 @@ namespace indigo
             return std::make_pair(x, y) < std::make_pair(a.x, a.y);
         }
 
+        inline float operator*(const Vec2f& a) const
+        {
+            return x * a.x + y * a.y;
+        }
+
         inline Vec2f operator+(const Vec2f& a) const
         {
             return Vec2f(x + a.x, y + a.y);
@@ -206,6 +212,24 @@ namespace indigo
             return *this;
         }
 
+        inline float vcos(const Vec2f& a) const
+        {
+            float scalar = *this * a;
+            float ta = length() * a.length();
+            if (ta < EPSILON)
+                ta = EPSILON;
+            return scalar / ta;
+        }
+
+        inline float vsin(const Vec2f& a) const
+        {
+            float scalar = *this * a;
+            float ta = lengthSqr() * a.lengthSqr();
+            if (ta < EPSILON)
+                ta = EPSILON;
+            return sqrt(1 - scalar * scalar / ta);
+        }
+
         DLLEXPORT bool normalize();
 
         DLLEXPORT bool normalization(const Vec2f& v);
@@ -218,7 +242,7 @@ namespace indigo
 
         DLLEXPORT float calc_angle_pos(Vec2f a, Vec2f b);
 
-        inline void scale(float s)
+        inline void scale(const float s)
         {
             x *= s;
             y *= s;
@@ -291,6 +315,36 @@ namespace indigo
         }
     };
 
+    inline bool rayIntersectsSegment(const Vec2f& beg, const Vec2f& end, const Vec2f& a, const Vec2f& b)
+    {
+        Vec2f ray = end - beg;
+
+        // Vector of the segment
+        Vec2f segment = a - b;
+
+        // Calculate the cross products
+        float cross1 = Vec2f::cross(ray, segment);
+        if (fabs(cross1) < 1e-6)
+        {
+            // Parallel segments
+            return false;
+        }
+
+        // Compute the cross product of vectors (beg - a) and (beg - b)
+        Vec2f vecBA = beg - a;
+        Vec2f vecBB = beg - b;
+
+        float t = Vec2f::cross(vecBA, segment) / cross1;
+        if (t < 0)
+        {
+            // Intersection is behind the starting point
+            return false;
+        }
+
+        float u = Vec2f::cross(vecBA, ray) / cross1;
+        return (u >= 0 && u <= 1);
+    }
+
     struct Rect2f
     {
 
@@ -327,21 +381,15 @@ namespace indigo
 
         inline bool rayIntersectsRect(const Vec2f& begin, const Vec2f& end)
         {
-            Vec2f v = end - begin;
-            Vec2f vr(v.y, -v.x); // perpendicular vector
-            auto lb = _leftBottom - begin;
-            auto lt = leftTop() - begin;
-            auto rt = _rightTop - begin;
-            auto rb = rightBottom() - begin;
-            // same_sign means no intersection
-            bool same_sign = std::signbit(Vec2f::dot(vr, lb)) == std::signbit(Vec2f::dot(vr, lt)) &&
-                             std::signbit(Vec2f::dot(vr, lt)) == std::signbit(Vec2f::dot(vr, rt)) &&
-                             std::signbit(Vec2f::dot(vr, rt)) == std::signbit(Vec2f::dot(vr, rb));
-
-            return !same_sign && Vec2f::cross(lb, vr) > 0 && Vec2f::cross(lt, vr) > 0 && Vec2f::cross(rt, vr) > 0 && Vec2f::cross(rb, vr) > 0;
+            auto lb = _leftBottom;
+            auto lt = leftTop();
+            auto rt = _rightTop;
+            auto rb = rightBottom();
+            return rayIntersectsSegment(begin, end, lb, lt) || rayIntersectsSegment(begin, end, lt, rt) || rayIntersectsSegment(begin, end, rt, rb) ||
+                   rayIntersectsSegment(begin, end, rb, lb);
         }
 
-        inline double pointDistance(const Vec2f& pt)
+        inline float pointDistance(const Vec2f& pt)
         {
             if (pt.x <= left())
             {

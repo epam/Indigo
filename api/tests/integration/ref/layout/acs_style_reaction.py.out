@@ -1,0 +1,29 @@
+*** ACS reaction layout testing ***
+
+*** test zero margin ***
+  Result: Molecule #0: Success
+   Molecule #1: Success
+   Molecule #2: Success
+   Molecule #3: Success
+   Molecule #4: Success
+
+*** test default margin ***
+  Result: Molecule #0: Success
+   Molecule #1: Success
+   Molecule #2: Success
+   Molecule #3: Success
+   Molecule #4: Success
+
+*** 2389 wrong margin ***
+acs_issue_2389.ket:SUCCEED
+
+*** 2458 catalist margins margin ***
+  Result: Molecule #0: Success
+   Molecule #1: Success
+   Molecule #2: Success
+   Molecule #3: Success
+   Molecule #4: Success
+   Molecule #5: Success
+   Molecule #6: Success
+   Molecule #7: Success
+   Molecule #8: Success

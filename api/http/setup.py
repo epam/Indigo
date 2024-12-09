@@ -5,7 +5,7 @@ packages = ["indigo_service"]
 package_data = {"": ["*"]}
 
 install_requires = [
-    "pydantic==1.10.8",
+    "pydantic==1.10.13",
     "aiofiles>=0.7.0",
     "epam.indigo>=1.4.3",
     "fastapi>=0.63.0",
@@ -20,7 +20,7 @@ entry_points = {
 
 setup_kwargs = {
     "name": "indigo-service",
-    "version": "1.25.0.dev1",
+    "version": "1.27.0.dev1",
     "description": "",
     "long_description": None,
     "author": "Ruslan Khyurri",

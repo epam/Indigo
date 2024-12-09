@@ -12,7 +12,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import Indigo, joinPathPy  # noqa
 
 indigo = Indigo()
 indigo.setOption("ignore-stereochemistry-errors", True)
@@ -27,6 +27,8 @@ files = [
     "1843-rna",
     "1950-mixed-seq",
     "nucleotides",
+    "2341-no-analog",
+    "2436-ambiguous",
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -35,9 +37,9 @@ lib = indigo.loadMonomerLibraryFromFile(
 
 files.sort()
 for filename in files:
-    mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
+    mol = indigo.loadKetDocumentFromFile(os.path.join(root, filename + ".ket"))
     # with open(os.path.join(ref_path, filename) + ".fasta", "w") as file:
-    #     file.write(mol.fasta())
+    #     file.write(mol.fasta(lib))
     with open(os.path.join(ref_path, filename) + ".fasta", "r") as file:
         seq_ref = file.read()
     seq = mol.fasta(lib)

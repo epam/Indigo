@@ -10,6 +10,7 @@ anacyclamide.ket:SUCCEED
 apamine.ket:SUCCEED
 atropisomer.ket:SUCCEED
 chem.ket:SUCCEED
+chem_rna_hydro.ket:SUCCEED
 conjugate.ket:SUCCEED
 cysteine.ket:SUCCEED
 dcysteine.ket:SUCCEED

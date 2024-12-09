@@ -29,116 +29,13 @@
 #include "reaction/reaction.h"
 #include "render_context.h"
 
+#ifdef _WIN32
+#pragma warning(push, 4)
+#endif
+
 using namespace indigo;
 
 #define BOND_STEREO_BOLD 10001
-
-static bool ElementHygrodenOnLeft[] = {
-    false, // filler
-    false, // ELEM_H
-    false, // ELEM_He
-    false, // ELEM_Li
-    false, // ELEM_Be
-    false, // ELEM_B
-    false, // ELEM_C
-    false, // ELEM_N
-    true,  // ELEM_O
-    true,  // ELEM_F
-    false, // ELEM_Ne
-    false, // ELEM_Na
-    false, // ELEM_Mg
-    false, // ELEM_Al
-    false, // ELEM_Si
-    false, // ELEM_P
-    true,  // ELEM_S
-    true,  // ELEM_Cl
-    false, // ELEM_Ar
-    false, // ELEM_K
-    false, // ELEM_Ca
-    false, // ELEM_Sc
-    false, // ELEM_Ti
-    false, // ELEM_V
-    false, // ELEM_Cr
-    false, // ELEM_Mn
-    false, // ELEM_Fe
-    false, // ELEM_Co
-    false, // ELEM_Ni
-    false, // ELEM_Cu
-    false, // ELEM_Zn
-    false, // ELEM_Ga
-    false, // ELEM_Ge
-    false, // ELEM_As
-    true,  // ELEM_Se
-    true,  // ELEM_Br
-    false, // ELEM_Kr
-    false, // ELEM_Rb
-    false, // ELEM_Sr
-    false, // ELEM_Y
-    false, // ELEM_Zr
-    false, // ELEM_Nb
-    false, // ELEM_Mo
-    false, // ELEM_Tc
-    false, // ELEM_Ru
-    false, // ELEM_Rh
-    false, // ELEM_Pd
-    false, // ELEM_Ag
-    false, // ELEM_Cd
-    false, // ELEM_In
-    false, // ELEM_Sn
-    false, // ELEM_Sb
-    false, // ELEM_Te
-    true,  // ELEM_I
-    false, // ELEM_Xe
-    false, // ELEM_Cs
-    false, // ELEM_Ba
-    false, // ELEM_La
-    false, // ELEM_Ce
-    false, // ELEM_Pr
-    false, // ELEM_Nd
-    false, // ELEM_Pm
-    false, // ELEM_Sm
-    false, // ELEM_Eu
-    false, // ELEM_Gd
-    false, // ELEM_Tb
-    false, // ELEM_Dy
-    false, // ELEM_Ho
-    false, // ELEM_Er
-    false, // ELEM_Tm
-    false, // ELEM_Yb
-    false, // ELEM_Lu
-    false, // ELEM_Hf
-    false, // ELEM_Ta
-    false, // ELEM_W
-    false, // ELEM_Re
-    false, // ELEM_Os
-    false, // ELEM_Ir
-    false, // ELEM_Pt
-    false, // ELEM_Au
-    false, // ELEM_Hg
-    false, // ELEM_Tl
-    false, // ELEM_Pb
-    false, // ELEM_Bi
-    false, // ELEM_Po
-    false, // ELEM_At
-    false, // ELEM_Rn
-    false, // ELEM_Fr
-    false, // ELEM_Ra
-    false, // ELEM_Ac
-    false, // ELEM_Th
-    false, // ELEM_Pa
-    false, // ELEM_U
-    false, // ELEM_Np
-    false, // ELEM_Pu
-    false, // ELEM_Am
-    false, // ELEM_Cm
-    false, // ELEM_Bk
-    false, // ELEM_Cf
-    false, // ELEM_Es
-    false, // ELEM_Fm
-    false, // ELEM_Md
-    false, // ELEM_No
-    false  // ELEM_Lr
-};
 
 static bool _isBondWide(const BondDescr& bd)
 {
@@ -148,10 +45,10 @@ static bool _isBondWide(const BondDescr& bd)
 
 RenderOptions::RenderOptions()
 {
-    clear();
+    clearRenderOptions();
 }
 
-void RenderOptions::clear()
+void RenderOptions::clearRenderOptions()
 {
     baseColor.set(0, 0, 0);
     backgroundColor.set(-1, -1, -1);
@@ -187,6 +84,33 @@ void RenderOptions::clear()
     showCycles = false;
     agentsBelowArrow = true;
     atomColorProp.clear();
+    ppi = LayoutOptions::DEFAULT_PPI;
+    fontSize = -1;
+    fontSizeUnit = UnitsOfMeasure::PT;
+    fontSizeSub = -1;
+    fontSizeSubUnit = UnitsOfMeasure::PT;
+    bondThickness = -1;
+    bondThicknessUnit = UnitsOfMeasure::PT;
+    bondSpacing = -1;
+    stereoBondWidth = -1;
+    stereoBondWidthUnit = UnitsOfMeasure::PT;
+    hashSpacing = -1;
+    hashSpacingUnit = UnitsOfMeasure::PT;
+}
+
+AcsOptions::AcsOptions()
+{
+    clear();
+}
+
+void AcsOptions::clear()
+{
+    bondSpacing = -1;
+    fontSizeAngstrom = -1;
+    fontSizeSubAngstrom = -1;
+    bondThicknessAngstrom = -1;
+    stereoBondWidthAngstrom = -1;
+    hashSpacingAngstrom = -1;
 }
 
 IMPL_ERROR(MoleculeRenderInternal, "molecule render internal");
@@ -1453,7 +1377,11 @@ void MoleculeRenderInternal::_determineStereoGroupsMode()
             bprintf(tiChiral.text, "Chiral");
             tiChiral.fontsize = FONT_SIZE_LABEL;
             _cw.setTextItemSize(tiChiral);
-            tiChiral.bbp.set((_max.x - _min.x) * _scale - tiChiral.bbsz.x, -tiChiral.bbsz.y * 2);
+            Rect2f bbox;
+            Vec2f pos;
+            _mol->getBoundingBox(bbox);
+            _objCoordTransform(pos, Vec2f(bbox.left(), bbox.top()));
+            tiChiral.bbp.set(pos.x + (_max.x - _min.x) * _scale - tiChiral.bbsz.x, pos.y - tiChiral.bbsz.y * 2);
             _cw.setSingleSource(CWC_BASE);
             _cw.drawTextItemText(tiChiral, _idle);
             return;
@@ -1583,7 +1511,7 @@ void MoleculeRenderInternal::_initHydroPos(int aid)
 {
     AtomDesc& ad = _ad(aid);
     const Vertex& v = _mol->getVertex(aid);
-    if (v.degree() == 0 && ElementHygrodenOnLeft[ad.label])
+    if (v.degree() == 0 && ElementHygrodenOnLeft(ad.label))
     {
         ad.implHPosWeights[HYDRO_POS_RIGHT] = 0.2f; // weights are relative, absoute values don't matter
         ad.implHPosWeights[HYDRO_POS_LEFT] = 0.3f;
@@ -3859,7 +3787,7 @@ void MoleculeRenderInternal::_adjustAngle(Vec2f& l, const BondEnd& be1, const Bo
     const Vec2f& p1 = _ad(be1.aid).pos;
     const Vec2f& p2 = _ad(be2.aid).pos;
     const double len = Vec2f::dist(p1, p2);
-    double w = _settings.bondSpace;
+    double w = _settings.stereoBondSpace;
     double tgb = w / len;
     double csb = sqrt(1 / (1 + tgb * tgb));
     double snb = tgb * csb;
@@ -3878,7 +3806,7 @@ void MoleculeRenderInternal::_adjustAngle(Vec2f& l, const BondEnd& be1, const Bo
 void MoleculeRenderInternal::_bondBoldStereo(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
 {
     Vec2f r0(be1.p), l0(be1.p), r1(be2.p), l1(be2.p);
-    float w = _settings.bondSpace;
+    float w = _settings.stereoBondSpace;
     l0.addScaled(bd.norm, -w);
     r0.addScaled(bd.norm, w);
     l1.addScaled(bd.norm, -w);
@@ -3944,23 +3872,27 @@ void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, cons
         _bondBoldStereo(bd, be1, be2);
         return;
     }
-    Vec2f l(be2.p), r(be2.p);
-    float w = _settings.bondSpace;
-    l.addScaled(bd.norm, -w);
-    r.addScaled(bd.norm, w);
-    bd.extP = bd.extN = w;
 
     float lw = _cw.currentLineWidth();
-    Vec2f r0(be1.p), l0(be1.p);
-    l0.addScaled(bd.norm, -lw / 2);
-    r0.addScaled(bd.norm, lw / 2);
-
     if (bd.stereodir == 0)
     {
         _cw.drawLine(be1.p, be2.p);
         bd.extP = bd.extN = lw / 2;
+        return;
     }
-    else if (bd.stereodir == BOND_UP)
+
+    // stereo bonds
+    Vec2f l(be2.p), r(be2.p);
+    float w = _settings.stereoBondSpace;
+    l.addScaled(bd.norm, -w);
+    r.addScaled(bd.norm, w);
+    bd.extP = bd.extN = w;
+
+    Vec2f r0(be1.p), l0(be1.p);
+    l0.addScaled(bd.norm, -lw / 2);
+    r0.addScaled(bd.norm, lw / 2);
+
+    if (bd.stereodir == BOND_UP)
     {
         if (_ad(be2.aid).showLabel == false && !bd.isShort)
         {
@@ -3975,8 +3907,17 @@ void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, cons
     }
     else if (bd.stereodir == BOND_DOWN)
     {
-        int stripeCnt = std::max((int)((len) / lw / 2), 4);
-        _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
+        int constexpr min_count = 4;
+        auto count = len / (_settings.hashSpacing > 0 ? _settings.hashSpacing : (lw * 2));
+        if (_settings.hashSpacing > 0 && count > min_count)
+        {
+            _cw.fillQuadStripesSpacing(r0, l0, r, l, _settings.hashSpacing);
+        }
+        else
+        {
+            int stripeCnt = std::max((int)count, min_count);
+            _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
+        }
     }
     else if (bd.stereodir == BOND_EITHER)
     {
@@ -4334,3 +4275,7 @@ void MoleculeRenderInternal::_precalcScale()
     }
     _scale = std::max(_scale, float(max_output_length) / ((float)10.0 * scale_modificator));
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif

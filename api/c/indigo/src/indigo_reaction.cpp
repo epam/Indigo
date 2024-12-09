@@ -23,6 +23,7 @@
 #include "indigo_mapping.h"
 #include "indigo_molecule.h"
 #include "reaction/canonical_rsmiles_saver.h"
+#include "reaction/pathway_reaction.h"
 #include "reaction/reaction_auto_loader.h"
 #include "reaction/reaction_automapper.h"
 #include "reaction/rsmiles_loader.h"
@@ -60,7 +61,66 @@ const char* IndigoBaseReaction::debugInfo() const
 }
 
 //
-// IndigoBaseReaction
+// IndigoPathwayReaction
+//
+
+IndigoPathwayReaction::IndigoPathwayReaction() : IndigoBaseReaction(PATHWAY_REACTION)
+{
+    init();
+}
+
+const char* IndigoPathwayReaction::debugInfo() const
+{
+    if (type == IndigoObject::PATHWAY_REACTION)
+        return "<pathway reaction>";
+    return "";
+}
+
+IndigoPathwayReaction::~IndigoPathwayReaction()
+{
+}
+
+void IndigoPathwayReaction::init(std::unique_ptr<BaseReaction>&& reaction)
+{
+    rxn = reaction ? std::move(reaction) : std::make_unique<PathwayReaction>();
+}
+
+BaseReaction& IndigoPathwayReaction::getBaseReaction()
+{
+    assert(rxn);
+    return *rxn;
+}
+
+PathwayReaction& IndigoPathwayReaction::getPathwayReaction()
+{
+    assert(rxn);
+    return dynamic_cast<PathwayReaction&>(*rxn);
+}
+
+const char* IndigoPathwayReaction::getName()
+{
+    if (!rxn || rxn->name.ptr() == 0)
+        return "";
+    return rxn->name.ptr();
+}
+
+IndigoObject* IndigoPathwayReaction::clone()
+{
+    return cloneFrom(*this);
+}
+
+IndigoPathwayReaction* IndigoPathwayReaction::cloneFrom(IndigoObject& obj)
+{
+    Reaction& rxn = obj.getReaction();
+    std::unique_ptr<IndigoPathwayReaction> rxnptr = std::make_unique<IndigoPathwayReaction>();
+    rxnptr->rxn->clone(rxn, 0, 0, 0);
+    auto& props = obj.getProperties();
+    rxnptr->copyProperties(props);
+    return rxnptr.release();
+}
+
+//
+// IndigoReaction
 //
 
 IndigoReaction::IndigoReaction() : IndigoBaseReaction(REACTION)
@@ -72,8 +132,6 @@ const char* IndigoReaction::debugInfo() const
 {
     if (type == IndigoObject::REACTION)
         return "<reaction>";
-    if (type == IndigoObject::PATHWAY_REACTION)
-        return "<pathway reaction>";
     return "";
 }
 
@@ -83,7 +141,6 @@ IndigoReaction::~IndigoReaction()
 
 void IndigoReaction::init(std::unique_ptr<BaseReaction>&& reaction)
 {
-    type = !reaction || dynamic_cast<Reaction*>(reaction.get()) ? IndigoObject::REACTION : IndigoObject::PATHWAY_REACTION;
     rxn = reaction ? std::move(reaction) : std::make_unique<Reaction>();
 }
 
@@ -226,37 +283,49 @@ IndigoReactionIter::~IndigoReactionIter()
 
 int IndigoReactionIter::_begin()
 {
-    if (_subtype == REACTANTS)
+    switch (_subtype)
+    {
+    case REACTANTS:
         return _rxn.reactantBegin();
-    if (_subtype == PRODUCTS)
+    case PRODUCTS:
         return _rxn.productBegin();
-    if (_subtype == CATALYSTS)
+    case CATALYSTS:
         return _rxn.catalystBegin();
-
+    case REACTIONS:
+        return _rxn.reactionBegin();
+    }
     return _rxn.begin();
 }
 
 int IndigoReactionIter::_end()
 {
-    if (_subtype == REACTANTS)
+    switch (_subtype)
+    {
+    case REACTANTS:
         return _rxn.reactantEnd();
-    if (_subtype == PRODUCTS)
+    case PRODUCTS:
         return _rxn.productEnd();
-    if (_subtype == CATALYSTS)
+    case CATALYSTS:
         return _rxn.catalystEnd();
-
+    case REACTIONS:
+        return _rxn.reactionEnd();
+    }
     return _rxn.end();
 }
 
 int IndigoReactionIter::_next(int i)
 {
-    if (_subtype == REACTANTS)
+    switch (_subtype)
+    {
+    case REACTANTS:
         return _rxn.reactantNext(i);
-    if (_subtype == PRODUCTS)
+    case PRODUCTS:
         return _rxn.productNext(i);
-    if (_subtype == CATALYSTS)
+    case CATALYSTS:
         return _rxn.catalystNext(i);
-
+    case REACTIONS:
+        return _rxn.reactionNext(i);
+    }
     return _rxn.next(i);
 }
 
@@ -272,7 +341,13 @@ IndigoObject* IndigoReactionIter::next()
     if (_idx == _end())
         return 0;
 
-    if (_map)
+    if (_subtype == REACTION)
+    {
+        auto reaction = new IndigoReaction();
+        reaction->init(_rxn.getBaseReaction(_idx));
+        return reaction;
+    }
+    else if (_map)
     {
         return new IndigoReactionMolecule(_rxn, *_map, _idx);
     }
@@ -380,9 +455,22 @@ CEXPORT int indigoLoadReaction(int source)
         loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
+        loader.layout_options = self.layout_options;
+        auto rxn = loader.loadReaction(false);
+        std::unique_ptr<IndigoBaseReaction> rxnptr;
+        if (rxn->isPathwayReaction())
+        {
+            auto pwr = std::make_unique<IndigoPathwayReaction>();
+            pwr->init(std::move(rxn));
+            rxnptr = std::move(pwr);
+        }
+        else
+        {
+            auto reaction = std::make_unique<IndigoReaction>();
+            reaction->init(std::move(rxn));
+            rxnptr = std::move(reaction);
+        }
 
-        std::unique_ptr<IndigoReaction> rxnptr = std::make_unique<IndigoReaction>();
-        rxnptr->init(loader.loadReaction(false));
         return self.addObject(rxnptr.release());
     }
     INDIGO_END(-1);
@@ -427,6 +515,11 @@ CEXPORT int indigoIterateCatalysts(int reaction)
 CEXPORT int indigoIterateMolecules(int reaction)
 {
     return _indigoIterateReaction(reaction, IndigoReactionIter::MOLECULES);
+}
+
+CEXPORT int indigoIterateReactions(int reaction)
+{
+    return _indigoIterateReaction(reaction, IndigoReactionIter::REACTIONS);
 }
 
 CEXPORT int indigoCreateReaction(void)

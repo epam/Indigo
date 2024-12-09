@@ -69,7 +69,7 @@ void RenderParams::clear()
     relativeThickness = 1.0f;
     bondLineWidthFactor = 1.0f;
     rmode = RENDER_NONE;
-    rOpt.clear();
+    rOpt.clearRenderOptions();
     cnvOpt.clear();
     clearArrays();
 }
@@ -189,9 +189,9 @@ void RenderParamInterface::render(RenderParams& params)
 
     RenderContext rc(params.rOpt, params.relativeThickness, params.bondLineWidthFactor);
 
-    bool bondLengthSet = params.cnvOpt.bondLength > 0;
-    int bondLength = (int)(bondLengthSet ? params.cnvOpt.bondLength : 100);
-    rc.setDefaultScale((float)bondLength); // TODO: fix bondLength type
+    int bondLength_px = (int)(params.rOpt.bond_length_px > EPSILON ? params.rOpt.bond_length_px : LayoutOptions::DEFAULT_BOND_LENGTH_PX);
+
+    rc.setDefaultScale((float)bondLength_px); // TODO: fix bondLength type
 
     RenderItemFactory factory(rc);
     int obj = -1;
@@ -274,14 +274,14 @@ void RenderParamInterface::render(RenderParams& params)
 
     if (obj >= 0)
     {
-        RenderSingle render(rc, factory, params.cnvOpt, bondLength, bondLengthSet);
+        RenderSingle render(rc, factory, params.cnvOpt, bondLength_px);
         render.obj = obj;
         render.comment = comment;
         render.draw();
     }
     else
     {
-        RenderGrid render(rc, factory, params.cnvOpt, bondLength, bondLengthSet);
+        RenderGrid render(rc, factory, params.cnvOpt, bondLength_px);
         render.objs.copy(objs);
         render.comment = comment;
         render.titles.copy(titles);

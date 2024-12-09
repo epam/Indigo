@@ -22,13 +22,17 @@
 #include "render_internal.h"
 #include "render_item_factory.h"
 
+#ifdef _WIN32
+#pragma warning(push, 4)
+#endif
+
 namespace indigo
 {
 
     class Render
     {
     public:
-        Render(RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength, bool bondLengthSet);
+        Render(RenderContext& rc, RenderItemFactory& factory, const CanvasOptions& cnvOpt, int bondLength);
         virtual ~Render() = 0;
 
         DECL_ERROR;
@@ -50,9 +54,12 @@ namespace indigo
         const RenderOptions& _opt;
         RenderItemFactory& _factory;
         int _bondLength;
-        bool _bondLengthSet;
     };
 
 } // namespace indigo
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif //__render_h__

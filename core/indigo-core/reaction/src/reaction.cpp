@@ -16,9 +16,11 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "reaction/reaction.h"
+#include <memory>
+
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_dearom.h"
+#include "reaction/reaction.h"
 #include "reaction/reaction_automapper.h"
 
 using namespace indigo;
@@ -56,9 +58,7 @@ void Reaction::saveBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_typ
     while (bond_types.size() < reaction.end())
         bond_types.push();
 
-    int i;
-
-    for (i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
+    for (int i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
     {
         Molecule::saveBondOrders(reaction.getMolecule(i), bond_types[i]);
     }
@@ -66,10 +66,7 @@ void Reaction::saveBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_typ
 
 void Reaction::loadBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_types)
 {
-
-    int i;
-
-    for (i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
+    for (int i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
     {
         Molecule::loadBondOrders(reaction.getMolecule(i), bond_types[i]);
     }
@@ -90,6 +87,24 @@ Reaction& Reaction::asReaction()
     return *this;
 }
 
+std::unique_ptr<BaseReaction> Reaction::getBaseReaction(int index)
+{
+    std::unique_ptr<BaseReaction> reaction(neu());
+    if (_reactionBlocks.size())
+    {
+        auto& rb = _reactionBlocks[index];
+        for (auto ridx : rb.reactants)
+            reaction->addReactantCopy(getBaseMolecule(ridx), 0, 0);
+
+        for (auto pidx : rb.products)
+            reaction->addProductCopy(getBaseMolecule(pidx), 0, 0);
+
+        return reaction;
+    }
+    reaction->clone(*this);
+    return reaction;
+}
+
 BaseReaction* Reaction::neu()
 {
     return new Reaction();
@@ -97,8 +112,6 @@ BaseReaction* Reaction::neu()
 
 void Reaction::checkForConsistency(Reaction& rxn)
 {
-    int i;
-
-    for (i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
+    for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
         Molecule::checkForConsistency(rxn.getMolecule(i));
 }

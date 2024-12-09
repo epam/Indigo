@@ -54,6 +54,9 @@ namespace indigo
         DNA
     };
 
+    const std::string HelmHydrogenPair{"pair"};
+    const std::string KetConnectionSingle{"single"};
+    const std::string KetConnectionHydro{"hydrogen"};
 }
 
 #ifdef _MSC_VER

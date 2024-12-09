@@ -82,6 +82,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoSequence(self, library.self));
     }
 
+    public String sequence3Letter(IndigoObject library) {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoSequence3Letter(self, library.self));
+    }
+
     public String fasta(IndigoObject library) {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoFasta(self, library.self));
@@ -110,6 +115,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public void saveSequenceToFile(String filename, IndigoObject library) {
         dispatcher.setSessionID();
         Indigo.checkResult(this, lib.indigoSaveSequenceToFile(self, filename, library.self));
+    }
+
+    public void saveSequence3LetterToFile(String filename, IndigoObject library) {
+        dispatcher.setSessionID();
+        Indigo.checkResult(this, lib.indigoSaveSequence3LetterToFile(self, filename, library.self));
     }
 
     public void saveFastaToFile(String filename) {
@@ -219,6 +229,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         dispatcher.setSessionID();
         return new IndigoObject(
                 dispatcher, Indigo.checkResult(this, lib.indigoIterateMolecules(self)), this);
+    }
+
+    public IndigoObject iterateReactions() {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher, Indigo.checkResult(this, lib.indigoIterateReactions(self)), this);
     }
 
     public String rxnfile() {

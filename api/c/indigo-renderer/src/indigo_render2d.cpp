@@ -20,6 +20,7 @@
 #include "base_cpp/scanner.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
+#include "reaction/pathway_reaction.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
 #include "render_cdxml.h"
@@ -73,14 +74,6 @@ IndigoRenderer::IndigoRenderer()
 IndigoRenderer::~IndigoRenderer()
 {
 }
-
-#define SET_POSITIVE_FLOAT_OPTION(option, error)                                                                                                               \
-    [](float value) {                                                                                                                                          \
-        if (value <= 0.0f)                                                                                                                                     \
-            throw IndigoError(error);                                                                                                                          \
-        option = value;                                                                                                                                        \
-    },                                                                                                                                                         \
-        [](float& value) { value = option; }
 
 #define CHECK_AND_SETTER_GETTER_COLOR_OPTION(option)                                                                                                           \
     [](float r, float g, float b) {                                                                                                                            \
@@ -189,54 +182,6 @@ void indigoRenderGetStereoStyle(Array<char>& value)
         break;
     case STEREO_STYLE_NONE:
         value.readString("none", true);
-        break;
-    }
-}
-
-void indigoRenderSetLabelMode(const char* mode)
-{
-    std::string mode_string(mode);
-    LABEL_MODE result;
-    if (mode_string == "none")
-    {
-        result = LABEL_MODE_NONE;
-    }
-    else if (mode_string == "hetero")
-    {
-        result = LABEL_MODE_HETERO;
-    }
-    else if (mode_string == "terminal-hetero")
-    {
-        result = LABEL_MODE_TERMINAL_HETERO;
-    }
-    else if (mode_string == "all")
-    {
-        result = LABEL_MODE_ALL;
-    }
-    else
-    {
-        throw IndigoError("Invalid label mode, should be 'none', 'hetero', 'terminal-hetero' or 'all'");
-    }
-    RenderParams& rp = indigoRendererGetInstance().renderParams;
-    rp.rOpt.labelMode = result;
-}
-
-void indigoRenderGetLabelMode(Array<char>& value)
-{
-    RenderParams& rp = indigoRendererGetInstance().renderParams;
-    switch (rp.rOpt.labelMode)
-    {
-    case LABEL_MODE_NONE:
-        value.readString("none", true);
-        break;
-    case LABEL_MODE_HETERO:
-        value.readString("hetero", true);
-        break;
-    case LABEL_MODE_TERMINAL_HETERO:
-        value.readString("terminal-hetero", true);
-        break;
-    case LABEL_MODE_ALL:
-        value.readString("all", true);
         break;
     }
 }
@@ -383,6 +328,18 @@ void indigoRenderGetCommentPosition(Array<char>& value)
         value.readString("bottom", true);
 }
 
+static void indigoSetBondLength(float value)
+{
+    Indigo& self = indigoGetInstance();
+    self.layout_options.setBondLengthPx(value);
+}
+
+static void indigoGetBondLength(float& value)
+{
+    Indigo& self = indigoGetInstance();
+    value = self.layout_options.getBondLengthPx();
+}
+
 RenderCdxmlContext& getCdxmlContext()
 {
     RenderParams& rp = indigoRendererGetInstance().renderParams;
@@ -444,6 +401,29 @@ CEXPORT int indigoRendererDispose(const qword id)
     INDIGO_END(-1);
 }
 
+static void setParams(RenderParams& rp, LayoutOptions& layout_options)
+{
+    rp.cnvOpt.bondLength = layout_options.bondLength;
+    rp.cnvOpt.bondLengthUnit = layout_options.bondLengthUnit;
+    rp.rOpt.ppi = layout_options.ppi;
+    rp.rOpt.fontSize = layout_options.fontSize;
+    rp.rOpt.fontSizeUnit = layout_options.fontSizeUnit;
+    rp.rOpt.fontSizeSub = layout_options.fontSizeSub;
+    rp.rOpt.fontSizeSubUnit = layout_options.fontSizeSubUnit;
+    rp.rOpt.labelMode = layout_options.labelMode;
+    rp.rOpt.bond_length_px = layout_options.bondLength > EPSILON ? layout_options.getBondLengthPx() : LayoutOptions::DEFAULT_BOND_LENGTH_PX;
+    if (rp.cnvOpt.outputSheetWidth > 0)
+    {
+        rp.cnvOpt.maxHeight = -1;
+        rp.cnvOpt.maxWidth = UnitsOfMeasure::convertInchesToPx(rp.cnvOpt.outputSheetWidth, layout_options.ppi);
+    }
+    else if (rp.cnvOpt.outputSheetHeight > 0)
+    {
+        rp.cnvOpt.maxHeight = UnitsOfMeasure::convertInchesToPx(rp.cnvOpt.outputSheetHeight, layout_options.ppi);
+        rp.cnvOpt.maxWidth = -1;
+    }
+}
+
 CEXPORT int indigoRender(int object, int output)
 {
     INDIGO_BEGIN
@@ -453,6 +433,8 @@ CEXPORT int indigoRender(int object, int output)
         // rendere a grid -> needs to clear it
         rp.clearArrays();
         rp.smart_layout = self.smart_layout;
+
+        setParams(rp, indigoGetInstance().layout_options);
 
         IndigoObject& obj = self.getObject(object);
 
@@ -469,6 +451,8 @@ CEXPORT int indigoRender(int object, int output)
         {
             if (obj.getBaseReaction().isQueryReaction())
                 rp.rxn.reset(new QueryReaction());
+            else if (obj.getBaseReaction().isPathwayReaction())
+                rp.rxn.reset(new PathwayReaction());
             else
                 rp.rxn.reset(new Reaction());
             rp.rxn->clone(self.getObject(object).getBaseReaction(), 0, 0, 0);
@@ -506,6 +490,8 @@ CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int outpu
     {
         RenderParams& rp = indigoRendererGetInstance().renderParams;
         rp.clearArrays();
+
+        setParams(rp, indigoGetInstance().layout_options);
 
         PtrArray<IndigoObject>& objs = IndigoArray::cast(self.getObject(objects)).objects;
         if (rp.rOpt.cdxml_context.get() != NULL)
@@ -689,9 +675,11 @@ void IndigoRenderer::setOptionsHandlers()
     if (!options_set)
     {
         auto mgr = sf::xlock_safe_ptr(indigoGetOptionManager(indigo_id));
+        options_set = true;
 
 #define rp indigoRendererGetInstance().renderParams
 #define cdxmlContext getCdxmlContext()
+#define indigo indigoGetInstance()
 
         mgr->setOptionHandlerInt("render-comment-offset", SETTER_GETTER_INT_OPTION(rp.cnvOpt.commentOffset));
         mgr->setOptionHandlerInt("render-image-width", SETTER_GETTER_INT_OPTION(rp.cnvOpt.width));
@@ -701,7 +689,6 @@ void IndigoRenderer::setOptionsHandlers()
 
         mgr->setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat, indigoRenderGetOutputFormat);
 
-        mgr->setOptionHandlerString("render-label-mode", indigoRenderSetLabelMode, indigoRenderGetLabelMode);
         mgr->setOptionHandlerString("render-comment", SETTER_GETTER_STR_OPTION(rp.cnvOpt.comment));
         mgr->setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition, indigoRenderGetCommentPosition);
         mgr->setOptionHandlerString("render-stereo-style", indigoRenderSetStereoStyle, indigoRenderGetStereoStyle);
@@ -720,7 +707,7 @@ void IndigoRenderer::setOptionsHandlers()
         mgr->setOptionHandlerBool("render-highlighted-labels-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.highlightedLabelsVisible));
         mgr->setOptionHandlerBool("render-bold-bond-detection", SETTER_GETTER_BOOL_OPTION(rp.rOpt.boldBondDetection));
 
-        mgr->setOptionHandlerFloat("render-bond-length", SETTER_GETTER_FLOAT_OPTION(rp.cnvOpt.bondLength));
+        mgr->setOptionHandlerFloat("render-bond-length", indigoSetBondLength, indigoGetBondLength);
         mgr->setOptionHandlerFloat("render-relative-thickness", SET_POSITIVE_FLOAT_OPTION(rp.relativeThickness, "relative thickness must be positive"));
         mgr->setOptionHandlerFloat("render-bond-line-width", SET_POSITIVE_FLOAT_OPTION(rp.bondLineWidthFactor, "bond line width factor must be positive"));
         mgr->setOptionHandlerFloat("render-comment-font-size", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.commentFontFactor));
@@ -758,6 +745,15 @@ void IndigoRenderer::setOptionsHandlers()
 
         mgr->setOptionHandlerVoid("reset-render-options", indigoRenderResetOptions);
 
-        options_set = true;
+        // ACS style options
+        mgr->setOptionHandlerFloat("render-bond-thickness", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.bondThickness));
+        mgr->setOptionHandlerString("render-bond-thickness-unit", SETTER_GETTER_UNIT_OPTION(rp.rOpt.bondThicknessUnit));
+        mgr->setOptionHandlerFloat("render-bond-spacing", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.bondSpacing));
+        mgr->setOptionHandlerFloat("render-stereo-bond-width", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.stereoBondWidth));
+        mgr->setOptionHandlerString("render-stereo-bond-width-unit", SETTER_GETTER_UNIT_OPTION(rp.rOpt.stereoBondWidthUnit));
+        mgr->setOptionHandlerFloat("render-hash-spacing", SETTER_GETTER_FLOAT_OPTION(rp.rOpt.hashSpacing));
+        mgr->setOptionHandlerString("render-hash-spacing-unit", SETTER_GETTER_UNIT_OPTION(rp.rOpt.hashSpacingUnit));
+        mgr->setOptionHandlerFloat("render-output-sheet-width", SETTER_GETTER_FLOAT_OPTION(rp.cnvOpt.outputSheetWidth));
+        mgr->setOptionHandlerFloat("render-output-sheet-height", SETTER_GETTER_FLOAT_OPTION(rp.cnvOpt.outputSheetHeight));
     }
 }

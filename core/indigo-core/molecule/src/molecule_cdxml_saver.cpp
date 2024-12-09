@@ -29,6 +29,7 @@
 #include "molecule/molecule_cdxml_loader.h"
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
+#include "utils/image_not_supported.h"
 
 #include <codecvt>
 #include <fstream>
@@ -1280,15 +1281,8 @@ void MoleculeCdxmlSaver::addRetrosynteticArrow(int graphic_obj_id, int arrow_id,
     ar_beg.scale(_bond_length);
     ar_end.scale(_bond_length);
 
-    auto upper_point = std::max(ar_end.y, ar_beg.y);
-    auto bottom_point = std::min(ar_end.y, ar_beg.y);
-    auto left_point = std::min(ar_end.x, ar_beg.x);
-    auto right_point = std::max(ar_end.x, ar_beg.x);
-    Vec2f graph_beg(right_point - RETRO_ARROW_DELTA_X, bottom_point + (upper_point - bottom_point) / 2);
-    Vec2f graph_end(left_point + RETRO_ARROW_DELTA_X, bottom_point + (upper_point - bottom_point) / 2);
-
-    attrs.insert("Head3D", std::to_string(graph_beg.x) + " " + std::to_string(graph_beg.y) + " " + std::to_string(ar_end.z));
-    attrs.insert("Tail3D", std::to_string(graph_end.x) + " " + std::to_string(graph_end.y) + " " + std::to_string(ar_beg.z));
+    attrs.insert("Head3D", std::to_string(ar_end.x) + " " + std::to_string(ar_end.y) + " " + std::to_string(ar_end.z));
+    attrs.insert("Tail3D", std::to_string(ar_beg.x) + " " + std::to_string(ar_beg.y) + " " + std::to_string(ar_beg.z));
 
     addElement("arrow", arrow_id, arrow_end, arrow_beg, attrs);
 
@@ -1301,7 +1295,7 @@ void MoleculeCdxmlSaver::addRetrosynteticArrow(int graphic_obj_id, int arrow_id,
 
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
-    out.printf("%f %f %f %f", graph_beg.x, graph_beg.y, graph_end.x, graph_end.y);
+    out.printf("%f %f %f %f", ar_end.x, ar_end.y, ar_beg.x, ar_beg.y);
     buf.push(0);
 
     attrs.insert("BoundingBox", buf.ptr());
@@ -1334,7 +1328,12 @@ void MoleculeCdxmlSaver::addImage(int id, const KETImage& image)
     out.printf("%f %f %f %f", _bond_length * bbox.left(), -_bond_length * bbox.bottom(), _bond_length * bbox.right(), -_bond_length * bbox.top());
     buf.push(0);
     attrs.insert("BoundingBox", buf.ptr());
-    attrs.insert("PNG", stringToHex(image.getData()));
+    if (image.getFormat() == KETImage::EKETPNG)
+        attrs.insert("PNG", stringToHex(image.getData()));
+    else if (image.getFormat() == KETImage::EKETSVG)
+        attrs.insert("PNG", IMAGE_NOT_SUPPORTED_PNG);
+    else
+        throw Error("MoleculeCdxmlSaver::addImage: Unknown image format");
     emb_object.readString("embeddedobject", true);
     addCustomElement(id, emb_object, attrs);
 }

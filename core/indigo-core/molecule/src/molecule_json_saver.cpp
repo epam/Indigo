@@ -304,9 +304,9 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         }
 
         writer.Key("x");
-        writer.Double(dsg.display_pos.x);
+        writeFloat(writer, dsg.display_pos.x);
         writer.Key("y");
-        writer.Double(dsg.display_pos.y);
+        writeFloat(writer, dsg.display_pos.y);
 
         if (!dsg.detached)
         {
@@ -1220,6 +1220,42 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     writer.EndObject();
 }
 
+void MoleculeJsonSaver::saveAmbiguousMonomerTemplate(TGroup& tg, JsonWriter& writer)
+{
+    std::string template_id("ambiguousMonomerTemplate-");
+    std::string tg_id(monomerId(tg));
+    std::string template_class(monomerKETClass(tg.tgroup_class.ptr()));
+    std::string helm_class(monomerHELMClass(tg.tgroup_class.ptr()));
+    template_id += tg_id;
+    writer.Key(template_id.c_str());
+    writer.StartObject();
+    writer.Key("type");
+    writer.String("ambiguousMonomerTemplate");
+    writer.Key("subtype");
+    writer.String(tg.mixture ? "mixture" : "alternatives");
+    writer.Key("id");
+    writer.String(tg_id.c_str());
+    writer.Key("alias");
+    writer.String(tg.tgroup_alias.ptr());
+    writer.Key("options");
+    writer.StartArray();
+    const char* num_name = tg.mixture ? "ratio" : "probability";
+    for (int i = 0; i < tg.aliases.size(); i++)
+    {
+        writer.StartObject();
+        writer.Key("templateId");
+        writer.String(tg.aliases[i].ptr());
+        writer.EndObject();
+        if (tg.ratios[i] >= 0)
+        {
+            writer.Key(num_name);
+            saveNativeFloat(writer, tg.ratios[i]);
+        }
+    }
+    writer.EndArray();
+    writer.EndObject();
+}
+
 void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter& writer)
 {
     std::map<std::string, int> sorted_attachment_points;
@@ -1361,7 +1397,7 @@ int MoleculeJsonSaver::getMonomerNumber(int mon_idx)
     return -1;
 }
 
-void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer)
+void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer, bool hydrogen)
 {
     writer.Key(ep.c_str());
     writer.StartObject();
@@ -1375,7 +1411,7 @@ void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, i
             writer.Key("attachmentPointId");
             writer.String(convertAPToHELM(conn_it->second).c_str());
         }
-        else
+        else if (!hydrogen) // Hydrogen connection has no attachment point
             throw Error("Attachment point not found!!!");
     }
     else
@@ -1541,10 +1577,11 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
                 // save connections between templates or atoms
                 writer.StartObject();
                 writer.Key("connectionType");
-                writer.String(mol.getBondOrder(i) == _BOND_HYDROGEN ? "hydrogen" : "single");
+                bool hydrogen = mol.getBondOrder(i) == _BOND_HYDROGEN;
+                writer.String(hydrogen ? "hydrogen" : "single");
                 // save endpoints
-                saveEndpoint(mol, "endpoint1", e.beg, e.end, writer);
-                saveEndpoint(mol, "endpoint2", e.end, e.beg, writer);
+                saveEndpoint(mol, "endpoint1", e.beg, e.end, writer, hydrogen);
+                saveEndpoint(mol, "endpoint2", e.end, e.beg, writer, hydrogen);
                 writer.EndObject(); // connection
             }
         }
@@ -1599,7 +1636,8 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 writer.Key((std::string("monomer") + std::to_string(mon_id)).c_str());
                 writer.StartObject();
                 writer.Key("type");
-                writer.String("monomer");
+                int temp_idx = mol->getTemplateAtomTemplateIndex(i);
+                writer.String(temp_idx > -1 && bmol.tgroups.getTGroup(temp_idx).ambiguous ? "ambiguousMonomer" : "monomer");
                 writer.Key("id");
                 writer.String(std::to_string(mon_id).c_str());
                 auto seqid = mol->getTemplateAtomSeqid(i);
@@ -1613,9 +1651,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 writer.StartObject();
                 const auto& pos = mol->getAtomXyz(i);
                 writer.Key("x");
-                writer.Double(pos.x);
+                writeFloat(writer, pos.x);
                 writer.Key("y");
-                writer.Double(pos.y);
+                writeFloat(writer, pos.y);
                 writer.EndObject(); // pos
 
                 // find template
@@ -1623,7 +1661,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 auto alias = mol->getTemplateAtom(i);
                 writer.String(alias);
                 auto mon_class = mol->getTemplateAtomClass(i);
-                int temp_idx = mol->getTemplateAtomTemplateIndex(i);
                 if (temp_idx > -1)
                 {
                     auto& tg = bmol.tgroups.getTGroup(temp_idx);
@@ -1651,7 +1688,10 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     for (int i = mol->tgroups.begin(); i != mol->tgroups.end(); i = mol->tgroups.next(i))
     {
         TGroup& tg = mol->tgroups.getTGroup(i);
-        saveMonomerTemplate(tg, writer);
+        if (tg.ambiguous)
+            saveAmbiguousMonomerTemplate(tg, writer);
+        else
+            saveMonomerTemplate(tg, writer);
     }
 
     // save molecules
@@ -1673,11 +1713,11 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 writer.Key("stereoFlagPosition");
                 writer.StartObject();
                 writer.Key("x");
-                writer.Double(flag_pos.x);
+                writeFloat(writer, flag_pos.x);
                 writer.Key("y");
-                writer.Double(flag_pos.y);
+                writeFloat(writer, flag_pos.y);
                 writer.Key("z");
-                writer.Double(flag_pos.z);
+                writeFloat(writer, flag_pos.z);
                 writer.EndObject();
             }
             writer.EndObject();
@@ -1791,18 +1831,18 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             writer.StartArray();
             writer.StartObject();
             writer.Key("x");
-            writer.Double(ar.getTail().x);
+            writeFloat(writer, ar.getTail().x);
             writer.Key("y");
-            writer.Double(ar.getTail().y);
+            writeFloat(writer, ar.getTail().y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
 
             writer.StartObject();
             writer.Key("x");
-            writer.Double(ar.getHead().x);
+            writeFloat(writer, ar.getHead().x);
             writer.Key("y");
-            writer.Double(ar.getHead().y);
+            writeFloat(writer, ar.getHead().y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
@@ -1825,9 +1865,9 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             writer.Key("position");
             writer.StartObject();
             writer.Key("x");
-            writer.Double(ar.getHead().x);
+            writeFloat(writer, ar.getHead().x);
             writer.Key("y");
-            writer.Double(ar.getHead().y);
+            writeFloat(writer, ar.getHead().y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
@@ -1840,18 +1880,18 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
 
             writer.StartObject();
             writer.Key("x");
-            writer.Double(ar.getSpineBegin().x);
+            writeFloat(writer, ar.getSpineBegin().x);
             writer.Key("y");
-            writer.Double(ar.getSpineBegin().y);
+            writeFloat(writer, ar.getSpineBegin().y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
 
             writer.StartObject();
             writer.Key("x");
-            writer.Double(ar.getSpineEnd().x);
+            writeFloat(writer, ar.getSpineEnd().x);
             writer.Key("y");
-            writer.Double(ar.getSpineEnd().y);
+            writeFloat(writer, ar.getSpineEnd().y);
             writer.Key("z");
             writer.Double(0);
             writer.EndObject();
@@ -1868,9 +1908,9 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             {
                 writer.StartObject();
                 writer.Key("x");
-                writer.Double(t.x);
+                writeFloat(writer, t.x);
                 writer.Key("y");
-                writer.Double(t.y);
+                writeFloat(writer, t.y);
                 writer.Key("z");
                 writer.Double(0);
                 writer.EndObject();
@@ -1893,8 +1933,8 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             writer.String("plus");
             writer.Key("location");
             writer.StartArray();
-            writer.Double(rp.getPos().x);
-            writer.Double(rp.getPos().y);
+            writeFloat(writer, rp.getPos().x);
+            writeFloat(writer, rp.getPos().y);
             writer.Double(0);
             writer.EndArray();
             writer.EndObject();
@@ -1968,16 +2008,16 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
 
             writer.StartObject(); // start bbox
             writer.Key("x");
-            writer.Double(bbox.left());
+            writeFloat(writer, bbox.left());
             writer.Key("y");
-            writer.Double(bbox.top());
+            writeFloat(writer, bbox.top());
             writer.Key("z");
             writer.Double(0);
 
             writer.Key("width");
-            writer.Double(bbox.width());
+            writeFloat(writer, bbox.width());
             writer.Key("height");
-            writer.Double(bbox.height());
+            writeFloat(writer, bbox.height());
             writer.EndObject(); // end bbox
 
             writer.Key("data");

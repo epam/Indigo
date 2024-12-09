@@ -74,6 +74,7 @@ namespace indigo
         void loadFasta(KetDocument& document, SeqType seq_type);
         void loadIdt(KetDocument& document);
         void loadHELM(KetDocument& document);
+        void load3LetterSequence(KetDocument& document);
 
     private:
         Vec3f getBackboneMonomerPosition();
@@ -130,6 +131,7 @@ namespace indigo
         int _col;
         MonomerTemplateLibrary& _library;
         std::map<std::string, std::string> _alias_to_id;
+        std::map<std::string, std::string> _var_alias_to_id;
         int _unknown_variants_count;
         std::map<variant_template_opts, std::string> _opts_to_template_id;
     };

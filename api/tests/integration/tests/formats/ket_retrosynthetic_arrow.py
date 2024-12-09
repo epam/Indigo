@@ -85,11 +85,41 @@ for reaction, test_case_filename in reaction_types:
 
         print("output format: " + format_name)
 
+        # with open(os.path.join(ref_path, filename), "w") as file:
+        #     file.write(parsed_format)
+
         with open(os.path.join(ref_path, filename), "r") as file:
             format_ref = file.read()
+
         diff = find_diff(format_ref, parsed_format)
         if not diff:
             print(filename + ":SUCCEED")
         else:
             print(filename + ":FAILED")
             print(diff)
+
+print("issue 2318")
+indigo.setOption("json-use-native-precision", "1")
+filename = "ket_retro_arrow.ket"
+fname = os.path.join(root_rea, filename)
+rxn = indigo.loadReactionFromFile(fname)
+# with open(fname, "w") as file:
+#     file.write(rxn.json())
+with open(fname, "r") as file:
+    ref_json = file.read()
+diff = find_diff(ref_json, rxn.json())
+if not diff:
+    print(filename + ":SUCCEED")
+else:
+    print(filename + ":FAILED")
+    print(diff)
+print("issue 2417")
+rxn.layout()
+# with open(fname, "w") as file:
+#     file.write(rxn.json())
+diff = find_diff(ref_json, rxn.json())
+if not diff:
+    print(filename + ":SUCCEED")
+else:
+    print(filename + ":FAILED")
+    print(diff)

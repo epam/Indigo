@@ -109,16 +109,16 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
         {
             Value& connection = connections[i];
             std::string connection_type = connection["connectionType"].GetString();
-            if (connection_type == "single")
+            if (connection_type == KetConnectionSingle || connection_type == KetConnectionHydro)
             {
                 KetConnectionEndPoint ep1, ep2;
                 ep1.parseOptsFromKet(connection["endpoint1"]);
                 ep2.parseOptsFromKet(connection["endpoint2"]);
-                auto& conn = document.addConnection(ep1, ep2);
+                auto& conn = document.addConnection(connection_type, ep1, ep2);
                 conn.parseOptsFromKet(connection);
             }
             else
-                throw Error("Unknows connection type: %s", connection_type.c_str());
+                throw Error("Unknown connection type: %s", connection_type.c_str());
         }
     }
 }
@@ -198,15 +198,30 @@ void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json
     if (mt_json.HasMember("attachmentPoints"))
     {
         auto& att_points = mt_json["attachmentPoints"];
+        int side_count = 0;
         for (SizeType i = 0; i < att_points.Size(); i++)
         {
             auto& ap = att_points[i];
-            std::string ap_type, label;
+            std::string id = "R";
             int attachment_atom;
-            if (ap.HasMember("label"))
-                label = ap["label"].GetString();
+            if (ap.HasMember("type"))
+            {
+                std::string t = ap["type"].GetString();
+                if (t == "left")
+                    id = "R1";
+                else if (t == "right")
+                    id = "R2";
+                else if (t == "side")
+                    id += '3' + side_count++;
+                else
+                    throw Error("Unknown attachment point type %s", t.c_str());
+            }
+            else if (ap.HasMember("label"))
+                id = ap["label"].GetString();
+            else
+                id += '1' + i;
             attachment_atom = ap["attachmentAtom"].GetInt();
-            auto& att_point = mon_template.AddAttachmentPoint(label, attachment_atom);
+            auto& att_point = mon_template.AddAttachmentPointId(id, attachment_atom);
             att_point.parseOptsFromKet(ap);
             if (ap.HasMember("leavingGroup"))
             {

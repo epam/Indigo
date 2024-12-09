@@ -39,39 +39,57 @@ std::vector<int> PathwayReaction::getRootReactions() const
 {
     std::vector<int> root_reactions;
     for (int i = 0; i < _reactionNodes.size(); ++i)
-        if (_reactionNodes[i].successorReactions.size() == 0)
+        if (_reactionNodes[i].successorReactionIndexes.size() == 0)
             root_reactions.push_back(i);
     return root_reactions;
 }
 
-void PathwayReaction::clone(PathwayReaction& reaction)
+void PathwayReaction::_cloneSub(BaseReaction& other)
 {
-    BaseReaction::clone(reaction);
-    for (int i = 0; i < _reactionNodes.size(); ++i)
+    clear();
+    PathwayReaction& other_pwr = other.asPathwayReaction();
+    for (int i = 0; i < other_pwr._reactionNodes.size(); ++i)
     {
-        auto& other = _reactionNodes[i];
-        auto& rn = reaction._reactionNodes.push();
-        rn.reactionIdx = other.reactionIdx;
-        rn.precursorReactionsIndexes.copy(other.precursorReactionsIndexes);
-        for (int j = 0; j < other.successorReactions.size(); ++j)
+        auto& other_rnode = other_pwr._reactionNodes[i];
+        auto& rn = _reactionNodes.push();
+        rn.reactionIdx = other_rnode.reactionIdx;
+        rn.precursorReactionIndexes.copy(other_rnode.precursorReactionIndexes);
+        for (int j = 0; j < other_rnode.successorReactionIndexes.size(); ++j)
         {
-            auto& sr = other.successorReactions[j];
-            rn.successorReactions.push(sr);
+            auto& sr = other_rnode.successorReactionIndexes[j];
+            rn.successorReactionIndexes.push(sr);
         }
     }
 
-    for (int i = 0; i < reaction._reactions.size(); ++i)
+    for (int i = 0; i < other_pwr._reactions.size(); ++i)
     {
-        auto& other = reaction._reactions[i];
+        auto& other_reaction = other_pwr._reactions[i];
         auto& rc = _reactions.push();
-        rc.productIndexes.copy(other.productIndexes);
-        rc.reactantIndexes.copy(other.reactantIndexes);
+        rc.productIndexes.copy(other_reaction.productIndexes);
+        rc.reactantIndexes.copy(other_reaction.reactantIndexes);
     }
+
+    for (int i = 0; i < other_pwr._molecules.size(); ++i)
+    {
+        auto other_molecule = other_pwr._molecules[i];
+        addMolecule(*other_molecule);
+    }
+
+    _rootReaction.clone(other_pwr._rootReaction);
 }
 
 BaseReaction* PathwayReaction::neu()
 {
     return new PathwayReaction;
+}
+
+void PathwayReaction::clear()
+{
+    BaseReaction::clear();
+    _reactionNodes.clear();
+    _reactions.clear();
+    _rootReaction.clear();
+    _molecules.clear();
 }
 
 int PathwayReaction::_addBaseMolecule(int side)
@@ -84,9 +102,15 @@ int PathwayReaction::_addBaseMolecule(int side)
 bool PathwayReaction::aromatize(const AromaticityOptions& options)
 {
     bool arom_found = false;
-    for (int i = begin(); i < end(); i = next(i))
-    {
-        arom_found |= MoleculeAromatizer::aromatizeBonds(*(Molecule*)_allMolecules[i], options);
-    }
+    for (int i = 0; i < _molecules.size(); ++i)
+        arom_found |= _molecules[i]->aromatize(options);
+    return arom_found;
+}
+
+bool PathwayReaction::dearomatize(const AromaticityOptions& options)
+{
+    bool arom_found = false;
+    for (int i = 0; i < _molecules.size(); ++i)
+        arom_found |= _molecules[i]->dearomatize(options);
     return arom_found;
 }

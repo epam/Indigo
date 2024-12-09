@@ -404,6 +404,7 @@ MoleculeCdxmlLoader::MoleculeCdxmlLoader(Scanner& scanner, bool is_binary, bool 
 void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
 {
     mol.clear();
+    _stereo_centers.clear();
     nodes.clear();
     bonds.clear();
     _arrows.clear();

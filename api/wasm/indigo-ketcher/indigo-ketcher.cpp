@@ -144,6 +144,10 @@ namespace indigo
             {
                 result = _checkResultString(indigoSequence(id(), library));
             }
+            else if (outputFormat == "sequence-3-letter" || outputFormat == "chemical/x-sequence-3-letter")
+            {
+                result = _checkResultString(indigoSequence3Letter(id(), library));
+            }
             else if (outputFormat == "fasta" || outputFormat == "chemical/x-fasta")
             {
                 result = _checkResultString(indigoFasta(id(), library));
@@ -204,6 +208,20 @@ namespace indigo
                     const auto frag = IndigoObject(_checkResult(indigoNext(comp_it.id)));
                     const auto mol = IndigoObject(_checkResult(indigoClone(frag.id)));
                     indigoSdfAppend(buffer.id, mol.id);
+                }
+                print_js(outputFormat.c_str());
+                result = _checkResultString(indigoToString(buffer.id));
+            }
+            else if (outputFormat == "rdf" || outputFormat == "chemical/x-rdf")
+            {
+                auto buffer = IndigoObject(_checkResult(indigoWriteBuffer()));
+                auto reac_it = IndigoObject(_checkResult(indigoIterateReactions(id())));
+                indigoRdfHeader(buffer.id);
+                while (indigoHasNext(reac_it.id))
+                {
+                    const auto reac_obj = IndigoObject(_checkResult(indigoNext(reac_it.id)));
+                    const auto reac = IndigoObject(_checkResult(indigoClone(reac_obj.id)));
+                    indigoRdfAppend(buffer.id, reac.id);
                 }
                 print_js(outputFormat.c_str());
                 result = _checkResultString(indigoToString(buffer.id));
@@ -329,8 +347,10 @@ namespace indigo
     IndigoKetcherObject loadMoleculeOrReaction(const std::string& data, const std::map<std::string, std::string>& options, int library = -1,
                                                bool use_document = false)
     {
-        static std::unordered_map<std::string, std::string> seq_formats = {
-            {"chemical/x-peptide-sequence", "PEPTIDE"}, {"chemical/x-rna-sequence", "RNA"}, {"chemical/x-dna-sequence", "DNA"}};
+        static std::unordered_map<std::string, std::string> seq_formats = {{"chemical/x-peptide-sequence", "PEPTIDE"},
+                                                                           {"chemical/x-peptide-sequence-3-letter", "PEPTIDE-3-LETTER"},
+                                                                           {"chemical/x-rna-sequence", "RNA"},
+                                                                           {"chemical/x-dna-sequence", "DNA"}};
 
         static std::unordered_map<std::string, std::string> fasta_formats = {
             {"chemical/x-peptide-fasta", "PEPTIDE"}, {"chemical/x-rna-fasta", "RNA"}, {"chemical/x-dna-fasta", "DNA"}};
@@ -429,6 +449,23 @@ namespace indigo
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
                 }
                 exceptionMessages.emplace_back(indigoGetLastError());
+
+                if (library >= 0)
+                {
+                    print_js("try as IDT");
+                    objectId = indigoLoadIdtFromString(data.c_str(), library);
+                    if (objectId >= 0)
+                    {
+                        return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                    }
+
+                    print_js("try as HELM");
+                    objectId = indigoLoadHelmFromString(data.c_str(), library);
+                    if (objectId >= 0)
+                    {
+                        return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                    }
+                }
             }
             exceptionMessages.emplace_back(indigoGetLastError());
             // Let's try query molecule

@@ -1,74 +1,47 @@
 @import '../../styles/variables';
 
-table.libs > thead > tr > th {
-  vertical-align: bottom;
-  border-bottom: 2px solid #ddd;
-  padding: 8px;
-  line-height: 1em;
-  text-align: left;
+fieldset.libraries-fieldset {
+  max-height: 140px;
+  border-bottom: 1px #E1E5EA solid !important;
+  overflow: auto;
 }
 
-table.libs > tbody > tr > td,
-table.libs > tbody > tr > th,
-table.libs > tfoot > tr > td,
-table.libs > tfoot > tr > th,
-table.libs > thead > tr > td,
-table.libs > thead > tr > th {
-  padding: 8px;
-  line-height: 1em;
-  vertical-align: top;
-  border-top: 1px solid #ddd;
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
-table.libs > tbody > tr:nth-of-type(2n + 1) {
-  background-color: #f9f9f9;
+.app-checkbox {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  margin: 0;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #B4B9D6;
+  border-radius: 4px;
+  display: grid;
+  place-content: center;
+  outline: none;
 }
 
-.search table.libs {
-  background-color: $c-light-primary;
-  margin: 0 0 20px 0;
-  width: 100%;
-  max-width: 100%;
+.app-checkbox::before {
+  content: "";
+  width: 0.65em;
+  height: 0.65em;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em #B4B9D6;
 }
 
-.search table.libs thead {
-  position: relative;
-  display: block;
+.app-checkbox:checked::before {
+  transform: scale(1);
 }
 
-.search table.libs > thead:first-child > tr:first-child > th {
-  border-top: 0;
-}
-
-.search table.libs th.count {
-  max-width: 55px;
-  text-align: right;
-  width: 5em;
-}
-
-.search table.libs tbody {
-  display: block;
-  height: 160px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.search table.libs td.check,
-.search table.libs th.check {
-  max-width: 30px;
-}
-
-input[type='checkbox'],
-input[type='radio'] {
-  box-sizing: border-box;
-  padding: 0;
-}
-
-.lib-name {
-  width: 100%;
-}
-
-.search input[type='checkbox'].intermediate {
-  opacity: 0.55;
-  border-color: #000;
+.checkbox-title {
+  color: #666666;
+  font-size: 12px;
+  font-weight: 400;
+  margin-left: 5px;
 }

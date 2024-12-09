@@ -7,10 +7,11 @@ sys.path.append(
     )
 )
 
-from env_indigo import *  # noqa
+from env_indigo import Indigo, joinPathPy  # noqa
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
+indigo.setOption("json-use-native-precision", True)
 root_rxn = joinPathPy("reactions/", __file__)
 filename = "1113-no-layout.rxn"
 print(filename)

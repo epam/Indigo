@@ -40,7 +40,6 @@ namespace indigo
         {
             LAYOUT_MAX_ITERATION = 20
         };
-        static constexpr float DEFAULT_BOND_LENGTH = 1.6f;
 
         explicit MoleculeLayout(BaseMolecule& molecule, bool smart_layout = false);
 
@@ -55,7 +54,7 @@ namespace indigo
         Filter* filter;
         int max_iterations;
         bool _smart_layout;
-        layout_orientation_value layout_orientation;
+        LAYOUT_ORIENTATION layout_orientation;
 
         DECL_ERROR;
 

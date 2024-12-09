@@ -49,6 +49,7 @@ files = [
     "taspoglutide",
     "1972-case1",
     "1972-case2",
+    "chem_rna_hydro",
 ]
 
 files.sort()

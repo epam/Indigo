@@ -616,6 +616,25 @@ CEXPORT int indigoSaveSequence(int item, int output, int library)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoSaveSequence3Letter(int item, int output, int library)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        Output& out = IndigoOutput::get(self.getObject(output));
+        if (IndigoKetDocument::is(obj))
+        {
+            IndigoObject& lib_obj = self.getObject(library);
+            SequenceSaver saver(out, IndigoMonomerLibrary::get(lib_obj));
+            saver.saveKetDocument(static_cast<IndigoKetDocument&>(obj).get(), SequenceSaver::SeqFormat::Sequence3);
+            out.flush();
+            return 1;
+        }
+        throw IndigoError("indigoSaveSequence(): expected molecule, got %s", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
 CEXPORT int indigoSaveFasta(int item, int output, int library)
 {
     INDIGO_BEGIN
@@ -770,9 +789,8 @@ CEXPORT int indigoSaveCml(int item, int output)
         }
         if (IndigoBaseReaction::is(obj))
         {
-            Reaction& rxn = obj.getReaction();
+            auto& rxn = obj.getBaseReaction();
             ReactionCmlSaver saver(out);
-
             saver.saveReaction(rxn);
             out.flush();
             return 1;
@@ -876,10 +894,9 @@ CEXPORT int indigoSaveCdxml(int item, int output)
         if (IndigoBaseReaction::is(obj))
         {
             ReactionCdxmlSaver saver(out);
-            if (obj.type == IndigoObject::REACTION)
+            if (obj.type == IndigoObject::REACTION || obj.type == IndigoObject::PATHWAY_REACTION)
             {
-                Reaction& rxn = obj.getReaction();
-                saver.saveReaction(rxn);
+                saver.saveReaction(obj.getBaseReaction());
             }
             else if (obj.type == IndigoObject::QUERY_REACTION)
             {
@@ -920,10 +937,9 @@ CEXPORT int indigoSaveCdx(int item, int output)
         if (IndigoBaseReaction::is(obj))
         {
             ReactionCdxmlSaver saver(out, true);
-            if (obj.type == IndigoObject::REACTION)
+            if (obj.type == IndigoObject::REACTION || obj.type == IndigoObject::PATHWAY_REACTION)
             {
-                Reaction& rxn = obj.getReaction();
-                saver.saveReaction(rxn);
+                saver.saveReaction(obj.getBaseReaction());
             }
             else if (obj.type == IndigoObject::QUERY_REACTION)
             {
