@@ -3927,7 +3927,7 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
         else if (ch == 'D')
             dsg.detached = true;
         else
-            throw Error("Expected 'A' or 'D' but got '%d'.", ch);
+            throw Error("Expected 'A' or 'D' but got '%c'.", ch);
         ch = scanner.readChar();
         if (ch == 'R')
             dsg.relative = true;
