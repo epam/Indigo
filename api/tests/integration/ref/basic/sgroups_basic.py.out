@@ -3372,7 +3372,7 @@ M  V30 BEGIN SGROUP
 M  V30 1 DAT 1 ATOMS=(1 1) FIELDNAME="SMMX:sequence position data" FIELDDISP=-
 M  V30 "    1.5563   -9.2328    ARU   ALL  1       1  "
 M  V30 2 DAT 2 ATOMS=(1 2) FIELDNAME="SMMX:sequence pos data 2" FIELDDISP="  -
-M  V30   2.5563   -9.2328    DA    ALL  1       1  "
+M  V30   2.5563   -9.2328    AA    ALL  1       1  "
 M  V30 END SGROUP
 M  V30 END CTAB
 M  V30 BEGIN TEMPLATE
