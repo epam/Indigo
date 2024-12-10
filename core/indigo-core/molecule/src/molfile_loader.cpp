@@ -3903,16 +3903,29 @@ void MolfileLoader::_readTGroups3000()
 
 void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
 {
+    int constexpr MIN_SDD_SIZE = 36;
+    bool well_formatted = scanner.length() >= MIN_SDD_SIZE;
     dsg.display_pos.x = scanner.readFloatFix(10);
     dsg.display_pos.y = scanner.readFloatFix(10);
-    scanner.skip(4);
-    if (scanner.readChar() == 'A') // means "attached"
+    int ch = ' ';
+    if (well_formatted)
+    {
+        scanner.skip(4);
+        ch = scanner.readChar();
+    }
+    else
+    {
+        for (int i = 0; i < 5 && ch == ' '; i++)
+            ch = scanner.readChar();
+    }
+    if (ch == 'A') // means "attached"
         dsg.detached = false;
     else
         dsg.detached = true;
     if (scanner.readChar() == 'R')
         dsg.relative = true;
-    if (scanner.readChar() == 'U')
+    ch = scanner.readChar();
+    if (ch == 'U')
         dsg.display_units = true;
 
     long long cur = scanner.tell();
@@ -3920,7 +3933,20 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
     long long end = scanner.tell();
     scanner.seek(cur, SEEK_SET);
 
-    scanner.skip(3);
+    if (well_formatted)
+    {
+        scanner.skip(3);
+    }
+    else
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            ch = scanner.lookNext();
+            if (ch != ' ')
+                break;
+            scanner.skip(1);
+        }
+    }
 
     char chars[4] = {0, 0, 0, 0};
     scanner.readCharsFix(3, chars);
@@ -3932,17 +3958,21 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
         dsg.num_chars = scanner.readInt1();
     }
 
-    scanner.skip(7);
-    dsg.tag = scanner.readChar();
-
-    if (end - cur + 1 > 16)
+    if (well_formatted)
     {
-        scanner.skip(2);
-        if (scanner.lookNext() == '\n' || scanner.lookNext() == '\r')
-            return;
-        int c = scanner.readChar();
-        if (c >= '1' && c <= '9')
-            dsg.dasp_pos = c - '0';
+        scanner.skip(7);
+
+        dsg.tag = scanner.readChar();
+
+        if (end - cur + 1 > 16)
+        {
+            scanner.skip(2);
+            if (scanner.lookNext() == '\n' || scanner.lookNext() == '\r')
+                return;
+            int c = scanner.readChar();
+            if (c >= '1' && c <= '9')
+                dsg.dasp_pos = c - '0';
+        }
     }
 }
 
