@@ -3600,6 +3600,8 @@ void MolfileLoader::_readSGroup3000(const char* str)
             QS_DEF(Array<char>, substr);
             substr.clear();
             _readStringInQuotes(scanner, &substr);
+            if (substr.size() > 0)
+                substr.pop(); // remove trailing 0
             if (dsg != 0)
             {
                 BufferScanner subscan(substr);
@@ -3903,46 +3905,104 @@ void MolfileLoader::_readTGroups3000()
 
 void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
 {
-    dsg.display_pos.x = scanner.readFloatFix(10);
-    dsg.display_pos.y = scanner.readFloatFix(10);
-    scanner.skip(4);
-    if (scanner.readChar() == 'A') // means "attached"
-        dsg.detached = false;
-    else
-        dsg.detached = true;
-    if (scanner.readChar() == 'R')
-        dsg.relative = true;
-    if (scanner.readChar() == 'U')
-        dsg.display_units = true;
-
-    long long cur = scanner.tell();
-    scanner.seek(0LL, SEEK_END);
-    long long end = scanner.tell();
-    scanner.seek(cur, SEEK_SET);
-
-    scanner.skip(3);
-
-    char chars[4] = {0, 0, 0, 0};
-    scanner.readCharsFix(3, chars);
-    if (strncmp(chars, "ALL", 3) == 0)
-        dsg.num_chars = 0;
-    else
+    try
     {
-        scanner.seek(cur + 3, SEEK_CUR);
-        dsg.num_chars = scanner.readInt1();
+        int constexpr MIN_SDD_SIZE = 36;
+        bool well_formatted = scanner.length() >= MIN_SDD_SIZE;
+        dsg.display_pos.x = scanner.readFloatFix(10);
+        dsg.display_pos.y = scanner.readFloatFix(10);
+        int ch = ' ';
+        if (well_formatted)
+        {
+            scanner.skip(4);
+            ch = scanner.readChar();
+        }
+        else
+        {
+            for (int i = 0; i < 5 && ch == ' '; i++)
+                ch = scanner.readChar();
+        }
+        if (ch == 'A') // means "attached"
+            dsg.detached = false;
+        else if (ch == 'D')
+            dsg.detached = true;
+        else
+            throw Error("Expected 'A' or 'D' but got '%c'.", ch);
+        ch = scanner.readChar();
+        if (ch == 'R')
+            dsg.relative = true;
+        else if (ch != 'A')
+            throw Error("Expected 'A' or 'R' but got '%c'.", ch);
+        ch = scanner.readChar();
+        if (ch == 'U')
+            dsg.display_units = true;
+        else if (ch != ' ')
+            throw Error("Expected 'U' or ' ' but got '%c'.", ch);
+
+        if (well_formatted)
+        {
+            scanner.skip(3);
+        }
+        else
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                ch = scanner.lookNext();
+                if (ch != ' ')
+                    break;
+                scanner.skip(1);
+            }
+        }
+
+        long long cur = scanner.tell();
+
+        char chars[4] = {0, 0, 0, 0};
+        scanner.readCharsFix(3, chars);
+        if (strncmp(chars, "ALL", 3) == 0)
+            dsg.num_chars = 0;
+        else
+        {
+            scanner.seek(cur, SEEK_CUR);
+            dsg.num_chars = scanner.readInt1();
+        }
+
+        if (well_formatted)
+        {
+            scanner.skip(7);
+            dsg.tag = scanner.readChar();
+        }
+        else
+        {
+            ch = ' ';
+            // read kkk: Number of lines to display (unused, always 1)
+            for (int i = 0; i < 3 && ch == ' '; i++)
+                ch = scanner.readChar();
+            ch = ' ';
+            // read tag
+            for (int i = 0; i < 5 && ch == ' '; i++)
+                ch = scanner.readChar();
+            if (ch != ' ')
+                dsg.tag = ch;
+        }
+
+        cur = scanner.tell();
+        scanner.seek(0LL, SEEK_END);
+        long long end = scanner.tell();
+        scanner.seek(cur, SEEK_SET);
+
+        if (end - cur + 1 > 2)
+        {
+            scanner.skip(2);
+            if (scanner.lookNext() == '\n' || scanner.lookNext() == '\r')
+                return;
+            int c = scanner.readChar();
+            if (c >= '1' && c <= '9')
+                dsg.dasp_pos = c - '0';
+        }
     }
-
-    scanner.skip(7);
-    dsg.tag = scanner.readChar();
-
-    if (end - cur + 1 > 16)
+    catch (Scanner::Error)
     {
-        scanner.skip(2);
-        if (scanner.lookNext() == '\n' || scanner.lookNext() == '\r')
-            return;
-        int c = scanner.readChar();
-        if (c >= '1' && c <= '9')
-            dsg.dasp_pos = c - '0';
+        // Ignore scanner error - just use default values.
     }
 }
 
