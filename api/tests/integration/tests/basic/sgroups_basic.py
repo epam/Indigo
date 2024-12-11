@@ -7,7 +7,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import Indigo, dataPath  # noqa
 
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
@@ -151,3 +151,8 @@ for g in m.iterateMultipleGroups():
     print(g.getSGroupMultiplier())
     for a in g.iterateAtoms():
         print("{0} {1}".format(a.index(), a.symbol()))
+
+fname = "molecules/basic/2681-mol3000-fielddisp.mol"
+m = indigo.loadMoleculeFromFile(dataPath(fname))
+print("\n%s\n" % fname)
+print(m.molfile())
