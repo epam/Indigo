@@ -180,12 +180,11 @@ namespace indigo
 
     struct CdxmlText
     {
-        CdxmlText(const Vec3f& pos, const Vec2f& size, const std::string& text) : pos(pos), size(size), text(text)
+        CdxmlText(const Rect2f& bbox, const std::string& text) : bbox(bbox), text(text)
         {
         }
         std::string text;
-        Vec3f pos;
-        Vec2f size;
+        Rect2f bbox;
     };
 
     class BaseCDXProperty
@@ -898,7 +897,7 @@ namespace indigo
         void _parseBond(CdxmlBond& bond, BaseCDXProperty& prop);
 
         void _parseBracket(CdxmlBracket& bracket, BaseCDXProperty& prop);
-        void _parseText(BaseCDXElement& elem, std::vector<std::pair<Rect2f, std::string>>& text_parsed);
+        void _parseText(BaseCDXElement& elem, std::vector<CdxmlText>& text_parsed);
         void _parseTextToKetObject(BaseCDXElement& elem, std::vector<SimpleTextObject>& text_objects);
 
         void _parseLabel(BaseCDXElement& elem, std::string& label);

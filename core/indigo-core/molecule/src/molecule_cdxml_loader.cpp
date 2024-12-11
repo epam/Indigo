@@ -529,17 +529,19 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
     for (auto& brk : brackets)
         _addBracket(mol, brk);
 
+    for (const auto& to : text_objects)
+        mol.meta().addMetaObject(new SimpleTextObject(to.bbox, to.text));
     for (const auto& kto : ket_text_objects)
         mol.meta().addMetaObject(new SimpleTextObject(kto));
 
     for (const auto& plus : _pluses)
         mol.meta().addMetaObject(new ReactionPlusObject(plus));
 
-    // CDX contains graphic arrow wich id dublicate arrow/
+    // CDX contains graphic arrow with duplicate arrow id/
     for (const auto& image : _images)
         mol.meta().addMetaObject(new EmbeddedImageObject(image.bbox, image.image_format, image.data, false));
 
-    // Search arrows for arrow with coords same as in grapic arrow and if found - remove tis arrow gecause graphic arrow contains more specific type
+    // Search arrows for arrow with coords same as in graphic arrow and if found - remove tis arrow gecause graphic arrow contains more specific type
     for (const auto& g_arrow : _graphic_arrows)
     {
         const auto& g_arr_info = g_arrow.first;
@@ -787,8 +789,8 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(BaseCDXElement& first_elem, bool n
         }
         else
         {
-            _parseTextToKetObject(elem, ket_text_objects);
-            //_parseText(elem, text_objects);
+            // _parseTextToKetObject(elem, ket_text_objects);
+            _parseText(elem, text_objects);
         }
     };
 
@@ -1789,7 +1791,7 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
     }
 }
 
-void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<std::pair<Rect2f, std::string>>& text_parsed)
+void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<CdxmlText>& text_parsed)
 {
     Vec2f text_pos;
     Rect2f text_bbox;
