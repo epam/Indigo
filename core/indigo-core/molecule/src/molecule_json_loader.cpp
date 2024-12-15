@@ -1909,7 +1909,7 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
                                 rb = Vec2f(pos[2]["x"].GetFloat(), pos[2]["y"].GetFloat());
                             }
                         }
-                        meta_interface.addMetaObject(new SimpleTextObject(Rect2f(lt,rb), content));
+                        meta_interface.addMetaObject(new SimpleTextObject(Rect2f(lt, rb), content));
                     }
                 }
                 else if (node_type == "text")

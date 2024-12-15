@@ -2091,17 +2091,14 @@ void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const SimpleTextObject& t
     writer.String(text_obj.content().c_str());
     writer.Key("position");
     writer.WritePoint(text_obj.boundingBox().leftTop());
-    if (text_obj.boundingBox().width() > 0 && text_obj.boundingBox().height() > 0)
-    {
-        writer.Key("pos");
-        writer.StartArray();
-        writer.WritePoint(text_obj.boundingBox().leftTop());
-        writer.WritePoint(text_obj.boundingBox().leftBottom());
-        writer.WritePoint(text_obj.boundingBox().leftTop());
-        writer.WritePoint(text_obj.boundingBox().rightBottom());
-        writer.WritePoint(text_obj.boundingBox().rightTop());
-        writer.EndArray();
-    }
+    writer.Key("pos");
+    writer.StartArray();
+    writer.WritePoint(text_obj.boundingBox().leftTop());
+    writer.WritePoint(text_obj.boundingBox().leftBottom());
+    writer.WritePoint(text_obj.boundingBox().leftTop());
+    writer.WritePoint(text_obj.boundingBox().rightBottom());
+    writer.WritePoint(text_obj.boundingBox().rightTop());
+    writer.EndArray();
     writer.EndObject();
 }
 

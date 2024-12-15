@@ -305,7 +305,7 @@ namespace indigo
         auto style_lambda = styleLambda(_font_styles);
 
         DispatchMapKVP text_obj_dispatcher = {{"boundingBox", bbox_lambda},      {"alignment", alignLambda(_alignment)}, {KFontBoldStr, style_lambda},
-                                              {KFontItalicStr, style_lambda},  {KFontSubscriptStr, style_lambda},    {KFontSuperscriptStr, style_lambda},
+                                              {KFontItalicStr, style_lambda},    {KFontSubscriptStr, style_lambda},      {KFontSuperscriptStr, style_lambda},
                                               {"indent", indentLambda(_indent)}, {"font", fontLambda(_font_styles)},     {"paragraphs", paragraphs_lambda}};
 
         applyDispatcher(text_obj, text_obj_dispatcher);
@@ -337,7 +337,6 @@ namespace indigo
         out_buffer.push('\0');
         return out_buffer.ptr();
     }
-
 
     SimpleTextObjectBuilder::SimpleTextObjectBuilder() : _writer(_buffer), _line_counter(0)
     {

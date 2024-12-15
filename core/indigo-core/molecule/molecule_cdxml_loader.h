@@ -19,6 +19,7 @@
 #ifndef __cdxml_loader__
 #define __cdxml_loader__
 
+#include <charconv>
 #include <functional>
 #include <regex>
 #include <sstream>
@@ -27,7 +28,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <charconv>
 
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
@@ -65,9 +65,9 @@ namespace indigo
     class AutoInt
     {
     public:
-        AutoInt() : val(0){};
+        AutoInt() : val(0) {};
 
-        AutoInt(int v) : val(v){};
+        AutoInt(int v) : val(v) {};
 
         AutoInt(const std::string& v) : val(std::stoi(v))
         {
@@ -122,8 +122,7 @@ namespace indigo
         AutoInt id;
         std::string label;
         AutoInt element;
-        Vec2f pos;
-        Vec3f pos3d;
+        Vec3f pos;
         int type;
         AutoInt isotope;
         AutoInt charge;
@@ -205,7 +204,7 @@ namespace indigo
     public:
         DECL_ERROR;
 
-        CDXMLProperty(const tinyxml2::XMLAttribute* attribute) : _attribute(attribute){};
+        CDXMLProperty(const tinyxml2::XMLAttribute* attribute) : _attribute(attribute) {};
 
         virtual bool hasContent() const override
         {
@@ -319,7 +318,7 @@ namespace indigo
     class CDXIdProperty : public CDXProperty
     {
     public:
-        CDXIdProperty(CDXElement* parent, const uint8_t* data) : CDXProperty(parent, 0, data, id_size){};
+        CDXIdProperty(CDXElement* parent, const uint8_t* data) : CDXProperty(parent, 0, data, id_size) {};
 
         std::unique_ptr<BaseCDXProperty> copy() override
         {
@@ -340,7 +339,7 @@ namespace indigo
     {
     public:
         CDXStyleProperty(CDXElement* parent, const uint8_t* data, uint8_t prop_index)
-            : CDXProperty(parent, 0xffff, data, sizeof(uint16_t)), _prop_index(prop_index){};
+            : CDXProperty(parent, 0xffff, data, sizeof(uint16_t)), _prop_index(prop_index) {};
 
         std::unique_ptr<BaseCDXProperty> copy() override
         {
@@ -392,7 +391,7 @@ namespace indigo
     public:
         DECL_ERROR;
 
-        CDXMLElement(const tinyxml2::XMLElement* xml) : _xml(xml){};
+        CDXMLElement(const tinyxml2::XMLElement* xml) : _xml(xml) {};
 
         bool hasContent() override
         {
@@ -738,7 +737,7 @@ namespace indigo
             return _scanner;
         }
 
-        virtual ~CDXReader(){};
+        virtual ~CDXReader() {};
 
     protected:
         std::string _buffer;
@@ -844,6 +843,29 @@ namespace indigo
                 }
                 else
                     throw Error("Not enought coordinates");
+            };
+        }
+
+        auto posLambda(Vec3f& pos)
+        {
+            return [this, &pos](const std::string& data) {
+                std::vector<std::string> coords = split(data, ' ');
+                if (coords.size() >= 2)
+                {
+                    pos.x = std::stof(coords[0]);
+                    pos.y = std::stof(coords[1]);
+                    pos.z = coords.size() > 2 ? std::stof(coords[2]) : -0.0f;
+                    if (_has_bounding_box)
+                    {
+                        pos.x -= cdxml_bbox.left();
+                        pos.y -= cdxml_bbox.bottom();
+                    }
+                    pos.x /= SCALE;
+                    pos.y /= -SCALE;
+                    pos.z /= -SCALE;
+                }
+                else
+                    throw Error("Not enough coordinates");
             };
         }
 
