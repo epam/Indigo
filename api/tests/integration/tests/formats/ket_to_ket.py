@@ -56,6 +56,7 @@ def check_res(filename, format, ket_ref, ket):
 indigo.setOption("json-use-native-precision", True)
 files = [
     "monomer_shape",
+    "ambiguous_monomer",
 ]
 formats = {
     "mol": indigo.loadMolecule,
@@ -70,4 +71,4 @@ for filename in sorted(files):
         # with open("{}_{}.ket".format(file_path, format), "w") as file:
         #     file.write(mol.json())
         ket = mol.json()
-        check_res(filename, "molecule", ket_ref, ket)
+        check_res(filename, format, ket_ref, ket)
