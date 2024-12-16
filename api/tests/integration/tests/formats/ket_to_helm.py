@@ -54,6 +54,7 @@ helm_data = {
     "helm_molecule_2418": "PEPTIDE1{A}|CHEM1{[C1C=CC=CC=1[*:1] |$;;;;;;_R1$|]}$PEPTIDE1,CHEM1,1:R1-1:R1$$$V2.0",
     "helm_chem_rna_hydro": "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:pair-3:pair$$$V2.0",
     "helm_monomer_molecule_direct": "PEPTIDE1{A}|CHEM1{[C(=C)N[*:1] |$;;;_R1$|]}$PEPTIDE1,CHEM1,1:R2-1:R1$$$V2.0",
+    "helm_unknown": "CHEM1{[C1([*:1])C([*:4])C([*:3])C1[*:2] |$;_R1;;_R4;;_R3;;_R2$|]}$$$$V2.0",
 }
 
 for filename in sorted(helm_data.keys()):

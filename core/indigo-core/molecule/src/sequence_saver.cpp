@@ -1206,7 +1206,15 @@ void SequenceSaver::add_monomer(KetDocument& document, const std::unique_ptr<Ket
                 auto& ap = sa.attachment_points.at(ap_id);
                 int leaving_atom = ap.lvidx;
                 int ap_idx = getAttachmentOrder(ap.apid.ptr()) + 1;
-                pmol->resetAtom(leaving_atom, ELEM_RSITE);
+                if (leaving_atom >= 0)
+                {
+                    pmol->resetAtom(leaving_atom, ELEM_RSITE);
+                }
+                else
+                {
+                    leaving_atom = pmol->addAtom(ELEM_RSITE);
+                    pmol->addBond(ap.aidx, leaving_atom, BOND_SINGLE);
+                }
                 pmol->allowRGroupOnRSite(leaving_atom, ap_idx);
             }
             sgroups.remove(i);
