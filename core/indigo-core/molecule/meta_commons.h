@@ -577,7 +577,7 @@ namespace indigo
         };
 
         ReactionArrowObject(int arrow_type, const Vec2f& begin, const Vec2f& end, float height = 0)
-            : MetaObject(CID), _arrow_type(arrow_type), _begin(begin), _end(end), _height(height) {};
+            : MetaObject(CID), _arrow_type(arrow_type), _begin(begin), _end(end), _height(height){};
 
         MetaObject* clone() const override
         {
@@ -717,7 +717,7 @@ namespace indigo
     {
     public:
         static const std::uint32_t CID = "Reaction plus object"_hash;
-        ReactionPlusObject(const Vec2f& pos) : MetaObject(CID), _pos(pos) {};
+        ReactionPlusObject(const Vec2f& pos) : MetaObject(CID), _pos(pos){};
 
         MetaObject* clone() const override
         {
@@ -801,8 +801,8 @@ namespace indigo
 
     struct MolSumm
     {
-        MolSumm() : bbox(Vec2f(0, 0), Vec2f(0, 0)), role(BaseReaction::UNDEFINED), reaction_idx(-1) {};
-        MolSumm(const Rect2f& box) : bbox(box), role(BaseReaction::UNDEFINED), reaction_idx(-1) {};
+        MolSumm() : bbox(Vec2f(0, 0), Vec2f(0, 0)), role(BaseReaction::UNDEFINED), reaction_idx(-1){};
+        MolSumm(const Rect2f& box) : bbox(box), role(BaseReaction::UNDEFINED), reaction_idx(-1){};
 
         Rect2f bbox;
         std::vector<int> indexes;
@@ -852,7 +852,7 @@ namespace indigo
         };
 
         ReactionComponent(int ctype, const Rect2f& box, int idx, std::unique_ptr<BaseMolecule> mol)
-            : component_type(ctype), bbox(box), molecule(std::move(mol)), summ_block_idx(NOT_CONNECTED), index(idx) {};
+            : component_type(ctype), bbox(box), molecule(std::move(mol)), summ_block_idx(NOT_CONNECTED), index(idx){};
 
         int component_type;
         Rect2f bbox;

@@ -65,9 +65,9 @@ namespace indigo
     class AutoInt
     {
     public:
-        AutoInt() : val(0) {};
+        AutoInt() : val(0){};
 
-        AutoInt(int v) : val(v) {};
+        AutoInt(int v) : val(v){};
 
         AutoInt(const std::string& v) : val(std::stoi(v))
         {
@@ -204,7 +204,7 @@ namespace indigo
     public:
         DECL_ERROR;
 
-        CDXMLProperty(const tinyxml2::XMLAttribute* attribute) : _attribute(attribute) {};
+        CDXMLProperty(const tinyxml2::XMLAttribute* attribute) : _attribute(attribute){};
 
         virtual bool hasContent() const override
         {
@@ -737,7 +737,7 @@ namespace indigo
             return _scanner;
         }
 
-        virtual ~CDXReader() {};
+        virtual ~CDXReader(){};
 
     protected:
         std::string _buffer;
