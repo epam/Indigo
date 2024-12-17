@@ -667,6 +667,49 @@ void MoleculeCdxmlLoader::parseCDXMLAttributes(BaseCDXProperty& prop)
     applyDispatcher(prop, cdxml_dispatcher);
 }
 
+void MoleculeCdxmlLoader::parseColorTable(BaseCDXElement& elem)
+{
+    for (auto color_elem = elem.firstChildElement(); color_elem->hasContent(); color_elem = color_elem->nextSiblingElement())
+    {
+        if (color_elem->name() == "color")
+        {
+            uint32_t cdxml_color = 0;
+            for (auto color_prop = color_elem->firstProperty(); color_prop->hasContent(); color_prop = color_prop->next())
+            {
+                auto cval = static_cast<int>(std::stof(color_prop->value()) * 0xFF);
+                if (color_prop->name() == "r")
+                    cdxml_color |= cval << 16;
+                else if (color_prop->name() == "g")
+                    cdxml_color |= cval << 8;
+                else if (color_prop->name() == "b")
+                    cdxml_color |= cval;
+            }
+            color_table.push_back(cdxml_color);
+        }
+    }
+}
+
+void indigo::MoleculeCdxmlLoader::parseFontTable(BaseCDXElement& elem)
+{
+    for (auto font_elem = elem.firstChildElement(); font_elem->hasContent(); font_elem = font_elem->nextSiblingElement())
+    {
+        if (font_elem->name() == "font")
+        {
+            int font_id = 0;
+            std::string font_name;
+            for (auto font_prop = font_elem->firstProperty(); font_prop->hasContent(); font_prop = font_prop->next())
+            {
+                if (font_prop->name() == "id")
+                    font_id = std::stoi(font_prop->value());
+                else if (font_prop->name() == "name")
+                    font_name = font_prop->value();
+            }
+            if (font_id && font_name.size())
+                font_table.emplace(font_id, font_name);
+        }
+    }
+}
+
 void MoleculeCdxmlLoader::_parseCDXMLPage(BaseCDXElement& elem)
 {
     for (auto page_elem = elem.firstChildElement(); page_elem->hasContent(); page_elem = page_elem->nextSiblingElement())
@@ -682,46 +725,9 @@ void MoleculeCdxmlLoader::_parseCDXMLPage(BaseCDXElement& elem)
             }
         }
         else if (page_elem->value() == "colortable")
-        {
-            for (auto color_elem = page_elem->firstChildElement(); color_elem->hasContent(); color_elem = color_elem->nextSiblingElement())
-            {
-                if (color_elem->name() == "color")
-                {
-                    uint32_t cdxml_color = 0;
-                    for (auto color_prop = color_elem->firstProperty(); color_prop->hasContent(); color_prop = color_prop->next())
-                    {
-                        auto cval = static_cast<int>(std::stof(color_prop->value()) * 0xFF);
-                        if (color_prop->name() == "r")
-                            cdxml_color |= cval << 16;
-                        else if (color_prop->name() == "g")
-                            cdxml_color |= cval << 8;
-                        else if (color_prop->name() == "b")
-                            cdxml_color |= cval;
-                    }
-                    color_table.push_back(cdxml_color);
-                }
-            }
-        }
+            parseColorTable(*page_elem);
         else if (page_elem->value() == "fonttable")
-        {
-            for (auto font_elem = page_elem->firstChildElement(); font_elem->hasContent(); font_elem = font_elem->nextSiblingElement())
-            {
-                if (font_elem->name() == "font")
-                {
-                    int font_id = 0;
-                    std::string font_name;
-                    for (auto font_prop = font_elem->firstProperty(); font_prop->hasContent(); font_prop = font_prop->next())
-                    {
-                        if (font_prop->name() == "id")
-                            font_id = std::stoi(font_prop->value());
-                        else if (font_prop->name() == "name")
-                            font_name = font_prop->value();
-                    }
-                    if (font_id && font_name.size())
-                        font_table.emplace(font_id, font_name);
-                }
-            }
-        }
+            parseFontTable(*page_elem);
     }
 }
 
@@ -789,8 +795,8 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(BaseCDXElement& first_elem, bool n
         }
         else
         {
-            // _parseTextToKetObject(elem, ket_text_objects);
-            _parseText(elem, text_objects);
+            _parseTextToKetObject(elem, ket_text_objects);
+            //_parseText(elem, text_objects);
         }
     };
 
@@ -1656,11 +1662,11 @@ void MoleculeCdxmlLoader::_parseLabel(BaseCDXElement& elem, std::string& label)
 void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vector<SimpleTextObject>& text_objects)
 {
     Vec2f text_pos;
-    Rect2f text_bbox;
     float wwrap_val;
     std::vector<int> line_starts;
     std::string label_justification, label_alignment, text_justification;
-    AutoInt font_id, font_color_index, font_face;
+    AutoInt font_id, font_face;
+    std::optional<AutoInt> font_color_index;
     float font_size;
     SimpleTextObject kto;
 
@@ -1677,7 +1683,7 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
     auto style_size_lambda = [&font_size](const std::string& data) { font_size = round(std::stof(data) * kCDXMLFonsSizeMultiplier); };
     auto style_color_lambda = [&font_color_index](const std::string& data) {
         font_color_index = data;
-        font_color_index = font_color_index - 2;
+        font_color_index = font_color_index.value() - 2;
     };
 
     std::unordered_map<std::string, std::function<void(const std::string&)>> style_dispatcher = {
@@ -1694,7 +1700,7 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
             std::string style_text = text_style->getText();
             if (style_text == "+")
             {
-                _pluses.push_back(text_bbox.center());
+                _pluses.push_back(kto.boundingBox().center());
                 return;
             }
 
@@ -1707,22 +1713,24 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
             for (size_t i = 0; i < lines.size(); ++i)
             {
                 if (i)
-                {
                     kto.block().push_back(SimpleTextObject::KETTextParagraph());
-                }
 
                 const auto& part = lines[i];
                 if (part.size())
                 {
                     // parts should be added to the last paragraph
                     auto& paragraph = kto.block().back();
+                    if (line_starts.size())
+                    {
+                        paragraph.line_starts = line_starts;
+                        line_starts.clear();
+                    }
 
                     FONT_STYLE_SET fss;
-
                     font_face = 0;
                     font_size = 0.0;
                     font_id = 0;
-                    font_color_index = -2;
+                    font_color_index.reset();
                     auto style = text_style->firstProperty();
                     applyDispatcher(*style, style_dispatcher);
 
@@ -1751,19 +1759,20 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
                                     std::forward_as_tuple(true));
 
                     // set fss font color
-                    if (font_color_index >= 0 && font_color_index < static_cast<int>(color_table.size()))
+                    if (font_color_index.has_value())
                     {
-                        fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::EColor, color_table[font_color_index]),
+                        auto fidx = font_color_index.value();
+                        auto font_color = fidx >= 0 && font_color_index.value() < static_cast<int>(color_table.size()) ? color_table[font_color_index.value()]
+                                                                                                                       : (fidx == -1 ? 0xFFFFFF : 0);
+                        fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::EColor, font_color),
                                     std::forward_as_tuple(true));
                     }
 
                     // set fss font family
                     auto font_it = font_table.find(font_id);
                     if (font_it != font_table.end())
-                    {
                         fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::EFamily, font_it->second),
                                     std::forward_as_tuple(true));
-                    }
 
                     auto prev_it = paragraph.font_styles.find(paragraph.text.size());
                     if (prev_it != paragraph.font_styles.end())
@@ -1785,10 +1794,7 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
         }
     }
     if (kto.block().size())
-    {
-
         text_objects.push_back(kto);
-    }
 }
 
 void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<CdxmlText>& text_parsed)
@@ -1803,7 +1809,8 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<CdxmlText
                                                                                                 {"BoundingBox", bboxLambda(text_bbox)},
                                                                                                 {"LabelJustification", strLambda(label_justification)},
                                                                                                 {"LabelAlignment", strLambda(label_alignment)}};
-    AutoInt font_id, font_color_index, font_face;
+    AutoInt font_id, font_face;
+    AutoInt font_color_index;
     float font_size;
 
     auto style_font_lambda = [&font_id](const std::string& data) { font_id = data; };

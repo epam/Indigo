@@ -41,7 +41,16 @@ namespace indigo
                     lhs.erase(it);
 
                 // check for duplicates
-                if (!lhs.count(fs))
+                auto fs_it = lhs.find(fs);
+                if (fs_it != lhs.end())
+                {
+                    // Update value if it is already present
+                    if (fs_it->first.hasValue())
+                    {
+                        lhs.erase(fs_it);
+                        lhs.insert(fs);
+                    }
+                } else
                     lhs.insert(fs);
             }
             else

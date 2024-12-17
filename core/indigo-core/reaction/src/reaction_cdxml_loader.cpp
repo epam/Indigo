@@ -149,6 +149,10 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                 }
             }
         }
+        else if (page_elem->value() == "colortable")
+            loader.parseColorTable(*page_elem);
+        else if (page_elem->value() == "fonttable")
+            loader.parseFontTable(*page_elem);
     }
 
     for (auto id : reactants_ids)

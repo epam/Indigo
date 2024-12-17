@@ -144,12 +144,17 @@ namespace indigo
             _font_style = fs;
         }
 
-        void setValue(const std::string& val)
+        void copyValue(const KETFontStyle& other)
+        {
+            _val = other._val;
+        }
+
+        void setValue(uint32_t val)
         {
             _val = val;
         }
 
-        void setValue(uint32_t val)
+        void setValue(const std::variant<std::monostate, std::string, uint32_t>& val)
         {
             _val = val;
         }
@@ -291,6 +296,7 @@ namespace indigo
             FONT_STYLE_SET font_style;
             std::optional<TextAlignment> alignment;
             std::optional<KETTextIndent> indent;
+            std::optional<std::vector<int>> line_starts;
             std::map<std::size_t, FONT_STYLE_SET> font_styles;
         };
 

@@ -896,6 +896,9 @@ namespace indigo
             };
         }
 
+        void parseColorTable(BaseCDXElement& elem);
+        void parseFontTable(BaseCDXElement& elem);
+
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
         Rect2f cdxml_bbox;

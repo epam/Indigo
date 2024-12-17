@@ -323,6 +323,11 @@ void RenderItemAuxiliary::fillKETStyle(TextItem& ti, const FONT_STYLE_SET& style
             ti.size /= KFontScaleFactor;
         }
         break;
+        case KETFontStyle::FontStyle::EColor: {
+            auto color_val = text_style.first.getUInt();
+            if (text_style.second && color_val.has_value())
+                ti.color = color_val.value();
+        }
         default:
             break;
         }
@@ -386,14 +391,34 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
 
                         auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(text_item.text).substr(first_index, second_index - first_index));
-                        ti.text.readString(sub_text.c_str(), true);
                         fillKETStyle(ti, current_styles);
+                        ti.text.readString(sub_text.c_str(), true);
                         _rc.setTextItemSize(ti);
                         ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
                         ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
-                        _rc.drawTextItemText(ti, Vec3f(0, 0, 0), idle);
 
-                        text_offset_x += ti.bbsz.x + _settings.boundExtent;
+                        float red = (float)((ti.color >> 16) & 0xFF) / 255.0f;
+                        float green = (float)((ti.color >> 8) & 0xFF) / 255.0f;
+                        float blue = (float)(ti.color & 0xFF) / 255.0f;
+
+                        if (text_item.line_starts.has_value())
+                        {
+                            int line_start_offset = 0;
+                            for (auto& line_start : text_item.line_starts.value())
+                            {
+                                ti.text.readString(sub_text.substr(line_start_offset, line_start - line_start_offset).c_str(), true);
+                                line_start_offset = line_start;
+                                _rc.drawTextItemText(ti, Vec3f(red, green, blue), idle);
+                                ti.bbp.y += text_max_height + _settings.boundExtent;
+                            }
+                            text_offset_y += text_max_height * (text_item.line_starts.value().size() - 1);
+                        }
+                        else
+                        {
+                            _rc.drawTextItemText(ti, Vec3f(red, green, blue), idle);
+                        }
+
+                        text_offset_x += ti.bbsz.x;
                         current_styles = kvp.second;
                         first_index = second_index;
                     }
@@ -465,6 +490,7 @@ void RenderItemAuxiliary::_drawImage(const EmbeddedImageObject& img)
 void RenderItemAuxiliary::_renderSimpleObject(const SimpleGraphicsObject& simple)
 {
     _rc.setLineWidth(_settings.bondLineWidth);
+    _rc.setSingleSource(CWC_BASE);
 
     auto v1 = simple._coordinates.first;
     auto v2 = simple._coordinates.second;
@@ -569,7 +595,8 @@ float RenderItemAuxiliary::_getMaxHeight(const SimpleTextObject::KETTextParagrap
 
         std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
         std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
-        auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(tl.text).substr(first_index, second_index - first_index));
+        auto utf32str = utf82w.from_bytes(tl.text);
+        auto sub_text = w2utf8.to_bytes(utf32str.substr(first_index, second_index - first_index));
 
         ti.text.readString(sub_text.c_str(), true);
         fillKETStyle(ti, current_styles);
