@@ -1578,7 +1578,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
         for (int i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
         {
             TGroup& tg = mol.tgroups.getTGroup(i);
-            auto template_name = std::string("monomerTemplate-") + monomerId(tg);
+            auto template_name = std::string(tg.ambiguous ? "ambiguousMonomerTemplate-" : "monomerTemplate-") + monomerId(tg);
             writer.StartObject();
             writer.Key("$ref");
             writer.String(template_name.c_str());
