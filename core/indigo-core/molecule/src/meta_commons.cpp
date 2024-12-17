@@ -50,7 +50,8 @@ namespace indigo
                         lhs.erase(fs_it);
                         lhs.insert(fs);
                     }
-                } else
+                }
+                else
                     lhs.insert(fs);
             }
             else
