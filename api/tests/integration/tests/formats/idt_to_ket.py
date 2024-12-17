@@ -102,6 +102,7 @@ idt_errors = {
     "/3Phos/*": "Symbol '*' could be placed only between two nucleotides/nucleosides.",
     "r(B1:50003000)(B1)": "Unknown mixed base 'B1'",
     "(YY:00330067)": "Invalid mixed base - only numerical index allowed.",
+    "(Y:)": "Invalid IDT ambiguous monomer (Y:)",
 }
 for idt_seq in sorted(idt_errors.keys()):
     error = idt_errors[idt_seq]

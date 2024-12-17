@@ -655,7 +655,7 @@ const std::map<std::string, int>& KetConnection::getStringPropStrToIdx() const
     return str_to_idx;
 }
 
-IMPL_ERROR(KetAmbiguousMonomer, "Ket Variant Monomer")
+IMPL_ERROR(KetAmbiguousMonomer, "Ket Ambiguous Monomer")
 
 const std::map<std::string, int>& KetAmbiguousMonomer::getIntPropStrToIdx() const
 {
