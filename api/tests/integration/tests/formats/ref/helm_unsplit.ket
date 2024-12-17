@@ -1,0 +1,401 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "monomer0"
+            }
+        ],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-5Br-dU___5-Bromo-deoxyuridine"
+            }
+        ]
+    },
+    "monomer0": {
+        "type": "monomer",
+        "id": "0",
+        "seqid": 1,
+        "position": {
+            "x": 0.000000,
+            "y": -0.000000
+        },
+        "alias": "5Br-dU",
+        "templateId": "5Br-dU___5-Bromo-deoxyuridine"
+    },
+    "monomerTemplate-5Br-dU___5-Bromo-deoxyuridine": {
+        "type": "monomerTemplate",
+        "id": "5Br-dU___5-Bromo-deoxyuridine",
+        "class": "RNA",
+        "classHELM": "RNA",
+        "fullName": "5-Bromo-deoxyuridine",
+        "alias": "5Br-dU",
+        "naturalAnalogShort": "U",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 7,
+                "type": "left",
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 10,
+                "type": "right",
+                "leavingGroup": {
+                    "atoms": [
+                        11
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    15.273682,
+                    -8.096931,
+                    0.000000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "O",
+                "location": [
+                    16.187220,
+                    -7.690222,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    16.856388,
+                    -8.433364,
+                    0.000000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    16.356394,
+                    -9.299379,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    15.378230,
+                    -9.091434,
+                    0.000000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    14.407657,
+                    -7.596931,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    17.850908,
+                    -8.328821,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    14.407657,
+                    -6.596931,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    13.541631,
+                    -6.096931,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    14.635082,
+                    -9.760561,
+                    0.000000
+                ]
+            },
+            {
+                "label": "P",
+                "location": [
+                    13.684028,
+                    -9.451541,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    12.940880,
+                    -10.120668,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    13.476119,
+                    -8.473392,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    13.891935,
+                    -10.429688,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    19.348570,
+                    -7.462246,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    18.350935,
+                    -7.461986,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    19.849623,
+                    -8.328752,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    18.353966,
+                    -9.198792,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    19.354019,
+                    -9.192330,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    20.849623,
+                    -8.327120,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    17.857058,
+                    -10.066595,
+                    0.000000
+                ]
+            },
+            {
+                "label": "Br",
+                "location": [
+                    19.848392,
+                    -6.596118,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    0
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    5
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    6
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    5,
+                    7
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    7,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    9
+                ],
+                "stereo": 6
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    9,
+                    10
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    10,
+                    11
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    10,
+                    12
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    10,
+                    13
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    15,
+                    6
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    17
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    17,
+                    18
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    18,
+                    16
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    16,
+                    14
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    14,
+                    15
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    16,
+                    19
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    17,
+                    20
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    14,
+                    21
+                ]
+            }
+        ]
+    }
+}
