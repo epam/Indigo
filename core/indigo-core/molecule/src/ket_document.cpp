@@ -100,7 +100,7 @@ KetAmbiguousMonomerTemplate& KetDocument::addAmbiguousMonomerTemplate(const std:
                                                                       IdtAlias idt_alias, std::vector<KetAmbiguousMonomerOption>& options)
 {
     if (_ambiguous_templates.find(id) != _ambiguous_templates.end())
-        throw Error("Variant monomer template '%s' already exists.", id.c_str());
+        throw Error("Ambiguous monomer template '%s' already exists.", id.c_str());
     _ambiguous_templates_ids.emplace_back(id);
     auto it = _ambiguous_templates.try_emplace(id, subtype, id, name, idt_alias, options);
     _template_id_to_type.emplace(id, KetBaseMonomerTemplate::TemplateType::AmbiguousMonomerTemplate);
@@ -120,7 +120,7 @@ std::unique_ptr<KetBaseMonomer>& KetDocument::addAmbiguousMonomer(const std::str
 std::unique_ptr<KetBaseMonomer>& KetDocument::addAmbiguousMonomer(const std::string& id, const std::string& alias, const std::string& template_id)
 {
     if (_monomers.find(id) != _monomers.end())
-        throw Error("Variant monomer '%s' already exists.", id.c_str());
+        throw Error("Ambiguous monomer '%s' already exists.", id.c_str());
     auto it = _monomers.try_emplace(id, std::make_unique<KetAmbiguousMonomer>(id, alias, template_id));
     it.first->second->setAttachmentPoints(_ambiguous_templates.at(template_id).attachmentPoints());
     _monomer_ref_to_id.emplace(it.first->second->ref(), id);
@@ -222,7 +222,7 @@ void KetDocument::processAmbiguousMonomerTemplates()
                 has_probability = true;
         }
         if (has_ratio && has_probability)
-            throw Error("Variant monomer template '%s' has options with both ratio and probability set.", it.first.c_str());
+            throw Error("Ambiguous monomer template '%s' has options with both ratio and probability set.", it.first.c_str());
         MonomerClass monomer_class = _templates.at(options[0].templateId()).monomerClass();
         for (auto& opt_it : options)
         {
