@@ -1706,93 +1706,80 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
             // add paragraph
             if (kto.block().empty())
                 kto.block().push_back(SimpleTextObject::KETTextParagraph());
+            auto& paragraph = kto.block().back();
 
-            // break parts into separate paragraphs if CR presents
-            auto lines = split_with_empty(style_text, '\n');
-            for (size_t i = 0; i < lines.size(); ++i)
+            if (style_text.size())
             {
-                if (i)
-                    kto.block().push_back(SimpleTextObject::KETTextParagraph());
+                FONT_STYLE_SET fss;
+                font_face = 0;
+                font_size = 0.0;
+                font_id = 0;
+                font_color_index.reset();
+                auto style = text_style->firstProperty();
+                applyDispatcher(*style, style_dispatcher);
 
-                const auto& part = lines[i];
-                if (part.size())
+                // fill fss
+
+                CDXMLFontStyle fs(font_face);
+                if (font_face == KCDXMLChemicalFontStyle)
                 {
-                    // parts should be added to the last paragraph
-                    auto& paragraph = kto.block().back();
-                    if (line_starts.size())
-                    {
-                        paragraph.line_starts = line_starts;
-                        line_starts.clear();
-                    }
-
-                    FONT_STYLE_SET fss;
-                    font_face = 0;
-                    font_size = 0.0;
-                    font_id = 0;
-                    font_color_index.reset();
-                    auto style = text_style->firstProperty();
-                    applyDispatcher(*style, style_dispatcher);
-
-                    // fill fss
-
-                    CDXMLFontStyle fs(font_face);
-                    if (font_face == KCDXMLChemicalFontStyle)
-                    {
-                        // special case
-                    }
-                    else
-                    {
-                        if (fs.is_bold)
-                            fss.emplace(KETFontStyle::FontStyle::EBold, true);
-                        if (fs.is_italic)
-                            fss.emplace(KETFontStyle::FontStyle::EBold, true);
-                        if (fs.is_superscript)
-                            fss.emplace(KETFontStyle::FontStyle::ESuperScript, true);
-                        if (fs.is_superscript)
-                            fss.emplace(KETFontStyle::FontStyle::ESubScript, true);
-                    }
-
-                    // set fss font size
-                    if (font_size > 0 && (int)font_size != KDefaultFontSize)
-                        fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::ESize, static_cast<uint32_t>(font_size)),
-                                    std::forward_as_tuple(true));
-
-                    // set fss font color
-                    if (font_color_index.has_value())
-                    {
-                        auto fidx = font_color_index.value();
-                        auto font_color = fidx >= 0 && font_color_index.value() < static_cast<int>(color_table.size()) ? color_table[font_color_index.value()]
-                                                                                                                       : (fidx == -1 ? 0xFFFFFF : 0);
-                        fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::EColor, font_color), std::forward_as_tuple(true));
-                    }
-
-                    // set fss font family
-                    auto font_it = font_table.find(font_id);
-                    if (font_it != font_table.end())
-                        fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::EFamily, font_it->second),
-                                    std::forward_as_tuple(true));
-
-                    auto prev_it = paragraph.font_styles.find(paragraph.text.size());
-                    if (prev_it != paragraph.font_styles.end())
-                        prev_it->second += fss;
-                    else
-                        paragraph.font_styles.emplace(paragraph.text.size(), fss);
-
-                    paragraph.text += part;
-                    // turn off the styles
-                    FONT_STYLE_SET fss_off;
-                    for (auto& fs_off : fss)
-                    {
-                        fss.emplace(fs_off.first, false);
-                    }
-                    if (fss.size())
-                        paragraph.font_styles.emplace(paragraph.text.size(), fss);
+                    // special case
                 }
+                else
+                {
+                    if (fs.is_bold)
+                        fss.emplace(KETFontStyle::FontStyle::EBold, true);
+                    if (fs.is_italic)
+                        fss.emplace(KETFontStyle::FontStyle::EBold, true);
+                    if (fs.is_superscript)
+                        fss.emplace(KETFontStyle::FontStyle::ESuperScript, true);
+                    if (fs.is_superscript)
+                        fss.emplace(KETFontStyle::FontStyle::ESubScript, true);
+                }
+
+                // set fss font size
+                if (font_size > 0 && (int)font_size != KDefaultFontSize)
+                    fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::ESize, static_cast<uint32_t>(font_size)),
+                                std::forward_as_tuple(true));
+
+                // set fss font color
+                if (font_color_index.has_value())
+                {
+                    auto fidx = font_color_index.value();
+                    auto font_color = fidx >= 0 && font_color_index.value() < static_cast<int>(color_table.size()) ? color_table[font_color_index.value()]
+                                                                                                                   : (fidx == -1 ? 0xFFFFFF : 0);
+                    fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::EColor, font_color), std::forward_as_tuple(true));
+                }
+
+                // set fss font family
+                auto font_it = font_table.find(font_id);
+                if (font_it != font_table.end())
+                    fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::EFamily, font_it->second),
+                                std::forward_as_tuple(true));
+
+                auto prev_it = paragraph.font_styles.find(paragraph.text.size());
+                if (prev_it != paragraph.font_styles.end())
+                    prev_it->second += fss;
+                else
+                    paragraph.font_styles.emplace(paragraph.text.size(), fss);
+
+                paragraph.text += style_text;
+                // turn off the styles
+                FONT_STYLE_SET fss_off;
+                for (auto& fs_off : fss)
+                {
+                    fss.emplace(fs_off.first, false);
+                }
+                if (fss.size())
+                    paragraph.font_styles.emplace(paragraph.text.size(), fss);
             }
         }
     }
     if (kto.block().size())
+    {
+        kto.block().back().line_starts = line_starts;
         text_objects.push_back(kto);
+    }
 }
 
 void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<CdxmlText>& text_parsed)

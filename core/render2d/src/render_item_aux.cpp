@@ -368,6 +368,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                 for (auto& text_item : ko.block())
                 {
                     float text_max_height = _getMaxHeight(text_item);
+                    auto line_starts = text_item.line_starts;
                     int first_index = -1;
                     int second_index = -1;
                     double text_offset_x = 0;
@@ -390,34 +391,35 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
                         std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
 
-                        auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(text_item.text).substr(first_index, second_index - first_index));
-                        fillKETStyle(ti, current_styles);
-                        ti.text.readString(sub_text.c_str(), true);
-                        _rc.setTextItemSize(ti);
-                        ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
-                        ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
+                        std::vector<std::string> styled_lines;
+                        if (line_starts.has_value() && line_starts.value().size() && line_starts.value().front() <= second_index &&
+                            line_starts.value().front() > first_index)
+                        {
+                            auto ls_index = line_starts.value().front();
+                            line_starts.value().erase(line_starts.value().begin());
+                            styled_lines.push_back(text_item.text.substr(first_index, ls_index - first_index));
+                            styled_lines.push_back(text_item.text.substr(ls_index, second_index - ls_index));
+                        }
+                        else
+                            styled_lines.push_back(text_item.text.substr(first_index, second_index - first_index));
 
+                        fillKETStyle(ti, current_styles);
                         float red = (float)((ti.color >> 16) & 0xFF) / 255.0f;
                         float green = (float)((ti.color >> 8) & 0xFF) / 255.0f;
                         float blue = (float)(ti.color & 0xFF) / 255.0f;
 
-                        if (text_item.line_starts.has_value())
+                        // check for multiple lines
+                        for (auto& styled_text : styled_lines)
                         {
-                            int line_start_offset = 0;
-                            for (auto& line_start : text_item.line_starts.value())
-                            {
-                                ti.text.readString(sub_text.substr(line_start_offset, line_start - line_start_offset).c_str(), true);
-                                line_start_offset = line_start;
-                                _rc.drawTextItemText(ti, Vec3f(red, green, blue), idle);
-                                ti.bbp.y += text_max_height + _settings.boundExtent;
-                            }
-                            text_offset_y += text_max_height * (text_item.line_starts.value().size() - 1);
-                        }
-                        else
-                        {
+                            auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(styled_text));
+                            ti.text.readString(sub_text.c_str(), true);
+                            _rc.setTextItemSize(ti);
+                            ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
+                            ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
                             _rc.drawTextItemText(ti, Vec3f(red, green, blue), idle);
+                            if (styled_lines.size() > 1)
+                                text_offset_y += text_max_height + _settings.boundExtent;
                         }
-
                         text_offset_x += ti.bbsz.x;
                         current_styles = kvp.second;
                         first_index = second_index;
@@ -595,8 +597,8 @@ float RenderItemAuxiliary::_getMaxHeight(const SimpleTextObject::KETTextParagrap
 
         std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
         std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
-        auto utf32str = utf82w.from_bytes(tl.text);
-        auto sub_text = w2utf8.to_bytes(utf32str.substr(first_index, second_index - first_index));
+        auto utf32str = utf82w.from_bytes(tl.text.substr(first_index, second_index - first_index));
+        auto sub_text = w2utf8.to_bytes(utf32str);
 
         ti.text.readString(sub_text.c_str(), true);
         fillKETStyle(ti, current_styles);
