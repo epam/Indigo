@@ -1738,13 +1738,14 @@ void SequenceLoader::loadHELM(KetDocument& document)
                 else // kHELMPolymerTypeRNA
                 {
                     const std::string& phosphate_lib_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, std::get<0>(monomer_info));
-                    if (phosphate_lib_id.size())
+                    const std::string& nucleotide_id = _library.getMonomerTemplateIdByAlias(MonomerClass::RNA, std::get<0>(monomer_info));
+                    if (phosphate_lib_id.size() || nucleotide_id.size())
                     {
                         // add phosphate
-                        auto phosphate_idx = addKetMonomer(document, monomer_info, MonomerClass::Phosphate, pos);
-                        cur_polymer_map->second[monomer_idx] = phosphate_idx;
+                        auto added_idx = addKetMonomer(document, monomer_info, nucleotide_id.size() > 0 ? MonomerClass::RNA : MonomerClass::Phosphate, pos);
+                        cur_polymer_map->second[monomer_idx] = added_idx;
                         if (monomer_idx > 1)
-                            addMonomerConnection(document, phosphate_idx - 1, phosphate_idx);
+                            addMonomerConnection(document, added_idx - 1, added_idx);
                         ch = _scanner.lookNext();
                         if (ch != '.' && ch != '}')
                             throw Error("Unexpected symbol. Expected '.' or '}' but found '%c'.", ch);
