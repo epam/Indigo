@@ -1593,8 +1593,8 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
 void MoleculeCdxmlLoader::_parseArrow(BaseCDXElement& elem)
 {
     Rect2f text_bbox;
-    Vec2f begin_pos;
-    Vec2f end_pos;
+    Vec3f begin_pos;
+    Vec3f end_pos;
     std::string fill_type;
     std::string arrow_head;
     std::string head_type;
@@ -1638,8 +1638,7 @@ void MoleculeCdxmlLoader::_parseArrow(BaseCDXElement& elem)
                 ar_type = ReactionComponent::ARROW_BOTH_ENDS_FILLED_TRIANGLE;
             }
         }
-
-        _arrows[arrow_id] = (std::make_pair(std::make_pair(begin_pos, end_pos), ar_type));
+        _arrows[arrow_id] = std::make_pair(std::make_pair(begin_pos, end_pos), ar_type);
     }
 }
 
