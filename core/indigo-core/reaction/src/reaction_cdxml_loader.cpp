@@ -236,7 +236,11 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
     {
         loader.loadMoleculeFromFragment(*_pmol, *kvp.second);
         if (_pmol->vertexCount())
+        {
+            Array<char> label;
+            _pmol->getAtomSymbol(0, label);
             rxn.addUndefinedCopy(*_pmol, 0, 0);
+        }
         rxn.meta().append(_pmol->meta());
     }
 }

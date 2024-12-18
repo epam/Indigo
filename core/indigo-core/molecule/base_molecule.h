@@ -479,6 +479,7 @@ namespace indigo
         void getSGroupAtomsCenterPoint(SGroup& sgroup, Vec2f& res);
         void getAtomsCenterPoint(Array<int>& atoms, Vec2f& res);
         void getAtomsCenterPoint(Vec2f& res);
+        void setAtomsCenterPoint(const Vec3f& center);
         float getBondsMeanLength();
 
         void scale(const Vec2f& center, float scale);

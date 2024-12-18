@@ -4123,6 +4123,19 @@ void BaseMolecule::getAtomsCenterPoint(Vec2f& res)
     getAtomsCenterPoint(atoms, res);
 }
 
+void BaseMolecule::setAtomsCenterPoint(const Vec3f& center)
+{
+    Vec2f old_center;
+    getAtomsCenterPoint(old_center);
+    Vec2f shift = Vec2f(center.x, center.y) - old_center;
+    for (auto i : vertices())
+    {
+        Vec3f& p = getAtomXyz(i);
+        p.x += shift.x;
+        p.y += shift.y;
+    }
+}
+
 float BaseMolecule::getBondsMeanLength()
 {
     double bondSum = 0.0;

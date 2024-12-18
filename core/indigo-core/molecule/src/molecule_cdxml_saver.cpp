@@ -1573,7 +1573,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
                 XMLElement* s = _doc->NewElement("s");
                 t->LinkEndChild(s);
                 s->SetAttribute("font", 4);
-                s->SetAttribute("size", font_size / kCDXMLFonsSizeMultiplier);
+                s->SetAttribute("size", font_size / kCDXMLFontSizeMultiplier);
                 s->SetAttribute("face", font_face.face);
                 if (font_face.is_superscript)
                 {

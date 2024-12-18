@@ -392,15 +392,16 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
 
                         std::vector<std::string> styled_lines;
-                        if (line_starts.has_value() && line_starts.value().size() && line_starts.value().front() <= second_index &&
-                            line_starts.value().front() > first_index)
+                        while (line_starts.has_value() && line_starts.value().size() && line_starts.value().front() <= second_index &&
+                               line_starts.value().front() > first_index)
                         {
                             auto ls_index = line_starts.value().front();
                             line_starts.value().erase(line_starts.value().begin());
                             styled_lines.push_back(text_item.text.substr(first_index, ls_index - first_index));
-                            styled_lines.push_back(text_item.text.substr(ls_index, second_index - ls_index));
+                            first_index = ls_index;
                         }
-                        else
+
+                        if (second_index > first_index)
                             styled_lines.push_back(text_item.text.substr(first_index, second_index - first_index));
 
                         fillKETStyle(ti, current_styles);
@@ -411,14 +412,21 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         // check for multiple lines
                         for (auto& styled_text : styled_lines)
                         {
-                            auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(styled_text));
-                            ti.text.readString(sub_text.c_str(), true);
-                            _rc.setTextItemSize(ti);
-                            ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
-                            ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
-                            _rc.drawTextItemText(ti, Vec3f(red, green, blue), idle);
-                            if (styled_lines.size() > 1)
-                                text_offset_y += text_max_height + _settings.boundExtent;
+                            auto splitted = split_with_empty(styled_text, '\n');
+                            for (auto& line : splitted)
+                            {
+                                if (line.size())
+                                {
+                                    auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(line));
+                                    ti.text.readString(sub_text.c_str(), true);
+                                    _rc.setTextItemSize(ti);
+                                    ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
+                                    ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
+                                    _rc.drawTextItemText(ti, Vec3f(red, green, blue), idle);
+                                    if (styled_lines.size() > 1)
+                                        text_offset_y += text_max_height + _settings.boundExtent;
+                                }
+                            }
                         }
                         text_offset_x += ti.bbsz.x;
                         current_styles = kvp.second;

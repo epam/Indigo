@@ -175,6 +175,8 @@ namespace indigo
         int repeat_pattern;
         std::string label;
         bool is_superatom;
+        Rect2f bbox;
+        Vec3f pos;
     };
 
     struct CdxmlText
@@ -926,6 +928,7 @@ namespace indigo
         void _parseTextToKetObject(BaseCDXElement& elem, std::vector<SimpleTextObject>& text_objects);
 
         void _parseLabel(BaseCDXElement& elem, std::string& label);
+        void _parseBracketLabel(BaseCDXElement& elem, CdxmlBracket& bracket);
 
         void _parseGraphic(BaseCDXElement& elem);
         void _parseArrow(BaseCDXElement& elem);

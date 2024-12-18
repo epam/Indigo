@@ -32,7 +32,7 @@ namespace indigo
     const uint32_t kCDXMagicNumber = 0x01020304;
     const char kCDXReserved[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     const float kColorMult = ((1 << 16) - 1);
-    const float kCDXMLFonsSizeMultiplier = 1.5;
+    const float kCDXMLFontSizeMultiplier = 3.0;
     const std::uint16_t KCDXMLFontStyleSubscript = 0x20;
     const std::uint16_t KCDXMLFontStyleSuperscript = 0x40;
     constexpr uint32_t kCDXUnitsPerPoint = 65536;
