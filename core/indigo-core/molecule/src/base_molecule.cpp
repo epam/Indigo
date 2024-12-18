@@ -124,6 +124,16 @@ bool BaseMolecule::hasCoord(BaseMolecule& mol)
             return true;
     }
 
+    for (i = 0; i < mol.rgroups.getRGroupCount(); ++i)
+    {
+        RGroup& rg = mol.rgroups.getRGroup(i + 1);
+        for (int j = 0; j < rg.fragments.size(); ++j)
+        {
+            BaseMolecule* frag = rg.fragments[j];
+            if (hasCoord(*frag))
+                return true;
+        }
+    }
     return false;
 }
 
