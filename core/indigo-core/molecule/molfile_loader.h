@@ -52,8 +52,8 @@ namespace indigo
         void copyProperties(const MolfileLoader& loader);
 
         // for Rxnfiles v3000
-        void loadCtab3000(Molecule& mol);
-        void loadQueryCtab3000(QueryMolecule& mol);
+        void loadMolBlock3000(Molecule& mol);
+        void loadQueryMolBlock3000(QueryMolecule& mol);
 
         StereocentersOptions stereochemistry_options;
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
@@ -124,6 +124,7 @@ namespace indigo
         void _readSGroup3000(const char* str);
         void _readRGroups3000();
         void _readTGroups3000();
+        void _checkEndOfMolBlock3000();
         void _readSGroupDisplay(Scanner& scanner, DataSGroup& dsg);
         void _readCollectionBlock3000();
         void _readSGroupsBlock3000();
