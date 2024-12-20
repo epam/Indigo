@@ -107,26 +107,48 @@ void MolfileLoader::_loadMolecule()
         _readCtab3000();
         _readRGroups3000();
         _readTGroups3000();
+
+        long long next_block_pos = _scanner.tell();
+        QS_DEF(Array<char>, str);
+        _scanner.readLine(str, true);
+        if (strncmp(str.ptr(), "M  END", 6) != 0)
+            throw Error("unexpected string in molecule: %s", str.ptr());
+        _scanner.seek(next_block_pos, SEEK_SET);
     }
 
     _postLoad();
 }
 
-void MolfileLoader::loadCtab3000(Molecule& mol)
+void MolfileLoader::_checkEndOfMolBlock3000()
+{
+    long long next_block_pos = _scanner.tell();
+    QS_DEF(Array<char>, str);
+    _scanner.readLine(str, true);
+    // could be end of rectant, product or catalyst, ot start of next item
+    if (!(strncmp(str.ptr(), "M  V30 END ", 11) == 0 || strncmp(str.ptr(), "M  V30 BEGIN CTAB", 15) == 0))
+        throw Error("unexpected string in reaction: %s", str.ptr());
+    _scanner.seek(next_block_pos, SEEK_SET);
+}
+
+void MolfileLoader::loadMolBlock3000(Molecule& mol)
 {
     _bmol = &mol;
     _qmol = 0;
     _mol = &mol;
     _readCtab3000();
+    _readTGroups3000();
+    _checkEndOfMolBlock3000();
     _postLoad();
 }
 
-void MolfileLoader::loadQueryCtab3000(QueryMolecule& mol)
+void MolfileLoader::loadQueryMolBlock3000(QueryMolecule& mol)
 {
     _bmol = &mol;
     _qmol = &mol;
     _mol = 0;
     _readCtab3000();
+    _readTGroups3000();
+    _checkEndOfMolBlock3000();
     _postLoad();
 }
 
@@ -3793,6 +3815,8 @@ void MolfileLoader::_readTGroups3000()
 
     while (!_scanner.isEOF())
     {
+        long long next_block_pos = _scanner.tell();
+
         _scanner.readLine(str, true);
 
         if (strncmp(str.ptr(), "M  V30 BEGIN TEMPLATE", 21) == 0)
@@ -3896,10 +3920,11 @@ void MolfileLoader::_readTGroups3000()
                     throw Error("unexpected string in template: %s", str.ptr());
             }
         }
-        else if (strncmp(str.ptr(), "M  END", 6) == 0)
-            break;
         else
-            throw Error("unexpected string in template: %s", str.ptr());
+        {
+            _scanner.seek(next_block_pos, SEEK_SET);
+            break;
+        }
     }
 }
 

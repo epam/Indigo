@@ -12,7 +12,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import Indigo, joinPathPy  # noqa
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
@@ -26,6 +26,7 @@ ref_path = joinPathPy("ref/", __file__)
 files = [
     "2531-bad-layout",
     "2485-bad-layout",
+    "rxn3000-with-macro",
 ]
 
 files.sort()
