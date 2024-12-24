@@ -27,7 +27,12 @@ def test_smarts_to_ket(smarts_in, expected_str):
 
 
 def test_ket_to_smarts(filename, expected_str):
-    mol = indigo.loadQueryMoleculeFromFile(os.path.join(ref_path, filename))
+    try:
+        mol = indigo.loadMoleculeFromFile(os.path.join(ref_path, filename))
+    except IndigoException as e:
+        mol = indigo.loadQueryMoleculeFromFile(
+            os.path.join(ref_path, filename)
+        )
     smarts = mol.smarts()
     if smarts == expected_str:
         print(

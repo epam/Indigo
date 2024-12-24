@@ -207,6 +207,11 @@ void IndigoSmilesSaver::generateSmarts(IndigoObject& obj, Array<char>& out_buffe
     {
         BaseMolecule& mol = obj.getBaseMolecule();
 
+        if (mol.tgroups.getTGroupCount())
+        {
+            mol.transformTemplatesToSuperatoms();
+        }
+
         SmilesSaver saver(output);
         saver.smarts_mode = true;
         if (mol.isQueryMolecule())

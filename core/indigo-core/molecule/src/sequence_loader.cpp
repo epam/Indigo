@@ -259,8 +259,7 @@ void SequenceLoader::addAminoAcid(BaseMolecule& mol, char ch)
 {
     Vec3f pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
     std::string aa(1, ch);
-    int amino_idx = mol.asMolecule().addAtom(-1);
-    mol.asMolecule().setTemplateAtom(amino_idx, monomerNameByAlias(kMonomerClassAA, aa).c_str());
+    int amino_idx = mol.addTemplateAtom(monomerNameByAlias(kMonomerClassAA, aa).c_str());
     mol.asMolecule().setTemplateAtomClass(amino_idx, kMonomerClassAA);
     mol.asMolecule().setTemplateAtomSeqid(amino_idx, _seq_id);
     mol.asMolecule().setAtomXyz(amino_idx, pos);
@@ -275,8 +274,7 @@ void SequenceLoader::addAminoAcid(BaseMolecule& mol, char ch)
 
 int SequenceLoader::addTemplateAtom(BaseMolecule& mol, const char* alias, const char* monomer_class, int seq_id)
 {
-    int idx = mol.asMolecule().addAtom(-1);
-    mol.asMolecule().setTemplateAtom(idx, alias);
+    int idx = mol.addTemplateAtom(alias);
     mol.asMolecule().setTemplateAtomClass(idx, monomer_class);
     mol.asMolecule().setTemplateAtomSeqid(idx, seq_id);
     return idx;

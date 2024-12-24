@@ -1606,8 +1606,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     }
     BaseMolecule::collapse(*mol);
 
-    if (!mol->isQueryMolecule())
-        mol->getTemplatesMap(_templates);
+    mol->getTemplatesMap(_templates);
 
     // save root elements
     saveRoot(*mol, writer);

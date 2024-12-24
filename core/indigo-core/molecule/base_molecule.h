@@ -215,13 +215,55 @@ namespace indigo
         virtual bool isPseudoAtom(int idx) = 0;
         virtual const char* getPseudoAtom(int idx) = 0;
 
+        struct _AttachOrder
+        {
+            int ap_idx;
+            Array<char> ap_id;
+        };
+
+        struct _TemplateOccurrence
+        {
+            int name_idx;              // index in _template_names
+            int class_idx;             // index in _template_classes
+            int seq_id;                // sequence id
+            int template_idx;          // template idx
+            Array<char> seq_name;      // sequence name
+            DisplayOption contracted;  // display option (-1 if undefined, 0 - expanded, 1 - contracted)
+            Array<_AttachOrder> order; // attach order info
+            _TemplateOccurrence() : name_idx(-1), class_idx(-1), seq_id(-1), template_idx(-1), contracted(DisplayOption::Undefined)
+            {
+            }
+            _TemplateOccurrence(const _TemplateOccurrence& other)
+                : name_idx(other.name_idx), class_idx(other.class_idx), seq_id(other.seq_id), template_idx(other.template_idx), contracted(other.contracted)
+            {
+                seq_name.copy(other.seq_name);
+                order.copy(other.order);
+            }
+        };
+        ObjPool<_TemplateOccurrence> _template_occurrences;
+
+        StringPool _template_classes;
+        StringPool _template_names;
+
+        virtual int addTemplateAtom(const char* text) = 0;
         virtual bool isTemplateAtom(int idx) = 0;
-        virtual const char* getTemplateAtom(int idx) = 0;
-        virtual const int getTemplateAtomSeqid(int idx) = 0;
-        virtual const char* getTemplateAtomSeqName(int idx) = 0;
-        virtual const char* getTemplateAtomClass(int idx) = 0;
-        virtual const int getTemplateAtomDisplayOption(int idx) = 0;
-        virtual const int getTemplateAtomTemplateIndex(int idx) = 0;
+        virtual int getTemplateAtomOccurrence(int idx) = 0;
+
+        const char* getTemplateAtom(int idx);
+        const int getTemplateAtomSeqid(int idx);
+        const char* getTemplateAtomSeqName(int idx);
+        const char* getTemplateAtomClass(int idx);
+        const int getTemplateAtomDisplayOption(int idx);
+        const int getTemplateAtomTemplateIndex(int idx);
+
+        void renameTemplateAtom(int idx, const char* text);
+        void setTemplateAtomName(int idx, const char* text);
+        void setTemplateAtomClass(int idx, const char* text);
+        void setTemplateAtomSeqid(int idx, int seq_id);
+        void setTemplateAtomSeqName(int idx, const char* seq_name);
+
+        void setTemplateAtomDisplayOption(int idx, int contracted);
+        void setTemplateAtomTemplateIndex(int idx, int temp_idx);
 
         bool getUnresolvedTemplatesList(BaseMolecule& bmol, std::string& unresolved);
 
@@ -313,6 +355,7 @@ namespace indigo
         virtual int addAtom(int label) = 0;
 
         virtual int addBond(int beg, int end, int order) = 0;
+        virtual int addBond_Silent(int beg, int end, int order) = 0;
 
         void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false, bool only_selected = false);
 

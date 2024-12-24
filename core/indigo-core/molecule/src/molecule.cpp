@@ -56,9 +56,6 @@ void Molecule::clear()
     _total_h.clear();
     _valence.clear();
     _radicals.clear();
-    _template_occurrences.clear();
-    _template_names.clear();
-    _template_classes.clear();
 
     _aromatized = false;
     _ignore_bad_valence = false;
@@ -342,15 +339,11 @@ void Molecule::setPseudoAtom(int idx, const char* text)
     updateEditRevision();
 }
 
-void Molecule::renameTemplateAtom(int idx, const char* text)
+int Molecule::addTemplateAtom(const char* text)
 {
-    auto occur_idx = _atoms[idx].template_occur_idx;
-    if (_atoms[idx].number == ELEM_TEMPLATE)
-    {
-        _TemplateOccurrence& occur = _template_occurrences.at(occur_idx);
-        _template_names.set(occur.name_idx, text);
-        updateEditRevision();
-    }
+    int idx = addAtom(ELEM_TEMPLATE);
+    setTemplateAtom(idx, text);
+    return idx;
 }
 
 void Molecule::setTemplateAtom(int idx, const char* text)
@@ -362,66 +355,6 @@ void Molecule::setTemplateAtom(int idx, const char* text)
     occur.seq_id = -1;
     occur.template_idx = -1;
     occur.contracted = DisplayOption::Undefined;
-    updateEditRevision();
-}
-
-void Molecule::setTemplateAtomName(int idx, const char* text)
-{
-    if (_atoms[idx].number != ELEM_TEMPLATE)
-        throw Error("setTemplateAtomClass(): atom #%d is not a template atom", idx);
-
-    _TemplateOccurrence& occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
-    occur.name_idx = _template_names.add(text);
-    updateEditRevision();
-}
-
-void Molecule::setTemplateAtomClass(int idx, const char* text)
-{
-    if (_atoms[idx].number != ELEM_TEMPLATE)
-        throw Error("setTemplateAtomClass(): atom #%d is not a template atom", idx);
-
-    _TemplateOccurrence& occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
-    occur.class_idx = _template_classes.add(text);
-    updateEditRevision();
-}
-
-void Molecule::setTemplateAtomSeqid(int idx, int seq_id)
-{
-    if (_atoms[idx].number != ELEM_TEMPLATE)
-        throw Error("setTemplateAtomSeqid(): atom #%d is not a template atom", idx);
-
-    _TemplateOccurrence& occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
-    occur.seq_id = seq_id;
-    updateEditRevision();
-}
-
-void Molecule::setTemplateAtomSeqName(int idx, const char* seq_name)
-{
-    if (_atoms[idx].number != ELEM_TEMPLATE)
-        throw Error("setTemplateAtomSeqName(): atom #%d is not a template atom", idx);
-
-    _TemplateOccurrence& occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
-    occur.seq_name.readString(seq_name, true);
-    updateEditRevision();
-}
-
-void Molecule::setTemplateAtomTemplateIndex(int idx, int temp_idx)
-{
-    if (_atoms[idx].number != ELEM_TEMPLATE)
-        throw Error("setTemplateAtomTemplateIndex(): atom #%d is not a template atom", idx);
-
-    _TemplateOccurrence& occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
-    occur.template_idx = temp_idx;
-    updateEditRevision();
-}
-
-void Molecule::setTemplateAtomDisplayOption(int idx, int option)
-{
-    if (_atoms[idx].number != ELEM_TEMPLATE)
-        throw Error("setTemplateAtomDisplayOption(): atom #%d is not a template atom", idx);
-
-    _TemplateOccurrence& occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
-    occur.contracted = (DisplayOption)option;
     updateEditRevision();
 }
 
@@ -1406,83 +1339,14 @@ bool Molecule::isTemplateAtom(int idx)
     return _atoms[idx].number == ELEM_TEMPLATE;
 }
 
-const char* Molecule::getTemplateAtom(int idx)
+int Molecule::getTemplateAtomOccurrence(int idx)
 {
     const _Atom& atom = _atoms[idx];
 
     if (atom.number != ELEM_TEMPLATE)
-        throw Error("getTemplateAtom(): atom #%d is not a template atom", idx);
+        throw Error("getTemplateAtomOccurrence(): atom #%d is not a template atom", idx);
 
-    _TemplateOccurrence& occur = _template_occurrences.at(atom.template_occur_idx);
-    const char* res = _template_names.at(occur.name_idx);
-
-    if (res == 0)
-        throw Error("template atom string is zero");
-
-    return res;
-}
-
-const char* Molecule::getTemplateAtomClass(int idx)
-{
-    const _Atom& atom = _atoms[idx];
-
-    if (atom.number != ELEM_TEMPLATE)
-        throw Error("getTemplateAtomClass(): atom #%d is not a template atom", idx);
-
-    _TemplateOccurrence& occur = _template_occurrences.at(atom.template_occur_idx);
-    const char* res = _template_classes.at(occur.class_idx);
-
-    return res;
-}
-
-const char* Molecule::getTemplateAtomSeqName(int idx)
-{
-    const _Atom& atom = _atoms[idx];
-
-    if (atom.number != ELEM_TEMPLATE)
-        throw Error("getTemplateAtomClass(): atom #%d is not a template atom", idx);
-
-    _TemplateOccurrence& occur = _template_occurrences.at(atom.template_occur_idx);
-    return occur.seq_name.ptr();
-}
-
-const int Molecule::getTemplateAtomTemplateIndex(int idx)
-{
-    const _Atom& atom = _atoms[idx];
-
-    if (atom.number != ELEM_TEMPLATE)
-        throw Error("getTemplateAtomTemplateIndex(): atom #%d is not a template atom", idx);
-
-    _TemplateOccurrence& occur = _template_occurrences.at(atom.template_occur_idx);
-    const int res = occur.template_idx;
-    return res;
-}
-
-const int Molecule::getTemplateAtomSeqid(int idx)
-{
-    const _Atom& atom = _atoms[idx];
-
-    if (atom.number != ELEM_TEMPLATE)
-        throw Error("getTemplateAtomSeqid(): atom #%d is not a template atom", idx);
-
-    _TemplateOccurrence& occur = _template_occurrences.at(atom.template_occur_idx);
-    const int res = occur.seq_id;
-
-    return res;
-}
-
-const int Molecule::getTemplateAtomDisplayOption(int idx)
-{
-    const _Atom& atom = _atoms[idx];
-
-    if (atom.number != ELEM_TEMPLATE)
-        throw Error("getTemplateAtomDisplayOption(): atom #%d is not a template atom", idx);
-
-    _TemplateOccurrence& occur = _template_occurrences.at(atom.template_occur_idx);
-    const int res = static_cast<int>(occur.contracted);
-    // const int res = occur.contracted;
-
-    return res;
+    return atom.template_occur_idx;
 }
 
 BaseMolecule* Molecule::neu()
