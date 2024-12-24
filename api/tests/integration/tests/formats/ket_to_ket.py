@@ -59,16 +59,17 @@ files = [
     "ambiguous_monomer",
 ]
 formats = {
-    "doc": indigo.loadKetDocument,
-    "mol": indigo.loadMolecule,
+    "doc": [indigo.loadKetDocument],
+    "mol": [indigo.loadMolecule, indigo.loadQueryMolecule],
 }
 for filename in sorted(files):
     for format in sorted(formats.keys()):
         file_path = os.path.join(ref_path, filename)
         with open("{}_{}.ket".format(file_path, format), "r") as file:
             ket_ref = file.read()
-        mol = formats[format](ket_ref)
-        # with open("{}_{}.ket".format(file_path, format), "w") as file:
-        #     file.write(mol.json())
-        ket = mol.json()
-        check_res(filename, format, ket_ref, ket)
+        for loader in formats[format]:
+            mol = loader(ket_ref)
+            # with open("{}_{}.ket".format(file_path, format), "w") as file:
+            #     file.write(mol.json())
+            ket = mol.json()
+            check_res(filename, format + " " + loader.__name__, ket_ref, ket)

@@ -1,6 +1,8 @@
 *** KET to KET ***
 images.ket:SUCCEED
-ambiguous_monomer.ket doc: SUCCEED
-ambiguous_monomer.ket mol: SUCCEED
-monomer_shape.ket doc: SUCCEED
-monomer_shape.ket mol: SUCCEED
+ambiguous_monomer.ket doc loadKetDocument: SUCCEED
+ambiguous_monomer.ket mol loadMolecule: SUCCEED
+ambiguous_monomer.ket mol loadQueryMolecule: SUCCEED
+monomer_shape.ket doc loadKetDocument: SUCCEED
+monomer_shape.ket mol loadMolecule: SUCCEED
+monomer_shape.ket mol loadQueryMolecule: SUCCEED

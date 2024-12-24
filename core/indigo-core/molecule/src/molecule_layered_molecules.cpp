@@ -356,39 +356,19 @@ const char* LayeredMolecules::getPseudoAtom(int idx)
     return _proto.getPseudoAtom(idx);
 }
 
+int LayeredMolecules::addTemplateAtom(const char* text)
+{
+    return _proto.addTemplateAtom(text);
+}
+
 bool LayeredMolecules::isTemplateAtom(int idx)
 {
     return _proto.isTemplateAtom(idx);
 }
 
-const char* LayeredMolecules::getTemplateAtom(int idx)
+int LayeredMolecules::getTemplateAtomOccurrence(int idx)
 {
-    return _proto.getTemplateAtom(idx);
-}
-
-const int LayeredMolecules::getTemplateAtomSeqid(int idx)
-{
-    return _proto.getTemplateAtomSeqid(idx);
-}
-
-const char* LayeredMolecules::getTemplateAtomSeqName(int idx)
-{
-    return _proto.getTemplateAtomSeqName(idx);
-}
-
-const int LayeredMolecules::getTemplateAtomTemplateIndex(int idx)
-{
-    return _proto.getTemplateAtomTemplateIndex(idx);
-}
-
-const char* LayeredMolecules::getTemplateAtomClass(int idx)
-{
-    return _proto.getTemplateAtomClass(idx);
-}
-
-const int LayeredMolecules::getTemplateAtomDisplayOption(int idx)
-{
-    return _proto.getTemplateAtomDisplayOption(idx);
+    return _proto.getTemplateAtomOccurrence(idx);
 }
 
 bool LayeredMolecules::isRSite(int idx)
@@ -487,6 +467,11 @@ int LayeredMolecules::addAtom(int label)
 }
 
 int LayeredMolecules::addBond(int beg, int end, int order)
+{
+    return _proto.addBond(beg, end, order);
+}
+
+int LayeredMolecules::addBond_Silent(int beg, int end, int order)
 {
     return _proto.addBond(beg, end, order);
 }

@@ -1636,15 +1636,16 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     for (SizeType i = 0; i < _monomer_array.Size(); i++)
     {
         auto& ma = _monomer_array[i];
-        int idx = mol.asMolecule().addAtom(-1);
+
+        if (!ma.HasMember("alias"))
+            throw Error("Monomer alias is missing");
+
+        int idx = mol.addTemplateAtom(ma["alias"].GetString());
         int monomer_id = std::stoi(std::string(ma["id"].GetString()));
         monomer_id_mapping.emplace(monomer_id, idx);
 
-        if (ma.HasMember("alias"))
-            mol.asMolecule().setTemplateAtom(idx, ma["alias"].GetString());
-
         if (ma.HasMember("seqid"))
-            mol.asMolecule().setTemplateAtomSeqid(idx, ma["seqid"].GetInt());
+            mol.setTemplateAtomSeqid(idx, ma["seqid"].GetInt());
 
         if (ma.HasMember("position"))
         {
@@ -1656,8 +1657,8 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         auto temp_it = _id_to_template.find(template_id);
         if (temp_it != _id_to_template.end())
         {
-            mol.asMolecule().setTemplateAtomClass(idx, monomerMolClass(monomerTemplateClass(_templates[temp_it->second])).c_str());
-            mol.asMolecule().setTemplateAtomTemplateIndex(idx, temp_it->second);
+            mol.setTemplateAtomClass(idx, monomerMolClass(monomerTemplateClass(_templates[temp_it->second])).c_str());
+            mol.setTemplateAtomTemplateIndex(idx, temp_it->second);
         }
     }
 
@@ -1805,7 +1806,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         if (atp2.size())
             mol.setTemplateAtomAttachmentOrder(id2, id1, atp2.c_str());
 
-        mol.asMolecule().addBond_Silent(id1, id2, order);
+        mol.addBond_Silent(id1, id2, order);
     }
 
     MoleculeLayout ml(mol, false);
