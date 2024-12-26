@@ -1096,8 +1096,18 @@ void SequenceLoader::loadIdt(KetDocument& document)
                             check_mixed_base(mixed_base);
                             if (ratios_str.size() != 8)
                                 throw Exception("Invalid IDT ambiguous monomer %s", idt_alias.c_str());
-                            ratios.emplace(std::array<float, 4>{std::stof(ratios_str.substr(0, 2)), std::stof(ratios_str.substr(2, 2)),
-                                                                std::stof(ratios_str.substr(4, 2)), std::stof(ratios_str.substr(6, 2))});
+                            auto stof = [](const std::string& arg) -> float {
+                                try
+                                {
+                                    return std::stof(arg);
+                                }
+                                catch (...)
+                                {
+                                    throw Error("Invalid number '%s'", arg.c_str());
+                                }
+                            };
+                            ratios.emplace(std::array<float, 4>{stof(ratios_str.substr(0, 2)), stof(ratios_str.substr(2, 2)), stof(ratios_str.substr(4, 2)),
+                                                                stof(ratios_str.substr(6, 2))});
                             idt_alias = '(' + mixed_base + ')';
                             mixed_base = mixed_base[0];
                         }
@@ -1491,7 +1501,14 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
             auto& opt = options.second.emplace_back(opt_alias, std::optional<float>());
             if (count.size() > 0)
             {
-                opt.second = std::stof(count);
+                try
+                {
+                    opt.second = std::stof(count);
+                }
+                catch (...)
+                {
+                    throw Error("Invalid number '%s'", count.c_str());
+                }
                 no_counts = false;
             }
             if (ch == ')')
