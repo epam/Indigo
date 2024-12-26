@@ -326,7 +326,12 @@ void RenderItemAuxiliary::fillKETStyle(TextItem& ti, const FONT_STYLE_SET& style
         case KETFontStyle::FontStyle::EColor: {
             auto color_val = text_style.first.getUInt();
             if (text_style.second && color_val.has_value())
+            {
                 ti.color = color_val.value();
+
+                ti.rgb_color = ti.color == CWC_BASE ? Vec3f(0,0,0) : Vec3f((float)((ti.color >> 16) & 0xFF) / 255.0f, ti.rgb_color.y = (float)((ti.color >> 8) & 0xFF) / 255.0f,
+                                              ti.rgb_color.z = (float)(ti.color & 0xFF) / 255.0f);
+            }
         }
         default:
             break;
@@ -405,9 +410,6 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                             styled_lines.push_back(text_item.text.substr(first_index, second_index - first_index));
 
                         fillKETStyle(ti, current_styles);
-                        float red = (float)((ti.color >> 16) & 0xFF) / 255.0f;
-                        float green = (float)((ti.color >> 8) & 0xFF) / 255.0f;
-                        float blue = (float)(ti.color & 0xFF) / 255.0f;
 
                         // check for multiple lines
                         for (auto& styled_text : styled_lines)
@@ -422,7 +424,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                                     _rc.setTextItemSize(ti);
                                     ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
                                     ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
-                                    _rc.drawTextItemText(ti, Vec3f(red, green, blue), idle);
+                                    _rc.drawTextItemText(ti, ti.rgb_color, idle);
                                     if (styled_lines.size() > 1)
                                         text_offset_y += text_max_height + _settings.boundExtent;
                                 }

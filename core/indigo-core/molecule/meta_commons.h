@@ -83,9 +83,16 @@ namespace indigo
         EPatch
     };
 
+    using KETFontVal = std::variant<std::monostate, std::string, uint32_t>;
+
+    struct KETFontStyleStatus
+    {
+        std::size_t offset;
+        KETFontVal val;
+    };
+
     struct KETFontStyle
     {
-        using KETFontVal = std::variant<std::monostate, std::string, uint32_t>;
         enum class FontStyle : int
         {
             ENone,
@@ -123,6 +130,11 @@ namespace indigo
         FontStyle getFontStyle() const
         {
             return _font_style;
+        }
+
+        const KETFontVal& getVal() const
+        {
+            return _val;
         }
 
         std::optional<std::string> getString() const
@@ -166,7 +178,7 @@ namespace indigo
 
     private:
         FontStyle _font_style;
-        std::variant<std::monostate, std::string, uint32_t> _val;
+        KETFontVal _val;
     };
 
     struct compareFunction

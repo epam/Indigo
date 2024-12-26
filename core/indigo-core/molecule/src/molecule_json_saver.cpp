@@ -2085,17 +2085,96 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
 
 void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const SimpleTextObject& text_obj)
 {
+    std::string content = text_obj.content();
+    if (content.empty() && text_obj.block().size())
+    {
+        // generate text from paragraphs
+        SimpleTextObjectBuilder tob;
+        for (const auto& paragraph : text_obj.block())
+        {
+            SimpleTextLine line;
+            line.text = paragraph.text;
+            std::unordered_map<KETFontStyle::FontStyle, KETFontStyleStatus> style_status;
+            for (auto& kvp : paragraph.font_styles)
+            {
+                auto& fs = kvp.second;
+                for (auto& fs_pair : fs)
+                {
+                    SimpleTextStyle sts;
+                    auto ss_it = style_status.find(fs_pair.first.getFontStyle());
+                    if (fs_pair.second)
+                    {
+                        if (ss_it == style_status.end())
+                            style_status.emplace(fs_pair.first.getFontStyle(), KETFontStyleStatus{kvp.first, fs_pair.first.getVal()});
+                        else 
+                            if (fs_pair.first.hasValue())
+                            {
+                                // update style status
+                                if (fs_pair.first == KETFontStyle::FontStyle::ESize)
+                                {
+                                    auto pval = std::get_if<uint32_t>(&ss_it->second.val);
+                                    if (pval)
+                                    {
+                                        sts.styles.push_back(std::string(KFontCustomSizeStrV1) + "_" + std::to_string(*pval) + "px");
+                                        sts.offset = ss_it->second.offset;
+                                        sts.size = kvp.first - ss_it->second.offset;
+                                        line.text_styles.push_back(sts);
+                                    }
+                                }
+                                ss_it->second.offset = kvp.first;
+                                ss_it->second.val = fs_pair.first.getVal();
+                            }
+
+                    }
+                    else
+                    {
+                        if (ss_it != style_status.end())
+                        {
+                            sts.offset = ss_it->second.offset;
+                            sts.size = kvp.first - ss_it->second.offset;
+
+                            switch (fs_pair.first.getFontStyle())
+                            {
+                            case KETFontStyle::FontStyle::EBold:
+                                sts.styles.push_back(KFontBoldStrV1);
+                                break;
+                            case KETFontStyle::FontStyle::EItalic:
+                                sts.styles.push_back(KFontItalicStrV1);
+                                break;
+                            case KETFontStyle::FontStyle::ESubScript:
+                                sts.styles.push_back(KFontSubscriptStrV1);
+                                break;
+                            case KETFontStyle::FontStyle::ESuperScript:
+                                sts.styles.push_back(KFontSuperscriptStrV1);
+                                break;
+                            case KETFontStyle::FontStyle::ESize: {
+                                auto fs_val = fs_pair.first.getUInt();
+                                if (fs_val.has_value())
+                                    sts.styles.push_back(std::string(KFontCustomSizeStrV1) + "_" + std::to_string(fs_val.value()) + "px");
+                            }
+                            break;
+                            }
+                            line.text_styles.push_back(sts);
+                            style_status.erase(ss_it);
+                        }
+                    }
+                }
+            }
+            tob.addLine(line);
+        }
+        content = tob.getJsonString();
+    }
+
     writer.Key("data");
     writer.StartObject();
     writer.Key("content");
-    writer.String(text_obj.content().c_str());
+    writer.String(content.c_str());
     writer.Key("position");
     writer.WritePoint(text_obj.boundingBox().leftTop());
     writer.Key("pos");
     writer.StartArray();
     writer.WritePoint(text_obj.boundingBox().leftTop());
     writer.WritePoint(text_obj.boundingBox().leftBottom());
-    writer.WritePoint(text_obj.boundingBox().leftTop());
     writer.WritePoint(text_obj.boundingBox().rightBottom());
     writer.WritePoint(text_obj.boundingBox().rightTop());
     writer.EndArray();

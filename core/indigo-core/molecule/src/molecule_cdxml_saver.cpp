@@ -18,7 +18,7 @@
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 4315) // TODO: Fix CDXFont allign issue
+#pragma warning(disable : 4315) // TODO: Fix CDXFont align issue
 #endif
 
 #include "molecule/molecule_cdxml_saver.h"
@@ -1517,10 +1517,13 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
             FONT_STYLE_SET current_styles;
             Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().top());
             std::string pos_str = std::to_string(_bond_length * text_origin.x) + " " + std::to_string(-_bond_length * text_origin.y);
+            std::string box_str = std::to_string(_bond_length * ko.boundingBox().left()) + " " + std::to_string(-_bond_length * ko.boundingBox().top()) + " " +
+                                  std::to_string(_bond_length * ko.boundingBox().right()) + " " + std::to_string(-_bond_length * ko.boundingBox().bottom());
             XMLElement* t = _doc->NewElement("t");
             _current->LinkEndChild(t);
             t->SetAttribute("id", id);
             t->SetAttribute("p", pos_str.c_str());
+            t->SetAttribute("BoundingBox", box_str.c_str());
             t->SetAttribute("Justification", "Left");
             t->SetAttribute("InterpretChemically", "no");
             for (auto& kvp : text_item.font_styles)
@@ -1573,7 +1576,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
                 XMLElement* s = _doc->NewElement("s");
                 t->LinkEndChild(s);
                 s->SetAttribute("font", 4);
-                s->SetAttribute("size", font_size / kCDXMLFontSizeMultiplier);
+                s->SetAttribute("size", 2 * font_size / kCDXMLFontSizeMultiplier);
                 s->SetAttribute("face", font_face.face);
                 if (font_face.is_superscript)
                 {
