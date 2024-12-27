@@ -45,6 +45,7 @@ helm_data = {
     "helm_fractional_ratio": "PEPTIDE1{(A:1.5+C:0.1+G:3)}$$$$V2.0",
     "helm_chem_rna_hydro": "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:pair-3:pair$$$V2.0",
     "helm_unsplit": "RNA1{[5Br-dU]}$$$$V2.0",
+    "helm_smiles_no_ap": "CHEM1{[P(O)(O)(=O)O]}$$$$V2.0",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -78,6 +79,7 @@ helm_errors = {
     "PEPTIDE1{(A:+C:0.1)}$$$$V2.0": "Unexpected symbol. Expected digit but found '+'",
     "RNA1{R(A).R(A)p}$$$$V2.0": "Monomer template with class 'Phosphate' and alias 'R' not found in monomer librarys",
     "PEPTIDE1{(A:1.5.+C:0.1)}$$$$V2.0": "Enexpected symbol. Second dot in number",
+    "RNA1{R[P(O)(O)(=O)O]}$$$$V2.0": "Unknown attachment point 'R1' in monomer Mod0",
 }
 for helm_seq in sorted(helm_errors.keys()):
     error = helm_errors[helm_seq]
