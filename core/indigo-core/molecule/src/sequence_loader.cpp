@@ -1330,7 +1330,24 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
             throw Error(unexpected_eod);
         if (ch != ']')
             throw Error("Unexpected symbol. Expected ']' but found '%c'.", ch);
-        if (smiles)
+        bool found = false;
+        if (_library.getMonomerTemplateIdByAlias(monomer_class, monomer_alias).size() > 0)
+        {
+            found = true;
+        }
+        else if (monomer_class == MonomerClass::Sugar) // In place of sugar can be phosphate or unsplit rna
+        {
+            if (_library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, monomer_alias).size() > 0)
+            {
+                found = true;
+            }
+            else
+            {
+                if (_library.getMonomerTemplateIdByAlias(MonomerClass::RNA, monomer_alias).size() > 0)
+                    found = true;
+            }
+        }
+        if (smiles || !found) // Monomer alias not found in library - try read as smiles
         {
             // Convert smiles to molecule
             BufferScanner scanner(monomer_alias.c_str());
