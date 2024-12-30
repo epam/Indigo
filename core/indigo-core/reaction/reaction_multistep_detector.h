@@ -115,7 +115,7 @@ namespace indigo
         std::vector<std::unique_ptr<BaseMolecule>> _components;
         std::vector<MOL_DISTANCES_DESC> _mol_distances;
         std::vector<SPECIAL_ZONE_DESC> _zones;
-        int _moleculeCount;
+        size_t _moleculeCount;
     };
 
 } // namespace indigo

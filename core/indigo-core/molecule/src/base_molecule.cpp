@@ -4827,8 +4827,6 @@ float BaseMolecule::distance(BaseMolecule& other)
     return min_dist;
 }
 
-
-
 float BaseMolecule::distance1(const BaseMolecule& other)
 {
     auto build_kd_tree = [](const Array<Vec3f>& points) -> std::vector<Vec3f> {

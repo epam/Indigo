@@ -50,32 +50,20 @@ void ReactionMultistepDetector::createSummBlocks()
     auto pair_comp_asc = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) { return b.first > a.first; };
     auto pair_comp_des = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) { return b.first < a.first; };
     auto pair_comp_mol_asc = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) { return b.second > a.second; };
-    std::list<std::unordered_set<int>> s_neighbors;
-    getSGroupAtoms(_bmol, s_neighbors);
-    _moleculeCount = _bmol.countComponents(s_neighbors);
     _reaction_components.reserve(_moleculeCount);
     FLOAT_INT_PAIRS mol_tops, mol_bottoms, mol_lefts, mol_rights;
 
     // collect components
     for (int i = 0; i < _moleculeCount; ++i)
     {
-        Filter filter(_bmol.getDecomposition().ptr(), Filter::EQ, i);
-        std::unique_ptr<BaseMolecule> component;
-        if (_bmol.isQueryMolecule())
-            component = std::make_unique<QueryMolecule>();
-        else
-            component = std::make_unique<Molecule>();
-
-        BaseMolecule& mol = *component;
-        mol.makeSubmolecule(_bmol, filter, 0, 0);
         Rect2f bbox;
-        mol.getBoundingBox(bbox, MIN_MOL_SIZE);
+        _components[i]->getBoundingBox(bbox, MIN_MOL_SIZE);
 
         mol_tops.emplace_back(bbox.top(), i);
         mol_bottoms.emplace_back(bbox.bottom(), i);
         mol_lefts.emplace_back(bbox.left(), i);
         mol_rights.emplace_back(bbox.right(), i);
-        _reaction_components.emplace_back(ReactionComponent::MOLECULE, bbox, i, std::move(component));
+        _reaction_components.emplace_back(ReactionComponent::MOLECULE, bbox, i, std::move(_components[i]));
     }
 
     for (int i = 0; i < _bmol.meta().getMetaCount(ReactionPlusObject::CID); ++i)
@@ -408,6 +396,7 @@ void ReactionMultistepDetector::mergeCloseComponents()
         }
     }
     _components.erase(std::remove_if(_components.begin(), _components.end(), [](auto& p) { return !p; }), _components.end());
+    _moleculeCount = _components.size();
 }
 
 bool ReactionMultistepDetector::isMergeable(size_t mol_idx1, size_t mol_idx2)
