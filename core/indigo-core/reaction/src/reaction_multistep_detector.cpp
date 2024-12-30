@@ -16,6 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 #include <numeric>
+#include <queue>
 
 #include "layout/pathway_layout.h"
 #include "reaction/pathway_reaction.h"
@@ -238,6 +239,190 @@ void ReactionMultistepDetector::createSummBlocks()
     }
 }
 
+std::unique_ptr<BaseMolecule> ReactionMultistepDetector::extractComponent(int index)
+{
+    Filter filter(_bmol.getDecomposition().ptr(), Filter::EQ, index);
+    std::unique_ptr<BaseMolecule> component;
+    if (_bmol.isQueryMolecule())
+        component = std::make_unique<QueryMolecule>();
+    else
+        component = std::make_unique<Molecule>();
+    component->makeSubmolecule(_bmol, filter, 0, 0);
+    return component;
+}
+
+void ReactionMultistepDetector::collectSortedDistances()
+{
+    _mol_distances.resize(_moleculeCount);
+    for (int i = 0; i < _moleculeCount; ++i)
+    {
+        for (int j = i + 1; j < _moleculeCount; ++j)
+        {
+            float dist = _components[i]->distance(*_components[j]);
+
+            auto& mdi = _mol_distances[i];
+            auto it = std::lower_bound(mdi.sorted_distances.begin(), mdi.sorted_distances.end(), std::make_pair(j, dist),
+                                       [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
+
+            mdi.sorted_distances.insert(it, {j, dist});
+            mdi.distances_map[j] = dist;
+
+            auto& mdj = _mol_distances[j];
+            it = std::lower_bound(mdj.sorted_distances.begin(), mdj.sorted_distances.end(), std::make_pair(i, dist),
+                                  [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
+
+            mdj.sorted_distances.insert(it, {i, dist});
+            mdj.distances_map[i] = dist;
+        }
+    }
+}
+
+void ReactionMultistepDetector::createSpecialZones()
+{
+    for (int i = 0; i < _bmol.meta().getMetaCount(ReactionPlusObject::CID); ++i)
+    {
+        auto& plus = (const ReactionPlusObject&)_bmol.meta().getMetaObject(ReactionPlusObject::CID, i);
+        const auto& plus_pos = plus.getPos();
+        addPlusZones(plus_pos);
+    }
+
+    for (int i = 0; i < _bmol.meta().getMetaCount(ReactionArrowObject::CID); ++i)
+    {
+        auto& arrow = (const ReactionArrowObject&)_bmol.meta().getMetaObject(ReactionArrowObject::CID, i);
+        addArrowZones(arrow.getTail(), arrow.getHead());
+    }
+
+    for (int i = 0; i < _bmol.meta().getMetaCount(ReactionMultitailArrowObject::CID); ++i)
+    {
+        auto& multi = (const ReactionMultitailArrowObject&)_bmol.meta().getMetaObject(ReactionMultitailArrowObject::CID, i);
+        auto& tails = multi.getTails();
+
+        // TODO: add zones for multitail arrows
+    }
+}
+
+void ReactionMultistepDetector::addPlusZones(const Vec2f& pos)
+{
+    Rect2f bbox(pos - PLUS_BBOX_SHIFT, pos + PLUS_BBOX_SHIFT);
+    SPECIAL_ZONE_DESC szd;
+    szd.zone_type = ZoneType::EPlus;
+    std::vector<Vec2f> left, right, bottom, top;
+
+    left.push_back(pos);
+    left.push_back(bbox.leftBottom());
+    left.push_back(Vec2f(left.back().x - PLUS_DETECTION_DISTANCE, left.back().y));
+    left.push_back(Vec2f(left.back().x, left.back().y + bbox.height()));
+    left.push_back(bbox.leftTop());
+    left.push_back(pos);
+
+    right.push_back(pos);
+    right.push_back(bbox.rightTop());
+    right.push_back(Vec2f(right.back().x + PLUS_DETECTION_DISTANCE, right.back().y));
+    right.push_back(Vec2f(right.back().x, right.back().y - bbox.height()));
+    right.push_back(bbox.rightBottom());
+    right.push_back(pos);
+
+    bottom.push_back(pos);
+    bottom.push_back(bbox.rightBottom());
+    bottom.push_back(Vec2f(bottom.back().x, bottom.back().y - PLUS_DETECTION_DISTANCE));
+    bottom.push_back(Vec2f(bottom.back().x - bbox.width(), bottom.back().y));
+    bottom.push_back(bbox.leftBottom());
+    bottom.push_back(pos);
+
+    top.push_back(pos);
+    top.push_back(bbox.leftTop());
+    top.push_back(Vec2f(top.back().x, top.back().y + PLUS_DETECTION_DISTANCE));
+    top.push_back(Vec2f(top.back().x + bbox.width(), top.back().y));
+    top.push_back(bbox.rightTop());
+    top.push_back(pos);
+    szd.zone_sections.push_back(left);
+    szd.zone_sections.push_back(right);
+    szd.zone_sections.push_back(bottom);
+    szd.zone_sections.push_back(top);
+    _zones.push_back(szd);
+}
+
+void ReactionMultistepDetector::addArrowZones(const Vec2f& tale, const Vec2f& head)
+{
+    float dx = head.x - tale.x, dy = head.y - tale.y;
+    float length = std::hypot(dx, dy), half = length * 0.5f;
+    float inv = 1.0f / length;
+    Vec2f nTop = {-dy * inv * half, dx * inv * half};
+    Vec2f nBottom = {dy * inv * half, -dx * inv * half};
+
+    std::vector<Vec2f> top{{head.x, head.y}, {tale.x, tale.y}, {tale.x + nTop.x, tale.y + nTop.y}, {head.x + nTop.x, head.y + nTop.y}};
+    std::vector<Vec2f> bottom{{tale.x, tale.y}, {head.x, head.y}, {head.x + nBottom.x, head.y + nBottom.y}, {tale.x + nBottom.x, tale.y + nBottom.y}};
+    SPECIAL_ZONE_DESC szd;
+    szd.zone_type = ZoneType::EArrow;
+    szd.zone_sections.push_back(top);
+    szd.zone_sections.push_back(bottom);
+    _zones.push_back(szd);
+}
+
+std::unordered_map<int, std::pair<int, int>> ReactionMultistepDetector::findSpecialZones(int mol_idx)
+{
+    std::unordered_map<int, std::pair<int, int>> result;
+    for (int i = 0; i < static_cast<int>(_zones.size()); ++i)
+    {
+        auto& zone = _zones[i];
+        for (int j = 0; j < static_cast<int>(zone.zone_sections.size()); ++j)
+        {
+            auto& section = zone.zone_sections[j];
+        }
+    }
+    return result;
+}
+
+void ReactionMultistepDetector::mergeCloseComponents()
+{
+    for (std::size_t i = 0; i < _components.size(); ++i)
+    {
+        if (!_components[i])
+            continue;
+        std::queue<std::size_t> bfs_queue;
+        std::vector<std::size_t> cluster;
+        bfs_queue.push(i);
+        cluster.push_back(i);
+        while (!bfs_queue.empty())
+        {
+            auto idx = bfs_queue.front();
+            bfs_queue.pop();
+            for (std::size_t j = 0; j < _components.size(); ++j)
+            {
+                if (!_components[j] || j == idx)
+                    continue;
+                if (std::find(cluster.begin(), cluster.end(), j) != cluster.end())
+                    continue;
+                if (isMergeable(idx, j))
+                {
+                    cluster.push_back(j);
+                    bfs_queue.push(j);
+                }
+            }
+        }
+        for (std::size_t k = 1; k < cluster.size(); ++k)
+        {
+            QS_DEF(Array<int>, mapping);
+            _components[i]->mergeWithMolecule(*_components[cluster[k]], &mapping, 0);
+            _components[cluster[k]].reset();
+        }
+    }
+    _components.erase(std::remove_if(_components.begin(), _components.end(), [](auto& p) { return !p; }), _components.end());
+}
+
+bool ReactionMultistepDetector::isMergeable(size_t mol_idx1, size_t mol_idx2)
+{
+    auto& mdi1 = _mol_distances[mol_idx1];
+    auto& mdi2 = _mol_distances[mol_idx2];
+    auto dist_it = mdi1.distances_map.find(mol_idx2);
+    if (dist_it != mdi1.distances_map.end() && dist_it->second < LayoutOptions::DEFAULT_BOND_LENGTH * 2)
+    {
+        // TODO: add merge conditions
+        return true;
+    }
+    return false;
+}
+
 void ReactionMultistepDetector::sortSummblocks()
 {
     // Create a list of original indices
@@ -275,6 +460,14 @@ void ReactionMultistepDetector::sortSummblocks()
 
 ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReaction()
 {
+    std::list<std::unordered_set<int>> s_neighbors;
+    getSGroupAtoms(_bmol, s_neighbors);
+    _moleculeCount = _bmol.countComponents(s_neighbors);
+    for (int i = 0; i < _moleculeCount; ++i)
+        _components.push_back(std::move(extractComponent(i)));
+
+    collectSortedDistances();
+    mergeCloseComponents();
     createSummBlocks();
     bool has_multistep = mapReactionComponents();
     bool has_multitail = mapMultitailReactionComponents();
@@ -456,6 +649,7 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
 bool ReactionMultistepDetector::findPlusNeighbours(const Vec2f& plus_pos, const FLOAT_INT_PAIRS& mol_tops, const FLOAT_INT_PAIRS& mol_bottoms,
                                                    const FLOAT_INT_PAIRS& mol_lefts, const FLOAT_INT_PAIRS& mol_rights, std::pair<int, int>& connection)
 {
+    // TODO: add bounding box for plus
     auto plus_pos_y = std::make_pair(plus_pos.y, 0);
     auto plus_pos_x = std::make_pair(plus_pos.x, 0);
 
@@ -512,6 +706,7 @@ bool ReactionMultistepDetector::findPlusNeighbours(const Vec2f& plus_pos, const 
         bottoms_col.emplace_back(lr_box.bottom(), kvp.second);
     }
 
+    // sort to find the closest to the plus
     std::sort(lefts_row.begin(), lefts_row.end(), pair_comp_asc);
     std::sort(rights_row.begin(), rights_row.end(), pair_comp_des);
     std::sort(tops_col.begin(), tops_col.end(), pair_comp_asc);
@@ -528,6 +723,7 @@ bool ReactionMultistepDetector::findPlusNeighbours(const Vec2f& plus_pos, const 
 
     if (rights_row_it != rights_row.end() && lefts_row_it != lefts_row.end())
     {
+        // TODO: distances limit
         min_distance_h = std::min(std::fabs(rights_row_it->first - plus_pos_x.first), std::fabs(plus_pos_x.first - lefts_row_it->first));
         connection.second = lefts_row_it->second;
         connection.first = rights_row_it->second;
@@ -537,6 +733,7 @@ bool ReactionMultistepDetector::findPlusNeighbours(const Vec2f& plus_pos, const 
 
     if (tops_col_it != tops_col.end() && bottoms_col_it != bottoms_col.end())
     {
+        // TODO: distances limit
         min_distance_v = std::min(std::fabs(tops_col_it->first - plus_pos_y.first), std::fabs(bottoms_col_it->first - plus_pos_y.first));
         if (!result || min_distance_v < min_distance_h)
         {

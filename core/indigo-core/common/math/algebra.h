@@ -23,14 +23,15 @@
 #include <cmath>
 #include <iostream>
 #include <limits>
+#include <vector>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
 
 #define SQR(x) ((x) * (x))
 
-#define DEG2RAD(x) ((x)*M_PI / 180)
-#define RAD2DEG(x) ((x)*180 / M_PI)
+#define DEG2RAD(x) ((x) * M_PI / 180)
+#define RAD2DEG(x) ((x) * 180 / M_PI)
 #define HYPOT(a, b) (sqrt((a) * (a) + (b) * (b)))
 
 namespace indigo
@@ -279,6 +280,7 @@ namespace indigo
         DLLEXPORT void rotateL(float si, float co);
         DLLEXPORT void rotateL(Vec2f vec);
         DLLEXPORT void rotateAroundSegmentEnd(const Vec2f& a, const Vec2f& b, float angle);
+        DLLEXPORT float relativeCross(const Vec2f& a, const Vec2f& b);
 
         DLLEXPORT static float distSqr(const Vec2f& a, const Vec2f& b);
         DLLEXPORT static float dist(const Vec2f& a, const Vec2f& b);
@@ -821,6 +823,28 @@ namespace indigo
         Vec3f _norm;
         float _d;
     };
+
+    inline bool isPointInPolygon(const Vec2f& p, const std::vector<Vec2f>& poly)
+    {
+        bool in = false;
+        for (size_t i = 0, n = poly.size(); i < n; ++i)
+        {
+            size_t j = (i + 1) % n;
+            bool intersect =
+                ((poly[i].y > p.y) != (poly[j].y > p.y)) && (p.x < (poly[j].x - poly[i].x) * (p.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x);
+            if (intersect)
+                in = !in;
+        }
+        return in;
+    }
+
+    inline std::vector<Vec2f> getPointsInsidePolygon(const std::vector<Vec2f>& polygon1, const std::vector<Vec2f>& polygon2)
+    {
+        std::vector<Vec2f> result;
+        result.reserve(polygon1.size());
+        std::copy_if(polygon1.begin(), polygon1.end(), std::back_inserter(result), [&](auto& p) { return isPointInPolygon(p, polygon2); });
+        return result;
+    }
 
 } // namespace indigo
 #endif

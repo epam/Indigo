@@ -4775,6 +4775,90 @@ void BaseMolecule::getBoundingBox(float font_size, LABEL_MODE label_mode, Rect2f
     bbox = Rect2f(a, b);
 }
 
+std::vector<Vec2f> BaseMolecule::getConvexHull(const Vec2f& min_box) const
+{
+    std::vector<Vec2f> vertices;
+    std::transform(_xyz.ptr(), _xyz.ptr() + _xyz.size(), std::back_inserter(vertices), [](const Vec3f& v) -> Vec2f { return Vec2f(v.x, v.y); });
+    if (vertices.size() < 3)
+    {
+        Rect2f bbox;
+        getBoundingBox(bbox, min_box);
+        vertices.clear();
+        vertices.emplace_back(bbox.leftTop());
+        vertices.emplace_back(bbox.rightTop());
+        vertices.emplace_back(bbox.rightBottom());
+        vertices.emplace_back(bbox.leftBottom());
+        return vertices;
+    }
+    std::sort(vertices.begin(), vertices.end());
+    std::vector<Vec2f> hull;
+    for (const auto& p : vertices)
+    {
+        while (hull.size() >= 2 && hull[hull.size() - 2].relativeCross(hull.back(), p) <= 0)
+            hull.pop_back();
+        hull.push_back(p);
+    }
+    size_t lower_size = hull.size();
+    for (auto it = vertices.rbegin(); it != vertices.rend(); ++it)
+    {
+        while (hull.size() > lower_size && hull[hull.size() - 2].relativeCross(hull.back(), *it) <= 0)
+            hull.pop_back();
+        hull.push_back(*it);
+    }
+    hull.pop_back();
+    return hull;
+}
+
+float BaseMolecule::distance(BaseMolecule& other)
+{
+    float min_dist = -1;
+    for (int atom_idx = 0; atom_idx < vertexCount(); ++atom_idx)
+    {
+        const auto& vec3d = _xyz[atom_idx];
+        for (int j = 0; j < other.vertexCount(); ++j)
+        {
+            float dist = std::hypot(vec3d.x - other._xyz[j].x, vec3d.y - other._xyz[j].y, vec3d.z - other._xyz[j].z);
+            if (atom_idx == 0 && j == 0)
+                min_dist = dist;
+            else
+                min_dist = std::min(min_dist, dist);
+        }
+    }
+    return min_dist;
+}
+
+
+
+float BaseMolecule::distance1(const BaseMolecule& other)
+{
+    auto build_kd_tree = [](const Array<Vec3f>& points) -> std::vector<Vec3f> {
+        std::vector<Vec3f> sorted_points(points.ptr(), points.ptr() + points.size());
+        std::sort(sorted_points.begin(), sorted_points.end(), [](const Vec3f& a, const Vec3f& b) { return a.x < b.x; });
+        return sorted_points;
+    };
+
+    auto nearest_neighbor = [](const std::vector<Vec3f>& tree, const Vec3f& target) -> float {
+        float best_dist = std::numeric_limits<float>::infinity();
+        for (const auto& point : tree)
+        {
+            float dist = std::hypot(point.x - target.x, point.y - target.y, point.z - target.z);
+            best_dist = std::min(best_dist, dist);
+        }
+        return best_dist;
+    };
+
+    if (_xyz.size() == 0 || other._xyz.size() == 0)
+        return std::numeric_limits<float>::infinity();
+
+    auto kd_tree = build_kd_tree(other._xyz);
+    float min_dist = std::numeric_limits<float>::infinity();
+
+    for (const auto& atom : _xyz)
+        min_dist = std::min(min_dist, nearest_neighbor(kd_tree, atom));
+
+    return min_dist;
+}
+
 void BaseMolecule::getBoundingBox(Vec2f& a, Vec2f& b) const
 {
     for (int atom_idx = 0; atom_idx < vertexCount(); ++atom_idx)

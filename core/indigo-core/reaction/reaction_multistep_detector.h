@@ -30,6 +30,7 @@
 
 #include "base_cpp/exception.h"
 #include "molecule/meta_commons.h"
+#include "layout/metalayout.h"
 
 namespace indigo
 {
@@ -41,11 +42,33 @@ namespace indigo
     class ReactionMultistepDetector
     {
     public:
+        using MOL_DISTANCES = std::vector<std::pair<size_t, float>>;
+        using MOL_DISTANCES_MAP = std::unordered_map<size_t, float>;
+
+        struct MOL_DISTANCES_DESC
+        {
+            MOL_DISTANCES sorted_distances;
+            MOL_DISTANCES_MAP distances_map;
+        };
+
         enum class ReactionType
         {
             ESimpleReaction,
             EMutistepReaction,
             EPathwayReaction
+        };
+
+        enum class ZoneType
+        {
+            EPlus,
+            EArrow,
+            EPathPay
+        };
+
+        struct SPECIAL_ZONE_DESC
+        {
+            ZoneType zone_type;
+            std::vector<std::vector<Vec2f>> zone_sections;
         };
 
         ReactionMultistepDetector(BaseMolecule& mol);
@@ -62,11 +85,21 @@ namespace indigo
         typedef std::vector<FLOAT_INT_PAIR> FLOAT_INT_PAIRS;
         const Vec2f PLUS_BBOX_SHIFT = {0.9f, 0.9f};
         const Vec2f ARROW_BBOX_SHIFT = {0.0f, 0.9f};
+        const float PLUS_DETECTION_DISTANCE = LayoutOptions::DEFAULT_BOND_LENGTH * 5;
 
         DECL_ERROR;
 
     private:
         void createSummBlocks();
+        // collect molecules' distances
+        void collectSortedDistances();
+        void createSpecialZones();
+        void addPlusZones(const Vec2f& pos);
+        void addArrowZones(const Vec2f& tale, const Vec2f& head);
+        std::unordered_map<int, std::pair<int, int>> findSpecialZones(int mol_idx);
+        void mergeCloseComponents();
+        bool isMergeable(size_t mol_idx1, size_t mol_idx2);
+        std::unique_ptr<BaseMolecule> extractComponent(int index);
         void sortSummblocks();
 
         bool mapReactionComponents();
@@ -79,7 +112,9 @@ namespace indigo
         std::vector<ReactionComponent> _reaction_components;
         std::vector<MolSumm> _component_summ_blocks;
         std::list<MolSumm> _component_summ_blocks_list;
-
+        std::vector<std::unique_ptr<BaseMolecule>> _components;
+        std::vector<MOL_DISTANCES_DESC> _mol_distances;
+        std::vector<SPECIAL_ZONE_DESC> _zones;
         int _moleculeCount;
     };
 
