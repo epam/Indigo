@@ -29,8 +29,8 @@
 #include <vector>
 
 #include "base_cpp/exception.h"
-#include "molecule/meta_commons.h"
 #include "layout/metalayout.h"
+#include "molecule/meta_commons.h"
 
 namespace indigo
 {
