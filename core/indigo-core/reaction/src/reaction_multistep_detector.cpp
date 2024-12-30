@@ -258,7 +258,7 @@ void ReactionMultistepDetector::collectSortedDistances()
     {
         for (int j = i + 1; j < _moleculeCount; ++j)
         {
-            float dist = _components[i]->distance(*_components[j]);
+            float dist = _components[i]->distance1(*_components[j]);
 
             auto& mdi = _mol_distances[i];
             auto it = std::lower_bound(mdi.sorted_distances.begin(), mdi.sorted_distances.end(), std::make_pair(j, dist),
