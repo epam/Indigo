@@ -396,7 +396,7 @@ void ReactionMultistepDetector::mergeCloseComponents()
         }
     }
     _components.erase(std::remove_if(_components.begin(), _components.end(), [](auto& p) { return !p; }), _components.end());
-    _moleculeCount = _components.size();
+    _moleculeCount = (int)_components.size();
 }
 
 bool ReactionMultistepDetector::isMergeable(size_t mol_idx1, size_t mol_idx2)
