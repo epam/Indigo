@@ -96,7 +96,7 @@ namespace indigo
         void createSpecialZones();
         void addPlusZones(const Vec2f& pos);
         void addArrowZones(const Vec2f& tale, const Vec2f& head);
-        std::unordered_map<int, std::pair<int, int>> findSpecialZones(int mol_idx);
+        std::unordered_map<int, std::pair<int, int>> findSpecialZones(size_t mol_idx);
         void mergeCloseComponents();
         bool isMergeable(size_t mol_idx1, size_t mol_idx2);
         std::unique_ptr<BaseMolecule> extractComponent(int index);
@@ -112,7 +112,7 @@ namespace indigo
         std::vector<ReactionComponent> _reaction_components;
         std::vector<MolSumm> _component_summ_blocks;
         std::list<MolSumm> _component_summ_blocks_list;
-        std::vector<std::unique_ptr<BaseMolecule>> _components;
+        std::vector<std::pair<std::unique_ptr<BaseMolecule>, std::vector<Vec2f>>> _components;
         std::vector<MOL_DISTANCES_DESC> _mol_distances;
         std::vector<SPECIAL_ZONE_DESC> _zones;
         int _moleculeCount;

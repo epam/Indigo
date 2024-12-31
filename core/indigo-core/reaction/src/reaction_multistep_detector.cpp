@@ -57,13 +57,13 @@ void ReactionMultistepDetector::createSummBlocks()
     for (int i = 0; i < _moleculeCount; ++i)
     {
         Rect2f bbox;
-        _components[i]->getBoundingBox(bbox, MIN_MOL_SIZE);
+        _components[i].first->getBoundingBox(bbox, MIN_MOL_SIZE);
 
         mol_tops.emplace_back(bbox.top(), i);
         mol_bottoms.emplace_back(bbox.bottom(), i);
         mol_lefts.emplace_back(bbox.left(), i);
         mol_rights.emplace_back(bbox.right(), i);
-        _reaction_components.emplace_back(ReactionComponent::MOLECULE, bbox, i, std::move(_components[i]));
+        _reaction_components.emplace_back(ReactionComponent::MOLECULE, bbox, i, std::move(_components[i].first));
     }
 
     for (int i = 0; i < _bmol.meta().getMetaCount(ReactionPlusObject::CID); ++i)
@@ -246,8 +246,7 @@ void ReactionMultistepDetector::collectSortedDistances()
     {
         for (int j = i + 1; j < _moleculeCount; ++j)
         {
-            float dist = _components[i]->distance1(*_components[j]);
-
+            float dist = computeConvexDistance(_components[i].second, _components[j].second);
             auto& mdi = _mol_distances[i];
             auto it = std::lower_bound(mdi.sorted_distances.begin(), mdi.sorted_distances.end(), std::make_pair(j, dist),
                                        [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
@@ -284,7 +283,6 @@ void ReactionMultistepDetector::createSpecialZones()
     {
         auto& multi = (const ReactionMultitailArrowObject&)_bmol.meta().getMetaObject(ReactionMultitailArrowObject::CID, i);
         auto& tails = multi.getTails();
-
         // TODO: add zones for multitail arrows
     }
 }
@@ -347,8 +345,9 @@ void ReactionMultistepDetector::addArrowZones(const Vec2f& tale, const Vec2f& he
     _zones.push_back(szd);
 }
 
-std::unordered_map<int, std::pair<int, int>> ReactionMultistepDetector::findSpecialZones(int mol_idx)
+std::unordered_map<int, std::pair<int, int>> ReactionMultistepDetector::findSpecialZones(size_t mol_idx)
 {
+    auto& mol = *_components[mol_idx].first;
     std::unordered_map<int, std::pair<int, int>> result;
     for (int i = 0; i < static_cast<int>(_zones.size()); ++i)
     {
@@ -365,7 +364,7 @@ void ReactionMultistepDetector::mergeCloseComponents()
 {
     for (std::size_t i = 0; i < _components.size(); ++i)
     {
-        if (!_components[i])
+        if (!_components[i].first)
             continue;
         std::queue<std::size_t> bfs_queue;
         std::vector<std::size_t> cluster;
@@ -377,7 +376,7 @@ void ReactionMultistepDetector::mergeCloseComponents()
             bfs_queue.pop();
             for (std::size_t j = 0; j < _components.size(); ++j)
             {
-                if (!_components[j] || j == idx)
+                if (!_components[j].first || j == idx)
                     continue;
                 if (std::find(cluster.begin(), cluster.end(), j) != cluster.end())
                     continue;
@@ -391,11 +390,11 @@ void ReactionMultistepDetector::mergeCloseComponents()
         for (std::size_t k = 1; k < cluster.size(); ++k)
         {
             QS_DEF(Array<int>, mapping);
-            _components[i]->mergeWithMolecule(*_components[cluster[k]], &mapping, 0);
-            _components[cluster[k]].reset();
+            _components[i].first->mergeWithMolecule(*_components[cluster[k]].first, &mapping, 0);
+            _components[cluster[k]].first.reset();
         }
     }
-    _components.erase(std::remove_if(_components.begin(), _components.end(), [](auto& p) { return !p; }), _components.end());
+    _components.erase(std::remove_if(_components.begin(), _components.end(), [](auto& p) { return !p.first; }), _components.end());
     _moleculeCount = (int)_components.size();
 }
 
@@ -406,7 +405,8 @@ bool ReactionMultistepDetector::isMergeable(size_t mol_idx1, size_t mol_idx2)
     auto dist_it = mdi1.distances_map.find(mol_idx2);
     if (dist_it != mdi1.distances_map.end() && dist_it->second < LayoutOptions::DEFAULT_BOND_LENGTH * 2)
     {
-        // TODO: add merge conditions
+        findSpecialZones(mol_idx1);
+        findSpecialZones(mol_idx2);
         return true;
     }
     return false;
@@ -453,7 +453,11 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
     getSGroupAtoms(_bmol, s_neighbors);
     _moleculeCount = _bmol.countComponents(s_neighbors);
     for (int i = 0; i < _moleculeCount; ++i)
-        _components.push_back(std::move(extractComponent(i)));
+    {
+        auto component = extractComponent(i);
+        auto hull = component->getConvexHull(Vec2f(LayoutOptions::DEFAULT_BOND_LENGTH, LayoutOptions::DEFAULT_BOND_LENGTH));
+        _components.emplace_back(std::move(component), hull);
+    }
 
     collectSortedDistances();
     mergeCloseComponents();

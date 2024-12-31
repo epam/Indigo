@@ -846,5 +846,146 @@ namespace indigo
         return result;
     }
 
+    inline bool isPointInConvexPolygon(const Vec2f& p, const std::vector<Vec2f>& poly)
+    {
+        auto cross = [](const Vec2f& a, const Vec2f& b, const Vec2f& c) { return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x); };
+        bool sign = cross(poly.back(), poly[0], p) < 0;
+        for (size_t i = 0, n = poly.size(); i < n; ++i)
+            if ((cross(poly[i], poly[(i + 1) % n], p) < 0) != sign)
+                return false;
+        return true;
+    }
+
+    inline std::vector<Vec2f> getPointsInsideConvexPolygon(const std::vector<Vec2f>& polygon1, const std::vector<Vec2f>& polygon2)
+    {
+        std::vector<Vec2f> result;
+        result.reserve(polygon1.size());
+        std::copy_if(polygon1.begin(), polygon1.end(), std::back_inserter(result), [&](auto& p) { return isPointInConvexPolygon(p, polygon2); });
+        return result;
+    }
+
+    inline float convexPolygonArea(const std::vector<Vec2f>& poly)
+    {
+        float area = 0.0f;
+        size_t n = poly.size();
+        for (size_t i = 0; i < n; ++i)
+        {
+            const Vec2f& p1 = poly[i];
+            const Vec2f& p2 = poly[(i + 1) % n];
+            area += Vec2f::cross(p1, p2);
+        }
+        return std::abs(area) * 0.5f;
+    }
+
+    inline bool isCCW(const Vec2f& edgeStart, const Vec2f& edgeEnd, const Vec2f& point)
+    {
+        return Vec2f::cross(edgeEnd - edgeStart, point - edgeStart) >= 0.0f;
+    }
+
+    inline Vec2f computeIntersection(const Vec2f& p1, const Vec2f& p2, const Vec2f& p3, const Vec2f& p4)
+    {
+        Vec2f res;
+        Vec2f d1 = p2 - p1;
+        Vec2f d2 = p4 - p3;
+        float denom = Vec2f::cross(d1, d2);
+        if(denom != 0.0f)
+        {
+            float t = Vec2f::cross((p3 - p1), d2) / denom;
+            res = Vec2f(p1.x + d1.x * t, p1.y + d1.y * t);
+        }
+        return res;
+    }
+
+    inline std::vector<Vec2f> convexClip(const std::vector<Vec2f>& subject, const std::vector<Vec2f>& clip)
+    {
+        std::vector<Vec2f> output = subject;
+        size_t clipCount = clip.size();
+        for (size_t i = 0; i < clipCount; ++i)
+        {
+            std::vector<Vec2f> input = std::move(output);
+            output.clear();
+            Vec2f A = clip[i];
+            Vec2f B = clip[(i + 1) % clipCount];
+            size_t inputCount = input.size();
+            if (inputCount == 0)
+                break;
+            Vec2f S = input[inputCount - 1];
+            for (size_t j = 0; j < inputCount; ++j)
+            {
+                Vec2f E = input[j];
+                if (isCCW(A, B, E))
+                {
+                    if (!isCCW(A, B, S))
+                    {
+                        output.emplace_back(computeIntersection(S, E, A, B));
+                    }
+                    output.emplace_back(E);
+                }
+                else if (isCCW(A, B, S))
+                {
+                    output.emplace_back(computeIntersection(S, E, A, B));
+                }
+                S = E;
+            }
+        }
+        return output;
+    }
+
+    inline float computeConvexContainment(const std::vector<Vec2f>& poly1, const std::vector<Vec2f>& poly2)
+    {
+        float area = convexPolygonArea(poly1);
+        if (area == 0.0f)
+            return 0.0f;
+        std::vector<Vec2f> intersection = convexClip(poly1, poly2);
+        if (intersection.empty())
+            return 0.0f;
+        float intersectionArea = convexPolygonArea(intersection);
+        if (std::abs(intersectionArea - area) < 1e-6f)
+            return 1.0f;
+        return intersectionArea / area;
+    }
+
+    inline float distancePointToEdge(const Vec2f& p, const Vec2f& a, const Vec2f& b)
+    {
+        Vec2f ab = b - a;
+        Vec2f ap = p - a;
+        float t = Vec2f::dot(ap, ab) / Vec2f::dot(ab, ab);
+        t = std::max(0.0f, std::min(1.0f, t));
+        Vec2f projection(a.x + ab.x * t, a.y + ab.y * t);
+        Vec2f diff = p - projection;
+        return diff.length();
+    }
+
+    inline float computeConvexDistance(const std::vector<Vec2f>& poly1, const std::vector<Vec2f>& poly2)
+    {
+        float minDist = std::numeric_limits<float>::max();
+        for (const auto& p : poly1)
+        {
+            float dist = std::numeric_limits<float>::max();
+            size_t n = poly2.size();
+            for (size_t i = 0; i < n; ++i)
+            {
+                float d = distancePointToEdge(p, poly2[i], poly2[(i + 1) % n]);
+                dist = std::min(dist, d);
+                if (d < minDist)
+                    break;
+            }
+            minDist = std::min(minDist, dist);
+        }
+        for (const auto& p : poly2)
+        {
+            float dist = std::numeric_limits<float>::max();
+            size_t n = poly1.size();
+            for (size_t i = 0; i < n; ++i)
+            {
+                float d = distancePointToEdge(p, poly1[i], poly1[(i + 1) % n]);
+                dist = std::min(dist, d);
+                if (d < minDist)
+                    break;
+            }
+            minDist = std::min(minDist, dist);
+        }
+        return minDist;
+    }
 } // namespace indigo
 #endif
