@@ -888,7 +888,7 @@ namespace indigo
         Vec2f d1 = p2 - p1;
         Vec2f d2 = p4 - p3;
         float denom = Vec2f::cross(d1, d2);
-        if( denom != 0.0f )
+        if(denom != 0.0f)
         {
             float t = Vec2f::cross((p3 - p1), d2) / denom;
             res = Vec2f(p1.x + d1.x * t, p1.y + d1.y * t);
