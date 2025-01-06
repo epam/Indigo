@@ -592,10 +592,6 @@ namespace indigo
         // calc convex hull
         std::vector<Vec2f> getConvexHull(const Vec2f& min_box) const;
 
-        // calc distance between molecules
-        float distance(BaseMolecule& other);
-        float distance1(const BaseMolecule& other);
-
         // aliases
         bool isAlias(int atom_idx) const;
         const char* getAlias(int atom_idx) const;

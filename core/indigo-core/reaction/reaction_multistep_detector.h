@@ -62,13 +62,14 @@ namespace indigo
         {
             EPlus,
             EArrow,
-            EPathPay
+            EPathWay
         };
 
         struct SPECIAL_ZONE_DESC
         {
             ZoneType zone_type;
             std::vector<std::vector<Vec2f>> zone_sections;
+            std::vector<Vec2f> origin_coordinates;
         };
 
         ReactionMultistepDetector(BaseMolecule& mol);
@@ -85,7 +86,8 @@ namespace indigo
         typedef std::vector<FLOAT_INT_PAIR> FLOAT_INT_PAIRS;
         const Vec2f PLUS_BBOX_SHIFT = {0.9f, 0.9f};
         const Vec2f ARROW_BBOX_SHIFT = {0.0f, 0.9f};
-        const float PLUS_DETECTION_DISTANCE = LayoutOptions::DEFAULT_BOND_LENGTH * 5;
+        const float PLUS_DETECTION_DISTANCE = LayoutOptions::DEFAULT_BOND_LENGTH * 2.5;
+        const float ARROW_DETECTION_DISTANCE = LayoutOptions::DEFAULT_BOND_LENGTH * 3;
 
         DECL_ERROR;
 
@@ -95,10 +97,12 @@ namespace indigo
         void collectSortedDistances();
         void createSpecialZones();
         void addPlusZones(const Vec2f& pos);
-        void addArrowZones(const Vec2f& tale, const Vec2f& head);
-        std::unordered_map<int, std::pair<int, int>> findSpecialZones(size_t mol_idx);
+        void addArrowZones(const Vec2f& tail, const Vec2f& head);
+        void addPathwayZones(const Vec2f& head, const Vec2f& sp_beg, const Vec2f& sp_end, const std::vector<Vec2f>& tails);
+        std::map<int, std::unordered_set<int>> findSpecialZones(size_t mol_idx);
         void mergeCloseComponents();
         bool isMergeable(size_t mol_idx1, size_t mol_idx2);
+        bool checkForOppositeSections(ZoneType zt, const std::unordered_set<int>& sections1, const std::unordered_set<int>& sections2);
         std::unique_ptr<BaseMolecule> extractComponent(int index);
         void sortSummblocks();
 

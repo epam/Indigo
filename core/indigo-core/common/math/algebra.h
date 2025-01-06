@@ -30,8 +30,8 @@
 
 #define SQR(x) ((x) * (x))
 
-#define DEG2RAD(x) ((x)*M_PI / 180)
-#define RAD2DEG(x) ((x)*180 / M_PI)
+#define DEG2RAD(x) ((x) * M_PI / 180)
+#define RAD2DEG(x) ((x) * 180 / M_PI)
 #define HYPOT(a, b) (sqrt((a) * (a) + (b) * (b)))
 
 namespace indigo
@@ -877,58 +877,83 @@ namespace indigo
         return std::abs(area) * 0.5f;
     }
 
-    inline bool isCCW(const Vec2f& edgeStart, const Vec2f& edgeEnd, const Vec2f& point)
+    inline bool isInside(const Vec2f& edgeStart, const Vec2f& edgeEnd, const Vec2f& point)
     {
-        return Vec2f::cross(edgeEnd - edgeStart, point - edgeStart) >= 0.0f;
+        return (edgeEnd.x - edgeStart.x) * (point.y - edgeStart.y) - (edgeEnd.y - edgeStart.y) * (point.x - edgeStart.x) <= 0;
     }
 
-    inline Vec2f computeIntersection(const Vec2f& p1, const Vec2f& p2, const Vec2f& p3, const Vec2f& p4)
+    inline bool convexPolygonsIntersect(const std::vector<Vec2f>& poly1, const std::vector<Vec2f>& poly2)
     {
-        Vec2f res;
-        Vec2f d1 = p2 - p1;
-        Vec2f d2 = p4 - p3;
-        float denom = Vec2f::cross(d1, d2);
-        if(denom != 0.0f)
-        {
-            float t = Vec2f::cross((p3 - p1), d2) / denom;
-            res = Vec2f(p1.x + d1.x * t, p1.y + d1.y * t);
-        }
-        return res;
+        auto project = [](const std::vector<Vec2f>& poly, const Vec2f& axis) {
+            auto [min, max] = std::minmax_element(poly.begin(), poly.end(), [&](const Vec2f& a, const Vec2f& b) { return a * axis < b * axis; });
+            return std::pair{*min * axis, *max * axis};
+        };
+
+        auto overlap = [](const auto& range1, const auto& range2) { return !(range1.first > range2.second || range2.first > range1.second); };
+
+        auto getNormals = [](const std::vector<Vec2f>& poly) {
+            std::vector<Vec2f> normals;
+            for (size_t i = 0; i < poly.size(); ++i)
+            {
+                Vec2f edge = poly[(i + 1) % poly.size()] - poly[i];
+                normals.emplace_back(-edge.y, edge.x);
+            }
+            return normals;
+        };
+
+        auto normals1 = getNormals(poly1), normals2 = getNormals(poly2);
+        for (const auto& normal : normals1)
+            if (!overlap(project(poly1, normal), project(poly2, normal)))
+                return false;
+        for (const auto& normal : normals2)
+            if (!overlap(project(poly1, normal), project(poly2, normal)))
+                return false;
+        return true;
+    }
+
+    inline Vec2f computeIntersection(const Vec2f& s, const Vec2f& e, const Vec2f& edgeStart, const Vec2f& edgeEnd)
+    {
+        float dx1 = e.x - s.x, dy1 = e.y - s.y, dx2 = edgeEnd.x - edgeStart.x, dy2 = edgeEnd.y - edgeStart.y;
+        float det = dx1 * dy2 - dy1 * dx2;
+        if (std::abs(det) < 1e-6)
+            return s;
+        float t = ((edgeStart.x - s.x) * dy2 - (edgeStart.y - s.y) * dx2) / det;
+        return {s.x + t * dx1, s.y + t * dy1};
     }
 
     inline std::vector<Vec2f> convexClip(const std::vector<Vec2f>& subject, const std::vector<Vec2f>& clip)
     {
-        std::vector<Vec2f> output = subject;
-        size_t clipCount = clip.size();
-        for (size_t i = 0; i < clipCount; ++i)
+        std::vector<Vec2f> result = subject;
+        for (size_t i = 0; i < clip.size(); ++i)
         {
-            std::vector<Vec2f> input = std::move(output);
-            output.clear();
-            Vec2f A = clip[i];
-            Vec2f B = clip[(i + 1) % clipCount];
-            size_t inputCount = input.size();
-            if (inputCount == 0)
+            const Vec2f& edgeStart = clip[i];
+            const Vec2f& edgeEnd = clip[(i + 1) % clip.size()];
+            std::vector<Vec2f> input = std::move(result);
+            result.clear();
+            if (input.empty())
                 break;
-            Vec2f S = input[inputCount - 1];
-            for (size_t j = 0; j < inputCount; ++j)
+            Vec2f prev = input.back();
+            for (const Vec2f& curr : input)
             {
-                Vec2f E = input[j];
-                if (isCCW(A, B, E))
+                if (isInside(edgeStart, edgeEnd, curr))
                 {
-                    if (!isCCW(A, B, S))
-                    {
-                        output.emplace_back(computeIntersection(S, E, A, B));
-                    }
-                    output.emplace_back(E);
+                    if (!isInside(edgeStart, edgeEnd, prev))
+                        result.push_back(computeIntersection(prev, curr, edgeStart, edgeEnd));
+                    result.push_back(curr);
                 }
-                else if (isCCW(A, B, S))
+                else if (isInside(edgeStart, edgeEnd, prev))
                 {
-                    output.emplace_back(computeIntersection(S, E, A, B));
+                    result.push_back(computeIntersection(prev, curr, edgeStart, edgeEnd));
                 }
-                S = E;
+                prev = curr;
             }
         }
-        return output;
+
+        std::cout << "result: " << std::endl;
+        for (const auto& p : result)
+            std::cout << p.x << " " << p.y << std::endl;
+
+        return result;
     }
 
     inline float computeConvexContainment(const std::vector<Vec2f>& poly1, const std::vector<Vec2f>& poly2)
@@ -987,5 +1012,43 @@ namespace indigo
         }
         return minDist;
     }
+
+    inline bool doesVerticalLineIntersectPolygon(float x, const std::vector<Vec2f>& poly)
+    {
+        for (size_t i = 0, n = poly.size(); i < n; ++i)
+        {
+            const Vec2f& a = poly[i];
+            const Vec2f& b = poly[(i + 1) % n];
+            if ((x > std::min(a.x, b.x) && x < std::max(a.x, b.x)))
+                return true;
+        }
+        return false;
+    }
+
+    inline bool doesHorizontalLineIntersectPolygon(float y, const std::vector<Vec2f>& poly)
+    {
+        for (size_t i = 0, n = poly.size(); i < n; ++i)
+        {
+            const Vec2f& a = poly[i];
+            const Vec2f& b = poly[(i + 1) % n];
+            if ((y > std::min(a.y, b.y) && y < std::max(a.y, b.y)))
+                return true;
+        }
+        return false;
+    }
+
+    inline bool doesRayIntersectPolygon(const Vec2f& p1, const Vec2f& p2, const std::vector<Vec2f>& poly)
+    {
+        Vec2f dir = {p2.x - p1.x, p2.y - p1.y};
+        for (size_t i = 0, n = poly.size(); i < n; ++i)
+        {
+            Vec2f a = {poly[i].x - p1.x, poly[i].y - p1.y};
+            Vec2f b = {poly[(i + 1) % n].x - p1.x, poly[(i + 1) % n].y - p1.y};
+            if (Vec2f::cross(dir, a) * Vec2f::cross(dir, b) < 0 && Vec2f::cross(a, b) * Vec2f::cross(a, dir) < 0)
+                return true;
+        }
+        return false;
+    }
+
 } // namespace indigo
 #endif

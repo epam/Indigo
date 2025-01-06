@@ -283,7 +283,11 @@ void ReactionMultistepDetector::createSpecialZones()
     {
         auto& multi = (const ReactionMultitailArrowObject&)_bmol.meta().getMetaObject(ReactionMultitailArrowObject::CID, i);
         auto& tails = multi.getTails();
-        // TODO: add zones for multitail arrows
+        auto& head = multi.getHead();
+        auto& spine_beg = multi.getSpineBegin();
+        auto& spine_end = multi.getSpineEnd();
+        std::vector<Vec2f> tails_vec(tails.begin(), tails.end());
+        addPathwayZones(head, spine_beg, spine_end, tails_vec);
     }
 }
 
@@ -292,8 +296,10 @@ void ReactionMultistepDetector::addPlusZones(const Vec2f& pos)
     Rect2f bbox(pos - PLUS_BBOX_SHIFT, pos + PLUS_BBOX_SHIFT);
     SPECIAL_ZONE_DESC szd;
     szd.zone_type = ZoneType::EPlus;
+    szd.origin_coordinates.push_back(pos);
     std::vector<Vec2f> left, right, bottom, top;
 
+    // left zone
     left.push_back(pos);
     left.push_back(bbox.leftBottom());
     left.push_back(Vec2f(left.back().x - PLUS_DETECTION_DISTANCE, left.back().y));
@@ -301,6 +307,7 @@ void ReactionMultistepDetector::addPlusZones(const Vec2f& pos)
     left.push_back(bbox.leftTop());
     left.push_back(pos);
 
+    // right zone
     right.push_back(pos);
     right.push_back(bbox.rightTop());
     right.push_back(Vec2f(right.back().x + PLUS_DETECTION_DISTANCE, right.back().y));
@@ -308,6 +315,7 @@ void ReactionMultistepDetector::addPlusZones(const Vec2f& pos)
     right.push_back(bbox.rightBottom());
     right.push_back(pos);
 
+    // bottom zone
     bottom.push_back(pos);
     bottom.push_back(bbox.rightBottom());
     bottom.push_back(Vec2f(bottom.back().x, bottom.back().y - PLUS_DETECTION_DISTANCE));
@@ -315,6 +323,7 @@ void ReactionMultistepDetector::addPlusZones(const Vec2f& pos)
     bottom.push_back(bbox.leftBottom());
     bottom.push_back(pos);
 
+    // top zone
     top.push_back(pos);
     top.push_back(bbox.leftTop());
     top.push_back(Vec2f(top.back().x, top.back().y + PLUS_DETECTION_DISTANCE));
@@ -328,34 +337,111 @@ void ReactionMultistepDetector::addPlusZones(const Vec2f& pos)
     _zones.push_back(szd);
 }
 
-void ReactionMultistepDetector::addArrowZones(const Vec2f& tale, const Vec2f& head)
+void ReactionMultistepDetector::addArrowZones(const Vec2f& tail, const Vec2f& head)
 {
-    float dx = head.x - tale.x, dy = head.y - tale.y;
-    float length = std::hypot(dx, dy), half = length * 0.5f;
+    float dx = head.x - tail.x, dy = head.y - tail.y;
+    Vec2f dir = {dx, dy};
+    float length = std::hypot(dx, dy), half_length = length * 0.5f;
     float inv = 1.0f / length;
-    Vec2f nTop = {-dy * inv * half, dx * inv * half};
-    Vec2f nBottom = {dy * inv * half, -dx * inv * half};
+    Vec2f nT = {-dy * inv, dx * inv};
+    Vec2f nB = {dy * inv, -dx * inv};
 
-    std::vector<Vec2f> top{{head.x, head.y}, {tale.x, tale.y}, {tale.x + nTop.x, tale.y + nTop.y}, {head.x + nTop.x, head.y + nTop.y}};
-    std::vector<Vec2f> bottom{{tale.x, tale.y}, {head.x, head.y}, {head.x + nBottom.x, head.y + nBottom.y}, {tale.x + nBottom.x, tale.y + nBottom.y}};
+    Vec2f nTop = nT * half_length;
+    Vec2f nBottom = nB * half_length;
+
+    std::vector<Vec2f> top{{head.x, head.y}, {tail.x, tail.y}, {tail.x + nTop.x, tail.y + nTop.y}, {head.x + nTop.x, head.y + nTop.y}};
+    std::vector<Vec2f> bottom{{tail.x, tail.y}, {head.x, head.y}, {head.x + nBottom.x, head.y + nBottom.y}, {tail.x + nBottom.x, tail.y + nBottom.y}};
+
+    std::vector<Vec2f> left, right;
+    Vec2f pos = tail + nB / 2;
+    left.push_back(pos);
+    pos -= dir * ARROW_DETECTION_DISTANCE;
+    left.push_back(pos);
+    pos += nT;
+    left.push_back(pos);
+    pos += dir * ARROW_DETECTION_DISTANCE;
+    left.push_back(pos);
+    pos += nB;
+    left.push_back(pos);
+
+    pos = head + nT / 2;
+    right.push_back(pos);
+    pos += dir * ARROW_DETECTION_DISTANCE;
+    right.push_back(pos);
+    pos += nB;
+    right.push_back(pos);
+    pos -= dir * ARROW_DETECTION_DISTANCE;
+    right.push_back(pos);
+    pos += nT;
+    right.push_back(pos);
+
     SPECIAL_ZONE_DESC szd;
     szd.zone_type = ZoneType::EArrow;
     szd.zone_sections.push_back(top);
     szd.zone_sections.push_back(bottom);
+    szd.zone_sections.push_back(left);
+    szd.zone_sections.push_back(right);
+    szd.origin_coordinates.push_back(tail);
+    szd.origin_coordinates.push_back(head);
     _zones.push_back(szd);
 }
 
-std::unordered_map<int, std::pair<int, int>> ReactionMultistepDetector::findSpecialZones(size_t mol_idx)
+void ReactionMultistepDetector::addPathwayZones(const Vec2f& head, const Vec2f& sp_beg, const Vec2f& sp_end, const std::vector<Vec2f>& tails)
 {
-    auto& mol = *_components[mol_idx].first;
-    std::unordered_map<int, std::pair<int, int>> result;
+    std::vector<Vec2f> right;
+    Vec2f pos(head);
+    pos.y += LayoutOptions::DEFAULT_BOND_LENGTH / 2.0f;
+    right.push_back(pos);
+    pos.x += ARROW_DETECTION_DISTANCE;
+    right.push_back(pos);
+    pos.y -= LayoutOptions::DEFAULT_BOND_LENGTH;
+    right.push_back(pos);
+    pos.x -= ARROW_DETECTION_DISTANCE;
+    right.push_back(pos);
+    pos.y += LayoutOptions::DEFAULT_BOND_LENGTH;
+    right.push_back(pos);
+    SPECIAL_ZONE_DESC szd;
+    szd.zone_type = ZoneType::EPathWay;
+    szd.zone_sections.push_back(right);
+    szd.origin_coordinates.push_back(head);
+    szd.origin_coordinates.push_back(sp_beg);
+    szd.origin_coordinates.push_back(sp_end);
+    for (const auto& tail : tails)
+    {
+        std::vector<Vec2f> left;
+        pos = tail;
+        pos.y -= LayoutOptions::DEFAULT_BOND_LENGTH / 2.0f;
+        left.push_back(pos);
+        pos.x -= ARROW_DETECTION_DISTANCE;
+        left.push_back(pos);
+        pos.y += LayoutOptions::DEFAULT_BOND_LENGTH;
+        left.push_back(pos);
+        pos.x += ARROW_DETECTION_DISTANCE;
+        left.push_back(pos);
+        pos.y -= LayoutOptions::DEFAULT_BOND_LENGTH;
+        left.push_back(pos);
+        szd.zone_sections.push_back(left);
+        szd.origin_coordinates.push_back(tail);
+    }
+    _zones.push_back(szd);
+}
+
+std::map<int, std::unordered_set<int>> ReactionMultistepDetector::findSpecialZones(size_t mol_idx)
+{
+    auto& hull = _components[mol_idx].second;
+    std::map<int, std::unordered_set<int>> result;
     for (int i = 0; i < static_cast<int>(_zones.size()); ++i)
     {
         auto& zone = _zones[i];
+        std::pair<int, std::unordered_set<int>> cur_zone(i, {});
         for (int j = 0; j < static_cast<int>(zone.zone_sections.size()); ++j)
         {
             auto& section = zone.zone_sections[j];
+            if (convexPolygonsIntersect(hull, section))
+                cur_zone.second.insert(j);
         }
+        if (cur_zone.second.size())
+            result.insert(cur_zone);
     }
     return result;
 }
@@ -390,8 +476,11 @@ void ReactionMultistepDetector::mergeCloseComponents()
         for (std::size_t k = 1; k < cluster.size(); ++k)
         {
             QS_DEF(Array<int>, mapping);
-            _components[i].first->mergeWithMolecule(*_components[cluster[k]].first, &mapping, 0);
-            _components[cluster[k]].first.reset();
+            if (_components[cluster[k]].first)
+            {
+                _components[i].first->mergeWithMolecule(*_components[cluster[k]].first, &mapping, 0);
+                _components[cluster[k]].first.reset();
+            }
         }
     }
     _components.erase(std::remove_if(_components.begin(), _components.end(), [](auto& p) { return !p.first; }), _components.end());
@@ -405,10 +494,77 @@ bool ReactionMultistepDetector::isMergeable(size_t mol_idx1, size_t mol_idx2)
     auto dist_it = mdi1.distances_map.find(mol_idx2);
     if (dist_it != mdi1.distances_map.end() && dist_it->second < LayoutOptions::DEFAULT_BOND_LENGTH * 2)
     {
-        findSpecialZones(mol_idx1);
-        findSpecialZones(mol_idx2);
-        return true;
+        // collect surrounding zones for both molecules
+        auto zones1 = findSpecialZones(mol_idx1);
+        auto zones2 = findSpecialZones(mol_idx2);
+        if (zones2.empty())
+            return true;
+
+        // find common zones
+        std::map<int, std::unordered_set<int>> intersection;
+        std::set_intersection(zones1.begin(), zones1.end(), zones2.begin(), zones2.end(), std::inserter(intersection, intersection.begin()),
+                              [](const auto& a, const auto& b) { return a.first < b.first; });
+
+        // if there are common zones check for opposite sections. if molecules are connected by opposite sections, they are not mergeable
+        for (auto& [key, values] : intersection)
+        {
+            auto zones2_it = zones2.find(key);
+            if (zones2_it != zones2.end() && _zones[key].zone_type != ZoneType::EPathWay &&
+                checkForOppositeSections(_zones[key].zone_type, values, zones2_it->second))
+                return false;
+        }
+
+        if (intersection.empty())
+        {
+            std::map<int, std::unordered_set<int>> zones_union;
+            std::set_union(zones1.begin(), zones1.end(), zones2.begin(), zones2.end(), std::inserter(zones_union, zones_union.begin()),
+                           [](const auto& a, const auto& b) { return a.first < b.first; });
+            // check if special zone affects both molecules
+            const auto& hull1 = _components[mol_idx1].second;
+            const auto& hull2 = _components[mol_idx2].second;
+            for (auto& [key, values] : zones_union)
+            {
+                const auto& coords = _zones[key].origin_coordinates;
+                switch (_zones[key].zone_type)
+                {
+                case ZoneType::EPlus:
+                    if ((doesVerticalLineIntersectPolygon(coords[0].x, hull1) && doesVerticalLineIntersectPolygon(coords[0].x, hull2)) ||
+                        (doesHorizontalLineIntersectPolygon(coords[0].x, hull1) && doesHorizontalLineIntersectPolygon(coords[0].x, hull2)))
+                        return true;
+                    break;
+                case ZoneType::EArrow:
+                    if ((doesRayIntersectPolygon(coords[0], coords[1], hull1) && doesRayIntersectPolygon(coords[0], coords[1], hull2)) ||
+                        (doesRayIntersectPolygon(coords[1], coords[0], hull1) && doesRayIntersectPolygon(coords[1], coords[0], hull2)))
+                        return true;
+                    break;
+                case ZoneType::EPathWay: {
+                    auto c_it = coords.begin();
+                    const Vec2f& head = *c_it++;
+                    const Vec2f& spine_beg = *c_it++;
+                    const Vec2f& spine_end = *c_it++;
+                    Vec2f tail(spine_beg.x, head.y);
+                    if (doesRayIntersectPolygon(tail, head, hull1) && doesRayIntersectPolygon(tail, head, hull2))
+                        return true;
+                    for (; c_it != coords.end(); ++c_it)
+                    {
+                        Vec2f tail_start(spine_end.x, c_it->y);
+                        if (doesRayIntersectPolygon(tail_start, *c_it, hull1) && doesRayIntersectPolygon(tail_start, *c_it, hull2))
+                            return true;
+                    }
+                }
+                break;
+                }
+            }
+        }
     }
+    return false;
+}
+
+bool ReactionMultistepDetector::checkForOppositeSections(ZoneType /* zt */, const std::unordered_set<int>& sections1, const std::unordered_set<int>& sections2)
+{
+    for (int section1 : sections1)
+        if (sections2.count(section1 ^ 1))
+            return true;
     return false;
 }
 
@@ -449,6 +605,7 @@ void ReactionMultistepDetector::sortSummblocks()
 
 ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReaction()
 {
+    createSpecialZones();
     std::list<std::unordered_set<int>> s_neighbors;
     getSGroupAtoms(_bmol, s_neighbors);
     _moleculeCount = _bmol.countComponents(s_neighbors);
