@@ -551,7 +551,7 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
         {
             // if both molecules has the same zone and section - merge
             // we never merge molecules with different sections of the same zone
-            if (zone1.value().first == zone2.value().first)
+            if (zone2.has_value() && zone1.value().first == zone2.value().first)
                 return zone1.value().second == zone2.value().second ? zone1 : std::nullopt;
             if (!current_zone.has_value())
                 current_zone = zone1;

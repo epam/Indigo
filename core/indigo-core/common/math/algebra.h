@@ -948,11 +948,6 @@ namespace indigo
                 prev = curr;
             }
         }
-
-        std::cout << "result: " << std::endl;
-        for (const auto& p : result)
-            std::cout << p.x << " " << p.y << std::endl;
-
         return result;
     }
 
