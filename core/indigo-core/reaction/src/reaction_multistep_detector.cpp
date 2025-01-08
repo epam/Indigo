@@ -281,11 +281,11 @@ void ReactionMultistepDetector::createSpecialZones()
 
     for (int i = 0; i < _bmol.meta().getMetaCount(ReactionMultitailArrowObject::CID); ++i)
     {
-        auto& multi = (const ReactionMultitailArrowObject&)_bmol.meta().getMetaObject(ReactionMultitailArrowObject::CID, i);
-        auto& tails = multi.getTails();
-        auto& head = multi.getHead();
-        auto& spine_beg = multi.getSpineBegin();
-        auto& spine_end = multi.getSpineEnd();
+        const auto& multi = (const ReactionMultitailArrowObject&)_bmol.meta().getMetaObject(ReactionMultitailArrowObject::CID, i);
+        const auto& tails = multi.getTails();
+        const auto& head = multi.getHead();
+        const auto& spine_beg = multi.getSpineBegin();
+        const auto& spine_end = multi.getSpineEnd();
         std::vector<Vec2f> tails_vec(tails.begin(), tails.end());
         addPathwayZones(head, spine_beg, spine_end, tails_vec);
     }
