@@ -388,7 +388,9 @@ void ReactionMultistepDetector::addArrowZones(const Vec2f& tail, const Vec2f& he
 
 void ReactionMultistepDetector::addPathwayZones(const Vec2f& head, const Vec2f& sp_beg, const Vec2f& sp_end, const std::vector<Vec2f>& tails)
 {
-    std::vector<Vec2f> right;
+    std::vector<Vec2f> right, top, bottom;
+
+    // form products zone
     Vec2f pos(head);
     pos.y += LayoutOptions::DEFAULT_BOND_LENGTH / 2.0f;
     right.push_back(pos);
@@ -400,8 +402,30 @@ void ReactionMultistepDetector::addPathwayZones(const Vec2f& head, const Vec2f& 
     right.push_back(pos);
     pos.y += LayoutOptions::DEFAULT_BOND_LENGTH;
     right.push_back(pos);
+
+    // form top agents zone
+    pos = head;
+    top.push_back(pos);
+    pos.x = sp_beg.x;
+    top.push_back(pos);
+    pos.y = sp_beg.y;
+    top.push_back(pos);
+    pos.x = head.x;
+    top.push_back(pos);
+    pos = head;
+    top.push_back(pos);
+    bottom.push_back(pos);
+    pos.y = sp_end.y;
+    bottom.push_back(pos);
+    pos.x = sp_end.x;
+    bottom.push_back(pos);
+    pos.y = head.y;
+    bottom.push_back(pos);
+    bottom.push_back(head);
     SPECIAL_ZONE_DESC szd;
     szd.zone_type = ZoneType::EPathWay;
+    szd.zone_sections.push_back(top);
+    szd.zone_sections.push_back(bottom);
     szd.zone_sections.push_back(right);
     szd.origin_coordinates.push_back(head);
     szd.origin_coordinates.push_back(sp_beg);
@@ -446,6 +470,29 @@ std::map<int, std::unordered_set<int>> ReactionMultistepDetector::findSpecialZon
     return result;
 }
 
+std::optional<std::pair<int, int>> ReactionMultistepDetector::findMaxSpecialZone(size_t mol_idx)
+{
+    std::optional<std::pair<int, int>> result{};
+    float max_containment = 0.0f;
+    auto& hull = _components[mol_idx].second;
+    for (int i = 0; i < static_cast<int>(_zones.size()); ++i)
+    {
+        auto& zone = _zones[i];
+        std::pair<int, std::unordered_set<int>> cur_zone(i, {});
+        for (int j = 0; j < static_cast<int>(zone.zone_sections.size()); ++j)
+        {
+            auto& section = zone.zone_sections[j];
+            float cont = computeConvexContainment(hull, section);
+            if (cont > max_containment)
+            {
+                max_containment = cont;
+                result = {i, j};
+            }
+        }
+    }
+    return result;
+}
+
 void ReactionMultistepDetector::mergeCloseComponents()
 {
     for (std::size_t i = 0; i < _components.size(); ++i)
@@ -454,6 +501,7 @@ void ReactionMultistepDetector::mergeCloseComponents()
             continue;
         std::queue<std::size_t> bfs_queue;
         std::vector<std::size_t> cluster;
+        std::optional<std::pair<int, int>> current_zone{};
         bfs_queue.push(i);
         cluster.push_back(i);
         while (!bfs_queue.empty())
@@ -466,8 +514,10 @@ void ReactionMultistepDetector::mergeCloseComponents()
                     continue;
                 if (std::find(cluster.begin(), cluster.end(), j) != cluster.end())
                     continue;
-                if (isMergeable(idx, j))
+                auto zone = isMergeable(idx, j, current_zone);
+                if (zone.has_value())
                 {
+                    current_zone = zone;
                     cluster.push_back(j);
                     bfs_queue.push(j);
                 }
@@ -487,84 +537,77 @@ void ReactionMultistepDetector::mergeCloseComponents()
     _moleculeCount = (int)_components.size();
 }
 
-bool ReactionMultistepDetector::isMergeable(size_t mol_idx1, size_t mol_idx2)
+std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t mol_idx1, size_t mol_idx2, std::optional<std::pair<int, int>> current_zone)
 {
-    auto& mdi1 = _mol_distances[mol_idx1];
-    auto& mdi2 = _mol_distances[mol_idx2];
-    auto dist_it = mdi1.distances_map.find(mol_idx2);
-    if (dist_it != mdi1.distances_map.end() && dist_it->second < LayoutOptions::DEFAULT_BOND_LENGTH * 2)
+    auto& mdi = _mol_distances[mol_idx1];
+    auto dist_it = mdi.distances_map.find(mol_idx2);
+    if (dist_it != mdi.distances_map.end() && dist_it->second < LayoutOptions::DEFAULT_BOND_LENGTH * 2)
     {
         // collect surrounding zones for both molecules
-        auto zones1 = findSpecialZones(mol_idx1);
-        auto zones2 = findSpecialZones(mol_idx2);
-        if (zones2.empty())
-            return true;
-
-        // find common zones
-        std::map<int, std::unordered_set<int>> intersection;
-        std::set_intersection(zones1.begin(), zones1.end(), zones2.begin(), zones2.end(), std::inserter(intersection, intersection.begin()),
-                              [](const auto& a, const auto& b) { return a.first < b.first; });
-
-        // if there are common zones check for opposite sections. if molecules are connected by opposite sections, they are not mergeable
-        for (auto& [key, values] : intersection)
+        auto zone1 = findMaxSpecialZone(mol_idx1);
+        auto zone2 = findMaxSpecialZone(mol_idx2);
+        // no zone - no reason to merge
+        if (zone1.has_value())
         {
-            auto zones2_it = zones2.find(key);
-            if (zones2_it != zones2.end() && _zones[key].zone_type != ZoneType::EPathWay &&
-                checkForOppositeSections(_zones[key].zone_type, values, zones2_it->second))
-                return false;
+            // if both molecules has the same zone and section - merge
+            // we never merge molecules with different sections of the same zone
+            if (zone1.value().first == zone2.value().first)
+                return zone1.value().second == zone2.value().second ? zone1 : std::nullopt;
+            if (!current_zone.has_value())
+                current_zone = zone1;
         }
+        else if (!current_zone.has_value())
+            return std::nullopt;
 
-        if (intersection.empty())
+        auto zidx = current_zone.value().first;
+        // if molecules have different zones - check if they are mergeable
+        auto& hull1 = _components[mol_idx1].second;
+        auto& hull2 = _components[mol_idx2].second;
+
+        const auto& coords = _zones[zidx].origin_coordinates;
+        // check if both molecules are on the same zone continuation
+        switch (_zones[zidx].zone_type)
         {
-            std::map<int, std::unordered_set<int>> zones_union;
-            std::set_union(zones1.begin(), zones1.end(), zones2.begin(), zones2.end(), std::inserter(zones_union, zones_union.begin()),
-                           [](const auto& a, const auto& b) { return a.first < b.first; });
-            // check if special zone affects both molecules
-            const auto& hull1 = _components[mol_idx1].second;
-            const auto& hull2 = _components[mol_idx2].second;
-            for (auto& [key, values] : zones_union)
+        case ZoneType::EPlus:
+            if ((doesVerticalLineIntersectPolygon(coords[0].x, hull1) && doesVerticalLineIntersectPolygon(coords[0].x, hull2)) ||
+                (doesHorizontalLineIntersectPolygon(coords[0].x, hull1) && doesHorizontalLineIntersectPolygon(coords[0].x, hull2)))
+                return zone1;
+            break;
+        case ZoneType::EArrow:
+            if ((doesRayIntersectPolygon(coords[0], coords[1], hull1) && doesRayIntersectPolygon(coords[0], coords[1], hull2)) ||
+                (doesRayIntersectPolygon(coords[1], coords[0], hull1) && doesRayIntersectPolygon(coords[1], coords[0], hull2)))
+                return zone1;
+            break;
+        case ZoneType::EPathWay: {
+            auto c_it = coords.begin();
+            const Vec2f& head = *c_it++;
+            const Vec2f& spine_beg = *c_it++;
+            const Vec2f& spine_end = *c_it++;
+            Vec2f tail(spine_beg.x, head.y);
+            if (doesRayIntersectPolygon(tail, head, hull1) && doesRayIntersectPolygon(tail, head, hull2))
+                return zone1;
+            for (; c_it != coords.end(); ++c_it)
             {
-                const auto& coords = _zones[key].origin_coordinates;
-                switch (_zones[key].zone_type)
-                {
-                case ZoneType::EPlus:
-                    if ((doesVerticalLineIntersectPolygon(coords[0].x, hull1) && doesVerticalLineIntersectPolygon(coords[0].x, hull2)) ||
-                        (doesHorizontalLineIntersectPolygon(coords[0].x, hull1) && doesHorizontalLineIntersectPolygon(coords[0].x, hull2)))
-                        return true;
-                    break;
-                case ZoneType::EArrow:
-                    if ((doesRayIntersectPolygon(coords[0], coords[1], hull1) && doesRayIntersectPolygon(coords[0], coords[1], hull2)) ||
-                        (doesRayIntersectPolygon(coords[1], coords[0], hull1) && doesRayIntersectPolygon(coords[1], coords[0], hull2)))
-                        return true;
-                    break;
-                case ZoneType::EPathWay: {
-                    auto c_it = coords.begin();
-                    const Vec2f& head = *c_it++;
-                    const Vec2f& spine_beg = *c_it++;
-                    const Vec2f& spine_end = *c_it++;
-                    Vec2f tail(spine_beg.x, head.y);
-                    if (doesRayIntersectPolygon(tail, head, hull1) && doesRayIntersectPolygon(tail, head, hull2))
-                        return true;
-                    for (; c_it != coords.end(); ++c_it)
-                    {
-                        Vec2f tail_start(spine_end.x, c_it->y);
-                        if (doesRayIntersectPolygon(tail_start, *c_it, hull1) && doesRayIntersectPolygon(tail_start, *c_it, hull2))
-                            return true;
-                    }
-                }
-                break;
-                }
+                Vec2f tail_start(spine_end.x, c_it->y);
+                if (doesRayIntersectPolygon(tail_start, *c_it, hull1) && doesRayIntersectPolygon(tail_start, *c_it, hull2))
+                    return zone1;
             }
         }
+        break;
+        }
     }
-    return false;
+    return std::nullopt;
 }
 
-bool ReactionMultistepDetector::checkForOppositeSections(ZoneType /* zt */, const std::unordered_set<int>& sections1, const std::unordered_set<int>& sections2)
+bool ReactionMultistepDetector::checkForOppositeSections(ZoneType zt, const std::unordered_set<int>& sections1, const std::unordered_set<int>& sections2)
 {
     for (int section1 : sections1)
+    {
+        if (zt == ZoneType::EPathWay && section1 > 1) // pathway has only 2 opposite agents sections
+            break;
         if (sections2.count(section1 ^ 1))
             return true;
+    }
     return false;
 }
 
