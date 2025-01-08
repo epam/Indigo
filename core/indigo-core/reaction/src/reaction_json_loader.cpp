@@ -72,7 +72,7 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
     if (arrow_count == 0 && multi_count == 0)
         throw Error("No arrow in the reaction");
 
-    if (arrow_count > 0 || multi_count > 0)
+    if (arrow_count > 1 || multi_count > 0)
     {
         ReactionMultistepDetector md(*_pmol);
         switch (md.detectReaction())
