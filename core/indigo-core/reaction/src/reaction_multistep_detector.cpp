@@ -583,14 +583,6 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
             const Vec2f& spine_beg = *c_it++;
             const Vec2f& spine_end = *c_it++;
             Vec2f tail(spine_beg.x, head.y);
-            if (mol_idx1 == 3 && mol_idx2 == 4)
-            {
-                std::cout << "p1: " << tail.x << " " << tail.y << std::endl;
-                std::cout << "p2: " << head.x << " " << head.y << std::endl;
-                std::cout << "polygon: " << std::endl;
-                for (auto& p : hull1)
-                    std::cout << p.x << " " << p.y << std::endl;
-            }
             if (doesRayIntersectPolygon(tail, head, hull1) && doesRayIntersectPolygon(tail, head, hull2))
                 return zone1 ? zone1 : current_zone;
             for (; c_it != coords.end(); ++c_it)
