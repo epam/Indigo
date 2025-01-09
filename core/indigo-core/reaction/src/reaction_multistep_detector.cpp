@@ -499,27 +499,26 @@ void ReactionMultistepDetector::mergeCloseComponents()
     {
         if (!_components[i].first)
             continue;
-        std::queue<std::size_t> bfs_queue;
+        std::queue<std::pair<std::size_t, std::optional<std::pair<int, int>>>> bfs_queue;
         std::vector<std::size_t> cluster;
-        std::optional<std::pair<int, int>> current_zone{};
-        bfs_queue.push(i);
+        bfs_queue.emplace(i, std::nullopt);
         cluster.push_back(i);
         while (!bfs_queue.empty())
         {
-            auto idx = bfs_queue.front();
+            auto qel = bfs_queue.front();
             bfs_queue.pop();
             for (std::size_t j = 0; j < _components.size(); ++j)
             {
-                if (!_components[j].first || j == idx)
+                if (!_components[j].first || j == qel.first)
                     continue;
                 if (std::find(cluster.begin(), cluster.end(), j) != cluster.end())
                     continue;
-                auto zone = isMergeable(idx, j, current_zone);
+                auto zone = isMergeable(qel.first, j, qel.second);
+                std::cout << qel.first << " " << j << " " << zone.has_value() << std::endl;
                 if (zone.has_value())
                 {
-                    current_zone = zone;
                     cluster.push_back(j);
-                    bfs_queue.push(j);
+                    bfs_queue.emplace(j, zone);
                 }
             }
         }
@@ -571,12 +570,12 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
         case ZoneType::EPlus:
             if ((doesVerticalLineIntersectPolygon(coords[0].x, hull1) && doesVerticalLineIntersectPolygon(coords[0].x, hull2)) ||
                 (doesHorizontalLineIntersectPolygon(coords[0].x, hull1) && doesHorizontalLineIntersectPolygon(coords[0].x, hull2)))
-                return zone1;
+                return zone1 ? zone1 : current_zone;
             break;
         case ZoneType::EArrow:
             if ((doesRayIntersectPolygon(coords[0], coords[1], hull1) && doesRayIntersectPolygon(coords[0], coords[1], hull2)) ||
                 (doesRayIntersectPolygon(coords[1], coords[0], hull1) && doesRayIntersectPolygon(coords[1], coords[0], hull2)))
-                return zone1;
+                return zone1 ? zone1 : current_zone;
             break;
         case ZoneType::EPathWay: {
             auto c_it = coords.begin();
@@ -584,13 +583,21 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
             const Vec2f& spine_beg = *c_it++;
             const Vec2f& spine_end = *c_it++;
             Vec2f tail(spine_beg.x, head.y);
+            if (mol_idx1 == 3 && mol_idx2 == 4)
+            {
+                std::cout << "p1: " << tail.x << " " << tail.y << std::endl;
+                std::cout << "p2: " << head.x << " " << head.y << std::endl;
+                std::cout << "polygon: " << std::endl;
+                for (auto& p : hull1)
+                    std::cout << p.x << " " << p.y << std::endl;
+            }
             if (doesRayIntersectPolygon(tail, head, hull1) && doesRayIntersectPolygon(tail, head, hull2))
-                return zone1;
+                return zone1 ? zone1 : current_zone;
             for (; c_it != coords.end(); ++c_it)
             {
                 Vec2f tail_start(spine_end.x, c_it->y);
                 if (doesRayIntersectPolygon(tail_start, *c_it, hull1) && doesRayIntersectPolygon(tail_start, *c_it, hull2))
-                    return zone1;
+                    return zone1 ? zone1 : current_zone;
             }
         }
         break;

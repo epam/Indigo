@@ -1034,12 +1034,20 @@ namespace indigo
 
     inline bool doesRayIntersectPolygon(const Vec2f& p1, const Vec2f& p2, const std::vector<Vec2f>& poly)
     {
-        Vec2f dir = {p2.x - p1.x, p2.y - p1.y};
+        Vec2f dir = p2 - p1;
         for (size_t i = 0, n = poly.size(); i < n; ++i)
         {
-            Vec2f a = {poly[i].x - p1.x, poly[i].y - p1.y};
-            Vec2f b = {poly[(i + 1) % n].x - p1.x, poly[(i + 1) % n].y - p1.y};
-            if (Vec2f::cross(dir, a) * Vec2f::cross(dir, b) < 0 && Vec2f::cross(a, b) * Vec2f::cross(a, dir) < 0)
+            Vec2f A = poly[i];
+            Vec2f B = poly[(i + 1) % n];
+            Vec2f a = A - p1;
+            Vec2f b = B - p1;
+            Vec2f s = b - a;
+            float den = Vec2f::cross(dir, s);
+            if (std::fabs(den) <= +0.0f)
+                continue;
+            float t = Vec2f::cross(a, s) / den;
+            float u = Vec2f::cross(a, dir) / den;
+            if (t >= 0.f && u >= 0.f && u <= 1.f)
                 return true;
         }
         return false;
