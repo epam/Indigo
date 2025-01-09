@@ -514,7 +514,6 @@ void ReactionMultistepDetector::mergeCloseComponents()
                 if (std::find(cluster.begin(), cluster.end(), j) != cluster.end())
                     continue;
                 auto zone = isMergeable(qel.first, j, qel.second);
-                std::cout << qel.first << " " << j << " " << zone.has_value() << std::endl;
                 if (zone.has_value())
                 {
                     cluster.push_back(j);
