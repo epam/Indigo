@@ -89,8 +89,6 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
             break;
         }
     }
-    //else
-    //    parseOneArrowReaction(rxn);
 }
 
 void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
