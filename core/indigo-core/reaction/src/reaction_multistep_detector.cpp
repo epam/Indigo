@@ -490,7 +490,7 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::findMaxSpecialZone
             }
             if (cont > 0.0f)
             {
-                auto& zone_it = zones.find(i);
+                auto zone_it = zones.find(i);
                 if (zone_it != zones.end())
                     zone_it->second.insert(j);
                 else
