@@ -377,10 +377,10 @@ void ReactionMultistepDetector::addArrowZones(const Vec2f& tail, const Vec2f& he
 
     SPECIAL_ZONE_DESC szd;
     szd.zone_type = ZoneType::EArrow;
-    szd.zone_sections.push_back(top);
-    szd.zone_sections.push_back(bottom);
     szd.zone_sections.push_back(left);
     szd.zone_sections.push_back(right);
+    szd.zone_sections.push_back(top);
+    szd.zone_sections.push_back(bottom);
     szd.origin_coordinates.push_back(tail);
     szd.origin_coordinates.push_back(head);
     _zones.push_back(szd);
@@ -470,7 +470,7 @@ std::map<int, std::unordered_set<int>> ReactionMultistepDetector::findSpecialZon
     return result;
 }
 
-std::optional<std::pair<int, int>> ReactionMultistepDetector::findMaxSpecialZone(size_t mol_idx)
+std::optional<std::pair<int, int>> ReactionMultistepDetector::findMaxSpecialZone(size_t mol_idx, std::map<int, std::unordered_set<int>>& zones)
 {
     std::optional<std::pair<int, int>> result{};
     float max_containment = 0.0f;
@@ -487,6 +487,14 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::findMaxSpecialZone
             {
                 max_containment = cont;
                 result = {i, j};
+            }
+            if (cont > 0.0f)
+            {
+                auto& zone_it = zones.find(i);
+                if (zone_it != zones.end())
+                    zone_it->second.insert(j);
+                else
+                    zones.insert({i, {j}});
             }
         }
     }
@@ -542,15 +550,49 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
     if (dist_it != mdi.distances_map.end() && dist_it->second < LayoutOptions::DEFAULT_BOND_LENGTH * 2)
     {
         // collect surrounding zones for both molecules
-        auto zone1 = findMaxSpecialZone(mol_idx1);
-        auto zone2 = findMaxSpecialZone(mol_idx2);
+        std::map<int, std::unordered_set<int>> other_zones1;
+        std::map<int, std::unordered_set<int>> other_zones2;
+        std::map<int, std::unordered_set<int>> comm_zones;
+
+        auto zone1 = findMaxSpecialZone(mol_idx1, other_zones1);
+        auto zone2 = findMaxSpecialZone(mol_idx2, other_zones2);
+        std::set_intersection(other_zones1.begin(), other_zones1.end(), other_zones2.begin(), other_zones2.end(), std::inserter(comm_zones, comm_zones.begin()),
+                              [](auto& a, auto& b) { return a.first < b.first; });
+
         // no zone - no reason to merge
         if (zone1.has_value())
         {
             // if both molecules has the same zone and section - merge
             // we never merge molecules with different sections of the same zone
-            if (zone2.has_value() && zone1.value().first == zone2.value().first)
-                return zone1.value().second == zone2.value().second ? zone1 : std::nullopt;
+            if (zone2.has_value())
+            {
+                // disable catalysts merging
+                if ((_zones[zone1.value().first].zone_type == ZoneType::EArrow && zone1.value().second > 1) ||
+                    (_zones[zone2.value().first].zone_type == ZoneType::EArrow && zone2.value().second > 1))
+                    return std::nullopt;
+
+                // if both molecules are on the same zone - check if they are mergeable
+                for (auto& cz : comm_zones)
+                {
+                    auto it_oz2 = other_zones2.find(cz.first);
+                    if (it_oz2 != other_zones2.end())
+                    {
+                        for (auto& section : cz.second)
+                        {
+                            if (!(_zones[cz.first].zone_type == ZoneType::EPathWay && section > 1) && it_oz2->second.count(section ^ 1))
+                                return std::nullopt;
+
+                            if (it_oz2->second.count(section))
+                                return zone1;
+                        }
+                    }
+                }
+
+                // different zone types are not mergeable
+                if (_zones[zone1.value().first].zone_type != _zones[zone2.value().first].zone_type && comm_zones.empty())
+                    return std::nullopt;
+            }
+
             if (!current_zone.has_value())
                 current_zone = zone1;
         }
@@ -1194,44 +1236,110 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
 
 void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
 {
-    for (auto& csb : _component_summ_blocks)
+    enum RecordIndexes
     {
-        switch (csb.role)
+        BBOX_IDX = 0,
+        FRAGMENT_TYPE_IDX,
+        MOLECULE_IDX
+    };
+
+    auto& arrow = (const ReactionArrowObject&)rxn.meta().getMetaObject(ReactionArrowObject::CID, 0);
+    bool reverseReactionOrder = arrow.getArrowType() == ReactionArrowObject::ERetrosynthetic;
+
+    if (reverseReactionOrder)
+        rxn.setIsRetrosyntetic();
+
+    for (int i = 0; i < rxn.meta().getMetaCount(SimpleTextObject::CID); ++i)
+    {
+        auto& text = (const SimpleTextObject&)rxn.meta().getMetaObject(SimpleTextObject::CID, i);
+        Rect2f bbox(Vec2f(text._pos.x, text._pos.y), Vec2f(text._pos.x, text._pos.y)); // change to real text box later
+        _reaction_components.emplace_back(ReactionComponent::TEXT, bbox, i, nullptr);
+    }
+
+    int text_meta_idx = 0;
+    for (const auto& comp : _reaction_components)
+    {
+        switch (comp.component_type)
         {
-        case BaseReaction::PRODUCT: {
-            for (auto idx : csb.indexes)
+        case ReactionComponent::MOLECULE: {
+            auto& cmol = *comp.molecule;
+            for (int idx = cmol.vertexBegin(); idx < cmol.vertexEnd(); idx = cmol.vertexNext(idx))
             {
-                auto& rc = _reaction_components[idx];
-                rxn.addProductCopy(*rc.molecule, 0, 0);
+                Vec3f& pt3d = cmol.getAtomXyz(idx);
+                Vec2f pt(pt3d.x, pt3d.y);
+                int side = !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
+                switch (side)
+                {
+                case KReagentUpArea:
+                case KReagentDownArea:
+                    rxn.addCatalystCopy(cmol, 0, 0);
+                    break;
+                case KProductArea:
+                    rxn.addProductCopy(cmol, 0, 0);
+                    break;
+                default:
+                    rxn.addReactantCopy(cmol, 0, 0);
+                    break;
+                }
+                break;
             }
         }
         break;
-        case BaseReaction::REACTANT: {
-            for (auto idx : csb.indexes)
+        case ReactionComponent::TEXT: {
+            const auto& bbox = comp.bbox;
+            Vec2f pt(bbox.center());
+            int side = !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
+            if (side == KReagentUpArea || side == KReagentDownArea)
             {
-                auto& rc = _reaction_components[idx];
-                rxn.addReactantCopy(*rc.molecule, 0, 0);
+                rxn.addSpecialCondition(text_meta_idx, bbox);
+                break;
             }
-        }
-        break;
-        case BaseReaction::INTERMEDIATE: {
-            for (auto idx : csb.indexes)
-            {
-                auto& rc = _reaction_components[idx];
-                rxn.addIntermediateCopy(*rc.molecule, 0, 0);
-            }
-        }
-        break;
-        case BaseReaction::UNDEFINED: {
-            for (auto idx : csb.indexes)
-            {
-                auto& rc = _reaction_components[idx];
-                rxn.addUndefinedCopy(*rc.molecule, 0, 0);
-            }
+            text_meta_idx++;
         }
         break;
         default:
             break;
         }
     }
+
+    // for (auto& csb : _component_summ_blocks)
+    //{
+    //     switch (csb.role)
+    //     {
+    //     case BaseReaction::PRODUCT: {
+    //         for (auto idx : csb.indexes)
+    //         {
+    //             auto& rc = _reaction_components[idx];
+    //             rxn.addProductCopy(*rc.molecule, 0, 0);
+    //         }
+    //     }
+    //     break;
+    //     case BaseReaction::REACTANT: {
+    //         for (auto idx : csb.indexes)
+    //         {
+    //             auto& rc = _reaction_components[idx];
+    //             rxn.addReactantCopy(*rc.molecule, 0, 0);
+    //         }
+    //     }
+    //     break;
+    //     case BaseReaction::INTERMEDIATE: {
+    //         for (auto idx : csb.indexes)
+    //         {
+    //             auto& rc = _reaction_components[idx];
+    //             rxn.addIntermediateCopy(*rc.molecule, 0, 0);
+    //         }
+    //     }
+    //     break;
+    //     case BaseReaction::UNDEFINED: {
+    //         for (auto idx : csb.indexes)
+    //         {
+    //             auto& rc = _reaction_components[idx];
+    //             rxn.addUndefinedCopy(*rc.molecule, 0, 0);
+    //         }
+    //     }
+    //     break;
+    //     default:
+    //         break;
+    //     }
+    // }
 }
