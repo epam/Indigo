@@ -57,13 +57,13 @@ void ReactionMultistepDetector::createSummBlocks()
     for (int i = 0; i < _moleculeCount; ++i)
     {
         Rect2f bbox;
-        _components[i].first->getBoundingBox(bbox, MIN_MOL_SIZE);
+        _components[i].mol->getBoundingBox(bbox, MIN_MOL_SIZE);
 
         mol_tops.emplace_back(bbox.top(), i);
         mol_bottoms.emplace_back(bbox.bottom(), i);
         mol_lefts.emplace_back(bbox.left(), i);
         mol_rights.emplace_back(bbox.right(), i);
-        _reaction_components.emplace_back(ReactionComponent::MOLECULE, bbox, i, std::move(_components[i].first));
+        _reaction_components.emplace_back(ReactionComponent::MOLECULE, bbox, i, std::move(_components[i].mol));
     }
 
     for (int i = 0; i < _bmol.meta().getMetaCount(ReactionPlusObject::CID); ++i)
@@ -246,7 +246,7 @@ void ReactionMultistepDetector::collectSortedDistances()
     {
         for (int j = i + 1; j < _moleculeCount; ++j)
         {
-            float dist = computeConvexDistance(_components[i].second, _components[j].second);
+            float dist = computeConvexDistance(_components[i].hull, _components[j].hull);
             auto& mdi = _mol_distances[i];
             auto it = std::lower_bound(mdi.sorted_distances.begin(), mdi.sorted_distances.end(), std::make_pair(j, dist),
                                        [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
@@ -452,7 +452,7 @@ void ReactionMultistepDetector::addPathwayZones(const Vec2f& head, const Vec2f& 
 
 std::map<int, std::unordered_set<int>> ReactionMultistepDetector::findSpecialZones(size_t mol_idx)
 {
-    auto& hull = _components[mol_idx].second;
+    auto& hull = _components[mol_idx].hull;
     std::map<int, std::unordered_set<int>> result;
     for (int i = 0; i < static_cast<int>(_zones.size()); ++i)
     {
@@ -474,7 +474,7 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::findMaxSpecialZone
 {
     std::optional<std::pair<int, int>> result{};
     float max_containment = 0.0f;
-    auto& hull = _components[mol_idx].second;
+    auto& hull = _components[mol_idx].hull;
     for (int i = 0; i < static_cast<int>(_zones.size()); ++i)
     {
         auto& zone = _zones[i];
@@ -505,7 +505,7 @@ void ReactionMultistepDetector::mergeCloseComponents()
 {
     for (std::size_t i = 0; i < _components.size(); ++i)
     {
-        if (!_components[i].first)
+        if (!_components[i].mol)
             continue;
         std::queue<std::pair<std::size_t, std::optional<std::pair<int, int>>>> bfs_queue;
         std::vector<std::size_t> cluster;
@@ -517,7 +517,7 @@ void ReactionMultistepDetector::mergeCloseComponents()
             bfs_queue.pop();
             for (std::size_t j = 0; j < _components.size(); ++j)
             {
-                if (!_components[j].first || j == qel.first)
+                if (!_components[j].mol || j == qel.first)
                     continue;
                 if (std::find(cluster.begin(), cluster.end(), j) != cluster.end())
                     continue;
@@ -532,14 +532,15 @@ void ReactionMultistepDetector::mergeCloseComponents()
         for (std::size_t k = 1; k < cluster.size(); ++k)
         {
             QS_DEF(Array<int>, mapping);
-            if (_components[cluster[k]].first)
+            if (_components[cluster[k]].mol)
             {
-                _components[i].first->mergeWithMolecule(*_components[cluster[k]].first, &mapping, 0);
-                _components[cluster[k]].first.reset();
+                _components[i].mol->mergeWithMolecule(*_components[cluster[k]].mol, &mapping, 0);
+                _components[cluster[k]].mapped_idx = (int)i;
+                _components[cluster[k]].mol.reset();
             }
         }
     }
-    _components.erase(std::remove_if(_components.begin(), _components.end(), [](auto& p) { return !p.first; }), _components.end());
+    _components.erase(std::remove_if(_components.begin(), _components.end(), [](auto& p) { return !p.mol; }), _components.end());
     _moleculeCount = (int)_components.size();
 }
 
@@ -601,8 +602,8 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
 
         auto zidx = current_zone.value().first;
         // if molecules have different zones - check if they are mergeable
-        auto& hull1 = _components[mol_idx1].second;
-        auto& hull2 = _components[mol_idx2].second;
+        auto& hull1 = _components[mol_idx1].hull;
+        auto& hull2 = _components[mol_idx2].hull;
 
         const auto& coords = _zones[zidx].origin_coordinates;
         // check if both molecules are on the same zone continuation
@@ -696,7 +697,7 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
     {
         auto component = extractComponent(i);
         auto hull = component->getConvexHull(Vec2f(LayoutOptions::DEFAULT_BOND_LENGTH, LayoutOptions::DEFAULT_BOND_LENGTH));
-        _components.emplace_back(std::move(component), hull);
+        _components.emplace_back(std::move(component), hull, i);
     }
 
     collectSortedDistances();

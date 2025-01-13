@@ -72,6 +72,16 @@ namespace indigo
             std::vector<Vec2f> origin_coordinates;
         };
 
+        struct COMPONENT_DESC
+        {
+            COMPONENT_DESC(std::unique_ptr<BaseMolecule> mol, std::vector<Vec2f> poly, int idx) : mol(std::move(mol)), hull(poly), mapped_idx(idx)
+            {
+            }
+            std::unique_ptr<BaseMolecule> mol;
+            std::vector<Vec2f> hull;
+            int mapped_idx;
+        };
+
         ReactionMultistepDetector(BaseMolecule& mol);
         ~ReactionMultistepDetector();
         ReactionType detectReaction();
@@ -118,7 +128,7 @@ namespace indigo
         std::vector<ReactionComponent> _reaction_components;
         std::vector<MolSumm> _component_summ_blocks;
         std::list<MolSumm> _component_summ_blocks_list;
-        std::vector<std::pair<std::unique_ptr<BaseMolecule>, std::vector<Vec2f>>> _components;
+        std::vector<COMPONENT_DESC> _components;
         std::vector<MOL_DISTANCES_DESC> _mol_distances;
         std::vector<SPECIAL_ZONE_DESC> _zones;
         int _moleculeCount;
