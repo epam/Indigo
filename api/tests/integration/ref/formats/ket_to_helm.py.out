@@ -2,6 +2,7 @@
 dna_variants.ket:SUCCEED
 helm_aminoacids_variants.ket:SUCCEED
 helm_annotations.ket:SUCCEED
+helm_any_chem.ket:SUCCEED
 helm_chem_peptide.ket:SUCCEED
 helm_chem_rna.ket:SUCCEED
 helm_chem_rna_hydro.ket:SUCCEED

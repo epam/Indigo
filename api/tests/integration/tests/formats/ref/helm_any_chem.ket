@@ -1,0 +1,102 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "monomer0"
+            },
+            {
+                "$ref": "monomer1"
+            }
+        ],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-unknown_monomer_0"
+            },
+            {
+                "$ref": "monomerTemplate-unknown_monomer_1"
+            }
+        ]
+    },
+    "monomer0": {
+        "type": "monomer",
+        "id": "0",
+        "seqid": 1,
+        "position": {
+            "x": 0.000000,
+            "y": -0.000000
+        },
+        "alias": "unknown_monomer_0",
+        "templateId": "unknown_monomer_0"
+    },
+    "monomer1": {
+        "type": "monomer",
+        "id": "1",
+        "seqid": 2,
+        "position": {
+            "x": 0.000000,
+            "y": -1.500000
+        },
+        "alias": "unknown_monomer_1",
+        "templateId": "unknown_monomer_1"
+    },
+    "monomerTemplate-unknown_monomer_0": {
+        "type": "monomerTemplate",
+        "id": "unknown_monomer_0",
+        "class": "CHEM",
+        "alias": "unknown_monomer_0",
+        "unresolved": true,
+        "idtAliases": {
+            "base": "unknown_monomer_0"
+        },
+        "attachmentPoints": [
+            {
+                "attachmentAtom": -1,
+                "label": "R1"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R2"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R3"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R4"
+            }
+        ],
+        "atoms": [],
+        "bonds": []
+    },
+    "monomerTemplate-unknown_monomer_1": {
+        "type": "monomerTemplate",
+        "id": "unknown_monomer_1",
+        "class": "CHEM",
+        "alias": "unknown_monomer_1",
+        "unresolved": true,
+        "idtAliases": {
+            "base": "unknown_monomer_1"
+        },
+        "attachmentPoints": [
+            {
+                "attachmentAtom": -1,
+                "label": "R1"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R2"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R3"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R4"
+            }
+        ],
+        "atoms": [],
+        "bonds": []
+    }
+}
