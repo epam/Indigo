@@ -1285,7 +1285,12 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
             if (monomer_class == MonomerClass::Base)
                 helm_string += '(';
             if (monomer->monomerType() == KetBaseMonomer::MonomerType::Monomer)
-                add_monomer(document, monomer, helm_string);
+            {
+                if (templates.at(monomer->templateId()).unresolved())
+                    helm_string += '*';
+                else
+                    add_monomer(document, monomer, helm_string);
+            }
             else if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
             {
                 const auto& templ = variant_templates.at(monomer->templateId());
