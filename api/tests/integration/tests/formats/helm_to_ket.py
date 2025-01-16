@@ -46,6 +46,7 @@ helm_data = {
     "helm_chem_rna_hydro": "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:pair-3:pair$$$V2.0",
     "helm_unsplit": "RNA1{[5Br-dU]}$$$$V2.0",
     "helm_smiles_no_ap": "CHEM1{[P(O)(O)(=O)O]}$$$$V2.0",
+    "helm_any_chem": "CHEM1{*}|CHEM2{*}$$$$V2.0",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
