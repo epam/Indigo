@@ -54,13 +54,18 @@ helm_data = {
     "helm_molecule_2418": "PEPTIDE1{A}|CHEM1{[C1C=CC=CC=1[*:1] |$;;;;;;_R1$|]}$PEPTIDE1,CHEM1,1:R1-1:R1$$$V2.0",
     "helm_chem_rna_hydro": "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:pair-3:pair$$$V2.0",
     "helm_monomer_molecule_direct": "PEPTIDE1{A}|CHEM1{[C(=C)N[*:1] |$;;;_R1$|]}$PEPTIDE1,CHEM1,1:R2-1:R1$$$V2.0",
-    "helm_unknown": "CHEM1{[C1([*:1])C([*:4])C([*:3])C1[*:2] |$;_R1;;_R4;;_R3;;_R2$|]}$$$$V2.0",
+    "helm_unknown": "CHEM1{*}$$$$V2.0",
     "helm_different_id": "PEPTIDE1{A}|RNA1{R(A)P}$$$$V2.0",
+    "helm_any_chem": "CHEM1{*}|CHEM2{*}$$$$V2.0",
 }
 
 for filename in sorted(helm_data.keys()):
     mol = indigo.loadKetDocumentFromFile(os.path.join(ref, filename + ".ket"))
-    helm = mol.helm(lib)
+    try:
+        helm = mol.helm(lib)
+    except IndigoException as e:
+        print("Test %s failed: %s" % (filename, getIndigoExceptionText(e)))
+        continue
     helm_ref = helm_data[filename]
     if helm_ref == helm:
         print(filename + ".ket:SUCCEED")
