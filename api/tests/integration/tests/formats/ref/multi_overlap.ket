@@ -17,9 +17,6 @@
                 "$ref": "mol4"
             },
             {
-                "$ref": "mol5"
-            },
-            {
                 "type": "arrow",
                 "data": {
                     "mode": "open-angle",
@@ -482,19 +479,5 @@
                 ]
             }
         ]
-    },
-    "mol5": {
-        "type": "molecule",
-        "atoms": [
-            {
-                "label": "Cl",
-                "location": [
-                    13.998743057250977,
-                    -7.9926533699035648,
-                    0.0
-                ]
-            }
-        ],
-        "bonds": []
     }
 }
