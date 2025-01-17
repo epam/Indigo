@@ -729,7 +729,7 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
     createSummBlocks();
     bool has_multistep = mapReactionComponents();
     bool has_multitail = mapMultitailReactionComponents();
-    //if (has_multistep || has_multitail)
+    // if (has_multistep || has_multitail)
     mergeUndefinedComponents();
     sortSummblocks();
     return has_multitail ? ReactionType::EPathwayReaction : (has_multistep ? ReactionType ::EMutistepReaction : ReactionType::ESimpleReaction);
