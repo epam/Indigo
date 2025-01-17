@@ -41,6 +41,8 @@ files = [
     "pathway12",
     "pathway_merge1",
     "pathway_merge2",
+    "multi_merge1",
+    "multi_merge2",
 ]
 
 files.sort()

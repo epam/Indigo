@@ -17,6 +17,7 @@ from env_indigo import Indigo, joinPathPy  # noqa
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
 indigo.setOption("ignore-stereochemistry-errors", True)
+indigo.setOption("molfile-saving-skip-date", True)
 
 print("*** KET to RXN ***")
 
@@ -25,15 +26,21 @@ ref_path = joinPathPy("ref/", __file__)
 
 files = [
     "merge_test1",
+    "merge_test1a",
     "merge_test2",
+    "merge_test2a",
+    "merge_test3",
+    "merge_test3a",
+    "merge_test4",
+    "merge_test5",
 ]
 
 files.sort()
 for filename in files:
     rea = indigo.loadReactionFromFile(os.path.join(root, filename + ".ket"))
 
-    with open(os.path.join(ref_path, filename) + ".rxn", "w") as file:
-        file.write(rea.rxnfile())
+    # with open(os.path.join(ref_path, filename) + ".rxn", "w") as file:
+    #     file.write(rea.rxnfile())
     with open(os.path.join(ref_path, filename) + ".rxn", "r") as file:
         rxn_ref = file.read()
     rxn = rea.rxnfile()
