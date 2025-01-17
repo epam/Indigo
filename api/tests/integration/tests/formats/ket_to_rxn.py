@@ -25,6 +25,7 @@ ref_path = joinPathPy("ref/", __file__)
 
 files = [
     "merge_test1",
+    "merge_test2",
 ]
 
 files.sort()

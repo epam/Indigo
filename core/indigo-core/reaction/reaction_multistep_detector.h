@@ -74,11 +74,12 @@ namespace indigo
 
         struct COMPONENT_DESC
         {
-            COMPONENT_DESC(std::unique_ptr<BaseMolecule> mol, std::vector<Vec2f> poly, int idx) : mol(std::move(mol)), hull(poly), mapped_idx(idx)
+            COMPONENT_DESC(std::unique_ptr<BaseMolecule> mol, std::vector<Vec2f> poly, int idx) : mol(std::move(mol)), hull(poly), idx(idx), mapped_idx(-1)
             {
             }
             std::unique_ptr<BaseMolecule> mol;
             std::vector<Vec2f> hull;
+            int idx;
             int mapped_idx;
         };
 
@@ -120,6 +121,7 @@ namespace indigo
 
         bool mapReactionComponents();
         bool mapMultitailReactionComponents();
+        bool mergeUndefinedComponents();
 
         bool findPlusNeighbours(const Vec2f& plus_pos, const FLOAT_INT_PAIRS& mol_tops, const FLOAT_INT_PAIRS& mol_bottoms, const FLOAT_INT_PAIRS& mol_lefts,
                                 const FLOAT_INT_PAIRS& mol_rights, std::pair<int, int>& connection);
@@ -129,6 +131,7 @@ namespace indigo
         std::vector<MolSumm> _component_summ_blocks;
         std::list<MolSumm> _component_summ_blocks_list;
         std::vector<COMPONENT_DESC> _components;
+        std::vector<COMPONENT_DESC> _merged_components;
         std::vector<MOL_DISTANCES_DESC> _mol_distances;
         std::vector<SPECIAL_ZONE_DESC> _zones;
         int _moleculeCount;
