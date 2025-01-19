@@ -249,19 +249,22 @@ void ReactionMultistepDetector::collectSortedDistances()
         for (int j = i + 1; j < _moleculeCount; ++j)
         {
             float dist = computeConvexDistance(_components[i].hull, _components[j].hull);
-            auto& mdi = _mol_distances[i];
-            auto it = std::lower_bound(mdi.sorted_distances.begin(), mdi.sorted_distances.end(), std::make_pair(j, dist),
-                                       [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
+            if (dist < LayoutOptions::DEFAULT_BOND_LENGTH * 2)
+            {
+                auto& mdi = _mol_distances[i];
+                auto it = std::lower_bound(mdi.sorted_distances.begin(), mdi.sorted_distances.end(), std::make_pair(j, dist),
+                                           [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
 
-            mdi.sorted_distances.insert(it, {j, dist});
-            mdi.distances_map[j] = dist;
+                mdi.sorted_distances.insert(it, {j, dist});
+                mdi.distances_map[j] = dist;
 
-            auto& mdj = _mol_distances[j];
-            it = std::lower_bound(mdj.sorted_distances.begin(), mdj.sorted_distances.end(), std::make_pair(i, dist),
-                                  [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
+                auto& mdj = _mol_distances[j];
+                it = std::lower_bound(mdj.sorted_distances.begin(), mdj.sorted_distances.end(), std::make_pair(i, dist),
+                                      [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
 
-            mdj.sorted_distances.insert(it, {i, dist});
-            mdj.distances_map[i] = dist;
+                mdj.sorted_distances.insert(it, {i, dist});
+                mdj.distances_map[i] = dist;
+            }
         }
     }
 }
@@ -937,7 +940,7 @@ bool ReactionMultistepDetector::mergeUndefinedComponents()
                         _reaction_components[mol_idx_target].molecule->mergeWithMolecule(*_reaction_components[mol_idx].molecule, nullptr, 0);
                         _reaction_components[mol_idx].molecule.reset();
                         // mark the component as merged
-                        _components[closest_idx].idx = _components[mol_orig_idx].idx;
+                        _components[mol_orig_idx].idx = _components[closest_idx].idx;
                         csb.indexes.clear();
                     }
                     else
