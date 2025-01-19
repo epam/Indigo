@@ -246,26 +246,24 @@ void ReactionMultistepDetector::collectSortedDistances()
     _mol_distances.resize(_moleculeCount);
     for (int i = 0; i < _moleculeCount; ++i)
     {
+        auto& mdi = _mol_distances[i];
         for (int j = i + 1; j < _moleculeCount; ++j)
         {
             float dist = computeConvexDistance(_components[i].hull, _components[j].hull);
             if (dist < LayoutOptions::DEFAULT_BOND_LENGTH * 2)
             {
-                auto& mdi = _mol_distances[i];
-                auto it = std::lower_bound(mdi.sorted_distances.begin(), mdi.sorted_distances.end(), std::make_pair(j, dist),
-                                           [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
-
-                mdi.sorted_distances.insert(it, {j, dist});
+                mdi.sorted_distances.emplace_back(j, dist);
                 mdi.distances_map[j] = dist;
 
                 auto& mdj = _mol_distances[j];
-                it = std::lower_bound(mdj.sorted_distances.begin(), mdj.sorted_distances.end(), std::make_pair(i, dist),
+                auto it = std::lower_bound(mdj.sorted_distances.begin(), mdj.sorted_distances.end(), std::make_pair(i, dist),
                                       [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
 
-                mdj.sorted_distances.insert(it, {i, dist});
-                mdj.distances_map[i] = dist;
+                mdj.sorted_distances.emplace_back(i, dist);
+                mdj.distances_map.emplace(i, dist);
             }
         }
+        std::sort(mdi.sorted_distances.begin(), mdi.sorted_distances.end(), [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
     }
 }
 
@@ -732,7 +730,6 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
     createSummBlocks();
     bool has_multistep = mapReactionComponents();
     bool has_multitail = mapMultitailReactionComponents();
-    // if (has_multistep || has_multitail)
     mergeUndefinedComponents();
     sortSummblocks();
     return has_multitail ? ReactionType::EPathwayReaction : (has_multistep ? ReactionType ::EMutistepReaction : ReactionType::ESimpleReaction);
