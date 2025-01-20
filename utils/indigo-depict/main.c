@@ -869,6 +869,7 @@ int main(int argc, char* argv[])
     indigoSetOption("ignore-bad-valence", "on");
     indigoSetOption("molfile-saving-mode", "3000");
     indigoSetOptionBool("json-saving-pretty", "on");
+    indigoSetOptionFloat("reaction-component-margin-size", 0.0f);
 
     if (parseParams(&p, argc, argv) < 0)
         return -1;

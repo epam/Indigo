@@ -1,6 +1,8 @@
 *** KET to RDF ***
 2404-metadata_detect.rdf:SUCCEED
 multi.rdf:SUCCEED
+multi_merge1.rdf:SUCCEED
+multi_merge2.rdf:SUCCEED
 pathway1.rdf:SUCCEED
 pathway10.rdf:SUCCEED
 pathway11.rdf:SUCCEED
@@ -13,3 +15,5 @@ pathway6.rdf:SUCCEED
 pathway7.rdf:SUCCEED
 pathway8.rdf:SUCCEED
 pathway9.rdf:SUCCEED
+pathway_merge1.rdf:SUCCEED
+pathway_merge2.rdf:SUCCEED
