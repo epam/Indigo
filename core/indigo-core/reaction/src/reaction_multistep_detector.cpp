@@ -241,6 +241,7 @@ std::unique_ptr<BaseMolecule> ReactionMultistepDetector::extractComponent(int in
     return component;
 }
 
+// TODO: we can't avoid the calculation like this, but it's optimizable to N(log(N)) complexity
 void ReactionMultistepDetector::collectSortedDistances()
 {
     _mol_distances.resize(_moleculeCount);
@@ -250,18 +251,14 @@ void ReactionMultistepDetector::collectSortedDistances()
         for (int j = i + 1; j < _moleculeCount; ++j)
         {
             float dist = computeConvexDistance(_components[i].hull, _components[j].hull);
+            auto& mdj = _mol_distances[j];
             if (dist < LayoutOptions::DEFAULT_BOND_LENGTH * 2)
             {
                 mdi.sorted_distances.emplace_back(j, dist);
-                mdi.distances_map[j] = dist;
-
-                auto& mdj = _mol_distances[j];
-                auto it = std::lower_bound(mdj.sorted_distances.begin(), mdj.sorted_distances.end(), std::make_pair(i, dist),
-                                      [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
-
                 mdj.sorted_distances.emplace_back(i, dist);
-                mdj.distances_map.emplace(i, dist);
             }
+            mdj.distances_map.emplace(i, dist);
+            mdi.distances_map.emplace(j, dist);
         }
         std::sort(mdi.sorted_distances.begin(), mdi.sorted_distances.end(), [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
     }
@@ -506,9 +503,10 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::findMaxSpecialZone
 
 void ReactionMultistepDetector::mergeCloseComponents()
 {
-    for (std::size_t i = 0; i < _components.size(); ++i)
+    for (auto i = 0; i < _mol_distances.size(); ++i)
     {
-        if (!_components[i].mol)
+        auto& mdi = _mol_distances[i];
+        if (mdi.sorted_distances.empty() || !_components[i].mol)
             continue;
         std::queue<std::pair<std::size_t, std::optional<std::pair<int, int>>>> bfs_queue;
         std::vector<std::size_t> cluster;
@@ -517,12 +515,12 @@ void ReactionMultistepDetector::mergeCloseComponents()
         while (!bfs_queue.empty())
         {
             auto qel = bfs_queue.front();
+            auto& mdj = _mol_distances[qel.first];
             bfs_queue.pop();
-            for (std::size_t j = 0; j < _components.size(); ++j)
+            for (auto& sd : mdj.sorted_distances)
             {
-                if (!_components[j].mol || j == qel.first)
-                    continue;
-                if (std::find(cluster.begin(), cluster.end(), j) != cluster.end())
+                auto j = sd.first;
+                if (!_components[j].mol || std::find(cluster.begin(), cluster.end(), j) != cluster.end())
                     continue;
                 auto zone = isMergeable(qel.first, j, qel.second);
                 if (zone.has_value())
@@ -998,8 +996,6 @@ bool ReactionMultistepDetector::findPlusNeighbours(const Vec2f& plus_pos, const 
     for (const auto& kvp : intersection_top_bottom)
     {
         auto& tb_box = _reaction_components[kvp.second].bbox;
-        // if (tb_box.pointInRect(plus_pos))
-        //     continue;
         rights_row.emplace_back(tb_box.right(), kvp.second);
         lefts_row.emplace_back(tb_box.left(), kvp.second);
     }
@@ -1008,8 +1004,6 @@ bool ReactionMultistepDetector::findPlusNeighbours(const Vec2f& plus_pos, const 
     for (const auto& kvp : intersection_left_right)
     {
         auto& lr_box = _reaction_components[kvp.second].bbox;
-        // if (lr_box.pointInRect(plus_pos))
-        //     continue;
         tops_col.emplace_back(lr_box.top(), kvp.second);
         bottoms_col.emplace_back(lr_box.bottom(), kvp.second);
     }
