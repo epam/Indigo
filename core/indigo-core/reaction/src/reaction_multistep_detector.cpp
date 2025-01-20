@@ -293,7 +293,7 @@ void ReactionMultistepDetector::createSpecialZones()
 
 void ReactionMultistepDetector::addPlusZones(const Vec2f& pos)
 {
-    Rect2f bbox(pos - PLUS_BBOX_SHIFT/2, pos + PLUS_BBOX_SHIFT/2);
+    Rect2f bbox(pos - PLUS_BBOX_SHIFT / 2, pos + PLUS_BBOX_SHIFT / 2);
     SPECIAL_ZONE_DESC szd;
     szd.zone_type = ZoneType::EPlus;
     szd.origin_coordinates.push_back(pos);
