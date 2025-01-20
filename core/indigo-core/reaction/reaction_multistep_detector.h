@@ -128,7 +128,6 @@ namespace indigo
         BaseMolecule& _bmol;
         std::vector<ReactionComponent> _reaction_components;
         std::vector<MolSumm> _component_summ_blocks;
-        std::list<MolSumm> _component_summ_blocks_list;
         std::vector<COMPONENT_DESC> _components;
         std::vector<COMPONENT_DESC> _merged_components;
         std::vector<MOL_DISTANCES_DESC> _mol_distances;

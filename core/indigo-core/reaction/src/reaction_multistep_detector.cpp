@@ -125,6 +125,8 @@ void ReactionMultistepDetector::createSummBlocks()
     std::sort(mol_lefts.begin(), mol_lefts.end(), pair_comp_des);
     std::sort(mol_rights.begin(), mol_rights.end(), pair_comp_asc);
 
+    std::list<MolSumm> component_summ_blocks_list;
+
     for (int i = 0; i < _bmol.meta().getMetaCount(ReactionPlusObject::CID); ++i)
     {
         auto& plus = static_cast<const ReactionPlusObject&>(_bmol.meta().getMetaObject(ReactionPlusObject::CID, i));
@@ -155,14 +157,14 @@ void ReactionMultistepDetector::createSummBlocks()
                 // create brand new connection
                 Rect2f bbox = rc_connection.first.bbox;
                 merge_bbox(bbox, rc_connection.second.bbox);
-                _component_summ_blocks_list.emplace_back(bbox); // add merged boxes of both components
-                auto& last_sb = _component_summ_blocks_list.back();
+                component_summ_blocks_list.emplace_back(bbox); // add merged boxes of both components
+                auto& last_sb = component_summ_blocks_list.back();
                 last_sb.indexes.push_back(plus_connection.first);
                 last_sb.indexes.push_back(plus_connection.second);
 
                 rc_connection.first.summ_block_idx = ReactionComponent::CONNECTED; // mark as connected
                 rc_connection.second.summ_block_idx = ReactionComponent::CONNECTED;
-                auto last_it = std::prev(_component_summ_blocks_list.end());
+                auto last_it = std::prev(component_summ_blocks_list.end());
                 rc_connection.first.summ_block_it = last_it; // bind to summ blocks list
                 rc_connection.second.summ_block_it = last_it;
             }
@@ -179,7 +181,7 @@ void ReactionMultistepDetector::createSummBlocks()
                     block_first.indexes.push_back(v);                                          // copy all indexes of block_second to block_first
                     _reaction_components[v].summ_block_it = rc_connection.first.summ_block_it; // patch copied components. now they belong to block_first.
                 }
-                _component_summ_blocks_list.erase(second_block_it); // remove block_second
+                component_summ_blocks_list.erase(second_block_it); // remove block_second
             }
             break;
 
@@ -207,7 +209,7 @@ void ReactionMultistepDetector::createSummBlocks()
     }
 
     // copy list to vector and set summ block indexes
-    for (auto& csb : _component_summ_blocks_list)
+    for (auto& csb : component_summ_blocks_list)
     {
         for (int v : csb.indexes)
             _reaction_components[v].summ_block_idx = static_cast<int>(_component_summ_blocks.size());
