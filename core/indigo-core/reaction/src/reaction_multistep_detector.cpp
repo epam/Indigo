@@ -503,7 +503,7 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::findMaxSpecialZone
 
 void ReactionMultistepDetector::mergeCloseComponents()
 {
-    for (auto i = 0; i < _mol_distances.size(); ++i)
+    for (size_t i = 0; i < _mol_distances.size(); ++i)
     {
         auto& mdi = _mol_distances[i];
         if (mdi.sorted_distances.empty() || !_components[i].mol)
