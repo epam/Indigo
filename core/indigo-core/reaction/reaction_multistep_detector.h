@@ -115,7 +115,6 @@ namespace indigo
 
         void mergeCloseComponents();
         std::optional<std::pair<int, int>> isMergeable(size_t mol_idx1, size_t mol_idx2, std::optional<std::pair<int, int>> current_zone);
-        bool checkForOppositeSections(ZoneType zt, const std::unordered_set<int>& sections1, const std::unordered_set<int>& sections2);
         std::unique_ptr<BaseMolecule> extractComponent(int index);
         void sortSummblocks();
 

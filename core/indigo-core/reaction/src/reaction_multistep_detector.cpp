@@ -662,18 +662,6 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
     return std::nullopt;
 }
 
-bool ReactionMultistepDetector::checkForOppositeSections(ZoneType zt, const std::unordered_set<int>& sections1, const std::unordered_set<int>& sections2)
-{
-    for (int section1 : sections1)
-    {
-        if (zt == ZoneType::EPathWay && section1 > 1) // pathway has only 2 opposite agents sections
-            break;
-        if (sections2.count(section1 ^ 1))
-            return true;
-    }
-    return false;
-}
-
 void ReactionMultistepDetector::sortSummblocks()
 {
     // Create a list of original indices
