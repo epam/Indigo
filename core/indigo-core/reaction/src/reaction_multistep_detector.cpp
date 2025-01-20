@@ -293,7 +293,7 @@ void ReactionMultistepDetector::createSpecialZones()
 
 void ReactionMultistepDetector::addPlusZones(const Vec2f& pos)
 {
-    Rect2f bbox(pos - PLUS_BBOX_SHIFT, pos + PLUS_BBOX_SHIFT);
+    Rect2f bbox(pos - PLUS_BBOX_SHIFT/2, pos + PLUS_BBOX_SHIFT/2);
     SPECIAL_ZONE_DESC szd;
     szd.zone_type = ZoneType::EPlus;
     szd.origin_coordinates.push_back(pos);
@@ -912,7 +912,7 @@ bool ReactionMultistepDetector::mergeUndefinedComponents()
                 int mol_orig_idx = _merged_components[mol_idx].mapped_idx;
                 auto& mdi = _mol_distances[mol_orig_idx];
                 // if there are any close components
-                if (mdi.sorted_distances.size() && mdi.sorted_distances.front().second < LayoutOptions::DEFAULT_BOND_LENGTH * 2)
+                if (mdi.sorted_distances.size())
                 {
                     // if not merged
                     auto closest_idx = mdi.sorted_distances.front().first;
