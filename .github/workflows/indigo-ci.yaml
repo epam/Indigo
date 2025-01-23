@@ -240,15 +240,15 @@ jobs:
         with:
           name: indigo-dotnet
           path: dist/*.nupkg
-    merge:
-      runs-on: ubuntu-latest
-      needs: upload
-      steps:
-        - name: Merge native shared libs
-          uses: actions/upload-artifact/merge@v4
-          with:
-            name: indigo-native-shared-libs
-            pattern: indigo-native-shared-libs-*
+  merge:
+    runs-on: ubuntu-latest
+    needs: upload
+    steps:
+      - name: Merge native shared libs
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: indigo-native-shared-libs
+          pattern: indigo-native-shared-libs-*
 
   test_indigo_python_x86_64:
     timeout-minutes: 60
