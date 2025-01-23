@@ -1410,65 +1410,69 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
         MOLECULE_IDX
     };
 
-    auto& arrow = (const ReactionArrowObject&)rxn.meta().getMetaObject(ReactionArrowObject::CID, 0);
-    bool reverseReactionOrder = arrow.getArrowType() == ReactionArrowObject::ERetrosynthetic;
-
-    if (reverseReactionOrder)
-        rxn.setIsRetrosyntetic();
-
-    for (int i = 0; i < rxn.meta().getMetaCount(SimpleTextObject::CID); ++i)
+    if (rxn.meta().getMetaCount(ReactionArrowObject::CID))
     {
-        auto& text = (const SimpleTextObject&)rxn.meta().getMetaObject(SimpleTextObject::CID, i);
-        Rect2f bbox(Vec2f(text._pos.x, text._pos.y), Vec2f(text._pos.x, text._pos.y)); // change to real text box later
-        _reaction_components.emplace_back(ReactionComponent::TEXT, bbox, i, nullptr);
-    }
+        auto& arrow = (const ReactionArrowObject&)rxn.meta().getMetaObject(ReactionArrowObject::CID, 0);
+        bool reverseReactionOrder = arrow.getArrowType() == ReactionArrowObject::ERetrosynthetic;
 
-    int text_meta_idx = 0;
-    for (const auto& comp : _reaction_components)
-    {
-        switch (comp.component_type)
+        if (reverseReactionOrder)
+            rxn.setIsRetrosyntetic();
+
+        for (int i = 0; i < rxn.meta().getMetaCount(SimpleTextObject::CID); ++i)
         {
-        case ReactionComponent::MOLECULE: {
-            if (comp.molecule)
+            auto& text = (const SimpleTextObject&)rxn.meta().getMetaObject(SimpleTextObject::CID, i);
+            Rect2f bbox(Vec2f(text._pos.x, text._pos.y), Vec2f(text._pos.x, text._pos.y)); // change to real text box later
+            _reaction_components.emplace_back(ReactionComponent::TEXT, bbox, i, nullptr);
+        }
+
+        int text_meta_idx = 0;
+        for (const auto& comp : _reaction_components)
+        {
+            switch (comp.component_type)
             {
-                auto& cmol = *comp.molecule;
-                for (int idx = cmol.vertexBegin(); idx < cmol.vertexEnd(); idx = cmol.vertexNext(idx))
+            case ReactionComponent::MOLECULE: {
+                if (comp.molecule)
                 {
-                    Vec3f& pt3d = cmol.getAtomXyz(idx);
-                    Vec2f pt(pt3d.x, pt3d.y);
-                    int side = !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
-                    switch (side)
+                    auto& cmol = *comp.molecule;
+                    for (int idx = cmol.vertexBegin(); idx < cmol.vertexEnd(); idx = cmol.vertexNext(idx))
                     {
-                    case KReagentUpArea:
-                    case KReagentDownArea:
-                        rxn.addCatalystCopy(cmol, 0, 0);
-                        break;
-                    case KProductArea:
-                        rxn.addProductCopy(cmol, 0, 0);
-                        break;
-                    default:
-                        rxn.addReactantCopy(cmol, 0, 0);
+                        Vec3f& pt3d = cmol.getAtomXyz(idx);
+                        Vec2f pt(pt3d.x, pt3d.y);
+                        int side =
+                            !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
+                        switch (side)
+                        {
+                        case KReagentUpArea:
+                        case KReagentDownArea:
+                            rxn.addCatalystCopy(cmol, 0, 0);
+                            break;
+                        case KProductArea:
+                            rxn.addProductCopy(cmol, 0, 0);
+                            break;
+                        default:
+                            rxn.addReactantCopy(cmol, 0, 0);
+                            break;
+                        }
                         break;
                     }
-                    break;
                 }
             }
-        }
-        break;
-        case ReactionComponent::TEXT: {
-            const auto& bbox = comp.bbox;
-            Vec2f pt(bbox.center());
-            int side = !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
-            if (side == KReagentUpArea || side == KReagentDownArea)
-            {
-                rxn.addSpecialCondition(text_meta_idx, bbox);
+            break;
+            case ReactionComponent::TEXT: {
+                const auto& bbox = comp.bbox;
+                Vec2f pt(bbox.center());
+                int side = !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
+                if (side == KReagentUpArea || side == KReagentDownArea)
+                {
+                    rxn.addSpecialCondition(text_meta_idx, bbox);
+                    break;
+                }
+                text_meta_idx++;
+            }
+            break;
+            default:
                 break;
             }
-            text_meta_idx++;
-        }
-        break;
-        default:
-            break;
         }
     }
 }
