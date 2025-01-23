@@ -33,6 +33,7 @@ files = [
     "merge_test3a",
     "merge_test4",
     "merge_test5",
+    "merge_test6",
 ]
 
 files.sort()
