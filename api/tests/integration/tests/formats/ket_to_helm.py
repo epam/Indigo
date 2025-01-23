@@ -48,18 +48,24 @@ helm_data = {
     "dna_variants": "RNA1{[dR](C,G,T)P.[dR](A,C,G,T)}$$$$V2.0",
     "rna_variants": "RNA1{R(A,G)P.R(G,T)P.R(A,C,G,T)}$$$$V2.0",
     "helm_monomer_molecule": "PEPTIDE1{A}|PEPTIDE2{G}|CHEM1{[C(N[*:2])=C[*:1] |$;;_R2;;_R1$|]}$CHEM1,PEPTIDE1,1:R2-1:R1|PEPTIDE2,CHEM1,1:R2-1:R1$$$V2.0",
-    "helm_fractional_ratio": "PEPTIDE1{(A:1.5+C:.1+G:3.)}$$$$V2.0",
+    "helm_fractional_ratio": "PEPTIDE1{(A:1.5+C:0.1+G:3)}$$$$V2.0",
     "helm_smiles": "PEPTIDE1{G.[[*:1]NC(C(=O)[*:2])C=O |$_R1;;;;;_R2;;$|].C}|PEPTIDE2{G.[[*:1]NC(C(=O)[*:2])C=O |$_R1;;;;;_R2;;$|].C}$$$$V2.0",
     "helm_smiles_sugar": "RNA1{[C(C(CO[*:1])O[*:2])[*:3] |$;;;;_R1;;_R2;_R3$|](A)P}$$$$V2.0",
     "helm_molecule_2418": "PEPTIDE1{A}|CHEM1{[C1C=CC=CC=1[*:1] |$;;;;;;_R1$|]}$PEPTIDE1,CHEM1,1:R1-1:R1$$$V2.0",
     "helm_chem_rna_hydro": "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:pair-3:pair$$$V2.0",
     "helm_monomer_molecule_direct": "PEPTIDE1{A}|CHEM1{[C(=C)N[*:1] |$;;;_R1$|]}$PEPTIDE1,CHEM1,1:R2-1:R1$$$V2.0",
-    "helm_unknown": "CHEM1{[C1([*:1])C([*:4])C([*:3])C1[*:2] |$;_R1;;_R4;;_R3;;_R2$|]}$$$$V2.0",
+    "helm_unknown": "CHEM1{*}$$$$V2.0",
+    "helm_different_id": "PEPTIDE1{A}|RNA1{R(A)P}$$$$V2.0",
+    "helm_any_chem": "CHEM1{*}|CHEM2{*}$$$$V2.0",
 }
 
 for filename in sorted(helm_data.keys()):
     mol = indigo.loadKetDocumentFromFile(os.path.join(ref, filename + ".ket"))
-    helm = mol.helm(lib)
+    try:
+        helm = mol.helm(lib)
+    except IndigoException as e:
+        print("Test %s failed: %s" % (filename, getIndigoExceptionText(e)))
+        continue
     helm_ref = helm_data[filename]
     if helm_ref == helm:
         print(filename + ".ket:SUCCEED")
