@@ -218,7 +218,7 @@ jobs:
       - name: Upload native shared libs
         uses: actions/upload-artifact@v4
         with:
-          name: indigo-native-shared-libs-${{ matrix.runs-on }}
+          name: indigo-native-shared-libs-${{ matrix.wrapper }}
           path: |
             dist/lib
       - name: Upload Python wrappers
@@ -244,7 +244,7 @@ jobs:
       runs-on: ubuntu-latest
       needs: upload
       steps:
-        - name: native shared libs
+        - name: Merge native shared libs
           uses: actions/upload-artifact/merge@v4
           with:
             name: indigo-native-shared-libs
