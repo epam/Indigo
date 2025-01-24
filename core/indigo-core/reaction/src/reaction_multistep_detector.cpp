@@ -564,7 +564,7 @@ void dumpHull(std::string name, const std::vector<Vec2f>& hull)
         std::cout << v.x << "," << v.y << std::endl;
 }
 
-std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t mol_idx1, size_t mol_idx2, std::optional<std::pair<int, int>> current_zone)
+std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t mol_idx1, size_t mol_idx2, std::optional<std::pair<int, int>>& current_zone)
 {
     auto& mdi = _mol_distances[mol_idx1];
     auto dist_it = mdi.distances_map.find(mol_idx2);

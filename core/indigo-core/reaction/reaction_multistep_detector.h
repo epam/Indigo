@@ -137,7 +137,7 @@ namespace indigo
         std::optional<std::pair<int, int>> findMaxSpecialZone(size_t mol_idx, std::map<int, std::unordered_set<int>>& other_zones);
 
         void mergeCloseComponents();
-        std::optional<std::pair<int, int>> isMergeable(size_t mol_idx1, size_t mol_idx2, std::optional<std::pair<int, int>> current_zone);
+        std::optional<std::pair<int, int>> isMergeable(size_t mol_idx1, size_t mol_idx2, std::optional<std::pair<int, int>>& current_zone);
         std::unique_ptr<BaseMolecule> extractComponent(int index);
         void sortSummblocks();
 
