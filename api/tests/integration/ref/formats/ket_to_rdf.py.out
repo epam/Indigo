@@ -3,6 +3,10 @@
 multi.rdf:SUCCEED
 multi_merge1.rdf:SUCCEED
 multi_merge2.rdf:SUCCEED
+multi_merge3.rdf:SUCCEED
+multi_merge4.rdf:SUCCEED
+multi_merge5.rdf:SUCCEED
+multi_merge6.rdf:SUCCEED
 pathway1.rdf:SUCCEED
 pathway10.rdf:SUCCEED
 pathway11.rdf:SUCCEED

@@ -824,15 +824,31 @@ namespace indigo
         float _d;
     };
 
+    inline bool isPointOnSegment(const Vec2f& p, const Vec2f& a, const Vec2f& b)
+    {
+        const float eps = 1e-7f;
+        float c = Vec2f::cross(p - a, b - a);
+        if (std::fabs(c) > eps)
+            return false;
+        float d = (p - a)*(b - a);
+        if (d < 0)
+            return false;
+        float l = (b - a)*(b - a);
+        if (d > l)
+            return false;
+        return true;
+    }
+
     inline bool isPointInPolygon(const Vec2f& p, const std::vector<Vec2f>& poly)
     {
         bool in = false;
-        for (size_t i = 0, n = poly.size(); i < n; ++i)
+        size_t n = poly.size();
+        for (size_t i = 0; i < n; ++i)
         {
             size_t j = (i + 1) % n;
-            bool intersect =
-                ((poly[i].y > p.y) != (poly[j].y > p.y)) && (p.x < (poly[j].x - poly[i].x) * (p.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x);
-            if (intersect)
+            if (isPointOnSegment(p, poly[i], poly[j]))
+                return true;
+            if (((poly[i].y > p.y) != (poly[j].y > p.y)) && (p.x < (poly[j].x - poly[i].x) * (p.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x))
                 in = !in;
         }
         return in;
@@ -864,6 +880,7 @@ namespace indigo
         return result;
     }
 
+    // Shoelace formula - triangle form
     inline float convexPolygonArea(const std::vector<Vec2f>& poly)
     {
         float area = 0.0f;

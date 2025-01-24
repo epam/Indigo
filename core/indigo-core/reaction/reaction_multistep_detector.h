@@ -65,6 +65,30 @@ namespace indigo
             EPathWay
         };
 
+        enum class PlusSectionCode : int
+        {
+            ELeft = 0,
+            ERight,
+            ETop,
+            EBottom,
+        };
+
+        enum class ArrowSectionCode : int
+        {
+            ELeft = 0,
+            ERight,
+            ETop,
+            EBottom,
+        };
+
+        enum class PathwaySectionCode : int
+        {
+            ERight,
+            ETop,
+            EBottom,
+        };
+
+
         struct SPECIAL_ZONE_DESC
         {
             ZoneType zone_type;

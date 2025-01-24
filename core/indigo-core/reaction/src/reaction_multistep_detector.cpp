@@ -334,8 +334,8 @@ void ReactionMultistepDetector::addPlusZones(const Vec2f& pos)
     top.push_back(pos);
     szd.zone_sections.push_back(left);
     szd.zone_sections.push_back(right);
-    szd.zone_sections.push_back(bottom);
     szd.zone_sections.push_back(top);
+    szd.zone_sections.push_back(bottom);
     _zones.push_back(szd);
 }
 
@@ -608,20 +608,6 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
                     }
                 }
 
-                // check if both molecules are on the same section
-                // for (auto& cz : comm_zones)
-                //{
-                //    auto it_oz2 = other_zones2.find(cz.first);
-                //    if (it_oz2 != other_zones2.end())
-                //    {
-                //        for (auto& section : cz.second)
-                //        {
-                //            if (it_oz2->second.count(section))
-                //                return zone1;
-                //        }
-                //    }
-                //}
-
                 // different zone types are not mergeable
                 if (_zones[zone1.value().first].zone_type != _zones[zone2.value().first].zone_type && comm_zones.empty())
                     return std::nullopt;
@@ -643,8 +629,11 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
         switch (_zones[zidx].zone_type)
         {
         case ZoneType::EPlus:
-            if ((doesVerticalLineIntersectPolygon(coords[0].x, hull1) && doesVerticalLineIntersectPolygon(coords[0].x, hull2)) ||
-                (doesHorizontalLineIntersectPolygon(coords[0].x, hull1) && doesHorizontalLineIntersectPolygon(coords[0].x, hull2)))
+            if (((current_zone->second == (int)PlusSectionCode::ETop ||
+                 current_zone->second == (int)PlusSectionCode::EBottom) && doesVerticalLineIntersectPolygon(coords[0].x, hull1) &&
+                     doesVerticalLineIntersectPolygon(coords[0].x, hull2)) ||
+                ((current_zone->second == (int)PlusSectionCode::ELeft || current_zone->second == (int)PlusSectionCode::ERight) &&
+                 doesHorizontalLineIntersectPolygon(coords[0].y, hull1) && doesHorizontalLineIntersectPolygon(coords[0].y, hull2)))
                 return zone1 ? zone1 : current_zone;
             break;
         case ZoneType::EArrow:
@@ -658,7 +647,7 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
             auto c_it = coords.begin();
             const Vec2f& head = *c_it++;
             const Vec2f& spine_beg = *c_it++;
-            const Vec2f& spine_end = *c_it++;
+            const Vec2f& spine_end = *c_it++; // we could skip it because only x is used which is the same as spine_beg
             Vec2f tail(spine_beg.x, head.y);
             if (doesRayIntersectPolygon(tail, head, hull1) && doesRayIntersectPolygon(tail, head, hull2))
                 return zone1 ? zone1 : current_zone;
@@ -788,7 +777,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
             }
 
             // TODO: add upper limit
-            if (min_dist_prod > 0 && min_dist_reac > 0) // if both ends present
+            if (min_dist_prod >= 0 && min_dist_reac >= 0) // if both ends present
             {
                 auto& rc_arrow = _reaction_components[_moleculeCount + _bmol.meta().getMetaCount(ReactionPlusObject::CID) + reaction_index];
                 rc_arrow.summ_block_idx = ReactionComponent::CONNECTED; // mark arrow as connected
@@ -1084,7 +1073,7 @@ bool ReactionMultistepDetector::findPlusNeighbours(const Vec2f& plus_pos, const 
     {
         auto& tb_box = _reaction_components[kvp.second].bbox;
         auto dir = tb_box.center() - plus_pos;
-        if (std::fabs(dir.x) > std::fabs(dir.y))
+        if (_reaction_components[kvp.second].component_type == ReactionComponent::MOLECULE && std::fabs(dir.x) > std::fabs(dir.y))
         {
             rights_row.emplace_back(tb_box.right(), kvp.second);
             lefts_row.emplace_back(tb_box.left(), kvp.second);
@@ -1096,7 +1085,7 @@ bool ReactionMultistepDetector::findPlusNeighbours(const Vec2f& plus_pos, const 
     {
         auto& lr_box = _reaction_components[kvp.second].bbox;
         auto dir = lr_box.center() - plus_pos;
-        if (std::fabs(dir.x) < std::fabs(dir.y))
+        if (_reaction_components[kvp.second].component_type == ReactionComponent::MOLECULE && std::fabs(dir.x) < std::fabs(dir.y))
         {
             tops_col.emplace_back(lr_box.top(), kvp.second);
             bottoms_col.emplace_back(lr_box.bottom(), kvp.second);
