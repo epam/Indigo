@@ -88,7 +88,6 @@ namespace indigo
             EBottom,
         };
 
-
         struct SPECIAL_ZONE_DESC
         {
             ZoneType zone_type;

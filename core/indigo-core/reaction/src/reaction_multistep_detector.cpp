@@ -629,9 +629,8 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
         switch (_zones[zidx].zone_type)
         {
         case ZoneType::EPlus:
-            if (((current_zone->second == (int)PlusSectionCode::ETop ||
-                 current_zone->second == (int)PlusSectionCode::EBottom) && doesVerticalLineIntersectPolygon(coords[0].x, hull1) &&
-                     doesVerticalLineIntersectPolygon(coords[0].x, hull2)) ||
+            if (((current_zone->second == (int)PlusSectionCode::ETop || current_zone->second == (int)PlusSectionCode::EBottom) &&
+                 doesVerticalLineIntersectPolygon(coords[0].x, hull1) && doesVerticalLineIntersectPolygon(coords[0].x, hull2)) ||
                 ((current_zone->second == (int)PlusSectionCode::ELeft || current_zone->second == (int)PlusSectionCode::ERight) &&
                  doesHorizontalLineIntersectPolygon(coords[0].y, hull1) && doesHorizontalLineIntersectPolygon(coords[0].y, hull2)))
                 return zone1 ? zone1 : current_zone;
