@@ -30,8 +30,8 @@
 
 #define SQR(x) ((x) * (x))
 
-#define DEG2RAD(x) ((x)*M_PI / 180)
-#define RAD2DEG(x) ((x)*180 / M_PI)
+#define DEG2RAD(x) ((x) * M_PI / 180)
+#define RAD2DEG(x) ((x) * 180 / M_PI)
 #define HYPOT(a, b) (sqrt((a) * (a) + (b) * (b)))
 
 namespace indigo
@@ -830,10 +830,10 @@ namespace indigo
         float c = Vec2f::cross(p - a, b - a);
         if (std::fabs(c) > eps)
             return false;
-        float d = (p - a)*(b - a);
+        float d = (p - a) * (b - a);
         if (d < 0)
             return false;
-        float l = (b - a)*(b - a);
+        float l = (b - a) * (b - a);
         if (d > l)
             return false;
         return true;
@@ -848,7 +848,9 @@ namespace indigo
             size_t j = (i + 1) % n;
             if (isPointOnSegment(p, poly[i], poly[j]))
                 return true;
-            if (((poly[i].y > p.y) != (poly[j].y > p.y)) && (p.x < (poly[j].x - poly[i].x) * (p.y - poly[i].y) / (poly[j].y - poly[i].y) + poly[i].x))
+            if (((poly[i].y > p.y) != (poly[j].y > p.y)) &&
+                (((p.x > poly[i].x) && (p.x < poly[j].x)) ||
+                 (p.x < (poly[i].x + (p.y - poly[i].y) * (poly[j].x - poly[i].x) / (poly[j].y - poly[i].y))))) // py < (py-y0)*dx/dy
                 in = !in;
         }
         return in;
