@@ -191,7 +191,7 @@ float Vec2f::cross(const Vec2f& a, const Vec2f& b)
 
 float Vec2f::relativeCross(const Vec2f& a, const Vec2f& b) const
 {
-    return cross(a - *this,b - *this);
+    return cross(a - *this, b - *this);
 }
 
 void Vec2f::projectZ(Vec2f& v2, const Vec3f& v3)
