@@ -1463,4 +1463,47 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
             }
         }
     }
+    else
+    {
+        for (auto& csb : _component_summ_blocks)
+        {
+            switch (csb.role)
+            {
+            case BaseReaction::PRODUCT: {
+                for (auto idx : csb.indexes)
+                {
+                    auto& rc = _reaction_components[idx];
+                    rxn.addProductCopy(*rc.molecule, 0, 0);
+                }
+            }
+            break;
+            case BaseReaction::REACTANT: {
+                for (auto idx : csb.indexes)
+                {
+                    auto& rc = _reaction_components[idx];
+                    rxn.addReactantCopy(*rc.molecule, 0, 0);
+                }
+            }
+            break;
+            case BaseReaction::INTERMEDIATE: {
+                for (auto idx : csb.indexes)
+                {
+                    auto& rc = _reaction_components[idx];
+                    rxn.addIntermediateCopy(*rc.molecule, 0, 0);
+                }
+            }
+            break;
+            case BaseReaction::UNDEFINED: {
+                for (auto idx : csb.indexes)
+                {
+                    auto& rc = _reaction_components[idx];
+                    rxn.addUndefinedCopy(*rc.molecule, 0, 0);
+                }
+            }
+            break;
+            default:
+                break;
+            }
+        }
+    }
 }
