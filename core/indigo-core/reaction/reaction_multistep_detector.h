@@ -134,7 +134,7 @@ namespace indigo
         void addArrowZones(const Vec2f& tail, const Vec2f& head);
         void addPathwayZones(const Vec2f& head, const Vec2f& sp_beg, const Vec2f& sp_end, const std::vector<Vec2f>& tails);
         std::map<int, std::unordered_set<int>> findSpecialZones(size_t mol_idx);
-        std::optional<std::pair<int, int>> findMaxSpecialZone(size_t mol_idx, std::map<int, std::unordered_set<int>>& other_zones);
+        std::optional<std::pair<int, int>> findMaxSpecialZone(size_t mol_idx, std::map<int, std::set<int>>& other_zones);
 
         void mergeCloseComponents();
         std::optional<std::pair<int, int>> isMergeable(size_t mol_idx1, size_t mol_idx2, std::optional<std::pair<int, int>>& current_zone);

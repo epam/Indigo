@@ -473,7 +473,7 @@ std::map<int, std::unordered_set<int>> ReactionMultistepDetector::findSpecialZon
     return result;
 }
 
-std::optional<std::pair<int, int>> ReactionMultistepDetector::findMaxSpecialZone(size_t mol_idx, std::map<int, std::unordered_set<int>>& zones)
+std::optional<std::pair<int, int>> ReactionMultistepDetector::findMaxSpecialZone(size_t mol_idx, std::map<int, std::set<int>>& zones)
 {
     std::optional<std::pair<int, int>> result{};
     float max_containment = 0.0f;
@@ -571,9 +571,9 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
     if (dist_it != mdi.distances_map.end() && dist_it->second < LayoutOptions::DEFAULT_BOND_LENGTH * 2)
     {
         // collect surrounding zones for both molecules
-        std::map<int, std::unordered_set<int>> other_zones1;
-        std::map<int, std::unordered_set<int>> other_zones2;
-        std::map<int, std::unordered_set<int>> comm_zones;
+        std::map<int, std::set<int>> other_zones1;
+        std::map<int, std::set<int>> other_zones2;
+        std::map<int, std::set<int>> comm_zones;
 
         auto zone1 = findMaxSpecialZone(mol_idx1, other_zones1);
         auto zone2 = findMaxSpecialZone(mol_idx2, other_zones2);

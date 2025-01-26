@@ -280,7 +280,7 @@ namespace indigo
         DLLEXPORT void rotateL(float si, float co);
         DLLEXPORT void rotateL(Vec2f vec);
         DLLEXPORT void rotateAroundSegmentEnd(const Vec2f& a, const Vec2f& b, float angle);
-        DLLEXPORT float relativeCross(const Vec2f& a, const Vec2f& b);
+        DLLEXPORT float relativeCross(const Vec2f& a, const Vec2f& b) const;
 
         DLLEXPORT static float distSqr(const Vec2f& a, const Vec2f& b);
         DLLEXPORT static float dist(const Vec2f& a, const Vec2f& b);
@@ -896,11 +896,6 @@ namespace indigo
         return std::abs(area) * 0.5f;
     }
 
-    inline bool isInside(const Vec2f& edgeStart, const Vec2f& edgeEnd, const Vec2f& point)
-    {
-        return (edgeEnd.x - edgeStart.x) * (point.y - edgeStart.y) - (edgeEnd.y - edgeStart.y) * (point.x - edgeStart.x) <= 0;
-    }
-
     inline bool convexPolygonsIntersect(const std::vector<Vec2f>& poly1, const std::vector<Vec2f>& poly2)
     {
         auto project = [](const std::vector<Vec2f>& poly, const Vec2f& axis) {
@@ -954,13 +949,13 @@ namespace indigo
             Vec2f prev = input.back();
             for (const Vec2f& curr : input)
             {
-                if (isInside(edgeStart, edgeEnd, curr))
+                if (edgeStart.relativeCross(edgeEnd, curr) <= 0)
                 {
-                    if (!isInside(edgeStart, edgeEnd, prev))
+                    if (edgeStart.relativeCross(edgeEnd, prev) > 0)
                         result.push_back(computeIntersection(prev, curr, edgeStart, edgeEnd));
                     result.push_back(curr);
                 }
-                else if (isInside(edgeStart, edgeEnd, prev))
+                else if (edgeStart.relativeCross(edgeEnd, prev) <= 0)
                 {
                     result.push_back(computeIntersection(prev, curr, edgeStart, edgeEnd));
                 }

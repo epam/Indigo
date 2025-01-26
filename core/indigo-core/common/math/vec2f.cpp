@@ -189,9 +189,9 @@ float Vec2f::cross(const Vec2f& a, const Vec2f& b)
     return a.x * b.y - a.y * b.x;
 }
 
-float Vec2f::relativeCross(const Vec2f& a, const Vec2f& b)
+float Vec2f::relativeCross(const Vec2f& a, const Vec2f& b) const
 {
-    return (a.x - x) * (b.y - y) - (a.y - y) * (b.x - x);
+    return cross(a - *this,b - *this);
 }
 
 void Vec2f::projectZ(Vec2f& v2, const Vec3f& v3)
