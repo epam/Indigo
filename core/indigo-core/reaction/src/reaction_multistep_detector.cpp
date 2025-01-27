@@ -697,6 +697,12 @@ void ReactionMultistepDetector::sortSummblocks()
         std::for_each(block.arrows_to.begin(), block.arrows_to.end(), update_arrow);
         std::for_each(block.arrows_from.begin(), block.arrows_from.end(), update_arrow);
     }
+    // Update reaction components with new indices
+    for (auto& rc : _reaction_components)
+    {
+        if (rc.summ_block_idx >= 0 && rc.summ_block_idx < static_cast<int>(old_to_new.size()))
+            rc.summ_block_idx = old_to_new[rc.summ_block_idx];
+    }
 }
 
 ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReaction()
@@ -717,8 +723,8 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
     createSummBlocks();
     bool has_multistep = mapReactionComponents();
     bool has_multitail = mapMultitailReactionComponents();
-    mergeUndefinedComponents();
     sortSummblocks();
+    mergeUndefinedComponents();
     return has_multitail ? ReactionType::EPathwayReaction : (has_multistep ? ReactionType ::EMutistepReaction : ReactionType::ESimpleReaction);
 }
 
