@@ -22,6 +22,7 @@ print("*** KET to KET ***")
 
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
+root_rea = joinPathPy("reactions/", __file__)
 
 files = [
     "images",
@@ -73,3 +74,23 @@ for filename in sorted(files):
             #     file.write(mol.json())
             ket = mol.json()
             check_res(filename, format + " " + loader.__name__, ket_ref, ket)
+
+files = [
+    "multi_merge4",
+]
+
+files.sort()
+for filename in files:
+    rea = indigo.loadReactionFromFile(os.path.join(root_rea, filename + ".ket"))
+
+    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+    #     file.write(rea.json())
+    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
+        ket_ref = file.read()
+    ket = rea.json()
+    diff = find_diff(ket_ref, ket)
+    if not diff:
+        print(filename + ".ket:SUCCEED")
+    else:
+        print(filename + ".ket:FAILED")
+        print(diff)
