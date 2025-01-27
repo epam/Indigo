@@ -72,7 +72,7 @@ for filename in files:
     rdf = buffer.toString()
 
     # with open(os.path.join(ref_path, filename) + ".rdf", "w") as file:
-    #     file.write(rdf)
+    #    file.write(rdf)
 
     with open(os.path.join(ref_path, filename) + ".rdf", "r") as file:
         rdf_ref = file.read()
