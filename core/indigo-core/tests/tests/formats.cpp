@@ -46,10 +46,13 @@
 #include <molecule/sdf_loader.h>
 #include <molecule/smiles_loader.h>
 #include <molecule/smiles_saver.h>
+#include <reaction/reaction_cdxml_loader.h>
+#include <reaction/reaction_cdxml_saver.h>
 
 #include "common.h"
 
 #include <algorithm>
+#include <fstream>
 
 using namespace indigo;
 
@@ -557,6 +560,28 @@ TEST_F(IndigoCoreFormatsTest, mol_to_document)
         fill_conn_info(connection.ep2(), ep2_info);
         printf("%s connection from %s to %s\n", connection.connectionType().c_str(), ep1_info.c_str(), ep2_info.c_str());
     }
+}
+
+TEST_F(IndigoCoreFormatsTest, wrong_stereochemistry_2739)
+{
+    FileScanner scanner(dataPath("reactions/basic/wrong_stereochemistry_2739.cdxml").c_str());
+    Reaction reaction;
+    ReactionCdxmlLoader loader(scanner);
+    loader.loadReaction(reaction);
+
+    Array<char> out;
+    ArrayOutput stdOut(out);
+    ReactionCdxmlSaver saver(stdOut);
+    saver.saveReaction(reaction);
+    std::string outCDXML{out.ptr(), static_cast<std::size_t>(out.size())};
+
+    std::ifstream file(dataPath("reactions/basic/wrong_stereochemistry_2739.cdxml"));
+    std::stringstream stringStream;
+    stringStream << file.rdbuf();
+    std::string originalCDXML = stringStream.str();
+    file.close();
+
+    ASSERT_EQ(originalCDXML, outCDXML);
 }
 
 #ifdef _MSC_VER
