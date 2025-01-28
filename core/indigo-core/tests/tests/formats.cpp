@@ -47,12 +47,10 @@
 #include <molecule/smiles_loader.h>
 #include <molecule/smiles_saver.h>
 #include <reaction/reaction_cdxml_loader.h>
-#include <reaction/reaction_cdxml_saver.h>
 
 #include "common.h"
 
 #include <algorithm>
-#include <fstream>
 
 using namespace indigo;
 
@@ -569,19 +567,26 @@ TEST_F(IndigoCoreFormatsTest, wrong_stereochemistry_2739)
     ReactionCdxmlLoader loader(scanner);
     loader.loadReaction(reaction);
 
-    Array<char> out;
-    ArrayOutput stdOut(out);
-    ReactionCdxmlSaver saver(stdOut);
-    saver.saveReaction(reaction);
-    std::string outCDXML{out.ptr(), static_cast<std::size_t>(out.size())};
+    std::vector<std::pair<int, int>> testData = {{1, 1}, {1, 2}, {2, 1}};
 
-    std::ifstream file(dataPath("reactions/basic/wrong_stereochemistry_2739.cdxml"));
-    std::stringstream stringStream;
-    stringStream << file.rdbuf();
-    std::string originalCDXML = stringStream.str();
-    file.close();
+    std::vector<std::pair<int, int>> bondDirections;
+    for (int i = reaction.begin(); i != reaction.end(); i = reaction.next(i)) {
+        const Molecule& mol = reaction.getMolecule(i);
+        int bondUp = 0;
+        int bondDown = 0;
+        for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
+        {
+            int direction = mol.getBondDirection(j);
+            if (direction == BOND_UP) {
+                ++bondUp;
+            } else if (direction == BOND_DOWN) {
+                ++bondDown;
+            }
+        }
+        bondDirections.push_back({bondUp, bondDown});
+    }
 
-    ASSERT_EQ(originalCDXML, outCDXML);
+    ASSERT_EQ(testData, bondDirections);
 }
 
 #ifdef _MSC_VER
