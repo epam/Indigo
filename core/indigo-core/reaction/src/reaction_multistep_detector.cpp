@@ -668,11 +668,11 @@ void ReactionMultistepDetector::sortSummblocks()
     std::vector<int> indices(_component_summ_blocks.size());
     std::iota(indices.begin(), indices.end(), 0);
 
-    int csm_undef_index = -1;
+    int csm_undef_index = -(int)_component_summ_blocks.size() - 1;
     for (auto& csm : _component_summ_blocks)
     {
         if (csm.reaction_idx == -1)
-            csm.reaction_idx = csm_undef_index--;
+            csm.reaction_idx = csm_undef_index++;
     }
 
     // Sort the indices based on reaction_idx
