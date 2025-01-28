@@ -709,7 +709,7 @@ void indigo::ReactionMultistepDetector::dumpDetectionResults()
     std::cout << "csm count: " << _component_summ_blocks.size() << std::endl;
     for (auto& csm : _component_summ_blocks)
     {
-        std::cout << "csm: " << "role:" << csm.role << "index:" << csm.reaction_idx << "bbox:" << csm.bbox.left() << "," << csm.bbox.top() << " "
+        std::cout << "csm: " << " role:" << csm.role << " index:" << csm.reaction_idx << " bbox:" << csm.bbox.left() << "," << csm.bbox.top() << " "
                   << csm.bbox.right() << "," << csm.bbox.bottom() << std::endl;
     }
 }
@@ -734,6 +734,7 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
     bool has_multitail = mapMultitailReactionComponents();
     sortSummblocks();
     mergeUndefinedComponents();
+    dumpDetectionResults();
     return has_multitail ? ReactionType::EPathwayReaction : (has_multistep ? ReactionType ::EMutistepReaction : ReactionType::ESimpleReaction);
 }
 
