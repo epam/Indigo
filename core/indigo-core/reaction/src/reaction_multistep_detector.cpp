@@ -668,6 +668,13 @@ void ReactionMultistepDetector::sortSummblocks()
     std::vector<int> indices(_component_summ_blocks.size());
     std::iota(indices.begin(), indices.end(), 0);
 
+    int csm_undef_index = -1;
+    for (auto& csm : _component_summ_blocks)
+    {
+        if (csm.reaction_idx == -1)
+            csm.reaction_idx = csm_undef_index--;
+    }
+
     // Sort the indices based on reaction_idx
     std::sort(indices.begin(), indices.end(),
               [&](int a, int b) -> bool { return _component_summ_blocks[a].reaction_idx < _component_summ_blocks[b].reaction_idx; });
@@ -734,7 +741,7 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
     bool has_multitail = mapMultitailReactionComponents();
     sortSummblocks();
     mergeUndefinedComponents();
-    dumpDetectionResults();
+    // dumpDetectionResults();
     return has_multitail ? ReactionType::EPathwayReaction : (has_multistep ? ReactionType ::EMutistepReaction : ReactionType::ESimpleReaction);
 }
 
