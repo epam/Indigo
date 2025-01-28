@@ -1699,6 +1699,26 @@ CEXPORT const char* indigoJson(int item)
     INDIGO_END(0);
 }
 
+CEXPORT const char* indigoMacroProps(int object)
+{
+    INDIGO_BEGIN
+    {
+        auto& tmp = self.getThreadTmpData();
+        ArrayOutput out(tmp.string);
+
+        IndigoObject& obj = self.getObject(object);
+
+        if (IndigoBaseMolecule::is(obj) || IndigoBaseReaction::is(obj) || IndigoKetDocument::is(obj))
+        {
+            auto& doc = obj.getKetDocument();
+            doc.CalculateMacroProps(out, self.json_saving_pretty);
+        }
+        out.writeChar(0);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
+}
+
 CEXPORT const char* indigoGetOriginalFormat(int item)
 {
     INDIGO_BEGIN

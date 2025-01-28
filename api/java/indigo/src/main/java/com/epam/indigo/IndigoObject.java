@@ -102,6 +102,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoHelm(self, library.self));
     }
 
+    public String macroProps() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoMacroProps(self));
+    }
+
     public String getOriginalFormat() {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoGetOriginalFormat(self));

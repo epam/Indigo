@@ -80,7 +80,7 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
                 if (node_type == "molecule")
                 {
                     // parseKetMolecule(ref, node, document);
-                    document.addMolecule(node);
+                    document.addMolecule(node, ref);
                 }
                 else if (node_type == "rgroup")
                 {

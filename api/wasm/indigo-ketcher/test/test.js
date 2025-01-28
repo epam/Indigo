@@ -1063,6 +1063,51 @@ M  END
         });
     }
 
+    {
+        test("macroprops", "double_dna", () => {
+            var fs = require('fs');
+            const double_dna = fs.readFileSync("props_double_dna.ket");
+            let options = new indigo.MapStringString();
+            options.set('json-saving-pretty', 'true');
+            let json = JSON.parse(indigo.calculateMacro(double_dna, "ket", options)).struct;            
+            // fs.writeFileSync("props_double_dna.json", ket);
+            const json_ref = fs.readFileSync("props_double_dna.json");
+            assert.equal(json, json_ref.toString().trim());
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("macroprops", "peptides_micro", () => {
+            var fs = require('fs');
+            const peptides_micro = fs.readFileSync("props_peptides_micro.ket");
+            let options = new indigo.MapStringString();
+            options.set('json-saving-pretty', 'true');
+            let json = JSON.parse(indigo.calculateMacro(peptides_micro, "ket", options)).struct;            
+            // fs.writeFileSync("props_peptides_micro.json", ket);
+            const json_ref = fs.readFileSync("props_peptides_micro.json");
+            assert.equal(json, json_ref.toString().trim());
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("macroprops", "peptides", () => {
+            var fs = require('fs');
+            const peptides = fs.readFileSync("props_peptides.ket");
+            let options = new indigo.MapStringString();
+            options.set('json-saving-pretty', 'true');
+            let json = JSON.parse(indigo.calculateMacro(peptides, "ket", options)).struct;            
+            // fs.writeFileSync("props_peptides.json", ket);
+            const json_ref = fs.readFileSync("props_peptides.json");
+            assert.equal(json, json_ref.toString().trim());
+            options.delete();
+            assert(true);
+        });
+    }
+
     // Run tests
     run();
 });

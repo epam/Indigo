@@ -37,6 +37,7 @@ namespace indigo
     class QueryReaction;
     class BaseReaction;
     class PathwayReaction;
+    class KetDocument;
 
     struct SpecialCondition
     {
@@ -372,6 +373,8 @@ namespace indigo
             isRetrosynthetic = true;
         };
 
+        KetDocument& getKetDocument();
+
         DECL_ERROR;
 
     protected:
@@ -400,6 +403,8 @@ namespace indigo
 
         virtual void _clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings);
         virtual void _cloneSub(BaseReaction& other);
+
+        KetDocument* _document;
     };
 
 } // namespace indigo
