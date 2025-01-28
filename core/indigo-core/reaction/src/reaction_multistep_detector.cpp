@@ -209,7 +209,7 @@ void ReactionMultistepDetector::createSummBlocks()
     }
 
     // copy list to vector and set summ block indexes
-    int undef_idx = -component_summ_blocks_list.size() - 1;
+    int undef_idx = -(int)component_summ_blocks_list.size() - 1;
     for (auto& csb : component_summ_blocks_list)
     {
         for (int v : csb.indexes)
