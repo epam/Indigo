@@ -209,16 +209,15 @@ void ReactionMultistepDetector::createSummBlocks()
     }
 
     // copy list to vector and set summ block indexes
-    int undef_idx = -(int)component_summ_blocks_list.size() - 1;
     for (auto& csb : component_summ_blocks_list)
     {
         for (int v : csb.indexes)
             _reaction_components[v].summ_block_idx = static_cast<int>(_component_summ_blocks.size());
-        csb.reaction_idx = undef_idx++;
         _component_summ_blocks.push_back(csb);
     }
 
     // add all single molecules to _component_summ_blocks
+    int undef_idx = -(int)_reaction_components.size() - 1;
     for (size_t i = 0; i < _reaction_components.size(); ++i)
     {
         auto& rc = _reaction_components[i];
@@ -229,6 +228,7 @@ void ReactionMultistepDetector::createSummBlocks()
             rc.summ_block_idx = static_cast<int>(_component_summ_blocks.size());
             _component_summ_blocks.push_back(_reaction_components[i].bbox);
             _component_summ_blocks.back().indexes.push_back(static_cast<int>(i));
+            _component_summ_blocks.back().reaction_idx = undef_idx++;
         }
     }
 }
