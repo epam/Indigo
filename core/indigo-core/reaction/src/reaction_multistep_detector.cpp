@@ -704,6 +704,16 @@ void ReactionMultistepDetector::sortSummblocks()
     }
 }
 
+void indigo::ReactionMultistepDetector::dumpDetectionResults()
+{
+    std::cout << "csm count: " << _component_summ_blocks.size() << std::endl;
+    for (auto& csm : _component_summ_blocks)
+    {
+        std::cout << "csm: " << "role:" << csm.role << "index:" << csm.reaction_idx << "bbox:" << csm.bbox.left() << "," << csm.bbox.top() << " "
+                  << csm.bbox.right() << "," << csm.bbox.bottom() << std::endl;
+    }
+}
+
 ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReaction()
 {
     createSpecialZones();
