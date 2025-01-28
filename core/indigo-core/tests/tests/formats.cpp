@@ -570,16 +570,20 @@ TEST_F(IndigoCoreFormatsTest, wrong_stereochemistry_2739)
     std::vector<std::pair<int, int>> testData = {{1, 1}, {1, 2}, {2, 1}};
 
     std::vector<std::pair<int, int>> bondDirections;
-    for (int i = reaction.begin(); i != reaction.end(); i = reaction.next(i)) {
+    for (int i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
+    {
         const Molecule& mol = reaction.getMolecule(i);
         int bondUp = 0;
         int bondDown = 0;
         for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
         {
             int direction = mol.getBondDirection(j);
-            if (direction == BOND_UP) {
+            if (direction == BOND_UP)
+            {
                 ++bondUp;
-            } else if (direction == BOND_DOWN) {
+            }
+            else if (direction == BOND_DOWN)
+            {
                 ++bondDown;
             }
         }
