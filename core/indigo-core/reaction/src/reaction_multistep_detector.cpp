@@ -209,10 +209,12 @@ void ReactionMultistepDetector::createSummBlocks()
     }
 
     // copy list to vector and set summ block indexes
+    int undef_idx = -component_summ_blocks_list.size() - 1;
     for (auto& csb : component_summ_blocks_list)
     {
         for (int v : csb.indexes)
             _reaction_components[v].summ_block_idx = static_cast<int>(_component_summ_blocks.size());
+        csb.reaction_idx = undef_idx++;
         _component_summ_blocks.push_back(csb);
     }
 
@@ -667,13 +669,6 @@ void ReactionMultistepDetector::sortSummblocks()
     // Create a list of original indices
     std::vector<int> indices(_component_summ_blocks.size());
     std::iota(indices.begin(), indices.end(), 0);
-
-    int csm_undef_index = -(int)_component_summ_blocks.size() - 1;
-    for (auto& csm : _component_summ_blocks)
-    {
-        if (csm.reaction_idx == -1)
-            csm.reaction_idx = csm_undef_index++;
-    }
 
     // Sort the indices based on reaction_idx
     std::sort(indices.begin(), indices.end(),
