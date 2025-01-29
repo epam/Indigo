@@ -81,7 +81,9 @@ files = [
 
 files.sort()
 for filename in files:
-    rea = indigo.loadReactionFromFile(os.path.join(root_rea, filename + ".ket"))
+    rea = indigo.loadReactionFromFile(
+        os.path.join(root_rea, filename + ".ket")
+    )
 
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
     #     file.write(rea.json())
