@@ -784,27 +784,33 @@ bool ReactionMultistepDetector::mapReactionComponents()
             }
 
             // TODO: add upper limit
-            if (min_dist_prod >= 0 && min_dist_reac >= 0) // if both ends present
+            if (min_dist_prod >= 0 || min_dist_reac >= 0) // if both ends present
             {
                 auto& rc_arrow = _reaction_components[_moleculeCount + _bmol.meta().getMetaCount(ReactionPlusObject::CID) + reaction_index];
                 rc_arrow.summ_block_idx = ReactionComponent::CONNECTED; // mark arrow as connected
-                auto& csb_min_prod = _component_summ_blocks[idx_cs_min_prod];
-                if (csb_min_prod.role == BaseReaction::UNDEFINED)
-                    csb_min_prod.role = BaseReaction::PRODUCT;
-                else if (csb_min_prod.role == BaseReaction::REACTANT)
-                    csb_min_prod.role = BaseReaction::INTERMEDIATE;
 
-                auto& csb_min_reac = _component_summ_blocks[idx_cs_min_reac];
-                if (csb_min_reac.role == BaseReaction::UNDEFINED)
-                    csb_min_reac.role = BaseReaction::REACTANT;
-                else if (csb_min_reac.role == BaseReaction::PRODUCT)
-                    csb_min_reac.role = BaseReaction::INTERMEDIATE;
+                if (min_dist_prod >= 0)
+                {
+                    auto& csb_min_prod = _component_summ_blocks[idx_cs_min_prod];
+                    if (csb_min_prod.role == BaseReaction::UNDEFINED)
+                        csb_min_prod.role = BaseReaction::PRODUCT;
+                    else if (csb_min_prod.role == BaseReaction::REACTANT)
+                        csb_min_prod.role = BaseReaction::INTERMEDIATE;
+                    if (min_dist_reac >= 0 )
+                        csb_min_prod.arrows_from.push_back(idx_cs_min_reac);
+                    csb_min_prod.reaction_idx = reaction_index;
+                }
 
-                // idx_cs_min_reac <-> idx_cs_min_prod
-                csb_min_reac.arrows_to.push_back(idx_cs_min_prod);
-                csb_min_prod.arrows_from.push_back(idx_cs_min_reac);
-                // csb_min_reac.reaction_idx = reaction_index;
-                csb_min_prod.reaction_idx = reaction_index;
+                if (min_dist_reac >= 0)
+                {
+                    auto& csb_min_reac = _component_summ_blocks[idx_cs_min_reac];
+                    if (csb_min_reac.role == BaseReaction::UNDEFINED)
+                        csb_min_reac.role = BaseReaction::REACTANT;
+                    else if (csb_min_reac.role == BaseReaction::PRODUCT)
+                        csb_min_reac.role = BaseReaction::INTERMEDIATE;
+                    if (min_dist_prod >= 0)
+                        csb_min_reac.arrows_to.push_back(idx_cs_min_prod);
+                }
             }
         }
         return arrow_count > 1;
@@ -897,7 +903,6 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
                     csb_min_reac.arrows_to.push_back(idx_cs_min_prod);
                     _component_summ_blocks[idx_cs_min_prod].arrows_from.push_back(reac.second);
                 }
-                // csb_min_reac.reaction_idx = pathway_idx + _bmol.meta().getMetaCount(ReactionArrowObject::CID);
             }
             else
                 bad_pathway = true;
@@ -1427,7 +1432,8 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
             switch (comp.component_type)
             {
             case ReactionComponent::MOLECULE: {
-                if (comp.molecule)
+                if (comp.molecule && comp.summ_block_idx != ReactionComponent::NOT_CONNECTED &&
+                    _component_summ_blocks[comp.summ_block_idx].role != BaseReaction::UNDEFINED)
                 {
                     auto& cmol = *comp.molecule;
                     for (int idx = cmol.vertexBegin(); idx < cmol.vertexEnd(); idx = cmol.vertexNext(idx))
