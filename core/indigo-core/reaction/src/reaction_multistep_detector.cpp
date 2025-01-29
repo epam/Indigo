@@ -217,7 +217,6 @@ void ReactionMultistepDetector::createSummBlocks()
     }
 
     // add all single molecules to _component_summ_blocks
-    int undef_idx = -(int)_reaction_components.size() - 1;
     for (size_t i = 0; i < _reaction_components.size(); ++i)
     {
         auto& rc = _reaction_components[i];
@@ -228,7 +227,6 @@ void ReactionMultistepDetector::createSummBlocks()
             rc.summ_block_idx = static_cast<int>(_component_summ_blocks.size());
             _component_summ_blocks.push_back(_reaction_components[i].bbox);
             _component_summ_blocks.back().indexes.push_back(static_cast<int>(i));
-            _component_summ_blocks.back().reaction_idx = undef_idx++;
         }
     }
 }
@@ -732,11 +730,11 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
     collectSortedDistances();
     mergeCloseComponents();
     createSummBlocks();
+    dumpDetectionResults();
     bool has_multistep = mapReactionComponents();
     bool has_multitail = mapMultitailReactionComponents();
     sortSummblocks();
     mergeUndefinedComponents();
-    dumpDetectionResults();
     return has_multitail ? ReactionType::EPathwayReaction : (has_multistep ? ReactionType ::EMutistepReaction : ReactionType::ESimpleReaction);
 }
 
