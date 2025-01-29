@@ -1879,6 +1879,6 @@ def macromolecule_properties():
         try_document=True,
     )
 
-    result = {"properties": indigo.macroProps(md.struct)}
+    result = {"properties": md.struct.macroProps()}
 
     return jsonify(result), 200, {"Content-Type": "application/json"}
