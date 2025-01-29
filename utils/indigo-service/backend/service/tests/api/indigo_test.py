@@ -3675,14 +3675,14 @@ M  END
             headers=headers,
             data=data,
         )
-        result_json = json.loads(result.text)
+        result_json = json.loads(result.text)["properties"]
 
         file_name = os.path.join(
             joinPathPy("ref/", __file__), "props_double_dna.json"
         )
         # write references
         # with open(file_name, "w") as file:
-        #     file.write(result_ket)
+        #     file.write(result_json)
 
         # check
         with open(file_name, "r") as file:
