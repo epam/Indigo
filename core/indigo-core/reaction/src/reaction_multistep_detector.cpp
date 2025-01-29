@@ -796,7 +796,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
                         csb_min_prod.role = BaseReaction::PRODUCT;
                     else if (csb_min_prod.role == BaseReaction::REACTANT)
                         csb_min_prod.role = BaseReaction::INTERMEDIATE;
-                    if (min_dist_reac >= 0 )
+                    if (min_dist_reac >= 0)
                         csb_min_prod.arrows_from.push_back(idx_cs_min_reac);
                     csb_min_prod.reaction_idx = reaction_index;
                 }
