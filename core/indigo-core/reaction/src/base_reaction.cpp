@@ -98,7 +98,7 @@ SideIter SideAuto::end()
 
 BaseReaction::BaseReaction()
     : reactants(*this, REACTANT), catalysts(*this, CATALYST), products(*this, PRODUCT), intermediates(*this, INTERMEDIATE), undefined(*this, UNDEFINED),
-      original_format(BaseMolecule::UNKNOWN)
+      original_format(BaseMolecule::UNKNOWN), _document(nullptr)
 {
     clear();
 }
