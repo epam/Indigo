@@ -189,6 +189,7 @@ namespace indigo
     class BaseCDXProperty
     {
     public:
+        virtual ~BaseCDXProperty()=default;
         virtual bool hasContent() const = 0;
         virtual std::unique_ptr<BaseCDXProperty> copy() = 0;
         virtual std::unique_ptr<BaseCDXProperty> next() = 0;
@@ -375,6 +376,7 @@ namespace indigo
     class BaseCDXElement
     {
     public:
+        virtual ~BaseCDXElement()=default;
         virtual bool hasContent() = 0;
         virtual std::unique_ptr<BaseCDXElement> copy() = 0;
         virtual std::unique_ptr<BaseCDXProperty> firstProperty() = 0;

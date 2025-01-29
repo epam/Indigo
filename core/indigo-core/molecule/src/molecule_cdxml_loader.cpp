@@ -1146,7 +1146,7 @@ void MoleculeCdxmlLoader::_parseFragmentAttributes(BaseCDXProperty& prop)
 
 void MoleculeCdxmlLoader::applyDispatcher(BaseCDXProperty& prop, const std::unordered_map<std::string, std::function<void(const std::string&)>>& dispatcher)
 {
-    for (auto ptr = prop.copy(); ptr->hasContent(); ptr = ptr->next())
+    for (auto ptr = prop.copy(); ptr->hasContent(); ptr=ptr->next())
     {
         auto it = dispatcher.find(ptr->name());
         if (it != dispatcher.end())
