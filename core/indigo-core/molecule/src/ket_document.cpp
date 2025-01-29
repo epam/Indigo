@@ -572,7 +572,7 @@ void KetDocument::CalculateMacroProps(Output& output, bool pretty_json)
         }
     }
     std::map<std::string, size_t> five_prime_monomers, three_prime_monomers;
-    for (auto i = 0; i < sequences.size(); i++)
+    for (size_t i = 0; i < sequences.size(); i++)
     {
         five_prime_monomers.emplace(sequences[i].front(), i);
         three_prime_monomers.emplace(sequences[i].back(), i);

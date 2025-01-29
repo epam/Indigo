@@ -941,7 +941,8 @@ namespace indigo
         rapidjson::Document result;
         auto& allocator = result.GetAllocator();
         result.SetObject();
-        result.AddMember("properties", indigoMacroProps(iko), allocator);
+        std::string props{indigoMacroProps(iko)};
+        result.AddMember("properties", props, allocator);
         rapidjson::StringBuffer buffer;
         rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
         result.Accept(writer);
