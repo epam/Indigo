@@ -665,12 +665,6 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
 void ReactionMultistepDetector::sortSummblocks()
 {
     // Create a list of original indices
-    int und_idx = -(int)_component_summ_blocks.size() - 1;
-    for (auto& csb : _component_summ_blocks)
-    {
-        if (csb.reaction_idx < -1)
-            csb.reaction_idx = und_idx++;
-    }
     std::vector<int> indices(_component_summ_blocks.size());
     std::iota(indices.begin(), indices.end(), 0);
 
@@ -731,7 +725,7 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
     createSummBlocks();
     bool has_multistep = mapReactionComponents();
     bool has_multitail = mapMultitailReactionComponents();
-    // sortSummblocks();
+    sortSummblocks();
     mergeUndefinedComponents();
     return has_multitail ? ReactionType::EPathwayReaction : (has_multistep ? ReactionType ::EMutistepReaction : ReactionType::ESimpleReaction);
 }
