@@ -665,6 +665,12 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
 void ReactionMultistepDetector::sortSummblocks()
 {
     // Create a list of original indices
+    int und_idx = -(int)_component_summ_blocks.size() - 1;
+    for (auto& csb : _component_summ_blocks)
+    {
+        if (csb.reaction_idx < -1)
+            csb.reaction_idx = und_idx++;
+    }
     std::vector<int> indices(_component_summ_blocks.size());
     std::iota(indices.begin(), indices.end(), 0);
 
@@ -672,11 +678,7 @@ void ReactionMultistepDetector::sortSummblocks()
     std::stable_sort(indices.begin(), indices.end(), [&](int a, int b) -> bool {
         auto& csba = _component_summ_blocks[a];
         auto& csbb = _component_summ_blocks[b];
-        if (csba.reaction_idx != csbb.reaction_idx)
-            return csba.reaction_idx < csbb.reaction_idx;
-        if (csba.role != csbb.role)
-            return csba.role < csbb.role;
-        return csba.bbox.center() < csbb.bbox.center();
+        return csba.reaction_idx < csbb.reaction_idx;
     });
 
     // Create a mapping from old index to new index
