@@ -669,7 +669,7 @@ void ReactionMultistepDetector::sortSummblocks()
     std::iota(indices.begin(), indices.end(), 0);
 
     // Sort the indices based on reaction_idx
-    std::sort(indices.begin(), indices.end(),
+    std::stable_sort(indices.begin(), indices.end(),
               [&](int a, int b) -> bool { return _component_summ_blocks[a].reaction_idx < _component_summ_blocks[b].reaction_idx; });
 
     // Create a mapping from old index to new index
