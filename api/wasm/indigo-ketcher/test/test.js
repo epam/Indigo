@@ -1069,7 +1069,7 @@ M  END
             const double_dna = fs.readFileSync("props_double_dna.ket");
             let options = new indigo.MapStringString();
             options.set('json-saving-pretty', 'true');
-            let json = JSON.parse(indigo.calculateMacro(double_dna, "ket", options)).struct;            
+            let json = JSON.parse(indigo.calculateMacro(double_dna, options)).struct;            
             // fs.writeFileSync("props_double_dna.json", ket);
             const json_ref = fs.readFileSync("props_double_dna.json");
             assert.equal(json, json_ref.toString().trim());
@@ -1084,7 +1084,7 @@ M  END
             const peptides_micro = fs.readFileSync("props_peptides_micro.ket");
             let options = new indigo.MapStringString();
             options.set('json-saving-pretty', 'true');
-            let json = JSON.parse(indigo.calculateMacro(peptides_micro, "ket", options)).struct;            
+            let json = JSON.parse(indigo.calculateMacro(peptides_micro, options)).struct;            
             // fs.writeFileSync("props_peptides_micro.json", ket);
             const json_ref = fs.readFileSync("props_peptides_micro.json");
             assert.equal(json, json_ref.toString().trim());
@@ -1099,7 +1099,7 @@ M  END
             const peptides = fs.readFileSync("props_peptides.ket");
             let options = new indigo.MapStringString();
             options.set('json-saving-pretty', 'true');
-            let json = JSON.parse(indigo.calculateMacro(peptides, "ket", options)).struct;            
+            let json = JSON.parse(indigo.calculateMacro(peptides, options)).struct;            
             // fs.writeFileSync("props_peptides.json", ket);
             const json_ref = fs.readFileSync("props_peptides.json");
             assert.equal(json, json_ref.toString().trim());

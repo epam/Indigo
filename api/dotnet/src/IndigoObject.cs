@@ -138,7 +138,7 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoCml(self));
         }
 
-        public string indigoMacroProps()
+        public string macroProps()
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoMacroProps(self));
