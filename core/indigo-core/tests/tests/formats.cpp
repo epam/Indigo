@@ -46,6 +46,7 @@
 #include <molecule/sdf_loader.h>
 #include <molecule/smiles_loader.h>
 #include <molecule/smiles_saver.h>
+#include <reaction/reaction_cdxml_loader.h>
 
 #include "common.h"
 
@@ -557,6 +558,39 @@ TEST_F(IndigoCoreFormatsTest, mol_to_document)
         fill_conn_info(connection.ep2(), ep2_info);
         printf("%s connection from %s to %s\n", connection.connectionType().c_str(), ep1_info.c_str(), ep2_info.c_str());
     }
+}
+
+TEST_F(IndigoCoreFormatsTest, wrong_stereochemistry_2739)
+{
+    FileScanner scanner(dataPath("reactions/basic/wrong_stereochemistry_2739.cdxml").c_str());
+    Reaction reaction;
+    ReactionCdxmlLoader loader(scanner);
+    loader.loadReaction(reaction);
+
+    std::vector<std::pair<int, int>> testData = {{1, 1}, {1, 2}, {2, 1}};
+
+    std::vector<std::pair<int, int>> bondDirections;
+    for (int i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
+    {
+        const Molecule& mol = reaction.getMolecule(i);
+        int bondUp = 0;
+        int bondDown = 0;
+        for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
+        {
+            int direction = mol.getBondDirection(j);
+            if (direction == BOND_UP)
+            {
+                ++bondUp;
+            }
+            else if (direction == BOND_DOWN)
+            {
+                ++bondDown;
+            }
+        }
+        bondDirections.push_back({bondUp, bondDown});
+    }
+
+    ASSERT_EQ(testData, bondDirections);
 }
 
 #ifdef _MSC_VER
