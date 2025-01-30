@@ -41,7 +41,7 @@ lib = indigo.loadMonomerLibraryFromFile(
 for filename in sorted(macro_data):
     mol = indigo.loadKetDocumentFromFile(os.path.join(root, filename + ".ket"))
     try:
-        props = mol.macroProps()
+        props = mol.macroProperties()
     except IndigoException as e:
         print("Test '%s' filed: %", (filename, getIndigoExceptionText(e)))
     # with open(os.path.join(ref, filename) + ".json", "w") as file:

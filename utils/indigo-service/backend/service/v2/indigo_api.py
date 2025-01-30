@@ -1784,9 +1784,9 @@ def render():
     return result, 200, {"Content-Type": content_type}
 
 
-@indigo_api.route("/macromolecule_properties", methods=["POST"])
+@indigo_api.route("/calculateMacroProperties", methods=["POST"])
 @check_exceptions
-def macromolecule_properties():
+def calculateMacroProperties():
     """
     Calculate macromulecule properties
     ---
@@ -1863,7 +1863,7 @@ def macromolecule_properties():
     data = IndigoRequestSchema().load(request_data)
 
     LOG_DATA(
-        "[REQUEST] /macromolecule_properties",
+        "[REQUEST] /calculateMacroProperties",
         data["input_format"],
         data["output_format"],
         data["struct"],
@@ -1879,6 +1879,6 @@ def macromolecule_properties():
         try_document=True,
     )
 
-    result = {"properties": md.struct.macroProps()}
+    result = {"properties": md.struct.macroProperties()}
 
     return jsonify(result), 200, {"Content-Type": "application/json"}

@@ -87,7 +87,7 @@ public interface IndigoLib extends Library {
 
     int indigoRemove(int item);
 
-    Pointer indigoMacroProps(int item);
+    Pointer indigoMacroProperties(int item);
 
     Pointer indigoGetOriginalFormat(int item);
 

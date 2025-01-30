@@ -933,7 +933,7 @@ namespace indigo
         return buffer.GetString();
     }
 
-    std::string calculateMacro(const std::string& data, const std::map<std::string, std::string>& options)
+    std::string calculateMacroProperties(const std::string& data, const std::map<std::string, std::string>& options)
     {
         const IndigoSession session;
         indigoSetOptions(options);
@@ -941,7 +941,7 @@ namespace indigo
         rapidjson::Document result;
         auto& allocator = result.GetAllocator();
         result.SetObject();
-        std::string props{indigoMacroProps(iko)};
+        std::string props{indigoMacroProperties(iko)};
         result.AddMember("properties", props, allocator);
         rapidjson::StringBuffer buffer;
         rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
@@ -1046,7 +1046,7 @@ namespace indigo
         emscripten::function("check", &check);
         emscripten::function("calculateCip", &calculateCip);
         emscripten::function("calculate", &calculate);
-        emscripten::function("calculateMacro", &calculateMacro);
+        emscripten::function("calculateMacroProperties", &calculateMacroProperties);
         emscripten::function("render", &render);
         emscripten::function("reactionComponents", &reactionComponents);
 

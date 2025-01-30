@@ -1699,7 +1699,7 @@ CEXPORT const char* indigoJson(int item)
     INDIGO_END(0);
 }
 
-CEXPORT const char* indigoMacroProps(int object)
+CEXPORT const char* indigoMacroProperties(int object)
 {
     INDIGO_BEGIN
     {

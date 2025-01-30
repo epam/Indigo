@@ -949,7 +949,7 @@ void KetDocument::CalculateMacroProps(Output& output, bool pretty_json)
                 {
                     e_calc += it.second * extinction_coefficients.at(it.first);
                 }
-                writer.Key("e");
+                writer.Key("extinctionCoefficient");
                 writer.Uint64(e_calc);
             }
         }
@@ -1038,16 +1038,22 @@ void KetDocument::CalculateMacroProps(Output& output, bool pretty_json)
         writer.StartObject();
         for (const auto& it : peptides_count)
         {
-            writer.Key(it.first);
-            writer.Uint64(it.second);
+            if (it.second > 0)
+            {
+                writer.Key(it.first);
+                writer.Uint64(it.second);
+            }
         }
         writer.EndObject(); // peptides
         writer.Key("nucleotides");
         writer.StartObject();
         for (const auto& it : nucleotides_count)
         {
-            writer.Key(it.first);
-            writer.Uint64(it.second);
+            if (it.second > 0)
+            {
+                writer.Key(it.first);
+                writer.Uint64(it.second);
+            }
         }
         writer.EndObject(); // nucleotides
         writer.EndObject(); // monomerCount

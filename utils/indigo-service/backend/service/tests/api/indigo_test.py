@@ -3671,7 +3671,7 @@ M  END
         )
 
         result = requests.post(
-            self.url_prefix + "/macromolecule_properties",
+            self.url_prefix + "/calculateMacroProperties",
             headers=headers,
             data=data,
         )

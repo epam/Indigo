@@ -138,10 +138,10 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoCml(self));
         }
 
-        public string macroProps()
+        public string macroProperties()
         {
             dispatcher.setSessionID();
-            return dispatcher.checkResult(IndigoLib.indigoMacroProps(self));
+            return dispatcher.checkResult(IndigoLib.indigoMacroProperties(self));
         }
 
         public string getOriginalFormat()
