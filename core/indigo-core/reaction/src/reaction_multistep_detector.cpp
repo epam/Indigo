@@ -1432,9 +1432,9 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
             switch (comp.component_type)
             {
             case ReactionComponent::MOLECULE: {
-                if (comp.molecule && comp.summ_block_idx != ReactionComponent::NOT_CONNECTED &&
-                    _component_summ_blocks[comp.summ_block_idx].role != BaseReaction::UNDEFINED)
+                if (comp.molecule && comp.summ_block_idx != ReactionComponent::NOT_CONNECTED)
                 {
+                    auto role = _component_summ_blocks[comp.summ_block_idx].role;
                     auto& cmol = *comp.molecule;
                     for (int idx = cmol.vertexBegin(); idx < cmol.vertexEnd(); idx = cmol.vertexNext(idx))
                     {
@@ -1449,10 +1449,12 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
                             rxn.addCatalystCopy(cmol, 0, 0);
                             break;
                         case KProductArea:
-                            rxn.addProductCopy(cmol, 0, 0);
+                            if (role != BaseReaction::UNDEFINED)
+                                rxn.addProductCopy(cmol, 0, 0);
                             break;
                         default:
-                            rxn.addReactantCopy(cmol, 0, 0);
+                            if (role != BaseReaction::UNDEFINED)
+                                rxn.addReactantCopy(cmol, 0, 0);
                             break;
                         }
                         break;
