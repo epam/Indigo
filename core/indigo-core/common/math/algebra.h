@@ -839,6 +839,7 @@ namespace indigo
         return true;
     }
 
+    // Ray casting algorithm
     inline bool isPointInPolygon(const Vec2f& p, const std::vector<Vec2f>& poly)
     {
         bool in = false;
@@ -850,7 +851,7 @@ namespace indigo
                 return true;
             if (((poly[i].y > p.y) != (poly[j].y > p.y)) &&
                 (((p.x > poly[i].x) && (p.x < poly[j].x)) ||
-                 (p.x < (poly[i].x + (p.y - poly[i].y) * (poly[j].x - poly[i].x) / (poly[j].y - poly[i].y))))) // py < (py-y0)*dx/dy
+                 (p.x < (poly[i].x + (p.y - poly[i].y) * (poly[j].x - poly[i].x) / (poly[j].y - poly[i].y)))))
                 in = !in;
         }
         return in;
