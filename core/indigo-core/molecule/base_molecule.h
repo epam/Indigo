@@ -589,6 +589,9 @@ namespace indigo
         void getBoundingBox(float font_size, LABEL_MODE label_mode, Vec2f& bottom_left, Vec2f& top_right);
         void getBoundingBox(float font_size, LABEL_MODE label_mode, Rect2f& bbox);
 
+        // calc convex hull
+        std::vector<Vec2f> getConvexHull(const Vec2f& min_box) const;
+
         // aliases
         bool isAlias(int atom_idx) const;
         const char* getAlias(int atom_idx) const;
