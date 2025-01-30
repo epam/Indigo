@@ -3656,6 +3656,39 @@ M  END
         result_helm = json.loads(result.text)["struct"]
         self.assertEqual(helm_struct, result_helm)
 
+    def test_macro_props(self):
+        structs_path = joinPathPy("structures/", __file__)
+        file_path = os.path.join(structs_path, "props_double_dna.ket")
+        with open(file_path, "r") as file:
+            double_dna = file.read()
+
+        headers, data = self.get_headers(
+            {
+                "struct": double_dna,
+                "options": {"json-saving-pretty": True},
+                "input_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result = requests.post(
+            self.url_prefix + "/calculateMacroProperties",
+            headers=headers,
+            data=data,
+        )
+        result_json = json.loads(result.text)["properties"]
+
+        file_name = os.path.join(
+            joinPathPy("ref/", __file__), "props_double_dna.json"
+        )
+        # write references
+        # with open(file_name, "w") as file:
+        #     file.write(result_json)
+
+        # check
+        with open(file_name, "r") as file:
+            ref_json = file.read()
+        self.assertEqual(result_json, ref_json)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2, warnings="ignore")
