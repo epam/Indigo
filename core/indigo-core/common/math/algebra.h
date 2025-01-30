@@ -850,8 +850,7 @@ namespace indigo
             if (isPointOnSegment(p, poly[i], poly[j]))
                 return true;
             if (((poly[i].y > p.y) != (poly[j].y > p.y)) &&
-                (((p.x > poly[i].x) && (p.x < poly[j].x)) ||
-                 (p.x < (poly[i].x + (p.y - poly[i].y) * (poly[j].x - poly[i].x) / (poly[j].y - poly[i].y)))))
+                (((p.x > poly[i].x) && (p.x < poly[j].x)) || (p.x < (poly[i].x + (p.y - poly[i].y) * (poly[j].x - poly[i].x) / (poly[j].y - poly[i].y)))))
                 in = !in;
         }
         return in;
