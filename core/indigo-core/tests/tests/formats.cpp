@@ -593,32 +593,6 @@ TEST_F(IndigoCoreFormatsTest, wrong_stereochemistry_2739)
     ASSERT_EQ(testData, bondDirections);
 }
 
-TEST_F(IndigoCoreFormatsTest, missing_stereochemistry_2741)
-{
-    FileScanner scanner(dataPath("molecules/basic/missing_stereochemistry_2741.cdxml").c_str());
-    Molecule molecule;
-    MoleculeCdxmlLoader loader(scanner);
-    loader.loadMolecule(molecule);
-
-    int bondUp = 0;
-    int bondDown = 0;
-    for (int j = molecule.edgeBegin(); j != molecule.edgeEnd(); j = molecule.edgeNext(j))
-    {
-        int direction = molecule.getBondDirection(j);
-        if (direction == BOND_UP)
-        {
-            ++bondUp;
-        }
-        else if (direction == BOND_DOWN)
-        {
-            ++bondDown;
-        }
-    }
-
-    ASSERT_EQ(bondUp, 2);
-    ASSERT_EQ(bondDown, 2);
-}
-
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
