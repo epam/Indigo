@@ -35,6 +35,7 @@
 namespace indigo
 {
     class BaseMolecule;
+    class Output;
 
     class DLLEXPORT KetDocument : public MonomerTemplateLibrary
     {
@@ -159,7 +160,7 @@ namespace indigo
 
         void addRGroup(const rapidjson::Value& node);
 
-        void addMolecule(const rapidjson::Value& node);
+        void addMolecule(const rapidjson::Value& node, std::string& ref);
 
         const rapidjson::Value& metaObjects() const
         {
@@ -198,6 +199,8 @@ namespace indigo
             return _monomer_shapes;
         }
 
+        void CalculateMacroProps(Output& output, bool pretty_json = false);
+
     protected:
         void collect_sequence_side(const std::string& monomer_id, bool left_side, std::set<std::string>& monomers, std::set<std::string>& used_monomers,
                                    std::deque<std::string>& sequence, std::map<std::pair<std::string, std::string>, const KetConnection&>& ap_to_connection);
@@ -218,6 +221,7 @@ namespace indigo
         rapidjson::Value _meta_objects;
         rapidjson::Value _r_groups;
         rapidjson::Value _json_molecules;
+        std::map<std::string, int> _mol_ref_to_idx;
         rapidjson::Document _json_document;
         std::vector<std::string> _fasta_properties;
         std::vector<KetMonomerShape> _monomer_shapes;

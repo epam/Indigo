@@ -222,7 +222,8 @@ namespace indigo
     public:
         DECL_ERROR;
 
-        MonomerTemplateLibrary(){};
+        MonomerTemplateLibrary() = default;
+        virtual ~MonomerTemplateLibrary() = default;
 
         MonomerTemplateLibrary(const MonomerTemplateLibrary&) = delete;
         MonomerTemplateLibrary(MonomerTemplateLibrary&&) = delete;

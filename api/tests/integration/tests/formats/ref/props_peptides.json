@@ -1,0 +1,45 @@
+[
+    {
+        "grossFormula": "C19 N5 O8 S Se H33",
+        "mass": 569.5190227031708,
+        "pKa": 4.0066667,
+        "extinctionCoefficient": 125,
+        "hydrophobicity": [
+            0.616,
+            0.68,
+            0.028,
+            0.943
+        ],
+        "monomerCount": {
+            "peptides": {
+                "A": 1,
+                "C": 1,
+                "D": 1,
+                "I": 1,
+                "Other": 1
+            },
+            "nucleotides": {}
+        }
+    },
+    {
+        "grossFormula": "C23 N8 O7 H36",
+        "mass": 535.5813446044922,
+        "pKa": 3.5150001,
+        "extinctionCoefficient": 0,
+        "hydrophobicity": [
+            0.236,
+            1.0,
+            0.0,
+            0.45
+        ],
+        "monomerCount": {
+            "peptides": {
+                "F": 1,
+                "N": 1,
+                "R": 1,
+                "T": 1
+            },
+            "nucleotides": {}
+        }
+    }
+]

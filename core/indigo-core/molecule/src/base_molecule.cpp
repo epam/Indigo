@@ -5023,9 +5023,9 @@ std::string BaseMolecule::getAtomDescription(int idx)
 KetDocument& BaseMolecule::getKetDocument()
 {
     // static thread_local std::optional<std::unique_ptr<KetDocument>> document; // Temporary until direct conversion to document supported
-    if (_document || _edit_revision != _document_revision)
+    if (_document == nullptr || _edit_revision != _document_revision)
     {
-        if (_edit_revision != _document_revision)
+        if (_document != nullptr)
         {
             delete _document;
             _document = nullptr;
