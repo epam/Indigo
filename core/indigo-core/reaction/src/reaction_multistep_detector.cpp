@@ -1579,37 +1579,6 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
         {
             switch (comp.component_type)
             {
-            // case ReactionComponent::MOLECULE: {
-            //     if (comp.molecule && comp.summ_block_idx != ReactionComponent::NOT_CONNECTED)
-            //     {
-            //         auto role = _component_summ_blocks[comp.summ_block_idx].role;
-            //         auto& cmol = *comp.molecule;
-            //         for (int idx = cmol.vertexBegin(); idx < cmol.vertexEnd(); idx = cmol.vertexNext(idx))
-            //         {
-            //             Vec3f& pt3d = cmol.getAtomXyz(idx);
-            //             Vec2f pt(pt3d.x, pt3d.y);
-            //             int side =
-            //                 !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
-            //             switch (side)
-            //             {
-            //             case KReagentUpArea:
-            //             case KReagentDownArea:
-            //                 rxn.addCatalystCopy(cmol, 0, 0);
-            //                 break;
-            //             case KProductArea:
-            //                 if (role != BaseReaction::UNDEFINED)
-            //                     rxn.addProductCopy(cmol, 0, 0);
-            //                 break;
-            //             default:
-            //                 if (role != BaseReaction::UNDEFINED)
-            //                     rxn.addReactantCopy(cmol, 0, 0);
-            //                 break;
-            //             }
-            //             break;
-            //         }
-            //     }
-            // }
-            // break;
             case ReactionComponent::TEXT: {
                 const auto& bbox = comp.bbox;
                 Vec2f pt(bbox.center());
@@ -1627,4 +1596,10 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
             }
         }
     }
+    else
+        for (const auto& comp : _reaction_components)
+        {
+            if (comp.molecule)
+                rxn.addUndefinedCopy(*comp.molecule, 0, 0);
+        }
 }
