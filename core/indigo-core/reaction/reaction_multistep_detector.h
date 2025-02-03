@@ -111,6 +111,8 @@ namespace indigo
         ReactionType detectReaction();
         void constructMultipleArrowReaction(BaseReaction& rxn);
         void constructSimpleArrowReaction(BaseReaction& rxn);
+        uint8_t geMoleculeSide(BaseReaction& rxn, BaseMolecule& mol);
+
         void constructPathwayReaction(PathwayReaction& rxn);
         void detectPathwayMetadata(PathwayReaction& rxn);
         void collectMetadata(int reaction_idx, PathwayReaction& rxn, const Rect2f& bbox);

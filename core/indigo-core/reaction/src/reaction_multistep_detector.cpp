@@ -716,7 +716,15 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
     for (int i = 0; i < _moleculeCount; ++i)
     {
         auto component = extractComponent(i);
-        auto hull = component->getConvexHull(Vec2f(LayoutOptions::DEFAULT_BOND_LENGTH, LayoutOptions::DEFAULT_BOND_LENGTH));
+        Rect2f bbox;
+        component->getBoundingBox(bbox, Vec2f(LayoutOptions::DEFAULT_BOND_LENGTH, LayoutOptions::DEFAULT_BOND_LENGTH));
+        // auto hull = component->getConvexHull(Vec2f(LayoutOptions::DEFAULT_BOND_LENGTH, LayoutOptions::DEFAULT_BOND_LENGTH));
+        std::vector<Vec2f> hull;
+        hull.push_back(bbox.leftTop());
+        hull.push_back(bbox.leftBottom());
+        hull.push_back(bbox.rightBottom());
+        hull.push_back(bbox.rightTop());
+        hull.push_back(bbox.leftTop());
         _components.emplace_back(std::move(component), hull, i);
     }
 
@@ -1369,6 +1377,9 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
                 case BaseReaction::UNDEFINED:
                     copied_components.emplace(idx, rxn.addUndefinedCopy(*rc.molecule, 0, 0));
                     break;
+                case BaseReaction::CATALYST:
+                    copied_components.emplace(idx, rxn.addCatalystCopy(*rc.molecule, 0, 0));
+                    break;
                 default:
                     break;
                 }
@@ -1402,6 +1413,21 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
     }
 }
 
+uint8_t ReactionMultistepDetector::geMoleculeSide(BaseReaction& rxn, BaseMolecule& mol)
+{
+    auto& arrow = (const ReactionArrowObject&)rxn.meta().getMetaObject(ReactionArrowObject::CID, 0);
+    bool reverseReactionOrder = arrow.getArrowType() == ReactionArrowObject::ERetrosynthetic;
+    std::array<int, KProductArea + 1> sides{};
+    for (int idx = mol.vertexBegin(); idx < mol.vertexEnd(); idx = mol.vertexNext(idx))
+    {
+        Vec3f& pt3d = mol.getAtomXyz(idx);
+        Vec2f pt(pt3d.x, pt3d.y);
+        int side = !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
+        sides[side]++;
+    }
+    return (uint8_t)std::distance(sides.begin(), std::max_element(sides.begin(), sides.end()));
+}
+
 void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
 {
     enum RecordIndexes
@@ -1427,41 +1453,163 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
         }
 
         int text_meta_idx = 0;
+
+        std::vector<std::pair<int, uint8_t>> undefined_components;
+        std::vector<std::pair<int, int>> product_components, reactant_components;
+
+        for (auto& csb : _component_summ_blocks)
+        {
+            switch (csb.role)
+            {
+            case BaseReaction::PRODUCT: {
+                for (auto idx : csb.indexes)
+                {
+                    auto& rc = _reaction_components[idx];
+                    product_components.emplace_back(idx, rxn.addProductCopy(*rc.molecule, 0, 0));
+                }
+            }
+            break;
+            case BaseReaction::REACTANT: {
+                for (auto idx : csb.indexes)
+                {
+                    auto& rc = _reaction_components[idx];
+                    reactant_components.emplace_back(idx, rxn.addReactantCopy(*rc.molecule, 0, 0));
+                }
+            }
+            break;
+            // simple reaction does not have intermediates
+            case BaseReaction::INTERMEDIATE: {
+                for (auto idx : csb.indexes)
+                {
+                    auto& rc = _reaction_components[idx];
+                    rxn.addIntermediateCopy(*rc.molecule, 0, 0);
+                }
+            }
+            break;
+            case BaseReaction::CATALYST: {
+                for (auto idx : csb.indexes)
+                {
+                    auto& rc = _reaction_components[idx];
+                    rxn.addCatalystCopy(*rc.molecule, 0, 0);
+                }
+            }
+            break;
+            // undefined components are not allowed
+            case BaseReaction::UNDEFINED: {
+                for (auto idx : csb.indexes)
+                {
+                    auto& rc = _reaction_components[idx];
+                    auto side = geMoleculeSide(rxn, *rc.molecule);
+                    if (side == KReagentUpArea || side == KReagentDownArea)
+                        rxn.addCatalystCopy(*rc.molecule, 0, 0);
+                    else
+                        undefined_components.emplace_back(idx, side);
+                }
+            }
+            break;
+            default:
+                break;
+            }
+        }
+
+        // map undefined components
+        for (auto [idx, side] : undefined_components)
+        {
+            auto& rc = _reaction_components[idx];
+            auto& cmol = *rc.molecule;
+
+            int comp_idx = _merged_components[idx].mapped_idx;
+
+            switch (side)
+            {
+            case KReactantArea:
+                if (reactant_components.size())
+                {
+                    int min_idx = -1;
+                    float min_dist = 0;
+                    for (auto [rc_idx, mol_idx] : reactant_components)
+                    {
+                        auto rcm_idx = _merged_components[rc_idx].mapped_idx;
+                        if (rcm_idx > -1)
+                        {
+                            auto& dm = _mol_distances[comp_idx].distances_map;
+                            auto it = dm.find(rcm_idx);
+                            if (it != dm.end() && (min_idx < 0 || it->second < min_dist))
+                            {
+                                min_idx = mol_idx;
+                                min_dist = it->second;
+                            }
+                        }
+                    }
+                    // merge to closest reactant
+                    rxn.getBaseMolecule(min_idx).mergeWithMolecule(*rc.molecule, nullptr, 0);
+                }
+                else
+                    rxn.addReactantCopy(*rc.molecule, 0, 0);
+                break;
+            case KProductArea:
+                if (product_components.size())
+                {
+                    int min_idx = -1;
+                    float min_dist = 0;
+                    for (auto [pc_idx, mol_idx] : product_components)
+                    {
+                        auto pcm_idx = _merged_components[pc_idx].mapped_idx;
+                        if (pcm_idx > -1)
+                        {
+                            auto& dm = _mol_distances[comp_idx].distances_map;
+                            auto it = dm.find(pcm_idx);
+                            if (it != dm.end() && (min_idx < 0 || it->second < min_dist))
+                            {
+                                min_idx = mol_idx;
+                                min_dist = it->second;
+                            }
+                        }
+                    }
+                    // merge to closest product
+                    rxn.getBaseMolecule(min_idx).mergeWithMolecule(*rc.molecule, nullptr, 0);
+                }
+                else
+                    rxn.addProductCopy(*rc.molecule, 0, 0);
+                break;
+            }
+        }
+
         for (const auto& comp : _reaction_components)
         {
             switch (comp.component_type)
             {
-            case ReactionComponent::MOLECULE: {
-                if (comp.molecule && comp.summ_block_idx != ReactionComponent::NOT_CONNECTED)
-                {
-                    auto role = _component_summ_blocks[comp.summ_block_idx].role;
-                    auto& cmol = *comp.molecule;
-                    for (int idx = cmol.vertexBegin(); idx < cmol.vertexEnd(); idx = cmol.vertexNext(idx))
-                    {
-                        Vec3f& pt3d = cmol.getAtomXyz(idx);
-                        Vec2f pt(pt3d.x, pt3d.y);
-                        int side =
-                            !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
-                        switch (side)
-                        {
-                        case KReagentUpArea:
-                        case KReagentDownArea:
-                            rxn.addCatalystCopy(cmol, 0, 0);
-                            break;
-                        case KProductArea:
-                            if (role != BaseReaction::UNDEFINED)
-                                rxn.addProductCopy(cmol, 0, 0);
-                            break;
-                        default:
-                            if (role != BaseReaction::UNDEFINED)
-                                rxn.addReactantCopy(cmol, 0, 0);
-                            break;
-                        }
-                        break;
-                    }
-                }
-            }
-            break;
+            // case ReactionComponent::MOLECULE: {
+            //     if (comp.molecule && comp.summ_block_idx != ReactionComponent::NOT_CONNECTED)
+            //     {
+            //         auto role = _component_summ_blocks[comp.summ_block_idx].role;
+            //         auto& cmol = *comp.molecule;
+            //         for (int idx = cmol.vertexBegin(); idx < cmol.vertexEnd(); idx = cmol.vertexNext(idx))
+            //         {
+            //             Vec3f& pt3d = cmol.getAtomXyz(idx);
+            //             Vec2f pt(pt3d.x, pt3d.y);
+            //             int side =
+            //                 !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
+            //             switch (side)
+            //             {
+            //             case KReagentUpArea:
+            //             case KReagentDownArea:
+            //                 rxn.addCatalystCopy(cmol, 0, 0);
+            //                 break;
+            //             case KProductArea:
+            //                 if (role != BaseReaction::UNDEFINED)
+            //                     rxn.addProductCopy(cmol, 0, 0);
+            //                 break;
+            //             default:
+            //                 if (role != BaseReaction::UNDEFINED)
+            //                     rxn.addReactantCopy(cmol, 0, 0);
+            //                 break;
+            //             }
+            //             break;
+            //         }
+            //     }
+            // }
+            // break;
             case ReactionComponent::TEXT: {
                 const auto& bbox = comp.bbox;
                 Vec2f pt(bbox.center());
@@ -1472,49 +1620,6 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
                     break;
                 }
                 text_meta_idx++;
-            }
-            break;
-            default:
-                break;
-            }
-        }
-    }
-    else
-    {
-        for (auto& csb : _component_summ_blocks)
-        {
-            switch (csb.role)
-            {
-            case BaseReaction::PRODUCT: {
-                for (auto idx : csb.indexes)
-                {
-                    auto& rc = _reaction_components[idx];
-                    rxn.addProductCopy(*rc.molecule, 0, 0);
-                }
-            }
-            break;
-            case BaseReaction::REACTANT: {
-                for (auto idx : csb.indexes)
-                {
-                    auto& rc = _reaction_components[idx];
-                    rxn.addReactantCopy(*rc.molecule, 0, 0);
-                }
-            }
-            break;
-            case BaseReaction::INTERMEDIATE: {
-                for (auto idx : csb.indexes)
-                {
-                    auto& rc = _reaction_components[idx];
-                    rxn.addIntermediateCopy(*rc.molecule, 0, 0);
-                }
-            }
-            break;
-            case BaseReaction::UNDEFINED: {
-                for (auto idx : csb.indexes)
-                {
-                    auto& rc = _reaction_components[idx];
-                    rxn.addUndefinedCopy(*rc.molecule, 0, 0);
-                }
             }
             break;
             default:

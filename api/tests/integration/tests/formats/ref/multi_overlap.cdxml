@@ -30,13 +30,13 @@
                     <s font="3" size="10" face="32">2</s>
                 </t>
             </n>
-            <b id="46" B="7" E="5" Order="2"/>
-            <b id="47" B="8" E="6" Order="2"/>
-            <b id="48" B="5" E="9"/>
-            <b id="49" B="6" E="7"/>
-            <b id="50" B="9" E="10" Order="2"/>
-            <b id="51" B="10" E="8"/>
-            <b id="52" B="6" E="11"/>
+            <b id="48" B="7" E="5" Order="2"/>
+            <b id="49" B="8" E="6" Order="2"/>
+            <b id="50" B="5" E="9"/>
+            <b id="51" B="6" E="7"/>
+            <b id="52" B="9" E="10" Order="2"/>
+            <b id="53" B="10" E="8"/>
+            <b id="54" B="6" E="11"/>
         </fragment>
         <fragment id="12">
             <n id="13" p="289.138000 246.374496"/>
@@ -50,49 +50,56 @@
                     <s font="3" size="10" face="96">O</s>
                 </t>
             </n>
-            <b id="53" B="13" E="18"/>
-            <b id="54" B="13" E="14"/>
-            <b id="55" B="14" E="15"/>
-            <b id="56" B="15" E="16"/>
-            <b id="57" B="16" E="17"/>
-            <b id="58" B="17" E="18"/>
-            <b id="59" B="18" E="19" Order="2"/>
+            <b id="55" B="13" E="18"/>
+            <b id="56" B="13" E="14"/>
+            <b id="57" B="14" E="15"/>
+            <b id="58" B="15" E="16"/>
+            <b id="59" B="16" E="17"/>
+            <b id="60" B="17" E="18"/>
+            <b id="61" B="18" E="19" Order="2"/>
         </fragment>
         <fragment id="20">
-            <n id="21" p="541.702454 270.462097"/>
-            <n id="22" p="541.591370 240.603302"/>
-            <n id="23" p="511.339081 270.074677"/>
-            <n id="24" p="511.264008 240.603302"/>
-            <b id="60" B="21" E="22"/>
-            <b id="61" B="21" E="23"/>
-            <b id="62" B="22" E="24"/>
-            <b id="63" B="23" E="24"/>
+            <n id="21" Element="17" NumHydrogens="1" p="419.962280 239.779602">
+                <t p="419.962280 239.779602" LabelJustification="Left">
+                    <s font="3" size="10" face="96">ClH</s>
+                </t>
+            </n>
         </fragment>
-        <fragment id="25">
-            <n id="26" p="586.042419 267.974121"/>
-            <n id="27" p="616.079956 267.974121"/>
-            <n id="28" p="601.062683 242.025894"/>
-            <b id="64" B="26" E="27"/>
-            <b id="65" B="26" E="28"/>
-            <b id="66" B="27" E="28"/>
+        <fragment id="22">
+            <n id="23" p="541.702454 270.462097"/>
+            <n id="24" p="541.591370 240.603302"/>
+            <n id="25" p="511.339081 270.074677"/>
+            <n id="26" p="511.264008 240.603302"/>
+            <b id="62" B="23" E="24"/>
+            <b id="63" B="23" E="25"/>
+            <b id="64" B="24" E="26"/>
+            <b id="65" B="25" E="26"/>
         </fragment>
-        <fragment id="29">
-            <n id="30" p="781.716187 266.926453"/>
-            <n id="31" p="781.605164 237.073532"/>
-            <n id="32" p="751.358887 266.539093"/>
-            <n id="33" p="751.283813 237.073532"/>
-            <b id="67" B="30" E="31"/>
-            <b id="68" B="30" E="32"/>
-            <b id="69" B="31" E="33"/>
-            <b id="70" B="32" E="33"/>
+        <fragment id="27">
+            <n id="28" p="586.042419 267.974121"/>
+            <n id="29" p="616.079956 267.974121"/>
+            <n id="30" p="601.062683 242.025894"/>
+            <b id="66" B="28" E="29"/>
+            <b id="67" B="28" E="30"/>
+            <b id="68" B="29" E="30"/>
         </fragment>
-        <arrow id="34" BoundingBox="483.724365 258.533142 370.452087 260.783630" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="483.724365 258.533142 0.000000" Tail3D="370.452087 260.783630 0.000000"/>
-        <arrow id="37" BoundingBox="725.250000 255.000000 640.500000 256.500000" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="725.250000 255.000000 0.000000" Tail3D="640.500000 256.500000 0.000000"/>
-        <graphic id="40" BoundingBox="257.992737 266.998779 257.992737 259.498779" GraphicType="Symbol" SymbolType="Plus"/>
-        <graphic id="43" BoundingBox="562.811218 257.250000 562.811218 249.750000" GraphicType="Symbol" SymbolType="Plus"/>
+        <fragment id="31">
+            <n id="32" p="781.716187 266.926453"/>
+            <n id="33" p="781.605164 237.073532"/>
+            <n id="34" p="751.358887 266.539093"/>
+            <n id="35" p="751.283813 237.073532"/>
+            <b id="69" B="32" E="33"/>
+            <b id="70" B="32" E="34"/>
+            <b id="71" B="33" E="35"/>
+            <b id="72" B="34" E="35"/>
+        </fragment>
+        <arrow id="36" BoundingBox="483.724365 258.533142 370.452087 260.783630" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="483.724365 258.533142 0.000000" Tail3D="370.452087 260.783630 0.000000"/>
+        <arrow id="39" BoundingBox="725.250000 255.000000 640.500000 256.500000" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="725.250000 255.000000 0.000000" Tail3D="640.500000 256.500000 0.000000"/>
+        <graphic id="42" BoundingBox="257.992737 266.998779 257.992737 259.498779" GraphicType="Symbol" SymbolType="Plus"/>
+        <graphic id="45" BoundingBox="562.811218 257.250000 562.811218 249.750000" GraphicType="Symbol" SymbolType="Plus"/>
         <scheme>
-            <step ReactionStepReactants="4 12" ReactionStepProducts="20 25" ReactionStepArrows="34"/>
-            <step ReactionStepReactants="20 25" ReactionStepProducts="29" ReactionStepArrows="37"/>
+            <step ReactionStepReactants="4 12" ReactionStepProducts="22 27" ReactionStepObjectsAboveArrow="20" ReactionStepArrows="36"/>
+            <step ReactionStepReactants="22 27" ReactionStepProducts="31" ReactionStepObjectsAboveArrow="20" ReactionStepArrows="39"/>
         </scheme>
     </page>
 </CDXML>

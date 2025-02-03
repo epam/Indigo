@@ -346,6 +346,34 @@
         "type": "molecule",
         "atoms": [
             {
+                "label": "P",
+                "location": [
+                    16.951387,
+                    0.902778,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": []
+    },
+    "mol7": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "O",
+                "location": [
+                    19.798611,
+                    0.902778,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": []
+    },
+    "mol8": {
+        "type": "molecule",
+        "atoms": [
+            {
                 "label": "N",
                 "location": [
                     21.604164,
@@ -520,33 +548,5 @@
                 ]
             }
         ]
-    },
-    "mol7": {
-        "type": "molecule",
-        "atoms": [
-            {
-                "label": "P",
-                "location": [
-                    16.951387,
-                    0.902778,
-                    0.0
-                ]
-            }
-        ],
-        "bonds": []
-    },
-    "mol8": {
-        "type": "molecule",
-        "atoms": [
-            {
-                "label": "O",
-                "location": [
-                    19.798611,
-                    0.902778,
-                    0.0
-                ]
-            }
-        ],
-        "bonds": []
     }
 }
