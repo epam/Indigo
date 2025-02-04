@@ -1499,11 +1499,14 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
                 for (auto idx : csb.indexes)
                 {
                     auto& rc = _reaction_components[idx];
-                    auto side = geMoleculeSide(rxn, *rc.molecule);
-                    if (side == KReagentUpArea || side == KReagentDownArea)
-                        rxn.addCatalystCopy(*rc.molecule, 0, 0);
-                    else
-                        undefined_components.emplace_back(idx, side);
+                    if (rc.molecule)
+                    {
+                        auto side = geMoleculeSide(rxn, *rc.molecule);
+                        if (side == KReagentUpArea || side == KReagentDownArea)
+                            rxn.addCatalystCopy(*rc.molecule, 0, 0);
+                        else
+                            undefined_components.emplace_back(idx, side);
+                    }
                 }
             }
             break;
