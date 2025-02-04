@@ -3485,31 +3485,34 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
 void MoleculeRenderInternal::_reverseLabelText(const int aid)
 {
     AtomDesc& ad = _ad(aid);
-    std::stringstream stream;
-    std::vector<std::string> labels;
-    stream << ad.pseudo[0];
-    for (int i = 1; i < ad.pseudo.size() - 1; ++i)
+    if (ad.pseudo.size() > 0)
     {
-        if (ad.pseudo[i] >= 'A' && ad.pseudo[i] <= 'Z')
+        std::stringstream stream;
+        std::vector<std::string> labels;
+        stream << *ad.pseudo.begin();
+        for (int i = 1; i < ad.pseudo.size() - 1; ++i)
         {
-            labels.push_back(stream.str());
-            stream.str(std::string());
-            stream.clear();
-        }
-        stream << ad.pseudo[i];
-    }
-    labels.push_back(stream.str());
-
-    int j = 0;
-    int size = ad.pseudo.size() - 1;
-    for (auto it = labels.crbegin(); it != labels.crend(); ++it)
-    {
-        for (const auto& ch : *it)
-        {
-            if (j < size)
+            if (ad.pseudo[i] >= 'A' && ad.pseudo[i] <= 'Z')
             {
-                ad.pseudo[j] = ch;
-                ++j;
+                labels.push_back(stream.str());
+                stream.str(std::string());
+                stream.clear();
+            }
+            stream << ad.pseudo[i];
+        }
+        labels.push_back(stream.str());
+
+        int j = 0;
+        int size = ad.pseudo.size() - 1;
+        for (auto it = labels.crbegin(); it != labels.crend(); ++it)
+        {
+            for (const auto& ch : *it)
+            {
+                if (j < size)
+                {
+                    ad.pseudo[j] = ch;
+                    ++j;
+                }
             }
         }
     }
