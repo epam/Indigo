@@ -50,6 +50,7 @@ files = [
     "1972-case1",
     "1972-case2",
     "chem_rna_hydro",
+    "tadfile",
 ]
 
 files.sort()

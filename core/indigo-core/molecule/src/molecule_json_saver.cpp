@@ -1154,7 +1154,16 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     {
         auto alias = monomerAlias(tg);
         if (isBasicAminoAcid(template_class, alias))
+        {
             natreplace = alias;
+        }
+        else if (tg.tgroup_name.size() > 0)
+        {
+            std::string name = tg.tgroup_name.ptr();
+            alias = monomerAliasByName(tg.tgroup_class.ptr(), name);
+            if (alias.size() > 0 && alias.size() != name.size())
+                natreplace = alias;
+        }
     }
     else
         natreplace = tg.tgroup_natreplace.ptr();
