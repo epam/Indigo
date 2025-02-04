@@ -2985,6 +2985,11 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
     ad.boundBoxMin.set(0, 0);
     ad.boundBoxMax.set(0, 0);
 
+    if (ad.label == 0 && ad.hydroPos == HYDRO_POS_LEFT)
+    {
+        _reverseLabelText(aid);
+    }
+
     int color = ad.color;
     bool highlighted = _vertexIsHighlighted(aid);
 
@@ -3474,6 +3479,39 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
 
         if (ad.showLabel)
             index.bbp.set(ad.rightMargin + _settings.labelInternalOffset, ad.ypos + 0.5f * ad.height);
+    }
+}
+
+void MoleculeRenderInternal::_reverseLabelText(const int aid)
+{
+    AtomDesc& ad = _ad(aid);
+    std::stringstream stream;
+    std::vector<std::string> labels;
+    stream << ad.pseudo[0];
+    for (int i = 1; i < ad.pseudo.size() - 1; ++i)
+    {
+        if (ad.pseudo[i] >= 'A' && ad.pseudo[i] <= 'Z')
+        {
+            labels.push_back(stream.str());
+            stream.str(std::string());
+            stream.clear();
+        }
+        stream << ad.pseudo[i];
+    }
+    labels.push_back(stream.str());
+
+    int j = 0;
+    int size = ad.pseudo.size() - 1;
+    for (auto it = labels.crbegin(); it != labels.crend(); ++it)
+    {
+        for (const auto& ch : *it)
+        {
+            if (j < size)
+            {
+                ad.pseudo[j] = ch;
+                ++j;
+            }
+        }
     }
 }
 

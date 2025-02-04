@@ -133,6 +133,7 @@ namespace indigo
         void _preparePseudoAtom(int aid, int color, bool highlighted);
         void _prepareChargeLabel(int aid, int color, bool highlighted);
         void _prepareLabelText(int aid);
+        void _reverseLabelText(const int aid);
         void _prepareAAM();
         int _pushTextItem(RenderItem::TYPE type, int color, bool highlighted);
         int _pushTextItem(AtomDesc& ad, RenderItem::TYPE type, int color, bool highlighted);
