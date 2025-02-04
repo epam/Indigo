@@ -344,7 +344,6 @@ M  END
 TEST_F(IndigoCoreFormatsTest, mol_loader_issue_2732)
 {
     Molecule t_mol;
-    
 
     const char* mol = R"(
   ACCLDraw01172516572D
