@@ -112,6 +112,7 @@ namespace indigo
         void constructMultipleArrowReaction(BaseReaction& rxn);
         void constructSimpleArrowReaction(BaseReaction& rxn);
         uint8_t geMoleculeSide(BaseReaction& rxn, BaseMolecule& mol);
+        uint8_t geMoleculeSide(BaseReaction& rxn, BaseMolecule& mol, std::array<int, KProductArea + 1>& sides);
 
         void constructPathwayReaction(PathwayReaction& rxn);
         void detectPathwayMetadata(PathwayReaction& rxn);
