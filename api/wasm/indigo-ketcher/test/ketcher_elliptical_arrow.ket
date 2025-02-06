@@ -1,0 +1,27 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "type": "arrow",
+                "data": {
+                    "mode": "elliptical-arc-arrow-filled-bow",
+                    "pos": [
+                        {
+                            "x": 11.100000000000001,
+                            "y": -7.45,
+                            "z": 0
+                        },
+                        {
+                            "x": 14.15040980853393,
+                            "y": -7.45,
+                            "z": 0
+                        }
+                    ],
+                    "height": 1
+                }
+            }
+        ],
+        "connections": [],
+        "templates": []
+    }
+}
