@@ -1236,27 +1236,29 @@ _cairo_stroker_curve_to (void *closure,
     cairo_line_join_t line_join_save;
     cairo_stroke_face_t face;
     double slope_dx, slope_dy;
-    cairo_spline_add_point_func_t line_to;
-    cairo_spline_add_point_func_t spline_to;
+    cairo_spline_add_point_simple_func_t line_to;
+    cairo_spline_add_point_func_t spline_to = NULL;
+    cairo_spline_add_point_simple_func_t spline_to_simple = NULL;
     cairo_status_t status = CAIRO_STATUS_SUCCESS;
 
-    line_to = stroker->dash.dashed ?
-	(cairo_spline_add_point_func_t) _cairo_stroker_line_to_dashed :
-	(cairo_spline_add_point_func_t) _cairo_stroker_line_to;
+    line_to = stroker->dash.dashed ? _cairo_stroker_line_to_dashed : _cairo_stroker_line_to;
 
     /* spline_to is only capable of rendering non-degenerate splines. */
-    spline_to = stroker->dash.dashed ?
-	(cairo_spline_add_point_func_t) _cairo_stroker_line_to_dashed :
-	(cairo_spline_add_point_func_t) _cairo_stroker_spline_to;
+	if(stroker->dash.dashed)
+      spline_to_simple =  _cairo_stroker_line_to_dashed ;
+	else 
+	  spline_to = _cairo_stroker_spline_to;
 
     if (! _cairo_spline_init (&spline,
 			      spline_to,
+				  spline_to_simple,
 			      stroker,
 			      &stroker->current_point, b, c, d))
     {
-	cairo_slope_t fallback_slope;
-	_cairo_slope_init (&fallback_slope, &stroker->current_point, d);
-	return line_to (closure, d, &fallback_slope);
+	// cairo_slope_t fallback_slope;
+	// _cairo_slope_init (&fallback_slope, &stroker->current_point, d);
+	// return line_to (closure, d, &fallback_slope);
+	return line_to (closure, d);
     }
 
     /* If the line width is so small that the pen is reduced to a

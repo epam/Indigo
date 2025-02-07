@@ -998,7 +998,7 @@ curve_to (void *closure,
 				    &stroker->line_bounds))
 	return line_to (closure, d);
 
-    if (! _cairo_spline_init (&spline, spline_to, stroker,
+    if (! _cairo_spline_init (&spline, spline_to, NULL, stroker,
 			      &stroker->current_face.point, b, c, d))
 	return line_to (closure, d);
 
@@ -1039,19 +1039,19 @@ curve_to_dashed (void *closure,
     struct stroker *stroker = closure;
     cairo_spline_t spline;
     cairo_line_join_t line_join_save;
-    cairo_spline_add_point_func_t func;
+    cairo_spline_add_point_simple_func_t func;
     cairo_status_t status;
 
-    func = (cairo_spline_add_point_func_t)line_to_dashed;
+    func = line_to_dashed;
 
     if (stroker->has_bounds &&
 	! _cairo_spline_intersects (&stroker->current_face.point, b, c, d,
 				    &stroker->line_bounds))
-	return func (closure, d, NULL);
+	return func (closure, d);
 
-    if (! _cairo_spline_init (&spline, func, stroker,
+    if (! _cairo_spline_init (&spline, NULL, func, stroker,
 			      &stroker->current_face.point, b, c, d))
-	return func (closure, d, NULL);
+	return func (closure, d);
 
     /* Temporarily modify the stroker to use round joins to guarantee
      * smooth stroked curves. */

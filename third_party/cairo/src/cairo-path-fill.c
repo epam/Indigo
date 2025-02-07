@@ -113,7 +113,7 @@ _cairo_filler_curve_to (void		*closure,
     }
 
     if (! _cairo_spline_init (&spline,
-			      (cairo_spline_add_point_func_t)_cairo_filler_line_to, filler,
+			      NULL, _cairo_filler_line_to, filler,
 			      &filler->current_point, p1, p2, p3))
     {
 	return _cairo_filler_line_to (closure, p3);
