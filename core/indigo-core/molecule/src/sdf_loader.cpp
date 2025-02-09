@@ -192,7 +192,7 @@ void SdfLoader::readNext()
             auto& propBuf = properties.insert(word.ptr());
             //         auto& propBuf = properties.valueBuf(word.ptr());
             //         int idx = properties.findOrInsert(word.ptr());
-            propBuf.copy(str);
+            propBuf = str.ptr();
             output.writeStringCR(str.ptr());
             if (str.size() > 1)
             {
@@ -205,9 +205,8 @@ void SdfLoader::readNext()
                     output.writeStringCR(str.ptr());
                     if (str.size() > 1)
                     {
-                        propBuf.pop(); // Remove string end marker (0)
-                        propBuf.push('\n');
-                        propBuf.appendString(str.ptr(), true);
+                        propBuf += '\n';
+                        propBuf += str.ptr();
                     }
                 } while (str.size() > 1);
             }
