@@ -601,7 +601,7 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
                     {
                         for (auto& section : cz.second)
                         {
-                            if (!(_zones[cz.first].zone_type == ZoneType::EPathWay && section > 1) && it_oz2->second.count(section ^ 1))
+                            if ((_zones[cz.first].zone_type == ZoneType::EPathWay && section > 1) || it_oz2->second.count(section ^ 1))
                                 return std::nullopt;
                         }
                     }
@@ -849,7 +849,7 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
             auto& csb = _component_summ_blocks[index_cs];
             if (csb.bbox.rayIntersectsRect(arr_begin, arr_end))
             {
-                float dist = csb.bbox.pointDistance(arr_end);
+                float dist = (csb.bbox.center() - arr_end).length();
                 if (min_dist_prod < 0 || dist < min_dist_prod)
                 {
                     min_dist_prod = dist;
@@ -865,7 +865,7 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
 
                 if (csb.bbox.rayIntersectsRect(arr_end, arr_begin))
                 {
-                    auto dist = csb.bbox.pointDistance(arr_begin);
+                    auto dist = (csb.bbox.center() - arr_begin).length();
                     if (min_dist_reactants[j].first < 0 || dist < min_dist_reactants[j].first)
                     {
                         min_dist_reactants[j].first = dist;
@@ -896,7 +896,7 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
         for (int j = 0; j < (int)min_dist_reactants.size(); ++j)
         {
             auto& reac = min_dist_reactants[j];
-            if (reac.first > 0)
+            if (reac.first >= 0)
             {
                 auto& csb_min_reac = _component_summ_blocks[reac.second];
                 if (csb_min_reac.role == BaseReaction::UNDEFINED)
@@ -1033,11 +1033,14 @@ bool ReactionMultistepDetector::mergeUndefinedComponents()
                         {
                             auto mol_idx_target = _components[_components[closest_idx].idx].mapped_idx;
                             // merge mol_idx into mol_idx_target
-                            _reaction_components[mol_idx_target].molecule->mergeWithMolecule(*_reaction_components[undefIdx].molecule, nullptr, 0);
-                            _reaction_components[undefIdx].molecule.reset();
-                            // mark the component as merged
-                            _components[mol_orig_idx].idx = _components[closest_idx].idx;
-                            csb.indexes.clear();
+                            if (_reaction_components[undefIdx].molecule)
+                            {
+                                _reaction_components[mol_idx_target].molecule->mergeWithMolecule(*_reaction_components[undefIdx].molecule, nullptr, 0);
+                                _reaction_components[undefIdx].molecule.reset();
+                                // mark the component as merged
+                                _components[mol_orig_idx].idx = _components[closest_idx].idx;
+                                csb.indexes.clear();
+                            }
                         }
                     }
                 }
@@ -1516,12 +1519,12 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
                     if (rc.molecule)
                     {
                         std::array<int, KProductArea + 1> sides;
-                        geMoleculeSide(rxn, *rc.molecule, sides);
+                        auto side = geMoleculeSide(rxn, *rc.molecule, sides);
 
                         if (sides[KReagentUpArea] || sides[KReagentDownArea])
                             rxn.addCatalystCopy(*rc.molecule, 0, 0);
                         else
-                            rxn.addUndefinedCopy(*rc.molecule, 0, 0);
+                            undefined_components.emplace_back(idx, side);
                     }
                 }
             }
@@ -1532,67 +1535,69 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
         }
 
         // map undefined components
-        //for (auto [idx, side] : undefined_components)
-        //{
-        //    auto& rc = _reaction_components[idx];
-        //    auto& cmol = *rc.molecule;
+        for (auto [idx, side] : undefined_components)
+        {
+            auto& rc = _reaction_components[idx];
+            auto& cmol = *rc.molecule;
 
-        //    int comp_idx = _merged_components[idx].mapped_idx;
+            int comp_idx = _merged_components[idx].mapped_idx;
 
-        //    switch (side)
-        //    {
-        //    case KReactantArea:
-        //        if (reactant_components.size())
-        //        {
-        //            int min_idx = -1;
-        //            float min_dist = 0;
-        //            for (auto [rc_idx, mol_idx] : reactant_components)
-        //            {
-        //                auto rcm_idx = _merged_components[rc_idx].mapped_idx;
-        //                if (rcm_idx > -1)
-        //                {
-        //                    auto& dm = _mol_distances[comp_idx].distances_map;
-        //                    auto it = dm.find(rcm_idx);
-        //                    if (it != dm.end() && (min_idx < 0 || it->second < min_dist))
-        //                    {
-        //                        min_idx = mol_idx;
-        //                        min_dist = it->second;
-        //                    }
-        //                }
-        //            }
-        //            // merge to closest reactant
-        //            rxn.getBaseMolecule(min_idx).mergeWithMolecule(*rc.molecule, nullptr, 0);
-        //        }
-        //        else
-        //            rxn.addReactantCopy(*rc.molecule, 0, 0);
-        //        break;
-        //    case KProductArea:
-        //        if (product_components.size())
-        //        {
-        //            int min_idx = -1;
-        //            float min_dist = 0;
-        //            for (auto [pc_idx, mol_idx] : product_components)
-        //            {
-        //                auto pcm_idx = _merged_components[pc_idx].mapped_idx;
-        //                if (pcm_idx > -1)
-        //                {
-        //                    auto& dm = _mol_distances[comp_idx].distances_map;
-        //                    auto it = dm.find(pcm_idx);
-        //                    if (it != dm.end() && (min_idx < 0 || it->second < min_dist))
-        //                    {
-        //                        min_idx = mol_idx;
-        //                        min_dist = it->second;
-        //                    }
-        //                }
-        //            }
-        //            // merge to closest product
-        //            rxn.getBaseMolecule(min_idx).mergeWithMolecule(*rc.molecule, nullptr, 0);
-        //        }
-        //        else
-        //            rxn.addProductCopy(*rc.molecule, 0, 0);
-        //        break;
-        //    }
-        //}
+            switch (side)
+            {
+            case KReactantArea:
+                // TODO: check mol_idx in reactants zone
+                if (reactant_components.size())
+                {
+                    int min_idx = -1;
+                    float min_dist = 0;
+                    for (auto [rc_idx, mol_idx] : reactant_components)
+                    {
+                        auto rcm_idx = _merged_components[rc_idx].mapped_idx;
+                        if (rcm_idx > -1)
+                        {
+                            auto& dm = _mol_distances[comp_idx].distances_map;
+                            auto it = dm.find(rcm_idx);
+                            if (it != dm.end() && (min_idx < 0 || it->second < min_dist))
+                            {
+                                min_idx = mol_idx;
+                                min_dist = it->second;
+                            }
+                        }
+                    }
+                    // merge to closest reactant
+                    rxn.getBaseMolecule(min_idx).mergeWithMolecule(*rc.molecule, nullptr, 0);
+                }
+                else
+                    rxn.addReactantCopy(*rc.molecule, 0, 0);
+                break;
+            case KProductArea:
+                // TODO: check mol_idx in products zone
+                if (product_components.size())
+                {
+                    int min_idx = -1;
+                    float min_dist = 0;
+                    for (auto [pc_idx, mol_idx] : product_components)
+                    {
+                        auto pcm_idx = _merged_components[pc_idx].mapped_idx;
+                        if (pcm_idx > -1)
+                        {
+                            auto& dm = _mol_distances[comp_idx].distances_map;
+                            auto it = dm.find(pcm_idx);
+                            if (it != dm.end() && (min_idx < 0 || it->second < min_dist))
+                            {
+                                min_idx = mol_idx;
+                                min_dist = it->second;
+                            }
+                        }
+                    }
+                    // merge to closest product
+                    rxn.getBaseMolecule(min_idx).mergeWithMolecule(*rc.molecule, nullptr, 0);
+                }
+                else
+                    rxn.addProductCopy(*rc.molecule, 0, 0);
+                break;
+            }
+        }
 
         for (const auto& comp : _reaction_components)
         {
