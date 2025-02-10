@@ -476,6 +476,7 @@ void SmilesLoader::_readOtherStuff()
                 constexpr char value_prefix[] = "_AV:";
                 auto position = _scanner.tell();
                 _scanner.read(sizeof(value_prefix) - 1, label);
+                label.push(0);
                 if (strcmp(value_prefix, label.ptr()) == 0)
                 {
                     _scanner.skipUntil("$");

@@ -366,7 +366,7 @@ M  END
 C1c2cc3cc4ccc5cc6Cc7cc8ccc1c1c9c%10c%11c(c6c7c%10c81)c5c4c%11c3c29
 C1c2cc3cc4ccc5cc6Cc7cc8ccc1c1c9c%10c%11c(c6c7c%10c81)c5c4c%11c3c29
 *Cl |$_AV:;3$,$R1;$|
-*Cl |$R1;3$|
+*Cl |$R1;$|
 
   -INDIGO-01000000002D
 
@@ -374,8 +374,6 @@ C1c2cc3cc4ccc5cc6Cc7cc8ccc1c1c9c%10c%11c(c6c7c%10c81)c5c4c%11c3c29
     0.0000    0.0000    0.0000 R1  0  0  0  0  0  0  0  0  0  0  0  0
     0.0000    0.0000    0.0000 Cl  0  0  0  0  0  0  0  0  0  0  0  0
   1  2  1  0  0  0  0
-A    2
-3
 M  END
 
 C*CC |$;;;R$|
