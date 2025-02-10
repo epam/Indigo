@@ -74,3 +74,18 @@ m = indigo.loadMolecule(
 )
 m.aromatize()
 print(m.canonicalSmiles())
+
+for smiles in sorted(
+    [
+        "C*CC |$R$|",
+        "C*CC |$;R$|",
+        "C*CC |$;;R$|",
+        "C*CC |$;;;R$|",
+        "C*CC |$R$|",
+        "*Cl |$_AV:;3$,$R1;$|",
+    ]
+):
+    m = indigo.loadMolecule(smiles)
+    print(smiles)
+    print(m.smiles())
+    print(m.molfile())
