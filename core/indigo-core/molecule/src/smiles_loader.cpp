@@ -470,7 +470,21 @@ void SmilesLoader::_readOtherStuff()
         else if (c == '$') // pseudoatoms
         {
             QS_DEF(Array<char>, label);
-
+            // It can be values filed - $_AV:;;$ Just skip for now
+            if (_scanner.lookNext() == '_')
+            {
+                constexpr char value_prefix[] = "_AV:";
+                auto position = _scanner.tell();
+                _scanner.read(sizeof(value_prefix) - 1, label);
+                label.push(0);
+                if (strcmp(value_prefix, label.ptr()) == 0)
+                {
+                    _scanner.skipUntil("$");
+                    _scanner.skip(1);
+                    continue;
+                }
+                _scanner.seek(position, SEEK_SET);
+            }
             for (int i = _bmol->vertexBegin(); i != _bmol->vertexEnd(); i = _bmol->vertexNext(i))
             {
                 label.clear();
@@ -484,8 +498,8 @@ void SmilesLoader::_readOtherStuff()
                         break;
                     label.push(c);
                 }
-                if (c == '$' && i != _bmol->vertexEnd() - 1)
-                    throw Error("only %d atoms found in pseudo-atoms $...$ block", i + 1);
+                // if (c == '$' && i != _bmol->vertexEnd() - 1)
+                //     throw Error("only %d atoms found in pseudo-atoms $...$ block", i + 1);
                 if (c == ';' && i == _bmol->vertexEnd() - 1)
                     throw Error("extra ';' in pseudo-atoms $...$ block");
 
@@ -676,6 +690,8 @@ void SmilesLoader::_readOtherStuff()
                         }
                     }
                 }
+                if (c == '$')
+                    break;
             }
         }
         else if (c == 'c' || c == 't') // CIS and TRANS bonds
