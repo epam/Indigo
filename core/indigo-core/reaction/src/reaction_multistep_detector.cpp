@@ -1519,12 +1519,12 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
                     if (rc.molecule)
                     {
                         rxn.addUndefinedCopy(*rc.molecule, 0, 0);
-                        //std::array<int, KProductArea + 1> sides{};
-                        //auto side = geMoleculeSide(rxn, *rc.molecule, sides);
-                        //if (sides[KReagentUpArea] || sides[KReagentDownArea])
-                        //    rxn.addCatalystCopy(*rc.molecule, 0, 0);
-                        //else
-                        //    undefined_components.emplace_back(idx, side);
+                        // std::array<int, KProductArea + 1> sides{};
+                        // auto side = geMoleculeSide(rxn, *rc.molecule, sides);
+                        // if (sides[KReagentUpArea] || sides[KReagentDownArea])
+                        //     rxn.addCatalystCopy(*rc.molecule, 0, 0);
+                        // else
+                        //     undefined_components.emplace_back(idx, side);
                     }
                 }
             }
@@ -1535,7 +1535,7 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
         }
 
         // map undefined components
-        //for (auto [idx, side] : undefined_components)
+        // for (auto [idx, side] : undefined_components)
         //{
         //    auto& rc = _reaction_components[idx];
         //    auto& cmol = *rc.molecule;
