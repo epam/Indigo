@@ -51,6 +51,16 @@ namespace indigo
             MOL_DISTANCES_MAP distances_map;
         };
 
+        struct MERGE_CANDIDATE
+        {
+            MERGE_CANDIDATE(size_t idx1, size_t idx2, float distance) : undef_idx(idx1), comp_idx(idx2), distance(distance)
+            {
+            }
+            size_t undef_idx;
+            size_t comp_idx;
+            float distance;
+        };
+
         enum class ReactionType
         {
             ESimpleReaction,
@@ -146,7 +156,11 @@ namespace indigo
 
         bool mapReactionComponents();
         bool mapMultitailReactionComponents();
-        bool mergeUndefinedComponents();
+        void mergeUndefinedComponents();
+        void mergeUndefinedComponents1();
+        void collectUndefinedDistances(const std::vector<std::pair<size_t, Rect2f>>& component_bboxes,
+                                       const std::vector<std::pair<size_t, Rect2f>>& undef_component_bboxes, std::vector<MOL_DISTANCES_DESC>& undef_distances,
+                                       std::vector<MOL_DISTANCES_DESC>& undef_comp_distances);
 
         bool findPlusNeighbours(const Vec2f& plus_pos, const FLOAT_INT_PAIRS& mol_tops, const FLOAT_INT_PAIRS& mol_bottoms, const FLOAT_INT_PAIRS& mol_lefts,
                                 const FLOAT_INT_PAIRS& mol_rights, std::pair<int, int>& connection);

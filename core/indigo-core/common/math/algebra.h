@@ -386,6 +386,20 @@ namespace indigo
             return !(right() < other.left() || left() > other.right() || top() < other.bottom() || bottom() > other.top());
         }
 
+        inline float distanceTo(const Rect2f& other) const
+        {
+            if (intersects(other))
+                return 0.0f;
+
+            float dx = std::max(other.left() - right(), left() - other.right());
+            float dy = std::max(other.bottom() - top(), bottom() - other.top());
+
+            dx = std::max(0.0f, dx);
+            dy = std::max(0.0f, dy);
+
+            return HYPOT(dx, dy);
+        }
+
         inline bool rayIntersectsRect(const Vec2f& begin, const Vec2f& end)
         {
             auto lb = _leftBottom;
