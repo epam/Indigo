@@ -778,11 +778,6 @@ void MoleculeCdxmlLoader::_updateConnection(const CdxmlNode& node, int atom_idx)
         {
             auto& conn = frag_node.connections[fit->second];
             conn.atom_idx = atom_idx;
-            // Set position of node to that of its parent fragment node
-            if (fabsf(frag_node.pos.x) >= EPSILON || fabsf(frag_node.pos.y) >= EPSILON || fabsf(frag_node.pos.z) >= EPSILON)
-            {
-                _pmol->setAtomXyz(atom_idx, frag_node.pos);
-            }
         }
     }
 }
