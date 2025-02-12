@@ -1,0 +1,106 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "$ref": "mol1"
+            },
+            {
+                "$ref": "mol2"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "A",
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            }
+        ]
+    },
+    "mol1": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "AH",
+                "location": [
+                    3.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    4.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            }
+        ]
+    },
+    "mol2": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "*",
+                "alias": "*",
+                "location": [
+                    0.0,
+                    2.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.0,
+                    2.0,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            }
+        ]
+    }
+}
