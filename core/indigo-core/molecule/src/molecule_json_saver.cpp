@@ -787,7 +787,6 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                     }
                     else
                     {
-                        char* alias = nullptr;
                         if (query_atom_type == QueryMolecule::QUERY_ATOM_AH && _pqmol->isAlias(i))
                         {
                             buf.readString(_pqmol->getAlias(i), true);
