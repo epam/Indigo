@@ -1059,11 +1059,11 @@ void ReactionMultistepDetector::collectUndefinedDistances(const std::vector<std:
     undef_comp_distances.clear();
     undef_distances.resize(undef_component_bboxes.size());
     undef_comp_distances.resize(undef_component_bboxes.size());
-    for (int i = 0; i < undef_component_bboxes.size(); ++i)
+    for (size_t i = 0; i < undef_component_bboxes.size(); ++i)
     {
         // collect distances to other undefined components
         auto& mdi = undef_distances[i];
-        for (int j = i + 1; j < undef_component_bboxes.size(); ++j)
+        for (size_t j = i + 1; j < undef_component_bboxes.size(); ++j)
         {
             float dist = undef_component_bboxes[i].second.distanceTo(undef_component_bboxes[j].second);
             auto& mdj = undef_distances[j];
@@ -1079,7 +1079,7 @@ void ReactionMultistepDetector::collectUndefinedDistances(const std::vector<std:
 
         // collect distances to detected components
         auto& mdic = undef_comp_distances[i];
-        for (int j = 0; j < component_bboxes.size(); ++j)
+        for (size_t j = 0; j < component_bboxes.size(); ++j)
         {
             float dist = undef_component_bboxes[i].second.distanceTo(component_bboxes[j].second);
             mdic.distances_map.emplace(j, dist);
@@ -1123,7 +1123,7 @@ void ReactionMultistepDetector::mergeUndefinedComponents()
         std::vector<MERGE_CANDIDATE> merge_list_candidates;
 
         // iterate over all undefined components
-        for (int i = 0; i < undef_component_bboxes.size(); ++i)
+        for (size_t i = 0; i < undef_component_bboxes.size(); ++i)
         {
             auto& mdi_comp = undef_comp_distances[i];
             auto& mdi_undef = undef_distances[i];
