@@ -67,12 +67,8 @@ To build the project from the sources, the following tools should be installed:
 
 
 #### **Dependencies:**
->On Linux use python3 insted of python. Using virtual environment might be required as well.
 
-To be able to run backend API test set environment variable by running this command `export INDIGO_SERVICE_URL=http://localhost:5000/v2` or
-`$env:INDIGO_SERVICE_URL="http://localhost:5000/v2"` (in powershell)
-
-**Python**
+> **Python**
 - wheel package installed. Command: `python -m pip install wheel`
 - setuptools version less than 72.0.0 package installed. Command: `python -m pip install setuptools==68.0.0`
 - waitress package installed (to run backend API test). Command: `python -m pip install waitress`
@@ -87,7 +83,7 @@ To be able to run backend API test set environment variable by running this comm
 - pyparsing package installed (to run backend API test). Command: `python -m pip install pyparsing`
 - requests package installed (to run backend API test). Command: `python -m pip install requests`
  
-
+> On Linux use python3 insted of python. Using virtual environment might be required as well.
 
 
 ## Build instruction ##
@@ -113,47 +109,79 @@ To be able to run backend API test set environment variable by running this comm
     cmake --build . --config Release --target <target name>
     ```
 
-Replace _**\<target name\>**_ with any of the following targets you need: { **ALL_BUILD** (on Windows) or **all** (on Linux) | **indigo-dotnet** | **indigo-java** | **indigo-python** }
+Replace _**\<target name\>**_ with any of the following targets you need:
 
-Build results could be collected from Indigo/dist folder.
+- **ALL_BUILD** (on Windows)
+- **all** (on Linux)
+- **indigo-dotnet**
+- **indigo-java**
+- **indigo-python**
+
+> Build results could be collected from Indigo/dist folder.
 
 > 'indigo-python' target is commonly used.
 
 ## Run tests ##
-Befor run any test you have to build and install indigo-python
+Befor running any test you have to build and install indigo-python
+
 1) Build indigo-python using `--target indigo-python` or `--target ALL_BUILD`(on Windows) or `--target all`(on Linux). See Build instruction above.
-> - On Windows the package should be in 'Indigo/api/python/dist' folder
-> - On Linux it is located in 'Indigo\dist' folder
+    > - On Windows the package should be in 'Indigo/api/python/dist' folder
+    > - On Linux it is located in 'Indigo\dist' folder
 
 
-Package will be named like 'epam.indigo-*\<version-arch\>*.whl'. For instance: *epam.indigo-1.29.0.dev2-py3-none-win_amd64.whl*
+> Package will be named like 'epam.indigo-*\<version-arch\>*.whl'. For instance: *epam.indigo-1.29.0.dev2-py3-none-win_amd64.whl*
    
 2) Install package using pip
+    > - If Indigo package has been already installed, uninstall it with the following command: `python -m pip uninstall <path-to-.whl-file> -y`
+
     ```
-    python -m pip uninstall <path-to-.whl-file> -y
+    python -m pip install <path-to-.whl-file>
     ```
-    Replace _**\<path-to-.whl-file>**_ with the right path to .whl package. For instance: `python -m pip uninstall ../api/python/dist/epam.indigo-1.29.0.dev2-py3-none-win_amd64.whl`
+    
+    > Replace _**\<path-to-.whl-file>**_ with the right path to .whl package. For instance: `python -m pip install ../api/python/dist/epam.indigo-1.29.0.dev2-py3-none-win_amd64.whl`
 
 3) Run integration test
 
     >to run all test
+
     ```
     python api/tests/integration/test.py -t 1
     ```
     
-    >to run tests by mask `test_name`
+    >to run tests by mask use `test_name`
     ```
     python api/tests/integration/test.py -t 1 -p test_name
     ```
 
 ### To run backend API test:
-1) Install epam-indigo
-2) Run backend service :
-      * `cd utils/indigo-service/backend/service`
-      * `cp v2/common/config.py .`
-      * `waitress-serve --listen="127.0.0.1:5000 [::1]:5000"  app:app` you may use any port instead of 5000
-3) Run backend API test:
-    * run test `python utils/indigo-service/backend/service/tests/api/indigo_test.py` use `-k test_name` to run test by pattern.
+1) Build and install indigo-python
+2) Set environment variable by running this command:
+
+    > for Linux
+    ```
+    export INDIGO_SERVICE_URL=http://localhost:5000/v2
+    ```
+    > for Windows in PowerShell
+    ```
+    $env:INDIGO_SERVICE_URL="http://localhost:5000/v2"
+    ```
+3) Run backend service :
+    ```
+    cd utils/indigo-service/backend/service
+    ```
+    ```
+    cp v2/common/config.py .
+    ```
+    ```
+    waitress-serve --listen="127.0.0.1:5000 [::1]:5000"  app:app
+    ```
+    > you may use any port instead of 5000
+
+4) Run backend API test:
+    ```
+    python utils/indigo-service/backend/service/tests/api/indigo_test.py`
+    ```
+    > use `-k test_name` to run test by pattern.
 
 ## How to build Indigo-WASM ##
 
@@ -195,11 +223,20 @@ Make sure it's running from path:
 * Install emscripten sdk (https://github.com/emscripten-core/emsdk)
 
 ```
->git clone https://github.com/emscripten-core/emsdk.git
->cd emsdk
->./emsdk install latest
->./emsdk activate latest
->source ./emsdk_env.sh
+git clone https://github.com/emscripten-core/emsdk.git
+```
+```
+cd emsdk
+```
+```
+./emsdk install latest
+```
+
+```
+./emsdk activate latest
+```
+```
+source ./emsdk_env.sh
 ```
 
 Note: On Windows, run `emsdk` instead of `./emsdk`, and `emsdk_env.bat` instead of source `./emsdk_env.sh`, use `cmd` instead of `powershell`.
