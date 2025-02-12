@@ -866,6 +866,7 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                                 int neighboringBondID = v.neiEdge(j), bondID = -1;
                                 if (mol.findEdgeIndex(neighboringAtomID, superAtomID) < 0)
                                 {
+                                    int oldBondMappingInvPosition = _bondMappingInv.at(neighboringBondID);
                                     if (mol.isQueryMolecule())
                                     {
                                         QueryMolecule& qm = mol.asQueryMolecule();
@@ -874,13 +875,16 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                                     else
                                     {
                                         Molecule& amol = mol.asMolecule();
+                                        int oldBondTopology = amol.getBondTopology(neighboringBondID);
+                                        int oldBondDirection = amol.getBondDirection(neighboringBondID);
+                                        amol.removeBond(neighboringBondID);
                                         bondID = amol.addBond(neighboringAtomID, superAtomID, amol.getBondOrder(neighboringBondID));
-                                        amol.setEdgeTopology(bondID, amol.getBondTopology(neighboringBondID));
-                                        amol.setBondDirection(bondID, mol.getBondDirection(neighboringBondID));
+                                        amol.setEdgeTopology(bondID, oldBondTopology);
+                                        amol.setBondDirection(bondID, oldBondDirection);
                                     }
                                     if (_bondMappingInv.find(bondID) != _bondMappingInv.end())
                                         _bondMappingInv.erase(bondID);
-                                    _bondMappingInv.emplace(bondID, _bondMappingInv.at(neighboringBondID));
+                                    _bondMappingInv.emplace(bondID, oldBondMappingInvPosition);
                                 }
                             }
                         }
