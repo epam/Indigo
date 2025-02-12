@@ -545,9 +545,18 @@ void SmilesLoader::_readOtherStuff()
                         if (label.size() > 3 &&
                             (strncmp(label.ptr() + label.size() - 3, "_p", 2) == 0 || strncmp(label.ptr() + label.size() - 3, "_e", 2) == 0))
                         {
-                            label.pop();
-                            label.pop();
-                            label.pop();
+                            constexpr char star_atom_name[] = "star_e";
+                            if (label.size() == sizeof(star_atom_name) && strcmp(label.ptr(), star_atom_name) == 0)
+                            {
+                                label.clear();
+                                label.push('*');
+                            }
+                            else
+                            {
+                                label.pop();
+                                label.pop();
+                                label.pop();
+                            }
                             label.push(0);
                         }
 
@@ -585,6 +594,14 @@ void SmilesLoader::_readOtherStuff()
 
                                 x_atom->type = QueryMolecule::OP_NONE;
                                 _qmol->resetAtom(i, x_atom.release());
+                            }
+                            else if (label.size() == 2 && label[0] == '*')
+                            {
+                                std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
+
+                                x_atom->type = QueryMolecule::OP_NONE;
+                                _qmol->resetAtom(i, x_atom.release());
+                                _qmol->setAlias(i, "*");
                             }
                             else if (label.size() == 2 && label[0] == 'X')
                             {

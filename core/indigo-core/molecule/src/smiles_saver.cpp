@@ -1561,14 +1561,20 @@ void SmilesSaver::writeSpecialAtom(int aid, Output& out)
         out.writeString("X_p");
     else if (query_atom_type == QueryMolecule::QUERY_ATOM_M)
         out.writeString("M_p");
-    else if (query_atom_type == QueryMolecule::QUERY_ATOM_AH)
-        out.writeString("AH_p");
     else if (query_atom_type == QueryMolecule::QUERY_ATOM_QH)
         out.writeString("QH_p");
     else if (query_atom_type == QueryMolecule::QUERY_ATOM_XH)
         out.writeString("XH_p");
     else if (query_atom_type == QueryMolecule::QUERY_ATOM_MH)
         out.writeString("MH_p");
+    else if (query_atom_type == QueryMolecule::QUERY_ATOM_AH)
+    {
+        auto label = _qmol->isAlias(aid) ? _qmol->getAlias(aid) : nullptr;
+        if (label != nullptr && strlen(label) == 1 && *label == '*')
+            out.writeString("star_e");
+        else
+            out.writeString("AH_p");
+    }
 }
 
 void SmilesSaver::_writeHighlighting()

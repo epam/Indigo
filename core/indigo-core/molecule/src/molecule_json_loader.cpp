@@ -146,6 +146,7 @@ int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int 
 int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope)
 {
     std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
+    int atom_type = QueryMolecule::QUERY_ATOM_UNKNOWN;
     if (element != -1 && element < ELEM_MAX)
         atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, element);
     else if (element == ELEM_ATOMLIST)
@@ -154,7 +155,7 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
     }
     else
     {
-        int atom_type = QueryMolecule::getAtomType(label);
+        atom_type = QueryMolecule::getAtomType(label);
         switch (atom_type)
         {
         case _ATOM_PSEUDO:
@@ -242,7 +243,10 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
     if (radical != 0)
         atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_RADICAL, radical)));
 
-    return _pqmol->addAtom(atom.release());
+    auto atom_idx = _pqmol->addAtom(atom.release());
+    if (label != nullptr && label[0] == '*' && label[1] == 0)
+        _pqmol->setAlias(atom_idx, label);
+    return atom_idx;
 }
 
 void MoleculeJsonLoader::validateMoleculeBond(int order)
