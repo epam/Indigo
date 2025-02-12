@@ -727,6 +727,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                      query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_max & QueryMolecule::CHIRALITY_OR_UNSPECIFIED))
                     needCustomQuery = true;
             }
+
             if (mol.isPseudoAtom(i))
             {
                 buf.readString(mol.getPseudoAtom(i), true);
@@ -785,7 +786,17 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                         }
                     }
                     else
-                        QueryMolecule::getQueryAtomLabel(query_atom_type, buf);
+                    {
+                        if (query_atom_type == QueryMolecule::QUERY_ATOM_AH && _pqmol->isAlias(i))
+                        {
+                            buf.readString(_pqmol->getAlias(i), true);
+                        }
+                        if (buf.size() != 2 || buf[0] != '*')
+                        {
+                            buf.clear();
+                            QueryMolecule::getQueryAtomLabel(query_atom_type, buf);
+                        }
+                    }
                 }
                 else // query_atom_type == QueryMolecule::QUERY_ATOM_UNKNOWN
                 {
