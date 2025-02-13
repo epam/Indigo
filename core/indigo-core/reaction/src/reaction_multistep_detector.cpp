@@ -783,8 +783,18 @@ bool ReactionMultistepDetector::mapReactionComponents()
             for (int index_cs = 0; index_cs < static_cast<int>(_component_summ_blocks.size()); ++index_cs)
             {
                 auto& csb = _component_summ_blocks[index_cs];
+                std::array<int, KProductArea + 1> sides{};
+                int side = -1;
+                for (auto rc_idx : csb.indexes)
+                {
+                    auto& rc = _reaction_components[rc_idx];
+                    if (rc.component_type == ReactionComponent::MOLECULE)
+                        side = getMoleculeSide(arrow, *rc.molecule, sides);
+                }
+
                 std::vector<Vec2f> csb_bbox = {csb.bbox.leftTop(), csb.bbox.rightTop(), csb.bbox.rightBottom(), csb.bbox.leftBottom(), csb.bbox.leftTop()};
-                if (csb.bbox.rayIntersectsRect(arr_end, arr_begin) || (arrow_count == 1 && convexPolygonsIntersect(csb_bbox, right_arrow_zone)))
+                if (csb.bbox.rayIntersectsRect(arr_end, arr_begin) ||
+                    (arrow_count == 1 && side == KProductArea && convexPolygonsIntersect(csb_bbox, right_arrow_zone)))
                 {
                     float dist = csb.bbox.pointDistance(arr_end);
                     if (min_dist_prod < 0 || dist < min_dist_prod)
@@ -793,7 +803,8 @@ bool ReactionMultistepDetector::mapReactionComponents()
                         idx_cs_min_prod = index_cs;
                     }
                 }
-                else if (csb.bbox.rayIntersectsRect(arr_begin, arr_end) || (arrow_count == 1 && convexPolygonsIntersect(csb_bbox, left_arrow_zone)))
+                else if (csb.bbox.rayIntersectsRect(arr_begin, arr_end) ||
+                         (arrow_count == 1 && side == KReactantArea && convexPolygonsIntersect(csb_bbox, left_arrow_zone)))
                 {
                     float dist = csb.bbox.pointDistance(arr_begin);
                     if (min_dist_reac < 0 || dist < min_dist_reac)
@@ -1433,33 +1444,19 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
     }
 }
 
-uint8_t ReactionMultistepDetector::geMoleculeSide(BaseReaction& rxn, BaseMolecule& mol)
+int ReactionMultistepDetector::getMoleculeSide(const ReactionArrowObject& arrow, BaseMolecule& mol, std::array<int, KProductArea + 1>& sides)
 {
-    auto& arrow = (const ReactionArrowObject&)rxn.meta().getMetaObject(ReactionArrowObject::CID, 0);
     bool reverseReactionOrder = arrow.getArrowType() == ReactionArrowObject::ERetrosynthetic;
-    std::array<int, KProductArea + 1> sides{};
+    bool has_element = false;
     for (int idx = mol.vertexBegin(); idx < mol.vertexEnd(); idx = mol.vertexNext(idx))
     {
         Vec3f& pt3d = mol.getAtomXyz(idx);
         Vec2f pt(pt3d.x, pt3d.y);
         int side = !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
         sides[side]++;
+        has_element = true;
     }
-    return (uint8_t)std::distance(sides.begin(), std::max_element(sides.begin(), sides.end()));
-}
-
-uint8_t ReactionMultistepDetector::geMoleculeSide(BaseReaction& rxn, BaseMolecule& mol, std::array<int, KProductArea + 1>& sides)
-{
-    auto& arrow = (const ReactionArrowObject&)rxn.meta().getMetaObject(ReactionArrowObject::CID, 0);
-    bool reverseReactionOrder = arrow.getArrowType() == ReactionArrowObject::ERetrosynthetic;
-    for (int idx = mol.vertexBegin(); idx < mol.vertexEnd(); idx = mol.vertexNext(idx))
-    {
-        Vec3f& pt3d = mol.getAtomXyz(idx);
-        Vec2f pt(pt3d.x, pt3d.y);
-        int side = !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
-        sides[side]++;
-    }
-    return (uint8_t)std::distance(sides.begin(), std::max_element(sides.begin(), sides.end()));
+    return has_element ? (int)std::distance(sides.begin(), std::max_element(sides.begin(), sides.end())) : -1;
 }
 
 void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
@@ -1538,8 +1535,8 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
                     if (rc.molecule)
                     {
                         std::array<int, KProductArea + 1> sides{};
-                        auto side = geMoleculeSide(rxn, *rc.molecule, sides);
-                        if (sides[KReagentUpArea] || sides[KReagentDownArea])
+                        auto side = getMoleculeSide(arrow, *rc.molecule, sides);
+                        if (side > -1 && (sides[KReagentUpArea] || sides[KReagentDownArea]))
                             rxn.addCatalystCopy(*rc.molecule, 0, 0);
                         else
                             rxn.addUndefinedCopy(*rc.molecule, 0, 0);
