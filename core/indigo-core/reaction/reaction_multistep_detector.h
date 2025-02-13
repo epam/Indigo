@@ -158,7 +158,6 @@ namespace indigo
         bool mapReactionComponents();
         bool mapMultitailReactionComponents();
         void mergeUndefinedComponents();
-        void mergeUndefinedComponents1();
         void collectUndefinedDistances(const std::vector<std::pair<size_t, Rect2f>>& component_bboxes,
                                        const std::vector<std::pair<size_t, Rect2f>>& undef_component_bboxes, std::vector<MOL_DISTANCES_DESC>& undef_distances,
                                        std::vector<MOL_DISTANCES_DESC>& undef_comp_distances);
