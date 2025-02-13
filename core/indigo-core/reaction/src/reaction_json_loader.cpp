@@ -36,7 +36,8 @@ using namespace rapidjson;
 
 IMPL_ERROR(ReactionJsonLoader, "reaction KET loader");
 
-ReactionJsonLoader::ReactionJsonLoader(Document& ket) : _loader(ket), _molecule(kArrayType), ignore_noncritical_query_features(false)
+ReactionJsonLoader::ReactionJsonLoader(Document& ket, const LayoutOptions& options)
+    : _loader(ket), _molecule(kArrayType), ignore_noncritical_query_features(false), _layout_options(options)
 {
     ignore_bad_valence = false;
 }
@@ -74,7 +75,7 @@ void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
 
     if (arrow_count > 0 || multi_count > 0)
     {
-        ReactionMultistepDetector md(*_pmol);
+        ReactionMultistepDetector md(*_pmol, _layout_options);
         switch (md.detectReaction())
         {
         case ReactionMultistepDetector::ReactionType::EPathwayReaction:

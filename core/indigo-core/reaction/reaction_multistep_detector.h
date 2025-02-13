@@ -116,7 +116,7 @@ namespace indigo
             int mapped_idx;
         };
 
-        ReactionMultistepDetector(BaseMolecule& mol);
+        ReactionMultistepDetector(BaseMolecule& mol, const LayoutOptions& options);
         ~ReactionMultistepDetector();
         ReactionType detectReaction();
         void constructMultipleArrowReaction(BaseReaction& rxn);
@@ -145,6 +145,8 @@ namespace indigo
         void createSpecialZones();
         void addPlusZones(const Vec2f& pos);
         void addArrowZones(const Vec2f& tail, const Vec2f& head);
+        std::vector<Vec2f> getArrowZone(const Vec2f& tail, const Vec2f& head);
+
         void addPathwayZones(const Vec2f& head, const Vec2f& sp_beg, const Vec2f& sp_end, const std::vector<Vec2f>& tails);
         std::map<int, std::unordered_set<int>> findSpecialZones(size_t mol_idx);
         std::optional<std::pair<int, int>> findMaxSpecialZone(size_t mol_idx, std::map<int, std::set<int>>& other_zones);
@@ -173,6 +175,8 @@ namespace indigo
         std::vector<MOL_DISTANCES_DESC> _mol_distances;
         std::vector<SPECIAL_ZONE_DESC> _zones;
         int _moleculeCount;
+        const LayoutOptions& _layout_options;
+        float _reaction_margin_size;
     };
 
 } // namespace indigo

@@ -41,8 +41,11 @@ ReactionMultistepDetector::~ReactionMultistepDetector()
 {
 }
 
-ReactionMultistepDetector::ReactionMultistepDetector(BaseMolecule& bmol) : _bmol(bmol), _moleculeCount(0)
+ReactionMultistepDetector::ReactionMultistepDetector(BaseMolecule& bmol, const LayoutOptions& options)
+    : _bmol(bmol), _moleculeCount(0), _layout_options(options)
 {
+    _reaction_margin_size =
+        options.fontSize > EPSILON ? options.getMarginSizeInAngstroms() : LayoutOptions::DEFAULT_BOND_LENGTH * options.getMarginSizeInAngstroms();
 }
 
 void ReactionMultistepDetector::createSummBlocks()
@@ -337,6 +340,27 @@ void ReactionMultistepDetector::addPlusZones(const Vec2f& pos)
     szd.zone_sections.push_back(top);
     szd.zone_sections.push_back(bottom);
     _zones.push_back(szd);
+}
+
+std::vector<Vec2f> ReactionMultistepDetector::getArrowZone(const Vec2f& tail, const Vec2f& head)
+{
+    auto dir = head - tail;
+    float length = dir.length();
+    dir.normalize();
+    Vec2f nT = {-dir.y, dir.x};
+    Vec2f nB = {dir.y, -dir.x};
+    std::vector<Vec2f> result;
+    Vec2f pos = head + nT * ARROW_DETECTION_DISTANCE;
+    result.push_back(pos);
+    pos += dir * (ARROW_DETECTION_DISTANCE * 2 + _reaction_margin_size);
+    result.push_back(pos);
+    pos += nB;
+    result.push_back(pos);
+    pos -= dir * (ARROW_DETECTION_DISTANCE * 2 + _reaction_margin_size);
+    result.push_back(pos);
+    pos += nT * ARROW_DETECTION_DISTANCE * 2;
+    result.push_back(pos);
+    return result;
 }
 
 void ReactionMultistepDetector::addArrowZones(const Vec2f& tail, const Vec2f& head)
@@ -751,12 +775,16 @@ bool ReactionMultistepDetector::mapReactionComponents()
             const Vec2f& arr_begin = !reverseReactionOrder ? arrow.getTail() : arrow.getHead();
             const Vec2f& arr_end = !reverseReactionOrder ? arrow.getHead() : arrow.getTail();
 
+            auto right_arrow_zone = getArrowZone(arr_begin, arr_end);
+            auto left_arrow_zone = getArrowZone(arr_end, arr_begin);
+
             float min_dist_prod = -1, min_dist_reac = -1;
             int idx_cs_min_prod = -1, idx_cs_min_reac = -1;
             for (int index_cs = 0; index_cs < static_cast<int>(_component_summ_blocks.size()); ++index_cs)
             {
                 auto& csb = _component_summ_blocks[index_cs];
-                if (csb.bbox.rayIntersectsRect(arr_end, arr_begin))
+                std::vector<Vec2f> csb_bbox = {csb.bbox.leftTop(), csb.bbox.rightTop(), csb.bbox.rightBottom(), csb.bbox.leftBottom(), csb.bbox.leftTop()};
+                if (csb.bbox.rayIntersectsRect(arr_end, arr_begin) /* || (arrow_count == 1 && convexPolygonsIntersect(csb_bbox, right_arrow_zone))*/)
                 {
                     float dist = csb.bbox.pointDistance(arr_end);
                     if (min_dist_prod < 0 || dist < min_dist_prod)
@@ -765,7 +793,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
                         idx_cs_min_prod = index_cs;
                     }
                 }
-                else if (csb.bbox.rayIntersectsRect(arr_begin, arr_end))
+                else if (csb.bbox.rayIntersectsRect(arr_begin, arr_end) /* || (arrow_count == 1 && convexPolygonsIntersect(csb_bbox, left_arrow_zone))*/)
                 {
                     float dist = csb.bbox.pointDistance(arr_begin);
                     if (min_dist_reac < 0 || dist < min_dist_reac)
@@ -918,136 +946,6 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
     }
     return !bad_pathway;
 }
-
-// bool ReactionMultistepDetector::mergeUndefinedComponents()
-//{
-//     bool result = true; // true means - no more undefined components
-//     for (auto& csb : _component_summ_blocks)
-//     {
-//         // no undefined components allowed
-//         if (csb.role == BaseReaction::UNDEFINED)
-//         {
-//             // consists of only one component
-//             if (csb.indexes.size() == 1)
-//             {
-//                 int mol_idx = csb.indexes.front();
-//                 int mol_orig_idx = _merged_components[mol_idx].mapped_idx;
-//                 auto& mdi = _mol_distances[mol_orig_idx];
-//                 // if there are any close components
-//                 if (mdi.sorted_distances.size())
-//                 {
-//                     // if not merged
-//                     auto closest_idx = mdi.sorted_distances.front().first;
-//                     if (_components[closest_idx].idx != _components[mol_orig_idx].idx)
-//                     {
-//                         auto mol_idx_target = _components[_components[closest_idx].idx].mapped_idx;
-//                         // merge mol_idx into mol_idx_target
-//                         _reaction_components[mol_idx_target].molecule->mergeWithMolecule(*_reaction_components[mol_idx].molecule, nullptr, 0);
-//                         _reaction_components[mol_idx].molecule.reset();
-//                         // mark the component as merged
-//                         _components[mol_orig_idx].idx = _components[closest_idx].idx;
-//                         csb.indexes.clear();
-//                     }
-//                     else
-//                         result = false;
-//                 }
-//                 else
-//                     result = false;
-//             }
-//             else
-//                 result = false;
-//         }
-//     }
-//     return result;
-// }
-
-// void ReactionMultistepDetector::mergeUndefinedComponents()
-//{
-//     bool result = true;
-//
-//     for (size_t i = 0; i < _reaction_components.size(); ++i)
-//     {
-//         std::vector<size_t> cluster, agg_candidates;
-//         std::vector<bool> visited(_reaction_components.size(), false);
-//
-//         auto& rc = _reaction_components[i];
-//         if (!visited[i] && rc.component_type == ReactionComponent::MOLECULE)
-//         {
-//             auto& csb = _component_summ_blocks[rc.summ_block_idx];
-//             if (csb.role == BaseReaction::UNDEFINED && !csb.indexes.empty())
-//             {
-//                 std::queue<size_t> q;
-//                 q.push(i);
-//                 visited[i] = true;
-//
-//                 // trying to build an undefined cluster
-//                 while (!q.empty())
-//                 {
-//                     size_t current = q.front();
-//                     q.pop();
-//                     cluster.push_back(current);
-//
-//                     auto& currentCsb = _component_summ_blocks[_reaction_components[current].summ_block_idx];
-//                     if (!currentCsb.indexes.empty())
-//                     {
-//                         int molIdx = currentCsb.indexes.front();
-//                         int origIdx = _merged_components[molIdx].mapped_idx;
-//                         for (const auto& [compIdx, dist] : _mol_distances[origIdx].sorted_distances)
-//                         {
-//                             int neighborRcIdx = _components[compIdx].mapped_idx;
-//                             if (neighborRcIdx < 0 || neighborRcIdx == static_cast<int>(current) || visited[neighborRcIdx])
-//                                 continue;
-//
-//                             auto& neighborCsb = _component_summ_blocks[_reaction_components[neighborRcIdx].summ_block_idx];
-//                             if (neighborCsb.role == BaseReaction::UNDEFINED)
-//                             {
-//                                 q.push(neighborRcIdx);
-//                                 visited[neighborRcIdx] = true;
-//                             }
-//                             else if (neighborCsb.role != BaseReaction::CATALYST)
-//                             {
-//                                 agg_candidates.push_back(neighborRcIdx);
-//                                 visited[neighborRcIdx] = true;
-//                             }
-//                         }
-//                     }
-//                 }
-//                 if (agg_candidates.size())
-//                 {
-//                     for (size_t undefIdx : cluster)
-//                     {
-//                         int mol_orig_idx = _merged_components[undefIdx].mapped_idx;
-//                         int closest_idx = -1;
-//                         float min_dist = 0;
-//                         for (size_t aggIdx : agg_candidates)
-//                         {
-//                             auto agg_orig_idx = _merged_components[aggIdx].mapped_idx;
-//                             auto dist = _mol_distances[mol_orig_idx].distances_map[agg_orig_idx];
-//                             if (closest_idx < 0 || dist < min_dist)
-//                             {
-//                                 closest_idx = (int)agg_orig_idx;
-//                                 min_dist = dist;
-//                             }
-//                         }
-//                         if (_components[closest_idx].idx != _components[mol_orig_idx].idx)
-//                         {
-//                             auto mol_idx_target = _components[_components[closest_idx].idx].mapped_idx;
-//                             // merge mol_idx into mol_idx_target
-//                             if (_reaction_components[undefIdx].molecule)
-//                             {
-//                                 _reaction_components[mol_idx_target].molecule->mergeWithMolecule(*_reaction_components[undefIdx].molecule, nullptr, 0);
-//                                 _reaction_components[undefIdx].molecule.reset();
-//                                 // mark the component as merged
-//                                 _components[mol_orig_idx].idx = _components[closest_idx].idx;
-//                                 csb.indexes.clear();
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
 
 void ReactionMultistepDetector::collectUndefinedDistances(const std::vector<std::pair<size_t, Rect2f>>& component_bboxes,
                                                           const std::vector<std::pair<size_t, Rect2f>>& undef_component_bboxes,
@@ -1579,7 +1477,9 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
         bool reverseReactionOrder = arrow.getArrowType() == ReactionArrowObject::ERetrosynthetic;
 
         if (reverseReactionOrder)
+        {
             rxn.setIsRetrosyntetic();
+        }
 
         for (int i = 0; i < rxn.meta().getMetaCount(SimpleTextObject::CID); ++i)
         {
@@ -1651,67 +1551,6 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
                 break;
             }
         }
-
-        // map undefined components
-        // for (auto [idx, side] : undefined_components)
-        //{
-        //    auto& rc = _reaction_components[idx];
-        //    auto& cmol = *rc.molecule;
-
-        //    int comp_idx = _merged_components[idx].mapped_idx;
-
-        //    switch (side)
-        //    {
-        //    case KReactantArea:
-        //        if (reactant_components.size())
-        //        {
-        //            int min_idx = -1;
-        //            float min_dist = 0;
-        //            for (auto [rc_idx, mol_idx] : reactant_components)
-        //            {
-        //                auto rcm_idx = _merged_components[rc_idx].mapped_idx;
-        //                if (rcm_idx > -1)
-        //                {
-        //                    auto& dm = _mol_distances[comp_idx].distances_map;
-        //                    auto it = dm.find(rcm_idx);
-        //                    if (it != dm.end() && (min_idx < 0 || it->second < min_dist))
-        //                    {
-        //                        min_idx = mol_idx;
-        //                        min_dist = it->second;
-        //                    }
-        //                }
-        //            }
-        //            rxn.getBaseMolecule(min_idx).mergeWithMolecule(*rc.molecule, nullptr, 0);
-        //        }
-        //        else
-        //            rxn.addReactantCopy(*rc.molecule, 0, 0);
-        //        break;
-        //    case KProductArea:
-        //        if (product_components.size())
-        //        {
-        //            int min_idx = -1;
-        //            float min_dist = 0;
-        //            for (auto [pc_idx, mol_idx] : product_components)
-        //            {
-        //                auto pcm_idx = _merged_components[pc_idx].mapped_idx;
-        //                if (pcm_idx > -1)
-        //                {
-        //                    auto& dm = _mol_distances[comp_idx].distances_map;
-        //                    auto it = dm.find(pcm_idx);
-        //                    if (it != dm.end() && (min_idx < 0 || it->second < min_dist))
-        //                    {
-        //                        min_idx = mol_idx;
-        //                        min_dist = it->second;
-        //                    }
-        //                }
-        //            }
-        //            rxn.getBaseMolecule(min_idx).mergeWithMolecule(*rc.molecule, nullptr, 0);
-        //        }
-        //        else
-        //            rxn.addProductCopy(*rc.molecule, 0, 0);
-        //        break;
-        //    }
-        //}
 
         for (const auto& comp : _reaction_components)
         {
