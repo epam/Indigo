@@ -874,8 +874,9 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                                     else
                                     {
                                         Molecule& amol = mol.asMolecule();
-                                        bondID = amol.addBond(superAtomID, neighboringAtomID, amol.getBondOrder(neighboringBondID));
+                                        bondID = amol.addBond(neighboringAtomID, superAtomID, amol.getBondOrder(neighboringBondID));
                                         amol.setEdgeTopology(bondID, amol.getBondTopology(neighboringBondID));
+                                        amol.setBondDirection(bondID, mol.getBondDirection(neighboringBondID));
                                     }
                                     if (_bondMappingInv.find(bondID) != _bondMappingInv.end())
                                         _bondMappingInv.erase(bondID);

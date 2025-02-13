@@ -5006,8 +5006,16 @@ void BaseMolecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std
     for (int i = tgroups.begin(); i != tgroups.end(); i = tgroups.next(i))
     {
         auto& tg = tgroups.getTGroup(i);
-        std::string tname = tg.tgroup_name.size() ? tg.tgroup_name.ptr() : monomerAlias(tg);
-        templates_map.emplace(std::make_pair(tname, tg.tgroup_class.ptr()), std::ref(tg));
+        if (tg.tgroup_name.size() > 0)
+        {
+            templates_map.emplace(std::make_pair(tg.tgroup_name.ptr(), tg.tgroup_class.ptr()), std::ref(tg));
+            if (tg.tgroup_alias.size() > 0)
+                templates_map.emplace(std::make_pair(tg.tgroup_alias.ptr(), tg.tgroup_class.ptr()), std::ref(tg));
+        }
+        else
+        {
+            templates_map.emplace(std::make_pair(monomerAlias(tg), tg.tgroup_class.ptr()), std::ref(tg));
+        }
     }
 }
 

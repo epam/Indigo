@@ -23,5 +23,6 @@ peptides.ket:SUCCEED
 removed_phosphate.ket:SUCCEED
 rna_mod.ket:SUCCEED
 suplabel.ket:SUCCEED
+tadfile.ket:SUCCEED
 taspoglutide.ket:SUCCEED
 thymine.ket:SUCCEED

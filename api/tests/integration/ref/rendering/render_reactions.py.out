@@ -15,3 +15,5 @@ issue 2512 two short equilibrium half arrows
 issue_2512.png rendering status: OK
 issue 2513 elliptical-arc-arrow render error
 issue_2513.png rendering status: OK
+issue 2741 missing stereochemistry
+missing_stereochemistry_2741.png rendering status: OK

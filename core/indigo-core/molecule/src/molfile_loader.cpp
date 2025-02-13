@@ -1411,14 +1411,14 @@ void MolfileLoader::_readCtab2000()
                             id[3] = 0;
                             throw Error("Undefined Sgroup connectivity: '%s'", id);
                         }
-                        if (id[2] == '\n')
-                        {
-                            if (n != 0)
-                                throw Error("Unexpected end of M SCN");
-                            else
-                                // In some molfiles last space is not written
-                                need_skip_line = false;
-                        }
+                    }
+                    if (id[2] == '\n')
+                    {
+                        if (n != 0)
+                            throw Error("Unexpected end of M SCN");
+                        else
+                            // In some molfiles last space is not written
+                            need_skip_line = false;
                     }
                 }
                 if (need_skip_line)
