@@ -341,6 +341,43 @@ M  END
     ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 0);
 }
 
+TEST_F(IndigoCoreFormatsTest, mol_loader_issue_2732)
+{
+    Molecule t_mol;
+
+    const char* mol = R"(
+  ACCLDraw01172516572D
+
+  5  4  0  0  0  0  0  0  0  0999 V2000
+    4.4375   -4.3750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    5.1538   -4.7885    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    5.8700   -4.3750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    5.1538   -4.7885    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    5.1538   -4.7885    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  2  3  1  0  0  0  0
+  4  5  1  0  0  0  0
+  2  5  1  0  0  0  0
+  4  1  1  0  0  0  0
+M  STY  1   1 MUL
+M  SLB  1   1   1
+M  SCN  1   1 HT
+M  SAL   1  3   2   4   5
+M  SBL   1  2   1   4
+M  SPA   1  1   2
+M  SDI   1  4    4.7956   -4.9953    4.7956   -4.1682
+M  SDI   1  4    5.5119   -4.1682    5.5119   -4.9953
+M  SMT   1 3
+M  END
+)";
+    loadMolecule(mol, t_mol);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 1);
+    SGroup& sg = t_mol.sgroups.getSGroup(0);
+    ASSERT_EQ(sg.atoms.size(), 3);
+    ASSERT_EQ(sg.atoms.at(0), 1);
+    ASSERT_EQ(sg.atoms.at(1), 3);
+    ASSERT_EQ(sg.atoms.at(2), 4);
+}
+
 TEST_F(IndigoCoreFormatsTest, smarts_load_save)
 {
     QueryMolecule q_mol;
