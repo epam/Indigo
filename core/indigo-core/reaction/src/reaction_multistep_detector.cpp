@@ -784,7 +784,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
             {
                 auto& csb = _component_summ_blocks[index_cs];
                 std::vector<Vec2f> csb_bbox = {csb.bbox.leftTop(), csb.bbox.rightTop(), csb.bbox.rightBottom(), csb.bbox.leftBottom(), csb.bbox.leftTop()};
-                if (csb.bbox.rayIntersectsRect(arr_end, arr_begin) /* || (arrow_count == 1 && convexPolygonsIntersect(csb_bbox, right_arrow_zone))*/)
+                if (csb.bbox.rayIntersectsRect(arr_end, arr_begin) || (arrow_count == 1 && convexPolygonsIntersect(csb_bbox, right_arrow_zone)))
                 {
                     float dist = csb.bbox.pointDistance(arr_end);
                     if (min_dist_prod < 0 || dist < min_dist_prod)
@@ -793,7 +793,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
                         idx_cs_min_prod = index_cs;
                     }
                 }
-                else if (csb.bbox.rayIntersectsRect(arr_begin, arr_end) /* || (arrow_count == 1 && convexPolygonsIntersect(csb_bbox, left_arrow_zone))*/)
+                else if (csb.bbox.rayIntersectsRect(arr_begin, arr_end) || (arrow_count == 1 && convexPolygonsIntersect(csb_bbox, left_arrow_zone)))
                 {
                     float dist = csb.bbox.pointDistance(arr_begin);
                     if (min_dist_reac < 0 || dist < min_dist_reac)
