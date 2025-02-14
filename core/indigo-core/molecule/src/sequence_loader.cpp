@@ -169,6 +169,8 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
 
         if (start_char)
         {
+            if (ch == ' ' || ch == '\t')
+                continue; // skip leading whitespaces
             if (ch >= NUM_BEGIN && ch < NUM_END)
             {
                 isGenBankPept = true;
@@ -2015,6 +2017,8 @@ void SequenceLoader::loadSequence(KetDocument& document, SeqType seq_type)
 
         if (start_char)
         {
+            if (ch == ' ' || ch == '\t')
+                continue; // skip leading whitespaces
             if (isdigit(ch))
                 isGenBankPept = true;
             start_char = false;
