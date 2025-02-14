@@ -25,6 +25,7 @@ ref_path = joinPathPy("ref/", __file__)
 files = [
     {"file": "1844-gen_bank", "seq_type": "PEPTIDE"},
     {"file": "1844-gen_pept", "seq_type": "PEPTIDE"},
+    {"file": "2763-gen_spaces", "seq_type": "DNA"},
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -36,6 +37,8 @@ for infile in files:
     mol = indigo.loadSequenceFromFile(
         os.path.join(root, filename), infile["seq_type"], lib
     )
+    # with open(os.path.join(ref_path, filename), "w") as file:
+    #     file.write(mol.sequence(lib))
     with open(os.path.join(ref_path, filename), "r") as file:
         seq_ref = file.read()
     seq = mol.sequence(lib)
