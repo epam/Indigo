@@ -43,7 +43,7 @@ namespace indigo
     public:
         DECL_ERROR;
 
-        ReactionJsonLoader(rapidjson::Document& ket);
+        ReactionJsonLoader(rapidjson::Document& ket, const LayoutOptions& options);
         ~ReactionJsonLoader();
 
         void loadReaction(BaseReaction& rxn);
@@ -59,6 +59,7 @@ namespace indigo
         void parseOneArrowReaction(BaseReaction& rxn);
         rapidjson::Value _molecule;
         MoleculeJsonLoader _loader;
+        const LayoutOptions& _layout_options;
 
         // Reaction* _prxn;
         // QueryReaction* _pqrxn;

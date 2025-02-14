@@ -361,6 +361,7 @@ void ReactionLayout::make()
             molLayout.max_iterations = max_iterations;
             molLayout.layout_orientation = layout_orientation;
             molLayout.bond_length = bond_length;
+            molLayout.multiple_distance = bond_length;
             molLayout.make();
         }
     }
@@ -407,6 +408,26 @@ void ReactionLayout::make()
         processReactionElements(_r.reactantBegin(), _r.reactantEnd(), &BaseReaction::reactantNext);
     else
         processReactionElements(_r.productBegin(), _r.productEnd(), &BaseReaction::productNext);
+
+    if (_r.undefinedCount())
+    {
+        Metalayout::LayoutLine& line_undef = _ml.newLine();
+        for (int i = _r.undefinedBegin(); i < _r.undefinedEnd(); i = _r.undefinedNext(i))
+        {
+            Rect2f bbox;
+            _r.getBaseMolecule(i).getBoundingBox(bbox);
+            if (i != _r.undefinedBegin())
+            {
+                if (bbox.height() > _ml.verticalIntervalFactor)
+                    _ml.verticalIntervalFactor = bbox.height();
+                _pushSpace(line_undef, reaction_margin_size);
+            }
+            else
+                _ml.verticalIntervalFactor = bbox.height();
+            _pushMol(line_undef, i, true);
+        }
+        _ml.verticalIntervalFactor += reaction_margin_size + LayoutOptions::DEFAULT_BOND_LENGTH * 2;
+    }
 
     _ml.bondLength = bond_length;
     _ml.reactionComponentMarginSize = reaction_margin_size;

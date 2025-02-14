@@ -300,7 +300,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
                     {
                         if (data.HasMember("root") && data["root"].HasMember("nodes"))
                         {
-                            ReactionJsonLoader loader(data);
+                            ReactionJsonLoader loader(data, layout_options);
                             loader.stereochemistry_options = stereochemistry_options;
                             loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
                             loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;

@@ -264,7 +264,7 @@ void MoleculeLayoutGraphSimple::makeLayoutSubgraph(MoleculeLayoutGraph& graph, F
     }
 }
 
-void MoleculeLayoutGraph::layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing)
+void MoleculeLayoutGraph::layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing, float multiple_distance)
 {
     if (molecule.vertexCount() == 0)
         return;
@@ -276,7 +276,7 @@ void MoleculeLayoutGraph::layout(BaseMolecule& molecule, float bond_length, cons
 
     _molecule = &molecule;
     if (n_components > 1)
-        _layoutMultipleComponents(molecule, respect_existing, filter, bond_length);
+        _layoutMultipleComponents(molecule, respect_existing, filter, bond_length, multiple_distance < 0 ? bond_length * 2 : multiple_distance);
     else
         _layoutSingleComponent(molecule, respect_existing, filter, bond_length);
 }
@@ -350,7 +350,8 @@ int MoleculeLayoutGraphSimple::_pattern_cmp2(const PatternLayout& p1, int n_v, i
     return n_e - p1.edgeCount();
 }
 
-void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length)
+void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length,
+                                                    float multiple_distance)
 {
     QS_DEF(Array<Vec2f>, src_layout);
     QS_DEF(Array<int>, molecule_edge_mapping);
@@ -474,7 +475,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
                         copyCoordsFromComponent(component, shift);
                 }
 
-                row_bottom += fixed_comps_bbox.height() + 2 * bond_length;
+                row_bottom += fixed_comps_bbox.height() + multiple_distance;
             }
         }
 
@@ -496,13 +497,13 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
             // first column in row - add previous row height+space to row_bottom
             if (col == 0 && row > 0)
             {
-                row_bottom += row_height + 2 * bond_length;
+                row_bottom += row_height + multiple_distance;
                 row_height = 0.f;
                 column_left = 0.f;
             }
             // Add space between columns
             if (col > 0)
-                column_left += 2 * bond_length;
+                column_left += multiple_distance;
 
             // Component shifting
             Rect2f bbox;
