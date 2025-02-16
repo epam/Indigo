@@ -150,7 +150,8 @@ namespace indigo
         void cloneLayoutGraph(MoleculeLayoutGraph& other, Array<int>* mapping);
         void copyLayoutTo(MoleculeLayoutGraph& other, const Array<int>& mapping) const;
 
-        virtual void layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing, float multiple_distance = -1);
+        virtual void layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing,
+                            std::optional<Vec2f> multiple_distance = std::nullopt);
 
         const BaseMolecule* getMolecule(const int** molecule_edge_mapping) const
         {
@@ -347,7 +348,8 @@ namespace indigo
         // make tree of biconnected components (tree[i] - component incoming to vertex i or -1)
         static void _makeComponentsTree(BiconnectedDecomposer& decon, PtrArray<MoleculeLayoutGraph>& components, Array<int>& tree);
 
-        void _layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length, float multiple_distance);
+        void _layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length,
+                                       std::optional<Vec2f> multiple_distance = std::nullopt);
         void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
 
     protected:

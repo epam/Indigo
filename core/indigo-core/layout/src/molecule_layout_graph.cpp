@@ -264,7 +264,7 @@ void MoleculeLayoutGraphSimple::makeLayoutSubgraph(MoleculeLayoutGraph& graph, F
     }
 }
 
-void MoleculeLayoutGraph::layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing, float multiple_distance)
+void MoleculeLayoutGraph::layout(BaseMolecule& molecule, float bond_length, const Filter* filter, bool respect_existing, std::optional<Vec2f> multiple_distance)
 {
     if (molecule.vertexCount() == 0)
         return;
@@ -276,7 +276,7 @@ void MoleculeLayoutGraph::layout(BaseMolecule& molecule, float bond_length, cons
 
     _molecule = &molecule;
     if (n_components > 1)
-        _layoutMultipleComponents(molecule, respect_existing, filter, bond_length, multiple_distance < 0 ? bond_length * 2 : multiple_distance);
+        _layoutMultipleComponents(molecule, respect_existing, filter, bond_length, multiple_distance);
     else
         _layoutSingleComponent(molecule, respect_existing, filter, bond_length);
 }
@@ -351,7 +351,7 @@ int MoleculeLayoutGraphSimple::_pattern_cmp2(const PatternLayout& p1, int n_v, i
 }
 
 void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length,
-                                                    float multiple_distance)
+                                                    std::optional<Vec2f> multiple_distance)
 {
     QS_DEF(Array<Vec2f>, src_layout);
     QS_DEF(Array<int>, molecule_edge_mapping);
@@ -475,7 +475,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
                         copyCoordsFromComponent(component, shift);
                 }
 
-                row_bottom += fixed_comps_bbox.height() + multiple_distance;
+                row_bottom += fixed_comps_bbox.height() + (multiple_distance.has_value() ? multiple_distance.value().y : bond_length * 2);
             }
         }
 
@@ -497,17 +497,24 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
             // first column in row - add previous row height+space to row_bottom
             if (col == 0 && row > 0)
             {
-                row_bottom += row_height + multiple_distance;
+                row_bottom += row_height + (multiple_distance.has_value() ? multiple_distance.value().y : bond_length * 2);
                 row_height = 0.f;
                 column_left = 0.f;
             }
             // Add space between columns
             if (col > 0)
-                column_left += multiple_distance;
+                column_left += (multiple_distance.has_value() ? multiple_distance.value().x : bond_length * 2);
 
             // Component shifting
             Rect2f bbox;
             component.getBoundingBox(bbox);
+
+            if (multiple_distance.has_value())
+            {
+                auto bw_size = Vec2f(bbox.width() < bond_length ? bond_length : bbox.width(), bbox.height() < bond_length ? bond_length : bbox.height());
+                bbox = Rect2f(bbox.center() - bw_size / 2, bbox.center() + bw_size / 2);
+            }
+
             Vec2f shift = bbox.leftBottom();
             shift.negate();
             shift.add(Vec2f(column_left, row_bottom));

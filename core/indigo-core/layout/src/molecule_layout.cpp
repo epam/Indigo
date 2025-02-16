@@ -27,7 +27,7 @@ using namespace indigo;
 IMPL_ERROR(MoleculeLayout, "molecule_layout");
 
 MoleculeLayout::MoleculeLayout(BaseMolecule& molecule, bool smart_layout)
-    : _molecule(molecule), _smart_layout(smart_layout), respect_existing_layout(false), multiple_distance(-1)
+    : _molecule(molecule), _smart_layout(smart_layout), respect_existing_layout(false), multiple_distance(std::nullopt)
 {
     _hasMulGroups = _molecule.sgroups.getSGroupCount(SGroup::SG_TYPE_MUL) > 0;
     _init(smart_layout);

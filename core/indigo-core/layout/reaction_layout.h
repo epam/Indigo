@@ -41,6 +41,7 @@ namespace indigo
         explicit ReactionLayout(BaseReaction& r, bool smart_layout, const LayoutOptions& options);
 
         static constexpr float DEFAULT_HOR_INTERVAL_FACTOR = 1.4f;
+        const Vec2f MOL_COMPONENT_INTERVAL{0.5f, 0.5f};
 
         void make();
 
