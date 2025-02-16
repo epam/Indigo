@@ -1021,15 +1021,17 @@ void ReactionMultistepDetector::mergeUndefinedComponents()
     }
 
     bool has_merges = false;
+    std::vector<MOL_DISTANCES_DESC> undef_distances;
+    std::vector<MOL_DISTANCES_DESC> undef_comp_distances;
+    std::vector<MERGE_CANDIDATE> merge_list_candidates;
+
     do
     {
-        std::vector<MOL_DISTANCES_DESC> undef_distances;
-        std::vector<MOL_DISTANCES_DESC> undef_comp_distances;
+        merge_list_candidates.clear();
         collectUndefinedDistances(component_bboxes, undef_component_bboxes, undef_distances, undef_comp_distances);
 
         // find minimal distance to other undefined components
         std::optional<MERGE_CANDIDATE> undef_min_dist;
-        std::vector<MERGE_CANDIDATE> merge_list_candidates;
 
         // iterate over all undefined components
         for (size_t i = 0; i < undef_component_bboxes.size(); ++i)
