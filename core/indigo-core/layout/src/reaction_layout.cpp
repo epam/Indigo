@@ -426,7 +426,7 @@ void ReactionLayout::make()
                 _ml.verticalIntervalFactor = bbox.height();
             _pushMol(line_undef, i, true);
         }
-        _ml.verticalIntervalFactor += reaction_margin_size + LayoutOptions::DEFAULT_BOND_LENGTH * 2;
+        _ml.verticalIntervalFactor += reaction_margin_size + LayoutOptions::DEFAULT_BOND_LENGTH * 2.5f;
     }
 
     _ml.bondLength = bond_length;
