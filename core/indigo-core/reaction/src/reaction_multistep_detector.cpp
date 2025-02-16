@@ -347,14 +347,14 @@ std::vector<Vec2f> ReactionMultistepDetector::getArrowZone(const Vec2f& tail, co
     auto dir = head - tail;
     float length = dir.length();
     dir.normalize();
-    Vec2f nT = {-dir.y, dir.x};
-    Vec2f nB = {dir.y, -dir.x};
+    Vec2f nB = {-dir.y, dir.x};
+    Vec2f nT = {dir.y, -dir.x};
     std::vector<Vec2f> result;
     Vec2f pos = head + nT * ARROW_DETECTION_DISTANCE;
     result.push_back(pos);
     pos += dir * (ARROW_DETECTION_DISTANCE * 2 + _reaction_margin_size);
     result.push_back(pos);
-    pos += nB;
+    pos += nB * ARROW_DETECTION_DISTANCE * 2;
     result.push_back(pos);
     pos -= dir * (ARROW_DETECTION_DISTANCE * 2 + _reaction_margin_size);
     result.push_back(pos);
