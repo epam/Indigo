@@ -391,13 +391,10 @@ namespace indigo
             if (intersects(other))
                 return 0.0f;
 
-            float dx = std::max(other.left() - right(), left() - other.right());
-            float dy = std::max(other.bottom() - top(), bottom() - other.top());
+            float dx = std::max(0.0f, std::max(other.left() - right(), left() - other.right()));
+            float dy = std::max(0.0f, std::max(other.bottom() - top(), bottom() - other.top()));
 
-            dx = std::max(0.0f, dx);
-            dy = std::max(0.0f, dy);
-
-            return HYPOT(dx, dy);
+            return (dx > 0.0f && dy > 0.0f) ? HYPOT(dx, dy) : (dx + dy);
         }
 
         inline bool rayIntersectsRect(const Vec2f& begin, const Vec2f& end)
@@ -840,9 +837,8 @@ namespace indigo
 
     inline bool isPointOnSegment(const Vec2f& p, const Vec2f& a, const Vec2f& b)
     {
-        const float eps = 1e-7f;
         float c = Vec2f::cross(p - a, b - a);
-        if (std::fabs(c) > eps)
+        if (std::fabs(c) > EPSILON)
             return false;
         float d = (p - a) * (b - a);
         if (d < 0)
