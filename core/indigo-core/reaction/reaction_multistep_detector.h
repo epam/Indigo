@@ -130,7 +130,7 @@ namespace indigo
 
         typedef std::pair<float, int> FLOAT_INT_PAIR;
         typedef std::vector<FLOAT_INT_PAIR> FLOAT_INT_PAIRS;
-        const Vec2f PLUS_BBOX_SHIFT = {0.9f, 0.9f};
+        const Vec2f PLUS_BBOX_SHIFT = {1.0f, 1.0f};
         const Vec2f ARROW_BBOX_SHIFT = {0.0f, 0.9f};
         const float PLUS_DETECTION_DISTANCE = LayoutOptions::DEFAULT_BOND_LENGTH * 2.0f;
         const float ARROW_DETECTION_DISTANCE = LayoutOptions::DEFAULT_BOND_LENGTH * 2.0f;
