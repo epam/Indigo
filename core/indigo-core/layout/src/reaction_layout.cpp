@@ -436,7 +436,7 @@ void ReactionLayout::make()
             _r.getBaseMolecule(i).getBoundingBox(bbox, MIN_MOL_SIZE);
             Metalayout::LayoutLine& line_undef = _ml.newLine();
             line_undef.offset = first_margin - bbox.width();
-            if( _r.reactantsCount() == 0 )
+            if (_r.reactantsCount() == 0)
                 line_undef.offset -= last_margin;
             _pushMol(line_undef, i, false);
         }
