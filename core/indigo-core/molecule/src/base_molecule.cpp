@@ -4775,6 +4775,7 @@ void BaseMolecule::getBoundingBox(float font_size, LABEL_MODE label_mode, Rect2f
     bbox = Rect2f(a, b);
 }
 
+// Andrew's monotone chain convex hull algorithm
 std::vector<Vec2f> BaseMolecule::getConvexHull(const Vec2f& min_box) const
 {
     std::vector<Vec2f> vertices;

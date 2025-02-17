@@ -415,7 +415,7 @@ void ReactionLayout::make()
     if (_r.undefinedCount())
     {
         _ml.verticalIntervalFactor += reaction_margin_size + DEFAULT_VER_INTERVAL_FACTOR;
-        float first_margin = 0;
+        float first_margin = 0, last_margin = 0;
 
         if (_r.reactantBegin() != _r.reactantEnd())
         {
@@ -427,7 +427,7 @@ void ReactionLayout::make()
         {
             Rect2f bb;
             _r.getBaseMolecule(_r.productBegin()).getBoundingBox(bb);
-            first_margin = bb.width();
+            last_margin = bb.width();
         }
 
         for (int i = _r.undefinedBegin(); i < _r.undefinedEnd(); i = _r.undefinedNext(i))
@@ -435,9 +435,10 @@ void ReactionLayout::make()
             Rect2f bbox;
             _r.getBaseMolecule(i).getBoundingBox(bbox, MIN_MOL_SIZE);
             Metalayout::LayoutLine& line_undef = _ml.newLine();
-            line_undef.offset = _r.reactantsCount() ? (bbox.width() < first_margin ? (first_margin - bbox.width()) : (bbox.width() - first_margin))
-                                                    : -bbox.width() - reaction_margin_size * 2 - default_arrow_size - first_margin;
-            _pushMol(line_undef, i, true);
+            line_undef.offset = first_margin - bbox.width();
+            if( _r.reactantsCount() == 0 )
+                line_undef.offset -= last_margin;
+            _pushMol(line_undef, i, false);
         }
     }
 

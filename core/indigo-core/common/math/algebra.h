@@ -30,8 +30,8 @@
 
 #define SQR(x) ((x) * (x))
 
-#define DEG2RAD(x) ((x)*M_PI / 180)
-#define RAD2DEG(x) ((x)*180 / M_PI)
+#define DEG2RAD(x) ((x) * M_PI / 180)
+#define RAD2DEG(x) ((x) * 180 / M_PI)
 #define HYPOT(a, b) (sqrt((a) * (a) + (b) * (b)))
 
 namespace indigo
@@ -906,6 +906,7 @@ namespace indigo
         return std::abs(area) * 0.5f;
     }
 
+    // Separating axis theorem
     inline bool convexPolygonsIntersect(const std::vector<Vec2f>& poly1, const std::vector<Vec2f>& poly2)
     {
         auto project = [](const std::vector<Vec2f>& poly, const Vec2f& axis) {
@@ -945,6 +946,7 @@ namespace indigo
         return {s.x + t * dx1, s.y + t * dy1};
     }
 
+    // Sutherland–Hodgman algorithm
     inline std::vector<Vec2f> convexClip(const std::vector<Vec2f>& subject, const std::vector<Vec2f>& clip)
     {
         std::vector<Vec2f> result = subject;
@@ -1061,8 +1063,8 @@ namespace indigo
         Vec2f dir = p2 - p1;
         for (size_t i = 0, n = poly.size(); i < n; ++i)
         {
-            Vec2f A = poly[i];
-            Vec2f B = poly[(i + 1) % n];
+            const Vec2f& A = poly[i];
+            const Vec2f& B = poly[(i + 1) % n];
             Vec2f a = A - p1;
             Vec2f b = B - p1;
             Vec2f s = b - a;

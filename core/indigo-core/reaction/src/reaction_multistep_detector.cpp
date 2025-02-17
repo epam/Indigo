@@ -497,6 +497,7 @@ std::map<int, std::unordered_set<int>> ReactionMultistepDetector::findSpecialZon
     return result;
 }
 
+// Find in which detection zone the molecule is primarily located.
 std::optional<std::pair<int, int>> ReactionMultistepDetector::findMaxSpecialZone(size_t mol_idx, std::map<int, std::set<int>>& zones)
 {
     std::optional<std::pair<int, int>> result{};
@@ -596,12 +597,9 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
         // collect surrounding zones for both molecules
         std::map<int, std::set<int>> other_zones1;
         std::map<int, std::set<int>> other_zones2;
-        std::map<int, std::set<int>> comm_zones;
 
         auto zone1 = findMaxSpecialZone(mol_idx1, other_zones1);
         auto zone2 = findMaxSpecialZone(mol_idx2, other_zones2);
-        std::set_intersection(other_zones1.begin(), other_zones1.end(), other_zones2.begin(), other_zones2.end(), std::inserter(comm_zones, comm_zones.begin()),
-                              [](auto& a, auto& b) { return a.first < b.first; });
 
         // no zone - no reason to merge
         if (zone1.has_value())
@@ -618,6 +616,10 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
                 // if both molecules are on the same zone - check if they are mergeable
 
                 // check if there are opposite sections
+                std::map<int, std::set<int>> comm_zones;
+                std::set_intersection(other_zones1.begin(), other_zones1.end(), other_zones2.begin(), other_zones2.end(),
+                                      std::inserter(comm_zones, comm_zones.begin()), [](auto& a, auto& b) { return a.first < b.first; });
+
                 for (auto& cz : comm_zones)
                 {
                     auto it_oz2 = other_zones2.find(cz.first);
@@ -625,6 +627,7 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
                     {
                         for (auto& section : cz.second)
                         {
+                            // meaning of section ^ 1: the sections are ELeft = 0, ERight, ETop, EBottom. ^1 switches between ELeft and ERight, ETop and EBottom
                             if ((_zones[cz.first].zone_type == ZoneType::EPathWay && section > 1) || it_oz2->second.count(section ^ 1))
                                 return std::nullopt;
                         }
@@ -661,9 +664,7 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
         case ZoneType::EArrow:
             if ((doesRayIntersectPolygon(coords[0], coords[1], hull1) && doesRayIntersectPolygon(coords[0], coords[1], hull2)) ||
                 (doesRayIntersectPolygon(coords[1], coords[0], hull1) && doesRayIntersectPolygon(coords[1], coords[0], hull2)))
-            {
                 return zone1 ? zone1 : current_zone;
-            }
             break;
         case ZoneType::EPathWay: {
             auto c_it = coords.begin();
@@ -1538,7 +1539,10 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
                     {
                         std::array<int, KProductArea + 1> sides{};
                         auto side = getMoleculeSide(arrow, *rc.molecule, sides);
-                        if (side > -1 && (sides[KReagentUpArea] || sides[KReagentDownArea]))
+                        int rem_up_count = rc.molecule->vertexCount() - sides[KReagentUpArea];
+                        int rem_down_count = rc.molecule->vertexCount() - sides[KReagentDownArea];
+
+                        if (side > -1 && (sides[KReagentUpArea] > rem_up_count || sides[KReagentDownArea] > rem_down_count))
                             rxn.addCatalystCopy(*rc.molecule, 0, 0);
                         else
                             rxn.addUndefinedCopy(*rc.molecule, 0, 0);
