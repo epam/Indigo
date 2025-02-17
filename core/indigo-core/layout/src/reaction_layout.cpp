@@ -385,11 +385,12 @@ void ReactionLayout::make()
     if (_r.isRetrosyntetic())
         processReactionElements(_r.productBegin(), _r.productEnd(), &BaseReaction::productNext);
     else
+    {
         processReactionElements(_r.reactantBegin(), _r.reactantEnd(), &BaseReaction::reactantNext);
+    }
 
     if (_r.catalystCount())
     {
-
         _pushSpace(line, reaction_margin_size);
         _pushSpace(line, reaction_margin_size);
         for (int i = _r.catalystBegin(); i < _r.catalystEnd(); i = _r.catalystNext(i))
@@ -405,28 +406,33 @@ void ReactionLayout::make()
         _pushSpace(line, default_arrow_size + reaction_margin_size * 2);
 
     if (_r.isRetrosyntetic())
+    {
         processReactionElements(_r.reactantBegin(), _r.reactantEnd(), &BaseReaction::reactantNext);
+    }
     else
         processReactionElements(_r.productBegin(), _r.productEnd(), &BaseReaction::productNext);
 
     if (_r.undefinedCount())
     {
-        Metalayout::LayoutLine& line_undef = _ml.newLine();
+        _ml.verticalIntervalFactor += reaction_margin_size + DEFAULT_VER_INTERVAL_FACTOR;
+        float first_margin = 0;
+
+        if (_r.reactantBegin() != _r.reactantEnd())
+        {
+            Rect2f bb;
+            _r.getBaseMolecule(_r.reactantBegin()).getBoundingBox(bb);
+            first_margin = bb.width();
+        }
+
         for (int i = _r.undefinedBegin(); i < _r.undefinedEnd(); i = _r.undefinedNext(i))
         {
             Rect2f bbox;
-            _r.getBaseMolecule(i).getBoundingBox(bbox);
-            if (i != _r.undefinedBegin())
-            {
-                if (bbox.height() > _ml.verticalIntervalFactor)
-                    _ml.verticalIntervalFactor = bbox.height();
-                _pushSpace(line_undef, reaction_margin_size);
-            }
-            else
-                _ml.verticalIntervalFactor = bbox.height();
+            _r.getBaseMolecule(i).getBoundingBox(bbox, MIN_MOL_SIZE);
+            float right_margin = bbox.width() < first_margin ? (first_margin - bbox.width()) / 2 : first_margin - bbox.width();
+            Metalayout::LayoutLine& line_undef = _ml.newLine();
+            _pushSpace(line_undef, right_margin);
             _pushMol(line_undef, i, true);
         }
-        _ml.verticalIntervalFactor += reaction_margin_size + LayoutOptions::DEFAULT_BOND_LENGTH * 2.5f;
     }
 
     _ml.bondLength = bond_length;
