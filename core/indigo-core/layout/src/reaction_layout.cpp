@@ -423,14 +423,20 @@ void ReactionLayout::make()
             _r.getBaseMolecule(_r.reactantBegin()).getBoundingBox(bb);
             first_margin = bb.width();
         }
+        else if (_r.productBegin() != _r.productEnd())
+        {
+            Rect2f bb;
+            _r.getBaseMolecule(_r.productBegin()).getBoundingBox(bb);
+            first_margin = bb.width();
+        }
 
         for (int i = _r.undefinedBegin(); i < _r.undefinedEnd(); i = _r.undefinedNext(i))
         {
             Rect2f bbox;
             _r.getBaseMolecule(i).getBoundingBox(bbox, MIN_MOL_SIZE);
-            float right_margin = bbox.width() < first_margin ? (first_margin - bbox.width()) / 2 : first_margin - bbox.width();
             Metalayout::LayoutLine& line_undef = _ml.newLine();
-            _pushSpace(line_undef, right_margin);
+            line_undef.offset = _r.reactantsCount() ? (bbox.width() < first_margin ? (first_margin - bbox.width()) : (bbox.width() - first_margin))
+                                                    : -bbox.width() - reaction_margin_size * 2 - default_arrow_size - first_margin;
             _pushMol(line_undef, i, true);
         }
     }
