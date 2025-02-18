@@ -38,7 +38,7 @@ Metalayout::LayoutLine::~LayoutLine()
 void Metalayout::LayoutLine::clear()
 {
     items.clear();
-    bottom_height = top_height = height = width = 0;
+    offset = bottom_height = top_height = height = width = 0;
 }
 
 IMPL_ERROR(Metalayout, "metalayout");
@@ -93,7 +93,7 @@ void Metalayout::process()
     for (int i = 0; i < _layout.size(); ++i)
     {
         LayoutLine& line = _layout[i];
-        pos.x = 0;
+        pos.x = line.offset;
 
         for (int j = 0; j < line.items.size(); ++j)
         {

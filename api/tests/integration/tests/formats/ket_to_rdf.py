@@ -39,6 +39,14 @@ files = [
     "pathway10",
     "pathway11",
     "pathway12",
+    "pathway_merge1",
+    "pathway_merge2",
+    "multi_merge1",
+    "multi_merge2",
+    "multi_merge3",
+    "multi_merge4",
+    "multi_merge5",
+    "multi_merge6",
 ]
 
 files.sort()
@@ -64,7 +72,7 @@ for filename in files:
     rdf = buffer.toString()
 
     # with open(os.path.join(ref_path, filename) + ".rdf", "w") as file:
-    #     file.write(rdf)
+    #    file.write(rdf)
 
     with open(os.path.join(ref_path, filename) + ".rdf", "r") as file:
         rdf_ref = file.read()

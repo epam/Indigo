@@ -26,7 +26,8 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeLayout, "molecule_layout");
 
-MoleculeLayout::MoleculeLayout(BaseMolecule& molecule, bool smart_layout) : _molecule(molecule), _smart_layout(smart_layout), respect_existing_layout(false)
+MoleculeLayout::MoleculeLayout(BaseMolecule& molecule, bool smart_layout)
+    : _molecule(molecule), _smart_layout(smart_layout), respect_existing_layout(false), multiple_distance(std::nullopt)
 {
     _hasMulGroups = _molecule.sgroups.getSGroupCount(SGroup::SG_TYPE_MUL) > 0;
     _init(smart_layout);
@@ -442,6 +443,7 @@ void MoleculeLayout::make()
                     layout.max_iterations = max_iterations;
                     layout.layout_orientation = layout_orientation;
                     layout.bond_length = bond_length;
+                    layout.multiple_distance = multiple_distance;
                     layout.make();
                 }
                 _pushMol(line, mol); // add molecule to metalayout AFTER its own layout is determined
@@ -489,10 +491,10 @@ void MoleculeLayout::_makeLayout()
 
         Filter new_filter(fixed_vertices.ptr(), Filter::NEQ, 1);
 
-        _layout_graph->layout(*_bm, bond_length, &new_filter, respect_existing_layout);
+        _layout_graph->layout(*_bm, bond_length, &new_filter, respect_existing_layout, multiple_distance);
     }
     else
-        _layout_graph->layout(*_bm, bond_length, 0, respect_existing_layout);
+        _layout_graph->layout(*_bm, bond_length, 0, respect_existing_layout, multiple_distance);
 }
 
 void MoleculeLayout::_updateRepeatingUnits()
