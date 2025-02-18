@@ -201,7 +201,7 @@ void Molecule::_validateVertexConnectivity(int idx, bool validate)
             _atoms[idx].explicit_valence = false;
             _valence[idx] = -1;
         }
-        if (_radicals.size() > idx)
+        if (_radicals.size() > idx && _radicals[idx] <= 0)
         {
             _radicals[idx] = -1;
         }
