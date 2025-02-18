@@ -336,7 +336,8 @@ void ReactionMultistepDetector::addPlusZones(const Vec2f& pos)
     top.push_back(bbox.rightTop());
     top.push_back(pos);
 
-    // the order of sections is important. Odd and even indexes are opposite. 0 - left, 1 - right, 2 - top, 3 - bottom
+    // the order of sections is important. Odd and even indexes are opposite. 0 - left, 1 - right, 2 - top, 3 - bottom.
+    // this used ReactionMultistepDetector::isMergeable during the switch between opposite sections with ^1 operation.
     szd.zone_sections.push_back(left);
     szd.zone_sections.push_back(right);
     szd.zone_sections.push_back(top);
@@ -407,6 +408,7 @@ void ReactionMultistepDetector::addArrowZones(const Vec2f& tail, const Vec2f& he
     SPECIAL_ZONE_DESC szd;
     szd.zone_type = ZoneType::EArrow;
     // the order of sections is important. Odd and even indexes are opposite. 0 - left, 1 - right, 2 - top, 3 - bottom
+    // this used ReactionMultistepDetector::isMergeable during the switch between opposite sections with ^1 operation.
     szd.zone_sections.push_back(left);
     szd.zone_sections.push_back(right);
     szd.zone_sections.push_back(top);
@@ -455,6 +457,7 @@ void ReactionMultistepDetector::addPathwayZones(const Vec2f& head, const Vec2f& 
     SPECIAL_ZONE_DESC szd;
     szd.zone_type = ZoneType::EPathWay;
     // the order of sections is important. Odd and even indexes are opposite. 0 - top, 1 - bottom
+    // this used ReactionMultistepDetector::isMergeable during the switch between opposite sections with ^1 operation.
     szd.zone_sections.push_back(top);
     szd.zone_sections.push_back(bottom);
     szd.zone_sections.push_back(right);
@@ -631,7 +634,8 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
                     {
                         for (auto& section : cz.second)
                         {
-                            // meaning of section ^ 1: the sections are ELeft = 0, ERight, ETop, EBottom. ^1 switches between ELeft and ERight, ETop and EBottom
+                            // meaning of section ^ 1: the sections are ELeft = 0, ERight, ETop, EBottom. ^ 1 switches between ELeft and ERight, ETop and
+                            // EBottom. left = 0, right = 1, left = 2, right = 3. ^ 1 operation converts left->right, right->left, top->bottom, bottom->top.
                             if ((_zones[cz.first].zone_type == ZoneType::EPathWay && section > 1) || it_oz2->second.count(section ^ 1))
                                 return std::nullopt;
                         }
