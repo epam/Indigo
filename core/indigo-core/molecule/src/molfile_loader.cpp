@@ -3999,6 +3999,9 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
                 dsg.tag = ch;
         }
 
+        if (scanner.lookNext() == '\n' || scanner.lookNext() == '\r')
+            return;
+
         cur = scanner.tell();
         scanner.seek(0LL, SEEK_END);
         long long end = scanner.tell();
@@ -4006,9 +4009,12 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
 
         if (end - cur + 1 > 2)
         {
-            scanner.skip(2);
-            if (scanner.lookNext() == '\n' || scanner.lookNext() == '\r')
-                return;
+            for (auto i = 0; i < 2; i++)
+            {
+                scanner.skip(1);
+                if (scanner.lookNext() == '\n' || scanner.lookNext() == '\r')
+                    return;
+            }
             int c = scanner.readChar();
             if (c >= '1' && c <= '9')
                 dsg.dasp_pos = c - '0';
