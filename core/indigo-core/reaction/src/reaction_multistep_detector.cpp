@@ -335,6 +335,8 @@ void ReactionMultistepDetector::addPlusZones(const Vec2f& pos)
     top.push_back(Vec2f(top.back().x + bbox.width(), top.back().y));
     top.push_back(bbox.rightTop());
     top.push_back(pos);
+
+    // the order of sections is important. Odd and even indexes are opposite. 0 - left, 1 - right, 2 - top, 3 - bottom
     szd.zone_sections.push_back(left);
     szd.zone_sections.push_back(right);
     szd.zone_sections.push_back(top);
@@ -404,6 +406,7 @@ void ReactionMultistepDetector::addArrowZones(const Vec2f& tail, const Vec2f& he
 
     SPECIAL_ZONE_DESC szd;
     szd.zone_type = ZoneType::EArrow;
+    // the order of sections is important. Odd and even indexes are opposite. 0 - left, 1 - right, 2 - top, 3 - bottom
     szd.zone_sections.push_back(left);
     szd.zone_sections.push_back(right);
     szd.zone_sections.push_back(top);
@@ -451,6 +454,7 @@ void ReactionMultistepDetector::addPathwayZones(const Vec2f& head, const Vec2f& 
     bottom.push_back(head);
     SPECIAL_ZONE_DESC szd;
     szd.zone_type = ZoneType::EPathWay;
+    // the order of sections is important. Odd and even indexes are opposite. 0 - top, 1 - bottom
     szd.zone_sections.push_back(top);
     szd.zone_sections.push_back(bottom);
     szd.zone_sections.push_back(right);
