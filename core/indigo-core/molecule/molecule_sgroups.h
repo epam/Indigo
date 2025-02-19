@@ -195,6 +195,8 @@ namespace indigo
         };
         Array<_BondConnection> bond_connections; // SBV in Molfile format
 
+        Vec3f display_position;
+
     private:
         Superatom(const Superatom&);
     };
