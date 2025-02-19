@@ -1740,6 +1740,7 @@ _cairo_polygon_is_empty (const cairo_polygon_t *polygon)
 cairo_private cairo_bool_t
 _cairo_spline_init (cairo_spline_t *spline,
 		    cairo_spline_add_point_func_t add_point_func,
+		    cairo_spline_add_point_simple_func_t add_point_simple_func,
 		    void *closure,
 		    const cairo_point_t *a, const cairo_point_t *b,
 		    const cairo_point_t *c, const cairo_point_t *d);
@@ -1748,7 +1749,7 @@ cairo_private cairo_status_t
 _cairo_spline_decompose (cairo_spline_t *spline, double tolerance);
 
 cairo_private cairo_status_t
-_cairo_spline_bound (cairo_spline_add_point_func_t add_point_func,
+_cairo_spline_bound (cairo_spline_add_point_simple_func_t add_point_simple_func,
 		     void *closure,
 		     const cairo_point_t *p0, const cairo_point_t *p1,
 		     const cairo_point_t *p2, const cairo_point_t *p3);

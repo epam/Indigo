@@ -89,6 +89,10 @@ void BaseMolecule::clear()
     tgroups.clear();
     template_attachment_points.clear();
     template_attachment_indexes.clear();
+    _template_occurrences.clear();
+    _template_names.clear();
+    _template_classes.clear();
+
     Graph::clear();
     _hl_atoms.clear();
     _hl_bonds.clear();
@@ -698,6 +702,12 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
     copyProperties(other, *mapping);
     for (int i = 0; i < other.monomer_shapes.size(); ++i)
         monomer_shapes.add(new KetMonomerShape(*other.monomer_shapes[i]));
+    for (int i = 0; i < other._template_occurrences.size(); ++i)
+        std::ignore = _template_occurrences.add(other._template_occurrences[i]);
+    for (int i = 0; i < other._template_names.size(); ++i)
+        _template_names.add(other._template_names.at(i));
+    for (int i = 0; i < other._template_classes.size(); ++i)
+        _template_classes.add(other._template_classes.at(i));
 }
 
 void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
@@ -733,6 +743,12 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
     copyProperties(other, mapping);
     for (int j = 0; j < other.monomer_shapes.size(); ++j)
         monomer_shapes.add(new KetMonomerShape(*other.monomer_shapes[j]));
+    for (i = 0; i < other._template_occurrences.size(); ++i)
+        std::ignore = _template_occurrences.add(other._template_occurrences[i]);
+    for (i = 0; i < other._template_names.size(); ++i)
+        _template_names.add(other._template_names.at(i));
+    for (i = 0; i < other._template_classes.size(); ++i)
+        _template_classes.add(other._template_classes.at(i));
 }
 
 void BaseMolecule::mergeWithMolecule(BaseMolecule& other, Array<int>* mapping, int skip_flags)
@@ -1826,8 +1842,7 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
                 continue;
             }
 
-            int idx = this->asMolecule().addAtom(-1);
-            this->asMolecule().setTemplateAtom(idx, tg.tgroup_name.ptr());
+            int idx = this->addTemplateAtom(tg.tgroup_name.ptr());
             this->asMolecule().setTemplateAtomClass(idx, tg.tgroup_class.ptr());
 
             count_occur++;
@@ -2101,7 +2116,7 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
 
 
              int idx = this->asMolecule().addAtom(-1);
-             this->asMolecule().setTemplateAtom(idx, tg.tgroup_name.ptr());
+             int idx = this->addTemplateAtom(tg.tgroup_name.ptr());
              this->asMolecule().setTemplateAtomClass(idx, tg.tgroup_class.ptr());
              count_occur++;
 
@@ -2581,8 +2596,7 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
                 continue;
             }
 
-            int idx = this->asMolecule().addAtom(-1);
-            this->asMolecule().setTemplateAtom(idx, tg.tgroup_name.ptr());
+            int idx = this->addTemplateAtom(tg.tgroup_name.ptr());
             this->asMolecule().setTemplateAtomClass(idx, tg.tgroup_class.ptr());
 
             count_occur++;
@@ -2998,7 +3012,6 @@ void BaseMolecule::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>&
 int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
 {
     int result = 0;
-    QS_DEF(Molecule, fragment);
     QS_DEF(Array<int>, sgs);
     QS_DEF(Array<int>, base_sgs);
     QS_DEF(Array<int>, mapping);
@@ -3009,6 +3022,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     QS_DEF(StringPool, ap_points_ids);
     QS_DEF(Array<int>, ap_ids);
     QS_DEF(Array<char>, ap_id);
+    std::unique_ptr<BaseMolecule> fragment(neu());
 
     int tg_idx = t_idx;
     if (t_idx == -1)
@@ -3017,8 +3031,8 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     TGroup& tgroup = tgroups.getTGroup(tg_idx);
     if (tgroup.ambiguous)
         throw Error("Ambiguous monomer cannot be transform to SGroup.");
-    fragment.clear();
-    fragment.clone(*tgroup.fragment.get());
+    fragment->clear();
+    fragment->clone(*tgroup.fragment.get());
 
     sgs.clear();
     att_atoms.clear();
@@ -3028,10 +3042,10 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     ap_points_ids.clear();
     ap_ids.clear();
 
-    for (int j = fragment.sgroups.begin(); j != fragment.sgroups.end(); j = fragment.sgroups.next(j))
+    for (int j = fragment->sgroups.begin(); j != fragment->sgroups.end(); j = fragment->sgroups.next(j))
     {
         // how to check if group is connected?
-        auto& sg = fragment.sgroups.getSGroup(j);
+        auto& sg = fragment->sgroups.getSGroup(j);
         if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
             Superatom& sa = (Superatom&)sg;
@@ -3050,7 +3064,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     if (base_sgs.size() > 1)
         throw Error("transformTGroupToSGroup(): wrong template structure found (more then one base SGroup detected)");
 
-    SGroup& sgu = fragment.sgroups.getSGroup(base_sgs[0]);
+    SGroup& sgu = fragment->sgroups.getSGroup(base_sgs[0]);
     if (sgu.sgroup_type != SGroup::SG_TYPE_SUP)
         throw Error("transformTGroupToSGroup(): wrong template structure found (base SGroup is not Superatom type)");
 
@@ -3074,17 +3088,17 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
         }
     }
 
-    mergeWithMolecule(fragment, &mapping);
+    mergeWithMolecule(*fragment, &mapping);
     for (const auto sg_index : sgs)
     {
-        const SGroup& lvg = fragment.sgroups.getSGroup(sg_index);
+        const SGroup& lvg = fragment->sgroups.getSGroup(sg_index);
         for (const auto lvgroup_index : lvgroups)
         {
             if (lvg.atoms.find(lvgroup_index) > -1)
             {
                 atoms_to_delete.push(mapping[lvg.atoms[0]]);
-                fragment.removeSGroup(sg_index);
-                if (!fragment.sgroups.hasSGroup(sg_index))
+                fragment->removeSGroup(sg_index);
+                if (!fragment->sgroups.hasSGroup(sg_index))
                 {
                     break;
                 }
@@ -3092,11 +3106,11 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
         }
     }
 
-    for (auto i : fragment.vertices())
+    for (auto i : fragment->vertices())
     {
         int aidx = mapping[i];
         auto tpos = getAtomXyz(idx);
-        tpos.add(fragment.getAtomXyz(i));
+        tpos.add(fragment->getAtomXyz(i));
         if (aidx > -1)
             setAtomXyz(aidx, tpos);
     }
@@ -3349,8 +3363,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
         tg.fragment->sgroups.remove((sgs[j]));
     }
 
-    int idx = this->asMolecule().addAtom(-1);
-    this->asMolecule().setTemplateAtom(idx, tg.tgroup_name.ptr());
+    int idx = this->addTemplateAtom(tg.tgroup_name.ptr());
     this->asMolecule().setTemplateAtomClass(idx, tg.tgroup_class.ptr());
     this->asMolecule().setTemplateAtomSeqid(idx, su.seqid);
     this->asMolecule().setTemplateAtomTemplateIndex(idx, tg_idx);
@@ -4785,6 +4798,41 @@ void BaseMolecule::getBoundingBox(float font_size, LABEL_MODE label_mode, Rect2f
     bbox = Rect2f(a, b);
 }
 
+// Andrew's monotone chain convex hull algorithm
+std::vector<Vec2f> BaseMolecule::getConvexHull(const Vec2f& min_box) const
+{
+    std::vector<Vec2f> vertices;
+    std::transform(_xyz.ptr(), _xyz.ptr() + _xyz.size(), std::back_inserter(vertices), [](const Vec3f& v) -> Vec2f { return Vec2f(v.x, v.y); });
+    if (vertices.size() < 3)
+    {
+        Rect2f bbox;
+        getBoundingBox(bbox, min_box);
+        vertices.clear();
+        vertices.emplace_back(bbox.leftTop());
+        vertices.emplace_back(bbox.rightTop());
+        vertices.emplace_back(bbox.rightBottom());
+        vertices.emplace_back(bbox.leftBottom());
+        return vertices;
+    }
+    std::sort(vertices.begin(), vertices.end());
+    std::vector<Vec2f> hull;
+    for (const auto& p : vertices)
+    {
+        while (hull.size() >= 2 && hull[hull.size() - 2].relativeCross(hull.back(), p) <= 0)
+            hull.pop_back();
+        hull.push_back(p);
+    }
+    size_t lower_size = hull.size();
+    for (auto it = vertices.rbegin(); it != vertices.rend(); ++it)
+    {
+        while (hull.size() > lower_size && hull[hull.size() - 2].relativeCross(hull.back(), *it) <= 0)
+            hull.pop_back();
+        hull.push_back(*it);
+    }
+    hull.pop_back();
+    return hull;
+}
+
 void BaseMolecule::getBoundingBox(Vec2f& a, Vec2f& b) const
 {
     for (int atom_idx = 0; atom_idx < vertexCount(); ++atom_idx)
@@ -4982,8 +5030,16 @@ void BaseMolecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std
     for (int i = tgroups.begin(); i != tgroups.end(); i = tgroups.next(i))
     {
         auto& tg = tgroups.getTGroup(i);
-        std::string tname = tg.tgroup_name.size() ? tg.tgroup_name.ptr() : monomerAlias(tg);
-        templates_map.emplace(std::make_pair(tname, tg.tgroup_class.ptr()), std::ref(tg));
+        if (tg.tgroup_name.size() > 0)
+        {
+            templates_map.emplace(std::make_pair(tg.tgroup_name.ptr(), tg.tgroup_class.ptr()), std::ref(tg));
+            if (tg.tgroup_alias.size() > 0)
+                templates_map.emplace(std::make_pair(tg.tgroup_alias.ptr(), tg.tgroup_class.ptr()), std::ref(tg));
+        }
+        else
+        {
+            templates_map.emplace(std::make_pair(monomerAlias(tg), tg.tgroup_class.ptr()), std::ref(tg));
+        }
     }
 }
 
@@ -5033,9 +5089,9 @@ std::string BaseMolecule::getAtomDescription(int idx)
 KetDocument& BaseMolecule::getKetDocument()
 {
     // static thread_local std::optional<std::unique_ptr<KetDocument>> document; // Temporary until direct conversion to document supported
-    if (_document || _edit_revision != _document_revision)
+    if (_document == nullptr || _edit_revision != _document_revision)
     {
-        if (_edit_revision != _document_revision)
+        if (_document != nullptr)
         {
             delete _document;
             _document = nullptr;
@@ -5055,6 +5111,117 @@ KetDocument& BaseMolecule::getKetDocument()
         _document_revision = _edit_revision;
     }
     return *_document;
+}
+
+const char* BaseMolecule::getTemplateAtom(int idx)
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    const char* res = _template_names.at(occur.name_idx);
+
+    if (res == 0)
+        throw Error("template atom string is zero");
+
+    return res;
+}
+
+const char* BaseMolecule::getTemplateAtomClass(int idx)
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    const char* res = _template_classes.at(occur.class_idx);
+
+    return res;
+}
+
+const char* BaseMolecule::getTemplateAtomSeqName(int idx)
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    return occur.seq_name.ptr();
+}
+
+const int BaseMolecule::getTemplateAtomTemplateIndex(int idx)
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    const int res = occur.template_idx;
+    return res;
+}
+
+const int BaseMolecule::getTemplateAtomSeqid(int idx)
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    const int res = occur.seq_id;
+
+    return res;
+}
+
+const int BaseMolecule::getTemplateAtomDisplayOption(int idx)
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    const int res = static_cast<int>(occur.contracted);
+    // const int res = occur.contracted;
+
+    return res;
+}
+
+void BaseMolecule::renameTemplateAtom(int idx, const char* text)
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    _template_names.set(occur.name_idx, text);
+    updateEditRevision();
+}
+
+void BaseMolecule::setTemplateAtomName(int idx, const char* text)
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    occur.name_idx = _template_names.add(text);
+    updateEditRevision();
+}
+
+void BaseMolecule::setTemplateAtomClass(int idx, const char* text)
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    occur.class_idx = _template_classes.add(text);
+    updateEditRevision();
+}
+
+void BaseMolecule::setTemplateAtomSeqid(int idx, int seq_id)
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    occur.seq_id = seq_id;
+    updateEditRevision();
+}
+
+void BaseMolecule::setTemplateAtomSeqName(int idx, const char* seq_name)
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    occur.seq_name.readString(seq_name, true);
+    updateEditRevision();
+}
+
+void BaseMolecule::setTemplateAtomTemplateIndex(int idx, int temp_idx)
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    occur.template_idx = temp_idx;
+    updateEditRevision();
+}
+
+void BaseMolecule::setTemplateAtomDisplayOption(int idx, int option)
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    occur.contracted = (DisplayOption)option;
+    updateEditRevision();
 }
 
 #ifdef _MSC_VER

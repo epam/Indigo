@@ -685,6 +685,19 @@ M  END
             options.delete();
         });
 
+        test("render", "ketcher_elliptical_arrow", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("ketcher_elliptical_arrow.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("ketcher_elliptical_arrow_out.png", png);
+            const { equal } = await looksSame('ketcher_elliptical_arrow_ref.png', 'ketcher_elliptical_arrow_out.png');
+            assert(equal);
+            options.delete();
+        });
+
         test("render", "ketcher_text_panel_regular", async () => {
             let options = new indigo.MapStringString();
             options.set("render-output-format", "png");
@@ -1058,6 +1071,51 @@ M  END
             // fs.writeFileSync("pathway_layout.ket", ket);
             const ket_ref = fs.readFileSync("pathway_layout.ket");
             assert.equal(ket, ket_ref.toString().trim());
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("macroprops", "double_dna", () => {
+            var fs = require('fs');
+            const double_dna = fs.readFileSync("props_double_dna.ket");
+            let options = new indigo.MapStringString();
+            options.set('json-saving-pretty', 'true');
+            let json = JSON.parse(indigo.calculateMacroProperties(double_dna, options)).properties;            
+            // fs.writeFileSync("props_double_dna.json", json);
+            const json_ref = fs.readFileSync("props_double_dna.json");
+            assert.equal(json, json_ref.toString().trim());
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("macroprops", "peptides_micro", () => {
+            var fs = require('fs');
+            const peptides_micro = fs.readFileSync("props_peptides_micro.ket");
+            let options = new indigo.MapStringString();
+            options.set('json-saving-pretty', 'true');
+            let json = JSON.parse(indigo.calculateMacroProperties(peptides_micro, options)).properties;            
+            // fs.writeFileSync("props_peptides_micro.json", json);
+            const json_ref = fs.readFileSync("props_peptides_micro.json");
+            assert.equal(json, json_ref.toString().trim());
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("macroprops", "peptides", () => {
+            var fs = require('fs');
+            const peptides = fs.readFileSync("props_peptides.ket");
+            let options = new indigo.MapStringString();
+            options.set('json-saving-pretty', 'true');
+            let json = JSON.parse(indigo.calculateMacroProperties(peptides, options)).properties;            
+            // fs.writeFileSync("props_peptides.json", json);
+            const json_ref = fs.readFileSync("props_peptides.json");
+            assert.equal(json, json_ref.toString().trim());
             options.delete();
             assert(true);
         });

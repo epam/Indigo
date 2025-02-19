@@ -1,0 +1,36 @@
+[
+    {
+        "grossFormula": "C20 N7 O12 P H26",
+        "mass": 586.4339051246643,
+        "monomerCount": {
+            "peptides": {},
+            "nucleotides": {
+                "A": 1,
+                "T": 1
+            }
+        }
+    },
+    {
+        "grossFormula": "C58 N26 O36 P4 H74",
+        "mass": 1834.2558131217957,
+        "Tm": 7.666666666666667,
+        "monomerCount": {
+            "peptides": {},
+            "nucleotides": {
+                "A": 2,
+                "C": 2,
+                "G": 2
+            }
+        }
+    },
+    {
+        "grossFormula": "C9 N2 O9 P H13",
+        "mass": 323.1812837123871,
+        "monomerCount": {
+            "peptides": {},
+            "nucleotides": {
+                "U": 1
+            }
+        }
+    }
+]

@@ -755,6 +755,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                      query_atom_properties[QueryMolecule::ATOM_CHIRALITY]->value_max & QueryMolecule::CHIRALITY_OR_UNSPECIFIED))
                     needCustomQuery = true;
             }
+
             if (mol.isPseudoAtom(i))
             {
                 buf.readString(mol.getPseudoAtom(i), true);
@@ -813,7 +814,17 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                         }
                     }
                     else
-                        QueryMolecule::getQueryAtomLabel(query_atom_type, buf);
+                    {
+                        if (query_atom_type == QueryMolecule::QUERY_ATOM_AH && _pqmol->isAlias(i))
+                        {
+                            buf.readString(_pqmol->getAlias(i), true);
+                        }
+                        if (buf.size() != 2 || buf[0] != '*')
+                        {
+                            buf.clear();
+                            QueryMolecule::getQueryAtomLabel(query_atom_type, buf);
+                        }
+                    }
                 }
                 else // query_atom_type == QueryMolecule::QUERY_ATOM_UNKNOWN
                 {
@@ -1182,7 +1193,16 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     {
         auto alias = monomerAlias(tg);
         if (isBasicAminoAcid(template_class, alias))
+        {
             natreplace = alias;
+        }
+        else if (tg.tgroup_name.size() > 0)
+        {
+            std::string name = tg.tgroup_name.ptr();
+            alias = monomerAliasByName(tg.tgroup_class.ptr(), name);
+            if (alias.size() > 0 && alias.size() != name.size())
+                natreplace = alias;
+        }
     }
     else
         natreplace = tg.tgroup_natreplace.ptr();
@@ -1644,8 +1664,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     }
     BaseMolecule::collapse(*mol);
 
-    if (!mol->isQueryMolecule())
-        mol->getTemplatesMap(_templates);
+    mol->getTemplatesMap(_templates);
 
     // save root elements
     saveRoot(*mol, writer);

@@ -809,6 +809,10 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
         output.writeChar('*');
         break;
     }
+    case ATOM_TEMPLATE: {
+        output.writeString(atom->alias.ptr());
+        break;
+    }
 
     case ATOM_CONNECTIVITY: {
         output.printf("X%d", atom->value_min);
@@ -827,7 +831,6 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
     case ATOM_RSITE:
         output.printf("*:%d", atom->value_min);
         break;
-
     default: {
         throw Error("Unknown atom attribute %d", atom->type);
         break;
@@ -974,6 +977,19 @@ const char* QueryMolecule::getPseudoAtom(int idx)
     throw Error("getPseudoAtom() applied to something that is not a pseudo-atom");
 }
 
+int QueryMolecule::addTemplateAtom(const char* alias)
+{
+    std::unique_ptr<Atom> atom(new Atom(ATOM_TEMPLATE, alias));
+    int template_occur_idx = _template_occurrences.add();
+    atom->occurrence_idx = template_occur_idx;
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    occur.name_idx = _template_names.add(alias);
+    occur.seq_id = -1;
+    occur.template_idx = -1;
+    occur.contracted = DisplayOption::Undefined;
+    return addAtom(atom.release());
+}
+
 bool QueryMolecule::isTemplateAtom(int idx)
 {
     // This is dirty hack; however, it is legal here, as template atoms
@@ -996,48 +1012,13 @@ bool QueryMolecule::isTemplateAtom(int idx)
     return false;
 }
 
-const char* QueryMolecule::getTemplateAtom(int idx)
+int QueryMolecule::getTemplateAtomOccurrence(int idx)
 {
     // see the comment above in isTemplateAtom()
+    if (!isTemplateAtom(idx))
+        throw Error("getTemplateAtomOccurrence() applied to something that is not a template atom");
 
-    if (_atoms[idx]->type == ATOM_TEMPLATE)
-        return _atoms[idx]->alias.ptr();
-
-    if (_atoms[idx]->type == OP_AND)
-    {
-        int i;
-
-        for (i = 0; i < _atoms[idx]->children.size(); i++)
-            if (_atoms[idx]->children[i]->type == ATOM_TEMPLATE)
-                return ((Atom*)_atoms[idx]->children[i])->alias.ptr();
-    }
-
-    throw Error("getTemplateAtom() applied to something that is not a template atom");
-}
-
-const char* QueryMolecule::getTemplateAtomClass(int /*idx*/)
-{
-    return 0;
-}
-
-const int QueryMolecule::getTemplateAtomSeqid(int /*idx*/)
-{
-    return -1;
-}
-
-const char* QueryMolecule::getTemplateAtomSeqName(int /*idx*/)
-{
-    return nullptr;
-}
-
-const int QueryMolecule::getTemplateAtomTemplateIndex(int /*idx*/)
-{
-    return -1;
-}
-
-const int QueryMolecule::getTemplateAtomDisplayOption(int /*idx*/)
-{
-    return -1;
+    return _atoms[idx]->occurrence_idx;
 }
 
 bool QueryMolecule::isSaturatedAtom(int /*idx*/)
@@ -1056,13 +1037,13 @@ QueryMolecule::Node::~Node()
 
 IMPL_ERROR(QueryMolecule::Atom, "query atom");
 
-QueryMolecule::Atom::Atom() : Node(OP_NONE)
+QueryMolecule::Atom::Atom() : Node(OP_NONE), occurrence_idx(0)
 {
     value_min = 0;
     value_max = 0;
 }
 
-QueryMolecule::Atom::Atom(int type_, int value) : Node(type_)
+QueryMolecule::Atom::Atom(int type_, int value) : Node(type_), occurrence_idx(0)
 {
     if (type_ == ATOM_NUMBER || type_ == ATOM_CHARGE || type_ == ATOM_ISOTOPE || type_ == ATOM_RADICAL || type_ == ATOM_AROMATICITY || type_ == ATOM_VALENCE ||
         type_ == ATOM_RING_BONDS || type_ == ATOM_RING_BONDS_AS_DRAWN || type_ == ATOM_SUBSTITUENTS || type_ == ATOM_SUBSTITUENTS_AS_DRAWN ||
@@ -1075,13 +1056,13 @@ QueryMolecule::Atom::Atom(int type_, int value) : Node(type_)
         throw Error("bad type: %d", type_);
 }
 
-QueryMolecule::Atom::Atom(int type_, int val_min, int val_max) : Node(type_)
+QueryMolecule::Atom::Atom(int type_, int val_min, int val_max) : Node(type_), occurrence_idx(0)
 {
     value_min = val_min;
     value_max = val_max;
 }
 
-QueryMolecule::Atom::Atom(int type_, const char* value) : Node(type_)
+QueryMolecule::Atom::Atom(int type_, const char* value) : Node(type_), occurrence_idx(0)
 {
     if (type_ == ATOM_PSEUDO || type_ == ATOM_TEMPLATE || type_ == ATOM_TEMPLATE_CLASS)
         alias.readString(value, true);
@@ -1089,7 +1070,7 @@ QueryMolecule::Atom::Atom(int type_, const char* value) : Node(type_)
         throw Error("bad type: %d", type_);
 }
 
-QueryMolecule::Atom::Atom(int type_, QueryMolecule* value) : Node(type_)
+QueryMolecule::Atom::Atom(int type_, QueryMolecule* value) : Node(type_), occurrence_idx(0)
 {
     if (type_ == ATOM_FRAGMENT)
         fragment.reset(value);
@@ -2051,6 +2032,22 @@ int QueryMolecule::addBond(int beg, int end, QueryMolecule::Bond* bond)
     return idx;
 }
 
+int QueryMolecule::addBond_Silent(int beg, int end, int order)
+{
+    updateEditRevision();
+    int idx = _addBaseBond(beg, end);
+
+    _bonds.expand(idx + 1);
+    _bonds.set(idx, QueryMolecule::createQueryMoleculeBond(order, BOND_ZERO, BOND_ZERO));
+
+    aromaticity.setCanBeAromatic(idx, false);
+    setBondStereoCare(idx, false);
+
+    updateEditRevision();
+
+    return idx;
+}
+
 QueryMolecule::Bond& QueryMolecule::getBond(int idx)
 {
     return *_bonds[idx];
@@ -2075,6 +2072,7 @@ void QueryMolecule::Atom::copy(const Atom& other)
     type = other.type;
     value_max = other.value_max;
     value_min = other.value_min;
+    occurrence_idx = other.occurrence_idx;
 
     fragment.reset(nullptr);
     if (other.fragment.get() != 0)
@@ -3162,7 +3160,7 @@ int QueryMolecule::getAtomType(const char* label)
 {
     static const std::unordered_map<std::string, int> atom_types = {{"R", _ATOM_R},   {"A", _ATOM_A},   {"X", _ATOM_X},   {"Q", _ATOM_Q},
                                                                     {"M", _ATOM_M},   {"AH", _ATOM_AH}, {"XH", _ATOM_XH}, {"QH", _ATOM_QH},
-                                                                    {"XH", _ATOM_XH}, {"QH", _ATOM_QH}, {"MH", _ATOM_MH}};
+                                                                    {"XH", _ATOM_XH}, {"QH", _ATOM_QH}, {"MH", _ATOM_MH}, {"*", _ATOM_AH}};
     auto it = atom_types.find(label);
     if (it != atom_types.end())
         return it->second;

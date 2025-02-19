@@ -1146,7 +1146,8 @@ _cpf_curve_to (void		*closure,
     cairo_point_t *p0 = &cpf->current_point;
 
     if (! _cairo_spline_init (&spline,
-			      (cairo_spline_add_point_func_t)cpf->line_to,
+			      NULL,
+				  cpf->line_to,
 			      cpf->closure,
 			      p0, p1, p2, p3))
     {

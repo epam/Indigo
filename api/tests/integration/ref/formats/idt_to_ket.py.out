@@ -30,6 +30,8 @@ idt_unresolved.ket:SUCCEED
 idt_unresolved_many.ket:SUCCEED
 idt_unsplit.ket:SUCCEED
 Test '!+A-$#12w12r23e32e33': got expected error 'Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3'
+Test '(Y:)': got expected error 'Invalid IDT ambiguous monomer (Y:)'
+Test '(Y:000010af)': got expected error 'Invalid number 'af''
 Test '(YY:00330067)': got expected error 'Invalid mixed base - only numerical index allowed.'
 Test '+/5Phos/A': got expected error 'Sugar prefix could not be used with modified monomer.'
 Test '/': got expected error 'Unexpected end of data'

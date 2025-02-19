@@ -1,6 +1,7 @@
 *** HELM to KET ***
 helm_aminoacids_variants.ket:SUCCEED
 helm_annotations.ket:SUCCEED
+helm_any_chem.ket:SUCCEED
 helm_chem_peptide.ket:SUCCEED
 helm_chem_rna.ket:SUCCEED
 helm_chem_rna_hydro.ket:SUCCEED
@@ -13,7 +14,9 @@ helm_peptide.ket:SUCCEED
 helm_rna_without_base.ket:SUCCEED
 helm_simple_rna.ket:SUCCEED
 helm_smiles.ket:SUCCEED
+helm_smiles_no_ap.ket:SUCCEED
 helm_smiles_sugar.ket:SUCCEED
+helm_unsplit.ket:SUCCEED
 Test 'CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM1,PEPTIDE1,1:R2-3:R1$$$V2.0': got expected error 'Polymer 'PEPTIDE1' does not contains monomer with number 3.'
 Test 'CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM1,PEPTIDE1,1:R4-1:R1$$$V2.0': got expected error 'Unknown attachment point 'R4' in monomer A6OH'
 Test 'CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM10,PEPTIDE1,1:R2-1:R1$$$V2.0': got expected error 'Polymer 'CHEM10' not found.'
@@ -26,3 +29,4 @@ Test 'PEPTIDE1{A'2'}$$$$V2.0': got expected error 'Repeating not supported now.'
 Test 'PEPTIDE1{D-gGlu}$$$$V2.0': got expected error 'Unexpected symbol. Expected '.' or '}' but found '-'.'
 Test 'RNA1{R(A).R(A)p}$$$$V2.0': got expected error 'Monomer template with class 'Phosphate' and alias 'R' not found in monomer librarys'
 Test 'RNA1{R(bla-bla-bla)p}$$$$V2.0': got expected error 'Unexpected symbol. Expected ')' but found 'l'.'
+Test 'RNA1{R[P(O)(O)(=O)O]}$$$$V2.0': got expected error 'Unknown attachment point 'R1' in monomer Mod0'

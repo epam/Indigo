@@ -151,6 +151,7 @@ int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int 
 int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope)
 {
     std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
+    int atom_type = QueryMolecule::QUERY_ATOM_UNKNOWN;
     if (element != -1 && element < ELEM_MAX)
         atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, element);
     else if (element == ELEM_ATOMLIST)
@@ -159,7 +160,7 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
     }
     else
     {
-        int atom_type = QueryMolecule::getAtomType(label);
+        atom_type = QueryMolecule::getAtomType(label);
         switch (atom_type)
         {
         case _ATOM_PSEUDO:
@@ -247,7 +248,10 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
     if (radical != 0)
         atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_RADICAL, radical)));
 
-    return _pqmol->addAtom(atom.release());
+    auto atom_idx = _pqmol->addAtom(atom.release());
+    if (label != nullptr && label[0] == '*' && label[1] == 0)
+        _pqmol->setAlias(atom_idx, label);
+    return atom_idx;
 }
 
 void MoleculeJsonLoader::validateMoleculeBond(int order)
@@ -1641,15 +1645,16 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     for (SizeType i = 0; i < _monomer_array.Size(); i++)
     {
         auto& ma = _monomer_array[i];
-        int idx = mol.asMolecule().addAtom(-1);
+
+        if (!ma.HasMember("alias"))
+            throw Error("Monomer alias is missing");
+
+        int idx = mol.addTemplateAtom(ma["alias"].GetString());
         int monomer_id = std::stoi(std::string(ma["id"].GetString()));
         monomer_id_mapping.emplace(monomer_id, idx);
 
-        if (ma.HasMember("alias"))
-            mol.asMolecule().setTemplateAtom(idx, ma["alias"].GetString());
-
         if (ma.HasMember("seqid"))
-            mol.asMolecule().setTemplateAtomSeqid(idx, ma["seqid"].GetInt());
+            mol.setTemplateAtomSeqid(idx, ma["seqid"].GetInt());
 
         if (ma.HasMember("position"))
         {
@@ -1661,8 +1666,8 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         auto temp_it = _id_to_template.find(template_id);
         if (temp_it != _id_to_template.end())
         {
-            mol.asMolecule().setTemplateAtomClass(idx, monomerMolClass(monomerTemplateClass(_templates[temp_it->second])).c_str());
-            mol.asMolecule().setTemplateAtomTemplateIndex(idx, temp_it->second);
+            mol.setTemplateAtomClass(idx, monomerMolClass(monomerTemplateClass(_templates[temp_it->second])).c_str());
+            mol.setTemplateAtomTemplateIndex(idx, temp_it->second);
         }
     }
 
@@ -1810,7 +1815,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         if (atp2.size())
             mol.setTemplateAtomAttachmentOrder(id2, id1, atp2.c_str());
 
-        mol.asMolecule().addBond_Silent(id1, id2, order);
+        mol.addBond_Silent(id1, id2, order);
     }
 
     MoleculeLayout ml(mol, false);

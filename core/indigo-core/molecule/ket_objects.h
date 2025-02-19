@@ -32,6 +32,7 @@
 #include "common/math/algebra.h"
 #include "molecule/idt_alias.h"
 #include "molecule/monomers_defs.h"
+#include <set>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -729,6 +730,16 @@ namespace indigo
             return _alias;
         };
 
+        void addHydrogenConnection(const std::string& monomer_ref)
+        {
+            _hydrogen_connections.insert(monomer_ref);
+        };
+
+        const std::set<std::string>& hydrogenConnections() const
+        {
+            return _hydrogen_connections;
+        };
+
     protected:
         MonomerType _monomer_type;
         std::string _id;
@@ -738,6 +749,7 @@ namespace indigo
         std::map<std::string, KetAttachmentPoint> _attachment_points;
         ket_connections_type _connections;
         std::string _ref;
+        std::set<std::string> _hydrogen_connections;
     };
 
     class DLLEXPORT KetMonomer : public KetBaseMonomer
@@ -794,7 +806,7 @@ namespace indigo
 
         KetConnection(TYPE conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
 
-        KetConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) : _connection_type("single"), _ep1(ep1), _ep2(ep2){};
+        KetConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) : _connection_type(KetConnectionSingle), _ep1(ep1), _ep2(ep2){};
 
         const std::map<std::string, int>& getStringPropStrToIdx() const override;
 

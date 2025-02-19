@@ -97,14 +97,9 @@ namespace indigo
         bool isPseudoAtom(int idx) override;
         const char* getPseudoAtom(int idx) override;
 
+        int addTemplateAtom(const char* text) override;
         bool isTemplateAtom(int idx) override;
-        const char* getTemplateAtom(int idx) override;
-        const int getTemplateAtomSeqid(int idx) override;
-        const char* getTemplateAtomSeqName(int idx) override;
-        const int getTemplateAtomTemplateIndex(int idx) override;
-
-        const char* getTemplateAtomClass(int idx) override;
-        const int getTemplateAtomDisplayOption(int idx) override;
+        int getTemplateAtomOccurrence(int idx) override;
 
         bool isRSite(int atom_idx) override;
         dword getRSiteBits(int atom_idx) override;
@@ -132,6 +127,7 @@ namespace indigo
 
         int addAtom(int label) override;
         int addBond(int beg, int end, int order) override;
+        int addBond_Silent(int beg, int end, int order) override;
 
         int getImplicitH(int idx, bool impl_h_no_throw) override;
         void setImplicitH(int idx, int impl_h) override;

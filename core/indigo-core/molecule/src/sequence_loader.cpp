@@ -169,6 +169,8 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
 
         if (start_char)
         {
+            if (ch == ' ' || ch == '\t')
+                continue; // skip leading whitespaces
             if (ch >= NUM_BEGIN && ch < NUM_END)
             {
                 isGenBankPept = true;
@@ -259,8 +261,7 @@ void SequenceLoader::addAminoAcid(BaseMolecule& mol, char ch)
 {
     Vec3f pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
     std::string aa(1, ch);
-    int amino_idx = mol.asMolecule().addAtom(-1);
-    mol.asMolecule().setTemplateAtom(amino_idx, monomerNameByAlias(kMonomerClassAA, aa).c_str());
+    int amino_idx = mol.addTemplateAtom(monomerNameByAlias(kMonomerClassAA, aa).c_str());
     mol.asMolecule().setTemplateAtomClass(amino_idx, kMonomerClassAA);
     mol.asMolecule().setTemplateAtomSeqid(amino_idx, _seq_id);
     mol.asMolecule().setAtomXyz(amino_idx, pos);
@@ -275,8 +276,7 @@ void SequenceLoader::addAminoAcid(BaseMolecule& mol, char ch)
 
 int SequenceLoader::addTemplateAtom(BaseMolecule& mol, const char* alias, const char* monomer_class, int seq_id)
 {
-    int idx = mol.asMolecule().addAtom(-1);
-    mol.asMolecule().setTemplateAtom(idx, alias);
+    int idx = mol.addTemplateAtom(alias);
     mol.asMolecule().setTemplateAtomClass(idx, monomer_class);
     mol.asMolecule().setTemplateAtomSeqid(idx, seq_id);
     return idx;
@@ -1098,8 +1098,18 @@ void SequenceLoader::loadIdt(KetDocument& document)
                             check_mixed_base(mixed_base);
                             if (ratios_str.size() != 8)
                                 throw Exception("Invalid IDT ambiguous monomer %s", idt_alias.c_str());
-                            ratios.emplace(std::array<float, 4>{std::stof(ratios_str.substr(0, 2)), std::stof(ratios_str.substr(2, 2)),
-                                                                std::stof(ratios_str.substr(4, 2)), std::stof(ratios_str.substr(6, 2))});
+                            auto stof = [](const std::string& arg) -> float {
+                                try
+                                {
+                                    return std::stof(arg);
+                                }
+                                catch (...)
+                                {
+                                    throw Error("Invalid number '%s'", arg.c_str());
+                                }
+                            };
+                            ratios.emplace(std::array<float, 4>{stof(ratios_str.substr(0, 2)), stof(ratios_str.substr(2, 2)), stof(ratios_str.substr(4, 2)),
+                                                                stof(ratios_str.substr(6, 2))});
                             idt_alias = '(' + mixed_base + ')';
                             mixed_base = mixed_base[0];
                         }
@@ -1240,15 +1250,12 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         checkAddTemplate(document, monomer_template);
                         single_monomer = monomer_template_id;
                         single_monomer_alias = monomer_template.getStringProp("alias");
-                        single_monomer_class = MonomerTemplates::classToStr(monomer_template.monomerClass());
                     }
                     else // IDT alias not found
                     {
-                        unresolved = true;
                         single_monomer = "unknown_monomer_with_idt_alias_" + idt_alias;
                         single_monomer_alias = idt_alias;
                         auto monomer_class = MonomerClass::CHEM;
-                        single_monomer_class = MonomerTemplates::classToStr(monomer_class);
                         // Unresoved monomer could be in any position
                         MonomerTemplate monomer_template(single_monomer, monomer_class, IdtAlias(idt_alias, idt_alias, idt_alias, idt_alias), true);
                         monomer_template.setStringProp("alias", idt_alias);
@@ -1294,6 +1301,14 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
     std::string monomer_alias;
     auto ch = _scanner.lookNext();
 
+    if (ch == '*')
+    {
+        if (monomer_class != MonomerClass::CHEM)
+            throw Error("'*' could be used only for CHEM monomers for now.");
+        _scanner.skip(1);
+        return "*";
+    }
+
     if (ch == '[')
     {
         _scanner.skip(1);
@@ -1322,7 +1337,24 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
             throw Error(unexpected_eod);
         if (ch != ']')
             throw Error("Unexpected symbol. Expected ']' but found '%c'.", ch);
-        if (smiles)
+        bool found = false;
+        if (_library.getMonomerTemplateIdByAlias(monomer_class, monomer_alias).size() > 0)
+        {
+            found = true;
+        }
+        else if (monomer_class == MonomerClass::Sugar) // In place of sugar can be phosphate or unsplit rna
+        {
+            if (_library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, monomer_alias).size() > 0)
+            {
+                found = true;
+            }
+            else
+            {
+                if (_library.getMonomerTemplateIdByAlias(MonomerClass::RNA, monomer_alias).size() > 0)
+                    found = true;
+            }
+        }
+        if (smiles || !found) // Monomer alias not found in library - try read as smiles
         {
             // Convert smiles to molecule
             BufferScanner scanner(monomer_alias.c_str());
@@ -1493,7 +1525,14 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
             auto& opt = options.second.emplace_back(opt_alias, std::optional<float>());
             if (count.size() > 0)
             {
-                opt.second = std::stof(count);
+                try
+                {
+                    opt.second = std::stof(count);
+                }
+                catch (...)
+                {
+                    throw Error("Invalid number '%s'", count.c_str());
+                }
                 no_counts = false;
             }
             if (ch == ')')
@@ -1660,6 +1699,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
     std::string simple_polymer_type = "";
     int monomer_idx = 0;
     int prev_monomer_template_atom_idx = -1;
+    int unknown_count = 0;
     _unknown_ambiguous_count = 0;
     using polymer_map = std::map<std::string, std::map<int, size_t>>;
     polymer_map used_polymer_nums;
@@ -1721,6 +1761,18 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     ch = _scanner.lookNext();
                     if (ch != '}')
                         throw Error("Unexpected symbol. Expected '}' but found '%c'.", ch); // only one monomer in chem
+
+                    auto& alias = std::get<0>(monomer_info);
+                    if (alias == "*") // if monomer_alias == "*"
+                    {
+                        alias = "unknown_monomer_" + std::to_string(unknown_count++);
+                        MonomerTemplate monomer_template(alias, MonomerClass::CHEM, IdtAlias(alias, alias, alias, alias), true);
+                        monomer_template.setStringProp("alias", alias);
+                        for (auto ap : {"R1", "R2", "R3", "R4"})
+                            monomer_template.AddAttachmentPoint(ap, -1);
+                        checkAddTemplate(document, monomer_template);
+                        _added_templates.emplace(monomer_class, alias);
+                    }
                     cur_polymer_map->second[monomer_idx] = addKetMonomer(document, monomer_info, monomer_class, pos);
                 }
                 else if (monomer_class == MonomerClass::AminoAcid)
@@ -1738,13 +1790,14 @@ void SequenceLoader::loadHELM(KetDocument& document)
                 else // kHELMPolymerTypeRNA
                 {
                     const std::string& phosphate_lib_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, std::get<0>(monomer_info));
-                    if (phosphate_lib_id.size())
+                    const std::string& nucleotide_id = _library.getMonomerTemplateIdByAlias(MonomerClass::RNA, std::get<0>(monomer_info));
+                    if (phosphate_lib_id.size() || nucleotide_id.size())
                     {
                         // add phosphate
-                        auto phosphate_idx = addKetMonomer(document, monomer_info, MonomerClass::Phosphate, pos);
-                        cur_polymer_map->second[monomer_idx] = phosphate_idx;
+                        auto added_idx = addKetMonomer(document, monomer_info, nucleotide_id.size() > 0 ? MonomerClass::RNA : MonomerClass::Phosphate, pos);
+                        cur_polymer_map->second[monomer_idx] = added_idx;
                         if (monomer_idx > 1)
-                            addMonomerConnection(document, phosphate_idx - 1, phosphate_idx);
+                            addMonomerConnection(document, added_idx - 1, added_idx);
                         ch = _scanner.lookNext();
                         if (ch != '.' && ch != '}')
                             throw Error("Unexpected symbol. Expected '.' or '}' but found '%c'.", ch);
@@ -1964,6 +2017,8 @@ void SequenceLoader::loadSequence(KetDocument& document, SeqType seq_type)
 
         if (start_char)
         {
+            if (ch == ' ' || ch == '\t')
+                continue; // skip leading whitespaces
             if (isdigit(ch))
                 isGenBankPept = true;
             start_char = false;

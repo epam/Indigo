@@ -22,6 +22,7 @@ print("*** KET to KET ***")
 
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
+root_rea = joinPathPy("reactions/", __file__)
 
 files = [
     "images",
@@ -59,16 +60,39 @@ files = [
     "ambiguous_monomer",
 ]
 formats = {
-    "doc": indigo.loadKetDocument,
-    "mol": indigo.loadMolecule,
+    "doc": [indigo.loadKetDocument],
+    "mol": [indigo.loadMolecule, indigo.loadQueryMolecule],
 }
 for filename in sorted(files):
     for format in sorted(formats.keys()):
         file_path = os.path.join(ref_path, filename)
         with open("{}_{}.ket".format(file_path, format), "r") as file:
             ket_ref = file.read()
-        mol = formats[format](ket_ref)
-        # with open("{}_{}.ket".format(file_path, format), "w") as file:
-        #     file.write(mol.json())
-        ket = mol.json()
-        check_res(filename, format, ket_ref, ket)
+        for loader in formats[format]:
+            mol = loader(ket_ref)
+            # with open("{}_{}.ket".format(file_path, format), "w") as file:
+            #     file.write(mol.json())
+            ket = mol.json()
+            check_res(filename, format + " " + loader.__name__, ket_ref, ket)
+
+files = [
+    "multi_merge4",
+]
+
+files.sort()
+for filename in files:
+    rea = indigo.loadReactionFromFile(
+        os.path.join(root_rea, filename + ".ket")
+    )
+
+    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+    #     file.write(rea.json())
+    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
+        ket_ref = file.read()
+    ket = rea.json()
+    diff = find_diff(ket_ref, ket)
+    if not diff:
+        print(filename + ".ket:SUCCEED")
+    else:
+        print(filename + ".ket:FAILED")
+        print(diff)

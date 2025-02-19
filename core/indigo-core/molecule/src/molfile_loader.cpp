@@ -107,26 +107,48 @@ void MolfileLoader::_loadMolecule()
         _readCtab3000();
         _readRGroups3000();
         _readTGroups3000();
+
+        long long next_block_pos = _scanner.tell();
+        QS_DEF(Array<char>, str);
+        _scanner.readLine(str, true);
+        if (strncmp(str.ptr(), "M  END", 6) != 0)
+            throw Error("unexpected string in molecule: %s", str.ptr());
+        _scanner.seek(next_block_pos, SEEK_SET);
     }
 
     _postLoad();
 }
 
-void MolfileLoader::loadCtab3000(Molecule& mol)
+void MolfileLoader::_checkEndOfMolBlock3000()
+{
+    long long next_block_pos = _scanner.tell();
+    QS_DEF(Array<char>, str);
+    _scanner.readLine(str, true);
+    // could be end of rectant, product or catalyst, ot start of next item
+    if (!(strncmp(str.ptr(), "M  V30 END ", 11) == 0 || strncmp(str.ptr(), "M  V30 BEGIN CTAB", 15) == 0))
+        throw Error("unexpected string in reaction: %s", str.ptr());
+    _scanner.seek(next_block_pos, SEEK_SET);
+}
+
+void MolfileLoader::loadMolBlock3000(Molecule& mol)
 {
     _bmol = &mol;
     _qmol = 0;
     _mol = &mol;
     _readCtab3000();
+    _readTGroups3000();
+    _checkEndOfMolBlock3000();
     _postLoad();
 }
 
-void MolfileLoader::loadQueryCtab3000(QueryMolecule& mol)
+void MolfileLoader::loadQueryMolBlock3000(QueryMolecule& mol)
 {
     _bmol = &mol;
     _qmol = &mol;
     _mol = 0;
     _readCtab3000();
+    _readTGroups3000();
+    _checkEndOfMolBlock3000();
     _postLoad();
 }
 
@@ -1389,14 +1411,14 @@ void MolfileLoader::_readCtab2000()
                             id[3] = 0;
                             throw Error("Undefined Sgroup connectivity: '%s'", id);
                         }
-                        if (id[2] == '\n')
-                        {
-                            if (n != 0)
-                                throw Error("Unexpected end of M SCN");
-                            else
-                                // In some molfiles last space is not written
-                                need_skip_line = false;
-                        }
+                    }
+                    if (id[2] == '\n')
+                    {
+                        if (n != 0)
+                            throw Error("Unexpected end of M SCN");
+                        else
+                            // In some molfiles last space is not written
+                            need_skip_line = false;
                     }
                 }
                 if (need_skip_line)
@@ -2105,28 +2127,31 @@ void MolfileLoader::_postLoad()
 
     std::set<int> templates_to_remove;
     std::unordered_map<MonomerKey, int, pair_hash> new_templates;
-    for (int atom_idx = _bmol->vertexBegin(); atom_idx != _bmol->vertexEnd(); atom_idx = _bmol->vertexNext(atom_idx))
+    if (!_bmol->isQueryMolecule())
     {
-        if (_bmol->isTemplateAtom(atom_idx) && isNucleotideClass(_bmol->getTemplateAtomClass(atom_idx)))
+        for (int atom_idx = _bmol->vertexBegin(); atom_idx != _bmol->vertexEnd(); atom_idx = _bmol->vertexNext(atom_idx))
         {
-            int tg_idx = _bmol->getTemplateAtomTemplateIndex(atom_idx);
-            if (tg_idx == -1)
+            if (_bmol->isTemplateAtom(atom_idx) && isNucleotideClass(_bmol->getTemplateAtomClass(atom_idx)))
             {
-                auto atom_name = _bmol->getTemplateAtom(atom_idx);
-                auto nt_it = nucleo_templates.find(atom_name);
-                if (nt_it != nucleo_templates.end())
+                int tg_idx = _bmol->getTemplateAtomTemplateIndex(atom_idx);
+                if (tg_idx == -1)
                 {
-                    if (_expandNucleotide(atom_idx, nt_it->second, new_templates))
-                        templates_to_remove.insert(nt_it->second);
+                    auto atom_name = _bmol->getTemplateAtom(atom_idx);
+                    auto nt_it = nucleo_templates.find(atom_name);
+                    if (nt_it != nucleo_templates.end())
+                    {
+                        if (_expandNucleotide(atom_idx, nt_it->second, new_templates))
+                            templates_to_remove.insert(nt_it->second);
+                    }
+                    else
+                    {
+                        // TODO: handle missing template case
+                    }
                 }
-                else
+                else // tg_idx != -1 means the template is converted from S-Group
                 {
-                    // TODO: handle missing template case
+                    // TODO: handle modified monomer. Currently it leaves as is.
                 }
-            }
-            else // tg_idx != -1 means the template is converted from S-Group
-            {
-                // TODO: handle modified monomer. Currently it leaves as is.
             }
         }
     }
@@ -2163,103 +2188,98 @@ bool MolfileLoader::_expandNucleotide(int nuc_atom_idx, int tg_idx, std::unorder
     GranularNucleotide nuc;
     if (MonomerTemplates::splitNucleotide(tg.tgroup_class.ptr(), tg.tgroup_name.ptr(), nuc))
     {
-        if (_mol)
+        auto& ph = nuc.at(MonomerClass::Phosphate).get();
+        auto& sugar = nuc.at(MonomerClass::Sugar).get();
+        auto& base = nuc.at(MonomerClass::Base).get();
+        int seq_id = _bmol->getTemplateAtomSeqid(nuc_atom_idx);
+        // collect attachment points. only left attachment remains untouched.
+        std::unordered_map<std::string, int> atp_map;
+        for (int j = _bmol->template_attachment_points.begin(); j != _bmol->template_attachment_points.end(); j = _bmol->template_attachment_points.next(j))
         {
-            auto& ph = nuc.at(MonomerClass::Phosphate).get();
-            auto& sugar = nuc.at(MonomerClass::Sugar).get();
-            auto& base = nuc.at(MonomerClass::Base).get();
-            int seq_id = _mol->getTemplateAtomSeqid(nuc_atom_idx);
-            // collect attachment points. only left attachment remains untouched.
-            std::unordered_map<std::string, int> atp_map;
-            for (int j = _mol->template_attachment_points.begin(); j != _mol->template_attachment_points.end(); j = _mol->template_attachment_points.next(j))
+            auto& ap = _bmol->template_attachment_points.at(j);
+            if (ap.ap_occur_idx == nuc_atom_idx && std::string(ap.ap_id.ptr()) > kLeftAttachmentPoint)
             {
-                auto& ap = _mol->template_attachment_points.at(j);
-                if (ap.ap_occur_idx == nuc_atom_idx && std::string(ap.ap_id.ptr()) > kLeftAttachmentPoint)
-                {
-                    atp_map.emplace(ap.ap_id.ptr(), ap.ap_aidx);
-                    _mol->template_attachment_points.remove(j);
-                    auto att_idxs = _mol->getTemplateAtomAttachmentPointIdxs(nuc_atom_idx, j);
-                    if (att_idxs.has_value())
-                        att_idxs.value().second.get().remove(att_idxs.value().first);
-                }
+                atp_map.emplace(ap.ap_id.ptr(), ap.ap_aidx);
+                _bmol->template_attachment_points.remove(j);
+                auto att_idxs = _bmol->getTemplateAtomAttachmentPointIdxs(nuc_atom_idx, j);
+                if (att_idxs.has_value())
+                    att_idxs.value().second.get().remove(att_idxs.value().first);
             }
-
-            // patch existing nucleotide atom with phosphate
-            _mol->renameTemplateAtom(nuc_atom_idx, ph.first.second.c_str());
-            _mol->setTemplateAtomClass(nuc_atom_idx, MonomerTemplates::classToStr(ph.first.first).c_str());
-
-            // add sugar
-            int sugar_idx = _mol->addAtom(-1);
-            _mol->setTemplateAtom(sugar_idx, sugar.first.second.c_str());
-            _mol->setTemplateAtomClass(sugar_idx, MonomerTemplates::classToStr(sugar.first.first).c_str());
-
-            // add base
-            int base_idx = _mol->addAtom(-1);
-            _mol->setTemplateAtom(base_idx, base.first.second.c_str());
-            _mol->setTemplateAtomClass(base_idx, MonomerTemplates::classToStr(base.first.first).c_str());
-
-            // modify connections
-            auto right_it = atp_map.find(std::string(kRightAttachmentPoint));
-            int right_idx = -1;
-            if (right_it != atp_map.end())
-            {
-                // nucleotide had Br attachment point. Now it should be moved to sugar.
-                //   disconnect right nucleotide
-                right_idx = right_it->second;
-                _mol->removeEdge(_mol->findEdgeIndex(nuc_atom_idx, right_idx));
-                // connect right nucleotide to the sugar
-                _mol->addBond_Silent(sugar_idx, right_it->second, BOND_SINGLE);
-                // [sugar <- (Al) right nucleotide]
-                _mol->updateTemplateAtomAttachmentDestination(right_idx, nuc_atom_idx, sugar_idx);
-                // [sugar (Br) -> right nucleotide]
-                _mol->setTemplateAtomAttachmentOrder(sugar_idx, right_idx, kRightAttachmentPoint);
-                atp_map.erase(right_it);
-            }
-
-            for (auto& atp : atp_map)
-            {
-                _mol->removeEdge(_mol->findEdgeIndex(nuc_atom_idx, atp.second));
-                // connect branch to base. which is incorrect!!! TODO: use substructure matcher to determine right monomer!!!
-                _mol->addBond_Silent(base_idx, atp.second, BOND_SINGLE);
-                // [sugar <- (Al) right nucleotide]
-                _mol->updateTemplateAtomAttachmentDestination(atp.second, nuc_atom_idx, base_idx);
-                // [sugar (Br) -> right nucleotide]
-                _mol->setTemplateAtomAttachmentOrder(base_idx, right_it->second, atp.first.c_str());
-            }
-
-            // connect phosphate to the sugar
-            _mol->addBond_Silent(nuc_atom_idx, sugar_idx, BOND_SINGLE);
-            // [phosphate (Br) -> sugar]
-            _mol->setTemplateAtomAttachmentOrder(nuc_atom_idx, sugar_idx, kRightAttachmentPoint);
-            // [phosphate <- (Al) sugar]
-            _mol->setTemplateAtomAttachmentOrder(sugar_idx, nuc_atom_idx, kLeftAttachmentPoint);
-            // connect base to sugar
-            _mol->addBond_Silent(sugar_idx, base_idx, BOND_SINGLE);
-            // [sugar (Cx) -> base]
-            _mol->setTemplateAtomAttachmentOrder(sugar_idx, base_idx, kBranchAttachmentPoint);
-            // [sugar <- (Al) base]
-            _mol->setTemplateAtomAttachmentOrder(base_idx, sugar_idx, kLeftAttachmentPoint);
-            // fix coordinates
-            Vec3f sugar_pos, base_pos;
-            if (!_bmol->getMiddlePoint(nuc_atom_idx, right_idx, sugar_pos))
-            {
-                sugar_pos.copy(_bmol->getAtomXyz(nuc_atom_idx));
-                sugar_pos.x += LayoutOptions::DEFAULT_BOND_LENGTH;
-            }
-            base_pos.copy(sugar_pos);
-            base_pos.y -= LayoutOptions::DEFAULT_BOND_LENGTH;
-            _bmol->setAtomXyz(sugar_idx, sugar_pos);
-            _bmol->setAtomXyz(base_idx, base_pos);
-            // set seqid
-            _mol->setTemplateAtomSeqid(nuc_atom_idx, seq_id++); // increment seq_id after phosphate
-            _mol->setTemplateAtomSeqid(sugar_idx, seq_id);
-            _mol->setTemplateAtomSeqid(base_idx, seq_id);
-            // handle templates
-            _mol->setTemplateAtomTemplateIndex(nuc_atom_idx, _insertTemplate(ph, new_templates));
-            _mol->setTemplateAtomTemplateIndex(sugar_idx, _insertTemplate(sugar, new_templates));
-            _mol->setTemplateAtomTemplateIndex(base_idx, _insertTemplate(base, new_templates));
-            return true;
         }
+
+        // patch existing nucleotide atom with phosphate
+        _bmol->renameTemplateAtom(nuc_atom_idx, ph.first.second.c_str());
+        _bmol->setTemplateAtomClass(nuc_atom_idx, MonomerTemplates::classToStr(ph.first.first).c_str());
+
+        // add sugar
+        int sugar_idx = _bmol->addTemplateAtom(sugar.first.second.c_str());
+        _bmol->setTemplateAtomClass(sugar_idx, MonomerTemplates::classToStr(sugar.first.first).c_str());
+
+        // add base
+        int base_idx = _bmol->addTemplateAtom(base.first.second.c_str());
+        _bmol->setTemplateAtomClass(base_idx, MonomerTemplates::classToStr(base.first.first).c_str());
+
+        // modify connections
+        auto right_it = atp_map.find(std::string(kRightAttachmentPoint));
+        int right_idx = -1;
+        if (right_it != atp_map.end())
+        {
+            // nucleotide had Br attachment point. Now it should be moved to sugar.
+            //   disconnect right nucleotide
+            right_idx = right_it->second;
+            _bmol->removeEdge(_bmol->findEdgeIndex(nuc_atom_idx, right_idx));
+            // connect right nucleotide to the sugar
+            _bmol->addBond_Silent(sugar_idx, right_it->second, BOND_SINGLE);
+            // [sugar <- (Al) right nucleotide]
+            _bmol->updateTemplateAtomAttachmentDestination(right_idx, nuc_atom_idx, sugar_idx);
+            // [sugar (Br) -> right nucleotide]
+            _bmol->setTemplateAtomAttachmentOrder(sugar_idx, right_idx, kRightAttachmentPoint);
+            atp_map.erase(right_it);
+        }
+
+        for (auto& atp : atp_map)
+        {
+            _bmol->removeEdge(_bmol->findEdgeIndex(nuc_atom_idx, atp.second));
+            // connect branch to base. which is incorrect!!! TODO: use substructure matcher to determine right monomer!!!
+            _bmol->addBond_Silent(base_idx, atp.second, BOND_SINGLE);
+            // [sugar <- (Al) right nucleotide]
+            _bmol->updateTemplateAtomAttachmentDestination(atp.second, nuc_atom_idx, base_idx);
+            // [sugar (Br) -> right nucleotide]
+            _bmol->setTemplateAtomAttachmentOrder(base_idx, right_it->second, atp.first.c_str());
+        }
+
+        // connect phosphate to the sugar
+        _bmol->addBond_Silent(nuc_atom_idx, sugar_idx, BOND_SINGLE);
+        // [phosphate (Br) -> sugar]
+        _bmol->setTemplateAtomAttachmentOrder(nuc_atom_idx, sugar_idx, kRightAttachmentPoint);
+        // [phosphate <- (Al) sugar]
+        _bmol->setTemplateAtomAttachmentOrder(sugar_idx, nuc_atom_idx, kLeftAttachmentPoint);
+        // connect base to sugar
+        _bmol->addBond_Silent(sugar_idx, base_idx, BOND_SINGLE);
+        // [sugar (Cx) -> base]
+        _bmol->setTemplateAtomAttachmentOrder(sugar_idx, base_idx, kBranchAttachmentPoint);
+        // [sugar <- (Al) base]
+        _bmol->setTemplateAtomAttachmentOrder(base_idx, sugar_idx, kLeftAttachmentPoint);
+        // fix coordinates
+        Vec3f sugar_pos, base_pos;
+        if (!_bmol->getMiddlePoint(nuc_atom_idx, right_idx, sugar_pos))
+        {
+            sugar_pos.copy(_bmol->getAtomXyz(nuc_atom_idx));
+            sugar_pos.x += LayoutOptions::DEFAULT_BOND_LENGTH;
+        }
+        base_pos.copy(sugar_pos);
+        base_pos.y -= LayoutOptions::DEFAULT_BOND_LENGTH;
+        _bmol->setAtomXyz(sugar_idx, sugar_pos);
+        _bmol->setAtomXyz(base_idx, base_pos);
+        // set seqid
+        _bmol->setTemplateAtomSeqid(nuc_atom_idx, seq_id++); // increment seq_id after phosphate
+        _bmol->setTemplateAtomSeqid(sugar_idx, seq_id);
+        _bmol->setTemplateAtomSeqid(base_idx, seq_id);
+        // handle templates
+        _bmol->setTemplateAtomTemplateIndex(nuc_atom_idx, _insertTemplate(ph, new_templates));
+        _bmol->setTemplateAtomTemplateIndex(sugar_idx, _insertTemplate(sugar, new_templates));
+        _bmol->setTemplateAtomTemplateIndex(base_idx, _insertTemplate(base, new_templates));
+        return true;
     }
     return false;
 }
@@ -2577,16 +2597,19 @@ void MolfileLoader::_readCtab3000()
 
             if (_mol != 0)
             {
-                _mol->addAtom(label);
-                if (atom_type == _ATOM_PSEUDO)
+                if (atom_type == _ATOM_TEMPLATE)
                 {
                     _preparePseudoAtomLabel(buf);
-                    _mol->setPseudoAtom(i, buf.ptr());
+                    _mol->addTemplateAtom(buf.ptr());
                 }
-                else if (atom_type == _ATOM_TEMPLATE)
+                else
                 {
-                    _preparePseudoAtomLabel(buf);
-                    _mol->setTemplateAtom(i, buf.ptr());
+                    _mol->addAtom(label);
+                    if (atom_type == _ATOM_PSEUDO)
+                    {
+                        _preparePseudoAtomLabel(buf);
+                        _mol->setPseudoAtom(i, buf.ptr());
+                    }
                 }
             }
             else
@@ -2600,7 +2623,7 @@ void MolfileLoader::_readCtab3000()
                 else if (atom_type == _ATOM_PSEUDO)
                     _qmol->addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, buf.ptr()));
                 else if (atom_type == _ATOM_TEMPLATE)
-                    _qmol->addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_TEMPLATE, buf.ptr()));
+                    _qmol->addTemplateAtom(buf.ptr());
                 else if (atom_type == _ATOM_A)
                     _qmol->addAtom(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
                 else if (atom_type == _ATOM_AH)
@@ -2898,24 +2921,12 @@ void MolfileLoader::_readCtab3000()
                     QS_DEF(Array<char>, temp_class);
                     strscan.readWord(temp_class, 0);
                     temp_class.push(0);
-                    if (_mol != 0)
-                        _mol->setTemplateAtomClass(i, temp_class.ptr());
-                    else
-                    {
-                        _qmol->resetAtom(
-                            i, QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_TEMPLATE_CLASS, temp_class.ptr())));
-                    }
+                    _bmol->setTemplateAtomClass(i, temp_class.ptr());
                 }
                 else if (strcmp(prop, "SEQID") == 0)
                 {
                     int seq_id = strscan.readInt1();
-                    if (_mol != 0)
-                        _mol->setTemplateAtomSeqid(i, seq_id);
-                    else
-                    {
-                        _qmol->resetAtom(i,
-                                         QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_TEMPLATE_SEQID, seq_id)));
-                    }
+                    _bmol->setTemplateAtomSeqid(i, seq_id);
                 }
                 else if (strcmp(prop, "SEQNAME") == 0)
                 {
@@ -3793,6 +3804,8 @@ void MolfileLoader::_readTGroups3000()
 
     while (!_scanner.isEOF())
     {
+        long long next_block_pos = _scanner.tell();
+
         _scanner.readLine(str, true);
 
         if (strncmp(str.ptr(), "M  V30 BEGIN TEMPLATE", 21) == 0)
@@ -3896,10 +3909,11 @@ void MolfileLoader::_readTGroups3000()
                     throw Error("unexpected string in template: %s", str.ptr());
             }
         }
-        else if (strncmp(str.ptr(), "M  END", 6) == 0)
-            break;
         else
-            throw Error("unexpected string in template: %s", str.ptr());
+        {
+            _scanner.seek(next_block_pos, SEEK_SET);
+            break;
+        }
     }
 }
 

@@ -38,6 +38,7 @@ MoleculeStereocenters::MoleculeStereocenters()
 void MoleculeStereocenters::clear()
 {
     _stereocenters.clear();
+    _atropocenters.clear();
 }
 
 void MoleculeStereocenters::buildFromBonds(BaseMolecule& baseMolecule, const StereocentersOptions& options, int* sensible_bonds_out)

@@ -2156,7 +2156,7 @@ _cairo_ft_scaled_font_fini (void *abstract_font)
 }
 
 static int
-_move_to (FT_Vector *to, void *closure)
+_move_to (const FT_Vector *to, void *closure)
 {
     cairo_path_fixed_t *path = closure;
     cairo_fixed_t x, y;
@@ -2173,7 +2173,7 @@ _move_to (FT_Vector *to, void *closure)
 }
 
 static int
-_line_to (FT_Vector *to, void *closure)
+_line_to (const FT_Vector *to, void *closure)
 {
     cairo_path_fixed_t *path = closure;
     cairo_fixed_t x, y;
@@ -2188,7 +2188,7 @@ _line_to (FT_Vector *to, void *closure)
 }
 
 static int
-_conic_to (FT_Vector *control, FT_Vector *to, void *closure)
+_conic_to (const FT_Vector *control, const FT_Vector *to, void *closure)
 {
     cairo_path_fixed_t *path = closure;
 
@@ -2223,7 +2223,7 @@ _conic_to (FT_Vector *control, FT_Vector *to, void *closure)
 }
 
 static int
-_cubic_to (FT_Vector *control1, FT_Vector *control2,
+_cubic_to (const FT_Vector *control1, const FT_Vector *control2,
 	   FT_Vector *to, void *closure)
 {
     cairo_path_fixed_t *path = closure;
