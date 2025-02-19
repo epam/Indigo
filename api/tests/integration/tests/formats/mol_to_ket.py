@@ -51,6 +51,7 @@ files = [
     "1972-case2",
     "chem_rna_hydro",
     "tadfile",
+    "2708-sgroup-data",
 ]
 
 files.sort()
