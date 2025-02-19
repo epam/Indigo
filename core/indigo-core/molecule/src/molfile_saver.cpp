@@ -1388,7 +1388,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             {
                 int* s = substitution_count.push();
                 s[0] = i;
-                s[1] = subst;
+                s[1] = subst > MAX_SUBSTITUTION_COUNT ? MAX_SUBSTITUTION_COUNT : subst;
             }
         }
 

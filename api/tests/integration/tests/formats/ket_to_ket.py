@@ -17,6 +17,7 @@ from env_indigo import Indigo, joinPathPy  # noqa
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
 indigo.setOption("ignore-stereochemistry-errors", True)
+indigo.setOption("molfile-saving-skip-date", True)
 
 print("*** KET to KET ***")
 
@@ -74,6 +75,17 @@ for filename in sorted(files):
             #     file.write(mol.json())
             ket = mol.json()
             check_res(filename, format + " " + loader.__name__, ket_ref, ket)
+
+filename = "2707_subst_count"
+file_path = os.path.join(ref_path, filename)
+mol = indigo.loadQueryMoleculeFromFile("{}.ket".format(file_path))
+for format, saver in {"ket": mol.json, "mol": mol.molfile}.items():
+    data = saver()
+    # with open("{}.{}".format(file_path, format), "w") as file:
+    #     file.write(data)
+    with open("{}.{}".format(file_path, format), "r") as file:
+        data_ref = file.read()
+    check_res(filename, format, data_ref, data)
 
 files = [
     "multi_merge4",

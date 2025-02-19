@@ -477,9 +477,8 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                                                                                                                   _pqmol->getVertex(atom_idx).degree())));
             }
             else if (sub_count > 0)
-                _pqmol->resetAtom(atom_idx,
-                                  QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, sub_count,
-                                                                                                                  (sub_count < 6 ? sub_count : 100))));
+                _pqmol->resetAtom(
+                    atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, sub_count)));
             else
                 throw Error("invalid SUB value: %d", sub_count);
         }

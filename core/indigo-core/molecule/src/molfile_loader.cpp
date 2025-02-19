@@ -27,6 +27,7 @@
 #include "molecule/molecule_3d_constraints.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molfile_loader.h"
+#include "molecule/molfile_saver.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
@@ -836,9 +837,10 @@ void MolfileLoader::_readCtab2000()
                                                                                                                      _qmol->getVertex(atom_idx).degree())));
                     }
                     else if (sub_count > 0)
-                        _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
-                                                                            new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, sub_count,
-                                                                                                    (sub_count < 6 ? sub_count : 100))));
+                        _qmol->resetAtom(
+                            atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
+                                                               new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, sub_count,
+                                                                                       (sub_count < MolfileSaver::MAX_SUBSTITUTION_COUNT ? sub_count : 100))));
                     else
                         throw Error("invalid SUB value: %d", sub_count);
                 }
@@ -2817,8 +2819,10 @@ void MolfileLoader::_readCtab3000()
                                                             new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN, _qmol->getVertex(i).degree())));
                         }
                         else if (subst > 0)
-                            _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst,
-                                                                                                                        (subst < 6 ? subst : 100))));
+                            _qmol->resetAtom(i,
+                                             QueryMolecule::Atom::und(_qmol->releaseAtom(i),
+                                                                      new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst,
+                                                                                              (subst < MolfileSaver::MAX_SUBSTITUTION_COUNT ? subst : 100))));
                         else
                             throw Error("invalid SUBST value: %d", subst);
                     }

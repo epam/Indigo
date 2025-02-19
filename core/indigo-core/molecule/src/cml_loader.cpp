@@ -683,8 +683,7 @@ void CmlLoader::_loadMoleculeElement(XMLHandle& handle)
                             }
                             else if (subst > 0)
                             {
-                                atom.reset(QueryMolecule::Atom::und(
-                                    atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst, (subst < 6 ? subst : 100))));
+                                atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst)));
                             }
                         }
                         else if (strncmp(qf.ptr(), "u", 1) == 0)
