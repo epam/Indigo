@@ -837,10 +837,11 @@ void MolfileLoader::_readCtab2000()
                                                                                                                      _qmol->getVertex(atom_idx).degree())));
                     }
                     else if (sub_count > 0)
-                        _qmol->resetAtom(
-                            atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
-                                                               new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, sub_count,
-                                                                                       (sub_count < MolfileSaver::MAX_SUBSTITUTION_COUNT ? sub_count : 100))));
+                        _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(
+                                                       _qmol->releaseAtom(atom_idx),
+                                                       new QueryMolecule::Atom(
+                                                           QueryMolecule::ATOM_SUBSTITUENTS, sub_count,
+                                                           (sub_count < MolfileSaver::MAX_SUBSTITUTION_COUNT ? sub_count : QueryMolecule::MAX_ATOM_VALUE))));
                     else
                         throw Error("invalid SUB value: %d", sub_count);
                 }
@@ -2869,8 +2870,9 @@ void MolfileLoader::_readCtab3000()
                                                                              new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbonds)));
                             }
                             else if (rb > 1)
-                                _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
-                                                                             new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rb, (rb < 4 ? rb : 100))));
+                                _qmol->resetAtom(
+                                    i, QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rb,
+                                                                                                               (rb < 4 ? rb : QueryMolecule::MAX_ATOM_VALUE))));
                             else
                                 throw Error("invalid RBCNT value: %d", rb);
                         }
