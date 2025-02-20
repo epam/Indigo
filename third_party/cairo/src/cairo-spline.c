@@ -83,6 +83,7 @@ _cairo_spline_intersects (const cairo_point_t *a,
 cairo_bool_t
 _cairo_spline_init (cairo_spline_t *spline,
 		    cairo_spline_add_point_func_t add_point_func,
+		    cairo_spline_add_point_simple_func_t add_point_simple_func,
 		    void *closure,
 		    const cairo_point_t *a, const cairo_point_t *b,
 		    const cairo_point_t *c, const cairo_point_t *d)
@@ -91,7 +92,11 @@ _cairo_spline_init (cairo_spline_t *spline,
     if (a->x == b->x && a->y == b->y && c->x == d->x && c->y == d->y)
 	return FALSE;
 
+    if (add_point_func == NULL && add_point_simple_func == NULL)
+    return FALSE;
+
     spline->add_point_func = add_point_func;
+    spline->add_point_simple_func = add_point_simple_func;
     spline->closure = closure;
 
     spline->knots.a = *a;
@@ -135,7 +140,8 @@ _cairo_spline_add_point (cairo_spline_t *spline,
     _cairo_slope_init (&slope, point, knot);
 
     spline->last_point = *point;
-    return spline->add_point_func (spline->closure, point, &slope);
+    return spline->add_point_func != NULL ? spline->add_point_func (spline->closure, point, &slope)
+                                          : spline->add_point_simple_func (spline->closure, point);    
 }
 
 static void
@@ -268,13 +274,13 @@ _cairo_spline_decompose (cairo_spline_t *spline, double tolerance)
     if (unlikely (status))
 	return status;
 
-    return spline->add_point_func (spline->closure,
-				   &spline->knots.d, &spline->final_slope);
+    return spline->add_point_func != NULL ? spline->add_point_func (spline->closure, &spline->knots.d, &spline->final_slope)
+                                          : spline->add_point_simple_func (spline->closure, &spline->knots.d);
 }
 
 /* Note: this function is only good for computing bounds in device space. */
 cairo_status_t
-_cairo_spline_bound (cairo_spline_add_point_func_t add_point_func,
+_cairo_spline_bound (cairo_spline_add_point_simple_func_t add_point_simple_func,
 		     void *closure,
 		     const cairo_point_t *p0, const cairo_point_t *p1,
 		     const cairo_point_t *p2, const cairo_point_t *p3)
@@ -381,7 +387,7 @@ _cairo_spline_bound (cairo_spline_add_point_func_t add_point_func,
     c = -y0 + y1;
     FIND_EXTREMES (a, b, c);
 
-    status = add_point_func (closure, p0, NULL);
+    status = add_point_simple_func (closure, p0);
     if (unlikely (status))
 	return status;
 
@@ -415,10 +421,10 @@ _cairo_spline_bound (cairo_spline_add_point_func_t add_point_func,
 
 	p.x = _cairo_fixed_from_double (x);
 	p.y = _cairo_fixed_from_double (y);
-	status = add_point_func (closure, &p, NULL);
+	status = add_point_simple_func (closure, &p);
 	if (unlikely (status))
 	    return status;
     }
 
-    return add_point_func (closure, p3, NULL);
+    return add_point_simple_func (closure, p3);
 }

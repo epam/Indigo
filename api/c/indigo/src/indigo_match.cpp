@@ -985,7 +985,7 @@ int indigoIterateMatches(int target_matcher, int query)
         {
             IndigoMoleculeSubstructureMatcher& matcher = IndigoMoleculeSubstructureMatcher::cast(obj);
 
-            if (matcher.tau_params.method != BASIC && matcher.mode == IndigoMoleculeSubstructureMatcher::TAUTOMER)
+            if (matcher.mode == IndigoMoleculeSubstructureMatcher::TAUTOMER && matcher.tau_params.method != BASIC)
             {
                 std::unique_ptr<IndigoTautomerSubstructureMatchIter> match_iter(
                     matcher.getTautomerMatchIterator(self, query, true, self.max_embeddings, matcher.tau_params.method));

@@ -27,6 +27,7 @@
 #include "molecule/molecule_3d_constraints.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molfile_loader.h"
+#include "molecule/molfile_saver.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
@@ -836,9 +837,11 @@ void MolfileLoader::_readCtab2000()
                                                                                                                      _qmol->getVertex(atom_idx).degree())));
                     }
                     else if (sub_count > 0)
-                        _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx),
-                                                                            new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, sub_count,
-                                                                                                    (sub_count < 6 ? sub_count : 100))));
+                        _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(
+                                                       _qmol->releaseAtom(atom_idx),
+                                                       new QueryMolecule::Atom(
+                                                           QueryMolecule::ATOM_SUBSTITUENTS, sub_count,
+                                                           (sub_count < MolfileSaver::MAX_SUBSTITUTION_COUNT ? sub_count : QueryMolecule::MAX_ATOM_VALUE))));
                     else
                         throw Error("invalid SUB value: %d", sub_count);
                 }
@@ -1411,14 +1414,14 @@ void MolfileLoader::_readCtab2000()
                             id[3] = 0;
                             throw Error("Undefined Sgroup connectivity: '%s'", id);
                         }
-                        if (id[2] == '\n')
-                        {
-                            if (n != 0)
-                                throw Error("Unexpected end of M SCN");
-                            else
-                                // In some molfiles last space is not written
-                                need_skip_line = false;
-                        }
+                    }
+                    if (id[2] == '\n')
+                    {
+                        if (n != 0)
+                            throw Error("Unexpected end of M SCN");
+                        else
+                            // In some molfiles last space is not written
+                            need_skip_line = false;
                     }
                 }
                 if (need_skip_line)
@@ -2817,8 +2820,11 @@ void MolfileLoader::_readCtab3000()
                                                             new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN, _qmol->getVertex(i).degree())));
                         }
                         else if (subst > 0)
-                            _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst,
-                                                                                                                        (subst < 6 ? subst : 100))));
+                            _qmol->resetAtom(
+                                i, QueryMolecule::Atom::und(
+                                       _qmol->releaseAtom(i),
+                                       new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst,
+                                                               (subst < MolfileSaver::MAX_SUBSTITUTION_COUNT ? subst : QueryMolecule::MAX_ATOM_VALUE))));
                         else
                             throw Error("invalid SUBST value: %d", subst);
                     }
@@ -2865,8 +2871,9 @@ void MolfileLoader::_readCtab3000()
                                                                              new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS_AS_DRAWN, rbonds)));
                             }
                             else if (rb > 1)
-                                _qmol->resetAtom(i, QueryMolecule::Atom::und(_qmol->releaseAtom(i),
-                                                                             new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rb, (rb < 4 ? rb : 100))));
+                                _qmol->resetAtom(
+                                    i, QueryMolecule::Atom::und(_qmol->releaseAtom(i), new QueryMolecule::Atom(QueryMolecule::ATOM_RING_BONDS, rb,
+                                                                                                               (rb < 4 ? rb : QueryMolecule::MAX_ATOM_VALUE))));
                             else
                                 throw Error("invalid RBCNT value: %d", rb);
                         }
@@ -3999,6 +4006,9 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
                 dsg.tag = ch;
         }
 
+        if (scanner.lookNext() == '\n' || scanner.lookNext() == '\r')
+            return;
+
         cur = scanner.tell();
         scanner.seek(0LL, SEEK_END);
         long long end = scanner.tell();
@@ -4006,9 +4016,12 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
 
         if (end - cur + 1 > 2)
         {
-            scanner.skip(2);
-            if (scanner.lookNext() == '\n' || scanner.lookNext() == '\r')
-                return;
+            for (auto i = 0; i < 2; i++)
+            {
+                scanner.skip(1);
+                if (scanner.lookNext() == '\n' || scanner.lookNext() == '\r')
+                    return;
+            }
             int c = scanner.readChar();
             if (c >= '1' && c <= '9')
                 dsg.dasp_pos = c - '0';

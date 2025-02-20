@@ -162,9 +162,18 @@ mol = indigo.loadMoleculeFromFile(
 renderer.renderToFile(mol, joinPathPy("out/sa-mono.png", __file__))
 print(checkImageSimilarity("sa-mono.png"))
 
+print("issue 2746 incorrect phosphorus valence")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+fname = "incorrect_phosphorus_valence_2746"
+png_fname = fname + ".png"
+cdxml_fname = joinPathPy("molecules/%s.cdxml" % fname, __file__)
+mol = indigo.loadMoleculeFromFile(cdxml_fname)
+renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
+
 print("issue 2748 backwards substituents")
 indigo.resetOptions()
-indigo.setOption("render-background-color", "255, 255, 255")
 indigo.setOption("render-output-format", "png")
 fname = "backwards_substituents_2748"
 png_fname = fname + ".png"

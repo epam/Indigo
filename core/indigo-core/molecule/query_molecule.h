@@ -189,6 +189,8 @@ namespace indigo
             virtual void _optimize(){};
         };
 
+        constexpr static int MAX_ATOM_VALUE = 100;
+
         class DLLEXPORT Atom : public Node
         {
         public:

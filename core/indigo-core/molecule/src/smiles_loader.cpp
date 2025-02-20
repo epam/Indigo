@@ -470,7 +470,21 @@ void SmilesLoader::_readOtherStuff()
         else if (c == '$') // pseudoatoms
         {
             QS_DEF(Array<char>, label);
-
+            // It can be values filed - $_AV:;;$ Just skip for now
+            if (_scanner.lookNext() == '_')
+            {
+                constexpr char value_prefix[] = "_AV:";
+                auto position = _scanner.tell();
+                _scanner.read(sizeof(value_prefix) - 1, label);
+                label.push(0);
+                if (strcmp(value_prefix, label.ptr()) == 0)
+                {
+                    _scanner.skipUntil("$");
+                    _scanner.skip(1);
+                    continue;
+                }
+                _scanner.seek(position, SEEK_SET);
+            }
             for (int i = _bmol->vertexBegin(); i != _bmol->vertexEnd(); i = _bmol->vertexNext(i))
             {
                 label.clear();
@@ -484,8 +498,8 @@ void SmilesLoader::_readOtherStuff()
                         break;
                     label.push(c);
                 }
-                if (c == '$' && i != _bmol->vertexEnd() - 1)
-                    throw Error("only %d atoms found in pseudo-atoms $...$ block", i + 1);
+                // if (c == '$' && i != _bmol->vertexEnd() - 1)
+                //     throw Error("only %d atoms found in pseudo-atoms $...$ block", i + 1);
                 if (c == ';' && i == _bmol->vertexEnd() - 1)
                     throw Error("extra ';' in pseudo-atoms $...$ block");
 
@@ -531,9 +545,18 @@ void SmilesLoader::_readOtherStuff()
                         if (label.size() > 3 &&
                             (strncmp(label.ptr() + label.size() - 3, "_p", 2) == 0 || strncmp(label.ptr() + label.size() - 3, "_e", 2) == 0))
                         {
-                            label.pop();
-                            label.pop();
-                            label.pop();
+                            constexpr char star_atom_name[] = "star_e";
+                            if (label.size() == sizeof(star_atom_name) && strcmp(label.ptr(), star_atom_name) == 0)
+                            {
+                                label.clear();
+                                label.push('*');
+                            }
+                            else
+                            {
+                                label.pop();
+                                label.pop();
+                                label.pop();
+                            }
                             label.push(0);
                         }
 
@@ -571,6 +594,14 @@ void SmilesLoader::_readOtherStuff()
 
                                 x_atom->type = QueryMolecule::OP_NONE;
                                 _qmol->resetAtom(i, x_atom.release());
+                            }
+                            else if (label.size() == 2 && label[0] == '*')
+                            {
+                                std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
+
+                                x_atom->type = QueryMolecule::OP_NONE;
+                                _qmol->resetAtom(i, x_atom.release());
+                                _qmol->setAlias(i, "*");
                             }
                             else if (label.size() == 2 && label[0] == 'X')
                             {
@@ -676,6 +707,8 @@ void SmilesLoader::_readOtherStuff()
                         }
                     }
                 }
+                if (c == '$')
+                    break;
             }
         }
         else if (c == 'c' || c == 't') // CIS and TRANS bonds
@@ -1323,8 +1356,8 @@ void SmilesLoader::_readOtherStuff()
                                                                                                                     _qmol->getVertex(atom_idx).degree())));
                     break;
                 default:
-                    _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS,
-                                                                                                                              subs, (subs < 6 ? subs : 100))));
+                    _qmol->resetAtom(atom_idx,
+                                     QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subs)));
                     break;
                 }
                 if (_scanner.lookNext() == ',')
