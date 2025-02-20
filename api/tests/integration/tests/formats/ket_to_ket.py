@@ -60,16 +60,16 @@ files = [
     "monomer_shape",
     "ambiguous_monomer",
 ]
-formats = {
+savers = {
     "doc": [indigo.loadKetDocument],
     "mol": [indigo.loadMolecule, indigo.loadQueryMolecule],
 }
 for filename in sorted(files):
-    for format in sorted(formats.keys()):
+    for format in sorted(savers.keys()):
         file_path = os.path.join(ref_path, filename)
         with open("{}_{}.ket".format(file_path, format), "r") as file:
             ket_ref = file.read()
-        for loader in formats[format]:
+        for loader in savers[format]:
             mol = loader(ket_ref)
             # with open("{}_{}.ket".format(file_path, format), "w") as file:
             #     file.write(mol.json())
@@ -79,8 +79,9 @@ for filename in sorted(files):
 filename = "2707_subst_count"
 file_path = os.path.join(ref_path, filename)
 mol = indigo.loadQueryMoleculeFromFile("{}.ket".format(file_path))
-for format, saver in {"ket": mol.json, "mol": mol.molfile}.items():
-    data = saver()
+savers = {"ket": mol.json, "mol": mol.molfile}
+for format in sorted(savers.keys()):
+    data = savers[format]()
     # with open("{}.{}".format(file_path, format), "w") as file:
     #     file.write(data)
     with open("{}.{}".format(file_path, format), "r") as file:
