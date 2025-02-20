@@ -1356,8 +1356,8 @@ void SmilesLoader::_readOtherStuff()
                                                                                                                     _qmol->getVertex(atom_idx).degree())));
                     break;
                 default:
-                    _qmol->resetAtom(atom_idx, QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS,
-                                                                                                                              subs, (subs < 6 ? subs : 100))));
+                    _qmol->resetAtom(atom_idx,
+                                     QueryMolecule::Atom::und(_qmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subs)));
                     break;
                 }
                 if (_scanner.lookNext() == ',')
