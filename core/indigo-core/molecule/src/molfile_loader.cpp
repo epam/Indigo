@@ -2820,10 +2820,11 @@ void MolfileLoader::_readCtab3000()
                                                             new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN, _qmol->getVertex(i).degree())));
                         }
                         else if (subst > 0)
-                            _qmol->resetAtom(i,
-                                             QueryMolecule::Atom::und(_qmol->releaseAtom(i),
-                                                                      new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst,
-                                                                                              (subst < MolfileSaver::MAX_SUBSTITUTION_COUNT ? subst : 100))));
+                            _qmol->resetAtom(
+                                i, QueryMolecule::Atom::und(
+                                       _qmol->releaseAtom(i),
+                                       new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst,
+                                                               (subst < MolfileSaver::MAX_SUBSTITUTION_COUNT ? subst : QueryMolecule::MAX_ATOM_VALUE))));
                         else
                             throw Error("invalid SUBST value: %d", subst);
                     }
