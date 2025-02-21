@@ -823,13 +823,23 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                 if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
                 {
                     const Superatom& group = (Superatom&)sgroup;
-                    Vec3f centre;
-                    for (int j = 0; j < group.atoms.size(); ++j)
+                    Vec3f displayPosition = group.display_position;
+                    bool useDisplayPosition = false;
+                    if (fabs(displayPosition.x) > EPSILON || fabs(displayPosition.y) > EPSILON || fabs(displayPosition.z) > EPSILON)
                     {
-                        int atomID = group.atoms[j];
-                        centre.add(mol.getAtomXyz(atomID));
+                        useDisplayPosition = true;
                     }
-                    centre.scale(1.0f / group.atoms.size());
+
+                    Vec3f centre;
+                    if (!useDisplayPosition)
+                    {
+                        for (int j = 0; j < group.atoms.size(); ++j)
+                        {
+                            int atomID = group.atoms[j];
+                            centre.add(mol.getAtomXyz(atomID));
+                        }
+                        centre.scale(1.0f / group.atoms.size());
+                    }
                     int superAtomID = -1;
 
                     if (mol.isQueryMolecule())
@@ -854,15 +864,16 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                     {
                         int atomID = group.atoms[0];
                         const Vertex& v = mol.getVertex(atomID);
-                        bool posCounted = false;
                         for (int j = v.neiBegin(); j < v.neiEnd(); j = v.neiNext(j))
                         {
                             int neighboringAtomID = v.neiVertex(j);
                             if (!groupAtoms.find(neighboringAtomID))
                             {
-                                pos.add(mol.getAtomXyz(atomID));
-                                posCounted = true;
-                                posCnt++;
+                                if (!useDisplayPosition)
+                                {
+                                    pos.add(mol.getAtomXyz(atomID));
+                                    posCnt++;
+                                }
                                 int neighboringBondID = v.neiEdge(j), bondID = -1;
                                 if (mol.findEdgeIndex(neighboringAtomID, superAtomID) < 0)
                                 {
@@ -890,15 +901,23 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                         }
                         mol.removeAtom(atomID);
                     }
-                    if (posCnt == 0)
+
+                    if (useDisplayPosition)
                     {
-                        pos.copy(centre);
+                        mol.setAtomXyz(superAtomID, displayPosition.x, displayPosition.y, displayPosition.z);
                     }
                     else
                     {
-                        pos.scale(1.f / posCnt);
+                        if (posCnt == 0)
+                        {
+                            pos.copy(centre);
+                        }
+                        else
+                        {
+                            pos.scale(1.f / posCnt);
+                        }
+                        mol.setAtomXyz(superAtomID, pos.x, pos.y, pos.z);
                     }
-                    mol.setAtomXyz(superAtomID, pos.x, pos.y, pos.z);
                 }
             }
         }

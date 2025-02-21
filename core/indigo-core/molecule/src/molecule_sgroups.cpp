@@ -105,6 +105,7 @@ Superatom::Superatom() : unresolved(false)
     seqid = -1;
     attachment_points.clear();
     bond_connections.clear();
+    display_position.clear();
 }
 
 Superatom::~Superatom()
