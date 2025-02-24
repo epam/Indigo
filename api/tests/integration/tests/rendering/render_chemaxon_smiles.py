@@ -36,16 +36,6 @@ for key, value in smiles.items():
     renderer.renderToFile(mol, joinPathPy(out_dir + png_fname, __file__))
     print(checkImageSimilarity("chemaxon_smiles/" + png_fname))
 
-#png_fname = "smiles_attachment_points_452_S.png"
-#mol = indigo.loadMolecule("S%91C(C1C=CC=CC=1)C1C=CC=CC=1.[*:1]%91 |$;;;;;;;;;;;;;;_AP1$|")
-#renderer.renderToFile(mol, joinPathPy(out_dir + png_fname, __file__))
-#print(checkImageSimilarity("chemaxon_smiles/" + png_fname))
-#
-#png_fname = "smiles_attachment_points_452_N.png"
-#mol = indigo.loadMolecule("[NH3+]%91.[*:1]%91 |$;_AP1$|")
-#renderer.renderToFile(mol, joinPathPy(out_dir + png_fname, __file__))
-#print(checkImageSimilarity("chemaxon_smiles/" + png_fname))
-
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()
