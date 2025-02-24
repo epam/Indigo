@@ -17,6 +17,7 @@ from env_indigo import *  # noqa
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
 indigo.setOption("molfile-saving-skip-date", True)
+indigo.setOption("ignore-stereochemistry-errors", True)
 
 print("*** KET to MOL ***")
 
@@ -69,6 +70,7 @@ files = [
     ("macro/R2R3R4", "auto"),
     ("5amd", "2000"),
     ("chem_rna_hydro", "3000"),
+    ("issue_2702", "auto"),
 ]
 
 files.sort(key=lambda x: x[0])
