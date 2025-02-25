@@ -2083,7 +2083,9 @@ void MolfileLoader::_postLoad()
         {
             if (_bmol->stereocenters.getType(i) == 0)
             {
-                if (!stereochemistry_options.ignore_errors)
+                if (stereochemistry_options.ignore_errors)
+                    _bmol->addStereocentersIgnoreBad(i, _stereocenter_types[i], _stereocenter_groups[i], false); // add non-valid stereocenters
+                else if (_qmol == nullptr)
                     throw Error("stereo type specified for atom #%d, but the bond "
                                 "directions does not say that it is a stereocenter",
                                 i);
