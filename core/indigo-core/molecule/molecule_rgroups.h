@@ -22,6 +22,7 @@
 #include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_pool.h"
 #include "base_cpp/red_black.h"
+#include <limits>
 
 #ifdef _WIN32
 #pragma warning(push)
