@@ -53,11 +53,13 @@ files = [
     "tadfile",
     "2708-sgroup-data",
     "2704-stereocenters",
+    "issue_2699_rlogic",
 ]
 
 native_precisipon = [
     "2708-sgroup-data",
     "2704-stereocenters",
+    "issue_2699_rlogic",
 ]
 
 files.sort()

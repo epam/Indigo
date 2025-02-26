@@ -32,6 +32,7 @@ namespace indigo
 {
 
     class BaseMolecule;
+    class Output;
 
     struct RGroup
     {
@@ -47,6 +48,14 @@ namespace indigo
         int if_then;
         int rest_h;
         Array<int> occurrence;
+
+        inline void pushRange(uint16_t begin, uint16_t end)
+        {
+            occurrence.push((begin << 16) | end);
+        }
+
+        void readOccurrence(const char* str);
+        void writeOccurrence(Output& output);
 
     protected:
         explicit RGroup(RGroup& other);

@@ -1948,30 +1948,10 @@ void SmilesSaver::_writeRGroups()
                     _output.printf(";");
 
                 if (rgroup.occurrence.size() > 0)
-                    _writeOccurrenceRanges(_output, rgroup.occurrence);
+                    rgroup.writeOccurrence(_output);
             }
             _output.writeString("}");
         }
-    }
-}
-
-void SmilesSaver::_writeOccurrenceRanges(Output& out, const Array<int>& occurrences)
-{
-    for (int i = 0; i < occurrences.size(); i++)
-    {
-        int occurrence = occurrences[i];
-
-        if ((occurrence & 0xFFFF) == 0xFFFF)
-            out.printf(">%d", (occurrence >> 16) - 1);
-        else if ((occurrence >> 16) == (occurrence & 0xFFFF))
-            out.printf("%d", occurrence >> 16);
-        else if ((occurrence >> 16) == 0)
-            out.printf("<%d", (occurrence & 0xFFFF) + 1);
-        else
-            out.printf("%d-%d", occurrence >> 16, occurrence & 0xFFFF);
-
-        if (i != occurrences.size() - 1)
-            out.printf(",");
     }
 }
 

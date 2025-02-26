@@ -827,8 +827,8 @@ void CmlSaver::_addRgroups(XMLElement* elem, BaseMolecule& mol, bool query)
 
             QS_DEF(Array<char>, buf);
             ArrayOutput out(buf);
-
-            _writeOccurrenceRanges(out, rgroup.occurrence);
+            rgroup.writeOccurrence(out);
+            out.writeChar(0);
 
             if (buf.size() > 1)
                 rg->SetAttribute("rlogicRange", buf.ptr());
@@ -848,27 +848,6 @@ void CmlSaver::_addRgroupElement(XMLElement* elem, RGroup& rgroup, bool query)
 
         _addMoleculeElement(elem, *fragment, query);
     }
-}
-
-void CmlSaver::_writeOccurrenceRanges(Output& out, const Array<int>& occurrences)
-{
-    for (int i = 0; i < occurrences.size(); i++)
-    {
-        int occurrence = occurrences[i];
-
-        if ((occurrence & 0xFFFF) == 0xFFFF)
-            out.printf(">%d", (occurrence >> 16) - 1);
-        else if ((occurrence >> 16) == (occurrence & 0xFFFF))
-            out.printf("%d", occurrence >> 16);
-        else if ((occurrence >> 16) == 0)
-            out.printf("<%d", (occurrence & 0xFFFF) + 1);
-        else
-            out.printf("%d-%d", occurrence >> 16, occurrence & 0xFFFF);
-
-        if (i != occurrences.size() - 1)
-            out.printf(",");
-    }
-    out.writeChar(0);
 }
 
 bool CmlSaver::_getRingBondCountFlagValue(QueryMolecule& qmol, int idx, int& value)

@@ -1291,7 +1291,7 @@ void SmilesLoader::_readOtherStuff()
                                     }
 
                                     _scanner.readWord(occurrence_str, ".}");
-                                    _readRGroupOccurrenceRanges(occurrence_str.ptr(), rgroup.occurrence);
+                                    rgroup.readOccurrence(occurrence_str.ptr());
 
                                     _scanner.skip(1);
                                 }
@@ -3558,53 +3558,6 @@ int SmilesLoader::_parseCurly(Array<char>& curly, int& repetitions)
         }
     }
     return 0;
-}
-
-void SmilesLoader::_readRGroupOccurrenceRanges(const char* str, Array<int>& ranges)
-{
-    int beg = -1, end = -1;
-    int add_beg = 0, add_end = 0;
-
-    while (*str != 0)
-    {
-        if (*str == '>')
-        {
-            end = 0xFFFF;
-            add_beg = 1;
-        }
-        else if (*str == '<')
-        {
-            beg = 0;
-            add_end = -1;
-        }
-        else if (isdigit(*str))
-        {
-            sscanf(str, "%d", beg == -1 ? &beg : &end);
-            while (isdigit(*str))
-                str++;
-            continue;
-        }
-        else if (*str == ',')
-        {
-            if (end == -1)
-                end = beg;
-            else
-                beg += add_beg, end += add_end;
-            ranges.push((beg << 16) | end);
-            beg = end = -1;
-            add_beg = add_end = 0;
-        }
-        str++;
-    }
-
-    if (beg == -1 && end == -1)
-        return;
-
-    if (end == -1)
-        end = beg;
-    else
-        beg += add_beg, end += add_end;
-    ranges.push((beg << 16) | end);
 }
 
 SmilesLoader::_AtomDesc::_AtomDesc(Pool<List<int>::Elem>& neipool) : neighbors(neipool)
