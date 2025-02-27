@@ -1599,6 +1599,24 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         RGroup& rgroup = rgroups.getRGroup(rgrp.first);
         Value one_rnode(kArrayType);
         Value& rnode = rgrp.second;
+        if (rnode.HasMember("rlogic"))
+        {
+            auto& rlogic = rnode["rlogic"];
+            // rlogic["number"].GetInt();
+            if (rlogic.HasMember("ifthen"))
+            {
+                rgroup.if_then = rlogic["ifthen"].GetInt();
+            }
+            if (rlogic.HasMember("range"))
+            {
+                rgroup.occurrence.clear();
+                rgroup.readOccurrence(rlogic["range"].GetString());
+            }
+            if (rlogic.HasMember("resth"))
+            {
+                rgroup.rest_h = rlogic["resth"].GetBool();
+            }
+        }
         if (rnode.HasMember("fragments"))
         {
             auto& rfragments = rnode["fragments"];
