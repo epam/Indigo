@@ -76,7 +76,7 @@ void RGroup::readOccurrence(const char* str)
     {
         if (*str == '>')
         {
-            end = UINT_LEAST16_MAX;
+            end = UINT16_MAX;
             add_beg = 1;
         }
         else if (*str == '<')
@@ -119,10 +119,10 @@ void RGroup::writeOccurrence(Output& output)
     for (int i = 0; i < occurrence.size(); i++)
     {
         int end = occurrence[i];
-        int begin = end >> std::numeric_limits<uint_least16_t>::digits;
-        end = end & UINT_LEAST16_MAX;
+        int begin = end >> std::numeric_limits<uint16_t>::digits;
+        end = end & UINT16_MAX;
 
-        if (end == UINT_LEAST16_MAX)
+        if (end == UINT16_MAX)
             output.printf(">%d", begin - 1);
         else if (begin == end)
             output.printf("%d", begin);

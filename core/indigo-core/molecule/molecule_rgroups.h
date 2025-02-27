@@ -51,9 +51,9 @@ namespace indigo
         int rest_h;
         Array<int> occurrence;
 
-        inline void pushRange(uint_least16_t begin, uint_least16_t end)
+        inline void pushRange(uint16_t begin, uint16_t end)
         {
-            occurrence.push((begin << std::numeric_limits<uint_least16_t>::digits) | end);
+            occurrence.push((begin << std::numeric_limits<uint16_t>::digits) | end);
         }
 
         void readOccurrence(const char* str);
