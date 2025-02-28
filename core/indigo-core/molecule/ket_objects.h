@@ -765,9 +765,15 @@ namespace indigo
             _ref = ref_prefix + _id;
         };
 
+        const std::map<std::string, int>& getBoolPropStrToIdx() const override;
+
         const std::map<std::string, int>& getIntPropStrToIdx() const override;
 
     private:
+        enum class BoolProps
+        {
+            expanded
+        };
         enum class IntProps
         {
             seqid

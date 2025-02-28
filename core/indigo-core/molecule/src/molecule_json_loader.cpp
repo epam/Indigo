@@ -1674,6 +1674,15 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             mol.setAtomXyz(idx, static_cast<float>(pos_val["x"].GetDouble()), static_cast<float>(pos_val["y"].GetDouble()), 0);
         }
 
+        if (ma.HasMember("expanded"))
+        {
+            bool expanded = ma["expanded"].GetBool();
+            if (expanded)
+                mol.setTemplateAtomDisplayOption(idx, DisplayOption::Expanded);
+            else
+                mol.setTemplateAtomDisplayOption(idx, DisplayOption::Contracted);
+        }
+
         std::string template_id = ma["templateId"].GetString();
         auto temp_it = _id_to_template.find(template_id);
         if (temp_it != _id_to_template.end())

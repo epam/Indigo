@@ -59,6 +59,7 @@ indigo.setOption("json-use-native-precision", True)
 files = [
     "monomer_shape",
     "ambiguous_monomer",
+    "expanded_monomer",
 ]
 savers = {
     "doc": [indigo.loadKetDocument],

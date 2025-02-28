@@ -1682,6 +1682,13 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 writeFloat(writer, pos.y);
                 writer.EndObject(); // pos
 
+                auto display = mol->getTemplateAtomDisplayOption(i);
+                if (display != DisplayOption::Undefined)
+                {
+                    writer.Key("expanded");
+                    writer.Bool(display == DisplayOption::Expanded);
+                }
+
                 // find template
                 writer.Key("alias");
                 auto alias = mol->getTemplateAtom(i);
