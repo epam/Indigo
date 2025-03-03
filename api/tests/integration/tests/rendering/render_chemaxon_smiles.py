@@ -26,9 +26,11 @@ print("issue 425 smiles with attachment points")
 indigo.resetOptions()
 indigo.setOption("render-output-format", "png")
 
-smiles = {"O": "[O-]%91.[*:1]%91 |$;_AP1$|",
-          "S": "S%91C(C1C=CC=CC=1)C1C=CC=CC=1.[*:1]%91 |$;;;;;;;;;;;;;;_AP1$|",
-		  "N": "[NH3+]%91.[*:1]%91 |$;_AP1$|"}
+smiles = {
+    "O": "[O-]%91.[*:1]%91 |$;_AP1$|",
+    "S": "S%91C(C1C=CC=CC=1)C1C=CC=CC=1.[*:1]%91 |$;;;;;;;;;;;;;;_AP1$|",
+    "N": "[NH3+]%91.[*:1]%91 |$;_AP1$|",
+}
 
 for key, value in smiles.items():
     png_fname = "smiles_attachment_points_452_" + key + ".png"
