@@ -172,6 +172,16 @@ mol = indigo.loadMoleculeFromFile(cdxml_fname)
 renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
 print(checkImageSimilarity(png_fname))
 
+print("issue 2150 render heavy atoms")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+fname = "render_heavy_atoms_2150"
+png_fname = fname + ".png"
+mol_fname = joinPathPy("molecules/%s.mol" % fname, __file__)
+mol = indigo.loadMoleculeFromFile(mol_fname)
+renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()
