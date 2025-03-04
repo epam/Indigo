@@ -174,6 +174,7 @@ namespace indigo
         int repeat_pattern;
         std::string label;
         bool is_superatom;
+        Vec3f superatom_position;
     };
 
     struct CdxmlText
