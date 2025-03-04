@@ -124,6 +124,13 @@ def testFoldUnfoldQueryReaction(smiles):
         print(mol.countAtoms())
 
 
+def testFoldUnfoldWithExplicitRadicals(smiles):
+    print("testing " + smiles)
+    mol = indigo.loadMolecule(smiles)
+    mol.unfoldHydrogens()
+    print(mol.smiles())
+
+
 testFoldUnfoldSDF(
     joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__)
 )
@@ -193,3 +200,12 @@ testAutoFoldUnfoldSingleMol("CC[H]")
 testAutoFoldUnfoldSingleReaction("[H]CC>>CC")
 testAutoFoldUnfoldSingleMol("[H][H]")
 testAutoFoldUnfoldSingleMol("[2H]C")
+
+# Monoradical
+testFoldUnfoldWithExplicitRadicals("[CH3] |^1:0|")
+# Diradical (singlet)
+testFoldUnfoldWithExplicitRadicals("[CH2] |^3:0|")
+# Diradical (triplet)
+testFoldUnfoldWithExplicitRadicals("[CH2] |^4:0|")
+testFoldUnfoldWithExplicitRadicals("[CH]C1=CC=CO1 |^4:0|")
+testFoldUnfoldWithExplicitRadicals("C1C=CC=C([CH])C=1 |^4:5|")
