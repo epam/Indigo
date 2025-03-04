@@ -27,12 +27,13 @@ indigo.resetOptions()
 indigo.setOption("render-output-format", "png")
 
 smiles = {
+    "N": "[NH3+]%91.[*:1]%91 |$;_AP1$|",
     "O": "[O-]%91.[*:1]%91 |$;_AP1$|",
     "S": "S%91C(C1C=CC=CC=1)C1C=CC=CC=1.[*:1]%91 |$;;;;;;;;;;;;;;_AP1$|",
-    "N": "[NH3+]%91.[*:1]%91 |$;_AP1$|",
 }
 
-for key, value in smiles.items():
+for key in sorted(smiles.keys()):
+    value = smiles[key]
     png_fname = "smiles_attachment_points_452_" + key + ".png"
     mol = indigo.loadMolecule(value)
     renderer.renderToFile(mol, joinPathPy(out_dir + png_fname, __file__))
