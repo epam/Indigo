@@ -534,9 +534,17 @@ void SmilesLoader::_readOtherStuff()
                         int k;
                         const Vertex& v = _bmol->getVertex(i);
 
+                        Array<int> bondsToRemove;
                         for (k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+                        {
                             _bmol->addAttachmentPoint(rnum, v.neiVertex(k));
+                            if (_bmol->findEdgeIndex(i, v.neiVertex(k)) >= 0)
+                            {
+                                bondsToRemove.push(_bmol->findEdgeIndex(i, v.neiVertex(k)));
+                            }
+                        }
                         to_remove.push(i);
+                        _bmol->removeBonds(bondsToRemove);
                     }
                     else
                     {
