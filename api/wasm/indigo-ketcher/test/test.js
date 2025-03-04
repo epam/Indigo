@@ -685,6 +685,19 @@ M  END
             options.delete();
         });
 
+        test("render", "ketcher_elliptical_arrow", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("ketcher_elliptical_arrow.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("ketcher_elliptical_arrow_out.png", png);
+            const { equal } = await looksSame('ketcher_elliptical_arrow_ref.png', 'ketcher_elliptical_arrow_out.png');
+            assert(equal);
+            options.delete();
+        });
+
         test("render", "ketcher_text_panel_regular", async () => {
             let options = new indigo.MapStringString();
             options.set("render-output-format", "png");

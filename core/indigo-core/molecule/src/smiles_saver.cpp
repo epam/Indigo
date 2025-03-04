@@ -1561,14 +1561,20 @@ void SmilesSaver::writeSpecialAtom(int aid, Output& out)
         out.writeString("X_p");
     else if (query_atom_type == QueryMolecule::QUERY_ATOM_M)
         out.writeString("M_p");
-    else if (query_atom_type == QueryMolecule::QUERY_ATOM_AH)
-        out.writeString("AH_p");
     else if (query_atom_type == QueryMolecule::QUERY_ATOM_QH)
         out.writeString("QH_p");
     else if (query_atom_type == QueryMolecule::QUERY_ATOM_XH)
         out.writeString("XH_p");
     else if (query_atom_type == QueryMolecule::QUERY_ATOM_MH)
         out.writeString("MH_p");
+    else if (query_atom_type == QueryMolecule::QUERY_ATOM_AH)
+    {
+        auto label = _qmol->isAlias(aid) ? _qmol->getAlias(aid) : nullptr;
+        if (label != nullptr && strlen(label) == 1 && *label == '*')
+            out.writeString("star_e");
+        else
+            out.writeString("AH_p");
+    }
 }
 
 void SmilesSaver::_writeHighlighting()
@@ -1942,30 +1948,10 @@ void SmilesSaver::_writeRGroups()
                     _output.printf(";");
 
                 if (rgroup.occurrence.size() > 0)
-                    _writeOccurrenceRanges(_output, rgroup.occurrence);
+                    rgroup.writeOccurrence(_output);
             }
             _output.writeString("}");
         }
-    }
-}
-
-void SmilesSaver::_writeOccurrenceRanges(Output& out, const Array<int>& occurrences)
-{
-    for (int i = 0; i < occurrences.size(); i++)
-    {
-        int occurrence = occurrences[i];
-
-        if ((occurrence & 0xFFFF) == 0xFFFF)
-            out.printf(">%d", (occurrence >> 16) - 1);
-        else if ((occurrence >> 16) == (occurrence & 0xFFFF))
-            out.printf("%d", occurrence >> 16);
-        else if ((occurrence >> 16) == 0)
-            out.printf("<%d", (occurrence & 0xFFFF) + 1);
-        else
-            out.printf("%d-%d", occurrence >> 16, occurrence & 0xFFFF);
-
-        if (i != occurrences.size() - 1)
-            out.printf(",");
     }
 }
 

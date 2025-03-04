@@ -1163,7 +1163,7 @@ curve_to (void *closure,
 				    &stroker->bounds))
 	return line_to (closure, d);
 
-    if (! _cairo_spline_init (&spline, spline_to, stroker,
+    if (! _cairo_spline_init (&spline, spline_to, NULL, stroker,
 			      &stroker->current_face.point, b, c, d))
 	return line_to (closure, d);
 

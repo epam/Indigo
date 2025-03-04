@@ -1,0 +1,103 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ],
+        "connections": [],
+        "templates": []
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "P",
+                "location": [
+                    9.3,
+                    -5.65,
+                    0
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    10.3,
+                    -5.65,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    8.8,
+                    -4.783974596215562,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    8.8,
+                    -6.516025403784439,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    9.8,
+                    -4.783974596215562,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    9.8,
+                    -6.516025403784439,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    4
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    5
+                ]
+            }
+        ]
+    }
+}

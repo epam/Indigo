@@ -146,6 +146,7 @@ int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int 
 int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, int charge, int valence, int radical, int isotope)
 {
     std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
+    int atom_type = QueryMolecule::QUERY_ATOM_UNKNOWN;
     if (element != -1 && element < ELEM_MAX)
         atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_NUMBER, element);
     else if (element == ELEM_ATOMLIST)
@@ -154,7 +155,7 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
     }
     else
     {
-        int atom_type = QueryMolecule::getAtomType(label);
+        atom_type = QueryMolecule::getAtomType(label);
         switch (atom_type)
         {
         case _ATOM_PSEUDO:
@@ -242,7 +243,10 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
     if (radical != 0)
         atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_RADICAL, radical)));
 
-    return _pqmol->addAtom(atom.release());
+    auto atom_idx = _pqmol->addAtom(atom.release());
+    if (label != nullptr && label[0] == '*' && label[1] == 0)
+        _pqmol->setAlias(atom_idx, label);
+    return atom_idx;
 }
 
 void MoleculeJsonLoader::validateMoleculeBond(int order)
@@ -473,9 +477,8 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                                                                                                                   _pqmol->getVertex(atom_idx).degree())));
             }
             else if (sub_count > 0)
-                _pqmol->resetAtom(atom_idx,
-                                  QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, sub_count,
-                                                                                                                  (sub_count < 6 ? sub_count : 100))));
+                _pqmol->resetAtom(
+                    atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, sub_count)));
             else
                 throw Error("invalid SUB value: %d", sub_count);
         }
@@ -1596,6 +1599,24 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         RGroup& rgroup = rgroups.getRGroup(rgrp.first);
         Value one_rnode(kArrayType);
         Value& rnode = rgrp.second;
+        if (rnode.HasMember("rlogic"))
+        {
+            auto& rlogic = rnode["rlogic"];
+            // rlogic["number"].GetInt();
+            if (rlogic.HasMember("ifthen"))
+            {
+                rgroup.if_then = rlogic["ifthen"].GetInt();
+            }
+            if (rlogic.HasMember("range"))
+            {
+                rgroup.occurrence.clear();
+                rgroup.readOccurrence(rlogic["range"].GetString());
+            }
+            if (rlogic.HasMember("resth"))
+            {
+                rgroup.rest_h = rlogic["resth"].GetBool();
+            }
+        }
         if (rnode.HasMember("fragments"))
         {
             auto& rfragments = rnode["fragments"];
@@ -1651,6 +1672,15 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         {
             auto& pos_val = ma["position"];
             mol.setAtomXyz(idx, static_cast<float>(pos_val["x"].GetDouble()), static_cast<float>(pos_val["y"].GetDouble()), 0);
+        }
+
+        if (ma.HasMember("expanded"))
+        {
+            bool expanded = ma["expanded"].GetBool();
+            if (expanded)
+                mol.setTemplateAtomDisplayOption(idx, DisplayOption::Expanded);
+            else
+                mol.setTemplateAtomDisplayOption(idx, DisplayOption::Contracted);
         }
 
         std::string template_id = ma["templateId"].GetString();

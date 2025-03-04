@@ -50,6 +50,7 @@ namespace indigo
         void setCancellationHandler(CancellationHandler* cancellation);
 
         float bond_length;
+        std::optional<Vec2f> multiple_distance;
         bool respect_existing_layout;
         Filter* filter;
         int max_iterations;

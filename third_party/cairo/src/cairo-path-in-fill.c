@@ -217,7 +217,8 @@ _cairo_in_fill_curve_to (void *closure,
 
     /* XXX Investigate direct inspection of the inflections? */
     if (! _cairo_spline_init (&spline,
-			      (cairo_spline_add_point_func_t)_cairo_in_fill_line_to,
+			      NULL,
+                  _cairo_in_fill_line_to,
 			      in_fill,
 			      &in_fill->current_point, b, c, d))
     {

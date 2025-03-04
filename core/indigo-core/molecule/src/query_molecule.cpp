@@ -157,6 +157,10 @@ int QueryMolecule::getAtomSubstCount(int idx)
         return res;
     if (_atoms[idx]->sureValue(ATOM_SUBSTITUENTS_AS_DRAWN, res))
         return res;
+    // Some data stored as min=value, max=100(e.g. MOL format)
+    auto atom = _atoms[idx]->sureConstraint(ATOM_SUBSTITUENTS);
+    if (atom != nullptr)
+        return atom->value_min;
 
     return -1;
 }
@@ -3160,7 +3164,7 @@ int QueryMolecule::getAtomType(const char* label)
 {
     static const std::unordered_map<std::string, int> atom_types = {{"R", _ATOM_R},   {"A", _ATOM_A},   {"X", _ATOM_X},   {"Q", _ATOM_Q},
                                                                     {"M", _ATOM_M},   {"AH", _ATOM_AH}, {"XH", _ATOM_XH}, {"QH", _ATOM_QH},
-                                                                    {"XH", _ATOM_XH}, {"QH", _ATOM_QH}, {"MH", _ATOM_MH}};
+                                                                    {"XH", _ATOM_XH}, {"QH", _ATOM_QH}, {"MH", _ATOM_MH}, {"*", _ATOM_AH}};
     auto it = atom_types.find(label);
     if (it != atom_types.end())
         return it->second;

@@ -24,6 +24,7 @@
 #endif
 
 #include <atomic>
+#include <chrono>
 #include <safe_ptr.h>
 
 #include "base_cpp/array.h"

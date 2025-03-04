@@ -495,7 +495,8 @@ namespace indigo
             ARROW_ELLIPTICAL_ARC_OPEN_ANGLE,
             ARROW_ELLIPTICAL_ARC_OPEN_HALF_ANGLE,
             ARROW_RETROSYNTHETIC,
-            ARROW_MULTITAIL
+            ARROW_MULTITAIL,
+            TEXT
         };
 
         enum

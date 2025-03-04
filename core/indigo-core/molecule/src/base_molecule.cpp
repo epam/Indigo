@@ -4776,6 +4776,41 @@ void BaseMolecule::getBoundingBox(float font_size, LABEL_MODE label_mode, Rect2f
     bbox = Rect2f(a, b);
 }
 
+// Andrew's monotone chain convex hull algorithm
+std::vector<Vec2f> BaseMolecule::getConvexHull(const Vec2f& min_box) const
+{
+    std::vector<Vec2f> vertices;
+    std::transform(_xyz.ptr(), _xyz.ptr() + _xyz.size(), std::back_inserter(vertices), [](const Vec3f& v) -> Vec2f { return Vec2f(v.x, v.y); });
+    if (vertices.size() < 3)
+    {
+        Rect2f bbox;
+        getBoundingBox(bbox, min_box);
+        vertices.clear();
+        vertices.emplace_back(bbox.leftTop());
+        vertices.emplace_back(bbox.rightTop());
+        vertices.emplace_back(bbox.rightBottom());
+        vertices.emplace_back(bbox.leftBottom());
+        return vertices;
+    }
+    std::sort(vertices.begin(), vertices.end());
+    std::vector<Vec2f> hull;
+    for (const auto& p : vertices)
+    {
+        while (hull.size() >= 2 && hull[hull.size() - 2].relativeCross(hull.back(), p) <= 0)
+            hull.pop_back();
+        hull.push_back(p);
+    }
+    size_t lower_size = hull.size();
+    for (auto it = vertices.rbegin(); it != vertices.rend(); ++it)
+    {
+        while (hull.size() > lower_size && hull[hull.size() - 2].relativeCross(hull.back(), *it) <= 0)
+            hull.pop_back();
+        hull.push_back(*it);
+    }
+    hull.pop_back();
+    return hull;
+}
+
 void BaseMolecule::getBoundingBox(Vec2f& a, Vec2f& b) const
 {
     for (int atom_idx = 0; atom_idx < vertexCount(); ++atom_idx)
@@ -5101,14 +5136,12 @@ const int BaseMolecule::getTemplateAtomSeqid(int idx)
     return res;
 }
 
-const int BaseMolecule::getTemplateAtomDisplayOption(int idx)
+const DisplayOption BaseMolecule::getTemplateAtomDisplayOption(int idx)
 {
     int template_occur_idx = getTemplateAtomOccurrence(idx);
     _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
-    const int res = static_cast<int>(occur.contracted);
-    // const int res = occur.contracted;
 
-    return res;
+    return occur.contracted;
 }
 
 void BaseMolecule::renameTemplateAtom(int idx, const char* text)
@@ -5159,11 +5192,11 @@ void BaseMolecule::setTemplateAtomTemplateIndex(int idx, int temp_idx)
     updateEditRevision();
 }
 
-void BaseMolecule::setTemplateAtomDisplayOption(int idx, int option)
+void BaseMolecule::setTemplateAtomDisplayOption(int idx, DisplayOption option)
 {
     int template_occur_idx = getTemplateAtomOccurrence(idx);
     _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
-    occur.contracted = (DisplayOption)option;
+    occur.contracted = option;
     updateEditRevision();
 }
 
