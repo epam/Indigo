@@ -1038,7 +1038,7 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
     static const std::unordered_map<int, int> implemeted_brackets = {
         {kCDXBracketUsage_SRU, SGroup::SG_TYPE_SRU}, {kCDXBracketUsage_MultipleGroup, SGroup::SG_TYPE_MUL}, {kCDXBracketUsage_Generic, SGroup::SG_TYPE_GEN}};
 
-    mol.setAtomsCenterPoint(bracket.bbox.leftTop());
+    mol.setAtomsCenterPoint(Vec3f(bracket.bbox.leftTop().x, bracket.bbox.leftTop().y, 0));
     auto it = implemeted_brackets.find(bracket.usage);
     if (it != implemeted_brackets.end())
     {
