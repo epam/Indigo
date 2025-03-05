@@ -6,6 +6,7 @@ extern "C"
 
 #include "fmgr.h"
 #include "utils/builtins.h"
+#include "varatt.h"
 }
 
 #include "bingo_pg_fix_post.h"
