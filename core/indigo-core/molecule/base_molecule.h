@@ -253,7 +253,7 @@ namespace indigo
         const int getTemplateAtomSeqid(int idx);
         const char* getTemplateAtomSeqName(int idx);
         const char* getTemplateAtomClass(int idx);
-        const int getTemplateAtomDisplayOption(int idx);
+        const DisplayOption getTemplateAtomDisplayOption(int idx);
         const int getTemplateAtomTemplateIndex(int idx);
 
         void renameTemplateAtom(int idx, const char* text);
@@ -262,7 +262,7 @@ namespace indigo
         void setTemplateAtomSeqid(int idx, int seq_id);
         void setTemplateAtomSeqName(int idx, const char* seq_name);
 
-        void setTemplateAtomDisplayOption(int idx, int contracted);
+        void setTemplateAtomDisplayOption(int idx, DisplayOption contracted);
         void setTemplateAtomTemplateIndex(int idx, int temp_idx);
 
         bool getUnresolvedTemplatesList(BaseMolecule& bmol, std::string& unresolved);

@@ -93,12 +93,10 @@ bool MoleculeSavers::getSubstitutionCountFlagValue(QueryMolecule& qmol, int idx,
                 value = -1;
             return true;
         }
-        int values[1] = {6};
-        if (atom.sureValueBelongs(QueryMolecule::ATOM_SUBSTITUENTS, values, 1))
-        {
-            value = 6;
-            return true;
-        }
+        // Some data stored as min=value, max=100(e.g. MOL format)
+        auto subst_node = atom.sureConstraint(QueryMolecule::ATOM_SUBSTITUENTS);
+        if (subst_node != nullptr)
+            return subst_node->value_min;
     }
     else if (atom.sureValue(QueryMolecule::ATOM_SUBSTITUENTS_AS_DRAWN, v))
     {

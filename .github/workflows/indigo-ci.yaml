@@ -757,7 +757,7 @@ jobs:
   build_indigo_windows_mingw_x86_64:
     timeout-minutes: 60
     runs-on: windows-latest
-    needs: static_analysis
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, merge_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
     defaults:
       run:
         shell: msys2 {0}
@@ -842,7 +842,7 @@ jobs:
 
   build_indigo_ketcher_cjk:
     runs-on: ubuntu-latest
-    needs: static_analysis
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, merge_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
     container: emscripten/emsdk:3.1.60
     steps:
       - name: Checkout
@@ -878,7 +878,7 @@ jobs:
       matrix:
         os: [ macos-13, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
-    needs: static_analysis
+    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -925,7 +925,7 @@ jobs:
 
   build_bingo_oracle_linux_x86_64:
     runs-on: ubuntu-latest
-    needs: static_analysis
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, merge_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -955,7 +955,7 @@ jobs:
 
   build_bingo_oracle_windows_mingw_x86_64:
     runs-on: windows-latest
-    needs: static_analysis
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, merge_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
     defaults:
       run:
         shell: msys2 {0}
@@ -987,7 +987,7 @@ jobs:
 
   build_bingo_oracle_windows_msvc_x86_64:
     runs-on: windows-latest
-    needs: static_analysis
+    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, merge_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -1016,7 +1016,7 @@ jobs:
       matrix:
         postgres_major_version: [ 12, 13, 14, 15 ]
     runs-on: ubuntu-latest
-    needs: static_analysis
+    needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -1091,7 +1091,7 @@ jobs:
       matrix:
         postgres_major_version: [ "12", "13", "14", "15" ]
     runs-on: windows-latest
-    needs: static_analysis
+    needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -1127,7 +1127,7 @@ jobs:
       matrix:
         postgres_major_version: [ 12, 13, 14, 15 ]
     runs-on: macos-13
-    needs: static_analysis
+    needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -1162,7 +1162,7 @@ jobs:
       matrix:
         os: [ windows-latest ]
     runs-on: ${{ matrix.os }}
-    needs: static_analysis
+    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -1338,7 +1338,7 @@ jobs:
   build_test_publish_indigo_service_old:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    needs: merge_indigo_wrappers
+    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -1395,7 +1395,7 @@ jobs:
   build_test_publish_indigo_service_new:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    needs: merge_indigo_wrappers
+    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4

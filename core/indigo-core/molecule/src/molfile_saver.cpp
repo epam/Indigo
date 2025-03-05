@@ -285,8 +285,7 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 
             QS_DEF(Array<char>, occ);
             ArrayOutput occ_out(occ);
-
-            _writeOccurrenceRanges(occ_out, rgroup.occurrence);
+            rgroup.writeOccurrence(occ_out);
 
             for (j = 0; j < 3 - occ.size(); j++)
                 _output.writeChar(' ');
@@ -1122,26 +1121,6 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, int idx, Output& outp
     }
 }
 
-void MolfileSaver::_writeOccurrenceRanges(Output& out, const Array<int>& occurrences)
-{
-    for (int i = 0; i < occurrences.size(); i++)
-    {
-        int occurrence = occurrences[i];
-
-        if ((occurrence & 0xFFFF) == 0xFFFF)
-            out.printf(">%d", (occurrence >> 16) - 1);
-        else if ((occurrence >> 16) == (occurrence & 0xFFFF))
-            out.printf("%d", occurrence >> 16);
-        else if ((occurrence >> 16) == 0)
-            out.printf("<%d", (occurrence & 0xFFFF) + 1);
-        else
-            out.printf("%d-%d", occurrence >> 16, occurrence & 0xFFFF);
-
-        if (i != occurrences.size() - 1)
-            out.printf(",");
-    }
-}
-
 void MolfileSaver::_writeRGroup(Output& output, BaseMolecule& mol, int rg_idx)
 {
     QS_DEF(Array<char>, buf);
@@ -1152,7 +1131,7 @@ void MolfileSaver::_writeRGroup(Output& output, BaseMolecule& mol, int rg_idx)
 
     out.printf("RLOGIC %d %d ", rgroup.if_then, rgroup.rest_h);
 
-    _writeOccurrenceRanges(out, rgroup.occurrence);
+    rgroup.writeOccurrence(out);
 
     _writeMultiString(output, buf.ptr(), buf.size());
 
@@ -1388,7 +1367,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             {
                 int* s = substitution_count.push();
                 s[0] = i;
-                s[1] = subst;
+                s[1] = subst > MAX_SUBSTITUTION_COUNT ? MAX_SUBSTITUTION_COUNT : subst;
             }
         }
 

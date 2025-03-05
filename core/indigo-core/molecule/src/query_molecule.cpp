@@ -157,6 +157,10 @@ int QueryMolecule::getAtomSubstCount(int idx)
         return res;
     if (_atoms[idx]->sureValue(ATOM_SUBSTITUENTS_AS_DRAWN, res))
         return res;
+    // Some data stored as min=value, max=100(e.g. MOL format)
+    auto atom = _atoms[idx]->sureConstraint(ATOM_SUBSTITUENTS);
+    if (atom != nullptr)
+        return atom->value_min;
 
     return -1;
 }

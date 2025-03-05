@@ -193,7 +193,6 @@ namespace indigo
 
         static void _readBond(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond, bool smarts_mode);
         static void _readBondSub(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond, bool smarts_mode);
-        void _readRGroupOccurrenceRanges(const char* str, Array<int>& ranges);
 
     private:
         SmilesLoader(const SmilesLoader&); // no implicit copy
