@@ -1015,7 +1015,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 12, 13, 14, 15, 16, 17 ]
+        # postgres_major_version: [ 12, 13, 14, 15, 16, 17 ]
+        postgres_major_version: [ 17 ]
     runs-on: ubuntu-latest
     # needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
     steps:
@@ -1039,7 +1040,7 @@ jobs:
             /bin/sh -c "
             set -eux &&
             yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm &&
-            yum install -y yum-utils cmake gcc gcc-c++ python3 &&
+            yum install -y yum-utils cmake gcc gcc-c++ python3 git &&
             curl -OL https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-RHEL &&
             rpm --import PGDG-RPM-GPG-KEY-RHEL &&
             yumdownloader -y postgresql${{ matrix.postgres_major_version }}-devel &&
