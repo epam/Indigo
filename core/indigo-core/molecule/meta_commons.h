@@ -87,7 +87,16 @@ namespace indigo
 
     struct KETFontStyleStatus
     {
+        KETFontStyleStatus() : offset(0), size(0), val(std::monostate{})
+        {
+        }
+
+        KETFontStyleStatus(std::size_t off, std::size_t sz, KETFontVal v) : offset(off), size(sz), val(v)
+        {
+        }
+
         std::size_t offset;
+        std::size_t size;
         KETFontVal val;
     };
 
@@ -190,6 +199,7 @@ namespace indigo
     };
 
     using FONT_STYLE_SET = std::set<std::pair<KETFontStyle, bool>, compareFunction>;
+    using KETFontStatusMap = std::map<KETFontStyle::FontStyle, std::deque<KETFontStyleStatus>>;
 
     FONT_STYLE_SET& operator+=(FONT_STYLE_SET& lhs, const FONT_STYLE_SET& rhs);
 
@@ -281,13 +291,15 @@ namespace indigo
         using TextAlignMap = const std::unordered_map<std::string, TextAlignment>;
         using StrIntMap = const std::unordered_map<std::string, int>;
         using FontStyleMap = const std::unordered_map<std::string, KETFontStyle::FontStyle>;
+        using FontStyleMapInv = const std::unordered_map<KETFontStyle::FontStyle, std::string>;
+
         using DispatchMapKVP = std::unordered_map<std::string, std::function<void(const std::string&, const rapidjson::Value&)>>;
         using DispatchMapVal = std::unordered_map<std::string, std::function<void(const rapidjson::Value&)>>;
 
         static const TextAlignMap& textAlignmentMap();
 
         static const FontStyleMap& textStyleMapV1();
-
+        static const FontStyleMapInv& textStyleMapInvV1();
         static const FontStyleMap& textStyleMap();
 
         static KETFontStyle::FontStyle textStyleByName(const std::string& style_name);
@@ -313,6 +325,36 @@ namespace indigo
         };
 
         static const std::uint32_t CID = "Simple text object"_hash;
+
+        static void convertToSimpleTextStyle(const FONT_STYLE_SET& fss, SimpleTextStyle& sts)
+        {
+            for (auto& fs : fss)
+            {
+                switch (fs.first.getFontStyle())
+                {
+                case KETFontStyle::FontStyle::EBold:
+                    sts.styles.push_back(KFontBoldStrV1);
+                    break;
+                case KETFontStyle::FontStyle::EItalic:
+                    sts.styles.push_back(KFontItalicStrV1);
+                    break;
+                case KETFontStyle::FontStyle::ESubScript:
+                    sts.styles.push_back(KFontSubscriptStrV1);
+                    break;
+                case KETFontStyle::FontStyle::ESuperScript:
+                    sts.styles.push_back(KFontSuperscriptStrV1);
+                    break;
+                case KETFontStyle::FontStyle::ESize: {
+                    auto fs_val = fs.first.getUInt();
+                    if (fs_val.has_value())
+                        sts.styles.push_back(std::string(KFontCustomSizeStrV1) + "_" + std::to_string(fs_val.value()) + "px");
+                    break;
+                }
+                default:
+                    break;
+                }
+            }
+        }
 
         static void applyDispatcher(const rapidjson::Value& val, const DispatchMapKVP& disp_map)
         {
@@ -589,7 +631,7 @@ namespace indigo
         };
 
         ReactionArrowObject(int arrow_type, const Vec2f& begin, const Vec2f& end, float height = 0)
-            : MetaObject(CID), _arrow_type(arrow_type), _begin(begin), _end(end), _height(height){};
+            : MetaObject(CID), _arrow_type(arrow_type), _begin(begin), _end(end), _height(height) {};
 
         MetaObject* clone() const override
         {
@@ -729,7 +771,7 @@ namespace indigo
     {
     public:
         static const std::uint32_t CID = "Reaction plus object"_hash;
-        ReactionPlusObject(const Vec2f& pos) : MetaObject(CID), _pos(pos){};
+        ReactionPlusObject(const Vec2f& pos) : MetaObject(CID), _pos(pos) {};
 
         MetaObject* clone() const override
         {
@@ -813,8 +855,8 @@ namespace indigo
 
     struct MolSumm
     {
-        MolSumm() : bbox(Vec2f(0, 0), Vec2f(0, 0)), role(BaseReaction::UNDEFINED), reaction_idx(-1){};
-        MolSumm(const Rect2f& box) : bbox(box), role(BaseReaction::UNDEFINED), reaction_idx(-1){};
+        MolSumm() : bbox(Vec2f(0, 0), Vec2f(0, 0)), role(BaseReaction::UNDEFINED), reaction_idx(-1) {};
+        MolSumm(const Rect2f& box) : bbox(box), role(BaseReaction::UNDEFINED), reaction_idx(-1) {};
 
         Rect2f bbox;
         std::vector<int> indexes;
@@ -865,7 +907,7 @@ namespace indigo
         };
 
         ReactionComponent(int ctype, const Rect2f& box, int idx, std::unique_ptr<BaseMolecule> mol)
-            : component_type(ctype), bbox(box), molecule(std::move(mol)), summ_block_idx(NOT_CONNECTED), index(idx){};
+            : component_type(ctype), bbox(box), molecule(std::move(mol)), summ_block_idx(NOT_CONNECTED), index(idx) {};
 
         int component_type;
         Rect2f bbox;

@@ -2109,78 +2109,89 @@ void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const SimpleTextObject& t
     {
         // generate text from paragraphs
         SimpleTextObjectBuilder tob;
+        auto default_fss = text_obj.fontStyles();
         for (const auto& paragraph : text_obj.block())
         {
+            // merge font styles: default_fss + paragraph.font_style
+            auto paragraph_fss = default_fss;
+            paragraph_fss += paragraph.font_style;
             SimpleTextLine line;
-            line.text = paragraph.text;
-            std::unordered_map<KETFontStyle::FontStyle, KETFontStyleStatus> style_status;
-            for (auto& kvp : paragraph.font_styles)
-            {
-                auto& fs = kvp.second;
-                for (auto& fs_pair : fs)
+            line.text = paragraph.text; // single part
+            std::string_view text_view = std::string_view(line.text);
+            KETFontStatusMap style_status_map;
+            if (paragraph.font_styles.size() > 1)
+                for (auto it_fss_kvp = paragraph.font_styles.rbegin(); it_fss_kvp != paragraph.font_styles.rend(); ++it_fss_kvp)
                 {
-                    SimpleTextStyle sts;
-                    auto ss_it = style_status.find(fs_pair.first.getFontStyle());
-                    if (fs_pair.second)
-                    {
-                        if (ss_it == style_status.end())
-                            style_status.emplace(fs_pair.first.getFontStyle(), KETFontStyleStatus{kvp.first, fs_pair.first.getVal()});
-                        else 
-                            if (fs_pair.first.hasValue())
-                            {
-                                // update style status
-                                if (fs_pair.first == KETFontStyle::FontStyle::ESize)
-                                {
-                                    auto pval = std::get_if<uint32_t>(&ss_it->second.val);
-                                    if (pval)
-                                    {
-                                        sts.styles.push_back(std::string(KFontCustomSizeStrV1) + "_" + std::to_string(*pval) + "px");
-                                        sts.offset = ss_it->second.offset;
-                                        sts.size = kvp.first - ss_it->second.offset;
-                                        line.text_styles.push_back(sts);
-                                    }
-                                }
-                                ss_it->second.offset = kvp.first;
-                                ss_it->second.val = fs_pair.first.getVal();
-                            }
+                    auto current_part_fss = paragraph_fss;
+                    auto prev_part_fss = paragraph_fss;
 
-                    }
-                    else
+                    current_part_fss += it_fss_kvp->second; // current font state
+
+                    auto it_fss_kvp_prev = it_fss_kvp != paragraph.font_styles.rbegin() ? std::prev(it_fss_kvp) : it_fss_kvp;
+
+                    if (it_fss_kvp != it_fss_kvp_prev)
+                        prev_part_fss += it_fss_kvp_prev->second; // previous font state
+
+                    auto text_part = it_fss_kvp != it_fss_kvp_prev ? text_view.substr(it_fss_kvp->first, it_fss_kvp_prev->first - it_fss_kvp->first)
+                                                                   : text_view.substr(it_fss_kvp->first);
+
+                    for (auto& fss : current_part_fss)
                     {
-                        if (ss_it != style_status.end())
+                        auto fs = fss.first.getFontStyle();
+                        auto fs_it = style_status_map.find(fs);
+                        // check if font style is already in the map or values are different
+                        if (fs_it == style_status_map.end())
                         {
-                            sts.offset = ss_it->second.offset;
-                            sts.size = kvp.first - ss_it->second.offset;
-
-                            switch (fs_pair.first.getFontStyle())
-                            {
-                            case KETFontStyle::FontStyle::EBold:
-                                sts.styles.push_back(KFontBoldStrV1);
-                                break;
-                            case KETFontStyle::FontStyle::EItalic:
-                                sts.styles.push_back(KFontItalicStrV1);
-                                break;
-                            case KETFontStyle::FontStyle::ESubScript:
-                                sts.styles.push_back(KFontSubscriptStrV1);
-                                break;
-                            case KETFontStyle::FontStyle::ESuperScript:
-                                sts.styles.push_back(KFontSuperscriptStrV1);
-                                break;
-                            case KETFontStyle::FontStyle::ESize: {
-                                auto fs_val = fs_pair.first.getUInt();
-                                if (fs_val.has_value())
-                                    sts.styles.push_back(std::string(KFontCustomSizeStrV1) + "_" + std::to_string(fs_val.value()) + "px");
-                            }
-                            break;
-                            }
-                            line.text_styles.push_back(sts);
-                            style_status.erase(ss_it);
+                            // just add new font style with offset and size
+                            style_status_map.emplace(
+                                std::piecewise_construct, std::forward_as_tuple(fs),
+                                std::forward_as_tuple(std::initializer_list<KETFontStyleStatus>{{it_fss_kvp->first, text_part.size(), fss.first.getVal()}}));
                         }
+                        else // here we should update offset, size and val
+                        {
+                            // if val differs from previous or there is an offset gap
+                            if (fs_it->second.front().val != fss.first.getVal() || fs_it->second.front().offset != it_fss_kvp_prev->first)
+                                fs_it->second.emplace_front(it_fss_kvp->first, text_part.size(), fss.first.getVal());
+                            else // extend font style
+                            {
+                                fs_it->second.front().offset = it_fss_kvp->first;
+                                fs_it->second.front().size += text_part.size();
+                            }
+                        }
+                    }
+                }
+            else
+            {
+                // add default font styles
+            }
+            if (style_status_map.size())
+            {
+                for (auto& [fs, ss_queue] : style_status_map)
+                {
+                    for (auto& ss : ss_queue)
+                    {
+                        SimpleTextStyle sts;
+                        sts.offset = ss.offset;
+                        sts.size = ss.size;
+                        if (fs == KETFontStyle::FontStyle::ESize)
+                        {
+                            if (auto pval = std::get_if<uint32_t>(&ss.val))
+                                sts.styles.push_back(std::string(KFontCustomSizeStrV1) + "_" + std::to_string(*pval) + "px");
+                        }
+                        else
+                        {
+                            auto it_fs = SimpleTextObject::textStyleMapInvV1().find(fs);
+                            if (it_fs != SimpleTextObject::textStyleMapInvV1().end())
+                                sts.styles.push_back(it_fs->second);
+                        }
+                        line.text_styles.push_back(sts);
                     }
                 }
             }
             tob.addLine(line);
         }
+        if (tob.getLineCounter())
+            tob.finalize();
         content = tob.getJsonString();
     }
 

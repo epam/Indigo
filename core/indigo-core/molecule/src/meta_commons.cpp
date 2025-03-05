@@ -188,6 +188,15 @@ namespace indigo
         return KTextStylesMap;
     }
 
+    const SimpleTextObject::FontStyleMapInv& SimpleTextObject::textStyleMapInvV1()
+    {
+        static const FontStyleMapInv KTextStylesMap{{KETFontStyle::FontStyle::EBold, KFontBoldStrV1},
+                                                    {KETFontStyle::FontStyle::EItalic, KFontItalicStrV1},
+                                                    {KETFontStyle::FontStyle::ESuperScript, KFontSuperscriptStrV1},
+                                                    {KETFontStyle::FontStyle::ESubScript, KFontSubscriptStrV1}};
+        return KTextStylesMap;
+    }
+
     const SimpleTextObject::FontStyleMap& SimpleTextObject::textStyleMap()
     {
         static const FontStyleMap KTextFontStylesMap{{KFontBoldStr, KETFontStyle::FontStyle::EBold},
