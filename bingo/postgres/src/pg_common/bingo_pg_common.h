@@ -421,6 +421,10 @@ private:
     }                                                                                                                                                          \
     }
 
+#if PG_VERSION_NUM >= 160000
+#define PG_FUNCNAME_MACRO __func__
+#endif
+
 #define PG_BINGO_BEGIN                                                                                                                                         \
     {                                                                                                                                                          \
         int pg_err_mess = 0;                                                                                                                                   \
