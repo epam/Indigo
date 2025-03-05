@@ -329,8 +329,10 @@ void RenderItemAuxiliary::fillKETStyle(TextItem& ti, const FONT_STYLE_SET& style
             {
                 ti.color = color_val.value();
 
-                ti.rgb_color = ti.color == CWC_BASE ? Vec3f(0,0,0) : Vec3f((float)((ti.color >> 16) & 0xFF) / 255.0f, ti.rgb_color.y = (float)((ti.color >> 8) & 0xFF) / 255.0f,
-                                              ti.rgb_color.z = (float)(ti.color & 0xFF) / 255.0f);
+                ti.rgb_color = ti.color == CWC_BASE
+                                   ? Vec3f(0, 0, 0)
+                                   : Vec3f((float)((ti.color >> 16) & 0xFF) / 255.0f, ti.rgb_color.y = (float)((ti.color >> 8) & 0xFF) / 255.0f,
+                                           ti.rgb_color.z = (float)(ti.color & 0xFF) / 255.0f);
             }
         }
         default:
