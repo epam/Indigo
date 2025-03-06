@@ -25,6 +25,7 @@ jobs:
           tags: epmlsop/buildpack-almalinux8:latest
       - name: Push buildpack-almalinux8
         run: docker push epmlsop/buildpack-almalinux8:latest
+  docker-buildpack-centos7:
     runs-on: ubuntu-latest
     steps:
       - name: Login to DockerHub
