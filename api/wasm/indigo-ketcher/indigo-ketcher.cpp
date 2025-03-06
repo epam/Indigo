@@ -455,7 +455,7 @@ namespace indigo
                 if (library >= 0)
                 {
                     auto sequence_type = options.find("sequence-type");
-                    if (sequence_type != options.end() && (sequence_type->second == "PEPTIDE")
+                    if (sequence_type != options.end() && sequence_type->second == "PEPTIDE")
                     {
                         print_js("try as PEPTIDE-3-LETTER");
                         objectId = indigoLoadSequenceFromString(data.c_str(), "PEPTIDE-3-LETTER", library);
@@ -479,7 +479,9 @@ namespace indigo
                         {
                             return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                         }
-                    }else{
+                    }
+                    else
+                    {
                         print_js("try as PEPTIDE-3-LETTER");
                         objectId = indigoLoadSequenceFromString(data.c_str(), "PEPTIDE-3-LETTER", library);
                         if (objectId >= 0)
