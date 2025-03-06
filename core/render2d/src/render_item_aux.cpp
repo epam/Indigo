@@ -374,6 +374,8 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                 double text_offset_y = 0;
                 for (auto& text_item : ko.block())
                 {
+                    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> utf8w;
+                    auto text_wstr = utf8w.from_bytes(text_item.text);
                     float text_max_height = _getMaxHeight(text_item);
                     auto line_starts = text_item.line_starts;
                     int first_index = -1;
@@ -395,21 +397,18 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         }
                         second_index = static_cast<int>(kvp.first);
 
-                        std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
-                        std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
-
                         std::vector<std::string> styled_lines;
                         while (line_starts.has_value() && line_starts.value().size() && line_starts.value().front() <= second_index &&
                                line_starts.value().front() > first_index)
                         {
                             auto ls_index = line_starts.value().front();
                             line_starts.value().erase(line_starts.value().begin());
-                            styled_lines.push_back(text_item.text.substr(first_index, ls_index - first_index));
+                            styled_lines.push_back(utf8w.to_bytes(text_wstr.substr(first_index, ls_index - first_index)));
                             first_index = ls_index;
                         }
 
                         if (second_index > first_index)
-                            styled_lines.push_back(text_item.text.substr(first_index, second_index - first_index));
+                            styled_lines.push_back(utf8w.to_bytes(text_wstr.substr(first_index, second_index - first_index)));
 
                         fillKETStyle(ti, current_styles);
 
@@ -421,8 +420,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                             {
                                 if (line.size())
                                 {
-                                    auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(line));
-                                    ti.text.readString(sub_text.c_str(), true);
+                                    ti.text.readString(line.c_str(), true);
                                     _rc.setTextItemSize(ti);
                                     ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
                                     ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
@@ -606,12 +604,8 @@ float RenderItemAuxiliary::_getMaxHeight(const SimpleTextObject::KETTextParagrap
             continue;
         }
         second_index = static_cast<int>(kvp.first);
-
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
-        auto utf32str = utf82w.from_bytes(tl.text.substr(first_index, second_index - first_index));
-        auto sub_text = w2utf8.to_bytes(utf32str);
-
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> utf8w;
+        auto sub_text = utf8w.to_bytes(utf8w.from_bytes(tl.text).substr(first_index, second_index - first_index));
         ti.text.readString(sub_text.c_str(), true);
         fillKETStyle(ti, current_styles);
         _rc.setTextItemSize(ti);
