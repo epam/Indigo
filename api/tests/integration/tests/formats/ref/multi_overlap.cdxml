@@ -18,45 +18,45 @@
     </colortable>
     <page HeightPages="1" WidthPages="1">
         <fragment id="4">
-            <n id="5" p="289.138000 246.374496"/>
-            <n id="6" p="289.138000 276.373230"/>
-            <n id="7" p="315.116943 291.372620"/>
-            <n id="8" p="341.095825 276.373230"/>
-            <n id="9" p="341.095825 246.374496"/>
-            <n id="10" p="315.116943 231.375137"/>
-            <n id="11" Element="8" NumHydrogens="0" p="315.116943 201.376846">
-                <t p="315.116943 201.376846" LabelJustification="Left">
-                    <s font="3" size="10" face="96">O</s>
-                </t>
-            </n>
-            <b id="48" B="5" E="10"/>
-            <b id="49" B="5" E="6"/>
-            <b id="50" B="6" E="7"/>
-            <b id="51" B="7" E="8"/>
-            <b id="52" B="8" E="9"/>
-            <b id="53" B="9" E="10"/>
-            <b id="54" B="10" E="11" Order="2"/>
-        </fragment>
-        <fragment id="12">
-            <n id="13" p="180.420013 247.126923"/>
-            <n id="14" p="232.326111 247.112366"/>
-            <n id="15" p="206.422195 232.124527"/>
-            <n id="16" p="232.326111 277.138947"/>
-            <n id="17" p="180.420013 277.273590"/>
-            <n id="18" p="206.487701 292.123138"/>
-            <n id="19" Element="7" NumHydrogens="2" p="258.312408 232.125305">
+            <n id="5" p="180.420013 247.126923"/>
+            <n id="6" p="232.326111 247.112366"/>
+            <n id="7" p="206.422195 232.124527"/>
+            <n id="8" p="232.326111 277.138947"/>
+            <n id="9" p="180.420013 277.273590"/>
+            <n id="10" p="206.487701 292.123138"/>
+            <n id="11" Element="7" NumHydrogens="2" p="258.312408 232.125305">
                 <t p="258.312408 232.125305" LabelJustification="Left">
                     <s font="3" size="10" face="96">NH</s>
                     <s font="3" size="10" face="32">2</s>
                 </t>
             </n>
-            <b id="55" B="15" E="13" Order="2"/>
-            <b id="56" B="16" E="14" Order="2"/>
-            <b id="57" B="13" E="17"/>
-            <b id="58" B="14" E="15"/>
-            <b id="59" B="17" E="18" Order="2"/>
-            <b id="60" B="18" E="16"/>
-            <b id="61" B="14" E="19"/>
+            <b id="48" B="7" E="5" Order="2"/>
+            <b id="49" B="8" E="6" Order="2"/>
+            <b id="50" B="5" E="9"/>
+            <b id="51" B="6" E="7"/>
+            <b id="52" B="9" E="10" Order="2"/>
+            <b id="53" B="10" E="8"/>
+            <b id="54" B="6" E="11"/>
+        </fragment>
+        <fragment id="12">
+            <n id="13" p="289.138000 246.374496"/>
+            <n id="14" p="289.138000 276.373230"/>
+            <n id="15" p="315.116943 291.372620"/>
+            <n id="16" p="341.095825 276.373230"/>
+            <n id="17" p="341.095825 246.374496"/>
+            <n id="18" p="315.116943 231.375137"/>
+            <n id="19" Element="8" NumHydrogens="0" p="315.116943 201.376846">
+                <t p="315.116943 201.376846" LabelJustification="Left">
+                    <s font="3" size="10" face="96">O</s>
+                </t>
+            </n>
+            <b id="55" B="13" E="18"/>
+            <b id="56" B="13" E="14"/>
+            <b id="57" B="14" E="15"/>
+            <b id="58" B="15" E="16"/>
+            <b id="59" B="16" E="17"/>
+            <b id="60" B="17" E="18"/>
+            <b id="61" B="18" E="19" Order="2"/>
         </fragment>
         <fragment id="20">
             <n id="21" Element="17" NumHydrogens="1" p="419.962280 239.779602">
@@ -98,8 +98,8 @@
         <graphic id="42" BoundingBox="257.992737 266.998779 257.992737 259.498779" GraphicType="Symbol" SymbolType="Plus"/>
         <graphic id="45" BoundingBox="562.811218 257.250000 562.811218 249.750000" GraphicType="Symbol" SymbolType="Plus"/>
         <scheme>
-            <step ReactionStepReactants="4" ReactionStepProducts="22 27" ReactionStepArrows="36"/>
-            <step ReactionStepReactants="22 27" ReactionStepProducts="31" ReactionStepArrows="39"/>
+            <step ReactionStepReactants="4 12" ReactionStepProducts="22 27" ReactionStepObjectsAboveArrow="20" ReactionStepArrows="36"/>
+            <step ReactionStepReactants="22 27" ReactionStepProducts="31" ReactionStepObjectsAboveArrow="20" ReactionStepArrows="39"/>
         </scheme>
     </page>
 </CDXML>

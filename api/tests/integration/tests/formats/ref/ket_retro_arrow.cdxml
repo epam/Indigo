@@ -18,38 +18,38 @@
     </colortable>
     <page HeightPages="1" WidthPages="1">
         <fragment id="4">
-            <n id="5" p="40.980751 22.500000"/>
-            <n id="6" p="40.980751 -7.500000"/>
-            <n id="7" p="15.000000 -22.500000"/>
-            <n id="8" Element="7" NumHydrogens="2" p="66.961525 -22.500000">
+            <n id="5" Element="8" NumHydrogens="1" p="156.961533 -7.500000">
+                <t p="156.961533 -7.500000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">OH</s>
+                </t>
+            </n>
+            <n id="6" p="182.942276 7.500000"/>
+            <n id="7" Element="8" NumHydrogens="1" p="208.923050 -7.500000">
+                <t p="208.923050 -7.500000" LabelJustification="Left">
+                    <s font="3" size="10" face="96">OH</s>
+                </t>
+            </n>
+            <b id="16" B="5" E="6"/>
+            <b id="17" B="6" E="7"/>
+        </fragment>
+        <fragment id="8">
+            <n id="9" p="40.980751 22.500000"/>
+            <n id="10" p="40.980751 -7.500000"/>
+            <n id="11" p="15.000000 -22.500000"/>
+            <n id="12" Element="7" NumHydrogens="2" p="66.961525 -22.500000">
                 <t p="66.961525 -22.500000" LabelJustification="Left">
                     <s font="3" size="10" face="96">NH</s>
                     <s font="3" size="10" face="32">2</s>
                 </t>
             </n>
-            <b id="16" B="5" E="6"/>
-            <b id="17" B="6" E="7"/>
-            <b id="18" B="6" E="8"/>
-        </fragment>
-        <fragment id="9">
-            <n id="10" Element="8" NumHydrogens="1" p="156.961533 -7.500000">
-                <t p="156.961533 -7.500000" LabelJustification="Left">
-                    <s font="3" size="10" face="96">OH</s>
-                </t>
-            </n>
-            <n id="11" p="182.942276 7.500000"/>
-            <n id="12" Element="8" NumHydrogens="1" p="208.923050 -7.500000">
-                <t p="208.923050 -7.500000" LabelJustification="Left">
-                    <s font="3" size="10" face="96">OH</s>
-                </t>
-            </n>
+            <b id="18" B="9" E="10"/>
             <b id="19" B="10" E="11"/>
-            <b id="20" B="11" E="12"/>
+            <b id="20" B="10" E="12"/>
         </fragment>
         <arrow id="13" BoundingBox="126.961525 -0.000000 96.961525 -0.000000" FillType="None" ArrowheadHead="Full" ArrowheadType="Angle" HeadSize="600" ArrowheadCenterSize="600" ArrowheadWidth="150" ArrowShaftSpacing="600" Head3D="126.961525 -0.000000 0.000000" Tail3D="96.961525 -0.000000 0.000000"/>
         <graphic id="21" SupersededBy="13" GraphicType="Line" ArrowType="RetroSynthetic" HeadSize="600" BoundingBox="126.961525 -0.000000 96.961525 -0.000000"/>
         <scheme>
-            <step ReactionStepReactants="4" ReactionStepProducts="9" ReactionStepArrows="21"/>
+            <step ReactionStepReactants="8" ReactionStepProducts="4" ReactionStepArrows="21"/>
         </scheme>
     </page>
 </CDXML>

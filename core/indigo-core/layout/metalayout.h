@@ -93,6 +93,7 @@ namespace indigo
             float top_height;
             float bottom_height;
             float width;
+            float offset;
 
         private:
             LayoutLine(const LayoutLine&);
@@ -124,12 +125,11 @@ namespace indigo
         float reactionComponentMarginSize; // in angstrom
         float verticalIntervalFactor;
         float bondLength; // in angstrom
-
         DECL_ERROR;
 
     private:
         Vec2f _contentSize;
-        float _avel, _scaleFactor, _offset;
+        float _avel, _scaleFactor;
 
         float _getAverageBondLength();
 

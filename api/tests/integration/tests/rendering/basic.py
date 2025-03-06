@@ -162,6 +162,26 @@ mol = indigo.loadMoleculeFromFile(
 renderer.renderToFile(mol, joinPathPy("out/sa-mono.png", __file__))
 print(checkImageSimilarity("sa-mono.png"))
 
+print("issue 2746 incorrect phosphorus valence")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+fname = "incorrect_phosphorus_valence_2746"
+png_fname = fname + ".png"
+cdxml_fname = joinPathPy("molecules/%s.cdxml" % fname, __file__)
+mol = indigo.loadMoleculeFromFile(cdxml_fname)
+renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
+
+print("issue 2150 render heavy atoms")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+fname = "render_heavy_atoms_2150"
+png_fname = fname + ".png"
+mol_fname = joinPathPy("molecules/%s.mol" % fname, __file__)
+mol = indigo.loadMoleculeFromFile(mol_fname)
+renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()

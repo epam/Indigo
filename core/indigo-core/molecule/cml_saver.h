@@ -57,7 +57,6 @@ namespace indigo
 
         bool _getRingBondCountFlagValue(QueryMolecule& qmol, int idx, int& value);
         bool _getSubstitutionCountFlagValue(QueryMolecule& qmol, int idx, int& value);
-        void _writeOccurrenceRanges(Output& out, const Array<int>& occurrences);
 
         Output& _output;
 

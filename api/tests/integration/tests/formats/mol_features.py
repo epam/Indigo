@@ -7,7 +7,12 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import (  # noqa
+    Indigo,
+    IndigoException,
+    getIndigoExceptionText,
+    joinPathPy,
+)
 
 indigo = Indigo()
 
@@ -19,13 +24,31 @@ def iterateSavingOptions():
         yield val
 
 
+def trim_sed(s):
+    if s.startswith("M  SED"):
+        return s.rstrip()
+    else:
+        return s
+
+
+def find_diff(a, b):
+    return "\n".join(
+        difflib.unified_diff(
+            [trim_sed(s) for s in a.splitlines()],
+            [trim_sed(s) for s in b.splitlines()],
+        )
+    )
+
+
 def testReload(mol):
     molfile = mol.molfile()
     mol2 = indigo.loadMolecule(molfile)
     molfile2 = mol2.molfile()
-    if molfile != molfile:
+    diff = find_diff(molfile, molfile2)
+    if diff:
         print("Molecule is different after resave")
-        sys.stderr.write("Molecule is different after resave")
+        print("diff:\n%s\n" % diff)
+        # sys.stderr.write("Molecule is different after resave")
 
 
 indigo.setOption("molfile-saving-skip-date", True)

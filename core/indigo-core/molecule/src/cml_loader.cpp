@@ -683,8 +683,7 @@ void CmlLoader::_loadMoleculeElement(XMLHandle& handle)
                             }
                             else if (subst > 0)
                             {
-                                atom.reset(QueryMolecule::Atom::und(
-                                    atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst, (subst < 6 ? subst : 100))));
+                                atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, subst)));
                             }
                         }
                         else if (strncmp(qf.ptr(), "u", 1) == 0)
@@ -1827,7 +1826,7 @@ void CmlLoader::_loadRgroupElement(XMLHandle& handle)
 
         const char* rlogic_range = elem->Attribute("rlogicRange");
         if (rlogic_range != 0)
-            _parseRlogicRange(rlogic_range, rgroup.occurrence);
+            rgroup.readOccurrence(rlogic_range);
 
         const char* rgroup_then = elem->Attribute("thenR");
         if (rgroup_then != 0)
@@ -1886,53 +1885,6 @@ void CmlLoader::_loadRgroupElement(XMLHandle& handle)
             }
         }
     }
-}
-
-void CmlLoader::_parseRlogicRange(const char* str, Array<int>& ranges)
-{
-    int beg = -1, end = -1;
-    int add_beg = 0, add_end = 0;
-
-    while (*str != 0)
-    {
-        if (*str == '>')
-        {
-            end = 0xFFFF;
-            add_beg = 1;
-        }
-        else if (*str == '<')
-        {
-            beg = 0;
-            add_end = -1;
-        }
-        else if (isdigit(*str))
-        {
-            sscanf(str, "%d", beg == -1 ? &beg : &end);
-            while (isdigit(*str))
-                str++;
-            continue;
-        }
-        else if (*str == ',')
-        {
-            if (end == -1)
-                end = beg;
-            else
-                beg += add_beg, end += add_end;
-            ranges.push((beg << 16) | end);
-            beg = end = -1;
-            add_beg = add_end = 0;
-        }
-        str++;
-    }
-
-    if (beg == -1 && end == -1)
-        return;
-
-    if (end == -1)
-        end = beg;
-    else
-        beg += add_beg, end += add_end;
-    ranges.push((beg << 16) | end);
 }
 
 void CmlLoader::_appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom)

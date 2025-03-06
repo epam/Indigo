@@ -1335,10 +1335,13 @@ void MoleculeJsonSaver::saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writ
         }
     }
 }
-void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, JsonWriter& writer)
+void MoleculeJsonSaver::saveRGroup(RGroup& rgroup, int rgnum, JsonWriter& writer)
 {
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
+
+    if (rgroup.fragments.size() == 0 && rgroup.occurrence.size() == 0 && rgroup.if_then <= 0 && !rgroup.rest_h)
+        return;
 
     buf.clear();
     out.printf("rg%d", rgnum);
@@ -1350,22 +1353,40 @@ void MoleculeJsonSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, 
     writer.StartObject();
     writer.Key("number");
     writer.Int(rgnum);
+    if (rgroup.occurrence.size() > 0)
+    {
+        buf.clear();
+        rgroup.writeOccurrence(out);
+        out.writeChar(0);
+        writer.Key("range");
+        writer.String(buf.ptr());
+    }
+    if (rgroup.if_then > 0)
+    {
+        writer.Key("ifthen");
+        writer.Int(rgroup.if_then);
+    }
+    if (rgroup.rest_h)
+    {
+        writer.Key("resth");
+        writer.Bool(rgroup.rest_h);
+    }
     writer.EndObject(); // rlogic
     writer.Key("type");
     writer.String("rgroup");
 
-    bool fmode = fragments.size() > 1;
+    bool fmode = rgroup.fragments.size() > 1;
     if (fmode)
     {
         writer.Key("fragments");
         writer.StartArray();
     }
 
-    for (int i = fragments.begin(); i != fragments.end(); i = fragments.next(i))
+    for (int i = rgroup.fragments.begin(); i != rgroup.fragments.end(); i = rgroup.fragments.next(i))
     {
         if (fmode)
             writer.StartObject();
-        saveFragment(*fragments[i], writer);
+        saveFragment(*rgroup.fragments[i], writer);
         if (fmode)
             writer.EndObject();
     }
@@ -1661,6 +1682,13 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 writeFloat(writer, pos.y);
                 writer.EndObject(); // pos
 
+                auto display = mol->getTemplateAtomDisplayOption(i);
+                if (display != DisplayOption::Undefined)
+                {
+                    writer.Key("expanded");
+                    writer.Bool(display == DisplayOption::Expanded);
+                }
+
                 // find template
                 writer.Key("alias");
                 auto alias = mol->getTemplateAtom(i);
@@ -1732,9 +1760,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     // save R-Groups
     for (int i = 1; i <= mol->rgroups.getRGroupCount(); i++)
     {
-        auto& rgrp = mol->rgroups.getRGroup(i);
-        if (rgrp.fragments.size())
-            saveRGroup(rgrp.fragments, i, writer);
+        saveRGroup(mol->rgroups.getRGroup(i), i, writer);
     }
 
     // save monomer shapes
