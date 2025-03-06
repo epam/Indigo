@@ -477,9 +477,8 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                                                                                                                   _pqmol->getVertex(atom_idx).degree())));
             }
             else if (sub_count > 0)
-                _pqmol->resetAtom(atom_idx,
-                                  QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, sub_count,
-                                                                                                                  (sub_count < 6 ? sub_count : 100))));
+                _pqmol->resetAtom(
+                    atom_idx, QueryMolecule::Atom::und(_pqmol->releaseAtom(atom_idx), new QueryMolecule::Atom(QueryMolecule::ATOM_SUBSTITUENTS, sub_count)));
             else
                 throw Error("invalid SUB value: %d", sub_count);
         }
@@ -1600,6 +1599,24 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         RGroup& rgroup = rgroups.getRGroup(rgrp.first);
         Value one_rnode(kArrayType);
         Value& rnode = rgrp.second;
+        if (rnode.HasMember("rlogic"))
+        {
+            auto& rlogic = rnode["rlogic"];
+            // rlogic["number"].GetInt();
+            if (rlogic.HasMember("ifthen"))
+            {
+                rgroup.if_then = rlogic["ifthen"].GetInt();
+            }
+            if (rlogic.HasMember("range"))
+            {
+                rgroup.occurrence.clear();
+                rgroup.readOccurrence(rlogic["range"].GetString());
+            }
+            if (rlogic.HasMember("resth"))
+            {
+                rgroup.rest_h = rlogic["resth"].GetBool();
+            }
+        }
         if (rnode.HasMember("fragments"))
         {
             auto& rfragments = rnode["fragments"];
@@ -1655,6 +1672,15 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         {
             auto& pos_val = ma["position"];
             mol.setAtomXyz(idx, static_cast<float>(pos_val["x"].GetDouble()), static_cast<float>(pos_val["y"].GetDouble()), 0);
+        }
+
+        if (ma.HasMember("expanded"))
+        {
+            bool expanded = ma["expanded"].GetBool();
+            if (expanded)
+                mol.setTemplateAtomDisplayOption(idx, DisplayOption::Expanded);
+            else
+                mol.setTemplateAtomDisplayOption(idx, DisplayOption::Contracted);
         }
 
         std::string template_id = ma["templateId"].GetString();

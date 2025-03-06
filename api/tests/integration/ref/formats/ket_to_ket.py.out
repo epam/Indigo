@@ -3,7 +3,12 @@ images.ket:SUCCEED
 ambiguous_monomer.ket doc loadKetDocument: SUCCEED
 ambiguous_monomer.ket mol loadMolecule: SUCCEED
 ambiguous_monomer.ket mol loadQueryMolecule: SUCCEED
+expanded_monomer.ket doc loadKetDocument: SUCCEED
+expanded_monomer.ket mol loadMolecule: SUCCEED
+expanded_monomer.ket mol loadQueryMolecule: SUCCEED
 monomer_shape.ket doc loadKetDocument: SUCCEED
 monomer_shape.ket mol loadMolecule: SUCCEED
 monomer_shape.ket mol loadQueryMolecule: SUCCEED
+2707_subst_count.ket ket: SUCCEED
+2707_subst_count.ket mol: SUCCEED
 multi_merge4.ket:SUCCEED

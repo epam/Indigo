@@ -12,7 +12,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import Indigo, joinPathPy  # noqa
 
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
@@ -29,7 +29,7 @@ for filename in files:
     mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".mol"))
 
     # with open(os.path.join(ref_path, filename) + ".mol", "w") as file:
-    # file.write(mol.molfile())
+    #     file.write(mol.molfile())
     with open(os.path.join(ref_path, filename) + ".mol", "r") as file:
         mol_ref = file.read()
 

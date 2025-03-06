@@ -597,9 +597,16 @@ void KetBaseMonomer::connectAttachmentPointTo(const std::string& ap_id, const st
 
 IMPL_ERROR(KetMonomer, "Ket Monomer")
 
+const std::map<std::string, int>& KetMonomer::getBoolPropStrToIdx() const
+{
+    static std::map<std::string, int> str_to_idx{
+        {"expanded", toUType(BoolProps::expanded)},
+    };
+    return str_to_idx;
+}
+
 const std::map<std::string, int>& KetMonomer::getIntPropStrToIdx() const
 {
-
     static std::map<std::string, int> str_to_idx{
         {"seqid", toUType(IntProps::seqid)},
     };

@@ -227,6 +227,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                         ap.apid.copy(supersa.attachment_points[j].apid);
                     }
                 }
+                sa.display_position.copy(supersa.display_position);
             }
             else if (sg.sgroup_type == SGroup::SG_TYPE_SRU)
             {
@@ -5135,14 +5136,12 @@ const int BaseMolecule::getTemplateAtomSeqid(int idx)
     return res;
 }
 
-const int BaseMolecule::getTemplateAtomDisplayOption(int idx)
+const DisplayOption BaseMolecule::getTemplateAtomDisplayOption(int idx)
 {
     int template_occur_idx = getTemplateAtomOccurrence(idx);
     _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
-    const int res = static_cast<int>(occur.contracted);
-    // const int res = occur.contracted;
 
-    return res;
+    return occur.contracted;
 }
 
 void BaseMolecule::renameTemplateAtom(int idx, const char* text)
@@ -5193,11 +5192,11 @@ void BaseMolecule::setTemplateAtomTemplateIndex(int idx, int temp_idx)
     updateEditRevision();
 }
 
-void BaseMolecule::setTemplateAtomDisplayOption(int idx, int option)
+void BaseMolecule::setTemplateAtomDisplayOption(int idx, DisplayOption option)
 {
     int template_occur_idx = getTemplateAtomOccurrence(idx);
     _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
-    occur.contracted = (DisplayOption)option;
+    occur.contracted = option;
     updateEditRevision();
 }
 

@@ -67,7 +67,6 @@ namespace indigo
         void _loadSGroupElement(tinyxml2::XMLElement* elem, std::unordered_map<std::string, int>& atoms_id, int parent);
         void _loadRgroupElement(tinyxml2::XMLHandle& handle);
         bool _findMolecule(tinyxml2::XMLNode* node);
-        void _parseRlogicRange(const char* str, Array<int>& ranges);
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
 
         Molecule* _mol;
