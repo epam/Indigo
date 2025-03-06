@@ -427,6 +427,7 @@ private:
 
 #if PG_VERSION_NUM >= 170000
 #define SPI_push_conditional() false
+#define SPI_pop_conditional(pushed) ((void)0)
 #endif
 
 #define PG_BINGO_BEGIN                                                                                                                                         \
