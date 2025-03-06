@@ -4,7 +4,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  docker-buildpack-centos7:
+  docker-buildpack-almalinux8:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 500
+      - name: Build buildpack-almalinux8
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: .ci/docker/buildpack-almalinux8/Dockerfile
+          tags: epmlsop/buildpack-almalinux8:latest
+      - name: Push buildpack-almalinux8
+        run: docker push epmlsop/buildpack-almalinux8:latest
     runs-on: ubuntu-latest
     steps:
       - name: Login to DockerHub
