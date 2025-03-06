@@ -873,10 +873,10 @@ M  END
             let ad_options = new indigo.MapStringString();
             ad_options.set("output-content-type", "application/json");
             ad_options.set("monomerLibrary", monomersLib);
-            const res2 = indigo.convert(peptide_seq_ref, "ket", ad_options);
+            const res2 = JSON.parse(indigo.convert(peptide_seq_ref, "ket", options)).struct;
             assert.equal(res2, peptide_ket_ref.toString());
             ad_options.set("sequence-type", "PEPTIDE");
-            const res3 = indigo.convert(peptide_seq_ref, "ket", ad_options);
+            const res3 = JSON.parse(indigo.convert(peptide_seq_ref, "ket", options)).struct;
             assert.equal(res3, peptide_ket_ref.toString());
             ad_options.delete();
         });
@@ -905,7 +905,7 @@ M  END
             let ad_options = new indigo.MapStringString();
             ad_options.set("output-content-type", "application/json");
             ad_options.set("monomerLibrary", monomersLib);
-            ad_options.set("sequence-type", "DNA");
+            ad_options.set("sequence-type", "RNA");
             const res2 = indigo.convert(rna_seq_ref, "ket", ad_options);
             assert.equal(res2, rna_ket_ref.toString());
             ad_options.delete();

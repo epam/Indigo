@@ -3229,9 +3229,11 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": "ACGTU",
-                "options": {"monomerLibrary": monomer_library},
+                "options": {
+                    "monomerLibrary": monomer_library,
+                    "sequence-type": "RNA",
+                },
                 "output_format": "chemical/x-indigo-ket",
-                "sequence-type": "RNA",
             }
         )
         result_rna_ad = requests.post(
@@ -3269,9 +3271,11 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": "ACGTU",
-                "options": {"monomerLibrary": monomer_library},
+                "options": {
+                    "monomerLibrary": monomer_library,
+                    "sequence-type": "DNA",
+                },
                 "output_format": "chemical/x-indigo-ket",
-                "sequence-type": "DNA",
             }
         )
         result_dna_ad = requests.post(
@@ -3308,9 +3312,11 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": "ACGTU",
-                "options": {"monomerLibrary": monomer_library},
+                "options": {
+                    "monomerLibrary": monomer_library,
+                    "sequence-type": "PEPTIDE",
+                },
                 "output_format": "chemical/x-indigo-ket",
-                "sequence-type": "PEPTIDE",
             }
         )
         result_peptide_ad = requests.post(
@@ -3334,9 +3340,11 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": peptide_3,
-                "options": {"monomerLibrary": monomer_library},
+                "options": {
+                    "monomerLibrary": monomer_library,
+                    "sequence-type": "PEPTIDE",
+                },
                 "output_format": "chemical/x-indigo-ket",
-                "sequence-type": "PEPTIDE",
             }
         )
         result_ket_3_ad = requests.post(
