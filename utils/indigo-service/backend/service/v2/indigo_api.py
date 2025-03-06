@@ -311,7 +311,9 @@ def try_load_macromol(indigo, md, molstr, library, options):
     sequence_type = options.get("sequence-type")
     if sequence_type == "PEPTIDE":
         try:
-            md.struct = indigo.loadSequence(molstr, "PEPTIDE-3-LETTER", library)
+            md.struct = indigo.loadSequence(
+                molstr, "PEPTIDE-3-LETTER", library
+            )
             md.is_rxn = False
             md.is_query = False
             return
@@ -334,16 +336,16 @@ def try_load_macromol(indigo, md, molstr, library, options):
             pass
     else:
         try:
-            md.struct = indigo.loadSequence(molstr, "PEPTIDE-3-LETTER", library)
+            md.struct = indigo.loadSequence(
+                molstr, "PEPTIDE-3-LETTER", library
+            )
             md.is_rxn = False
             md.is_query = False
             return
         except IndigoException:
             pass
     try:
-        md.struct = indigo.loadHelm(
-            molstr, library
-        )
+        md.struct = indigo.loadHelm(molstr, library)
     except IndigoException:
         raise HttpException(
             "struct data not recognized as molecule, query, reaction or reaction query",
@@ -454,7 +456,9 @@ def load_moldata(
                                 400,
                             )
                         else:  # has library try to load macromolecule
-                            try_load_macromol(indigo, md, molstr, library, options)
+                            try_load_macromol(
+                                indigo, md, molstr, library, options
+                            )
     return md
 
 
