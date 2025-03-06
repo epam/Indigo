@@ -472,7 +472,7 @@ namespace indigo
                     }
                     if (sequence_type != options.end())
                     {
-                        std::msg = "try as " + sequence_type->second;
+                        std::string msg = "try as " + sequence_type->second;
                         print_js(msg.c_str());
                         objectId = indigoLoadSequenceFromString(data.c_str(), sequence_type->second.c_str(), library);
                         if (objectId >= 0)
