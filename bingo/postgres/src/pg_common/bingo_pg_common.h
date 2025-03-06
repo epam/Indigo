@@ -425,6 +425,10 @@ private:
 #define PG_FUNCNAME_MACRO __func__
 #endif
 
+#if PG_VERSION_NUM >= 170000
+#define SPI_push_conditional() false
+#endif
+
 #define PG_BINGO_BEGIN                                                                                                                                         \
     {                                                                                                                                                          \
         int pg_err_mess = 0;                                                                                                                                   \
