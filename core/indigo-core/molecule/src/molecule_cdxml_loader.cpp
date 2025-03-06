@@ -721,6 +721,11 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(BaseCDXElement& first_elem, bool n
                 }
             }
             this->_parseLabel(elem, bracket.label);
+            if (fragment_start_idx - 1 > 0 && fragment_start_idx - 1 < static_cast<int>(nodes.size()))
+            {
+                auto parentNode = this->nodes[fragment_start_idx - 1];
+                bracket.superatom_position.copy(parentNode.pos);
+            }
             this->brackets.push_back(bracket);
         }
         else
@@ -1000,6 +1005,7 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
             Superatom& sa = (Superatom&)sgroup;
             sa.contracted = DisplayOption::Contracted;
             sa.subscript.readString(bracket.label.c_str(), true);
+            sa.display_position.copy(bracket.superatom_position);
         }
         else
             switch (bracket.usage)
