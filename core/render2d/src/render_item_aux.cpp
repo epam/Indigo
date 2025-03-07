@@ -334,6 +334,11 @@ void RenderItemAuxiliary::fillKETStyle(TextItem& ti, const FONT_STYLE_SET& style
                                    : Vec3f((float)((ti.color >> 16) & 0xFF) / 255.0f, ti.rgb_color.y = (float)((ti.color >> 8) & 0xFF) / 255.0f,
                                            ti.rgb_color.z = (float)(ti.color & 0xFF) / 255.0f);
             }
+            else
+            {
+                ti.color = CWC_BASE;
+                ti.rgb_color = Vec3f(0, 0, 0);
+            }
         }
         default:
             break;
@@ -403,34 +408,42 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         {
                             auto ls_index = line_starts.value().front();
                             line_starts.value().erase(line_starts.value().begin());
-                            styled_lines.push_back(utf8w.to_bytes(text_wstr.substr(first_index, ls_index - first_index)));
+                            styled_lines.push_back(utf8w.to_bytes(text_wstr.substr(first_index, ls_index - first_index)) + '\n');
                             first_index = ls_index;
                         }
 
                         if (second_index > first_index)
+                        {
                             styled_lines.push_back(utf8w.to_bytes(text_wstr.substr(first_index, second_index - first_index)));
+                        }
 
                         fillKETStyle(ti, current_styles);
 
-                        // check for multiple lines
                         for (auto& styled_text : styled_lines)
                         {
                             auto splitted = split_with_empty(styled_text, '\n');
-                            for (auto& line : splitted)
+                            for (auto line_it = splitted.begin(); line_it != splitted.end(); ++line_it)
                             {
-                                if (line.size())
+                                if (line_it->size())
                                 {
-                                    ti.text.readString(line.c_str(), true);
+                                    ti.text.readString(line_it->c_str(), true);
                                     _rc.setTextItemSize(ti);
+
                                     ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
                                     ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
                                     _rc.drawTextItemText(ti, ti.rgb_color, idle);
-                                    if (styled_lines.size() > 1)
+                                    text_offset_x +=
+                                        ti.bbsz.x + _rc.getSpaceWidth() * std::distance(line_it->rbegin(), std::find_if(line_it->rbegin(), line_it->rend(),
+                                                                                                                        [](char c) { return c != ' '; }));
+
+                                    if (splitted.size() > 1 && std::next(line_it) != splitted.end())
+                                    {
                                         text_offset_y += text_max_height + _settings.boundExtent;
+                                        text_offset_x = 0;
+                                    }
                                 }
                             }
                         }
-                        text_offset_x += ti.bbsz.x;
                         current_styles = kvp.second;
                         first_index = second_index;
                     }

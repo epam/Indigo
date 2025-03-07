@@ -1773,10 +1773,10 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
                 paragraph.text += style_text;
                 // turn off the styles
                 FONT_STYLE_SET fss_off;
-                for (auto& fs_off : fss)
-                {
-                    fss.emplace(fs_off.first, false);
-                }
+                std::transform(fss.begin(), fss.end(), std::inserter(fss_off, fss_off.end()),
+                               [](const auto& entry) { return std::make_pair(entry.first, false); });
+                fss = std::move(fss_off);
+
                 if (fss.size())
                     paragraph.font_styles.emplace(paragraph.text.size(), fss);
             }
