@@ -836,6 +836,14 @@ M  END
             const peptide_seq_ref1 = fs.readFileSync("peptide_ref.seq");
             assert.equal(peptide_seq, peptide_seq_ref1.toString());
             options.delete();
+            // test autodetect
+            let ad_options = new indigo.MapStringString();
+            ad_options.set("output-content-type", "application/json");
+            ad_options.set("monomerLibrary", monomersLib);
+            ad_options.set("sequence-type", "PEPTIDE");
+            const res2 = indigo.convert(peptide_seq_ref, "ket", ad_options);
+            assert.equal(res2, peptide_ket_ref.toString());
+            ad_options.delete();
         });
     }
 
@@ -861,6 +869,16 @@ M  END
             const peptide_seq1 = indigo.convert(peptide_ket_ref.toString(), "peptide-sequence-3-letter", options);
             assert.equal(peptide_seq1, peptide_seq_ref);
             options.delete();
+            // test autodetect
+            let ad_options = new indigo.MapStringString();
+            ad_options.set("output-content-type", "application/json");
+            ad_options.set("monomerLibrary", monomersLib);
+            const res2 = JSON.parse(indigo.convert(peptide_seq_ref, "peptide-sequence-3-letter", ad_options)).struct;
+            assert.equal(res2, peptide_seq_ref);
+            ad_options.set("sequence-type", "PEPTIDE");
+            const res3 = JSON.parse(indigo.convert(peptide_seq_ref, "peptide-sequence-3-letter", ad_options)).struct;
+            assert.equal(res3, peptide_seq_ref);
+            ad_options.delete();
         });
     }
 
@@ -883,6 +901,14 @@ M  END
             const rna_seq_ref1 = fs.readFileSync("rna_ref.seq");
             assert.equal(rna_seq, rna_seq_ref1.toString());
             options.delete();
+            // test autodetect
+            let ad_options = new indigo.MapStringString();
+            ad_options.set("output-content-type", "application/json");
+            ad_options.set("monomerLibrary", monomersLib);
+            ad_options.set("sequence-type", "RNA");
+            const res2 = indigo.convert(rna_seq_ref, "sequence", ad_options);
+            assert.equal(res2, rna_seq_ref1.toString());
+            ad_options.delete();
         });
 
     }
@@ -906,6 +932,14 @@ M  END
             const dna_seq_ref1 = fs.readFileSync("dna_ref.seq");
             assert.equal(dna_seq, dna_seq_ref1.toString());
             options.delete();
+            // test autodetect
+            let ad_options = new indigo.MapStringString();
+            ad_options.set("output-content-type", "application/json");
+            ad_options.set("monomerLibrary", monomersLib);
+            ad_options.set("sequence-type", "DNA");
+            const res2 = indigo.convert(dna_seq_ref, "sequence", ad_options);
+            assert.equal(res2, dna_seq_ref1.toString());
+            ad_options.delete();
         });
 
     }

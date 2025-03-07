@@ -182,7 +182,7 @@ int QueryReaction::_addBaseMolecule(int side)
 
 std::unique_ptr<BaseReaction> QueryReaction::getBaseReaction(int index)
 {
-    std::unique_ptr<BaseReaction> query_reaction;
+    std::unique_ptr<BaseReaction> query_reaction(neu());
     query_reaction->clone(*this);
     return query_reaction;
 }
