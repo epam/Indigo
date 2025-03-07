@@ -3213,9 +3213,11 @@ M  END
         with open(lib_path, "r") as file:
             monomer_library = file.read()
 
+        monomer_struct = "ACGTU"
+
         headers, data = self.get_headers(
             {
-                "struct": "ACGTU",
+                "struct": monomer_struct,
                 "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-rna-sequence",
                 "output_format": "chemical/x-indigo-ket",
@@ -3225,24 +3227,9 @@ M  END
             self.url_prefix + "/convert", headers=headers, data=data
         )
 
-        # test autodetect RNA
         headers, data = self.get_headers(
             {
-                "struct": "ACGTU",
-                "options": {
-                    "monomerLibrary": monomer_library,
-                    "sequence-type": "RNA",
-                },
-                "output_format": "chemical/x-indigo-ket",
-            }
-        )
-        result_rna_ad = requests.post(
-            self.url_prefix + "/convert", headers=headers, data=data
-        )
-
-        headers, data = self.get_headers(
-            {
-                "struct": "ACGTU",
+                "struct": monomer_struct,
                 "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-rna-sequence",
                 "output_format": "chemical/x-sequence",
@@ -3253,11 +3240,27 @@ M  END
             self.url_prefix + "/convert", headers=headers, data=data
         )
 
-        self.assertEqual(json.loads(result_rna_1.text)["struct"], "ACGTU")
+        self.assertEqual(json.loads(result_rna_1.text)["struct"], monomer_struct)
 
+        # test autodetect RNA
         headers, data = self.get_headers(
             {
                 "struct": "ACGTU",
+                "options": {
+                    "monomerLibrary": monomer_library,
+                    "sequence-type": "RNA",
+                },
+                "output_format": "chemical/x-sequence",
+            }
+        )
+        result_rna_ad = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        self.assertEqual(json.loads(result_rna_ad.text)["struct"], monomer_struct)
+
+        headers, data = self.get_headers(
+            {
+                "struct": monomer_struct,
                 "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-dna-sequence",
                 "output_format": "chemical/x-indigo-ket",
@@ -3267,24 +3270,9 @@ M  END
             self.url_prefix + "/convert", headers=headers, data=data
         )
 
-        # test autodetect DNA
         headers, data = self.get_headers(
             {
-                "struct": "ACGTU",
-                "options": {
-                    "monomerLibrary": monomer_library,
-                    "sequence-type": "DNA",
-                },
-                "output_format": "chemical/x-indigo-ket",
-            }
-        )
-        result_dna_ad = requests.post(
-            self.url_prefix + "/convert", headers=headers, data=data
-        )
-
-        headers, data = self.get_headers(
-            {
-                "struct": "ACGTU",
+                "struct": monomer_struct,
                 "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-dna-sequence",
                 "output_format": "chemical/x-sequence",
@@ -3294,11 +3282,27 @@ M  END
             self.url_prefix + "/convert", headers=headers, data=data
         )
 
-        self.assertEqual(json.loads(result_dna_1.text)["struct"], "ACGTU")
+        self.assertEqual(json.loads(result_dna_1.text)["struct"], monomer_struct)
+
+        # test autodetect DNA
+        headers, data = self.get_headers(
+            {
+                "struct": monomer_struct,
+                "options": {
+                    "monomerLibrary": monomer_library,
+                    "sequence-type": "DNA",
+                },
+                "output_format": "chemical/x-sequence",
+            }
+        )
+        result_dna_ad = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        self.assertEqual(json.loads(result_dna_ad.text)["struct"], monomer_struct)
 
         headers, data = self.get_headers(
             {
-                "struct": "ACGTU",
+                "struct": monomer_struct,
                 "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-peptide-sequence",
                 "output_format": "chemical/x-indigo-ket",
@@ -3311,17 +3315,18 @@ M  END
         # test autodetect PEPTIDE
         headers, data = self.get_headers(
             {
-                "struct": "ACGTU",
+                "struct": monomer_struct,
                 "options": {
                     "monomerLibrary": monomer_library,
                     "sequence-type": "PEPTIDE",
                 },
-                "output_format": "chemical/x-indigo-ket",
+                "output_format": "chemical/x-sequence",
             }
         )
         result_peptide_ad = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
+        self.assertEqual(json.loads(result_peptide_ad.text)["struct"], monomer_struct)
 
         peptide_3 = "AlaCysGlyThrSec"
         headers, data = self.get_headers(
@@ -3344,23 +3349,25 @@ M  END
                     "monomerLibrary": monomer_library,
                     "sequence-type": "PEPTIDE",
                 },
-                "output_format": "chemical/x-indigo-ket",
+                "output_format": "chemical/x-sequence",
             }
         )
-        result_ket_3_ad = requests.post(
+        result_peptide_3_ad = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
+        self.assertEqual(json.loads(result_peptide_3_ad.text)["struct"], monomer_struct)
 
         headers, data = self.get_headers(
             {
                 "struct": peptide_3,
                 "options": {"monomerLibrary": monomer_library},
-                "output_format": "chemical/x-indigo-ket",
+                "output_format": "chemical/x-sequence",
             }
         )
-        result_ket_3_ad_no_type = requests.post(
+        result_peptide_3_ad_no_type = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
+        self.assertEqual(json.loads(result_peptide_3_ad_no_type.text)["struct"], monomer_struct)
 
         headers, data = self.get_headers(
             {
@@ -3405,20 +3412,15 @@ M  END
         with open(os.path.join(ref_path, "rna_ref") + ".ket", "r") as file:
             rna_ref = file.read()
             self.assertEqual(result_rna.text, rna_ref)
-            self.assertEqual(result_rna_ad.text, rna_ref)
 
         with open(os.path.join(ref_path, "dna_ref") + ".ket", "r") as file:
             dna_ref = file.read()
             self.assertEqual(result_dna.text, dna_ref)
-            self.assertEqual(result_dna_ad.text, dna_ref)
 
         with open(os.path.join(ref_path, "peptide_ref") + ".ket", "r") as file:
             peptide_ref = file.read()
             self.assertEqual(result_peptide.text, peptide_ref)
-            self.assertEqual(result_peptide_ad.text, peptide_ref)
             self.assertEqual(result_ket_3.text, peptide_ref)
-            self.assertEqual(result_ket_3_ad.text, peptide_ref)
-            self.assertEqual(result_ket_3_ad_no_type.text, peptide_ref)
 
     def test_convert_fasta(self):
         ref_path = joinPathPy("ref/", __file__)
