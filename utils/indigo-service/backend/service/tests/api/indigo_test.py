@@ -3240,7 +3240,9 @@ M  END
             self.url_prefix + "/convert", headers=headers, data=data
         )
 
-        self.assertEqual(json.loads(result_rna_1.text)["struct"], monomer_struct)
+        self.assertEqual(
+            json.loads(result_rna_1.text)["struct"], monomer_struct
+        )
 
         # test autodetect RNA
         headers, data = self.get_headers(
@@ -3256,7 +3258,9 @@ M  END
         result_rna_ad = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
-        self.assertEqual(json.loads(result_rna_ad.text)["struct"], monomer_struct)
+        self.assertEqual(
+            json.loads(result_rna_ad.text)["struct"], monomer_struct
+        )
 
         headers, data = self.get_headers(
             {
@@ -3282,7 +3286,9 @@ M  END
             self.url_prefix + "/convert", headers=headers, data=data
         )
 
-        self.assertEqual(json.loads(result_dna_1.text)["struct"], monomer_struct)
+        self.assertEqual(
+            json.loads(result_dna_1.text)["struct"], monomer_struct
+        )
 
         # test autodetect DNA
         headers, data = self.get_headers(
@@ -3298,7 +3304,9 @@ M  END
         result_dna_ad = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
-        self.assertEqual(json.loads(result_dna_ad.text)["struct"], monomer_struct)
+        self.assertEqual(
+            json.loads(result_dna_ad.text)["struct"], monomer_struct
+        )
 
         headers, data = self.get_headers(
             {
@@ -3326,7 +3334,9 @@ M  END
         result_peptide_ad = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
-        self.assertEqual(json.loads(result_peptide_ad.text)["struct"], monomer_struct)
+        self.assertEqual(
+            json.loads(result_peptide_ad.text)["struct"], monomer_struct
+        )
 
         peptide_3 = "AlaCysGlyThrSec"
         headers, data = self.get_headers(
@@ -3355,7 +3365,9 @@ M  END
         result_peptide_3_ad = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
-        self.assertEqual(json.loads(result_peptide_3_ad.text)["struct"], monomer_struct)
+        self.assertEqual(
+            json.loads(result_peptide_3_ad.text)["struct"], monomer_struct
+        )
 
         headers, data = self.get_headers(
             {
@@ -3367,7 +3379,10 @@ M  END
         result_peptide_3_ad_no_type = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
-        self.assertEqual(json.loads(result_peptide_3_ad_no_type.text)["struct"], monomer_struct)
+        self.assertEqual(
+            json.loads(result_peptide_3_ad_no_type.text)["struct"],
+            monomer_struct,
+        )
 
         headers, data = self.get_headers(
             {
