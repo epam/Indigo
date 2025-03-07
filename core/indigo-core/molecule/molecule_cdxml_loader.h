@@ -176,7 +176,7 @@ namespace indigo
         std::string label;
         bool is_superatom;
         Rect2f bbox;
-        Vec3f pos;
+        Vec3f superatom_position;
     };
 
     struct CdxmlText

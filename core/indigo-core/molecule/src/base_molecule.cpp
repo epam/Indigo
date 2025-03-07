@@ -237,6 +237,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                         ap.apid.copy(supersa.attachment_points[j].apid);
                     }
                 }
+                sa.display_position.copy(supersa.display_position);
             }
             else if (sg.sgroup_type == SGroup::SG_TYPE_SRU)
             {

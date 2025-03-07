@@ -791,6 +791,11 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(BaseCDXElement& first_elem, bool n
                 }
             }
             _parseBracketLabel(elem, bracket);
+            if (fragment_start_idx - 1 > 0 && fragment_start_idx - 1 < static_cast<int>(nodes.size()))
+            {
+                auto parentNode = this->nodes[fragment_start_idx - 1];
+                bracket.superatom_position.copy(parentNode.pos);
+            }
             brackets.push_back(bracket);
         }
         else
@@ -1071,6 +1076,7 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
             Superatom& sa = (Superatom&)sgroup;
             sa.contracted = DisplayOption::Contracted;
             sa.subscript.readString(bracket.label.c_str(), true);
+            sa.display_position.copy(bracket.superatom_position);
         }
         else
             switch (bracket.usage)
@@ -1658,7 +1664,7 @@ void MoleculeCdxmlLoader::_parseLabel(BaseCDXElement& elem, std::string& label)
 
 void MoleculeCdxmlLoader::_parseBracketLabel(BaseCDXElement& elem, CdxmlBracket& bracket)
 {
-    std::unordered_map<std::string, std::function<void(const std::string&)>> text_dispatcher = {{"p", posLambda(bracket.pos)},
+    std::unordered_map<std::string, std::function<void(const std::string&)>> text_dispatcher = {{"p", posLambda(bracket.superatom_position)},
                                                                                                 {"BoundingBox", bboxLambda(bracket.bbox)}};
 
     applyDispatcher(*elem.firstProperty().get(), text_dispatcher);
