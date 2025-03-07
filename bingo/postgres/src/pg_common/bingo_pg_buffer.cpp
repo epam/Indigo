@@ -152,7 +152,7 @@ int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
     //   PageInit(BufferGetPage(buf), BufferGetPageSize(buf), sizeof (HashPageOpaqueData));
     BINGO_PG_TRY
     {
-        PageInit(BufferGetPage(_buffer), BufferGetPageSize(buf), 0);
+        PageInit(BufferGetPage(_buffer), BufferGetPageSize(_buffer), 0);
     }
     BINGO_PG_HANDLE(throw Error("internal error: can not initialize the page %d: %s", _buffer, message));
     _lock = BINGO_PG_WRITE;
