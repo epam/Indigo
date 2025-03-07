@@ -275,7 +275,7 @@ namespace indigo
 
     void indigoSetOptions(const std::map<std::string, std::string>& options)
     {
-        std::set<std::string> to_skip{"smiles", "smarts", "input-format", "output-content-type", "monomerLibrary"};
+        std::set<std::string> to_skip{"smiles", "smarts", "input-format", "output-content-type", "monomerLibrary", "sequence-type"};
         for (const auto& option : options)
         {
             if (to_skip.count(option.first) < 1)
@@ -454,13 +454,41 @@ namespace indigo
 
                 if (library >= 0)
                 {
+                    auto sequence_type = options.find("sequence-type");
+                    if (sequence_type != options.end() && sequence_type->second == "PEPTIDE")
+                    {
+                        print_js("try as PEPTIDE-3-LETTER");
+                        objectId = indigoLoadSequenceFromString(data.c_str(), "PEPTIDE-3-LETTER", library);
+                        if (objectId >= 0)
+                        {
+                            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                        }
+                    }
                     print_js("try as IDT");
                     objectId = indigoLoadIdtFromString(data.c_str(), library);
                     if (objectId >= 0)
                     {
                         return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                     }
-
+                    if (sequence_type != options.end())
+                    {
+                        std::string msg = "try as " + sequence_type->second;
+                        print_js(msg.c_str());
+                        objectId = indigoLoadSequenceFromString(data.c_str(), sequence_type->second.c_str(), library);
+                        if (objectId >= 0)
+                        {
+                            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                        }
+                    }
+                    else
+                    {
+                        print_js("try as PEPTIDE-3-LETTER");
+                        objectId = indigoLoadSequenceFromString(data.c_str(), "PEPTIDE-3-LETTER", library);
+                        if (objectId >= 0)
+                        {
+                            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                        }
+                    }
                     print_js("try as HELM");
                     objectId = indigoLoadHelmFromString(data.c_str(), library);
                     if (objectId >= 0)
