@@ -106,6 +106,7 @@ void Indigo::init()
     deco_save_ap_bond_orders = false;
     deco_ignore_errors = true;
     molfile_saving_mode = 0;
+    ket_saving_version = {1, 0, 0};
     dearomatize_on_load = false;
     smiles_saving_format = SmilesSaver::SMILES_MODE::SMILES_CHEMAXON;
     molfile_saving_no_chiral = false;
@@ -205,12 +206,14 @@ void Indigo::initMoleculeJsonSaver(MoleculeJsonSaver& saver)
     saver.add_stereo_desc = json_saving_add_stereo_desc;
     saver.pretty_json = json_saving_pretty;
     saver.use_native_precision = json_use_native_precision;
+    saver.ket_version = ket_saving_version;
 }
 
 void Indigo::initReactionJsonSaver(ReactionJsonSaver& saver) const
 {
     saver.add_stereo_desc = json_saving_add_stereo_desc;
     saver.pretty_json = json_saving_pretty;
+    saver.ket_version = ket_saving_version;
     saver.layout_options = layout_options;
     saver.use_native_precision = json_use_native_precision;
 }

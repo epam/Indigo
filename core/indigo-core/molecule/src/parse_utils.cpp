@@ -100,6 +100,27 @@ namespace indigo
         return true;
     }
 
+    std::vector<std::string> split_with_empty(const std::string& str, char delim)
+    {
+        std::vector<std::string> strings;
+        if (str.size())
+        {
+            if (str.front() == delim)
+            {
+                strings.push_back("");
+            }
+
+            auto splitted = split(str, delim);
+            strings.insert(strings.end(), splitted.begin(), splitted.end());
+
+            if (!str.empty() && str.back() == delim)
+            {
+                strings.push_back("");
+            }
+        }
+        return strings;
+    }
+
     std::vector<std::string> split(const std::string& str, char delim)
     {
         std::vector<std::string> strings;
