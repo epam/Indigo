@@ -61,7 +61,7 @@ namespace indigo
         static void saveIndent(JsonWriter& writer, const SimpleTextObject::KETTextIndent& indent);
         static void saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET& fss);
         static void saveParagraphs(JsonWriter& writer, const std::list<SimpleTextObject::KETTextParagraph>& paragraphs);
-        static void saveParts(JsonWriter& writer, const std::map<std::size_t, FONT_STYLE_SET>& fss_map, const std::string& text);
+        static void saveParts(JsonWriter& writer, const SimpleTextObject::KETTextParagraph& paragraph);
         static std::string monomerId(const TGroup& tg);
         static std::string monomerKETClass(const std::string& class_name);
         static std::string monomerHELMClass(const std::string& class_name);

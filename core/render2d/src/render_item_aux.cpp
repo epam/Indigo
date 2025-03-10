@@ -310,10 +310,10 @@ void RenderItemAuxiliary::fillKETStyle(TextItem& ti, const FONT_STYLE_SET& style
             ti.italic = text_style.second;
             break;
         case KETFontStyle::FontStyle::ESuperScript:
-            ti.script_type = text_style.second ? 1 : 0;
+            ti.script_type = text_style.second ? 2 : 0;
             break;
         case KETFontStyle::FontStyle::ESubScript:
-            ti.script_type = text_style.second ? 2 : 0;
+            ti.script_type = text_style.second ? 1 : 0;
             break;
         case KETFontStyle::FontStyle::ESize: {
             ti.size = KDefaultFontSize;
@@ -387,11 +387,14 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                     int second_index = -1;
                     double text_offset_x = 0;
                     FONT_STYLE_SET current_styles;
+                    ObjArray<ObjArray<TextItem>> ti_lines;
+                    ti_lines.push();
                     TextItem ti;
                     ti.size = KDefaultFontSize / KFontScaleFactor; // default size
                     ti.ritype = RenderItem::RIT_TITLE;
                     Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().top());
                     scale(text_origin);
+                    float text_width = ko.boundingBox().width() * scaleFactor;
                     for (auto& kvp : text_item.font_styles)
                     {
                         if (first_index == -1)
@@ -403,10 +406,10 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         second_index = static_cast<int>(kvp.first);
 
                         std::vector<std::string> styled_lines;
-                        while (line_starts.has_value() && line_starts.value().size() && line_starts.value().front() <= second_index &&
-                               line_starts.value().front() > first_index)
+                        while (line_starts.has_value() && line_starts.value().size() && *line_starts.value().begin() <= second_index &&
+                               *line_starts.value().begin() > first_index)
                         {
-                            auto ls_index = line_starts.value().front();
+                            auto ls_index = *line_starts.value().begin();
                             line_starts.value().erase(line_starts.value().begin());
                             styled_lines.push_back(utf8w.to_bytes(text_wstr.substr(first_index, ls_index - first_index)) + '\n');
                             first_index = ls_index;
@@ -424,22 +427,23 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                             auto splitted = split_with_empty(styled_text, '\n');
                             for (auto line_it = splitted.begin(); line_it != splitted.end(); ++line_it)
                             {
+                                auto& ti_line = ti_lines.top();
                                 if (line_it->size())
                                 {
                                     ti.text.readString(line_it->c_str(), true);
                                     _rc.setTextItemSize(ti);
-
+                                    auto space_width = _rc.getSpaceWidth() * std::distance(line_it->rbegin(), std::find_if(line_it->rbegin(), line_it->rend(),
+                                                                                                                           [](char c) { return c != ' '; }));
                                     ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
                                     ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
-                                    _rc.drawTextItemText(ti, ti.rgb_color, idle);
-                                    text_offset_x +=
-                                        ti.bbsz.x + _rc.getSpaceWidth() * std::distance(line_it->rbegin(), std::find_if(line_it->rbegin(), line_it->rend(),
-                                                                                                                        [](char c) { return c != ' '; }));
+                                    ti_line.push(ti);
+                                    text_offset_x += ti.bbsz.x + space_width;
 
                                     if (splitted.size() > 1 && std::next(line_it) != splitted.end())
                                     {
                                         text_offset_y += text_max_height + _settings.boundExtent;
                                         text_offset_x = 0;
+                                        ti_lines.push();
                                     }
                                 }
                             }
@@ -447,6 +451,76 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         current_styles = kvp.second;
                         first_index = second_index;
                     }
+
+                    for (int j = 0; j < ti_lines.size(); ++j)
+                    {
+                        auto& ti_line = ti_lines[j];
+                        float line_width = 0;
+                        float align_offset = 0;
+
+                        if (text_item.alignment.has_value() && text_item.alignment.value() != SimpleTextObject::TextAlignment::ELeft)
+                        {
+                            for (int k = 0; k < ti_line.size(); ++k)
+                            {
+                                auto& ti_rc = ti_line[k];
+                                line_width += ti_rc.bbsz.x - _rc.getSpaceWidth() * std::count(ti_rc.text.begin(), ti_rc.text.end(), ' ');
+                            }
+
+                            if (text_item.alignment.value() == SimpleTextObject::TextAlignment::EFull)
+                            {
+                                ObjArray<TextItem> ti_tmp_line;
+                                text_offset_x = 0;
+                                for (int k = 0; k < ti_line.size(); ++k)
+                                {
+                                    auto& ti_rc = ti_line[k];
+                                    TextItem ti_tmp(ti_rc);
+                                    auto separate_words = split(ti_rc.text.ptr(), ' ');
+                                    float space_width = text_width - line_width;
+                                    if (separate_words.size() > 1)
+                                        space_width /= separate_words.size() - 1;
+
+                                    if (j < ti_lines.size() - 1)
+                                    {
+                                        auto space_count = std::count(ti_rc.text.begin(), ti_rc.text.end(), ' ');
+                                        for (auto& wrd : separate_words)
+                                        {
+                                            ti_tmp.text.readString(wrd.c_str(), true);
+                                            _rc.setTextItemSize(ti_tmp);
+                                            ti_tmp.bbp.x = static_cast<float>(text_origin.x - ti_tmp.relpos.x + text_offset_x);
+                                            ti_tmp_line.push(ti_tmp);
+                                            text_offset_x += ti_tmp.bbsz.x;
+                                            if (space_count)
+                                                text_offset_x += space_width;
+                                        }
+                                    }
+                                }
+                                if (ti_tmp_line.size())
+                                {
+                                    ti_line.clear();
+                                    for (int k = 0; k < ti_tmp_line.size(); ++k)
+                                        ti_line.push(ti_tmp_line[k]);
+                                }
+                            }
+
+                            switch (text_item.alignment.value())
+                            {
+                            case SimpleTextObject::TextAlignment::ECenter:
+                                align_offset = (text_width - line_width) / 2;
+                                break;
+                            case SimpleTextObject::TextAlignment::ERight:
+                                align_offset = text_width - line_width;
+                                break;
+                            }
+                        }
+
+                        for (int k = 0; k < ti_line.size(); ++k)
+                        {
+                            auto& ti_rc = ti_line[k];
+                            ti_rc.bbp.x += align_offset;
+                            _rc.drawTextItemText(ti_rc, ti_rc.rgb_color, idle);
+                        }
+                    }
+
                     text_offset_y += text_max_height + _settings.boundExtent;
                     text_offset_x = 0;
                 }

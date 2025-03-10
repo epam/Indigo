@@ -819,6 +819,16 @@ namespace indigo
             return [&str](const std::string& data) { str = data; };
         }
 
+        static auto justificationLambda(CDXTextJustification& justification)
+        {
+            return [&justification](const std::string& data) 
+                {
+                auto it = kTextJustificationStrToInt.find(data);
+                justification =
+                    it != kTextJustificationStrToInt.end() ? static_cast<CDXTextJustification>(it->second) : CDXTextJustification::kCDXTextJustification_Left;
+                };
+        }
+
         static auto intLambda(AutoInt& val)
         {
             return [&val](const std::string& data) { val = data; };
@@ -897,6 +907,16 @@ namespace indigo
                 vals.clear();
                 for (auto& str : str_vals)
                     vals.push_back(std::stoi(str));
+            };
+        }
+
+        static auto intSetLambda(std::set<int>& vals)
+        {
+            return [&vals](const std::string& data) {
+                std::vector<std::string> str_vals = split(data, ' ');
+                vals.clear();
+                for (auto& str : str_vals)
+                    vals.insert(std::stoi(str));
             };
         }
 

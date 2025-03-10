@@ -2329,21 +2329,28 @@ void MoleculeJsonSaver::saveParagraphs(JsonWriter& writer, const std::list<Simpl
         if (paragraph.font_style.size())
             saveFontStyles(writer, paragraph.font_style);
         if (paragraph.font_styles.size())
-            saveParts(writer, paragraph.font_styles, paragraph.text);
+            saveParts(writer, paragraph);
+        if (paragraph.line_starts.has_value())
+        {
+            writer.Key("lineStarts");
+            writer.StartArray();
+            for (auto ls : paragraph.line_starts.value())
+                writer.Uint(ls);
+            writer.EndArray();
+        }
         writer.EndObject();
     }
     writer.EndArray();
 }
 
-void MoleculeJsonSaver::saveParts(JsonWriter& writer, const std::map<std::size_t, FONT_STYLE_SET>& fss_map, const std::string& text)
+void MoleculeJsonSaver::saveParts(JsonWriter& writer, const SimpleTextObject::KETTextParagraph& paragraph)
 {
-    if (fss_map.size() > 1)
+    if (paragraph.font_styles.size() > 1)
     {
-        std::string_view text_view = std::string_view(text);
+        std::string_view text_view = std::string_view(paragraph.text);
         writer.Key("parts");
         writer.StartArray();
-        FONT_STYLE_SET fss;
-        for (auto it_fss_kvp = fss_map.begin(); it_fss_kvp != std::prev(fss_map.end()); ++it_fss_kvp)
+        for (auto it_fss_kvp = paragraph.font_styles.begin(); it_fss_kvp != std::prev(paragraph.font_styles.end()); ++it_fss_kvp)
         {
             writer.StartObject();
             auto next_it = std::next(it_fss_kvp);
@@ -2351,10 +2358,7 @@ void MoleculeJsonSaver::saveParts(JsonWriter& writer, const std::map<std::size_t
             writer.Key("text");
             writer.String(std::string(text_part).c_str());
             if (it_fss_kvp->second.size())
-            {
-                fss += it_fss_kvp->second;
-                saveFontStyles(writer, fss);
-            }
+                saveFontStyles(writer, it_fss_kvp->second);
             writer.EndObject();
         }
         writer.EndArray();
@@ -2402,8 +2406,8 @@ void MoleculeJsonSaver::saveAlignment(JsonWriter& writer, SimpleTextObject::Text
     case SimpleTextObject::TextAlignment::ECenter:
         alignment_str = KAlignmentCenter;
         break;
-    case SimpleTextObject::TextAlignment::EJustify:
-        alignment_str = KAlignmentJustify;
+    case SimpleTextObject::TextAlignment::EFull:
+        alignment_str = KAlignmentFull;
         break;
     }
     writer.Key("alignment");

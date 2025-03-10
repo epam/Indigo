@@ -1675,8 +1675,9 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
 {
     Vec2f text_pos;
     float wwrap_val;
-    std::vector<int> line_starts;
-    std::string label_justification, label_alignment, text_justification;
+    std::set<int> line_starts;
+    std::string label_alignment, label_justification;
+    CDXTextJustification text_justification;
     AutoInt font_id, font_face;
     std::optional<AutoInt> font_color_index;
     float font_size;
@@ -1685,9 +1686,9 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
     std::unordered_map<std::string, std::function<void(const std::string&)>> text_dispatcher = {
         {"p", posLambda(text_pos)},
         {"BoundingBox", bboxLambda(kto.boundingBox())},
-        {"Justification", strLambda(text_justification)},
+        {"Justification", justificationLambda(text_justification)},
         {"WordWrapWidth", floatLambda(wwrap_val)},
-        {"LineStarts", intListLambda(line_starts)},
+        {"LineStarts", intSetLambda(line_starts)},
         {"LabelJustification", strLambda(label_justification)},
         {"LabelAlignment", strLambda(label_alignment)},
     };
@@ -1743,7 +1744,7 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
                     if (fs.is_bold)
                         fss.emplace(KETFontStyle::FontStyle::EBold, true);
                     if (fs.is_italic)
-                        fss.emplace(KETFontStyle::FontStyle::EBold, true);
+                        fss.emplace(KETFontStyle::FontStyle::EItalic, true);
                     if (fs.is_superscript)
                         fss.emplace(KETFontStyle::FontStyle::ESuperScript, true);
                     if (fs.is_superscript)
@@ -1762,6 +1763,19 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
                     auto font_color = fidx >= 0 && font_color_index.value() < static_cast<int>(color_table.size()) ? color_table[font_color_index.value()]
                                                                                                                    : (fidx == -1 ? 0xFFFFFF : 0);
                     fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::EColor, font_color), std::forward_as_tuple(true));
+                }
+
+                switch (text_justification)
+                {
+                case CDXTextJustification::kCDXTextJustification_Center:
+                    paragraph.alignment = SimpleTextObject::TextAlignment::ECenter;
+                    break;
+                case CDXTextJustification::kCDXTextJustification_Right:
+                    paragraph.alignment = SimpleTextObject::TextAlignment::ERight;
+                    break;
+                case CDXTextJustification::kCDXTextJustification_Full:
+                    paragraph.alignment = SimpleTextObject::TextAlignment::EFull;
+                    break;
                 }
 
                 // set fss font family

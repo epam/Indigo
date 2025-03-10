@@ -175,7 +175,7 @@ namespace indigo
         static TextAlignMap KTextAlignmentsMap{{KAlignmentLeft, TextAlignment::ELeft},
                                                {KAlignmentRight, TextAlignment::ERight},
                                                {KAlignmentCenter, TextAlignment::ECenter},
-                                               {KAlignmentJustify, TextAlignment::EJustify}};
+                                               {KAlignmentFull, TextAlignment::EFull}};
         return KTextAlignmentsMap;
     }
 
@@ -298,7 +298,7 @@ namespace indigo
         auto bbox_lambda = [this](const std::string&, const Value& bbox_val) {
             Vec2f v1(bbox_val["x"].GetFloat(), bbox_val["y"].GetFloat());
             Vec2f v2(v1);
-            v2.add(Vec2f(bbox_val["width"].GetFloat(), bbox_val["height"].GetFloat()));
+            v2.add(Vec2f(bbox_val["width"].GetFloat(), -bbox_val["height"].GetFloat()));
             _bbox.copy(Rect2f(v1, v2));
         };
 
@@ -314,7 +314,8 @@ namespace indigo
                                                        {KFontSuperscriptStr, style_lambda},
                                                        {"indent", indentLambda(text_line.indent)},
                                                        {"font", fontLambda(text_line.font_style)},
-                                                       {"parts", partsLambda(text_line)}};
+                                                       {"parts", partsLambda(text_line)},
+                                                       {"lineStarts", lineStartsLambda(text_line)}};
 
                 applyDispatcher(paragraph, paragraph_dispatcher);
                 _block.push_back(text_line);

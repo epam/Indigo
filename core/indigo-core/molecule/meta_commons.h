@@ -58,7 +58,7 @@ namespace indigo
     const auto KAlignmentLeft = "left";
     const auto KAlignmentRight = "right";
     const auto KAlignmentCenter = "center";
-    const auto KAlignmentJustify = "justify";
+    const auto KAlignmentFull = "full";
 
     const uint8_t KReactantArea = 0;
     const uint8_t KReagentUpArea = 1;
@@ -285,7 +285,7 @@ namespace indigo
             ELeft,
             ERight,
             ECenter,
-            EJustify
+            EFull
         };
 
         using TextAlignMap = const std::unordered_map<std::string, TextAlignment>;
@@ -320,7 +320,7 @@ namespace indigo
             FONT_STYLE_SET font_style;
             std::optional<TextAlignment> alignment;
             std::optional<KETTextIndent> indent;
-            std::optional<std::vector<int>> line_starts;
+            std::optional<std::set<int>> line_starts;
             std::map<std::size_t, FONT_STYLE_SET> font_styles;
         };
 
@@ -384,6 +384,11 @@ namespace indigo
         static auto intLambda(std::optional<int>& val)
         {
             return [&val](const rapidjson::Value& int_val) { val = int_val.GetInt(); };
+        }
+
+        static auto boolLambda(bool& val)
+        {
+            return [&val](const rapidjson::Value& bool_val) { val = bool_val.GetBool(); };
         }
 
         static auto strLambda(std::optional<std::string>& str)
@@ -468,6 +473,18 @@ namespace indigo
             };
         }
 
+        auto lineStartsLambda(KETTextParagraph& paragraph)
+        {
+            return [&paragraph](const std::string&, const rapidjson::Value& line_starts) {
+                for (const auto& line_start : line_starts.GetArray())
+                {
+                    if (!paragraph.line_starts.has_value())
+                        paragraph.line_starts = std::set<int>();
+                    paragraph.line_starts.value().insert(line_start.GetInt());
+                }
+            };
+        }
+
         auto partsLambda(KETTextParagraph& paragraph)
         {
             return [this, &paragraph](const std::string&, const rapidjson::Value& parts) {
@@ -475,6 +492,7 @@ namespace indigo
                 {
                     std::string part;
                     FONT_STYLE_SET fss;
+                    bool line_start = false;
                     auto text_lambda = [&part](const std::string&, const rapidjson::Value& text_val) { part = text_val.GetString(); };
                     auto style_lambda = styleLambda(fss);
                     DispatchMapKVP paragraph_dispatcher = {{"text", text_lambda},
@@ -487,8 +505,26 @@ namespace indigo
                     applyDispatcher(part_val, paragraph_dispatcher);
                     if (part.size())
                     {
-                        paragraph.font_styles.emplace(paragraph.text.size(), fss);
+                        auto prev_it = paragraph.font_styles.find(paragraph.text.size());
+                        if (prev_it != paragraph.font_styles.end())
+                            prev_it->second += fss;
+                        else
+                            paragraph.font_styles.emplace(paragraph.text.size(), fss);
+
+                        if (line_start)
+                        {
+                            if (!paragraph.line_starts.has_value())
+                                paragraph.line_starts = std::set<int>();
+                            paragraph.line_starts.value().insert((int)paragraph.text.size());
+                        }
+
                         paragraph.text += part;
+                        FONT_STYLE_SET fss_off;
+                        std::transform(fss.begin(), fss.end(), std::inserter(fss_off, fss_off.end()),
+                                       [](const auto& entry) { return std::make_pair(entry.first, false); });
+                        fss = std::move(fss_off);
+                        if (fss.size())
+                            paragraph.font_styles.emplace(paragraph.text.size(), fss);
                     }
                 }
             };
@@ -631,7 +667,7 @@ namespace indigo
         };
 
         ReactionArrowObject(int arrow_type, const Vec2f& begin, const Vec2f& end, float height = 0)
-            : MetaObject(CID), _arrow_type(arrow_type), _begin(begin), _end(end), _height(height){};
+            : MetaObject(CID), _arrow_type(arrow_type), _begin(begin), _end(end), _height(height) {};
 
         MetaObject* clone() const override
         {
@@ -771,7 +807,7 @@ namespace indigo
     {
     public:
         static const std::uint32_t CID = "Reaction plus object"_hash;
-        ReactionPlusObject(const Vec2f& pos) : MetaObject(CID), _pos(pos){};
+        ReactionPlusObject(const Vec2f& pos) : MetaObject(CID), _pos(pos) {};
 
         MetaObject* clone() const override
         {
@@ -855,8 +891,8 @@ namespace indigo
 
     struct MolSumm
     {
-        MolSumm() : bbox(Vec2f(0, 0), Vec2f(0, 0)), role(BaseReaction::UNDEFINED), reaction_idx(-1){};
-        MolSumm(const Rect2f& box) : bbox(box), role(BaseReaction::UNDEFINED), reaction_idx(-1){};
+        MolSumm() : bbox(Vec2f(0, 0), Vec2f(0, 0)), role(BaseReaction::UNDEFINED), reaction_idx(-1) {};
+        MolSumm(const Rect2f& box) : bbox(box), role(BaseReaction::UNDEFINED), reaction_idx(-1) {};
 
         Rect2f bbox;
         std::vector<int> indexes;
@@ -907,7 +943,7 @@ namespace indigo
         };
 
         ReactionComponent(int ctype, const Rect2f& box, int idx, std::unique_ptr<BaseMolecule> mol)
-            : component_type(ctype), bbox(box), molecule(std::move(mol)), summ_block_idx(NOT_CONNECTED), index(idx){};
+            : component_type(ctype), bbox(box), molecule(std::move(mol)), summ_block_idx(NOT_CONNECTED), index(idx) {};
 
         int component_type;
         Rect2f bbox;

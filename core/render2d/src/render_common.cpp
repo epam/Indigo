@@ -71,6 +71,7 @@ RenderItem::RenderItem(const RenderItem& ri)
     bbsz.copy(ri.bbsz);
     relpos.copy(ri.relpos);
     color = ri.color;
+    rgb_color = ri.rgb_color;
     highlighted = ri.highlighted;
     noBondOffset = ri.noBondOffset;
 }
