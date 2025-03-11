@@ -98,8 +98,8 @@ namespace indigo
             unsigned int is_underline : 1;
             unsigned int is_outline : 1;
             unsigned int is_shadow : 1;
-            unsigned int is_subscript : 1;
             unsigned int is_superscript : 1;
+            unsigned int is_subscript : 1;
         };
         unsigned int face;
     };

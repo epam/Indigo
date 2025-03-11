@@ -1747,7 +1747,7 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
                         fss.emplace(KETFontStyle::FontStyle::EItalic, true);
                     if (fs.is_superscript)
                         fss.emplace(KETFontStyle::FontStyle::ESuperScript, true);
-                    if (fs.is_superscript)
+                    if (fs.is_subscript)
                         fss.emplace(KETFontStyle::FontStyle::ESubScript, true);
                 }
 

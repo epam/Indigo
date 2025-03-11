@@ -388,7 +388,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                     double text_offset_x = 0;
                     FONT_STYLE_SET current_styles;
                     ObjArray<ObjArray<TextItem>> ti_lines;
-                    ti_lines.push();
+                    std::vector<std::pair<int, float>> spaces_widths;
                     TextItem ti;
                     ti.size = KDefaultFontSize / KFontScaleFactor; // default size
                     ti.ritype = RenderItem::RIT_TITLE;
@@ -427,23 +427,34 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                             auto splitted = split_with_empty(styled_text, '\n');
                             for (auto line_it = splitted.begin(); line_it != splitted.end(); ++line_it)
                             {
+                                if (ti_lines.size() == 0)
+                                {
+                                    ti_lines.push();
+                                    spaces_widths.emplace_back(0, 0.0f);
+                                }
+
                                 auto& ti_line = ti_lines.top();
                                 if (line_it->size())
                                 {
                                     ti.text.readString(line_it->c_str(), true);
                                     _rc.setTextItemSize(ti);
-                                    auto space_width = _rc.getSpaceWidth() * std::distance(line_it->rbegin(), std::find_if(line_it->rbegin(), line_it->rend(),
-                                                                                                                           [](char c) { return c != ' '; }));
+                                    auto trailing_spaces_width =
+                                        _rc.getSpaceWidth() *
+                                        std::distance(line_it->rbegin(), std::find_if(line_it->rbegin(), line_it->rend(), [](char c) { return c != ' '; }));
+                                    auto spc_count = (int)std::count(line_it->begin(), line_it->end(), ' ');
+                                    spaces_widths.back().first += spc_count;
+                                    spaces_widths.back().second += _rc.getSpaceWidth() * spc_count;
                                     ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
                                     ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
                                     ti_line.push(ti);
-                                    text_offset_x += ti.bbsz.x + space_width;
+                                    text_offset_x += ti.bbsz.x + trailing_spaces_width;
 
                                     if (splitted.size() > 1 && std::next(line_it) != splitted.end())
                                     {
                                         text_offset_y += text_max_height + _settings.boundExtent;
                                         text_offset_x = 0;
                                         ti_lines.push();
+                                        spaces_widths.emplace_back(0, 0.0f);
                                     }
                                 }
                             }
@@ -452,67 +463,82 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         first_index = second_index;
                     }
 
+                    if (ti_lines.size() && !ti_lines[ti_lines.size() - 1].size())
+                        ti_lines.remove(ti_lines.size() - 1);
+
                     for (int j = 0; j < ti_lines.size(); ++j)
                     {
                         auto& ti_line = ti_lines[j];
                         float line_width = 0;
                         float align_offset = 0;
 
+                        // calculate alignment offsets
                         if (text_item.alignment.has_value() && text_item.alignment.value() != SimpleTextObject::TextAlignment::ELeft)
                         {
                             for (int k = 0; k < ti_line.size(); ++k)
                             {
                                 auto& ti_rc = ti_line[k];
-                                line_width += ti_rc.bbsz.x - _rc.getSpaceWidth() * std::count(ti_rc.text.begin(), ti_rc.text.end(), ' ');
+                                line_width += ti_rc.bbsz.x;
                             }
 
-                            if (text_item.alignment.value() == SimpleTextObject::TextAlignment::EFull)
-                            {
-                                ObjArray<TextItem> ti_tmp_line;
-                                text_offset_x = 0;
-                                for (int k = 0; k < ti_line.size(); ++k)
-                                {
-                                    auto& ti_rc = ti_line[k];
-                                    TextItem ti_tmp(ti_rc);
-                                    auto separate_words = split(ti_rc.text.ptr(), ' ');
-                                    float space_width = text_width - line_width;
-                                    if (separate_words.size() > 1)
-                                        space_width /= separate_words.size() - 1;
-
-                                    if (j < ti_lines.size() - 1)
-                                    {
-                                        auto space_count = std::count(ti_rc.text.begin(), ti_rc.text.end(), ' ');
-                                        for (auto& wrd : separate_words)
-                                        {
-                                            ti_tmp.text.readString(wrd.c_str(), true);
-                                            _rc.setTextItemSize(ti_tmp);
-                                            ti_tmp.bbp.x = static_cast<float>(text_origin.x - ti_tmp.relpos.x + text_offset_x);
-                                            ti_tmp_line.push(ti_tmp);
-                                            text_offset_x += ti_tmp.bbsz.x;
-                                            if (space_count)
-                                                text_offset_x += space_width;
-                                        }
-                                    }
-                                }
-                                if (ti_tmp_line.size())
-                                {
-                                    ti_line.clear();
-                                    for (int k = 0; k < ti_tmp_line.size(); ++k)
-                                        ti_line.push(ti_tmp_line[k]);
-                                }
-                            }
+                            float space_width = text_width - line_width;
 
                             switch (text_item.alignment.value())
                             {
                             case SimpleTextObject::TextAlignment::ECenter:
-                                align_offset = (text_width - line_width) / 2;
+                                align_offset = space_width / 2;
                                 break;
                             case SimpleTextObject::TextAlignment::ERight:
-                                align_offset = text_width - line_width;
+                                align_offset = space_width;
+                                break;
+                            case SimpleTextObject::TextAlignment::EFull:
+                                if (j < ti_lines.size() - 1)
+                                {
+                                    ObjArray<TextItem> ti_tmp_line;
+                                    text_offset_x = 0;
+                                    space_width += spaces_widths[j].second; // add line spaces
+                                    if (spaces_widths[j].first > 1)
+                                        space_width /= (spaces_widths[j].first - 1);
+                                    // iterate line elements and split them by words
+                                    for (int k = 0; k < ti_line.size(); ++k)
+                                    {
+                                        auto& ti_rc = ti_line[k];
+                                        TextItem ti_tmp(ti_rc);
+                                        auto separate_words = split(ti_rc.text.ptr(), ' ');
+
+                                        std::string str = ti_rc.text.ptr();
+                                        auto leading_spaces = std::distance(str.begin(), std::find_if(str.begin(), str.end(), [](char c) { return c != ' '; }));
+                                        auto trailing_spaces =
+                                            std::distance(str.rbegin(), std::find_if(str.rbegin(), str.rend(), [](char c) { return c != ' '; }));
+
+                                        for (auto& wrd : separate_words)
+                                        {
+                                            ti_tmp.text.readString(wrd.c_str(), true);
+                                            _rc.setTextItemSize(ti_tmp);
+                                            if (leading_spaces)
+                                                text_offset_x += space_width * leading_spaces;
+
+                                            ti_tmp.bbp.x = static_cast<float>(text_origin.x - ti_tmp.relpos.x + text_offset_x);
+                                            ti_tmp_line.push(ti_tmp);
+                                            text_offset_x += ti_tmp.bbsz.x;
+                                            if (trailing_spaces)
+                                                text_offset_x += space_width * trailing_spaces;
+                                        }
+                                        if (separate_words.empty() && (leading_spaces + trailing_spaces)) // single space case
+                                            text_offset_x += space_width;
+                                    }
+                                    if (ti_tmp_line.size())
+                                    {
+                                        ti_line.clear();
+                                        for (int k = 0; k < ti_tmp_line.size(); ++k)
+                                            ti_line.push(ti_tmp_line[k]);
+                                    }
+                                }
                                 break;
                             }
                         }
 
+                        // draw text
                         for (int k = 0; k < ti_line.size(); ++k)
                         {
                             auto& ti_rc = ti_line[k];

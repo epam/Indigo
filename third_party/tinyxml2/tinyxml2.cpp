@@ -713,8 +713,6 @@ char* XMLDocument::Identify( char* p, XMLNode** node )
     TIXMLASSERT( p );
     char* const start = p;
     int const startLine = _parseCurLineNum;
-    //if (_whitespaceMode == COLLAPSE_WHITESPACE)
-    p = XMLUtil::SkipWhiteSpace( p, &_parseCurLineNum );
     if( !*p ) {
         *node = 0;
         TIXMLASSERT( p );
