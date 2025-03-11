@@ -443,3 +443,37 @@ TEST_F(IndigoApiFormatsTest, ket_to_rdf_v2000_unknown_reaction)
         ASSERT_STREQ("molfile saver: i2AmPr cannot be written in MDL Molfile format.", e.what());
     }
 }
+
+TEST_F(IndigoApiFormatsTest, ket_to_canonical_smarts_unknown_monomers)
+{
+    try
+    {
+        int molecule = -1;
+        molecule = indigoLoadKetDocumentFromFile(dataPath("molecules/basic/unknown_monomers.ket").c_str());
+
+        auto buffer = indigoWriteBuffer();
+
+        indigoCanonicalSmarts(molecule);
+    }
+    catch (const std::exception& e)
+    {
+        ASSERT_STREQ("core: <KetDocument> can not be converted to SMARTS", e.what());
+    }
+}
+
+TEST_F(IndigoApiFormatsTest, ket_to_smarts_unknown_monomers)
+{
+    try
+    {
+        int molecule = -1;
+        molecule = indigoLoadKetDocumentFromFile(dataPath("molecules/basic/unknown_monomers.ket").c_str());
+
+        auto buffer = indigoWriteBuffer();
+
+        indigoSmarts(molecule);
+    }
+    catch (const std::exception& e)
+    {
+        ASSERT_STREQ("core: <KetDocument> can not be converted to SMARTS", e.what());
+    }
+}
