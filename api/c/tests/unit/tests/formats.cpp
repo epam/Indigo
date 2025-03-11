@@ -394,3 +394,52 @@ TEST_F(IndigoApiFormatsTest, ket_to_sdf_v2000_unknown_monomers)
         ASSERT_STREQ("molfile saver: i2AmPr cannot be written in MDL Molfile format.", e.what());
     }
 }
+
+TEST_F(IndigoApiFormatsTest, ket_to_rdf_unknown_reaction)
+{
+    try
+    {
+        int reaction = -1;
+        reaction = indigoLoadReactionFromFile(dataPath("molecules/basic/unknown_reaction.ket").c_str());
+
+        auto buffer = indigoWriteBuffer();
+        auto reac_it = indigoIterateReactions(reaction);
+        indigoRdfHeader(buffer);
+
+        while (indigoHasNext(reac_it))
+        {
+            const auto reac_obj = indigoNext(reac_it);
+            const auto reac = indigoClone(reac_obj);
+            indigoRdfAppend(buffer, reac);
+        }
+    }
+    catch (const std::exception& e)
+    {
+        ASSERT_STREQ("molfile saver: i2AmPr cannot be written in MDL Molfile format.", e.what());
+    }
+}
+
+TEST_F(IndigoApiFormatsTest, ket_to_rdf_v2000_unknown_reaction)
+{
+    try
+    {
+        int reaction = -1;
+        reaction = indigoLoadReactionFromFile(dataPath("molecules/basic/unknown_reaction.ket").c_str());
+        indigoSetOption("molfile-saving-mode", "2000");
+
+        auto buffer = indigoWriteBuffer();
+        auto reac_it = indigoIterateReactions(reaction);
+        indigoRdfHeader(buffer);
+
+        while (indigoHasNext(reac_it))
+        {
+            const auto reac_obj = indigoNext(reac_it);
+            const auto reac = indigoClone(reac_obj);
+            indigoRdfAppend(buffer, reac);
+        }
+    }
+    catch (const std::exception& e)
+    {
+        ASSERT_STREQ("molfile saver: i2AmPr cannot be written in MDL Molfile format.", e.what());
+    }
+}
