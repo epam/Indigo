@@ -316,3 +316,34 @@ TEST_F(IndigoApiFormatsTest, ket_to_idt)
     // printf("res=%s", res);
     ASSERT_STREQ("ARAS", res);
 }
+
+TEST_F(IndigoApiFormatsTest, ket_to_mol_unknown_monomers)
+{
+    try
+    {
+        int molecule = -1;
+        molecule = indigoLoadKetDocumentFromFile(dataPath("molecules/basic/unknown_monomers.ket").c_str());
+
+        indigoMolfile(molecule);
+    }
+    catch (const std::exception& e)
+    {
+        ASSERT_STREQ("molfile saver: i2AmPr cannot be written in MDL Molfile format.", e.what());
+    }
+}
+
+TEST_F(IndigoApiFormatsTest, ket_to_mol_v2000_unknown_monomers)
+{
+    try
+    {
+        int molecule = -1;
+        molecule = indigoLoadKetDocumentFromFile(dataPath("molecules/basic/unknown_monomers.ket").c_str());
+        indigoSetOption("molfile-saving-mode", "2000");
+
+        indigoMolfile(molecule);
+    }
+    catch (const std::exception& e)
+    {
+        ASSERT_STREQ("molfile saver: i2AmPr cannot be written in MDL Molfile format.", e.what());
+    }
+}
