@@ -36,6 +36,7 @@ namespace indigo
 
     std::vector<std::string> split_with_empty(const std::string& str, char delim);
     std::vector<std::string> split(const std::string& str, char delim);
+    std::vector<std::string> split_spaces(const std::string& str);
 
     inline bool is_lower_case(const std::string& str)
     {

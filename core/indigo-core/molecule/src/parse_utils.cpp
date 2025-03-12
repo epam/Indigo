@@ -100,6 +100,22 @@ namespace indigo
         return true;
     }
 
+    std::vector<std::string> split_spaces(const std::string& str)
+    {
+        std::vector<std::string> result;
+        size_t i = 0, n = str.size();
+        while (i < n)
+        {
+            size_t start = i;
+            bool is_space = (str[i] == ' ');
+
+            i = std::find_if(str.begin() + i, str.end(), [is_space](char c) { return (c == ' ') != is_space; }) - str.begin();
+
+            result.emplace_back(str.substr(start, i - start));
+        }
+        return result;
+    }
+
     std::vector<std::string> split_with_empty(const std::string& str, char delim)
     {
         std::vector<std::string> strings;

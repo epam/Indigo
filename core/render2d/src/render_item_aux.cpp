@@ -438,28 +438,36 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                                 }
 
                                 auto& ti_line = ti_lines.top();
-                                if (line_it->size())
-                                {
-                                    ti.text.readString(line_it->c_str(), true);
-                                    _rc.setTextItemSize(ti);
-                                    auto trailing_spaces_width =
-                                        _rc.getSpaceWidth() *
-                                        std::distance(line_it->rbegin(), std::find_if(line_it->rbegin(), line_it->rend(), [](char c) { return c != ' '; }));
-                                    auto spc_count = (int)std::count(line_it->begin(), line_it->end(), ' ');
-                                    spaces_widths.back().first += spc_count;
-                                    spaces_widths.back().second += _rc.getSpaceWidth() * spc_count;
-                                    ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
-                                    ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
-                                    ti_line.push(ti);
-                                    text_offset_x += ti.bbsz.x + trailing_spaces_width;
+                                auto splitted_spaces = split_spaces(*line_it);
 
-                                    if (splitted.size() > 1 && std::next(line_it) != splitted.end())
+                                for (auto& line_str : splitted_spaces)
+                                {
+                                    auto spc_count = (int)std::count(line_str.begin(), line_str.end(), ' ');
+                                    ti.text.readString(line_str.c_str(), true);
+                                    _rc.setTextItemSize(ti);
+                                    if (spc_count)
                                     {
-                                        text_offset_y += text_max_height + _settings.boundExtent;
-                                        text_offset_x = 0;
-                                        ti_lines.push();
-                                        spaces_widths.emplace_back(0, 0.0f);
+                                        text_offset_x += _rc.getSpaceWidth() * spc_count;
+                                        spaces_widths.back().first += spc_count;
+                                        spaces_widths.back().second += _rc.getSpaceWidth() * spc_count;
+                                        ti.bbsz.x = 0;
+                                        ti.text.readString(" ", true);
                                     }
+                                    else
+                                    {
+                                        ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
+                                        ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
+                                        text_offset_x += ti.bbsz.x;
+                                    }
+                                    ti_line.push(ti);
+                                }
+
+                                if (splitted.size() > 1 && std::next(line_it) != splitted.end())
+                                {
+                                    text_offset_y += text_max_height + _settings.boundExtent;
+                                    text_offset_x = 0;
+                                    ti_lines.push();
+                                    spaces_widths.emplace_back(0, 0.0f);
                                 }
                             }
                         }
@@ -483,7 +491,6 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                             for (int k = 0; k < ti_line.size(); ++k)
                             {
                                 auto& ti_rc = ti_line[k];
-                                // leading and trailing spaces are included
                                 line_width += ((k + 1) < ti_line.size()) ? (ti_line[k + 1].bbp.x - ti_rc.bbp.x) : ti_rc.bbsz.x;
                             }
 
@@ -500,40 +507,25 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                             case SimpleTextObject::TextAlignment::EFull:
                                 if (j < ti_lines.size() - 1)
                                 {
-                                    ObjArray<TextItem> ti_tmp_line;
-                                    text_offset_x = 0;
-                                    space_width += spaces_widths[j].second; // add line spaces
-                                    if (spaces_widths[j].first > 1)
-                                        space_width /= (spaces_widths[j].first - 1);
-                                    // iterate line elements and split them by words
+                                    float lw = 0;
                                     for (int k = 0; k < ti_line.size(); ++k)
                                     {
                                         auto& ti_rc = ti_line[k];
-                                        TextItem ti_tmp(ti_rc);
-                                        auto separate_words = split(ti_rc.text.ptr(), ' ');
-
-                                        std::string str = ti_rc.text.ptr();
-                                        auto leading_spaces = std::distance(str.begin(), std::find_if(str.begin(), str.end(), [](char c) { return c != ' '; }));
-                                        auto trailing_spaces =
-                                            std::distance(str.rbegin(), std::find_if(str.rbegin(), str.rend(), [](char c) { return c != ' '; }));
-
-                                        for (auto& wrd : separate_words)
-                                        {
-                                            ti_tmp.text.readString(wrd.c_str(), true);
-                                            _rc.setTextItemSize(ti_tmp);
-                                            text_offset_x += space_width * leading_spaces;
-                                            ti_tmp.bbp.x = static_cast<float>(text_origin.x - ti_tmp.relpos.x + text_offset_x);
-                                            ti_tmp_line.push(ti_tmp);
-                                            text_offset_x += ti_tmp.bbsz.x + space_width * trailing_spaces;
-                                        }
-                                        if (separate_words.empty() && (leading_spaces + trailing_spaces)) // single space case
-                                            text_offset_x += space_width;
+                                        lw += ti_rc.bbsz.x;
                                     }
-                                    if (ti_tmp_line.size())
+
+                                    text_offset_x = 0;
+                                    space_width = text_width - lw - indent_offset; // accurate space width
+                                    if (spaces_widths[j].first > 1)
+                                        space_width /= (spaces_widths[j].first - 1);
+                                    // iterate line elements and calculate new positions
+                                    for (int k = 0; k < ti_line.size(); ++k)
                                     {
-                                        ti_line.clear();
-                                        for (int k = 0; k < ti_tmp_line.size(); ++k)
-                                            ti_line.push(ti_tmp_line[k]);
+                                        auto& ti_rc = ti_line[k];
+                                        ti_rc.bbp.x = static_cast<float>(text_origin.x - ti_rc.relpos.x + text_offset_x);
+                                        text_offset_x += ti_rc.bbsz.x;
+                                        if (std::string(ti_rc.text.ptr()) == " ")
+                                            text_offset_x += space_width;
                                     }
                                 }
                                 break;
