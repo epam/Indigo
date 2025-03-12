@@ -2244,7 +2244,10 @@ void MoleculeJsonSaver::saveText(JsonWriter& writer, const SimpleTextObject& tex
     if (text_obj.alignment().has_value())
         saveAlignment(writer, text_obj.alignment().value());
     if (text_obj.indent().has_value())
-        saveIndent(writer, text_obj.indent().value());
+    {
+        writer.Key("indent");
+        writer.Double(text_obj.indent().value());
+    }
     if (text_obj.fontStyles().size())
         saveFontStyles(writer, text_obj.fontStyles());
     if (text_obj.block().size())
@@ -2325,7 +2328,10 @@ void MoleculeJsonSaver::saveParagraphs(JsonWriter& writer, const std::list<Simpl
         if (paragraph.alignment.has_value())
             saveAlignment(writer, paragraph.alignment.value());
         if (paragraph.indent.has_value())
-            saveIndent(writer, paragraph.indent.value());
+        {
+            writer.Key("indent");
+            writer.Double(paragraph.indent.value());
+        }
         if (paragraph.font_style.size())
             saveFontStyles(writer, paragraph.font_style);
         if (paragraph.font_styles.size())
@@ -2362,33 +2368,6 @@ void MoleculeJsonSaver::saveParts(JsonWriter& writer, const SimpleTextObject::KE
             writer.EndObject();
         }
         writer.EndArray();
-    }
-}
-
-void MoleculeJsonSaver::saveIndent(JsonWriter& writer, const SimpleTextObject::KETTextIndent& indent)
-{
-    if (indent.first_line.has_value() || indent.left.has_value() || indent.right.has_value())
-    {
-        writer.Key("indent");
-        writer.StartObject();
-        if (indent.first_line.has_value())
-        {
-            writer.Key("first_line");
-            writer.Double(indent.first_line.value());
-        }
-
-        if (indent.left.has_value())
-        {
-            writer.Key("left");
-            writer.Double(indent.first_line.value());
-        }
-
-        if (indent.right.has_value())
-        {
-            writer.Key("right");
-            writer.Double(indent.first_line.value());
-        }
-        writer.EndObject();
     }
 }
 

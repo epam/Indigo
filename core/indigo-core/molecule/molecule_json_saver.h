@@ -58,7 +58,6 @@ namespace indigo
         static void saveTextV1(JsonWriter& writer, const SimpleTextObject& text_obj);
         static void saveText(JsonWriter& writer, const SimpleTextObject& text_obj);
         static void saveAlignment(JsonWriter& writer, SimpleTextObject::TextAlignment alignment);
-        static void saveIndent(JsonWriter& writer, const SimpleTextObject::KETTextIndent& indent);
         static void saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET& fss);
         static void saveParagraphs(JsonWriter& writer, const std::list<SimpleTextObject::KETTextParagraph>& paragraphs);
         static void saveParts(JsonWriter& writer, const SimpleTextObject::KETTextParagraph& paragraph);

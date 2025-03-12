@@ -319,7 +319,7 @@ namespace indigo
             std::string text;
             FONT_STYLE_SET font_style;
             std::optional<TextAlignment> alignment;
-            std::optional<KETTextIndent> indent;
+            std::optional<float> indent;
             std::optional<std::set<int>> line_starts;
             std::map<std::size_t, FONT_STYLE_SET> font_styles;
         };
@@ -378,7 +378,10 @@ namespace indigo
 
         static auto floatLambda(std::optional<float>& val)
         {
-            return [&val](const rapidjson::Value& float_val) { val = float_val.GetFloat(); };
+            return [&val](const std::string&, const rapidjson::Value& float_val) {
+                if (float_val.IsFloat())
+                    val = float_val.GetFloat();
+            };
         }
 
         static auto intLambda(std::optional<int>& val)
@@ -453,23 +456,6 @@ namespace indigo
                 DispatchMapVal font_dispatcher = {
                     {KFontFamilyStr, fontFamilyLambda(fss, bval)}, {KFontSizeStr, fontSizeLambda(fss, bval)}, {KFontColorStr, colorLambda(fss, bval)}};
                 applyDispatcher(font_val, font_dispatcher);
-            };
-        }
-
-        static auto indentLambda(std::optional<KETTextIndent>& indent)
-        {
-            return [&indent](const std::string&, const rapidjson::Value& indent_val) {
-                std::unordered_map<std::string, std::function<void(const rapidjson::Value&)>> indent_dispatcher = {
-                    {"first_line", floatLambda(indent.value().first_line)},
-                    {"left", floatLambda(indent.value().left)},
-                    {"right", floatLambda(indent.value().right)}};
-
-                for (auto indent_it = indent_val.MemberBegin(); indent_it != indent_val.MemberEnd(); ++indent_it)
-                {
-                    auto ind_it = indent_dispatcher.find(indent_it->name.GetString());
-                    if (ind_it != indent_dispatcher.end())
-                        ind_it->second(indent_it->value);
-                }
             };
         }
 
@@ -620,7 +606,7 @@ namespace indigo
         std::string _content;
         std::list<KETTextParagraph> _block;
         Rect2f _bbox;
-        std::optional<KETTextIndent> _indent;
+        std::optional<float> _indent;
         std::optional<TextAlignment> _alignment;
         FONT_STYLE_SET _font_styles;
     };

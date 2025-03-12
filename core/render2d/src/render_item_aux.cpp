@@ -385,7 +385,11 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                     auto line_starts = text_item.line_starts;
                     int first_index = -1;
                     int second_index = -1;
-                    double text_offset_x = 0;
+                    float text_offset_x = 0;
+                    auto indent = ko.indent();
+                    if (text_item.indent.has_value())
+                        indent = text_item.indent;
+
                     FONT_STYLE_SET current_styles;
                     ObjArray<ObjArray<TextItem>> ti_lines;
                     std::vector<std::pair<int, float>> spaces_widths;
@@ -471,6 +475,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         auto& ti_line = ti_lines[j];
                         float line_width = 0;
                         float align_offset = 0;
+                        float indent_offset = (j == 0 && indent.has_value()) ? indent.value() : 0.0f;
 
                         // calculate alignment offsets
                         if (text_item.alignment.has_value() && text_item.alignment.value() != SimpleTextObject::TextAlignment::ELeft)
@@ -478,10 +483,11 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                             for (int k = 0; k < ti_line.size(); ++k)
                             {
                                 auto& ti_rc = ti_line[k];
-                                line_width += ti_rc.bbsz.x;
+                                // leading and trailing spaces are included
+                                line_width += ((k + 1) < ti_line.size()) ? (ti_line[k + 1].bbp.x - ti_rc.bbp.x) : ti_rc.bbsz.x;
                             }
 
-                            float space_width = text_width - line_width;
+                            float space_width = text_width - line_width - indent_offset;
 
                             switch (text_item.alignment.value())
                             {
@@ -515,14 +521,10 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                                         {
                                             ti_tmp.text.readString(wrd.c_str(), true);
                                             _rc.setTextItemSize(ti_tmp);
-                                            if (leading_spaces)
-                                                text_offset_x += space_width * leading_spaces;
-
+                                            text_offset_x += space_width * leading_spaces;
                                             ti_tmp.bbp.x = static_cast<float>(text_origin.x - ti_tmp.relpos.x + text_offset_x);
                                             ti_tmp_line.push(ti_tmp);
-                                            text_offset_x += ti_tmp.bbsz.x;
-                                            if (trailing_spaces)
-                                                text_offset_x += space_width * trailing_spaces;
+                                            text_offset_x += ti_tmp.bbsz.x + space_width * trailing_spaces;
                                         }
                                         if (separate_words.empty() && (leading_spaces + trailing_spaces)) // single space case
                                             text_offset_x += space_width;
@@ -542,7 +544,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         for (int k = 0; k < ti_line.size(); ++k)
                         {
                             auto& ti_rc = ti_line[k];
-                            ti_rc.bbp.x += align_offset;
+                            ti_rc.bbp.x += align_offset + indent_offset;
                             _rc.drawTextItemText(ti_rc, ti_rc.rgb_color, idle);
                         }
                     }
