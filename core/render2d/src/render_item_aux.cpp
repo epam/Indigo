@@ -420,9 +420,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         }
 
                         if (second_index > first_index)
-                        {
                             styled_lines.push_back(utf8w.to_bytes(text_wstr.substr(first_index, second_index - first_index)));
-                        }
 
                         fillKETStyle(ti, current_styles);
 
@@ -445,6 +443,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                                     auto spc_count = (int)std::count(line_str.begin(), line_str.end(), ' ');
                                     ti.text.readString(line_str.c_str(), true);
                                     _rc.setTextItemSize(ti);
+                                    ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
                                     if (spc_count)
                                     {
                                         text_offset_x += _rc.getSpaceWidth() * spc_count;
@@ -455,7 +454,6 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                                     }
                                     else
                                     {
-                                        ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
                                         ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
                                         text_offset_x += ti.bbsz.x;
                                     }
@@ -481,17 +479,19 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                     for (int j = 0; j < ti_lines.size(); ++j)
                     {
                         auto& ti_line = ti_lines[j];
-                        float line_width = 0;
                         float align_offset = 0;
                         float indent_offset = (j == 0 && indent.has_value()) ? indent.value() : 0.0f;
 
                         // calculate alignment offsets
                         if (text_item.alignment.has_value() && text_item.alignment.value() != SimpleTextObject::TextAlignment::ELeft)
                         {
+                            float line_width = 0;
                             for (int k = 0; k < ti_line.size(); ++k)
                             {
                                 auto& ti_rc = ti_line[k];
-                                line_width += ((k + 1) < ti_line.size()) ? (ti_line[k + 1].bbp.x - ti_rc.bbp.x) : ti_rc.bbsz.x;
+                                line_width += ((k + 1) < ti_line.size() && text_item.alignment.value() != SimpleTextObject::TextAlignment::EFull)
+                                                  ? (ti_line[k + 1].bbp.x - ti_rc.bbp.x)
+                                                  : ti_rc.bbsz.x;
                             }
 
                             float space_width = text_width - line_width - indent_offset;
@@ -507,15 +507,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                             case SimpleTextObject::TextAlignment::EFull:
                                 if (j < ti_lines.size() - 1)
                                 {
-                                    float lw = 0;
-                                    for (int k = 0; k < ti_line.size(); ++k)
-                                    {
-                                        auto& ti_rc = ti_line[k];
-                                        lw += ti_rc.bbsz.x;
-                                    }
-
                                     text_offset_x = 0;
-                                    space_width = text_width - lw - indent_offset; // accurate space width
                                     if (spaces_widths[j].first > 1)
                                         space_width /= (spaces_widths[j].first - 1);
                                     // iterate line elements and calculate new positions
@@ -540,9 +532,6 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                             _rc.drawTextItemText(ti_rc, ti_rc.rgb_color, idle);
                         }
                     }
-
-                    text_offset_y += text_max_height + _settings.boundExtent;
-                    text_offset_x = 0;
                 }
             }
             break;
