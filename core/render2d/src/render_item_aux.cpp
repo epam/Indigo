@@ -377,8 +377,11 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
             case SimpleTextObject::CID: {
                 const SimpleTextObject& ko = static_cast<const SimpleTextObject&>(mobj);
                 double text_offset_y = 0;
+                auto default_styles = ko.fontStyles();
                 for (auto& text_item : ko.block())
                 {
+                    auto paragraph_style = default_styles;
+                    paragraph_style += text_item.font_style;                    
                     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> utf8w;
                     auto text_wstr = utf8w.from_bytes(text_item.text);
                     float text_max_height = _getMaxHeight(text_item);
@@ -404,7 +407,8 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         if (first_index == -1)
                         {
                             first_index = static_cast<int>(kvp.first);
-                            current_styles = kvp.second;
+                            current_styles = paragraph_style;
+                            current_styles += kvp.second;
                             continue;
                         }
                         second_index = static_cast<int>(kvp.first);
@@ -474,7 +478,10 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                     }
 
                     if (ti_lines.size() && !ti_lines[ti_lines.size() - 1].size())
+                    {
+                        text_offset_y += text_max_height + _settings.boundExtent;
                         ti_lines.remove(ti_lines.size() - 1);
+                    }
 
                     for (int j = 0; j < ti_lines.size(); ++j)
                     {
@@ -532,6 +539,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                             _rc.drawTextItemText(ti_rc, ti_rc.rgb_color, idle);
                         }
                     }
+                    text_offset_y += text_max_height + _settings.boundExtent;
                 }
             }
             break;

@@ -2336,7 +2336,7 @@ void MoleculeJsonSaver::saveParagraphs(JsonWriter& writer, const std::list<Simpl
             saveFontStyles(writer, paragraph.font_style);
         if (paragraph.font_styles.size())
             saveParts(writer, paragraph);
-        if (paragraph.line_starts.has_value())
+        if (paragraph.line_starts.has_value() && paragraph.line_starts.value().size())
         {
             writer.Key("lineStarts");
             writer.StartArray();

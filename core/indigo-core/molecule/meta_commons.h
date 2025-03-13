@@ -478,7 +478,6 @@ namespace indigo
                 {
                     std::string part;
                     FONT_STYLE_SET fss;
-                    bool line_start = false;
                     auto text_lambda = [&part](const std::string&, const rapidjson::Value& text_val) { part = text_val.GetString(); };
                     auto style_lambda = styleLambda(fss);
                     DispatchMapKVP paragraph_dispatcher = {{"text", text_lambda},
@@ -497,20 +496,12 @@ namespace indigo
                         else
                             paragraph.font_styles.emplace(paragraph.text.size(), fss);
 
-                        if (line_start)
-                        {
-                            if (!paragraph.line_starts.has_value())
-                                paragraph.line_starts = std::set<int>();
-                            paragraph.line_starts.value().insert((int)paragraph.text.size());
-                        }
-
                         paragraph.text += part;
                         FONT_STYLE_SET fss_off;
                         std::transform(fss.begin(), fss.end(), std::inserter(fss_off, fss_off.end()),
                                        [](const auto& entry) { return std::make_pair(entry.first, false); });
                         fss = std::move(fss_off);
-                        if (fss.size())
-                            paragraph.font_styles.emplace(paragraph.text.size(), fss);
+                        paragraph.font_styles.emplace(paragraph.text.size(), fss);
                     }
                 }
             };
