@@ -90,7 +90,9 @@ renderer.renderToFile(reac, joinPathPy("out/retro.png", __file__))
 print(checkImageSimilarity("retro.png"))
 
 indigo.setOption("render-background-color", "255, 255, 255")
-mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/text_test1.ket", __file__))
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/text_test1.ket", __file__)
+)
 indigo.setOption("render-output-format", "png")
 renderer.renderToFile(mol, joinPathPy("out/text_test1.png", __file__))
 print(checkImageSimilarity("text_test1.png"))
