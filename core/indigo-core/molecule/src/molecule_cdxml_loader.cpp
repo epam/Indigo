@@ -790,7 +790,7 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(BaseCDXElement& first_elem, bool n
                     bracket.bracketed_list.push_back(node.id);
                 }
             }
-            _parseBracketLabel(elem, bracket);
+            _parseLabel(elem, bracket.label);
             if (fragment_start_idx - 1 > 0 && fragment_start_idx - 1 < static_cast<int>(nodes.size()))
             {
                 auto parentNode = this->nodes[fragment_start_idx - 1];
@@ -1043,7 +1043,6 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
     static const std::unordered_map<int, int> implemeted_brackets = {
         {kCDXBracketUsage_SRU, SGroup::SG_TYPE_SRU}, {kCDXBracketUsage_MultipleGroup, SGroup::SG_TYPE_MUL}, {kCDXBracketUsage_Generic, SGroup::SG_TYPE_GEN}};
 
-    mol.setAtomsCenterPoint(Vec3f(bracket.bbox.leftTop().x, bracket.bbox.leftTop().y, 0));
     auto it = implemeted_brackets.find(bracket.usage);
     if (it != implemeted_brackets.end())
     {
@@ -1065,12 +1064,11 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
 
         // add brackets
         Vec2f* p = sgroup.brackets.push();
-        p[0].set(bracket.bbox.left(), bracket.bbox.top());
-        p[1].set(bracket.bbox.left(), bracket.bbox.bottom());
+        p[0].set(0, 0);
+        p[1].set(0, 0);
         p = sgroup.brackets.push();
-        p[0].set(bracket.bbox.right(), bracket.bbox.top());
-        p[1].set(bracket.bbox.right(), bracket.bbox.bottom());
-        // sgroup.brk_style
+        p[0].set(0, 0);
+        p[1].set(0, 0); // sgroup.brk_style
         if (bracket.is_superatom)
         {
             Superatom& sa = (Superatom&)sgroup;
@@ -1660,15 +1658,6 @@ void MoleculeCdxmlLoader::_parseLabel(BaseCDXElement& elem, std::string& label)
             label += txt;
         }
     }
-}
-
-void MoleculeCdxmlLoader::_parseBracketLabel(BaseCDXElement& elem, CdxmlBracket& bracket)
-{
-    std::unordered_map<std::string, std::function<void(const std::string&)>> text_dispatcher = {{"p", posLambda(bracket.superatom_position)},
-                                                                                                {"BoundingBox", bboxLambda(bracket.bbox)}};
-
-    applyDispatcher(*elem.firstProperty().get(), text_dispatcher);
-    _parseLabel(elem, bracket.label);
 }
 
 void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vector<SimpleTextObject>& text_objects)

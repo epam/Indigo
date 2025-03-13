@@ -65,9 +65,9 @@ namespace indigo
     class AutoInt
     {
     public:
-        AutoInt() : val(0){};
+        AutoInt() : val(0) {};
 
-        AutoInt(int v) : val(v){};
+        AutoInt(int v) : val(v) {};
 
         AutoInt(const std::string& v) : val(std::stoi(v))
         {
@@ -175,7 +175,6 @@ namespace indigo
         int repeat_pattern;
         std::string label;
         bool is_superatom;
-        Rect2f bbox;
         Vec3f superatom_position;
     };
 
@@ -207,7 +206,7 @@ namespace indigo
     public:
         DECL_ERROR;
 
-        CDXMLProperty(const tinyxml2::XMLAttribute* attribute) : _attribute(attribute){};
+        CDXMLProperty(const tinyxml2::XMLAttribute* attribute) : _attribute(attribute) {};
 
         virtual bool hasContent() const override
         {
@@ -321,7 +320,7 @@ namespace indigo
     class CDXIdProperty : public CDXProperty
     {
     public:
-        CDXIdProperty(CDXElement* parent, const uint8_t* data) : CDXProperty(parent, 0, data, id_size){};
+        CDXIdProperty(CDXElement* parent, const uint8_t* data) : CDXProperty(parent, 0, data, id_size) {};
 
         std::unique_ptr<BaseCDXProperty> copy() override
         {
@@ -342,7 +341,7 @@ namespace indigo
     {
     public:
         CDXStyleProperty(CDXElement* parent, const uint8_t* data, uint8_t prop_index)
-            : CDXProperty(parent, 0xffff, data, sizeof(uint16_t)), _prop_index(prop_index){};
+            : CDXProperty(parent, 0xffff, data, sizeof(uint16_t)), _prop_index(prop_index) {};
 
         std::unique_ptr<BaseCDXProperty> copy() override
         {
@@ -395,7 +394,7 @@ namespace indigo
     public:
         DECL_ERROR;
 
-        CDXMLElement(const tinyxml2::XMLElement* xml) : _xml(xml){};
+        CDXMLElement(const tinyxml2::XMLElement* xml) : _xml(xml) {};
 
         bool hasContent() override
         {
@@ -741,7 +740,7 @@ namespace indigo
             return _scanner;
         }
 
-        virtual ~CDXReader(){};
+        virtual ~CDXReader() {};
 
     protected:
         std::string _buffer;
@@ -949,7 +948,6 @@ namespace indigo
         void _parseTextToKetObject(BaseCDXElement& elem, std::vector<SimpleTextObject>& text_objects);
 
         void _parseLabel(BaseCDXElement& elem, std::string& label);
-        void _parseBracketLabel(BaseCDXElement& elem, CdxmlBracket& bracket);
 
         void _parseGraphic(BaseCDXElement& elem);
         void _parseArrow(BaseCDXElement& elem);
