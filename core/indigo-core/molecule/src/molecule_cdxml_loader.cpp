@@ -495,6 +495,15 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         }
     }
 
+    for (const auto& fragment : _fragment_nodes)
+    {
+        auto& fn = nodes[fragment];
+        if (fn.ext_connections.size() == 0 && fn.connections.size() == 0 && !fn.has_fragment)
+        {
+            atoms.push_back(fragment);
+        }
+    }
+
     for (const auto& bond : bonds)
     {
         _checkFragmentConnection(bond.be.first, bond.id);

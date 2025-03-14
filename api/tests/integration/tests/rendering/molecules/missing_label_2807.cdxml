@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE CDXML SYSTEM "https://static.chemistry.revvitycloud.com/cdxml/CDXML.dtd" >
+<CDXML CreationProgram="ChemDraw 23.1.1.3" Name="missing_comment.cdxml" BoundingBox="134.20 372.76 203.09 450.61" WindowPosition="0 0" WindowSize="-2147483648 0" WindowIsZoomed="yes" FractionalWidths="yes" InterpretChemically="yes" ShowAtomQuery="yes" ShowAtomStereo="no" ShowAtomEnhancedStereo="yes" ShowAtomNumber="no" ShowResidueID="no" ShowBondQuery="yes" ShowBondRxn="yes" ShowBondStereo="no" ShowTerminalCarbonLabels="no" ShowNonTerminalCarbonLabels="no" HideImplicitHydrogens="no" LabelFont="3" LabelSize="10" LabelFace="96" CaptionFont="3" CaptionSize="10" HashSpacing="2.49" MarginWidth="1.59" LineWidth="0.60" BoldWidth="2.01" BondLength="14.40" BondSpacing="18" ChainAngle="120" LabelJustification="Auto" CaptionJustification="Left" AminoAcidTermini="HOH" ShowSequenceTermini="yes" ShowSequenceBonds="yes" ShowSequenceUnlinkedBranches="no" ResidueWrapCount="40" ResidueBlockCount="10" PrintMargins="36 36 36 36" MacPrintInfo="0003000001200120000000000B6608A0FF84FF880BE309180367052703FC0002000001200120000000000B6608A0000100000064000000010001010100000001270F000100010000000000000000000000000002001901900000000000600000000000000000000100000000000000000000000000000000" ChemPropName="" ChemPropFormula="Chemical Formula: " ChemPropExactMass="Exact Mass: " ChemPropMolWt="Molecular Weight: " ChemPropMOverZ="m/z: " ChemPropAnalysis="Elemental Analysis: " ChemPropBoilingPt="Boiling Point: " ChemPropMeltingPt="Melting Point: " ChemPropCritTemp="Critical Temp: " ChemPropCritPres="Critical Pres: " ChemPropCritVol="Critical Vol: " ChemPropGibbs="Gibbs Energy: " ChemPropLogP="Log P: " ChemPropMR="MR: " ChemPropHenry="Henry&apos;s Law: " ChemPropEForm="Heat of Form: " ChemProptPSA="tPSA: " ChemPropCLogP="CLogP: " ChemPropCMR="CMR: " ChemPropLogS="LogS: " ChemPropPKa="pKa: " ChemPropID="" ChemPropFragmentLabel="" color="0" bgcolor="1" RxnAutonumberStart="1" RxnAutonumberConditions="no" RxnAutonumberStyle="Roman" RxnAutonumberFormat="(#)">
+	<colortable>
+		<color r="1" g="1" b="1"/>
+		<color r="0" g="0" b="0"/>
+		<color r="1" g="0" b="0"/>
+		<color r="1" g="1" b="0"/>
+		<color r="0" g="1" b="0"/>
+		<color r="0" g="1" b="1"/>
+		<color r="0" g="0" b="1"/>
+		<color r="1" g="0" b="1"/>
+	</colortable>
+	<fonttable>
+		<font id="3" charset="iso-8859-1" name="Arial"/>
+	</fonttable>
+	<page id="2095056201" BoundingBox="0 0 540 719.75" HeaderPosition="36" FooterPosition="36" PrintTrimMarks="yes" HeightPages="1" WidthPages="1">
+		<fragment id="3487" BoundingBox="153.33 372.76 178.57 399.17" Z="14">
+			<n id="3488" p="153.48 398.91" Z="13" AS="N" AtomID="1"/>
+			<n id="3489" p="165.95 391.71" Z="15" AS="N" AtomID="2"/>
+			<n id="3490" p="178.42 398.91" Z="17" AS="N" AtomID="3"/>
+			<n id="3491" p="165.95 377.31" Z="19" Element="8" NumHydrogens="0" NeedsClean="yes" AS="N" AtomID="4">
+				<t p="162.06 381.21" BoundingBox="162.06 372.76 169.84 381.31" LabelJustification="Left">
+					<s font="3" size="10" color="0" face="96">O</s>
+				</t>
+			</n>
+			<b id="3493" Z="16" B="3488" E="3489" BS="N"/>
+			<b id="3494" Z="18" B="3489" E="3490" BS="N"/>
+			<b id="3495" Z="20" B="3489" E="3491" Order="2" BS="N"/>
+		</fragment>
+		<fragment id="2095056199" BoundingBox="134.20 416.92 203.09 428.42" Z="22">
+			<n id="2095056198" p="137.54 421.97" Z="21" Warning="ChemDraw can&apos;t interpret this label." NodeType="Fragment" NeedsClean="yes" AS="N" AtomID="5">
+				<t p="134.20 425.87" BoundingBox="134.20 416.92 203.09 428.42" LabelJustification="Left" LabelLineHeight="auto" LineHeight="auto" LabelAlignment="Left">
+					<s font="3" size="10" color="0" face="96">H2O, comment</s>
+				</t>
+			</n>
+		</fragment>
+		<t id="2826" p="158.43 448.11" BoundingBox="158.43 438.86 187.88 450.61" Z="12" Warning="Chemical Interpretation is not possible for this label" LineHeight="auto">
+			<s font="3" size="10" color="0" face="1">Label</s>
+		</t>
+		<annotation Keyword="Fragment Label" Content="[I]"/>
+		<annotation Keyword="GUID" Content="F15530D6-7276-4093-A8E3-267E498A0466"/>
+		<annotation Keyword="HATU" Content="HATU"/>
+		<annotation Keyword="Name" Content="reaction"/>
+		<annotation Keyword="Numbering" Content="123"/>
+		<annotation Keyword="Solubility_Index" Content="5.2"/>
+		<annotation Keyword="Solubility_Index_bin_numeric_5,7" Content="5 - 7"/>
+		<annotation Keyword="Status" Content="idea"/>
+		<annotation Keyword="TPSA" Content="106.0"/>
+		<annotation Keyword="TargetID" Content="5334112"/>
+		<annotation Keyword="Type" Content="stnd."/>
+		<annotation Keyword="__Rationale" Content="further reduce logD of ortho-Cl substituted analogs by adding hydroxyl group to the proline/alanine linker"/>
+		<annotation Keyword="cHH_prob" Content="0.53"/>
+		<annotation Keyword="cHLM_prob" Content="0.82"/>
+		<annotation Keyword="cKinSol_prob" Content="0.691"/>
+		<annotation Keyword="cLogD7.4" Content="2.4"/>
+		<annotation Keyword="cLogP" Content="2.5"/>
+		<annotation Keyword="cMDCK_AB_prob" Content="0.53"/>
+		<annotation Keyword="cMDCK_efflux_prob" Content="0.49"/>
+		<annotation Keyword="cMH_prob" Content="0.6"/>
+		<annotation Keyword="cMLM_prob" Content="0.66"/>
+		<annotation Keyword="cPPB_H_pct" Content="94.3"/>
+		<annotation Keyword="cPPB_M_pct" Content="96.8"/>
+		<annotation Keyword="cPPB_R_pct" Content="92.7"/>
+		<annotation Keyword="cRH_prob" Content="0.87"/>
+		<annotation Keyword="cRLM_prob" Content="0.75"/>
+		<annotation Keyword="cTDI_3A4" Content="N"/>
+		<annotation Keyword="cTDI_3A4_prob" Content="0.3"/>
+		<annotation Keyword="c_pKa" Content="b 4.82, b 4.18"/>
+		<annotation Keyword="c_pKa_MB" Content="4.82"/>
+		<annotation Keyword="cgLogD7.4" Content="2.21"/>
+		<annotation Keyword="scaffold" Content="other"/>
+		<annotation Keyword="scaffold_hed" Content="other"/>
+		<annotation Keyword="scaffold_subseries" Content="other"/>
+		<annotation Keyword="scaffold_tail" Content="Cl_phe"/>
+	</page>
+</CDXML>
