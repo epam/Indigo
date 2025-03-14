@@ -474,79 +474,79 @@
             <b id="329" B="153" E="154" Order="1.5" Display="Dash" Display2="Dash"/>
             <b id="330" B="154" E="145" Order="1.5" Display="Dash" Display2="Dash"/>
         </fragment>
-        <t id="155" p="2320.371826 359.082520" Justification="Left" InterpretChemically="no">
+        <t id="155" p="2320.371826 359.082520" BoundingBox="2320.371826 359.082520 2466.260498 402.282532" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Removal of benzoxazol-2-yl</s>
         </t>
-        <t id="155" p="2320.371826 359.082520" Justification="Left" InterpretChemically="no">
+        <t id="155" p="2320.371826 359.082520" BoundingBox="2320.371826 359.082520 2466.260498 402.282532" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">group from amines</s>
         </t>
-        <t id="155" p="2320.371826 359.082520" Justification="Left" InterpretChemically="no"/>
-        <t id="155" p="2320.371826 359.082520" Justification="Left" InterpretChemically="no">
+        <t id="155" p="2320.371826 359.082520" BoundingBox="2320.371826 359.082520 2466.260498 402.282532" Justification="Left" InterpretChemically="no"/>
+        <t id="155" p="2320.371826 359.082520" BoundingBox="2320.371826 359.082520 2466.260498 402.282532" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">LAH.THF.reflux</s>
         </t>
-        <t id="158" p="1711.179077 348.282501" Justification="Left" InterpretChemically="no">
+        <t id="158" p="1711.179077 348.282501" BoundingBox="1711.179077 348.282501 1879.512451 402.282501" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Alkylation of amines with</s>
         </t>
-        <t id="158" p="1711.179077 348.282501" Justification="Left" InterpretChemically="no">
+        <t id="158" p="1711.179077 348.282501" BoundingBox="1711.179077 348.282501 1879.512451 402.282501" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">alkyl halides</s>
         </t>
-        <t id="158" p="1711.179077 348.282501" Justification="Left" InterpretChemically="no"/>
-        <t id="158" p="1711.179077 348.282501" Justification="Left" InterpretChemically="no">
+        <t id="158" p="1711.179077 348.282501" BoundingBox="1711.179077 348.282501 1879.512451 402.282501" Justification="Left" InterpretChemically="no"/>
+        <t id="158" p="1711.179077 348.282501" BoundingBox="1711.179077 348.282501 1879.512451 402.282501" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">KOH. toluene. PTC. catalyst or</s>
         </t>
-        <t id="158" p="1711.179077 348.282501" Justification="Left" InterpretChemically="no">
+        <t id="158" p="1711.179077 348.282501" BoundingBox="1711.179077 348.282501 1879.512451 402.282501" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">KI. base e.g. K2CO3</s>
         </t>
-        <t id="161" p="1247.496704 119.420479" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1247.496704 119.420479" BoundingBox="1247.496704 119.420479 1415.830078 216.620499" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Published reaction</s>
         </t>
-        <t id="161" p="1247.496704 119.420479" Justification="Left" InterpretChemically="no"/>
-        <t id="161" p="1247.496704 119.420479" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1247.496704 119.420479" BoundingBox="1247.496704 119.420479 1415.830078 216.620499" Justification="Left" InterpretChemically="no"/>
+        <t id="161" p="1247.496704 119.420479" BoundingBox="1247.496704 119.420479 1415.830078 216.620499" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">Stage 1: 14 h, Copper(II)</s>
         </t>
-        <t id="161" p="1247.496704 119.420479" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1247.496704 119.420479" BoundingBox="1247.496704 119.420479 1415.830078 216.620499" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">chloride, Dimethylformamide,</s>
         </t>
-        <t id="161" p="1247.496704 119.420479" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1247.496704 119.420479" BoundingBox="1247.496704 119.420479 1415.830078 216.620499" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">Dichloromethane, CK2O3   </s>
         </t>
-        <t id="161" p="1247.496704 119.420479" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1247.496704 119.420479" BoundingBox="1247.496704 119.420479 1415.830078 216.620499" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">Potassium carbonate | Stage 2:</s>
         </t>
-        <t id="161" p="1247.496704 119.420479" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1247.496704 119.420479" BoundingBox="1247.496704 119.420479 1415.830078 216.620499" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">5 h, 80 degree, acid, Dy(3+)-</s>
         </t>
-        <t id="161" p="1247.496704 119.420479" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1247.496704 119.420479" BoundingBox="1247.496704 119.420479 1415.830078 216.620499" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">salt C3Dy1F9O9S3,</s>
         </t>
-        <t id="161" p="1247.496704 119.420479" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1247.496704 119.420479" BoundingBox="1247.496704 119.420479 1415.830078 216.620499" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">Dichloromethane, Acetonitrile</s>
         </t>
-        <t id="164" p="1247.496704 544.744507" Justification="Left" InterpretChemically="no">
+        <t id="164" p="1247.496704 544.744507" BoundingBox="1247.496704 544.744507 1404.607910 587.944519" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Addition of dihalomethane to</s>
         </t>
-        <t id="164" p="1247.496704 544.744507" Justification="Left" InterpretChemically="no">
+        <t id="164" p="1247.496704 544.744507" BoundingBox="1247.496704 544.744507 1404.607910 587.944519" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">aldehyde</s>
         </t>
-        <t id="164" p="1247.496704 544.744507" Justification="Left" InterpretChemically="no"/>
-        <t id="164" p="1247.496704 544.744507" Justification="Left" InterpretChemically="no">
+        <t id="164" p="1247.496704 544.744507" BoundingBox="1247.496704 544.744507 1404.607910 587.944519" Justification="Left" InterpretChemically="no"/>
+        <t id="164" p="1247.496704 544.744507" BoundingBox="1247.496704 544.744507 1404.607910 587.944519" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">SmI2.THF</s>
         </t>
-        <t id="167" p="727.691711 615.989075" Justification="Left" InterpretChemically="no">
+        <t id="167" p="727.691711 615.989075" BoundingBox="727.691711 615.989075 884.802734 659.189087" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Ozonolysis</s>
         </t>
-        <t id="167" p="727.691711 615.989075" Justification="Left" InterpretChemically="no"/>
-        <t id="167" p="727.691711 615.989075" Justification="Left" InterpretChemically="no">
+        <t id="167" p="727.691711 615.989075" BoundingBox="727.691711 615.989075 884.802734 659.189087" Justification="Left" InterpretChemically="no"/>
+        <t id="167" p="727.691711 615.989075" BoundingBox="727.691711 615.989075 884.802734 659.189087" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">O3.MeOH.CH2Cl2.PPh3 or Me2S.</s>
         </t>
-        <t id="167" p="727.691711 615.989075" Justification="Left" InterpretChemically="no">
+        <t id="167" p="727.691711 615.989075" BoundingBox="727.691711 615.989075 884.802734 659.189087" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">low temperature</s>
         </t>
-        <t id="170" p="242.335175 626.789062" Justification="Left" InterpretChemically="no">
+        <t id="170" p="242.335175 626.789062" BoundingBox="242.335175 626.789062 382.612915 659.189087" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Mitsunobu reaction</s>
         </t>
-        <t id="170" p="242.335175 626.789062" Justification="Left" InterpretChemically="no"/>
-        <t id="170" p="242.335175 626.789062" Justification="Left" InterpretChemically="no">
+        <t id="170" p="242.335175 626.789062" BoundingBox="242.335175 626.789062 382.612915 659.189087" Justification="Left" InterpretChemically="no"/>
+        <t id="170" p="242.335175 626.789062" BoundingBox="242.335175 626.789062 382.612915 659.189087" Justification="Left" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">DEAD.or.DCAD.or.DIAD.PPh3</s>
         </t>
         <arrow id="176" BoundingBox="932.080505 674.622375 722.080566 674.622375" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="932.080505 674.622375 0.000000" Tail3D="722.080566 674.622375 0.000000"/>
