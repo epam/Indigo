@@ -383,7 +383,6 @@ void PathwayLayout::addMetaText(PathwayReaction::ReactionNode& node, const Vec2f
     auto text_height = _text_line_height * tob.getLineCounter();
     Vec2f text_pos_tl(text_pos_bl.x, text_pos_bl.y - _text_line_height / 2.0f + text_height + _reaction_margin_size);
     Vec2f text_pos_rb(text_pos_tl.x + node.text_width, text_pos_tl.y - text_height);
-
     _reaction.meta().addMetaObject(new SimpleTextObject(Rect2f(text_pos_tl, text_pos_rb), tob.getJsonString()), true);
 }
 
