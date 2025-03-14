@@ -1671,10 +1671,11 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
     std::optional<AutoInt> font_color_index;
     float font_size;
     SimpleTextObject kto;
+    auto& bbox = kto.boundingBox();
 
     std::unordered_map<std::string, std::function<void(const std::string&)>> text_dispatcher = {
         {"p", posLambda(text_pos)},
-        {"BoundingBox", bboxLambda(kto.boundingBox())},
+        {"BoundingBox", bboxLambda(bbox)},
         {"Justification", justificationLambda(text_justification)},
         {"WordWrapWidth", floatLambda(wwrap_val)},
         {"LineStarts", intSetLambda(line_starts)},
@@ -1692,6 +1693,9 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
         {"font", intLambda(font_id)}, {"size", style_size_lambda}, {"color", style_color_lambda}, {"face", intLambda(font_face)}};
 
     applyDispatcher(*elem.firstProperty().get(), text_dispatcher);
+
+    if (std::fabs(text_pos.x - bbox.leftTop().x) || std::fabs(text_pos.y - bbox.leftTop().y))
+        bbox.copy(Rect2f(text_pos, text_pos));
 
     for (auto text_style = elem.firstChildElement(); text_style->hasContent(); text_style = text_style->nextSiblingElement())
     {

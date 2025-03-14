@@ -127,17 +127,17 @@ bool BaseMolecule::hasCoord(BaseMolecule& mol)
         if (fabs(xyz.x) > 0.001 || fabs(xyz.y) > 0.001 || fabs(xyz.z) > 0.001)
             return true;
     }
-
-    for (i = 0; i < mol.rgroups.getRGroupCount(); ++i)
-    {
-        RGroup& rg = mol.rgroups.getRGroup(i + 1);
-        for (int j = 0; j < rg.fragments.size(); ++j)
-        {
-            BaseMolecule* frag = rg.fragments[j];
-            if (hasCoord(*frag))
-                return true;
-        }
-    }
+    // should be uncommented
+    //for (i = 0; i < mol.rgroups.getRGroupCount(); ++i)
+    //{
+    //    RGroup& rg = mol.rgroups.getRGroup(i + 1);
+    //    for (int j = 0; j < rg.fragments.size(); ++j)
+    //    {
+    //        BaseMolecule* frag = rg.fragments[j];
+    //        if (hasCoord(*frag))
+    //            return true;
+    //    }
+    //}
     return false;
 }
 

@@ -310,10 +310,10 @@ void RenderItemAuxiliary::fillKETStyle(TextItem& ti, const FONT_STYLE_SET& style
             ti.italic = text_style.second;
             break;
         case KETFontStyle::FontStyle::ESuperScript:
-            ti.script_type = text_style.second ? 2 : 0;
+            ti.script_type = text_style.second ? 1 : 0;
             break;
         case KETFontStyle::FontStyle::ESubScript:
-            ti.script_type = text_style.second ? 1 : 0;
+            ti.script_type = text_style.second ? 2 : 0;
             break;
         case KETFontStyle::FontStyle::ESize: {
             ti.size = KDefaultFontSize;
