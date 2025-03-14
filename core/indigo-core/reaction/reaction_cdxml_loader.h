@@ -49,6 +49,7 @@ namespace indigo
         std::set<int> intermediates_ids;
         std::set<int> arrows_ids;
         std::set<int> agents_ids;
+        std::set<int> bracket_ids;
 
     private:
         ReactionCdxmlLoader(const ReactionCdxmlLoader&); // no implicit copy
