@@ -479,7 +479,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
 
                     if (ti_lines.size() && !ti_lines[ti_lines.size() - 1].size())
                     {
-                        text_offset_y += text_max_height + _settings.boundExtent;
+                        text_offset_y -= text_max_height + _settings.boundExtent;
                         ti_lines.remove(ti_lines.size() - 1);
                     }
 
