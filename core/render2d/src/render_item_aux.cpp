@@ -396,6 +396,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                     FONT_STYLE_SET current_styles;
                     ObjArray<ObjArray<TextItem>> ti_lines;
                     std::vector<std::pair<int, float>> spaces_widths;
+                    std::pair<int, float> trailing_spaces{};
                     TextItem ti;
                     ti.size = KDefaultFontSize / KFontScaleFactor; // default size
                     ti.ritype = RenderItem::RIT_TITLE;
@@ -448,6 +449,10 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                                     ti.text.readString(line_str.c_str(), true);
                                     _rc.setTextItemSize(ti);
                                     ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
+                                    trailing_spaces.first =
+                                        (int)std::distance(line_str.rbegin(), std::find_if(line_str.rbegin(), line_str.rend(), [](char c) { return c != ' '; }));
+                                    trailing_spaces.second = trailing_spaces.first ? _rc.getSpaceWidth() * trailing_spaces.first : 0.0f;
+
                                     if (spc_count)
                                     {
                                         text_offset_x += _rc.getSpaceWidth() * spc_count;
@@ -468,6 +473,11 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                                 {
                                     text_offset_y += text_max_height + _settings.boundExtent;
                                     text_offset_x = 0;
+                                    if (trailing_spaces.first)
+                                    {
+                                        spaces_widths.back().first -= trailing_spaces.first;
+                                        spaces_widths.back().second -= trailing_spaces.second;
+                                    }
                                     ti_lines.push();
                                     spaces_widths.emplace_back(0, 0.0f);
                                 }
@@ -515,8 +525,8 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                                 if (j < ti_lines.size() - 1)
                                 {
                                     text_offset_x = 0;
-                                    if (spaces_widths[j].first > 1)
-                                        space_width /= (spaces_widths[j].first - 1);
+                                    if (spaces_widths[j].first)
+                                        space_width /= spaces_widths[j].first;
                                     // iterate line elements and calculate new positions
                                     for (int k = 0; k < ti_line.size(); ++k)
                                     {

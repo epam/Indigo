@@ -2251,7 +2251,7 @@ void MoleculeJsonSaver::saveText(JsonWriter& writer, const SimpleTextObject& tex
     if (text_obj.fontStyles().size())
         saveFontStyles(writer, text_obj.fontStyles());
     if (text_obj.block().size())
-        saveParagraphs(writer, text_obj.block());
+        saveParagraphs(writer, text_obj);
 }
 
 void MoleculeJsonSaver::saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET& fss)
@@ -2318,8 +2318,9 @@ void MoleculeJsonSaver::saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET&
     }
 }
 
-void MoleculeJsonSaver::saveParagraphs(JsonWriter& writer, const std::list<SimpleTextObject::KETTextParagraph>& paragraphs)
+void MoleculeJsonSaver::saveParagraphs(JsonWriter& writer, const SimpleTextObject& text_obj)
 {
+    const auto& paragraphs = text_obj.block();
     writer.Key("paragraphs");
     writer.StartArray();
     for (const auto& paragraph : paragraphs)
@@ -2332,10 +2333,15 @@ void MoleculeJsonSaver::saveParagraphs(JsonWriter& writer, const std::list<Simpl
             writer.Key("indent");
             writer.Double(paragraph.indent.value());
         }
-        if (paragraph.font_style.size())
-            saveFontStyles(writer, paragraph.font_style);
+
+        auto def_fss = text_obj.fontStyles();
+        def_fss &= paragraph.font_style;
+
+        if (def_fss.size())
+            saveFontStyles(writer, def_fss);
+
         if (paragraph.font_styles.size())
-            saveParts(writer, paragraph);
+            saveParts(writer, paragraph, def_fss);
         if (paragraph.line_starts.has_value() && paragraph.line_starts.value().size())
         {
             writer.Key("lineStarts");
@@ -2349,7 +2355,7 @@ void MoleculeJsonSaver::saveParagraphs(JsonWriter& writer, const std::list<Simpl
     writer.EndArray();
 }
 
-void MoleculeJsonSaver::saveParts(JsonWriter& writer, const SimpleTextObject::KETTextParagraph& paragraph)
+void MoleculeJsonSaver::saveParts(JsonWriter& writer, const SimpleTextObject::KETTextParagraph& paragraph, const FONT_STYLE_SET& def_fss)
 {
     if (paragraph.font_styles.size() > 1)
     {
@@ -2363,8 +2369,10 @@ void MoleculeJsonSaver::saveParts(JsonWriter& writer, const SimpleTextObject::KE
             auto text_part = text_view.substr(it_fss_kvp->first, next_it->first - it_fss_kvp->first);
             writer.Key("text");
             writer.String(std::string(text_part).c_str());
-            if (it_fss_kvp->second.size())
-                saveFontStyles(writer, it_fss_kvp->second);
+            auto current_part_fss = def_fss;
+            current_part_fss &= it_fss_kvp->second;
+            if (current_part_fss.size())
+                saveFontStyles(writer, current_part_fss);
             writer.EndObject();
         }
         writer.EndArray();

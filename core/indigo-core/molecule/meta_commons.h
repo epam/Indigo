@@ -201,6 +201,7 @@ namespace indigo
     using FONT_STYLE_SET = std::set<std::pair<KETFontStyle, bool>, compareFunction>;
     using KETFontStatusMap = std::map<KETFontStyle::FontStyle, std::deque<KETFontStyleStatus>>;
 
+    FONT_STYLE_SET& operator&=(FONT_STYLE_SET& lhs, const FONT_STYLE_SET& rhs);
     FONT_STYLE_SET& operator+=(FONT_STYLE_SET& lhs, const FONT_STYLE_SET& rhs);
 
     constexpr std::uint32_t string_hash(char const* s, std::size_t count)
@@ -303,13 +304,6 @@ namespace indigo
         static const FontStyleMap& textStyleMap();
 
         static KETFontStyle::FontStyle textStyleByName(const std::string& style_name);
-
-        struct KETTextIndent
-        {
-            std::optional<float> left;
-            std::optional<float> right;
-            std::optional<float> first_line;
-        };
 
         struct KETTextParagraph
         {

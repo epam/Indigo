@@ -1694,7 +1694,7 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
 
     applyDispatcher(*elem.firstProperty().get(), text_dispatcher);
 
-    if (std::fabs(text_pos.x - bbox.leftTop().x) || std::fabs(text_pos.y - bbox.leftTop().y))
+    if (bbox.width() == 0.0f || bbox.height() == 0.0f)
         bbox.copy(Rect2f(text_pos, text_pos));
 
     for (auto text_style = elem.firstChildElement(); text_style->hasContent(); text_style = text_style->nextSiblingElement())
@@ -1704,6 +1704,11 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
         if (text_element == "s")
         {
             std::string style_text = text_style->getText();
+
+            // workaround for empty text. bug in tinyxml2.
+            if (style_text.empty())
+                style_text += " ";
+
             if (style_text == "+")
             {
                 _pluses.push_back(kto.boundingBox().center());

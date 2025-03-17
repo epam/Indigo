@@ -29,6 +29,46 @@
 
 namespace indigo
 {
+    // apply style
+    FONT_STYLE_SET& operator&=(FONT_STYLE_SET& lhs, const FONT_STYLE_SET& rhs)
+    {
+        for (const auto& fs : rhs)
+        {
+            if (fs.second) // we want to turn on the style
+            {
+                // remove previous switching off the style if there is one
+                auto it = lhs.find(std::make_pair(fs.first, false));
+                if (it != lhs.end())
+                    lhs.erase(it);
+
+                // check for duplicates
+                auto fs_it = lhs.find(fs);
+                if (fs_it != lhs.end())
+                {
+                    // Update value if it is already present
+                    if (fs_it->first.hasValue())
+                    {
+                        lhs.erase(fs_it);
+                        lhs.insert(fs);
+                    }
+                }
+                else
+                    lhs.insert(fs);
+            }
+            else
+            {
+                auto it = lhs.find(std::make_pair(fs.first, true));
+                if (it != lhs.end())
+                {
+                    lhs.erase(it);
+                    lhs.insert(fs);
+                }
+            }
+        }
+        return lhs;
+    }
+
+    // merge style
     FONT_STYLE_SET& operator+=(FONT_STYLE_SET& lhs, const FONT_STYLE_SET& rhs)
     {
         for (const auto& fs : rhs)
@@ -287,7 +327,7 @@ namespace indigo
         }
     }
 
-    SimpleTextObject::SimpleTextObject() : MetaObject(CID)
+    SimpleTextObject::SimpleTextObject() : MetaObject(CID), _alignment{}, _indent{}, _font_styles{}, _bbox{}
     {
     }
 
