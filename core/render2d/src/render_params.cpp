@@ -93,6 +93,12 @@ bool RenderParamInterface::needsLayoutSub(BaseMolecule& mol)
                 if (atomsToIgnore.find(patoms[j]))
                     atomsToIgnore.remove(patoms[j]);
         }
+        else if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+        {
+            const Array<int>& atoms = sg.atoms;
+            for (const auto& atom : atoms)
+                atomsToIgnore.find_or_insert(atom);
+        }
     }
     for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
     {
