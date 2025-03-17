@@ -73,6 +73,16 @@ indigo.setOption("render-output-format", "cdxml")
 buf = renderer.renderGridToBuffer(arr, None, 3)
 print(len(buf) > 100)
 
+print("issue 1686 extra plus")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+fname = "extra_plus_1686"
+png_fname = fname + ".png"
+cdxml_fname = joinPathPy("molecules/%s.cdxml" % fname, __file__)
+mol = indigo.loadMoleculeFromFile(cdxml_fname)
+renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()

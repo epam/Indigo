@@ -9,3 +9,5 @@ OC(C(=O)O)(C(C)=O)C
 OC(C(CO)O)C1C(O)N(O)C2=C(C(N=C(N)N2)=O)N1
 OC(C(=CC=CC(=O)O)N)=O
 True
+issue 1686 extra plus
+extra_plus_1686.png rendering status: OK
