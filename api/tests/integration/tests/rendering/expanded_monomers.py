@@ -26,9 +26,7 @@ mol = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/expanded.ket", __file__)
 )
 indigo.setOption("render-output-format", "png")
-renderer.renderToFile(
-    mol, joinPathPy("out/expanded.png", __file__)
-)
+renderer.renderToFile(mol, joinPathPy("out/expanded.png", __file__))
 print(checkImageSimilarity("expanded.png"))
 
 if isIronPython():
