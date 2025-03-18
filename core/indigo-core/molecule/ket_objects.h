@@ -22,6 +22,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -32,7 +33,7 @@
 #include "common/math/algebra.h"
 #include "molecule/idt_alias.h"
 #include "molecule/monomers_defs.h"
-#include <set>
+#include "molecule/transformation.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -42,8 +43,9 @@
 namespace indigo
 {
 
-    class MonomerTemplate;
     class JsonWriter;
+    class MonomerTemplate;
+    class MonomerTemplateLibrary;
 
     template <typename T>
     constexpr auto toUType(T enumerator) noexcept
@@ -769,6 +771,16 @@ namespace indigo
 
         const std::map<std::string, int>& getIntPropStrToIdx() const override;
 
+        void setTransformation(const Transformation& transform)
+        {
+            _transform = transform;
+        }
+
+        const Transformation& getTransformation() const
+        {
+            return _transform;
+        }
+
     private:
         enum class BoolProps
         {
@@ -778,6 +790,7 @@ namespace indigo
         {
             seqid
         };
+        Transformation _transform;
     };
 
     class DLLEXPORT KetConnectionEndPoint : public KetObjWithProps

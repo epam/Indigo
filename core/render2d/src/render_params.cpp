@@ -202,7 +202,7 @@ void RenderParamInterface::render(RenderParams& params)
         if (params.mols.size() == 0)
         {
             obj = factory.addItemMolecule();
-            BaseMolecule& bm = *params.mol;
+            BaseMolecule& bm = params.mol->getExpandedMonomerCount() == 0 ? *params.mol.get() : *params.mol->expandedMonomersToAtoms().get();
             _prepareMolecule(params, bm);
             factory.getItemMolecule(obj).mol = &bm;
         }

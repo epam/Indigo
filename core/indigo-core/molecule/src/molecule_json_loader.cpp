@@ -1683,6 +1683,22 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
                 mol.setTemplateAtomDisplayOption(idx, DisplayOption::Contracted);
         }
 
+        if (ma.HasMember("transformation"))
+        {
+            auto& transform_val = ma["transformation"];
+            float rotate = 0;
+            if (transform_val.HasMember("rotate"))
+                rotate = transform_val["rotate"].GetFloat();
+            Vec2f shift(0, 0);
+            if (transform_val.HasMember("shift"))
+            {
+                auto& shift_val = transform_val["shift"];
+                shift.x = shift_val["x"].GetFloat();
+                shift.y = shift_val["y"].GetFloat();
+            }
+            mol.setTemplateAtomTransform(idx, Transformation(rotate, shift));
+        }
+
         std::string template_id = ma["templateId"].GetString();
         auto temp_it = _id_to_template.find(template_id);
         if (temp_it != _id_to_template.end())
