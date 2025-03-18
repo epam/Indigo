@@ -60,6 +60,8 @@ namespace indigo
     public:
         DECL_ERROR;
 
+        virtual ~KetObjWithProps() = default;
+
         inline void setBoolProp(int idx, bool value)
         {
             _bool_props[idx] = value;
