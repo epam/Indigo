@@ -1600,8 +1600,27 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
     case kCDXGraphicType_Symbol: {
         if (symbol_type == kCDXSymbolType_Plus)
         {
-            Rect2f bbox(graph_bbox.first, graph_bbox.second);
-            _pluses.emplace_back(bbox.center());
+            bool atomicCharge = false;
+            for (auto child = elem.firstChildElement(); child->hasContent(); child = child->nextSiblingElement())
+            {
+                if (child->name() == "represent")
+                {
+                    auto attribute = child->findProperty("attribute");
+                    if (attribute->hasContent())
+                    {
+                        if (attribute->value() == "Charge")
+                        {
+                            atomicCharge = true;
+                        }
+                    }
+                }
+            }
+
+            if (!atomicCharge)
+            {
+                Rect2f bbox(graph_bbox.first, graph_bbox.second);
+                _pluses.emplace_back(bbox.center());
+            }
         }
     }
     break;
