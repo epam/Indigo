@@ -2839,12 +2839,12 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
 
             bool tag = false;
             {
-                char c = (i == len ? ' ' : str[i]);
-                if (isspace(c))
+                unsigned char c = (i == len ? ' ' : str[i]);
+                if (std::isspace(c))
                 {
                     b = WHITESPACE;
                 }
-                else if (isdigit(c))
+                else if (std::isdigit(c))
                 {
                     b = DIGIT;
                 }
