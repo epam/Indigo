@@ -146,6 +146,8 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                     auto id = cdxml_elem->findProperty("id");
                     if (id->hasContent())
                         _cdxml_elements.emplace(std::stoi(id->value()), cdxml_elem->copy());
+                    else
+                        std::cout << "Unknown element: " << page_elem->value() << std::endl;
                 }
             }
         }
@@ -153,6 +155,8 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
             loader.parseColorTable(*page_elem);
         else if (page_elem->value() == "fonttable")
             loader.parseFontTable(*page_elem);
+        else
+            std::cout << "Unknown element: " << page_elem->value() << std::endl;
     }
 
     for (auto id : reactants_ids)

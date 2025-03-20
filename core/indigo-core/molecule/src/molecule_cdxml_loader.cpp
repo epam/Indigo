@@ -174,9 +174,25 @@ std::string CDXProperty::formatValue(ECDXType cdx_type) const
     }
     break;
 
-    case ECDXType::CDXColorTable:
-        result = "ColorTable not implemented";
-        break;
+    case ECDXType::CDXColorTable: {
+        auto ptr16 = (uint16_t*)_data;
+        auto num_colors = *ptr16;
+        if (num_colors && num_colors == (_size - sizeof(uint16_t)) / (sizeof(uint16_t) * 3))
+        {
+            ++ptr16;
+            for (auto i = 0; i < num_colors; ++i)
+            {
+                auto b = ptr16[i] >> 8;
+                auto r = ptr16[i + 1] >> 8;
+                auto g = ptr16[i + 2] >> 8;
+                uint32_t col = (r << 16) | (g << 8) | b;
+                if (i)
+                    result += " ";
+                result += std::to_string(col);
+            }
+        }
+    }
+    break;
 
     case ECDXType::CDXFontTable:
         result = "FontTable not implemented";
@@ -662,8 +678,18 @@ void MoleculeCdxmlLoader::parseCDXMLAttributes(BaseCDXProperty& prop)
 
     auto& bond_length = cdxml_bond_length;
     auto cdxml_bond_length_lambda = [&bond_length](const std::string& data) { bond_length = data; };
-    std::unordered_map<std::string, std::function<void(const std::string&)>> cdxml_dispatcher = {{"BoundingBox", cdxml_bbox_lambda},
-                                                                                                 {"BondLength", cdxml_bond_length_lambda}};
+
+    auto color_table_lambda = [this](const std::string& data) {
+        auto color_strs = split(data, ' ');
+        color_table.resize(color_strs.size());
+        std::transform(color_strs.begin(), color_strs.end(), color_table.begin(),
+                       [](const std::string& s) -> uint32_t { return static_cast<uint32_t>(std::stoul(s)); });
+    };
+
+    auto font_table_lambda = [this](const std::string& data) {};
+
+    std::unordered_map<std::string, std::function<void(const std::string&)>> cdxml_dispatcher = {
+        {"BoundingBox", cdxml_bbox_lambda}, {"BondLength", cdxml_bond_length_lambda}, {"colortable", color_table_lambda}, {"fonttable", font_table_lambda}};
     applyDispatcher(prop, cdxml_dispatcher);
 }
 
@@ -689,7 +715,7 @@ void MoleculeCdxmlLoader::parseColorTable(BaseCDXElement& elem)
     }
 }
 
-void indigo::MoleculeCdxmlLoader::parseFontTable(BaseCDXElement& elem)
+void MoleculeCdxmlLoader::parseFontTable(BaseCDXElement& elem)
 {
     for (auto font_elem = elem.firstChildElement(); font_elem->hasContent(); font_elem = font_elem->nextSiblingElement())
     {
@@ -1704,6 +1730,8 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
         if (text_element == "s")
         {
             std::string style_text = text_style->getText();
+            if (!is_valid_utf8(style_text))
+                style_text = latin1_to_utf8(style_text);
 
             // workaround for empty text. bug in tinyxml2.
             if (style_text.empty())

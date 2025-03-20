@@ -383,6 +383,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                     auto paragraph_style = default_styles;
                     paragraph_style += text_item.font_style;
                     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> utf8w;
+
                     auto text_wstr = utf8w.from_bytes(text_item.text);
                     float text_max_height = _getMaxHeight(text_item);
                     auto line_starts = text_item.line_starts;
