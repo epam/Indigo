@@ -1,6 +1,6 @@
+import difflib
 import os
 import sys
-import difflib
 
 
 def find_diff(a, b):
