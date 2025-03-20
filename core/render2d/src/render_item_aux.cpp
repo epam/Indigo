@@ -24,6 +24,7 @@
 #include "render_context.h"
 #include "render_internal.h"
 #include <codecvt>
+#include <regex>
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -421,7 +422,10 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         {
                             auto ls_index = *line_starts.value().begin();
                             line_starts.value().erase(line_starts.value().begin());
-                            styled_lines.push_back(utf8w.to_bytes(text_wstr.substr(first_index, ls_index - first_index)) + '\n');
+                            auto text_wsubstr = text_wstr.substr(first_index, ls_index - first_index);
+                            if (text_wsubstr.back() != '\n' && text_wsubstr.back() != '\r')
+                                text_wsubstr.push_back('\n');
+                            styled_lines.push_back(utf8w.to_bytes(text_wsubstr));
                             first_index = ls_index;
                         }
 
@@ -432,7 +436,8 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
 
                         for (auto& styled_text : styled_lines)
                         {
-                            auto splitted = split_with_empty(styled_text, '\n');
+                            auto splitted = split_to_lines(styled_text);
+                            //auto splitted = split_with_empty(styled_text, '\n');
                             for (auto line_it = splitted.begin(); line_it != splitted.end(); ++line_it)
                             {
                                 if (ti_lines.size() == 0)

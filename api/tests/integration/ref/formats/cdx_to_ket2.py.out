@@ -10,6 +10,9 @@ image.ket:SUCCEED
 invalid-ascii.ket:SUCCEED
 CDXML loader: Not a molecule. Found 1 arrows.
 *** Try as Reaction ***
+issue_1679.ket:SUCCEED
+CDXML loader: Not a molecule. Found 1 arrows.
+*** Try as Reaction ***
 issue_1683.ket:SUCCEED
 issue_2603.ket:SUCCEED
 CDXML loader: Not a molecule. Found 1 arrows.

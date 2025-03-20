@@ -100,6 +100,31 @@ namespace indigo
         return true;
     }
 
+    std::vector<std::string> split_to_lines(const std::string& str)
+    {
+        std::vector<std::string> result;
+        if (str.empty())
+            return result;
+
+        if (str.find_first_of("\r\n") == 0)
+            result.emplace_back();
+
+        size_t start = 0, end;
+        while (start < str.size())
+        {
+            end = str.find_first_of("\r\n", start);
+            result.emplace_back(str, start, (end == std::string::npos) ? std::string::npos : end - start);
+
+            if (end == std::string::npos)
+                break;
+            start = (end + 1 < str.size() && ((str[end] == '\r' && str[end + 1] == '\n') || (str[end] == '\n' && str[end + 1] == '\r'))) ? end + 2 : end + 1;
+        }
+
+        if (!str.empty() && str.find_last_of("\r\n") == str.size() - 1)
+            result.emplace_back();
+        return result;
+    }
+
     std::vector<std::string> split_spaces(const std::string& str)
     {
         std::vector<std::string> result;
