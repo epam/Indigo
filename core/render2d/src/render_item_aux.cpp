@@ -437,7 +437,6 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         for (auto& styled_text : styled_lines)
                         {
                             auto splitted = split_to_lines(styled_text);
-                            //auto splitted = split_with_empty(styled_text, '\n');
                             for (auto line_it = splitted.begin(); line_it != splitted.end(); ++line_it)
                             {
                                 if (ti_lines.size() == 0)
