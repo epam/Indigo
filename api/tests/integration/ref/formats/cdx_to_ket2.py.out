@@ -1,0 +1,24 @@
+*** CDX to ket ***
+US06174985-20010116-C00003.ket:SUCCEED
+US06837803-20050104-C00001.ket:SUCCEED
+arom64.ket:SUCCEED
+arrow64.ket:SUCCEED
+CDXML loader: Not a molecule. Found 73 arrows.
+*** Try as Reaction ***
+arrows.ket:SUCCEED
+image.ket:SUCCEED
+invalid-ascii.ket:SUCCEED
+CDXML loader: Not a molecule. Found 1 arrows.
+*** Try as Reaction ***
+issue_1683.ket:SUCCEED
+issue_2603.ket:SUCCEED
+CDXML loader: Not a molecule. Found 1 arrows.
+*** Try as Reaction ***
+marvin.ket:SUCCEED
+simple_rgrp64.ket:SUCCEED
+CDXML loader: Not a molecule. Found 14 arrows.
+*** Try as Reaction ***
+test_zero_id.ket:SUCCEED
+unspecified_with_abbreviation.ket:SUCCEED
+x_sup.ket:SUCCEED
+x_sup_sub_default_size.ket:SUCCEED
