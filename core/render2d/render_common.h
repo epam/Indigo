@@ -573,6 +573,7 @@ namespace indigo
         bool showNeighborArcs;
         bool showAtomIds;
         bool showValences;
+        bool showCIPLabels;
         bool atomColoring;
         STEREO_STYLE stereoMode;
         bool showReactingCenterUnchanged;

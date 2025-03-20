@@ -76,6 +76,7 @@ void RenderOptions::clearRenderOptions()
     showBondEndIds = false;
     showNeighborArcs = false;
     showValences = true;
+    showCIPLabels = true;
     atomColoring = false;
     stereoMode = STEREO_STYLE_OLD;
     showReactingCenterUnchanged = false;
@@ -3348,7 +3349,10 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
     }
 
     // CIP
-    _prepareCIPLabel(aid, color, highlighted);
+    if (_opt.showCIPLabels)
+    {
+        _prepareCIPLabel(aid, color, highlighted);
+    }
 
     int bondEndRightToStereoGroupLabel = -1;
     // prepare stereogroup labels
