@@ -42,6 +42,7 @@
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_tgroups.h"
 #include "molecule/monomers_lib.h"
+#include "molecule/transformation.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -81,6 +82,7 @@ namespace indigo
 
     enum
     {
+        BOND_DIRECTION_MONO = 0,
         BOND_UP = 1,
         BOND_DOWN = 2,
         BOND_EITHER = 3,
@@ -145,11 +147,11 @@ namespace indigo
             BaseMolecule& _mol;
         };
 
-        struct TemplateAttPoint
+        struct TemplateAttPoint // Monomer connection info
         {
-            int ap_occur_idx;
-            int ap_aidx;
-            Array<char> ap_id;
+            int ap_occur_idx;  // Index of the attachment point occurrence
+            int ap_aidx;       // Molecule atom index of the connection
+            Array<char> ap_id; // Attachment point id
         };
 
         BaseMolecule();
@@ -189,7 +191,7 @@ namespace indigo
         virtual void changed() override;
 
         // 'neu' means 'new' in German
-        virtual BaseMolecule* neu() = 0;
+        virtual BaseMolecule* neu() const = 0;
 
         virtual int getAtomNumber(int idx) = 0;      // > 0 -- ELEM_***, 0 -- pseudo-atom, -1 -- not sure
         virtual int getAtomCharge(int idx) = 0;      // charge or CHARGE_UNKNOWN if not sure
@@ -230,31 +232,34 @@ namespace indigo
             Array<char> seq_name;      // sequence name
             DisplayOption contracted;  // display option (-1 if undefined, 0 - expanded, 1 - contracted)
             Array<_AttachOrder> order; // attach order info
+            Transformation transform;
             _TemplateOccurrence() : name_idx(-1), class_idx(-1), seq_id(-1), template_idx(-1), contracted(DisplayOption::Undefined)
             {
             }
             _TemplateOccurrence(const _TemplateOccurrence& other)
-                : name_idx(other.name_idx), class_idx(other.class_idx), seq_id(other.seq_id), template_idx(other.template_idx), contracted(other.contracted)
+                : name_idx(other.name_idx), class_idx(other.class_idx), seq_id(other.seq_id), template_idx(other.template_idx), contracted(other.contracted),
+                  transform(other.transform)
             {
                 seq_name.copy(other.seq_name);
                 order.copy(other.order);
             }
         };
-        ObjPool<_TemplateOccurrence> _template_occurrences;
+        ObjPool<_TemplateOccurrence> _template_occurrences; // monomer info. each template atom contains index of it occurence in this array
 
         StringPool _template_classes;
         StringPool _template_names;
 
         virtual int addTemplateAtom(const char* text) = 0;
-        virtual bool isTemplateAtom(int idx) = 0;
-        virtual int getTemplateAtomOccurrence(int idx) = 0;
+        virtual bool isTemplateAtom(int idx) const = 0;
+        virtual int getTemplateAtomOccurrence(int idx) const = 0;
 
         const char* getTemplateAtom(int idx);
         const int getTemplateAtomSeqid(int idx);
         const char* getTemplateAtomSeqName(int idx);
         const char* getTemplateAtomClass(int idx);
-        const DisplayOption getTemplateAtomDisplayOption(int idx);
+        const DisplayOption getTemplateAtomDisplayOption(int idx) const;
         const int getTemplateAtomTemplateIndex(int idx);
+        const Transformation& getTemplateAtomTransform(int idx) const;
 
         void renameTemplateAtom(int idx, const char* text);
         void setTemplateAtomName(int idx, const char* text);
@@ -264,6 +269,7 @@ namespace indigo
 
         void setTemplateAtomDisplayOption(int idx, DisplayOption contracted);
         void setTemplateAtomTemplateIndex(int idx, int temp_idx);
+        void setTemplateAtomTransform(int idx, const Transformation& transform);
 
         bool getUnresolvedTemplatesList(BaseMolecule& bmol, std::string& unresolved);
 
@@ -310,6 +316,8 @@ namespace indigo
         int attachmentPointCount() const;
         void removeAttachmentPoints();
         void getAttachmentIndicesForAtom(int atom_idx, Array<int>& res);
+        int getExpandedMonomerCount() const;
+        std::unique_ptr<BaseMolecule>& expandedMonomersToAtoms();
 
         virtual bool isSaturatedAtom(int idx) = 0;
 
@@ -414,8 +422,8 @@ namespace indigo
             return reaction_atom_exact_change;
         }
 
-        ObjPool<TemplateAttPoint> template_attachment_points;
-        ObjArray<ObjPool<int>> template_attachment_indexes;
+        ObjPool<TemplateAttPoint> template_attachment_points; // All used APs -
+        ObjArray<ObjPool<int>> template_attachment_indexes;   //
 
         MoleculeSGroups sgroups;
 
@@ -588,6 +596,13 @@ namespace indigo
         void getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE label_mode, Vec2f& bottom_left, Vec2f& top_right);
         void getBoundingBox(float font_size, LABEL_MODE label_mode, Vec2f& bottom_left, Vec2f& top_right);
         void getBoundingBox(float font_size, LABEL_MODE label_mode, Rect2f& bbox);
+
+        // Transformation
+        std::unique_ptr<BaseMolecule> applyTransformation(const Transformation& transform, const Vec2f position);
+        std::unique_ptr<BaseMolecule> applyTransformation(const Transformation& transform, const Vec3f xyz)
+        {
+            return applyTransformation(transform, Vec2f(xyz.x, xyz.y));
+        };
 
         // calc convex hull
         std::vector<Vec2f> getConvexHull(const Vec2f& min_box) const;

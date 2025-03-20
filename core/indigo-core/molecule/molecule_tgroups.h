@@ -34,6 +34,7 @@ namespace indigo
 {
 
     class BaseMolecule;
+    class Transformation;
 
     class TGroup
     {
