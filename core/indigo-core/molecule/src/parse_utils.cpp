@@ -59,7 +59,7 @@ namespace indigo
     bool is_valid_utf8(const std::string& data)
     {
         int cnt = 0;
-        for (auto ch : data)
+        for (unsigned char ch : data)
         {
             if (cnt == 0)
             {

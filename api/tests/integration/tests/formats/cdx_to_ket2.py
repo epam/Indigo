@@ -45,11 +45,17 @@ for filename in files:
             )
             ket = qmol.json()
 
-    # with open(os.path.join(ref_path, os.path.splitext(filename)[0]) + ".ket", "w") as file:
-    #     file.write(ket)
+    with open(
+        os.path.join(ref_path, os.path.splitext(filename)[0]) + ".ket",
+        "w",
+        encoding="utf-8",
+    ) as file:
+        file.write(ket)
 
     with open(
-        os.path.join(ref_path, os.path.splitext(filename)[0]) + ".ket", "r"
+        os.path.join(ref_path, os.path.splitext(filename)[0]) + ".ket",
+        "r",
+        encoding="utf-8",
     ) as file:
         ket_ref = file.read()
 
