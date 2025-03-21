@@ -1745,7 +1745,7 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
 
             // add paragraph
             if (kto.block().empty())
-                kto.block().push_back(SimpleTextObject::KETTextParagraph());
+                kto.block().emplace_back();
             auto& paragraph = kto.block().back();
 
             if (style_text.size())

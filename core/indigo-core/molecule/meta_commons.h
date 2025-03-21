@@ -307,7 +307,7 @@ namespace indigo
 
         struct KETTextParagraph
         {
-            KETTextParagraph()
+            KETTextParagraph() : font_styles{}, alignment{}, indent{}, line_starts{}
             {
             }
             std::string text;
