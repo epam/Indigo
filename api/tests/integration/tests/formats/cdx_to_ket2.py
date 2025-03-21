@@ -1,4 +1,5 @@
 import difflib
+import io
 import os
 import sys
 
@@ -45,14 +46,14 @@ for filename in files:
             )
             ket = qmol.json()
 
-    with open(
-        os.path.join(ref_path, os.path.splitext(filename)[0]) + ".ket",
-        "w",
-        encoding="utf-8",
-    ) as file:
-        file.write(ket)
+    # with open(
+    #     os.path.join(ref_path, os.path.splitext(filename)[0]) + ".ket",
+    #     "w",
+    #     encoding="utf-8",
+    # ) as file:
+    #     file.write(ket)
 
-    with open(
+    with io.open(
         os.path.join(ref_path, os.path.splitext(filename)[0]) + ".ket",
         "r",
         encoding="utf-8",
