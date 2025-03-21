@@ -525,6 +525,15 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         }
     }
 
+    for (const auto& fragment : _fragment_nodes)
+    {
+        auto& fn = nodes[fragment];
+        if (fn.ext_connections.size() == 0 && fn.connections.size() == 0 && !fn.has_fragment)
+        {
+            atoms.push_back(fragment);
+        }
+    }
+
     for (const auto& bond : bonds)
     {
         _checkFragmentConnection(bond.be.first, bond.id);
@@ -652,6 +661,20 @@ void MoleculeCdxmlLoader::loadMoleculeFromFragment(BaseMolecule& mol, BaseCDXEle
     _initMolecule(mol);
     _parseCDXMLElements(elem, true);
     _parseCollections(mol);
+}
+
+void MoleculeCdxmlLoader::loadBracket(BaseMolecule& mol, BaseCDXElement& elem, const std::unordered_map<int, int>& idToAtomIndex)
+{
+    brackets.clear();
+    _id_to_atom_idx.clear();
+
+    _id_to_atom_idx = idToAtomIndex;
+    _pmol = &mol.asMolecule();
+    CdxmlBracket bracket;
+    _parseBracket(bracket, *elem.firstProperty());
+    brackets.push_back(bracket);
+    for (auto& brk : brackets)
+        _addBracket(mol, brk);
 }
 
 void MoleculeCdxmlLoader::parseCDXMLAttributes(BaseCDXProperty& prop)
@@ -1009,16 +1032,20 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
         int grp_idx = mol.sgroups.addSGroup(bracket.is_superatom ? SGroup::SG_TYPE_SUP : it->second);
         SGroup& sgroup = mol.sgroups.getSGroup(grp_idx);
         std::unordered_set<int> sgroup_atoms;
-        for (auto atom_id : bracket.bracketed_list)
+        for (const auto& atom_id : bracket.bracketed_list)
         {
-            int atom_idx = _id_to_atom_idx.at(atom_id);
-            sgroup.atoms.push(atom_idx);
-            sgroup_atoms.insert(atom_idx);
-            if (bracket.usage == kCDXBracketUsage_MultipleGroup)
+            auto atomIt = _id_to_atom_idx.find(atom_id);
+            if (atomIt != _id_to_atom_idx.end())
             {
-                MultipleGroup& mg = (MultipleGroup&)sgroup;
-                if (mg.multiplier)
-                    mg.parent_atoms.push(atom_idx);
+                int atom_idx = atomIt->second;
+                sgroup.atoms.push(atom_idx);
+                sgroup_atoms.insert(atom_idx);
+                if (bracket.usage == kCDXBracketUsage_MultipleGroup)
+                {
+                    MultipleGroup& mg = (MultipleGroup&)sgroup;
+                    if (mg.multiplier)
+                        mg.parent_atoms.push(atom_idx);
+                }
             }
         }
 
@@ -1464,6 +1491,11 @@ void indigo::MoleculeCdxmlLoader::parseHex(const std::string& hex, std::string& 
     }
 }
 
+std::unordered_map<int, int> MoleculeCdxmlLoader::idToAtomIndexMap() const
+{
+    return _id_to_atom_idx;
+}
+
 void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
 {
     std::vector<AutoInt> r_labels;
@@ -1630,8 +1662,27 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
     case kCDXGraphicType_Symbol: {
         if (symbol_type == kCDXSymbolType_Plus)
         {
-            Rect2f bbox(graph_bbox.first, graph_bbox.second);
-            _pluses.emplace_back(bbox.center());
+            bool atomicCharge = false;
+            for (auto child = elem.firstChildElement(); child->hasContent(); child = child->nextSiblingElement())
+            {
+                if (child->name() == "represent")
+                {
+                    auto attribute = child->findProperty("attribute");
+                    if (attribute->hasContent())
+                    {
+                        if (attribute->value() == "Charge")
+                        {
+                            atomicCharge = true;
+                        }
+                    }
+                }
+            }
+
+            if (!atomicCharge)
+            {
+                Rect2f bbox(graph_bbox.first, graph_bbox.second);
+                _pluses.emplace_back(bbox.center());
+            }
         }
     }
     break;

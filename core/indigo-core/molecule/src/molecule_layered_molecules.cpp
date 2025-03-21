@@ -361,12 +361,12 @@ int LayeredMolecules::addTemplateAtom(const char* text)
     return _proto.addTemplateAtom(text);
 }
 
-bool LayeredMolecules::isTemplateAtom(int idx)
+bool LayeredMolecules::isTemplateAtom(int idx) const
 {
     return _proto.isTemplateAtom(idx);
 }
 
-int LayeredMolecules::getTemplateAtomOccurrence(int idx)
+int LayeredMolecules::getTemplateAtomOccurrence(int idx) const
 {
     return _proto.getTemplateAtomOccurrence(idx);
 }
@@ -492,7 +492,7 @@ void LayeredMolecules::_mergeWithSubmolecule(BaseMolecule& /* bmol */, const Arr
     throw Error("_mergeWithSubmolecule method is not implemented in LayeredMolecules class");
 }
 
-BaseMolecule* LayeredMolecules::neu()
+BaseMolecule* LayeredMolecules::neu() const
 {
     throw Error("neu method is not implemented in LayeredMolecules class");
 }

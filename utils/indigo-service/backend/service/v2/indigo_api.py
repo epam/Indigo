@@ -79,6 +79,7 @@ def indigo_init(options={}):
                 "input-format",
                 "output-content-type",
                 "monomerLibrary",
+                "sequence-type",
             ):
                 continue
             tls.indigo.setOption(option, value)
@@ -306,6 +307,52 @@ def remove_unselected_repeating_units_r(r, selected):
             remove_unselected_repeating_units_m(m, moleculeAtoms)
 
 
+def try_load_macromol(indigo, md, molstr, library, options):
+    sequence_type = options.get("sequence-type")
+    if sequence_type == "PEPTIDE":
+        try:
+            md.struct = indigo.loadSequence(
+                molstr, "PEPTIDE-3-LETTER", library
+            )
+            md.is_rxn = False
+            md.is_query = False
+            return
+        except IndigoException:
+            pass
+    try:
+        md.struct = indigo.loadIdt(molstr, library)
+        md.is_rxn = False
+        md.is_query = False
+        return
+    except IndigoException:
+        pass
+    if sequence_type is not None:
+        try:
+            md.struct = indigo.loadSequence(molstr, sequence_type, library)
+            md.is_rxn = False
+            md.is_query = False
+            return
+        except IndigoException:
+            pass
+    else:
+        try:
+            md.struct = indigo.loadSequence(
+                molstr, "PEPTIDE-3-LETTER", library
+            )
+            md.is_rxn = False
+            md.is_query = False
+            return
+        except IndigoException:
+            pass
+    try:
+        md.struct = indigo.loadHelm(molstr, library)
+    except IndigoException:
+        raise HttpException(
+            "struct data not recognized as molecule, query, reaction or reaction query",
+            400,
+        )
+
+
 def load_moldata(
     molstr,
     indigo=None,
@@ -408,21 +455,10 @@ def load_moldata(
                                 "struct data not recognized as molecule, query, reaction or reaction query",
                                 400,
                             )
-                        else:  # has library try to load IDT and HELM
-                            try:
-                                md.struct = indigo.loadIdt(molstr, library)
-                                md.is_rxn = False
-                            except IndigoException:
-                                try:
-                                    md.struct = indigo.loadHelm(
-                                        molstr, library
-                                    )
-                                except IndigoException:
-                                    raise HttpException(
-                                        "struct data not recognized as molecule, query, reaction or reaction query",
-                                        400,
-                                    )
-
+                        else:  # has library try to load macromolecule
+                            try_load_macromol(
+                                indigo, md, molstr, library, options
+                            )
     return md
 
 

@@ -137,6 +137,26 @@ rxn = indigo.loadReactionFromFile(cdxml_fname)
 renderer.renderToFile(rxn, joinPathPy("out/" + png_fname, __file__))
 print(checkImageSimilarity(png_fname))
 
+print("issue 2810 unnecessary rearrangment")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+fname = "unnecessary_rearrangment_2810"
+png_fname = fname + ".png"
+cdxml_fname = joinPathPy("reactions/%s.cdxml" % fname, __file__)
+rxn = indigo.loadReactionFromFile(cdxml_fname)
+renderer.renderToFile(rxn, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
+
+print("issue 2801 reactions with brackets")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+fname = "reactions_with_brackets_2801"
+png_fname = fname + ".png"
+cdxml_fname = joinPathPy("reactions/%s.cdxml" % fname, __file__)
+rxn = indigo.loadReactionFromFile(cdxml_fname)
+renderer.renderToFile(rxn, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()

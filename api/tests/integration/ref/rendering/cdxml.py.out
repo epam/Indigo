@@ -9,5 +9,9 @@ OC(C(=O)O)(C(C)=O)C
 OC(C(CO)O)C1C(O)N(O)C2=C(C(N=C(N)N2)=O)N1
 OC(C(=CC=CC(=O)O)N)=O
 True
+issue 1686 extra plus
+extra_plus_1686.png rendering status: OK
+issue 2807 missing label
+missing_label_2807.png rendering status: OK
 issue 2778 multiple external connections
 multiple_external_connections_2778.png rendering status: OK

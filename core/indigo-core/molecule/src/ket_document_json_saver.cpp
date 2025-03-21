@@ -248,6 +248,28 @@ void KetDocumentJsonSaver::saveMonomer(JsonWriter& writer, const KetMonomer& mon
     }
     saveStr(writer, "alias", monomer.alias());
     saveStr(writer, "templateId", monomer.templateId());
+    const auto& transform = monomer.getTransformation();
+    if (transform.rotation != 0 || transform.shift.x != 0 || transform.shift.y != 0)
+    {
+        writer.Key("transform");
+        writer.StartObject();
+        if (transform.rotation != 0)
+        {
+            writer.Key("rotation");
+            saveNativeFloat(writer, transform.rotation);
+        }
+        if (transform.shift.x != 0 || transform.shift.y != 0)
+        {
+            writer.Key("shift");
+            writer.StartObject();
+            writer.Key("x");
+            saveNativeFloat(writer, transform.shift.x);
+            writer.Key("y");
+            saveNativeFloat(writer, transform.shift.y);
+            writer.EndObject(); // shift
+        }
+        writer.EndObject(); // transform
+    }
     writer.EndObject();
 }
 
