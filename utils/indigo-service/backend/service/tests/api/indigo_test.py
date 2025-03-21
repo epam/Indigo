@@ -3247,7 +3247,7 @@ M  END
         # test autodetect RNA
         headers, data = self.get_headers(
             {
-                "struct": "ACGTU",
+                "struct": monomer_struct,
                 "options": {
                     "monomerLibrary": monomer_library,
                     "sequence-type": "RNA",
@@ -3776,6 +3776,112 @@ M  END
         # write references
         # with open(file_name, "w") as file:
         #     file.write(result_json)
+
+        # check
+        with open(file_name, "r") as file:
+            ref_json = file.read()
+        self.assertEqual(result_json, ref_json)
+
+    def test_2816(self):
+        lib_file = "monomer_library.ket"
+        lib_path = os.path.join(joinPathPy("structures/", __file__), lib_file)
+        with open(lib_path, "r") as file:
+            monomer_library = file.read()
+        headers, data = self.get_headers(
+            {
+                "struct": "ACDGHKMNRSRUVWY",
+                "options": {
+                    "monomerLibrary": monomer_library,
+                    "sequence-type": "RNA",
+                    "json-use-native-precision": True,
+                },
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result_rna_2816 = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_json = json.loads(result_rna_2816.text)["struct"]
+
+        file_name = os.path.join(joinPathPy("ref/", __file__), "2816_rna.ket")
+        # write references
+        # with open(file_name, "w") as file:
+        #     file.write(result_json)
+        with open(file_name, "r") as file:
+            ref_json = file.read()
+
+        # check
+        self.assertEqual(result_json, ref_json)
+
+        headers, data = self.get_headers(
+            {
+                "struct": "ACDGHKMNRSRUVWY",
+                "options": {
+                    "monomerLibrary": monomer_library,
+                    "sequence-type": "DNA",
+                    "json-use-native-precision": True,
+                },
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result_dna_2816 = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_json = json.loads(result_dna_2816.text)["struct"]
+
+        file_name = os.path.join(joinPathPy("ref/", __file__), "2816_dna.ket")
+        # write references
+        # with open(file_name, "w") as file:
+        #     file.write(result_json)
+        with open(file_name, "r") as file:
+            ref_json = file.read()
+
+        # check
+        self.assertEqual(result_json, ref_json)
+
+        headers, data = self.get_headers(
+            {
+                "struct": "ACDGHIKMNRSRUVWY",
+                "options": {
+                    "monomerLibrary": monomer_library,
+                    "sequence-type": "PEPTIDE",
+                    "json-use-native-precision": True,
+                },
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result_peptide_2816 = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_json = json.loads(result_peptide_2816.text)["struct"]
+
+        file_name = os.path.join(
+            joinPathPy("ref/", __file__), "2816_peptide.ket"
+        )
+        # write references
+        # with open(file_name, "w") as file:
+        #     file.write(result_json)
+        with open(file_name, "r") as file:
+            ref_json = file.read()
+
+        # check
+        self.assertEqual(result_json, ref_json)
+
+        headers, data = self.get_headers(
+            {
+                "struct": "acdghikmnrsruvwy",
+                "options": {
+                    "monomerLibrary": monomer_library,
+                    "sequence-type": "PEPTIDE",
+                    "json-use-native-precision": True,
+                },
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result_peptide_2816 = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_json = json.loads(result_peptide_2816.text)["struct"]
 
         # check
         with open(file_name, "r") as file:
