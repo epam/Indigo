@@ -137,7 +137,7 @@ namespace indigo
         explicit Graph();
         virtual ~Graph();
 
-        VerticesAuto vertices();
+        VerticesAuto vertices() const;
 
         EdgesAuto edges();
 
