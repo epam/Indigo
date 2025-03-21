@@ -23,7 +23,7 @@
 
 using namespace indigo;
 
-TGroup::TGroup() : unresolved(false), ambiguous(false)
+TGroup::TGroup() : unresolved(false), ambiguous(false), mixture(false)
 {
 }
 
@@ -35,6 +35,7 @@ void TGroup::clear()
 {
     unresolved = false;
     ambiguous = false;
+    mixture = false;
 }
 
 int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* /*context*/)

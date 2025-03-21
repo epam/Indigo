@@ -290,7 +290,7 @@ namespace indigo
 
         void clear() override;
 
-        BaseMolecule* neu() override;
+        BaseMolecule* neu() const override;
 
         QueryMolecule& asQueryMolecule() override;
         bool isQueryMolecule() override;
@@ -323,8 +323,8 @@ namespace indigo
         const char* getPseudoAtom(int idx) override;
 
         int addTemplateAtom(const char* text) override;
-        bool isTemplateAtom(int idx) override;
-        int getTemplateAtomOccurrence(int idx) override;
+        bool isTemplateAtom(int idx) const override;
+        int getTemplateAtomOccurrence(int idx) const override;
 
         bool isRSite(int atom_idx) override;
         dword getRSiteBits(int atom_idx) override;

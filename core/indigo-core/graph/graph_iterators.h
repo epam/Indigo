@@ -12,24 +12,24 @@ namespace indigo
     class VertexIter : public AutoIterator
     {
     public:
-        VertexIter(Graph& owner, int idx);
+        VertexIter(const Graph& owner, int idx);
 
         VertexIter& operator++();
 
     private:
-        Graph& _owner;
+        const Graph& _owner;
     };
 
     class VerticesAuto
     {
     public:
-        VerticesAuto(Graph& owner);
+        VerticesAuto(const Graph& owner);
 
         VertexIter begin();
         VertexIter end();
 
     private:
-        Graph& _owner;
+        const Graph& _owner;
     };
 
     class EdgeIter : public AutoIterator
