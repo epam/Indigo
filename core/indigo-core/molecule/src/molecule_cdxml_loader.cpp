@@ -633,6 +633,20 @@ void MoleculeCdxmlLoader::loadMoleculeFromFragment(BaseMolecule& mol, BaseCDXEle
     _parseCollections(mol);
 }
 
+void MoleculeCdxmlLoader::loadBracket(BaseMolecule& mol, BaseCDXElement& elem, const std::unordered_map<int, int>& idToAtomIndex)
+{
+    brackets.clear();
+    _id_to_atom_idx.clear();
+
+    _id_to_atom_idx = idToAtomIndex;
+    _pmol = &mol.asMolecule();
+    CdxmlBracket bracket;
+    _parseBracket(bracket, *elem.firstProperty());
+    brackets.push_back(bracket);
+    for (auto& brk : brackets)
+        _addBracket(mol, brk);
+}
+
 void MoleculeCdxmlLoader::parseCDXMLAttributes(BaseCDXProperty& prop)
 {
     auto cdxml_bbox_lambda = [this](const std::string& data) {
@@ -988,16 +1002,20 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
         int grp_idx = mol.sgroups.addSGroup(bracket.is_superatom ? SGroup::SG_TYPE_SUP : it->second);
         SGroup& sgroup = mol.sgroups.getSGroup(grp_idx);
         std::unordered_set<int> sgroup_atoms;
-        for (auto atom_id : bracket.bracketed_list)
+        for (const auto& atom_id : bracket.bracketed_list)
         {
-            int atom_idx = _id_to_atom_idx.at(atom_id);
-            sgroup.atoms.push(atom_idx);
-            sgroup_atoms.insert(atom_idx);
-            if (bracket.usage == kCDXBracketUsage_MultipleGroup)
+            auto atomIt = _id_to_atom_idx.find(atom_id);
+            if (atomIt != _id_to_atom_idx.end())
             {
-                MultipleGroup& mg = (MultipleGroup&)sgroup;
-                if (mg.multiplier)
-                    mg.parent_atoms.push(atom_idx);
+                int atom_idx = atomIt->second;
+                sgroup.atoms.push(atom_idx);
+                sgroup_atoms.insert(atom_idx);
+                if (bracket.usage == kCDXBracketUsage_MultipleGroup)
+                {
+                    MultipleGroup& mg = (MultipleGroup&)sgroup;
+                    if (mg.multiplier)
+                        mg.parent_atoms.push(atom_idx);
+                }
             }
         }
 
@@ -1441,6 +1459,11 @@ void indigo::MoleculeCdxmlLoader::parseHex(const std::string& hex, std::string& 
             throw std::runtime_error("Invalid hex digit");
         }
     }
+}
+
+std::unordered_map<int, int> MoleculeCdxmlLoader::idToAtomIndexMap() const
+{
+    return _id_to_atom_idx;
 }
 
 void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
