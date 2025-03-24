@@ -57,6 +57,7 @@ namespace indigo
         MonomerTemplate& addMonomerTemplate(const std::string& id, const std::string& monomer_class, IdtAlias idt_alias, bool unresolved = false);
         void addMonomerTemplate(const MonomerTemplate& monomer_template);
 
+        bool hasAmbiguousMonomerTemplateWithId(const std::string& id) const;
         KetAmbiguousMonomerTemplate& addAmbiguousMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name, IdtAlias idt_alias,
                                                                  std::vector<KetAmbiguousMonomerOption>& options);
         std::unique_ptr<KetBaseMonomer>& addAmbiguousMonomer(const std::string& alias, const std::string& template_id);
