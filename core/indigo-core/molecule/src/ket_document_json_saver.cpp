@@ -251,7 +251,7 @@ void KetDocumentJsonSaver::saveMonomer(JsonWriter& writer, const KetMonomer& mon
     const auto& transform = monomer.getTransformation();
     if (transform.rotation != 0 || transform.shift.x != 0 || transform.shift.y != 0)
     {
-        writer.Key("transform");
+        writer.Key("transformation");
         writer.StartObject();
         if (transform.rotation != 0)
         {

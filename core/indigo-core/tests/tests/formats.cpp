@@ -630,6 +630,89 @@ TEST_F(IndigoCoreFormatsTest, wrong_stereochemistry_2739)
     ASSERT_EQ(testData, bondDirections);
 }
 
+TEST_F(IndigoCoreFormatsTest, expand_monomers)
+{
+    FileScanner source_file(dataPath("molecules/basic/peptide_collapsed.ket").c_str());
+    MoleculeJsonLoader loader(source_file);
+    Molecule mol;
+    loader.loadMolecule(mol);
+    float dy = 0.f;
+
+    // Expand monomers using old classes
+    for (auto v_idx = mol.vertexBegin(); v_idx < mol.vertexEnd(); v_idx++)
+    {
+        if (mol.isTemplateAtom(v_idx) && mol.getTemplateAtomDisplayOption(v_idx) != DisplayOption::Expanded)
+        {
+            mol.setTemplateAtomDisplayOption(v_idx, DisplayOption::Expanded);
+            // set transform: rotate PI/2 and shift (0.1, 0.2)
+            mol.setTemplateAtomTransform(v_idx, {static_cast<float>(-M_PI / 4), {0, dy}});
+            dy -= 1.5f;
+        }
+    }
+    // get molecule with expanded monomers
+    auto& expanded_mol = mol.expandedMonomersToAtoms();
+
+    std::string ref_path{dataPath("molecules/basic/peptide_expanded.mol")};
+    // write reference
+    // FileOutput f_ref_out(ref_path.c_str());
+    // MolfileSaver ref_saver(f_ref_out);
+    // ref_saver.mode = MolfileSaver::MODE_3000;
+    // ref_saver.skip_date = true;
+    // ref_saver.saveBaseMolecule(*expanded_mol);
+    // f_ref_out.flush();
+
+    // read reference
+    FileScanner f_ref_in(ref_path.c_str());
+    std::string ref_data;
+    f_ref_in.readAll(ref_data);
+
+    // write to string
+    std::string s_mol;
+    StringOutput s_mol_out(s_mol);
+    MolfileSaver mol_saver(s_mol_out);
+    mol_saver.mode = MolfileSaver::MODE_3000;
+    mol_saver.skip_date = true;
+    mol_saver.saveBaseMolecule(*expanded_mol);
+
+    ASSERT_EQ(ref_data, s_mol);
+
+    // Expand monomer using new classes
+
+    KetDocument document{};
+    KetDocumentJsonLoader doc_loader{};
+    std::string json_str;
+    source_file.seek(0, SEEK_SET); // go to start
+    source_file.readAll(json_str);
+    doc_loader.parseJson(json_str, document);
+
+    dy = 0;
+    for (auto& monomer_id : document.monomersIds())
+    {
+        auto& monomer_ptr = document.getMonomerById(monomer_id);
+        if (monomer_ptr->monomerType() != KetBaseMonomer::MonomerType::Monomer)
+            continue;
+        auto& monomer = static_cast<KetMonomer&>(*monomer_ptr);
+        if (monomer.hasBoolProp("expanded") && monomer.getBoolProp("expanded"))
+            continue;
+        monomer.setBoolProp("expanded", true);
+        // set transform: rotate PI/2 and shift (0.1, 0.2)
+        monomer.setTransformation({static_cast<float>(-M_PI / 4), {0, dy}});
+        dy -= 1.5f;
+    }
+    // get molecule with expanded monomers
+    auto& expanded_doc_mol = document.getBaseMolecule().expandedMonomersToAtoms();
+
+    // write to string
+    std::string s_doc_mol;
+    StringOutput s_doc_mol_out(s_doc_mol);
+    MolfileSaver doc_mol_saver(s_doc_mol_out);
+    doc_mol_saver.mode = MolfileSaver::MODE_3000;
+    doc_mol_saver.skip_date = true;
+    doc_mol_saver.saveBaseMolecule(*expanded_doc_mol);
+
+    ASSERT_EQ(ref_data, s_doc_mol);
+}
+
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif

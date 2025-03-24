@@ -70,7 +70,7 @@ std::unique_ptr<KetBaseMonomer>& KetDocument::addMonomer(const std::string& alia
     return addMonomer(id, alias, template_id);
 }
 
-const std::unique_ptr<KetBaseMonomer>& KetDocument::getMonomerById(const std::string& id) const
+std::unique_ptr<KetBaseMonomer>& KetDocument::getMonomerById(const std::string& id)
 {
     auto it = _monomers.find(id);
     if (it == _monomers.end())
