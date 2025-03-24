@@ -2028,9 +2028,9 @@ void SequenceLoader::loadSequence(KetDocument& document, SeqType seq_type)
         {
             if (ch == ' ' || isdigit(ch))
                 continue;
-            if (islower(ch))
-                ch -= CHAR_SHIFT_CONVERT;
         }
+        if (islower(ch))
+            ch -= CHAR_SHIFT_CONVERT;
 
         if (!isGenBankPept && ch == ' ')
         {

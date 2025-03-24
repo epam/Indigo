@@ -857,6 +857,16 @@ M  END
             const res2 = indigo.convert(peptide_seq_ref, "ket", ad_options);
             assert.equal(res2, peptide_ket_ref.toString());
             ad_options.delete();
+            const bug2816_seq = "ACDGHIKMNRSRUVWY";
+            let ad2_options = new indigo.MapStringString();
+            ad2_options.set("output-content-type", "application/json");
+            ad2_options.set("monomerLibrary", monomersLib);
+            ad2_options.set("sequence-type", "PEPTIDE");
+            const res3 = indigo.convert(bug2816_seq, "ket", ad2_options);
+            // fs.writeFileSync("peptide_2816_ref.ket", peptide_ket);
+            const peptide_2816_ref = fs.readFileSync("peptide_2816_ref.ket");
+            assert.equal(res3, peptide_2816_ref.toString());
+            ad2_options.delete();
         });
     }
 
@@ -922,6 +932,16 @@ M  END
             const res2 = indigo.convert(rna_seq_ref, "sequence", ad_options);
             assert.equal(res2, rna_seq_ref1.toString());
             ad_options.delete();
+            const bug2816_seq = "ACDGHKMNRSRUVWY";
+            let ad2_options = new indigo.MapStringString();
+            ad2_options.set("output-content-type", "application/json");
+            ad2_options.set("monomerLibrary", monomersLib);
+            ad2_options.set("sequence-type", "RNA");
+            const res3 = indigo.convert(bug2816_seq, "ket", ad2_options);
+            // fs.writeFileSync("rna_2816_ref.ket", res3);
+            const rna_2816_ref = fs.readFileSync("rna_2816_ref.ket");
+            assert.equal(res3, rna_2816_ref.toString());
+            ad2_options.delete();
         });
 
     }
@@ -953,6 +973,16 @@ M  END
             const res2 = indigo.convert(dna_seq_ref, "sequence", ad_options);
             assert.equal(res2, dna_seq_ref1.toString());
             ad_options.delete();
+            const bug2816_seq = "ACDGHKMNRSRUVWY";
+            let ad2_options = new indigo.MapStringString();
+            ad2_options.set("output-content-type", "application/json");
+            ad2_options.set("monomerLibrary", monomersLib);
+            ad2_options.set("sequence-type", "RNA");
+            const res3 = indigo.convert(bug2816_seq, "ket", ad2_options);
+            // fs.writeFileSync("dna_2816_ref.ket", res3);
+            const dna_2816_ref = fs.readFileSync("dna_2816_ref.ket");
+            assert.equal(res3, dna_2816_ref.toString());
+            ad2_options.delete();
         });
 
     }

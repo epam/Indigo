@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iomanip>
 #include <map>
 #include <set>
@@ -459,6 +460,20 @@ namespace indigo
                     {
                         print_js("try as PEPTIDE-3-LETTER");
                         objectId = indigoLoadSequenceFromString(data.c_str(), "PEPTIDE-3-LETTER", library);
+                        if (objectId >= 0)
+                        {
+                            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                        }
+                    }
+                    auto is_upper =
+                        std::all_of(sequence_type->second.begin(), sequence_type->second.end(), [](int ch) { return !std::isalpha(ch) || std::isupper(ch); });
+                    auto is_lower =
+                        std::all_of(sequence_type->second.begin(), sequence_type->second.end(), [](int ch) { return !std::isalpha(ch) || std::islower(ch); });
+                    if (sequence_type != options.end() && (is_upper || is_lower))
+                    {
+                        std::string msg = "try as " + sequence_type->second;
+                        print_js(msg.c_str());
+                        objectId = indigoLoadSequenceFromString(data.c_str(), sequence_type->second.c_str(), library);
                         if (objectId >= 0)
                         {
                             return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
