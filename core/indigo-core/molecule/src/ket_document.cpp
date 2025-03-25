@@ -100,6 +100,13 @@ void KetDocument::addMonomerTemplate(const MonomerTemplate& monomer_template)
     it.first->second.copy(monomer_template);
 }
 
+bool KetDocument::hasAmbiguousMonomerTemplateWithId(const std::string& id) const
+{
+    if (_ambiguous_templates.find(id) == _ambiguous_templates.end())
+        return false;
+    return true;
+}
+
 KetAmbiguousMonomerTemplate& KetDocument::addAmbiguousMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name,
                                                                       IdtAlias idt_alias, std::vector<KetAmbiguousMonomerOption>& options)
 {
