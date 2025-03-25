@@ -635,7 +635,7 @@ void BaseMolecule::flipBond(int atom_parent, int atom_from, int atom_to)
 
     // Clear bond direction because sterecenters
     // should mark bond directions properly
-    setBondDirection(new_bond_idx, 0);
+    setBondDirection(new_bond_idx, BOND_DIRECTION_MONO);
 
     // sgroups
 
@@ -808,7 +808,7 @@ void BaseMolecule::removeAtoms(const Array<int>& indices)
             b_idx = vertex.neiEdge(j);
             unhighlightBond(b_idx);
             if (getBondDirection(b_idx) > 0)
-                setBondDirection(b_idx, 0);
+                setBondDirection(b_idx, BOND_DIRECTION_MONO);
         }
     }
 
@@ -880,7 +880,7 @@ void BaseMolecule::removeBonds(const Array<int>& indices)
     {
         unhighlightBond(indices[i]);
         if (getBondDirection(indices[i]) > 0)
-            setBondDirection(indices[i], 0);
+            setBondDirection(indices[i], BOND_DIRECTION_MONO);
         removeEdge(indices[i]);
     }
     updateEditRevision();
@@ -4071,7 +4071,7 @@ int BaseMolecule::getBondDirection2(int center_idx, int nei_idx)
 
 void BaseMolecule::setBondDirection(int idx, int dir)
 {
-    _bond_directions.expandFill(idx + 1, 0);
+    _bond_directions.expandFill(idx + 1, BOND_DIRECTION_MONO);
     _bond_directions[idx] = dir;
 }
 
@@ -5159,12 +5159,20 @@ const int BaseMolecule::getTemplateAtomSeqid(int idx)
     return res;
 }
 
-const DisplayOption BaseMolecule::getTemplateAtomDisplayOption(int idx)
+const DisplayOption BaseMolecule::getTemplateAtomDisplayOption(int idx) const
 {
     int template_occur_idx = getTemplateAtomOccurrence(idx);
-    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    const _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
 
     return occur.contracted;
+}
+
+const Transformation& BaseMolecule::getTemplateAtomTransform(int idx) const
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    const _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+
+    return occur.transform;
 }
 
 void BaseMolecule::renameTemplateAtom(int idx, const char* text)
@@ -5221,6 +5229,191 @@ void BaseMolecule::setTemplateAtomDisplayOption(int idx, DisplayOption option)
     _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
     occur.contracted = option;
     updateEditRevision();
+}
+
+void BaseMolecule::setTemplateAtomTransform(int idx, const Transformation& transform)
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    occur.transform = transform;
+    updateEditRevision();
+}
+
+int BaseMolecule::getExpandedMonomerCount() const
+{
+    int count = 0;
+    for (auto vertex : vertices())
+    {
+        if (isTemplateAtom(vertex) && getTemplateAtomDisplayOption(vertex) == DisplayOption::Expanded)
+            count++;
+    }
+    return count;
+}
+
+std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
+{
+    thread_local static std::unique_ptr<BaseMolecule> result;
+    thread_local static int edit_revision = -1;
+    if (edit_revision == _edit_revision)
+        return result;
+    result.reset(neu());
+    edit_revision = _edit_revision;
+    result->clone(*this);
+    std::list<int> att_indexes_to_remove;
+    for (int atom_idx = result->vertexBegin(); atom_idx != result->vertexEnd(); atom_idx = result->vertexNext(atom_idx))
+    {
+        if (!result->isTemplateAtom(atom_idx))
+            continue;
+
+        int template_occur_idx = result->getTemplateAtomOccurrence(atom_idx);
+        _TemplateOccurrence& occur = result->_template_occurrences.at(template_occur_idx);
+        if (occur.contracted != DisplayOption::Expanded)
+            continue;
+
+        int template_idx = occur.template_idx;
+        if (template_idx == -1)
+            continue;
+
+        auto& tgroup = result->tgroups.getTGroup(template_idx);
+        if (tgroup.unresolved)
+            continue;
+
+        auto monomer_mol = tgroup.fragment->applyTransformation(getTemplateAtomTransform(atom_idx), result->getAtomXyz(atom_idx));
+        auto& monomer_sgroups = monomer_mol->sgroups;
+        std::map<int, int> attached_atom;
+        Array<int> atoms_to_remove;
+        // Attachment points stored in SuperAtom SGroups
+        for (int j = monomer_sgroups.begin(); j != monomer_sgroups.end(); j = monomer_sgroups.next(j))
+        {
+            SGroup& sg = monomer_sgroups.getSGroup(j);
+            if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+            {
+                auto& sa = static_cast<Superatom&>(sg);
+                if (sa.attachment_points.size())
+                {
+                    std::map<std::string, int> sorted_attachment_points; // AP id to index in attachment points
+                    for (int i = sa.attachment_points.begin(); i != sa.attachment_points.end(); i = sa.attachment_points.next(i))
+                    {
+                        auto& atp = sa.attachment_points[i];
+                        std::string atp_id_str(atp.apid.ptr());
+                        if (atp_id_str.size())
+                            sorted_attachment_points.insert(std::make_pair(atp_id_str, i));
+                    }
+                    // for all used AP mark leaving atom to remove, all leaving atom are leafs - so bonds will be removed automatically
+                    auto& indexes = result->template_attachment_indexes.at(atom_idx);
+                    for (int att_idx = 0; att_idx < indexes.size(); att_idx++)
+                    {
+                        auto& ap = result->template_attachment_points.at(indexes.at(att_idx));
+                        assert(ap.ap_occur_idx == atom_idx);
+                        auto it = sorted_attachment_points.find(ap.ap_id.ptr());
+                        if (it != sorted_attachment_points.end())
+                        {
+                            auto& atp = sa.attachment_points[it->second];
+                            attached_atom.insert(std::make_pair(ap.ap_aidx, atp.aidx)); // molecule atom ap.ap_aidx is attached to atp.aidx in monomer
+                            atoms_to_remove.push(atp.lvidx);
+                        }
+                        result->template_attachment_points.remove(indexes.at(att_idx));
+                    }
+                    att_indexes_to_remove.emplace_back(atom_idx);
+                }
+                monomer_sgroups.remove(j);
+            }
+        }
+        Array<int> atom_map;
+        result->mergeWithMolecule(*monomer_mol, &atom_map);
+        // update atom indexes
+        for (int* i = atoms_to_remove.begin(); i != atoms_to_remove.end(); i++)
+        {
+            *i = atom_map[*i];
+        }
+        // add bonds from template atom neighbors to attachment points
+        const Vertex& v = result->getVertex(atom_idx);
+        Array<int> bonds_to_delete;
+        for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+        {
+            int edge_idx = result->findEdgeIndex(atom_idx, v.neiVertex(k));
+            if (edge_idx >= 0 && result->getBondOrder(edge_idx) == BOND_SINGLE)
+            {
+                int a1 = result->getEdge(edge_idx).beg;
+                int a2 = result->getEdge(edge_idx).end;
+                int other = a1 == atom_idx ? a2 : a1;
+                auto it = attached_atom.find(other);
+                if (it != attached_atom.end())
+                {
+                    int ap_new_idx = atom_map[it->second];
+                    int new_bond = result->addBond_Silent(ap_new_idx, other, BOND_SINGLE);
+                    result->setBondDirection(new_bond, BOND_DIRECTION_MONO);
+                    // fix neighbor template_attachment_points
+                    if (other < result->template_attachment_indexes.size())
+                    {
+                        auto& indexes = result->template_attachment_indexes.at(other);
+                        for (int att_idx = 0; att_idx < indexes.size(); att_idx++)
+                        {
+                            auto& ap = result->template_attachment_points.at(indexes.at(att_idx));
+                            if (ap.ap_aidx == atom_idx)
+                                ap.ap_aidx = ap_new_idx;
+                        }
+                    }
+                }
+                bonds_to_delete.push(edge_idx);
+            }
+        }
+        // remove template atom and all bonds to it
+        result->removeBonds(bonds_to_delete);
+        result->removeAtom(atom_idx);
+        // remove leaved atoms
+        result->removeAtoms(atoms_to_remove);
+    }
+    att_indexes_to_remove.sort(std::greater<int>());
+    for (int idx : att_indexes_to_remove)
+        result->template_attachment_indexes.remove(idx);
+    return result;
+}
+
+/*
+ *  Returns the copy of molecule with next coordinate transformation:
+ *  1) translate coords so that the center of bounding box is at the point 'position'
+ *  2) rotate around the center of bounding box by angle 'rotation'
+ *  3) shift by vector 'shift'
+ */
+std::unique_ptr<BaseMolecule> BaseMolecule::applyTransformation(const Transformation& transform, const Vec2f position)
+{
+    BaseMolecule* result = neu();
+    result->clone_KeepIndices(*this);
+    Rect2f bbox;
+    result->getBoundingBox(bbox);
+    Transform3f matr;
+    if (false) // stright transformation
+    {
+        matr.identity();                  // init matrix with 1-s on diagonal
+        matr.translateInv(bbox.center()); // translate to move bounding center to (0,0)
+        if (transform.rotation != 0)
+        {
+            Transform3f rot;
+            rot.rotateZ(transform.rotation); // rotate around Z axis
+            matr.transform(rot);             // rotate after translation
+        }
+    }
+    else // 2DO: check if this is correct. Also add comment to translateLocal
+    {
+        if (transform.rotation == 0)
+            matr.identity();
+        else
+            matr.rotationZ(transform.rotation);
+        matr.translateLocalInv(bbox.center());
+    }
+    matr.translate(position); // translate to move bounding center to position point
+    if (transform.shift.x != 0 || transform.shift.y != 0)
+    {
+        matr.translate(transform.shift); // apply shift
+    }
+    for (auto atom_idx : result->vertices())
+    {
+        Vec3f& p = result->getAtomXyz(atom_idx);
+        p.transformPoint(matr);
+    }
+
+    return std::unique_ptr<BaseMolecule>{result};
 }
 
 #ifdef _MSC_VER

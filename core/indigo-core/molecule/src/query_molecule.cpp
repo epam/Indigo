@@ -994,7 +994,7 @@ int QueryMolecule::addTemplateAtom(const char* alias)
     return addAtom(atom.release());
 }
 
-bool QueryMolecule::isTemplateAtom(int idx)
+bool QueryMolecule::isTemplateAtom(int idx) const
 {
     // This is dirty hack; however, it is legal here, as template atoms
     // can not be present in deep query trees due to Molfile and SMILES
@@ -1016,7 +1016,7 @@ bool QueryMolecule::isTemplateAtom(int idx)
     return false;
 }
 
-int QueryMolecule::getTemplateAtomOccurrence(int idx)
+int QueryMolecule::getTemplateAtomOccurrence(int idx) const
 {
     // see the comment above in isTemplateAtom()
     if (!isTemplateAtom(idx))
@@ -2214,7 +2214,7 @@ void QueryMolecule::clear()
     updateEditRevision();
 }
 
-BaseMolecule* QueryMolecule::neu()
+BaseMolecule* QueryMolecule::neu() const
 {
     return new QueryMolecule();
 }

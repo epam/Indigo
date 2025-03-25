@@ -319,6 +319,14 @@ def try_load_macromol(indigo, md, molstr, library, options):
             return
         except IndigoException:
             pass
+    if sequence_type is not None and (molstr.isupper() or molstr.islower()):
+        try:
+            md.struct = indigo.loadSequence(molstr, sequence_type, library)
+            md.is_rxn = False
+            md.is_query = False
+            return
+        except IndigoException:
+            pass
     try:
         md.struct = indigo.loadIdt(molstr, library)
         md.is_rxn = False

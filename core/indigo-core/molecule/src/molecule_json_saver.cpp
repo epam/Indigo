@@ -1727,6 +1727,29 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                     writer.Bool(display == DisplayOption::Expanded);
                 }
 
+                auto transform = mol->getTemplateAtomTransform(i);
+                if (transform.rotation != 0 || transform.shift.x != 0 || transform.shift.y != 0)
+                {
+                    writer.Key("transform");
+                    writer.StartObject();
+                    if (transform.rotation != 0)
+                    {
+                        writer.Key("rotation");
+                        writeFloat(writer, transform.rotation);
+                    }
+                    if (transform.shift.x != 0 || transform.shift.y != 0)
+                    {
+                        writer.Key("shift");
+                        writer.StartObject();
+                        writer.Key("x");
+                        writeFloat(writer, transform.shift.x);
+                        writer.Key("y");
+                        writeFloat(writer, transform.shift.y);
+                        writer.EndObject(); // shift
+                    }
+                    writer.EndObject(); // transform
+                }
+
                 // find template
                 writer.Key("alias");
                 auto alias = mol->getTemplateAtom(i);

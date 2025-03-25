@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE CDXML SYSTEM "https://static.chemistry.revvitycloud.com/cdxml/CDXML.dtd" >
+<CDXML CreationProgram="ChemDraw 23.1.1.3" Name="extra_plus.cdxml" BoundingBox="68.18 73.94 120.14 102.89" WindowPosition="0 0" WindowSize="-2147483648 0" WindowIsZoomed="yes" FractionalWidths="yes" InterpretChemically="yes" ShowAtomQuery="yes" ShowAtomStereo="no" ShowAtomEnhancedStereo="yes" ShowAtomNumber="no" ShowResidueID="no" ShowBondQuery="yes" ShowBondRxn="yes" ShowBondStereo="no" ShowTerminalCarbonLabels="no" ShowNonTerminalCarbonLabels="no" HideImplicitHydrogens="no" LabelFont="3" LabelSize="10" LabelFace="96" CaptionFont="3" CaptionSize="10" HashSpacing="2.50" MarginWidth="1.60" LineWidth="0.60" BoldWidth="2" BondLength="14.40" BondSpacing="18" ChainAngle="120" LabelJustification="Auto" CaptionJustification="Left" AminoAcidTermini="HOH" ShowSequenceTermini="yes" ShowSequenceBonds="yes" ShowSequenceUnlinkedBranches="no" ResidueWrapCount="40" ResidueBlockCount="10" PrintMargins="36 36 36 36" MacPrintInfo="0003000001200120000000000B6608A0FF84FF880BE309180367052703FC0002000001200120000000000B6608A0000100000064000000010001010100000001270F000100010000000000000000000000000002001901900000000000600000000000000000000100000000000000000000000000000000" ChemPropName="" ChemPropFormula="Chemical Formula: " ChemPropExactMass="Exact Mass: " ChemPropMolWt="Molecular Weight: " ChemPropMOverZ="m/z: " ChemPropAnalysis="Elemental Analysis: " ChemPropBoilingPt="Boiling Point: " ChemPropMeltingPt="Melting Point: " ChemPropCritTemp="Critical Temp: " ChemPropCritPres="Critical Pres: " ChemPropCritVol="Critical Vol: " ChemPropGibbs="Gibbs Energy: " ChemPropLogP="Log P: " ChemPropMR="MR: " ChemPropHenry="Henry&apos;s Law: " ChemPropEForm="Heat of Form: " ChemProptPSA="tPSA: " ChemPropCLogP="CLogP: " ChemPropCMR="CMR: " ChemPropLogS="LogS: " ChemPropPKa="pKa: " ChemPropID="" ChemPropFragmentLabel="" color="0" bgcolor="1" RxnAutonumberStart="1" RxnAutonumberConditions="no" RxnAutonumberStyle="Roman" RxnAutonumberFormat="(#)">
+	<colortable>
+		<color r="1" g="1" b="1"/>
+		<color r="0" g="0" b="0"/>
+		<color r="1" g="0" b="0"/>
+		<color r="1" g="1" b="0"/>
+		<color r="0" g="1" b="0"/>
+		<color r="0" g="1" b="1"/>
+		<color r="0" g="0" b="1"/>
+		<color r="1" g="0" b="1"/>
+	</colortable>
+	<fonttable>
+		<font id="3" charset="iso-8859-1" name="Arial"/>
+	</fonttable>
+	<page id="2100924158" BoundingBox="0 0 540 719.75" HeaderPosition="36" FooterPosition="36" PrintTrimMarks="yes" HeightPages="1" WidthPages="1">
+		<fragment id="2100924143" BoundingBox="68.18 73.94 93.42 102.89" Z="16">
+			<n id="2100924142" p="68.33 100.10" Z="15" color="8" AS="N" AtomID="1"/>
+			<n id="2100924144" p="80.80 92.90" Z="17" color="8" Element="16" NumHydrogens="0" Charge="1" NeedsClean="yes" AS="N" AtomID="2">
+				<t p="77.47 96.80" BoundingBox="77.47 88.34 84.14 96.90" color="8" LabelJustification="Left" LabelAlignment="Below">
+					<s font="3" size="10" color="8" face="96">S</s>
+				</t>
+			</n>
+			<n id="2100924146" p="93.27 100.10" Z="19" color="8" AS="N" AtomID="3"/>
+			<n id="2100924148" p="80.80 78.50" Z="21" color="8" Element="8" NumHydrogens="0" NeedsClean="yes" AS="N" AtomID="4">
+				<t p="76.91 82.40" BoundingBox="76.91 73.94 84.69 82.50" color="8" LabelJustification="Left">
+					<s font="3" size="10" color="8" face="96">O</s>
+				</t>
+			</n>
+			<n id="2100924150" p="93.27 85.70" Z="23" color="8" AS="N" AtomID="5"/>
+			<b id="2100924145" Z="18" color="8" B="2100924142" E="2100924144" BS="N"/>
+			<b id="2100924147" Z="20" color="8" B="2100924144" E="2100924146" BS="N"/>
+			<b id="2100924149" Z="22" color="8" B="2100924144" E="2100924148" Order="2" BS="N"/>
+			<b id="2100924151" Z="24" color="8" B="2100924144" E="2100924150" BS="N"/>
+			<graphic id="2100924152" BoundingBox="80.89 100.92 73.39 100.92" Z="25" color="8" GraphicType="Symbol" SymbolType="Plus">
+				<represent attribute="Charge" object="2100924144"/>
+			</graphic>
+		</fragment>
+		<fragment id="2100924155" BoundingBox="105.33 89.49 120.14 101.15" Z="27">
+			<n id="2100924154" p="108.94 94.70" Z="26" color="8" Element="17" NumHydrogens="0" Charge="-1" NeedsClean="yes" AS="N" AtomID="6">
+				<t p="105.33 98.60" BoundingBox="105.33 89.65 114.77 101.15" color="8" LabelJustification="Left" LabelLineHeight="auto" LineHeight="auto" LabelAlignment="Left">
+					<s font="3" size="10" color="8">Cl</s>
+				</t>
+			</n>
+			<graphic id="2100924156" BoundingBox="118.17 90.24 110.67 90.24" Z="28" color="8" GraphicType="Symbol" SymbolType="Minus">
+				<represent attribute="Charge" object="2100924154"/>
+			</graphic>
+		</fragment>
+	</page>
+</CDXML>

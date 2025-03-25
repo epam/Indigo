@@ -1560,10 +1560,13 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
         else if (monomer_class == MonomerClass::Base)
         {
             if (!is_mixture && STANDARD_MIXED_BASES_TO_ALIAS.count(aliases) > 0)
-                if (!is_mixture && no_counts)
-                    monomer_alias = STANDARD_MIXED_BASES_TO_ALIAS.at(aliases);
-                else
-                    monomer_alias = STANDARD_MIXED_BASES_TO_ALIAS.at(aliases) + std::to_string(_unknown_ambiguous_count++);
+            {
+                monomer_alias = STANDARD_MIXED_BASES_TO_ALIAS.at(aliases);
+                if (monomer_alias[0] == 'r')
+                    monomer_alias.erase(0, 1);
+                if (is_mixture || !no_counts)
+                    monomer_alias += std::to_string(_unknown_ambiguous_count++);
+            }
             else
                 monomer_alias = "Var" + std::to_string(_unknown_ambiguous_count++);
         }
@@ -2028,9 +2031,9 @@ void SequenceLoader::loadSequence(KetDocument& document, SeqType seq_type)
         {
             if (ch == ' ' || isdigit(ch))
                 continue;
-            if (islower(ch))
-                ch -= CHAR_SHIFT_CONVERT;
         }
+        if (islower(ch))
+            ch -= CHAR_SHIFT_CONVERT;
 
         if (!isGenBankPept && ch == ' ')
         {

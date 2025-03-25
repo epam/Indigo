@@ -70,15 +70,19 @@ idt_data = {
 
 for filename in sorted(idt_data.keys()):
     mol = indigo.loadKetDocumentFromFile(os.path.join(ref, filename + ".ket"))
-    idt = mol.idt(lib)
-    idt_ref = idt_data[filename]
-    if idt_ref == idt:
-        print(filename + ".ket:SUCCEED")
-    else:
-        print(
-            "%s.idt FAILED : expected '%s', got '%s'"
-            % (filename, idt_ref, idt)
-        )
+    try:
+        idt = mol.idt(lib)
+        idt_ref = idt_data[filename]
+        if idt_ref == idt:
+            print(filename + ".ket:SUCCEED")
+        else:
+            print(
+                "%s.idt FAILED : expected '%s', got '%s'"
+                % (filename, idt_ref, idt)
+            )
+    except IndigoException as e:
+        text = getIndigoExceptionText(e)
+        print(filename + ".ket:FAILED - %s" % text)
 
 idt_errors = {
     "ket-to-idt-r1r1connection": "Sequence saver: Cannot save in IDT format - nonstandard connection found.",

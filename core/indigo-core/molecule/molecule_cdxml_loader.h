@@ -805,6 +805,7 @@ namespace indigo
 
         void loadMolecule(BaseMolecule& mol, bool load_arrows = false);
         void loadMoleculeFromFragment(BaseMolecule& mol, BaseCDXElement& elem);
+        void loadBracket(BaseMolecule& mol, BaseCDXElement& elem, const std::unordered_map<int, int>& idToAtomIndex);
 
         static void applyDispatcher(BaseCDXProperty& prop, const std::unordered_map<std::string, std::function<void(const std::string&)>>& dispatcher);
         void parseCDXMLAttributes(BaseCDXProperty& prop);
@@ -920,6 +921,8 @@ namespace indigo
 
         void parseColorTable(BaseCDXElement& elem);
         void parseFontTable(BaseCDXElement& elem);
+
+        std::unordered_map<int, int> idToAtomIndexMap() const;
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
