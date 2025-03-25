@@ -516,15 +516,18 @@ void MoleculeCdxmlSaver::addColorTable(const char* color)
     }
 }
 
-void MoleculeCdxmlSaver::addColorToTable(int id, int r, int g, int b)
+void MoleculeCdxmlSaver::addColorToTable(int id, float r, float g, float b)
 {
-    XMLElement* color = _doc->NewElement("color");
-    _colortable->LinkEndChild(color);
+    XMLElement* cel = _doc->NewElement("color");
+    _colortable->LinkEndChild(cel);
     if (id > 0)
-        color->SetAttribute("id", id);
-    color->SetAttribute("r", r);
-    color->SetAttribute("g", g);
-    color->SetAttribute("b", b);
+        cel->SetAttribute("id", id);
+    cel->SetAttribute("r", r);
+    cel->SetAttribute("g", g);
+    cel->SetAttribute("b", b);
+    uint32_t color = ((uint32_t)(r * 0xFF) << 16) + ((uint32_t)(g * 0xFF) << 8) + (uint32_t)b * 0xFF;
+    _color_table_map.emplace(color, (int)_color_table.size());
+    _color_table.push_back(color);
 }
 
 void MoleculeCdxmlSaver::addDefaultFontTable()
@@ -1485,8 +1488,8 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
             ecenter.y = -ecenter.y;
             min_axis.y = -min_axis.y;
             maj_axis.y = -maj_axis.y;
-            Rect2f bbox_new(ecenter, bbox.rightTop());
-            bbox.copy(bbox_new);
+            //Rect2f bbox_new(ecenter, bbox.rightTop());
+            //bbox.copy(bbox_new);
             attrs.insert("Center3D", std::to_string(ecenter.x) + " " + std::to_string(ecenter.y));
             attrs.insert("MajorAxisEnd3D", std::to_string(maj_axis.x) + " " + std::to_string(maj_axis.y));
             attrs.insert("MinorAxisEnd3D", std::to_string(min_axis.x) + " " + std::to_string(min_axis.y));
@@ -1505,17 +1508,30 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
     break;
     case SimpleTextObject::CID: {
         const SimpleTextObject& ko = static_cast<const SimpleTextObject&>(cp_obj);
-        // double text_offset_y = 0;
         int font_size = static_cast<int>(KDefaultFontSize);
+        int color_index = -1;
         CDXMLFontStyle font_face(0);
         for (auto& text_item : ko.block())
         {
             bool is_first_index = true;
             size_t first_index = 0;
             size_t second_index = 0;
-            // double text_offset_x = 0;
             FONT_STYLE_SET current_styles;
-            Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().top());
+            Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().bottom());
+            auto align = text_item.alignment.has_value() ? text_item.alignment : ko.alignment();
+            if (align.has_value())
+            {
+                switch (align.value())
+                {
+                case SimpleTextObject::TextAlignment::ECenter:
+                    text_origin.x = ko.boundingBox().center().x;
+                    break;
+                case SimpleTextObject::TextAlignment::ERight:
+                    text_origin.x = ko.boundingBox().right();
+                    break;
+                }
+            }
+
             std::string pos_str = std::to_string(_bond_length * text_origin.x) + " " + std::to_string(-_bond_length * text_origin.y);
             std::string box_str = std::to_string(_bond_length * ko.boundingBox().left()) + " " + std::to_string(-_bond_length * ko.boundingBox().top()) + " " +
                                   std::to_string(_bond_length * ko.boundingBox().right()) + " " + std::to_string(-_bond_length * ko.boundingBox().bottom());
@@ -1524,7 +1540,38 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
             t->SetAttribute("id", id);
             t->SetAttribute("p", pos_str.c_str());
             t->SetAttribute("BoundingBox", box_str.c_str());
-            t->SetAttribute("Justification", "Left");
+            t->SetAttribute("LineHeight", "auto");
+            if (align.has_value())
+            {
+                switch (align.value())
+                {
+                case SimpleTextObject::TextAlignment::ELeft:
+                    t->SetAttribute("Justification", "Left");
+                    break;
+                case SimpleTextObject::TextAlignment::ECenter:
+                    t->SetAttribute("Justification", "Center");
+                    break;
+                case SimpleTextObject::TextAlignment::ERight:
+                    t->SetAttribute("Justification", "Right");
+                    break;
+                case SimpleTextObject::TextAlignment::EFull:
+                    t->SetAttribute("Justification", "Full");
+                    break;
+                }
+            }
+            if (text_item.line_starts.has_value() && text_item.line_starts.value().size())
+            {
+                auto& line_starts = text_item.line_starts.value();
+                std::string line_starts_str;
+                for (auto ls : line_starts)
+                {
+                    if (!line_starts_str.empty())
+                        line_starts_str += " ";
+                    line_starts_str += std::to_string(ls);
+                }
+                t->SetAttribute("LineStarts", line_starts_str.c_str());
+                t->SetAttribute("WordWrapWidth", ko.boundingBox().width() * _bond_length);
+            }
             t->SetAttribute("InterpretChemically", "no");
             for (auto& kvp : text_item.font_styles)
             {
@@ -1537,10 +1584,6 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
                 }
                 second_index = kvp.first;
 
-                // std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
-                // std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
-
-                // auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(text_item.text).substr(first_index, second_index - first_index));
                 auto sub_text = text_item.text.substr(first_index, second_index - first_index);
                 for (const auto& text_style : current_styles)
                 {
@@ -1567,8 +1610,27 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
                             font_size = sz_val.value();
                     }
                     break;
+                    case KETFontStyle::FontStyle::EColor: {
+                        auto col_val = text_style.first.getUInt();
+                        if (text_style.second && col_val.has_value())
+                        {
+                            uint32_t color = col_val.value();
+                            auto it_color = _color_table_map.find(color);
+                            if (it_color == _color_table_map.end())
+                            {
+                                color_index = (int)_color_table.size();
+                                _color_table_map.emplace(color, color_index);
+                                _color_table.push_back(color);
+                            }
+                            else
+                                color_index = it_color->second;
+                            color_index += 2;
+                        }
+                        else
+                            color_index = -1;
+                    }
+                    break;
                     default:
-                        font_size = text_style.second ? text_style.first : static_cast<int>(KDefaultFontSize);
                         break;
                     }
                 }
@@ -1578,6 +1640,8 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
                 s->SetAttribute("font", 4);
                 s->SetAttribute("size", font_size / kCDXMLFontSizeMultiplier);
                 s->SetAttribute("face", font_face.face);
+                if (color_index >= 0)
+                    s->SetAttribute("color", color_index);
                 if (font_face.is_superscript)
                 {
                     s->SetAttribute("face", KCDXMLFontStyleSuperscript);
@@ -1990,22 +2054,17 @@ void MoleculeCdxmlSaver::_validate(BaseMolecule& bmol)
 void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
 {
     _validate(bmol);
-    Vec2f min_coord, max_coord;
-
+    Rect2f bbox;
     _id = 0;
-
     if (bmol.have_xyz)
-    {
-        bmol.getBoundingBox(min_coord, max_coord);
-    }
+        bmol.getBoundingBox(bbox);
 
     for (int i = 0; i < bmol.meta().metaData().size(); ++i)
     {
         Rect2f bb;
         auto& mo = *bmol.meta().metaData()[i];
         mo.getBoundingBox(bb);
-        min_coord.min(bb.leftBottom());
-        max_coord.max(bb.rightTop());
+        bbox.extend(bb);
     }
 
     beginDocument(NULL);
@@ -2013,7 +2072,7 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
     addDefaultColorTable();
     beginPage(NULL);
 
-    Vec2f offset(-min_coord.x, -max_coord.y);
+    Vec2f offset(-bbox.left(), -bbox.top());
     saveMoleculeFragment(bmol, offset, 1);
     for (int i = 1; i <= bmol.rgroups.getRGroupCount(); i++)
     {
@@ -2030,7 +2089,7 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
 
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
-    out.printf("%f %f %f %f", _scale * min_coord.x, -_scale * min_coord.y, _scale * max_coord.x, -_scale * max_coord.y);
+    out.printf("%f %f %f %f", _scale * bbox.left(), -_scale * bbox.top(), _scale * bbox.right(), -_scale * bbox.bottom());
     buf.push(0);
     _page->SetAttribute("BoundingBox", buf.ptr());
     endPage();

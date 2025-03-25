@@ -931,7 +931,6 @@ namespace indigo
         std::vector<SimpleTextObject> ket_text_objects;
         std::map<int, std::string> font_table;
         std::vector<uint32_t> color_table;
-        std::vector<CdxmlText> text_objects;
 
     protected:
         void _initMolecule(BaseMolecule& mol);

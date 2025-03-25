@@ -431,7 +431,7 @@ void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
     _id_to_bond_index.clear();
     _fragment_nodes.clear();
     _images.clear();
-    text_objects.clear();
+    ket_text_objects.clear();
     _pluses.clear();
     brackets.clear();
     _pmol = NULL;
@@ -468,6 +468,7 @@ void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     int arrows_count = mol.meta().getMetaCount(ReactionArrowObject::CID);
     if (arrows_count && !load_arrows && _has_scheme)
         throw Error("Not a molecule. Found %d arrows.", arrows_count);
+
 }
 
 void MoleculeCdxmlLoader::_checkFragmentConnection(int node_id, int bond_id)
@@ -545,8 +546,6 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
     for (auto& brk : brackets)
         _addBracket(mol, brk);
 
-    for (const auto& to : text_objects)
-        mol.meta().addMetaObject(new SimpleTextObject(to.bbox, to.text));
     for (const auto& kto : ket_text_objects)
         mol.meta().addMetaObject(new SimpleTextObject(kto));
 
@@ -587,8 +586,18 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
 
     for (const auto& prim : _primitives)
     {
-        if (prim.second == kCDXGraphicType_Rectangle)
+        switch (prim.second)
+        {
+        case kCDXGraphicType_Line:
+            mol.meta().addMetaObject(new SimpleGraphicsObject(SimpleGraphicsObject::ELine, prim.first));
+            break;
+        case kCDXGraphicType_Rectangle:
             mol.meta().addMetaObject(new SimpleGraphicsObject(SimpleGraphicsObject::ERectangle, prim.first));
+            break;
+        case kCDXGraphicType_Oval:
+            mol.meta().addMetaObject(new SimpleGraphicsObject(SimpleGraphicsObject::EEllipse, prim.first));
+            break;
+        }
     }
 }
 
@@ -1559,40 +1568,48 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
     case kCDXGraphicType_Undefined:
         break;
     case kCDXGraphicType_Line: {
-        if (arrow_type && superseded_id == 0)
+        if (head_size)
         {
-            auto head = graph_bbox.first;
-            auto tail = graph_bbox.second;
-            int ar_type = ReactionComponent::ARROW_BASIC;
-            switch (arrow_type)
+            if (arrow_type && superseded_id == 0)
             {
-            case kCDXArrowType_Resonance:
-                ar_type = ReactionComponent::ARROW_BOTH_ENDS_FILLED_TRIANGLE;
-                break;
-            case kCDXArrowType_Equilibrium:
-                ar_type = ReactionComponent::ARROW_EQUILIBRIUM_FILLED_HALF_BOW;
-                break;
-            case kCDXArrowType_FullHead:
-                ar_type = ReactionComponent::ARROW_FILLED_TRIANGLE;
-                break;
-            default:
-                break;
+                auto head = graph_bbox.first;
+                auto tail = graph_bbox.second;
+                int ar_type = ReactionComponent::ARROW_BASIC;
+                switch (arrow_type)
+                {
+                case kCDXArrowType_Resonance:
+                    ar_type = ReactionComponent::ARROW_BOTH_ENDS_FILLED_TRIANGLE;
+                    break;
+                case kCDXArrowType_Equilibrium:
+                    ar_type = ReactionComponent::ARROW_EQUILIBRIUM_FILLED_HALF_BOW;
+                    break;
+                case kCDXArrowType_FullHead:
+                    ar_type = ReactionComponent::ARROW_FILLED_TRIANGLE;
+                    break;
+                default:
+                    break;
+                }
+                _graphic_arrows.push_back(std::make_pair(std::make_pair(tail, head), ar_type));
             }
-            _graphic_arrows.push_back(std::make_pair(std::make_pair(tail, head), ar_type));
+            else if (arrow_type == kCDXArrowType_RetroSynthetic && superseded_id != 0)
+            {
+                auto& head = graph_bbox.first;
+                auto& tail = graph_bbox.second;
+
+                auto arrow_it = _arrows.find(superseded_id);
+                if (arrow_it != _arrows.end())
+                {
+                    _arrows.erase(arrow_it);
+                }
+                _retro_arrows_graph_id.emplace(superseded_id);
+
+                _graphic_arrows.push_back(
+                    std::make_pair(std::make_pair(Vec2f(tail.x, tail.y), Vec2f(head.x, head.y)), ReactionComponent::ARROW_RETROSYNTHETIC));
+            }
         }
-        else if (arrow_type == kCDXArrowType_RetroSynthetic && superseded_id != 0)
+        else
         {
-            auto& head = graph_bbox.first;
-            auto& tail = graph_bbox.second;
-
-            auto arrow_it = _arrows.find(superseded_id);
-            if (arrow_it != _arrows.end())
-            {
-                _arrows.erase(arrow_it);
-            }
-            _retro_arrows_graph_id.emplace(superseded_id);
-
-            _graphic_arrows.push_back(std::make_pair(std::make_pair(Vec2f(tail.x, tail.y), Vec2f(head.x, head.y)), ReactionComponent::ARROW_RETROSYNTHETIC));
+            _primitives.push_back(std::make_pair(graph_bbox, graphic_type));
         }
     }
     break;
