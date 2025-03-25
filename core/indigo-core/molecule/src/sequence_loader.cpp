@@ -1654,9 +1654,17 @@ const std::string SequenceLoader::checkAddAmbiguousMonomerTemplate(KetDocument& 
                         vt_ap_names.erase(it);
             }
         }
-        auto& var_template = document.addAmbiguousMonomerTemplate(subtype, alias, alias, IdtAlias(), opts);
-        var_template.setAttachmentPoints(att_points);
         template_id = alias;
+        if (document.hasAmbiguousMonomerTemplateWithId(template_id))
+        {
+            int idx = 0;
+            do
+            {
+                template_id = alias + std::to_string(idx++);
+            } while (document.hasAmbiguousMonomerTemplateWithId(template_id));
+        }
+        auto& var_template = document.addAmbiguousMonomerTemplate(subtype, template_id, alias, IdtAlias(), opts);
+        var_template.setAttachmentPoints(att_points);
         _opts_to_template_id.emplace(options, template_id);
     }
     return template_id;
