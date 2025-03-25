@@ -665,7 +665,6 @@ TEST_F(IndigoCoreFormatsTest, expand_monomers)
     FileScanner f_ref_in(ref_path.c_str());
     std::string ref_data;
     f_ref_in.readAll(ref_data);
-    std::remove(ref_data.begin(), ref_data.end(), '\r'); // convert \r\n to \n
 
     // write to string
     std::string s_mol;
