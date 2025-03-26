@@ -1532,8 +1532,6 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
         int font_size = static_cast<int>(KDefaultFontSize);
         int color_index = -1;
         CDXMLFontStyle font_face(0);
-        std::cout << "bbox:" << ko.boundingBox().left() << " " << ko.boundingBox().top() << " " << ko.boundingBox().right() << " " << ko.boundingBox().bottom()
-                  << std::endl;
         for (auto& text_item : ko.block())
         {
             bool is_first_index = true;
@@ -1541,7 +1539,6 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
             size_t second_index = 0;
             FONT_STYLE_SET current_styles;
             Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().bottom());
-            std::cout << "text:" << text_item.text << std::endl;
             auto align = text_item.alignment.has_value() ? text_item.alignment : ko.alignment();
             if (align.has_value())
             {
@@ -1560,7 +1557,6 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
             std::string box_str = std::to_string(_bond_length * ko.boundingBox().left()) + " " + std::to_string(-_bond_length * ko.boundingBox().top()) + " " +
                                   std::to_string(_bond_length * ko.boundingBox().right()) + " " + std::to_string(-_bond_length * ko.boundingBox().bottom());
 
-            std::cout << "pos:" << pos_str << "box:" << box_str << std::endl;
             XMLElement* t = _doc->NewElement("t");
             _current->LinkEndChild(t);
             t->SetAttribute("id", id);

@@ -468,7 +468,6 @@ void MoleculeCdxmlLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     int arrows_count = mol.meta().getMetaCount(ReactionArrowObject::CID);
     if (arrows_count && !load_arrows && _has_scheme)
         throw Error("Not a molecule. Found %d arrows.", arrows_count);
-
 }
 
 void MoleculeCdxmlLoader::_checkFragmentConnection(int node_id, int bond_id)
@@ -1479,7 +1478,6 @@ void MoleculeCdxmlLoader::_parseBond(CdxmlBond& bond, BaseCDXProperty& prop)
 
     applyDispatcher(prop, bond_dispatcher);
 }
-
 
 std::unordered_map<int, int> MoleculeCdxmlLoader::idToAtomIndexMap() const
 {
