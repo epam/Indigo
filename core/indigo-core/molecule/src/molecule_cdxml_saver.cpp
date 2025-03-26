@@ -320,6 +320,15 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
     }
     break;
 
+    case ECDXType::CDXINT16ListWithCounts: {
+        std::string values = pAttr->Value();
+        auto vals = split(values, ' ');
+        _output.writeBinaryUInt16(static_cast<uint16_t>((vals.size() + 1) * sizeof(uint16_t)));
+        _output.writeBinaryUInt16(static_cast<uint16_t>(vals.size()));
+        for (const auto& val : vals)
+            _output.writeBinaryUInt16((uint16_t)std::stoul(val));
+    }
+    break;
     case ECDXType::CDXObjectIDArray: {
         std::string values = pAttr->Value();
         auto vals = split(values, ' ');
@@ -328,7 +337,6 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
             _output.writeBinaryInt(std::stoi(val));
     }
     break;
-
     case ECDXType::CDXDate:
     case ECDXType::CDXRepresentsProperty:
     case ECDXType::CDXFontTable:
@@ -338,7 +346,6 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
     case ECDXType::CDXObjectIDArrayWithCounts:
     case ECDXType::CDXGenericList:
     case ECDXType::CDXFLOAT64:
-    case ECDXType::CDXINT16ListWithCounts:
     case ECDXType::CDXCurvePoints:
     case ECDXType::CDXCurvePoints3D:
     case ECDXType::CDXvaries:
@@ -355,6 +362,11 @@ IMPL_ERROR(MoleculeCdxmlSaver, "molecule CDXML saver");
 int MoleculeCdxmlSaver::getId()
 {
     return _id;
+}
+
+std::string MoleculeCdxmlSaver::boundingBoxToString(const Rect2f& bbox)
+{
+    return std::to_string(bbox.left()) + " " + std::to_string(bbox.top()) + " " + std::to_string(bbox.right()) + " " + std::to_string(bbox.bottom());
 }
 
 MoleculeCdxmlSaver::MoleculeCdxmlSaver(Output& output, bool is_binary) : _output(output), _is_binary(is_binary)
@@ -1122,6 +1134,15 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
         {
             XMLElement* t = _doc->NewElement("t");
             node->LinkEndChild(t);
+            Vec2f pos(sa.display_position.x, -sa.display_position.y);
+            pos.scale(_bond_length);
+            Vec2f v1(pos.x - _bond_length / 2, pos.y - _bond_length / 2);
+            Vec2f v2(pos.x + _bond_length / 2, pos.y + _bond_length / 2);
+            std::string pos_str = std::to_string(pos.x) + " " + std::to_string(pos.y);
+            Rect2f bbox(v1, v2);
+            std::string bbox_str = boundingBoxToString(bbox);
+            t->SetAttribute("p", pos_str.c_str());
+            t->SetAttribute("BoundingBox", bbox_str.c_str());
             t->SetAttribute("LabelJustification", "Left");
             t->SetAttribute("LabelAlignment", "Above");
             XMLElement* s = _doc->NewElement("s");
@@ -1488,8 +1509,8 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
             ecenter.y = -ecenter.y;
             min_axis.y = -min_axis.y;
             maj_axis.y = -maj_axis.y;
-            //Rect2f bbox_new(ecenter, bbox.rightTop());
-            //bbox.copy(bbox_new);
+            // Rect2f bbox_new(ecenter, bbox.rightTop());
+            // bbox.copy(bbox_new);
             attrs.insert("Center3D", std::to_string(ecenter.x) + " " + std::to_string(ecenter.y));
             attrs.insert("MajorAxisEnd3D", std::to_string(maj_axis.x) + " " + std::to_string(maj_axis.y));
             attrs.insert("MinorAxisEnd3D", std::to_string(min_axis.x) + " " + std::to_string(min_axis.y));

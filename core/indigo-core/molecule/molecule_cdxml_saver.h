@@ -71,6 +71,8 @@ namespace indigo
         };
 
     public:
+        static std::string boundingBoxToString(const Rect2f& bbox);
+
         explicit MoleculeCdxmlSaver(Output& output, bool is_binary = false);
 
         ~MoleculeCdxmlSaver();
