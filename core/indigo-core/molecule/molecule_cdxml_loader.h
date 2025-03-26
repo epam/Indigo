@@ -819,7 +819,7 @@ namespace indigo
             return [&str](const std::string& data) { str = data; };
         }
 
-        static auto justificationLambda(CDXTextJustification& justification)
+        static auto justificationLambda(std::optional<CDXTextJustification>& justification)
         {
             return [&justification](const std::string& data) {
                 auto it = kTextJustificationStrToInt.find(data);

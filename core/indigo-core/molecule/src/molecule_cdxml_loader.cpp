@@ -1759,7 +1759,7 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
     float wwrap_val;
     std::set<int> line_starts;
     std::string label_alignment, label_justification;
-    CDXTextJustification text_justification;
+    std::optional<CDXTextJustification> text_justification;
     AutoInt font_id, font_face;
     std::optional<AutoInt> font_color_index;
     float font_size;
@@ -1858,18 +1858,19 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
                     fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::EColor, font_color), std::forward_as_tuple(true));
                 }
 
-                switch (text_justification)
-                {
-                case CDXTextJustification::kCDXTextJustification_Center:
-                    paragraph.alignment = SimpleTextObject::TextAlignment::ECenter;
-                    break;
-                case CDXTextJustification::kCDXTextJustification_Right:
-                    paragraph.alignment = SimpleTextObject::TextAlignment::ERight;
-                    break;
-                case CDXTextJustification::kCDXTextJustification_Full:
-                    paragraph.alignment = SimpleTextObject::TextAlignment::EFull;
-                    break;
-                }
+                if (text_justification.has_value())
+                    switch (text_justification.value())
+                    {
+                    case CDXTextJustification::kCDXTextJustification_Center:
+                        paragraph.alignment = SimpleTextObject::TextAlignment::ECenter;
+                        break;
+                    case CDXTextJustification::kCDXTextJustification_Right:
+                        paragraph.alignment = SimpleTextObject::TextAlignment::ERight;
+                        break;
+                    case CDXTextJustification::kCDXTextJustification_Full:
+                        paragraph.alignment = SimpleTextObject::TextAlignment::EFull;
+                        break;
+                    }
 
                 // set fss font family
                 auto font_it = font_table.find(font_id);
