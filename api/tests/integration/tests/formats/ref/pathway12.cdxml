@@ -304,110 +304,110 @@
             <b id="255" B="115" E="116"/>
             <b id="256" B="116" E="117"/>
         </fragment>
-        <t id="118" p="1125.922607 226.056747" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" Justification="Left" InterpretChemically="no"/>
-        <t id="118" p="1125.922607 226.056747" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" Justification="Left" InterpretChemically="no">
+        <t id="118" p="1125.922607 323.256744" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" LineHeight="auto" InterpretChemically="no"/>
+        <t id="118" p="1125.922607 323.256744" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="2">123456789012345678901234567890</s>
         </t>
-        <t id="118" p="1125.922607 226.056747" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" Justification="Left" InterpretChemically="no">
+        <t id="118" p="1125.922607 323.256744" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="2">123456789012345678901234567890</s>
         </t>
-        <t id="118" p="1125.922607 226.056747" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" Justification="Left" InterpretChemically="no">
+        <t id="118" p="1125.922607 323.256744" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="2">123456789012345678901234567890</s>
         </t>
-        <t id="118" p="1125.922607 226.056747" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" Justification="Left" InterpretChemically="no">
+        <t id="118" p="1125.922607 323.256744" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="2">123456789012345678901234567890</s>
         </t>
-        <t id="118" p="1125.922607 226.056747" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" Justification="Left" InterpretChemically="no">
+        <t id="118" p="1125.922607 323.256744" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="2">123456789012345678901234567890</s>
         </t>
-        <t id="118" p="1125.922607 226.056747" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" Justification="Left" InterpretChemically="no">
+        <t id="118" p="1125.922607 323.256744" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="2">123456789012345678901234567890</s>
         </t>
-        <t id="118" p="1125.922607 226.056747" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" Justification="Left" InterpretChemically="no">
+        <t id="118" p="1125.922607 323.256744" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="2">123456789012345678901234567890</s>
         </t>
-        <t id="118" p="1125.922607 226.056747" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" Justification="Left" InterpretChemically="no">
+        <t id="118" p="1125.922607 323.256744" BoundingBox="1125.922607 226.056747 1294.255981 323.256744" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="2">123456789012345678901234567...</s>
         </t>
-        <t id="121" p="814.358826 301.656769" BoundingBox="814.358826 301.656769 982.692139 323.256775" Justification="Left" InterpretChemically="no">
+        <t id="121" p="814.358826 323.256775" BoundingBox="814.358826 301.656769 982.692139 323.256775" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="121" p="814.358826 301.656769" BoundingBox="814.358826 301.656769 982.692139 323.256775" Justification="Left" InterpretChemically="no">
+        <t id="121" p="814.358826 323.256775" BoundingBox="814.358826 301.656769 982.692139 323.256775" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">12</s>
         </t>
-        <t id="124" p="502.256348 114.618309" BoundingBox="502.256348 114.618309 670.589661 168.618301" Justification="Left" InterpretChemically="no">
+        <t id="124" p="502.256348 168.618301" BoundingBox="502.256348 114.618309 670.589661 168.618301" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="124" p="502.256348 114.618309" BoundingBox="502.256348 114.618309 670.589661 168.618301" Justification="Left" InterpretChemically="no">
+        <t id="124" p="502.256348 168.618301" BoundingBox="502.256348 114.618309 670.589661 168.618301" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">12</s>
         </t>
-        <t id="124" p="502.256348 114.618309" BoundingBox="502.256348 114.618309 670.589661 168.618301" Justification="Left" InterpretChemically="no"/>
-        <t id="124" p="502.256348 114.618309" BoundingBox="502.256348 114.618309 670.589661 168.618301" Justification="Left" InterpretChemically="no">
+        <t id="124" p="502.256348 168.618301" BoundingBox="502.256348 114.618309 670.589661 168.618301" LineHeight="auto" InterpretChemically="no"/>
+        <t id="124" p="502.256348 168.618301" BoundingBox="502.256348 114.618309 670.589661 168.618301" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">~!@#$%^&amp;*()_-+=?.,{}[]|\/"':;`</s>
         </t>
-        <t id="124" p="502.256348 114.618309" BoundingBox="502.256348 114.618309 670.589661 168.618301" Justification="Left" InterpretChemically="no">
+        <t id="124" p="502.256348 168.618301" BoundingBox="502.256348 114.618309 670.589661 168.618301" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">&lt;&gt;</s>
         </t>
-        <t id="127" p="502.256348 445.495209" BoundingBox="502.256348 445.495209 670.589661 477.895203" Justification="Left" InterpretChemically="no">
+        <t id="127" p="502.256348 477.895203" BoundingBox="502.256348 445.495209 670.589661 477.895203" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">ABCDEFGHIJKLMNOPQRSTUVWXYZABCD</s>
         </t>
-        <t id="127" p="502.256348 445.495209" BoundingBox="502.256348 445.495209 670.589661 477.895203" Justification="Left" InterpretChemically="no"/>
-        <t id="127" p="502.256348 445.495209" BoundingBox="502.256348 445.495209 670.589661 477.895203" Justification="Left" InterpretChemically="no">
+        <t id="127" p="502.256348 477.895203" BoundingBox="502.256348 445.495209 670.589661 477.895203" LineHeight="auto" InterpretChemically="no"/>
+        <t id="127" p="502.256348 477.895203" BoundingBox="502.256348 445.495209 670.589661 477.895203" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">AbcdefghijklmnopqrstuvWxyzabcd</s>
         </t>
-        <t id="130" p="80.833344 509.536621" BoundingBox="80.833344 509.536621 249.166656 541.936646" Justification="Left" InterpretChemically="no">
+        <t id="130" p="80.833344 541.936646" BoundingBox="80.833344 509.536621 249.166656 541.936646" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="130" p="80.833344 509.536621" BoundingBox="80.833344 509.536621 249.166656 541.936646" Justification="Left" InterpretChemically="no"/>
-        <t id="130" p="80.833344 509.536621" BoundingBox="80.833344 509.536621 249.166656 541.936646" Justification="Left" InterpretChemically="no">
+        <t id="130" p="80.833344 541.936646" BoundingBox="80.833344 509.536621 249.166656 541.936646" LineHeight="auto" InterpretChemically="no"/>
+        <t id="130" p="80.833344 541.936646" BoundingBox="80.833344 509.536621 249.166656 541.936646" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">~!@#$%^&amp;*()_-+=?.,{}[]|\/"':;`</s>
         </t>
-        <t id="133" p="748.192444 769.491760" BoundingBox="748.192444 769.491760 916.525757 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="133" p="748.192444 845.091736" BoundingBox="748.192444 769.491760 916.525757 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">ABCDEFGHIJKLMNOPQRSTUVWXYZABCD</s>
         </t>
-        <t id="133" p="748.192444 769.491760" BoundingBox="748.192444 769.491760 916.525757 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="133" p="748.192444 845.091736" BoundingBox="748.192444 769.491760 916.525757 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">ABCDEFGHIJKLMNOPQRSTUVWXYZABCD</s>
         </t>
-        <t id="133" p="748.192444 769.491760" BoundingBox="748.192444 769.491760 916.525757 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="133" p="748.192444 845.091736" BoundingBox="748.192444 769.491760 916.525757 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">ABCDEFGHIJKLMNOPQRSTUVWXYZABCD</s>
         </t>
-        <t id="133" p="748.192444 769.491760" BoundingBox="748.192444 769.491760 916.525757 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="133" p="748.192444 845.091736" BoundingBox="748.192444 769.491760 916.525757 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">ABCDEFGHIJKLMNOPQRSTUVWXYZABCD</s>
         </t>
-        <t id="133" p="748.192444 769.491760" BoundingBox="748.192444 769.491760 916.525757 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="133" p="748.192444 845.091736" BoundingBox="748.192444 769.491760 916.525757 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">ABCDEFGHIJKLMNOPQRSTUVWXYZABCD</s>
         </t>
-        <t id="133" p="748.192444 769.491760" BoundingBox="748.192444 769.491760 916.525757 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="133" p="748.192444 845.091736" BoundingBox="748.192444 769.491760 916.525757 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">ABCDEFGHIJKLMNOPQRSTUVWXYZABCD</s>
         </t>
-        <t id="133" p="748.192444 769.491760" BoundingBox="748.192444 769.491760 916.525757 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="133" p="748.192444 845.091736" BoundingBox="748.192444 769.491760 916.525757 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">ABCDEFGHIJKLMNOPQRSTUVWXYZABCD</s>
         </t>
-        <t id="136" p="398.389313 747.891785" BoundingBox="398.389313 747.891785 566.722656 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="136" p="398.389313 845.091736" BoundingBox="398.389313 747.891785 566.722656 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="136" p="398.389313 747.891785" BoundingBox="398.389313 747.891785 566.722656 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="136" p="398.389313 845.091736" BoundingBox="398.389313 747.891785 566.722656 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="136" p="398.389313 747.891785" BoundingBox="398.389313 747.891785 566.722656 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="136" p="398.389313 845.091736" BoundingBox="398.389313 747.891785 566.722656 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="136" p="398.389313 747.891785" BoundingBox="398.389313 747.891785 566.722656 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="136" p="398.389313 845.091736" BoundingBox="398.389313 747.891785 566.722656 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="136" p="398.389313 747.891785" BoundingBox="398.389313 747.891785 566.722656 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="136" p="398.389313 845.091736" BoundingBox="398.389313 747.891785 566.722656 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="136" p="398.389313 747.891785" BoundingBox="398.389313 747.891785 566.722656 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="136" p="398.389313 845.091736" BoundingBox="398.389313 747.891785 566.722656 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="136" p="398.389313 747.891785" BoundingBox="398.389313 747.891785 566.722656 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="136" p="398.389313 845.091736" BoundingBox="398.389313 747.891785 566.722656 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="136" p="398.389313 747.891785" BoundingBox="398.389313 747.891785 566.722656 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="136" p="398.389313 845.091736" BoundingBox="398.389313 747.891785 566.722656 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567890</s>
         </t>
-        <t id="136" p="398.389313 747.891785" BoundingBox="398.389313 747.891785 566.722656 845.091736" Justification="Left" InterpretChemically="no">
+        <t id="136" p="398.389313 845.091736" BoundingBox="398.389313 747.891785 566.722656 845.091736" LineHeight="auto" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">123456789012345678901234567...</s>
         </t>
         <arrow id="139" BoundingBox="290.833344 557.369934 80.833336 557.369934" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="290.833344 557.369934 0.000000" Tail3D="80.833336 557.369934 0.000000"/>

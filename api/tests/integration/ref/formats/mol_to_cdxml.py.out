@@ -63,7 +63,7 @@ enhanced_stereo1.mol
         <color r="1" g="0" b="1"/>
         <color r="0.5" g="0.5" b="0.5"/>
     </colortable>
-    <page HeightPages="1" WidthPages="1" BoundingBox="-40.010998 23.099998 80.018997 -207.899994">
+    <page HeightPages="1" WidthPages="1" BoundingBox="-40.010998 -207.899994 80.018997 23.099998">
         <fragment id="4">
             <n id="5" Element="8" NumHydrogens="1" p="0.000000 -0.000000">
                 <t p="0.000000 -0.000000" LabelJustification="Left">
@@ -136,7 +136,7 @@ enhanced_stereo2.mol
         <color r="1" g="0" b="1"/>
         <color r="0.5" g="0.5" b="0.5"/>
     </colortable>
-    <page HeightPages="1" WidthPages="1" BoundingBox="-40.010998 23.099998 80.018997 -207.899994">
+    <page HeightPages="1" WidthPages="1" BoundingBox="-40.010998 -207.899994 80.018997 23.099998">
         <fragment id="4">
             <n id="5" Element="8" NumHydrogens="1" p="0.000000 -0.000000">
                 <t p="0.000000 -0.000000" LabelJustification="Left">
@@ -204,7 +204,7 @@ enhanced_stereo3.mol
         <color r="1" g="0" b="1"/>
         <color r="0.5" g="0.5" b="0.5"/>
     </colortable>
-    <page HeightPages="1" WidthPages="1" BoundingBox="-40.010998 23.099998 80.021996 -207.899994">
+    <page HeightPages="1" WidthPages="1" BoundingBox="-40.010998 -207.899994 80.021996 23.099998">
         <fragment id="4">
             <n id="5" Element="8" NumHydrogens="1" p="0.000000 -0.000000">
                 <t p="0.000000 -0.000000" LabelJustification="Left">
@@ -274,7 +274,7 @@ stereo_either-0020.mol
         <color r="1" g="0" b="1"/>
         <color r="0.5" g="0.5" b="0.5"/>
     </colortable>
-    <page HeightPages="1" WidthPages="1" BoundingBox="-42.777000 94.818001 107.219994 -125.213997">
+    <page HeightPages="1" WidthPages="1" BoundingBox="-42.777000 -125.213997 107.219994 94.818001">
         <fragment id="4">
             <n id="5" p="72.653999 80.502007"/>
             <n id="6" p="66.120003 51.312004"/>
