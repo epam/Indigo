@@ -1,0 +1,74 @@
+{
+    "ket_version": "2.0.0",
+    "root": {
+        "nodes": [
+            {
+                "type": "text",
+                "boundingBox": {
+                    "x": 8.300000190734864,
+                    "y": -10.050000190734864,
+                    "width": 0.0,
+                    "height": 0.0
+                },
+                "paragraphs": [
+                    {
+                        "parts": [
+                            {
+                                "text": "X",
+                                "font": {
+                                    "size": 12,
+                                    "color": "#0"
+                                }
+                            },
+                            {
+                                "text": "2",
+                                "superscript": true,
+                                "font": {
+                                    "size": 12,
+                                    "color": "#0"
+                                }
+                            },
+                            {
+                                "text": "D",
+                                "font": {
+                                    "size": 12,
+                                    "color": "#0"
+                                }
+                            },
+                            {
+                                "text": "3",
+                                "subscript": true,
+                                "font": {
+                                    "size": 12,
+                                    "color": "#0"
+                                }
+                            },
+                            {
+                                "text": "C",
+                                "font": {
+                                    "size": 12,
+                                    "color": "#0"
+                                }
+                            },
+                            {
+                                "text": "4",
+                                "superscript": true,
+                                "font": {
+                                    "size": 12,
+                                    "color": "#0"
+                                }
+                            },
+                            {
+                                "text": "D",
+                                "font": {
+                                    "size": 12,
+                                    "color": "#0"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

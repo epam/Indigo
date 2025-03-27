@@ -24,6 +24,7 @@
 #include "render_context.h"
 #include "render_internal.h"
 #include <codecvt>
+#include <regex>
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -301,23 +302,46 @@ void RenderItemAuxiliary::fillKETStyle(TextItem& ti, const FONT_STYLE_SET& style
 {
     for (const auto& text_style : style_set)
     {
-        switch (text_style.first)
+        switch (static_cast<KETFontStyle::FontStyle>(text_style.first))
         {
-        case SimpleTextObject::EBold:
+        case KETFontStyle::FontStyle::EBold:
             ti.bold = text_style.second;
             break;
-        case SimpleTextObject::EItalic:
+        case KETFontStyle::FontStyle::EItalic:
             ti.italic = text_style.second;
             break;
-        case SimpleTextObject::ESuperScript:
+        case KETFontStyle::FontStyle::ESuperScript:
             ti.script_type = text_style.second ? 1 : 0;
             break;
-        case SimpleTextObject::ESubScript:
+        case KETFontStyle::FontStyle::ESubScript:
             ti.script_type = text_style.second ? 2 : 0;
             break;
-        default:
-            ti.size = text_style.second ? text_style.first : KDefaultFontSize;
+        case KETFontStyle::FontStyle::ESize: {
+            ti.size = KDefaultFontSize;
+            auto sz_val = text_style.first.getUInt();
+            if (text_style.second && sz_val.has_value())
+                ti.size = sz_val.value();
             ti.size /= KFontScaleFactor;
+        }
+        break;
+        case KETFontStyle::FontStyle::EColor: {
+            auto color_val = text_style.first.getUInt();
+            if (text_style.second && color_val.has_value())
+            {
+                ti.color = color_val.value();
+
+                ti.rgb_color = ti.color == CWC_BASE
+                                   ? Vec3f(0, 0, 0)
+                                   : Vec3f((float)((ti.color >> 16) & 0xFF) / 255.0f, ti.rgb_color.y = (float)((ti.color >> 8) & 0xFF) / 255.0f,
+                                           ti.rgb_color.z = (float)(ti.color & 0xFF) / 255.0f);
+            }
+            else
+            {
+                ti.color = CWC_BASE;
+                ti.rgb_color = Vec3f(0, 0, 0);
+            }
+        }
+        default:
             break;
         }
     }
@@ -354,45 +378,183 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
             case SimpleTextObject::CID: {
                 const SimpleTextObject& ko = static_cast<const SimpleTextObject&>(mobj);
                 double text_offset_y = 0;
-                for (auto& text_item : ko._block)
+                auto default_styles = ko.fontStyles();
+                for (auto& text_item : ko.block())
                 {
+                    auto paragraph_style = default_styles;
+                    paragraph_style += text_item.font_style;
+                    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> utf8w;
+
+                    auto text_wstr = utf8w.from_bytes(text_item.text);
                     float text_max_height = _getMaxHeight(text_item);
+                    auto line_starts = text_item.line_starts;
                     int first_index = -1;
                     int second_index = -1;
-                    double text_offset_x = 0;
+                    float text_offset_x = 0;
+                    auto indent = ko.indent();
+                    if (text_item.indent.has_value())
+                        indent = text_item.indent;
+
                     FONT_STYLE_SET current_styles;
+                    ObjArray<ObjArray<TextItem>> ti_lines;
+                    std::vector<std::pair<int, float>> spaces_widths;
+                    std::pair<int, float> trailing_spaces{};
                     TextItem ti;
                     ti.size = KDefaultFontSize / KFontScaleFactor; // default size
                     ti.ritype = RenderItem::RIT_TITLE;
-                    Vec2f text_origin(ko._pos.x, ko._pos.y);
+                    Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().top());
                     scale(text_origin);
-                    for (auto& kvp : text_item.styles)
+                    float text_width = ko.boundingBox().width() * scaleFactor;
+                    for (auto& kvp : text_item.font_styles)
                     {
                         if (first_index == -1)
                         {
                             first_index = static_cast<int>(kvp.first);
-                            current_styles = kvp.second;
+                            current_styles = paragraph_style;
+                            current_styles += kvp.second;
                             continue;
                         }
                         second_index = static_cast<int>(kvp.first);
 
-                        std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
-                        std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
+                        std::vector<std::string> styled_lines;
+                        while (line_starts.has_value() && line_starts.value().size() && *line_starts.value().begin() <= second_index &&
+                               *line_starts.value().begin() > first_index)
+                        {
+                            auto ls_index = *line_starts.value().begin();
+                            line_starts.value().erase(line_starts.value().begin());
+                            auto text_wsubstr = text_wstr.substr(first_index, ls_index - first_index);
+                            if (text_wsubstr.back() != '\n' && text_wsubstr.back() != '\r')
+                                text_wsubstr.push_back('\n');
+                            styled_lines.push_back(utf8w.to_bytes(text_wsubstr));
+                            first_index = ls_index;
+                        }
 
-                        auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(text_item.text).substr(first_index, second_index - first_index));
-                        ti.text.readString(sub_text.c_str(), true);
+                        if (second_index > first_index)
+                            styled_lines.push_back(utf8w.to_bytes(text_wstr.substr(first_index, second_index - first_index)));
+
                         fillKETStyle(ti, current_styles);
-                        _rc.setTextItemSize(ti);
-                        ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
-                        ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
-                        _rc.drawTextItemText(ti, Vec3f(0, 0, 0), idle);
 
-                        text_offset_x += ti.bbsz.x + _settings.boundExtent;
+                        for (auto& styled_text : styled_lines)
+                        {
+                            auto splitted = split_to_lines(styled_text);
+                            for (auto line_it = splitted.begin(); line_it != splitted.end(); ++line_it)
+                            {
+                                if (ti_lines.size() == 0)
+                                {
+                                    ti_lines.push();
+                                    spaces_widths.emplace_back(0, 0.0f);
+                                }
+
+                                auto& ti_line = ti_lines.top();
+                                auto splitted_spaces = split_spaces(*line_it);
+
+                                for (auto& line_str : splitted_spaces)
+                                {
+                                    auto spc_count = (int)std::count(line_str.begin(), line_str.end(), ' ');
+                                    ti.text.readString(line_str.c_str(), true);
+                                    _rc.setTextItemSize(ti);
+                                    ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
+                                    trailing_spaces.first = (int)std::distance(
+                                        line_str.rbegin(), std::find_if(line_str.rbegin(), line_str.rend(), [](char c) { return c != ' '; }));
+                                    trailing_spaces.second = trailing_spaces.first ? _rc.getSpaceWidth() * trailing_spaces.first : 0.0f;
+
+                                    if (spc_count)
+                                    {
+                                        text_offset_x += _rc.getSpaceWidth() * spc_count;
+                                        spaces_widths.back().first += spc_count;
+                                        spaces_widths.back().second += _rc.getSpaceWidth() * spc_count;
+                                        ti.bbsz.x = 0;
+                                        ti.text.readString(" ", true);
+                                    }
+                                    else
+                                    {
+                                        ti.bbp.y = static_cast<float>(text_origin.y - ti.relpos.y + text_max_height / 2 + text_offset_y);
+                                        text_offset_x += ti.bbsz.x;
+                                    }
+                                    ti_line.push(ti);
+                                }
+
+                                if (splitted.size() > 1 && std::next(line_it) != splitted.end())
+                                {
+                                    text_offset_y += text_max_height + _settings.boundExtent;
+                                    text_offset_x = 0;
+                                    if (trailing_spaces.first)
+                                    {
+                                        spaces_widths.back().first -= trailing_spaces.first;
+                                        spaces_widths.back().second -= trailing_spaces.second;
+                                    }
+                                    ti_lines.push();
+                                    spaces_widths.emplace_back(0, 0.0f);
+                                }
+                            }
+                        }
                         current_styles = kvp.second;
                         first_index = second_index;
                     }
+
+                    if (ti_lines.size() && !ti_lines[ti_lines.size() - 1].size())
+                    {
+                        text_offset_y -= text_max_height + _settings.boundExtent;
+                        ti_lines.remove(ti_lines.size() - 1);
+                    }
+
+                    for (int j = 0; j < ti_lines.size(); ++j)
+                    {
+                        auto& ti_line = ti_lines[j];
+                        float align_offset = 0;
+                        float indent_offset = (j == 0 && indent.has_value()) ? indent.value() : 0.0f;
+
+                        // calculate alignment offsets
+                        if (text_item.alignment.has_value() && text_item.alignment.value() != SimpleTextObject::TextAlignment::ELeft)
+                        {
+                            float line_width = 0;
+                            for (int k = 0; k < ti_line.size(); ++k)
+                            {
+                                auto& ti_rc = ti_line[k];
+                                line_width += ((k + 1) < ti_line.size() && text_item.alignment.value() != SimpleTextObject::TextAlignment::EFull)
+                                                  ? (ti_line[k + 1].bbp.x - ti_rc.bbp.x)
+                                                  : ti_rc.bbsz.x;
+                            }
+
+                            float space_width = text_width - line_width - indent_offset;
+
+                            switch (text_item.alignment.value())
+                            {
+                            case SimpleTextObject::TextAlignment::ECenter:
+                                align_offset = space_width / 2;
+                                break;
+                            case SimpleTextObject::TextAlignment::ERight:
+                                align_offset = space_width;
+                                break;
+                            case SimpleTextObject::TextAlignment::EFull:
+                                if (j < ti_lines.size() - 1)
+                                {
+                                    text_offset_x = 0;
+                                    if (spaces_widths[j].first)
+                                        space_width /= spaces_widths[j].first;
+                                    // iterate line elements and calculate new positions
+                                    for (int k = 0; k < ti_line.size(); ++k)
+                                    {
+                                        auto& ti_rc = ti_line[k];
+                                        ti_rc.bbp.x = static_cast<float>(text_origin.x - ti_rc.relpos.x + text_offset_x);
+                                        text_offset_x += ti_rc.bbsz.x;
+                                        if (std::string(ti_rc.text.ptr()) == " ")
+                                            text_offset_x += space_width;
+                                    }
+                                }
+                                break;
+                            }
+                        }
+
+                        // draw text
+                        for (int k = 0; k < ti_line.size(); ++k)
+                        {
+                            auto& ti_rc = ti_line[k];
+                            ti_rc.bbp.x += align_offset + indent_offset;
+                            _rc.drawTextItemText(ti_rc, ti_rc.rgb_color, idle);
+                        }
+                    }
                     text_offset_y += text_max_height + _settings.boundExtent;
-                    text_offset_x = 0;
                 }
             }
             break;
@@ -459,6 +621,7 @@ void RenderItemAuxiliary::_drawImage(const EmbeddedImageObject& img)
 void RenderItemAuxiliary::_renderSimpleObject(const SimpleGraphicsObject& simple)
 {
     _rc.setLineWidth(_settings.bondLineWidth);
+    _rc.setSingleSource(CWC_BASE);
 
     auto v1 = simple._coordinates.first;
     auto v2 = simple._coordinates.second;
@@ -541,7 +704,7 @@ void RenderItemAuxiliary::init()
 {
 }
 
-float RenderItemAuxiliary::_getMaxHeight(const SimpleTextObject::SimpleTextLine& tl)
+float RenderItemAuxiliary::_getMaxHeight(const SimpleTextObject::KETTextParagraph& tl)
 {
     int first_index = -1;
     int second_index = -1;
@@ -549,10 +712,9 @@ float RenderItemAuxiliary::_getMaxHeight(const SimpleTextObject::SimpleTextLine&
     TextItem ti;
     ti.size = KDefaultFontSize / KFontScaleFactor; // default size
     ti.ritype = RenderItem::RIT_TITLE;
-    // ti.text.readString("!", true);
     _rc.setTextItemSize(ti);
     float sz = (float)ti.bbsz.y;
-    for (auto& kvp : tl.styles)
+    for (auto& kvp : tl.font_styles)
     {
         if (first_index == -1)
         {
@@ -561,11 +723,8 @@ float RenderItemAuxiliary::_getMaxHeight(const SimpleTextObject::SimpleTextLine&
             continue;
         }
         second_index = static_cast<int>(kvp.first);
-
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
-        auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(tl.text).substr(first_index, second_index - first_index));
-
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> utf8w;
+        auto sub_text = utf8w.to_bytes(utf8w.from_bytes(tl.text).substr(first_index, second_index - first_index));
         ti.text.readString(sub_text.c_str(), true);
         fillKETStyle(ti, current_styles);
         _rc.setTextItemSize(ti);

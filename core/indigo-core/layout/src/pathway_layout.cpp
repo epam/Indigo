@@ -377,12 +377,13 @@ void PathwayLayout::addMetaText(PathwayReaction::ReactionNode& node, const Vec2f
     // add text meta-object
     SimpleTextObjectBuilder tob;
     auto height_limit = text_height_limit;
-    generateTextBlocks(tob, node.name_text, KFontBoldStr, height_limit);
-    generateTextBlocks(tob, node.conditions_text, KFontItalicStr, height_limit);
+    generateTextBlocks(tob, node.name_text, KFontBoldStrV1, height_limit);
+    generateTextBlocks(tob, node.conditions_text, KFontItalicStrV1, height_limit);
     tob.finalize();
     auto text_height = _text_line_height * tob.getLineCounter();
-    Vec3f text_pos_tl(text_pos_bl.x, text_pos_bl.y - _text_line_height / 2.0f + text_height + _reaction_margin_size, 0.0f);
-    _reaction.meta().addMetaObject(new SimpleTextObject(text_pos_tl, Vec2f(node.text_width, text_height), tob.getJsonString()), true);
+    Vec2f text_pos_tl(text_pos_bl.x, text_pos_bl.y - _text_line_height / 2.0f + text_height + _reaction_margin_size);
+    Vec2f text_pos_rb(text_pos_tl.x + node.text_width, text_pos_tl.y - text_height);
+    _reaction.meta().addMetaObject(new SimpleTextObject(Rect2f(text_pos_tl, text_pos_rb), tob.getJsonString()), true);
 }
 
 std::vector<std::string> PathwayLayout::splitText(const std::string& text, float max_width, std::function<float(char ch)> symbol_width)

@@ -1,0 +1,554 @@
+{
+    "ket_version": "2.0.0",
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "type": "simpleObject",
+                "data": {
+                    "mode": "rectangle",
+                    "pos": [
+                        {
+                            "x": -1.5,
+                            "y": -3.7109999656677248,
+                            "z": 0
+                        },
+                        {
+                            "x": 2.0,
+                            "y": -12.210,
+                            "z": 0
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "text",
+                "boundingBox": {
+                    "x": -1.5,
+                    "y": -3.7109999656677248,
+                    "width": 3.25,
+                    "height": 8.5
+                },
+                "paragraphs": [
+                    {
+                        "parts": [
+                            {
+                                "text": "The ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff0000"
+                                }
+                            },
+                            {
+                                "text": "quick ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 24
+                                }
+                            },
+                            {
+                                "text": "brown ",
+                                "bold": true,
+                                "italic": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#804000"
+                                }
+                            },
+                            {
+                                "text": "fox ",
+                                "subscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "jumps ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "over ",
+                                "superscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "the ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "lazy ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff"
+                                }
+                            },
+                            {
+                                "text": "dog",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 27
+                                }
+                            }
+                        ],
+                        "lineStarts": [
+                            10,
+                            26,
+                            43
+                        ]
+                    },
+                    {
+                        "alignment": "right",
+                        "parts": [
+                            {
+                                "text": "The ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff0000"
+                                }
+                            },
+                            {
+                                "text": "quick ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 24
+                                }
+                            },
+                            {
+                                "text": "brown ",
+                                "bold": true,
+                                "italic": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#804000"
+                                }
+                            },
+                            {
+                                "text": "fox ",
+                                "subscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "jumps ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "over ",
+                                "superscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "the ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "lazy ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff"
+                                }
+                            },
+                            {
+                                "text": "dog",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 27
+                                }
+                            }
+                        ],
+                        "lineStarts": [
+                            10,
+                            26,
+                            43
+                        ]
+                    },
+                    {
+                        "alignment": "right",
+                        "parts": [
+                            {
+                                "text": "The ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff0000"
+                                }
+                            },
+                            {
+                                "text": "quick ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 24
+                                }
+                            },
+                            {
+                                "text": "brown ",
+                                "bold": true,
+                                "italic": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#804000"
+                                }
+                            },
+                            {
+                                "text": "fox ",
+                                "subscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "jumps ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "over ",
+                                "superscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "the ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "lazy ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff"
+                                }
+                            },
+                            {
+                                "text": "dog",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 27
+                                }
+                            }
+                        ],
+                        "lineStarts": [
+                            10,
+                            26,
+                            43
+                        ]
+                    },
+                    {
+                        "alignment": "center",
+                        "parts": [
+                            {
+                                "text": "The ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff0000"
+                                }
+                            },
+                            {
+                                "text": "quick ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 24
+                                }
+                            },
+                            {
+                                "text": "brown ",
+                                "bold": true,
+                                "italic": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#804000"
+                                }
+                            },
+                            {
+                                "text": "fox ",
+                                "subscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "jumps ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "over ",
+                                "superscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "the ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "lazy ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff"
+                                }
+                            },
+                            {
+                                "text": "dog",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 27
+                                }
+                            }
+                        ],
+                        "lineStarts": [
+                            10,
+                            26,
+                            43
+                        ]
+                    },
+                    {
+                        "alignment": "full",
+                        "parts": [
+                            {
+                                "text": "The ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff0000"
+                                }
+                            },
+                            {
+                                "text": "quick ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 24
+                                }
+                            },
+                            {
+                                "text": "brown ",
+                                "bold": true,
+                                "italic": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#804000"
+                                }
+                            },
+                            {
+                                "text": "fox ",
+                                "subscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "jumps ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "over ",
+                                "superscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "the ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "lazy ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff"
+                                }
+                            },
+                            {
+                                "text": "dog",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 27
+                                }
+                            }
+                        ],
+                        "lineStarts": [
+                            10,
+                            26,
+                            43
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "text",
+                "boundingBox": {
+                    "x": -1.5,
+                    "y": -2.5,
+                    "width": 2.815000057220459,
+                    "height": 0.4649999141693115
+                },
+                "italic": true,
+                "paragraphs": [
+                    {
+                        "parts": [
+                            {
+                                "text": "Color, size, subscript and superscript"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.5,
+                    -0.8660253882408142,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.0,
+                    -1.732050895690918,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.1920928955078126e-7,
+                    -1.7320510149002076,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.5000003576278687,
+                    -0.8660255670547485,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 2,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    4,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    5,
+                    0
+                ]
+            }
+        ]
+    }
+}
