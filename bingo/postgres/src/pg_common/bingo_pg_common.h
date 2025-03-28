@@ -421,6 +421,15 @@ private:
     }                                                                                                                                                          \
     }
 
+#if PG_VERSION_NUM >= 160000
+#define PG_FUNCNAME_MACRO __func__
+#endif
+
+#if PG_VERSION_NUM >= 170000
+#define SPI_push_conditional() false
+#define SPI_pop_conditional(pushed) ((void)0)
+#endif
+
 #define PG_BINGO_BEGIN                                                                                                                                         \
     {                                                                                                                                                          \
         int pg_err_mess = 0;                                                                                                                                   \
