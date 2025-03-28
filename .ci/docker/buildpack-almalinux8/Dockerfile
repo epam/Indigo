@@ -20,9 +20,6 @@ ENV MANPATH=/opt/rh/rh-git${GIT_VERSION}/root/usr/share/man:/opt/rh/gcc-toolset-
     LSAN_OPTIONS=suppressions=/opt/external.supp \
     ASAN_OPTIONS=alloc_dealloc_mismatch=0
 
-
-RUN PIP_ONLY_BINARY="cmake" python3 -m pip install cmake
-
 RUN cmake --version && \
     gcc --version && \
     g++ --version && \
