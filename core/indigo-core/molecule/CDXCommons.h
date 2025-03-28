@@ -3,6 +3,7 @@
 
 #include "CDXConstants.h"
 #include "reaction/reaction.h"
+
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -1283,6 +1284,12 @@ namespace indigo
         {'U', CIPStereochemistry::Undetermined}, {'N', CIPStereochemistry::Symmetric},          {'R', CIPStereochemistry::Asymmetric_R},
         {'S', CIPStereochemistry::Asymmetric_S}, {'r', CIPStereochemistry::Pseudoasymmetric_r}, {'s', CIPStereochemistry::Pseudoasymmetric_s},
         {'u', CIPStereochemistry::Unspecified},
+    };
+    const std::unordered_map<uint8_t, CIPDesc> kIndexToCIPDesc = {
+        {CIPStereochemistry::Undetermined, CIPDesc::UNKNOWN}, {CIPStereochemistry::Symmetric, CIPDesc::NONE},
+        {CIPStereochemistry::Asymmetric_R, CIPDesc::R},       {CIPStereochemistry::Asymmetric_S, CIPDesc::S},
+        {CIPStereochemistry::Pseudoasymmetric_r, CIPDesc::r}, {CIPStereochemistry::Pseudoasymmetric_s, CIPDesc::s},
+        {CIPStereochemistry::Unspecified, CIPDesc::UNKNOWN},
     };
 
     const std::vector<char> kCIPBondStereochemistryIndexToChar = {'U', 'N', 'E', 'Z'};

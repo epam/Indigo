@@ -69,8 +69,9 @@ bool BaseMolecule::isQueryMolecule()
 
 void BaseMolecule::changed()
 {
-    if (have_cip)
-        clearCIP();
+    // #2851: when adding atoms to the molecule, we should keep existing cip labels
+    // if (have_cip)
+    //     clearCIP();
 }
 
 void BaseMolecule::clear()

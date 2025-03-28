@@ -881,7 +881,6 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
         if (_pmol)
         {
             atom_idx = _pmol->addAtom(atom.element);
-
             if (atom.type == kCDXNodeType_NamedAlternativeGroup)
                 mol.allowRGroupOnRSite(atom_idx, atom.rg_index);
 
@@ -892,6 +891,11 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                 _pmol->setExplicitValence(atom_idx, atom.valence);
             _pmol->setAtomRadical(atom_idx, atom.radical);
             _pmol->setAtomIsotope(atom_idx, atom.isotope);
+            const auto it = kIndexToCIPDesc.find(atom.stereo);
+            if (it != kIndexToCIPDesc.end())
+            {
+                _pmol->setAtomCIP(atom_idx, it->second);
+            }
             if (atom.type == kCDXNodeType_GenericNickname || atom.element == ELEM_PSEUDO)
                 _pmol->setPseudoAtom(atom_idx, atom.label.c_str());
             switch (atom.enchanced_stereo)

@@ -697,6 +697,7 @@ void IndigoRenderer::setOptionsHandlers()
 
         mgr->setOptionHandlerBool("render-coloring", SETTER_GETTER_BOOL_OPTION(rp.rOpt.atomColoring));
         mgr->setOptionHandlerBool("render-valences-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.showValences));
+        mgr->setOptionHandlerBool("render-cip-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.showCIPLabels));
         mgr->setOptionHandlerBool("render-atom-ids-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.showAtomIds));
         mgr->setOptionHandlerBool("render-bond-ids-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.showBondIds));
         mgr->setOptionHandlerBool("render-atom-bond-ids-from-one", SETTER_GETTER_BOOL_OPTION(rp.rOpt.atomBondIdsFromOne));

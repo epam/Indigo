@@ -1,0 +1,730 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE CDXML SYSTEM "https://static.chemistry.revvitycloud.com/cdxml/CDXML.dtd" >
+<CDXML
+ CreationProgram="ChemDraw 23.1.1.3"
+ Name="no_cip_label.cdxml"
+ BoundingBox="170.44 129.87 226.05 169.35"
+ WindowPosition="0 0"
+ WindowSize="-2147483648 0"
+ WindowIsZoomed="yes"
+ FractionalWidths="yes"
+ InterpretChemically="yes"
+ ShowAtomQuery="yes"
+ ShowAtomStereo="no"
+ ShowAtomEnhancedStereo="yes"
+ ShowAtomNumber="no"
+ ShowResidueID="no"
+ ShowBondQuery="yes"
+ ShowBondRxn="yes"
+ ShowBondStereo="no"
+ ShowTerminalCarbonLabels="no"
+ ShowNonTerminalCarbonLabels="no"
+ HideImplicitHydrogens="no"
+ LabelFont="3"
+ LabelSize="10"
+ LabelFace="96"
+ CaptionFont="3"
+ CaptionSize="10"
+ HashSpacing="2.49"
+ MarginWidth="1.59"
+ LineWidth="0.60"
+ BoldWidth="2.01"
+ BondLength="14.40"
+ BondSpacing="18"
+ ChainAngle="120"
+ LabelJustification="Auto"
+ CaptionJustification="Left"
+ AminoAcidTermini="HOH"
+ ShowSequenceTermini="yes"
+ ShowSequenceBonds="yes"
+ ShowSequenceUnlinkedBranches="no"
+ ResidueWrapCount="40"
+ ResidueBlockCount="10"
+ PrintMargins="36 36 36 36"
+ MacPrintInfo="0003000001200120000000000B6608A0FF84FF880BE309180367052703FC0002000001200120000000000B6608A0000100000064000000010001010100000001270F000100010000000000000000000000000002001901900000000000600000000000000000000100000000000000000000000000000000"
+ ChemPropName=""
+ ChemPropFormula="Chemical Formula: "
+ ChemPropExactMass="Exact Mass: "
+ ChemPropMolWt="Molecular Weight: "
+ ChemPropMOverZ="m/z: "
+ ChemPropAnalysis="Elemental Analysis: "
+ ChemPropBoilingPt="Boiling Point: "
+ ChemPropMeltingPt="Melting Point: "
+ ChemPropCritTemp="Critical Temp: "
+ ChemPropCritPres="Critical Pres: "
+ ChemPropCritVol="Critical Vol: "
+ ChemPropGibbs="Gibbs Energy: "
+ ChemPropLogP="Log P: "
+ ChemPropMR="MR: "
+ ChemPropHenry="Henry&apos;s Law: "
+ ChemPropEForm="Heat of Form: "
+ ChemProptPSA="tPSA: "
+ ChemPropCLogP="CLogP: "
+ ChemPropCMR="CMR: "
+ ChemPropLogS="LogS: "
+ ChemPropPKa="pKa: "
+ ChemPropID=""
+ ChemPropFragmentLabel=""
+ color="0"
+ bgcolor="1"
+ RxnAutonumberStart="1"
+ RxnAutonumberConditions="no"
+ RxnAutonumberStyle="Roman"
+ RxnAutonumberFormat="(#)"
+><colortable>
+<color r="1" g="1" b="1"/>
+<color r="0" g="0" b="0"/>
+<color r="1" g="0" b="0"/>
+<color r="1" g="1" b="0"/>
+<color r="0" g="1" b="0"/>
+<color r="0" g="1" b="1"/>
+<color r="0" g="0" b="1"/>
+<color r="1" g="0" b="1"/>
+</colortable><fonttable>
+<font id="3" charset="iso-8859-1" name="Arial"/>
+</fonttable><page
+ id="26939"
+ BoundingBox="0 0 540 719.75"
+ HeaderPosition="36"
+ FooterPosition="36"
+ PrintTrimMarks="yes"
+ HeightPages="1"
+ WidthPages="1"
+><fragment
+ id="26885"
+ BoundingBox="170.44 129.87 226.05 169.35"
+ Z="15"
+><n
+ id="26889"
+ p="170.44 134.31"
+ Z="16"
+ ShowAtomStereo="yes"
+ AS="N"
+ AtomID="1"
+/><n
+ id="26890"
+ p="184.84 134.31"
+ Z="17"
+ ShowAtomStereo="yes"
+ Element="7"
+ NumHydrogens="1"
+ NeedsClean="yes"
+ AS="N"
+ AtomID="2"
+><t
+ p="181.23 138.21"
+ BoundingBox="181.23 129.87 195.67 138.21"
+ LabelJustification="Left"
+ LabelAlignment="Left"
+><s font="3" size="10" color="0" face="96">NH</s></t></n><n
+ id="26892"
+ p="190 147.75"
+ Z="18"
+ ShowAtomStereo="yes"
+ Geometry="Tetrahedral"
+ AS="R"
+ BondOrdering="26915 26916 0 26936"
+ AtomID="3"
+><objecttag
+ TagType="Unknown"
+ Name="stereo"
+><t
+ p="177.99 155.25"
+ BoundingBox="177.99 148.89 188.40 156.80"
+ CaptionLineHeight="variable"
+><s font="3" size="7.5" color="0" face="2">(R)</s></t></objecttag></n><n
+ id="26893"
+ p="202.47 154.95"
+ Z="19"
+ ShowAtomStereo="yes"
+ AS="N"
+ AtomID="4"
+/><n
+ id="26894"
+ p="202.47 169.35"
+ Z="20"
+ ShowAtomStereo="yes"
+ AS="N"
+ AtomID="5"
+/><n
+ id="26909"
+ p="202.47 140.55"
+ Z="25"
+ ShowAtomStereo="yes"
+ AS="N"
+ AtomID="6"
+/><n
+ id="26910"
+ p="214.94 147.75"
+ Z="27"
+ ShowAtomStereo="yes"
+ Element="8"
+ NumHydrogens="1"
+ NeedsClean="yes"
+ AS="N"
+ AtomID="7"
+><t
+ p="211.05 151.65"
+ BoundingBox="211.05 143.20 226.05 151.75"
+ LabelJustification="Left"
+ LabelAlignment="Left"
+><s font="3" size="10" color="0" face="96">OH</s></t></n><b
+ id="26913"
+ Z="21"
+ ShowBondStereo="yes"
+ B="26889"
+ E="26890"
+ BS="N"
+/><b
+ id="26915"
+ Z="22"
+ ShowBondStereo="yes"
+ B="26890"
+ E="26892"
+ BS="N"
+/><b
+ id="26916"
+ Z="23"
+ ShowBondStereo="yes"
+ B="26892"
+ E="26893"
+ BS="N"
+/><b
+ id="26917"
+ Z="24"
+ ShowBondStereo="yes"
+ B="26893"
+ E="26894"
+ BS="N"
+/><b
+ id="26936"
+ Z="26"
+ ShowBondStereo="yes"
+ B="26892"
+ E="26909"
+ Display="WedgedHashBegin"
+ BS="N"
+/><b
+ id="26937"
+ Z="28"
+ ShowBondStereo="yes"
+ B="26909"
+ E="26910"
+ BS="N"
+/></fragment><annotation
+ Keyword="Amount Requested"
+ Content="25 mg"
+/><annotation
+ Keyword="CNS MPO"
+ Content="0.0734"
+/><annotation
+ Keyword="COMMENT"
+ Content="Note: this is the opposite enantiomer!"
+/><annotation
+ Keyword="Catalytic Cycle"
+ Content="Catalytic Cycle template"
+/><annotation
+ Keyword="Chem Initials"
+ Content="JdV"
+/><annotation
+ Keyword="Chemist Rationale"
+ Content="pyrrolidine to improve properties and in position parallel/cis to thiazole. Also ability to modulate basicity. Amine available."
+/><annotation
+ Keyword="Class"
+ Content="Final Compound"
+/><annotation
+ Keyword="Compound Comment"
+ Content="USP7"
+/><annotation
+ Keyword="CompoundName"
+ Content="C0-EE-WT0K"
+/><annotation
+ Keyword="Date Requested"
+ Content="2016-10-14"
+/><annotation
+ Keyword="Description"
+ Content="SIOC"
+/><annotation
+ Keyword="DocumentGUID"
+ Content="346b9881-64fc-4868-a3c3-4f8fc70e7fe6"
+/><annotation
+ Keyword="Epik mbcpKa (pKa)"
+ Content="15.67"
+/><annotation
+ Keyword="Epik pH 7.4 (2D)"
+ Content="445a3303-4e60-4b1c-834f-fed9daf06f30"
+/><annotation
+ Keyword="Fragment Label"
+ Content="[I]"
+/><annotation
+ Keyword="GUID"
+ Content="4cf17392-fd90-4786-bcbf-000bc1bdbb04"
+/><annotation
+ Keyword="HATU"
+ Content="HATU"
+/><annotation
+ Keyword="ID"
+ Content="WR1329-48-V1-21"
+/><annotation
+ Keyword="Kelley Cluster (ID)"
+ Content="4"
+/><annotation
+ Keyword="Matched Scaffold"
+ Content="537"
+/><annotation
+ Keyword="Name"
+ Content="(methylsulfonyl)methane"
+/><annotation
+ Keyword="Numbering"
+ Content="123"
+/><annotation
+ Keyword="Priority"
+ Content="1"
+/><annotation
+ Keyword="Qikprop (Conformation-independent predicted Aqueous solubility)"
+ Content="-5.06"
+/><annotation
+ Keyword="Qikprop (Molecular Weight)"
+ Content="403.45"
+/><annotation
+ Keyword="Qikprop (No. f rotatable bonds)"
+ Content="3"
+/><annotation
+ Keyword="Qikprop (No. of H bond donors)"
+ Content="1"
+/><annotation
+ Keyword="Qikprop (No. of H bonds acceptor)"
+ Content="5"
+/><annotation
+ Keyword="Qikprop (Non-drug likeliness)"
+ Content="0"
+/><annotation
+ Keyword="Qikprop (Polar surface area)"
+ Content="43.76"
+/><annotation
+ Keyword="Qikprop (Pred. CNS activity)"
+ Content="2"
+/><annotation
+ Keyword="Qikprop (Pred. IC50-HERG K+ Channel)"
+ Content="-5.81"
+/><annotation
+ Keyword="Quick Properties (PSA)"
+ Content="46"
+/><annotation
+ Keyword="R1 (SAR)"
+ Content="FC(F)(F)[#6]-[#7]-1-[#6]-[#6]-2-[#6](-*)-[#6]-2-[#6]-1 |$;;;;;;;;;_AP1;;$|"
+/><annotation
+ Keyword="Rationale Date"
+ Content="2020-05-27"
+/><annotation
+ Keyword="RequestAmount"
+ Content="100"
+/><annotation
+ Keyword="RequestPriority"
+ Content="2"
+/><annotation
+ Keyword="RequestPurity"
+ Content="95"
+/><annotation
+ Keyword="RequestSaltCode"
+ Content="NX"
+/><annotation
+ Keyword="RequestSaltCoefficient"
+ Content="1"
+/><annotation
+ Keyword="SMILES"
+ Content="COC(=O)C2=C(N)NC1COC(=O)C=1C2c3cccc(F)c3C(C)F"
+/><annotation
+ Keyword="Scaffold Name"
+ Content="12 heteroaryl"
+/><annotation
+ Keyword="Solubility_Index"
+ Content="5.2"
+/><annotation
+ Keyword="Solubility_Index_bin_numeric_5,7"
+ Content="5 - 7"
+/><annotation
+ Keyword="State"
+ Content="REQUESTED"
+/><annotation
+ Keyword="Status"
+ Content="idea"
+/><annotation
+ Keyword="StereoCategory"
+ Content="S_UNKN"
+/><annotation
+ Keyword="StereoInfo"
+ Content="Fourth peak from chiral separation"
+/><annotation
+ Keyword="Synthesis Priority"
+ Content="1"
+/><annotation
+ Keyword="TPSA"
+ Content="106.0"
+/><annotation
+ Keyword="TPSA (Basechem)"
+ Content="45"
+/><annotation
+ Keyword="TPSA_NO (undefined)"
+ Content="46"
+/><annotation
+ Keyword="TPSA_NOPS (undefined)"
+ Content="46"
+/><annotation
+ Keyword="TargetID"
+ Content="5334112"
+/><annotation
+ Keyword="Type"
+ Content="stnd."
+/><annotation
+ Keyword="__Rationale"
+ Content="further reduce logD of ortho-Cl substituted analogs by adding hydroxyl group to the proline/alanine linker"
+/><annotation
+ Keyword="b_glide_conssat_A:CYS:502:H(hbond)"
+ Content="1"
+/><annotation
+ Keyword="b_glide_conssat_A:CYS:502:O(hbond)"
+ Content="1"
+/><annotation
+ Keyword="b_sd_chiral_flag"
+ Content="1"
+/><annotation
+ Keyword="cHH_prob"
+ Content="0.53"
+/><annotation
+ Keyword="cHLM_prob"
+ Content="0.82"
+/><annotation
+ Keyword="cKinSol_prob"
+ Content="0.691"
+/><annotation
+ Keyword="cLogD7.4"
+ Content="2.4"
+/><annotation
+ Keyword="cLogP"
+ Content="2.5"
+/><annotation
+ Keyword="cLogP (Basechem)"
+ Content="3.7"
+/><annotation
+ Keyword="cMDCK_AB_prob"
+ Content="0.53"
+/><annotation
+ Keyword="cMDCK_efflux_prob"
+ Content="0.49"
+/><annotation
+ Keyword="cMH_prob"
+ Content="0.6"
+/><annotation
+ Keyword="cMLM_prob"
+ Content="0.66"
+/><annotation
+ Keyword="cPPB_H_pct"
+ Content="94.3"
+/><annotation
+ Keyword="cPPB_M_pct"
+ Content="96.8"
+/><annotation
+ Keyword="cPPB_R_pct"
+ Content="92.7"
+/><annotation
+ Keyword="cRH_prob"
+ Content="0.87"
+/><annotation
+ Keyword="cRLM_prob"
+ Content="0.75"
+/><annotation
+ Keyword="cTDI_3A4"
+ Content="N"
+/><annotation
+ Keyword="cTDI_3A4_prob"
+ Content="0.3"
+/><annotation
+ Keyword="c_pKa"
+ Content="b 4.82, b 4.18"
+/><annotation
+ Keyword="c_pKa_MB"
+ Content="4.82"
+/><annotation
+ Keyword="cgLogD7.4"
+ Content="2.21"
+/><annotation
+ Keyword="cycle1_name"
+ Content="MC103679"
+/><annotation
+ Keyword="cycle1_smiles"
+ Content="COC(=O)[C@@]12CNC[C@@H]1CN(C(=O)OC(C)(C)C)C2"
+/><annotation
+ Keyword="cycle2_name"
+ Content="truncate_noCap"
+/><annotation
+ Keyword="cycle2_smiles"
+ Content="truncate"
+/><annotation
+ Keyword="cycle3_name"
+ Content="MC100798"
+/><annotation
+ Keyword="cycle3_smiles"
+ Content="CC1=C(C=O)C(C2=CC=C(F)C=C2)=NO1"
+/><annotation
+ Keyword="i_i_glide_confnum"
+ Content="162"
+/><annotation
+ Keyword="i_i_glide_lignum"
+ Content="1"
+/><annotation
+ Keyword="i_i_glide_posenum"
+ Content="227"
+/><annotation
+ Keyword="i_i_glide_rotatable_bonds"
+ Content="11"
+/><annotation
+ Keyword="i_m_Source_File_Index"
+ Content="1"
+/><annotation
+ Keyword="i_m_ct_enhanced_stereo_status"
+ Content="0"
+/><annotation
+ Keyword="i_m_stars"
+ Content="2"
+/><annotation
+ Keyword="i_sd_version"
+ Content="0"
+/><annotation
+ Keyword="id"
+ Content="B061"
+/><annotation
+ Keyword="library"
+ Content="MC03"
+/><annotation
+ Keyword="prod_smiles"
+ Content="CC1=C(CN2C[C@H]3CN(C([14C])=O)C[C@@]3(C(=O)O)C2)C(C2=CC=C(F)C=C2)=NO1"
+/><annotation
+ Keyword="r_i_docking_score"
+ Content="-11.140214077782"
+/><annotation
+ Keyword="r_i_glide_ecoul"
+ Content="-12.3080434799194"
+/><annotation
+ Keyword="r_i_glide_eff_state_penalty"
+ Content="0"
+/><annotation
+ Keyword="r_i_glide_einternal"
+ Content="8.45608901977539"
+/><annotation
+ Keyword="r_i_glide_emodel"
+ Content="-120.231961939546"
+/><annotation
+ Keyword="r_i_glide_energy"
+ Content="-72.8601789474487"
+/><annotation
+ Keyword="r_i_glide_erotb"
+ Content="0.571970855956062"
+/><annotation
+ Keyword="r_i_glide_esite"
+ Content="-0.0622512226112379"
+/><annotation
+ Keyword="r_i_glide_evdw"
+ Content="-60.5521354675293"
+/><annotation
+ Keyword="r_i_glide_gscore"
+ Content="-11.140214077782"
+/><annotation
+ Keyword="r_i_glide_hbond"
+ Content="-0.474811696506665"
+/><annotation
+ Keyword="r_i_glide_ligand_efficiency"
+ Content="-0.301086866967081"
+/><annotation
+ Keyword="r_i_glide_ligand_efficiency_ln"
+ Content="-2.41605126979877"
+/><annotation
+ Keyword="r_i_glide_ligand_efficiency_sa"
+ Content="-1.00328823614373"
+/><annotation
+ Keyword="r_i_glide_lipo"
+ Content="-3.70085480288082"
+/><annotation
+ Keyword="r_i_glide_metal"
+ Content="0"
+/><annotation
+ Keyword="r_i_glide_rewards"
+ Content="-2.60045391637495"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind"
+ Content="-33.0079365651018"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind(NS)"
+ Content="-34.8896420562014"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind(NS)_Coulomb"
+ Content="-12.8277131712994"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind(NS)_Covalent"
+ Content="0.00109279300022536"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind(NS)_Hbond"
+ Content="-0.861715459400003"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind(NS)_Lipo"
+ Content="-10.836981245175"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind(NS)_Packing"
+ Content="-0.00130287320000022"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind(NS)_S@"
+ Content="-10.7928865272601"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind(NS)_SelfCont"
+ Content="0"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind(NS)_Solv_GB"
+ Content="18.2612065799801"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind(NS)_vdW"
+ Content="-28.6242286667039"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind_Coulomb"
+ Content="-12.9846570120999"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind_Covalent"
+ Content="0.65655851720021"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind_Hbond"
+ Content="-0.861715459400003"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind_Lipo"
+ Content="-10.7928865272601"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind_Packing"
+ Content="-0.00130287320000022"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind_SelfCont"
+ Content="0"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind_Solv_GB"
+ Content="18.4604054539002"
+/><annotation
+ Keyword="r_psp_MMGBSA_dG_Bind_vdW"
+ Content="-27.4843386508037"
+/><annotation
+ Keyword="r_psp_Prime_Coulomb"
+ Content="-7191.34812860898"
+/><annotation
+ Keyword="r_psp_Prime_Covalent"
+ Content="2984.9928265557"
+/><annotation
+ Keyword="r_psp_Prime_Energy"
+ Content="11361.8584332099"
+/><annotation
+ Keyword="r_psp_Prime_Hbond"
+ Content="-100.375768632489"
+/><annotation
+ Keyword="r_psp_Prime_Lipo"
+ Content="-539.448316414897"
+/><annotation
+ Keyword="r_psp_Prime_Packing"
+ Content="-17.8855193555839"
+/><annotation
+ Keyword="r_psp_Prime_SelfCont"
+ Content="-14.1319467320942"
+/><annotation
+ Keyword="r_psp_Prime_Solv_GB"
+ Content="-1611.08530884299"
+/><annotation
+ Keyword="r_psp_Prime_vdW"
+ Content="17851.1405952413"
+/><annotation
+ Keyword="r_psp_Rec_Strain_Coulomb"
+ Content="0"
+/><annotation
+ Keyword="r_psp_Rec_Strain_Covalent"
+ Content="0"
+/><annotation
+ Keyword="r_psp_Rec_Strain_Energy"
+ Content="0"
+/><annotation
+ Keyword="r_psp_Rec_Strain_Hbond"
+ Content="0"
+/><annotation
+ Keyword="r_psp_Rec_Strain_Lipo"
+ Content="0"
+/><annotation
+ Keyword="r_psp_Rec_Strain_Packing"
+ Content="0"
+/><annotation
+ Keyword="r_psp_Rec_Strain_SelfCont"
+ Content="0"
+/><annotation
+ Keyword="r_psp_Rec_Strain_Solv_GB"
+ Content="0"
+/><annotation
+ Keyword="r_psp_Rec_Strain_vdW"
+ Content="0"
+/><annotation
+ Keyword="r_psp_Receptor_Coulomb"
+ Content="-7143.99984228"
+/><annotation
+ Keyword="r_psp_Receptor_Covalent"
+ Content="2973.95909382"
+/><annotation
+ Keyword="r_psp_Receptor_Energy"
+ Content="11409.7936986"
+/><annotation
+ Keyword="r_psp_Receptor_Hbond"
+ Content="-99.5140531726"
+/><annotation
+ Keyword="r_psp_Receptor_Lipo"
+ Content="-527.650731621"
+/><annotation
+ Keyword="r_psp_Receptor_Packing"
+ Content="-17.8842164824"
+/><annotation
+ Keyword="r_psp_Receptor_SelfCont"
+ Content="-14.1319467321"
+/><annotation
+ Keyword="r_psp_Receptor_Solv_GB"
+ Content="-1621.54129407"
+/><annotation
+ Keyword="r_psp_Receptor_vdW"
+ Content="17860.5566891"
+/><annotation
+ Keyword="s_i_glide_gridfile"
+ Content="HPK1_from_FGFR"
+/><annotation
+ Keyword="s_m_Source_File"
+ Content="design_64_20200508.sdf"
+/><annotation
+ Keyword="s_m_Source_Path"
+ Content="F:\project\FAK\fak_u_pan\FAK\result\C007_phase7_selected"
+/><annotation
+ Keyword="s_m_entry_id"
+ Content="323"
+/><annotation
+ Keyword="s_m_entry_name"
+ Content="Build Structure_ligand"
+/><annotation
+ Keyword="s_m_job_name"
+ Content="prime_mmgbsa_376"
+/><annotation
+ Keyword="s_psp_Prime_Energy_Force_Field"
+ Content="OPLS3"
+/><annotation
+ Keyword="s_psp_Prime_Energy_Solvent_Model"
+ Content="VSGB2.1"
+/><annotation
+ Keyword="s_psp_Prime_MMGBSA_Input_Structure_Hash"
+ Content="68dd6300ead1451b85338c064e6c3dcadb14413dbaeced9cf9913a3f"
+/><annotation
+ Keyword="scaffold"
+ Content="other"
+/><annotation
+ Keyword="scaffold_hed"
+ Content="other"
+/><annotation
+ Keyword="scaffold_subseries"
+ Content="other"
+/><annotation
+ Keyword="scaffold_tail"
+ Content="Cl_phe"
+/></page></CDXML>

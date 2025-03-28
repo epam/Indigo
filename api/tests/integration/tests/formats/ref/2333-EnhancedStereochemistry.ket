@@ -294,7 +294,8 @@
                     -2.002000093460083,
                     0.0
                 ],
-                "stereoLabel": "abs"
+                "stereoLabel": "abs",
+                "cip": "S"
             },
             {
                 "label": "C",
@@ -369,7 +370,8 @@
                     -3.50166654586792,
                     0.0
                 ],
-                "stereoLabel": "abs"
+                "stereoLabel": "abs",
+                "cip": "S"
             },
             {
                 "label": "C",

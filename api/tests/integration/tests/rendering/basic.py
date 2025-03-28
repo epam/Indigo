@@ -182,6 +182,22 @@ mol = indigo.loadMoleculeFromFile(mol_fname)
 renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
 print(checkImageSimilarity(png_fname))
 
+print("issue 2815 cip labels")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+fname = "cip_labels_2815"
+cdxml_png_fname = fname + "_cdxml.png"
+cdxml_fname = joinPathPy("molecules/%s.cdxml" % fname, __file__)
+mol = indigo.loadMoleculeFromFile(cdxml_fname)
+renderer.renderToFile(mol, joinPathPy("out/" + cdxml_png_fname, __file__))
+print(checkImageSimilarity(cdxml_png_fname))
+ket_png_fname = fname + "_ket.png"
+ket_fname = joinPathPy("molecules/%s.ket" % fname, __file__)
+mol = indigo.loadMoleculeFromFile(ket_fname)
+renderer.renderToFile(mol, joinPathPy("out/" + ket_png_fname, __file__))
+print(checkImageSimilarity(ket_png_fname))
+
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()

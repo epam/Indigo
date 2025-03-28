@@ -134,8 +134,8 @@ AtomDesc::AtomDesc()
 void AtomDesc::clear()
 {
     showLabel = showHydro = true;
-    tibegin = gibegin = -1;
-    ticount = gicount = 0;
+    tibegin = gibegin = cipBegin = -1;
+    ticount = gicount = cipCount = 0;
     attachmentPointBegin = -1;
     attachmentPointCount = 0;
     rSiteAttachmentIndexBegin = -1;
@@ -271,6 +271,7 @@ void MoleculeRenderData::clear()
     graphitems.clear();
     rings.clear();
     textitems.clear();
+    cipItems.clear();
     aam.clear();
     reactingCenters.clear();
     inversions.clear();
