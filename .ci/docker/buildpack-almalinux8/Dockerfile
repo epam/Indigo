@@ -1,12 +1,12 @@
 FROM almalinux:8
 
 ARG DEVTOOLSET_VERSION=11
-ARG GIT_VERSION=227
 
-RUN yum install -y epel-release centos-release-scl
-RUN rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo
+RUN yum install -y yum-utils cmake gcc gcc-c++ libstdc++ python3.12 python3.12-pip git
+RUN alternatives --set python /usr/bin/python3.12
+RUN alternatives --set python3 /usr/bin/python3.12
 RUN yum update -y
-RUN yum install -y gcc-toolset-${DEVTOOLSET_VERSION}-gcc-c++ gcc-toolset-${DEVTOOLSET_VERSION}-libasan-devel gcc-toolset-${DEVTOOLSET_VERSION}-liblsan-devel freetype-devel fontconfig-devel make python3 rh-git${GIT_VERSION}
+RUN yum install -y gcc-toolset-${DEVTOOLSET_VERSION}-gcc-c++ gcc-toolset-${DEVTOOLSET_VERSION}-libasan-devel gcc-toolset-${DEVTOOLSET_VERSION}-liblsan-devel freetype-devel fontconfig-devel make python3
 RUN yum clean -y all
 RUN echo $'leak:libfontconfig\nleak:libc\n' >> /opt/external.supp
 
