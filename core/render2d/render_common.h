@@ -130,7 +130,8 @@ namespace indigo
             RIT_SGROUP,
             RIT_DATASGROUP,
             RIT_COMMENT,
-            RIT_TITLE
+            RIT_TITLE,
+            RIT_CIP
         };
 
         RenderItem();
@@ -238,6 +239,7 @@ namespace indigo
 
         int tibegin, ticount;
         int gibegin, gicount;
+        int cipBegin, cipCount;
         int attachmentPointBegin, attachmentPointCount;
         int rSiteAttachmentIndexBegin, rSiteAttachmentIndexCount;
 
@@ -382,6 +384,7 @@ namespace indigo
         ObjArray<Ring> rings;
         ObjArray<BondEnd> bondends;
         ObjArray<TextItem> textitems;
+        ObjArray<TextItem> cipItems;
         ObjArray<GraphItem> graphitems;
         ObjArray<RenderItemAttachmentPoint> attachmentPoints;
         ObjArray<RenderItemRSiteAttachmentIndex> rSiteAttachmentIndices;
@@ -570,6 +573,7 @@ namespace indigo
         bool showNeighborArcs;
         bool showAtomIds;
         bool showValences;
+        bool showCIPLabels;
         bool atomColoring;
         STEREO_STYLE stereoMode;
         bool showReactingCenterUnchanged;

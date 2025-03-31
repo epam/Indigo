@@ -132,6 +132,7 @@ namespace indigo
         int _findClosestBox(Vec2f& p, int aid, const Vec2f& sz, float mrg, int skip = -1);
         void _preparePseudoAtom(int aid, int color, bool highlighted);
         void _prepareChargeLabel(int aid, int color, bool highlighted);
+        void _prepareCIPLabel(int aid, int color, bool highlighted);
         void _prepareLabelText(int aid);
         void _prepareAAM();
         int _pushTextItem(RenderItem::TYPE type, int color, bool highlighted);
@@ -140,6 +141,8 @@ namespace indigo
         int _pushGraphItem(RenderItem::TYPE type, int color, bool highlighted);
         int _pushGraphItem(AtomDesc& ad, RenderItem::TYPE type, int color, bool highlighted);
         int _pushGraphItem(Sgroup& ad, RenderItem::TYPE type, int color = CWC_BASE);
+        int _pushCIPItem(int color, bool highlighted);
+        int _pushCIPItem(AtomDesc& ad, int color, bool highlighted);
         const char* _valenceText(const int valence);
         float _ctghalf(float cs);
         void _drawBond(int b);
