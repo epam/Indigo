@@ -215,7 +215,7 @@ BingoPgCommon::BingoSessionHandler::BingoSessionHandler(Oid func_id)
     {
         schema_name = get_namespace_name(get_func_namespace(func_id));
     }
-    BINGO_PG_HANDLE(pfree(schema_name); throw Error("internal error while trying get namespace name: %s", message));
+    BINGO_PG_HANDLE(throw Error("internal error while trying get namespace name: %s", message));
 
     _bingoContext = std::make_unique<BingoContext>(0);
     _mangoContext = std::make_unique<MangoContext>(*_bingoContext.get());
