@@ -633,7 +633,7 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
             mol.meta().addMetaObject(new SimpleGraphicsObject(SimpleGraphicsObject::ERectangle, prim.first));
             break;
         case kCDXGraphicType_Oval:
-            //mol.meta().addMetaObject(new SimpleGraphicsObject(SimpleGraphicsObject::EEllipse, prim.first));
+            // mol.meta().addMetaObject(new SimpleGraphicsObject(SimpleGraphicsObject::EEllipse, prim.first));
             break;
         }
     }

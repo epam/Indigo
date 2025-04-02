@@ -1140,9 +1140,9 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
             Vec2f v2(pos.x + _bond_length / 2, pos.y + _bond_length / 2);
             std::string pos_str = std::to_string(pos.x) + " " + std::to_string(pos.y);
             Rect2f bbox(v1, v2);
-            //std::string bbox_str = boundingBoxToString(bbox);
-            //t->SetAttribute("p", pos_str.c_str());
-            //t->SetAttribute("BoundingBox", bbox_str.c_str());
+            // std::string bbox_str = boundingBoxToString(bbox);
+            // t->SetAttribute("p", pos_str.c_str());
+            // t->SetAttribute("BoundingBox", bbox_str.c_str());
             t->SetAttribute("LabelJustification", "Left");
             t->SetAttribute("LabelAlignment", "Above");
             XMLElement* s = _doc->NewElement("s");
