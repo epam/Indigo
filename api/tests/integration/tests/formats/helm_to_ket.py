@@ -48,6 +48,7 @@ helm_data = {
     "helm_smiles_no_ap": "CHEM1{[P(O)(O)(=O)O]}$$$$V2.0",
     "helm_any_chem": "CHEM1{*}|CHEM2{*}$$$$V2.0",
     "helm_2818": "RNA1{R(A,C,G,U)P.R(C,G,U)P.R(A,G,U)P.R(A,C,U)P.R(G,U)P.R(A,U)P.R(C,U)P}$$$$V2.0",
+    "helm_2826": "RNA1{[dR](A,C,G,T)P.[dR](A,G,T)P.[dR](A,T)P}|RNA2{R(A,C,G,U)P.R(A,C,U)P.R(A,U)[Ssp]}|RNA3{[RSpabC](A,U)P}$RNA1,RNA2,2:pair-8:pair|RNA1,RNA2,5:pair-5:pair|RNA2,RNA1,2:pair-8:pair$$$V2.0",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -55,18 +56,22 @@ lib = indigo.loadMonomerLibraryFromFile(
 )
 
 for filename in sorted(helm_data.keys()):
-    mol = indigo.loadHelm(helm_data[filename], lib)
-    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #     file.write(mol.json())
-    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
-        ket_ref = file.read()
-    ket = mol.json()
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print(filename + ".ket:SUCCEED")
-    else:
-        print(filename + ".ket:FAILED")
-        print(diff)
+    try:
+        mol = indigo.loadHelm(helm_data[filename], lib)
+        # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+        #     file.write(mol.json())
+        with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
+            ket_ref = file.read()
+        ket = mol.json()
+        diff = find_diff(ket_ref, ket)
+        if not diff:
+            print(filename + ".ket:SUCCEED")
+        else:
+            print(filename + ".ket:FAILED")
+            print(diff)
+    except IndigoException as e:
+        text = getIndigoExceptionText(e)
+        print(filename + ".ket:FAILED - " + text)
 
 helm_errors = {
     "PEPTIDE1{A'2'}$$$$V2.0": "Repeating not supported now.",

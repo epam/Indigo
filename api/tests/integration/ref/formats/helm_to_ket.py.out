@@ -1,5 +1,6 @@
 *** HELM to KET ***
 helm_2818.ket:SUCCEED
+helm_2826.ket:SUCCEED
 helm_aminoacids_variants.ket:SUCCEED
 helm_annotations.ket:SUCCEED
 helm_any_chem.ket:SUCCEED

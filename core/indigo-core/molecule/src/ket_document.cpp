@@ -70,7 +70,7 @@ std::unique_ptr<KetBaseMonomer>& KetDocument::addMonomer(const std::string& alia
     return addMonomer(id, alias, template_id);
 }
 
-const std::unique_ptr<KetBaseMonomer>& KetDocument::getMonomerById(const std::string& id) const
+std::unique_ptr<KetBaseMonomer>& KetDocument::getMonomerById(const std::string& id)
 {
     auto it = _monomers.find(id);
     if (it == _monomers.end())
@@ -98,6 +98,13 @@ void KetDocument::addMonomerTemplate(const MonomerTemplate& monomer_template)
     _template_id_to_type.emplace(monomer_template.id(), KetBaseMonomerTemplate::TemplateType::MonomerTemplate);
     _templates_ids.emplace_back(monomer_template.id());
     it.first->second.copy(monomer_template);
+}
+
+bool KetDocument::hasAmbiguousMonomerTemplateWithId(const std::string& id) const
+{
+    if (_ambiguous_templates.find(id) == _ambiguous_templates.end())
+        return false;
+    return true;
 }
 
 KetAmbiguousMonomerTemplate& KetDocument::addAmbiguousMonomerTemplate(const std::string& subtype, const std::string& id, const std::string& name,

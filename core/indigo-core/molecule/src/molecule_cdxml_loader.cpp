@@ -482,6 +482,39 @@ void MoleculeCdxmlLoader::_checkFragmentConnection(int node_id, int bond_id)
             fn.node_id_to_connection_idx.emplace(pid, fn.connections.size());
             fn.connections.push_back(_ExtConnection{bond_id, pid, -1});
         }
+        else if (is_fragment(fn) && fn.ext_connections.size() > 1)
+        {
+            int connectionIndex = 0;
+            for (const auto& connection : fn.connections)
+            {
+                if (connection.bond_id == bond_id)
+                {
+                    break;
+                }
+                ++connectionIndex;
+            }
+            fn.bond_id_to_connection_idx.emplace(bond_id, connectionIndex);
+
+            int externalNode = -1;
+            for (const auto& extConnection : fn.ext_connections)
+            {
+                bool used = false;
+                for (const auto& usedIDs : fn.node_id_to_connection_idx)
+                {
+                    if (extConnection == usedIDs.first)
+                    {
+                        used = true;
+                        break;
+                    }
+                }
+                if (!used)
+                {
+                    externalNode = extConnection;
+                    break;
+                }
+            }
+            fn.node_id_to_connection_idx.emplace(externalNode, connectionIndex);
+        }
         else
             throw Error("Unsupported node connectivity for bond id: %d", bond_id);
     }
@@ -511,10 +544,7 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
             if (_fragment_nodes.size())
             {
                 auto& fn = nodes[_fragment_nodes.back()];
-                if (fn.connections.size() == 0)
-                {
-                    fn.ext_connections.push_back(node.id);
-                }
+                fn.ext_connections.push_back(node.id);
             }
             else
             {
@@ -955,7 +985,6 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
         if (_pmol)
         {
             atom_idx = _pmol->addAtom(atom.element);
-
             if (atom.type == kCDXNodeType_NamedAlternativeGroup)
                 mol.allowRGroupOnRSite(atom_idx, atom.rg_index);
 
@@ -966,6 +995,11 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                 _pmol->setExplicitValence(atom_idx, atom.valence);
             _pmol->setAtomRadical(atom_idx, atom.radical);
             _pmol->setAtomIsotope(atom_idx, atom.isotope);
+            const auto it = kIndexToCIPDesc.find(atom.stereo);
+            if (it != kIndexToCIPDesc.end())
+            {
+                _pmol->setAtomCIP(atom_idx, it->second);
+            }
             if (atom.type == kCDXNodeType_GenericNickname || atom.element == ELEM_PSEUDO)
                 _pmol->setPseudoAtom(atom_idx, atom.label.c_str());
             switch (atom.enchanced_stereo)
