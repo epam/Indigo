@@ -45,6 +45,7 @@ namespace indigo_cpp
         std::string cml() const;
 
         std::string inchi() const;
+        std::string inchiKey() const;
 
         virtual std::string ctfile() const = 0;
 
