@@ -693,7 +693,7 @@ CN_Bond-S-GRP.rxn
                     <n id="19" NodeType="ExternalConnectionPoint"/>
                     <b id="21" B="19" E="5"/>
                 </fragment>
-                <t p="0.000000 -0.000000" BoundingBox="-15.000000 15.000000 15.000000 -15.000000" LabelJustification="Left" LabelAlignment="Above">
+                <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R1</s>
                 </t>
             </n>
@@ -711,7 +711,7 @@ CN_Bond-S-GRP.rxn
                     <n id="26" NodeType="ExternalConnectionPoint"/>
                     <b id="28" B="26" E="9"/>
                 </fragment>
-                <t p="0.000000 -0.000000" BoundingBox="-15.000000 15.000000 15.000000 -15.000000" LabelJustification="Left" LabelAlignment="Above">
+                <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R2</s>
                 </t>
             </n>
@@ -735,7 +735,7 @@ CN_Bond-S-GRP.rxn
                     <n id="34" NodeType="ExternalConnectionPoint"/>
                     <b id="36" B="34" E="14"/>
                 </fragment>
-                <t p="0.000000 -0.000000" BoundingBox="-15.000000 15.000000 15.000000 -15.000000" LabelJustification="Left" LabelAlignment="Above">
+                <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R2</s>
                 </t>
             </n>
@@ -745,7 +745,7 @@ CN_Bond-S-GRP.rxn
                     <n id="38" NodeType="ExternalConnectionPoint"/>
                     <b id="40" B="38" E="12"/>
                 </fragment>
-                <t p="0.000000 -0.000000" BoundingBox="-15.000000 15.000000 15.000000 -15.000000" LabelJustification="Left" LabelAlignment="Above">
+                <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R1</s>
                 </t>
             </n>
@@ -794,7 +794,7 @@ CN_Bond-S-GRP.rxn
                     <n id="19" NodeType="ExternalConnectionPoint"/>
                     <b id="21" B="19" E="5"/>
                 </fragment>
-                <t p="0.000000 -0.000000" BoundingBox="-15.000000 15.000000 15.000000 -15.000000" LabelJustification="Left" LabelAlignment="Above">
+                <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R1</s>
                 </t>
             </n>
@@ -812,7 +812,7 @@ CN_Bond-S-GRP.rxn
                     <n id="26" NodeType="ExternalConnectionPoint"/>
                     <b id="28" B="26" E="9"/>
                 </fragment>
-                <t p="0.000000 -0.000000" BoundingBox="-15.000000 15.000000 15.000000 -15.000000" LabelJustification="Left" LabelAlignment="Above">
+                <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R2</s>
                 </t>
             </n>
@@ -836,7 +836,7 @@ CN_Bond-S-GRP.rxn
                     <n id="34" NodeType="ExternalConnectionPoint"/>
                     <b id="36" B="34" E="14"/>
                 </fragment>
-                <t p="0.000000 -0.000000" BoundingBox="-15.000000 15.000000 15.000000 -15.000000" LabelJustification="Left" LabelAlignment="Above">
+                <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R2</s>
                 </t>
             </n>
@@ -846,7 +846,7 @@ CN_Bond-S-GRP.rxn
                     <n id="38" NodeType="ExternalConnectionPoint"/>
                     <b id="40" B="38" E="12"/>
                 </fragment>
-                <t p="0.000000 -0.000000" BoundingBox="-15.000000 15.000000 15.000000 -15.000000" LabelJustification="Left" LabelAlignment="Above">
+                <t LabelJustification="Left" LabelAlignment="Above">
                     <s>R1</s>
                 </t>
             </n>

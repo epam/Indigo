@@ -603,7 +603,7 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
             mol.meta().addMetaObject(new SimpleGraphicsObject(SimpleGraphicsObject::ERectangle, prim.first));
             break;
         case kCDXGraphicType_Oval:
-            mol.meta().addMetaObject(new SimpleGraphicsObject(SimpleGraphicsObject::EEllipse, prim.first));
+            //mol.meta().addMetaObject(new SimpleGraphicsObject(SimpleGraphicsObject::EEllipse, prim.first));
             break;
         }
     }
@@ -842,13 +842,13 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(BaseCDXElement& first_elem, bool n
             for (size_t node_idx = fragment_start_idx; node_idx < nodes.size(); ++node_idx)
             {
                 auto& node = nodes[node_idx];
-                if (node.type == kCDXNodeType_Element || node.type == kCDXNodeType_ElementList)
+                if (node.type == kCDXNodeType_Element || node.type == kCDXNodeType_ElementList || node.type == kCDXNodeType_GenericNickname)
                 {
                     bracket.bracketed_list.push_back(node.id);
                 }
             }
             _parseLabel(elem, bracket.label);
-            if (fragment_start_idx - 1 > 0 && fragment_start_idx - 1 < static_cast<int>(nodes.size()))
+            if (fragment_start_idx > 0 && fragment_start_idx - 1 < static_cast<int>(nodes.size()))
             {
                 auto parentNode = this->nodes[fragment_start_idx - 1];
                 bracket.superatom_position.copy(parentNode.pos);

@@ -1140,9 +1140,9 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
             Vec2f v2(pos.x + _bond_length / 2, pos.y + _bond_length / 2);
             std::string pos_str = std::to_string(pos.x) + " " + std::to_string(pos.y);
             Rect2f bbox(v1, v2);
-            std::string bbox_str = boundingBoxToString(bbox);
-            t->SetAttribute("p", pos_str.c_str());
-            t->SetAttribute("BoundingBox", bbox_str.c_str());
+            //std::string bbox_str = boundingBoxToString(bbox);
+            //t->SetAttribute("p", pos_str.c_str());
+            //t->SetAttribute("BoundingBox", bbox_str.c_str());
             t->SetAttribute("LabelJustification", "Left");
             t->SetAttribute("LabelAlignment", "Above");
             XMLElement* s = _doc->NewElement("s");
@@ -2111,7 +2111,7 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
 
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
-    out.printf("%f %f %f %f", _scale * bbox.left(), -_scale * bbox.top(), _scale * bbox.right(), -_scale * bbox.bottom());
+    out.printf("%f %f %f %f", _scale * bbox.left(), -_scale * bbox.bottom(), _scale * bbox.right(), -_scale * bbox.top());
     buf.push(0);
     _page->SetAttribute("BoundingBox", buf.ptr());
     endPage();

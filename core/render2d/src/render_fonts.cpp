@@ -146,8 +146,8 @@ float RenderContext::getSpaceWidth()
     // cairo ignores trailing spaces, but takes in account leading spaces in cairo_text_extents, so we need to work around
     std::lock_guard<std::mutex> _lock(_cairo_mutex);
     cairo_text_extents_t te, te_;
-    cairo_text_extents(_cr, " _", &te);
-    cairo_text_extents(_cr, "_", &te_);
+    cairo_text_extents(_cr, ". .", &te);
+    cairo_text_extents(_cr, "..", &te_);
     cairoCheckStatus();
     return (float)(te.width - te_.width);
 }
