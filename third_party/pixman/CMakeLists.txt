@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.4...3.31)
 project(pixman C)
 
 file (GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS "pixman/*.c" "pixman/dither/*.c")
