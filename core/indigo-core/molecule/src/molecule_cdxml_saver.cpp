@@ -1509,8 +1509,8 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
             ecenter.y = -ecenter.y;
             min_axis.y = -min_axis.y;
             maj_axis.y = -maj_axis.y;
-            // Rect2f bbox_new(ecenter, bbox.rightTop());
-            // bbox.copy(bbox_new);
+            Rect2f bbox_new(ecenter, bbox.rightTop());
+            bbox.copy(bbox_new);
             attrs.insert("Center3D", std::to_string(ecenter.x) + " " + std::to_string(ecenter.y));
             attrs.insert("MajorAxisEnd3D", std::to_string(maj_axis.x) + " " + std::to_string(maj_axis.y));
             attrs.insert("MinorAxisEnd3D", std::to_string(min_axis.x) + " " + std::to_string(min_axis.y));
