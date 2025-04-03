@@ -1491,29 +1491,18 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
         switch (simple_obj._mode)
         {
         case SimpleGraphicsObject::EEllipse: {
-            auto ecenter = bbox.center();
+            auto sbox = Rect2f(Vec2f(bbox.left() * _scale, -bbox.bottom() * _scale), Vec2f(bbox.right() * _scale, -bbox.top() * _scale));
+            auto ecenter = sbox.center();
             Vec2f maj_axis, min_axis;
-            if (bbox.width() > bbox.height())
-            {
-                maj_axis.copy(bbox.rightMiddle());
-                min_axis.copy(bbox.topMiddle());
-            }
-            else
-            {
-                maj_axis.copy(bbox.topMiddle());
-                min_axis.copy(bbox.rightMiddle());
-            }
-            ecenter.scale(_bond_length);
-            min_axis.scale(_bond_length);
-            maj_axis.scale(_bond_length);
-            ecenter.y = -ecenter.y;
-            min_axis.y = -min_axis.y;
-            maj_axis.y = -maj_axis.y;
-            Rect2f bbox_new(ecenter, bbox.rightTop());
-            bbox.copy(bbox_new);
-            attrs.insert("Center3D", std::to_string(ecenter.x) + " " + std::to_string(ecenter.y));
-            attrs.insert("MajorAxisEnd3D", std::to_string(maj_axis.x) + " " + std::to_string(maj_axis.y));
-            attrs.insert("MinorAxisEnd3D", std::to_string(min_axis.x) + " " + std::to_string(min_axis.y));
+            maj_axis.x = sbox.right();
+            maj_axis.y = ecenter.y;
+
+            min_axis.x = ecenter.x;
+            min_axis.y = sbox.top();
+
+            attrs.insert("Center3D", std::to_string(ecenter.x) + " " + std::to_string(ecenter.y) + " 0");
+            attrs.insert("MajorAxisEnd3D", std::to_string(maj_axis.x) + " " + std::to_string(maj_axis.y) + " 0");
+            attrs.insert("MinorAxisEnd3D", std::to_string(min_axis.x) + " " + std::to_string(min_axis.y) + " 0");
             attrs.insert("GraphicType", "Oval");
         }
         break;
