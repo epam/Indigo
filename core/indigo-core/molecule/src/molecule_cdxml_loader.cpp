@@ -1623,16 +1623,12 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
 
     Vec3f center3d, majAxis3d, minAxis3d;
 
-
     std::unordered_map<std::string, std::function<void(const std::string&)>> graphic_dispatcher = {
-        {"SupersededBy", superseded_lambda},  {"BoundingBox", segLambda(graph_bbox.first, graph_bbox.second)},
-        {"GraphicType", graphic_type_lambda}, {"SymbolType", symbol_type_lambda},
-        {"ArrowType", arrow_type_lambda},
-        {"HeadSize", head_size_lambda},
-        {"Center3D", posLambda(center3d)},    
-        {"MajorAxisEnd3D", posLambda(majAxis3d)},
-        {"MinorAxisEnd3D", posLambda(minAxis3d)}
-    };
+        {"SupersededBy", superseded_lambda},     {"BoundingBox", segLambda(graph_bbox.first, graph_bbox.second)},
+        {"GraphicType", graphic_type_lambda},    {"SymbolType", symbol_type_lambda},
+        {"ArrowType", arrow_type_lambda},        {"HeadSize", head_size_lambda},
+        {"Center3D", posLambda(center3d)},       {"MajorAxisEnd3D", posLambda(majAxis3d)},
+        {"MinorAxisEnd3D", posLambda(minAxis3d)}};
 
     applyDispatcher(*elem.firstProperty().get(), graphic_dispatcher);
 
