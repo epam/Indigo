@@ -1621,10 +1621,18 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
     AutoInt head_size = 0;
     auto head_size_lambda = [&head_size](const std::string& data) { head_size = data; };
 
+    Vec3f center3d, majAxis3d, minAxis3d;
+
+
     std::unordered_map<std::string, std::function<void(const std::string&)>> graphic_dispatcher = {
         {"SupersededBy", superseded_lambda},  {"BoundingBox", segLambda(graph_bbox.first, graph_bbox.second)},
         {"GraphicType", graphic_type_lambda}, {"SymbolType", symbol_type_lambda},
-        {"ArrowType", arrow_type_lambda},     {"HeadSize", head_size_lambda}};
+        {"ArrowType", arrow_type_lambda},
+        {"HeadSize", head_size_lambda},
+        {"Center3D", posLambda(center3d)},    
+        {"MajorAxisEnd3D", posLambda(majAxis3d)},
+        {"MinorAxisEnd3D", posLambda(minAxis3d)}
+    };
 
     applyDispatcher(*elem.firstProperty().get(), graphic_dispatcher);
 
@@ -1679,6 +1687,10 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
     }
     break;
     case kCDXGraphicType_Oval:
+        graph_bbox.second.y = minAxis3d.y;
+        graph_bbox.second.x = majAxis3d.x;
+        graph_bbox.first.x = majAxis3d.x - (graph_bbox.second.x - center3d.x) * 2;
+        graph_bbox.first.y = minAxis3d.y - (graph_bbox.second.y - center3d.y) * 2;
     case kCDXGraphicType_Arc:
     case kCDXGraphicType_Rectangle:
         _primitives.push_back(std::make_pair(graph_bbox, graphic_type));
