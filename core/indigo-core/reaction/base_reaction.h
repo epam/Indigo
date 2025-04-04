@@ -314,10 +314,7 @@ namespace indigo
         virtual bool isQueryReaction();
         virtual bool isPathwayReaction();
 
-        BaseMolecule& getBaseMolecule(int index)
-        {
-            return *_allMolecules.at(index);
-        }
+        BaseMolecule& getBaseMolecule(int index);
 
         virtual std::unique_ptr<BaseReaction> getBaseReaction(int index) = 0;
 

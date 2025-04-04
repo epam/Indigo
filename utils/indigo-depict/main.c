@@ -1102,6 +1102,18 @@ int main(int argc, char* argv[])
                 }
                 indigoFree(writer);
             }
+            else if (p.out_ext == OEXT_SDF)
+            {
+                writer = indigoWriteFile(p.outfile);
+                auto it_id = indigoIterateMolecules(obj);
+                while (indigoHasNext(it_id))
+                {
+                    const auto robj = indigoNext(it_id);
+                    const auto mol_id = indigoClone(robj);
+                    auto rc = indigoSdfAppend(writer, mol_id);
+                }
+                indigoFree(writer);
+            }
             else
             {
                 indigoSaveJsonToFile(obj, p.outfile);
