@@ -119,7 +119,6 @@ print("*** CDXML to CDX ***")
 root_cdxml = joinPathPy("cdxml/", __file__)
 files = [
     "AlcoholOxidation_Rxn1",
-    "AlcoholOxidation_Rxn1",
     "AlcoholOxidation_Rxn2",
     "Amidation_Rxn1",
     "Amidation_Rxn2",

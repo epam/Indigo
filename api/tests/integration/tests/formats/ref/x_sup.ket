@@ -1,0 +1,37 @@
+{
+    "ket_version": "2.0.0",
+    "root": {
+        "nodes": [
+            {
+                "type": "text",
+                "boundingBox": {
+                    "x": 6.925000190734863,
+                    "y": -7.525000095367432,
+                    "width": 0.0,
+                    "height": 0.0
+                },
+                "paragraphs": [
+                    {
+                        "parts": [
+                            {
+                                "text": "X",
+                                "font": {
+                                    "size": 12,
+                                    "color": "#0"
+                                }
+                            },
+                            {
+                                "text": "2",
+                                "superscript": true,
+                                "font": {
+                                    "size": 12,
+                                    "color": "#0"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
