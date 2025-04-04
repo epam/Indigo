@@ -609,11 +609,5 @@
         <arrow id="283" BoundingBox="312.793304 468.247559 102.793289 468.247559" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="312.793304 468.247559 0.000000" Tail3D="102.793289 468.247559 0.000000"/>
         <arrow id="286" BoundingBox="1035.140625 799.760315 825.140564 799.760254" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="1035.140625 799.760315 0.000000" Tail3D="825.140564 799.760254 0.000000"/>
         <arrow id="289" BoundingBox="309.415466 166.734787 99.415451 166.734787" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="309.415466 166.734787 0.000000" Tail3D="99.415451 166.734787 0.000000"/>
-        <scheme>
-            <step ReactionStepArrows="280"/>
-            <step ReactionStepArrows="283"/>
-            <step ReactionStepArrows="286"/>
-            <step ReactionStepArrows="289"/>
-        </scheme>
     </page>
 </CDXML>

@@ -23,6 +23,7 @@
 #include "molecule/ket_document_json_loader.h"
 #include "molecule/meta_commons.h"
 #include "molecule/molecule_dearom.h"
+#include "reaction/pathway_reaction.h"
 #include "reaction/reaction_json_saver.h"
 
 using namespace indigo;
@@ -363,7 +364,7 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<
     if (inv_mappings != 0)
         inv_mappings->clear();
 
-    for (int i = other.begin(); i < other.end(); i = other.next(i))
+    for (int i = other._allMolecules.begin(); i < other._allMolecules.end(); i = other._allMolecules.next(i))
     {
         BaseMolecule& rmol = other.getBaseMolecule(i);
         QS_DEF(Array<int>, inv_mapping);
@@ -439,6 +440,11 @@ bool BaseReaction::isPathwayReaction()
     return false;
 }
 
+BaseMolecule& BaseReaction::getBaseMolecule(int index)
+{
+    return isPathwayReaction() ? asPathwayReaction().getMolecule(index) : *_allMolecules.at(index);
+}
+
 void BaseReaction::remove(int i)
 {
     int side = _types[i];
@@ -465,22 +471,22 @@ void BaseReaction::remove(int i)
 
 int BaseReaction::begin()
 {
-    return _nextElement(REACTANT | PRODUCT | CATALYST | INTERMEDIATE | UNDEFINED, -1);
+    return isPathwayReaction() ? 0 : _nextElement(REACTANT | PRODUCT | CATALYST | INTERMEDIATE | UNDEFINED, -1);
 }
 
 int BaseReaction::end()
 {
-    return _allMolecules.end();
+    return isPathwayReaction() ? asPathwayReaction().getMoleculeCount() : _allMolecules.end();
 }
 
 int BaseReaction::next(int index)
 {
-    return _nextElement(REACTANT | PRODUCT | CATALYST | INTERMEDIATE | UNDEFINED, index);
+    return isPathwayReaction() ? (index + 1) : _nextElement(REACTANT | PRODUCT | CATALYST | INTERMEDIATE | UNDEFINED, index);
 }
 
 int BaseReaction::count()
 {
-    return _allMolecules.size();
+    return isPathwayReaction() ? asPathwayReaction().getMoleculeCount() : _allMolecules.size();
 }
 
 int BaseReaction::findMolecule(BaseMolecule* mol)
