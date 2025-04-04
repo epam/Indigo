@@ -1683,10 +1683,10 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
     }
     break;
     case kCDXGraphicType_Oval:
-        graph_bbox.second.y = minAxis3d.y;
-        graph_bbox.second.x = majAxis3d.x;
-        graph_bbox.first.x = majAxis3d.x - (graph_bbox.second.x - center3d.x) * 2;
-        graph_bbox.first.y = minAxis3d.y - (graph_bbox.second.y - center3d.y) * 2;
+        graph_bbox.first.y = minAxis3d.y;
+        graph_bbox.first.x = majAxis3d.x;
+        graph_bbox.second.x = majAxis3d.x - (majAxis3d.x - center3d.x) * 2;
+        graph_bbox.second.y = minAxis3d.y - (minAxis3d.y - center3d.y) * 2;
     case kCDXGraphicType_Arc:
     case kCDXGraphicType_Rectangle:
         _primitives.push_back(std::make_pair(graph_bbox, graphic_type));

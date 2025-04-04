@@ -1550,8 +1550,7 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
             _current->LinkEndChild(t);
             t->SetAttribute("id", id);
             t->SetAttribute("p", pos_str.c_str());
-            t->SetAttribute("BoundingBox", box_str.c_str());
-            t->SetAttribute("LineHeight", "auto");
+            // t->SetAttribute("BoundingBox", box_str.c_str());
             if (align.has_value())
             {
                 switch (align.value())
@@ -1567,6 +1566,9 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
                     break;
                 case SimpleTextObject::TextAlignment::EFull:
                     t->SetAttribute("Justification", "Full");
+                    break;
+                default:
+                    t->SetAttribute("Justification", "Left");
                     break;
                 }
             }
