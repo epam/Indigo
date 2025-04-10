@@ -45,8 +45,8 @@ namespace indigo
                 auto fs_it = lhs.find(fs);
                 if (fs_it != lhs.end())
                 {
-                    // Update value if it is already present
-                    if (fs_it->first.hasValue())
+                    // Update value
+                    if (fs.first.hasValue())
                     {
                         lhs.erase(fs_it);
                         lhs.insert(fs);
@@ -84,8 +84,8 @@ namespace indigo
                 auto fs_it = lhs.find(fs);
                 if (fs_it != lhs.end())
                 {
-                    // Update value if it is already present
-                    if (fs_it->first.hasValue())
+                    // Update value
+                    if (fs.first.hasValue())
                     {
                         lhs.erase(fs_it);
                         lhs.insert(fs);
