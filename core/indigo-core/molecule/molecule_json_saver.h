@@ -56,7 +56,7 @@ namespace indigo
         static void saveFormatMode(KETVersion& version, Array<char>& output);
 
         static void saveTextV1(JsonWriter& writer, const SimpleTextObject& text_obj);
-        static void saveText(JsonWriter& writer, const SimpleTextObject& text_obj);
+        static void saveTextV2(JsonWriter& writer, const SimpleTextObject& text_obj);
         static void saveAlignment(JsonWriter& writer, SimpleTextObject::TextAlignment alignment);
         static void saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET& fss);
         static void saveParagraphs(JsonWriter& writer, const SimpleTextObject& text_obj);

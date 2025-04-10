@@ -2103,7 +2103,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             if (ket_version.major == KETVersion1.major)
                 saveTextV1(writer, *ptext_obj);
             else
-                saveText(writer, *ptext_obj);
+                saveTextV2(writer, *ptext_obj);
             writer.EndObject(); // end node
             break;
         }
@@ -2260,7 +2260,7 @@ void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const SimpleTextObject& t
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveText(JsonWriter& writer, const SimpleTextObject& text_obj)
+void MoleculeJsonSaver::saveTextV2(JsonWriter& writer, const SimpleTextObject& text_obj)
 {
     writer.Key("boundingBox");
     writer.WriteRect(text_obj.boundingBox());
