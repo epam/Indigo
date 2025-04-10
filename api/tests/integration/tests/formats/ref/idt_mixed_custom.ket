@@ -119,9 +119,6 @@
                 "$ref": "monomerTemplate-T___Thymine"
             },
             {
-                "$ref": "monomerTemplate-U___Uracil"
-            },
-            {
                 "$ref": "monomerTemplate-dR___Deoxy-Ribose"
             },
             {
@@ -963,165 +960,6 @@
             }
         ]
     },
-    "monomerTemplate-U___Uracil": {
-        "type": "monomerTemplate",
-        "id": "U___Uracil",
-        "class": "Base",
-        "classHELM": "RNA",
-        "fullName": "Uracil",
-        "alias": "U",
-        "naturalAnalogShort": "U",
-        "attachmentPoints": [
-            {
-                "attachmentAtom": 3,
-                "type": "left",
-                "leavingGroup": {
-                    "atoms": [
-                        8
-                    ]
-                }
-            }
-        ],
-        "atoms": [
-            {
-                "label": "C",
-                "location": [
-                    1.861700,
-                    1.349900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    1.111700,
-                    0.050900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.388300,
-                    0.050900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    -1.138200,
-                    1.350000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.388200,
-                    2.649000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    1.111700,
-                    2.648900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    3.061800,
-                    1.349900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    -0.988200,
-                    3.688200,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    -2.338300,
-                    1.350000,
-                    0.000000
-                ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 2,
-                "atoms": [
-                    0,
-                    6
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    5
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    1
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    1,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    3
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    4
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    8
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    4,
-                    7
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    4,
-                    5
-                ]
-            }
-        ]
-    },
     "monomerTemplate-dR___Deoxy-Ribose": {
         "type": "monomerTemplate",
         "id": "dR___Deoxy-Ribose",
@@ -1457,10 +1295,6 @@
             {
                 "templateId": "T___Thymine",
                 "ratio": 50.000000
-            },
-            {
-                "templateId": "U___Uracil",
-                "ratio": 50.000000
             }
         ]
     },
@@ -1481,9 +1315,6 @@
             },
             {
                 "templateId": "T___Thymine"
-            },
-            {
-                "templateId": "U___Uracil"
             }
         ]
     }

@@ -1137,6 +1137,8 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         {
                             if (sugar == "R" && template_alias == "T") // U instead of T for RNA
                                 template_alias = "U";
+                            else if (template_alias == "U") // skip U for DNA
+                                continue;
                             auto& template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Base, template_alias);
                             if (template_id.size() == 0)
                                 throw Error("Monomer base template '%s' not found", template_alias.c_str());
