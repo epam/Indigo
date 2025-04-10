@@ -125,9 +125,17 @@ namespace indigo
     static const std::map<std::string, std::vector<std::string>> STANDARD_MIXED_PEPTIDES = {
         {"B", {"D", "N"}}, {"J", {"L", "I"}}, {"Z", {"E", "Q"}}, {"X", {"A", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M",
                                                                         "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "Y"}}};
-    static const std::map<std::string, std::vector<std::string>> STANDARD_MIXED_BASES = {
-        {"R", {"A", "G"}},      {"Y", {"C", "T"}},      {"M", {"A", "C"}},      {"K", {"G", "T"}},      {"S", {"G", "C"}},          {"W", {"A", "T"}},
-        {"H", {"A", "C", "T"}}, {"B", {"C", "G", "T"}}, {"V", {"A", "C", "G"}}, {"D", {"A", "G", "T"}}, {"N", {"A", "C", "G", "T"}}};
+    static const std::map<std::string, std::vector<std::string>> STANDARD_MIXED_BASES = {{"R", {"A", "G"}},
+                                                                                         {"Y", {"C", "T", "U"}},
+                                                                                         {"M", {"A", "C"}},
+                                                                                         {"K", {"G", "T", "U"}},
+                                                                                         {"S", {"G", "C"}},
+                                                                                         {"W", {"A", "T", "U"}},
+                                                                                         {"H", {"A", "C", "T", "U"}},
+                                                                                         {"B", {"C", "G", "T", "U"}},
+                                                                                         {"V", {"A", "C", "G"}},
+                                                                                         {"D", {"A", "G", "T", "U"}},
+                                                                                         {"N", {"A", "C", "G", "T", "U"}}};
     static const std::map<std::set<std::string>, std::string> STANDARD_MIXED_PEPTIDES_TO_ALIAS = {
         {{"D", "N"}, "B"},
         {{"L", "I"}, "J"},

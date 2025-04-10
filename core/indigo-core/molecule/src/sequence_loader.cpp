@@ -386,8 +386,14 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
         }
 
         std::vector<KetAmbiguousMonomerOption> options;
+        const std::string uracil_alias = "U";
+        const std::string thymine_alias = "T";
+
         for (auto template_alias : alternatives.value().get())
         {
+            // filter out uracil and thymine for DNA and RNA respectively
+            if ((seq_type == SeqType::DNASeq && template_alias == uracil_alias) || (seq_type == SeqType::RNASeq && template_alias == thymine_alias))
+                continue;
             auto& template_id = _library.getMonomerTemplateIdByAlias(monomer_class, template_alias);
             if (template_id.size() == 0)
                 throw Error("Monomer base template '%s' not found", template_alias.c_str());
