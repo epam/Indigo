@@ -356,8 +356,5 @@
             <b id="343" B="158" E="157"/>
         </fragment>
         <arrow id="165" BoundingBox="934.752075 -528.459106 469.014008 -528.459106" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="934.752075 -528.459106 0.000000" Tail3D="469.014008 -528.459106 0.000000"/>
-        <scheme>
-            <step ReactionStepReactants="4 8" ReactionStepProducts="69" ReactionStepArrows="165"/>
-        </scheme>
     </page>
 </CDXML>
