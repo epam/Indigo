@@ -61,7 +61,7 @@ for filename in files:
 root = joinPathPy("reactions/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
-files = ["pathway1", "pathway2", "pathway3"]
+files = ["pathway1", "pathway2", "pathway3", "multi", "qreaction"]
 
 files.sort()
 for filename in files:

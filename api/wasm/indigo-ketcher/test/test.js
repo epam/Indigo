@@ -1185,6 +1185,21 @@ M  END
         });
     }
 
+    {
+        test("reaction to sdf", "pathway", () => {
+            var fs = require('fs');
+            const ket = fs.readFileSync("pathway.ket");
+            let options = new indigo.MapStringString();
+            options.set('output-content-type', "chemical/x-sdf");
+            let sdf = indigo.convert(ket, "sdf", options);            
+            fs.writeFileSync("pathway.sdf", sdf);
+            const sdf_ref = fs.readFileSync("pathway.sdf");
+            assert.equal(sdf, sdf_ref.toString().trim());
+            options.delete();
+            assert(true);
+        });
+    }
+
     // Run tests
     run();
 });
