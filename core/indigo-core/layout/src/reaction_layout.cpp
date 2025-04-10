@@ -160,7 +160,7 @@ void ReactionLayout::fixLayout()
 
     float arrow_len = pmin.x - rmax.x - (2 * ReactionMarginSize());
     // if left side of product bb at left of right side of reactant bb - fix layout
-    if (invalid_layout || arrow_len != default_arrow_size)
+    if (invalid_layout || arrow_len < default_arrow_size)
     {
         ReactionLayout rl(_r, true, _options);
         rl.preserve_molecule_layout = true;
