@@ -948,7 +948,7 @@ M  END
             ad3_options.set("monomerLibrary", monomersLib);
             ad3_options.set("sequence-type", "RNA");
             const res4 = indigo.convert(bug2832_seq, "ket", ad3_options);
-            fs.writeFileSync("rna_2832_ref.ket", res4);
+            // fs.writeFileSync("rna_2832_ref.ket", res4);
             const rna_2832_ref = fs.readFileSync("rna_2832_ref.ket");
             assert.equal(res4, rna_2832_ref.toString());
             ad3_options.delete();
@@ -987,7 +987,7 @@ M  END
             let ad2_options = new indigo.MapStringString();
             ad2_options.set("output-content-type", "application/json");
             ad2_options.set("monomerLibrary", monomersLib);
-            ad2_options.set("sequence-type", "RNA");
+            ad2_options.set("sequence-type", "DNA");
             const res3 = indigo.convert(bug2816_seq, "ket", ad2_options);
             // fs.writeFileSync("dna_2816_ref.ket", res3);
             const dna_2816_ref = fs.readFileSync("dna_2816_ref.ket");
@@ -1059,7 +1059,7 @@ M  END
             const dna_ket = indigo.convert(fasta, "ket", options);
             const dna_fasta = indigo.convert(fasta, "fasta", options);
 
-            fs.writeFileSync("test_dna_ref.ket", dna_ket);
+            // fs.writeFileSync("test_dna_ref.ket", dna_ket);
             // fs.writeFileSync("test_dna_ref.fasta", dna_fasta);
 
             const dna_ket_ref = fs.readFileSync("test_dna_ref.ket");
