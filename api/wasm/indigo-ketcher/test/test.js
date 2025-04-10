@@ -942,6 +942,16 @@ M  END
             const rna_2816_ref = fs.readFileSync("rna_2816_ref.ket");
             assert.equal(res3, rna_2816_ref.toString());
             ad2_options.delete();
+            const bug2832_seq = "NBDHKWY";
+            let ad3_options = new indigo.MapStringString();
+            ad3_options.set("output-content-type", "application/json");
+            ad3_options.set("monomerLibrary", monomersLib);
+            ad3_options.set("sequence-type", "RNA");
+            const res4 = indigo.convert(bug2832_seq, "ket", ad3_options);
+            fs.writeFileSync("rna_2832_ref.ket", res4);
+            const rna_2832_ref = fs.readFileSync("rna_2832_ref.ket");
+            assert.equal(res4, rna_2832_ref.toString());
+            ad3_options.delete();
         });
 
     }
