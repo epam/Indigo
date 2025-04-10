@@ -111,49 +111,54 @@ void ReactionLayout::fixLayout()
     // Calculate rightTop of reactant bounding box
     bool invalid_layout = false;
     float cur_left = 0, cur_right = 0;
-    for (int i = _r.isRetrosyntetic() ? _r.productBegin() : _r.reactantBegin(); i != (_r.isRetrosyntetic() ? _r.productEnd() : _r.reactantEnd());
-         i = _r.isRetrosyntetic() ? _r.productNext(i) : _r.reactantNext(i))
+    if (_r.reactantsCount() && _r.productsCount())
     {
-        _r.getBaseMolecule(i).getBoundingBox(bb);
-        bboxes.push_back(bb);
-        rmax.max(bb.rightTop());
-        if (i == 0 || (bb.left() > cur_left && bb.right() > cur_right))
+        for (int i = _r.isRetrosyntetic() ? _r.productBegin() : _r.reactantBegin(); i != (_r.isRetrosyntetic() ? _r.productEnd() : _r.reactantEnd());
+             i = _r.isRetrosyntetic() ? _r.productNext(i) : _r.reactantNext(i))
         {
-            cur_left = bb.left();
-            cur_right = bb.right();
-        }
-        else
-            invalid_layout = true;
-    }
-
-    bool first_after_arrow = true;
-    // Calculate leftBottom of product bounding box
-    for (int i = _r.isRetrosyntetic() ? _r.reactantBegin() : _r.productBegin(); i != (_r.isRetrosyntetic() ? _r.reactantEnd() : _r.productEnd());
-         i = _r.isRetrosyntetic() ? _r.reactantNext(i) : _r.productNext(i))
-    {
-        _r.getBaseMolecule(i).getBoundingBox(bb);
-        bboxes.push_back(bb);
-        pmin.min(bb.leftBottom());
-        if (bb.left() > cur_left && bb.right() > cur_right)
-        {
-            if (first_after_arrow)
+            _r.getBaseMolecule(i).getBoundingBox(bb);
+            bboxes.push_back(bb);
+            rmax.max(bb.rightTop());
+            if (i == 0 || (bb.left() > cur_left && bb.right() > cur_right))
             {
-                first_after_arrow = false;
-                if (bb.left() - cur_left < default_arrow_size)
-                {
-                    invalid_layout = true;
-                    break;
-                }
+                cur_left = bb.left();
+                cur_right = bb.right();
             }
-            cur_left = bb.left();
-            cur_right = bb.right();
+            else
+                invalid_layout = true;
         }
-        else
+
+        bool first_after_arrow = true;
+        // Calculate leftBottom of product bounding box
+        for (int i = _r.isRetrosyntetic() ? _r.reactantBegin() : _r.productBegin(); i != (_r.isRetrosyntetic() ? _r.reactantEnd() : _r.productEnd());
+             i = _r.isRetrosyntetic() ? _r.reactantNext(i) : _r.productNext(i))
         {
-            invalid_layout = true;
-            break;
+            _r.getBaseMolecule(i).getBoundingBox(bb);
+            bboxes.push_back(bb);
+            pmin.min(bb.leftBottom());
+            if (bb.left() > cur_left && bb.right() > cur_right)
+            {
+                if (first_after_arrow)
+                {
+                    first_after_arrow = false;
+                    if (bb.left() - cur_left < default_arrow_size)
+                    {
+                        invalid_layout = true;
+                        break;
+                    }
+                }
+                cur_left = bb.left();
+                cur_right = bb.right();
+            }
+            else
+            {
+                invalid_layout = true;
+                break;
+            }
         }
     }
+    else
+        invalid_layout = true;
 
     if (!invalid_layout)
         invalid_layout = hasAnyIntersect(bboxes) || !validVerticalRange(bboxes);
