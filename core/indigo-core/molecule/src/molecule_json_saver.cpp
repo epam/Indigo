@@ -75,8 +75,36 @@ void printMappings(Array<int>& mapping)
 }
 
 MoleculeJsonSaver::MoleculeJsonSaver(Output& output)
-    : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false), use_native_precision(false)
+    : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false), use_native_precision(false), ket_version(KETVersion1)
 {
+}
+
+void MoleculeJsonSaver::parseFormatMode(const char* version_str, KETVersion& version)
+{
+    auto version_data = split(version_str, '.');
+    for (size_t i = 0; i < version_data.size(); ++i)
+    {
+        int val = std::stoi(version_data[i]);
+        switch (static_cast<KETVersionIndex>(i))
+        {
+        case KETVersionIndex::EMajor:
+            version.major = val;
+            break;
+        case KETVersionIndex::EMinor:
+            version.minor = val;
+            break;
+        case KETVersionIndex::EPatch:
+            version.patch = val;
+            break;
+        }
+    }
+}
+
+void MoleculeJsonSaver::saveFormatMode(KETVersion& version, Array<char>& output)
+{
+    std::string ver;
+    ver += std::to_string(version.major) + "." + std::to_string(version.minor) + "." + std::to_string(version.patch);
+    output.readString(ver.c_str(), true);
 }
 
 void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list)
@@ -1485,6 +1513,16 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     writer.StartObject();
+
+    // save KET version
+    if (ket_version.major > KETVersion1.major)
+    {
+        writer.Key("ket_version");
+        Array<char> version_str;
+        saveFormatMode(ket_version, version_str);
+        writer.String(version_str.ptr());
+    }
+
     writer.Key("root");
     writer.StartObject();
     writer.Key("nodes");
@@ -1872,7 +1910,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol)
     _output.printf("%s", result.str().c_str());
 }
 
-void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
+void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& meta)
 {
     static const std::unordered_map<int, std::string> _arrow_type2string = {
         {ReactionComponent::ARROW_BASIC, "open-angle"},
@@ -2046,29 +2084,9 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             }
             writer.Key("pos");
             writer.StartArray();
-
             auto& coords = simple_obj->_coordinates;
-
-            // point1
-            writer.StartObject();
-            writer.Key("x");
-            writeFloat(writer, coords.first.x);
-            writer.Key("y");
-            writeFloat(writer, coords.first.y);
-            writer.Key("z");
-            writer.Double(0);
-            writer.EndObject();
-
-            // point2
-            writer.StartObject();
-            writer.Key("x");
-            writeFloat(writer, coords.second.x);
-            writer.Key("y");
-            writeFloat(writer, coords.second.y);
-            writer.Key("z");
-            writer.Double(0);
-            writer.EndObject();
-
+            writer.WritePoint(coords.first);
+            writer.WritePoint(coords.second);
             writer.EndArray();
 
             // end data
@@ -2078,29 +2096,14 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
             break;
         }
         case SimpleTextObject::CID: {
-            auto simple_obj = (SimpleTextObject*)pobj;
+            auto ptext_obj = (SimpleTextObject*)pobj;
             writer.StartObject();
             writer.Key("type");
             writer.String("text");
-            writer.Key("data");
-            writer.StartObject();
-            writer.Key("content");
-            writer.String(simple_obj->_content.c_str());
-            writer.Key("position");
-            writePos(writer, simple_obj->_pos);
-
-            writer.Key("pos");
-            writer.StartArray();
-            Vec2f pos_bbox(simple_obj->_pos.x, simple_obj->_pos.y);
-            writePos(writer, pos_bbox);
-            pos_bbox.y -= simple_obj->_size.y;
-            writePos(writer, pos_bbox);
-            pos_bbox.x += simple_obj->_size.x;
-            writePos(writer, pos_bbox);
-            pos_bbox.y += simple_obj->_size.y;
-            writePos(writer, pos_bbox);
-            writer.EndArray();
-            writer.EndObject(); // end data
+            if (ket_version.major == KETVersion1.major)
+                saveTextV1(writer, *ptext_obj);
+            else
+                saveTextV2(writer, *ptext_obj);
             writer.EndObject(); // end node
             break;
         }
@@ -2148,6 +2151,278 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, MetaDataStorage& meta)
     }
 }
 
+void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const SimpleTextObject& text_obj)
+{
+    std::string content = text_obj.content();
+    if (content.empty() && text_obj.block().size())
+    {
+        // generate text from paragraphs
+        SimpleTextObjectBuilder tob;
+        auto default_fss = text_obj.fontStyles();
+        for (const auto& paragraph : text_obj.block())
+        {
+            // merge font styles: default_fss + paragraph.font_style
+            auto paragraph_fss = default_fss;
+            paragraph_fss += paragraph.font_style;
+            SimpleTextLine line;
+            line.text = paragraph.text; // single part
+            std::string_view text_view = std::string_view(line.text);
+            KETFontStatusMap style_status_map;
+            if (paragraph.font_styles.size() > 1)
+                for (auto it_fss_kvp = paragraph.font_styles.rbegin(); it_fss_kvp != paragraph.font_styles.rend(); ++it_fss_kvp)
+                {
+                    auto current_part_fss = paragraph_fss;
+                    auto prev_part_fss = paragraph_fss;
+
+                    current_part_fss += it_fss_kvp->second; // current font state
+
+                    auto it_fss_kvp_prev = it_fss_kvp != paragraph.font_styles.rbegin() ? std::prev(it_fss_kvp) : it_fss_kvp;
+
+                    if (it_fss_kvp != it_fss_kvp_prev)
+                        prev_part_fss += it_fss_kvp_prev->second; // previous font state
+
+                    auto text_part = it_fss_kvp != it_fss_kvp_prev ? text_view.substr(it_fss_kvp->first, it_fss_kvp_prev->first - it_fss_kvp->first)
+                                                                   : text_view.substr(it_fss_kvp->first);
+
+                    for (auto& fss : current_part_fss)
+                    {
+                        auto fs = fss.first.getFontStyle();
+                        auto fs_it = style_status_map.find(fs);
+                        // check if font style is already in the map or values are different
+                        if (fs_it == style_status_map.end())
+                        {
+                            // just add new font style with offset and size
+                            style_status_map.emplace(
+                                std::piecewise_construct, std::forward_as_tuple(fs),
+                                std::forward_as_tuple(std::initializer_list<KETFontStyleStatus>{{it_fss_kvp->first, text_part.size(), fss.first.getVal()}}));
+                        }
+                        else // here we should update offset, size and val
+                        {
+                            // if val differs from previous or there is an offset gap
+                            if (fs_it->second.front().val != fss.first.getVal() || fs_it->second.front().offset != it_fss_kvp_prev->first)
+                                fs_it->second.emplace_front(it_fss_kvp->first, text_part.size(), fss.first.getVal());
+                            else // extend font style
+                            {
+                                fs_it->second.front().offset = it_fss_kvp->first;
+                                fs_it->second.front().size += text_part.size();
+                            }
+                        }
+                    }
+                }
+            else
+            {
+                // add default font styles
+            }
+            if (style_status_map.size())
+            {
+                for (auto& [fs, ss_queue] : style_status_map)
+                {
+                    for (auto& ss : ss_queue)
+                    {
+                        SimpleTextStyle sts;
+                        sts.offset = ss.offset;
+                        sts.size = ss.size;
+                        if (fs == KETFontStyle::FontStyle::ESize)
+                        {
+                            if (auto pval = std::get_if<uint32_t>(&ss.val))
+                                sts.styles.push_back(std::string(KFontCustomSizeStrV1) + "_" + std::to_string(*pval) + "px");
+                        }
+                        else
+                        {
+                            auto it_fs = SimpleTextObject::textStyleMapInvV1().find(fs);
+                            if (it_fs != SimpleTextObject::textStyleMapInvV1().end())
+                                sts.styles.push_back(it_fs->second);
+                        }
+                        line.text_styles.push_back(sts);
+                    }
+                }
+            }
+            tob.addLine(line);
+        }
+        if (tob.getLineCounter())
+            tob.finalize();
+        content = tob.getJsonString();
+    }
+
+    writer.Key("data");
+    writer.StartObject();
+    writer.Key("content");
+    writer.String(content.c_str());
+    writer.Key("position");
+    writer.WritePoint(text_obj.boundingBox().leftTop());
+    writer.Key("pos");
+    writer.StartArray();
+    writer.WritePoint(text_obj.boundingBox().leftTop());
+    writer.WritePoint(text_obj.boundingBox().leftBottom());
+    writer.WritePoint(text_obj.boundingBox().rightBottom());
+    writer.WritePoint(text_obj.boundingBox().rightTop());
+    writer.EndArray();
+    writer.EndObject();
+}
+
+void MoleculeJsonSaver::saveTextV2(JsonWriter& writer, const SimpleTextObject& text_obj)
+{
+    writer.Key("boundingBox");
+    writer.WriteRect(text_obj.boundingBox());
+    if (text_obj.alignment().has_value())
+        saveAlignment(writer, text_obj.alignment().value());
+    if (text_obj.indent().has_value())
+    {
+        writer.Key("indent");
+        writer.Double(text_obj.indent().value());
+    }
+    if (text_obj.fontStyles().size())
+        saveFontStyles(writer, text_obj.fontStyles());
+    if (text_obj.block().size())
+        saveParagraphs(writer, text_obj);
+}
+
+void MoleculeJsonSaver::saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET& fss)
+{
+    std::vector<std::reference_wrapper<const std::pair<KETFontStyle, bool>>> font_fields;
+    for (auto& fs : fss)
+    {
+        switch (fs.first.getFontStyle())
+        {
+        case KETFontStyle::FontStyle::EBold:
+            writer.Key(KFontBoldStr);
+            writer.Bool(fs.second);
+            break;
+        case KETFontStyle::FontStyle::EItalic:
+            writer.Key(KFontItalicStr);
+            writer.Bool(fs.second);
+            break;
+        case KETFontStyle::FontStyle::ESubScript:
+            writer.Key(KFontSubscriptStr);
+            writer.Bool(fs.second);
+            break;
+        case KETFontStyle::FontStyle::ESuperScript:
+            writer.Key(KFontSuperscriptStr);
+            writer.Bool(fs.second);
+            break;
+        case KETFontStyle::FontStyle::ENone:
+            // default style
+            break;
+        default:
+            if (fs.second)
+                font_fields.push_back(std::ref(fs));
+            break;
+        }
+    }
+
+    if (font_fields.size())
+    {
+        writer.Key("font");
+        writer.StartObject();
+        for (auto& fs_ref : font_fields)
+        {
+            auto& fs_font = fs_ref.get();
+            if (fs_font.second && fs_font.first.hasValue())
+                switch (fs_font.first.getFontStyle())
+                {
+                case KETFontStyle::FontStyle::EColor: {
+                    writer.Key(KFontColorStr);
+                    std::stringstream ss;
+                    ss << "#" << std::hex << fs_font.first.getUInt().value();
+                    writer.String(ss.str());
+                }
+                break;
+                case KETFontStyle::FontStyle::EFamily:
+                    writer.Key(KFontFamilyStr);
+                    writer.String(fs_font.first.getString().value());
+                    break;
+                case KETFontStyle::FontStyle::ESize:
+                    writer.Key(KFontSizeStr);
+                    writer.Uint(fs_font.first.getUInt().value());
+                    break;
+                }
+        }
+        writer.EndObject();
+    }
+}
+
+void MoleculeJsonSaver::saveParagraphs(JsonWriter& writer, const SimpleTextObject& text_obj)
+{
+    const auto& paragraphs = text_obj.block();
+    writer.Key("paragraphs");
+    writer.StartArray();
+    for (const auto& paragraph : paragraphs)
+    {
+        writer.StartObject();
+        if (paragraph.alignment.has_value())
+            saveAlignment(writer, paragraph.alignment.value());
+        if (paragraph.indent.has_value())
+        {
+            writer.Key("indent");
+            writer.Double(paragraph.indent.value());
+        }
+
+        auto def_fss = text_obj.fontStyles();
+        def_fss &= paragraph.font_style;
+
+        if (def_fss.size())
+            saveFontStyles(writer, def_fss);
+
+        if (paragraph.font_styles.size())
+            saveParts(writer, paragraph, def_fss);
+        if (paragraph.line_starts.has_value() && paragraph.line_starts.value().size())
+        {
+            writer.Key("lineStarts");
+            writer.StartArray();
+            for (auto ls : paragraph.line_starts.value())
+                writer.Uint(ls);
+            writer.EndArray();
+        }
+        writer.EndObject();
+    }
+    writer.EndArray();
+}
+
+void MoleculeJsonSaver::saveParts(JsonWriter& writer, const SimpleTextObject::KETTextParagraph& paragraph, const FONT_STYLE_SET& def_fss)
+{
+    if (paragraph.font_styles.size() > 1)
+    {
+        std::string_view text_view = std::string_view(paragraph.text);
+        writer.Key("parts");
+        writer.StartArray();
+        for (auto it_fss_kvp = paragraph.font_styles.begin(); it_fss_kvp != std::prev(paragraph.font_styles.end()); ++it_fss_kvp)
+        {
+            writer.StartObject();
+            auto next_it = std::next(it_fss_kvp);
+            auto text_part = text_view.substr(it_fss_kvp->first, next_it->first - it_fss_kvp->first);
+            writer.Key("text");
+            writer.String(std::string(text_part).c_str());
+            auto current_part_fss = def_fss;
+            current_part_fss &= it_fss_kvp->second;
+            if (current_part_fss.size())
+                saveFontStyles(writer, current_part_fss);
+            writer.EndObject();
+        }
+        writer.EndArray();
+    }
+}
+
+void MoleculeJsonSaver::saveAlignment(JsonWriter& writer, SimpleTextObject::TextAlignment alignment)
+{
+    std::string alignment_str;
+    switch (alignment)
+    {
+    case SimpleTextObject::TextAlignment::ELeft:
+        alignment_str = KAlignmentLeft;
+        break;
+    case SimpleTextObject::TextAlignment::ERight:
+        alignment_str = KAlignmentRight;
+        break;
+    case SimpleTextObject::TextAlignment::ECenter:
+        alignment_str = KAlignmentCenter;
+        break;
+    case SimpleTextObject::TextAlignment::EFull:
+        alignment_str = KAlignmentFull;
+        break;
+    }
+    writer.Key("alignment");
+    writer.String(alignment_str.c_str());
+}
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif

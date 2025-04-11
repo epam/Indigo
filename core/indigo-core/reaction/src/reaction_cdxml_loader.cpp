@@ -157,9 +157,17 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                     auto id = cdxml_elem->findProperty("id");
                     if (id->hasContent())
                         _cdxml_elements.emplace(std::stoi(id->value()), cdxml_elem->copy());
+                    else
+                        std::cout << "Unknown element: " << page_elem->value() << std::endl;
                 }
             }
         }
+        else if (page_elem->value() == "colortable")
+            loader.parseColorTable(*page_elem);
+        else if (page_elem->value() == "fonttable")
+            loader.parseFontTable(*page_elem);
+        else
+            std::cout << "Unknown element: " << page_elem->value() << std::endl;
     }
 
     std::map<int, std::unordered_map<int, int>> moleculeToAtomIDs;
@@ -228,7 +236,8 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                 {
                     auto& text = (SimpleTextObject&)_pmol->meta().getMetaObject(SimpleTextObject::CID, i);
                     int idx = rxn.meta().addMetaObject(text.clone());
-                    rxn.addSpecialCondition(idx, Rect2f(Vec2f(text._pos.x, text._pos.y), Vec2f(text._pos.x, text._pos.y)));
+                    rxn.addSpecialCondition(
+                        idx, Rect2f(Vec2f(text.boundingBox().left(), text.boundingBox().top()), Vec2f(text.boundingBox().left(), text.boundingBox().top())));
                 }
             }
             _cdxml_elements.erase(elem_it);
@@ -322,7 +331,11 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
     {
         loader.loadMoleculeFromFragment(*_pmol, *kvp.second);
         if (_pmol->vertexCount())
+        {
+            Array<char> label;
+            _pmol->getAtomSymbol(0, label);
             rxn.addUndefinedCopy(*_pmol, 0, 0);
+        }
         rxn.meta().append(_pmol->meta());
     }
 }

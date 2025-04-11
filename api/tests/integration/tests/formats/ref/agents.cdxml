@@ -77,7 +77,7 @@
             <b id="53" B="24" E="27"/>
         </fragment>
         <arrow id="28" BoundingBox="384.000000 150.750000 255.000000 152.250000" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="25" Head3D="384.000000 150.750000 0.000000" Tail3D="255.000000 152.250000 0.000000"/>
-        <t id="31" p="304.500000 167.250000" Justification="Left" InterpretChemically="no">
+        <t id="31" p="304.500000 176.550003" InterpretChemically="no">
             <s font="4" size="8.66667" face="0">test</s>
         </t>
         <scheme>

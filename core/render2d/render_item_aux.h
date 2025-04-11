@@ -24,7 +24,6 @@
 
 namespace indigo
 {
-
     class RenderItemAuxiliary : public RenderItemBase
     {
     public:
@@ -106,7 +105,7 @@ namespace indigo
         void _drawImage(const EmbeddedImageObject& img);
         void _renderIdle();
         void _renderSimpleObject(const SimpleGraphicsObject& simple);
-        float _getMaxHeight(const SimpleTextObject::SimpleTextLine& tl);
+        float _getMaxHeight(const SimpleTextObject::KETTextParagraph& tl);
     };
 
 } // namespace indigo

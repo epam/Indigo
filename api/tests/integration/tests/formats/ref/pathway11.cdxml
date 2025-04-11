@@ -474,79 +474,79 @@
             <b id="329" B="153" E="154"/>
             <b id="330" B="153" E="148" Order="1.5" Display="Dash" Display2="Dash"/>
         </fragment>
-        <t id="155" p="3511.761230 521.817200" Justification="Left" InterpretChemically="no">
+        <t id="155" p="3511.761230 590.937256" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Removal of benzoxazol-2-yl</s>
         </t>
-        <t id="155" p="3511.761230 521.817200" Justification="Left" InterpretChemically="no">
+        <t id="155" p="3511.761230 590.937256" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">group from amines</s>
         </t>
-        <t id="155" p="3511.761230 521.817200" Justification="Left" InterpretChemically="no"/>
-        <t id="155" p="3511.761230 521.817200" Justification="Left" InterpretChemically="no">
+        <t id="155" p="3511.761230 590.937256" InterpretChemically="no"/>
+        <t id="155" p="3511.761230 590.937256" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">LAH.THF.reflux</s>
         </t>
-        <t id="158" p="2565.886719 504.537231" Justification="Left" InterpretChemically="no">
+        <t id="158" p="2565.886719 590.937195" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Alkylation of amines with</s>
         </t>
-        <t id="158" p="2565.886719 504.537231" Justification="Left" InterpretChemically="no">
+        <t id="158" p="2565.886719 590.937195" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">alkyl halides</s>
         </t>
-        <t id="158" p="2565.886719 504.537231" Justification="Left" InterpretChemically="no"/>
-        <t id="158" p="2565.886719 504.537231" Justification="Left" InterpretChemically="no">
+        <t id="158" p="2565.886719 590.937195" InterpretChemically="no"/>
+        <t id="158" p="2565.886719 590.937195" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">KOH. toluene. PTC. catalyst</s>
         </t>
-        <t id="158" p="2565.886719 504.537231" Justification="Left" InterpretChemically="no">
+        <t id="158" p="2565.886719 590.937195" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">or KI. base e.g. K2CO3</s>
         </t>
-        <t id="161" p="1866.994995 172.643280" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1866.994995 328.163269" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Published reaction</s>
         </t>
-        <t id="161" p="1866.994995 172.643280" Justification="Left" InterpretChemically="no"/>
-        <t id="161" p="1866.994995 172.643280" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1866.994995 328.163269" InterpretChemically="no"/>
+        <t id="161" p="1866.994995 328.163269" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">Stage 1: 14 h, Copper(II)</s>
         </t>
-        <t id="161" p="1866.994995 172.643280" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1866.994995 328.163269" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">chloride, Dimethylformamide,</s>
         </t>
-        <t id="161" p="1866.994995 172.643280" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1866.994995 328.163269" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">Dichloromethane, CK2O3   </s>
         </t>
-        <t id="161" p="1866.994995 172.643280" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1866.994995 328.163269" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">Potassium carbonate | Stage 2</s>
         </t>
-        <t id="161" p="1866.994995 172.643280" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1866.994995 328.163269" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">5 h, 80 degree, acid, Dy(3+)</s>
         </t>
-        <t id="161" p="1866.994995 172.643280" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1866.994995 328.163269" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">salt C3Dy1F9O9S3,</s>
         </t>
-        <t id="161" p="1866.994995 172.643280" Justification="Left" InterpretChemically="no">
+        <t id="161" p="1866.994995 328.163269" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">Dichloromethane, Acetonitrile</s>
         </t>
-        <t id="164" p="1866.994995 784.591187" Justification="Left" InterpretChemically="no">
+        <t id="164" p="1866.994995 853.711243" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Addition of dihalomethane to</s>
         </t>
-        <t id="164" p="1866.994995 784.591187" Justification="Left" InterpretChemically="no">
+        <t id="164" p="1866.994995 853.711243" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">aldehyde</s>
         </t>
-        <t id="164" p="1866.994995 784.591187" Justification="Left" InterpretChemically="no"/>
-        <t id="164" p="1866.994995 784.591187" Justification="Left" InterpretChemically="no">
+        <t id="164" p="1866.994995 853.711243" InterpretChemically="no"/>
+        <t id="164" p="1866.994995 853.711243" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">SmI2.THF</s>
         </t>
-        <t id="167" p="1096.545410 876.082458" Justification="Left" InterpretChemically="no">
+        <t id="167" p="1096.545410 945.202515" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Ozonolysis</s>
         </t>
-        <t id="167" p="1096.545410 876.082458" Justification="Left" InterpretChemically="no"/>
-        <t id="167" p="1096.545410 876.082458" Justification="Left" InterpretChemically="no">
+        <t id="167" p="1096.545410 945.202515" InterpretChemically="no"/>
+        <t id="167" p="1096.545410 945.202515" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">O3.MeOH.CH2Cl2.PPh3 or Me2S</s>
         </t>
-        <t id="167" p="1096.545410 876.082458" Justification="Left" InterpretChemically="no">
+        <t id="167" p="1096.545410 945.202515" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">low temperature</s>
         </t>
-        <t id="170" p="344.736359 893.362366" Justification="Left" InterpretChemically="no">
+        <t id="170" p="344.736359 945.202393" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Mitsunobu reaction</s>
         </t>
-        <t id="170" p="344.736359 893.362366" Justification="Left" InterpretChemically="no"/>
-        <t id="170" p="344.736359 893.362366" Justification="Left" InterpretChemically="no">
+        <t id="170" p="344.736359 945.202393" InterpretChemically="no"/>
+        <t id="170" p="344.736359 945.202393" InterpretChemically="no">
             <s font="4" size="8.66667" face="3">DEAD.or.DCAD.or.DIAD.PPh3</s>
         </t>
         <arrow id="176" BoundingBox="1417.828857 957.395813 1081.828735 957.395752" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="1417.828857 957.395813 0.000000" Tail3D="1081.828735 957.395752 0.000000"/>

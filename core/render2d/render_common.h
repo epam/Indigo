@@ -145,6 +145,7 @@ namespace indigo
         Vec2f relpos; // text bearing (positive if text is entirely on the
                       // right and bottom from the bbp point)
         int color;
+        Vec3f rgb_color;
         bool highlighted;
         bool noBondOffset;
     };

@@ -128,7 +128,17 @@ bool BaseMolecule::hasCoord(BaseMolecule& mol)
         if (fabs(xyz.x) > 0.001 || fabs(xyz.y) > 0.001 || fabs(xyz.z) > 0.001)
             return true;
     }
-
+    // should be uncommented
+    // for (i = 0; i < mol.rgroups.getRGroupCount(); ++i)
+    //{
+    //    RGroup& rg = mol.rgroups.getRGroup(i + 1);
+    //    for (int j = 0; j < rg.fragments.size(); ++j)
+    //    {
+    //        BaseMolecule* frag = rg.fragments[j];
+    //        if (hasCoord(*frag))
+    //            return true;
+    //    }
+    //}
     return false;
 }
 
@@ -4126,6 +4136,19 @@ void BaseMolecule::getAtomsCenterPoint(Vec2f& res)
     for (auto i : vertices())
         atoms.push(i);
     getAtomsCenterPoint(atoms, res);
+}
+
+void BaseMolecule::setAtomsCenterPoint(const Vec3f& center)
+{
+    Vec2f old_center;
+    getAtomsCenterPoint(old_center);
+    Vec2f shift = Vec2f(center.x, center.y) - old_center;
+    for (auto i : vertices())
+    {
+        Vec3f& p = getAtomXyz(i);
+        p.x += shift.x;
+        p.y += shift.y;
+    }
 }
 
 float BaseMolecule::getBondsMeanLength()
