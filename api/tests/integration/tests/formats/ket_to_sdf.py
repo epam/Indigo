@@ -57,3 +57,40 @@ for filename in files:
     else:
         print(filename + ".sdf:FAILED")
         print(diff)
+
+root = joinPathPy("reactions/", __file__)
+ref_path = joinPathPy("ref/", __file__)
+
+files = ["pathway1", "pathway2", "pathway3", "multi", "qreaction"]
+
+files.sort()
+for filename in files:
+    try:
+        ket = indigo.loadReactionFromFile(
+            os.path.join(root, filename + ".ket")
+        )
+    except:
+        try:
+            ket = indigo.loadQueryReactionFromFile(
+                os.path.join(root, filename + ".ket")
+            )
+        except IndigoException as e:
+            print("  %s" % (getIndigoExceptionText(e)))
+
+    buffer = indigo.writeBuffer()
+    sdfSaver = indigo.createSaver(buffer, "sdf")
+    for mol in ket.iterateMolecules():
+        sdfSaver.append(mol.clone())
+    sdfSaver.close()
+    sdf = buffer.toString()
+    # with open(os.path.join(ref_path, filename) + ".sdf", "w") as file:
+    #     file.write(sdf)
+
+    with open(os.path.join(ref_path, filename) + ".sdf", "r") as file:
+        sdf_ref = file.read()
+    diff = find_diff(sdf_ref, sdf)
+    if not diff:
+        print(filename + ".sdf:SUCCEED")
+    else:
+        print(filename + ".sdf:FAILED")
+        print(diff)
