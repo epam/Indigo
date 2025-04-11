@@ -203,7 +203,8 @@ namespace indigo
             else if (outputFormat == "sdf" || outputFormat == "chemical/x-sdf")
             {
                 auto buffer = IndigoObject(_checkResult(indigoWriteBuffer()));
-                auto comp_it = IndigoObject(_checkResult(indigoIterateComponents(id())));
+                auto comp_it = (objtype == EKETMolecule || objtype == EKETMoleculeQuery) ? IndigoObject(_checkResult(indigoIterateComponents(id())))
+                                                                                         : IndigoObject(_checkResult(indigoIterateMolecules(id())));
                 while (indigoHasNext(comp_it.id))
                 {
                     const auto frag = IndigoObject(_checkResult(indigoNext(comp_it.id)));
