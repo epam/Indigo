@@ -386,14 +386,11 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
         }
 
         std::vector<KetAmbiguousMonomerOption> options;
-        const std::string uracil_alias = "U";
-        const std::string thymine_alias = "T";
-
         for (auto template_alias : alternatives.value().get())
         {
             // filter out uracil and thymine for DNA and RNA respectively
-            if ((seq_type == SeqType::DNASeq && template_alias == uracil_alias) || (seq_type == SeqType::RNASeq && template_alias == thymine_alias))
-                continue;
+            if (seq_type == SeqType::RNASeq && template_alias == "T")
+                template_alias = "U";
             auto& template_id = _library.getMonomerTemplateIdByAlias(monomer_class, template_alias);
             if (template_id.size() == 0)
                 throw Error("Monomer base template '%s' not found", template_alias.c_str());
@@ -1137,8 +1134,6 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         {
                             if (sugar == "R" && template_alias == "T") // U instead of T for RNA
                                 template_alias = "U";
-                            else if (template_alias == "U") // skip U for DNA
-                                continue;
                             auto& template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Base, template_alias);
                             if (template_id.size() == 0)
                                 throw Error("Monomer base template '%s' not found", template_alias.c_str());
