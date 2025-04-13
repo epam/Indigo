@@ -1699,7 +1699,7 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
     }
     else
     {
-        auto& it = _aliasHELM_to_id.find(make_pair(monomer_class, helm_alias));
+        const auto& it = _aliasHELM_to_id.find(make_pair(monomer_class, helm_alias));
         std::string template_id;
         if (it == _aliasHELM_to_id.end())
         {
