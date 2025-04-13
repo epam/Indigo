@@ -1357,6 +1357,12 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
             tg.idt_alias.readString(parseIdtAlias(monomer_template).getBase().c_str(), true);
         }
 
+        if (monomer_template.HasMember("aliasHELM"))
+        {
+            tg.different_aliasHELM = true;
+            tg.aliasHELM.readString(monomer_template["aliasHELM"].GetString(), true);
+        }
+
         if (monomer_template.HasMember("attachmentPoints"))
         {
             auto& att_points = monomer_template["attachmentPoints"];

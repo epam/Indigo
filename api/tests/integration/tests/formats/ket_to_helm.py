@@ -66,6 +66,10 @@ for filename in sorted(helm_data.keys()):
     except IndigoException as e:
         print("Test %s failed: %s" % (filename, getIndigoExceptionText(e)))
         continue
+    except Exception as e:
+        print("Test %s failed: %s" % (filename, e))
+        continue
+
     helm_ref = helm_data[filename]
     if helm_ref == helm:
         print(filename + ".ket:SUCCEED")

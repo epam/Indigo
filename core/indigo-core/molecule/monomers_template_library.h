@@ -145,7 +145,8 @@ namespace indigo
             fullName,
             alias,
             naturalAnalog,
-            naturalAnalogShort
+            naturalAnalogShort,
+            aliasHELM,
         };
         bool _unresolved;
         atoms_type _atoms;
@@ -248,6 +249,7 @@ namespace indigo
 
         const MonomerTemplate& getMonomerTemplateById(const std::string& monomer_template_id);
         const std::string& getMonomerTemplateIdByAlias(MonomerClass monomer_class, const std::string& monomer_template_alias);
+        const std::string& getMonomerTemplateIdByAliasHELM(MonomerClass monomer_class, const std::string& monomer_template_alias);
         MonomerGroupTemplate& getMonomerGroupTemplateById(const std::string& monomer_template_id);
 
         const std::string& getMonomerTemplateIdByIdtAliasBase(const std::string& alias_base);

@@ -366,7 +366,7 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
 {
     MonomerClass monomer_class = seq_type == SeqType::PEPTIDESeq ? MonomerClass::AminoAcid : MonomerClass::Base;
     if (!mixed)
-        _alias_to_id.emplace(monomer, checkAddTemplate(document, monomer_class, monomer));
+        _alias_to_id.emplace(make_pair(monomer_class, monomer), checkAddTemplate(document, monomer_class, monomer));
     else if (!document.hasAmbiguousMonomerTemplate(monomer))
     {
         std::optional<std::reference_wrapper<const std::vector<std::string>>> alternatives;
@@ -394,7 +394,7 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
             auto& option = options.emplace_back(template_id);
             auto& monomer_template = _library.getMonomerTemplateById(template_id);
             checkAddTemplate(document, monomer_template);
-            _alias_to_id.emplace(template_alias, template_id);
+            _alias_to_id.emplace(make_pair(monomer_class, template_alias), template_id);
         }
         auto& templ = document.addAmbiguousMonomerTemplate("alternatives", monomer, monomer, IdtAlias(), options);
         static const std::map<std::string, KetAttachmentPoint> aa_aps{{"R1", -1}, {"R2", -1}};
@@ -412,11 +412,11 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
     {
         // add sugar template
         if (_seq_id == 0)
-            _alias_to_id.emplace(sugar_alias, checkAddTemplate(document, MonomerClass::Sugar, sugar_alias));
+            _alias_to_id.emplace(make_pair(MonomerClass::Sugar, sugar_alias), checkAddTemplate(document, MonomerClass::Sugar, sugar_alias));
 
         // add phosphate template
         if (_seq_id == 1)
-            _alias_to_id.emplace(phosphate_alias, checkAddTemplate(document, MonomerClass::Phosphate, phosphate_alias));
+            _alias_to_id.emplace(make_pair(MonomerClass::Phosphate, phosphate_alias), checkAddTemplate(document, MonomerClass::Phosphate, phosphate_alias));
     }
 
     _seq_id++;
@@ -439,11 +439,10 @@ void SequenceLoader::addAminoAcid(KetDocument& document, const std::string& mono
 {
     Vec3f pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
     auto amino_idx = document.monomers().size();
-    auto& amino_acid = ambiguous ? document.addAmbiguousMonomer(monomer, _var_alias_to_id.at(monomer)) : document.addMonomer(monomer, _alias_to_id.at(monomer));
-    if (ambiguous)
-        amino_acid->setAttachmentPoints(document.ambiguousTemplates().at(_var_alias_to_id.at(monomer)).attachmentPoints());
-    else
-        amino_acid->setAttachmentPoints(document.templates().at(_alias_to_id.at(monomer)).attachmentPoints());
+    auto& aa_id = ambiguous ? _var_alias_to_id.at(monomer) : _alias_to_id.at(make_pair(MonomerClass::AminoAcid, monomer));
+    auto& amino_acid = ambiguous ? document.addAmbiguousMonomer(monomer, aa_id) : document.addMonomer(monomer, aa_id);
+    auto& att_points = ambiguous ? document.ambiguousTemplates().at(aa_id).attachmentPoints() : document.templates().at(aa_id).attachmentPoints();
+    amino_acid->setAttachmentPoints(att_points);
     amino_acid->setIntProp("seqid", _seq_id);
     amino_acid->setPosition(pos);
 
@@ -458,8 +457,9 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
 
     // add sugar
     auto sugar_idx = document.monomers().size();
-    auto& sugar = document.addMonomer(sugar_alias, _alias_to_id.at(sugar_alias));
-    sugar->setAttachmentPoints(document.templates().at(_alias_to_id.at(sugar_alias)).attachmentPoints());
+    auto& sugar_id = _alias_to_id.at(make_pair(MonomerClass::Sugar, sugar_alias));
+    auto& sugar = document.addMonomer(sugar_alias, sugar_id);
+    sugar->setAttachmentPoints(document.templates().at(sugar_id).attachmentPoints());
     sugar->setIntProp("seqid", _seq_id);
     sugar->setPosition(pos);
 
@@ -467,12 +467,10 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
     if (base_alias.size() > 0)
     {
         auto nuc_base_idx = document.monomers().size();
-        auto& base = ambiguous ? document.addAmbiguousMonomer(base_alias, _var_alias_to_id.at(base_alias))
-                               : document.addMonomer(base_alias, _alias_to_id.at(base_alias));
-        if (ambiguous)
-            base->setAttachmentPoints(document.ambiguousTemplates().at(_var_alias_to_id.at(base_alias)).attachmentPoints());
-        else
-            base->setAttachmentPoints(document.templates().at(_alias_to_id.at(base_alias)).attachmentPoints());
+        auto& base_id = ambiguous ? _var_alias_to_id.at(base_alias) : _alias_to_id.at(make_pair(MonomerClass::Base, base_alias));
+        auto& base = ambiguous ? document.addAmbiguousMonomer(base_alias, base_id) : document.addMonomer(base_alias, base_id);
+        auto& base_att_points = ambiguous ? document.ambiguousTemplates().at(base_id).attachmentPoints() : document.templates().at(base_id).attachmentPoints();
+        base->setAttachmentPoints(base_att_points);
         base->setIntProp("seqid", _seq_id);
         Vec3f base_coord(pos.x, pos.y - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, 0);
         base->setPosition(base_coord);
@@ -483,14 +481,15 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
 
     if (phosphate_alias.size())
     {
+        auto& phosphate_id = _alias_to_id.at(make_pair(MonomerClass::Phosphate, phosphate_alias));
         if (phosphate_at_left)
         {
             if (_seq_id > 1)
             {
                 // add phosphate
                 auto phosphate_idx = document.monomers().size();
-                auto& phosphate = document.addMonomer(phosphate_alias, _alias_to_id.at(phosphate_alias));
-                phosphate->setAttachmentPoints(document.templates().at(_alias_to_id.at(phosphate_alias)).attachmentPoints());
+                auto& phosphate = document.addMonomer(phosphate_alias, phosphate_id);
+                phosphate->setAttachmentPoints(document.templates().at(phosphate_id).attachmentPoints());
                 phosphate->setIntProp("seqid", _seq_id - 1);
                 Vec3f phosphate_coord(pos.x - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, pos.y, 0);
                 phosphate->setPosition(phosphate_coord);
@@ -503,8 +502,8 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
         {
             // add phosphate
             auto phosphate_idx = document.monomers().size();
-            auto& phosphate = document.addMonomer(phosphate_alias, _alias_to_id.at(phosphate_alias));
-            phosphate->setAttachmentPoints(document.templates().at(_alias_to_id.at(phosphate_alias)).attachmentPoints());
+            auto& phosphate = document.addMonomer(phosphate_alias, phosphate_id);
+            phosphate->setAttachmentPoints(document.templates().at(phosphate_id).attachmentPoints());
             phosphate->setIntProp("seqid", _seq_id);
             Vec3f phosphate_coord(pos.x + LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, pos.y, 0);
             phosphate->setPosition(phosphate_coord);
@@ -1141,7 +1140,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                             }
                             auto& monomer_template = _library.getMonomerTemplateById(template_id);
                             checkAddTemplate(document, monomer_template);
-                            _alias_to_id.emplace(template_alias, template_id);
+                            _alias_to_id.emplace(make_pair(MonomerClass::Base, template_alias), template_id);
                         }
                         auto& templ = document.addAmbiguousMonomerTemplate("mixture", idt_alias, idt_alias, IdtAlias(), options);
                         static const std::map<std::string, KetAttachmentPoint> aps{{"R1", -1}};
@@ -1171,11 +1170,11 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     phosphate = IDT_MODIFIED_PHOSPHATE;
                 }
 
-                _alias_to_id.emplace(sugar, checkAddTemplate(document, MonomerClass::Sugar, sugar));
+                _alias_to_id.emplace(make_pair(MonomerClass::Sugar, sugar), checkAddTemplate(document, MonomerClass::Sugar, sugar));
                 if (base.size() > 0 && !ambiguous_monomer)
-                    _alias_to_id.emplace(base, checkAddTemplate(document, MonomerClass::Base, base));
+                    _alias_to_id.emplace(make_pair(MonomerClass::Base, base), checkAddTemplate(document, MonomerClass::Base, base));
                 if (phosphate.size() > 0)
-                    _alias_to_id.emplace(phosphate, checkAddTemplate(document, MonomerClass::Phosphate, phosphate));
+                    _alias_to_id.emplace(make_pair(MonomerClass::Phosphate, phosphate), checkAddTemplate(document, MonomerClass::Phosphate, phosphate));
             }
             else
             {
@@ -1197,7 +1196,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     MonomerGroupTemplate& mgt = _library.getMonomerGroupTemplateById(mgt_id);
                     const MonomerTemplate& sugar_template = mgt.getTemplateByClass(MonomerClass::Sugar);
                     sugar = sugar_template.getStringProp("alias");
-                    _alias_to_id.emplace(sugar, sugar_template.id());
+                    _alias_to_id.emplace(make_pair(MonomerClass::Sugar, sugar), sugar_template.id());
                     checkAddTemplate(document, sugar_template);
                     if (alias_mod == IdtModification::THREE_PRIME_END)
                     {
@@ -1212,13 +1211,14 @@ void SequenceLoader::loadIdt(KetDocument& document)
                             if (token.second) // * means that 'sP' should be used
                             {
                                 phosphate = IDT_MODIFIED_PHOSPHATE;
-                                _alias_to_id.emplace(phosphate, checkAddTemplate(document, MonomerClass::Phosphate, phosphate));
+                                _alias_to_id.emplace(make_pair(MonomerClass::Phosphate, phosphate),
+                                                     checkAddTemplate(document, MonomerClass::Phosphate, phosphate));
                             }
                             else // use phosphate from template
                             {
                                 const MonomerTemplate& phosphate_template = mgt.getTemplateByClass(MonomerClass::Phosphate);
                                 phosphate = phosphate_template.getStringProp("alias");
-                                _alias_to_id.emplace(phosphate, phosphate_template.id());
+                                _alias_to_id.emplace(make_pair(MonomerClass::Phosphate, phosphate), phosphate_template.id());
                                 checkAddTemplate(document, phosphate_template);
                             }
                         }
@@ -1233,7 +1233,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     {
                         const MonomerTemplate& base_template = mgt.getTemplateByClass(MonomerClass::Base);
                         base = base_template.getStringProp("alias");
-                        _alias_to_id.emplace(base, base_template.id());
+                        _alias_to_id.emplace(make_pair(MonomerClass::Base, base), base_template.id());
                         checkAddTemplate(document, base_template);
                     }
                 }
@@ -1338,19 +1338,26 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
         if (ch != ']')
             throw Error("Unexpected symbol. Expected ']' but found '%c'.", ch);
         bool found = false;
-        if (_library.getMonomerTemplateIdByAlias(monomer_class, monomer_alias).size() > 0)
+        auto monomer_in_library = [this](MonomerClass monomer_class, const std::string& monomer_alias) -> bool {
+            if (_library.getMonomerTemplateIdByAlias(monomer_class, monomer_alias).size() > 0)
+                return true;
+            if (_library.getMonomerTemplateIdByAliasHELM(monomer_class, monomer_alias).size() > 0)
+                return true;
+            return false;
+        };
+        if (monomer_in_library(monomer_class, monomer_alias))
         {
             found = true;
         }
         else if (monomer_class == MonomerClass::Sugar) // In place of sugar can be phosphate or unsplit rna
         {
-            if (_library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, monomer_alias).size() > 0)
+            if (monomer_in_library(MonomerClass::Phosphate, monomer_alias))
             {
                 found = true;
             }
             else
             {
-                if (_library.getMonomerTemplateIdByAlias(MonomerClass::RNA, monomer_alias).size() > 0)
+                if (monomer_in_library(MonomerClass::RNA, monomer_alias))
                     found = true;
             }
         }
@@ -1670,9 +1677,9 @@ const std::string SequenceLoader::checkAddAmbiguousMonomerTemplate(KetDocument& 
     return template_id;
 }
 
-size_t SequenceLoader::addKetMonomer(KetDocument& document, MonomerInfo info, MonomerClass monomer_class, const Vec3f& pos)
+size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, MonomerClass monomer_class, const Vec3f& pos)
 {
-    auto [alias, repeating, annotaion, options] = info;
+    auto [helm_alias, repeating, annotaion, options] = info;
     if (repeating.size() && monomer_class == MonomerClass::CHEM)
         throw Error("Chem cannot be repeated.");
     if (repeating.size() && (monomer_class == MonomerClass::Base || monomer_class == MonomerClass::Sugar || monomer_class == MonomerClass::Phosphate))
@@ -1682,19 +1689,28 @@ size_t SequenceLoader::addKetMonomer(KetDocument& document, MonomerInfo info, Mo
     auto monomer_idx = document.monomers().size();
     if (options.second.size() > 0) // ambiguous monomer
     {
-        std::string template_id = checkAddAmbiguousMonomerTemplate(document, alias, monomer_class, options);
+        std::string template_id = checkAddAmbiguousMonomerTemplate(document, helm_alias, monomer_class, options);
         const auto var_templ = document.ambiguousTemplates().at(template_id);
-        alias = var_templ.alias();
-        auto& monomer = document.addAmbiguousMonomer(alias, template_id);
+        helm_alias = var_templ.alias();
+        auto& monomer = document.addAmbiguousMonomer(helm_alias, template_id);
         monomer->setAttachmentPoints(var_templ.attachmentPoints());
         monomer->setIntProp("seqid", _seq_id++);
         monomer->setPosition(pos);
     }
     else
     {
-        const std::string& template_id = checkAddTemplate(document, monomer_class, alias);
-        _alias_to_id.emplace(alias, template_id);
-        auto& monomer = document.addMonomer(alias, template_id);
+        auto& it = _aliasHELM_to_id.find(make_pair(monomer_class, helm_alias));
+        std::string template_id;
+        if (it == _aliasHELM_to_id.end())
+        {
+            auto& id = _library.getMonomerTemplateIdByAliasHELM(monomer_class, helm_alias);
+            if (id.size() > 0)
+                _aliasHELM_to_id.emplace(make_pair(monomer_class, helm_alias), id);
+            auto& alias = id.size() > 0 ? _library.getMonomerTemplateById(id).getStringProp("alias") : helm_alias;
+            template_id = checkAddTemplate(document, monomer_class, alias);
+            _alias_to_id.emplace(make_pair(monomer_class, alias), template_id);
+        }
+        auto& monomer = document.addMonomer(helm_alias, template_id);
         monomer->setAttachmentPoints(document.templates().at(template_id).attachmentPoints());
         monomer->setIntProp("seqid", _seq_id++);
         monomer->setPosition(pos);
@@ -1784,11 +1800,11 @@ void SequenceLoader::loadHELM(KetDocument& document)
                         checkAddTemplate(document, monomer_template);
                         _added_templates.emplace(monomer_class, alias);
                     }
-                    cur_polymer_map->second[monomer_idx] = addKetMonomer(document, monomer_info, monomer_class, pos);
+                    cur_polymer_map->second[monomer_idx] = addHelmMonomer(document, monomer_info, monomer_class, pos);
                 }
                 else if (monomer_class == MonomerClass::AminoAcid)
                 {
-                    auto amino_idx = addKetMonomer(document, monomer_info, monomer_class, pos);
+                    auto amino_idx = addHelmMonomer(document, monomer_info, monomer_class, pos);
                     cur_polymer_map->second[monomer_idx] = amino_idx;
                     if (monomer_idx > 1)
                         addMonomerConnection(document, amino_idx - 1, amino_idx);
@@ -1805,7 +1821,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     if (phosphate_lib_id.size() || nucleotide_id.size())
                     {
                         // add phosphate
-                        auto added_idx = addKetMonomer(document, monomer_info, nucleotide_id.size() > 0 ? MonomerClass::RNA : MonomerClass::Phosphate, pos);
+                        auto added_idx = addHelmMonomer(document, monomer_info, nucleotide_id.size() > 0 ? MonomerClass::RNA : MonomerClass::Phosphate, pos);
                         cur_polymer_map->second[monomer_idx] = added_idx;
                         if (monomer_idx > 1)
                             addMonomerConnection(document, added_idx - 1, added_idx);
@@ -1816,7 +1832,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                             _scanner.skip(1);
                         continue;
                     }
-                    auto sugar_idx = addKetMonomer(document, monomer_info, MonomerClass::Sugar, pos);
+                    auto sugar_idx = addHelmMonomer(document, monomer_info, MonomerClass::Sugar, pos);
                     cur_polymer_map->second[monomer_idx] = sugar_idx;
                     if (monomer_idx > 1)
                         addMonomerConnection(document, sugar_idx - 1, sugar_idx);
@@ -1827,7 +1843,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                         auto base_info = readHelmMonomer(document, MonomerClass::Base);
                         ch = _scanner.lookNext();
                         Vec3f base_pos(pos.x, pos.y - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, 0);
-                        auto base_idx = addKetMonomer(document, base_info, MonomerClass::Base, base_pos);
+                        auto base_idx = addHelmMonomer(document, base_info, MonomerClass::Base, base_pos);
                         cur_polymer_map->second[monomer_idx] = base_idx;
                         if (monomer_idx > 1)
                             addMonomerConnection(document, sugar_idx, base_idx, true);
@@ -1842,7 +1858,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     monomer_idx++;
                     Vec3f phosphate_pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
                     _col++;
-                    auto phosphate_idx = addKetMonomer(document, phosphate_info, MonomerClass::Phosphate, phosphate_pos);
+                    auto phosphate_idx = addHelmMonomer(document, phosphate_info, MonomerClass::Phosphate, phosphate_pos);
                     cur_polymer_map->second[monomer_idx] = phosphate_idx;
                     if (monomer_idx > 1)
                         addMonomerConnection(document, sugar_idx, phosphate_idx);

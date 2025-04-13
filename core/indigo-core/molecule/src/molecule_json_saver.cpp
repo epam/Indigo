@@ -1250,6 +1250,15 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
         }
     }
 
+    if (tg.different_aliasHELM)
+    {
+        writer.Key("aliasHELM");
+        if (tg.aliasHELM.size() > 0)
+            writer.String(tg.aliasHELM.ptr());
+        else
+            writer.String("");
+    }
+
     saveMonomerAttachmentPoints(tg, writer);
     saveFragment(*tg.fragment, writer);
     writer.EndObject();
