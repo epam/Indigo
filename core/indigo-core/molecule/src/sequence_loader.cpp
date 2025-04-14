@@ -481,13 +481,13 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
 
     if (phosphate_alias.size())
     {
-        auto& phosphate_id = _alias_to_id.at(make_pair(MonomerClass::Phosphate, phosphate_alias));
         if (phosphate_at_left)
         {
             if (_seq_id > 1)
             {
                 // add phosphate
                 auto phosphate_idx = document.monomers().size();
+                auto& phosphate_id = _alias_to_id.at(make_pair(MonomerClass::Phosphate, phosphate_alias));
                 auto& phosphate = document.addMonomer(phosphate_alias, phosphate_id);
                 phosphate->setAttachmentPoints(document.templates().at(phosphate_id).attachmentPoints());
                 phosphate->setIntProp("seqid", _seq_id - 1);
@@ -502,6 +502,7 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
         {
             // add phosphate
             auto phosphate_idx = document.monomers().size();
+            auto& phosphate_id = _alias_to_id.at(make_pair(MonomerClass::Phosphate, phosphate_alias));
             auto& phosphate = document.addMonomer(phosphate_alias, phosphate_id);
             phosphate->setAttachmentPoints(document.templates().at(phosphate_id).attachmentPoints());
             phosphate->setIntProp("seqid", _seq_id);
