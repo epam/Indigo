@@ -116,7 +116,7 @@
                 "$ref": "monomerTemplate-R___Ribose"
             },
             {
-                "$ref": "monomerTemplate-T___Thymine"
+                "$ref": "monomerTemplate-U___Uracil"
             },
             {
                 "$ref": "monomerTemplate-P___Phosphate"
@@ -860,14 +860,14 @@
             }
         ]
     },
-    "monomerTemplate-T___Thymine": {
+    "monomerTemplate-U___Uracil": {
         "type": "monomerTemplate",
-        "id": "T___Thymine",
+        "id": "U___Uracil",
         "class": "Base",
         "classHELM": "RNA",
-        "fullName": "Thymine",
-        "alias": "T",
-        "naturalAnalogShort": "T",
+        "fullName": "Uracil",
+        "alias": "U",
+        "naturalAnalogShort": "U",
         "attachmentPoints": [
             {
                 "attachmentAtom": 3,
@@ -951,14 +951,6 @@
                     1.350000,
                     0.000000
                 ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    1.711700,
-                    -0.988400,
-                    0.000000
-                ]
             }
         ],
         "bonds": [
@@ -1023,13 +1015,6 @@
                 "atoms": [
                     4,
                     5
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
-                    9
                 ]
             }
         ]
@@ -1318,7 +1303,7 @@
                 "templateId": "G___Guanine"
             },
             {
-                "templateId": "T___Thymine"
+                "templateId": "U___Uracil"
             }
         ]
     },
@@ -1338,7 +1323,7 @@
                 "templateId": "G___Guanine"
             },
             {
-                "templateId": "T___Thymine"
+                "templateId": "U___Uracil"
             }
         ]
     }
