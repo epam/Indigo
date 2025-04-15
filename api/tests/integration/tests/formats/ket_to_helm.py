@@ -46,7 +46,7 @@ helm_data = {
     "helm_mixed_custom": "RNA1{[dR](A:10+[Xan]:20+G:30+T:50)P.[dR](A:10+C:20+G:30+T:50)P.[dR](A+C+G+T)}$$$$V2.0",
     "helm_aminoacids_variants": "PEPTIDE1{([Dha]+N).(L+I).(E+Q).(A+C+D+E+F+G+H+I+K+L+M+N+O+P+Q+R+S+T+U+V+W+Y)}$$$$V2.0",
     "dna_variants": "RNA1{[dR](C,G,T)P.[dR](A,C,G,T)}$$$$V2.0",
-    "rna_variants": "RNA1{R(A,G)P.R(G,T)P.R(A,C,G,T)}$$$$V2.0",
+    "rna_variants": "RNA1{R(A,G)P.R(G,U)P.R(A,C,G,U)}$$$$V2.0",
     "helm_monomer_molecule": "PEPTIDE1{A}|PEPTIDE2{G}|CHEM1{[C(N[*:2])=C[*:1] |$;;_R2;;_R1$|]}$CHEM1,PEPTIDE1,1:R2-1:R1|PEPTIDE2,CHEM1,1:R2-1:R1$$$V2.0",
     "helm_fractional_ratio": "PEPTIDE1{(A:1.5+C:0.1+G:3)}$$$$V2.0",
     "helm_smiles": "PEPTIDE1{G.[[*:1]NC(C(=O)[*:2])C=O |$_R1;;;;;_R2;;$|].C}|PEPTIDE2{G.[[*:1]NC(C(=O)[*:2])C=O |$_R1;;;;;_R2;;$|].C}$$$$V2.0",

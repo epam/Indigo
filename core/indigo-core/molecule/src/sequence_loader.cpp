@@ -388,6 +388,8 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
         std::vector<KetAmbiguousMonomerOption> options;
         for (auto template_alias : alternatives.value().get())
         {
+            if (seq_type == SeqType::RNASeq && template_alias == "T")
+                template_alias = "U";
             auto& template_id = _library.getMonomerTemplateIdByAlias(monomer_class, template_alias);
             if (template_id.size() == 0)
                 throw Error("Monomer base template '%s' not found", template_alias.c_str());
