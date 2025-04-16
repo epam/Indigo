@@ -743,7 +743,7 @@ void KetDocument::CalculateMacroProps(Output& output, bool pretty_json)
         sequence.insert(sequence.begin(), sequence_arr.secondary_sequence.begin(), sequence_arr.secondary_sequence.end());
         std::vector<double> pKa_values;
         // in kDa(1000g/mol) (all chains)
-        double mass_sum = 0;
+        double mass_sum = -1;
         std::map<char, size_t> atoms_count;
         GROSS_UNITS gross_units;
         gross_units.resize(1);
