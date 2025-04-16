@@ -13,6 +13,7 @@ dcysteine.ket:SUCCEED
 dna_mod.ket:SUCCEED
 dthymine.ket:SUCCEED
 fmoc.ket:SUCCEED
+hydro_atp_ch.ket:SUCCEED
 issue_1476.ket:SUCCEED
 issue_2699_rlogic.ket:SUCCEED
 issue_2702.ket:SUCCEED

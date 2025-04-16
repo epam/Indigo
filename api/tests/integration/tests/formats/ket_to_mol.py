@@ -72,6 +72,7 @@ files = [
     ("chem_rna_hydro", "3000"),
     ("issue_2702", "auto"),
     ("issue_2699_rlogic", "3000"),
+    ("hydro_atp_ch", "3000"),
 ]
 
 files.sort(key=lambda x: x[0])
