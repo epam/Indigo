@@ -1084,7 +1084,6 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             auto& tg = mol.tgroups.getTGroup(i);
             if (!skip_unused_templates || template_atoms.count({tg.tgroup_alias.ptr(), tg.tgroup_class.ptr()}))
                 _writeTGroup(output, mol, i);
-
         }
         output.writeStringCR("M  V30 END TEMPLATE");
     }

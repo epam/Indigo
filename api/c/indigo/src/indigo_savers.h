@@ -40,8 +40,8 @@ public:
     static IndigoSaver* create(Output& output, const char* type);
 
 protected:
-    virtual void _appendHeader() {};
-    virtual void _appendFooter() {};
+    virtual void _appendHeader(){};
+    virtual void _appendFooter(){};
     virtual void _append(IndigoObject& object) = 0;
 
     Output& _output;
