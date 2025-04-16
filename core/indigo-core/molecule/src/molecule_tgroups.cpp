@@ -23,7 +23,7 @@
 
 using namespace indigo;
 
-TGroup::TGroup() : unresolved(false), ambiguous(false), mixture(false)
+TGroup::TGroup() : unresolved(false), ambiguous(false), mixture(false), different_aliasHELM(false)
 {
 }
 
@@ -137,6 +137,8 @@ void TGroup::copy(const TGroup& other)
         aliases.push().copy(other.aliases[i]);
     }
     ratios.copy(other.ratios);
+    different_aliasHELM = other.different_aliasHELM;
+    aliasHELM.copy(other.aliasHELM);
 }
 
 IMPL_ERROR(MoleculeTGroups, "molecule tgroups");

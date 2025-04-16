@@ -36,14 +36,23 @@ lib = indigo.loadMonomerLibraryFromFile(
 
 for desc in fasta_files:
     filename = desc["file"]
-    mol = indigo.loadFastaFromFile(
-        os.path.join(root, filename + ".fasta"), desc["seq_type"], lib
-    )
+    try:
+        mol = indigo.loadFastaFromFile(
+            os.path.join(root, filename + ".fasta"), desc["seq_type"], lib
+        )
+    except Exception as e:
+        print("%s.fasta:FAILED - %s" % (filename, e))
+        continue
     # with open(os.path.join(ref_path, filename) + ".fasta", "w") as file:
     #     file.write(mol.fasta())
     with open(os.path.join(ref_path, filename) + ".fasta", "r") as file:
         fasta_ref = file.read()
-    fasta = mol.fasta(lib)
+    try:
+        fasta = mol.fasta(lib)
+    except Exception as e:
+        print(filename + ".fasta:FAILED")
+        print(e)
+        continue
     diff = find_diff(fasta_ref, fasta)
     if not diff:
         print(filename + ".fasta:SUCCEED")

@@ -49,6 +49,7 @@ namespace indigo
             {"fullName", toUType(StringProps::fullName)},
             {"naturalAnalog", toUType(StringProps::naturalAnalog)},
             {"naturalAnalogShort", toUType(StringProps::naturalAnalogShort)},
+            {"aliasHELM", toUType(StringProps::aliasHELM)},
         };
         return str_to_idx;
     };
@@ -202,6 +203,17 @@ namespace indigo
         for (auto& it : _monomer_templates)
         {
             if (it.second.monomerClass() == monomer_class && it.second.hasStringProp("alias") && it.second.getStringProp("alias") == monomer_template_alias)
+                return it.second.id();
+        }
+        return EMPTY_STRING;
+    }
+
+    const std::string& MonomerTemplateLibrary::getMonomerTemplateIdByAliasHELM(MonomerClass monomer_class, const std::string& monomer_template_alias)
+    {
+        for (auto& it : _monomer_templates)
+        {
+            if (it.second.monomerClass() == monomer_class && it.second.hasStringProp("aliasHELM") &&
+                it.second.getStringProp("aliasHELM") == monomer_template_alias)
                 return it.second.id();
         }
         return EMPTY_STRING;

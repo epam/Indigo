@@ -49,6 +49,7 @@ helm_data = {
     "helm_any_chem": "CHEM1{*}|CHEM2{*}$$$$V2.0",
     "helm_2818": "RNA1{R(A,C,G,U)P.R(C,G,U)P.R(A,G,U)P.R(A,C,U)P.R(G,U)P.R(A,U)P.R(C,U)P}$$$$V2.0",
     "helm_2826": "RNA1{[dR](A,C,G,T)P.[dR](A,G,T)P.[dR](A,T)P}|RNA2{R(A,C,G,U)P.R(A,C,U)P.R(A,U)[Ssp]}|RNA3{[RSpabC](A,U)P}$RNA1,RNA2,2:pair-8:pair|RNA1,RNA2,5:pair-5:pair|RNA2,RNA1,2:pair-8:pair$$$V2.0",
+    "helm_alias": "RNA1{m(A)P.[n3r](C)P}$$$$V2.0",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
