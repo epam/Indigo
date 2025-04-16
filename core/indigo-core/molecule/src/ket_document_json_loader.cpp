@@ -195,6 +195,15 @@ void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json
     auto& mon_template = addMonomerTemplate(id, monomer_class, idt_alias, unresolved);
     mon_template.parseOptsFromKet(mt_json);
 
+    if (mt_json.HasMember("modificationTypes"))
+    {
+        auto& mt = mt_json["modificationTypes"];
+        for (SizeType i = 0; i < mt.Size(); i++)
+        {
+            mon_template.addModificationType(mt[i].GetString());
+        }
+    }
+
     // parse atoms
     mon_template.parseAtoms(mt_json["atoms"]);
 

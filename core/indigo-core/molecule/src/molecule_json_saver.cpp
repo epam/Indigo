@@ -1249,6 +1249,16 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
             writer.EndObject();
         }
     }
+    if (tg.modification_types.size() > 0)
+    {
+        writer.Key("modificationTypes");
+        writer.StartArray();
+        for (int i = 0; i < tg.modification_types.size(); i++)
+        {
+            writer.String(tg.modification_types[i].ptr());
+        }
+        writer.EndArray();
+    }
 
     if (tg.different_aliasHELM)
     {

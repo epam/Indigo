@@ -308,6 +308,17 @@ void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const Monomer
         }
     }
 
+    if (monomer_template.modificationTypes().size() > 0)
+    {
+        writer.Key("modificationTypes");
+        writer.StartArray();
+        for (auto& it : monomer_template.modificationTypes())
+        {
+            writer.String(it.c_str());
+        }
+        writer.EndArray();
+    }
+
     saveMonomerTemplateAttachmentPoints(writer, monomer_template);
     saveKetAtoms(writer, monomer_template.atoms());
     saveKetBonds(writer, monomer_template.bonds());
