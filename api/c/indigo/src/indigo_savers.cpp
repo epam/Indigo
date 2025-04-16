@@ -112,13 +112,13 @@ void IndigoSaver::appendObject(IndigoObject& object)
 // IndigoSDFSaver
 //
 
-void IndigoSdfSaver::appendMolfile(Output& out, IndigoObject& obj)
+void IndigoSdfSaver::appendMolfile(Output& out, IndigoObject& obj, bool skip_unused_templates)
 {
     if (IndigoBaseMolecule::is(obj) || IndigoKetDocument::is(obj))
     {
         Indigo& indigo = indigoGetInstance();
-
         MolfileSaver saver(out);
+        saver.skip_unused_templates = skip_unused_templates;
         indigo.initMolfileSaver(saver);
         saver.saveBaseMolecule(obj.getBaseMolecule());
     }
@@ -130,7 +130,7 @@ void IndigoSdfSaver::appendMolfile(Output& out, IndigoObject& obj)
 
 void IndigoSdfSaver::append(Output& out, IndigoObject& obj)
 {
-    appendMolfile(out, obj);
+    appendMolfile(out, obj, true);
 
     auto& props = obj.getProperties();
 

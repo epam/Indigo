@@ -65,16 +65,17 @@ namespace indigo
         void saveCtab3000(Molecule& mol);
         void saveQueryCtab3000(QueryMolecule& mol);
 
-        int mode;             // one of MODE_***, MODE_AUTO by default
-        bool no_chiral;       // skip the 'chiral' flag, not regarding of the actual stereochemistry (depricated)
-        int chiral_flag;      // set chiral to pre-defined value, not regarding of the actual stereochemistry
-                              // (the default value = -1, use actual stereochemistry)
-        bool skip_date;       // If true then zero date is written
-        bool add_stereo_desc; // If true then stereo descriptors will be added as DAT S-groups
-        bool add_implicit_h;  // If true then MRV_IMPLICIT_H Data S-groups will be added for saving
-                              // the number of implicit H for aromatic atoms
-                              // (if it is required for correct de-aromatization) (default value is true)
-        bool add_mrv_sma;     // If true then "MRV SMA" extension will be added for query molecules (default value is true)
+        int mode;                   // one of MODE_***, MODE_AUTO by default
+        bool no_chiral;             // skip the 'chiral' flag, not regarding of the actual stereochemistry (depricated)
+        int chiral_flag;            // set chiral to pre-defined value, not regarding of the actual stereochemistry
+                                    // (the default value = -1, use actual stereochemistry)
+        bool skip_date;             // If true then zero date is written
+        bool skip_unused_templates; // If true then save only used templates
+        bool add_stereo_desc;       // If true then stereo descriptors will be added as DAT S-groups
+        bool add_implicit_h;        // If true then MRV_IMPLICIT_H Data S-groups will be added for saving
+                                    // the number of implicit H for aromatic atoms
+                                    // (if it is required for correct de-aromatization) (default value is true)
+        bool add_mrv_sma;           // If true then "MRV SMA" extension will be added for query molecules (default value is true)
         static int parseFormatMode(const char* mode);
         static void saveFormatMode(int mode, Array<char>& output);
 

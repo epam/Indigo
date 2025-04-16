@@ -43,7 +43,8 @@ IMPL_ERROR(MolfileSaver, "molfile saver");
 
 CP_DEF(MolfileSaver);
 
-MolfileSaver::MolfileSaver(Output& output) : _output(output), CP_INIT, TL_CP_GET(_atom_mapping), TL_CP_GET(_bond_mapping), add_mrv_sma(true)
+MolfileSaver::MolfileSaver(Output& output)
+    : _output(output), CP_INIT, TL_CP_GET(_atom_mapping), TL_CP_GET(_bond_mapping), add_mrv_sma(true), skip_unused_templates(false)
 {
     mode = MODE_AUTO;
     no_chiral = false;
@@ -458,6 +459,16 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
     QS_DEF(Array<char>, buf);
     std::list<int> implicit_sgroups_indexes;
 
+    struct StringPairHash
+    {
+        std::size_t operator()(const std::pair<std::string, std::string>& p) const
+        {
+            return std::hash<std::string>()(p.first) ^ (std::hash<std::string>()(p.second) << 1);
+        }
+    };
+
+    std::unordered_set<std::pair<std::string, std::string>, StringPairHash> template_atoms;
+
     _atom_mapping.clear_resize(mol.vertexEnd());
     _bond_mapping.clear_resize(mol.edgeEnd());
 
@@ -644,8 +655,11 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         if (mol.isTemplateAtom(i))
         {
             std::string tclass;
+
             if (mol.getTemplateAtomClass(i) != 0 && strlen(mol.getTemplateAtomClass(i)) > 0)
             {
+                if (skip_unused_templates)
+                    template_atoms.insert({mol.getTemplateAtom(i), mol.getTemplateAtomClass(i)});
                 tclass = mol.getTemplateAtomClass(i);
                 // convert CHEM to LINKER for BIOVIA
                 out.printf(" CLASS=%s", tclass == kMonomerClassCHEM ? kMonomerClassLINKER : tclass.c_str());
@@ -1065,10 +1079,12 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
     if (n_tgroups > 0)
     {
         output.writeStringCR("M  V30 BEGIN TEMPLATE");
-
         for (i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
         {
-            _writeTGroup(output, mol, i);
+            auto& tg = mol.tgroups.getTGroup(i);
+            if (!skip_unused_templates || template_atoms.count({tg.tgroup_alias.ptr(), tg.tgroup_class.ptr()}))
+                _writeTGroup(output, mol, i);
+
         }
         output.writeStringCR("M  V30 END TEMPLATE");
     }

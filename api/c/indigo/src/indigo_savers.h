@@ -40,8 +40,8 @@ public:
     static IndigoSaver* create(Output& output, const char* type);
 
 protected:
-    virtual void _appendHeader(){};
-    virtual void _appendFooter(){};
+    virtual void _appendHeader() {};
+    virtual void _appendFooter() {};
     virtual void _append(IndigoObject& object) = 0;
 
     Output& _output;
@@ -59,7 +59,7 @@ public:
     }
     const char* debugInfo() const override;
     static void append(Output& output, IndigoObject& object);
-    static void appendMolfile(Output& output, IndigoObject& object);
+    static void appendMolfile(Output& output, IndigoObject& object, bool skip_unused_templates = false);
 
 protected:
     virtual void _append(IndigoObject& object);
