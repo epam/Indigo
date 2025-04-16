@@ -743,7 +743,8 @@ void KetDocument::CalculateMacroProps(Output& output, bool pretty_json)
         sequence.insert(sequence.begin(), sequence_arr.secondary_sequence.begin(), sequence_arr.secondary_sequence.end());
         std::vector<double> pKa_values;
         // in kDa(1000g/mol) (all chains)
-        double mass_sum = -1;
+        double mass_sum = 0;
+        bool calculate_mass = true;
         std::map<char, size_t> atoms_count;
         GROSS_UNITS gross_units;
         gross_units.resize(1);
@@ -764,14 +765,14 @@ void KetDocument::CalculateMacroProps(Output& output, bool pretty_json)
             auto& monomer = _monomers.at(monomer_id);
             if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
             {
-                mass_sum = -1;
+                calculate_mass = false;
                 atoms_count.clear();
                 break;
             }
             auto& monomer_template = _templates.at(monomer->templateId());
             if (monomer_template.unresolved())
             {
-                mass_sum = -1;
+                calculate_mass = false;
                 atoms_count.clear();
                 break;
             }
@@ -808,44 +809,44 @@ void KetDocument::CalculateMacroProps(Output& output, bool pretty_json)
             auto gross = MoleculeGrossFormula::collect(*pmol, true);
             merge_gross_data(*gross);
         }
-        std::vector<std::string> sequence_ends;
-        sequence_ends.emplace_back(sequence.front());
-        if (sequence.back() != sequence.front())
-            sequence_ends.emplace_back(sequence.back());
-        for (auto& monomer_id : sequence_ends)
+        if (calculate_mass)
         {
-            if (monomer_to_molecule.count(monomer_id) > 0)
+            std::vector<std::string> sequence_ends;
+            sequence_ends.emplace_back(sequence.front());
+            if (sequence.back() != sequence.front())
+                sequence_ends.emplace_back(sequence.back());
+            for (auto& monomer_id : sequence_ends)
             {
-                auto& molecule_id = monomer_to_molecule.at(monomer_id).first;
-                auto& mol_json = _json_molecules[_mol_ref_to_idx[molecule_id]];
-                rapidjson::Value marr(rapidjson::kArrayType);
-                marr.PushBack(_json_document.CopyFrom(mol_json, _json_document.GetAllocator()), _json_document.GetAllocator());
-                MoleculeJsonLoader loader(marr);
-                BaseMolecule* pbmol;
-                Molecule mol;
-                QueryMolecule qmol;
-                try
+                if (monomer_to_molecule.count(monomer_id) > 0)
                 {
-                    loader.loadMolecule(mol);
-                    pbmol = &mol;
-                    MoleculeMass mass;
-                    mass.mass_options.skip_error_on_pseudoatoms = true;
-                    mass_sum += mass.molecularWeight(mol);
-                    auto gross = MoleculeGrossFormula::collect(*pbmol, true);
-                    merge_gross_data(*gross);
-                }
-                catch (...)
-                {
-                    // query molecule just skipped
+                    auto& molecule_id = monomer_to_molecule.at(monomer_id).first;
+                    auto& mol_json = _json_molecules[_mol_ref_to_idx[molecule_id]];
+                    rapidjson::Value marr(rapidjson::kArrayType);
+                    marr.PushBack(_json_document.CopyFrom(mol_json, _json_document.GetAllocator()), _json_document.GetAllocator());
+                    MoleculeJsonLoader loader(marr);
+                    BaseMolecule* pbmol;
+                    Molecule mol;
+                    QueryMolecule qmol;
+                    try
+                    {
+                        loader.loadMolecule(mol);
+                        pbmol = &mol;
+                        MoleculeMass mass;
+                        mass.mass_options.skip_error_on_pseudoatoms = true;
+                        mass_sum += mass.molecularWeight(mol);
+                        auto gross = MoleculeGrossFormula::collect(*pbmol, true);
+                        merge_gross_data(*gross);
+                    }
+                    catch (...)
+                    {
+                        // query molecule just skipped
+                    }
                 }
             }
-        }
-        Array<char> gross_str;
-        MoleculeGrossFormula::toString(gross_units, gross_str);
-        writer.Key("grossFormula");
-        writer.String(gross_str.ptr());
-        if (mass_sum > 0)
-        {
+            Array<char> gross_str;
+            MoleculeGrossFormula::toString(gross_units, gross_str);
+            writer.Key("grossFormula");
+            writer.String(gross_str.ptr());
             writer.Key("mass");
             writer.Double(mass_sum);
         }

@@ -1,7 +1,7 @@
 [
     {
         "grossFormula": "C19 N5 O8 S Se H33",
-        "mass": 569.5190227031708,
+        "mass": 570.5190227031708,
         "pKa": 4.0066667,
         "extinctionCoefficient": 125,
         "hydrophobicity": [
@@ -23,7 +23,7 @@
     },
     {
         "grossFormula": "C23 N8 O7 H36",
-        "mass": 535.5813446044922,
+        "mass": 536.5813446044922,
         "pKa": 3.5150001,
         "extinctionCoefficient": 0,
         "hydrophobicity": [
