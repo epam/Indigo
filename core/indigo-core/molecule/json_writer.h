@@ -29,6 +29,7 @@
 #include <rapidjson/writer.h>
 
 #include "common/base_cpp/exception.h"
+#include "common/math/algebra.h"
 
 namespace indigo
 {

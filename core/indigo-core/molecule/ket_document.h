@@ -19,6 +19,7 @@
 #ifndef __ket_document__
 #define __ket_document__
 
+#include "molecule/ket_monomer_shape.h"
 #include "molecule/ket_objects.h"
 #include "molecule/monomers_template_library.h"
 
@@ -200,7 +201,12 @@ namespace indigo
             return _monomer_shapes;
         }
 
-        void CalculateMacroProps(Output& output, bool pretty_json = false);
+        int moleculeIdxByRef(const std::string& ref);
+
+        rapidjson::Document& jsonDocument()
+        {
+            return _json_document;
+        };
 
     protected:
         void collect_sequence_side(const std::string& monomer_id, bool left_side, std::set<std::string>& monomers, std::set<std::string>& used_monomers,

@@ -27,9 +27,9 @@
 #include "base_cpp/properties_map.h"
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
-#include "ket_objects.h"
 #include "math/algebra.h"
 #include "molecule/elements.h"
+#include "molecule/ket_monomer_shape.h"
 #include "molecule/metadata_storage.h"
 #include "molecule/molecule_allene_stereo.h"
 #include "molecule/molecule_arom.h"
@@ -41,7 +41,7 @@
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_tgroups.h"
-#include "molecule/monomers_lib.h"
+#include "molecule/monomers_defs.h"
 #include "molecule/transformation.h"
 
 #ifdef _WIN32
@@ -124,6 +124,7 @@ namespace indigo
     class QueryMolecule;
     class MetaDataStorage;
     class KetDocument;
+    class TGroup;
 
     class DLLEXPORT BaseMolecule : public Graph
     {

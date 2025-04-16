@@ -279,20 +279,28 @@ void parse_cdx(const char* filename, bool pretty_json)
     json.Reset(s);
     uint16_t tag;
     json.StartArray();
-    bool first = true;
-    while (!sc.isEOF())
+    try
     {
-        sc.read(sizeof(tag), &tag);
-        if (first) // marvin and ketcher write 0x0000 instead of 0x8000 for first document
+        bool first = true;
+        while (!sc.isEOF())
         {
+            sc.read(sizeof(tag), &tag);
+            if (first) // marvin and ketcher write 0x0000 instead of 0x8000 for first document
+            {
+                if (tag == 0)
+                    tag = kCDXObj_Document;
+                first = false;
+            }
             if (tag == 0)
-                tag = kCDXObj_Document;
-            first = false;
+                break; // end of file
+            readObjOrProp(tag, sc, json);
         }
-        if (tag == 0)
-            break; // end of file
-        readObjOrProp(tag, sc, json);
     }
+    catch (Exception e)
+    {
+        printf("Exception: %s", e.message());
+    }
+
     json.EndArray();
     printf("\n%s\n", s.GetString());
 }
