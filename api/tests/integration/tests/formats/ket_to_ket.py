@@ -61,7 +61,7 @@ files = [
     "ambiguous_monomer",
     "expanded_monomer",
     "helm_alias",
-    "modification_types"
+    "modification_types",
 ]
 savers = {
     "doc": [indigo.loadKetDocument],
