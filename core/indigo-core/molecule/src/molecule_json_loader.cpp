@@ -1343,6 +1343,15 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
             }
             if (monomer_template.HasMember("unresolved"))
                 tg.unresolved = monomer_template["unresolved"].GetBool();
+            if (monomer_template.HasMember("modificationTypes"))
+            {
+                auto& mod_types = monomer_template["modificationTypes"];
+                for (SizeType i = 0; i < mod_types.Size(); i++)
+                {
+                    std::string mod_type = mod_types[i].GetString();
+                    tg.modification_types.push().readString(mod_type.c_str(), true);
+                }
+            }
         }
 
         if (monomer_template.HasMember("fullName"))

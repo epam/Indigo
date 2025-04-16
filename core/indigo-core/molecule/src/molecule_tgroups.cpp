@@ -139,6 +139,10 @@ void TGroup::copy(const TGroup& other)
     ratios.copy(other.ratios);
     different_aliasHELM = other.different_aliasHELM;
     aliasHELM.copy(other.aliasHELM);
+    for (int i = 0; i < other.modification_types.size(); i++)
+    {
+        modification_types.push().copy(other.modification_types[i]);
+    }
 }
 
 IMPL_ERROR(MoleculeTGroups, "molecule tgroups");

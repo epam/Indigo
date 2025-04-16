@@ -9,6 +9,9 @@ expanded_monomer.ket mol loadQueryMolecule: SUCCEED
 helm_alias.ket doc loadKetDocument: SUCCEED
 helm_alias.ket mol loadMolecule: SUCCEED
 helm_alias.ket mol loadQueryMolecule: SUCCEED
+modification_types.ket doc loadKetDocument: SUCCEED
+modification_types.ket mol loadMolecule: SUCCEED
+modification_types.ket mol loadQueryMolecule: SUCCEED
 monomer_shape.ket doc loadKetDocument: SUCCEED
 monomer_shape.ket mol loadMolecule: SUCCEED
 monomer_shape.ket mol loadQueryMolecule: SUCCEED

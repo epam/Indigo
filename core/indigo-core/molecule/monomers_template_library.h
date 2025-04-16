@@ -138,6 +138,16 @@ namespace indigo
 
         int AddBond(int bond_type, int atom1, int atom2);
 
+        const std::vector<std::string>& modificationTypes() const
+        {
+            return _modification_types;
+        };
+
+        void addModificationType(const std::string& modification_type)
+        {
+            _modification_types.push_back(modification_type);
+        };
+
     private:
         enum class StringProps
         {
@@ -151,6 +161,7 @@ namespace indigo
         bool _unresolved;
         atoms_type _atoms;
         std::vector<KetBond> _bonds;
+        std::vector<std::string> _modification_types;
     };
 
     class DLLEXPORT MonomerGroupTemplate
