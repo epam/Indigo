@@ -70,7 +70,6 @@ namespace indigo
         int chiral_flag;            // set chiral to pre-defined value, not regarding of the actual stereochemistry
                                     // (the default value = -1, use actual stereochemistry)
         bool skip_date;             // If true then zero date is written
-        bool skip_unused_templates; // If true then save only used templates
         bool add_stereo_desc;       // If true then stereo descriptors will be added as DAT S-groups
         bool add_implicit_h;        // If true then MRV_IMPLICIT_H Data S-groups will be added for saving
                                     // the number of implicit H for aromatic atoms

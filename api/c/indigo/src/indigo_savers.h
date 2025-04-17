@@ -59,7 +59,7 @@ public:
     }
     const char* debugInfo() const override;
     static void append(Output& output, IndigoObject& object);
-    static void appendMolfile(Output& output, IndigoObject& object, bool skip_unused_templates = false);
+    static void appendMolfile(Output& output, IndigoObject& object);
 
 protected:
     virtual void _append(IndigoObject& object);
