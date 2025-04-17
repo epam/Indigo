@@ -24,7 +24,7 @@ print("*** KET to SDF ***")
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
-files = ["acd2d_err3", "sdf"]
+files = ["acd2d_err3", "separate_monomers"]
 
 files.sort()
 for filename in files:

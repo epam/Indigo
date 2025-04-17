@@ -867,7 +867,7 @@ int main(int argc, char* argv[])
 
     indigoSetOption("ignore-stereochemistry-errors", "on");
     indigoSetOption("ignore-bad-valence", "on");
-    indigoSetOption("molfile-saving-mode", "2000");
+    indigoSetOption("molfile-saving-mode", "3000");
     indigoSetOption("ket-saving-version", "1.0.0");
     indigoSetOptionBool("json-saving-pretty", "on");
     indigoSetOptionFloat("reaction-component-margin-size", 0.0f);
@@ -957,7 +957,7 @@ int main(int argc, char* argv[])
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
-            indigoLayout(obj);
+            //indigoLayout(obj);
             if (p.out_ext == OEXT_MOL)
                 indigoSaveMolfileToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_KET)
