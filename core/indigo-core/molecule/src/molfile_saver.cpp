@@ -458,6 +458,16 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
     QS_DEF(Array<char>, buf);
     std::list<int> implicit_sgroups_indexes;
 
+    struct StringPairHash
+    {
+        std::size_t operator()(const std::pair<std::string, std::string>& p) const
+        {
+            return std::hash<std::string>()(p.first) ^ (std::hash<std::string>()(p.second) << 1);
+        }
+    };
+
+    std::unordered_set<std::pair<std::string, std::string>, StringPairHash> template_atoms;
+
     _atom_mapping.clear_resize(mol.vertexEnd());
     _bond_mapping.clear_resize(mol.edgeEnd());
 
@@ -644,8 +654,10 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         if (mol.isTemplateAtom(i))
         {
             std::string tclass;
+
             if (mol.getTemplateAtomClass(i) != 0 && strlen(mol.getTemplateAtomClass(i)) > 0)
             {
+                template_atoms.insert({mol.getTemplateAtom(i), mol.getTemplateAtomClass(i)});
                 tclass = mol.getTemplateAtomClass(i);
                 // convert CHEM to LINKER for BIOVIA
                 out.printf(" CLASS=%s", tclass == kMonomerClassCHEM ? kMonomerClassLINKER : tclass.c_str());
@@ -1065,10 +1077,21 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
     if (n_tgroups > 0)
     {
         output.writeStringCR("M  V30 BEGIN TEMPLATE");
-
         for (i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
         {
-            _writeTGroup(output, mol, i);
+            auto& tg = mol.tgroups.getTGroup(i);
+            if (tg.ambiguous)
+                throw Error("Ambiguous monomer cannot be saved to molfile.");
+
+            std::string tmp_alias, tmp_name, tmp_class;
+            if (tg.tgroup_class.ptr())
+                tmp_class = tg.tgroup_class.ptr();
+            if (tg.tgroup_alias.ptr())
+                tmp_alias = tg.tgroup_alias.ptr();
+            if (tg.tgroup_name.ptr())
+                tmp_name = tg.tgroup_name.ptr();
+            if (template_atoms.size() == 0 || template_atoms.count({tmp_alias, tmp_class}) || template_atoms.count({tmp_name, tmp_class}))
+                _writeTGroup(output, mol, i);
         }
         output.writeStringCR("M  V30 END TEMPLATE");
     }
@@ -1147,8 +1170,6 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     TGroup& tgroup = mol.tgroups.getTGroup(tg_idx);
-    if (tgroup.ambiguous)
-        throw Error("Ambiguous monomer cannot be saved to molfile.");
     std::string natreplace;
     if (tgroup.tgroup_natreplace.size() > 0)
         natreplace = tgroup.tgroup_natreplace.ptr();

@@ -261,7 +261,7 @@
             "y": -6.3125
         },
         "alias": "C",
-        "templateId": "Cyt_0"
+        "templateId": "Cyt_3"
     },
     "monomer2": {
         "type": "monomer",
@@ -283,7 +283,7 @@
             "y": -6.3125
         },
         "alias": "G",
-        "templateId": "Gua_1"
+        "templateId": "Gua_2"
     },
     "monomer4": {
         "type": "monomer",

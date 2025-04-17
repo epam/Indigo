@@ -117,7 +117,6 @@ void IndigoSdfSaver::appendMolfile(Output& out, IndigoObject& obj)
     if (IndigoBaseMolecule::is(obj) || IndigoKetDocument::is(obj))
     {
         Indigo& indigo = indigoGetInstance();
-
         MolfileSaver saver(out);
         indigo.initMolfileSaver(saver);
         saver.saveBaseMolecule(obj.getBaseMolecule());

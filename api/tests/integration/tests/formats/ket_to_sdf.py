@@ -24,7 +24,7 @@ print("*** KET to SDF ***")
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
-files = ["acd2d_err3"]
+files = ["acd2d_err3", "separate_monomers"]
 
 files.sort()
 for filename in files:
@@ -47,7 +47,7 @@ for filename in files:
     sdfSaver.close()
     sdf = buffer.toString()
     # with open(os.path.join(ref_path, filename) + ".sdf", "w") as file:
-    #   file.write(sdf)
+    #     file.write(sdf)
 
     with open(os.path.join(ref_path, filename) + ".sdf", "r") as file:
         sdf_ref = file.read()
