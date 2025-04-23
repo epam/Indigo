@@ -5403,19 +5403,19 @@ std::unique_ptr<BaseMolecule> BaseMolecule::applyTransformation(const Transforma
     {
         matr.identity();                  // init matrix with 1-s on diagonal
         matr.translateInv(bbox.center()); // translate to move bounding center to (0,0)
-        if (transform.rotation != 0)
+        if (transform.rotate != 0)
         {
             Transform3f rot;
-            rot.rotateZ(transform.rotation); // rotate around Z axis
+            rot.rotateZ(transform.rotate); // rotate around Z axis
             matr.transform(rot);             // rotate after translation
         }
     }
     else // 2DO: check if this is correct. Also add comment to translateLocal
     {
-        if (transform.rotation == 0)
+        if (transform.rotate == 0)
             matr.identity();
         else
-            matr.rotationZ(transform.rotation);
+            matr.rotationZ(transform.rotate);
         matr.translateLocalInv(bbox.center());
     }
     matr.translate(position); // translate to move bounding center to position point

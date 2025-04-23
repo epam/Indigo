@@ -1747,14 +1747,14 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 }
 
                 auto transform = mol->getTemplateAtomTransform(i);
-                if (transform.rotation != 0 || transform.shift.x != 0 || transform.shift.y != 0)
+                if (transform.rotate != 0 || transform.shift.x != 0 || transform.shift.y != 0)
                 {
-                    writer.Key("transform");
+                    writer.Key("transformation");
                     writer.StartObject();
-                    if (transform.rotation != 0)
+                    if (transform.rotate != 0)
                     {
-                        writer.Key("rotation");
-                        writeFloat(writer, transform.rotation);
+                        writer.Key("rotate");
+                        writeFloat(writer, transform.rotate);
                     }
                     if (transform.shift.x != 0 || transform.shift.y != 0)
                     {

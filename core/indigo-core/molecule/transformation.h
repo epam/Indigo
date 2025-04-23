@@ -33,19 +33,19 @@ namespace indigo
     class Transformation
     {
     public:
-        Transformation() : rotation(0), shift(Vec2f(0, 0)){};
-        Transformation(float rotation) : rotation(rotation), shift(Vec2f(0, 0)){};
-        Transformation(const Vec2f& shift) : rotation(0), shift(shift){};
-        Transformation(float rotation, const Vec2f& shift) : rotation(rotation), shift(shift){};
-        Transformation(const Transformation& other) : rotation(other.rotation), shift(other.shift){};
+        Transformation() : rotate(0), shift(Vec2f(0, 0)){};
+        Transformation(float rotate) : rotate(rotate), shift(Vec2f(0, 0)){};
+        Transformation(const Vec2f& shift) : rotate(0), shift(shift){};
+        Transformation(float rotate, const Vec2f& shift) : rotate(rotate), shift(shift){};
+        Transformation(const Transformation& other) : rotate(other.rotate), shift(other.shift){};
         Transformation& operator=(const Transformation& other)
         {
-            rotation = other.rotation;
+            rotate = other.rotate;
             shift = other.shift;
             return *this;
         }
 
-        float rotation;
+        float rotate;
         Vec2f shift;
     };
 
