@@ -1487,7 +1487,9 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
     break;
     case SimpleGraphicsObject::CID: {
         SimpleGraphicsObject& simple_obj = (SimpleGraphicsObject&)cp_obj;
-        Rect2f bbox(simple_obj._coordinates.first, simple_obj._coordinates.second);
+        const auto& v1 = simple_obj._coordinates.first;
+        const auto& v2 = simple_obj._coordinates.second;
+        Rect2f bbox(v1, v2);
         switch (simple_obj._mode)
         {
         case SimpleGraphicsObject::EEllipse: {
@@ -1504,16 +1506,18 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
             attrs.insert("MajorAxisEnd3D", std::to_string(maj_axis.x) + " " + std::to_string(maj_axis.y) + " 0");
             attrs.insert("MinorAxisEnd3D", std::to_string(min_axis.x) + " " + std::to_string(min_axis.y) + " 0");
             attrs.insert("GraphicType", "Oval");
+            addElement("graphic", id, bbox.leftBottom(), bbox.rightTop(), attrs);
         }
         break;
         case SimpleGraphicsObject::ERectangle:
             attrs.insert("GraphicType", "Rectangle");
+            addElement("graphic", id, bbox.leftBottom(), bbox.rightTop(), attrs);
             break;
         case SimpleGraphicsObject::ELine:
             attrs.insert("GraphicType", "Line");
+            addElement("graphic", id, v1, v2, attrs);
             break;
         }
-        addElement("graphic", id, bbox.leftBottom(), bbox.rightTop(), attrs);
     }
     break;
     case SimpleTextObject::CID: {
