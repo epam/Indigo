@@ -5407,7 +5407,7 @@ std::unique_ptr<BaseMolecule> BaseMolecule::applyTransformation(const Transforma
         {
             Transform3f rot;
             rot.rotateZ(transform.rotate); // rotate around Z axis
-            matr.transform(rot);             // rotate after translation
+            matr.transform(rot);           // rotate after translation
         }
     }
     else // 2DO: check if this is correct. Also add comment to translateLocal
