@@ -1700,7 +1700,7 @@ CEXPORT const char* indigoJson(int item)
     INDIGO_END(0);
 }
 
-CEXPORT const char* indigoMacroProperties(int object)
+CEXPORT const char* indigoMacroProperties(int object, float upc, float nac)
 {
     INDIGO_BEGIN
     {
@@ -1713,7 +1713,7 @@ CEXPORT const char* indigoMacroProperties(int object)
         {
             auto& doc = obj.getKetDocument();
             MacroPropertiesCalculator calc;
-            calc.CalculateMacroProps(doc, out, self.json_saving_pretty);
+            calc.CalculateMacroProps(doc, out, upc, nac, self.json_saving_pretty);
         }
         out.writeChar(0);
         return tmp.string.ptr();

@@ -80,6 +80,8 @@ def indigo_init(options={}):
                 "output-content-type",
                 "monomerLibrary",
                 "sequence-type",
+                "upc",
+                "nac",
             ):
                 continue
             tls.indigo.setOption(option, value)
@@ -1923,6 +1925,21 @@ def calculateMacroProperties():
         try_document=True,
     )
 
-    result = {"properties": md.struct.macroProperties()}
+    options = data["options"]
+    upc = 140.0
+    if "upc" in options:
+        try:
+            upc = float(options["upc"])
+        except ValueError:
+            raise IndigoException("Invalid value for UPC")
+    nac = 0
+    if "nac" in options:
+        try:
+            nac = float(options["nac"])
+        except ValueError:
+            raise IndigoException("Invalid value for NAC")
+    else:
+            raise IndigoException("NAC option is mandatory")
+    result = {"properties": md.struct.macroProperties(upc, nac)}
 
     return jsonify(result), 200, {"Content-Type": "application/json"}
