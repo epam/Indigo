@@ -1939,7 +1939,7 @@ def calculateMacroProperties():
         except ValueError:
             raise IndigoException("Invalid value for NAC")
     else:
-            raise IndigoException("NAC option is mandatory")
+        raise IndigoException("NAC option is mandatory")
     result = {"properties": md.struct.macroProperties(upc, nac)}
 
     return jsonify(result), 200, {"Content-Type": "application/json"}
