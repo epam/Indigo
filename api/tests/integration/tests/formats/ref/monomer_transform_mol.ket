@@ -71,7 +71,8 @@
             "shift": {
                 "x": -1.000000,
                 "y": 1.000000
-            }
+            },
+            "flip": "horizontal"
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"

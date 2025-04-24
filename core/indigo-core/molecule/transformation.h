@@ -21,6 +21,7 @@
 
 #include <memory>
 
+#include "common/base_cpp/exception.h"
 #include "math/algebra.h"
 
 #ifdef _WIN32
@@ -33,20 +34,33 @@ namespace indigo
     class Transformation
     {
     public:
-        Transformation() : rotate(0), shift(Vec2f(0, 0)){};
-        Transformation(float rotate) : rotate(rotate), shift(Vec2f(0, 0)){};
-        Transformation(const Vec2f& shift) : rotate(0), shift(shift){};
-        Transformation(float rotate, const Vec2f& shift) : rotate(rotate), shift(shift){};
-        Transformation(const Transformation& other) : rotate(other.rotate), shift(other.shift){};
+        DECL_ERROR;
+
+        enum class FlipType
+        {
+            none,
+            horizontal,
+            vertical
+        };
+
+        Transformation() : rotate(0), shift(Vec2f(0, 0)), flip(FlipType::none){};
+        Transformation(float rotate) : rotate(rotate), shift(Vec2f(0, 0)), flip(FlipType::none){};
+        Transformation(const Vec2f& shift) : rotate(0), shift(shift), flip(FlipType::none){};
+        Transformation(float rotate, const Vec2f& shift) : rotate(rotate), shift(shift), flip(FlipType::none){};
+        Transformation(float rotation, const Vec2f& shift, std::string flip);
+        Transformation(const Transformation& other) : rotate(other.rotate), shift(other.shift), flip(other.flip){};
         Transformation& operator=(const Transformation& other)
         {
             rotate = other.rotate;
             shift = other.shift;
+            flip = other.flip;
             return *this;
         }
+        const std::string getFlip() const;
 
         float rotate;
         Vec2f shift;
+        FlipType flip;
     };
 
 } // namespace indigo
