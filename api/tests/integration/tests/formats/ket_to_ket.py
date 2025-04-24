@@ -62,6 +62,7 @@ files = [
     "expanded_monomer",
     "helm_alias",
     "modification_types",
+    "monomer_transform",
 ]
 savers = {
     "doc": [indigo.loadKetDocument],

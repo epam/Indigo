@@ -249,14 +249,14 @@ void KetDocumentJsonSaver::saveMonomer(JsonWriter& writer, const KetMonomer& mon
     saveStr(writer, "alias", monomer.alias());
     saveStr(writer, "templateId", monomer.templateId());
     const auto& transform = monomer.getTransformation();
-    if (transform.rotation != 0 || transform.shift.x != 0 || transform.shift.y != 0)
+    if (transform.rotate != 0 || transform.shift.x != 0 || transform.shift.y != 0)
     {
         writer.Key("transformation");
         writer.StartObject();
-        if (transform.rotation != 0)
+        if (transform.rotate != 0)
         {
-            writer.Key("rotation");
-            saveNativeFloat(writer, transform.rotation);
+            writer.Key("rotate");
+            saveNativeFloat(writer, transform.rotate);
         }
         if (transform.shift.x != 0 || transform.shift.y != 0)
         {
