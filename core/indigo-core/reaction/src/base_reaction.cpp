@@ -115,6 +115,7 @@ void BaseReaction::clear()
     _catalystCount = 0;
     _intermediateCount = 0;
     _undefinedCount = 0;
+    _specialCount = 0;
     _allMolecules.clear();
     _types.clear();
     name.clear();
@@ -358,7 +359,7 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<
     if (mappings == 0)
         mappings = &tmp_mappings;
     mappings->clear();
-    for (i = 0; i < other.end(); ++i)
+    for (i = 0; i < other._allMolecules.end(); ++i)
         mappings->push();
 
     if (inv_mappings != 0)
@@ -366,7 +367,7 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<
 
     for (int i = other._allMolecules.begin(); i < other._allMolecules.end(); i = other._allMolecules.next(i))
     {
-        BaseMolecule& rmol = other.getBaseMolecule(i);
+        BaseMolecule& rmol = *other._allMolecules[i];
         QS_DEF(Array<int>, inv_mapping);
 
         switch (other._types[i])
