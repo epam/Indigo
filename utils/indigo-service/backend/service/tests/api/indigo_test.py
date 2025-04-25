@@ -3758,7 +3758,7 @@ M  END
         headers, data = self.get_headers(
             {
                 "struct": double_dna,
-                "options": {"json-saving-pretty": True, "nac": "200.0"},
+                "options": {"json-saving-pretty": True, "nac": "0.2"},
                 "input_format": "chemical/x-indigo-ket",
             }
         )
