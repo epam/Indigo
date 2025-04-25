@@ -502,7 +502,7 @@ CEXPORT int indigoCountHydrogens(int item, int* hydro);
 CEXPORT int indigoCountImplicitHydrogens(int item);
 
 // Calculate macromolecule properties. Return Json string with properties.
-CEXPORT const char* indigoMacroProperties(int object);
+CEXPORT const char* indigoMacroProperties(int object, float upc, float nac);
 
 // On success, returns always the same pointer to a 3-element array;
 // you should not free() it, but rather memcpy() it if you want to keep it.

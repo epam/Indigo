@@ -29,7 +29,7 @@ using namespace indigo;
 
 IMPL_ERROR(MacroPropertiesCalculator, "Macro Properties Calculator")
 
-void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Output& output, bool pretty_json) const
+void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Output& output, float upc, float nac, bool pretty_json) const
 {
     const auto& monomers = document.monomers();
     auto is_base = [&](MonomerClass monomer_class) -> bool {
@@ -243,6 +243,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
     rapidjson::StringBuffer s;
     JsonWriter writer(pretty_json);
     writer.Reset(s);
+    writer.SetMaxDecimalPlaces(6);
     writer.StartArray();
     for (auto& sequence_arr : joined_sequences)
     {
@@ -429,8 +430,10 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                     base_count++;
                     left = right;
                 }
+                double sp = static_cast<double>(total_strength) / base_count;
+                double tm = 7.35 * sp + 17.34 * log(base_count) + 4.96 * log(upc) + 0.89 * log(nac) - 25.42;
                 writer.Key("Tm");
-                writer.Double(static_cast<double>(total_strength) / base_count);
+                writer.Double(tm);
             }
         }
 

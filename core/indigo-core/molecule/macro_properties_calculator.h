@@ -33,7 +33,7 @@ namespace indigo
     {
     public:
         DECL_ERROR;
-        void CalculateMacroProps(KetDocument& document, Output& output, bool pretty_json = false) const;
+        void CalculateMacroProps(KetDocument& document, Output& output, float upc, float nac, bool pretty_json = false) const;
     };
 }
 

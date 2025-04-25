@@ -277,7 +277,7 @@ namespace indigo
 
     void indigoSetOptions(const std::map<std::string, std::string>& options)
     {
-        std::set<std::string> to_skip{"smiles", "smarts", "input-format", "output-content-type", "monomerLibrary", "sequence-type"};
+        std::set<std::string> to_skip{"smiles", "smarts", "input-format", "output-content-type", "monomerLibrary", "sequence-type", "upc", "nac"};
         for (const auto& option : options)
         {
             if (to_skip.count(option.first) < 1)
@@ -981,11 +981,32 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
+        float upc = 140.0f;
+        char* str_end = nullptr;
+        auto it = options.find("upc");
+        if (it != options.end())
+        {
+            upc = std::strtof(it->second.c_str(), &str_end);
+            if (str_end != nullptr && *str_end != 0)
+                jsThrow("Wrong value for UPC");
+        }
+        float nac = 0;
+        it = options.find("nac");
+        if (it != options.end())
+        {
+            nac = std::strtof(it->second.c_str(), &str_end);
+            if (str_end != nullptr && *str_end != 0)
+                jsThrow("Wrong value for NAC");
+        }
+        else
+        {
+            jsThrow("NAC option is mandatory");
+        }
         auto iko = indigoLoadKetDocumentFromString(data.c_str());
         rapidjson::Document result;
         auto& allocator = result.GetAllocator();
         result.SetObject();
-        std::string props{indigoMacroProperties(iko)};
+        std::string props{indigoMacroProperties(iko, upc, nac)};
         result.AddMember("properties", props, allocator);
         rapidjson::StringBuffer buffer;
         rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);

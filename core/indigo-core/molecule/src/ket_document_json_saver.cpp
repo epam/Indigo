@@ -40,7 +40,7 @@ const std::string get_ref(const T& obj)
     return T::ref_prefix + obj.id();
 }
 
-static void saveNativeFloat(JsonWriter& writer, float f_value)
+static void writeDouble(JsonWriter& writer, float f_value)
 {
     std::string val = std::to_string(f_value);
     writer.RawValue(val.c_str(), val.length(), kStringType);
@@ -180,9 +180,9 @@ static void saveKetAtom(JsonWriter& writer, const KetBaseAtomType* base_atom)
         writer.Key("location");
         writer.StartArray();
         auto& loc = location.value();
-        saveNativeFloat(writer, loc.x);
-        saveNativeFloat(writer, loc.y);
-        saveNativeFloat(writer, loc.z);
+        writeDouble(writer, loc.x);
+        writeDouble(writer, loc.y);
+        writeDouble(writer, loc.z);
         writer.EndArray();
     }
     base_atom->saveOptsToKet(writer);
@@ -241,9 +241,9 @@ void KetDocumentJsonSaver::saveMonomer(JsonWriter& writer, const KetMonomer& mon
         writer.Key("position");
         writer.StartObject();
         writer.Key("x");
-        saveNativeFloat(writer, pos.value().x);
+        writeDouble(writer, pos.value().x);
         writer.Key("y");
-        saveNativeFloat(writer, pos.value().y);
+        writeDouble(writer, pos.value().y);
         writer.EndObject();
     }
     saveStr(writer, "alias", monomer.alias());
@@ -256,16 +256,16 @@ void KetDocumentJsonSaver::saveMonomer(JsonWriter& writer, const KetMonomer& mon
         if (transform.rotate != 0)
         {
             writer.Key("rotate");
-            saveNativeFloat(writer, transform.rotate);
+            writeDouble(writer, transform.rotate);
         }
         if (transform.shift.x != 0 || transform.shift.y != 0)
         {
             writer.Key("shift");
             writer.StartObject();
             writer.Key("x");
-            saveNativeFloat(writer, transform.shift.x);
+            writeDouble(writer, transform.shift.x);
             writer.Key("y");
-            saveNativeFloat(writer, transform.shift.y);
+            writeDouble(writer, transform.shift.y);
             writer.EndObject(); // shift
         }
         if (transform.flip != Transformation::FlipType::none)
@@ -342,9 +342,9 @@ void KetDocumentJsonSaver::saveVariantMonomer(JsonWriter& writer, const KetAmbig
         writer.Key("position");
         writer.StartObject();
         writer.Key("x");
-        saveNativeFloat(writer, pos.value().x);
+        writeDouble(writer, pos.value().x);
         writer.Key("y");
-        saveNativeFloat(writer, pos.value().y);
+        writeDouble(writer, pos.value().y);
         writer.EndObject();
     }
     monomer.saveOptsToKet(writer);
@@ -371,13 +371,13 @@ void KetDocumentJsonSaver::saveVariantMonomerTemplate(JsonWriter& writer, const 
         if (ratio.has_value())
         {
             writer.Key("ratio");
-            saveNativeFloat(writer, ratio.value());
+            writeDouble(writer, ratio.value());
         }
         auto& probability = it.probability();
         if (probability.has_value())
         {
             writer.Key("probability");
-            saveNativeFloat(writer, probability.value());
+            writeDouble(writer, probability.value());
         }
         writer.EndObject();
     }
@@ -398,9 +398,9 @@ void KetDocumentJsonSaver::saveMonomerShape(JsonWriter& writer, const KetMonomer
     Vec2f pos = monomer_shape.position();
     writer.StartObject();
     writer.Key("x");
-    saveNativeFloat(writer, pos.x);
+    writeDouble(writer, pos.x);
     writer.Key("y");
-    saveNativeFloat(writer, pos.y);
+    writeDouble(writer, pos.y);
     writer.EndObject();
     writer.Key("monomers");
     writer.StartArray();
