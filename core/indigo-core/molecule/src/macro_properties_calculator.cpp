@@ -29,6 +29,14 @@ using namespace indigo;
 
 IMPL_ERROR(MacroPropertiesCalculator, "Macro Properties Calculator")
 
+static void writeDouble(JsonWriter& writer, double f_value)
+{
+    constexpr int buff_size = 20;
+    char buff[buff_size];
+    std::snprintf(buff, buff_size, "%g", f_value);
+    writer.RawValue(buff, strlen(buff), rapidjson::kStringType);
+}
+
 void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Output& output, float upc, float nac, bool pretty_json) const
 {
     const auto& monomers = document.monomers();
@@ -357,7 +365,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             writer.Key("grossFormula");
             writer.String(gross_str.ptr());
             writer.Key("mass");
-            writer.Double(mass_sum);
+            writeDouble(writer, mass_sum);
         }
 
         // pKa (only peptides)
@@ -382,7 +390,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 pKa = pKa_values[0];
             }
             writer.Key("pKa");
-            writer.Double(pKa);
+            writeDouble(writer, pKa);
         }
 
         // Melting temperature (only double stranded DNA)
@@ -432,7 +440,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 double sp = static_cast<double>(total_strength) / base_count;
                 double tm = 7.35 * sp + 17.34 * log(base_count) + 4.96 * log(upc) + 0.89 * log(nac) - 25.42;
                 writer.Key("Tm");
-                writer.Double(tm);
+                writeDouble(writer, tm);
             }
         }
 
@@ -499,7 +507,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             writer.Key("hydrophobicity");
             writer.StartArray();
             for (auto value : hydrophobicity)
-                writer.Double(value);
+                writeDouble(writer, value);
             writer.EndArray();
         }
 
