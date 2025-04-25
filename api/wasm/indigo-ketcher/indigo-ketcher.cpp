@@ -981,7 +981,9 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        float upc = 140.0f;
+        // UPC is molar concentration of unipositive cations, NAC is molar concentration of the nucleotide strands, these options need to calculate melting
+        // temperature
+        float upc = 0.14f; // default value is the average physiological - 140 mM
         char* str_end = nullptr;
         auto it = options.find("upc");
         if (it != options.end())

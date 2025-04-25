@@ -38,8 +38,8 @@ lib = indigo.loadMonomerLibraryFromFile(
     os.path.join(ref, "monomer_library.ket")
 )
 
-upc = 140.0
-nac = 200.0
+upc = 0.14
+nac = 0.2
 for filename in sorted(macro_data):
     mol = indigo.loadKetDocumentFromFile(os.path.join(root, filename + ".ket"))
     try:
