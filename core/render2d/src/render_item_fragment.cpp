@@ -85,6 +85,13 @@ void RenderItemFragment::render(bool idle)
     rnd.setReactionComponentProperties(aam, reactingCenters, inversionArray);
     rnd.setQueryReactionComponentProperties(exactChangeArray);
     rnd.render();
+    if (idle)
+    {
+        Vec2f new_min, new_max;
+        float new_scale = rnd.getScaleFactor(new_min, new_max);
+        if (new_scale != _scaleFactor)
+            _scaleFactor = new_scale;
+    }
 }
 
 static float get2dDist(const Vec3f& v1, const Vec3f& v2)

@@ -190,6 +190,13 @@ void MoleculeRenderInternal::setScaleFactor(const float scaleFactor, const Vec2f
     _max.copy(max);
 }
 
+float MoleculeRenderInternal::getScaleFactor(Vec2f& min, Vec2f& max)
+{
+    min.copy(_min);
+    max.copy(_max);
+    return _scale;
+}
+
 void mapArray(Array<int>& dst, const Array<int>& src, const int* mapping)
 {
     for (int i = 0; i < src.size(); ++i)

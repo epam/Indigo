@@ -125,6 +125,13 @@ indigo.setOption("render-output-format", "png")
 renderer.renderToFile(mol, joinPathPy("out/text_test5.png", __file__))
 print(checkImageSimilarity("text_test5.png"))
 
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/scaled_mol.ket", __file__)
+)
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(mol, joinPathPy("out/scaled_mol.png", __file__))
+print(checkImageSimilarity("scaled_mol.png"))
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()
