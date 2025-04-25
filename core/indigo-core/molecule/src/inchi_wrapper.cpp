@@ -404,8 +404,16 @@ void InchiWrapper::parseInchiOutput(const InchiOutput& inchi_output, Molecule& m
     }
 }
 
-void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<inchi_Atom>& atoms, Array<inchi_Stereo0D>& stereo)
+void InchiWrapper::generateInchiInput(Molecule& input_mol, inchi_Input& input, Array<inchi_Atom>& atoms, Array<inchi_Stereo0D>& stereo)
 {
+    Molecule tmol;
+    auto tcount = input_mol.tgroups.getTGroupCount();
+    Molecule& mol = tcount ? tmol : input_mol;
+    if (tcount)
+    {
+        tmol.clone_KeepIndices(input_mol);
+        tmol.transformSCSRtoFullCTAB();
+    }
     QS_DEF(Array<int>, mapping);
     mapping.clear_resize(mol.vertexEnd());
     mapping.fffill();
@@ -425,7 +433,8 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
             throw Error("Molecule with pseudoatom (%s) cannot be converted into InChI", mol.getPseudoAtom(v));
         if (atom_number == ELEM_RSITE)
             throw Error("Molecule with RGroups cannot be converted into InChI");
-        strncpy(atom.elname, Element::toString(atom_number), ATOM_EL_LEN);
+
+        strncpy(atom.elname, atom_number == ELEM_TEMPLATE ? mol.getTemplateAtom(v) : Element::toString(atom_number), ATOM_EL_LEN);
 
         Vec3f& c = mol.getAtomXyz(v);
         atom.x = c.x;
@@ -471,7 +480,14 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
 
         // Other properties
         atom.isotopic_mass = mol.getAtomIsotope(v);
-        atom.radical = mol.getAtomRadical(v);
+        try
+        {
+            atom.radical = mol.getAtomRadical(v);
+        }
+        catch (Molecule::Error&)
+        {
+            atom.radical = 0;
+        }
         atom.charge = mol.getAtomCharge(v);
 
         // Hydrogens

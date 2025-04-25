@@ -60,7 +60,7 @@ namespace indigo
 
         void parseInchiOutput(const InchiOutput& inchi_output, Molecule& mol);
 
-        void generateInchiInput(Molecule& mol, inchi_Input& input, Array<inchi_Atom>& atoms, Array<inchi_Stereo0D>& stereo);
+        void generateInchiInput(Molecule& input_mol, inchi_Input& input, Array<inchi_Atom>& atoms, Array<inchi_Stereo0D>& stereo);
 
         void neutralizeV5Nitrogen(Molecule& mol);
 
