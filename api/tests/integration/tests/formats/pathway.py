@@ -31,6 +31,7 @@ files = [
     "pathway10",
     "pathway11",
     "pathway12",
+    "pathway_mon",
 ]
 
 for filename in files:
