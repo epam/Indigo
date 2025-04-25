@@ -1156,6 +1156,7 @@ M  END
             const double_dna = fs.readFileSync("props_double_dna.ket");
             let options = new indigo.MapStringString();
             options.set('json-saving-pretty', 'true');
+            options.set('nac', '200.0');
             let json = JSON.parse(indigo.calculateMacroProperties(double_dna, options)).properties;            
             // fs.writeFileSync("props_double_dna.json", json);
             const json_ref = fs.readFileSync("props_double_dna.json");

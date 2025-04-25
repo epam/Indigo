@@ -987,7 +987,7 @@ namespace indigo
         if (it != options.end())
         {
             upc = std::strtof(it->second.c_str(), &str_end);
-            if (str_end != nullptr)
+            if (str_end != nullptr && *str_end != 0)
                 jsThrow("Wrong value for UPC");
         }
         float nac = 0;
@@ -995,7 +995,7 @@ namespace indigo
         if (it != options.end())
         {
             nac = std::strtof(it->second.c_str(), &str_end);
-            if (str_end != nullptr)
+            if (str_end != nullptr && *str_end != 0)
                 jsThrow("Wrong value for NAC");
         }
         else
