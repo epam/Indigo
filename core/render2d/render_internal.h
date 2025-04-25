@@ -37,6 +37,8 @@ namespace indigo
         void setMolecule(BaseMolecule* mol);
         void setIsRFragment(bool isRFragment);
         void setScaleFactor(const float scaleFactor, const Vec2f& min, const Vec2f& max);
+        float getScaleFactor(Vec2f& min, Vec2f& max);
+
         void render();
 
         void setReactionComponentProperties(const Array<int>* aam, const Array<int>* reactingCenters, const Array<int>* inversions);
