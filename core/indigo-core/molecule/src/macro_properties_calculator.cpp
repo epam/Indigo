@@ -29,6 +29,7 @@ using namespace indigo;
 
 IMPL_ERROR(MacroPropertiesCalculator, "Macro Properties Calculator")
 
+// UPC is molar concentration of unipositive cations, NAC is molar concentration of the nucleotide strands, these options need to calculate melting temperature
 void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Output& output, float upc, float nac, bool pretty_json) const
 {
     const auto& monomers = document.monomers();

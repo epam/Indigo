@@ -1926,7 +1926,8 @@ def calculateMacroProperties():
     )
 
     options = data["options"]
-    upc = 140.0
+    # UPC is molar concentration of unipositive cations, NAC is molar concentration of the nucleotide strands, these options need to calculate melting temperature
+    upc = 0.14  # default value is the average physiological - 140 mM
     if "upc" in options:
         try:
             upc = float(options["upc"])
