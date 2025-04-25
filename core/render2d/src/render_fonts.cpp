@@ -202,7 +202,6 @@ void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool i
     cairo_new_path(_cr);
     moveTo(ti.bbp);
     moveToRel(ti.relpos);
-
     if (metafileFontsToCurves)
     { // TODO: remove
         {
