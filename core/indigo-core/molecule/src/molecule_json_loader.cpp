@@ -1716,7 +1716,10 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
                 shift.x = shift_val["x"].GetFloat();
                 shift.y = shift_val["y"].GetFloat();
             }
-            mol.setTemplateAtomTransform(idx, Transformation(rotate, shift));
+            std::string flip;
+            if (transform_val.HasMember("flip"))
+                flip = transform_val["flip"].GetString();
+            mol.setTemplateAtomTransform(idx, Transformation(rotate, shift, flip));
         }
 
         std::string template_id = ma["templateId"].GetString();

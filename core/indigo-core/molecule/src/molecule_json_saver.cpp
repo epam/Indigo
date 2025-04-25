@@ -1766,6 +1766,11 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                         writeFloat(writer, transform.shift.y);
                         writer.EndObject(); // shift
                     }
+                    if (transform.flip != Transformation::FlipType::none)
+                    {
+                        writer.Key("flip");
+                        writer.String(transform.getFlip());
+                    }
                     writer.EndObject(); // transform
                 }
 

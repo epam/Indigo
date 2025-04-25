@@ -338,7 +338,10 @@ void KetDocumentJsonLoader::parseKetMonomer(std::string& ref, rapidjson::Value& 
             shift.x = shift_val["x"].GetFloat();
             shift.y = shift_val["y"].GetFloat();
         }
-        static_cast<KetMonomer&>(*monomer).setTransformation({rotate, shift});
+        std::string flip;
+        if (transform_val.HasMember("flip"))
+            flip = transform_val["flip"].GetString();
+        static_cast<KetMonomer&>(*monomer).setTransformation({rotate, shift, flip});
     }
     monomer->setAttachmentPoints(document.templates().at(template_id).attachmentPoints());
 }

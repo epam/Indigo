@@ -268,6 +268,11 @@ void KetDocumentJsonSaver::saveMonomer(JsonWriter& writer, const KetMonomer& mon
             saveNativeFloat(writer, transform.shift.y);
             writer.EndObject(); // shift
         }
+        if (transform.flip != Transformation::FlipType::none)
+        {
+            writer.Key("shift");
+            writer.String(transform.getFlip());
+        }
         writer.EndObject(); // transform
     }
     writer.EndObject();

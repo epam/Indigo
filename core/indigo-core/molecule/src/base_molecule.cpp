@@ -5398,6 +5398,50 @@ std::unique_ptr<BaseMolecule> BaseMolecule::applyTransformation(const Transforma
     result->clone_KeepIndices(*this);
     Rect2f bbox;
     result->getBoundingBox(bbox);
+    if (transform.flip != Transformation::FlipType::none)
+    {
+        // dx = px - cx, px = cx - dx = cx - px + cx = 2*cx - px
+        Vec2f center = bbox.center() * 2.0;
+        if (transform.flip == Transformation::FlipType::horizontal)
+        {
+            for (auto atom_idx : result->vertices())
+            {
+                Vec3f& p = result->getAtomXyz(atom_idx);
+                p.x = center.x - p.x;
+                result->setAtomXyz(atom_idx, p);
+            }
+        }
+        else if (transform.flip == Transformation::FlipType::vertical)
+        {
+            for (auto atom_idx : result->vertices())
+            {
+                Vec3f& p = result->getAtomXyz(atom_idx);
+                p.y = center.y - p.y;
+                result->setAtomXyz(atom_idx, p);
+            }
+        }
+        // Fix bonds - change up to down and vice versa
+        for (int i = 0; i < result->edgeCount(); i++)
+        {
+            switch (result->getBondDirection(i))
+            {
+            case BOND_DOWN:
+                result->setBondDirection(i, BOND_UP);
+                break;
+            case BOND_UP:
+                result->setBondDirection(i, BOND_DOWN);
+                break;
+            case BOND_DOWN_OR_UNSPECIFIED:
+                result->setBondDirection(i, BOND_UP_OR_UNSPECIFIED);
+                break;
+            case BOND_UP_OR_UNSPECIFIED:
+                result->setBondDirection(i, BOND_DOWN_OR_UNSPECIFIED);
+                break;
+            default:
+                break;
+            }
+        }
+    }
     Transform3f matr;
     if (false) // straight transformation
     {
