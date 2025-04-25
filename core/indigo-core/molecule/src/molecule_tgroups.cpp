@@ -208,7 +208,8 @@ int MoleculeTGroups::findTGroup(const char* name)
         TGroup& tgroup = *_tgroups.at(i);
         if (tgroup.tgroup_name.size() > 0 && name != 0)
         {
-            if (strncmp(tgroup.tgroup_name.ptr(), name, tgroup.tgroup_name.size()) == 0)
+            if (strncmp(tgroup.tgroup_name.ptr(), name, tgroup.tgroup_name.size()) == 0 ||
+                strncmp(tgroup.tgroup_alias.ptr(), name, tgroup.tgroup_alias.size()) == 0)
                 return i;
         }
     }
