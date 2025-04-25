@@ -29,14 +29,6 @@ using namespace indigo;
 
 IMPL_ERROR(MacroPropertiesCalculator, "Macro Properties Calculator")
 
-static void writeDouble(JsonWriter& writer, double f_value)
-{
-    constexpr int buff_size = 20;
-    char buff[buff_size];
-    std::snprintf(buff, buff_size, "%g", f_value);
-    writer.RawValue(buff, strlen(buff), rapidjson::kStringType);
-}
-
 void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Output& output, float upc, float nac, bool pretty_json) const
 {
     const auto& monomers = document.monomers();
@@ -251,6 +243,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
     rapidjson::StringBuffer s;
     JsonWriter writer(pretty_json);
     writer.Reset(s);
+    writer.SetMaxDecimalPlaces(6);
     writer.StartArray();
     for (auto& sequence_arr : joined_sequences)
     {
@@ -365,7 +358,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             writer.Key("grossFormula");
             writer.String(gross_str.ptr());
             writer.Key("mass");
-            writeDouble(writer, mass_sum);
+            writer.Double(mass_sum);
         }
 
         // pKa (only peptides)
@@ -390,7 +383,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 pKa = pKa_values[0];
             }
             writer.Key("pKa");
-            writeDouble(writer, pKa);
+            writer.Double(pKa);
         }
 
         // Melting temperature (only double stranded DNA)
@@ -440,7 +433,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 double sp = static_cast<double>(total_strength) / base_count;
                 double tm = 7.35 * sp + 17.34 * log(base_count) + 4.96 * log(upc) + 0.89 * log(nac) - 25.42;
                 writer.Key("Tm");
-                writeDouble(writer, tm);
+                writer.Double(tm);
             }
         }
 
@@ -507,7 +500,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             writer.Key("hydrophobicity");
             writer.StartArray();
             for (auto value : hydrophobicity)
-                writeDouble(writer, value);
+                writer.Double(value);
             writer.EndArray();
         }
 
