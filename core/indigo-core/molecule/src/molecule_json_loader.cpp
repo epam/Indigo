@@ -293,12 +293,11 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
         if (a.HasMember("type"))
         {
             std::string atom_type = a["type"].GetString();
-            if (atom_type == "rg-label" && a.HasMember("$refs") && a["$refs"].Size())
+            if (atom_type == "rg-label")
             {
-                std::string ref = a["$refs"][0].GetString();
-                if (ref.find("rg-") == 0 && ref.erase(0, 3).size())
+                // Allow "$refs" to not exist or be empty
+                if (a["$refs"].Size() == 0 || !a.HasMember("$refs"))
                 {
-                    rsite_idx = std::stoi(ref);
                     elem = ELEM_RSITE;
                     label = "R";
                     if (a.HasMember("attachmentOrder"))
@@ -321,7 +320,17 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                     }
                 }
                 else
-                    throw Error("invalid refs: %s", ref.c_str());
+                {
+                    std::string ref = a["$refs"][0].GetString();
+                    if (ref.find("rg-") == 0 && ref.erase(0, 3).size())
+                    {
+                        rsite_idx = std::stoi(ref);
+                        elem = ELEM_RSITE;
+                        label = "R";
+                    }
+                    else
+                        throw Error("invalid refs: %s", ref.c_str());
+                }
             }
             else if (atom_type == "atom-list")
             {
