@@ -1117,7 +1117,6 @@ int main(int argc, char* argv[])
             }
             else
             {
-                indigoJson(obj);
                 indigoSaveJsonToFile(obj, p.outfile);
             }
         }
