@@ -153,6 +153,31 @@ namespace indigo
             return _rootReaction;
         }
 
+        int begin() override
+        {
+            return 0;
+        }
+
+        int end() override
+        {
+            return _molecules.size();
+        }
+
+        int next(int i) override
+        {
+            return ++i;
+        }
+
+        int count() override
+        {
+            return _molecules.size();
+        }
+
+        BaseMolecule& getBaseMolecule(int index) override
+        {
+            return *_molecules[index];
+        }
+
         void copyToReaction(BaseReaction& reaction)
         {
             reaction.clear();

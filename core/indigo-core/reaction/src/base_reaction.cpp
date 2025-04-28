@@ -443,7 +443,7 @@ bool BaseReaction::isPathwayReaction()
 
 BaseMolecule& BaseReaction::getBaseMolecule(int index)
 {
-    return isPathwayReaction() ? asPathwayReaction().getMolecule(index) : *_allMolecules.at(index);
+    return *_allMolecules.at(index);
 }
 
 void BaseReaction::remove(int i)
@@ -472,22 +472,22 @@ void BaseReaction::remove(int i)
 
 int BaseReaction::begin()
 {
-    return isPathwayReaction() ? 0 : _nextElement(REACTANT | PRODUCT | CATALYST | INTERMEDIATE | UNDEFINED, -1);
+    return _nextElement(REACTANT | PRODUCT | CATALYST | INTERMEDIATE | UNDEFINED, -1);
 }
 
 int BaseReaction::end()
 {
-    return isPathwayReaction() ? asPathwayReaction().getMoleculeCount() : _allMolecules.end();
+    return _allMolecules.end();
 }
 
 int BaseReaction::next(int index)
 {
-    return isPathwayReaction() ? (index + 1) : _nextElement(REACTANT | PRODUCT | CATALYST | INTERMEDIATE | UNDEFINED, index);
+    return _nextElement(REACTANT | PRODUCT | CATALYST | INTERMEDIATE | UNDEFINED, index);
 }
 
 int BaseReaction::count()
 {
-    return isPathwayReaction() ? asPathwayReaction().getMoleculeCount() : _allMolecules.size();
+    return _allMolecules.size();
 }
 
 int BaseReaction::findMolecule(BaseMolecule* mol)

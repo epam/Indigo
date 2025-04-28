@@ -1677,8 +1677,7 @@ CEXPORT const char* indigoJson(int item)
             {
                 PathwayReactionJsonSaver jn(out);
                 self.initReactionJsonSaver(jn);
-                BaseReaction& br = obj.getBaseReaction();
-                jn.saveReaction(dynamic_cast<PathwayReaction&>(br));
+                jn.saveReaction(obj.getPathwayReaction());
             }
             else
             {
