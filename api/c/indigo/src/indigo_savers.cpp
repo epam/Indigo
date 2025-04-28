@@ -744,8 +744,7 @@ CEXPORT int indigoSaveJson(int item, int output)
             {
                 PathwayReactionJsonSaver jn(out);
                 self.initReactionJsonSaver(jn);
-                BaseReaction& br = obj.getBaseReaction();
-                jn.saveReaction(dynamic_cast<PathwayReaction&>(br));
+                jn.saveReaction(obj.getPathwayReaction());
                 out.flush();
                 return 1;
             }

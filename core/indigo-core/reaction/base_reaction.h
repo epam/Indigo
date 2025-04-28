@@ -109,10 +109,10 @@ namespace indigo
         // 'neu' means 'new' in German
         virtual BaseReaction* neu() = 0;
 
-        int begin();
-        int end();
-        int next(int i);
-        int count();
+        virtual int begin();
+        virtual int end();
+        virtual int next(int i);
+        virtual int count();
 
         void remove(int i);
 
@@ -314,7 +314,7 @@ namespace indigo
         virtual bool isQueryReaction();
         virtual bool isPathwayReaction();
 
-        BaseMolecule& getBaseMolecule(int index);
+        virtual BaseMolecule& getBaseMolecule(int index);
 
         virtual std::unique_ptr<BaseReaction> getBaseReaction(int index) = 0;
 
