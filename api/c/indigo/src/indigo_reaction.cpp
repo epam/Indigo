@@ -202,13 +202,13 @@ const char* IndigoQueryReaction::getName()
 // IndigoReactionMolecule
 //
 
-IndigoReactionMolecule::IndigoReactionMolecule(BaseReaction& reaction, int index, int subtype)
-    : IndigoObject(REACTION_MOLECULE), rxn(reaction), idx(index), subtype(subtype)
+IndigoReactionMolecule::IndigoReactionMolecule(BaseReaction& reaction, int index)
+    : IndigoObject(REACTION_MOLECULE), rxn(reaction), idx(index)
 {
 }
 
-IndigoReactionMolecule::IndigoReactionMolecule(BaseReaction& reaction, MonomersProperties& map, int index, int subtype)
-    : IndigoObject(REACTION_MOLECULE), rxn(reaction), idx(index), subtype(subtype)
+IndigoReactionMolecule::IndigoReactionMolecule(BaseReaction& reaction, MonomersProperties& map, int index)
+    : IndigoObject(REACTION_MOLECULE), rxn(reaction), idx(index)
 {
     if (index < map.size())
     {
@@ -356,11 +356,11 @@ IndigoObject* IndigoReactionIter::next()
     }
     else if (_map)
     {
-        return new IndigoReactionMolecule(_rxn, *_map, _idx, _subtype);
+        return new IndigoReactionMolecule(_rxn, *_map, _idx);
     }
     else
     {
-        return new IndigoReactionMolecule(_rxn, _idx, _subtype);
+        return new IndigoReactionMolecule(_rxn, _idx);
     }
 }
 

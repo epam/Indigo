@@ -27,7 +27,7 @@ using namespace indigo;
 
 IMPL_ERROR(PathwayReaction, "pathway reaction");
 
-PathwayReaction::PathwayReaction()
+PathwayReaction::PathwayReaction() : _isModified(false)
 {
 }
 
@@ -74,8 +74,6 @@ void PathwayReaction::_cloneSub(BaseReaction& other)
         auto other_molecule = other_pwr._molecules[i];
         addMolecule(*other_molecule);
     }
-
-    _rootReaction.clone(other_pwr._rootReaction);
 }
 
 BaseReaction* PathwayReaction::neu()
@@ -85,6 +83,7 @@ BaseReaction* PathwayReaction::neu()
 
 void PathwayReaction::clear()
 {
+    _isModified = true;
     BaseReaction::clear();
     _reactionNodes.clear();
     _reactions.clear();
@@ -94,6 +93,7 @@ void PathwayReaction::clear()
 
 int PathwayReaction::_addBaseMolecule(int side)
 {
+    _isModified = true;
     int idx = _allMolecules.add(new Molecule());
     _addedBaseMolecule(idx, side, *_allMolecules[idx]);
     return idx;
@@ -101,6 +101,7 @@ int PathwayReaction::_addBaseMolecule(int side)
 
 bool PathwayReaction::aromatize(const AromaticityOptions& options)
 {
+    _isModified = true;
     bool arom_found = false;
     for (int i = 0; i < _molecules.size(); ++i)
         arom_found |= _molecules[i]->aromatize(options);
@@ -109,6 +110,7 @@ bool PathwayReaction::aromatize(const AromaticityOptions& options)
 
 bool PathwayReaction::dearomatize(const AromaticityOptions& options)
 {
+    _isModified = true;
     bool arom_found = false;
     for (int i = 0; i < _molecules.size(); ++i)
         arom_found |= _molecules[i]->dearomatize(options);

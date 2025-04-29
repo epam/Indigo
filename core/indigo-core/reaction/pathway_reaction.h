@@ -149,7 +149,11 @@ namespace indigo
 
         Reaction& asReaction() override
         {
-            _rootReaction.clone(*this);
+            if (_isModified)
+            {
+                _rootReaction.clone(*this);
+                _isModified = false;
+            }
             return _rootReaction;
         }
 
@@ -301,6 +305,7 @@ namespace indigo
         PtrArray<BaseMolecule> _molecules;
         ObjArray<SimpleReaction> _reactions;
         Reaction _rootReaction; // copy of root reaction
+        bool _isModified;
     };
 
 } // namespace indigo
