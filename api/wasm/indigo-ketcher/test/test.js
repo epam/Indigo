@@ -185,6 +185,20 @@ M  END
             selected.delete();
             options.delete();
         })
+
+        test("calculate", "pathway", () => {
+            var fs = require('fs');
+            const ket = fs.readFileSync("pathway_2859.ket");
+            let options = new indigo.MapStringString();
+            selected = new indigo.VectorInt();
+            const values = indigo.calculate(ket, options, selected);
+            // fs.writeFileSync("pathway_2859_calc.json", values);
+            const calc_ref = fs.readFileSync("pathway_2859_calc.json");
+            assert.equal(values, calc_ref.toString());
+            selected.delete();
+            options.delete();
+        });
+
     }
 
     // Check

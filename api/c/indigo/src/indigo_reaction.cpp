@@ -94,7 +94,7 @@ BaseReaction& IndigoPathwayReaction::getBaseReaction()
 PathwayReaction& IndigoPathwayReaction::getPathwayReaction()
 {
     assert(rxn);
-    return dynamic_cast<PathwayReaction&>(*rxn);
+    return rxn->asPathwayReaction();
 }
 
 const char* IndigoPathwayReaction::getName()
@@ -202,12 +202,13 @@ const char* IndigoQueryReaction::getName()
 // IndigoReactionMolecule
 //
 
-IndigoReactionMolecule::IndigoReactionMolecule(BaseReaction& reaction, int index) : IndigoObject(REACTION_MOLECULE), rxn(reaction), idx(index)
+IndigoReactionMolecule::IndigoReactionMolecule(BaseReaction& reaction, int index, int subtype)
+    : IndigoObject(REACTION_MOLECULE), rxn(reaction), idx(index), subtype(subtype)
 {
 }
 
-IndigoReactionMolecule::IndigoReactionMolecule(BaseReaction& reaction, MonomersProperties& map, int index)
-    : IndigoObject(REACTION_MOLECULE), rxn(reaction), idx(index)
+IndigoReactionMolecule::IndigoReactionMolecule(BaseReaction& reaction, MonomersProperties& map, int index, int subtype)
+    : IndigoObject(REACTION_MOLECULE), rxn(reaction), idx(index), subtype(subtype)
 {
     if (index < map.size())
     {
@@ -220,23 +221,28 @@ const char* IndigoReactionMolecule::debugInfo() const
     return "<reaction molecule>";
 }
 
+bool IndigoReactionMolecule::convertPathway()
+{
+    return subtype >= 0 && subtype != IndigoReactionIter::MOLECULES && rxn.isPathwayReaction();
+}
+
 IndigoReactionMolecule::~IndigoReactionMolecule()
 {
 }
 
 BaseMolecule& IndigoReactionMolecule::getBaseMolecule()
 {
-    return rxn.getBaseMolecule(idx);
+    return convertPathway() ? rxn.asReaction().getBaseMolecule(idx).asMolecule() : rxn.getBaseMolecule(idx);
 }
 
 Molecule& IndigoReactionMolecule::getMolecule()
 {
-    return rxn.getBaseMolecule(idx).asMolecule();
+    return convertPathway() ? rxn.asReaction().getBaseMolecule(idx).asMolecule() : rxn.getBaseMolecule(idx).asMolecule();
 }
 
 QueryMolecule& IndigoReactionMolecule::getQueryMolecule()
 {
-    return rxn.getBaseMolecule(idx).asQueryMolecule();
+    return convertPathway() ? rxn.asReaction().getBaseMolecule(idx).asQueryMolecule() : rxn.getBaseMolecule(idx).asQueryMolecule();
 }
 
 int IndigoReactionMolecule::getIndex()
@@ -350,11 +356,11 @@ IndigoObject* IndigoReactionIter::next()
     }
     else if (_map)
     {
-        return new IndigoReactionMolecule(_rxn, *_map, _idx);
+        return new IndigoReactionMolecule(_rxn, *_map, _idx, _subtype);
     }
     else
     {
-        return new IndigoReactionMolecule(_rxn, _idx);
+        return new IndigoReactionMolecule(_rxn, _idx, _subtype);
     }
 }
 

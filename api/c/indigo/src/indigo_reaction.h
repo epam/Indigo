@@ -121,8 +121,8 @@ public:
 class IndigoReactionMolecule : public IndigoObject
 {
 public:
-    IndigoReactionMolecule(BaseReaction& reaction, int index);
-    IndigoReactionMolecule(BaseReaction& reaction, MonomersProperties& map, int index);
+    IndigoReactionMolecule(BaseReaction& reaction, int index, int subtype = -1);
+    IndigoReactionMolecule(BaseReaction& reaction, MonomersProperties& map, int index, int subtype = -1);
     ~IndigoReactionMolecule() override;
 
     BaseMolecule& getBaseMolecule() override;
@@ -138,8 +138,11 @@ public:
 
     const char* debugInfo() const override;
 
+    bool convertPathway();
+
     BaseReaction& rxn;
     int idx;
+    int subtype;
     indigo::PropertiesMap _properties;
 };
 
