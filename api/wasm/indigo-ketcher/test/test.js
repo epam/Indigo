@@ -543,6 +543,14 @@ M  END
             options.delete();
         });
 
+        test("convert", "pathway-smarts", () => {
+            var fs = require('fs');
+            const ket = fs.readFileSync("pw.ket");
+            let options = new indigo.MapStringString();
+            const smarts = indigo.convert(ket, "smarts", options);
+            options.delete();
+        });
+
     }
 
     // Convert explicit hydrogens
@@ -592,6 +600,8 @@ M  END
             assert.equal(fold_smiles, '{"struct":"[HH]","format":"smiles","original_format":"chemical/x-daylight-smiles"}');
             options.delete();
         });
+
+
 
     }
 

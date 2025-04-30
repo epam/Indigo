@@ -267,7 +267,9 @@ IndigoReactionIter::IndigoReactionIter(BaseReaction& rxn, MonomersProperties& ma
     _idx = -1;
 }
 
-IndigoReactionIter::IndigoReactionIter(BaseReaction& rxn, int subtype) : IndigoObject(REACTION_ITER), _rxn(rxn), _map(nullptr)
+IndigoReactionIter::IndigoReactionIter(BaseReaction& rxn, int subtype)
+    : IndigoObject(REACTION_ITER), _rxn((_subtype >= 0 && _subtype != IndigoReactionIter::MOLECULES && rxn.isPathwayReaction()) ? rxn.asReaction() : rxn),
+      _map(nullptr)
 {
     _subtype = subtype;
     _idx = -1;
@@ -332,7 +334,6 @@ int IndigoReactionIter::_next(int i)
 
 IndigoObject* IndigoReactionIter::next()
 {
-    auto& rxn = (_subtype >= 0 && _subtype != IndigoReactionIter::MOLECULES && _rxn.isPathwayReaction()) ? _rxn.asReaction() : _rxn;
     if (_idx == -1)
     {
         _idx = _begin();
