@@ -202,8 +202,7 @@ const char* IndigoQueryReaction::getName()
 // IndigoReactionMolecule
 //
 
-IndigoReactionMolecule::IndigoReactionMolecule(BaseReaction& reaction, int index)
-    : IndigoObject(REACTION_MOLECULE), rxn(reaction), idx(index)
+IndigoReactionMolecule::IndigoReactionMolecule(BaseReaction& reaction, int index) : IndigoObject(REACTION_MOLECULE), rxn(reaction), idx(index)
 {
 }
 
