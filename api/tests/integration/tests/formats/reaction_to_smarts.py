@@ -14,9 +14,3 @@ print(
         joinPathPy("reactions/973-reaction-smarts.ket", __file__)
     ).smarts()
 )
-
-print(
-    indigo.loadReactionFromFile(
-        joinPathPy("reactions/pw.ket", __file__)
-    ).smarts()
-)
