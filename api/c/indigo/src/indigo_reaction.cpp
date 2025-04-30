@@ -94,7 +94,7 @@ BaseReaction& IndigoPathwayReaction::getBaseReaction()
 PathwayReaction& IndigoPathwayReaction::getPathwayReaction()
 {
     assert(rxn);
-    return dynamic_cast<PathwayReaction&>(*rxn);
+    return rxn->asPathwayReaction();
 }
 
 const char* IndigoPathwayReaction::getName()
@@ -261,13 +261,15 @@ void IndigoReactionMolecule::remove()
 // IndigoReactionIter
 //
 
-IndigoReactionIter::IndigoReactionIter(BaseReaction& rxn, MonomersProperties& map, int subtype) : IndigoObject(REACTION_ITER), _rxn(rxn), _map(&map)
+IndigoReactionIter::IndigoReactionIter(BaseReaction& rxn, MonomersProperties& map, int subtype)
+    : IndigoObject(REACTION_ITER), _rxn((subtype < IndigoReactionIter::MOLECULES && rxn.isPathwayReaction()) ? rxn.asReaction() : rxn), _map(&map)
 {
     _subtype = subtype;
     _idx = -1;
 }
 
-IndigoReactionIter::IndigoReactionIter(BaseReaction& rxn, int subtype) : IndigoObject(REACTION_ITER), _rxn(rxn), _map(nullptr)
+IndigoReactionIter::IndigoReactionIter(BaseReaction& rxn, int subtype)
+    : IndigoObject(REACTION_ITER), _rxn((subtype < IndigoReactionIter::MOLECULES && rxn.isPathwayReaction()) ? rxn.asReaction() : rxn), _map(nullptr)
 {
     _subtype = subtype;
     _idx = -1;

@@ -74,8 +74,6 @@ void PathwayReaction::_cloneSub(BaseReaction& other)
         auto other_molecule = other_pwr._molecules[i];
         addMolecule(*other_molecule);
     }
-
-    _rootReaction.clone(other_pwr._rootReaction);
 }
 
 BaseReaction* PathwayReaction::neu()
