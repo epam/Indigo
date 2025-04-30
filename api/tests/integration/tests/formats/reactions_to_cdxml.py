@@ -48,8 +48,8 @@ for filename in files:
         print("  %s" % (getIndigoExceptionText(e)))
 
     cdxml_text = ket.cdxml()
-    with open(os.path.join(ref_path, filename + ".cdxml"), "w") as file:
-        file.write(cdxml_text)
+    # with open(os.path.join(ref_path, filename + ".cdxml"), "w") as file:
+    #     file.write(cdxml_text)
 
     with open(os.path.join(ref_path, filename) + ".cdxml", "r") as file:
         cdxml_ref = file.read()
