@@ -27,7 +27,7 @@ using namespace indigo;
 
 IMPL_ERROR(PathwayReaction, "pathway reaction");
 
-PathwayReaction::PathwayReaction() : _isModified(false)
+PathwayReaction::PathwayReaction() : _isModified(true)
 {
 }
 

@@ -748,7 +748,7 @@ StructureChecker::CheckResult StructureChecker::checkReaction(const BaseReaction
 #define CHECK_REACTION_COMPONENT(KIND)                                                                                                                         \
     for (auto i = brxn->KIND##Begin(); i < brxn->KIND##End(); i = brxn->KIND##Next(i))                                                                         \
     {                                                                                                                                                          \
-        CheckResult res = checkMolecule(brxn->getBaseMolecule(i), check_types);                                                                                \
+        CheckResult res = checkMolecule(brxn->BaseReaction::getBaseMolecule(i), check_types);                                                                                \
         if (!res.isEmpty())                                                                                                                                    \
         {                                                                                                                                                      \
             message(r, StructureChecker::CheckMessageCode::CHECK_MSG_REACTION, i, res);                                                                        \
