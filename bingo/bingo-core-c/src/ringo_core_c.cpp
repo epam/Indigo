@@ -37,7 +37,7 @@ using namespace indigo::bingo_core;
 
 int BingoCore::ringoIndexProcessSingleRecord()
 {
-    BufferScanner scanner(self.index_record_data.ref());
+    BufferScanner scanner(*self.index_record_data);
 
     NullOutput output;
 
