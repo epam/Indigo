@@ -317,7 +317,6 @@ bool MangoSubstructure::matchBinary(Scanner& scanner, Scanner* xyz_scanner)
 
     profTimerStart(tcmf, "match.cmf");
 
-    cmf_loader.free();
     cmf_loader = std::make_unique<CmfLoader>(_context.cmf_dict, scanner);
 
     if (!_query_has_stereocare_bonds)
