@@ -44,7 +44,7 @@ using namespace indigo::bingo_core;
 
 int BingoCore::mangoIndexProcessSingleRecord()
 {
-    BufferScanner scanner(self.index_record_data.ref());
+    BufferScanner scanner(*self.index_record_data);
 
     NullOutput output;
 
@@ -479,7 +479,7 @@ int BingoCore::mangoMatchTargetBinary(const char* target_bin, int target_bin_len
         if (self.mango_search_type == BingoCore::_SUBSTRUCTRE)
         {
             MangoSubstructure& substructure = self.mango_context->substructure;
-            return substructure.matchBinary(scanner, xyz_scanner) ? 1 : 0;
+            return substructure.matchBinary(scanner, xyz_scanner.get()) ? 1 : 0;
         }
         else if (self.mango_search_type == BingoCore::_TAUTOMER)
         {
@@ -489,7 +489,7 @@ int BingoCore::mangoMatchTargetBinary(const char* target_bin, int target_bin_len
         else if (self.mango_search_type == BingoCore::_EXACT)
         {
             MangoExact& exact = self.mango_context->exact;
-            return exact.matchBinary(scanner, xyz_scanner) ? 1 : 0;
+            return exact.matchBinary(scanner, xyz_scanner.get()) ? 1 : 0;
         }
         else if (self.mango_search_type == BingoCore::_SIMILARITY)
         {
