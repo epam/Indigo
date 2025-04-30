@@ -449,12 +449,16 @@ def load_moldata(
             except IndigoException:
                 md.is_rxn = True
                 try:
-                    if not query:
+                    if query:
+                        try:
+                            md.struct = indigo.loadQueryReaction(molstr)
+                            md.is_query = True
+                        except IndigoException:
+                            md.struct = indigo.loadReaction(molstr)
+                            md.is_query = False
+                    else:
                         md.struct = indigo.loadReaction(molstr)
                         md.is_query = False
-                    else:
-                        md.struct = indigo.loadQueryReaction(molstr)
-                        md.is_query = True
                 except IndigoException:
                     try:
                         md.struct = indigo.loadQueryReaction(molstr)

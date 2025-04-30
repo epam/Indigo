@@ -428,13 +428,8 @@ namespace indigo
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                 }
             }
-            bool query = false;
             auto i = options.find("query");
-            if (i != options.end() and i->second == "true")
-            {
-                query = true;
-            }
-            if (!query)
+            if (i == options.end() || i->second == "false")
             {
                 // Let's try a simple molecule
                 print_js("try as molecule");
@@ -529,6 +524,24 @@ namespace indigo
             {
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReactionQuery);
             }
+
+            // Let's try a simple molecule
+            print_js("try as molecule");
+            objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
+            if (objectId >= 0)
+            {
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            }
+            exceptionMessages.emplace_back(indigoGetLastError());
+
+            // Let's try reaction
+            print_js("try as reaction");
+            objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
+            if (objectId >= 0)
+            {
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
+            }
+            exceptionMessages.emplace_back(indigoGetLastError());
         }
         // It's not anything we can load, let's throw an exception
         std::stringstream ss;
