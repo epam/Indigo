@@ -529,6 +529,14 @@ M  END
             options.delete();
         });
 
+        test("convert", "pathway-smarts", () => {
+            var fs = require('fs');
+            const ket = fs.readFileSync("pathway_2642.ket");
+            let options = new indigo.MapStringString();
+            const smarts = indigo.convert(ket, "smarts", options);
+            assert.equal(smarts, '[#6]1-[#6]-[#6]-[#6]-1.[#6]1-[#6]-[#6]-[#6]-[#6]-[#6]-[#6]-1>>[#6]1-[#6]-[#6]-1')
+            options.delete();
+        });
     }
 
     // Convert explicit hydrogens
