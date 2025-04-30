@@ -18,7 +18,7 @@ def joinPathPy(args, file_py):
 # @unittest.skip("Skip libraries test case")
 class IndigoTestCase(unittest.TestCase):
     def setUp(self):
-        service_url = "http://localhost/v2"
+        service_url = "http://localhost:8080/v2"
         if (
             "INDIGO_SERVICE_URL" in os.environ
             and len(os.environ["INDIGO_SERVICE_URL"]) > 0
@@ -723,7 +723,6 @@ chemical/x-idt, chemical/x-helm."
             pw_ket = file.read()
             params = {
                 "struct": pw_ket,
-                "input_format": "ket",
                 "output_format": "chemical/x-daylight-smarts",
             }
             headers, data = self.get_headers(params)
