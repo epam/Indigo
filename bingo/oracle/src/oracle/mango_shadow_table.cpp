@@ -230,7 +230,7 @@ void MangoShadowTable::_flushMain(OracleEnv& env)
             }
             profTimerStop(tmain);
 
-            _main_table_statement.free();
+            _main_table_statement.reset();
             _pending_rid.clear();
             _pending_blockno.clear();
             _pending_offset.clear();
@@ -269,7 +269,7 @@ void MangoShadowTable::_flushComponents(OracleEnv& env)
             _pending_comp_hash.clear();
             profTimerStop(tcomp);
         }
-        _components_table_statement.free();
+        _components_table_statement.reset();
         _components_table_statement_count = 0;
     }
 }
