@@ -185,6 +185,20 @@ M  END
             selected.delete();
             options.delete();
         })
+
+        test("calculate", "pathway", () => {
+            var fs = require('fs');
+            const ket = fs.readFileSync("pathway_2859.ket");
+            let options = new indigo.MapStringString();
+            selected = new indigo.VectorInt();
+            const values = indigo.calculate(ket, options, selected);
+            // fs.writeFileSync("pathway_2859_calc.json", values);
+            const calc_ref = fs.readFileSync("pathway_2859_calc.json");
+            assert.equal(values, calc_ref.toString());
+            selected.delete();
+            options.delete();
+        });
+
     }
 
     // Check
@@ -528,7 +542,6 @@ M  END
             assert.equal(rsmiles, '{"struct":"C1C=CC=CC=1.N>>C1N=CC=CC=1.[CH3-]","format":"smiles","original_format":"chemical/x-daylight-smarts"}');
             options.delete();
         });
-
     }
 
     // Convert explicit hydrogens
@@ -578,6 +591,8 @@ M  END
             assert.equal(fold_smiles, '{"struct":"[HH]","format":"smiles","original_format":"chemical/x-daylight-smiles"}');
             options.delete();
         });
+
+
 
     }
 
