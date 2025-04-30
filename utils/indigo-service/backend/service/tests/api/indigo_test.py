@@ -714,6 +714,28 @@ chemical/x-idt, chemical/x-helm."
 
         self.assertEqual(smarts, results)
         # self.assertEqual(smarts, results_get)
+        with open(
+            os.path.join(
+                joinPathPy("structures/", __file__), "pathway_2642.ket"
+            ),
+            "r",
+        ) as file:
+            pw_ket = file.read()
+            params = {
+                "struct": pw_ket,
+                "input_format": "ket",
+                "output_format": "chemical/x-daylight-smarts",
+            }
+            headers, data = self.get_headers(params)
+            result = requests.post(
+                self.url_prefix + "/convert", headers=headers, data=data
+            )
+            self.assertEqual(200, result.status_code)
+            result_data = json.loads(result.text)
+            self.assertEqual(
+                result_data["struct"],
+                "[#6]1-[#6]-[#6]-[#6]-1.[#6]1-[#6]-[#6]-[#6]-[#6]-[#6]-[#6]-1>>[#6]1-[#6]-[#6]-1",
+            )
 
     def test_convert_name_to_structure(self):
         names = [
