@@ -51,7 +51,8 @@ CEXPORT int indigoGrossFormula(int object)
         }
         else if (IndigoBaseReaction::is(indigoObject))
         {
-            BaseReaction& rxn = self.getObject(object).getBaseReaction();
+            auto& br = self.getObject(object).getBaseReaction();
+            BaseReaction& rxn = br.isPathwayReaction() ? br.asReaction() : br;
             std::unique_ptr<IndigoReactionGross> grossptr = std::make_unique<IndigoReactionGross>();
             grossptr->gross = ReactionGrossFormula::collect(rxn, self.gross_formula_options.add_isotopes);
             return self.addObject(grossptr.release());
