@@ -20,7 +20,6 @@
 #define __molecule_layout_graph_h__
 
 #include "base_cpp/cancellation_handler.h"
-#include "base_cpp/obj.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/tlscont.h"
 #include "graph/filter.h"
@@ -28,6 +27,8 @@
 #include "layout/layout_pattern_holder.h"
 #include "math/algebra.h"
 #include "molecule/molecule.h"
+
+#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -186,7 +187,7 @@ namespace indigo
         int _n_fixed;
 
         // Outline of the graph (from pattern)
-        Obj<Array<Vec2f>> _outline;
+        std::unique_ptr<Array<Vec2f>> _outline;
 
         BaseMolecule* _molecule;
         const int* _molecule_edge_mapping;

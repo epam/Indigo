@@ -23,9 +23,10 @@
 #include <unordered_map>
 
 #include "base_cpp/cancellation_handler.h"
-#include "base_cpp/obj.h"
 #include "base_cpp/tlscont.h"
 #include "graph/subgraph_hash.h"
+
+#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -179,7 +180,7 @@ namespace indigo
         const MoleculeFingerprintParameters& _parameters;
 
         // these parameters are indirectly passed to the callbacks
-        TautomerSuperStructure* _tau_super_structure;
+        std::unique_ptr<TautomerSuperStructure> _tau_super_structure;
         bool _is_cycle;
 
         struct HashBits
@@ -197,7 +198,7 @@ namespace indigo
 
         void _addOrdHashBits(dword hash, int bits_per_fragment);
 
-        Obj<SubgraphHash> subgraph_hash;
+        std::unique_ptr<SubgraphHash> subgraph_hash;
 
         CP_DECL;
         TL_CP_DECL(Array<byte>, _total_fingerprint);

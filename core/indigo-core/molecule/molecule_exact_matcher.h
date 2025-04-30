@@ -19,7 +19,6 @@
 #ifndef __molecule_exact_matcher__
 #define __molecule_exact_matcher__
 
-#include "base_cpp/obj.h"
 #include "base_cpp/scanner.h"
 #include "graph/embedding_enumerator.h"
 #include "graph/filter.h"
@@ -30,6 +29,8 @@
 #include "molecule/molecule_cis_trans.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_substructure_matcher.h"
+
+#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -81,8 +82,8 @@ namespace indigo
         BaseMolecule& _query;
         BaseMolecule& _target;
         EmbeddingEnumerator _ee;
-        Obj<GraphDecomposer> _query_decomposer;
-        Obj<GraphDecomposer> _target_decomposer;
+        std::unique_ptr<GraphDecomposer> _query_decomposer;
+        std::unique_ptr<GraphDecomposer> _target_decomposer;
 
         struct _MatchToken
         {
@@ -103,5 +104,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

@@ -390,8 +390,8 @@ int BingoCore::bingoImportParseFieldList(const char* fields_str)
 
     self.import_properties.free();
     self.import_columns.free();
-    self.import_properties.create();
-    self.import_columns.create();
+    self.import_properties = std::make_unique<StringPool>();
+    self.import_columns = std::make_unique<StringPool>();
 
     scanner.skipSpace();
 
@@ -486,8 +486,8 @@ CEXPORT const char* bingoImportGetPropertyValue(int idx)
 void BingoCore::bingoSDFImportOpen(const char* file_name)
 {
     self.bingoSDFImportClose();
-    self.file_scanner.create(file_name);
-    self.sdf_loader.create(self.file_scanner.ref());
+    self.file_scanner = std::make_unique<FileScanner>(file_name);
+    self.sdf_loader = std::make_unique<SdfLoader>(self.file_scanner.ref());
 }
 
 CEXPORT int bingoSDFImportOpen(const char* file_name)
@@ -557,8 +557,8 @@ CEXPORT const char* bingoSDFImportGetProperty(const char* param_name)
 void BingoCore::bingoRDFImportOpen(const char* file_name)
 {
     self.bingoRDFImportClose();
-    self.file_scanner.create(file_name);
-    self.rdf_loader.create(self.file_scanner.ref());
+    self.file_scanner = std::make_unique<FileScanner>(file_name);
+    self.rdf_loader = std::make_unique<RdfLoader>(self.file_scanner.ref());
 }
 
 CEXPORT int bingoRDFImportOpen(const char* file_name)
@@ -805,7 +805,7 @@ int BingoCore::bingoIndexBegin()
 
     _bingoIndexEnd(self);
 
-    self.index_record_data.create();
+    self.index_record_data = std::make_unique<Array<char>>();
     return 1;
 }
 
@@ -830,8 +830,7 @@ CEXPORT int bingoIndexSetSkipFP(bool skip)
 
 void BingoCore::bingoSMILESImportOpen(const char* file_name)
 {
-    self.file_scanner.free();
-    self.file_scanner.create(file_name);
+    self.file_scanner = std::make_unique<FileScanner>(file_name);
 
     // detect if input is gzipped
     byte magic[2];

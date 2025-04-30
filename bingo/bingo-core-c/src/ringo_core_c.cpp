@@ -47,7 +47,7 @@ int BingoCore::ringoIndexProcessSingleRecord()
         {
             if (self.single_ringo_index.get() == NULL)
             {
-                self.single_ringo_index.create();
+                self.single_ringo_index = std::make_unique<RingoIndex>();
                 self.single_ringo_index->init(*self.bingo_context);
                 self.single_ringo_index->skip_calculate_fp = self.skip_calculate_fp;
             }

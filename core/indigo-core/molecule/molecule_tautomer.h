@@ -20,11 +20,12 @@
 #define __molecule_tautomer_h__
 
 #include "base_cpp/array.h"
-#include "base_cpp/obj.h"
 #include "base_cpp/tlscont.h"
 #include "graph/graph_decomposer.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_dearom.h"
+
+#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -105,8 +106,8 @@ namespace indigo
         TL_CP_DECL(Array<int>, n1);
         TL_CP_DECL(Array<int>, n2);
 
-        Obj<Dearomatizer> dearomatizer;
-        Obj<DearomatizationMatcher> dearomatizationMatcher;
+        std::unique_ptr<Dearomatizer> dearomatizer;
+        std::unique_ptr<DearomatizationMatcher> dearomatizationMatcher;
     };
 
     class TautomerMatcher

@@ -60,7 +60,7 @@ void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockn
 
     if (_main_table_statement.get() == 0)
     {
-        _main_table_statement.create(env);
+        _main_table_statement = std::make_unique<OracleStatement>(env);
         _main_table_statement_count = 0;
 
         /*
@@ -120,7 +120,7 @@ void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockn
 
     if (_components_table_statement.get() == 0)
     {
-        _components_table_statement.create(env);
+        _components_table_statement = std::make_unique<OracleStatement>(env);
         _components_table_statement->append("INSERT %s INTO %s VALUES (:rid, :hash, :count)", append ? "/*+ APPEND_VALUES */" : "",
                                             _components_table_name.ptr());
         _components_table_statement_count = 0;

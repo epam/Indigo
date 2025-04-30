@@ -274,8 +274,8 @@ bool BingoFingerprints::screenPart_Init(OracleEnv& env, Screening& screening)
 
         screening.block = &_all_blocks[screening.part];
 
-        screening.statement.create(env);
-        screening.bits_lob.create(env);
+        screening.statement = std::make_unique<OracleStatement>(env);
+        screening.bits_lob = std::make_unique<OracleLob>(env);
         screening.statement->append("SELECT bits FROM %s WHERE part = :part", _table_name.ptr());
         screening.statement->prepare();
         screening.statement->bindIntByName(":part", &screening.part);
@@ -461,8 +461,8 @@ bool BingoFingerprints::countOnes_Init(OracleEnv& env, Screening& screening)
         if (screening.part >= _all_blocks.size())
             return false;
 
-        screening.statement.create(env);
-        screening.bits_lob.create(env);
+        screening.statement = std::make_unique<OracleStatement>(env);
+        screening.bits_lob = std::make_unique<OracleLOB>(env);
         screening.statement->append("SELECT bits FROM %s WHERE part = :part", _table_name.ptr());
         screening.statement->prepare();
         screening.statement->bindIntByName(":part", &screening.part);
