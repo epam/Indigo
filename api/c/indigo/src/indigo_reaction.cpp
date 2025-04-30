@@ -261,7 +261,9 @@ void IndigoReactionMolecule::remove()
 // IndigoReactionIter
 //
 
-IndigoReactionIter::IndigoReactionIter(BaseReaction& rxn, MonomersProperties& map, int subtype) : IndigoObject(REACTION_ITER), _rxn(rxn), _map(&map)
+IndigoReactionIter::IndigoReactionIter(BaseReaction& rxn, MonomersProperties& map, int subtype)
+    : IndigoObject(REACTION_ITER), _rxn((_subtype >= 0 && _subtype != IndigoReactionIter::MOLECULES && rxn.isPathwayReaction()) ? rxn.asReaction() : rxn),
+      _map(&map)
 {
     _subtype = subtype;
     _idx = -1;
