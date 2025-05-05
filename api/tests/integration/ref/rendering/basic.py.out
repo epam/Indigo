@@ -29,3 +29,5 @@ render_heavy_atoms_2150.png rendering status: OK
 issue 2815 cip labels
 cip_labels_2815_cdxml.png rendering status: OK
 cip_labels_2815_ket.png rendering status: OK
+issue 2748 backwards substituents
+backwards_substituents_2748.png rendering status: OK
