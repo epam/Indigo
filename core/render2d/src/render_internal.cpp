@@ -16,9 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <regex>
+
 #include "render_internal.h"
 #include "base_cpp/output.h"
-#include "base_cpp/queue.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tree.h"
 #include "molecule/molecule.h"
@@ -3492,35 +3493,53 @@ void MoleculeRenderInternal::_reverseLabelText(const int aid)
     AtomDesc& ad = _ad(aid);
     if (ad.pseudo.size() > 0)
     {
-        std::stringstream stream;
-        std::vector<std::string> labels;
-        stream << *ad.pseudo.begin();
-        for (int i = 1; i < ad.pseudo.size() - 1; ++i)
+        std::ostringstream stream;
+        for (int i = 0; i < ad.pseudo.size() - 1; ++i)
         {
-            if (ad.pseudo[i] >= 'A' && ad.pseudo[i] <= 'Z')
-            {
-                labels.push_back(stream.str());
-                stream.str(std::string());
-                stream.clear();
-            }
             stream << ad.pseudo[i];
         }
-        labels.push_back(stream.str());
 
-        int j = 0;
-        int size = ad.pseudo.size() - 1;
-        for (auto it = labels.crbegin(); it != labels.crend(); ++it)
+        std::vector<std::string> splitLabel = _splitLabelText(stream.str());
+        std::reverse(splitLabel.begin(), splitLabel.end());
+        std::ostringstream outStream;
+        for (const auto& label : splitLabel)
         {
-            for (const auto& ch : *it)
-            {
-                if (j < size)
-                {
-                    ad.pseudo[j] = ch;
-                    ++j;
-                }
-            }
+            outStream << label;
+        }
+        std::string reversedLabel = outStream.str();
+
+        for (int i = 0; i < ad.pseudo.size() - 1; ++i)
+        {
+            ad.pseudo[i] = reversedLabel[i];
         }
     }
+}
+
+std::vector<std::string> MoleculeRenderInternal::_splitLabelText(const std::string& label) const
+{
+    std::vector<std::string> result;
+    std::regex pattern("(([nst]-Bu|sBu|[ni]-Pr|iPr|Tol|Me|Et|Ac|Tf|Si|Na|Mg|Cl|Br)\\d*)");
+    std::sregex_token_iterator iter(label.begin(), label.end(), pattern);
+    std::sregex_token_iterator end;
+
+    while (iter != end)
+    {
+        result.push_back(*iter);
+        ++iter;
+    }
+
+    size_t length = 0;
+    for (const auto& abbreviation : result)
+    {
+        length += abbreviation.length();
+    }
+
+    if (length != label.length())
+    {
+        return {label};
+    }
+
+    return result;
 }
 
 int MoleculeRenderInternal::_pushTextItem(RenderItem::TYPE ritype, int color, bool highlighted)

@@ -134,6 +134,7 @@ namespace indigo
         void _prepareChargeLabel(int aid, int color, bool highlighted);
         void _prepareLabelText(int aid);
         void _reverseLabelText(const int aid);
+        std::vector<std::string> _splitLabelText(const std::string& label) const;
         void _prepareAAM();
         int _pushTextItem(RenderItem::TYPE type, int color, bool highlighted);
         int _pushTextItem(AtomDesc& ad, RenderItem::TYPE type, int color, bool highlighted);
