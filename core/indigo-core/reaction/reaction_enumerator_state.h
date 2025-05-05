@@ -19,7 +19,6 @@
 #ifndef __reaction_enumerator_state__
 #define __reaction_enumerator_state__
 
-#include "base_cpp/obj.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "graph/embedding_enumerator.h"
@@ -29,6 +28,13 @@
 #include "molecule/query_molecule.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
+
+#include <memory>
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
 
 namespace indigo
 {
@@ -127,7 +133,7 @@ namespace indigo
 
         TL_CP_DECL(Array<int>, _original_hydrogens);
 
-        AromaticityMatcher* _am;
+        std::shared_ptr<AromaticityMatcher> _am;
         EmbeddingEnumerator* _ee;
         int _tube_idx;
         int _deep_level;
@@ -257,5 +263,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif /* __reaction_enumerator_state__ */

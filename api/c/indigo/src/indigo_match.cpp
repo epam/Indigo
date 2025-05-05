@@ -705,7 +705,7 @@ bool IndigoMoleculeSubstructureMatcher::findTautomerMatch(QueryMolecule& query, 
     if (tau_matcher.get() == 0)
     {
         bool substructure = true;
-        tau_matcher.create(*target_prepared, substructure);
+        tau_matcher = std::make_unique<MoleculeTautomerMatcher>(*target_prepared, substructure);
     }
 
     tau_matcher->setRulesList(&tautomer_rules);
@@ -903,7 +903,7 @@ CEXPORT int indigoMatch(int target_matcher, int query)
             }
 
             if (matcher.matcher.get() == 0)
-                matcher.matcher.create(matcher.target);
+                matcher.matcher = std::make_unique<ReactionSubstructureMatcher>(matcher.target);
 
             matcher.matcher->use_daylight_aam_mode = matcher.daylight_aam;
             matcher.matcher->setQuery(qrxn);

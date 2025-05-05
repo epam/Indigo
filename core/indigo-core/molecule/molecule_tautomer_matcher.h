@@ -74,11 +74,11 @@ namespace indigo
         Molecule& _target_src;
         std::unique_ptr<BaseMolecule> _query;
 
-        Obj<TautomerSuperStructure> _target;
+        std::unique_ptr<TautomerSuperStructure> _target;
         BaseMolecule* _supermol;
 
-        Obj<GraphDecomposer> _query_decomposer;
-        Obj<GraphDecomposer> _target_decomposer;
+        std::unique_ptr<GraphDecomposer> _query_decomposer;
+        std::unique_ptr<GraphDecomposer> _target_decomposer;
     };
 
 } // namespace indigo
