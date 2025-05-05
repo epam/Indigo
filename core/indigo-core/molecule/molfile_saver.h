@@ -94,7 +94,6 @@ namespace indigo
         void _writeAtomLabel(Output& output, int label);
         void _writeMultiString(Output& output, const char* string, int len);
         void _writeCtab(Output& output, BaseMolecule& mol, bool query);
-        void _writeOccurrenceRanges(Output& out, const Array<int>& occurrences);
         void _writeRGroup(Output& output, BaseMolecule& mol, int rg_idx);
         void _writeTGroup(Output& output, BaseMolecule& mol, int tg_idx);
         void _writeCtabHeader2000(Output& output, BaseMolecule& mol);

@@ -868,6 +868,7 @@ int main(int argc, char* argv[])
     indigoSetOption("ignore-stereochemistry-errors", "on");
     indigoSetOption("ignore-bad-valence", "on");
     indigoSetOption("molfile-saving-mode", "2000");
+    indigoSetOption("ket-saving-version", "1.0.0");
     indigoSetOptionBool("json-saving-pretty", "on");
     indigoSetOptionFloat("reaction-component-margin-size", 0.0f);
 
@@ -1099,6 +1100,18 @@ int main(int argc, char* argv[])
                     const auto robj = indigoNext(it_id);
                     const auto rxn_id = indigoClone(robj);
                     auto rc = indigoRdfAppend(writer, rxn_id);
+                }
+                indigoFree(writer);
+            }
+            else if (p.out_ext == OEXT_SDF)
+            {
+                writer = indigoWriteFile(p.outfile);
+                auto it_id = indigoIterateMolecules(obj);
+                while (indigoHasNext(it_id))
+                {
+                    const auto robj = indigoNext(it_id);
+                    const auto mol_id = indigoClone(robj);
+                    auto rc = indigoSdfAppend(writer, mol_id);
                 }
                 indigoFree(writer);
             }

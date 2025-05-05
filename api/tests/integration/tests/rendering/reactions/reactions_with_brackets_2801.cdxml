@@ -1,0 +1,1260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE CDXML SYSTEM "https://static.chemistry.revvitycloud.com/cdxml/CDXML.dtd" >
+<CDXML
+ CreationProgram="ChemDraw 23.1.1.3"
+ Name="polymer_reaction.cdxml"
+ BoundingBox="25.51 59.44 695.58 138.01"
+ WindowPosition="0 0"
+ WindowSize="-2147483648 0"
+ WindowIsZoomed="yes"
+ FractionalWidths="yes"
+ InterpretChemically="yes"
+ ShowAtomQuery="yes"
+ ShowAtomStereo="no"
+ ShowAtomEnhancedStereo="yes"
+ ShowAtomNumber="no"
+ ShowResidueID="no"
+ ShowBondQuery="yes"
+ ShowBondRxn="yes"
+ ShowBondStereo="no"
+ ShowTerminalCarbonLabels="no"
+ ShowNonTerminalCarbonLabels="no"
+ HideImplicitHydrogens="no"
+ LabelFont="3"
+ LabelSize="10"
+ LabelFace="96"
+ CaptionFont="3"
+ CaptionSize="10"
+ HashSpacing="2.50"
+ MarginWidth="1.60"
+ LineWidth="0.60"
+ BoldWidth="2"
+ BondLength="14.40"
+ BondSpacing="18"
+ ChainAngle="120"
+ LabelJustification="Auto"
+ CaptionJustification="Left"
+ AminoAcidTermini="HOH"
+ ShowSequenceTermini="yes"
+ ShowSequenceBonds="yes"
+ ShowSequenceUnlinkedBranches="no"
+ ResidueWrapCount="40"
+ ResidueBlockCount="10"
+ PrintMargins="36 36 36 36"
+ MacPrintInfo="000300000258025800000000190012D0FF9CFF721964135E0367052803FC000200000258025800000000190012D0000100000064000000010001010100000001270F000100010000000000000000000000000002001901900000000000600000000000000000000100000000000000000000000000000000"
+ ChemPropName=""
+ ChemPropFormula="Chemical Formula: "
+ ChemPropExactMass="Exact Mass: "
+ ChemPropMolWt="Molecular Weight: "
+ ChemPropMOverZ="m/z: "
+ ChemPropAnalysis="Elemental Analysis: "
+ ChemPropBoilingPt="Boiling Point: "
+ ChemPropMeltingPt="Melting Point: "
+ ChemPropCritTemp="Critical Temp: "
+ ChemPropCritPres="Critical Pres: "
+ ChemPropCritVol="Critical Vol: "
+ ChemPropGibbs="Gibbs Energy: "
+ ChemPropLogP="Log P: "
+ ChemPropMR="MR: "
+ ChemPropHenry="Henry&apos;s Law: "
+ ChemPropEForm="Heat of Form: "
+ ChemProptPSA="tPSA: "
+ ChemPropCLogP="CLogP: "
+ ChemPropCMR="CMR: "
+ ChemPropLogS="LogS: "
+ ChemPropPKa="pKa: "
+ ChemPropID=""
+ ChemPropFragmentLabel=""
+ color="0"
+ bgcolor="1"
+ RxnAutonumberStart="1"
+ RxnAutonumberConditions="no"
+ RxnAutonumberStyle="Roman"
+ RxnAutonumberFormat="(#)"
+><colortable>
+<color r="1" g="1" b="1"/>
+<color r="0" g="0" b="0"/>
+<color r="1" g="0" b="0"/>
+<color r="1" g="1" b="0"/>
+<color r="0" g="1" b="0"/>
+<color r="0" g="1" b="1"/>
+<color r="0" g="0" b="1"/>
+<color r="1" g="0" b="1"/>
+</colortable><fonttable>
+<font id="3" charset="iso-8859-1" name="Arial"/>
+</fonttable><page
+ id="476659"
+ BoundingBox="0 0 1080 720"
+ HeaderPosition="36"
+ FooterPosition="36"
+ PrintTrimMarks="yes"
+ HeightPages="1"
+ WidthPages="2"
+><fragment
+ id="47140"
+ BoundingBox="25.51 66.15 108.43 138.01"
+ Z="281"
+><n
+ id="47141"
+ p="89.34 104.22"
+ Z="227"
+ AS="N"
+ AtomID="1"
+/><n
+ id="47142"
+ p="41.47 104.22"
+ Z="241"
+ AS="N"
+ AtomID="2"
+/><n
+ id="47143"
+ p="49.45 90.40"
+ Z="242"
+ AS="N"
+ AtomID="3"
+/><n
+ id="47144"
+ p="65.41 90.40"
+ Z="243"
+ AS="N"
+ AtomID="4"
+/><n
+ id="47145"
+ p="73.38 104.22"
+ Z="244"
+ AS="N"
+ AtomID="5"
+/><n
+ id="47146"
+ p="65.41 118.04"
+ Z="245"
+ AS="N"
+ AtomID="6"
+/><n
+ id="47147"
+ p="49.45 118.04"
+ Z="246"
+ AS="N"
+ AtomID="7"
+/><n
+ id="47148"
+ p="73.39 131.86"
+ Z="253"
+ NodeType="Nickname"
+ NeedsClean="yes"
+ AS="N"
+ AtomID="8"
+><fragment
+ id="476660"
+><n
+ id="476661"
+ p="73.39 131.86"
+/><n
+ id="476662"
+ p="66.22 144.29"
+/><n
+ id="476663"
+ p="73.39 156.71"
+/><n
+ id="476664"
+ p="66.22 169.14"
+/><n
+ id="476665"
+ p="73.39 181.57"
+/><n
+ id="476666"
+ p="66.22 194"
+/><n
+ id="476667"
+ p="73.39 206.42"
+/><n
+ id="476668"
+ p="66.22 218.85"
+/><n
+ id="476669"
+ p="73.40 231.28"
+/><n
+ id="476670"
+ p="66.22 243.71"
+/><n
+ id="476671"
+ p="73.40 256.13"
+/><n
+ id="476672"
+ p="66.22 268.56"
+/><n
+ id="476673"
+ p="73.40 280.99"
+/><n
+ id="476674"
+ p="66.22 293.42"
+/><n
+ id="476675"
+ p="73.40 305.84"
+/><n
+ id="476676"
+ p="66.23 318.27"
+/><n
+ id="476677"
+ p="73.40 330.70"
+/><n
+ id="476678"
+ p="66.23 343.13"
+/><n
+ id="476679"
+ p="73.40 355.55"
+/><n
+ id="476680"
+ p="66.23 367.98"
+/><n
+ id="476681"
+ p="66.21 119.43"
+ NodeType="ExternalConnectionPoint"
+/><b
+ id="476682"
+ B="476679"
+ E="476680"
+/><b
+ id="476683"
+ B="476678"
+ E="476679"
+/><b
+ id="476684"
+ B="476677"
+ E="476678"
+/><b
+ id="476685"
+ B="476676"
+ E="476677"
+/><b
+ id="476686"
+ B="476675"
+ E="476676"
+/><b
+ id="476687"
+ B="476674"
+ E="476675"
+/><b
+ id="476688"
+ B="476673"
+ E="476674"
+/><b
+ id="476689"
+ B="476672"
+ E="476673"
+/><b
+ id="476690"
+ B="476671"
+ E="476672"
+/><b
+ id="476691"
+ B="476670"
+ E="476671"
+/><b
+ id="476692"
+ B="476669"
+ E="476670"
+/><b
+ id="476693"
+ B="476668"
+ E="476669"
+/><b
+ id="476694"
+ B="476667"
+ E="476668"
+/><b
+ id="476695"
+ B="476666"
+ E="476667"
+/><b
+ id="476696"
+ B="476665"
+ E="476666"
+/><b
+ id="476697"
+ B="476664"
+ E="476665"
+/><b
+ id="476698"
+ B="476663"
+ E="476664"
+/><b
+ id="476699"
+ B="476662"
+ E="476663"
+/><b
+ id="476700"
+ B="476661"
+ E="476662"
+/><b
+ id="476701"
+ B="476681"
+ E="476661"
+/></fragment><t
+ p="69.78 135.76"
+ BoundingBox="69.78 127.30 100.91 138.01"
+ LabelJustification="Left"
+ LabelAlignment="Left"
+><s font="3" size="10" color="0" face="96">C20H41</s></t></n><n
+ id="47163"
+ p="25.51 104.22"
+ Z="255"
+ AS="N"
+ AtomID="9"
+/><n
+ id="47169"
+ p="97.32 90.40"
+ Z="268"
+ Element="8"
+ NumHydrogens="1"
+ NeedsClean="yes"
+ AS="N"
+ AtomID="10"
+><t
+ p="93.43 94.30"
+ BoundingBox="93.43 85.84 108.43 94.40"
+ LabelJustification="Left"
+ LabelAlignment="Left"
+><s font="3" size="10" color="0" face="96">OH</s></t></n><n
+ id="47175"
+ p="39.78 71.52"
+ Z="283"
+ NodeType="Nickname"
+ NeedsClean="yes"
+ AS="N"
+ LabelDisplay="Left"
+ AtomID="11"
+><fragment
+ id="476703"
+><n
+ id="476704"
+ p="43.53 -2.95"
+/><n
+ id="476705"
+ p="50.07 9.82"
+/><n
+ id="476706"
+ p="42.28 21.87"
+/><n
+ id="476707"
+ p="48.82 34.65"
+/><n
+ id="476708"
+ p="41.03 46.70"
+/><n
+ id="476709"
+ p="47.57 59.47"
+/><n
+ id="476710"
+ p="39.78 71.52"
+/><n
+ id="476711"
+ p="46.32 84.29"
+ NodeType="ExternalConnectionPoint"
+/><b
+ id="476712"
+ B="476709"
+ E="476710"
+/><b
+ id="476713"
+ B="476708"
+ E="476709"
+/><b
+ id="476714"
+ B="476707"
+ E="476708"
+/><b
+ id="476715"
+ B="476706"
+ E="476707"
+/><b
+ id="476716"
+ B="476705"
+ E="476706"
+/><b
+ id="476717"
+ B="476704"
+ E="476705"
+/><b
+ id="476718"
+ B="476711"
+ E="476710"
+/></fragment><t
+ p="36.31 75.54"
+ BoundingBox="36.01 66.15 63.33 77.79"
+ LabelJustification="Left"
+ RotationAngle="23461888"
+ LabelAlignment="Right"
+><s font="3" size="10" color="0" face="96">C7H15</s></t></n><b
+ id="47191"
+ Z="247"
+ B="47142"
+ E="47143"
+ Order="2"
+ BS="N"
+ BondCircularOrdering="47198 47196 47192 47213"
+/><b
+ id="47192"
+ Z="248"
+ B="47143"
+ E="47144"
+ BS="N"
+/><b
+ id="47193"
+ Z="249"
+ B="47144"
+ E="47145"
+ Order="2"
+ BS="N"
+ BondCircularOrdering="0 47192 47194 47212"
+/><b
+ id="47194"
+ Z="250"
+ B="47145"
+ E="47146"
+ BS="N"
+/><b
+ id="47195"
+ Z="251"
+ B="47146"
+ E="47147"
+ Order="2"
+ BS="N"
+ BondCircularOrdering="47197 47194 47196 0"
+/><b
+ id="47196"
+ Z="252"
+ B="47147"
+ E="47142"
+ BS="N"
+/><b
+ id="47197"
+ Z="254"
+ B="47146"
+ E="47148"
+ BS="N"
+/><b
+ id="47198"
+ Z="256"
+ B="47142"
+ E="47163"
+ BS="N"
+/><b
+ id="47205"
+ Z="273"
+ B="47141"
+ E="47169"
+ BS="N"
+/><b
+ id="47212"
+ Z="282"
+ B="47145"
+ E="47141"
+ BS="N"
+/><b
+ id="47213"
+ Z="284"
+ B="47143"
+ E="47175"
+ BS="N"
+/></fragment><fragment
+ id="476329"
+ BoundingBox="168.33 74.99 239.84 120.04"
+ Z="291"
+><n
+ id="476336"
+ p="198.61 120.04"
+ Z="295"
+ AS="N"
+ AtomID="12"
+/><n
+ id="476344"
+ p="198.61 102.65"
+ Z="302"
+ AS="u"
+ AtomID="13"
+/><n
+ id="476346"
+ p="183.55 93.95"
+ Z="304"
+ AS="N"
+ AtomID="14"
+/><n
+ id="476348"
+ p="213.67 93.95"
+ Z="306"
+ AS="N"
+ AtomID="15"
+/><n
+ id="476350"
+ p="228.73 102.65"
+ Z="308"
+ Element="8"
+ NumHydrogens="1"
+ NeedsClean="yes"
+ AS="N"
+ AtomID="16"
+><t
+ p="224.84 106.55"
+ BoundingBox="224.84 98.09 239.84 106.65"
+ LabelJustification="Left"
+ LabelAlignment="Left"
+><s font="3" size="10" color="0" face="96">OH</s></t></n><n
+ id="476354"
+ p="168.48 102.65"
+ Z="312"
+ AS="N"
+ AtomID="17"
+/><n
+ id="476649"
+ p="213.67 79.55"
+ Z="426"
+ Element="8"
+ NumHydrogens="0"
+ NeedsClean="yes"
+ AS="N"
+ AtomID="18"
+><t
+ p="209.78 83.45"
+ BoundingBox="209.78 74.99 217.56 83.55"
+ LabelJustification="Left"
+><s font="3" size="10" color="0" face="96">O</s></t></n><b
+ id="476345"
+ Z="303"
+ B="476336"
+ E="476344"
+ BS="N"
+/><b
+ id="476347"
+ Z="305"
+ B="476344"
+ E="476346"
+ BS="N"
+/><b
+ id="476349"
+ Z="307"
+ B="476344"
+ E="476348"
+ BS="N"
+/><b
+ id="476351"
+ Z="309"
+ B="476348"
+ E="476350"
+ BS="N"
+/><b
+ id="476355"
+ Z="313"
+ B="476346"
+ E="476354"
+ BS="N"
+/><b
+ id="476650"
+ Z="427"
+ B="476348"
+ E="476649"
+ Order="2"
+ BS="N"
+/></fragment><fragment
+ id="476463"
+ BoundingBox="564.15 59.44 695.58 124.81"
+ Z="383"
+><n
+ id="476464"
+ p="621.55 93.81"
+ Z="329"
+ AS="N"
+ AtomID="20"
+/><n
+ id="476465"
+ p="578.50 93.81"
+ Z="343"
+ AS="N"
+ AtomID="21"
+/><n
+ id="476466"
+ p="585.67 106.23"
+ Z="344"
+ AS="N"
+ AtomID="22"
+/><n
+ id="476467"
+ p="600.02 106.23"
+ Z="345"
+ AS="N"
+ AtomID="23"
+/><n
+ id="476468"
+ p="607.20 93.81"
+ Z="346"
+ AS="N"
+ AtomID="24"
+/><n
+ id="476469"
+ p="600.02 81.38"
+ Z="347"
+ AS="N"
+ AtomID="25"
+/><n
+ id="476470"
+ p="585.67 81.38"
+ Z="348"
+ AS="N"
+ AtomID="26"
+/><n
+ id="476471"
+ p="607.20 68.95"
+ Z="355"
+ NodeType="Nickname"
+ NeedsClean="yes"
+ AS="N"
+ AtomID="27"
+><fragment
+ id="476720"
+><n
+ id="476721"
+ p="671.78 31.68"
+/><n
+ id="476722"
+ p="664.61 44.11"
+/><n
+ id="476723"
+ p="650.26 44.10"
+/><n
+ id="476724"
+ p="643.08 56.53"
+/><n
+ id="476725"
+ p="628.73 56.53"
+/><n
+ id="476726"
+ p="621.55 68.95"
+/><n
+ id="476727"
+ p="607.20 68.95"
+/><n
+ id="476728"
+ p="600.02 81.38"
+ NodeType="ExternalConnectionPoint"
+/><b
+ id="476729"
+ B="476726"
+ E="476727"
+/><b
+ id="476730"
+ B="476725"
+ E="476726"
+/><b
+ id="476731"
+ B="476724"
+ E="476725"
+/><b
+ id="476732"
+ B="476723"
+ E="476724"
+/><b
+ id="476733"
+ B="476722"
+ E="476723"
+/><b
+ id="476734"
+ B="476721"
+ E="476722"
+/><b
+ id="476735"
+ B="476728"
+ E="476727"
+/></fragment><t
+ p="603.59 72.85"
+ BoundingBox="603.59 64.39 630.55 75.10"
+ LabelJustification="Left"
+ LabelAlignment="Left"
+><s font="3" size="10" color="0" face="96">C7H15</s></t></n><n
+ id="476486"
+ p="564.15 93.81"
+ Z="357"
+ AS="N"
+ AtomID="28"
+/><n
+ id="476498"
+ p="578.50 118.66"
+ Z="385"
+ NodeType="Nickname"
+ NeedsClean="yes"
+ AS="N"
+ LabelDisplay="Left"
+ AtomID="29"
+><fragment
+ id="476737"
+><n
+ id="476738"
+ p="578.50 118.66"
+/><n
+ id="476739"
+ p="564.15 118.67"
+/><n
+ id="476740"
+ p="556.98 131.10"
+/><n
+ id="476741"
+ p="542.63 131.10"
+/><n
+ id="476742"
+ p="535.46 143.53"
+/><n
+ id="476743"
+ p="521.11 143.54"
+/><n
+ id="476744"
+ p="513.94 155.97"
+/><n
+ id="476745"
+ p="499.59 155.97"
+/><n
+ id="476746"
+ p="492.42 168.40"
+/><n
+ id="476747"
+ p="478.07 168.41"
+/><n
+ id="476748"
+ p="470.90 180.84"
+/><n
+ id="476749"
+ p="456.55 180.84"
+/><n
+ id="476750"
+ p="449.38 193.28"
+/><n
+ id="476751"
+ p="435.03 193.28"
+/><n
+ id="476752"
+ p="427.86 205.71"
+/><n
+ id="476753"
+ p="413.51 205.72"
+/><n
+ id="476754"
+ p="406.34 218.15"
+/><n
+ id="476755"
+ p="391.99 218.15"
+/><n
+ id="476756"
+ p="384.82 230.58"
+/><n
+ id="476757"
+ p="370.47 230.59"
+/><n
+ id="476758"
+ p="585.67 106.23"
+ NodeType="ExternalConnectionPoint"
+/><b
+ id="476759"
+ B="476756"
+ E="476757"
+/><b
+ id="476760"
+ B="476755"
+ E="476756"
+/><b
+ id="476761"
+ B="476754"
+ E="476755"
+/><b
+ id="476762"
+ B="476753"
+ E="476754"
+/><b
+ id="476763"
+ B="476752"
+ E="476753"
+/><b
+ id="476764"
+ B="476751"
+ E="476752"
+/><b
+ id="476765"
+ B="476750"
+ E="476751"
+/><b
+ id="476766"
+ B="476749"
+ E="476750"
+/><b
+ id="476767"
+ B="476748"
+ E="476749"
+/><b
+ id="476768"
+ B="476747"
+ E="476748"
+/><b
+ id="476769"
+ B="476746"
+ E="476747"
+/><b
+ id="476770"
+ B="476745"
+ E="476746"
+/><b
+ id="476771"
+ B="476744"
+ E="476745"
+/><b
+ id="476772"
+ B="476743"
+ E="476744"
+/><b
+ id="476773"
+ B="476742"
+ E="476743"
+/><b
+ id="476774"
+ B="476741"
+ E="476742"
+/><b
+ id="476775"
+ B="476740"
+ E="476741"
+/><b
+ id="476776"
+ B="476739"
+ E="476740"
+/><b
+ id="476777"
+ B="476738"
+ E="476739"
+/><b
+ id="476778"
+ B="476758"
+ E="476738"
+/></fragment><t
+ p="574.89 122.56"
+ BoundingBox="574.89 114.10 606.02 124.81"
+ LabelJustification="Left"
+ LabelAlignment="Right"
+><s font="3" size="10" color="0" face="96">C20H41</s></t></n><n
+ id="47267"
+ p="633.04 83.42"
+ Z="389"
+ Element="8"
+ NumHydrogens="0"
+ NeedsClean="yes"
+ AS="N"
+ AtomID="19"
+><t
+ p="629.16 87.32"
+ BoundingBox="629.16 78.86 636.93 87.42"
+ LabelJustification="Left"
+ LabelAlignment="Below"
+><s font="3" size="10" color="0" face="96">O</s></t></n><n
+ id="476518"
+ p="652.10 120.14"
+ Z="396"
+ AS="N"
+ AtomID="30"
+/><n
+ id="476519"
+ p="662.91 101.42"
+ Z="403"
+ AS="u"
+ AtomID="31"
+/><n
+ id="476520"
+ p="684.52 101.42"
+ Z="405"
+ AS="N"
+ AtomID="32"
+/><n
+ id="476521"
+ p="652.10 82.70"
+ Z="407"
+ AS="N"
+ AtomID="33"
+/><n
+ id="476522"
+ p="662.91 64"
+ Z="409"
+ Element="8"
+ NumHydrogens="0"
+ NeedsClean="yes"
+ AS="N"
+ AtomID="34"
+><t
+ p="659.02 67.90"
+ BoundingBox="659.02 59.44 666.80 68"
+ LabelJustification="Left"
+><s font="3" size="10" color="0" face="96">O</s></t></n><n
+ id="476523"
+ p="695.32 120.14"
+ Z="411"
+ AS="N"
+ AtomID="35"
+/><b
+ id="476524"
+ Z="349"
+ B="476465"
+ E="476466"
+ Order="2"
+ BS="N"
+ BondCircularOrdering="476529 476531 476546 476525"
+/><b
+ id="476525"
+ Z="350"
+ B="476466"
+ E="476467"
+ BS="N"
+/><b
+ id="476526"
+ Z="351"
+ B="476467"
+ E="476468"
+ Order="2"
+ BS="N"
+ BondCircularOrdering="476525 0 476545 476527"
+/><b
+ id="476527"
+ Z="352"
+ B="476468"
+ E="476469"
+ BS="N"
+/><b
+ id="476528"
+ Z="353"
+ B="476469"
+ E="476470"
+ Order="2"
+ BS="N"
+ BondCircularOrdering="476527 476530 0 476529"
+ CrossingBonds="476656"
+/><b
+ id="476529"
+ Z="354"
+ B="476470"
+ E="476465"
+ BS="N"
+/><b
+ id="476530"
+ Z="356"
+ B="476469"
+ E="476471"
+ BS="N"
+ CrossingBonds="476656"
+/><b
+ id="476531"
+ Z="358"
+ B="476465"
+ E="476486"
+ BS="N"
+/><b
+ id="476545"
+ Z="384"
+ B="476468"
+ E="476464"
+ BS="N"
+/><b
+ id="476546"
+ Z="386"
+ B="476466"
+ E="476498"
+ BS="N"
+/><b
+ id="476553"
+ Z="404"
+ B="476518"
+ E="476519"
+ BS="N"
+/><b
+ id="476554"
+ Z="406"
+ B="476519"
+ E="476520"
+ BS="N"
+/><b
+ id="476555"
+ Z="408"
+ B="476519"
+ E="476521"
+ BS="N"
+/><b
+ id="476556"
+ Z="410"
+ B="476521"
+ E="476522"
+ Order="2"
+ BS="N"
+/><b
+ id="476557"
+ Z="412"
+ B="476520"
+ E="476523"
+ BS="N"
+/><b
+ id="476558"
+ Z="415"
+ B="476521"
+ E="47267"
+ BS="N"
+/><b
+ id="476656"
+ Z="433"
+ B="476464"
+ E="47267"
+ BS="N"
+ CrossingBonds="476528 476530"
+/></fragment><graphic
+ id="47215"
+ BoundingBox="79.23 85.31 79.23 117.83"
+ Z="285"
+ GraphicType="Bracket"
+ BracketType="Square"
+ LipSize="60"
+ BracketUsage="MultipleGroup"
+><objecttag
+ id="1"
+ TagType="Unknown"
+ Visible="no"
+ Name="parameterizedBracketLabel"
+><t
+ p="83.92 120.90"
+ BoundingBox="83.92 114.66 92.26 121"
+ Visible="no"
+ CaptionLineHeight="variable"
+><s font="3" size="7.5" color="0">15</s></t></objecttag><objecttag
+ id="2"
+ TagType="Unknown"
+ Name="bracketusage"
+><t
+ p="-36 -1.50"
+ BoundingBox="-36 -7.74 -27.66 -1.40"
+ IgnoreWarnings="yes"
+ CaptionLineHeight="variable"
+><s font="3" size="7.5" color="0">15</s></t></objecttag></graphic><graphic
+ id="47216"
+ BoundingBox="33.36 117.83 33.36 85.31"
+ Z="286"
+ GraphicType="Bracket"
+ BracketType="Square"
+ LipSize="60"
+/><graphic
+ id="476356"
+ BoundingBox="205.25 85.50 205.25 111.47"
+ Z="314"
+ GraphicType="Bracket"
+ BracketType="Square"
+ LipSize="60"
+ BracketUsage="MultipleGroup"
+><objecttag
+ id="1"
+ TagType="Unknown"
+ Visible="no"
+ Name="parameterizedBracketLabel"
+><t
+ p="209.94 113.77"
+ BoundingBox="209.94 109.17 214.11 113.77"
+ Visible="no"
+ CaptionLineHeight="variable"
+><s font="3" size="7.5" color="0">n</s></t></objecttag><objecttag
+ id="2"
+ TagType="Unknown"
+ Name="bracketusage"
+><t
+ p="0 0"
+ BoundingBox="0 -6.24 4.17 0"
+ IgnoreWarnings="yes"
+ CaptionLineHeight="variable"
+><s font="3" size="7.5" color="0">1</s></t></objecttag></graphic><graphic
+ id="476357"
+ BoundingBox="177.47 111.47 177.47 85.50"
+ Z="315"
+ GraphicType="Bracket"
+ BracketType="Square"
+ LipSize="60"
+/><graphic
+ id="476563"
+ BoundingBox="570.18 103.17 570.18 84.45"
+ Z="387"
+ GraphicType="Bracket"
+ BracketType="Square"
+ LipSize="60"
+ BracketUsage="MultipleGroup"
+><objecttag
+ id="1"
+ TagType="Unknown"
+ Visible="no"
+ PositioningType="offset"
+ PositioningOffset="43.13 7.87"
+ Name="parameterizedBracketLabel"
+><t
+ p="613.31 111.04"
+ BoundingBox="613.31 104.80 621.65 111.14"
+ Visible="no"
+ CaptionLineHeight="variable"
+><s font="3" size="7.5" color="0">15</s></t></objecttag><objecttag
+ id="2"
+ TagType="Unknown"
+ Name="bracketusage"
+><t
+ p="189 0.75"
+ BoundingBox="189 -5.49 197.34 0.85"
+ IgnoreWarnings="yes"
+ CaptionLineHeight="variable"
+><s font="3" size="7.5" color="0">15</s></t></objecttag></graphic><graphic
+ id="476564"
+ BoundingBox="613.23 84.45 613.23 103.17"
+ Z="388"
+ GraphicType="Bracket"
+ BracketType="Square"
+ LipSize="60"
+/><graphic
+ id="476565"
+ BoundingBox="646.48 107.65 660.58 83.24"
+ Z="413"
+ GraphicType="Bracket"
+ BracketType="Square"
+ LipSize="60"
+ BracketUsage="MultipleGroup"
+><objecttag
+ id="1"
+ TagType="Unknown"
+ Visible="no"
+ PositioningType="offset"
+ PositioningOffset="30.10 22.74"
+ Name="parameterizedBracketLabel"
+><t
+ p="676.59 130.41"
+ BoundingBox="676.59 126.99 682.77 133.20"
+ Visible="no"
+ CaptionLineHeight="variable"
+ RotationAngle="2752512"
+><s font="3" size="7.5" color="0">n</s></t></objecttag><objecttag
+ id="2"
+ TagType="Unknown"
+ Name="bracketusage"
+><t
+ p="0 0"
+ BoundingBox="0 -6.24 4.17 0"
+ IgnoreWarnings="yes"
+ CaptionLineHeight="variable"
+><s font="3" size="7.5" color="0">1</s></t></objecttag></graphic><graphic
+ id="476566"
+ BoundingBox="692.99 101.96 678.89 126.37"
+ Z="414"
+ GraphicType="Bracket"
+ BracketType="Square"
+ LipSize="60"
+/><graphic
+ id="476567"
+ BoundingBox="135.40 107.69 135.40 115.19"
+ Z="420"
+ GraphicType="Symbol"
+ SymbolType="Plus"
+/><graphic
+ id="476644"
+ SupersededBy="476780"
+ BoundingBox="491.29 108.44 275.65 108.44"
+ Z="421"
+ GraphicType="Line"
+ ArrowType="FullHead"
+ HeadSize="1000"
+/><scheme
+ id="476781"
+><step
+ id="476782"
+ ReactionStepReactants="47140 476329"
+ ReactionStepProducts="476463"
+ ReactionStepArrows="476644"
+/></scheme><bracketedgroup
+ id="476783"
+ BracketedObjectIDs="476336 476344 476346"
+ BracketUsage="MultipleGroup"
+ RepeatCount="1"
+><bracketattachment
+ id="476784"
+ GraphicID="476357"
+><crossingbond
+ id="476785"
+ BondID="476355"
+ InnerAtomID="476346"
+/></bracketattachment><bracketattachment
+ id="476786"
+ GraphicID="476356"
+><crossingbond
+ id="476787"
+ BondID="476349"
+ InnerAtomID="476344"
+/></bracketattachment></bracketedgroup><bracketedgroup
+ id="476788"
+ BracketedObjectIDs="476465 476466 476467 476468 476469 476470 476471 476498"
+ BracketUsage="MultipleGroup"
+ RepeatCount="15"
+><bracketattachment
+ id="476789"
+ GraphicID="476564"
+><crossingbond
+ id="476790"
+ BondID="476545"
+ InnerAtomID="476468"
+/></bracketattachment><bracketattachment
+ id="476791"
+ GraphicID="476563"
+><crossingbond
+ id="476792"
+ BondID="476531"
+ InnerAtomID="476465"
+/></bracketattachment></bracketedgroup><bracketedgroup
+ id="476793"
+ BracketedObjectIDs="476518 476519 476520"
+ BracketUsage="MultipleGroup"
+ RepeatCount="1"
+><bracketattachment
+ id="476794"
+ GraphicID="476566"
+><crossingbond
+ id="476795"
+ BondID="476557"
+ InnerAtomID="476520"
+/></bracketattachment><bracketattachment
+ id="476796"
+ GraphicID="476565"
+><crossingbond
+ id="476797"
+ BondID="476555"
+ InnerAtomID="476519"
+/></bracketattachment></bracketedgroup><bracketedgroup
+ id="476798"
+ BracketedObjectIDs="47142 47143 47144 47145 47146 47147 47148 47175"
+ BracketUsage="MultipleGroup"
+ RepeatCount="15"
+><bracketattachment
+ id="476799"
+ GraphicID="47216"
+><crossingbond
+ id="476800"
+ BondID="47198"
+ InnerAtomID="47142"
+/></bracketattachment><bracketattachment
+ id="476801"
+ GraphicID="47215"
+><crossingbond
+ id="476802"
+ BondID="47212"
+ InnerAtomID="47145"
+/></bracketattachment></bracketedgroup><arrow
+ id="476780"
+ BoundingBox="275.65 106.19 491.29 109.94"
+ Z="421"
+ FillType="None"
+ ArrowheadHead="Full"
+ ArrowheadType="Solid"
+ HeadSize="1000"
+ ArrowheadCenterSize="875"
+ ArrowheadWidth="250"
+ Head3D="491.29 108.44 0"
+ Tail3D="275.65 108.44 0"
+ Center3D="672.61 283.03 0"
+ MajorAxisEnd3D="-1985.76 283.03 0"
+ MinorAxisEnd3D="-6153.80 4451.08 0"
+/></page></CDXML>

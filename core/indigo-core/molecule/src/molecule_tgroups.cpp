@@ -23,7 +23,7 @@
 
 using namespace indigo;
 
-TGroup::TGroup() : unresolved(false), ambiguous(false)
+TGroup::TGroup() : unresolved(false), ambiguous(false), mixture(false), different_aliasHELM(false)
 {
 }
 
@@ -35,6 +35,7 @@ void TGroup::clear()
 {
     unresolved = false;
     ambiguous = false;
+    mixture = false;
 }
 
 int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* /*context*/)
@@ -136,6 +137,12 @@ void TGroup::copy(const TGroup& other)
         aliases.push().copy(other.aliases[i]);
     }
     ratios.copy(other.ratios);
+    different_aliasHELM = other.different_aliasHELM;
+    aliasHELM.copy(other.aliasHELM);
+    for (int i = 0; i < other.modification_types.size(); i++)
+    {
+        modification_types.push().copy(other.modification_types[i]);
+    }
 }
 
 IMPL_ERROR(MoleculeTGroups, "molecule tgroups");
@@ -207,7 +214,8 @@ int MoleculeTGroups::findTGroup(const char* name)
         TGroup& tgroup = *_tgroups.at(i);
         if (tgroup.tgroup_name.size() > 0 && name != 0)
         {
-            if (strncmp(tgroup.tgroup_name.ptr(), name, tgroup.tgroup_name.size()) == 0)
+            if (strncmp(tgroup.tgroup_name.ptr(), name, tgroup.tgroup_name.size()) == 0 ||
+                strncmp(tgroup.tgroup_alias.ptr(), name, tgroup.tgroup_alias.size()) == 0)
                 return i;
         }
     }

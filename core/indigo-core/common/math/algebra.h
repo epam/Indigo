@@ -370,7 +370,7 @@ namespace indigo
             _rightTop.max(b._rightTop);
         }
 
-        inline void copy(Rect2f& other)
+        inline void copy(const Rect2f& other)
         {
             _leftBottom = other._leftBottom;
             _rightTop = other._rightTop;
@@ -544,7 +544,7 @@ namespace indigo
         Vec3f(float xx, float yy, float zz) : x(xx), y(yy), z(zz)
         {
         }
-        Vec3f(Vec2f& v) : x(v.x), y(v.y), z(0)
+        Vec3f(const Vec2f& v) : x(v.x), y(v.y), z(0)
         {
         }
 
@@ -946,7 +946,7 @@ namespace indigo
         return {s.x + t * dx1, s.y + t * dy1};
     }
 
-    // Sutherland–Hodgman algorithm
+    // Sutherlandï¿½Hodgman algorithm
     inline std::vector<Vec2f> convexClip(const std::vector<Vec2f>& subject, const std::vector<Vec2f>& clip)
     {
         std::vector<Vec2f> result = subject;

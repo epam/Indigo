@@ -290,7 +290,7 @@ bool Graph::findPath(int from, int where, Array<int>& path_out) const
     return false;
 }
 
-VerticesAuto Graph::vertices()
+VerticesAuto Graph::vertices() const
 {
     return VerticesAuto(*this);
 }

@@ -18,7 +18,7 @@
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable : 4315) // TODO: Fix CDXFont allign issue
+#pragma warning(disable : 4315) // TODO: Fix CDXFont align issue
 #endif
 
 #include "molecule/molecule_cdxml_saver.h"
@@ -320,6 +320,15 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
     }
     break;
 
+    case ECDXType::CDXINT16ListWithCounts: {
+        std::string values = pAttr->Value();
+        auto vals = split(values, ' ');
+        _output.writeBinaryUInt16(static_cast<uint16_t>((vals.size() + 1) * sizeof(uint16_t)));
+        _output.writeBinaryUInt16(static_cast<uint16_t>(vals.size()));
+        for (const auto& val : vals)
+            _output.writeBinaryUInt16((uint16_t)std::stoul(val));
+    }
+    break;
     case ECDXType::CDXObjectIDArray: {
         std::string values = pAttr->Value();
         auto vals = split(values, ' ');
@@ -328,7 +337,6 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
             _output.writeBinaryInt(std::stoi(val));
     }
     break;
-
     case ECDXType::CDXDate:
     case ECDXType::CDXRepresentsProperty:
     case ECDXType::CDXFontTable:
@@ -338,7 +346,6 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
     case ECDXType::CDXObjectIDArrayWithCounts:
     case ECDXType::CDXGenericList:
     case ECDXType::CDXFLOAT64:
-    case ECDXType::CDXINT16ListWithCounts:
     case ECDXType::CDXCurvePoints:
     case ECDXType::CDXCurvePoints3D:
     case ECDXType::CDXvaries:
@@ -355,6 +362,11 @@ IMPL_ERROR(MoleculeCdxmlSaver, "molecule CDXML saver");
 int MoleculeCdxmlSaver::getId()
 {
     return _id;
+}
+
+std::string MoleculeCdxmlSaver::boundingBoxToString(const Rect2f& bbox)
+{
+    return std::to_string(bbox.left()) + " " + std::to_string(bbox.top()) + " " + std::to_string(bbox.right()) + " " + std::to_string(bbox.bottom());
 }
 
 MoleculeCdxmlSaver::MoleculeCdxmlSaver(Output& output, bool is_binary) : _output(output), _is_binary(is_binary)
@@ -516,15 +528,18 @@ void MoleculeCdxmlSaver::addColorTable(const char* color)
     }
 }
 
-void MoleculeCdxmlSaver::addColorToTable(int id, int r, int g, int b)
+void MoleculeCdxmlSaver::addColorToTable(int id, float r, float g, float b)
 {
-    XMLElement* color = _doc->NewElement("color");
-    _colortable->LinkEndChild(color);
+    XMLElement* cel = _doc->NewElement("color");
+    _colortable->LinkEndChild(cel);
     if (id > 0)
-        color->SetAttribute("id", id);
-    color->SetAttribute("r", r);
-    color->SetAttribute("g", g);
-    color->SetAttribute("b", b);
+        cel->SetAttribute("id", id);
+    cel->SetAttribute("r", r);
+    cel->SetAttribute("g", g);
+    cel->SetAttribute("b", b);
+    uint32_t color = ((uint32_t)(r * 0xFF) << 16) + ((uint32_t)(g * 0xFF) << 8) + (uint32_t)b * 0xFF;
+    _color_table_map.emplace(color, (int)_color_table.size());
+    _color_table.push_back(color);
 }
 
 void MoleculeCdxmlSaver::addDefaultFontTable()
@@ -1119,6 +1134,15 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
         {
             XMLElement* t = _doc->NewElement("t");
             node->LinkEndChild(t);
+            Vec2f pos(sa.display_position.x + offset.x, -sa.display_position.y - offset.y);
+            pos.scale(_bond_length);
+            Vec2f v1(pos.x - _bond_length / 2, pos.y - _bond_length / 2);
+            Vec2f v2(pos.x + _bond_length / 2, pos.y + _bond_length / 2);
+            std::string pos_str = std::to_string(pos.x) + " " + std::to_string(pos.y);
+            Rect2f bbox(v1, v2);
+            std::string bbox_str = boundingBoxToString(bbox);
+            if (sa.display_position.x != 0.0f && sa.display_position.y != 0.0f)
+                node->SetAttribute("p", pos_str.c_str());
             t->SetAttribute("LabelJustification", "Left");
             t->SetAttribute("LabelAlignment", "Above");
             XMLElement* s = _doc->NewElement("s");
@@ -1463,67 +1487,110 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
     break;
     case SimpleGraphicsObject::CID: {
         SimpleGraphicsObject& simple_obj = (SimpleGraphicsObject&)cp_obj;
-        Rect2f bbox(simple_obj._coordinates.first, simple_obj._coordinates.second);
+        const auto& v1 = simple_obj._coordinates.first;
+        const auto& v2 = simple_obj._coordinates.second;
+        Rect2f bbox(v1, v2);
         switch (simple_obj._mode)
         {
         case SimpleGraphicsObject::EEllipse: {
-            auto ecenter = bbox.center();
+            auto sbox = Rect2f(Vec2f(bbox.left() * _scale, -bbox.bottom() * _scale), Vec2f(bbox.right() * _scale, -bbox.top() * _scale));
+            auto ecenter = sbox.center();
             Vec2f maj_axis, min_axis;
-            if (bbox.width() > bbox.height())
-            {
-                maj_axis.copy(bbox.rightMiddle());
-                min_axis.copy(bbox.topMiddle());
-            }
-            else
-            {
-                maj_axis.copy(bbox.topMiddle());
-                min_axis.copy(bbox.rightMiddle());
-            }
-            ecenter.scale(_bond_length);
-            min_axis.scale(_bond_length);
-            maj_axis.scale(_bond_length);
-            ecenter.y = -ecenter.y;
-            min_axis.y = -min_axis.y;
-            maj_axis.y = -maj_axis.y;
-            Rect2f bbox_new(ecenter, bbox.rightTop());
-            bbox.copy(bbox_new);
-            attrs.insert("Center3D", std::to_string(ecenter.x) + " " + std::to_string(ecenter.y));
-            attrs.insert("MajorAxisEnd3D", std::to_string(maj_axis.x) + " " + std::to_string(maj_axis.y));
-            attrs.insert("MinorAxisEnd3D", std::to_string(min_axis.x) + " " + std::to_string(min_axis.y));
+            maj_axis.x = sbox.right();
+            maj_axis.y = ecenter.y;
+
+            min_axis.x = ecenter.x;
+            min_axis.y = sbox.top();
+
+            attrs.insert("Center3D", std::to_string(ecenter.x) + " " + std::to_string(ecenter.y) + " 0");
+            attrs.insert("MajorAxisEnd3D", std::to_string(maj_axis.x) + " " + std::to_string(maj_axis.y) + " 0");
+            attrs.insert("MinorAxisEnd3D", std::to_string(min_axis.x) + " " + std::to_string(min_axis.y) + " 0");
             attrs.insert("GraphicType", "Oval");
+            addElement("graphic", id, bbox.leftBottom(), bbox.rightTop(), attrs);
         }
         break;
         case SimpleGraphicsObject::ERectangle:
             attrs.insert("GraphicType", "Rectangle");
+            addElement("graphic", id, bbox.leftBottom(), bbox.rightTop(), attrs);
             break;
         case SimpleGraphicsObject::ELine:
             attrs.insert("GraphicType", "Line");
+            addElement("graphic", id, v1, v2, attrs);
             break;
         }
-        addElement("graphic", id, bbox.leftBottom(), bbox.rightTop(), attrs);
     }
     break;
     case SimpleTextObject::CID: {
         const SimpleTextObject& ko = static_cast<const SimpleTextObject&>(cp_obj);
-        // double text_offset_y = 0;
         int font_size = static_cast<int>(KDefaultFontSize);
+        int color_index = -1;
         CDXMLFontStyle font_face(0);
-        for (auto& text_item : ko._block)
+        for (auto& text_item : ko.block())
         {
             bool is_first_index = true;
             size_t first_index = 0;
             size_t second_index = 0;
-            // double text_offset_x = 0;
             FONT_STYLE_SET current_styles;
-            Vec2f text_origin(ko._pos.x, ko._pos.y);
+            Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().bottom());
+            auto align = text_item.alignment.has_value() ? text_item.alignment : ko.alignment();
+            if (align.has_value())
+            {
+                switch (align.value())
+                {
+                case SimpleTextObject::TextAlignment::ECenter:
+                    text_origin.x = ko.boundingBox().center().x;
+                    break;
+                case SimpleTextObject::TextAlignment::ERight:
+                    text_origin.x = ko.boundingBox().right();
+                    break;
+                }
+            }
+
             std::string pos_str = std::to_string(_bond_length * text_origin.x) + " " + std::to_string(-_bond_length * text_origin.y);
+            std::string box_str = std::to_string(_bond_length * ko.boundingBox().left()) + " " + std::to_string(-_bond_length * ko.boundingBox().top()) + " " +
+                                  std::to_string(_bond_length * ko.boundingBox().right()) + " " + std::to_string(-_bond_length * ko.boundingBox().bottom());
+
             XMLElement* t = _doc->NewElement("t");
             _current->LinkEndChild(t);
             t->SetAttribute("id", id);
             t->SetAttribute("p", pos_str.c_str());
-            t->SetAttribute("Justification", "Left");
+            // t->SetAttribute("BoundingBox", box_str.c_str());
+            if (align.has_value())
+            {
+                switch (align.value())
+                {
+                case SimpleTextObject::TextAlignment::ELeft:
+                    t->SetAttribute("Justification", "Left");
+                    break;
+                case SimpleTextObject::TextAlignment::ECenter:
+                    t->SetAttribute("Justification", "Center");
+                    break;
+                case SimpleTextObject::TextAlignment::ERight:
+                    t->SetAttribute("Justification", "Right");
+                    break;
+                case SimpleTextObject::TextAlignment::EFull:
+                    t->SetAttribute("Justification", "Full");
+                    break;
+                default:
+                    t->SetAttribute("Justification", "Left");
+                    break;
+                }
+            }
+            if (text_item.line_starts.has_value() && text_item.line_starts.value().size())
+            {
+                auto& line_starts = text_item.line_starts.value();
+                std::string line_starts_str;
+                for (auto ls : line_starts)
+                {
+                    if (!line_starts_str.empty())
+                        line_starts_str += " ";
+                    line_starts_str += std::to_string(ls);
+                }
+                t->SetAttribute("LineStarts", line_starts_str.c_str());
+                t->SetAttribute("WordWrapWidth", ko.boundingBox().width() * _bond_length);
+            }
             t->SetAttribute("InterpretChemically", "no");
-            for (auto& kvp : text_item.styles)
+            for (auto& kvp : text_item.font_styles)
             {
                 if (is_first_index)
                 {
@@ -1534,31 +1601,53 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
                 }
                 second_index = kvp.first;
 
-                // std::wstring_convert<std::codecvt_utf8<wchar_t>> utf82w;
-                // std::wstring_convert<std::codecvt_utf8<wchar_t>> w2utf8;
-
-                // auto sub_text = w2utf8.to_bytes(utf82w.from_bytes(text_item.text).substr(first_index, second_index - first_index));
                 auto sub_text = text_item.text.substr(first_index, second_index - first_index);
                 for (const auto& text_style : current_styles)
                 {
-                    switch (text_style.first)
+                    switch (static_cast<KETFontStyle::FontStyle>(text_style.first))
                     {
-                    case SimpleTextObject::EPlain:
+                    case KETFontStyle::FontStyle::ENone:
                         break;
-                    case SimpleTextObject::EBold:
+                    case KETFontStyle::FontStyle::EBold:
                         font_face.is_bold = text_style.second;
                         break;
-                    case SimpleTextObject::EItalic:
+                    case KETFontStyle::FontStyle::EItalic:
                         font_face.is_italic = text_style.second;
                         break;
-                    case SimpleTextObject::ESuperScript:
+                    case KETFontStyle::FontStyle::ESuperScript:
                         font_face.is_superscript = text_style.second;
                         break;
-                    case SimpleTextObject::ESubScript:
+                    case KETFontStyle::FontStyle::ESubScript:
                         font_face.is_subscript = text_style.second;
                         break;
+                    case KETFontStyle::FontStyle::ESize: {
+                        font_size = static_cast<int>(KDefaultFontSize);
+                        auto sz_val = text_style.first.getUInt();
+                        if (text_style.second && sz_val.has_value())
+                            font_size = sz_val.value();
+                    }
+                    break;
+                    case KETFontStyle::FontStyle::EColor: {
+                        auto col_val = text_style.first.getUInt();
+                        if (text_style.second && col_val.has_value())
+                        {
+                            uint32_t color = col_val.value();
+                            auto it_color = _color_table_map.find(color);
+                            if (it_color == _color_table_map.end())
+                            {
+                                color_index = (int)_color_table.size();
+                                _color_table_map.emplace(color, color_index);
+                                _color_table.push_back(color);
+                            }
+                            else
+                                color_index = it_color->second;
+                            color_index += 2;
+                        }
+                        else
+                            color_index = -1;
+                    }
+                    break;
                     default:
-                        font_size = text_style.second ? text_style.first : static_cast<int>(KDefaultFontSize);
                         break;
                     }
                 }
@@ -1566,8 +1655,10 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
                 XMLElement* s = _doc->NewElement("s");
                 t->LinkEndChild(s);
                 s->SetAttribute("font", 4);
-                s->SetAttribute("size", font_size / kCDXMLFonsSizeMultiplier);
+                s->SetAttribute("size", font_size / kCDXMLFontSizeMultiplier);
                 s->SetAttribute("face", font_face.face);
+                if (color_index >= 0)
+                    s->SetAttribute("color", color_index);
                 if (font_face.is_superscript)
                 {
                     s->SetAttribute("face", KCDXMLFontStyleSuperscript);
@@ -1980,22 +2071,17 @@ void MoleculeCdxmlSaver::_validate(BaseMolecule& bmol)
 void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
 {
     _validate(bmol);
-    Vec2f min_coord, max_coord;
-
+    Rect2f bbox;
     _id = 0;
-
     if (bmol.have_xyz)
-    {
-        bmol.getBoundingBox(min_coord, max_coord);
-    }
+        bmol.getBoundingBox(bbox);
 
     for (int i = 0; i < bmol.meta().metaData().size(); ++i)
     {
         Rect2f bb;
         auto& mo = *bmol.meta().metaData()[i];
         mo.getBoundingBox(bb);
-        min_coord.min(bb.leftBottom());
-        max_coord.max(bb.rightTop());
+        bbox.extend(bb);
     }
 
     beginDocument(NULL);
@@ -2003,7 +2089,7 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
     addDefaultColorTable();
     beginPage(NULL);
 
-    Vec2f offset(-min_coord.x, -max_coord.y);
+    Vec2f offset(-bbox.left(), -bbox.top());
     saveMoleculeFragment(bmol, offset, 1);
     for (int i = 1; i <= bmol.rgroups.getRGroupCount(); i++)
     {
@@ -2020,7 +2106,7 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
 
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
-    out.printf("%f %f %f %f", _scale * min_coord.x, -_scale * min_coord.y, _scale * max_coord.x, -_scale * max_coord.y);
+    out.printf("%f %f %f %f", _scale * bbox.left(), -_scale * bbox.bottom(), _scale * bbox.right(), -_scale * bbox.top());
     buf.push(0);
     _page->SetAttribute("BoundingBox", buf.ptr());
     endPage();

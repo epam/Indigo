@@ -23,6 +23,7 @@
 #include "molecule/icm_loader.h"
 #include "molecule/icm_saver.h"
 #include "molecule/ket_document_json_saver.h"
+#include "molecule/macro_properties_calculator.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/molecule_hash.h"
@@ -1676,8 +1677,7 @@ CEXPORT const char* indigoJson(int item)
             {
                 PathwayReactionJsonSaver jn(out);
                 self.initReactionJsonSaver(jn);
-                BaseReaction& br = obj.getBaseReaction();
-                jn.saveReaction(dynamic_cast<PathwayReaction&>(br));
+                jn.saveReaction(obj.getPathwayReaction());
             }
             else
             {
@@ -1699,7 +1699,7 @@ CEXPORT const char* indigoJson(int item)
     INDIGO_END(0);
 }
 
-CEXPORT const char* indigoMacroProperties(int object)
+CEXPORT const char* indigoMacroProperties(int object, float upc, float nac)
 {
     INDIGO_BEGIN
     {
@@ -1711,7 +1711,8 @@ CEXPORT const char* indigoMacroProperties(int object)
         if (IndigoBaseMolecule::is(obj) || IndigoBaseReaction::is(obj) || IndigoKetDocument::is(obj))
         {
             auto& doc = obj.getKetDocument();
-            doc.CalculateMacroProps(out, self.json_saving_pretty);
+            MacroPropertiesCalculator calc;
+            calc.CalculateMacroProps(doc, out, upc, nac, self.json_saving_pretty);
         }
         out.writeChar(0);
         return tmp.string.ptr();

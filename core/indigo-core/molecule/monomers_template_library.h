@@ -138,6 +138,16 @@ namespace indigo
 
         int AddBond(int bond_type, int atom1, int atom2);
 
+        const std::vector<std::string>& modificationTypes() const
+        {
+            return _modification_types;
+        };
+
+        void addModificationType(const std::string& modification_type)
+        {
+            _modification_types.push_back(modification_type);
+        };
+
     private:
         enum class StringProps
         {
@@ -145,11 +155,13 @@ namespace indigo
             fullName,
             alias,
             naturalAnalog,
-            naturalAnalogShort
+            naturalAnalogShort,
+            aliasHELM,
         };
         bool _unresolved;
         atoms_type _atoms;
         std::vector<KetBond> _bonds;
+        std::vector<std::string> _modification_types;
     };
 
     class DLLEXPORT MonomerGroupTemplate
@@ -248,6 +260,7 @@ namespace indigo
 
         const MonomerTemplate& getMonomerTemplateById(const std::string& monomer_template_id);
         const std::string& getMonomerTemplateIdByAlias(MonomerClass monomer_class, const std::string& monomer_template_alias);
+        const std::string& getMonomerTemplateIdByAliasHELM(MonomerClass monomer_class, const std::string& monomer_template_alias);
         MonomerGroupTemplate& getMonomerGroupTemplateById(const std::string& monomer_template_id);
 
         const std::string& getMonomerTemplateIdByIdtAliasBase(const std::string& alias_base);

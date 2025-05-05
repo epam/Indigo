@@ -19,9 +19,10 @@
 #ifndef __crf_loader__
 #define __crf_loader__
 
-#include "base_cpp/obj.h"
 #include "crf_saver.h"
 #include "lzw/lzw_decoder.h"
+
+#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -57,7 +58,7 @@ namespace indigo
 
         Scanner& _scanner;
 
-        Obj<LzwDecoder> _decoder;
+        std::unique_ptr<LzwDecoder> _decoder;
         LzwDict* _dict;
 
         Array<int>* _bond_rc_flags;

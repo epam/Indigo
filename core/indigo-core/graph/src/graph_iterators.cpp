@@ -20,7 +20,7 @@ bool AutoIterator::operator!=(const AutoIterator& other) const
     return false;
 }
 
-VertexIter::VertexIter(Graph& owner, int idx) : AutoIterator(idx), _owner(owner)
+VertexIter::VertexIter(const Graph& owner, int idx) : AutoIterator(idx), _owner(owner)
 {
 }
 
@@ -31,7 +31,7 @@ VertexIter& VertexIter::operator++()
     return *this;
 }
 
-VerticesAuto::VerticesAuto(Graph& owner) : _owner(owner)
+VerticesAuto::VerticesAuto(const Graph& owner) : _owner(owner)
 {
 }
 

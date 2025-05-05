@@ -48,6 +48,7 @@ void ReactionCdxmlLoader::_initReaction(BaseReaction& rxn)
     intermediates_ids.clear();
     arrows_ids.clear();
     agents_ids.clear();
+    bracket_ids.clear();
 
     if (rxn.isQueryReaction())
         _pqrxn = &rxn.asQueryReaction();
@@ -141,16 +142,35 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                         if (scheme_element->value() == "step")
                             _parseStep(*scheme_element->firstProperty());
                 }
+                else if (cdxml_elem->value() == "bracketedgroup")
+                {
+                    for (auto brackets = cdxml_elem->firstChildElement(); brackets->hasContent(); brackets = brackets->nextSiblingElement())
+                    {
+                        auto id = brackets->findProperty("id");
+                        bracket_ids.insert(std::stoi(id->value()));
+                        if (id->hasContent())
+                            _cdxml_elements.emplace(std::stoi(id->value()), cdxml_elem->copy());
+                    }
+                }
                 else
                 {
                     auto id = cdxml_elem->findProperty("id");
                     if (id->hasContent())
                         _cdxml_elements.emplace(std::stoi(id->value()), cdxml_elem->copy());
+                    else
+                        std::cout << "Unknown element: " << page_elem->value() << std::endl;
                 }
             }
         }
+        else if (page_elem->value() == "colortable")
+            loader.parseColorTable(*page_elem);
+        else if (page_elem->value() == "fonttable")
+            loader.parseFontTable(*page_elem);
+        else
+            std::cout << "Unknown element: " << page_elem->value() << std::endl;
     }
 
+    std::map<int, std::unordered_map<int, int>> moleculeToAtomIDs;
     for (auto id : reactants_ids)
     {
         auto elem_it = _cdxml_elements.find(id);
@@ -158,7 +178,10 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         {
             loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
             if (_pmol->vertexCount())
-                rxn.addReactantCopy(*_pmol, 0, 0);
+            {
+                int index = rxn.addReactantCopy(*_pmol, 0, 0);
+                moleculeToAtomIDs.emplace(std::pair<int, std::unordered_map<int, int>>{index, loader.idToAtomIndexMap()});
+            }
             else
                 throw Error("Empty reactant: %d", id);
             _cdxml_elements.erase(elem_it);
@@ -172,7 +195,10 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         {
             loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
             if (_pmol->vertexCount())
-                rxn.addProductCopy(*_pmol, 0, 0);
+            {
+                int index = rxn.addProductCopy(*_pmol, 0, 0);
+                moleculeToAtomIDs.emplace(std::pair<int, std::unordered_map<int, int>>{index, loader.idToAtomIndexMap()});
+            }
             else
                 throw Error("Empty product: %d", id);
             _cdxml_elements.erase(elem_it);
@@ -186,7 +212,10 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         {
             loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
             if (_pmol->vertexCount())
-                rxn.addIntermediateCopy(*_pmol, 0, 0);
+            {
+                int index = rxn.addIntermediateCopy(*_pmol, 0, 0);
+                moleculeToAtomIDs.emplace(std::pair<int, std::unordered_map<int, int>>{index, loader.idToAtomIndexMap()});
+            }
             else
                 throw Error("Empty product: %d", id);
             _cdxml_elements.erase(elem_it);
@@ -207,7 +236,8 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                 {
                     auto& text = (SimpleTextObject&)_pmol->meta().getMetaObject(SimpleTextObject::CID, i);
                     int idx = rxn.meta().addMetaObject(text.clone());
-                    rxn.addSpecialCondition(idx, Rect2f(Vec2f(text._pos.x, text._pos.y), Vec2f(text._pos.x, text._pos.y)));
+                    rxn.addSpecialCondition(
+                        idx, Rect2f(Vec2f(text.boundingBox().left(), text.boundingBox().top()), Vec2f(text.boundingBox().left(), text.boundingBox().top())));
                 }
             }
             _cdxml_elements.erase(elem_it);
@@ -227,11 +257,85 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         }
     }
 
+    for (const auto& bracketID : bracket_ids)
+    {
+        auto bracketIt = _cdxml_elements.find(bracketID);
+        if (bracketIt != _cdxml_elements.end())
+        {
+            for (auto bracketAttachment = bracketIt->second->firstChildElement(); bracketAttachment->hasContent();
+                 bracketAttachment = bracketAttachment->nextSiblingElement())
+            {
+                int id = -1;
+                auto idProperty = bracketAttachment->findProperty("id");
+                if (idProperty->hasContent())
+                    id = std::stoi(idProperty->value());
+
+                if (id == bracketID)
+                {
+                    for (auto crossingBond = bracketAttachment->firstChildElement(); crossingBond->hasContent();
+                         crossingBond = crossingBond->nextSiblingElement())
+                    {
+                        int atom = -1;
+                        auto atomID = crossingBond->findProperty("InnerAtomID");
+                        if (atomID->hasContent())
+                            atom = std::stoi(atomID->value());
+
+                        int bond = -1;
+                        auto bondID = crossingBond->findProperty("BondID");
+                        if (bondID->hasContent())
+                            bond = std::stoi(bondID->value());
+
+                        if (bond < 0 && atom < 0)
+                            throw Error("No atoms or bonds within the bracket %i", id);
+
+                        int molecule = -1;
+                        for (const auto& [moleculeIndex, atomMap] : moleculeToAtomIDs)
+                        {
+                            for (const auto& [id, index] : atomMap)
+                            {
+                                if (id == atom)
+                                {
+                                    molecule = moleculeIndex;
+                                    break;
+                                }
+                            }
+                            if (molecule >= 0)
+                                break;
+                        }
+
+                        if (molecule >= 0)
+                        {
+                            auto& mol = rxn.getBaseMolecule(molecule);
+                            loader.loadBracket(mol, *bracketIt->second, moleculeToAtomIDs[molecule]);
+                        }
+                        else
+                        {
+                            throw Error("Couldn't find the molecule with atoms matching the bracket %i", id);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for (const auto& bracketID : bracket_ids)
+    {
+        auto bracketIt = _cdxml_elements.find(bracketID);
+        if (bracketIt != _cdxml_elements.end())
+        {
+            _cdxml_elements.erase(bracketIt);
+        }
+    }
+
     for (const auto& kvp : _cdxml_elements)
     {
         loader.loadMoleculeFromFragment(*_pmol, *kvp.second);
         if (_pmol->vertexCount())
+        {
+            Array<char> label;
+            _pmol->getAtomSymbol(0, label);
             rxn.addUndefinedCopy(*_pmol, 0, 0);
+        }
         rxn.meta().append(_pmol->meta());
     }
 }

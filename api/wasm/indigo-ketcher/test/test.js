@@ -185,6 +185,20 @@ M  END
             selected.delete();
             options.delete();
         })
+
+        test("calculate", "pathway", () => {
+            var fs = require('fs');
+            const ket = fs.readFileSync("pathway_2859.ket");
+            let options = new indigo.MapStringString();
+            selected = new indigo.VectorInt();
+            const values = indigo.calculate(ket, options, selected);
+            // fs.writeFileSync("pathway_2859_calc.json", values);
+            const calc_ref = fs.readFileSync("pathway_2859_calc.json");
+            assert.equal(values, calc_ref.toString());
+            selected.delete();
+            options.delete();
+        });
+
     }
 
     // Check
@@ -528,7 +542,14 @@ M  END
             assert.equal(rsmiles, '{"struct":"C1C=CC=CC=1.N>>C1N=CC=CC=1.[CH3-]","format":"smiles","original_format":"chemical/x-daylight-smarts"}');
             options.delete();
         });
-
+        test("convert", "pathway-smarts", () => {
+            var fs = require('fs');
+            const ket = fs.readFileSync("pathway_2642.ket");
+            let options = new indigo.MapStringString();
+            const smarts = indigo.convert(ket, "smarts", options);
+            assert.equal(smarts, '[#6]1-[#6]-[#6]-[#6]-1.[#6]1-[#6]-[#6]-[#6]-[#6]-[#6]-[#6]-1>>[#6]1-[#6]-[#6]-1')
+            options.delete();
+        });
     }
 
     // Convert explicit hydrogens
@@ -578,6 +599,8 @@ M  END
             assert.equal(fold_smiles, '{"struct":"[HH]","format":"smiles","original_format":"chemical/x-daylight-smiles"}');
             options.delete();
         });
+
+
 
     }
 
@@ -849,6 +872,24 @@ M  END
             const peptide_seq_ref1 = fs.readFileSync("peptide_ref.seq");
             assert.equal(peptide_seq, peptide_seq_ref1.toString());
             options.delete();
+            // test autodetect
+            let ad_options = new indigo.MapStringString();
+            ad_options.set("output-content-type", "application/json");
+            ad_options.set("monomerLibrary", monomersLib);
+            ad_options.set("sequence-type", "PEPTIDE");
+            const res2 = indigo.convert(peptide_seq_ref, "ket", ad_options);
+            assert.equal(res2, peptide_ket_ref.toString());
+            ad_options.delete();
+            const bug2816_seq = "ACDGHIKMNRSRUVWY";
+            let ad2_options = new indigo.MapStringString();
+            ad2_options.set("output-content-type", "application/json");
+            ad2_options.set("monomerLibrary", monomersLib);
+            ad2_options.set("sequence-type", "PEPTIDE");
+            const res3 = indigo.convert(bug2816_seq, "ket", ad2_options);
+            // fs.writeFileSync("peptide_2816_ref.ket", peptide_ket);
+            const peptide_2816_ref = fs.readFileSync("peptide_2816_ref.ket");
+            assert.equal(res3, peptide_2816_ref.toString());
+            ad2_options.delete();
         });
     }
 
@@ -874,6 +915,16 @@ M  END
             const peptide_seq1 = indigo.convert(peptide_ket_ref.toString(), "peptide-sequence-3-letter", options);
             assert.equal(peptide_seq1, peptide_seq_ref);
             options.delete();
+            // test autodetect
+            let ad_options = new indigo.MapStringString();
+            ad_options.set("output-content-type", "application/json");
+            ad_options.set("monomerLibrary", monomersLib);
+            const res2 = JSON.parse(indigo.convert(peptide_seq_ref, "peptide-sequence-3-letter", ad_options)).struct;
+            assert.equal(res2, peptide_seq_ref);
+            ad_options.set("sequence-type", "PEPTIDE");
+            const res3 = JSON.parse(indigo.convert(peptide_seq_ref, "peptide-sequence-3-letter", ad_options)).struct;
+            assert.equal(res3, peptide_seq_ref);
+            ad_options.delete();
         });
     }
 
@@ -896,6 +947,34 @@ M  END
             const rna_seq_ref1 = fs.readFileSync("rna_ref.seq");
             assert.equal(rna_seq, rna_seq_ref1.toString());
             options.delete();
+            // test autodetect
+            let ad_options = new indigo.MapStringString();
+            ad_options.set("output-content-type", "application/json");
+            ad_options.set("monomerLibrary", monomersLib);
+            ad_options.set("sequence-type", "RNA");
+            const res2 = indigo.convert(rna_seq_ref, "sequence", ad_options);
+            assert.equal(res2, rna_seq_ref1.toString());
+            ad_options.delete();
+            const bug2816_seq = "ACDGHKMNRSRUVWY";
+            let ad2_options = new indigo.MapStringString();
+            ad2_options.set("output-content-type", "application/json");
+            ad2_options.set("monomerLibrary", monomersLib);
+            ad2_options.set("sequence-type", "RNA");
+            const res3 = indigo.convert(bug2816_seq, "ket", ad2_options);
+            // fs.writeFileSync("rna_2816_ref.ket", res3);
+            const rna_2816_ref = fs.readFileSync("rna_2816_ref.ket");
+            assert.equal(res3, rna_2816_ref.toString());
+            ad2_options.delete();
+            const bug2832_seq = "NBDHKWY";
+            let ad3_options = new indigo.MapStringString();
+            ad3_options.set("output-content-type", "application/json");
+            ad3_options.set("monomerLibrary", monomersLib);
+            ad3_options.set("sequence-type", "RNA");
+            const res4 = indigo.convert(bug2832_seq, "ket", ad3_options);
+            // fs.writeFileSync("rna_2832_ref.ket", res4);
+            const rna_2832_ref = fs.readFileSync("rna_2832_ref.ket");
+            assert.equal(res4, rna_2832_ref.toString());
+            ad3_options.delete();
         });
 
     }
@@ -919,6 +998,24 @@ M  END
             const dna_seq_ref1 = fs.readFileSync("dna_ref.seq");
             assert.equal(dna_seq, dna_seq_ref1.toString());
             options.delete();
+            // test autodetect
+            let ad_options = new indigo.MapStringString();
+            ad_options.set("output-content-type", "application/json");
+            ad_options.set("monomerLibrary", monomersLib);
+            ad_options.set("sequence-type", "DNA");
+            const res2 = indigo.convert(dna_seq_ref, "sequence", ad_options);
+            assert.equal(res2, dna_seq_ref1.toString());
+            ad_options.delete();
+            const bug2816_seq = "ACDGHKMNRSRUVWY";
+            let ad2_options = new indigo.MapStringString();
+            ad2_options.set("output-content-type", "application/json");
+            ad2_options.set("monomerLibrary", monomersLib);
+            ad2_options.set("sequence-type", "DNA");
+            const res3 = indigo.convert(bug2816_seq, "ket", ad2_options);
+            // fs.writeFileSync("dna_2816_ref.ket", res3);
+            const dna_2816_ref = fs.readFileSync("dna_2816_ref.ket");
+            assert.equal(res3, dna_2816_ref.toString());
+            ad2_options.delete();
         });
 
     }
@@ -985,7 +1082,7 @@ M  END
             const dna_ket = indigo.convert(fasta, "ket", options);
             const dna_fasta = indigo.convert(fasta, "fasta", options);
 
-            fs.writeFileSync("test_dna_ref.ket", dna_ket);
+            // fs.writeFileSync("test_dna_ref.ket", dna_ket);
             // fs.writeFileSync("test_dna_ref.fasta", dna_fasta);
 
             const dna_ket_ref = fs.readFileSync("test_dna_ref.ket");
@@ -1082,6 +1179,7 @@ M  END
             const double_dna = fs.readFileSync("props_double_dna.ket");
             let options = new indigo.MapStringString();
             options.set('json-saving-pretty', 'true');
+            options.set('nac', '0.2');
             let json = JSON.parse(indigo.calculateMacroProperties(double_dna, options)).properties;            
             // fs.writeFileSync("props_double_dna.json", json);
             const json_ref = fs.readFileSync("props_double_dna.json");
@@ -1097,6 +1195,7 @@ M  END
             const peptides_micro = fs.readFileSync("props_peptides_micro.ket");
             let options = new indigo.MapStringString();
             options.set('json-saving-pretty', 'true');
+            options.set('nac', '0.2');
             let json = JSON.parse(indigo.calculateMacroProperties(peptides_micro, options)).properties;            
             // fs.writeFileSync("props_peptides_micro.json", json);
             const json_ref = fs.readFileSync("props_peptides_micro.json");
@@ -1112,10 +1211,26 @@ M  END
             const peptides = fs.readFileSync("props_peptides.ket");
             let options = new indigo.MapStringString();
             options.set('json-saving-pretty', 'true');
+            options.set('nac', '0.2');
             let json = JSON.parse(indigo.calculateMacroProperties(peptides, options)).properties;            
             // fs.writeFileSync("props_peptides.json", json);
             const json_ref = fs.readFileSync("props_peptides.json");
             assert.equal(json, json_ref.toString().trim());
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("reaction to sdf", "pathway", () => {
+            var fs = require('fs');
+            const ket = fs.readFileSync("pathway.ket");
+            let options = new indigo.MapStringString();
+            options.set('molfile-saving-skip-date', 'true')
+            let sdf = indigo.convert(ket, "sdf", options);            
+            // fs.writeFileSync("pathway.sdf", sdf);
+            const sdf_ref = fs.readFileSync("pathway.sdf");
+            assert.equal(sdf, sdf_ref.toString());
             options.delete();
             assert(true);
         });

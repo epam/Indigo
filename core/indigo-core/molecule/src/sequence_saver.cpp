@@ -1186,7 +1186,14 @@ void SequenceSaver::add_monomer(KetDocument& document, const std::unique_ptr<Ket
     const auto& template_id = _library.getMonomerTemplateIdByAlias(mon_templ.monomerClass(), mon_templ.getStringProp("alias"));
     if (template_id.size() > 0)
     {
-        monomer_str = _library.monomerTemplates().at(template_id).getStringProp("alias");
+        auto& mononomer_template = _library.monomerTemplates().at(template_id);
+        std::string alias;
+        if (mononomer_template.hasStringProp("aliasHELM"))
+            alias = mononomer_template.getStringProp("aliasHELM");
+        if (alias.size() > 0)
+            monomer_str = alias;
+        else
+            monomer_str = mononomer_template.getStringProp("alias");
     }
     else
     {

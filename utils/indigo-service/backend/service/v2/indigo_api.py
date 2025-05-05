@@ -79,6 +79,9 @@ def indigo_init(options={}):
                 "input-format",
                 "output-content-type",
                 "monomerLibrary",
+                "sequence-type",
+                "upc",
+                "nac",
             ):
                 continue
             tls.indigo.setOption(option, value)
@@ -306,6 +309,60 @@ def remove_unselected_repeating_units_r(r, selected):
             remove_unselected_repeating_units_m(m, moleculeAtoms)
 
 
+def try_load_macromol(indigo, md, molstr, library, options):
+    sequence_type = options.get("sequence-type")
+    if sequence_type == "PEPTIDE":
+        try:
+            md.struct = indigo.loadSequence(
+                molstr, "PEPTIDE-3-LETTER", library
+            )
+            md.is_rxn = False
+            md.is_query = False
+            return
+        except IndigoException:
+            pass
+    if sequence_type is not None and (molstr.isupper() or molstr.islower()):
+        try:
+            md.struct = indigo.loadSequence(molstr, sequence_type, library)
+            md.is_rxn = False
+            md.is_query = False
+            return
+        except IndigoException:
+            pass
+    try:
+        md.struct = indigo.loadIdt(molstr, library)
+        md.is_rxn = False
+        md.is_query = False
+        return
+    except IndigoException:
+        pass
+    if sequence_type is not None:
+        try:
+            md.struct = indigo.loadSequence(molstr, sequence_type, library)
+            md.is_rxn = False
+            md.is_query = False
+            return
+        except IndigoException:
+            pass
+    else:
+        try:
+            md.struct = indigo.loadSequence(
+                molstr, "PEPTIDE-3-LETTER", library
+            )
+            md.is_rxn = False
+            md.is_query = False
+            return
+        except IndigoException:
+            pass
+    try:
+        md.struct = indigo.loadHelm(molstr, library)
+    except IndigoException:
+        raise HttpException(
+            "struct data not recognized as molecule, query, reaction or reaction query",
+            400,
+        )
+
+
 def load_moldata(
     molstr,
     indigo=None,
@@ -392,12 +449,16 @@ def load_moldata(
             except IndigoException:
                 md.is_rxn = True
                 try:
-                    if not query:
+                    if query:
+                        try:
+                            md.struct = indigo.loadQueryReaction(molstr)
+                            md.is_query = True
+                        except IndigoException:
+                            md.struct = indigo.loadReaction(molstr)
+                            md.is_query = False
+                    else:
                         md.struct = indigo.loadReaction(molstr)
                         md.is_query = False
-                    else:
-                        md.struct = indigo.loadQueryReaction(molstr)
-                        md.is_query = True
                 except IndigoException:
                     try:
                         md.struct = indigo.loadQueryReaction(molstr)
@@ -408,21 +469,10 @@ def load_moldata(
                                 "struct data not recognized as molecule, query, reaction or reaction query",
                                 400,
                             )
-                        else:  # has library try to load IDT and HELM
-                            try:
-                                md.struct = indigo.loadIdt(molstr, library)
-                                md.is_rxn = False
-                            except IndigoException:
-                                try:
-                                    md.struct = indigo.loadHelm(
-                                        molstr, library
-                                    )
-                                except IndigoException:
-                                    raise HttpException(
-                                        "struct data not recognized as molecule, query, reaction or reaction query",
-                                        400,
-                                    )
-
+                        else:  # has library try to load macromolecule
+                            try_load_macromol(
+                                indigo, md, molstr, library, options
+                            )
     return md
 
 
@@ -1879,6 +1929,22 @@ def calculateMacroProperties():
         try_document=True,
     )
 
-    result = {"properties": md.struct.macroProperties()}
+    options = data["options"]
+    # UPC is molar concentration of unipositive cations, NAC is molar concentration of the nucleotide strands, these options need to calculate melting temperature
+    upc = 0.14  # default value is the average physiological - 140 mM
+    if "upc" in options:
+        try:
+            upc = float(options["upc"])
+        except ValueError:
+            raise IndigoException("Invalid value for UPC")
+    nac = 0
+    if "nac" in options:
+        try:
+            nac = float(options["nac"])
+        except ValueError:
+            raise IndigoException("Invalid value for NAC")
+    else:
+        raise IndigoException("NAC option is mandatory")
+    result = {"properties": md.struct.macroProperties(upc, nac)}
 
     return jsonify(result), 200, {"Content-Type": "application/json"}

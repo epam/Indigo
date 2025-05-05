@@ -34,6 +34,7 @@ namespace indigo
 {
 
     class BaseMolecule;
+    class Transformation;
 
     class TGroup
     {
@@ -52,6 +53,9 @@ namespace indigo
         bool mixture;
         ObjArray<Array<char>> aliases;
         Array<float> ratios;
+        bool different_aliasHELM;
+        Array<char> aliasHELM;
+        ObjArray<Array<char>> modification_types;
 
         TGroup();
         ~TGroup();

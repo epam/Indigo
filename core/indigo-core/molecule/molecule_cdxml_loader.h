@@ -19,6 +19,7 @@
 #ifndef __cdxml_loader__
 #define __cdxml_loader__
 
+#include <charconv>
 #include <functional>
 #include <regex>
 #include <sstream>
@@ -174,16 +175,16 @@ namespace indigo
         int repeat_pattern;
         std::string label;
         bool is_superatom;
+        Vec3f superatom_position;
     };
 
     struct CdxmlText
     {
-        CdxmlText(const Vec3f& pos, const Vec2f& size, const std::string& text) : pos(pos), size(size), text(text)
+        CdxmlText(const Rect2f& bbox, const std::string& text) : bbox(bbox), text(text)
         {
         }
         std::string text;
-        Vec3f pos;
-        Vec2f size;
+        Rect2f bbox;
     };
 
     class BaseCDXProperty
@@ -777,6 +778,7 @@ namespace indigo
     class MoleculeCdxmlLoader
     {
     public:
+        static const int SCALE = 30;
         struct ImageDescriptor
         {
             ImageDescriptor(EmbeddedImageObject::ImageFormat iformat, Rect2f& rc, const std::string& raw_data) : image_format(iformat), bbox(rc), data(raw_data)
@@ -786,6 +788,7 @@ namespace indigo
             Rect2f bbox;
             std::string data;
         };
+
         struct EnhancedStereoCenter
         {
             EnhancedStereoCenter(int atom, int type_id, int group_num) : atom_idx(atom), type(type_id), group(group_num)
@@ -802,13 +805,124 @@ namespace indigo
 
         void loadMolecule(BaseMolecule& mol, bool load_arrows = false);
         void loadMoleculeFromFragment(BaseMolecule& mol, BaseCDXElement& elem);
+        void loadBracket(BaseMolecule& mol, BaseCDXElement& elem, const std::unordered_map<int, int>& idToAtomIndex);
 
         static void applyDispatcher(BaseCDXProperty& prop, const std::unordered_map<std::string, std::function<void(const std::string&)>>& dispatcher);
         void parseCDXMLAttributes(BaseCDXProperty& prop);
-        void parseBBox(const std::string& data, Rect2f& bbox);
-        void parsePos(const std::string& data, Vec3f& bbox);
-        void parseSeg(const std::string& data, Vec2f& v1, Vec2f& v2);
-        void parseHex(const std::string& hex, std::string& binary);
+
+        auto segLambda(Vec2f& v1, Vec2f& v2);
+
+        auto bboxLambda(Rect2f& bbox);
+
+        static auto strLambda(std::string& str)
+        {
+            return [&str](const std::string& data) { str = data; };
+        }
+
+        static auto justificationLambda(std::optional<CDXTextJustification>& justification)
+        {
+            return [&justification](const std::string& data) {
+                auto it = kTextJustificationStrToInt.find(data);
+                justification =
+                    it != kTextJustificationStrToInt.end() ? static_cast<CDXTextJustification>(it->second) : CDXTextJustification::kCDXTextJustification_Left;
+            };
+        }
+
+        static auto intLambda(AutoInt& val)
+        {
+            return [&val](const std::string& data) { val = data; };
+        }
+
+        static auto floatLambda(float& val)
+        {
+            return [&val](const std::string& data) { val = std::stof(data); };
+        }
+
+        auto posLambda(Vec2f& pos)
+        {
+            return [this, &pos](const std::string& data) {
+                std::vector<std::string> coords = split(data, ' ');
+                if (coords.size() >= 2)
+                {
+                    pos.x = std::stof(coords[0]);
+                    pos.y = std::stof(coords[1]);
+                    if (_has_bounding_box)
+                    {
+                        pos.x -= cdxml_bbox.left();
+                        pos.y -= cdxml_bbox.bottom();
+                    }
+                    pos.x /= SCALE;
+                    pos.y /= -SCALE;
+                }
+                else
+                    throw Error("Not enought coordinates");
+            };
+        }
+
+        auto posLambda(Vec3f& pos)
+        {
+            return [this, &pos](const std::string& data) {
+                std::vector<std::string> coords = split(data, ' ');
+                if (coords.size() >= 2)
+                {
+                    pos.x = std::stof(coords[0]);
+                    pos.y = std::stof(coords[1]);
+                    pos.z = coords.size() > 2 ? std::stof(coords[2]) : -0.0f;
+                    if (_has_bounding_box)
+                    {
+                        pos.x -= cdxml_bbox.left();
+                        pos.y -= cdxml_bbox.bottom();
+                    }
+                    pos.x /= SCALE;
+                    pos.y /= -SCALE;
+                    pos.z /= -SCALE;
+                }
+                else
+                    throw Error("Not enough coordinates");
+            };
+        }
+
+        auto hexLambda(std::string& binary)
+        {
+            return [this, &binary](const std::string& hex) {
+                binary.reserve(hex.size() / 2);
+
+                for (size_t i = 0; i < hex.size(); i += 2)
+                {
+                    unsigned char byte;
+                    auto [ptr, ec] = std::from_chars(hex.data() + i, hex.data() + i + 2, byte, 16);
+                    if (ec == std::errc())
+                        binary.push_back(static_cast<char>(byte));
+                    else
+                        throw std::runtime_error("Invalid hex digit");
+                }
+            };
+        }
+
+        static auto intListLambda(std::vector<int>& vals)
+        {
+            return [&vals](const std::string& data) {
+                std::vector<std::string> str_vals = split(data, ' ');
+                vals.clear();
+                for (auto& str : str_vals)
+                    vals.push_back(std::stoi(str));
+            };
+        }
+
+        static auto intSetLambda(std::set<int>& vals)
+        {
+            return [&vals](const std::string& data) {
+                std::vector<std::string> str_vals = split(data, ' ');
+                vals.clear();
+                for (auto& str : str_vals)
+                    vals.insert(std::stoi(str));
+            };
+        }
+
+        void parseColorTable(BaseCDXElement& elem);
+        void parseFontTable(BaseCDXElement& elem);
+
+        std::unordered_map<int, int> idToAtomIndexMap() const;
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
@@ -817,9 +931,9 @@ namespace indigo
         std::vector<CdxmlNode> nodes;
         std::vector<CdxmlBond> bonds;
         std::vector<CdxmlBracket> brackets;
-        std::vector<CdxmlText> text_objects;
-
-        static const int SCALE = 30;
+        std::vector<SimpleTextObject> ket_text_objects;
+        std::map<int, std::string> font_table;
+        std::vector<uint32_t> color_table;
 
     protected:
         void _initMolecule(BaseMolecule& mol);
@@ -833,6 +947,8 @@ namespace indigo
 
         void _parseBracket(CdxmlBracket& bracket, BaseCDXProperty& prop);
         void _parseText(BaseCDXElement& elem, std::vector<CdxmlText>& text_parsed);
+        void _parseTextToKetObject(BaseCDXElement& elem, std::vector<SimpleTextObject>& text_objects);
+
         void _parseLabel(BaseCDXElement& elem, std::string& label);
 
         void _parseGraphic(BaseCDXElement& elem);
@@ -862,10 +978,10 @@ namespace indigo
         std::unordered_map<int, std::size_t> _id_to_bond_index;
         std::vector<int> _fragment_nodes;
         std::vector<Vec2f> _pluses;
-        std::vector<ImageDescriptor> _images;
         std::unordered_map<int, std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
-        std::vector<std::pair<std::pair<Vec3f, Vec3f>, int>> _graphic_arrows;
+        std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _graphic_arrows;
         std::unordered_set<int> _retro_arrows_graph_id;
+        std::vector<ImageDescriptor> _images;
         std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _primitives;
 
         std::vector<EnhancedStereoCenter> _stereo_centers;

@@ -1393,3 +1393,13 @@ testing auto mode for [H][H]
 testing auto mode for [2H]C
 5
 2
+testing [CH3] |^1:0|
+[C]([H])([H])[H] |^1:0|
+testing [CH2] |^3:0|
+[C]([H])[H] |^3:0|
+testing [CH2] |^4:0|
+[C]([H])[H] |^4:0|
+testing [CH]C1=CC=CO1 |^4:0|
+[C]([H])C1OC([H])=C([H])C=1[H] |^4:0|
+testing C1C=CC=C([CH])C=1 |^4:5|
+C1([H])=C([H])C([C][H])=C([H])C([H])=C1[H] |^4:5|

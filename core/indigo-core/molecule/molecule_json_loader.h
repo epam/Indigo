@@ -82,7 +82,7 @@ namespace indigo
                              //  = ATOM_AND ('rac')
                              //  = ATOM_ANY ('any')
 
-        static void loadMetaObjects(rapidjson::Value& meta_objects, MetaDataStorage& meta);
+        void loadMetaObjects(rapidjson::Value& meta_objects, MetaDataStorage& meta);
         static int parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol, StereocentersOptions stereochemistry_options);
         void parseAmbiguousMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol);
 
@@ -129,7 +129,8 @@ namespace indigo
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
-        unsigned int components_count;
+        std::string _ket_version;
+        unsigned int _components_count;
         rapidjson::Document _document;
     };
 

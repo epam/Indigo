@@ -236,7 +236,7 @@ class IndigoObject:
 
         return IndigoLib.checkResult(self._lib().indigoRemove(self.id))
 
-    def macroProperties(self):
+    def macroProperties(self, upc, nac):
         """Method return macro-molecules properties
 
         Returns:
@@ -244,7 +244,7 @@ class IndigoObject:
         """
 
         return IndigoLib.checkResultString(
-            self._lib().indigoMacroProperties(self.id)
+            self._lib().indigoMacroProperties(self.id, upc, nac)
         )
 
     def getOriginalFormat(self):

@@ -17,3 +17,9 @@ issue 2513 elliptical-arc-arrow render error
 issue_2513.png rendering status: OK
 issue 2741 missing stereochemistry
 missing_stereochemistry_2741.png rendering status: OK
+issue 2747 incorrect substituent position
+incorrect_substituent_position_2747.png rendering status: OK
+issue 2810 unnecessary rearrangment
+unnecessary_rearrangment_2810.png rendering status: OK
+issue 2801 reactions with brackets
+reactions_with_brackets_2801.png rendering status: OK

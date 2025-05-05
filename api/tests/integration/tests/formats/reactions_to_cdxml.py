@@ -17,9 +17,9 @@ from env_indigo import *  # noqa
 indigo = Indigo()
 indigo.setOption("ignore-stereochemistry-errors", True)
 
-print("*** RDF to CDXML ***")
+print("*** KET to CDXML ***")
 
-root = joinPathPy("reactions/rdf/", __file__)
+root = joinPathPy("reactions/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
 files = [
@@ -35,13 +35,14 @@ files = [
     "pathway10",
     "pathway11",
     "pathway12",
+    "multi",
 ]
 
 files.sort()
 for filename in files:
     try:
         ket = indigo.loadReactionFromFile(
-            os.path.join(root, filename + ".rdf")
+            os.path.join(root, filename + ".ket")
         )
     except IndigoException as e:
         print("  %s" % (getIndigoExceptionText(e)))

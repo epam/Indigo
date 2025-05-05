@@ -18,7 +18,6 @@
 
 #include "molecule/molecule_arom_match.h"
 
-#include "base_cpp/obj.h"
 #include "graph/filter.h"
 #include "graph/spanning_tree.h"
 #include "molecule/molecule_dearom.h"
@@ -84,7 +83,7 @@ void AromaticityMatcher::validateQuery()
     }
 }
 
-bool AromaticityMatcher::canFixQueryBond(int query_edge_idx, bool aromatic)
+bool AromaticityMatcher::canFixQueryBond(int query_edge_idx, bool aromatic) const
 {
     // Check if bond is fixed then it aromatic state must be the same
     int _bond_state = _matching_edges_state[query_edge_idx];
@@ -264,8 +263,8 @@ bool AromaticityMatcher::match(int* core_sub, int* core_super)
     QS_DEF(DearomatizationsStorage, dearomatizations);
 
     // Dearomatizer and DearomatizationMatcher will be created on demand
-    Obj<Dearomatizer> dearomatizer;
-    Obj<DearomatizationMatcher> dearomatizationMatcher;
+    std::unique_ptr<Dearomatizer> dearomatizer;
+    std::unique_ptr<DearomatizationMatcher> dearomatizationMatcher;
 
     // Check edges
     for (int e = _submolecule->edgeBegin(); e != _submolecule->edgeEnd(); e = _submolecule->edgeNext(e))
@@ -312,11 +311,11 @@ bool AromaticityMatcher::match(int* core_sub, int* core_super)
             continue;
 
         // Find dearomatization
-        if (dearomatizer.get() == NULL)
+        if (dearomatizer.get() == nullptr)
         {
-            dearomatizer.create(*_submolecule, external_conn.ptr(), _arom_options);
+            dearomatizer = std::make_unique<Dearomatizer>(*_submolecule, external_conn.ptr(), _arom_options);
             dearomatizer->enumerateDearomatizations(dearomatizations);
-            dearomatizationMatcher.create(dearomatizations, *_submolecule, external_conn.ptr());
+            dearomatizationMatcher = std::make_unique<DearomatizationMatcher>(dearomatizations, *_submolecule, external_conn.ptr());
         }
 
         // Fix bond

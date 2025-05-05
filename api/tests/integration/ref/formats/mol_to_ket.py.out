@@ -4,6 +4,7 @@
 1465-lr_sugar.ket:SUCCEED
 1972-case1.ket:SUCCEED
 1972-case2.ket:SUCCEED
+2704-stereocenters.ket:SUCCEED
 2708-sgroup-data.ket:SUCCEED
 SgroupDifferent.ket:SUCCEED
 acgt_1412.ket:SUCCEED
@@ -18,6 +19,7 @@ dcysteine.ket:SUCCEED
 dna_mod.ket:SUCCEED
 dthymine.ket:SUCCEED
 fmoc.ket:SUCCEED
+issue_2699_rlogic.ket:SUCCEED
 non_atrop.ket:SUCCEED
 pepchem.ket:SUCCEED
 peptides.ket:SUCCEED

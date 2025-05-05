@@ -49,18 +49,28 @@ namespace indigo
         explicit MoleculeJsonSaver(Output& output);
         void saveMolecule(BaseMolecule& bmol);
         void saveMolecule(BaseMolecule& bmol, JsonWriter& writer);
+        void saveMetaData(JsonWriter& writer, const MetaDataStorage& meta);
+        void saveRoot(BaseMolecule& mol, JsonWriter& writer);
 
-        void saveMetaData(JsonWriter& writer, MetaDataStorage& meta);
+        static void parseFormatMode(const char* version_str, KETVersion& version);
+        static void saveFormatMode(KETVersion& version, Array<char>& output);
+
+        static void saveTextV1(JsonWriter& writer, const SimpleTextObject& text_obj);
+        static void saveTextV2(JsonWriter& writer, const SimpleTextObject& text_obj);
+        static void saveAlignment(JsonWriter& writer, SimpleTextObject::TextAlignment alignment);
+        static void saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET& fss);
+        static void saveParagraphs(JsonWriter& writer, const SimpleTextObject& text_obj);
+        static void saveParts(JsonWriter& writer, const SimpleTextObject::KETTextParagraph& paragraph, const FONT_STYLE_SET& def_fss);
         static std::string monomerId(const TGroup& tg);
         static std::string monomerKETClass(const std::string& class_name);
         static std::string monomerHELMClass(const std::string& class_name);
 
         bool add_stereo_desc;
         bool pretty_json;
-        bool use_native_precision; // TODO: Remove option and use_native_precision allways - have to fix a lot of UTs
+        bool use_native_precision; // TODO: Remove option and use_native_precision always - have to fix a lot of UTs
+        KETVersion ket_version;
 
     protected:
-        void saveRoot(BaseMolecule& mol, JsonWriter& writer);
         void saveMoleculeReference(int mol_id, JsonWriter& writer);
         void saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer, bool hydrogen = false);
         int getMonomerNumber(int mon_idx);
@@ -70,7 +80,7 @@ namespace indigo
 
         void saveAtoms(BaseMolecule& mol, JsonWriter& writer);
         void saveBonds(BaseMolecule& mol, JsonWriter& writer);
-        void saveRGroup(PtrPool<BaseMolecule>& fragments, int rgnum, JsonWriter& writer);
+        void saveRGroup(RGroup& rgroup, int rgnum, JsonWriter& writer);
         void saveFragment(BaseMolecule& fragment, JsonWriter& writer);
         void saveMonomerTemplate(TGroup& tg, JsonWriter& writer);
         void saveAmbiguousMonomerTemplate(TGroup& tg, JsonWriter& writer);

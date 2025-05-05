@@ -22,6 +22,8 @@
 #include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_pool.h"
 #include "base_cpp/red_black.h"
+#include <cstdint>
+#include <limits>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -32,6 +34,7 @@ namespace indigo
 {
 
     class BaseMolecule;
+    class Output;
 
     struct RGroup
     {
@@ -47,6 +50,14 @@ namespace indigo
         int if_then;
         int rest_h;
         Array<int> occurrence;
+
+        inline void pushRange(uint16_t begin, uint16_t end)
+        {
+            occurrence.push((begin << std::numeric_limits<uint16_t>::digits) | end);
+        }
+
+        void readOccurrence(const char* str);
+        void writeOccurrence(Output& output);
 
     protected:
         explicit RGroup(RGroup& other);

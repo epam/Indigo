@@ -29,6 +29,7 @@
 #include <rapidjson/writer.h>
 
 #include "common/base_cpp/exception.h"
+#include "common/math/algebra.h"
 
 namespace indigo
 {
@@ -170,6 +171,62 @@ namespace indigo
                 _pretty_writer.Flush();
             else
                 _writer.Flush();
+        }
+
+        void WritePoint(const Vec2f& point)
+        {
+            if (pretty_json)
+            {
+                _pretty_writer.StartObject();
+                _pretty_writer.Key("x");
+                _pretty_writer.Double(point.x);
+                _pretty_writer.Key("y");
+                _pretty_writer.Double(point.y);
+                _pretty_writer.Key("z");
+                _pretty_writer.Double(0.0);
+                _pretty_writer.EndObject(); // end position
+            }
+            else
+            {
+                _writer.StartObject();
+                _writer.Key("x");
+                _writer.Double(point.x);
+                _writer.Key("y");
+                _writer.Double(point.y);
+                _writer.Key("z");
+                _writer.Double(0.0);
+                _writer.EndObject(); // end position
+            }
+        }
+
+        void WriteRect(const Rect2f& rect)
+        {
+            if (pretty_json)
+            {
+                _pretty_writer.StartObject();
+                _pretty_writer.Key("x");
+                _pretty_writer.Double(rect.left());
+                _pretty_writer.Key("y");
+                _pretty_writer.Double(rect.top());
+                _pretty_writer.Key("width");
+                _pretty_writer.Double(rect.width());
+                _pretty_writer.Key("height");
+                _pretty_writer.Double(rect.height());
+                _pretty_writer.EndObject();
+            }
+            else
+            {
+                _writer.StartObject();
+                _writer.Key("x");
+                _writer.Double(rect.left());
+                _writer.Key("y");
+                _writer.Double(rect.top());
+                _writer.Key("width");
+                _writer.Double(rect.width());
+                _writer.Key("height");
+                _writer.Double(rect.height());
+                _writer.EndObject();
+            }
         }
 
     private:

@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include "molecule/molecule_rgroups.h"
+#include "base_cpp/output.h"
 #include "molecule/query_molecule.h"
 #include <memory>
 
@@ -64,6 +65,75 @@ bool RGroup::occurrenceSatisfied(int value)
         if (value >= (occurrence[i] >> 16) && value <= (occurrence[i] & 0xFFFF))
             return true;
     return false;
+}
+
+void RGroup::readOccurrence(const char* str)
+{
+    int beg = -1, end = -1;
+    int add_beg = 0, add_end = 0;
+
+    while (*str != 0)
+    {
+        if (*str == '>')
+        {
+            end = UINT16_MAX;
+            add_beg = 1;
+        }
+        else if (*str == '<')
+        {
+            beg = 0;
+            add_end = -1;
+        }
+        else if (isdigit(*str))
+        {
+            sscanf(str, "%d", beg == -1 ? &beg : &end);
+            while (isdigit(*str))
+                str++;
+            continue;
+        }
+        else if (*str == ',')
+        {
+            if (end == -1)
+                end = beg;
+            else
+                beg += add_beg, end += add_end;
+            pushRange(beg, end);
+            beg = end = -1;
+            add_beg = add_end = 0;
+        }
+        str++;
+    }
+
+    if (beg == -1 && end == -1)
+        return;
+
+    if (end == -1)
+        end = beg;
+    else
+        beg += add_beg, end += add_end;
+    pushRange(beg, end);
+}
+
+void RGroup::writeOccurrence(Output& output)
+{
+    for (int i = 0; i < occurrence.size(); i++)
+    {
+        int end = occurrence[i];
+        int begin = end >> std::numeric_limits<uint16_t>::digits;
+        end = end & UINT16_MAX;
+
+        if (end == UINT16_MAX)
+            output.printf(">%d", begin - 1);
+        else if (begin == end)
+            output.printf("%d", begin);
+        else if (begin == 0)
+            output.printf("<%d", end + 1);
+        else
+            output.printf("%d-%d", begin, end);
+
+        if (i != occurrence.size() - 1)
+            output.printf(",");
+    }
 }
 
 IMPL_ERROR(MoleculeRGroups, "molecule rgroups");

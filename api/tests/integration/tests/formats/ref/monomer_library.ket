@@ -10094,6 +10094,7 @@
     "id": "aR___3-Amino-Ribose",
     "fullName": "3-Amino-Ribose",
     "alias": "aR",
+    "aliasHELM": "n3r",
     "attachmentPoints": [
       {
         "attachmentAtom": 9,
@@ -15271,6 +15272,7 @@
     "id": "mR___2'-O-Methyl-Ribose",
     "fullName": "2'-O-Methyl-Ribose",
     "alias": "mR",
+    "aliasHELM": "m",
     "attachmentPoints": [
       {
         "attachmentAtom": 9,

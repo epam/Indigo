@@ -96,7 +96,7 @@ namespace com.epam.indigo
         public static extern int indigoClose(int item);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern byte* indigoMacroProperties(int id);
+        public static extern byte* indigoMacroProperties(int id, float upc, float nac);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoGetOriginalFormat(int id);

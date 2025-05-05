@@ -89,6 +89,49 @@ indigo.setOption("render-output-format", "png")
 renderer.renderToFile(reac, joinPathPy("out/retro.png", __file__))
 print(checkImageSimilarity("retro.png"))
 
+indigo.setOption("render-background-color", "255, 255, 255")
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/text_test1.ket", __file__)
+)
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(mol, joinPathPy("out/text_test1.png", __file__))
+print(checkImageSimilarity("text_test1.png"))
+
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/text_test2.ket", __file__)
+)
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(mol, joinPathPy("out/text_test2.png", __file__))
+print(checkImageSimilarity("text_test2.png"))
+
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/text_test3.ket", __file__)
+)
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(mol, joinPathPy("out/text_test3.png", __file__))
+print(checkImageSimilarity("text_test3.png"))
+
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/text_test4.ket", __file__)
+)
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(mol, joinPathPy("out/text_test4.png", __file__))
+print(checkImageSimilarity("text_test4.png"))
+
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/text_test5.ket", __file__)
+)
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(mol, joinPathPy("out/text_test5.png", __file__))
+print(checkImageSimilarity("text_test5.png"))
+
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/scaled_mol.ket", __file__)
+)
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(mol, joinPathPy("out/scaled_mol.png", __file__))
+print(checkImageSimilarity("scaled_mol.png"))
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()

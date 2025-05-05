@@ -12,11 +12,12 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import Indigo, IndigoException, joinPathPy  # noqa
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
 indigo.setOption("molfile-saving-skip-date", True)
+indigo.setOption("ignore-stereochemistry-errors", True)
 
 print("*** KET to MOL ***")
 
@@ -69,6 +70,9 @@ files = [
     ("macro/R2R3R4", "auto"),
     ("5amd", "2000"),
     ("chem_rna_hydro", "3000"),
+    ("issue_2702", "auto"),
+    ("issue_2699_rlogic", "3000"),
+    ("hydro_atp_ch", "3000"),
 ]
 
 files.sort(key=lambda x: x[0])
@@ -79,7 +83,7 @@ for test_tuple in files:
         mol = indigo.loadMoleculeFromFile(
             os.path.join(root, filename + ".ket")
         )
-    except IndigoException as e:
+    except IndigoException:
         indigo.setOption("molfile-saving-mode", "3000")
         mol = indigo.loadQueryMoleculeFromFile(
             os.path.join(root, filename + ".ket")

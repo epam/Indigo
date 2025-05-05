@@ -20,12 +20,18 @@
 #define __bingo_context__
 
 #include <map>
+#include <memory>
 
 #include "base_cpp/nullable.h"
 #include "bingo_version.h"
 #include "lzw/lzw_dictionary.h"
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_tautomer.h"
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
 
 // extern const char *bingo_version_string;
 
@@ -119,5 +125,9 @@ namespace indigo
 void bingoGetTauCondition(const char* list_ptr, int& aromaticity, indigo::Array<int>& label_list);
 
 void bingoGetName(indigo::Scanner& scanner, indigo::Array<char>& result);
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

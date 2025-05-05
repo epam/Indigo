@@ -19,13 +19,14 @@
 #ifndef __molecule_tautomer_substructure_matcher__
 #define __molecule_tautomer_substructure_matcher__
 
-#include "base_cpp/obj.h"
 #include "graph/embedding_enumerator.h"
 #include "graph/embeddings_storage.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_layered_molecules.h"
 #include "molecule/molecule_tautomer.h"
 #include "molecule/molecule_tautomer_enumerator.h"
+
+#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -77,12 +78,12 @@ namespace indigo
         QueryMolecule* _query;
         TautomerEnumerator _tautomerEnumerator;
 
-        Obj<EmbeddingEnumerator> _ee;
+        std::unique_ptr<EmbeddingEnumerator> _ee;
 
         // Because storage can be big it is not stored into TL_CP_***
         // It can be stored as TL_CP_*** if memory allocations will
         // be critical
-        Obj<GraphEmbeddingsStorage> _embeddings_storage;
+        std::unique_ptr<GraphEmbeddingsStorage> _embeddings_storage;
         ObjArray<Dbitset> _masks;
 
         CP_DECL;

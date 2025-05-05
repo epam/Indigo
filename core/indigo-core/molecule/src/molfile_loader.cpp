@@ -993,7 +993,7 @@ void MolfileLoader::_readCtab2000()
 
                 _scanner.readLine(occurrence_str, true);
 
-                _readRGroupOccurrenceRanges(occurrence_str.ptr(), rgroup.occurrence);
+                rgroup.readOccurrence(occurrence_str.ptr());
             }
             else if (strncmp(chars, "APO", 3) == 0)
             {
@@ -1842,53 +1842,6 @@ void MolfileLoader::_read3dFeature2000()
     }
 }
 
-void MolfileLoader::_readRGroupOccurrenceRanges(const char* str, Array<int>& ranges)
-{
-    int beg = -1, end = -1;
-    int add_beg = 0, add_end = 0;
-
-    while (*str != 0)
-    {
-        if (*str == '>')
-        {
-            end = 0xFFFF;
-            add_beg = 1;
-        }
-        else if (*str == '<')
-        {
-            beg = 0;
-            add_end = -1;
-        }
-        else if (isdigit(*str))
-        {
-            sscanf(str, "%d", beg == -1 ? &beg : &end);
-            while (isdigit(*str))
-                str++;
-            continue;
-        }
-        else if (*str == ',')
-        {
-            if (end == -1)
-                end = beg;
-            else
-                beg += add_beg, end += add_end;
-            ranges.push((beg << 16) | end);
-            beg = end = -1;
-            add_beg = add_end = 0;
-        }
-        str++;
-    }
-
-    if (beg == -1 && end == -1)
-        return;
-
-    if (end == -1)
-        end = beg;
-    else
-        beg += add_beg, end += add_end;
-    ranges.push((beg << 16) | end);
-}
-
 int MolfileLoader::_asc_cmp_cb(int& v1, int& v2, void* /*context*/)
 {
     return v2 - v1;
@@ -2083,7 +2036,9 @@ void MolfileLoader::_postLoad()
         {
             if (_bmol->stereocenters.getType(i) == 0)
             {
-                if (!stereochemistry_options.ignore_errors)
+                if (stereochemistry_options.ignore_errors)
+                    _bmol->addStereocentersIgnoreBad(i, _stereocenter_types[i], _stereocenter_groups[i], false); // add non-valid stereocenters
+                else if (_qmol == nullptr)
                     throw Error("stereo type specified for atom #%d, but the bond "
                                 "directions does not say that it is a stereocenter",
                                 i);
@@ -3403,7 +3358,8 @@ void MolfileLoader::_readRGroups3000()
                 QS_DEF(Array<char>, occ);
 
                 strscan.readLine(occ, true);
-                _readRGroupOccurrenceRanges(occ.ptr(), rgroup.occurrence);
+                rgroup.occurrence.clear();
+                rgroup.readOccurrence(occ.ptr());
             }
 
             while (!_scanner.isEOF())

@@ -118,7 +118,6 @@ namespace indigo
         void _readCtab2000();
         void _convertCharge(int value, int& charge, int& radical);
         void _read3dFeature2000();
-        void _readRGroupOccurrenceRanges(const char* str, Array<int>& ranges);
         void _readRGroups2000();
         void _readCtab3000();
         void _readSGroup3000(const char* str);

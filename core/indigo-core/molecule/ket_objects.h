@@ -22,6 +22,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -31,8 +32,9 @@
 #include "common/base_cpp/exception.h"
 #include "common/math/algebra.h"
 #include "molecule/idt_alias.h"
+#include "molecule/ket_obj_with_props.h"
 #include "molecule/monomers_defs.h"
-#include <set>
+#include "molecule/transformation.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -42,112 +44,11 @@
 namespace indigo
 {
 
-    class MonomerTemplate;
     class JsonWriter;
-
-    template <typename T>
-    constexpr auto toUType(T enumerator) noexcept
-    {
-        return static_cast<std::underlying_type_t<T>>(enumerator);
-    }
+    class MonomerTemplate;
+    class MonomerTemplateLibrary;
 
     using ket_connections_type = std::map<std::string, std::pair<std::string, std::string>>;
-
-    class DLLEXPORT KetObjWithProps
-    {
-    public:
-        DECL_ERROR;
-
-        inline void setBoolProp(int idx, bool value)
-        {
-            _bool_props[idx] = value;
-        };
-
-        inline void setIntProp(int idx, int value)
-        {
-            _int_props[idx] = value;
-        };
-
-        inline void setIntProp(int idx, std::size_t value)
-        {
-            _int_props[idx] = static_cast<int>(value);
-        };
-
-        inline void setStringProp(int idx, std::string value)
-        {
-            _string_props[idx] = value;
-        };
-
-        void setBoolProp(std::string name, bool value);
-        void setIntProp(std::string name, int value);
-        void setStringProp(std::string name, std::string value);
-
-        virtual const std::map<std::string, int>& getBoolPropStrToIdx() const;
-        virtual const std::map<std::string, int>& getIntPropStrToIdx() const;
-        virtual const std::map<std::string, int>& getStringPropStrToIdx() const;
-
-        inline bool hasBoolProp(int idx) const
-        {
-            return _bool_props.count(idx) > 0;
-        };
-        inline bool hasIntProp(int idx) const
-        {
-            return _int_props.count(idx) > 0;
-        };
-        inline bool hasStringProp(int idx) const
-        {
-            return _string_props.count(idx) > 0;
-        };
-
-        bool getBoolProp(int idx) const;
-        int getIntProp(int idx) const;
-        const std::string& getStringProp(int idx) const;
-
-        std::pair<bool, int> getBoolPropIdx(const std::string& name) const;
-        std::pair<bool, int> getIntPropIdx(const std::string& name) const;
-        std::pair<bool, int> getStringPropIdx(const std::string& name) const;
-
-        bool hasBoolProp(const std::string& name) const
-        {
-            auto res = getBoolPropIdx(name);
-            if (res.first)
-                return hasBoolProp(res.second);
-            return false;
-        }
-        bool hasIntProp(const std::string& name) const
-        {
-            auto res = getIntPropIdx(name);
-            if (res.first)
-                return hasIntProp(res.second);
-            return false;
-        };
-        bool hasStringProp(const std::string& name) const
-        {
-            auto res = getStringPropIdx(name);
-            if (res.first)
-                return hasStringProp(res.second);
-            return false;
-        };
-
-        bool getBoolProp(const std::string& name) const;
-        int getIntProp(const std::string& name) const;
-        const std::string& getStringProp(const std::string& name) const;
-
-        void parseOptsFromKet(const rapidjson::Value& json);
-        void saveOptsToKet(JsonWriter& writer) const;
-
-        void copy(const KetObjWithProps& other)
-        {
-            _bool_props = other._bool_props;
-            _int_props = other._int_props;
-            _string_props = other._string_props;
-        }
-
-    private:
-        std::map<int, bool> _bool_props;
-        std::map<int, int> _int_props;
-        std::map<int, std::string> _string_props;
-    };
 
     class KetQueryProperties : public KetObjWithProps
     {
@@ -765,13 +666,30 @@ namespace indigo
             _ref = ref_prefix + _id;
         };
 
+        const std::map<std::string, int>& getBoolPropStrToIdx() const override;
+
         const std::map<std::string, int>& getIntPropStrToIdx() const override;
 
+        void setTransformation(const Transformation& transform)
+        {
+            _transform = transform;
+        }
+
+        const Transformation& getTransformation() const
+        {
+            return _transform;
+        }
+
     private:
+        enum class BoolProps
+        {
+            expanded
+        };
         enum class IntProps
         {
             seqid
         };
+        Transformation _transform;
     };
 
     class DLLEXPORT KetConnectionEndPoint : public KetObjWithProps
@@ -1022,66 +940,6 @@ namespace indigo
         {
             alias
         };
-    };
-
-    class DLLEXPORT SimplePolymer
-    {
-    public:
-    private:
-    };
-
-    class DLLEXPORT KetMonomerShape : public KetObjWithProps
-    {
-    public:
-        DECL_ERROR;
-
-        inline static std::string ref_prefix = "monomerShape-";
-
-        enum class shape_type
-        {
-            generic,
-            antibody,
-            double_helix,
-            globular_protein
-        };
-
-        KetMonomerShape(const std::string& id, bool collapsed, const std::string& shape, Vec2f position, const std::vector<std::string>& monomers);
-
-        const std::string& id() const
-        {
-            return _id;
-        }
-
-        bool collapsed() const
-        {
-            return _collapsed;
-        }
-
-        shape_type shape() const
-        {
-            return _shape;
-        }
-
-        static shape_type strToShapeType(std::string shape);
-
-        static std::string shapeTypeToStr(shape_type shape);
-
-        Vec2f position() const
-        {
-            return _position;
-        }
-
-        const std::vector<std::string>& monomers() const
-        {
-            return _monomers;
-        }
-
-    private:
-        std::string _id;
-        bool _collapsed;
-        shape_type _shape;
-        Vec2f _position;
-        std::vector<std::string> _monomers;
     };
 
 }

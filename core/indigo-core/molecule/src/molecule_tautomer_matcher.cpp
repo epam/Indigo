@@ -33,13 +33,13 @@ MoleculeTautomerMatcher::MoleculeTautomerMatcher(Molecule& target, bool substruc
 {
     if (substructure)
     {
-        _target.create(target);
+        _target = std::make_unique<TautomerSuperStructure>(target);
         _supermol = _target.get();
     }
     else
         _supermol = &target;
 
-    _target_decomposer.create(*_supermol);
+    _target_decomposer = std::make_unique<GraphDecomposer>(*_supermol);
     _target_decomposer->decompose();
 
     highlight = false;
@@ -66,7 +66,7 @@ void MoleculeTautomerMatcher::setQuery(BaseMolecule& query)
         _query = std::make_unique<Molecule>();
 
     _query->clone(query, 0, 0, 0);
-    _query_decomposer.create(query);
+    _query_decomposer = std::make_unique<GraphDecomposer>(query);
     _query_decomposer->decompose();
 }
 

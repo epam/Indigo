@@ -19,6 +19,7 @@
 #include <memory>
 #include <set>
 
+#include "molecule/base_molecule.h"
 #include "molecule/ket_document.h"
 #include "molecule/ket_document_json_loader.h"
 #include "molecule/monomers_template_library.h"
@@ -194,6 +195,15 @@ void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json
     auto& mon_template = addMonomerTemplate(id, monomer_class, idt_alias, unresolved);
     mon_template.parseOptsFromKet(mt_json);
 
+    if (mt_json.HasMember("modificationTypes"))
+    {
+        auto& mt = mt_json["modificationTypes"];
+        for (SizeType i = 0; i < mt.Size(); i++)
+        {
+            mon_template.addModificationType(mt[i].GetString());
+        }
+    }
+
     // parse atoms
     mon_template.parseAtoms(mt_json["atoms"]);
 
@@ -314,6 +324,24 @@ void KetDocumentJsonLoader::parseKetMonomer(std::string& ref, rapidjson::Value& 
         location.x = coords["x"].GetFloat();
         location.y = coords["y"].GetFloat();
         monomer->setPosition(location);
+    }
+    if (json.HasMember("transformation"))
+    {
+        auto& transform_val = json["transformation"];
+        float rotate = 0;
+        if (transform_val.HasMember("rotate"))
+            rotate = transform_val["rotate"].GetFloat();
+        Vec2f shift(0, 0);
+        if (transform_val.HasMember("shift"))
+        {
+            auto& shift_val = transform_val["shift"];
+            shift.x = shift_val["x"].GetFloat();
+            shift.y = shift_val["y"].GetFloat();
+        }
+        std::string flip;
+        if (transform_val.HasMember("flip"))
+            flip = transform_val["flip"].GetString();
+        static_cast<KetMonomer&>(*monomer).setTransformation({rotate, shift, flip});
     }
     monomer->setAttachmentPoints(document.templates().at(template_id).attachmentPoints());
 }

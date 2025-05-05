@@ -77,6 +77,7 @@ void RenderOptions::clearRenderOptions()
     showBondEndIds = false;
     showNeighborArcs = false;
     showValences = true;
+    showCIPLabels = true;
     atomColoring = false;
     stereoMode = STEREO_STYLE_OLD;
     showReactingCenterUnchanged = false;
@@ -188,6 +189,13 @@ void MoleculeRenderInternal::setScaleFactor(const float scaleFactor, const Vec2f
     _scale = scaleFactor;
     _min.copy(min);
     _max.copy(max);
+}
+
+float MoleculeRenderInternal::getScaleFactor(Vec2f& min, Vec2f& max)
+{
+    min.copy(_min);
+    max.copy(_max);
+    return _scale;
 }
 
 void mapArray(Array<int>& dst, const Array<int>& src, const int* mapping)
@@ -824,13 +832,23 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                 if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
                 {
                     const Superatom& group = (Superatom&)sgroup;
-                    Vec3f centre;
-                    for (int j = 0; j < group.atoms.size(); ++j)
+                    Vec3f displayPosition = group.display_position;
+                    bool useDisplayPosition = false;
+                    if (fabs(displayPosition.x) > EPSILON || fabs(displayPosition.y) > EPSILON || fabs(displayPosition.z) > EPSILON)
                     {
-                        int atomID = group.atoms[j];
-                        centre.add(mol.getAtomXyz(atomID));
+                        useDisplayPosition = true;
                     }
-                    centre.scale(1.0f / group.atoms.size());
+
+                    Vec3f centre;
+                    if (!useDisplayPosition)
+                    {
+                        for (int j = 0; j < group.atoms.size(); ++j)
+                        {
+                            int atomID = group.atoms[j];
+                            centre.add(mol.getAtomXyz(atomID));
+                        }
+                        centre.scale(1.0f / group.atoms.size());
+                    }
                     int superAtomID = -1;
 
                     if (mol.isQueryMolecule())
@@ -855,15 +873,16 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                     {
                         int atomID = group.atoms[0];
                         const Vertex& v = mol.getVertex(atomID);
-                        bool posCounted = false;
                         for (int j = v.neiBegin(); j < v.neiEnd(); j = v.neiNext(j))
                         {
                             int neighboringAtomID = v.neiVertex(j);
                             if (!groupAtoms.find(neighboringAtomID))
                             {
-                                pos.add(mol.getAtomXyz(atomID));
-                                posCounted = true;
-                                posCnt++;
+                                if (!useDisplayPosition)
+                                {
+                                    pos.add(mol.getAtomXyz(atomID));
+                                    posCnt++;
+                                }
                                 int neighboringBondID = v.neiEdge(j), bondID = -1;
                                 if (mol.findEdgeIndex(neighboringAtomID, superAtomID) < 0)
                                 {
@@ -891,15 +910,23 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                         }
                         mol.removeAtom(atomID);
                     }
-                    if (posCnt == 0)
+
+                    if (useDisplayPosition)
                     {
-                        pos.copy(centre);
+                        mol.setAtomXyz(superAtomID, displayPosition.x, displayPosition.y, displayPosition.z);
                     }
                     else
                     {
-                        pos.scale(1.f / posCnt);
+                        if (posCnt == 0)
+                        {
+                            pos.copy(centre);
+                        }
+                        else
+                        {
+                            pos.scale(1.f / posCnt);
+                        }
+                        mol.setAtomXyz(superAtomID, pos.x, pos.y, pos.z);
                     }
-                    mol.setAtomXyz(superAtomID, pos.x, pos.y, pos.z);
                 }
             }
         }
@@ -2368,6 +2395,16 @@ void MoleculeRenderInternal::_drawAtom(const AtomDesc& desc)
         else
             _cw.drawGraphItem(_data.graphitems[i + desc.gibegin]);
     }
+    for (int i = 0; i < desc.cipCount; ++i)
+    {
+        const TextItem& cipItem = _data.cipItems[i + desc.cipBegin];
+        _cw.drawItemBackground(cipItem);
+
+        if (desc.hcolorSet)
+            _cw.drawTextItemText(cipItem, desc.hcolor, _idle);
+        else
+            _cw.drawTextItemText(cipItem, _idle);
+    }
 }
 
 void MoleculeRenderInternal::_writeQueryAtomToString(Output& output, int aid)
@@ -2821,12 +2858,12 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
 
             bool tag = false;
             {
-                char c = (i == len ? ' ' : str[i]);
-                if (isspace(c))
+                unsigned char c = (i == len ? ' ' : str[i]);
+                if (std::isspace(c))
                 {
                     b = WHITESPACE;
                 }
-                else if (isdigit(c))
+                else if (std::isdigit(c))
                 {
                     b = DIGIT;
                 }
@@ -2981,6 +3018,47 @@ void MoleculeRenderInternal::_prepareChargeLabel(int aid, int color, bool highli
         itemChargeSign.bbp.set(ad.rightMargin, ad.ypos + _settings.upperIndexShift * ad.height);
         _expandBoundRect(ad, itemChargeSign);
         ad.rightMargin += itemChargeSign.bbsz.x;
+    }
+}
+
+void MoleculeRenderInternal::_prepareCIPLabel(int aid, int color, bool highlighted)
+{
+    BaseMolecule& bm = *_mol;
+    CIPDesc cip = bm.getAtomCIP(aid);
+
+    if (cip != CIPDesc::UNKNOWN && cip != CIPDesc::NONE)
+    {
+        AtomDesc& ad = _ad(aid);
+
+        float yPosition = 0.0f;
+        float height = 0.0f;
+        if (!ad.showLabel)
+        {
+            TextItem dummyLabel;
+            dummyLabel.fontsize = FONT_SIZE_LABEL;
+            ArrayOutput output(dummyLabel.text);
+            output.printf(Element::toString(ad.label));
+            output.writeChar(0);
+            _cw.setTextItemSize(dummyLabel, ad.pos);
+            yPosition = dummyLabel.bbp.y;
+            height = dummyLabel.bbsz.y;
+        }
+        else
+        {
+            yPosition = ad.ypos;
+            height = ad.height;
+        }
+        int tiCIP = _pushCIPItem(ad, color, highlighted);
+
+        TextItem& itemCIP = _data.cipItems[tiCIP];
+        itemCIP.fontsize = FONT_SIZE_ATTR;
+        bprintf(itemCIP.text, "(%s)", CIPToString(cip).c_str());
+        _cw.setTextItemSize(itemCIP);
+
+        ad.rightMargin += _settings.labelInternalOffset;
+        itemCIP.bbp.set(ad.pos.x, yPosition + _settings.upperIndexShift * height);
+        _expandBoundRect(ad, itemCIP);
+        ad.rightMargin += itemCIP.bbsz.x;
     }
 }
 
@@ -3281,6 +3359,12 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                 _expandBoundRect(ad, itemRadical2);
             }
         }
+    }
+
+    // CIP
+    if (_opt.showCIPLabels)
+    {
+        _prepareCIPLabel(aid, color, highlighted);
     }
 
     int bondEndRightToStereoGroupLabel = -1;
@@ -3586,6 +3670,25 @@ int MoleculeRenderInternal::_pushGraphItem(AtomDesc& ad, RenderItem::TYPE ritype
     if (ad.gibegin < 0)
         ad.gibegin = res;
     ad.gicount++;
+    return res;
+}
+
+int MoleculeRenderInternal::_pushCIPItem(int color, bool highlighted)
+{
+    _data.cipItems.push();
+    _data.cipItems.top().clear();
+    _data.cipItems.top().ritype = RenderItem::TYPE::RIT_CIP;
+    _data.cipItems.top().color = color;
+    _data.cipItems.top().highlighted = highlighted;
+    return _data.cipItems.size() - 1;
+}
+
+int MoleculeRenderInternal::_pushCIPItem(AtomDesc& ad, int color, bool highlighted)
+{
+    int res = _pushCIPItem(color, highlighted);
+    if (ad.cipBegin < 0)
+        ad.cipBegin = res;
+    ++ad.cipCount;
     return res;
 }
 

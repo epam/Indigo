@@ -113,7 +113,7 @@ namespace indigo
 
         const std::string checkAddAmbiguousMonomerTemplate(KetDocument& document, const std::string& alias, MonomerClass monomer_class,
                                                            ambiguous_template_opts& options);
-        size_t addKetMonomer(KetDocument& document, MonomerInfo info, MonomerClass monomer_class, const Vec3f& pos);
+        size_t addHelmMonomer(KetDocument& document, MonomerInfo info, MonomerClass monomer_class, const Vec3f& pos);
         int readCount(std::string& count, Scanner& _scanner);
 
         MonomerInfo readHelmMonomer(KetDocument& document, MonomerClass monomer_class = MonomerClass::Unknown);
@@ -130,7 +130,8 @@ namespace indigo
         int _row;
         int _col;
         MonomerTemplateLibrary& _library;
-        std::map<std::string, std::string> _alias_to_id;
+        std::map<std::pair<MonomerClass, std::string>, std::string> _alias_to_id;
+        std::map<std::pair<MonomerClass, std::string>, std::string> _aliasHELM_to_id;
         std::map<std::string, std::string> _var_alias_to_id;
         int _unknown_ambiguous_count;
         std::map<ambiguous_template_opts, std::string> _opts_to_template_id;

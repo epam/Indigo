@@ -141,7 +141,8 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
     for (int i = 0; i < rxn.meta().getMetaCount(SimpleTextObject::CID); ++i)
     {
         auto& text = (const SimpleTextObject&)rxn.meta().getMetaObject(SimpleTextObject::CID, i);
-        Rect2f bbox(Vec2f(text._pos.x, text._pos.y), Vec2f(text._pos.x, text._pos.y)); // change to real text box later
+        Rect2f bbox(Vec2f(text.boundingBox().left(), text.boundingBox().top()),
+                    Vec2f(text.boundingBox().left(), text.boundingBox().top())); // change to real text box later
         components.emplace_back(bbox, ReactionFragmentType::TEXT, nullptr);
     }
 

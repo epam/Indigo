@@ -287,7 +287,11 @@ class IndigoLib:
         IndigoLib.lib.indigoRemove.restype = c_int
         IndigoLib.lib.indigoRemove.argtypes = [c_int]
         IndigoLib.lib.indigoMacroProperties.restype = c_char_p
-        IndigoLib.lib.indigoMacroProperties.argtypes = [c_int]
+        IndigoLib.lib.indigoMacroProperties.argtypes = [
+            c_int,
+            c_float,
+            c_float,
+        ]
         IndigoLib.lib.indigoGetOriginalFormat.restype = c_char_p
         IndigoLib.lib.indigoGetOriginalFormat.argtypes = [c_int]
         IndigoLib.lib.indigoSaveMolfileToFile.restype = c_int

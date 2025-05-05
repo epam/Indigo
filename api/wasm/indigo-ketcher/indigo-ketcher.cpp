@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iomanip>
 #include <map>
 #include <set>
@@ -202,7 +203,8 @@ namespace indigo
             else if (outputFormat == "sdf" || outputFormat == "chemical/x-sdf")
             {
                 auto buffer = IndigoObject(_checkResult(indigoWriteBuffer()));
-                auto comp_it = IndigoObject(_checkResult(indigoIterateComponents(id())));
+                auto comp_it = (objtype == EKETMolecule || objtype == EKETMoleculeQuery) ? IndigoObject(_checkResult(indigoIterateComponents(id())))
+                                                                                         : IndigoObject(_checkResult(indigoIterateMolecules(id())));
                 while (indigoHasNext(comp_it.id))
                 {
                     const auto frag = IndigoObject(_checkResult(indigoNext(comp_it.id)));
@@ -275,7 +277,7 @@ namespace indigo
 
     void indigoSetOptions(const std::map<std::string, std::string>& options)
     {
-        std::set<std::string> to_skip{"smiles", "smarts", "input-format", "output-content-type", "monomerLibrary"};
+        std::set<std::string> to_skip{"smiles", "smarts", "input-format", "output-content-type", "monomerLibrary", "sequence-type", "upc", "nac"};
         for (const auto& option : options)
         {
             if (to_skip.count(option.first) < 1)
@@ -426,13 +428,8 @@ namespace indigo
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                 }
             }
-            bool query = false;
             auto i = options.find("query");
-            if (i != options.end() and i->second == "true")
-            {
-                query = true;
-            }
-            if (!query)
+            if (i == options.end() || i->second == "false")
             {
                 // Let's try a simple molecule
                 print_js("try as molecule");
@@ -454,13 +451,55 @@ namespace indigo
 
                 if (library >= 0)
                 {
+                    auto sequence_type = options.find("sequence-type");
+                    if (sequence_type != options.end() && sequence_type->second == "PEPTIDE")
+                    {
+                        print_js("try as PEPTIDE-3-LETTER");
+                        objectId = indigoLoadSequenceFromString(data.c_str(), "PEPTIDE-3-LETTER", library);
+                        if (objectId >= 0)
+                        {
+                            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                        }
+                    }
+                    auto is_upper =
+                        std::all_of(sequence_type->second.begin(), sequence_type->second.end(), [](int ch) { return !std::isalpha(ch) || std::isupper(ch); });
+                    auto is_lower =
+                        std::all_of(sequence_type->second.begin(), sequence_type->second.end(), [](int ch) { return !std::isalpha(ch) || std::islower(ch); });
+                    if (sequence_type != options.end() && (is_upper || is_lower))
+                    {
+                        std::string msg = "try as " + sequence_type->second;
+                        print_js(msg.c_str());
+                        objectId = indigoLoadSequenceFromString(data.c_str(), sequence_type->second.c_str(), library);
+                        if (objectId >= 0)
+                        {
+                            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                        }
+                    }
                     print_js("try as IDT");
                     objectId = indigoLoadIdtFromString(data.c_str(), library);
                     if (objectId >= 0)
                     {
                         return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                     }
-
+                    if (sequence_type != options.end())
+                    {
+                        std::string msg = "try as " + sequence_type->second;
+                        print_js(msg.c_str());
+                        objectId = indigoLoadSequenceFromString(data.c_str(), sequence_type->second.c_str(), library);
+                        if (objectId >= 0)
+                        {
+                            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                        }
+                    }
+                    else
+                    {
+                        print_js("try as PEPTIDE-3-LETTER");
+                        objectId = indigoLoadSequenceFromString(data.c_str(), "PEPTIDE-3-LETTER", library);
+                        if (objectId >= 0)
+                        {
+                            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                        }
+                    }
                     print_js("try as HELM");
                     objectId = indigoLoadHelmFromString(data.c_str(), library);
                     if (objectId >= 0)
@@ -485,6 +524,24 @@ namespace indigo
             {
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReactionQuery);
             }
+
+            // Let's try a simple molecule
+            print_js("try as molecule");
+            objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
+            if (objectId >= 0)
+            {
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            }
+            exceptionMessages.emplace_back(indigoGetLastError());
+
+            // Let's try reaction
+            print_js("try as reaction");
+            objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
+            if (objectId >= 0)
+            {
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
+            }
+            exceptionMessages.emplace_back(indigoGetLastError());
         }
         // It's not anything we can load, let's throw an exception
         std::stringstream ss;
@@ -937,11 +994,34 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
+        // UPC is molar concentration of unipositive cations, NAC is molar concentration of the nucleotide strands, these options need to calculate melting
+        // temperature
+        float upc = 0.14f; // default value is the average physiological - 140 mM
+        char* str_end = nullptr;
+        auto it = options.find("upc");
+        if (it != options.end())
+        {
+            upc = std::strtof(it->second.c_str(), &str_end);
+            if (str_end != nullptr && *str_end != 0)
+                jsThrow("Wrong value for UPC");
+        }
+        float nac = 0;
+        it = options.find("nac");
+        if (it != options.end())
+        {
+            nac = std::strtof(it->second.c_str(), &str_end);
+            if (str_end != nullptr && *str_end != 0)
+                jsThrow("Wrong value for NAC");
+        }
+        else
+        {
+            jsThrow("NAC option is mandatory");
+        }
         auto iko = indigoLoadKetDocumentFromString(data.c_str());
         rapidjson::Document result;
         auto& allocator = result.GetAllocator();
         result.SetObject();
-        std::string props{indigoMacroProperties(iko)};
+        std::string props{indigoMacroProperties(iko, upc, nac)};
         result.AddMember("properties", props, allocator);
         rapidjson::StringBuffer buffer;
         rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);

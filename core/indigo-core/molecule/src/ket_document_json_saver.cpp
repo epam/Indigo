@@ -248,6 +248,33 @@ void KetDocumentJsonSaver::saveMonomer(JsonWriter& writer, const KetMonomer& mon
     }
     saveStr(writer, "alias", monomer.alias());
     saveStr(writer, "templateId", monomer.templateId());
+    const auto& transform = monomer.getTransformation();
+    if (transform.rotate != 0 || transform.shift.x != 0 || transform.shift.y != 0)
+    {
+        writer.Key("transformation");
+        writer.StartObject();
+        if (transform.rotate != 0)
+        {
+            writer.Key("rotate");
+            saveNativeFloat(writer, transform.rotate);
+        }
+        if (transform.shift.x != 0 || transform.shift.y != 0)
+        {
+            writer.Key("shift");
+            writer.StartObject();
+            writer.Key("x");
+            saveNativeFloat(writer, transform.shift.x);
+            writer.Key("y");
+            saveNativeFloat(writer, transform.shift.y);
+            writer.EndObject(); // shift
+        }
+        if (transform.flip != Transformation::FlipType::none)
+        {
+            writer.Key("shift");
+            writer.String(transform.getFlip());
+        }
+        writer.EndObject(); // transform
+    }
     writer.EndObject();
 }
 
@@ -284,6 +311,17 @@ void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const Monomer
             }
             writer.EndObject();
         }
+    }
+
+    if (monomer_template.modificationTypes().size() > 0)
+    {
+        writer.Key("modificationTypes");
+        writer.StartArray();
+        for (auto& it : monomer_template.modificationTypes())
+        {
+            writer.String(it.c_str());
+        }
+        writer.EndArray();
     }
 
     saveMonomerTemplateAttachmentPoints(writer, monomer_template);

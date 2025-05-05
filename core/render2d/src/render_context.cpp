@@ -447,14 +447,15 @@ void RenderContext::drawRectangle(const Vec2f& p, const Vec2f& sz)
 
 void RenderContext::drawEllipse(const Vec2f& v1, const Vec2f& v2)
 {
-    auto width = v2.x - v1.x;
-    auto height = v2.y - v1.y;
+    Rect2f bbox(v1, v2);
+    auto width = bbox.width();
+    auto height = bbox.height();
     cairo_matrix_t save_matrix;
     cairo_get_matrix(_cr, &save_matrix);
-    cairo_translate(_cr, v1.x + width / 2.0, v1.y + height / 2.0);
+    cairo_translate(_cr, bbox.center().x, bbox.center().y);
     cairo_scale(_cr, 1, height / width);
-    cairo_translate(_cr, -v1.x - width / 2.0, -v1.y - height / 2.0);
-    cairo_arc(_cr, v1.x + width / 2.0, v1.y + height / 2.0, width / 2.0, 0, 2 * M_PI);
+    cairo_translate(_cr, -bbox.center().x, -bbox.center().y);
+    cairo_arc(_cr, bbox.center().x, bbox.center().y, width / 2.0, 0, 2 * M_PI);
     cairo_set_matrix(_cr, &save_matrix);
     checkPathNonEmpty();
     bbIncludePath(true);
@@ -1698,7 +1699,9 @@ void RenderContext::getColor(float& r, float& g, float& b, int c)
         {0.72, 0.72, 0.82},  {0.65, 0.33, 0.30}, {0.34, 0.35, 0.38}, {0.62, 0.31, 0.71},  {0.67, 0.36, 0},     {0.46, 0.31, 0.27},  {0.26, 0.51, 0.59},
         {0.26, 0, 0.40},     {0, 0.49, 0},       {0.44, 0.67, 0.98}, {0, 0.73, 1.0},      {0, 0.63, 1.0},      {0, 0.56, 1.0},      {0, 0.50, 1.0},
         {0, 0.42, 1.0},      {0.33, 0.36, 0.95}, {0.47, 0.36, 0.89}, {0.54, 0.31, 0.89},  {0.63, 0.21, 0.83},  {0.70, 0.12, 0.83},  {0.70, 0.22, 0.83},
-        {0.60, 0.12, 0.83},  {0.50, 0.12, 0.83}, {0.70, 0.12, 0.63}, {0.70, 0.12, 0.83},  {0.70, 0.32, 0.83},  {0.60, 0.12, 0.83},  {0.70, 0.12, 0.43}};
+        {0.60, 0.12, 0.83},  {0.50, 0.12, 0.83}, {0.70, 0.12, 0.63}, {0.70, 0.12, 0.83},  {0.70, 0.32, 0.83},  {0.60, 0.12, 0.83},  {0.70, 0.12, 0.43},
+        {0.0, 0.0, 0.0},     {0.0, 0.0, 0.0},    {0.0, 0.0, 0.0},    {0.0, 0.0, 0.0},     {0.0, 0.0, 0.0},     {0.0, 0.0, 0.0},     {0.0, 0.0, 0.0},
+        {0.0, 0.0, 0.0},     {0.0, 0.0, 0.0},    {0.0, 0.0, 0.0},    {0.0, 0.0, 0.0}};
 
     if (c == CWC_BASE)
     {
