@@ -2190,6 +2190,7 @@ void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const SimpleTextObject& t
             paragraph_fss += paragraph.font_style;
             SimpleTextLine line;
             line.text = paragraph.text; // single part
+            std::replace(line.text.begin(), line.text.end(), '\r', '\n');
             std::string_view text_view = std::string_view(line.text);
             KETFontStatusMap style_status_map;
             if (paragraph.font_styles.size() > 1)
