@@ -20,7 +20,6 @@
 
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
-#include "molecule/smiles_saver.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
 
@@ -54,7 +53,9 @@ void RSmilesSaver::saveQueryReaction(QueryReaction& reaction)
 
 void RSmilesSaver::_writeMolecule(int i)
 {
-    SmilesSaver saver(_output);
+    _smiles_savers.emplace_back(std::make_unique<SmilesSaver>(_output));
+
+    SmilesSaver& saver = *_smiles_savers.back();
 
     saver.write_extra_info = false;
     saver.chemaxon = false;
@@ -150,6 +151,7 @@ void RSmilesSaver::_saveReaction()
     {
         _comma = false;
         _writeFragmentsInfo();
+        _writeRingCisTrans();
         _writeStereogroups();
         _writeRadicals();
         _writePseudoAtoms();
@@ -296,7 +298,7 @@ void RSmilesSaver::_writeStereogroups()
         {
             int group = _brxn->getBaseMolecule(idx.mol).stereocenters.getGroup(idx.idx);
 
-            _output.printf("&%d:%d", or_group_idx++, i);
+            _output.printf("o%d:%d", or_group_idx++, i);
             for (j = i + 1; j < _written_atoms.size(); j++)
             {
                 const _Idx& jdx = _written_atoms[j];
@@ -467,5 +469,16 @@ void RSmilesSaver::_writeHighlighting()
 
             _output.printf("%d", i);
         }
+    }
+}
+
+void RSmilesSaver::_writeRingCisTrans()
+{
+    for (int i = 0; i < _smiles_savers.size(); ++i)
+    {
+        auto& smiles_saver = _smiles_savers[i];
+        smiles_saver->setComma(_comma);
+        smiles_saver->writeRingCisTrans();
+        _comma = smiles_saver->getComma();
     }
 }

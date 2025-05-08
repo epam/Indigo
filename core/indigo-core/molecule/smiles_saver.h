@@ -54,6 +54,8 @@ namespace indigo
 
         void saveMolecule(Molecule& mol);
         void saveQueryMolecule(QueryMolecule& mol);
+        void setComma(bool comma);
+        bool getComma();
 
         int* vertex_ranks;
 
@@ -72,6 +74,7 @@ namespace indigo
         void writeSpecialAtom(int aid, Output& out);
         static SMILES_MODE parseFormatMode(const std::string& format);
         static void saveFormatMode(SMILES_MODE mode, std::string& output);
+        void writeRingCisTrans();
 
         bool inside_rsmiles;
 
@@ -116,7 +119,6 @@ namespace indigo
         void _banSlashes();
         int _calcBondDirection(int idx, int vprev);
         bool _updateSideBonds(int bond_idx);
-        void _writeRingCisTrans();
         void _writeStereogroups();
         void _writeRadicals();
         void _writePseudoAtoms();

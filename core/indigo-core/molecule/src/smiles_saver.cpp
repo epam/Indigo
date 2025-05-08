@@ -38,7 +38,8 @@ IMPL_ERROR(SmilesSaver, "SMILES saver");
 CP_DEF(SmilesSaver);
 
 SmilesSaver::SmilesSaver(Output& output)
-    : _output(output), CP_INIT, TL_CP_GET(_neipool), TL_CP_GET(_atoms), TL_CP_GET(_hcount), TL_CP_GET(_hcount_ignored), TL_CP_GET(_dbonds),
+    : _output(output), CP_INIT, TL_CP_GET(_neipool), TL_CP_GET(_atoms), TL_CP_GET(_hcount), TL_CP_GET(_hcount_ignored),
+      TL_CP_GET(_dbonds),
       TL_CP_GET(_written_atoms), TL_CP_GET(_written_atoms_inv), TL_CP_GET(_written_bonds), TL_CP_GET(_polymer_indices), TL_CP_GET(_attachment_indices),
       TL_CP_GET(_attachment_cycle_numbers), TL_CP_GET(_aromatic_bonds), TL_CP_GET(_ignored_vertices), TL_CP_GET(_complicated_cistrans), TL_CP_GET(_ban_slashes),
       TL_CP_GET(_cis_trans_parity)
@@ -77,6 +78,16 @@ void SmilesSaver::saveQueryMolecule(QueryMolecule& mol)
     _qmol = &mol;
     _mol = nullptr;
     _saveMolecule();
+}
+
+void SmilesSaver::setComma(bool comma)
+{
+    _comma = comma;
+}
+
+bool SmilesSaver::getComma()
+{
+    return _comma;
 }
 
 void SmilesSaver::_saveMolecule()
@@ -685,7 +696,7 @@ void SmilesSaver::_saveMolecule()
         }
 
         _comma = false;
-        _writeRingCisTrans();
+        writeRingCisTrans();
         _writeStereogroups();
         _writeRadicals();
         _writePseudoAtoms();
@@ -2067,7 +2078,7 @@ void SmilesSaver::_checkRGroupsAndAttachmentPoints()
                     "the Extended SMILES block (probably because you are saving reaction SMILES)");
 }
 
-void SmilesSaver::_writeRingCisTrans()
+void SmilesSaver::writeRingCisTrans()
 {
     if (!_have_complicated_cistrans)
         return;
