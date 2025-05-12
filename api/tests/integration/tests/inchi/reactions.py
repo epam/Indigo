@@ -55,7 +55,7 @@ for idx, smiles in enumerate(input_smiles, start=1):
         rxn = indigo.loadReaction(rxn.smiles())
 
         # extract the reactant and get its InChI
-        reactant = next(rxn.iterateReactants())
+        reactant = rxn.iterateReactants().next()
         inchi2 = indigo_inchi.getInchi(reactant)
         print("  InChI2: %s" % inchi2)
 
