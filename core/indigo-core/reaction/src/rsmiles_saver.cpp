@@ -474,11 +474,13 @@ void RSmilesSaver::_writeHighlighting()
 
 void RSmilesSaver::_writeRingCisTrans()
 {
+    int bonds_offset = 0;
     for (int i = 0; i < _smiles_savers.size(); ++i)
     {
         auto& smiles_saver = _smiles_savers[i];
         smiles_saver->setComma(_comma);
-        smiles_saver->writeRingCisTrans();
+        smiles_saver->writeRingCisTrans(bonds_offset);
+        bonds_offset += smiles_saver->writtenBonds().size();
         _comma = smiles_saver->getComma();
     }
 }

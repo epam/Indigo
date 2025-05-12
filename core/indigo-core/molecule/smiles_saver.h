@@ -74,7 +74,7 @@ namespace indigo
         void writeSpecialAtom(int aid, Output& out);
         static SMILES_MODE parseFormatMode(const std::string& format);
         static void saveFormatMode(SMILES_MODE mode, std::string& output);
-        void writeRingCisTrans();
+        void writeRingCisTrans(int bonds_offset = 0);
 
         bool inside_rsmiles;
 

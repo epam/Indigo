@@ -38,8 +38,7 @@ IMPL_ERROR(SmilesSaver, "SMILES saver");
 CP_DEF(SmilesSaver);
 
 SmilesSaver::SmilesSaver(Output& output)
-    : _output(output), CP_INIT, TL_CP_GET(_neipool), TL_CP_GET(_atoms), TL_CP_GET(_hcount), TL_CP_GET(_hcount_ignored),
-      TL_CP_GET(_dbonds),
+    : _output(output), CP_INIT, TL_CP_GET(_neipool), TL_CP_GET(_atoms), TL_CP_GET(_hcount), TL_CP_GET(_hcount_ignored), TL_CP_GET(_dbonds),
       TL_CP_GET(_written_atoms), TL_CP_GET(_written_atoms_inv), TL_CP_GET(_written_bonds), TL_CP_GET(_polymer_indices), TL_CP_GET(_attachment_indices),
       TL_CP_GET(_attachment_cycle_numbers), TL_CP_GET(_aromatic_bonds), TL_CP_GET(_ignored_vertices), TL_CP_GET(_complicated_cistrans), TL_CP_GET(_ban_slashes),
       TL_CP_GET(_cis_trans_parity)
@@ -2078,7 +2077,7 @@ void SmilesSaver::_checkRGroupsAndAttachmentPoints()
                     "the Extended SMILES block (probably because you are saving reaction SMILES)");
 }
 
-void SmilesSaver::writeRingCisTrans()
+void SmilesSaver::writeRingCisTrans(int bonds_offset)
 {
     if (!_have_complicated_cistrans)
         return;
@@ -2161,18 +2160,18 @@ void SmilesSaver::writeRingCisTrans()
 
     if (cis_bonds.size() != 0)
     {
-        _output.printf("c:%d", cis_bonds[0]);
+        _output.printf("c:%d", cis_bonds[0] + bonds_offset);
         for (i = 1; i < cis_bonds.size(); i++)
-            _output.printf(",%d", cis_bonds[i]);
+            _output.printf(",%d", cis_bonds[i] + bonds_offset);
     }
     if (trans_bonds.size() != 0)
     {
         if (cis_bonds.size() != 0)
             _output.printf(",");
 
-        _output.printf("t:%d", trans_bonds[0]);
+        _output.printf("t:%d", trans_bonds[0] + bonds_offset);
         for (i = 1; i < trans_bonds.size(); i++)
-            _output.printf(",%d", trans_bonds[i]);
+            _output.printf(",%d", trans_bonds[i] + bonds_offset);
     }
 }
 
