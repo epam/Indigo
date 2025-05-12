@@ -35,7 +35,7 @@ def load_molecule(data):
         return indigo.loadMolecule(data)
     except IndigoException as e:
         # on failure, print the error and retry more permissively
-        print("  Exception:", getIndigoExceptionText(e))
+        print("  Exception: %s" % (getIndigoExceptionText(e)))
         indigo.setOption("ignore-stereochemistry-errors", "1")
         return indigo.loadMolecule(data)
 
@@ -46,8 +46,8 @@ for idx, smiles in enumerate(input_smiles, start=1):
     try:
         # generate the "expected" InChI
         inchi1 = indigo_inchi.getInchi(m)
-        print("  Smiles original:", smiles)
-        print("  InChI1:", inchi1)
+        print("  Smiles original: %s" % smiles)
+        print("  InChI1: %s" % inchi1)
 
         # create a one-reactant reaction, then reload it (lossy)
         rxn = indigo.createReaction()
@@ -57,22 +57,20 @@ for idx, smiles in enumerate(input_smiles, start=1):
         # extract the reactant and get its InChI
         reactant = next(rxn.iterateReactants())
         inchi2 = indigo_inchi.getInchi(reactant)
-        print("  InChI2:", inchi2)
+        print("  InChI2: %s" % inchi2)
 
         # compare
         if inchi1 != inchi2:
             print("  -> Mismatch detected!")
         else:
             print("  -> InChIs match.")
-        print()
 
     except IndigoException as e:
         # catch any Indigo errors during processing
-        print("  Error:", getIndigoExceptionText(e))
+        print("  Exception: %s" % (getIndigoExceptionText(e)))
         warn = indigo_inchi.getWarning()
         log = indigo_inchi.getLog()
         if warn:
-            print("  InChI warning:", warn)
+            print("  InChI warning: %s" % warn)
         if log:
-            print("  InChI log:", log)
-        print()
+            print("  InChI log: %s" % log)
