@@ -475,7 +475,7 @@ void RSmilesSaver::_writeHighlighting()
 void RSmilesSaver::_writeRingCisTrans()
 {
     int bonds_offset = 0;
-    for (auto i = 0; i < _smiles_savers.size(); ++i)
+    for (size_t i = 0; i < _smiles_savers.size(); ++i)
     {
         auto& smiles_saver = _smiles_savers[i];
         smiles_saver->setComma(_comma);
