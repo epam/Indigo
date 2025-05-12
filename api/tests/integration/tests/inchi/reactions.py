@@ -42,7 +42,6 @@ def load_molecule(data):
 
 # Iterate over each SMILES, generate InChI before and after reaction reload
 for idx, smiles in enumerate(input_smiles, start=1):
-    print(f"--- Molecule #{idx} ---")
     m = load_molecule(smiles)
     try:
         # generate the "expected" InChI
@@ -53,8 +52,6 @@ for idx, smiles in enumerate(input_smiles, start=1):
         # create a one-reactant reaction, then reload it (lossy)
         rxn = indigo.createReaction()
         rxn.addReactant(m)
-        print("  MSmiles:", m.smiles())
-        print("  RSmiles:", rxn.smiles())
         rxn = indigo.loadReaction(rxn.smiles())
 
         # extract the reactant and get its InChI
