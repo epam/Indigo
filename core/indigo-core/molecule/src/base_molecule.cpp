@@ -303,7 +303,10 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
         {
             auto aidx = mapping[mol._cip_atoms.key(i)];
             if (aidx >= 0)
+            {
                 _cip_atoms.insert(aidx, mol._cip_atoms.value(i));
+                _show_cip_atoms.emplace(aidx, mol.getShowAtomCIP(i));
+            }
         }
         catch (Exception&)
         {
@@ -4541,6 +4544,7 @@ void BaseMolecule::addCIP()
 void BaseMolecule::clearCIP()
 {
     _cip_atoms.clear();
+    _show_cip_atoms.clear();
     _cip_bonds.clear();
     have_cip = false;
 }
@@ -4549,6 +4553,16 @@ CIPDesc BaseMolecule::getAtomCIP(int atom_idx)
 {
     auto* pval = _cip_atoms.at2(atom_idx);
     return pval ? *pval : CIPDesc::NONE;
+}
+
+bool BaseMolecule::getShowAtomCIP(const int atomIndex)
+{
+    auto it = _show_cip_atoms.find(atomIndex);
+    if (it != _show_cip_atoms.end())
+    {
+        return it->second;
+    }
+    return false;
 }
 
 CIPDesc BaseMolecule::getBondCIP(int bond_idx)
@@ -4560,7 +4574,13 @@ CIPDesc BaseMolecule::getBondCIP(int bond_idx)
 void BaseMolecule::setAtomCIP(int atom_idx, CIPDesc cip)
 {
     _cip_atoms.insert(atom_idx, cip);
+    _show_cip_atoms.emplace(atom_idx, true);
     have_cip = true;
+}
+
+void BaseMolecule::setShowAtomCIP(const int atomIndex, const bool display)
+{
+    _show_cip_atoms.insert_or_assign(atomIndex, display);
 }
 
 void BaseMolecule::setBondCIP(int bond_idx, CIPDesc cip)

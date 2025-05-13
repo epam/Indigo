@@ -3025,7 +3025,7 @@ void MoleculeRenderInternal::_prepareCIPLabel(int aid, int color, bool highlight
     BaseMolecule& bm = *_mol;
     CIPDesc cip = bm.getAtomCIP(aid);
 
-    if (cip != CIPDesc::UNKNOWN && cip != CIPDesc::NONE)
+    if (bm.getShowAtomCIP(aid) && cip != CIPDesc::UNKNOWN && cip != CIPDesc::NONE)
     {
         AtomDesc& ad = _ad(aid);
 
