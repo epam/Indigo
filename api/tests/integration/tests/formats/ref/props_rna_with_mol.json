@@ -1,0 +1,12 @@
+[
+    {
+        "grossFormula": "C23 N10 O10 P H29",
+        "mass": 636.511124,
+        "monomerCount": {
+            "peptides": {},
+            "nucleotides": {
+                "A": 2
+            }
+        }
+    }
+]
