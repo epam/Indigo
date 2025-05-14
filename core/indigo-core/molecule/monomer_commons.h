@@ -86,6 +86,7 @@ namespace indigo
     const auto kBranchAttachmentPoint = "Cx";
     const auto kAttachmentPointR1 = "R1";
     const auto kAttachmentPointR2 = "R2";
+    const auto kAttachmentPointR3 = "R3";
 
     const int kLeftAttachmentPointIdx = 0;
     const int kRightAttachmentPointIdx = 1;

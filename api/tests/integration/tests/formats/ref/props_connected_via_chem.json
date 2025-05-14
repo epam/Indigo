@@ -1,0 +1,19 @@
+[
+    {
+        "grossFormula": "C29 N10 O12 H44",
+        "mass": 724.719466,
+        "pKa": 4.006666,
+        "extinctionCoefficient": 0,
+        "hydrophobicity": [
+            0.616
+        ],
+        "monomerCount": {
+            "peptides": {
+                "A": 1
+            },
+            "nucleotides": {
+                "A": 1
+            }
+        }
+    }
+]
