@@ -22,6 +22,7 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/tlscont.h"
+#include "molecule/smiles_saver.h"
 #include "reaction.h"
 
 #ifdef _WIN32
@@ -76,8 +77,10 @@ namespace indigo
         void _writeRadicals();
         void _writePseudoAtoms();
         void _writeHighlighting();
+        void _writeRingCisTrans();
 
         bool _comma;
+        std::vector<std::unique_ptr<SmilesSaver>> _smiles_savers;
 
     private:
         RSmilesSaver(const RSmilesSaver&); // no implicit copy

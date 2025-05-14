@@ -86,7 +86,6 @@ void RSmilesLoader::loadQueryReaction(QueryReaction& rxn)
 void RSmilesLoader::_loadReaction()
 {
     _brxn->clear();
-
     std::unique_ptr<BaseMolecule> mols[3];
     std::unique_ptr<BaseMolecule>& rcnt = mols[0];
     std::unique_ptr<BaseMolecule>& ctlt = mols[1];
@@ -476,6 +475,37 @@ void RSmilesLoader::_loadReaction()
                     else
                         hl_bonds[idx] = 1;
 
+                    if (_scanner.lookNext() == ',')
+                        _scanner.skip(1);
+                }
+            }
+            else if (c == 'c' || c == 't')
+            {
+                if (_scanner.readChar() != ':')
+                    throw Error("colon expected after 'c'");
+
+                while (isdigit(_scanner.lookNext()))
+                {
+                    int idx = _scanner.readUnsigned();
+
+                    int group = _selectGroup(idx, rcnt->edgeCount(), ctlt->edgeCount(), prod->edgeCount());
+                    bool skip = false;
+                    if (ignore_cistrans_errors && !MoleculeCisTrans::isGeomStereoBond(*stereo[group], idx, nullptr, false))
+                        skip = true;
+
+                    if (!skip)
+                    {
+                        stereo[group]->restoreSubstituents(idx);
+                        const int* subst = stereo[group]->cis_trans.getSubstituents(idx);
+                        int parity = ((c == 'c') ? MoleculeCisTrans::CIS : MoleculeCisTrans::TRANS);
+
+                        if (subst[1] != -1 && subst[1] < subst[0])
+                            parity = 3 - parity;
+                        if (subst[3] != -1 && subst[3] < subst[2])
+                            parity = 3 - parity;
+
+                        stereo[group]->cis_trans.setParity(idx, parity);
+                    }
                     if (_scanner.lookNext() == ',')
                         _scanner.skip(1);
                 }
