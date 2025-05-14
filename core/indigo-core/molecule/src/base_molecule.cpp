@@ -5316,7 +5316,7 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
                             sorted_attachment_points.insert(std::make_pair(atp_id_str, i));
                     }
                     // for all used AP mark leaving atom to remove, all leaving atom are leafs - so bonds will be removed automatically
-                    if (result->template_attachment_indexes.size() < monomer_id) // check if monomer has attachment points in use
+                    if (monomer_id < result->template_attachment_indexes.size()) // check if monomer has attachment points in use
                     {
                         auto& indexes = result->template_attachment_indexes.at(monomer_id);
                         for (int att_idx = 0; att_idx < indexes.size(); att_idx++)
