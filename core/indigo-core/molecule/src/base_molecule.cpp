@@ -5316,21 +5316,24 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
                             sorted_attachment_points.insert(std::make_pair(atp_id_str, i));
                     }
                     // for all used AP mark leaving atom to remove, all leaving atom are leafs - so bonds will be removed automatically
-                    auto& indexes = result->template_attachment_indexes.at(monomer_id);
-                    for (int att_idx = 0; att_idx < indexes.size(); att_idx++)
+                    if (monomer_id < result->template_attachment_indexes.size()) // check if monomer has attachment points in use
                     {
-                        auto& ap = result->template_attachment_points.at(indexes.at(att_idx));
-                        assert(ap.ap_occur_idx == monomer_id);
-                        auto it = sorted_attachment_points.find(ap.ap_id.ptr());
-                        if (it != sorted_attachment_points.end())
+                        auto& indexes = result->template_attachment_indexes.at(monomer_id);
+                        for (int att_idx = 0; att_idx < indexes.size(); att_idx++)
                         {
-                            auto& atp = sa.attachment_points[it->second];
-                            attached_atom.insert(std::make_pair(ap.ap_aidx, atp.aidx)); // molecule atom ap.ap_aidx is attached to atp.aidx in monomer
-                            atoms_to_remove.push(atp.lvidx);
+                            auto& ap = result->template_attachment_points.at(indexes.at(att_idx));
+                            assert(ap.ap_occur_idx == monomer_id);
+                            auto it = sorted_attachment_points.find(ap.ap_id.ptr());
+                            if (it != sorted_attachment_points.end())
+                            {
+                                auto& atp = sa.attachment_points[it->second];
+                                attached_atom.insert(std::make_pair(ap.ap_aidx, atp.aidx)); // molecule atom ap.ap_aidx is attached to atp.aidx in monomer
+                                atoms_to_remove.push(atp.lvidx);
+                            }
+                            result->template_attachment_points.remove(indexes.at(att_idx));
                         }
-                        result->template_attachment_points.remove(indexes.at(att_idx));
+                        att_indexes_to_remove.emplace_back(monomer_id);
                     }
-                    att_indexes_to_remove.emplace_back(monomer_id);
                 }
                 monomer_sgroups.remove(j);
             }
