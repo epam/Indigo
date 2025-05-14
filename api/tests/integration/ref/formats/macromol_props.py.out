@@ -1,4 +1,9 @@
 *** HELM to KET ***
+props_connected_via_chem.json: SUCCEED
+props_connected_via_micro.json: SUCCEED
 props_double_dna.json: SUCCEED
+props_nucleoside_peptide.json: SUCCEED
+props_only_micro.json: SUCCEED
 props_peptides.json: SUCCEED
 props_peptides_micro.json: SUCCEED
+props_rna_with_mol.json: SUCCEED
