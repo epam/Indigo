@@ -1,0 +1,163 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "monomer0"
+            }
+        ],
+        "connections": [],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-A___Alanine"
+            }
+        ]
+    },
+    "monomer0": {
+        "type": "monomer",
+        "id": "0",
+        "position": {
+            "x": 12.200000000000001,
+            "y": -5.15
+        },
+        "alias": "A",
+        "templateId": "A___Alanine",
+        "seqid": 1,
+        "expanded": true,
+        "transformation": {
+            "flip": "vertical"
+        }
+    },
+    "monomerTemplate-A___Alanine": {
+        "type": "monomerTemplate",
+        "atoms": [
+            {
+                "label": "N",
+                "location": [
+                    -0.866,
+                    -0.25,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0,
+                    0.25,
+                    0
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "H",
+                "location": [
+                    -1.732,
+                    0.25,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.866,
+                    -0.25,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.732,
+                    0.25,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.866,
+                    -1.25,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0,
+                    1.25,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    3,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    6
+                ],
+                "stereo": 1
+            }
+        ],
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "id": "A___Alanine",
+        "fullName": "Alanine",
+        "alias": "A",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 0,
+                "type": "left",
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 3,
+                "type": "right",
+                "leavingGroup": {
+                    "atoms": [
+                        4
+                    ]
+                }
+            }
+        ],
+        "naturalAnalogShort": "A"
+    }
+}
