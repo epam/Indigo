@@ -957,7 +957,7 @@ int main(int argc, char* argv[])
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
-            // indigoLayout(obj);
+            indigoLayout(obj);
             if (p.out_ext == OEXT_MOL)
                 indigoSaveMolfileToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_KET)
@@ -1066,7 +1066,7 @@ int main(int argc, char* argv[])
                 int mol = indigoNext(mols);
                 printf("%d\n", mol);
             }
-            //indigoLayout(obj);
+            indigoLayout(obj);
             if (p.out_ext == OEXT_CML)
                 indigoSaveCmlToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_RXN)
