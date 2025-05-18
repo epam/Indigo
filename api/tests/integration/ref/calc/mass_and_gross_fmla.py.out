@@ -129,7 +129,7 @@
 *** Molecule fragments ***
 N([H])([H])C1=C([H])C([H])=C([H])C([H])=C1[H]
 *** Invalid valence ***
-Exception:  element: bad valence on N having 4 drawn bonds, charge 0, and 0 radical electrons
+C10 H16 N O2
 *** INDSP-222 [indigo-general] Problem with monoisotopic mass calculation in KNIME molecule properties ***
 94.939 93.942 93.942 C H3 Br C 12.65 H 3.19 Br 84.16
 426.221 427.768 427.768 C8 O8 Ru2 C 22.54 O 30.03 Ru 47.43
