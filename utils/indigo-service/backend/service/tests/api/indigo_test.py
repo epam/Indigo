@@ -18,7 +18,7 @@ def joinPathPy(args, file_py):
 # @unittest.skip("Skip libraries test case")
 class IndigoTestCase(unittest.TestCase):
     def setUp(self):
-        service_url = "http://localhost/v2"
+        service_url = "http://localhost:8080/v2"
         if (
             "INDIGO_SERVICE_URL" in os.environ
             and len(os.environ["INDIGO_SERVICE_URL"]) > 0
@@ -2359,6 +2359,37 @@ M  END
             "[C 74.87 H 25.13] + [C 79.89 H 20.11] > [C 79.89 H 20.11] + [C 74.87 H 25.13]",
             result_data["mass-composition"],
         )
+
+    def test_calculate_undefined_reaction(self):
+        with open(os.path.join(joinPathPy("structures/", __file__), "undefined_2897.ket"), "r",) as file:
+            r_struct = file.read()
+
+            headers, data = self.get_headers(
+                {
+                    "struct": r_struct,
+                    "properties": (
+                        "molecular-weight",
+                        "gross",
+                        "mass-composition",
+                        "most-abundant-mass",
+                        "monoisotopic-mass",
+                    ),
+                }
+            )
+            result_json = requests.post(
+                self.url_prefix + "/calculate", headers=headers, data=data
+            )
+            self.assertEqual(200, result_json.status_code)
+            file_name = os.path.join(joinPathPy("ref/", __file__), "undefined_2897_calc.json")
+            # write references
+            with open(file_name, "w") as file:
+                file.write(result_json.text)
+
+            # check
+            with open(file_name, "r") as file:
+                ref_json = file.read()
+                self.assertEqual(result_json.text, ref_json)
+
 
     def test_calculate_selected(self):
         headers, data = self.get_headers(

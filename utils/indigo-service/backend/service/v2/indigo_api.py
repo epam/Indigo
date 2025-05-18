@@ -232,18 +232,24 @@ def reaction_calc(rxn, func_name, precision=None):
         if m.countRGroups() or m.countAttachmentPoints():
             return "Cannot calculate properties for RGroups"
     reactants_results = []
-    for r in rxn.iterateReactants():
-        reactants_results.append(
-            "[{0}]".format(molecule_calc(r, func_name, precision))
+    if rxn.countReactants() > 0 or rxn.countProducts() > 0:
+        for r in rxn.iterateReactants():
+            reactants_results.append(
+                "[{0}]".format(molecule_calc(r, func_name, precision))
+            )
+        product_results = []
+        for p in rxn.iterateProducts():
+            product_results.append(
+                "[{0}]".format(molecule_calc(p, func_name, precision))
+            )
+        return "{0} > {1}".format(
+            " + ".join(reactants_results), " + ".join(product_results)
         )
-    product_results = []
-    for p in rxn.iterateProducts():
-        product_results.append(
-            "[{0}]".format(molecule_calc(p, func_name, precision))
-        )
-    return "{0} > {1}".format(
-        " + ".join(reactants_results), " + ".join(product_results)
-    )
+    else:
+        results = []
+        for m in rxn.iterateMolecules():
+            results.append(do_calc(m, func_name, precision))
+        return "; ".join(results)
 
 
 def selected_molecule_calc(
