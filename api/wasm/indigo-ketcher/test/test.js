@@ -199,6 +199,18 @@ M  END
             options.delete();
         });
 
+        test("calculate", "reaction_undefined", () => {
+            var fs = require('fs');
+            const ket = fs.readFileSync("undefined_2897.ket");
+            let options = new indigo.MapStringString();
+            selected = new indigo.VectorInt();
+            const values = indigo.calculate(ket, options, selected);
+            // fs.writeFileSync("undefined_2897_calc.json", values);
+            const calc_ref = fs.readFileSync("undefined_2897_calc.json");
+            assert.equal(values, calc_ref.toString());
+            selected.delete();
+            options.delete();
+        });
     }
 
     // Check

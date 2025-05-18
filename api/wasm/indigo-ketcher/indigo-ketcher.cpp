@@ -928,9 +928,10 @@ namespace indigo
         enum
         {
             IDX_REACTANTS = 0,
-            IDX_PRODUCTS = 1
+            IDX_PRODUCTS = 1,
+            IDX_UNDEFINED = 2
         };
-        std::vector<std::string> molWeights[2], mamMasses[2], misoMasses[2], massCompositions[2], grossFormulas[2];
+        std::vector<std::string> molWeights[3], mamMasses[3], misoMasses[3], massCompositions[3], grossFormulas[3];
 
         const auto mol_iterator = IndigoObject(_checkResult(indigoIterateMolecules(iko.id())));
         while (const auto mol_id = _checkResult(indigoNext(mol_iterator.id)))
@@ -939,17 +940,31 @@ namespace indigo
                 jsThrow("Cannot calculate properties for RGroups");
         }
         int base = 0;
-        calculate_iteration_object(IndigoObject(_checkResult(indigoIterateReactants(iko.id()))), molWeights[IDX_REACTANTS], mamMasses[IDX_REACTANTS],
-                                   misoMasses[IDX_REACTANTS], massCompositions[IDX_REACTANTS], grossFormulas[IDX_REACTANTS], selected_atoms, base);
+        if (_checkResult(indigoCountReactants(iko.id())) || _checkResult(indigoCountProducts(iko.id())))
+        {
+            calculate_iteration_object(IndigoObject(_checkResult(indigoIterateReactants(iko.id()))), molWeights[IDX_REACTANTS], mamMasses[IDX_REACTANTS],
+                                       misoMasses[IDX_REACTANTS], massCompositions[IDX_REACTANTS], grossFormulas[IDX_REACTANTS], selected_atoms, base);
 
-        calculate_iteration_object(IndigoObject(_checkResult(indigoIterateProducts(iko.id()))), molWeights[IDX_PRODUCTS], mamMasses[IDX_PRODUCTS],
-                                   misoMasses[IDX_PRODUCTS], massCompositions[IDX_PRODUCTS], grossFormulas[IDX_PRODUCTS], selected_atoms, base);
+            calculate_iteration_object(IndigoObject(_checkResult(indigoIterateProducts(iko.id()))), molWeights[IDX_PRODUCTS], mamMasses[IDX_PRODUCTS],
+                                       misoMasses[IDX_PRODUCTS], massCompositions[IDX_PRODUCTS], grossFormulas[IDX_PRODUCTS], selected_atoms, base);
 
-        molecularWeightStream << VectorStringBracketed(molWeights[IDX_REACTANTS], molWeights[IDX_PRODUCTS]);
-        mostAbundantMassStream << VectorStringBracketed(mamMasses[IDX_REACTANTS], mamMasses[IDX_PRODUCTS]);
-        monoisotopicMassStream << VectorStringBracketed(misoMasses[IDX_REACTANTS], misoMasses[IDX_PRODUCTS]);
-        massCompositionStream << VectorStringBracketed(massCompositions[IDX_REACTANTS], massCompositions[IDX_PRODUCTS]);
-        grossFormulaStream << VectorStringBracketed(grossFormulas[IDX_REACTANTS], grossFormulas[IDX_PRODUCTS]);
+            molecularWeightStream << VectorStringBracketed(molWeights[IDX_REACTANTS], molWeights[IDX_PRODUCTS]);
+            mostAbundantMassStream << VectorStringBracketed(mamMasses[IDX_REACTANTS], mamMasses[IDX_PRODUCTS]);
+            monoisotopicMassStream << VectorStringBracketed(misoMasses[IDX_REACTANTS], misoMasses[IDX_PRODUCTS]);
+            massCompositionStream << VectorStringBracketed(massCompositions[IDX_REACTANTS], massCompositions[IDX_PRODUCTS]);
+            grossFormulaStream << VectorStringBracketed(grossFormulas[IDX_REACTANTS], grossFormulas[IDX_PRODUCTS]);
+        }
+        else
+        {
+            calculate_iteration_object(IndigoObject(_checkResult(indigoIterateMolecules(iko.id()))), molWeights[IDX_UNDEFINED], mamMasses[IDX_UNDEFINED],
+                                       misoMasses[IDX_UNDEFINED], massCompositions[IDX_UNDEFINED], grossFormulas[IDX_UNDEFINED], selected_atoms, base);
+
+            molecularWeightStream << VectorStringSemicoloned(molWeights[IDX_UNDEFINED]);
+            mostAbundantMassStream << VectorStringSemicoloned(mamMasses[IDX_UNDEFINED]);
+            monoisotopicMassStream << VectorStringSemicoloned(misoMasses[IDX_UNDEFINED]);
+            massCompositionStream << VectorStringSemicoloned(massCompositions[IDX_UNDEFINED]);
+            grossFormulaStream << VectorStringSemicoloned(grossFormulas[IDX_UNDEFINED]);
+        }
     }
 
     std::string calculate(const std::string& data, const std::map<std::string, std::string>& options, const std::vector<int>& selected_atoms)
