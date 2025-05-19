@@ -79,6 +79,16 @@ void SmilesSaver::saveQueryMolecule(QueryMolecule& mol)
     _saveMolecule();
 }
 
+void SmilesSaver::setComma(bool comma)
+{
+    _comma = comma;
+}
+
+bool SmilesSaver::getComma()
+{
+    return _comma;
+}
+
 void SmilesSaver::_saveMolecule()
 {
     _validate(*_bmol);
@@ -685,7 +695,7 @@ void SmilesSaver::_saveMolecule()
         }
 
         _comma = false;
-        _writeRingCisTrans();
+        writeRingCisTrans();
         _writeStereogroups();
         _writeRadicals();
         _writePseudoAtoms();
@@ -2067,7 +2077,7 @@ void SmilesSaver::_checkRGroupsAndAttachmentPoints()
                     "the Extended SMILES block (probably because you are saving reaction SMILES)");
 }
 
-void SmilesSaver::_writeRingCisTrans()
+void SmilesSaver::writeRingCisTrans(int bonds_offset)
 {
     if (!_have_complicated_cistrans)
         return;
@@ -2150,18 +2160,18 @@ void SmilesSaver::_writeRingCisTrans()
 
     if (cis_bonds.size() != 0)
     {
-        _output.printf("c:%d", cis_bonds[0]);
+        _output.printf("c:%d", cis_bonds[0] + bonds_offset);
         for (i = 1; i < cis_bonds.size(); i++)
-            _output.printf(",%d", cis_bonds[i]);
+            _output.printf(",%d", cis_bonds[i] + bonds_offset);
     }
     if (trans_bonds.size() != 0)
     {
         if (cis_bonds.size() != 0)
             _output.printf(",");
 
-        _output.printf("t:%d", trans_bonds[0]);
+        _output.printf("t:%d", trans_bonds[0] + bonds_offset);
         for (i = 1; i < trans_bonds.size(); i++)
-            _output.printf(",%d", trans_bonds[i]);
+            _output.printf(",%d", trans_bonds[i] + bonds_offset);
     }
 }
 
