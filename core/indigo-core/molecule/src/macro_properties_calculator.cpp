@@ -410,10 +410,11 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                     loader.loadMolecule(mol);
                     pbmol = &mol;
                     // select all atoms and add unselected H to each monomer connection to decrease implicit H
-                    for (int i = 0; i < mol.vertexCount(); i++)
-                    {
-                        mol.selectAtom(i);
-                    }
+                    if (mol.countSelectedAtoms() == 0)
+                        for (int i = 0; i < mol.vertexCount(); i++)
+                        {
+                            mol.selectAtom(i);
+                        }
                     for (auto atom_connections : polymer.mol_atom_connections[molecule_id])
                     {
                         for (int j = 0; j < atom_connections.second; j++)
