@@ -286,3 +286,12 @@ Windows(using cmd):
 >set INDIGO_VERSION=1.29.0 
 >conda build . 
 ```
+
+To upload packages: install anaconda-client, login, and upload packet using command provided by conda-build in output
+```
+>conda install anaconda-client
+>anaconda login
+Enter username:
+Enter password:
+>anaconda upload /conda-build-dir/packet-name
+```
