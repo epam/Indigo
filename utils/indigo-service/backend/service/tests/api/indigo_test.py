@@ -2360,6 +2360,43 @@ M  END
             result_data["mass-composition"],
         )
 
+    def test_calculate_undefined_reaction(self):
+        with open(
+            os.path.join(
+                joinPathPy("structures/", __file__), "undefined_2897.ket"
+            ),
+            "r",
+        ) as file:
+            r_struct = file.read()
+
+            headers, data = self.get_headers(
+                {
+                    "struct": r_struct,
+                    "properties": (
+                        "molecular-weight",
+                        "gross",
+                        "mass-composition",
+                        "most-abundant-mass",
+                        "monoisotopic-mass",
+                    ),
+                }
+            )
+            result_json = requests.post(
+                self.url_prefix + "/calculate", headers=headers, data=data
+            )
+            self.assertEqual(200, result_json.status_code)
+            file_name = os.path.join(
+                joinPathPy("ref/", __file__), "undefined_2897_calc.json"
+            )
+            # write references
+            with open(file_name, "w") as file:
+                file.write(result_json.text)
+
+            # check
+            with open(file_name, "r") as file:
+                ref_json = file.read()
+                self.assertEqual(result_json.text, ref_json)
+
     def test_calculate_selected(self):
         headers, data = self.get_headers(
             {
