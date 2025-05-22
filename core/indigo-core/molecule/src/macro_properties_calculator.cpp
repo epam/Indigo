@@ -97,6 +97,13 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         molecule_to_polymer_idx.emplace(molecules_refs[i], idx);
         polymers.emplace_back(molecules_refs[i]);
     }
+    auto add_connection_to_atom = [&](size_t polymer_idx, const std::string& molecule_id, int atom_idx) {
+        auto& atom_connections = polymers[polymer_idx].mol_atom_connections[molecule_id];
+        if (atom_connections.count(atom_idx) == 0)
+            atom_connections.emplace(atom_idx, 1);
+        else
+            atom_connections[atom_idx] += 1;
+    };
     for (auto connection : document.nonSequenceConnections())
     {
         auto& ep1 = connection.ep1();
@@ -141,6 +148,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             auto monomer_ap = ep1.hasStringProp("monomerId") ? ep1.getStringProp("attachmentPointId") : ep2.getStringProp("attachmentPointId");
             monomers.at(monomer_id)->connectAttachmentPointToMolecule(monomer_ap, molecule_id, atom_idx);
             size_t sequence_polymer_idx = sequence_to_polymer_idx[monomer_to_sequence_idx[monomer_id]];
+
             size_t molecule_polymer_idx = molecule_to_polymer_idx[molecule_id];
             if (sequence_polymer_idx != molecule_polymer_idx)
             {
@@ -148,11 +156,24 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 molecule_to_polymer_idx[molecule_id] = sequence_polymer_idx;
                 polymers[molecule_polymer_idx].deleted = true;
             }
-            auto& atom_connections = polymers[sequence_polymer_idx].mol_atom_connections[molecule_id];
-            if (atom_connections.count(atom_idx) == 0)
-                atom_connections.emplace(atom_idx, 1);
-            else
-                atom_connections[atom_idx] += 1;
+            add_connection_to_atom(sequence_polymer_idx, molecule_id, atom_idx);
+        }
+        else if (ep1.hasStringProp("moleculeId") && ep2.hasStringProp("moleculeId"))
+        {
+            auto first_molecule_id = ep1.getStringProp("moleculeId");
+            auto second_molecule_id = ep2.getStringProp("moleculeId");
+            int first_atom_idx = std::stoi(ep1.getStringProp("atomId"));
+            int second_atom_idx = std::stoi(ep2.getStringProp("atomId"));
+            size_t first_molecule_polymer_idx = molecule_to_polymer_idx[first_molecule_id];
+            size_t second_molecule_polymer_idx = molecule_to_polymer_idx[second_molecule_id];
+            if (first_molecule_polymer_idx != second_molecule_polymer_idx)
+            {
+                polymers[first_molecule_polymer_idx].merge(polymers[second_molecule_polymer_idx]);
+                molecule_to_polymer_idx[second_molecule_id] = first_molecule_polymer_idx;
+                polymers[second_molecule_polymer_idx].deleted = true;
+            }
+            add_connection_to_atom(first_molecule_polymer_idx, first_molecule_id, first_atom_idx);
+            add_connection_to_atom(first_molecule_polymer_idx, second_molecule_id, second_atom_idx);
         }
     }
     // search for DNA/RNA double chains
@@ -405,32 +426,55 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 BaseMolecule* pbmol;
                 Molecule mol;
                 // QueryMolecule qmol;
-                try
+                loader.loadMolecule(mol);
+                pbmol = &mol;
+                // select all atoms and
+                if (mol.countSelectedAtoms() == 0) //
                 {
-                    loader.loadMolecule(mol);
-                    pbmol = &mol;
-                    // select all atoms and add unselected H to each monomer connection to decrease implicit H
                     for (int i = 0; i < mol.vertexCount(); i++)
                     {
                         mol.selectAtom(i);
                     }
-                    for (auto atom_connections : polymer.mol_atom_connections[molecule_id])
-                    {
-                        for (int j = 0; j < atom_connections.second; j++)
-                        {
-                            std::ignore = mol.addBond(atom_connections.first, mol.addAtom(ELEM_H), BOND_SINGLE);
-                        }
-                    }
-                    MoleculeMass mass;
-                    mass.mass_options.skip_error_on_pseudoatoms = true;
-                    mass_sum += mass.molecularWeight(mol);
-                    auto gross = MoleculeGrossFormula::collect(*pbmol, true);
-                    merge_gross_data(*gross);
                 }
-                catch (...)
+                std::set<int> used_leaving_atoms;
+                for (auto atom_connections : polymer.mol_atom_connections[molecule_id])
                 {
-                    // query molecule just skipped
+                    for (int j = 0; j < atom_connections.second; j++)
+                    {
+                        bool not_found_in_spu_aps = true;
+                        // search atom in SUP attachment points and deselect leaving atom
+                        auto& sgroups = mol.sgroups;
+                        for (int s_idx = sgroups.begin(); s_idx != sgroups.end(); s_idx = sgroups.next(s_idx))
+                        {
+                            SGroup& sg = sgroups.getSGroup(s_idx);
+                            if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+                            {
+                                auto& sa = static_cast<Superatom&>(sg);
+                                for (int ap_idx = sa.attachment_points.begin(); ap_idx != sa.attachment_points.end();
+                                     ap_idx = sa.attachment_points.next(ap_idx))
+                                {
+                                    auto& atp = sa.attachment_points[ap_idx];
+                                    if (atp.aidx != atom_connections.first)
+                                        continue;
+                                    if (used_leaving_atoms.count(atp.aidx) != 0)
+                                        continue;
+                                    // found unused AP
+                                    used_leaving_atoms.emplace(atp.aidx);
+                                    mol.unselectAtom(atp.lvidx);
+                                    not_found_in_spu_aps = false;
+                                }
+                            }
+                        }
+                        // if not found - add unselected H to each monomer connection to decrease implicit H
+                        if (not_found_in_spu_aps)
+                            std::ignore = mol.addBond(atom_connections.first, mol.addAtom(ELEM_H), BOND_SINGLE);
+                    }
                 }
+                MoleculeMass mass;
+                mass.mass_options.skip_error_on_pseudoatoms = true;
+                mass_sum += mass.molecularWeight(mol);
+                auto gross = MoleculeGrossFormula::collect(*pbmol, true);
+                merge_gross_data(*gross);
             }
             Array<char> gross_str;
             MoleculeGrossFormula::toString(gross_units, gross_str);
