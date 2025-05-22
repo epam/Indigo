@@ -954,7 +954,8 @@ int main(int argc, char* argv[])
         else
             obj = indigoLoadMolecule(reader);
 
-        _prepare(obj, p.aromatization);
+        float nac = 0.0002;
+        float upc = 0.14;
         if (p.action == ACTION_LAYOUT)
         {
             indigoLayout(obj);
