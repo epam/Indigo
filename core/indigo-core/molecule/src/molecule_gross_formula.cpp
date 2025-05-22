@@ -214,7 +214,7 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
 
             if (!mol.isQueryMolecule() && !mol.isRSite(filters[i][j]))
             {
-                int implicit_h = mol.asMolecule().getImplicitH_NoThrow(filters[i][j], -1);
+                int implicit_h = mol.asMolecule().getImplicitH(filters[i][j]);
 
                 if (implicit_h >= 0)
                 {
