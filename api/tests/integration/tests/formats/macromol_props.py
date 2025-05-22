@@ -38,6 +38,7 @@ macro_data = [
     "props_connected_via_chem",
     "props_only_micro",
     "props_mol_connected_to_mol",
+    "props_double_dna_gc",
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(
