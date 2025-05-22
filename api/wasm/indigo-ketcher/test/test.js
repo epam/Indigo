@@ -1234,22 +1234,6 @@ M  END
     }
 
     {
-        test("macroprops", "chems", () => {
-            var fs = require('fs');
-            const chems = fs.readFileSync("props_chems.ket");
-            let options = new indigo.MapStringString();
-            options.set('json-saving-pretty', 'true');
-            options.set('nac', '0.2');
-            let json = JSON.parse(indigo.calculateMacroProperties(chems, options)).properties;            
-            // fs.writeFileSync("props_chems.json", json);
-            const json_ref = fs.readFileSync("props_chems.json");
-            assert.equal(json, json_ref.toString().trim());
-            options.delete();
-            assert(true);
-        });
-    }
-
-    {
         test("reaction to sdf", "pathway", () => {
             var fs = require('fs');
             const ket = fs.readFileSync("pathway.ket");

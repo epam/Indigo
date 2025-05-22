@@ -87,7 +87,7 @@ double MoleculeMass::molecularWeight(Molecule& mol)
         }
 
         // Add hydrogens
-        impl_h += mol.getImplicitH_NoThrow(v, 0);
+        impl_h += mol.getImplicitH(v);
     }
 
     for (int i = ELEM_MIN; i < ELEM_MAX; i++)
