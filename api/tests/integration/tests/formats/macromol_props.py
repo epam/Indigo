@@ -37,6 +37,7 @@ macro_data = [
     "props_connected_via_micro",
     "props_connected_via_chem",
     "props_only_micro",
+    "props_mol_connected_to_mol"
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(
