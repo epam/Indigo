@@ -428,11 +428,16 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         if (ru.sgroup_subtype != 0)
         {
             writer.Key("subtype");
-            if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_ALT) {
+            if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_ALT)
+            {
                 writer.String("ALT");
-            } else if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_RAN) {
+            }
+            else if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_RAN)
+            {
                 writer.String("RAN");
-            } else if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_BLO) {
+            }
+            else if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_BLO)
+            {
                 writer.String("BLO");
             }
         }
@@ -451,7 +456,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             break;
         }
     }
-        break;
+    break;
     case SGroup::SG_TYPE_CRO:
         throw Error("SG_TYPE_CRO not implemented in indigo yet");
         break;
