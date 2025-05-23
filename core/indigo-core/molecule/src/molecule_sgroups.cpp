@@ -132,8 +132,6 @@ CopolymerGroup::~CopolymerGroup()
 {
 }
 
-
-
 MultipleGroup::MultipleGroup()
 {
     sgroup_type = SGroup::SG_TYPE_MUL;
