@@ -25,6 +25,10 @@
 #include "molecule/molecule_mass.h"
 #include "molecule/monomer_commons.h"
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
+
 using namespace indigo;
 
 IMPL_ERROR(MacroPropertiesCalculator, "Macro Properties Calculator")
@@ -537,7 +541,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 size_t base_count = 1;
                 size_t total_strength = 0;
                 static const std::map<std::pair<std::string, std::string>, size_t> STRENGTH_PARAMS{
-                    {{"C", "G"}, 13}, {{"C", "C"}, 11}, {{"G", "G"}, 11}, {{"C", "G"}, 10}, {{"A", "C"}, 10}, {{"T", "C"}, 8},
+                    {{"G", "C"}, 13}, {{"C", "C"}, 11}, {{"G", "G"}, 11}, {{"C", "G"}, 10}, {{"A", "C"}, 10}, {{"T", "C"}, 8},
                     {{"A", "G"}, 8},  {{"T", "G"}, 7},  {{"G", "T"}, 10}, {{"C", "T"}, 8},  {{"G", "A"}, 8},  {{"C", "A"}, 7},
                     {{"A", "T"}, 7},  {{"T", "T"}, 5},  {{"A", "A"}, 5},  {{"T", "A"}, 4}};
                 while (bases.size() > 0)
@@ -715,3 +719,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
     result << s.GetString();
     output.printf("%s", result.str().c_str());
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
