@@ -101,3 +101,4 @@ third_party/cairo/src/cairo-features.h.h
 .cache/
 .kdev4/
 indigo.kdev4
+debug/
