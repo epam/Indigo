@@ -673,6 +673,20 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 }
                 else if (is_base(monomer_template.monomerClass()))
                 {
+                    if (monomer_template.monomerClass() == MonomerClass::Base)
+                    {
+                        // check that base R1 attached to sugar R3
+                        const auto& connections = monomer->connections();
+                        auto it = connections.find(kAttachmentPointR1);
+                        if (it == connections.end())
+                            continue;
+                        auto& second_ap = it->second;
+                        if (second_ap.second != kAttachmentPointR3)
+                            continue;
+                        auto& sugar = document.getMonomerById(document.monomerIdByRef(second_ap.first));
+                        if (document.getMonomerClass(*sugar) != MonomerClass::Sugar)
+                            continue;
+                    }
                     if (monomer_template.hasStringProp("naturalAnalogShort"))
                         natural_analog = monomer_template.getStringProp("naturalAnalogShort");
                     auto it = nucleotides_count.find(natural_analog);
