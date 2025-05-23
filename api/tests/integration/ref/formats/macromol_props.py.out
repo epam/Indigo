@@ -1,4 +1,5 @@
 *** HELM to KET ***
+props_bases_no_sugar.json: SUCCEED
 props_connected_via_chem.json: SUCCEED
 props_connected_via_micro.json: SUCCEED
 props_double_dna.json: SUCCEED
