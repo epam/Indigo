@@ -268,3 +268,30 @@ Now build:
 >emcmake cmake .. -DCMAKE_BUILD_TYPE=Debug -G Ninja
 >ninja indigo-ketcher-js-test
 ```
+
+
+## How to build conda package ##
+
+Prepare conda build environment as described at https://docs.conda.io/projects/conda-build/en/stable/install-conda-build.html
+Change directory to ```recipe-conda``, set INDIGO_VERSION to existing Indigo version(already published at PyPi), run conda build:
+Linux/Mac:
+```
+>cd conda-recipe
+>INDIGO_VERSION=1.29.0 conda build . 
+```
+
+Windows(using cmd):
+```
+>cd conda-recipe
+>set INDIGO_VERSION=1.29.0 
+>conda build . 
+```
+
+To upload packages: install anaconda-client, login, and upload packet using command provided by conda-build in output
+```
+>conda install anaconda-client
+>anaconda login
+Enter username:
+Enter password:
+>anaconda upload /conda-build-dir/packet-name
+```

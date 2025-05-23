@@ -102,8 +102,8 @@ setup(
     description="Indigo universal cheminformatics toolkit",
     author="EPAM Systems Life Science Department",
     author_email="lifescience.opensource@epam.com",
-    maintainer="Mikhail Kviatkovskii",
-    maintainer_email="Mikhail_Kviatkovskii@epam.com",
+    maintainer="Lifescience Opensource",
+    maintainer_email="lifescience.opensource@epam.com",
     packages=[
         "indigo",
         "indigo._common",
