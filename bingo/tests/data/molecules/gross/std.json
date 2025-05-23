@@ -1597,7 +1597,7 @@
     {
         "query_id": 320,
         "query_type": "gross",
-        "expected": null
+        "expected": "B2 C19 N2 H40"
     },
     {
         "query_id": 321,
@@ -1622,37 +1622,37 @@
     {
         "query_id": 325,
         "query_type": "gross",
-        "expected": null
+        "expected": "B C15 N O2 S H16"
     },
     {
         "query_id": 326,
         "query_type": "gross",
-        "expected": null
+        "expected": "C14 O4 Ru2"
     },
     {
         "query_id": 327,
         "query_type": "gross",
-        "expected": null
+        "expected": "C14 O4 Fe2"
     },
     {
         "query_id": 328,
         "query_type": "gross",
-        "expected": null
+        "expected": "C15 H8"
     },
     {
         "query_id": 329,
         "query_type": "gross",
-        "expected": null
+        "expected": "C15 H9"
     },
     {
         "query_id": 330,
         "query_type": "gross",
-        "expected": null
+        "expected": "C15 H9"
     },
     {
         "query_id": 331,
         "query_type": "gross",
-        "expected": null
+        "expected": "C15 H8"
     },
     {
         "query_id": 332,
@@ -2652,17 +2652,17 @@
     {
         "query_id": 531,
         "query_type": "gross",
-        "expected": null
+        "expected": "C32 N48 O112 S40 Se8 Te16 Po16 H112"
     },
     {
         "query_id": 532,
         "query_type": "gross",
-        "expected": null
+        "expected": "N32 O192 S80 Se16 Te32 Po32 H128"
     },
     {
         "query_id": 533,
         "query_type": "gross",
-        "expected": null
+        "expected": "C48 N80 O104 S16 Se8 Te16 Po16 H192"
     },
     {
         "query_id": 534,
@@ -2737,7 +2737,7 @@
     {
         "query_id": 548,
         "query_type": "gross",
-        "expected": null
+        "expected": "C10 N O6 Ca Sn H13"
     },
     {
         "query_id": 549,
@@ -2822,7 +2822,7 @@
     {
         "query_id": 565,
         "query_type": "gross",
-        "expected": null
+        "expected": "H10"
     },
     {
         "query_id": 566,
@@ -2852,17 +2852,17 @@
     {
         "query_id": 571,
         "query_type": "gross",
-        "expected": null
+        "expected": "B C36 N5 O5 S Co H47"
     },
     {
         "query_id": 572,
         "query_type": "gross",
-        "expected": null
+        "expected": "B C30 S2 H32"
     },
     {
         "query_id": 573,
         "query_type": "gross",
-        "expected": null
+        "expected": "C42 N9 O6 H48"
     },
     {
         "query_id": 574,
@@ -2912,7 +2912,7 @@
     {
         "query_id": 583,
         "query_type": "gross",
-        "expected": null
+        "expected": "C36 N8 O16 S4 H84"
     },
     {
         "query_id": 584,
@@ -3057,7 +3057,7 @@
     {
         "query_id": 612,
         "query_type": "gross",
-        "expected": null
+        "expected": "C37 P2 I3 H31"
     },
     {
         "query_id": 613,
@@ -3272,7 +3272,7 @@
     {
         "query_id": 655,
         "query_type": "gross",
-        "expected": null
+        "expected": "C42 N7 O12 P H30"
     },
     {
         "query_id": 656,
@@ -3482,7 +3482,7 @@
     {
         "query_id": 697,
         "query_type": "gross",
-        "expected": null
+        "expected": "C117 N3 H192"
     },
     {
         "query_id": 698,
@@ -3582,17 +3582,17 @@
     {
         "query_id": 717,
         "query_type": "gross",
-        "expected": null
+        "expected": "C12 N6 O6 H16"
     },
     {
         "query_id": 718,
         "query_type": "gross",
-        "expected": null
+        "expected": "C18 N9 O9 H24"
     },
     {
         "query_id": 719,
         "query_type": "gross",
-        "expected": null
+        "expected": "C24 N12 O12 H32"
     },
     {
         "query_id": 720,
@@ -3727,12 +3727,12 @@
     {
         "query_id": 746,
         "query_type": "gross",
-        "expected": null
+        "expected": "C20 N O5 Br H26"
     },
     {
         "query_id": 747,
         "query_type": "gross",
-        "expected": null
+        "expected": "C24 N O5 Br H34"
     },
     {
         "query_id": 748,
@@ -3982,67 +3982,67 @@
     {
         "query_id": 797,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C11 N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H26"
     },
     {
         "query_id": 798,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C27 N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H97"
     },
     {
         "query_id": 799,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C27 N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H86"
     },
     {
         "query_id": 800,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C27 N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H97"
     },
     {
         "query_id": 801,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C27 N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H87"
     },
     {
         "query_id": 802,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C36 N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H116"
     },
     {
         "query_id": 803,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C37 N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H67"
     },
     {
         "query_id": 804,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C36 N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H112"
     },
     {
         "query_id": 805,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C36 N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H85"
     },
     {
         "query_id": 806,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C36 N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H115"
     },
     {
         "query_id": 807,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C36 N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H110"
     },
     {
         "query_id": 808,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C36 N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H112"
     },
     {
         "query_id": 809,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C36 N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H110"
     },
     {
         "query_id": 810,
@@ -4052,7 +4052,7 @@
     {
         "query_id": 811,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C2 N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H233"
     },
     {
         "query_id": 812,
@@ -4062,32 +4062,32 @@
     {
         "query_id": 813,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H133"
     },
     {
         "query_id": 814,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H119"
     },
     {
         "query_id": 815,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H113"
     },
     {
         "query_id": 816,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H145"
     },
     {
         "query_id": 817,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H130"
     },
     {
         "query_id": 818,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H115"
     },
     {
         "query_id": 819,
@@ -4097,12 +4097,12 @@
     {
         "query_id": 820,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H20"
     },
     {
         "query_id": 821,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H11"
     },
     {
         "query_id": 822,
@@ -4112,12 +4112,12 @@
     {
         "query_id": 823,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H34"
     },
     {
         "query_id": 824,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H14"
     },
     {
         "query_id": 825,
@@ -4127,12 +4127,12 @@
     {
         "query_id": 826,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H22"
     },
     {
         "query_id": 827,
         "query_type": "gross",
-        "expected": null
+        "expected": "He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf H22"
     },
     {
         "query_id": 828,
@@ -4742,7 +4742,7 @@
     {
         "query_id": 949,
         "query_type": "gross",
-        "expected": null
+        "expected": "H2"
     },
     {
         "query_id": 950,
@@ -4822,7 +4822,7 @@
     {
         "query_id": 965,
         "query_type": "gross",
-        "expected": null
+        "expected": "B2 C19 N2 H40"
     },
     {
         "query_id": 966,
@@ -5147,7 +5147,7 @@
     {
         "query_id": 1030,
         "query_type": "gross",
-        "expected": null
+        "expected": "B2 H6"
     },
     {
         "query_id": 1031,
@@ -5157,7 +5157,7 @@
     {
         "query_id": 1032,
         "query_type": "gross",
-        "expected": null
+        "expected": "H4"
     },
     {
         "query_id": 1033,
@@ -5207,7 +5207,7 @@
     {
         "query_id": 1042,
         "query_type": "gross",
-        "expected": null
+        "expected": "C2 S H8"
     },
     {
         "query_id": 1043,
@@ -5507,22 +5507,22 @@
     {
         "query_id": 1102,
         "query_type": "gross",
-        "expected": null
+        "expected": "C6 N3 O3 H8"
     },
     {
         "query_id": 1103,
         "query_type": "gross",
-        "expected": null
+        "expected": "C6 N3 O3 H8"
     },
     {
         "query_id": 1104,
         "query_type": "gross",
-        "expected": null
+        "expected": "C6 N3 O3 H8"
     },
     {
         "query_id": 1105,
         "query_type": "gross",
-        "expected": null
+        "expected": "C6 N3 O3 H8"
     },
     {
         "query_id": 1106,
@@ -5927,7 +5927,7 @@
     {
         "query_id": 1186,
         "query_type": "gross",
-        "expected": null
+        "expected": "C24 O4 Mo2 H30"
     },
     {
         "query_id": 1187,
@@ -5937,12 +5937,12 @@
     {
         "query_id": 1188,
         "query_type": "gross",
-        "expected": null
+        "expected": "C13 N Fe H8"
     },
     {
         "query_id": 1189,
         "query_type": "gross",
-        "expected": null
+        "expected": "C104 P8 Pt2 H80"
     },
     {
         "query_id": 1190,
@@ -5957,7 +5957,7 @@
     {
         "query_id": 1192,
         "query_type": "gross",
-        "expected": null
+        "expected": "C20 Fe2 H20"
     },
     {
         "query_id": 1193,
@@ -5977,7 +5977,7 @@
     {
         "query_id": 1196,
         "query_type": "gross",
-        "expected": null
+        "expected": "C185 N20 O3 F3 S Pd H140"
     },
     {
         "query_id": 1197,
@@ -6047,27 +6047,27 @@
     {
         "query_id": 1210,
         "query_type": "gross",
-        "expected": null
+        "expected": "B C36 N4 F4 Br4 Rh H36"
     },
     {
         "query_id": 1211,
         "query_type": "gross",
-        "expected": null
+        "expected": "B C11 N7 O4 H27"
     },
     {
         "query_id": 1212,
         "query_type": "gross",
-        "expected": null
+        "expected": "C87 P3 Fe3 I3 H51"
     },
     {
         "query_id": 1213,
         "query_type": "gross",
-        "expected": null
+        "expected": "B C10 F4 Fe"
     },
     {
         "query_id": 1214,
         "query_type": "gross",
-        "expected": null
+        "expected": "B C10 F4 Fe H10"
     },
     {
         "query_id": 1215,
@@ -6092,7 +6092,7 @@
     {
         "query_id": 1219,
         "query_type": "gross",
-        "expected": null
+        "expected": "C25 O2 F6 P2 Cl Ru H22"
     },
     {
         "query_id": 1220,
@@ -6107,7 +6107,7 @@
     {
         "query_id": 1222,
         "query_type": "gross",
-        "expected": null
+        "expected": "C34 N O4 F3 S Ru2 H32"
     },
     {
         "query_id": 1223,
@@ -6157,7 +6157,7 @@
     {
         "query_id": 1232,
         "query_type": "gross",
-        "expected": null
+        "expected": "C10 O Cl6 Fe3"
     },
     {
         "query_id": 1233,
@@ -6422,7 +6422,7 @@
     {
         "query_id": 1285,
         "query_type": "gross",
-        "expected": null
+        "expected": "C8 N2 H15"
     },
     {
         "query_id": 1286,
@@ -6447,12 +6447,12 @@
     {
         "query_id": 1290,
         "query_type": "gross",
-        "expected": null
+        "expected": "C3 N6 H4"
     },
     {
         "query_id": 1291,
         "query_type": "gross",
-        "expected": null
+        "expected": "C11 N2 P2 H18"
     },
     {
         "query_id": 1292,
@@ -6477,7 +6477,7 @@
     {
         "query_id": 1296,
         "query_type": "gross",
-        "expected": null
+        "expected": "C7 N2 H17"
     },
     {
         "query_id": 1297,
@@ -6537,7 +6537,7 @@
     {
         "query_id": 1308,
         "query_type": "gross",
-        "expected": null
+        "expected": "C14 N O2 H9"
     },
     {
         "query_id": 1309,
@@ -6872,7 +6872,7 @@
     {
         "query_id": 1375,
         "query_type": "gross",
-        "expected": null
+        "expected": "C5 N2 O H8"
     },
     {
         "query_id": 1376,
@@ -7962,7 +7962,7 @@
     {
         "query_id": 1593,
         "query_type": "gross",
-        "expected": null
+        "expected": "C38 N8 Cl H29"
     },
     {
         "query_id": 1594,
@@ -7972,7 +7972,7 @@
     {
         "query_id": 1595,
         "query_type": "gross",
-        "expected": null
+        "expected": "C26 N4 Cl H31"
     },
     {
         "query_id": 1596,
@@ -8002,7 +8002,7 @@
     {
         "query_id": 1601,
         "query_type": "gross",
-        "expected": null
+        "expected": "C23 N8 O Co H25"
     },
     {
         "query_id": 1602,
@@ -8202,17 +8202,17 @@
     {
         "query_id": 1641,
         "query_type": "gross",
-        "expected": null
+        "expected": "C10 Fe H10"
     },
     {
         "query_id": 1642,
         "query_type": "gross",
-        "expected": null
+        "expected": "C10 Fe H12"
     },
     {
         "query_id": 1643,
         "query_type": "gross",
-        "expected": null
+        "expected": "C10 Fe H10"
     },
     {
         "query_id": 1644,
