@@ -122,6 +122,18 @@ RepeatingUnit::~RepeatingUnit()
 {
 }
 
+CopolymerGroup::CopolymerGroup()
+{
+    sgroup_type = SGroup::SG_TYPE_COP;
+    connectivity = 0;
+}
+
+CopolymerGroup::~CopolymerGroup()
+{
+}
+
+
+
 MultipleGroup::MultipleGroup()
 {
     sgroup_type = SGroup::SG_TYPE_MUL;
@@ -210,6 +222,10 @@ int MoleculeSGroups::addSGroup(int sg_type)
     else if (sg_type == SGroup::SG_TYPE_MUL)
     {
         idx = _sgroups.add(new MultipleGroup());
+    }
+    else if (sg_type == SGroup::SG_TYPE_COP)
+    {
+        idx = _sgroups.add(new CopolymerGroup());
     }
     else
     {
