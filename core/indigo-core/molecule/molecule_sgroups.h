@@ -218,6 +218,7 @@ namespace indigo
         ~CopolymerGroup() override;
 
         int connectivity;
+
     private:
         CopolymerGroup(const CopolymerGroup&);
     };
