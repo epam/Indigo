@@ -25,6 +25,15 @@
 #include "indigo-renderer.h"
 #endif
 
+// For monomer expansion (indigoExpand)
+#include "molecule/ket_document.h"
+#include "molecule/ket_document_json_loader.h"
+#include "molecule/ket_document_json_saver.h"
+#include "molecule/mm_expand.h"
+// Array and output for JSON serialization
+#include "common/base_cpp/array.h"
+#include "common/base_cpp/output.h"
+
 namespace indigo
 {
     using cstring = const char*;
@@ -1112,6 +1121,24 @@ namespace indigo
         return buffer.GetString();
     }
 
+    std::string expand(const std::string& data, const std::vector<int>& expansions)
+    {
+        KetDocument document{};
+        KetDocumentJsonLoader doc_loader{};
+        doc_loader.parseJson(data, document);
+
+        indigoExpand(document, expansions);
+
+        Array<char> out;
+        ArrayOutput std_out(out);
+        KetDocumentJsonSaver saver(std_out);
+        saver.pretty_json = true;
+        saver.saveKetDocument(document);
+        std::string json_out{out.ptr(), static_cast<std::size_t>(out.size())};
+        return json_out;
+    }
+
+
     EMSCRIPTEN_BINDINGS(module)
     {
         emscripten::function("version", &version);
@@ -1129,6 +1156,7 @@ namespace indigo
         emscripten::function("calculateMacroProperties", &calculateMacroProperties);
         emscripten::function("render", &render);
         emscripten::function("reactionComponents", &reactionComponents);
+        emscripten::function("expand", &expand);
 
         emscripten::register_vector<int>("VectorInt");
         emscripten::register_map<std::string, std::string>("MapStringString");
