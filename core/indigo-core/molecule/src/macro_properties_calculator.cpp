@@ -481,7 +481,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 merge_gross_data(*gross);
             }
             Array<char> gross_str;
-            MoleculeGrossFormula::toString(gross_units, gross_str);
+            MoleculeGrossFormula::toString_Hill(gross_units, gross_str);
             writer.Key("grossFormula");
             writer.String(gross_str.ptr());
             writer.Key("mass");

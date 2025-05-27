@@ -1,6 +1,6 @@
 [
     {
-        "grossFormula": "C58 N26 O36 P4 H74",
+        "grossFormula": "C58 H74 N26 O36 P4",
         "mass": 1835.255813,
         "Tm": 31.445617,
         "monomerCount": {
@@ -13,7 +13,7 @@
         }
     },
     {
-        "grossFormula": "C29 N9 O21 P2 H39",
+        "grossFormula": "C29 H39 N9 O21 P2",
         "mass": 911.615188,
         "monomerCount": {
             "peptides": {},

@@ -1,6 +1,6 @@
 [
     {
-        "grossFormula": "C16 N6 O6 H22",
+        "grossFormula": "C16 H22 N6 O6",
         "mass": 394.382483,
         "pKa": 4.006666,
         "extinctionCoefficient": 0,
@@ -17,7 +17,7 @@
         }
     },
     {
-        "grossFormula": "C16 N6 O6 H22",
+        "grossFormula": "C16 H22 N6 O6",
         "mass": 394.382483,
         "pKa": 4.006666,
         "extinctionCoefficient": 0,
