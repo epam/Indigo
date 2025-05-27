@@ -16,11 +16,13 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "molecule/base_molecule.h"
+#include <algorithm>
+
 #include "base_cpp/crc32.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "graph/dfs_walk.h"
+#include "molecule/base_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/inchi_wrapper.h"
 #include "molecule/ket_document.h"
@@ -5253,12 +5255,8 @@ int BaseMolecule::getExpandedMonomerCount() const
 
 std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
 {
-    thread_local static std::unique_ptr<BaseMolecule> result;
-    thread_local static int edit_revision = -1;
-    if (edit_revision == _edit_revision)
-        return result;
+    std::unique_ptr<BaseMolecule>& result = _with_expanded_monomers;
     result.reset(neu());
-    edit_revision = _edit_revision;
     result->clone(*this);
     std::list<int> att_indexes_to_remove;
     std::list<int> monomer_ids;
