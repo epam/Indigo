@@ -1415,7 +1415,7 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
     else if (!_scanner.isEOF())
     {
         _scanner.skip(1);
-        monomer_alias = static_cast<char>(ch);
+        monomer_alias = ch;
         while (!_scanner.isEOF())
         {
             ch = static_cast<char>(_scanner.lookNext());
@@ -1428,7 +1428,7 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
                 end_of_name = ch == '.' || ch == '}';
             if (end_of_name)
                 break;
-            monomer_alias += static_cast<char>(ch);
+            monomer_alias += ch;
             _scanner.skip(1);
         }
     }
