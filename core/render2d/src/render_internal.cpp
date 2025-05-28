@@ -16,8 +16,6 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <regex>
-
 #include "render_internal.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
@@ -28,6 +26,7 @@
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
 #include "render_context.h"
+#include <regex>
 
 #ifdef _WIN32
 #pragma warning(push, 4)
