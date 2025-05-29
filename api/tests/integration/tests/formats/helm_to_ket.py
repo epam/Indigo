@@ -51,6 +51,7 @@ helm_data = {
     "helm_2826": "RNA1{[dR](A,C,G,T)P.[dR](A,G,T)P.[dR](A,T)P}|RNA2{R(A,C,G,U)P.R(A,C,U)P.R(A,U)[Ssp]}|RNA3{[RSpabC](A,U)P}$RNA1,RNA2,2:pair-8:pair|RNA1,RNA2,5:pair-5:pair|RNA2,RNA1,2:pair-8:pair$$$V2.0",
     "helm_alias": "RNA1{m(A)P.[n3r](C)P}$$$$V2.0",
     "helm_no_brackets": "PEPTIDE1{DACys.C.(meA+C)}$$$$V2.0",
+    "helm_unresolved": "PEPTIDE1{Unres1.Unres2.(Unres1+Unres2+Unres3)}|RNA1{Unres1(Unres2)}$$$$V2.0",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -85,7 +86,6 @@ helm_errors = {
     "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:R1-1:R2$$$V2.0": "Monomer 'R' attachment point 'R2' already connected to monomer'monomer3' attachment point 'R1'",
     "PEPTIDE1{(A:1.5+C:aaaa)}$$$$V2.0": "Unexpected symbol. Expected digit but found 'a'",
     "PEPTIDE1{(A:+C:0.1)}$$$$V2.0": "Unexpected symbol. Expected digit but found '+'",
-    "RNA1{R(A).R(A)p}$$$$V2.0": "Monomer template with class 'Phosphate' and alias 'R' not found in monomer librarys",
     "PEPTIDE1{(A:1.5.+C:0.1)}$$$$V2.0": "Enexpected symbol. Second dot in number",
     "RNA1{R[P(O)(O)(=O)O]}$$$$V2.0": "Unknown attachment point 'R1' in monomer Mod0",
 }
