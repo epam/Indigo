@@ -33,6 +33,10 @@
 #include "molecule/sequence_loader.h"
 #include "molecule/smiles_loader.h"
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
+
 using namespace indigo;
 
 IMPL_ERROR(SequenceLoader, "SEQUENCE loader");
@@ -393,7 +397,7 @@ void SequenceLoader::addMonomer(KetDocument& document, const std::string& monome
             auto& template_id = _library.getMonomerTemplateIdByAlias(monomer_class, template_alias);
             if (template_id.size() == 0)
                 throw Error("Monomer base template '%s' not found", template_alias.c_str());
-            auto& option = options.emplace_back(template_id);
+            std::ignore = options.emplace_back(template_id);
             auto& monomer_template = _library.getMonomerTemplateById(template_id);
             checkAddTemplate(document, monomer_template);
             _alias_to_id.emplace(make_pair(monomer_class, template_alias), template_id);
@@ -831,7 +835,6 @@ void SequenceLoader::loadIdt(BaseMolecule& mol)
                 }
                 else
                 {
-                    IdtModification alias_mod;
                     auto monomer_template_id = _library.getMonomerTemplateIdByIdtAlias(idt_alias, alias_mod);
                     if (monomer_template_id.size())
                     {
@@ -1018,7 +1021,6 @@ void SequenceLoader::loadIdt(KetDocument& document)
             std::string single_monomer = "";
             std::string single_monomer_alias = "";
             std::string single_monomer_class;
-            bool unresolved = false;
             bool ambiguous_monomer = false;
 
             if (token.first.back() == '/')
@@ -1242,7 +1244,6 @@ void SequenceLoader::loadIdt(KetDocument& document)
                 }
                 else
                 {
-                    IdtModification alias_mod;
                     auto& monomer_template_id = _library.getMonomerTemplateIdByIdtAlias(idt_alias, alias_mod);
                     if (monomer_template_id.size())
                     {
@@ -1299,10 +1300,10 @@ static std::set<std::string> polymer_types{kHELMPolymerTypePEPTIDE, kHELMPolymer
 static const char* reserved_helm_chars = "${}|.,-:[]()";
 static const char* unexpected_eod = unexpected_eod;
 
-std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerClass monomer_class)
+std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerClass monomer_class, bool inside_parentheses)
 {
     std::string monomer_alias;
-    auto ch = _scanner.lookNext();
+    char ch = static_cast<char>(_scanner.lookNext());
 
     if (ch == '*')
     {
@@ -1331,6 +1332,16 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
                 if (bracket_count > 0)
                     monomer_alias += ch;
                 break;
+            case '(':
+            case ')':
+            case '=':
+            case '#':
+            case '/':
+            case '\\':
+            case '+':
+                monomer_alias += ch;
+                smiles = true;
+                break;
             default:
                 monomer_alias += ch;
                 break;
@@ -1340,31 +1351,7 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
             throw Error(unexpected_eod);
         if (ch != ']')
             throw Error("Unexpected symbol. Expected ']' but found '%c'.", ch);
-        bool found = false;
-        auto monomer_in_library = [this](MonomerClass monomer_class, const std::string& monomer_alias) -> bool {
-            if (_library.getMonomerTemplateIdByAlias(monomer_class, monomer_alias).size() > 0)
-                return true;
-            if (_library.getMonomerTemplateIdByAliasHELM(monomer_class, monomer_alias).size() > 0)
-                return true;
-            return false;
-        };
-        if (monomer_in_library(monomer_class, monomer_alias))
-        {
-            found = true;
-        }
-        else if (monomer_class == MonomerClass::Sugar) // In place of sugar can be phosphate or unsplit rna
-        {
-            if (monomer_in_library(MonomerClass::Phosphate, monomer_alias))
-            {
-                found = true;
-            }
-            else
-            {
-                if (monomer_in_library(MonomerClass::RNA, monomer_alias))
-                    found = true;
-            }
-        }
-        if (smiles || !found) // Monomer alias not found in library - try read as smiles
+        if (smiles) // Monomer alias not found in library - try read as smiles
         {
             // Convert smiles to molecule
             BufferScanner scanner(monomer_alias.c_str());
@@ -1404,12 +1391,11 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
             }
             for (auto i : mol.edges())
             {
-                auto edge = mol.getEdge(i);
+                auto& edge = mol.getEdge(i);
                 int bond_order = mol.getBondOrder(i);
                 if (bond_order == BOND_ZERO)
                 {
                     bond_order = _BOND_COORDINATION;
-                    const Edge& edge = mol.getEdge(i);
                     if ((mol.getAtomNumber(edge.beg) == ELEM_H) || (mol.getAtomNumber(edge.end) == ELEM_H))
                         bond_order = _BOND_HYDROGEN;
                 }
@@ -1426,10 +1412,25 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
             _added_templates.emplace(monomer_class, monomer_alias);
         }
     }
-    else if (ch != -1)
+    else if (!_scanner.isEOF())
     {
         _scanner.skip(1);
         monomer_alias = ch;
+        while (!_scanner.isEOF())
+        {
+            ch = static_cast<char>(_scanner.lookNext());
+            if (ch == '(' || ch == '[' || ch == '\'' || ch == '"') // repeating or annotation
+                break;
+            bool end_of_name = false;
+            if (inside_parentheses)
+                end_of_name = ch == ',' || ch == '+' || ch == ':' || ch == ')';
+            else
+                end_of_name = ch == '.' || ch == '}';
+            if (end_of_name)
+                break;
+            monomer_alias += ch;
+            _scanner.skip(1);
+        }
     }
     if (_scanner.isEOF())
         throw Error(unexpected_eod);
@@ -1469,14 +1470,14 @@ std::string SequenceLoader::readHelmAnnotation()
     return annotation;
 }
 
-int SequenceLoader::readCount(std::string& count, Scanner& _scanner)
+int SequenceLoader::readCount(std::string& count)
 {
     count.clear();
-    int ch = _scanner.lookNext();
+    char ch = static_cast<char>(_scanner.lookNext());
     if (ch == ':')
     {
         _scanner.skip(1);
-        ch = _scanner.lookNext();
+        ch = static_cast<char>(_scanner.lookNext());
         while ((std::isdigit(ch) || ch == '.') && !_scanner.isEOF())
         {
             _scanner.skip(1);
@@ -1488,7 +1489,7 @@ int SequenceLoader::readCount(std::string& count, Scanner& _scanner)
                     throw Error("Enexpected symbol. Second dot in number");
             }
             count += ch;
-            ch = _scanner.lookNext();
+            ch = static_cast<char>(_scanner.lookNext());
         }
         if (count.size() == 0)
             throw Error("Unexpected symbol. Expected digit but found '%c'", ch);
@@ -1501,23 +1502,23 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
     std::string monomer_alias, repeating, annotation;
     ambiguous_template_opts options;
     int ch = _scanner.lookNext();
-    bool was_bracket = false;
+    bool inside_parentheses = false;
     if (ch == '(')
     {
         _scanner.skip(1);
-        was_bracket = true;
+        inside_parentheses = true;
     }
-    monomer_alias = readHelmMonomerAlias(document, monomer_class);
+    monomer_alias = readHelmMonomerAlias(document, monomer_class, inside_parentheses);
     ch = _scanner.lookNext();
     bool is_ambiguous = false;
 
     if (ch == ',' || ch == '+' || ch == ':') // looks like ambiguous
     {
-        if (!was_bracket)
+        if (!inside_parentheses)
             throw Error("Unexpected symbol '%c'. Ambiguous monomers should be defined in ().");
         std::string count;
         is_ambiguous = true;
-        ch = readCount(count, _scanner); // in ch==':' read conunt and return next char
+        ch = readCount(count); // in ch==':' read count and return next char
         bool is_mixture = false;
         if (ch == '+')
             is_mixture = true;
@@ -1547,10 +1548,10 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
             }
             if (ch == ')')
                 break;
-            opt_alias = readHelmMonomerAlias(document, monomer_class);
+            opt_alias = readHelmMonomerAlias(document, monomer_class, inside_parentheses);
             if (aliases.count(opt_alias) > 0)
                 throw Error("Ivalid ambiguous monomer. Monomer '%s' repeated more than once.", opt_alias.c_str());
-            ch = readCount(count, _scanner);
+            ch = readCount(count);
             if (is_mixture && ch != '+' && ch != ')')
                 throw Error("Invalid ambiguous monomer. Expected '+' but found '%c'", ch);
             else if (!is_mixture && ch != ',' && ch != ')')
@@ -1588,7 +1589,7 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
     repeating = readHelmRepeating();
     annotation = readHelmAnnotation();
     ch = _scanner.lookNext();
-    if (was_bracket && !is_ambiguous) // for variants ')' already processed
+    if (inside_parentheses && !is_ambiguous) // for variants ')' already processed
         if (ch == ')')
             _scanner.skip(1); // single monomer in () - branch monomer
         else
@@ -1602,7 +1603,7 @@ std::string SequenceLoader::readHelmSimplePolymerName(std::string& polymer_name)
     while (std::isalpha(ch) && !_scanner.isEOF())
     {
         _scanner.skip(1);
-        polymer_name += std::toupper(ch);
+        polymer_name += static_cast<char>(std::toupper(ch));
         ch = _scanner.lookNext();
     }
     std::string polymer_type = polymer_name;
@@ -1611,7 +1612,7 @@ std::string SequenceLoader::readHelmSimplePolymerName(std::string& polymer_name)
     while (std::isdigit(ch) && !_scanner.isEOF())
     {
         _scanner.skip(1);
-        polymer_name += ch;
+        polymer_name += static_cast<char>(ch);
         ch = _scanner.lookNext();
     }
     return polymer_type;
@@ -1648,9 +1649,9 @@ const std::string SequenceLoader::checkAddAmbiguousMonomerTemplate(KetDocument& 
             auto& monomer_template = _library.getMonomerTemplateById(opt_template_id);
             checkAddTemplate(document, monomer_template);
             std::set<std::string> ap_names;
-            for (auto& it : monomer_template.attachmentPoints())
+            for (auto& ap_it : monomer_template.attachmentPoints())
             {
-                ap_names.emplace(it.first);
+                ap_names.emplace(ap_it.first);
             }
             if (not_inited)
             {
@@ -1659,9 +1660,9 @@ const std::string SequenceLoader::checkAddAmbiguousMonomerTemplate(KetDocument& 
             }
             else
             {
-                for (auto it : vt_ap_names)
-                    if (ap_names.count(it) == 0)
-                        vt_ap_names.erase(it);
+                for (auto ap_it : vt_ap_names)
+                    if (ap_names.count(ap_it) == 0)
+                        vt_ap_names.erase(ap_it);
             }
         }
         template_id = alias;
@@ -1728,7 +1729,6 @@ void SequenceLoader::loadHELM(KetDocument& document)
     std::string simple_polymer_name = "";
     std::string simple_polymer_type = "";
     int monomer_idx = 0;
-    int prev_monomer_template_atom_idx = -1;
     int unknown_count = 0;
     _unknown_ambiguous_count = 0;
     using polymer_map = std::map<std::string, std::map<int, size_t>>;
@@ -2236,3 +2236,7 @@ void SequenceLoader::loadFasta(KetDocument& document, SeqType seq_type)
     else
         document.setFastaProps(properties);
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
