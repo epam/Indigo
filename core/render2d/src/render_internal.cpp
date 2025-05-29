@@ -18,7 +18,6 @@
 
 #include "render_internal.h"
 #include "base_cpp/output.h"
-#include "base_cpp/queue.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tree.h"
 #include "molecule/molecule.h"
@@ -27,6 +26,7 @@
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
 #include "render_context.h"
+#include <regex>
 
 #ifdef _WIN32
 #pragma warning(push, 4)
@@ -3068,6 +3068,11 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
     ad.boundBoxMin.set(0, 0);
     ad.boundBoxMax.set(0, 0);
 
+    if (ad.label == 0 && ad.hydroPos == HYDRO_POS_LEFT)
+    {
+        _reverseLabelText(aid);
+    }
+
     int color = ad.color;
     bool highlighted = _vertexIsHighlighted(aid);
 
@@ -3564,6 +3569,60 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         if (ad.showLabel)
             index.bbp.set(ad.rightMargin + _settings.labelInternalOffset, ad.ypos + 0.5f * ad.height);
     }
+}
+
+void MoleculeRenderInternal::_reverseLabelText(const int aid)
+{
+    AtomDesc& ad = _ad(aid);
+    if (ad.pseudo.size() > 0)
+    {
+        std::ostringstream stream;
+        for (int i = 0; i < ad.pseudo.size() - 1; ++i)
+        {
+            stream << ad.pseudo[i];
+        }
+
+        std::vector<std::string> splitLabel = _splitLabelText(stream.str());
+        std::reverse(splitLabel.begin(), splitLabel.end());
+        std::ostringstream outStream;
+        for (const auto& label : splitLabel)
+        {
+            outStream << label;
+        }
+        std::string reversedLabel = outStream.str();
+
+        for (int i = 0; i < ad.pseudo.size() - 1; ++i)
+        {
+            ad.pseudo[i] = reversedLabel[i];
+        }
+    }
+}
+
+std::vector<std::string> MoleculeRenderInternal::_splitLabelText(const std::string& label) const
+{
+    std::vector<std::string> result;
+    std::regex pattern("(([nst]-Bu|sBu|[ni]-Pr|iPr|Tol|Me|Et|Ac|Tf|Si|Na|Mg|Cl|Br)\\d*)");
+    std::sregex_token_iterator iter(label.begin(), label.end(), pattern);
+    std::sregex_token_iterator end;
+
+    while (iter != end)
+    {
+        result.push_back(*iter);
+        ++iter;
+    }
+
+    size_t length = 0;
+    for (const auto& abbreviation : result)
+    {
+        length += abbreviation.length();
+    }
+
+    if (length != label.length())
+    {
+        return {label};
+    }
+
+    return result;
 }
 
 int MoleculeRenderInternal::_pushTextItem(RenderItem::TYPE ritype, int color, bool highlighted)
