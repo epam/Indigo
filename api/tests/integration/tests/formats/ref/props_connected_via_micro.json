@@ -1,0 +1,36 @@
+[
+    {
+        "grossFormula": "C16 H22 N6 O6",
+        "mass": 394.382483,
+        "pKa": 4.006666,
+        "extinctionCoefficient": 0,
+        "hydrophobicity": [
+            0.616
+        ],
+        "monomerCount": {
+            "peptides": {
+                "A": 1
+            },
+            "nucleotides": {
+                "A": 1
+            }
+        }
+    },
+    {
+        "grossFormula": "C16 H22 N6 O6",
+        "mass": 394.382483,
+        "pKa": 4.006666,
+        "extinctionCoefficient": 0,
+        "hydrophobicity": [
+            0.616
+        ],
+        "monomerCount": {
+            "peptides": {
+                "A": 1
+            },
+            "nucleotides": {
+                "A": 1
+            }
+        }
+    }
+]

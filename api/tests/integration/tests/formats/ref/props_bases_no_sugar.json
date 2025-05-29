@@ -1,0 +1,12 @@
+[
+    {
+        "grossFormula": "C20 H19 N15 O4",
+        "mass": 533.462959,
+        "monomerCount": {
+            "peptides": {},
+            "nucleotides": {
+                "A": 1
+            }
+        }
+    }
+]

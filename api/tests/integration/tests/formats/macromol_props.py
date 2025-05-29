@@ -32,6 +32,14 @@ macro_data = [
     "props_double_dna",
     "props_peptides",
     "props_peptides_micro",
+    "props_rna_with_mol",
+    "props_nucleoside_peptide",
+    "props_connected_via_micro",
+    "props_connected_via_chem",
+    "props_only_micro",
+    "props_mol_connected_to_mol",
+    "props_double_dna_gc",
+    "props_bases_no_sugar",
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -45,7 +53,11 @@ for filename in sorted(macro_data):
     try:
         props = mol.macroProperties(upc, nac)
     except IndigoException as e:
-        print("Test '%s' filed: %", (filename, getIndigoExceptionText(e)))
+        print("Test '%s' failed: %", (filename, getIndigoExceptionText(e)))
+        continue
+    except Exception as e:
+        print("Test '%s' failed: %", (filename, e))
+        continue
     # with open(os.path.join(ref, filename) + ".json", "w") as file:
     #     file.write(props)
     with open(os.path.join(ref, filename) + ".json", "r") as file:
