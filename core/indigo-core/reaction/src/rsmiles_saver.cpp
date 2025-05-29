@@ -368,8 +368,42 @@ void RSmilesSaver::_writeRadicals()
     }
 }
 
+void RSmilesSaver::_startExtension()
+{
+    if (_comma)
+        _output.writeChar(',');
+    else
+    {
+        _output.writeString(" |");
+        _comma = true;
+    }
+}
+
 void RSmilesSaver::_writePseudoAtoms()
 {
+    int atoms_offset = 0;
+    for (int i = 0; i < _written_atoms.size(); i++)
+    {
+        BaseMolecule& mol = _brxn->getBaseMolecule(_written_atoms[i].mol);
+        int idx = _written_atoms[i].idx;
+
+        if ((mol.isPseudoAtom(idx) || mol.isAlias(idx)) || (mol.isRSite(idx) && mol.getRSiteBits(idx) > 0))
+        {
+            _startExtension();
+            _output.writeChar('$');
+            for (size_t i = 0; i < _smiles_savers.size(); ++i)
+            {
+                auto& smiles_saver = _smiles_savers[i];
+                smiles_saver->writePseudoAtoms(atoms_offset, true);
+                atoms_offset += smiles_saver->writtenAtoms().size();
+            }
+            _output.writeChar('$');
+            break;
+        }
+    }
+
+    return;
+
     int i;
 
     for (i = 0; i < _written_atoms.size(); i++)

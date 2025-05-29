@@ -75,6 +75,7 @@ namespace indigo
         void _writeFragmentsInfo();
         void _writeStereogroups();
         void _writeRadicals();
+        void _startExtension();
         void _writePseudoAtoms();
         void _writeHighlighting();
         void _writeRingCisTrans();

@@ -698,7 +698,7 @@ void SmilesSaver::_saveMolecule()
         writeRingCisTrans();
         _writeStereogroups();
         _writeRadicals();
-        _writePseudoAtoms();
+        writePseudoAtoms();
         _writeHighlighting();
         _writeRGroups();
         _writeSGroups();
@@ -1473,13 +1473,12 @@ void SmilesSaver::_writeRadicals()
     }
 }
 
-void SmilesSaver::_writePseudoAtoms()
+void SmilesSaver::writePseudoAtoms(int atoms_offset, bool force_pseudo)
 {
     BaseMolecule& mol = *_bmol;
 
     int i;
-
-    if (_attachment_indices.size() == 0)
+    if (_attachment_indices.size() == 0 && !force_pseudo)
     {
         for (i = 0; i < _written_atoms.size(); i++)
         {
@@ -1499,13 +1498,15 @@ void SmilesSaver::_writePseudoAtoms()
             return;
     }
 
-    _startExtension();
-
-    _output.writeChar('$');
+    if (!force_pseudo)
+    {
+        _startExtension();
+        _output.writeChar('$');
+    }
 
     for (i = 0; i < _written_atoms.size(); i++)
     {
-        if (i > 0)
+        if (i > 0 || atoms_offset > 0)
             _output.writeChar(';');
 
         if (mol.isPseudoAtom(_written_atoms[i]))
@@ -1539,7 +1540,8 @@ void SmilesSaver::_writePseudoAtoms()
         // ChemAxon's Extended SMILES notation for attachment points
         _output.printf(";_AP%d", _attachment_indices[i]);
 
-    _output.writeChar('$');
+    if (!force_pseudo)
+        _output.writeChar('$');
 }
 
 void SmilesSaver::writePseudoAtom(const char* label, Output& out)
