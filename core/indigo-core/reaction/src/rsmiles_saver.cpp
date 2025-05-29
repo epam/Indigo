@@ -386,7 +386,6 @@ void RSmilesSaver::_writePseudoAtoms()
     {
         BaseMolecule& mol = _brxn->getBaseMolecule(_written_atoms[i].mol);
         int idx = _written_atoms[i].idx;
-
         if ((mol.isPseudoAtom(idx) || mol.isAlias(idx)) || (mol.isRSite(idx) && mol.getRSiteBits(idx) > 0))
         {
             _startExtension();
@@ -394,61 +393,13 @@ void RSmilesSaver::_writePseudoAtoms()
             for (size_t i = 0; i < _smiles_savers.size(); ++i)
             {
                 auto& smiles_saver = _smiles_savers[i];
-                smiles_saver->writePseudoAtoms(atoms_offset, true);
+                smiles_saver->writePseudoAtoms(atoms_offset, false);
                 atoms_offset += smiles_saver->writtenAtoms().size();
             }
             _output.writeChar('$');
             break;
         }
     }
-
-    return;
-
-    int i;
-
-    for (i = 0; i < _written_atoms.size(); i++)
-    {
-        BaseMolecule& mol = _brxn->getBaseMolecule(_written_atoms[i].mol);
-        int idx = _written_atoms[i].idx;
-
-        if (mol.isPseudoAtom(idx) || mol.isAlias(idx))
-            break;
-        if (mol.isRSite(idx) && mol.getRSiteBits(idx) > 0)
-            break;
-    }
-
-    if (i == _written_atoms.size())
-        return;
-
-    if (_comma)
-        _output.writeChar(',');
-    else
-    {
-        _output.writeString(" |");
-        _comma = true;
-    }
-
-    _output.writeChar('$');
-
-    for (i = 0; i < _written_atoms.size(); i++)
-    {
-        _Idx& idx = _written_atoms[i];
-
-        if (i > 0)
-            _output.writeChar(';');
-
-        BaseMolecule& mol = _brxn->getBaseMolecule(idx.mol);
-
-        if (mol.isPseudoAtom(idx.idx))
-            SmilesSaver::writePseudoAtom(mol.getPseudoAtom(idx.idx), _output);
-        else if (mol.isAlias(idx.idx))
-            SmilesSaver::writePseudoAtom(mol.getAlias(idx.idx), _output);
-        else if (mol.isRSite(idx.idx) && mol.getRSiteBits(idx.idx) > 0)
-            // ChemAxon's Extended SMILES notation for R-sites
-            _output.printf("_R%d", mol.getSingleAllowedRGroup(idx.idx));
-    }
-
-    _output.writeChar('$');
 }
 
 void RSmilesSaver::_writeHighlighting()
