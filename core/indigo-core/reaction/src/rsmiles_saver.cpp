@@ -310,55 +310,15 @@ void RSmilesSaver::_writeStereogroups()
 
 void RSmilesSaver::_writeRadicals()
 {
-    QS_DEF(Array<int>, marked);
-    int i, j;
-
-    marked.clear_resize(_written_atoms.size());
-    marked.zerofill();
-
-    for (i = 0; i < _written_atoms.size(); i++)
+    int atoms_offset = 0;
+    int cur_radical = -1;
+    for (size_t i = 0; i < _smiles_savers.size(); ++i)
     {
-        if (marked[i])
-            continue;
-
-        const _Idx& idx = _written_atoms[i];
-        BaseMolecule& bmol = _brxn->getBaseMolecule(idx.mol);
-
-        if (bmol.isRSite(idx.idx) || bmol.isPseudoAtom(idx.idx) || bmol.isAlias(idx.idx))
-            continue;
-
-        int radical = bmol.getAtomRadical(idx.idx);
-
-        if (radical <= 0)
-            continue;
-
-        if (_comma)
-            _output.writeChar(',');
-        else
-        {
-            _output.writeString(" |");
-            _comma = true;
-        }
-
-        if (radical == RADICAL_SINGLET)
-            _output.writeString("^3:");
-        else if (radical == RADICAL_DOUBLET)
-            _output.writeString("^1:");
-        else // RADICAL_TRIPLET
-            _output.writeString("^4:");
-
-        _output.printf("%d", i);
-
-        for (j = i + 1; j < _written_atoms.size(); j++)
-        {
-            const _Idx& jdx = _written_atoms[j];
-
-            if (_brxn->getBaseMolecule(jdx.mol).getAtomRadical(jdx.idx) == radical)
-            {
-                marked[j] = 1;
-                _output.printf(",%d", j);
-            }
-        }
+        auto& smiles_saver = _smiles_savers[i];
+        smiles_saver->setComma(_comma);
+        cur_radical = smiles_saver->writeRadicals(atoms_offset, cur_radical);
+        atoms_offset += smiles_saver->writtenAtoms().size();
+        _comma = smiles_saver->getComma();
     }
 }
 
@@ -398,55 +358,17 @@ void RSmilesSaver::_writePseudoAtoms()
 
 void RSmilesSaver::_writeHighlighting()
 {
-    int i;
-
-    bool ha = false;
-
-    for (i = 0; i < _written_atoms.size(); i++)
+    for (int j = 0; j < 2; ++j)
     {
-        if (_brxn->getBaseMolecule(_written_atoms[i].mol).isAtomHighlighted(_written_atoms[i].idx))
+        int offset = 0;
+        bool is_cont = false;
+        for (size_t i = 0; i < _smiles_savers.size(); ++i)
         {
-            if (ha)
-                _output.writeChar(',');
-            else
-            {
-                if (_comma)
-                    _output.writeChar(',');
-                else
-                {
-                    _output.writeString(" |");
-                    _comma = true;
-                }
-                _output.writeString("ha:");
-                ha = true;
-            }
-
-            _output.printf("%d", i);
-        }
-    }
-
-    bool hb = false;
-
-    for (i = 0; i < _written_bonds.size(); i++)
-    {
-        if (_brxn->getBaseMolecule(_written_bonds[i].mol).isBondHighlighted(_written_bonds[i].idx))
-        {
-            if (hb)
-                _output.writeChar(',');
-            else
-            {
-                if (_comma)
-                    _output.writeChar(',');
-                else
-                {
-                    _output.writeString(" |");
-                    _comma = true;
-                }
-                _output.writeString("hb:");
-                hb = true;
-            }
-
-            _output.printf("%d", i);
+            auto& smiles_saver = _smiles_savers[i];
+            smiles_saver->setComma(_comma);
+            is_cont = j == 0 ? smiles_saver->writeHighlightedAtoms(offset, is_cont) : smiles_saver->writeHighlightedBonds(offset, is_cont);
+            _comma = smiles_saver->getComma();
+            offset += j == 0 ? smiles_saver->writtenAtoms().size() : smiles_saver->writtenBonds().size();
         }
     }
 }

@@ -47,6 +47,7 @@ namespace indigo
 
         void saveReaction(Reaction& reaction);
         void saveQueryReaction(QueryReaction& reaction);
+        void _writeMolecule(int i);
 
         bool smarts_mode;
         bool chemaxon;
@@ -71,7 +72,6 @@ namespace indigo
         TL_CP_DECL(Array<_Idx>, _written_bonds);
         TL_CP_DECL(Array<int>, _ncomp);
 
-        void _writeMolecule(int i);
         void _writeFragmentsInfo();
         void _writeStereogroups();
         void _writeRadicals();

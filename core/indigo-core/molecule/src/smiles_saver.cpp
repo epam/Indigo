@@ -697,9 +697,10 @@ void SmilesSaver::_saveMolecule()
         _comma = false;
         writeRingCisTrans();
         _writeStereogroups();
-        _writeRadicals();
+        writeRadicals();
         writePseudoAtoms();
-        _writeHighlighting();
+        writeHighlightedAtoms();
+        writeHighlightedBonds();
         _writeRGroups();
         _writeSGroups();
         _writeRingBonds();
@@ -1430,15 +1431,14 @@ void SmilesSaver::_writeStereogroups()
         _output.printf(",r");
 }
 
-void SmilesSaver::_writeRadicals()
+int SmilesSaver::writeRadicals(int atoms_offset, int prev_radical)
 {
     BaseMolecule& mol = *_bmol;
     QS_DEF(Array<int>, marked);
     int i, j;
-
     marked.clear_resize(_written_atoms.size());
     marked.zerofill();
-
+    int radical = -1;
     for (i = 0; i < _written_atoms.size(); i++)
     {
         if (marked[i] || mol.isRSite(_written_atoms[i]) || mol.isPseudoAtom(_written_atoms[i]))
@@ -1449,28 +1449,35 @@ void SmilesSaver::_writeRadicals()
         if (radical <= 0)
             continue;
 
-        _startExtension();
+        int shift = 0;
+        if (radical != prev_radical)
+        {
+            _startExtension();
+            if (radical == RADICAL_SINGLET)
+                _output.writeString("^3:");
+            else if (radical == RADICAL_DOUBLET)
+                _output.writeString("^1:");
+            else // RADICAL_TRIPLET
+                _output.writeString("^4:");
 
-        if (radical == RADICAL_SINGLET)
-            _output.writeString("^3:");
-        else if (radical == RADICAL_DOUBLET)
-            _output.writeString("^1:");
-        else // RADICAL_TRIPLET
-            _output.writeString("^4:");
+            _output.printf("%d", i + atoms_offset);
+            shift = 1;
+        }
 
-        _output.printf("%d", i);
-
-        for (j = i + 1; j < _written_atoms.size(); j++)
+        for (j = i + shift; j < _written_atoms.size(); j++)
         {
             if (mol.isPseudoAtom(_written_atoms[j]) || mol.isRSite(_written_atoms[j]))
                 continue;
             if (mol.getAtomRadical_NoThrow(_written_atoms[j], 0) == radical)
             {
                 marked[j] = 1;
-                _output.printf(",%d", j);
+                _output.printf(",%d", j + atoms_offset);
             }
         }
+        if (radical >= 0)
+            prev_radical = radical;
     }
+    return prev_radical;
 }
 
 void SmilesSaver::writePseudoAtoms(int atoms_offset, bool have_separators)
@@ -1589,50 +1596,51 @@ void SmilesSaver::writeSpecialAtom(int aid, Output& out)
     }
 }
 
-void SmilesSaver::_writeHighlighting()
+bool SmilesSaver::writeHighlightedBonds(int bonds_offset, bool is_cont)
 {
-    if (!_bmol->hasHighlighting())
-        return;
-
-    int i;
-
-    bool ha = false;
-
-    for (i = 0; i < _written_atoms.size(); i++)
+    if (_bmol->hasHighlighting())
     {
-        if (_bmol->isAtomHighlighted(_written_atoms[i]))
+        for (int i = 0; i < _written_bonds.size(); i++)
         {
-            if (ha)
-                _output.writeChar(',');
-            else
+            if (_bmol->isBondHighlighted(_written_bonds[i]))
             {
-                _startExtension();
-                _output.writeString("ha:");
-                ha = true;
+                if (is_cont)
+                    _output.writeChar(',');
+                else
+                {
+                    _startExtension();
+                    _output.writeString("hb:");
+                    is_cont = true;
+                }
+                _output.printf("%d", i + bonds_offset);
             }
-
-            _output.printf("%d", i);
         }
     }
+    return is_cont;
+}
 
-    bool hb = false;
 
-    for (i = 0; i < _written_bonds.size(); i++)
+bool SmilesSaver::writeHighlightedAtoms(int atoms_offset, bool is_cont)
+{
+    if (_bmol->hasHighlighting())
     {
-        if (_bmol->isBondHighlighted(_written_bonds[i]))
+        for (int i = 0; i < _written_atoms.size(); i++)
         {
-            if (hb)
-                _output.writeChar(',');
-            else
+            if (_bmol->isAtomHighlighted(_written_atoms[i]))
             {
-                _startExtension();
-                _output.writeString("hb:");
-                hb = true;
+                if (is_cont)
+                    _output.writeChar(',');
+                else
+                {
+                    _startExtension();
+                    _output.writeString("ha:");
+                    is_cont = true;
+                }
+                _output.printf("%d", i + atoms_offset);
             }
-
-            _output.printf("%d", i);
         }
     }
+    return is_cont;
 }
 
 void SmilesSaver::_writeUnsaturated()

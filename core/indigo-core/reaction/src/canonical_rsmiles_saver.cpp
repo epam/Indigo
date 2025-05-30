@@ -101,11 +101,12 @@ void CanonicalRSmilesSaver::_saveReaction()
     if (_brxn->productsCount())
         _writeMolecule(_brxn->productBegin(), moleculeSaver);
 
-    _writeFragmentsInfo();
-    _writeStereogroups();
-    _writeRadicals();
-    _writePseudoAtoms();
-    _writeHighlighting();
+    // This block shouldn't be written for canonical RSmiles.
+    // _writeFragmentsInfo();
+    // _writeStereogroups();
+    // _writeRadicals();
+    // _writePseudoAtoms();
+    // _writeHighlighting();
 
     if (_comma)
         _output.writeChar('|');
