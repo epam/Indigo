@@ -77,7 +77,7 @@ namespace indigo
         void writeRingCisTrans(int bonds_offset = 0);
         void writePseudoAtoms(int atoms_offset = 0, bool have_separators = true);
         int writeRadicals(int atoms_offset = 0, int prev_radical = -1);
-		bool writeHighlightedAtoms(int atoms_offset = 0, bool is_cont = false);
+        bool writeHighlightedAtoms(int atoms_offset = 0, bool is_cont = false);
         bool writeHighlightedBonds(int bonds_offset = 0, bool is_cont = false);
         bool inside_rsmiles;
 

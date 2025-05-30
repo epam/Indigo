@@ -1619,7 +1619,6 @@ bool SmilesSaver::writeHighlightedBonds(int bonds_offset, bool is_cont)
     return is_cont;
 }
 
-
 bool SmilesSaver::writeHighlightedAtoms(int atoms_offset, bool is_cont)
 {
     if (_bmol->hasHighlighting())
