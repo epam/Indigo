@@ -176,13 +176,7 @@ void RSmilesSaver::_writeFragmentsInfo()
     if (i == _ncomp.size())
         return;
 
-    if (_comma)
-        _output.writeChar(',');
-    else
-    {
-        _output.writeString(" |");
-        _comma = true;
-    }
+    _startExtension();
 
     _output.writeString("f:");
 
