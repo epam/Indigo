@@ -198,6 +198,7 @@ void RSmilesSaver::_writeFragmentsInfo()
     }
 }
 
+// TODO: this function need refactoring
 void RSmilesSaver::_writeStereogroups()
 {
     QS_DEF(Array<int>, marked);
