@@ -79,6 +79,7 @@ namespace indigo
         int writeRadicals(int atoms_offset = 0, int prev_radical = -1);
         bool writeHighlightedAtoms(int atoms_offset = 0, bool is_cont = false);
         bool writeHighlightedBonds(int bonds_offset = 0, bool is_cont = false);
+        int findNonABSStereoCenter(MoleculeStereocenters& stereocenters);
         bool inside_rsmiles;
 
         bool smarts_mode;

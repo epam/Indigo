@@ -1344,19 +1344,11 @@ void SmilesSaver::_writeStereogroups()
 {
     BaseMolecule& mol = *_bmol;
     MoleculeStereocenters& stereocenters = mol.stereocenters;
-    int i, j;
-
-    for (i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
-    {
-        int atom, type, group;
-        stereocenters.get(i, atom, type, group, 0);
-        if (type != MoleculeStereocenters::ATOM_ABS)
-            break;
-    }
-
-    if (i == stereocenters.end())
+    int i = findNonABSStereoCenter(stereocenters);
+    if (i < 0)
         return;
 
+    int j;
     int and_group_idx = 1;
     int or_group_idx = 1;
 
@@ -1617,6 +1609,18 @@ bool SmilesSaver::writeHighlightedBonds(int bonds_offset, bool is_cont)
         }
     }
     return is_cont;
+}
+
+int SmilesSaver::findNonABSStereoCenter(MoleculeStereocenters& stereocenters)
+{
+    for (int i = stereocenters.begin(); i != stereocenters.end(); i = stereocenters.next(i))
+    {
+        int atom, type, group;
+        stereocenters.get(i, atom, type, group, 0);
+        if (type != MoleculeStereocenters::ATOM_ABS)
+            return i;
+    }
+    return -1;
 }
 
 bool SmilesSaver::writeHighlightedAtoms(int atoms_offset, bool is_cont)
