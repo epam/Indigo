@@ -4,6 +4,8 @@ props_connected_via_chem.json: SUCCEED
 props_connected_via_micro.json: SUCCEED
 props_double_dna.json: SUCCEED
 props_double_dna_gc.json: SUCCEED
+props_double_dna_p.json: SUCCEED
+props_double_dna_unsplit.json: SUCCEED
 props_mol_connected_to_mol.json: SUCCEED
 props_nucleoside_peptide.json: SUCCEED
 props_only_micro.json: SUCCEED
