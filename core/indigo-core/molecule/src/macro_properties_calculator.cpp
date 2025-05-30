@@ -234,10 +234,13 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                         it++;
                     }
                     break;
+                case MonomerClass::Phosphate: // just skip phosphates
+                    it++;
+                    continue;
+                    break;
                 default:
                     return false;
                 };
-                monomer_class == MonomerClass::Base || monomer_class == MonomerClass::DNA || monomer_class == MonomerClass::RNA;
             }
             return true;
         };
@@ -263,8 +266,8 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                         if (document.getMonomerById(*it)->hydrogenConnections().size() > 0)
                             return false;
                         it++;
-                        if (it == sequence.rend())
-                            return false;
+                        if (it == sequence.rend()) // phosphate at left is ok
+                            return true;
                         monomer_class = document.getMonomerClass(*it);
                         if (monomer_class != MonomerClass::Base)
                             return false;
