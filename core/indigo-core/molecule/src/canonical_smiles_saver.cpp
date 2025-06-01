@@ -21,7 +21,6 @@
 #include "base_cpp/output.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/elements.h"
-#include "molecule/molecule.h"
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/molecule_dearom.h"
 #include "molecule/smiles_saver.h"
@@ -46,48 +45,46 @@ CanonicalSmilesSaver::~CanonicalSmilesSaver()
 {
 }
 
-void CanonicalSmilesSaver::saveMolecule(Molecule& mol_)
+void CanonicalSmilesSaver::saveMolecule(Molecule& mol)
 {
-    if (mol_.vertexCount() < 1)
+    if (mol.vertexCount() < 1)
         return;
 
     QS_DEF(Array<int>, ignored);
     QS_DEF(Array<int>, order);
     QS_DEF(Array<int>, ranks);
-    QS_DEF(Molecule, mol);
 
     int i;
 
-    if (mol_.sgroups.isPolimer())
+    if (mol.sgroups.isPolimer())
         throw Error("can not canonicalize a polymer");
 
     // Detect hydrogens configuration if aromatic but not ambiguous
     // We can store this infromation in the original structure mol_.
-    mol_.restoreAromaticHydrogens();
-
-    mol.clone(mol_, 0, 0);
+    mol.restoreAromaticHydrogens();
+    _mol.clone(mol, 0, 0);
 
     // TODO: canonicalize allenes properly
-    mol.allene_stereo.clear();
+    _mol.allene_stereo.clear();
 
-    ignored.clear_resize(mol.vertexEnd());
+    ignored.clear_resize(_mol.vertexEnd());
     ignored.zerofill();
 
-    for (i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
-        if (mol.convertableToImplicitHydrogen(i))
+    for (i = _mol.vertexBegin(); i < _mol.vertexEnd(); i = _mol.vertexNext(i))
+        if (_mol.convertableToImplicitHydrogen(i))
             ignored[i] = 1;
 
     // Try to save into ordinary smiles and find what cis-trans bonds were used
     NullOutput null_output;
     SmilesSaver saver_cistrans(null_output);
     saver_cistrans.ignore_hydrogens = true;
-    saver_cistrans.saveMolecule(mol);
+    saver_cistrans.saveMolecule(_mol);
     // Then reset cis-trans infromation that is not saved into SMILES
     const Array<int>& parities = saver_cistrans.getSavedCisTransParities();
-    for (i = mol.edgeBegin(); i < mol.edgeEnd(); i = mol.edgeNext(i))
+    for (i = _mol.edgeBegin(); i < _mol.edgeEnd(); i = _mol.edgeNext(i))
     {
-        if (mol.cis_trans.getParity(i) != 0 && parities[i] == 0)
-            mol.cis_trans.setParity(i, 0);
+        if (_mol.cis_trans.getParity(i) != 0 && parities[i] == 0)
+            _mol.cis_trans.setParity(i, 0);
     }
 
     MoleculeAutomorphismSearch of;
@@ -96,30 +93,30 @@ void CanonicalSmilesSaver::saveMolecule(Molecule& mol_)
     of.detect_invalid_stereocenters = find_invalid_stereo;
     of.find_canonical_ordering = true;
     of.ignored_vertices = ignored.ptr();
-    of.process(mol);
+    of.process(_mol);
     of.getCanonicalNumbering(order);
 
-    for (i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-        if (mol.cis_trans.getParity(i) != 0 && of.invalidCisTransBond(i))
-            mol.cis_trans.setParity(i, 0);
+    for (i = _mol.edgeBegin(); i != _mol.edgeEnd(); i = _mol.edgeNext(i))
+        if (_mol.cis_trans.getParity(i) != 0 && of.invalidCisTransBond(i))
+            _mol.cis_trans.setParity(i, 0);
 
-    for (i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
-        if (mol.stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY && of.invalidStereocenter(i))
-            mol.stereocenters.remove(i);
+    for (i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i))
+        if (_mol.stereocenters.getType(i) > MoleculeStereocenters::ATOM_ANY && of.invalidStereocenter(i))
+            _mol.stereocenters.remove(i);
 
-    ranks.clear_resize(mol.vertexEnd());
+    ranks.clear_resize(_mol.vertexEnd());
 
     for (i = 0; i < order.size(); i++)
         ranks[order[i]] = i;
 
     vertex_ranks = ranks.ptr();
 
-    _actual_atom_atom_mapping.clear_resize(mol.vertexCount());
+    _actual_atom_atom_mapping.clear_resize(_mol.vertexCount());
     _actual_atom_atom_mapping.zerofill();
 
     for (i = 0; i < order.size(); ++i)
     {
-        int aam = mol.reaction_atom_mapping[order[i]];
+        int aam = _mol.reaction_atom_mapping[order[i]];
         if (aam)
         {
             const auto it = _initial_to_actual.find(aam);
@@ -134,7 +131,7 @@ void CanonicalSmilesSaver::saveMolecule(Molecule& mol_)
             }
         }
     }
-    mol.reaction_atom_mapping.copy(_actual_atom_atom_mapping);
+    _mol.reaction_atom_mapping.copy(_actual_atom_atom_mapping);
 
-    SmilesSaver::saveMolecule(mol);
+    SmilesSaver::saveMolecule(_mol);
 }

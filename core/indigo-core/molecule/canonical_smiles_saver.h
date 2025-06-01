@@ -28,6 +28,7 @@
 
 #include "base_cpp/exception.h"
 #include "molecule/smiles_saver.h"
+#include "molecule/molecule.h"
 
 namespace indigo
 {
@@ -50,6 +51,9 @@ namespace indigo
         TL_CP_DECL(Array<int>, _actual_atom_atom_mapping);
         TL_CP_DECL(MapIntInt, _initial_to_actual);
         int _aam_counter;
+
+    private:
+        Molecule _mol;
     };
 
 } // namespace indigo
