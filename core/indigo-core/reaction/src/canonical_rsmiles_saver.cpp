@@ -36,48 +36,47 @@ CanonicalRSmilesSaver::~CanonicalRSmilesSaver()
 {
 }
 
-void CanonicalRSmilesSaver::saveReaction(Reaction& reaction_)
+void CanonicalRSmilesSaver::saveReaction(Reaction& reaction)
 {
     int j;
 
-    QS_DEF(Reaction, reaction);
-    reaction.clear();
+    _reaction.clear();
 
-    reaction.name.copy(reaction_.name);
+    _reaction.name.copy(reaction.name);
 
-    if (reaction_.reactantsCount())
+    if (reaction.reactantsCount())
     {
-        j = reaction.addReactant();
-        Molecule& mol = reaction.getMolecule(j);
-        for (auto i : reaction_.reactants)
+        j = _reaction.addReactant();
+        Molecule& mol = _reaction.getMolecule(j);
+        for (auto i : reaction.reactants)
         {
-            mol.mergeWithMolecule(reaction_.getMolecule(i), 0);
+            mol.mergeWithMolecule(reaction.getMolecule(i), 0);
         }
     }
 
-    if (reaction_.catalystCount())
+    if (reaction.catalystCount())
     {
-        j = reaction.addCatalyst();
-        Molecule& mol = reaction.getMolecule(j);
-        for (auto i : reaction_.catalysts)
+        j = _reaction.addCatalyst();
+        Molecule& mol = _reaction.getMolecule(j);
+        for (auto i : reaction.catalysts)
         {
-            mol.mergeWithMolecule(reaction_.getMolecule(i), 0);
+            mol.mergeWithMolecule(reaction.getMolecule(i), 0);
         }
     }
 
-    if (reaction_.productsCount())
+    if (reaction.productsCount())
     {
-        j = reaction.addProduct();
-        Molecule& mol = reaction.getMolecule(j);
-        for (auto i : reaction_.products)
+        j = _reaction.addProduct();
+        Molecule& mol = _reaction.getMolecule(j);
+        for (auto i : reaction.products)
         {
-            mol.mergeWithMolecule(reaction_.getMolecule(i), 0);
+            mol.mergeWithMolecule(reaction.getMolecule(i), 0);
         }
     }
 
-    _brxn = &reaction;
+    _brxn = &_reaction;
     _qrxn = 0;
-    _rxn = &reaction;
+    _rxn = &_reaction;
     _saveReaction();
 }
 
@@ -102,14 +101,19 @@ void CanonicalRSmilesSaver::_saveReaction()
         _writeMolecule(_brxn->productBegin(), moleculeSaver);
 
     // This block shouldn't be written for canonical RSmiles.
-    // _writeFragmentsInfo();
-    // _writeStereogroups();
-    // _writeRadicals();
-    // _writePseudoAtoms();
-    // _writeHighlighting();
+    /* _writeFragmentsInfo();
+    _writeStereogroups();
+    _writeRadicals();
+    _writePseudoAtoms();
+    _writeHighlighting();
 
     if (_comma)
-        _output.writeChar('|');
+        _output.writeChar('|'); */
+}
+
+void CanonicalRSmilesSaver::_writeMolecule(int i)
+{
+
 }
 
 void CanonicalRSmilesSaver::_writeMolecule(int i, CanonicalSmilesSaver& saver)

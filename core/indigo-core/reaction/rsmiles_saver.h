@@ -47,7 +47,6 @@ namespace indigo
 
         void saveReaction(Reaction& reaction);
         void saveQueryReaction(QueryReaction& reaction);
-        void _writeMolecule(int i);
 
         bool smarts_mode;
         bool chemaxon;
@@ -56,7 +55,7 @@ namespace indigo
         BaseReaction* _brxn;
         QueryReaction* _qrxn;
         Reaction* _rxn;
-
+        void _writeMolecule(int i);
         void _saveReaction();
 
         struct _Idx
