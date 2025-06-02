@@ -25,6 +25,10 @@
 #include "molecule/molecule_mass.h"
 #include "molecule/monomer_commons.h"
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
+
 using namespace indigo;
 
 IMPL_ERROR(MacroPropertiesCalculator, "Macro Properties Calculator")
@@ -32,7 +36,6 @@ IMPL_ERROR(MacroPropertiesCalculator, "Macro Properties Calculator")
 // UPC is molar concentration of unipositive cations, NAC is molar concentration of the nucleotide strands, these options need to calculate melting temperature
 void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Output& output, float upc, float nac, bool pretty_json) const
 {
-    const auto& monomers = document.monomers();
     auto is_base = [&](MonomerClass monomer_class) -> bool {
         return monomer_class == MonomerClass::Base || monomer_class == MonomerClass::DNA || monomer_class == MonomerClass::RNA;
     };
@@ -50,19 +53,71 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         chain(std::deque<std::string>& seq) : sequence(seq), secondary_sequence(){};
         chain(std::deque<std::string>& seq, std::deque<std::string>& secondary_seq) : sequence(seq), secondary_sequence(secondary_seq){};
     };
+    struct polymer_t
+    {
+        std::set<size_t> sequences;
+        std::set<std::string> molecules;
+        std::map<std::string, std::map<int, int>> mol_atom_connections;
+        bool is_double_chain = false;
+        bool has_non_sequence_connection = false;
+        bool deleted = false;
+        polymer_t(size_t idx) : is_double_chain(false), has_non_sequence_connection(false), deleted(false)
+        {
+            sequences.emplace(idx);
+        };
+        polymer_t(const std::string& mol_ref) : is_double_chain(false), has_non_sequence_connection(false), deleted(false)
+        {
+            molecules.emplace(mol_ref);
+            mol_atom_connections[mol_ref] = {};
+        };
+        void merge(const polymer_t& other)
+        {
+            sequences.insert(other.sequences.begin(), other.sequences.end());
+            molecules.insert(other.molecules.begin(), other.molecules.end());
+            mol_atom_connections.insert(other.mol_atom_connections.begin(), other.mol_atom_connections.end());
+        };
+    };
     std::vector<std::deque<std::string>> sequences;
-    std::vector<chain> joined_sequences;
-    std::map<std::string, std::pair<std::string, std::string>> monomer_to_molecule;
     document.parseSimplePolymers(sequences, false);
+    std::map<std::string, size_t> monomer_to_sequence_idx;
+    std::map<size_t, size_t> sequence_to_polymer_idx;
+    std::map<std::string, size_t> molecule_to_polymer_idx;
+    const auto& monomers = document.monomers();
+    const auto& molecules_refs = document.moleculesRefs();
+    const auto& templates = document.templates();
+    std::deque<polymer_t> polymers;
+    for (size_t i = 0; i < sequences.size(); i++)
+    {
+        sequence_to_polymer_idx.emplace(i, polymers.size());
+        polymers.emplace_back(i);
+        for (auto& monomer : sequences[i])
+        {
+            monomer_to_sequence_idx.emplace(monomer, i);
+        }
+    }
+    for (size_t i = 0; i < molecules_refs.size(); i++)
+    {
+        auto idx = polymers.size();
+        molecule_to_polymer_idx.emplace(molecules_refs[i], idx);
+        polymers.emplace_back(molecules_refs[i]);
+    }
+    auto add_connection_to_atom = [&](size_t polymer_idx, const std::string& molecule_id, int atom_idx) {
+        auto& atom_connections = polymers[polymer_idx].mol_atom_connections[molecule_id];
+        if (atom_connections.count(atom_idx) == 0)
+            atom_connections.emplace(atom_idx, 1);
+        else
+            atom_connections[atom_idx] += 1;
+    };
     for (auto connection : document.nonSequenceConnections())
     {
         auto& ep1 = connection.ep1();
         auto& ep2 = connection.ep2();
         if (ep1.hasStringProp("monomerId") && ep2.hasStringProp("monomerId"))
         {
-            const auto& monomers = document.monomers();
-            auto& left_monomer = monomers.at(document.monomerIdByRef(ep1.getStringProp("monomerId")));
-            auto& right_monomer = monomers.at(document.monomerIdByRef(ep2.getStringProp("monomerId")));
+            auto& left_monomer_id = document.monomerIdByRef(ep1.getStringProp("monomerId"));
+            auto& right_monomer_id = document.monomerIdByRef(ep2.getStringProp("monomerId"));
+            auto& left_monomer = monomers.at(left_monomer_id);
+            auto& right_monomer = monomers.at(right_monomer_id);
             if (connection.connectionType() == KetConnectionHydro)
             {
                 left_monomer->addHydrogenConnection(right_monomer->ref());
@@ -75,182 +130,216 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 left_monomer->connectAttachmentPointTo(ap_left, right_monomer->ref(), ap_right);
                 right_monomer->connectAttachmentPointTo(ap_right, left_monomer->ref(), ap_left);
             }
+            auto& left_sequence_idx = monomer_to_sequence_idx[left_monomer_id];
+            size_t right_sequence_idx = monomer_to_sequence_idx[right_monomer_id];
+            size_t left_polymer_idx = sequence_to_polymer_idx[left_sequence_idx];
+            size_t right_polymer_idx = sequence_to_polymer_idx[right_sequence_idx];
+            if (left_sequence_idx != right_sequence_idx && left_polymer_idx != right_polymer_idx)
+            {
+                polymers[left_polymer_idx].merge(polymers[right_polymer_idx]);
+                sequence_to_polymer_idx[right_sequence_idx] = left_polymer_idx;
+                polymers[right_polymer_idx].deleted = true;
+            }
+            if (connection.connectionType() != KetConnectionHydro)
+                polymers[left_polymer_idx].has_non_sequence_connection = true;
         }
         else if ((ep1.hasStringProp("monomerId") && ep2.hasStringProp("moleculeId")) || (ep1.hasStringProp("moleculeId") && ep2.hasStringProp("monomerId")))
         {
             auto monomer_id = ep1.hasStringProp("monomerId") ? document.monomerIdByRef(ep1.getStringProp("monomerId"))
                                                              : document.monomerIdByRef(ep2.getStringProp("monomerId"));
             auto molecule_id = ep1.hasStringProp("moleculeId") ? ep1.getStringProp("moleculeId") : ep2.getStringProp("moleculeId");
+            int atom_idx = std::stoi(ep1.hasStringProp("moleculeId") ? ep1.getStringProp("atomId") : ep2.getStringProp("atomId"));
             auto monomer_ap = ep1.hasStringProp("monomerId") ? ep1.getStringProp("attachmentPointId") : ep2.getStringProp("attachmentPointId");
-            if (monomer_ap == kAttachmentPointR1 || monomer_ap == kAttachmentPointR2)
-                monomer_to_molecule.emplace(monomer_id, std::make_pair(molecule_id, monomer_ap));
+            monomers.at(monomer_id)->connectAttachmentPointToMolecule(monomer_ap, molecule_id, atom_idx);
+            size_t sequence_polymer_idx = sequence_to_polymer_idx[monomer_to_sequence_idx[monomer_id]];
+
+            size_t molecule_polymer_idx = molecule_to_polymer_idx[molecule_id];
+            if (sequence_polymer_idx != molecule_polymer_idx)
+            {
+                polymers[sequence_polymer_idx].merge(polymers[molecule_polymer_idx]);
+                molecule_to_polymer_idx[molecule_id] = sequence_polymer_idx;
+                polymers[molecule_polymer_idx].deleted = true;
+            }
+            add_connection_to_atom(sequence_polymer_idx, molecule_id, atom_idx);
         }
-    }
-    std::map<std::string, size_t> five_prime_monomers, three_prime_monomers;
-    for (size_t i = 0; i < sequences.size(); i++)
-    {
-        five_prime_monomers.emplace(sequences[i].front(), i);
-        three_prime_monomers.emplace(sequences[i].back(), i);
-    }
-    std::set<size_t> used_sequences;
-    std::set<size_t> possible_double_chains;
-    std::map<size_t, std::set<size_t>> bases_count_to_variants;
-    while (five_prime_monomers.size() > 0)
-    {
-        auto idx = five_prime_monomers.begin()->second;
-        auto cur_monomer_id = five_prime_monomers.begin()->first;
-        five_prime_monomers.erase(five_prime_monomers.begin());
-        used_sequences.emplace(idx);
-        // If no chains connected to 5' and 3' ends of DNA/RNA chain - add it to possible double chain
-        if (monomers.at(sequences[idx].front())->connections().count(kAttachmentPointR1) == 0 &&
-            monomers.at(sequences[idx].back())->connections().count(kAttachmentPointR2) == 0)
+        else if (ep1.hasStringProp("moleculeId") && ep2.hasStringProp("moleculeId"))
         {
-            auto& first_monomer = monomers.at(sequences[idx].front());
-            auto first_monomer_class = document.getMonomerClass(*first_monomer);
-            switch (first_monomer_class)
+            auto first_molecule_id = ep1.getStringProp("moleculeId");
+            auto second_molecule_id = ep2.getStringProp("moleculeId");
+            int first_atom_idx = std::stoi(ep1.getStringProp("atomId"));
+            int second_atom_idx = std::stoi(ep2.getStringProp("atomId"));
+            size_t first_molecule_polymer_idx = molecule_to_polymer_idx[first_molecule_id];
+            size_t second_molecule_polymer_idx = molecule_to_polymer_idx[second_molecule_id];
+            if (first_molecule_polymer_idx != second_molecule_polymer_idx)
             {
-            case MonomerClass::DNA:
-            case MonomerClass::RNA:
-            case MonomerClass::Sugar:
-            case MonomerClass::Phosphate:
-            case MonomerClass::Base: {
-                bool found_no_hydrogen = false;
-                size_t bases_count = 0;
-                // check that all bases have hydrogen connections
-                for (auto& monomer_id : sequences[idx])
-                {
-                    auto& monomer = monomers.at(monomer_id);
-                    if (is_base(document.getMonomerClass(*monomer)))
-                    {
-                        if (monomer->hydrogenConnections().size() == 0) // no hydrogen connections
-                        {
-                            found_no_hydrogen = true;
-                            break;
-                        }
-                        bases_count++;
-                    }
-                }
-                if (found_no_hydrogen == false)
-                {
-                    possible_double_chains.emplace(idx);
-                    if (bases_count_to_variants.count(bases_count) == 0)
-                        bases_count_to_variants.emplace(bases_count, std::set<size_t>());
-                    bases_count_to_variants.at(bases_count).emplace(idx);
-                    continue;
-                }
+                polymers[first_molecule_polymer_idx].merge(polymers[second_molecule_polymer_idx]);
+                molecule_to_polymer_idx[second_molecule_id] = first_molecule_polymer_idx;
+                polymers[second_molecule_polymer_idx].deleted = true;
             }
-            default:
-                break;
-            }
-        }
-        auto& sequence = joined_sequences.emplace_back(sequences[idx]).sequence;
-        while (true)
-        {
-            auto& front_connections = monomers.at(sequence.front())->connections();
-            if (front_connections.count(kAttachmentPointR1) > 0)
-            {
-                auto& connection = front_connections.at(kAttachmentPointR1);
-                if (connection.second == kAttachmentPointR2)
-                {
-                    auto& monomer_id = document.monomerIdByRef(connection.first);
-                    auto it = three_prime_monomers.find(monomer_id);
-                    if (it == three_prime_monomers.end())
-                        throw Error("Internal error. Connection to monomer %s not found", monomer_id.c_str());
-                    auto letf_idx = it->second;
-                    if (used_sequences.count(letf_idx) == 0)
-                    {
-                        sequence.insert(sequence.begin(), sequences[letf_idx].begin(), sequences[letf_idx].end());
-                        five_prime_monomers.erase(sequences[letf_idx].front()); // remove from 5' monomers
-                        used_sequences.emplace(letf_idx);
-                        continue;
-                    }
-                }
-            }
-            auto& back_connections = monomers.at(sequence.back())->connections();
-            if (back_connections.count(kAttachmentPointR2) > 0)
-            {
-                auto& connection = back_connections.at(kAttachmentPointR2);
-                if (connection.second == kAttachmentPointR1)
-                {
-                    auto& monomer_id = document.monomerIdByRef(connection.first);
-                    if (monomer_id != cur_monomer_id) // avoid cycle
-                    {
-                        auto it = five_prime_monomers.find(monomer_id);
-                        if (it == five_prime_monomers.end())
-                            throw Error("Internal error. Connection to monomer %s not found", monomer_id.c_str());
-                        auto right_idx = it->second;
-                        if (used_sequences.count(right_idx) == 0)
-                        {
-                            sequence.insert(sequence.end(), sequences[right_idx].begin(), sequences[right_idx].end());
-                            five_prime_monomers.erase(sequences[right_idx].front()); // remove from 5' monomers
-                            used_sequences.emplace(right_idx);
-                            continue;
-                        }
-                    }
-                }
-            }
-            break;
+            add_connection_to_atom(first_molecule_polymer_idx, first_molecule_id, first_atom_idx);
+            add_connection_to_atom(first_molecule_polymer_idx, second_molecule_id, second_atom_idx);
         }
     }
-    std::set<size_t> verified_options;
-    for (auto idx : possible_double_chains)
+    // search for DNA/RNA double chains
+    for (auto& polymer : polymers)
     {
-        if (verified_options.count(idx) > 0)
+        if (polymer.deleted)
             continue;
-        auto& sequence = sequences[idx];
-        verified_options.emplace(idx);
-        size_t bases_count = 0;
-        for (auto it = sequence.begin(); it != sequence.end(); it++)
+        if (polymer.molecules.size() > 0)
+            continue;
+        if (polymer.sequences.size() != 2)
+            continue;
+        if (polymer.has_non_sequence_connection)
+            continue;
+
+        struct nucleo_t
         {
-            if (is_base(document.getMonomerClass(*it)))
-                bases_count++;
-        }
-        bases_count_to_variants.at(bases_count).erase(idx);
-        bool pair_found = false;
-        for (auto& variant_idx : bases_count_to_variants.at(bases_count))
-        {
-            auto& variant = sequences[variant_idx];
-            auto variant_it = variant.rbegin();
-            auto sequence_it = sequence.begin();
-            if (!is_base(document.getMonomerClass(*variant_it)))
-                move_to_next_base(variant_it, variant.rend());
-            if (!is_base(document.getMonomerClass(*sequence_it)))
-                move_to_next_base(sequence_it, sequence.end());
-            while (sequence_it != sequence.end() && variant_it != variant.rend())
+            std::string id;
+            bool nucleotide = true;
+            bool rna = true;
+            nucleo_t(const std::string& monomer_id) : id(monomer_id), nucleotide(true), rna(true)
             {
-                auto& base = monomers.at(*sequence_it);
-                auto& variant_base = monomers.at(*variant_it);
-                if (base->hydrogenConnections().count(variant_base->ref()) == 0)
+            }
+        };
+        auto collect_nucleos = [&](std::deque<std::string> sequence, std::vector<nucleo_t>& nucleos) -> bool {
+            // forward order - Sugar, Base then Phosphate(opt)
+            auto it = sequence.begin();
+            while (it != sequence.end())
+            {
+                if (document.getMonomerById(*it)->monomerType() != KetBaseMonomer::MonomerType::Monomer)
+                    return false;
+
+                auto monomer_class = document.getMonomerClass(*it);
+                switch (monomer_class)
+                {
+                case MonomerClass::RNA:
+                case MonomerClass::DNA:
+                    nucleos.emplace_back(*it);
+                    if (monomer_class != MonomerClass::RNA)
+                        nucleos.rbegin()->rna = false;
+                    it++;
                     break;
-                move_to_next_base(variant_it, variant.rend());
-                move_to_next_base(sequence_it, sequence.end());
+                case MonomerClass::Sugar:
+                    if (document.getMonomerById(*it)->hydrogenConnections().size() > 0)
+                        return false;
+                    it++;
+                    if (it == sequence.end() || document.getMonomerClass(*it) != MonomerClass::Base)
+                        return false;
+                    nucleos.emplace_back(*it);
+                    it++;
+                    if (it != sequence.end() && document.getMonomerClass(*it) == MonomerClass::Phosphate)
+                    {
+                        if (document.getMonomerById(*it)->hydrogenConnections().size() > 0)
+                            return false;
+                        it++;
+                    }
+                    break;
+                case MonomerClass::Phosphate: // just skip phosphates
+                    it++;
+                    continue;
+                    break;
+                default:
+                    return false;
+                };
             }
-            if (sequence_it == sequence.end() && variant_it == variant.rend())
+            return true;
+        };
+        auto collect_nucleos_reverse = [&](std::deque<std::string> sequence, std::vector<nucleo_t>& nucleos) -> bool {
+            // reverse order - Phosphate(opt), Base then Sugar
+            auto it = sequence.rbegin();
+            while (it != sequence.rend())
             {
-                pair_found = true;
-                verified_options.emplace(variant_idx);
-                bases_count_to_variants.at(bases_count).erase(variant_idx);
-                joined_sequences.emplace_back(sequence, variant);
-                break;
+                if (document.getMonomerById(*it)->monomerType() != KetBaseMonomer::MonomerType::Monomer)
+                    return false;
+                auto monomer_class = document.getMonomerClass(*it);
+                if (monomer_class == MonomerClass::RNA || monomer_class == MonomerClass::DNA)
+                {
+                    nucleos.emplace_back(*it);
+                    if (monomer_class != MonomerClass::RNA)
+                        nucleos.rbegin()->rna = false;
+                    it++;
+                }
+                else if (monomer_class == MonomerClass::Phosphate || monomer_class == MonomerClass::Base)
+                {
+                    if (monomer_class == MonomerClass::Phosphate)
+                    {
+                        if (document.getMonomerById(*it)->hydrogenConnections().size() > 0)
+                            return false;
+                        it++;
+                        if (it == sequence.rend()) // phosphate at left is ok
+                            return true;
+                        monomer_class = document.getMonomerClass(*it);
+                        if (monomer_class != MonomerClass::Base)
+                            return false;
+                    }
+                    nucleos.emplace_back(*it);
+                    it++;
+                    if (it == sequence.rend() && document.getMonomerClass(*it) != MonomerClass::Sugar)
+                        return false;
+                    if (document.getMonomerById(*it)->hydrogenConnections().size() > 0)
+                        return false;
+                    it++;
+                }
+                else
+                {
+                    return false;
+                };
             }
-        }
-        if (!pair_found)
+            return true;
+        };
+        std::vector<nucleo_t> first_nucleos;
+        auto& first_seq = sequences[*polymer.sequences.begin()];
+        if (!collect_nucleos(first_seq, first_nucleos))
+            continue;
+        std::vector<nucleo_t> second_nucleos;
+        auto& second_seq = sequences[*polymer.sequences.rbegin()];
+        if (!collect_nucleos_reverse(second_seq, second_nucleos))
+            continue;
+
+        auto first_nucleos_it = first_nucleos.begin();
+        auto second_nucleos_it = second_nucleos.begin();
+        const std::set<std::string> possible_bases{"A", "C", "T", "G", "U"};
+        while (first_nucleos_it != first_nucleos.end() && second_nucleos_it != second_nucleos.end())
         {
-            joined_sequences.emplace_back(sequence);
+            auto& first_monomer = monomers.at(first_nucleos_it->id);
+            auto& second_monomer = monomers.at(second_nucleos_it->id);
+            // check than bases have only one connection (to sugar - it is backbone sequence)
+            if (first_monomer->connections().size() != 1)
+                break;
+            if (second_monomer->connections().size() != 1)
+                break;
+            // Bases should be only connected by hydrogen connections to each other
+            if (first_monomer->hydrogenConnections().size() != 1)
+                break;
+            if (first_monomer->hydrogenConnections().count(second_monomer->ref()) == 0)
+                break;
+            if (second_monomer->hydrogenConnections().size() != 1)
+                break;
+            if (second_monomer->hydrogenConnections().count(first_monomer->ref()) == 0)
+                break;
+            if (possible_bases.count(templates.at(first_monomer->templateId()).getStringProp("naturalAnalogShort")) == 0)
+                break;
+            if (possible_bases.count(templates.at(second_monomer->templateId()).getStringProp("naturalAnalogShort")) == 0)
+                break;
+            first_nucleos_it++;
+            second_nucleos_it++;
+        }
+        if (first_nucleos_it == first_nucleos.end() && second_nucleos_it == second_nucleos.end())
+        {
+            polymer.is_double_chain = true;
         }
     }
-    const auto& templates = document.templates();
     // Sequences generated. Calculate macro properties
     rapidjson::StringBuffer s;
     JsonWriter writer(pretty_json);
     writer.Reset(s);
     writer.SetMaxDecimalPlaces(6);
     writer.StartArray();
-    for (auto& sequence_arr : joined_sequences)
+    for (auto& polymer : polymers)
     {
+        if (polymer.deleted)
+            continue;
         writer.StartObject();
-        std::deque<std::string> sequence{sequence_arr.sequence};
-        sequence.insert(sequence.begin(), sequence_arr.secondary_sequence.begin(), sequence_arr.secondary_sequence.end());
         std::vector<double> pKa_values;
         // in kDa(1000g/mol) (all chains)
         double mass_sum = 0;
@@ -270,92 +359,132 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 }
             }
         };
-        for (auto& monomer_id : sequence)
+        for (size_t sequence_idx : polymer.sequences)
         {
-            auto& monomer = monomers.at(monomer_id);
-            if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
-            {
-                calculate_mass = false;
-                atoms_count.clear();
+            if (!calculate_mass)
                 break;
-            }
-            auto& monomer_template = templates.at(monomer->templateId());
-            if (monomer_template.unresolved())
+            for (auto& monomer_id : sequences[sequence_idx])
             {
-                calculate_mass = false;
-                atoms_count.clear();
-                break;
+                auto& monomer = monomers.at(monomer_id);
+                if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
+                {
+                    calculate_mass = false;
+                    atoms_count.clear();
+                    break;
+                }
+                auto& monomer_template = templates.at(monomer->templateId());
+                if (monomer_template.unresolved())
+                {
+                    calculate_mass = false;
+                    atoms_count.clear();
+                    break;
+                }
+                std::vector<int> leaved_atoms;
+                auto& att_points = monomer->attachmentPoints();
+                std::vector<std::string> used_attachment_points;
+                for (auto& conn : monomer->connections())
+                {
+                    used_attachment_points.emplace_back(conn.first);
+                }
+                for (auto& conn : monomer->connectionsToMolecules())
+                {
+                    used_attachment_points.emplace_back(conn.first);
+                }
+                for (auto& att_point_id : used_attachment_points)
+                {
+                    auto it = att_points.find(att_point_id);
+                    if (it == att_points.end())
+                        throw Error("Internal error. Attachment point %s not found in monomer %s", att_point_id.c_str(), monomer_id.c_str());
+                    auto& leaving_group = it->second.leavingGroup();
+                    if (!leaving_group.has_value())
+                        continue;
+                    auto& leaved = leaving_group.value();
+                    leaved_atoms.insert(leaved_atoms.end(), leaved.begin(), leaved.end());
+                }
+                std::sort(leaved_atoms.rbegin(), leaved_atoms.rend());
+                auto tgroup = monomer_template.getTGroup();
+                auto* pmol = static_cast<Molecule*>(tgroup->fragment.get());
+                Array<int> atom_filt;
+                atom_filt.expandFill(pmol->vertexCount(), 1);
+                for (auto& idx : leaved_atoms)
+                    atom_filt[idx] = 0;
+                Filter atom_filter(atom_filt.ptr(), Filter::EQ, 1);
+                pmol->selectAtoms(atom_filter);
+                MoleculeMass mass;
+                mass.mass_options.skip_error_on_pseudoatoms = true;
+                mass_sum += mass.molecularWeight(*pmol);
+                if (document.getMonomerClass(*monomer) == MonomerClass::AminoAcid)
+                {
+                    pKa_values.emplace_back(Crippen::pKa(*pmol));
+                }
+                auto gross = MoleculeGrossFormula::collect(*pmol, true);
+                merge_gross_data(*gross);
             }
-            std::vector<int> leaved_atoms;
-            auto& connections = monomer->connections();
-            auto& att_points = monomer->attachmentPoints();
-            for (auto& conn : connections)
-            {
-                auto it = att_points.find(conn.first);
-                if (it == att_points.end())
-                    throw Error("Internal error. Attachment point %s not found in monomer %s", conn.first.c_str(), monomer_id.c_str());
-                auto& leaving_group = it->second.leavingGroup();
-                if (!leaving_group.has_value())
-                    continue;
-                auto& leaved = leaving_group.value();
-                leaved_atoms.insert(leaved_atoms.end(), leaved.begin(), leaved.end());
-            }
-            std::sort(leaved_atoms.rbegin(), leaved_atoms.rend());
-            auto tgroup = monomer_template.getTGroup();
-            auto* pmol = static_cast<Molecule*>(tgroup->fragment.get());
-            Array<int> atom_filt;
-            atom_filt.expandFill(pmol->vertexCount(), 1);
-            for (auto& idx : leaved_atoms)
-                atom_filt[idx] = 0;
-            Filter atom_filter(atom_filt.ptr(), Filter::EQ, 1);
-            pmol->selectAtoms(atom_filter);
-            MoleculeMass mass;
-            mass.mass_options.skip_error_on_pseudoatoms = true;
-            mass_sum += mass.molecularWeight(*pmol);
-            if (document.getMonomerClass(*monomer) == MonomerClass::AminoAcid)
-            {
-                pKa_values.emplace_back(Crippen::pKa(*pmol));
-            }
-            auto gross = MoleculeGrossFormula::collect(*pmol, true);
-            merge_gross_data(*gross);
         }
         if (calculate_mass)
         {
-            std::vector<std::string> sequence_ends;
-            sequence_ends.emplace_back(sequence.front());
-            if (sequence.back() != sequence.front())
-                sequence_ends.emplace_back(sequence.back());
             const auto& molecules = document.jsonMolecules();
-            for (auto& monomer_id : sequence_ends)
+            for (auto& molecule_id : polymer.molecules)
             {
-                if (monomer_to_molecule.count(monomer_id) > 0)
+                auto& mol_json = molecules[document.moleculeIdxByRef(molecule_id)];
+                rapidjson::Value marr(rapidjson::kArrayType);
+                marr.PushBack(document.jsonDocument().CopyFrom(mol_json, document.jsonDocument().GetAllocator()), document.jsonDocument().GetAllocator());
+                MoleculeJsonLoader loader(marr);
+                BaseMolecule* pbmol;
+                Molecule mol;
+                // QueryMolecule qmol;
+                loader.loadMolecule(mol);
+                pbmol = &mol;
+                // select all atoms and
+                if (mol.countSelectedAtoms() == 0) //
                 {
-                    auto& molecule_id = monomer_to_molecule.at(monomer_id).first;
-                    auto& mol_json = molecules[document.moleculeIdxByRef(molecule_id)];
-                    rapidjson::Value marr(rapidjson::kArrayType);
-                    marr.PushBack(document.jsonDocument().CopyFrom(mol_json, document.jsonDocument().GetAllocator()), document.jsonDocument().GetAllocator());
-                    MoleculeJsonLoader loader(marr);
-                    BaseMolecule* pbmol;
-                    Molecule mol;
-                    // QueryMolecule qmol;
-                    try
+                    for (int i = 0; i < mol.vertexCount(); i++)
                     {
-                        loader.loadMolecule(mol);
-                        pbmol = &mol;
-                        MoleculeMass mass;
-                        mass.mass_options.skip_error_on_pseudoatoms = true;
-                        mass_sum += mass.molecularWeight(mol);
-                        auto gross = MoleculeGrossFormula::collect(*pbmol, true);
-                        merge_gross_data(*gross);
-                    }
-                    catch (...)
-                    {
-                        // query molecule just skipped
+                        mol.selectAtom(i);
                     }
                 }
+                std::set<int> used_leaving_atoms;
+                for (auto atom_connections : polymer.mol_atom_connections[molecule_id])
+                {
+                    for (int j = 0; j < atom_connections.second; j++)
+                    {
+                        bool not_found_in_spu_aps = true;
+                        // search atom in SUP attachment points and deselect leaving atom
+                        auto& sgroups = mol.sgroups;
+                        for (int s_idx = sgroups.begin(); s_idx != sgroups.end(); s_idx = sgroups.next(s_idx))
+                        {
+                            SGroup& sg = sgroups.getSGroup(s_idx);
+                            if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+                            {
+                                auto& sa = static_cast<Superatom&>(sg);
+                                for (int ap_idx = sa.attachment_points.begin(); ap_idx != sa.attachment_points.end();
+                                     ap_idx = sa.attachment_points.next(ap_idx))
+                                {
+                                    auto& atp = sa.attachment_points[ap_idx];
+                                    if (atp.aidx != atom_connections.first)
+                                        continue;
+                                    if (used_leaving_atoms.count(atp.aidx) != 0)
+                                        continue;
+                                    // found unused AP
+                                    used_leaving_atoms.emplace(atp.aidx);
+                                    mol.unselectAtom(atp.lvidx);
+                                    not_found_in_spu_aps = false;
+                                }
+                            }
+                        }
+                        // if not found - add unselected H to each monomer connection to decrease implicit H
+                        if (not_found_in_spu_aps)
+                            std::ignore = mol.addBond(atom_connections.first, mol.addAtom(ELEM_H), BOND_SINGLE);
+                    }
+                }
+                MoleculeMass mass;
+                mass.mass_options.skip_error_on_pseudoatoms = true;
+                mass_sum += mass.molecularWeight(mol);
+                auto gross = MoleculeGrossFormula::collect(*pbmol, true);
+                merge_gross_data(*gross);
             }
             Array<char> gross_str;
-            MoleculeGrossFormula::toString(gross_units, gross_str);
+            MoleculeGrossFormula::toString_Hill(gross_units, gross_str);
             writer.Key("grossFormula");
             writer.String(gross_str.ptr());
             writer.Key("mass");
@@ -388,25 +517,25 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         }
 
         // Melting temperature (only double stranded DNA)
-        if (sequence_arr.secondary_sequence.size() > 0)
+        if (polymer.is_double_chain)
         {
             std::deque<std::string> bases;
-            auto it = sequence_arr.sequence.begin();
+            auto& sequence = sequences[*polymer.sequences.begin()];
+            auto it = sequence.begin();
             if (!is_base(document.getMonomerClass(*it)))
-                move_to_next_base(it, sequence_arr.sequence.end());
-            while (it != sequence_arr.sequence.end())
+                move_to_next_base(it, sequence.end());
+            while (it != sequence.end())
             {
                 auto& monomer = monomers.at(*it);
                 if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
                     continue;
                 auto& monomer_template = templates.at(monomer->templateId());
-                if (monomer_template.hasStringProp("naturalAnalogShort"))
-                {
-                    bases.emplace_back(monomer_template.getStringProp("naturalAnalogShort"));
-                }
-                move_to_next_base(it, sequence_arr.sequence.end());
+                if (!monomer_template.hasStringProp("naturalAnalogShort"))
+                    throw Error("Monomer template without natural analog short: %s", monomer_template.id().c_str());
+                bases.emplace_back(monomer_template.getStringProp("naturalAnalogShort"));
+                move_to_next_base(it, sequence.end());
             }
-            if (bases.size() > 0)
+            if (bases.size() > 1)
             {
                 std::string left = bases.front();
                 bases.pop_front();
@@ -415,7 +544,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 size_t base_count = 1;
                 size_t total_strength = 0;
                 static const std::map<std::pair<std::string, std::string>, size_t> STRENGTH_PARAMS{
-                    {{"C", "G"}, 13}, {{"C", "C"}, 11}, {{"G", "G"}, 11}, {{"C", "G"}, 10}, {{"A", "C"}, 10}, {{"T", "C"}, 8},
+                    {{"G", "C"}, 13}, {{"C", "C"}, 11}, {{"G", "G"}, 11}, {{"C", "G"}, 10}, {{"A", "C"}, 10}, {{"T", "C"}, 8},
                     {{"A", "G"}, 8},  {{"T", "G"}, 7},  {{"G", "T"}, 10}, {{"C", "T"}, 8},  {{"G", "A"}, 8},  {{"C", "A"}, 7},
                     {{"A", "T"}, 7},  {{"T", "T"}, 5},  {{"A", "A"}, 5},  {{"T", "A"}, 4}};
                 while (bases.size() > 0)
@@ -431,7 +560,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                     base_count++;
                     left = right;
                 }
-                double sp = static_cast<double>(total_strength) / base_count;
+                double sp = static_cast<double>(total_strength) / (base_count - 1);
                 double tm = 7.35 * sp + 17.34 * log(base_count) + 4.96 * log(upc) + 0.89 * log(nac) - 25.42;
                 writer.Key("Tm");
                 writer.Double(tm);
@@ -445,21 +574,24 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             for (auto& it : extinction_coefficients)
                 extinction_counts.emplace(it.first, 0);
             size_t peptides_count = 0;
-            for (auto monomer_id : sequence)
+            for (size_t sequence_idx : polymer.sequences)
             {
-                auto& monomer = monomers.at(monomer_id);
-                if (document.getMonomerClass(*monomer) != MonomerClass::AminoAcid)
-                    continue;
-                peptides_count++;
-                if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
-                    continue;
-                auto& monomer_template = templates.at(monomer->templateId());
-                if (monomer_template.hasStringProp("naturalAnalogShort"))
+                for (auto& monomer_id : sequences[sequence_idx])
                 {
-                    auto it = extinction_counts.find(monomer_template.getStringProp("naturalAnalogShort"));
-                    if (it != extinction_counts.end())
+                    auto& monomer = monomers.at(monomer_id);
+                    if (document.getMonomerClass(*monomer) != MonomerClass::AminoAcid)
+                        continue;
+                    peptides_count++;
+                    if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
+                        continue;
+                    auto& monomer_template = templates.at(monomer->templateId());
+                    if (monomer_template.hasStringProp("naturalAnalogShort"))
                     {
-                        it->second++;
+                        auto it = extinction_counts.find(monomer_template.getStringProp("naturalAnalogShort"));
+                        if (it != extinction_counts.end())
+                        {
+                            it->second++;
+                        }
                     }
                 }
             }
@@ -480,20 +612,22 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         static const std::map<std::string, double> hydrophobicity_coefficients{
             {"A", 0.616}, {"G", 0.501}, {"M", 0.738}, {"S", 0.359}, {"C", 0.680}, {"H", 0.165}, {"N", 0.236}, {"T", 0.450}, {"D", 0.028}, {"I", 0.943},
             {"P", 0.711}, {"V", 0.825}, {"E", 0.043}, {"K", 0.283}, {"Q", 0.251}, {"W", 0.878}, {"F", 1.000}, {"L", 0.943}, {"R", 0.000}, {"Y", 0.880}};
-        for (auto& monomer_id : sequence)
+        for (size_t sequence_idx : polymer.sequences)
         {
-            if (document.getMonomerClass(monomer_id) != MonomerClass::AminoAcid)
-                continue;
-            auto& monomer = monomers.at(monomer_id);
-            if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
-                continue;
-            auto& monomer_template = templates.at(monomer->templateId());
-            if (monomer_template.hasStringProp("naturalAnalogShort"))
+            for (auto& monomer_id : sequences[sequence_idx])
             {
-
-                auto it = hydrophobicity_coefficients.find(monomer_template.getStringProp("naturalAnalogShort"));
-                if (it != hydrophobicity_coefficients.end())
-                    hydrophobicity.emplace_back(it->second);
+                if (document.getMonomerClass(monomer_id) != MonomerClass::AminoAcid)
+                    continue;
+                auto& monomer = monomers.at(monomer_id);
+                if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
+                    continue;
+                auto& monomer_template = templates.at(monomer->templateId());
+                if (monomer_template.hasStringProp("naturalAnalogShort"))
+                {
+                    auto it = hydrophobicity_coefficients.find(monomer_template.getStringProp("naturalAnalogShort"));
+                    if (it != hydrophobicity_coefficients.end())
+                        hydrophobicity.emplace_back(it->second);
+                }
             }
         }
         if (hydrophobicity.size() > 0)
@@ -517,40 +651,57 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         static const std::string OTHER = "Other";
         peptides_count.emplace(OTHER, 0);
         nucleotides_count.emplace(OTHER, 0);
-        for (auto& monomer_id : sequence)
+        for (size_t sequence_idx : polymer.sequences)
         {
-            auto& monomer = monomers.at(monomer_id);
-            auto monomer_class = document.getMonomerClass(*monomer);
-            if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
+            for (auto& monomer_id : sequences[sequence_idx])
             {
-                if (monomer_class == MonomerClass::AminoAcid)
-                    peptides_count[OTHER]++;
-                else if (monomer_class == MonomerClass::DNA || monomer_class == MonomerClass::RNA || monomer_class == MonomerClass::Sugar ||
-                         monomer_class == MonomerClass::Phosphate || monomer_class == MonomerClass::Base)
-                    nucleotides_count[OTHER]++;
-                continue;
-            }
-            std::string natural_analog = "";
-            auto& monomer_template = templates.at(monomer->templateId());
-            if (monomer_template.monomerClass() == MonomerClass::AminoAcid)
-            {
-                if (monomer_template.hasStringProp("naturalAnalogShort"))
-                    natural_analog = monomer_template.getStringProp("naturalAnalogShort");
-                auto it = peptides_count.find(natural_analog);
-                if (it == peptides_count.end())
-                    peptides_count[OTHER]++;
-                else
-                    it->second++;
-            }
-            else if (is_base(monomer_template.monomerClass()))
-            {
-                if (monomer_template.hasStringProp("naturalAnalogShort"))
-                    natural_analog = monomer_template.getStringProp("naturalAnalogShort");
-                auto it = nucleotides_count.find(natural_analog);
-                if (it == nucleotides_count.end())
-                    nucleotides_count[OTHER]++;
-                else
-                    it->second++;
+                auto& monomer = monomers.at(monomer_id);
+                auto monomer_class = document.getMonomerClass(*monomer);
+                if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
+                {
+                    if (monomer_class == MonomerClass::AminoAcid)
+                        peptides_count[OTHER]++;
+                    else if (monomer_class == MonomerClass::DNA || monomer_class == MonomerClass::RNA || monomer_class == MonomerClass::Sugar ||
+                             monomer_class == MonomerClass::Phosphate || monomer_class == MonomerClass::Base)
+                        nucleotides_count[OTHER]++;
+                    continue;
+                }
+                std::string natural_analog = "";
+                auto& monomer_template = templates.at(monomer->templateId());
+                if (monomer_template.monomerClass() == MonomerClass::AminoAcid)
+                {
+                    if (monomer_template.hasStringProp("naturalAnalogShort"))
+                        natural_analog = monomer_template.getStringProp("naturalAnalogShort");
+                    auto it = peptides_count.find(natural_analog);
+                    if (it == peptides_count.end())
+                        peptides_count[OTHER]++;
+                    else
+                        it->second++;
+                }
+                else if (is_base(monomer_template.monomerClass()))
+                {
+                    if (monomer_template.monomerClass() == MonomerClass::Base)
+                    {
+                        // check that base R1 attached to sugar R3
+                        const auto& connections = monomer->connections();
+                        auto it = connections.find(kAttachmentPointR1);
+                        if (it == connections.end())
+                            continue;
+                        auto& second_ap = it->second;
+                        if (second_ap.second != kAttachmentPointR3)
+                            continue;
+                        auto& sugar = document.getMonomerById(document.monomerIdByRef(second_ap.first));
+                        if (document.getMonomerClass(*sugar) != MonomerClass::Sugar)
+                            continue;
+                    }
+                    if (monomer_template.hasStringProp("naturalAnalogShort"))
+                        natural_analog = monomer_template.getStringProp("naturalAnalogShort");
+                    auto it = nucleotides_count.find(natural_analog);
+                    if (it == nucleotides_count.end())
+                        nucleotides_count[OTHER]++;
+                    else
+                        it->second++;
+                }
             }
         }
         writer.Key("monomerCount");
@@ -585,3 +736,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
     result << s.GetString();
     output.printf("%s", result.str().c_str());
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

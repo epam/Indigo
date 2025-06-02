@@ -695,6 +695,8 @@ namespace indigo
 
         KetDocument* _document;
         int _document_revision;
+
+        std::unique_ptr<BaseMolecule> _with_expanded_monomers;
     };
 
 } // namespace indigo

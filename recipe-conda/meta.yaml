@@ -1,0 +1,32 @@
+package:
+  name: epam.indigo
+  version: {{ INDIGO_VERSION }}
+
+source:
+ path: .
+
+build:
+  number: 1
+  script_env:
+   - INDIGO_VERSION
+  python_version_independent: true 
+
+requirements:
+  build:
+    - python
+    - pip
+  run:
+    - python >=3.6
+
+# test:
+#   imports:
+#     - indigo
+
+about:
+ license: Apache 2.0
+ summary: Indigo universal cheminformatics toolkit
+ author: EPAM Systems Life Science Department
+ author_email: lifescience.opensource@epam.com
+ maintainer: Lifescience Opensource
+ maintainer_email: lifescience.opensource@epam.com
+ 

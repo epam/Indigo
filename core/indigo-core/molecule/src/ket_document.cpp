@@ -379,6 +379,7 @@ void KetDocument::addRGroup(const rapidjson::Value& node)
 
 void KetDocument::addMolecule(const rapidjson::Value& node, std::string& ref)
 {
+    _molecule_refs.emplace_back(ref);
     _mol_ref_to_idx.emplace(ref, _json_molecules.Size());
     _json_molecules.PushBack(_json_document.CopyFrom(node, _json_document.GetAllocator()), _json_document.GetAllocator());
 }

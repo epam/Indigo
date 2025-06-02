@@ -199,6 +199,18 @@ M  END
             options.delete();
         });
 
+        test("calculate", "reaction_undefined", () => {
+            var fs = require('fs');
+            const ket = fs.readFileSync("undefined_2897.ket");
+            let options = new indigo.MapStringString();
+            selected = new indigo.VectorInt();
+            const values = indigo.calculate(ket, options, selected);
+            // fs.writeFileSync("undefined_2897_calc.json", values);
+            const calc_ref = fs.readFileSync("undefined_2897_calc.json");
+            assert.equal(values, calc_ref.toString());
+            selected.delete();
+            options.delete();
+        });
     }
 
     // Check
@@ -1215,6 +1227,22 @@ M  END
             let json = JSON.parse(indigo.calculateMacroProperties(peptides, options)).properties;            
             // fs.writeFileSync("props_peptides.json", json);
             const json_ref = fs.readFileSync("props_peptides.json");
+            assert.equal(json, json_ref.toString().trim());
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("macroprops", "chems", () => {
+            var fs = require('fs');
+            const chems = fs.readFileSync("props_chems.ket");
+            let options = new indigo.MapStringString();
+            options.set('json-saving-pretty', 'true');
+            options.set('nac', '0.2');
+            let json = JSON.parse(indigo.calculateMacroProperties(chems, options)).properties;            
+            // fs.writeFileSync("props_chems.json", json);
+            const json_ref = fs.readFileSync("props_chems.json");
             assert.equal(json, json_ref.toString().trim());
             options.delete();
             assert(true);

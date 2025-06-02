@@ -1,0 +1,16 @@
+[
+    {
+        "grossFormula": "C38 H53 N15 O36 P6",
+        "mass": 1481.748893,
+        "Tm": 34.214852,
+        "monomerCount": {
+            "peptides": {},
+            "nucleotides": {
+                "A": 1,
+                "C": 1,
+                "G": 1,
+                "U": 1
+            }
+        }
+    }
+]

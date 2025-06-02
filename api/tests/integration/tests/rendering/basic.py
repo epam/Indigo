@@ -197,6 +197,16 @@ mol = indigo.loadMoleculeFromFile(ket_fname)
 renderer.renderToFile(mol, joinPathPy("out/" + ket_png_fname, __file__))
 print(checkImageSimilarity(ket_png_fname))
 
+print("issue 2748 backwards substituents")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+fname = "backwards_substituents_2748"
+png_fname = fname + ".png"
+cdxml_fname = joinPathPy("molecules/%s.cdxml" % fname, __file__)
+mol = indigo.loadMoleculeFromFile(cdxml_fname)
+renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
+
 print("issue 2900 cip always render")
 indigo.resetOptions()
 indigo.setOption("render-output-format", "png")
