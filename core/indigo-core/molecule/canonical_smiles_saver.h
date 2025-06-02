@@ -41,7 +41,7 @@ namespace indigo
 
         bool find_invalid_stereo;
 
-        void saveMolecule(Molecule& mol);
+        void saveMolecule(Molecule& mol) override;
 
         DECL_ERROR;
 

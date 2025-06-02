@@ -50,9 +50,9 @@ namespace indigo
         };
 
         SmilesSaver(Output& output);
-        ~SmilesSaver();
+        virtual ~SmilesSaver();
 
-        void saveMolecule(Molecule& mol);
+        virtual void saveMolecule(Molecule& mol);
         void saveQueryMolecule(QueryMolecule& mol);
         void setComma(bool comma);
         bool getComma();
