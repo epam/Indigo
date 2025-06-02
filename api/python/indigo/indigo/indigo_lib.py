@@ -422,6 +422,10 @@ class IndigoLib:
         IndigoLib.lib.indigoChangeStereocenterType.argtypes = [c_int, c_int]
         IndigoLib.lib.indigoValidateChirality.restype = c_int
         IndigoLib.lib.indigoValidateChirality.argtypes = [c_int]
+        IndigoLib.lib.indigoStereocenterCIPDescriptor.restype = c_int
+        IndigoLib.lib.indigoStereocenterCIPDescriptor.argtypes = [c_int]
+        IndigoLib.lib.indigoAddCIPStereoDescriptors.restype = c_int
+        IndigoLib.lib.indigoAddCIPStereoDescriptors.argtypes = [c_int]
         IndigoLib.lib.indigoSingleAllowedRGroup.restype = c_int
         IndigoLib.lib.indigoSingleAllowedRGroup.argtypes = [c_int]
         IndigoLib.lib.indigoAddStereocenter.restype = c_int
@@ -475,6 +479,14 @@ class IndigoLib:
         IndigoLib.lib.indigoCheckQuery.argtypes = [c_int]
         IndigoLib.lib.indigoCheckRGroups.restype = c_int
         IndigoLib.lib.indigoCheckRGroups.argtypes = [c_int]
+        IndigoLib.lib.indigoAtomIndex.restype = c_int
+        IndigoLib.lib.indigoAtomIndex.argtypes = [c_int]
+        IndigoLib.lib.indigoBondIndex.restype = c_int
+        IndigoLib.lib.indigoBondIndex.argtypes = [c_int]
+        IndigoLib.lib.indigoBondBegin.restype = c_int
+        IndigoLib.lib.indigoBondBegin.argtypes = [c_int]
+        IndigoLib.lib.indigoBondEnd.restype = c_int
+        IndigoLib.lib.indigoBondEnd.argtypes = [c_int]
         IndigoLib.lib.indigoCountHydrogens.restype = c_int
         IndigoLib.lib.indigoCountHydrogens.argtypes = [c_int, POINTER(c_int)]
         IndigoLib.lib.indigoCountImplicitHydrogens.restype = c_int
