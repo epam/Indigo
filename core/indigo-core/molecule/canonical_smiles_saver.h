@@ -27,8 +27,8 @@
 #include <map>
 
 #include "base_cpp/exception.h"
-#include "molecule/smiles_saver.h"
 #include "molecule/molecule.h"
+#include "molecule/smiles_saver.h"
 
 namespace indigo
 {
@@ -42,6 +42,7 @@ namespace indigo
         bool find_invalid_stereo;
 
         void saveMolecule(Molecule& mol) override;
+        void copyAAM(CanonicalSmilesSaver& saver);
 
         DECL_ERROR;
 

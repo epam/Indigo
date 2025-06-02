@@ -1077,7 +1077,7 @@ int main(int argc, char* argv[])
                 if (p.query_set)
                     pReaction = indigoSmarts(obj);
                 else
-                    pReaction = indigoCanonicalSmiles(obj);
+                    pReaction = indigoSmiles(obj);
                 FILE* fp = fopen(p.outfile, "w+");
                 if (fp)
                 {

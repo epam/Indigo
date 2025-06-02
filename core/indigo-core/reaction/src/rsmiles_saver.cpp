@@ -53,19 +53,20 @@ void RSmilesSaver::saveQueryReaction(QueryReaction& reaction)
 
 SmilesSaver& RSmilesSaver::_addMoleculeSaver()
 {
-    _smiles_savers.emplace_back(std::make_unique<SmilesSaver>(_output));
+    auto saver = std::make_unique<SmilesSaver>(_output);
+    saver->write_extra_info = false;
+    saver->chemaxon = false;
+    saver->separate_rsites = false;
+    saver->rsite_indices_as_aam = false;
+    saver->smarts_mode = smarts_mode;
+    saver->inside_rsmiles = true;
+    _smiles_savers.emplace_back(std::move(saver));
     return *_smiles_savers.back();
 }
 
 void RSmilesSaver::_writeMolecule(int i)
 {
     SmilesSaver& saver = _addMoleculeSaver();
-    saver.write_extra_info = false;
-    saver.chemaxon = false;
-    saver.separate_rsites = false;
-    saver.rsite_indices_as_aam = false;
-    saver.smarts_mode = smarts_mode;
-    saver.inside_rsmiles = true;
 
     if (_rxn != 0)
         saver.saveMolecule(_rxn->getMolecule(i));

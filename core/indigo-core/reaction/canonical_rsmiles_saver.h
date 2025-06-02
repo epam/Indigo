@@ -42,13 +42,10 @@ namespace indigo
         DECL_ERROR;
 
     protected:
-        void _saveReaction();
-        void _writeMolecule(int i, CanonicalSmilesSaver& saver);
-        void _writeMolecule(int i);
+        SmilesSaver& _addMoleculeSaver() override;
 
     private:
         Reaction _reaction;
-
     };
 
 } // namespace indigo

@@ -36,6 +36,26 @@ CanonicalRSmilesSaver::~CanonicalRSmilesSaver()
 {
 }
 
+SmilesSaver& CanonicalRSmilesSaver::_addMoleculeSaver()
+{
+    auto saver = std::make_unique<CanonicalSmilesSaver>(_output);
+    saver->write_extra_info = false;
+    saver->chemaxon = false;
+    saver->separate_rsites = false;
+    saver->rsite_indices_as_aam = false;
+    saver->smarts_mode = smarts_mode;
+    saver->inside_rsmiles = true;
+    saver->ignore_hydrogens = !_qrxn;
+    if (_smiles_savers.size())
+    {
+        // If there are already some savers, we need to copy aam from the last one.
+        CanonicalSmilesSaver& last_saver = static_cast<CanonicalSmilesSaver&>(*_smiles_savers.back());
+        saver->copyAAM(last_saver);
+    }
+    _smiles_savers.emplace_back(std::move(saver));
+    return *_smiles_savers.back();
+}
+
 void CanonicalRSmilesSaver::saveReaction(Reaction& reaction)
 {
     int j;
@@ -77,81 +97,5 @@ void CanonicalRSmilesSaver::saveReaction(Reaction& reaction)
     _brxn = &_reaction;
     _qrxn = 0;
     _rxn = &_reaction;
-    _saveReaction();
-}
-
-void CanonicalRSmilesSaver::_saveReaction()
-{
-    _written_atoms.clear();
-    _written_bonds.clear();
-    _ncomp.clear();
-    _comma = false;
-
-    CanonicalSmilesSaver moleculeSaver(_output);
-
-    // Invariant: there are only one molecule for each part of the reaction. Thus we can use _brxn->xxxBegin instead of the loop.
-    // The only exception is catalyst. There could be zero catalysts.
-    if (_brxn->reactantsCount())
-        _writeMolecule(_brxn->reactantBegin(), moleculeSaver);
-    _output.writeString(">");
-    if (_brxn->catalystCount())
-        _writeMolecule(_brxn->catalystBegin(), moleculeSaver);
-    _output.writeString(">");
-    if (_brxn->productsCount())
-        _writeMolecule(_brxn->productBegin(), moleculeSaver);
-
-    // This block shouldn't be written for canonical RSmiles.
-    /* _writeFragmentsInfo();
-    _writeStereogroups();
-    _writeRadicals();
-    _writePseudoAtoms();
-    _writeHighlighting();
-
-    if (_comma)
-        _output.writeChar('|'); */
-}
-
-void CanonicalRSmilesSaver::_writeMolecule(int i)
-{
-
-}
-
-void CanonicalRSmilesSaver::_writeMolecule(int i, CanonicalSmilesSaver& saver)
-{
-    int j;
-
-    saver.write_extra_info = false;
-    saver.chemaxon = false;
-    saver.separate_rsites = false;
-    saver.rsite_indices_as_aam = false;
-
-    saver.smarts_mode = smarts_mode;
-    saver.inside_rsmiles = true;
-
-    if (_rxn != 0)
-        saver.saveMolecule(_rxn->getMolecule(i));
-    // else
-    //   saver.saveQueryMolecule(_qrxn->getQueryMolecule(i));
-
-    _ncomp.push(saver.writtenComponents());
-
-    const Array<int>& atoms = saver.writtenAtoms();
-
-    for (j = 0; j < atoms.size(); j++)
-    {
-        _Idx& idx = _written_atoms.push();
-
-        idx.mol = i;
-        idx.idx = atoms[j];
-    }
-
-    const Array<int>& bonds = saver.writtenBonds();
-
-    for (j = 0; j < bonds.size(); j++)
-    {
-        _Idx& idx = _written_bonds.push();
-
-        idx.mol = i;
-        idx.idx = bonds[j];
-    }
+    RSmilesSaver::_saveReaction();
 }

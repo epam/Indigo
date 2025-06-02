@@ -22,6 +22,7 @@ input_smiles = [
     "OC[C@@](C(=O)O[C@H]1CN2CCC1CC2)(C2=CC=CC=C2)CSC |o1:2|",
     "CO[C@H]1C[C@H](O[C@H]2[C@H](C)O[C@@H](O[C@@H]3/C(C)=C/C[C@@H]4C[C@@H](C[C@]5(C=C[C@H](C)[C@@H](C6CCCCC6)O5)O4)OC(=O)[C@@H]4C=C(C)[C@@H](O)[C@H]5OC/C(=C\\C=C\\[C@@H]3C)[C@@]45O)C[C@@H]2OC)O[C@@H](C)[C@@H]1O",
     "OC[C@@](C(=O)O[C@H]1CN2CCC1CC2)(C2=CC=CC=C2)CSC |&1:2|",
+    "OC[C@](CSC)(C1C=CC(C2=CC=CC(=C2)[C@](CSC)(C(O[C@@H]2C3CCN(CC3)C2)=O)CO)=CC=1)C(O[C@@H]1C2CCN(CC2)C1)=O |o1:2,&1:16|",
 ]
 
 
@@ -81,7 +82,7 @@ rxn.addReactant(load_molecule(input_smiles[0]))
 rxn.addReactant(load_molecule(input_smiles[1]))
 rxn.addCatalyst(load_molecule(input_smiles[2]))
 rxn.addProduct(load_molecule(input_smiles[3]))
-print(rxn.smiles())
+print("Reaction SMILES: %s" % rxn.smiles())
 for idx, mol in enumerate(rxn.iterateMolecules()):
     print(mol.smiles())
     inchi1 = indigo_inchi.getInchi(mol)
@@ -90,3 +91,15 @@ for idx, mol in enumerate(rxn.iterateMolecules()):
         print("  -> Mismatch detected!")
     else:
         print("  -> InChIs match.")
+
+rxn = indigo.createReaction()
+rxn.addReactant(load_molecule("C1CCCC1"))  # no enhanced
+rxn.addReactant(load_molecule(input_smiles[1]))  # or
+rxn.addReactant(load_molecule(input_smiles[3]))  # and
+rxn.addCatalyst(load_molecule(input_smiles[1]))  # or
+rxn.addProduct(load_molecule(input_smiles[0]))  # cis
+rxn.addProduct(load_molecule(input_smiles[4]))  # and + or
+
+print("Reaction SMILES: %s" % rxn.smiles())
+for mol in rxn.iterateMolecules():
+    print(mol.smiles())

@@ -135,3 +135,10 @@ void CanonicalSmilesSaver::saveMolecule(Molecule& mol)
 
     SmilesSaver::saveMolecule(_mol);
 }
+
+void CanonicalSmilesSaver::copyAAM(CanonicalSmilesSaver& saver)
+{
+    _actual_atom_atom_mapping.copy(saver._actual_atom_atom_mapping);
+    _initial_to_actual = saver._initial_to_actual;
+    _aam_counter = saver._aam_counter;
+}
