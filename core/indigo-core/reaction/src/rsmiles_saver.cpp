@@ -51,12 +51,15 @@ void RSmilesSaver::saveQueryReaction(QueryReaction& reaction)
     _saveReaction();
 }
 
-void RSmilesSaver::_writeMolecule(int i)
+SmilesSaver& RSmilesSaver::_addMoleculeSaver()
 {
     _smiles_savers.emplace_back(std::make_unique<SmilesSaver>(_output));
+    return *_smiles_savers.back();
+}
 
-    SmilesSaver& saver = *_smiles_savers.back();
-
+void RSmilesSaver::_writeMolecule(int i)
+{
+    SmilesSaver& saver = _addMoleculeSaver();
     saver.write_extra_info = false;
     saver.chemaxon = false;
     saver.separate_rsites = false;

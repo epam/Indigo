@@ -56,6 +56,7 @@ namespace indigo
         QueryReaction* _qrxn;
         Reaction* _rxn;
         void _writeMolecule(int i);
+        virtual SmilesSaver& _addMoleculeSaver();
         void _saveReaction();
 
         struct _Idx
