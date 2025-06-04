@@ -150,7 +150,7 @@ namespace indigo
         // For RNA/DNA monomer placed in order Sugar-Base-Phosphate-Sugar... with standard connections
         // Each CHEM returned as separate simple polymer
         // Also store non-standard or creating cycle connections in nonSequenceConnections list
-        void parseSimplePolymers(std::vector<std::deque<std::string>>& sequences, bool for_idt = false, bool selection = false);
+        void parseSimplePolymers(std::vector<std::deque<std::string>>& sequences, bool for_idt = false);
 
         MonomerClass getMonomerClass(const KetBaseMonomer& monomer) const;
 
