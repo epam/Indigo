@@ -449,6 +449,7 @@ const std::map<std::string, int>& KetMonomer::getBoolPropStrToIdx() const
 {
     static std::map<std::string, int> str_to_idx{
         {"expanded", toUType(BoolProps::expanded)},
+        {"selected", toUType(BoolProps::selected)},
     };
     return str_to_idx;
 }
@@ -509,6 +510,15 @@ const std::map<std::string, int>& KetConnection::getStringPropStrToIdx() const
     };
     return str_to_idx;
 }
+
+const std::map<std::string, int>& KetConnection::getBoolPropStrToIdx() const
+{
+    static std::map<std::string, int> str_to_idx{
+        {"selected", toUType(BoolProps::selected)},
+    };
+    return str_to_idx;
+}
+
 
 IMPL_ERROR(KetAmbiguousMonomer, "Ket Ambiguous Monomer")
 

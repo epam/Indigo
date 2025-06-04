@@ -78,7 +78,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         };
     };
     std::vector<std::deque<std::string>> sequences;
-    document.parseSimplePolymers(sequences, false);
+    document.parseSimplePolymers(sequences, false, true);
     std::map<std::string, size_t> monomer_to_sequence_idx;
     std::map<size_t, size_t> sequence_to_polymer_idx;
     std::map<std::string, size_t> molecule_to_polymer_idx;
