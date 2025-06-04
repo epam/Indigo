@@ -1845,7 +1845,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 
         if (ep1.HasMember("monomerId"))
         {
-            id1 = _monomer_ref_to_id.at(ep1["monomerId"].GetString());
+            id1 = monomer_id_mapping.at(_monomer_ref_to_id.at(ep1["monomerId"].GetString()));
             if (ep1.HasMember("attachmentPointId"))
                 atp1 = convertAPFromHELM(ep1["attachmentPointId"].GetString());
         }
@@ -1859,7 +1859,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 
         if (ep2.HasMember("monomerId"))
         {
-            id2 = _monomer_ref_to_id.at(ep2["monomerId"].GetString());
+            id2 = monomer_id_mapping.at(_monomer_ref_to_id.at(ep2["monomerId"].GetString()));
             if (ep2.HasMember("attachmentPointId"))
                 atp2 = convertAPFromHELM(ep2["attachmentPointId"].GetString());
         }
