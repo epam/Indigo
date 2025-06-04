@@ -408,24 +408,17 @@ bool is_backbone_class(MonomerClass monomer_class)
     return false;
 }
 
-void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequences, bool for_idt, bool selection)
+void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequences, bool for_idt)
 {
     std::map<std::string, MonomerClass> id_to_class;
     std::set<std::string> monomers;
     std::set<std::string> used_monomers;
-    std::set<std::string> selected_monomers;
 
     for (auto& it : _monomers)
     {
-        if (selection && it.second->hasBoolProp("selected") && it.second->getBoolProp("selected"))
-            selected_monomers.emplace(it.first);
-
         id_to_class.emplace(it.first, getMonomerClass(*it.second));
         monomers.emplace(it.first);
     }
-
-    if (selected_monomers.size())
-        monomers = selected_monomers;
 
     std::map<std::pair<std::string, std::string>, const KetConnection&> ap_to_connection;
 
