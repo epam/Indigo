@@ -340,6 +340,9 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 break;
             if (possible_bases.count(templates.at(second_monomer->templateId()).getStringProp("naturalAnalogShort")) == 0)
                 break;
+            if (has_selection && !(first_monomer->hasBoolProp("selected") && first_monomer->getBoolProp("selected") &&
+                                   second_monomer->hasBoolProp("selected") && second_monomer->getBoolProp("selected")))
+                break;
             first_nucleos_it++;
             second_nucleos_it++;
         }
@@ -531,7 +534,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         }
 
         // Melting temperature (only double stranded DNA)
-        if (polymer.is_double_chain && !has_selection)
+        if (polymer.is_double_chain)
         {
             std::deque<std::string> bases;
             auto& sequence = sequences[*polymer.sequences.begin()];
@@ -541,6 +544,9 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             while (it != sequence.end())
             {
                 auto& monomer = monomers.at(*it);
+                bool selected = monomer->hasBoolProp("selected") && monomer->getBoolProp("selected");
+                if (has_selection && !selected)
+                    continue;
                 if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
                     continue;
                 auto& monomer_template = templates.at(monomer->templateId());
