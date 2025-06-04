@@ -952,12 +952,11 @@ int main(int argc, char* argv[])
             obj = indigoLoadHelm(reader, lib);
         }
         else
-            obj = indigoLoadKetDocument(reader);
+            obj = indigoLoadMolecule(reader);
 
-        printf(indigoMacroProperties(obj, 0.14, 0.2));
         if (p.action == ACTION_LAYOUT)
         {
-            //indigoLayout(obj);
+            indigoLayout(obj);
             if (p.out_ext == OEXT_MOL)
                 indigoSaveMolfileToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_KET)
