@@ -35,6 +35,8 @@
 
 using namespace indigo;
 
+static const char* get_helm_class(MonomerClass monomer_class);
+
 IMPL_ERROR(SequenceSaver, "Sequence saver");
 
 CP_DEF(SequenceSaver);
@@ -360,6 +362,8 @@ std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<in
                 const std::string& monomer_id = _library.getMonomerTemplateIdByAlias(MonomerTemplates::getStrToMonomerType().at(monomer_class), monomer);
                 if (monomer_id.size())
                     helm_polymer_class = _library.getMonomerTemplateById(monomer_id).getStringProp("classHELM");
+                else
+                    helm_polymer_class = get_helm_class(MonomerTemplates::getStrToMonomerType().at(monomer_class));
                 if (helm_string.size())
                     helm_string += '|'; // separator between polymers
                 helm_string += helm_polymer_class;
@@ -1195,6 +1199,13 @@ void SequenceSaver::add_monomer(KetDocument& document, const std::unique_ptr<Ket
         else
             monomer_str = mononomer_template.getStringProp("alias");
     }
+    else if (mon_templ.unresolved())
+    {
+        if (mon_templ.hasStringProp("aliasHELM"))
+            monomer_str = mon_templ.getStringProp("aliasHELM");
+        else
+            monomer_str = "*";
+    }
     else
     {
         // monomer not in library - generate smiles
@@ -1293,10 +1304,7 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
                 helm_string += '(';
             if (monomer->monomerType() == KetBaseMonomer::MonomerType::Monomer)
             {
-                if (templates.at(monomer->templateId()).unresolved())
-                    helm_string += '*';
-                else
-                    add_monomer(document, monomer, helm_string);
+                add_monomer(document, monomer, helm_string);
             }
             else if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
             {

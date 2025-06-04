@@ -1651,6 +1651,7 @@ const std::string SequenceLoader::checkAddAmbiguousMonomerTemplate(KetDocument& 
                 { // unknown monomer - add unresolved template
                     MonomerTemplate monomer_template(MonomerTemplate::MonomerClassToStr(monomer_class) + option.first, monomer_class, IdtAlias(), true);
                     monomer_template.setStringProp("alias", option.first);
+                    monomer_template.setStringProp("aliasHELM", alias);
                     for (auto ap : {"R1", "R2", "R3", "R4"})
                         monomer_template.AddAttachmentPoint(ap, -1);
                     checkAddTemplate(document, monomer_template);
@@ -1752,6 +1753,7 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
                         // unknown monomer - add unresolved template
                         MonomerTemplate monomer_template(MonomerTemplate::MonomerClassToStr(monomer_class) + alias, monomer_class, IdtAlias(), true);
                         monomer_template.setStringProp("alias", alias);
+                        monomer_template.setStringProp("aliasHELM", alias);
                         for (auto ap : {"R1", "R2", "R3", "R4"})
                             monomer_template.AddAttachmentPoint(ap, -1);
                         checkAddTemplate(document, monomer_template);
@@ -1867,18 +1869,15 @@ void SequenceLoader::loadHELM(KetDocument& document)
                 }
                 else // kHELMPolymerTypeRNA
                 {
-                    const std::string& phosphate_lib_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, std::get<0>(monomer_info));
-                    const std::string& nucleotide_id = _library.getMonomerTemplateIdByAlias(MonomerClass::RNA, std::get<0>(monomer_info));
-                    if (phosphate_lib_id.size() || nucleotide_id.size())
+                    ch = _scanner.lookNext();
+                    if (ch == '.' || ch == '}') // single monomer - could be unsplitted RNA or phosphate
                     {
-                        // add phosphate
-                        auto added_idx = addHelmMonomer(document, monomer_info, nucleotide_id.size() > 0 ? MonomerClass::RNA : MonomerClass::Phosphate, pos);
+                        const std::string& phosphate_lib_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, std::get<0>(monomer_info));
+                        // if found phosphate id - add phosphate, else - add unsplitted RNA(may be unresolved)
+                        auto added_idx = addHelmMonomer(document, monomer_info, phosphate_lib_id.size() > 0 ? MonomerClass::Phosphate : MonomerClass::RNA, pos);
                         cur_polymer_map->second[monomer_idx] = added_idx;
                         if (monomer_idx > 1)
                             addMonomerConnection(document, added_idx - 1, added_idx);
-                        ch = _scanner.lookNext();
-                        if (ch != '.' && ch != '}')
-                            throw Error("Unexpected symbol. Expected '.' or '}' but found '%c'.", ch);
                         if (ch == '.')
                             _scanner.skip(1);
                         continue;
@@ -1887,21 +1886,20 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     cur_polymer_map->second[monomer_idx] = sugar_idx;
                     if (monomer_idx > 1)
                         addMonomerConnection(document, sugar_idx - 1, sugar_idx);
-                    ch = _scanner.lookNext();
-                    if (ch == '(') // In RNA after sugar could be base in ()
+                    monomer_idx++;
+                    if (ch == '(') // base after sugar
                     {
-                        monomer_idx++;
                         auto base_info = readHelmMonomer(document, MonomerClass::Base);
-                        ch = _scanner.lookNext();
                         Vec3f base_pos(pos.x, pos.y - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, 0);
                         auto base_idx = addHelmMonomer(document, base_info, MonomerClass::Base, base_pos);
                         cur_polymer_map->second[monomer_idx] = base_idx;
-                        if (monomer_idx > 1)
-                            addMonomerConnection(document, sugar_idx, base_idx, true);
+                        addMonomerConnection(document, sugar_idx, base_idx, true);
                     }
-                    if (ch == '.')
+                    ch = _scanner.lookNext();
+                    if (ch == '.') // end of nucleo
                     {
                         _scanner.skip(1);
+                        continue;
                     }
                     if (ch == '}')
                         continue;
@@ -1911,8 +1909,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     _col++;
                     auto phosphate_idx = addHelmMonomer(document, phosphate_info, MonomerClass::Phosphate, phosphate_pos);
                     cur_polymer_map->second[monomer_idx] = phosphate_idx;
-                    if (monomer_idx > 1)
-                        addMonomerConnection(document, sugar_idx, phosphate_idx);
+                    addMonomerConnection(document, sugar_idx, phosphate_idx);
                     ch = _scanner.lookNext();
                     if (ch != '.' && ch != '}')
                         throw Error("Unexpected symbol. Expected '.' or '}' but found '%c'.", ch);
