@@ -187,10 +187,6 @@ void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json
         if (unresolved) // For unresoved all modifications should be equal to base
             idt_alias.setModifications(idt_base, idt_base, idt_base);
     }
-    else if (unresolved)
-    {
-        throw Error("Unresoved monomer '%s' without IDT alias.", id.c_str());
-    }
 
     auto& mon_template = addMonomerTemplate(id, monomer_class, idt_alias, unresolved);
     mon_template.parseOptsFromKet(mt_json);
