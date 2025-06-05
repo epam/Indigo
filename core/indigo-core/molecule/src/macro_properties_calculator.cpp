@@ -452,13 +452,16 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             {
                 auto& mol = *molecules[document.moleculeIdxByRef(molecule_id)];
 
-                // select all atoms and
-                if (mol.countSelectedAtoms() == 0) //
+                // select all atoms if no selection
+                if (mol.countSelectedAtoms() == 0)
                 {
-                    for (int i = 0; i < mol.vertexCount(); i++)
-                    {
-                        mol.selectAtom(i);
-                    }
+                    if (has_selection)
+                        continue;
+                    else
+                        for (int i = 0; i < mol.vertexCount(); i++)
+                        {
+                            mol.selectAtom(i);
+                        }
                 }
                 std::set<int> used_leaving_atoms;
                 for (auto atom_connections : polymer.mol_atom_connections[molecule_id])
