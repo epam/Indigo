@@ -535,7 +535,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 bases.emplace_back(monomer_template.getStringProp("naturalAnalogShort"));
                 move_to_next_base(it, sequence.end());
             }
-            if (bases.size() > 1)
+            if (bases.size() > 0)
             {
                 std::string left = bases.front();
                 bases.pop_front();
@@ -560,7 +560,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                     base_count++;
                     left = right;
                 }
-                double sp = static_cast<double>(total_strength) / (base_count - 1);
+                double sp = static_cast<double>(total_strength) / base_count;
                 double tm = 7.35 * sp + 17.34 * log(base_count) + 4.96 * log(upc) + 0.89 * log(nac) - 25.42;
                 writer.Key("Tm");
                 writer.Double(tm);
