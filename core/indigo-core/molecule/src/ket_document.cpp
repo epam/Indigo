@@ -280,8 +280,8 @@ static bool isSimplePolymerConnection(MonomerClass cl1, const std::string& ap1, 
         return true;
     if (((cl1 == MonomerClass::DNA || cl1 == MonomerClass::RNA) && (cl2 == MonomerClass::Phosphate || cl2 == MonomerClass::Sugar) &&
          (ap1 == "R2" && ap2 == "R1")) ||
-        ((cl2 == MonomerClass::DNA || cl2 == MonomerClass::RNA) && (cl1 == MonomerClass::Phosphate || cl1 == MonomerClass::Sugar) &&
-         (ap2 == "R2" && ap1 == "R1")))
+        ((cl1 == MonomerClass::Phosphate || cl1 == MonomerClass::Sugar) && (cl2 == MonomerClass::DNA || cl2 == MonomerClass::RNA) &&
+         (ap1 == "R2" && ap2 == "R1")))
         return true;
     if (((cl1 == MonomerClass::DNA && cl2 == MonomerClass::DNA) || (cl1 == MonomerClass::RNA && cl2 == MonomerClass::RNA)) &&
         ((ap1 == "R2" && ap2 == "R1") || (ap1 == "R1" && ap2 == "R2")))
