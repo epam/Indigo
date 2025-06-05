@@ -126,6 +126,7 @@ namespace indigo
         rapidjson::Value _monomer_shapes;
         std::unordered_map<std::string, int> _id_to_template;
         std::map<std::string, std::string> _template_ref_to_id;
+        std::map<std::string, int> _monomer_ref_to_id;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
