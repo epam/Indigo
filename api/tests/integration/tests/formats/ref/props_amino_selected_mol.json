@@ -1,0 +1,17 @@
+[
+    {
+        "grossFormula": "C3 H6 N O",
+        "mass": 72.08584,
+        "pKa": 4.006666,
+        "extinctionCoefficient": 0,
+        "hydrophobicity": [
+            0.616
+        ],
+        "monomerCount": {
+            "peptides": {
+                "A": 1
+            },
+            "nucleotides": {}
+        }
+    }
+]

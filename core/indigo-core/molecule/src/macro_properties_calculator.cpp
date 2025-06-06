@@ -77,6 +77,22 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             mol_atom_connections.insert(other.mol_atom_connections.begin(), other.mol_atom_connections.end());
         };
     };
+    bool has_selection = false;
+    std::vector<std::unique_ptr<BaseMolecule>> molecules;
+    // handle molecules
+    if (document.jsonMolecules().IsArray())
+        for (auto& mol_json : document.jsonMolecules().GetArray())
+        {
+            rapidjson::Value marr(rapidjson::kArrayType);
+            marr.PushBack(document.jsonDocument().CopyFrom(mol_json, document.jsonDocument().GetAllocator()), document.jsonDocument().GetAllocator());
+            MoleculeJsonLoader loader(marr);
+            molecules.emplace_back(std::make_unique<Molecule>());
+            BaseMolecule& bmol = *molecules.back();
+            loader.loadMolecule(bmol);
+            if (bmol.countSelectedAtoms())
+                has_selection = true;
+        }
+    // handle sequences
     std::vector<std::deque<std::string>> sequences;
     document.parseSimplePolymers(sequences, false);
     std::map<std::string, size_t> monomer_to_sequence_idx;
@@ -92,6 +108,9 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         polymers.emplace_back(i);
         for (auto& monomer : sequences[i])
         {
+            auto& mon = monomers.at(monomer);
+            if (mon->hasBoolProp("selected") && mon->getBoolProp("selected"))
+                has_selection = true;
             monomer_to_sequence_idx.emplace(monomer, i);
         }
     }
@@ -321,6 +340,9 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 break;
             if (possible_bases.count(templates.at(second_monomer->templateId()).getStringProp("naturalAnalogShort")) == 0)
                 break;
+            if (has_selection && !(first_monomer->hasBoolProp("selected") && first_monomer->getBoolProp("selected") &&
+                                   second_monomer->hasBoolProp("selected") && second_monomer->getBoolProp("selected")))
+                break;
             first_nucleos_it++;
             second_nucleos_it++;
         }
@@ -366,6 +388,9 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             for (auto& monomer_id : sequences[sequence_idx])
             {
                 auto& monomer = monomers.at(monomer_id);
+                bool selected = monomer->hasBoolProp("selected") && monomer->getBoolProp("selected");
+                if (has_selection && !selected)
+                    continue;
                 if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
                 {
                     calculate_mass = false;
@@ -423,25 +448,20 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         }
         if (calculate_mass)
         {
-            const auto& molecules = document.jsonMolecules();
             for (auto& molecule_id : polymer.molecules)
             {
-                auto& mol_json = molecules[document.moleculeIdxByRef(molecule_id)];
-                rapidjson::Value marr(rapidjson::kArrayType);
-                marr.PushBack(document.jsonDocument().CopyFrom(mol_json, document.jsonDocument().GetAllocator()), document.jsonDocument().GetAllocator());
-                MoleculeJsonLoader loader(marr);
-                BaseMolecule* pbmol;
-                Molecule mol;
-                // QueryMolecule qmol;
-                loader.loadMolecule(mol);
-                pbmol = &mol;
-                // select all atoms and
-                if (mol.countSelectedAtoms() == 0) //
+                auto& mol = *molecules[document.moleculeIdxByRef(molecule_id)];
+
+                // select all atoms if no selection
+                if (mol.countSelectedAtoms() == 0)
                 {
-                    for (int i = 0; i < mol.vertexCount(); i++)
-                    {
-                        mol.selectAtom(i);
-                    }
+                    if (has_selection)
+                        continue;
+                    else
+                        for (int i = 0; i < mol.vertexCount(); i++)
+                        {
+                            mol.selectAtom(i);
+                        }
                 }
                 std::set<int> used_leaving_atoms;
                 for (auto atom_connections : polymer.mol_atom_connections[molecule_id])
@@ -479,8 +499,8 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 }
                 MoleculeMass mass;
                 mass.mass_options.skip_error_on_pseudoatoms = true;
-                mass_sum += mass.molecularWeight(mol);
-                auto gross = MoleculeGrossFormula::collect(*pbmol, true);
+                mass_sum += mass.molecularWeight(mol.asMolecule());
+                auto gross = MoleculeGrossFormula::collect(mol, true);
                 merge_gross_data(*gross);
             }
             Array<char> gross_str;
@@ -527,6 +547,9 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             while (it != sequence.end())
             {
                 auto& monomer = monomers.at(*it);
+                bool selected = monomer->hasBoolProp("selected") && monomer->getBoolProp("selected");
+                if (has_selection && !selected)
+                    continue;
                 if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
                     continue;
                 auto& monomer_template = templates.at(monomer->templateId());
@@ -579,6 +602,9 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 for (auto& monomer_id : sequences[sequence_idx])
                 {
                     auto& monomer = monomers.at(monomer_id);
+                    bool selected = monomer->hasBoolProp("selected") && monomer->getBoolProp("selected");
+                    if (has_selection && !selected)
+                        continue;
                     if (document.getMonomerClass(*monomer) != MonomerClass::AminoAcid)
                         continue;
                     peptides_count++;
@@ -619,6 +645,10 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 if (document.getMonomerClass(monomer_id) != MonomerClass::AminoAcid)
                     continue;
                 auto& monomer = monomers.at(monomer_id);
+                bool selected = monomer->hasBoolProp("selected") && monomer->getBoolProp("selected");
+                if (has_selection && !selected)
+                    continue;
+
                 if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
                     continue;
                 auto& monomer_template = templates.at(monomer->templateId());
@@ -656,6 +686,10 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             for (auto& monomer_id : sequences[sequence_idx])
             {
                 auto& monomer = monomers.at(monomer_id);
+                bool selected = monomer->hasBoolProp("selected") && monomer->getBoolProp("selected");
+                if (has_selection && !selected)
+                    continue;
+
                 auto monomer_class = document.getMonomerClass(*monomer);
                 if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
                 {
@@ -692,6 +726,9 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                             continue;
                         auto& sugar = document.getMonomerById(document.monomerIdByRef(second_ap.first));
                         if (document.getMonomerClass(*sugar) != MonomerClass::Sugar)
+                            continue;
+                        // if base is selected and sugar is not selected - skip
+                        if (has_selection && !(sugar->hasBoolProp("selected") && sugar->getBoolProp("selected")))
                             continue;
                     }
                     if (monomer_template.hasStringProp("naturalAnalogShort"))

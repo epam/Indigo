@@ -1,7 +1,15 @@
 *** HELM to KET ***
+props_amino_full_mol_selected.json: SUCCEED
+props_amino_mol_selected.json: SUCCEED
+props_amino_one_selected.json: SUCCEED
+props_amino_selected_mol.json: SUCCEED
+props_amino_selected_mol_part.json: SUCCEED
 props_bases_no_sugar.json: SUCCEED
 props_connected_via_chem.json: SUCCEED
 props_connected_via_micro.json: SUCCEED
+props_dna_base_selected.json: SUCCEED
+props_dna_nucleotide_selected.json: SUCCEED
+props_dna_phosphate_selected.json: SUCCEED
 props_double_dna.json: SUCCEED
 props_double_dna_gc.json: SUCCEED
 props_double_dna_p.json: SUCCEED
