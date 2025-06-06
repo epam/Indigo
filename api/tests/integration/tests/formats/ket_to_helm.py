@@ -40,6 +40,7 @@ helm_data = {
     "helm_annotations": "CHEM1{[hxy]}|RNA1{R(A)P.R(U)P.R(G)P}$$$$V2.0",
     "helm_connetion_separator": "PEPTIDE1{A}|PEPTIDE2{C}|CHEM1{[A6OH]}$PEPTIDE1,CHEM1,1:R2-1:R1|CHEM1,PEPTIDE2,1:R2-1:R1$$$V2.0",
     "helm_chem_rna": "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:R1-3:R2$$$V2.0",
+    "helm_rna_without_base": "RNA1{R.P}$$$$V2.0",
     "helm_cycled_polymer": "PEPTIDE1{A.C.D.E.F}$PEPTIDE1,PEPTIDE1,5:R2-1:R1$$$V2.0",
     "helm_mixed_base": "RNA1{[dR](A)P.[dR](A+G)P.[dR](A)P.[dR](G+C)}$$$$V2.0",
     "helm_mixed_custom": "RNA1{[dR](A:10+[Xan]:20+G:30+T:50)P.[dR](A:10+C:20+G:30+T:50)P.[dR](A+C+G+T)}$$$$V2.0",
