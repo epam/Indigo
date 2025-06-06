@@ -42,6 +42,14 @@ macro_data = [
     "props_bases_no_sugar",
     "props_double_dna_p",
     "props_double_dna_unsplit",
+    "props_amino_full_mol_selected",
+    "props_amino_mol_selected",
+    "props_amino_one_selected",
+    "props_amino_selected_mol",
+    "props_amino_selected_mol_part",
+    "props_dna_base_selected",
+    "props_dna_nucleotide_selected",
+    "props_dna_phosphate_selected",
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(

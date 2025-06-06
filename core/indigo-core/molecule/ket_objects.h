@@ -691,7 +691,8 @@ namespace indigo
     private:
         enum class BoolProps
         {
-            expanded
+            expanded,
+            selected
         };
         enum class IntProps
         {
@@ -735,6 +736,7 @@ namespace indigo
         KetConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) : _connection_type(KetConnectionSingle), _ep1(ep1), _ep2(ep2){};
 
         const std::map<std::string, int>& getStringPropStrToIdx() const override;
+        const std::map<std::string, int>& getBoolPropStrToIdx() const override;
 
         const TYPE connType() const;
 
@@ -769,6 +771,12 @@ namespace indigo
         {
             label,
         };
+
+        enum class BoolProps
+        {
+            selected,
+        };
+
         std::string _connection_type;
         KetConnectionEndPoint _ep1;
         KetConnectionEndPoint _ep2;
