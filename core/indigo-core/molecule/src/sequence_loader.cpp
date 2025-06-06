@@ -1870,11 +1870,17 @@ void SequenceLoader::loadHELM(KetDocument& document)
                 else // kHELMPolymerTypeRNA
                 {
                     ch = _scanner.lookNext();
-                    if (ch == '.' || ch == '}') // single monomer - could be unsplitted RNA or phosphate
+                    if (ch == '.' || ch == '}') // single monomer - could be unsplitted RNA or phosphate or sugar
                     {
-                        const std::string& phosphate_lib_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, std::get<0>(monomer_info));
-                        // if found phosphate id - add phosphate, else - add unsplitted RNA(may be unresolved)
-                        auto added_idx = addHelmMonomer(document, monomer_info, phosphate_lib_id.size() > 0 ? MonomerClass::Phosphate : MonomerClass::RNA, pos);
+                        size_t added_idx;
+                        // if found sugar id - add sugar, else if found phosphate id - add phosphate, else - add unsplitted RNA(may be unresolved)
+                        if (_library.getMonomerTemplateIdByAlias(MonomerClass::Sugar, std::get<0>(monomer_info)).size() > 0)
+                            added_idx = addHelmMonomer(document, monomer_info, MonomerClass::Sugar, pos);
+                        else if (_library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, std::get<0>(monomer_info)).size() > 0)
+                            added_idx = addHelmMonomer(document, monomer_info, MonomerClass::Phosphate, pos);
+                        else
+                            added_idx = addHelmMonomer(document, monomer_info, MonomerClass::RNA, pos);
+
                         cur_polymer_map->second[monomer_idx] = added_idx;
                         if (monomer_idx > 1)
                             addMonomerConnection(document, added_idx - 1, added_idx);
