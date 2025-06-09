@@ -3384,7 +3384,6 @@ M  END
                 "struct": monomer_struct,
                 "options": {
                     "monomerLibrary": monomer_library,
-                    "sequence-type": "PEPTIDE",
                 },
                 "output_format": "chemical/x-sequence",
             }

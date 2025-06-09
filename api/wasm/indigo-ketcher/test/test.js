@@ -888,7 +888,6 @@ M  END
             let ad_options = new indigo.MapStringString();
             ad_options.set("output-content-type", "application/json");
             ad_options.set("monomerLibrary", monomersLib);
-            ad_options.set("sequence-type", "PEPTIDE");
             const res2 = indigo.convert(peptide_seq_ref, "ket", ad_options);
             assert.equal(res2, peptide_ket_ref.toString());
             ad_options.delete();

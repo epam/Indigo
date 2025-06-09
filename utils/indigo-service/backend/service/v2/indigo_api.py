@@ -315,26 +315,27 @@ def remove_unselected_repeating_units_r(r, selected):
             remove_unselected_repeating_units_m(m, moleculeAtoms)
 
 
+def try_load_seq(indigo, md, molstr, library, seq_type):
+    try:
+        md.struct = indigo.loadSequence(molstr, seq_type, library)
+        md.is_rxn = False
+        md.is_query = False
+        return True
+    except IndigoException:
+        return False
+
+
 def try_load_macromol(indigo, md, molstr, library, options):
     sequence_type = options.get("sequence-type")
-    if sequence_type == "PEPTIDE":
-        try:
-            md.struct = indigo.loadSequence(
-                molstr, "PEPTIDE-3-LETTER", library
-            )
-            md.is_rxn = False
-            md.is_query = False
+    if try_load_seq(indigo, md, molstr, library, "PEPTIDE-3-LETTER"):
+        return
+    if molstr.isupper() or molstr.islower():
+        if sequence_type is not None and try_load_seq(
+            indigo, md, molstr, library, sequence_type
+        ):
             return
-        except IndigoException:
-            pass
-    if sequence_type is not None and (molstr.isupper() or molstr.islower()):
-        try:
-            md.struct = indigo.loadSequence(molstr, sequence_type, library)
-            md.is_rxn = False
-            md.is_query = False
+        if try_load_seq(indigo, md, molstr, library, "PEPTIDE"):
             return
-        except IndigoException:
-            pass
     try:
         md.struct = indigo.loadIdt(molstr, library)
         md.is_rxn = False
@@ -342,24 +343,12 @@ def try_load_macromol(indigo, md, molstr, library, options):
         return
     except IndigoException:
         pass
-    if sequence_type is not None:
-        try:
-            md.struct = indigo.loadSequence(molstr, sequence_type, library)
-            md.is_rxn = False
-            md.is_query = False
-            return
-        except IndigoException:
-            pass
-    else:
-        try:
-            md.struct = indigo.loadSequence(
-                molstr, "PEPTIDE-3-LETTER", library
-            )
-            md.is_rxn = False
-            md.is_query = False
-            return
-        except IndigoException:
-            pass
+    if sequence_type is not None and try_load_seq(
+        indigo, md, molstr, library, sequence_type
+    ):
+        return
+    if try_load_seq(indigo, md, molstr, library, "PEPTIDE"):
+        return
     try:
         md.struct = indigo.loadHelm(molstr, library)
     except IndigoException:
