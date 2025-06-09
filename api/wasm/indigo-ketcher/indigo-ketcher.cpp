@@ -468,9 +468,9 @@ namespace indigo
                     {
                         if (sequence_type != options.end()) // try according to selector
                         {
-                            std::string msg = "try as " + seq_type;
+                            std::string msg = "try as " + sequence_type->second;
                             print_js(msg.c_str());
-                            objectId = indigoLoadSequenceFromString(data.c_str(), seq_type.c_str(), library);
+                            objectId = indigoLoadSequenceFromString(data.c_str(), sequence_type->second.c_str(), library);
                             if (objectId >= 0)
                             {
                                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
