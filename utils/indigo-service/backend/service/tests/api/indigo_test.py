@@ -3381,10 +3381,23 @@ M  END
         # test autodetect PEPTIDE
         headers, data = self.get_headers(
             {
+                "struct": "QWERTYUIOPASDFGHKLCVNM",
+                "options": {
+                    "monomerLibrary": monomer_library,
+                    "sequence-type": "DNA",
+                },
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result_peptide_ad_dna = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
                 "struct": monomer_struct,
                 "options": {
                     "monomerLibrary": monomer_library,
-                    "sequence-type": "PEPTIDE",
                 },
                 "output_format": "chemical/x-sequence",
             }
@@ -3481,6 +3494,8 @@ M  END
         #     file.write(result_dna.text)
         # with open(os.path.join(ref_path, "peptide_ref") + ".ket", "w") as file:
         #     file.write(result_peptide.text)
+        # with open(os.path.join(ref_path, "peptide_ref_ad") + ".ket", "w") as file:
+        #     file.write(result_peptide_ad_dna.text)
 
         with open(os.path.join(ref_path, "rna_ref") + ".ket", "r") as file:
             rna_ref = file.read()
@@ -3494,6 +3509,12 @@ M  END
             peptide_ref = file.read()
             self.assertEqual(result_peptide.text, peptide_ref)
             self.assertEqual(result_ket_3.text, peptide_ref)
+
+        with open(
+            os.path.join(ref_path, "peptide_ref_ad") + ".ket", "r"
+        ) as file:
+            peptide_ref = file.read()
+            self.assertEqual(result_peptide_ad_dna.text, peptide_ref)
 
     def test_convert_fasta(self):
         ref_path = joinPathPy("ref/", __file__)

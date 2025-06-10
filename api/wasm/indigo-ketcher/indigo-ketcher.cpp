@@ -349,13 +349,17 @@ namespace indigo
     IndigoKetcherObject loadMoleculeOrReaction(const std::string& data, const std::map<std::string, std::string>& options, int library = -1,
                                                bool use_document = false)
     {
-        static std::unordered_map<std::string, std::string> seq_formats = {{"chemical/x-peptide-sequence", "PEPTIDE"},
-                                                                           {"chemical/x-peptide-sequence-3-letter", "PEPTIDE-3-LETTER"},
-                                                                           {"chemical/x-rna-sequence", "RNA"},
-                                                                           {"chemical/x-dna-sequence", "DNA"}};
+        constexpr auto PEPTIDE = "PEPTIDE";
+        constexpr auto PEPTIDE_3_LETTER = "PEPTIDE-3-LETTER";
+        constexpr auto DNA = "DNA";
+        constexpr auto RNA = "RNA";
+        static std::unordered_map<std::string, std::string> seq_formats = {{"chemical/x-peptide-sequence", PEPTIDE},
+                                                                           {"chemical/x-peptide-sequence-3-letter", PEPTIDE_3_LETTER},
+                                                                           {"chemical/x-rna-sequence", RNA},
+                                                                           {"chemical/x-dna-sequence", DNA}};
 
         static std::unordered_map<std::string, std::string> fasta_formats = {
-            {"chemical/x-peptide-fasta", "PEPTIDE"}, {"chemical/x-rna-fasta", "RNA"}, {"chemical/x-dna-fasta", "DNA"}};
+            {"chemical/x-peptide-fasta", PEPTIDE}, {"chemical/x-rna-fasta", RNA}, {"chemical/x-dna-fasta", DNA}};
 
         print_js("loadMoleculeOrReaction:");
         std::vector<std::string> exceptionMessages;
@@ -452,24 +456,28 @@ namespace indigo
                 if (library >= 0)
                 {
                     auto sequence_type = options.find("sequence-type");
-                    if (sequence_type != options.end() && sequence_type->second == "PEPTIDE")
+                    print_js("try as PEPTIDE-3-LETTER");
+                    objectId = indigoLoadSequenceFromString(data.c_str(), PEPTIDE_3_LETTER, library);
+                    if (objectId >= 0)
                     {
-                        print_js("try as PEPTIDE-3-LETTER");
-                        objectId = indigoLoadSequenceFromString(data.c_str(), "PEPTIDE-3-LETTER", library);
-                        if (objectId >= 0)
-                        {
-                            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
-                        }
+                        return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                     }
-                    auto is_upper =
-                        std::all_of(sequence_type->second.begin(), sequence_type->second.end(), [](int ch) { return !std::isalpha(ch) || std::isupper(ch); });
-                    auto is_lower =
-                        std::all_of(sequence_type->second.begin(), sequence_type->second.end(), [](int ch) { return !std::isalpha(ch) || std::islower(ch); });
-                    if (sequence_type != options.end() && (is_upper || is_lower))
+                    auto is_upper = std::all_of(data.begin(), data.end(), [](int ch) { return !std::isalpha(ch) || std::isupper(ch); });
+                    auto is_lower = std::all_of(data.begin(), data.end(), [](int ch) { return !std::isalpha(ch) || std::islower(ch); });
+                    if (is_upper || is_lower)
                     {
-                        std::string msg = "try as " + sequence_type->second;
-                        print_js(msg.c_str());
-                        objectId = indigoLoadSequenceFromString(data.c_str(), sequence_type->second.c_str(), library);
+                        if (sequence_type != options.end()) // try according to selector
+                        {
+                            std::string msg = "try as " + sequence_type->second;
+                            print_js(msg.c_str());
+                            objectId = indigoLoadSequenceFromString(data.c_str(), sequence_type->second.c_str(), library);
+                            if (objectId >= 0)
+                            {
+                                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                            }
+                        }
+                        print_js("try as PEPTIDE");
+                        objectId = indigoLoadSequenceFromString(data.c_str(), PEPTIDE, library);
                         if (objectId >= 0)
                         {
                             return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
@@ -491,14 +499,11 @@ namespace indigo
                             return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                         }
                     }
-                    else
+                    print_js("try as PEPTIDE");
+                    objectId = indigoLoadSequenceFromString(data.c_str(), PEPTIDE, library);
+                    if (objectId >= 0)
                     {
-                        print_js("try as PEPTIDE-3-LETTER");
-                        objectId = indigoLoadSequenceFromString(data.c_str(), "PEPTIDE-3-LETTER", library);
-                        if (objectId >= 0)
-                        {
-                            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
-                        }
+                        return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                     }
                     print_js("try as HELM");
                     objectId = indigoLoadHelmFromString(data.c_str(), library);
