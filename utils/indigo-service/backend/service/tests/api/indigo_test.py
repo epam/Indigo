@@ -3510,7 +3510,9 @@ M  END
             self.assertEqual(result_peptide.text, peptide_ref)
             self.assertEqual(result_ket_3.text, peptide_ref)
 
-        with open(os.path.join(ref_path, "peptide_ref_ad") + ".ket", "r") as file:
+        with open(
+            os.path.join(ref_path, "peptide_ref_ad") + ".ket", "r"
+        ) as file:
             peptide_ref = file.read()
             self.assertEqual(result_peptide_ad_dna.text, peptide_ref)
 
