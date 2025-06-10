@@ -895,7 +895,7 @@ M  END
             let ad2_options = new indigo.MapStringString();
             ad2_options.set("output-content-type", "application/json");
             ad2_options.set("monomerLibrary", monomersLib);
-            ad2_options.set("sequence-type", "PEPTIDE");
+            ad2_options.set("sequence-type", "DNA");
             const res3 = indigo.convert(bug2816_seq, "ket", ad2_options);
             // fs.writeFileSync("peptide_2816_ref.ket", peptide_ket);
             const peptide_2816_ref = fs.readFileSync("peptide_2816_ref.ket");

@@ -477,7 +477,7 @@ namespace indigo
                             }
                         }
                         print_js("try as PEPTIDE");
-                        objectId = indigoLoadSequenceFromString(data.c_str(), "PEPTIDE", library);
+                        objectId = indigoLoadSequenceFromString(data.c_str(), PEPTIDE, library);
                         if (objectId >= 0)
                         {
                             return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
