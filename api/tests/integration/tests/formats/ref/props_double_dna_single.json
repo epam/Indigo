@@ -1,0 +1,13 @@
+[
+    {
+        "grossFormula": "C19 H25 N7 O10",
+        "mass": 511.442703,
+        "monomerCount": {
+            "peptides": {},
+            "nucleotides": {
+                "A": 1,
+                "U": 1
+            }
+        }
+    }
+]
