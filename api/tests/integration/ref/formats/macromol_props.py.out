@@ -21,3 +21,5 @@ props_only_micro.json: SUCCEED
 props_peptides.json: SUCCEED
 props_peptides_micro.json: SUCCEED
 props_rna_with_mol.json: SUCCEED
+UPC=0: SUCCEED
+NAC=0: SUCCEED
