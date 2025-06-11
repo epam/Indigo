@@ -61,7 +61,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         bool is_double_chain = false;
         bool has_non_sequence_connection = false;
         bool deleted = false;
-        bool selected = false;
+        bool has_selection = false;
         polymer_t(size_t idx) : is_double_chain(false), has_non_sequence_connection(false), deleted(false)
         {
             sequences.emplace(idx);
@@ -80,10 +80,13 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
     };
     bool has_selection = false;
     std::vector<std::unique_ptr<BaseMolecule>> molecules;
+    std::unordered_set<std::string> molecules_with_selection;
     // handle molecules
+    std::string molecule_prefix = "mol";
     if (document.jsonMolecules().IsArray())
-        for (auto& mol_json : document.jsonMolecules().GetArray())
+        for (rapidjson::SizeType i = 0; i < document.jsonMolecules().Size();++i)
         {
+            auto& mol_json = document.jsonMolecules()[i];
             rapidjson::Value marr(rapidjson::kArrayType);
             marr.PushBack(document.jsonDocument().CopyFrom(mol_json, document.jsonDocument().GetAllocator()), document.jsonDocument().GetAllocator());
             MoleculeJsonLoader loader(marr);
@@ -91,7 +94,10 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             BaseMolecule& bmol = *molecules.back();
             loader.loadMolecule(bmol);
             if (bmol.countSelectedAtoms())
+            {
                 has_selection = true;
+                molecules_with_selection.emplace(molecule_prefix + std::to_string(i));
+            }
         }
     // handle sequences
     std::vector<std::deque<std::string>> sequences;
@@ -113,7 +119,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             if (mon->hasBoolProp("selected") && mon->getBoolProp("selected"))
             {
                 has_selection = true;
-                polymers.back().selected = true;
+                polymers.back().has_selection = true;
             }
             monomer_to_sequence_idx.emplace(monomer, i);
         }
@@ -124,6 +130,8 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         auto idx = polymers.size();
         molecule_to_polymer_idx.emplace(molecules_refs[i], idx);
         polymers.emplace_back(molecules_refs[i]);
+        if (molecules_with_selection.count(molecules_refs[i]) > 0)
+			polymers.back().has_selection = true;
     }
     auto add_connection_to_atom = [&](size_t polymer_idx, const std::string& molecule_id, int atom_idx) {
         auto& atom_connections = polymers[polymer_idx].mol_atom_connections[molecule_id];
@@ -142,6 +150,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             auto& right_monomer_id = document.monomerIdByRef(ep2.getStringProp("monomerId"));
             auto& left_monomer = monomers.at(left_monomer_id);
             auto& right_monomer = monomers.at(right_monomer_id);
+            
             if (connection.connectionType() == KetConnectionHydro)
             {
                 left_monomer->addHydrogenConnection(right_monomer->ref());
@@ -161,6 +170,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             if (left_sequence_idx != right_sequence_idx && left_polymer_idx != right_polymer_idx)
             {
                 polymers[left_polymer_idx].merge(polymers[right_polymer_idx]);
+                polymers[left_polymer_idx].has_selection |= polymers[right_polymer_idx].has_selection;
                 sequence_to_polymer_idx[right_sequence_idx] = left_polymer_idx;
                 polymers[right_polymer_idx].deleted = true;
             }
@@ -181,6 +191,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             if (sequence_polymer_idx != molecule_polymer_idx)
             {
                 polymers[sequence_polymer_idx].merge(polymers[molecule_polymer_idx]);
+                polymers[sequence_polymer_idx].has_selection |= polymers[molecule_polymer_idx].has_selection;
                 molecule_to_polymer_idx[molecule_id] = sequence_polymer_idx;
                 polymers[molecule_polymer_idx].deleted = true;
             }
@@ -197,6 +208,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             if (first_molecule_polymer_idx != second_molecule_polymer_idx)
             {
                 polymers[first_molecule_polymer_idx].merge(polymers[second_molecule_polymer_idx]);
+                polymers[first_molecule_polymer_idx].has_selection |= polymers[second_molecule_polymer_idx].has_selection;
                 molecule_to_polymer_idx[second_molecule_id] = first_molecule_polymer_idx;
                 polymers[second_molecule_polymer_idx].deleted = true;
             }
@@ -364,7 +376,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
     writer.StartArray();
     for (auto& polymer : polymers)
     {
-        if (has_selection && !polymer.selected)
+        if (has_selection && !polymer.has_selection)
             continue;
 
         if (polymer.deleted)

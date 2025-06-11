@@ -1,1 +1,10 @@
-[]
+[
+    {
+        "grossFormula": "C6 H5",
+        "mass": 77.103901,
+        "monomerCount": {
+            "peptides": {},
+            "nucleotides": {}
+        }
+    }
+]
