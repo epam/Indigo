@@ -558,7 +558,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 bases.emplace_back(monomer_template.getStringProp("naturalAnalogShort"));
                 move_to_next_base(it, sequence.end());
             }
-            if (bases.size() > 0 && upc > 0 && nac > 0)
+            if (bases.size() > 1 && upc > 0 && nac > 0)
             {
                 std::string left = bases.front();
                 bases.pop_front();
