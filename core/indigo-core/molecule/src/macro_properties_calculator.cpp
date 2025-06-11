@@ -61,6 +61,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         bool is_double_chain = false;
         bool has_non_sequence_connection = false;
         bool deleted = false;
+        bool selected = false;
         polymer_t(size_t idx) : is_double_chain(false), has_non_sequence_connection(false), deleted(false)
         {
             sequences.emplace(idx);
@@ -110,10 +111,14 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         {
             auto& mon = monomers.at(monomer);
             if (mon->hasBoolProp("selected") && mon->getBoolProp("selected"))
+            {
                 has_selection = true;
+                polymers.back().selected = true;
+            }
             monomer_to_sequence_idx.emplace(monomer, i);
         }
     }
+
     for (size_t i = 0; i < molecules_refs.size(); i++)
     {
         auto idx = polymers.size();
@@ -359,6 +364,9 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
     writer.StartArray();
     for (auto& polymer : polymers)
     {
+        if (has_selection && !polymer.selected)
+            continue;
+
         if (polymer.deleted)
             continue;
         writer.StartObject();
@@ -744,6 +752,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 }
             }
         }
+
         writer.Key("monomerCount");
         writer.StartObject();
         writer.Key("peptides");
