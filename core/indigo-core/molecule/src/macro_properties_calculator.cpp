@@ -84,7 +84,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
     // handle molecules
     std::string molecule_prefix = "mol";
     if (document.jsonMolecules().IsArray())
-        for (rapidjson::SizeType i = 0; i < document.jsonMolecules().Size();++i)
+        for (rapidjson::SizeType i = 0; i < document.jsonMolecules().Size(); ++i)
         {
             auto& mol_json = document.jsonMolecules()[i];
             rapidjson::Value marr(rapidjson::kArrayType);
@@ -131,7 +131,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         molecule_to_polymer_idx.emplace(molecules_refs[i], idx);
         polymers.emplace_back(molecules_refs[i]);
         if (molecules_with_selection.count(molecules_refs[i]) > 0)
-			polymers.back().has_selection = true;
+            polymers.back().has_selection = true;
     }
     auto add_connection_to_atom = [&](size_t polymer_idx, const std::string& molecule_id, int atom_idx) {
         auto& atom_connections = polymers[polymer_idx].mol_atom_connections[molecule_id];
@@ -150,7 +150,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             auto& right_monomer_id = document.monomerIdByRef(ep2.getStringProp("monomerId"));
             auto& left_monomer = monomers.at(left_monomer_id);
             auto& right_monomer = monomers.at(right_monomer_id);
-            
+
             if (connection.connectionType() == KetConnectionHydro)
             {
                 left_monomer->addHydrogenConnection(right_monomer->ref());
