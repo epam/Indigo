@@ -513,13 +513,10 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             }
             Array<char> gross_str;
             MoleculeGrossFormula::toString_Hill(gross_units, gross_str);
-            if (!std::string(gross_str.ptr()).empty())
-            {
-                writer.Key("grossFormula");
-                writer.String(gross_str.ptr());
-                writer.Key("mass");
-                writer.Double(mass_sum);
-            }
+            writer.Key("grossFormula");
+            writer.String(gross_str.ptr());
+            writer.Key("mass");
+            writer.Double(mass_sum);
         }
 
         // pKa (only peptides)
