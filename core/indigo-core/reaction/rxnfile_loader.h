@@ -19,6 +19,9 @@
 #ifndef __rxnfile_loader__
 #define __rxnfile_loader__
 
+#include <functional>
+#include <optional>
+
 #include "base_cpp/exception.h"
 #include "molecule/molecule_stereocenter_options.h"
 
@@ -31,6 +34,7 @@ namespace indigo
     class QueryReaction;
     class MolfileLoader;
     class PropertiesMap;
+    class MonomerTemplateLibrary;
 
     class DLLEXPORT RxnfileLoader
     {
@@ -38,10 +42,11 @@ namespace indigo
         RxnfileLoader(Scanner& scanner);
         ~RxnfileLoader();
 
-        void loadReaction(Reaction& reaction);
-        void loadQueryReaction(QueryReaction& reaction);
-        void loadReaction(Reaction& reaction, PropertiesMap& props);
-        void loadQueryReaction(QueryReaction& reaction, PropertiesMap& props);
+        using library_ref = std::optional<std::reference_wrapper<MonomerTemplateLibrary>>;
+        void loadReaction(Reaction& reaction, library_ref monomer_lib = std::nullopt);
+        void loadQueryReaction(QueryReaction& reaction, library_ref monomer_lib = std::nullopt);
+        void loadReaction(Reaction& reaction, PropertiesMap& props, library_ref monomer_lib = std::nullopt);
+        void loadQueryReaction(QueryReaction& reaction, PropertiesMap& props, library_ref monomer_lib = std::nullopt);
 
         bool treat_x_as_pseudoatom;
         StereocentersOptions stereochemistry_options;
@@ -57,7 +62,7 @@ namespace indigo
         QueryReaction* _qrxn;
         Reaction* _rxn;
 
-        void _loadReaction();
+        void _loadReaction(library_ref monomer_lib = std::nullopt);
 
         Scanner& _scanner;
         void _readRxnHeader();

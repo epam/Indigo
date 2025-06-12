@@ -95,6 +95,14 @@ public interface IndigoLib extends Library {
 
     int indigoCreateQueryMolecule();
 
+    int indigoLoadMoleculeWithLib(int source, int lib);
+
+    int indigoLoadMoleculeWithLibFromString(String str);
+
+    int indigoLoadMoleculeWithLibFromFile(String filename);
+
+    int indigoLoadMoleculeWithLibFromBuffer(byte[] buffer, int size);
+
     int indigoLoadMolecule(int source);
 
     int indigoLoadMoleculeFromString(String str);
@@ -102,6 +110,14 @@ public interface IndigoLib extends Library {
     int indigoLoadMoleculeFromFile(String filename);
 
     int indigoLoadMoleculeFromBuffer(byte[] buffer, int size);
+
+    int indigoLoadQueryMoleculeWithLib(int source, int lib);
+
+    int indigoLoadQueryMoleculeWithLibFromString(String str);
+
+    int indigoLoadQueryMoleculeWithLibFromFile(String filename);
+
+    int indigoLoadQueryMoleculeWithLibFromBuffer(byte[] buffer, int size);
 
     int indigoLoadQueryMolecule(int source);
 

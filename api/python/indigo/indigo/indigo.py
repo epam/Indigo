@@ -426,6 +426,79 @@ class Indigo:
             ),
         )
 
+    def loadMoleculeWithLib(self, string, library):
+        """Loads molecule from string. Format is automatically recognized.
+
+        Args:
+            string (str): molecule format
+            library (IndigoObject): monomer library object
+
+        Returns:
+            IndigoObject: molecule object
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadMoleculeWithLibFromString(string.encode(), library.id)
+            ),
+        )
+
+    def loadMoleculeWithLibFromFile(self, filename, library):
+        """Loads molecule from file. Automatically detects input format.
+
+        Args:
+            filename (str): full path to a file
+            library (IndigoObject): monomer library object
+
+        Returns:
+            IndigoObject: loaded molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadMoleculeWithLibFromFile(filename.encode(), library.id)
+            ),
+        )
+
+    def loadMoleculeWithLibFromBuffer(self, data, library):
+        """Loads molecule from buffer. Automatically detects input format.
+
+        Args:
+            data (bytes): input byte array
+            library (IndigoObject): monomer library object
+
+        Returns:
+            IndigoObject: loaded molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+
+        Examples:
+            .. code-block:: python
+
+                with open (..), 'rb') as f:
+                    m = indigo.loadMoleculeFromBuffer(f.read())
+        """
+        buf = data
+        values = (c_byte * len(buf))()
+        for i in range(len(buf)):
+            values[i] = buf[i]
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadMoleculeWithLibFromBuffer(values, len(buf), library.id)
+            ),
+        )
+
     def loadQueryMolecule(self, string):
         """Loads query molecule from string. Format will be automatically
            recognized.
@@ -465,6 +538,50 @@ class Indigo:
             self,
             IndigoLib.checkResult(
                 self._lib().indigoLoadQueryMoleculeFromFile(filename.encode())
+            ),
+        )
+
+    def loadQueryMoleculeWithLib(self, string, library):
+        """Loads query molecule from string. Format will be automatically
+           recognized.
+
+        Args:
+            string (str): molecule format
+            library (IndigoObject): monomer library object
+
+        Returns:
+            IndigoObject: query molecule object
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadQueryMoleculeWithLibFromString(string.encode(), library.id)
+            ),
+        )
+
+    def loadQueryMoleculeWithLibFromFile(self, filename, library):
+        """
+        Loads query molecule from file. Automatically detects input format.
+
+        Args:
+            filename (str): full path to a file
+            library (IndigoObject): monomer library object
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadQueryMoleculeWithLibFromFile(filename.encode(), library.id)
             ),
         )
 
@@ -594,6 +711,7 @@ class Indigo:
         Args:
             string (str): sequence string
             seq_type (str): sequence type (RNA/DNA/PEPTIDE)
+            library (IndigoObject): monomer library object
 
         Returns:
             IndigoObject: loaded query molecular structure
@@ -617,6 +735,7 @@ class Indigo:
         Args:
             filename (str): full path to the file with sequence string
             seq_type (str): sequence type (RNA/DNA/PEPTIDE)
+            library (IndigoObject): monomer library object
 
         Returns:
             IndigoObject: loaded query molecular structure
@@ -640,6 +759,7 @@ class Indigo:
         Args:
             string (str): sequence string
             seq_type (str): sequence type (RNA/DNA/PEPTIDE)
+            library (IndigoObject): monomer library object
 
         Returns:
             IndigoObject: loaded query molecular structure
@@ -663,6 +783,7 @@ class Indigo:
         Args:
             filename (str): full path to the file with sequence string
             seq_type (str): sequence type (RNA/DNA/PEPTIDE)
+            library (IndigoObject): monomer library object
 
         Returns:
             IndigoObject: loaded query molecular structure
@@ -685,6 +806,7 @@ class Indigo:
 
         Args:
             string (str): sequence string
+            library (IndigoObject): monomer library object
 
         Returns:
             IndigoObject: loaded query molecular structure
@@ -707,6 +829,7 @@ class Indigo:
 
         Args:
             filename (str): full path to the file with sequence string
+            library (IndigoObject): monomer library object
 
         Returns:
             IndigoObject: loaded query molecular structure
@@ -729,6 +852,7 @@ class Indigo:
 
         Args:
             string (str): sequence string
+            library (IndigoObject): monomer library object
 
         Returns:
             IndigoObject: loaded query molecular structure
@@ -751,6 +875,7 @@ class Indigo:
 
         Args:
             filename (str): full path to the file with sequence string
+            library (IndigoObject): monomer library object
 
         Returns:
             IndigoObject: loaded query molecular structure

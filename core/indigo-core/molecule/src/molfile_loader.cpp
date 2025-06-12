@@ -19,12 +19,14 @@
 #include <memory>
 
 #include "../layout/molecule_layout.h"
+#include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 #include "layout/sequence_layout.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_3d_constraints.h"
+#include "molecule/molecule_inchi.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/molfile_saver.h"
@@ -41,7 +43,7 @@ IMPL_ERROR(MolfileLoader, "molfile loader");
 
 CP_DEF(MolfileLoader);
 
-MolfileLoader::MolfileLoader(Scanner& scanner)
+MolfileLoader::MolfileLoader(Scanner& scanner, library_ref monomer_library)
     : _scanner(scanner), _monomer_templates(MonomerTemplates::_instance()), _max_template_id(0), CP_INIT, TL_CP_GET(_stereo_care_atoms),
       TL_CP_GET(_stereo_care_bonds), TL_CP_GET(_stereocenter_types), TL_CP_GET(_stereocenter_groups), TL_CP_GET(_sensible_bond_directions),
       TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount), TL_CP_GET(_sgroup_types), TL_CP_GET(_sgroup_mapping)
@@ -53,6 +55,7 @@ MolfileLoader::MolfileLoader(Scanner& scanner)
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
     treat_stereo_as = 0;
+    _monomer_library = monomer_library;
 }
 
 void MolfileLoader::loadMolecule(Molecule& mol)
@@ -76,6 +79,7 @@ void MolfileLoader::copyProperties(const MolfileLoader& loader)
     skip_3d_chirality = loader.skip_3d_chirality;
     treat_stereo_as = loader.treat_stereo_as;
     treat_x_as_pseudoatom = loader.treat_x_as_pseudoatom;
+    _monomer_library = loader._monomer_library;
 }
 
 void MolfileLoader::loadQueryMolecule(QueryMolecule& mol)
@@ -3867,6 +3871,38 @@ void MolfileLoader::_readTGroups3000()
                     }
                     loader._readCtab3000();
                     loader._postLoad();
+                    if (_monomer_library.has_value() && tgroup.tgroup_class.size() > 0)
+                    {
+                        auto& class_map = MonomerTemplates::getStrToMonomerType();
+                        auto class_it = class_map.find(tgroup.tgroup_class.ptr());
+                        if (class_it != class_map.end())
+                        {
+                            // Search monomer library for monomer with same class and alias
+                            std::string id = _monomer_library->get().getMonomerTemplateIdByAlias(class_it->second, tgroup.tgroup_name.ptr());
+                            if (id.size() == 0 && tgroup.tgroup_alias.size() > 0)
+                                id = _monomer_library->get().getMonomerTemplateIdByAlias(class_it->second, tgroup.tgroup_alias.ptr());
+                            if (id.size() > 0)
+                            {
+                                // template with same class and alias found
+                                // check inchi keys of structures
+                                const auto& templ = _monomer_library->get().getMonomerTemplateById(id);
+                                std::string templ_inchi_str;
+                                StringOutput templ_inchi_output(templ_inchi_str);
+                                MoleculeInChI templ_inchi(templ_inchi_output);
+                                auto templ_tgroup = templ.getTGroup();
+                                templ_inchi.outputInChI(templ_tgroup->fragment->asMolecule());
+                                std::string tg_inchi_str;
+                                StringOutput tg_inchi_output(tg_inchi_str);
+                                MoleculeInChI tg_inchi(tg_inchi_output);
+                                tg_inchi.outputInChI(tgroup.fragment->asMolecule());
+                                if (templ_inchi_str == tg_inchi_str)
+                                {
+                                    tgroup.copy_without_fragment(*templ_tgroup);
+                                    tgroup.tgroup_text_id.readString(id.c_str(), true);
+                                }
+                            }
+                        }
+                    }
                 }
                 else
                     throw Error("unexpected string in template: %s", str.ptr());

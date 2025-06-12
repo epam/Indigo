@@ -418,6 +418,30 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMoleculeFromBuffer(buf, buf.Length)));
         }
 
+        public IndigoObject loadMoleculeWithLib(string str, int library)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMoleculeWithLibFromString(str, library)));
+        }
+
+        public IndigoObject loadMoleculeWithLib(byte[] buf, int library)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMoleculeWithLibFromBuffer(buf, buf.Length, library)));
+        }
+
+        public IndigoObject loadMoleculeWithLibFromFile(string path, int library)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMoleculeWithLibFromFile(path, library)));
+        }
+
+        public IndigoObject loadMoleculeWithLibFromBuffer(byte[] buf, int library)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMoleculeWithLibFromBuffer(buf, buf.Length, library)));
+        }
+
         public IndigoObject loadQueryMolecule(string str)
         {
             setSessionID();

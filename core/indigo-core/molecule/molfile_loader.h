@@ -19,12 +19,16 @@
 #ifndef __molfile_loader__
 #define __molfile_loader__
 
+#include <functional>
+#include <optional>
+
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/base_molecule.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/monomers_lib.h"
+#include "molecule/monomers_template_library.h"
 #include "molecule/query_molecule.h"
 
 namespace indigo
@@ -45,7 +49,8 @@ namespace indigo
     public:
         DECL_ERROR;
 
-        MolfileLoader(Scanner& scanner);
+        using library_ref = std::optional<std::reference_wrapper<MonomerTemplateLibrary>>;
+        MolfileLoader(Scanner& scanner, library_ref monomer_lib = std::nullopt);
 
         void loadMolecule(Molecule& mol);
         void loadQueryMolecule(QueryMolecule& mol);
@@ -150,6 +155,7 @@ namespace indigo
 
     private:
         MolfileLoader(const MolfileLoader&); // no implicit copy
+        library_ref _monomer_library;
     };
 
 } // namespace indigo

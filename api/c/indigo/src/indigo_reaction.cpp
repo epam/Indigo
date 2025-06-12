@@ -22,6 +22,7 @@
 #include "indigo_io.h"
 #include "indigo_mapping.h"
 #include "indigo_molecule.h"
+#include "indigo_monomer_library.h"
 #include "reaction/canonical_rsmiles_saver.h"
 #include "reaction/pathway_reaction.h"
 #include "reaction/reaction_auto_loader.h"
@@ -446,6 +447,11 @@ int _indigoIterateReaction(int reaction, int subtype)
 
 CEXPORT int indigoLoadReaction(int source)
 {
+    return indigoLoadReactionWithLib(source, -1);
+}
+
+CEXPORT int indigoLoadReactionWithLib(int source, int monomer_library)
+{
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(source);
@@ -481,6 +487,11 @@ CEXPORT int indigoLoadReaction(int source)
 
 CEXPORT int indigoLoadQueryReaction(int source)
 {
+    return indigoLoadQueryReactionWithLib(source, -1);
+}
+
+CEXPORT int indigoLoadQueryReactionWithLib(int source, int monomer_library)
+{
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(source);
@@ -493,8 +504,11 @@ CEXPORT int indigoLoadQueryReaction(int source)
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
 
+        std::optional<std::reference_wrapper<MonomerTemplateLibrary>> monomer_lib = std::nullopt;
+        if (monomer_library >= 0)
+            monomer_lib = IndigoMonomerLibrary::get(self.getObject(monomer_library));
         std::unique_ptr<IndigoQueryReaction> rxnptr = std::make_unique<IndigoQueryReaction>();
-        loader.loadReaction(rxnptr->rxn);
+        loader.loadReaction(rxnptr->rxn, monomer_lib);
         return self.addObject(rxnptr.release());
     }
     INDIGO_END(-1);

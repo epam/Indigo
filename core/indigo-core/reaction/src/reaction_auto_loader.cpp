@@ -77,29 +77,29 @@ ReactionAutoLoader::~ReactionAutoLoader()
         delete _scanner;
 }
 
-void ReactionAutoLoader::loadQueryReaction(QueryReaction& qreaction)
+void ReactionAutoLoader::loadQueryReaction(QueryReaction& qreaction, library_ref monomer_lib)
 {
-    loadReaction(qreaction);
+    loadReaction(qreaction, monomer_lib);
 }
 
-void ReactionAutoLoader::loadReaction(BaseReaction& reaction)
+void ReactionAutoLoader::loadReaction(BaseReaction& reaction, library_ref monomer_lib)
 {
-    auto rptr = loadReaction(reaction.isQueryReaction());
+    auto rptr = loadReaction(reaction.isQueryReaction(), monomer_lib);
     reaction.clone(*rptr);
     reaction.original_format = rptr->original_format;
     for (int i = 0; i < rptr->reactionBlocksCount(); i++)
         reaction.addReactionBlock().copy(rptr->reactionBlock(i));
 }
 
-std::unique_ptr<BaseReaction> ReactionAutoLoader::loadReaction(bool query)
+std::unique_ptr<BaseReaction> ReactionAutoLoader::loadReaction(bool query, library_ref monomer_lib)
 {
-    auto reaction = _loadReaction(query);
+    auto reaction = _loadReaction(query, monomer_lib);
     if (!query && dearomatize_on_load)
         reaction->dearomatize(arom_options);
     return reaction;
 }
 
-std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
+std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, library_ref monomer_lib)
 {
     auto local_scanner = _scanner;
     // chack for base64
@@ -183,13 +183,13 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
             if (query)
             {
                 auto reaction = std::make_unique<QueryReaction>();
-                loader.loadQueryReaction(*reaction);
+                loader.loadQueryReaction(*reaction, monomer_lib);
                 return reaction;
             }
             else
             {
                 auto reaction = std::make_unique<Reaction>();
-                loader.loadReaction(*reaction);
+                loader.loadReaction(*reaction, monomer_lib);
                 return reaction;
             }
         }
@@ -363,7 +363,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
                 loader.treat_stereo_as = treat_stereo_as;
                 loader.ignore_bad_valence = ignore_bad_valence;
                 reactions.emplace_back();
-                loader.loadReaction(reactions.back(), rdf_loader.properties);
+                loader.loadReaction(reactions.back(), rdf_loader.properties, monomer_lib);
             }
 
             PathwayReactionBuilder builder;
@@ -419,13 +419,13 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
         if (query)
         {
             auto reaction = std::make_unique<QueryReaction>();
-            loader.loadQueryReaction(*reaction);
+            loader.loadQueryReaction(*reaction, monomer_lib);
             return reaction;
         }
         else
         {
             auto reaction = std::make_unique<Reaction>();
-            loader.loadReaction(*reaction);
+            loader.loadReaction(*reaction, monomer_lib);
             return reaction;
         }
     }

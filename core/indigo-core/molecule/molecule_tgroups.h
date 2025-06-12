@@ -61,6 +61,7 @@ namespace indigo
         ~TGroup();
 
         void copy(const TGroup& other);
+        void copy_without_fragment(const TGroup& other);
         void clear();
         static int cmp(TGroup& tg1, TGroup& tg2, void* context);
 

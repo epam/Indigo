@@ -437,7 +437,7 @@ namespace indigo
             {
                 // Let's try a simple molecule
                 print_js("try as molecule");
-                objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
+                objectId = indigoLoadMoleculeWithLibFromBuffer(data.c_str(), data.size(), library);
                 if (objectId >= 0)
                 {
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
@@ -446,7 +446,7 @@ namespace indigo
 
                 // Let's try reaction
                 print_js("try as reaction");
-                objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
+                objectId = indigoLoadReactionWithLibFromBuffer(data.c_str(), data.size(), library);
                 if (objectId >= 0)
                 {
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
@@ -516,7 +516,7 @@ namespace indigo
             exceptionMessages.emplace_back(indigoGetLastError());
             // Let's try query molecule
             print_js("try as query molecule");
-            objectId = indigoLoadQueryMoleculeFromBuffer(data.c_str(), data.size());
+            objectId = indigoLoadQueryMoleculeWithLibFromBuffer(data.c_str(), data.size(), library);
             if (objectId >= 0)
             {
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
@@ -524,7 +524,7 @@ namespace indigo
             exceptionMessages.emplace_back(indigoGetLastError());
             // Let's try query reaction
             print_js("try as query reaction");
-            objectId = indigoLoadQueryReactionFromBuffer(data.c_str(), data.size());
+            objectId = indigoLoadQueryReactionWithLibFromBuffer(data.c_str(), data.size(), library);
             if (objectId >= 0)
             {
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReactionQuery);
@@ -532,7 +532,7 @@ namespace indigo
 
             // Let's try a simple molecule
             print_js("try as molecule");
-            objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
+            objectId = indigoLoadMoleculeWithLibFromBuffer(data.c_str(), data.size(), library);
             if (objectId >= 0)
             {
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
@@ -541,7 +541,7 @@ namespace indigo
 
             // Let's try reaction
             print_js("try as reaction");
-            objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
+            objectId = indigoLoadReactionWithLibFromBuffer(data.c_str(), data.size(), library);
             if (objectId >= 0)
             {
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);

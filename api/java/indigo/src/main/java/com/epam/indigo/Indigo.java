@@ -327,6 +327,22 @@ public class Indigo {
                 this, checkResult(this, lib.indigoLoadMoleculeFromBuffer(buf, buf.length)));
     }
 
+    public IndigoObject loadMoleculeWithLib(String str, IndigoObject library) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadMoleculeWithLibFromString(str, library.self)));
+    }
+
+    public IndigoObject loadMoleculeWithLib(byte[] buf, IndigoObject library) {
+        setSessionID();
+        return new IndigoObject(
+                this, checkResult(this, lib.indigoLoadMoleculeWithLibFromBuffer(buf, buf.length, library.self)));
+    }
+
+    public IndigoObject loadMoleculeWithLibFromFile(String path, IndigoObject library) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadMoleculeWithLibFromFile(path, library.self)));
+    }
+
     public IndigoObject loadQueryMolecule(String str) {
         setSessionID();
         return new IndigoObject(
@@ -342,6 +358,23 @@ public class Indigo {
     public IndigoObject loadQueryMoleculeFromFile(String path) {
         setSessionID();
         return new IndigoObject(this, checkResult(this, lib.indigoLoadQueryMoleculeFromFile(path)));
+    }
+
+    public IndigoObject loadQueryMoleculeWithLib(String str, IndigoObject library) {
+        setSessionID();
+        return new IndigoObject(
+                this, checkResult(this, lib.indigoLoadQueryMoleculeWithLibFromString(str, library.self)));
+    }
+
+    public IndigoObject loadQueryMoleculeWithLib(byte[] buf, IndigoObject library) {
+        setSessionID();
+        return new IndigoObject(
+                this, checkResult(this, lib.indigoLoadQueryMoleculeWithLibFromBuffer(buf, buf.length, library.self)));
+    }
+
+    public IndigoObject loadQueryMoleculeWithLibFromFile(String path, IndigoObject library) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadQueryMoleculeWithLibFromFile(path, library.self)));
     }
 
     public IndigoObject loadSmarts(String str) {
