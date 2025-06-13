@@ -418,28 +418,28 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMoleculeFromBuffer(buf, buf.Length)));
         }
 
-        public IndigoObject loadMoleculeWithLib(string str, int library)
+        public IndigoObject loadMoleculeWithLib(string str, IndigoObject library)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMoleculeWithLibFromString(str, library)));
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMoleculeWithLibFromString(str, library.self)));
         }
 
-        public IndigoObject loadMoleculeWithLib(byte[] buf, int library)
+        public IndigoObject loadMoleculeWithLib(byte[] buf, IndigoObject library)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMoleculeWithLibFromBuffer(buf, buf.Length, library)));
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMoleculeWithLibFromBuffer(buf, buf.Length, library.self)));
         }
 
-        public IndigoObject loadMoleculeWithLibFromFile(string path, int library)
+        public IndigoObject loadMoleculeWithLibFromFile(string path, IndigoObject library)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMoleculeWithLibFromFile(path, library)));
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMoleculeWithLibFromFile(path, library.self)));
         }
 
-        public IndigoObject loadMoleculeWithLibFromBuffer(byte[] buf, int library)
+        public IndigoObject loadMoleculeWithLibFromBuffer(byte[] buf, IndigoObject library)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMoleculeWithLibFromBuffer(buf, buf.Length, library)));
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMoleculeWithLibFromBuffer(buf, buf.Length, library.self)));
         }
 
         public IndigoObject loadQueryMolecule(string str)
@@ -586,40 +586,40 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadQueryReactionFromFile(path)));
         }
 
-        public IndigoObject loadReactionWithLib(string str, int library)
+        public IndigoObject loadReactionWithLib(string str, IndigoObject library)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadReactionWithLibFromString(str, library)));
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadReactionWithLibFromString(str, library.self)));
         }
 
-        public IndigoObject loadReactionWithLib(byte[] buf, int library)
+        public IndigoObject loadReactionWithLib(byte[] buf, IndigoObject library)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadReactionWithLibFromBuffer(buf, buf.Length, library)));
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadReactionWithLibFromBuffer(buf, buf.Length, library.self)));
         }
 
-        public IndigoObject loadReactionFromWithLibFile(string path, int library)
+        public IndigoObject loadReactionFromWithLibFile(string path, IndigoObject library)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadReactionWithLibFromFile(path, library)));
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadReactionWithLibFromFile(path, library.self)));
         }
 
-        public IndigoObject loadQueryReactionWithLib(string str, int library)
+        public IndigoObject loadQueryReactionWithLib(string str, IndigoObject library)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadQueryReactionWithLibFromString(str, library)));
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadQueryReactionWithLibFromString(str, library.self)));
         }
 
-        public IndigoObject loadQueryReactionWithLib(byte[] buf, int library)
+        public IndigoObject loadQueryReactionWithLib(byte[] buf, IndigoObject library)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadQueryReactionWithLibFromBuffer(buf, buf.Length, library)));
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadQueryReactionWithLibFromBuffer(buf, buf.Length, library.self)));
         }
 
-        public IndigoObject loadQueryReactionWithLibFromFile(string path, int library)
+        public IndigoObject loadQueryReactionWithLibFromFile(string path, IndigoObject library)
         {
             setSessionID();
-            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadQueryReactionWithLibFromFile(path, library)));
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadQueryReactionWithLibFromFile(path, library.self)));
         }
 
         public IndigoObject loadReactionSmarts(string str)

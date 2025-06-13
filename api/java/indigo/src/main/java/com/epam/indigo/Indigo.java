@@ -486,37 +486,37 @@ public class Indigo {
         return new IndigoObject(this, checkResult(this, lib.indigoLoadQueryReactionFromFile(path)));
     }
 
-    public IndigoObject loadReactionWithLib(String str, int library) {
+    public IndigoObject loadReactionWithLib(String str, IndigoObject library) {
         setSessionID();
-        return new IndigoObject(this, checkResult(this, lib.indigoLoadReactionWithLibFromString(str, library)));
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadReactionWithLibFromString(str, library.self)));
     }
 
-    public IndigoObject loadReactionWithLib(byte[] buf, int library) {
+    public IndigoObject loadReactionWithLib(byte[] buf, IndigoObject library) {
         setSessionID();
         return new IndigoObject(
-                this, checkResult(this, lib.indigoLoadReactionWithLibFromBuffer(buf, buf.length, library)));
+                this, checkResult(this, lib.indigoLoadReactionWithLibFromBuffer(buf, buf.length, library.self)));
     }
 
-    public IndigoObject loadReactionWithLibFromFile(String path, int library) {
+    public IndigoObject loadReactionWithLibFromFile(String path, IndigoObject library) {
         setSessionID();
-        return new IndigoObject(this, checkResult(this, lib.indigoLoadReactionWithLibFromFile(path, library)));
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadReactionWithLibFromFile(path, library.self)));
     }
 
-    public IndigoObject loadQueryReactionWithLib(String str, int library) {
-        setSessionID();
-        return new IndigoObject(
-                this, checkResult(this, lib.indigoLoadQueryReactionWithLibFromString(str, library)));
-    }
-
-    public IndigoObject loadQueryReactionWithLib(byte[] buf, int library) {
+    public IndigoObject loadQueryReactionWithLib(String str, IndigoObject library) {
         setSessionID();
         return new IndigoObject(
-                this, checkResult(this, lib.indigoLoadQueryReactionWithLibFromBuffer(buf, buf.length, library)));
+                this, checkResult(this, lib.indigoLoadQueryReactionWithLibFromString(str, library.self)));
     }
 
-    public IndigoObject loadQueryReactionWithLibFromFile(String path, int library) {
+    public IndigoObject loadQueryReactionWithLib(byte[] buf, IndigoObject library) {
         setSessionID();
-        return new IndigoObject(this, checkResult(this, lib.indigoLoadQueryReactionWithLibFromFile(path, library)));
+        return new IndigoObject(
+                this, checkResult(this, lib.indigoLoadQueryReactionWithLibFromBuffer(buf, buf.length, library.self)));
+    }
+
+    public IndigoObject loadQueryReactionWithLibFromFile(String path, IndigoObject library) {
+        setSessionID();
+        return new IndigoObject(this, checkResult(this, lib.indigoLoadQueryReactionWithLibFromFile(path, library.self)));
     }
 
     public IndigoObject loadReactionSmarts(String str) {
