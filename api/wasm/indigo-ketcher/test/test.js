@@ -1263,6 +1263,36 @@ M  END
         });
     }
 
+    {
+        test("calculate pka", "PKa", () => {
+            let options = new indigo.MapStringString();
+            let pka = indigo.pka('C([C@@H](C(=O)O)N)S', options);            
+            assert.equal(pka.toString(), '4.006667');
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("calculate LogP", "LogP", () => {
+            let options = new indigo.MapStringString();
+            let pka = indigo.logp('C([C@@H](C(=O)O)N)S', options);            
+            assert.equal(pka.toString(), '-0.671900');
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("molar refractivity", "molarRefractivity", () => {
+            let options = new indigo.MapStringString();
+            let pka = indigo.molarRefractivity('C([C@@H](C(=O)O)N)S', options);            
+            assert.equal(pka.toString(), '29.464200');
+            options.delete();
+            assert(true);
+        });
+    }
+
     // Run tests
     run();
 });
