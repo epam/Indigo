@@ -125,9 +125,15 @@ class IndigoLib:
             c_int,
         ]
         IndigoLib.lib.indigoLoadMoleculeWithLibFromString.restype = c_int
-        IndigoLib.lib.indigoLoadMoleculeWithLibFromString.argtypes = [c_char_p, c_int]
+        IndigoLib.lib.indigoLoadMoleculeWithLibFromString.argtypes = [
+            c_char_p,
+            c_int,
+        ]
         IndigoLib.lib.indigoLoadMoleculeWithLibFromFile.restype = c_int
-        IndigoLib.lib.indigoLoadMoleculeWithLibFromFile.argtypes = [c_char_p, c_int]
+        IndigoLib.lib.indigoLoadMoleculeWithLibFromFile.argtypes = [
+            c_char_p,
+            c_int,
+        ]
         IndigoLib.lib.indigoLoadMoleculeWithLibFromBuffer.restype = c_int
         IndigoLib.lib.indigoLoadMoleculeWithLibFromBuffer.argtypes = [
             POINTER(c_byte),
@@ -139,9 +145,15 @@ class IndigoLib:
         IndigoLib.lib.indigoLoadQueryMoleculeFromFile.restype = c_int
         IndigoLib.lib.indigoLoadQueryMoleculeFromFile.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadQueryMoleculeWithLibFromString.restype = c_int
-        IndigoLib.lib.indigoLoadQueryMoleculeWithLibFromString.argtypes = [c_char_p, c_int]
+        IndigoLib.lib.indigoLoadQueryMoleculeWithLibFromString.argtypes = [
+            c_char_p,
+            c_int,
+        ]
         IndigoLib.lib.indigoLoadQueryMoleculeWithLibFromFile.restype = c_int
-        IndigoLib.lib.indigoLoadQueryMoleculeWithLibFromFile.argtypes = [c_char_p, c_int]
+        IndigoLib.lib.indigoLoadQueryMoleculeWithLibFromFile.argtypes = [
+            c_char_p,
+            c_int,
+        ]
         IndigoLib.lib.indigoLoadSmartsFromString.restype = c_int
         IndigoLib.lib.indigoLoadSmartsFromString.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadSmartsFromFile.restype = c_int

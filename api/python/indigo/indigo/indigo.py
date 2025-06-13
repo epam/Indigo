@@ -443,7 +443,9 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadMoleculeWithLibFromString(string.encode(), library.id)
+                self._lib().indigoLoadMoleculeWithLibFromString(
+                    string.encode(), library.id
+                )
             ),
         )
 
@@ -464,7 +466,9 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadMoleculeWithLibFromFile(filename.encode(), library.id)
+                self._lib().indigoLoadMoleculeWithLibFromFile(
+                    filename.encode(), library.id
+                )
             ),
         )
 
@@ -495,7 +499,9 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadMoleculeWithLibFromBuffer(values, len(buf), library.id)
+                self._lib().indigoLoadMoleculeWithLibFromBuffer(
+                    values, len(buf), library.id
+                )
             ),
         )
 
@@ -559,7 +565,9 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadQueryMoleculeWithLibFromString(string.encode(), library.id)
+                self._lib().indigoLoadQueryMoleculeWithLibFromString(
+                    string.encode(), library.id
+                )
             ),
         )
 
@@ -581,7 +589,9 @@ class Indigo:
         return IndigoObject(
             self,
             IndigoLib.checkResult(
-                self._lib().indigoLoadQueryMoleculeWithLibFromFile(filename.encode(), library.id)
+                self._lib().indigoLoadQueryMoleculeWithLibFromFile(
+                    filename.encode(), library.id
+                )
             ),
         )
 
