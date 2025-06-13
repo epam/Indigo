@@ -28,7 +28,6 @@
 #pragma warning(disable : 4251)
 #endif
 
-using namespace std;
 namespace indigo
 {
 
@@ -40,7 +39,7 @@ namespace indigo
     {
         if (abs(weight) <= WEIGHT_FACTOR)
             return 0;
-        return max(0, weight * (rotate > 0 ? -1 : 1));
+        return std::max(0, weight * (rotate > 0 ? -1 : 1));
     }
 
     class DLLEXPORT MoleculeLayoutMacrocycles
@@ -230,7 +229,7 @@ namespace indigo
 
         void intersec(int x1, int x2, int y1, int y2)
         {
-            set(max(min_x, x1), min(max_x, x2), max(min_y, y1), min(max_y, y2));
+            set(std::max(min_x, x1), std::min(max_x, x2), std::max(min_y, y1), std::min(max_y, y2));
         }
 
         void set(rectangle rec)
@@ -379,7 +378,7 @@ namespace indigo
 
         const int quality(AnswerField& fld) const
         {
-            int diffCoord = (x * y >= 0) ? abs(x) + abs(y) : max(abs(x), abs(y));
+            int diffCoord = (x * y >= 0) ? abs(x) + abs(y) : std::max(abs(x), abs(y));
             return diffCoord + 2 * abs(rot - SIX) + fld.get_field(*this);
         }
     };

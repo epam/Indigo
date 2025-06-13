@@ -543,9 +543,9 @@ CEXPORT int indigoLoadQueryReactionWithLib(int source, int monomer_library)
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
 
-        std::optional<std::reference_wrapper<MonomerTemplateLibrary>> monomer_lib = std::nullopt;
+        MonomerTemplateLibrary* monomer_lib = nullptr;
         if (monomer_library >= 0)
-            monomer_lib = IndigoMonomerLibrary::get(self.getObject(monomer_library));
+            monomer_lib = &IndigoMonomerLibrary::get(self.getObject(monomer_library));
         std::unique_ptr<IndigoQueryReaction> rxnptr = std::make_unique<IndigoQueryReaction>();
         loader.loadReaction(rxnptr->rxn, monomer_lib);
         return self.addObject(rxnptr.release());

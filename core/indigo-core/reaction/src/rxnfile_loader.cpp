@@ -38,7 +38,7 @@ RxnfileLoader::~RxnfileLoader()
 {
 }
 
-void RxnfileLoader::loadReaction(Reaction& reaction, library_ref monomer_lib)
+void RxnfileLoader::loadReaction(Reaction& reaction, MonomerTemplateLibrary* monomer_lib)
 {
     _rxn = &reaction;
     _brxn = &reaction;
@@ -46,7 +46,7 @@ void RxnfileLoader::loadReaction(Reaction& reaction, library_ref monomer_lib)
     _loadReaction(monomer_lib);
 }
 
-void RxnfileLoader::loadQueryReaction(QueryReaction& rxn, library_ref monomer_lib)
+void RxnfileLoader::loadQueryReaction(QueryReaction& rxn, MonomerTemplateLibrary* monomer_lib)
 {
     _rxn = 0;
     _brxn = &rxn;
@@ -54,19 +54,19 @@ void RxnfileLoader::loadQueryReaction(QueryReaction& rxn, library_ref monomer_li
     _loadReaction();
 }
 
-void indigo::RxnfileLoader::loadReaction(Reaction& reaction, PropertiesMap& props, library_ref monomer_lib)
+void indigo::RxnfileLoader::loadReaction(Reaction& reaction, PropertiesMap& props, MonomerTemplateLibrary* monomer_lib)
 {
     loadReaction(reaction, monomer_lib);
     reaction.properties().copy(props);
 }
 
-void indigo::RxnfileLoader::loadQueryReaction(QueryReaction& reaction, PropertiesMap& props, library_ref monomer_lib)
+void indigo::RxnfileLoader::loadQueryReaction(QueryReaction& reaction, PropertiesMap& props, MonomerTemplateLibrary* monomer_lib)
 {
     loadQueryReaction(reaction, monomer_lib);
     reaction.properties().copy(props);
 }
 
-void RxnfileLoader::_loadReaction(library_ref monomer_lib)
+void RxnfileLoader::_loadReaction(MonomerTemplateLibrary* monomer_lib)
 {
     _brxn->clear();
 

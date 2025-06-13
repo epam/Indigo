@@ -77,12 +77,12 @@ ReactionAutoLoader::~ReactionAutoLoader()
         delete _scanner;
 }
 
-void ReactionAutoLoader::loadQueryReaction(QueryReaction& qreaction, library_ref monomer_lib)
+void ReactionAutoLoader::loadQueryReaction(QueryReaction& qreaction, MonomerTemplateLibrary* monomer_lib)
 {
     loadReaction(qreaction, monomer_lib);
 }
 
-void ReactionAutoLoader::loadReaction(BaseReaction& reaction, library_ref monomer_lib)
+void ReactionAutoLoader::loadReaction(BaseReaction& reaction, MonomerTemplateLibrary* monomer_lib)
 {
     auto rptr = loadReaction(reaction.isQueryReaction(), monomer_lib);
     reaction.clone(*rptr);
@@ -91,7 +91,7 @@ void ReactionAutoLoader::loadReaction(BaseReaction& reaction, library_ref monome
         reaction.addReactionBlock().copy(rptr->reactionBlock(i));
 }
 
-std::unique_ptr<BaseReaction> ReactionAutoLoader::loadReaction(bool query, library_ref monomer_lib)
+std::unique_ptr<BaseReaction> ReactionAutoLoader::loadReaction(bool query, MonomerTemplateLibrary* monomer_lib)
 {
     auto reaction = _loadReaction(query, monomer_lib);
     if (!query && dearomatize_on_load)
@@ -99,7 +99,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::loadReaction(bool query, libra
     return reaction;
 }
 
-std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, library_ref monomer_lib)
+std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, MonomerTemplateLibrary* monomer_lib)
 {
     auto local_scanner = _scanner;
     // chack for base64

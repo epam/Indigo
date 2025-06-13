@@ -87,12 +87,12 @@ MoleculeAutoLoader::~MoleculeAutoLoader()
         delete _scanner;
 }
 
-void MoleculeAutoLoader::loadQueryMolecule(QueryMolecule& qmol, library_ref monomer_lib)
+void MoleculeAutoLoader::loadQueryMolecule(QueryMolecule& qmol, MonomerTemplateLibrary* monomer_lib)
 {
     loadMolecule(qmol);
 }
 
-void MoleculeAutoLoader::loadMolecule(BaseMolecule& bmol, library_ref monomer_lib)
+void MoleculeAutoLoader::loadMolecule(BaseMolecule& bmol, MonomerTemplateLibrary* monomer_lib)
 {
     _loadMolecule(bmol, monomer_lib);
 
@@ -197,7 +197,7 @@ void MoleculeAutoLoader::readAllDataToString(Scanner& scanner, Array<char>& data
     dataBuf.push('\0');
 }
 
-void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, library_ref monomer_lib)
+void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary* monomer_lib)
 {
     bool query = mol.isQueryMolecule();
     properties.clear();

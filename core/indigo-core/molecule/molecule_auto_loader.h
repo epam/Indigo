@@ -19,9 +19,6 @@
 #ifndef __molecule_auto_loader__
 #define __molecule_auto_loader__
 
-#include <functional>
-#include <optional>
-
 #include "base_cpp/array.h"
 #include "base_cpp/properties_map.h"
 #include "base_cpp/red_black.h"
@@ -52,10 +49,9 @@ namespace indigo
 
         ~MoleculeAutoLoader();
 
-        using library_ref = std::optional<std::reference_wrapper<MonomerTemplateLibrary>>;
-        void loadMolecule(BaseMolecule& mol, library_ref monomer_lib = std::nullopt);
+        void loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary* monomer_lib = nullptr);
         // to keep C++ API compatible
-        void loadQueryMolecule(QueryMolecule& qmol, library_ref monomer_lib = std::nullopt);
+        void loadQueryMolecule(QueryMolecule& qmol, MonomerTemplateLibrary* monomer_lib = nullptr);
 
         StereocentersOptions stereochemistry_options;
         bool ignore_cistrans_errors;
@@ -85,7 +81,7 @@ namespace indigo
 
         void _init();
         bool _isSingleLine();
-        void _loadMolecule(BaseMolecule& mol, library_ref monomer_lib);
+        void _loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary* monomer_lib);
 
     private:
         MoleculeAutoLoader(const MoleculeAutoLoader&) = delete; // no implicit copy

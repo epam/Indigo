@@ -43,7 +43,7 @@ IMPL_ERROR(MolfileLoader, "molfile loader");
 
 CP_DEF(MolfileLoader);
 
-MolfileLoader::MolfileLoader(Scanner& scanner, library_ref monomer_library)
+MolfileLoader::MolfileLoader(Scanner& scanner, MonomerTemplateLibrary* monomer_library)
     : _scanner(scanner), _monomer_templates(MonomerTemplates::_instance()), _max_template_id(0), CP_INIT, TL_CP_GET(_stereo_care_atoms),
       TL_CP_GET(_stereo_care_bonds), TL_CP_GET(_stereocenter_types), TL_CP_GET(_stereocenter_groups), TL_CP_GET(_sensible_bond_directions),
       TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount), TL_CP_GET(_sgroup_types), TL_CP_GET(_sgroup_mapping)
@@ -3871,21 +3871,21 @@ void MolfileLoader::_readTGroups3000()
                     }
                     loader._readCtab3000();
                     loader._postLoad();
-                    if (_monomer_library.has_value() && tgroup.tgroup_class.size() > 0)
+                    if (_monomer_library != nullptr && tgroup.tgroup_class.size() > 0)
                     {
                         auto& class_map = MonomerTemplates::getStrToMonomerType();
                         auto class_it = class_map.find(tgroup.tgroup_class.ptr());
                         if (class_it != class_map.end())
                         {
                             // Search monomer library for monomer with same class and alias
-                            std::string id = _monomer_library->get().getMonomerTemplateIdByAlias(class_it->second, tgroup.tgroup_name.ptr());
+                            std::string id = _monomer_library->getMonomerTemplateIdByAlias(class_it->second, tgroup.tgroup_name.ptr());
                             if (id.size() == 0 && tgroup.tgroup_alias.size() > 0)
-                                id = _monomer_library->get().getMonomerTemplateIdByAlias(class_it->second, tgroup.tgroup_alias.ptr());
+                                id = _monomer_library->getMonomerTemplateIdByAlias(class_it->second, tgroup.tgroup_alias.ptr());
                             if (id.size() > 0)
                             {
                                 // template with same class and alias found
                                 // check inchi keys of structures
-                                const auto& templ = _monomer_library->get().getMonomerTemplateById(id);
+                                const auto& templ = _monomer_library->getMonomerTemplateById(id);
                                 std::string templ_inchi_str;
                                 StringOutput templ_inchi_output(templ_inchi_str);
                                 MoleculeInChI templ_inchi(templ_inchi_output);

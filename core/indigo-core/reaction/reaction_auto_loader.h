@@ -24,9 +24,6 @@
 #pragma warning(disable : 4251 4275)
 #endif
 
-#include <functional>
-#include <optional>
-
 #include "base_cpp/array.h"
 #include "layout/metalayout.h"
 #include "molecule/molecule_arom.h"
@@ -50,11 +47,10 @@ namespace indigo
 
         ~ReactionAutoLoader();
 
-        using library_ref = std::optional<std::reference_wrapper<MonomerTemplateLibrary>>;
-        void loadReaction(BaseReaction& reaction, library_ref monomer_lib = std::nullopt);
-        std::unique_ptr<BaseReaction> loadReaction(bool query, library_ref monomer_lib = std::nullopt);
+        void loadReaction(BaseReaction& reaction, MonomerTemplateLibrary* monomer_lib = nullptr);
+        std::unique_ptr<BaseReaction> loadReaction(bool query, MonomerTemplateLibrary* monomer_lib = nullptr);
         // to keep C++ API compatible
-        void loadQueryReaction(QueryReaction& qreaction, library_ref monomer_lib = std::nullopt);
+        void loadQueryReaction(QueryReaction& qreaction, MonomerTemplateLibrary* monomer_lib = nullptr);
 
         bool treat_x_as_pseudoatom;
         bool ignore_closing_bond_direction_mismatch;
@@ -75,7 +71,7 @@ namespace indigo
         bool _own_scanner;
 
         void _init();
-        std::unique_ptr<BaseReaction> _loadReaction(bool query, library_ref monomer_lib);
+        std::unique_ptr<BaseReaction> _loadReaction(bool query, MonomerTemplateLibrary* monomer_lib);
         bool _isSingleLine();
 
     private:

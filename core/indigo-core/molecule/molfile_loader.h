@@ -19,9 +19,6 @@
 #ifndef __molfile_loader__
 #define __molfile_loader__
 
-#include <functional>
-#include <optional>
-
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/tlscont.h"
@@ -49,8 +46,7 @@ namespace indigo
     public:
         DECL_ERROR;
 
-        using library_ref = std::optional<std::reference_wrapper<MonomerTemplateLibrary>>;
-        MolfileLoader(Scanner& scanner, library_ref monomer_lib = std::nullopt);
+        MolfileLoader(Scanner& scanner, MonomerTemplateLibrary* monomer_lib = nullptr);
 
         void loadMolecule(Molecule& mol);
         void loadQueryMolecule(QueryMolecule& mol);
@@ -155,7 +151,7 @@ namespace indigo
 
     private:
         MolfileLoader(const MolfileLoader&); // no implicit copy
-        library_ref _monomer_library;
+        MonomerTemplateLibrary* _monomer_library;
     };
 
 } // namespace indigo

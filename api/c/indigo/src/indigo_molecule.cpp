@@ -509,9 +509,9 @@ CEXPORT int indigoLoadMoleculeWithLib(int source, int monomer_library)
 
         Molecule& mol = molptr->mol;
 
-        std::optional<std::reference_wrapper<MonomerTemplateLibrary>> monomer_lib = std::nullopt;
+        MonomerTemplateLibrary* monomer_lib = nullptr;
         if (monomer_library >= 0)
-            monomer_lib = IndigoMonomerLibrary::get(self.getObject(monomer_library));
+            monomer_lib = &IndigoMonomerLibrary::get(self.getObject(monomer_library));
         loader.loadMolecule(mol, monomer_lib);
         molptr->getProperties().copy(loader.properties);
 
@@ -619,9 +619,9 @@ CEXPORT int indigoLoadQueryMoleculeWithLib(int source, int monomer_library)
 
         QueryMolecule& qmol = molptr->qmol;
 
-        std::optional<std::reference_wrapper<MonomerTemplateLibrary>> monomer_lib = std::nullopt;
+        MonomerTemplateLibrary* monomer_lib = nullptr;
         if (monomer_library >= 0)
-            monomer_lib = IndigoMonomerLibrary::get(self.getObject(monomer_library));
+            monomer_lib = &IndigoMonomerLibrary::get(self.getObject(monomer_library));
         loader.loadMolecule(qmol, monomer_lib);
         molptr->copyProperties(loader.properties);
 

@@ -160,7 +160,7 @@ void MoleculeLayoutGraphSmart::_search_path(int start, int finish, Array<int>& p
             }
             path.push(finish);
             for (int j = 0; j < path.size() / 2; j++)
-                swap(path[j], path[path.size() - 1 - j]);
+                std::swap(path[j], path[path.size() - 1 - j]);
             return;
         }
         const Vertex& vert = getVertex(vertices_list[i]);
