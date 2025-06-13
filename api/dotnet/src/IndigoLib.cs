@@ -282,6 +282,24 @@ namespace com.epam.indigo
         public static extern int indigoLoadQueryReactionFromBuffer(byte[] buf, int bufsize);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadReactionWithLibFromString(string str, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadReactionWithLibFromFile(string path, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadReactionWithLibFromBuffer(byte[] buf, int bufsize, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadQueryReactionWithLibFromString(string str, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadQueryReactionWithLibFromFile(string path, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadQueryReactionWithLibFromBuffer(byte[] buf, int bufsize, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadReactionSmartsFromString(string str);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]

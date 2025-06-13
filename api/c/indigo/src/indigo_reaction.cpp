@@ -485,6 +485,45 @@ CEXPORT int indigoLoadReactionWithLib(int source, int monomer_library)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoLoadReactionWithLibFromString(const char* string, int monomer_library)
+{
+    int source = indigoReadString(string);
+    int result;
+
+    if (source <= 0)
+        return -1;
+
+    result = indigoLoadReactionWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
+CEXPORT int indigoLoadReactionWithLibFromFile(const char* filename, int monomer_library)
+{
+    int source = indigoReadFile(filename);
+    int result;
+
+    if (source < 0)
+        return -1;
+
+    result = indigoLoadReactionWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
+CEXPORT int indigoLoadReactionWithLibFromBuffer(const char* buffer, int size, int monomer_library)
+{
+    int source = indigoReadBuffer(buffer, size);
+    int result;
+
+    if (source < 0)
+        return -1;
+
+    result = indigoLoadReactionWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
 CEXPORT int indigoLoadQueryReaction(int source)
 {
     return indigoLoadQueryReactionWithLib(source, -1);
@@ -512,6 +551,45 @@ CEXPORT int indigoLoadQueryReactionWithLib(int source, int monomer_library)
         return self.addObject(rxnptr.release());
     }
     INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadQueryReactionWithLibFromString(const char* string, int monomer_library)
+{
+    int source = indigoReadString(string);
+    int result;
+
+    if (source <= 0)
+        return -1;
+
+    result = indigoLoadQueryReactionWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
+CEXPORT int indigoLoadQueryReactionWithLibFromFile(const char* filename, int monomer_library)
+{
+    int source = indigoReadFile(filename);
+    int result;
+
+    if (source < 0)
+        return -1;
+
+    result = indigoLoadQueryReactionWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
+CEXPORT int indigoLoadQueryReactionWithLibFromBuffer(const char* buffer, int size, int monomer_library)
+{
+    int source = indigoReadBuffer(buffer, size);
+    int result;
+
+    if (source < 0)
+        return -1;
+
+    result = indigoLoadQueryReactionWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
 }
 
 CEXPORT int indigoIterateReactants(int reaction)

@@ -206,6 +206,26 @@ class IndigoLib:
         IndigoLib.lib.indigoLoadQueryReactionFromString.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadQueryReactionFromFile.restype = c_int
         IndigoLib.lib.indigoLoadQueryReactionFromFile.argtypes = [c_char_p]
+        IndigoLib.lib.indigoLoadReactionWithLibFromString.restype = c_int
+        IndigoLib.lib.indigoLoadReactionWithLibFromString.argtypes = [
+            c_char_p,
+            c_int,
+        ]
+        IndigoLib.lib.indigoLoadReactionWithLibFromFile.restype = c_int
+        IndigoLib.lib.indigoLoadReactionWithLibFromFile.argtypes = [
+            c_char_p,
+            c_int,
+        ]
+        IndigoLib.lib.indigoLoadQueryReactionWithLibFromString.restype = c_int
+        IndigoLib.lib.indigoLoadQueryReactionWithLibFromString.argtypes = [
+            c_char_p,
+            c_int,
+        ]
+        IndigoLib.lib.indigoLoadQueryReactionWithLibFromFile.restype = c_int
+        IndigoLib.lib.indigoLoadQueryReactionWithLibFromFile.argtypes = [
+            c_char_p,
+            c_int,
+        ]
         IndigoLib.lib.indigoLoadReactionSmartsFromString.restype = c_int
         IndigoLib.lib.indigoLoadReactionSmartsFromString.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadReactionSmartsFromFile.restype = c_int

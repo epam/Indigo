@@ -981,6 +981,96 @@ class Indigo:
             ),
         )
 
+    def loadReactionWithLib(self, string, library):
+        """Loads reaction from string. Format will be automatically recognized.
+
+        Args:
+            string (str): reaction format
+            library (IndigoObject): monomer library object
+
+        Returns:
+            IndigoObject: reaction object
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadReactionWithLibFromString(
+                    string.encode(), library.id
+                )
+            ),
+        )
+
+    def loadReactionFromFileWithLib(self, filename, library):
+        """Loads reaction from file
+
+        Args:
+            filename (str): full path to a file
+            library (IndigoObject): monomer library object
+
+        Returns:
+            IndigoObject: loaded reaction
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadReactionWithLibFromFile(
+                    filename.encode(), library.id
+                )
+            ),
+        )
+
+    def loadQueryReactionWithLib(self, string, library):
+        """Loads query reaction from string. Format will be automatically
+           recognized.
+
+        Args:
+            string (str): reaction format
+            library (IndigoObject): monomer library object
+
+        Returns:
+            IndigoObject: query reaction object
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadQueryReactionWithLibFromString(
+                    string.encode(), library.id
+                )
+            ),
+        )
+
+    def loadQueryReactionFromFileWithLib(self, filename, library):
+        """Loads query reaction from file. Automatically detects input format.
+
+        Args:
+            filename (str): full path to a file
+            library (IndigoObject): monomer library object
+
+        Returns:
+            IndigoObject: loaded query reaction object
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadQueryReactionWithLibFromFile(
+                    filename.encode(), library.id
+                )
+            ),
+        )
+
     def loadReactionSmarts(self, string):
         """Loads query reaction from string in SMARTS format
 

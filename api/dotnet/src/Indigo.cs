@@ -586,6 +586,42 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadQueryReactionFromFile(path)));
         }
 
+        public IndigoObject loadReactionWithLib(string str, int library)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadReactionWithLibFromString(str, library)));
+        }
+
+        public IndigoObject loadReactionWithLib(byte[] buf, int library)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadReactionWithLibFromBuffer(buf, buf.Length, library)));
+        }
+
+        public IndigoObject loadReactionFromWithLibFile(string path, int library)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadReactionWithLibFromFile(path, library)));
+        }
+
+        public IndigoObject loadQueryReactionWithLib(string str, int library)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadQueryReactionWithLibFromString(str, library)));
+        }
+
+        public IndigoObject loadQueryReactionWithLib(byte[] buf, int library)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadQueryReactionWithLibFromBuffer(buf, buf.Length, library)));
+        }
+
+        public IndigoObject loadQueryReactionWithLibFromFile(string path, int library)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadQueryReactionWithLibFromFile(path, library)));
+        }
+
         public IndigoObject loadReactionSmarts(string str)
         {
             setSessionID();
