@@ -37,7 +37,7 @@ namespace indigo
 
     inline int get_weight(int weight, int rotate)
     {
-        if (abs(weight) <= WEIGHT_FACTOR)
+        if (std::abs(weight) <= WEIGHT_FACTOR)
             return 0;
         return std::max(0, weight * (rotate > 0 ? -1 : 1));
     }
@@ -378,8 +378,8 @@ namespace indigo
 
         const int quality(AnswerField& fld) const
         {
-            int diffCoord = (x * y >= 0) ? abs(x) + abs(y) : std::max(abs(x), abs(y));
-            return diffCoord + 2 * abs(rot - SIX) + fld.get_field(*this);
+            int diffCoord = (x * y >= 0) ? std::abs(x) + std::abs(y) : std::max(std::abs(x), std::abs(y));
+            return diffCoord + 2 * std::abs(rot - SIX) + fld.get_field(*this);
         }
     };
 
