@@ -31,6 +31,7 @@ namespace indigo
     class QueryReaction;
     class MolfileLoader;
     class PropertiesMap;
+    class MonomerTemplateLibrary;
 
     class DLLEXPORT RxnfileLoader
     {
@@ -38,10 +39,10 @@ namespace indigo
         RxnfileLoader(Scanner& scanner);
         ~RxnfileLoader();
 
-        void loadReaction(Reaction& reaction);
-        void loadQueryReaction(QueryReaction& reaction);
-        void loadReaction(Reaction& reaction, PropertiesMap& props);
-        void loadQueryReaction(QueryReaction& reaction, PropertiesMap& props);
+        void loadReaction(Reaction& reaction, MonomerTemplateLibrary* monomer_lib = nullptr);
+        void loadQueryReaction(QueryReaction& reaction, MonomerTemplateLibrary* monomer_lib = nullptr);
+        void loadReaction(Reaction& reaction, PropertiesMap& props, MonomerTemplateLibrary* monomer_lib = nullptr);
+        void loadQueryReaction(QueryReaction& reaction, PropertiesMap& props, MonomerTemplateLibrary* monomer_lib = nullptr);
 
         bool treat_x_as_pseudoatom;
         StereocentersOptions stereochemistry_options;
@@ -57,7 +58,7 @@ namespace indigo
         QueryReaction* _qrxn;
         Reaction* _rxn;
 
-        void _loadReaction();
+        void _loadReaction(MonomerTemplateLibrary* monomer_lib = nullptr);
 
         Scanner& _scanner;
         void _readRxnHeader();

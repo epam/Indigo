@@ -115,6 +115,16 @@ int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* /*context*/)
 
 void TGroup::copy(const TGroup& other)
 {
+    copy_without_fragment(other);
+    if (!other.ambiguous)
+    {
+        fragment.reset(other.fragment->neu());
+        fragment->clone(*other.fragment.get(), 0, 0);
+    }
+}
+
+void TGroup::copy_without_fragment(const TGroup& other)
+{
     tgroup_class.copy(other.tgroup_class);
     tgroup_name.copy(other.tgroup_name);
     tgroup_full_name.copy(other.tgroup_full_name);
@@ -125,11 +135,6 @@ void TGroup::copy(const TGroup& other)
     tgroup_id = other.tgroup_id;
     unresolved = other.unresolved;
     idt_alias.copy(other.idt_alias);
-    if (!other.ambiguous)
-    {
-        fragment.reset(other.fragment->neu());
-        fragment->clone(*other.fragment.get(), 0, 0);
-    }
     ambiguous = other.ambiguous;
     mixture = other.mixture;
     for (int i = 0; i < other.aliases.size(); i++)

@@ -22,6 +22,7 @@
 #include "indigo_io.h"
 #include "indigo_mapping.h"
 #include "indigo_molecule.h"
+#include "indigo_monomer_library.h"
 #include "reaction/canonical_rsmiles_saver.h"
 #include "reaction/pathway_reaction.h"
 #include "reaction/reaction_auto_loader.h"
@@ -446,6 +447,11 @@ int _indigoIterateReaction(int reaction, int subtype)
 
 CEXPORT int indigoLoadReaction(int source)
 {
+    return indigoLoadReactionWithLib(source, -1);
+}
+
+CEXPORT int indigoLoadReactionWithLib(int source, int monomer_library)
+{
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(source);
@@ -479,7 +485,51 @@ CEXPORT int indigoLoadReaction(int source)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoLoadReactionWithLibFromString(const char* string, int monomer_library)
+{
+    int source = indigoReadString(string);
+    int result;
+
+    if (source <= 0)
+        return -1;
+
+    result = indigoLoadReactionWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
+CEXPORT int indigoLoadReactionWithLibFromFile(const char* filename, int monomer_library)
+{
+    int source = indigoReadFile(filename);
+    int result;
+
+    if (source < 0)
+        return -1;
+
+    result = indigoLoadReactionWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
+CEXPORT int indigoLoadReactionWithLibFromBuffer(const char* buffer, int size, int monomer_library)
+{
+    int source = indigoReadBuffer(buffer, size);
+    int result;
+
+    if (source < 0)
+        return -1;
+
+    result = indigoLoadReactionWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
 CEXPORT int indigoLoadQueryReaction(int source)
+{
+    return indigoLoadQueryReactionWithLib(source, -1);
+}
+
+CEXPORT int indigoLoadQueryReactionWithLib(int source, int monomer_library)
 {
     INDIGO_BEGIN
     {
@@ -493,11 +543,53 @@ CEXPORT int indigoLoadQueryReaction(int source)
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
 
+        MonomerTemplateLibrary* monomer_lib = nullptr;
+        if (monomer_library >= 0)
+            monomer_lib = &IndigoMonomerLibrary::get(self.getObject(monomer_library));
         std::unique_ptr<IndigoQueryReaction> rxnptr = std::make_unique<IndigoQueryReaction>();
-        loader.loadReaction(rxnptr->rxn);
+        loader.loadReaction(rxnptr->rxn, monomer_lib);
         return self.addObject(rxnptr.release());
     }
     INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadQueryReactionWithLibFromString(const char* string, int monomer_library)
+{
+    int source = indigoReadString(string);
+    int result;
+
+    if (source <= 0)
+        return -1;
+
+    result = indigoLoadQueryReactionWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
+CEXPORT int indigoLoadQueryReactionWithLibFromFile(const char* filename, int monomer_library)
+{
+    int source = indigoReadFile(filename);
+    int result;
+
+    if (source < 0)
+        return -1;
+
+    result = indigoLoadQueryReactionWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
+CEXPORT int indigoLoadQueryReactionWithLibFromBuffer(const char* buffer, int size, int monomer_library)
+{
+    int source = indigoReadBuffer(buffer, size);
+    int result;
+
+    if (source < 0)
+        return -1;
+
+    result = indigoLoadQueryReactionWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
 }
 
 CEXPORT int indigoIterateReactants(int reaction)
