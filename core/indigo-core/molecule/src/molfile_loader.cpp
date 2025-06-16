@@ -24,6 +24,7 @@
 #include "base_cpp/tlscont.h"
 #include "layout/sequence_layout.h"
 #include "molecule/elements.h"
+#include "molecule/inchi_wrapper.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_3d_constraints.h"
 #include "molecule/molecule_inchi.h"
@@ -3885,20 +3886,27 @@ void MolfileLoader::_readTGroups3000()
                             {
                                 // template with same class and alias found
                                 // check inchi keys of structures
-                                const auto& templ = _monomer_library->getMonomerTemplateById(id);
-                                std::string templ_inchi_str;
-                                StringOutput templ_inchi_output(templ_inchi_str);
-                                MoleculeInChI templ_inchi(templ_inchi_output);
-                                auto templ_tgroup = templ.getTGroup();
-                                templ_inchi.outputInChI(templ_tgroup->fragment->asMolecule());
-                                std::string tg_inchi_str;
-                                StringOutput tg_inchi_output(tg_inchi_str);
-                                MoleculeInChI tg_inchi(tg_inchi_output);
-                                tg_inchi.outputInChI(tgroup.fragment->asMolecule());
-                                if (templ_inchi_str == tg_inchi_str)
+                                try
                                 {
-                                    tgroup.copy_without_fragment(*templ_tgroup);
-                                    tgroup.tgroup_text_id.readString(id.c_str(), true);
+                                    const auto& templ = _monomer_library->getMonomerTemplateById(id);
+                                    std::string templ_inchi_str;
+                                    StringOutput templ_inchi_output(templ_inchi_str);
+                                    MoleculeInChI templ_inchi(templ_inchi_output);
+                                    auto templ_tgroup = templ.getTGroup();
+                                    templ_inchi.outputInChI(templ_tgroup->fragment->asMolecule());
+                                    std::string tg_inchi_str;
+                                    StringOutput tg_inchi_output(tg_inchi_str);
+                                    MoleculeInChI tg_inchi(tg_inchi_output);
+                                    tg_inchi.outputInChI(tgroup.fragment->asMolecule());
+                                    if (templ_inchi_str == tg_inchi_str)
+                                    {
+                                        tgroup.copy_without_fragment(*templ_tgroup);
+                                        tgroup.tgroup_text_id.readString(id.c_str(), true);
+                                    }
+                                }
+                                catch (...)
+                                {
+                                    // just do not copy on error
                                 }
                             }
                         }
