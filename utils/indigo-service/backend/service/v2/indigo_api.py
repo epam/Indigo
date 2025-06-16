@@ -377,6 +377,9 @@ def load_moldata(
             )
     md = MolData()
 
+    if library is None:
+        library = indigo.loadMonomerLibrary('{"root":{}}')
+
     input_format = mime_type
     if "input-format" in options:
         input_format = options["input-format"]
@@ -432,31 +435,37 @@ def load_moldata(
                 pass
         try:
             if not query:
-                md.struct = indigo.loadMolecule(molstr)
+                md.struct = indigo.loadMoleculeWithLib(molstr, library)
                 md.is_query = False
             else:
-                md.struct = indigo.loadQueryMolecule(molstr)
+                md.struct = indigo.loadQueryMoleculeWithLib(molstr, library)
                 md.is_query = True
         except IndigoException:
             try:
-                md.struct = indigo.loadQueryMolecule(molstr)
+                md.struct = indigo.loadQueryMoleculeWithLib(molstr, library)
                 md.is_query = True
             except IndigoException:
                 md.is_rxn = True
                 try:
                     if query:
                         try:
-                            md.struct = indigo.loadQueryReaction(molstr)
+                            md.struct = indigo.loadQueryReactionWithLib(
+                                molstr, library
+                            )
                             md.is_query = True
                         except IndigoException:
-                            md.struct = indigo.loadReaction(molstr)
+                            md.struct = indigo.loadReactionWithLib(
+                                molstr, library
+                            )
                             md.is_query = False
                     else:
-                        md.struct = indigo.loadReaction(molstr)
+                        md.struct = indigo.loadReactionWithLib(molstr, library)
                         md.is_query = False
                 except IndigoException:
                     try:
-                        md.struct = indigo.loadQueryReaction(molstr)
+                        md.struct = indigo.loadQueryReactionWithLib(
+                            molstr, library
+                        )
                         md.is_query = True
                     except IndigoException:
                         if library is None:

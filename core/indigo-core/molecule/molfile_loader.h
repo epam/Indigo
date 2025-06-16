@@ -25,6 +25,7 @@
 #include "molecule/base_molecule.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/monomers_lib.h"
+#include "molecule/monomers_template_library.h"
 #include "molecule/query_molecule.h"
 
 namespace indigo
@@ -45,7 +46,7 @@ namespace indigo
     public:
         DECL_ERROR;
 
-        MolfileLoader(Scanner& scanner);
+        MolfileLoader(Scanner& scanner, MonomerTemplateLibrary* monomer_lib = nullptr);
 
         void loadMolecule(Molecule& mol);
         void loadQueryMolecule(QueryMolecule& mol);
@@ -150,6 +151,7 @@ namespace indigo
 
     private:
         MolfileLoader(const MolfileLoader&); // no implicit copy
+        MonomerTemplateLibrary* _monomer_library;
     };
 
 } // namespace indigo
