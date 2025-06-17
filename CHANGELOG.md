@@ -48,11 +48,12 @@ Released 2025-04-17
 # Indigo 1.29.0
 Released 2025-03-26
 
-### Features
+## Features
 * #1844 - Implement GenBank/GenPept sequences import
 * #2552 - "Calculate Properties" for macromolecules 
-* #2713 - Support for the star atom (*) 
-### Bugfixes and improvements
+* #2713 - Support for the star atom (*)
+
+## Bugfixes and improvements
 * #2739 - Wrong stereochemistry when reading cdxml reaction 
 * #2744 - Indigo ignores alternate name for templates in MOL v3000 
 * #2716 - Valid CXSMILES rejected 
