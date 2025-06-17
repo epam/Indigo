@@ -1,3 +1,69 @@
+# Indigo 1.31.0
+Released 2025-06-17
+
+## Features
+* #2788 Support for PNG/SVG export of expanded monomers
+
+## Bugfixes and improvements
+* #2150 Can't save a schema with some elements from Periodic Table in PNG and SVG format
+* #425 Smiles with attachment points is not read correctly (valences are wrong)
+* #2747 Incorrect substituent position
+* #1680 System can't load CDX with (unsupported) brackets inside
+* #1631 Add/Remove hydrogens changes Radical value from Diradical (triplet) to Diradical (singlet)
+* #2755 Error occurs on click of "Remove Explicit Hydrogens" in reaction
+* #1686 System shows positive charge modificator as extra + in addition to charge modified molecule 
+* #2810 Unnecessary rearrangment of cdxml reaction
+* #2807 Missing label from cdxml
+* #2801 Can't render reactions which contain brackets
+* #2778 Can't render fragments with multiple external connections
+* #2815 CIP labels are not rendered
+* #2591 Reagents are repositioned above the reaction arrow after saving and loading RXN V2000/V3000 files
+* #2832 Load from clipboard ignores RNA/DNA/PEP switcher and always loads DNA ambiguous bases even if RNA mode switched on
+* #2845 Export to PNG/SVG works wrong for labels
+* #2722 Monomer could be saved to RDF V3000 format but can't be loaded back exception
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.30.0-rc.1...indigo-1.31.0
+
+# Indigo 1.30.1
+Released 2025-04-17
+
+## Features
+* 2790 Support of "expanded" monomer option
+
+## Bugfixes and improvements
+* 2513 Elliptical arrows can not be saved to the png
+* 2412 User can't correctly save (or make a layout) to RDF/RXN reaction several products or with separate positioned molecules
+* 2746 Incorrect phosphorus valence
+* 2708 Export to SMILES works wrong if loaded from MOL
+* 2707 Atom Query feature export: System lost MOST "Substitution count" values
+* 2702 Export molecule which contains atom with five neighbors and stereo-bond cause error
+* 2704 System losts one stereo label if load from MOL
+* 2699 R Group logic condition is wrong if loaded from MOL
+* 2816 Format recognition order of content from clipboard should be changed for Sequence mode canvas
+* 2818 Library ambiguius RNA bases loaded from HELM as bases with % label
+* 2826 Unable to load ambiguous RNA and ambiguous DNA monomers with same name from HELM
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.29.0...indigo-1.30.1
+
+# Indigo 1.29.0
+Released 2025-03-26
+
+## Features
+* #1844 - Implement GenBank/GenPept sequences import
+* #2552 - "Calculate Properties" for macromolecules 
+* #2713 - Support for the star atom (*)
+
+## Bugfixes and improvements
+* #2739 - Wrong stereochemistry when reading cdxml reaction 
+* #2744 - Indigo ignores alternate name for templates in MOL v3000 
+* #2716 - Valid CXSMILES rejected 
+* #2732 - V2000 Mol file loader skips essential SGroup line in certain cases 
+* #2589 - Jump on uninitialised value
+* #2763 - System should ignore spaces before line indexes on GenBank/GenPept sequences import
+* #2798 - Peptide sequence not pasting directly on canvas
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.28.0-rc.1...indigo-1.29.0
+
 # Indigo 1.28.0
 Released 2025-02-13
 
