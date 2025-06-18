@@ -97,7 +97,7 @@ if os.path.exists("epam.indigo.egg-info"):
     shutil.rmtree("epam.indigo.egg-info")
 
 setup(
-    name="epam.indigo",
+    name="epam_indigo",
     version="1.34.0.dev1",
     description="Indigo universal cheminformatics toolkit",
     author="EPAM Systems Life Science Department",

@@ -67,7 +67,7 @@ api/tests/integrations/**/out/
 **/.__pycache__
 *.pyo
 .DS_Store
-api/python/epam.indigo.egg-info
+api/python/epam_indigo.egg-info
 api/python/indigo/lib
 *.jar
 *.nupkg
