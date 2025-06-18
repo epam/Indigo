@@ -1089,7 +1089,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ "12", "13", "14", "15" ]
+        postgres_major_version: [ "13", "14", "15", "16" ]
     runs-on: windows-latest
     needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
     steps:
@@ -1104,7 +1104,7 @@ jobs:
              git fetch --tags -f
       - name: Setup Postgres
         run: |
-          $pg_version = switch(${{ matrix.postgres_major_version }}) { "15" { "15.1" } "14" { "14.6" } "13" { "13.9" } "12" { "12.13" } }
+          $pg_version = switch(${{ matrix.postgres_major_version }}) { "17" { "17.5" } "16" { "16.9" } "15" { "15.13" } "14" { "14.18" } "13" { "13.21" } }
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-windows-x64-binaries.zip
           Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip
           mv postgresql-${pg_version}-1-windows-x64-binaries/pgsql pgsql
@@ -1125,7 +1125,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 12, 13, 14, 15 ]
+        postgres_major_version: [ 13, 14, 15, 16, 17 ]
     runs-on: macos-13
     needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
     steps:
@@ -1140,7 +1140,7 @@ jobs:
              git fetch --tags -f
       - name: Setup Postgres
         run: |
-          case ${{ matrix.postgres_major_version }} in 15) pg_version=15.1;; 14) pg_version=14.6;; 13) pg_version=13.9;; 12) pg_version=12.13;; esac;
+          case ${{ matrix.postgres_major_version }} in 17) pg_version=17.5;; 16) pg_version=16.9;; 15) pg_version=15.13;; 14) pg_version=14.18;; 13) pg_version=13.21;; esac;
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
           unzip postgresql-${pg_version}-1-osx-binaries.zip
           mv pgsql/include/zlib.h pgsql/include/zlib.h.bck
