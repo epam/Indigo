@@ -683,7 +683,7 @@ jobs:
           name: indigo-python
           path: dist/
       - name: Install latest indigo version
-        run: pip install ${GITHUB_WORKSPACE}/dist/epam.indigo-*manylinux1_x86_64.whl --break-system-packages
+        run: pip install ${GITHUB_WORKSPACE}/dist/epam_indigo-*manylinux1_x86_64.whl --break-system-packages
         working-directory: bingo/bingo-elastic/python
       - name: Install dev dependencies
         run: pip install ".[dev]" --break-system-packages
