@@ -19,4 +19,4 @@ requests==2.32.2
 toml==0.10.2
 types-Pillow==9.5.0.4
 types-requests==2.31.0.0
-urllib3==2.2.2
+urllib3==2.5.0
