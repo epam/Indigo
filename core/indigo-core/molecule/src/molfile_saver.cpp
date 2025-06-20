@@ -436,14 +436,19 @@ void MolfileSaver::_writeMultiString(Output& output, const char* string, int len
             limit = len;
 
         spaceLimit = 70;
-        for (int i = 0; i < limit && i < len; ++i) {
-            if (string[i] == ' ') {
-                spaceLimit = i+1;
+        for (int i = 0; i < limit && i < len; ++i)
+        {
+            if (string[i] == ' ')
+            {
+                spaceLimit = i + 1;
             }
         }
-        if (len > limit) {
+        if (len > limit)
+        {
             spaceLimit = std::min(limit, spaceLimit);
-        } else {
+        }
+        else
+        {
             spaceLimit = len;
         }
 
@@ -1147,7 +1152,8 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, int idx, Output& outp
     for (i = 0; i < sgroup.brackets.size(); i++)
     {
         Vec2f* brackets = sgroup.brackets[i];
-        output.printf(" BRKXYZ=(9 %.8g %.8g %.8g %.8g %.8g %.8g %.8g %.8g %.8g)", brackets[0].x, brackets[0].y, 0.f, brackets[1].x, brackets[1].y, 0.f, 0.f, 0.f, 0.f);
+        output.printf(" BRKXYZ=(9 %.8g %.8g %.8g %.8g %.8g %.8g %.8g %.8g %.8g)", brackets[0].x, brackets[0].y, 0.f, brackets[1].x, brackets[1].y, 0.f, 0.f,
+                      0.f, 0.f);
     }
     if (sgroup.brackets.size() > 0 && sgroup.brk_style > 0)
     {
