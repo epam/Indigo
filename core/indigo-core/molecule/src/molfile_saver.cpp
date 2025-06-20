@@ -427,6 +427,7 @@ void MolfileSaver::_writeAtomLabel(Output& output, int label)
 void MolfileSaver::_writeMultiString(Output& output, const char* string, int len)
 {
     int limit = 70;
+    int spaceLimit = 70;
     while (len > 0)
     {
         output.writeString("M  V30 ");
@@ -434,12 +435,24 @@ void MolfileSaver::_writeMultiString(Output& output, const char* string, int len
         if (len <= limit)
             limit = len;
 
-        output.write(string, limit);
-        if (len != limit)
+        spaceLimit = 70;
+        for (int i = 0; i < limit && i < len; ++i) {
+            if (string[i] == ' ') {
+                spaceLimit = i+1;
+            }
+        }
+        if (len > limit) {
+            spaceLimit = std::min(limit, spaceLimit);
+        } else {
+            spaceLimit = len;
+        }
+
+        output.write(string, spaceLimit);
+        if (len != spaceLimit)
             output.writeString("-");
         output.writeCR();
-        len -= limit;
-        string += limit;
+        len -= spaceLimit;
+        string += spaceLimit;
     }
 }
 
@@ -1134,7 +1147,7 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, int idx, Output& outp
     for (i = 0; i < sgroup.brackets.size(); i++)
     {
         Vec2f* brackets = sgroup.brackets[i];
-        output.printf(" BRKXYZ=(9 %f %f %f %f %f %f %f %f %f)", brackets[0].x, brackets[0].y, 0.f, brackets[1].x, brackets[1].y, 0.f, 0.f, 0.f, 0.f);
+        output.printf(" BRKXYZ=(9 %.8g %.8g %.8g %.8g %.8g %.8g %.8g %.8g %.8g)", brackets[0].x, brackets[0].y, 0.f, brackets[1].x, brackets[1].y, 0.f, 0.f, 0.f, 0.f);
     }
     if (sgroup.brackets.size() > 0 && sgroup.brk_style > 0)
     {
