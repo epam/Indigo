@@ -354,40 +354,32 @@ namespace
 
         return result;
     }
-
     class PKACalculator
     {
     public:
         double calculate(Molecule& target) const
         {
             MoleculeSubstructureMatcher matcher(target);
-            return traverse(matcher, 0);
-        }
-
-    private:
-        double traverse(MoleculeSubstructureMatcher& matcher, int idx) const
-        {
-            const Node& node = pkaDecisionTree[idx];
-            if (node.yes < 0)
-                return node.pka;
-            QueryMolecule query;
+            int idx = 0;
+            while (true)
             {
+                const Node& node = pkaDecisionTree[idx];
+                if (node.smarts[0] == '\0')
+                    return node.pka;
+                QueryMolecule query;
                 BufferScanner scanner(node.smarts);
                 SmilesLoader smiles_loader(scanner);
                 smiles_loader.strict_aliphatic = true;
                 smiles_loader.loadSMARTS(query);
-            }
-            matcher.setQuery(query);
-            if (matcher.find())
-            {
-                return traverse(matcher, node.yes);
-            }
-            else
-            {
-                return traverse(matcher, node.no);
+                matcher.setQuery(query);
+                if (matcher.find())
+                    idx = node.yes;
+                else
+                    idx = node.no;
             }
         }
     };
+
     const PKACalculator pkaCalculator;
 }
 
