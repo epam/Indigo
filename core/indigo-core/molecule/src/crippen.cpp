@@ -355,82 +355,39 @@ namespace
         return result;
     }
 
-    struct PKANode
-    {
-        size_t id;
-        bool isLeaf;
-        double pkaValue;
-        shared_ptr<PKANode> yes = nullptr;
-        shared_ptr<PKANode> no = nullptr;
-        QueryMolecule smarts;
-        string smartsString;
-
-        PKANode(const size_t id, const bool isLeaf, const double pkaValue, const string& smartsString)
-            : id(id), isLeaf(isLeaf), pkaValue(pkaValue), smartsString(smartsString)
-        {
-        }
-    };
-
-    struct PKACalculator
+    class PKACalculator
     {
     public:
-        PKACalculator()
-        {
-            unordered_map<size_t, shared_ptr<PKANode>> nodes;
-            for (const auto& rawLine : pkaDecisionTree)
-            {
-                const auto& line = CSVReader::readCSVRow(rawLine);
-                const size_t id = static_cast<size_t>(stoull(line[0]));
-                const size_t parentId = static_cast<size_t>(stoull(line[1]));
-                const bool isLeaf = !static_cast<bool>(stoi(line[2]));
-                const string& smarts = line[4];
-                const bool yes = static_cast<bool>(stoi(line[5]));
-                const double pkaValue = stod(line[6]);
-
-                auto node = make_shared<PKANode>(id, isLeaf, pkaValue, smarts);
-                MoleculeAutoLoader loader(smarts.c_str());
-                loader.loadMolecule(node->smarts);
-
-                nodes[id] = node;
-                if (parentId > 0)
-                {
-                    if (yes)
-                    {
-                        nodes.at(parentId)->yes = node;
-                    }
-                    else
-                    {
-                        nodes.at(parentId)->no = node;
-                    }
-                }
-            }
-            root = nodes.at(1);
-        }
-
         double calculate(Molecule& target) const
         {
             MoleculeSubstructureMatcher matcher(target);
-            return traverse(matcher, root);
+            return traverse(matcher, 0);
         }
 
     private:
-        shared_ptr<PKANode> root = nullptr;
-
-        double traverse(MoleculeSubstructureMatcher& matcher, const shared_ptr<PKANode>& node) const
+        double traverse(MoleculeSubstructureMatcher& matcher, int idx) const
         {
-            if (node->isLeaf)
+            const Node& node = pkaDecisionTree[idx];
+            if (node.yes < 0)
+                return node.pka;
+            QueryMolecule query;
             {
-                return node->pkaValue;
+                BufferScanner scanner(node.smarts);
+                SmilesLoader smiles_loader(scanner);
+                smiles_loader.strict_aliphatic = true;
+                smiles_loader.loadSMARTS(query);
             }
-            matcher.setQuery(node->yes->smarts);
+            matcher.setQuery(query);
             if (matcher.find())
             {
-                return traverse(matcher, node->yes);
+                return traverse(matcher, node.yes);
             }
-            return traverse(matcher, node->no);
+            else
+            {
+                return traverse(matcher, node.no);
+            }
         }
     };
-
     const PKACalculator pkaCalculator;
 }
 

@@ -35,6 +35,7 @@ IMPL_ERROR(SmilesLoader, "SMILES loader");
 
 SmilesLoader::SmilesLoader(Scanner& scanner) : _scanner(scanner)
 {
+    strict_aliphatic = false;
     ignorable_aam = 0;
     inside_rsmiles = false;
     ignore_closing_bond_direction_mismatch = false;
@@ -1754,7 +1755,7 @@ void SmilesLoader::_parseMolecule()
                 atom_str.push(_scanner.readChar());
         }
 
-        _readAtom(atom_str, brackets, atom, qatom, smarts_mode, inside_rsmiles);
+        _readAtom(atom_str, brackets, atom, qatom, smarts_mode, inside_rsmiles, strict_aliphatic);
         atom.brackets = brackets;
 
         if (_qmol != 0)
@@ -2841,7 +2842,7 @@ void SmilesLoader::readSmartsAtomStr(const std::string& atom_str, std::unique_pt
 }
 
 void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom, bool smarts_mode,
-                             bool inside_rsmiles)
+                             bool inside_rsmiles, bool strict_aliphatic)
 {
     if (!_readAtomLogic(atom_str, first_in_brackets, atom, qatom, smarts_mode, inside_rsmiles))
         return;
@@ -2964,6 +2965,12 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
                     throw Error("'A' specifier is allowed only for query molecules");
 
                 subatom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_AROMATICITY, ATOM_ALIPHATIC);
+                if (strict_aliphatic)
+                {
+                    subatom->type = QueryMolecule::OP_AND;
+                    subatom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
+                    subatom->children.add(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_PSEUDO)));
+                }
             }
             else
             {
