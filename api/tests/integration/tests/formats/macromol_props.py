@@ -42,6 +42,14 @@ macro_data = [
     "props_bases_no_sugar",
     "props_double_dna_p",
     "props_double_dna_unsplit",
+    "props_amino_full_mol_selected",
+    "props_amino_mol_selected",
+    "props_amino_one_selected",
+    "props_amino_selected_mol",
+    "props_amino_selected_mol_part",
+    "props_dna_base_selected",
+    "props_dna_nucleotide_selected",
+    "props_dna_phosphate_selected",
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -70,3 +78,25 @@ for filename in sorted(macro_data):
     else:
         print(filename + ".json: FAILED")
         print(diff)
+
+filename = "props_double_dna_gc"
+mol = indigo.loadKetDocumentFromFile(os.path.join(root, filename + ".ket"))
+with open(os.path.join(ref, filename) + "_zero.json", "r") as file:
+    props_ref = file.read()
+    props = mol.macroProperties(upc, nac)
+# test UPC=0
+props = mol.macroProperties(0, nac)
+diff = find_diff(props_ref, props)
+if not diff:
+    print("UPC=0: SUCCEED")
+else:
+    print("UPC=0: FAILED")
+    print(diff)
+# test NAC=0
+props = mol.macroProperties(upc, 0)
+diff = find_diff(props_ref, props)
+if not diff:
+    print("NAC=0: SUCCEED")
+else:
+    print("NAC=0: FAILED")
+    print(diff)

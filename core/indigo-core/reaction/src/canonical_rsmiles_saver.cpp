@@ -36,117 +36,66 @@ CanonicalRSmilesSaver::~CanonicalRSmilesSaver()
 {
 }
 
-void CanonicalRSmilesSaver::saveReaction(Reaction& reaction_)
+SmilesSaver& CanonicalRSmilesSaver::_addMoleculeSaver()
+{
+    auto saver = std::make_unique<CanonicalSmilesSaver>(_output);
+    saver->write_extra_info = false;
+    saver->chemaxon = false;
+    saver->separate_rsites = false;
+    saver->rsite_indices_as_aam = false;
+    saver->smarts_mode = smarts_mode;
+    saver->inside_rsmiles = true;
+    saver->ignore_hydrogens = !_qrxn;
+    if (_smiles_savers.size())
+    {
+        // If there are already some savers, we need to copy aam from the last one.
+        CanonicalSmilesSaver& last_saver = static_cast<CanonicalSmilesSaver&>(*_smiles_savers.back());
+        saver->copyAAM(last_saver);
+    }
+    _smiles_savers.emplace_back(std::move(saver));
+    return *_smiles_savers.back();
+}
+
+void CanonicalRSmilesSaver::saveReaction(Reaction& reaction)
 {
     int j;
 
-    QS_DEF(Reaction, reaction);
-    reaction.clear();
+    _reaction.clear();
 
-    reaction.name.copy(reaction_.name);
+    _reaction.name.copy(reaction.name);
 
-    if (reaction_.reactantsCount())
+    if (reaction.reactantsCount())
     {
-        j = reaction.addReactant();
-        Molecule& mol = reaction.getMolecule(j);
-        for (auto i : reaction_.reactants)
+        j = _reaction.addReactant();
+        Molecule& mol = _reaction.getMolecule(j);
+        for (auto i : reaction.reactants)
         {
-            mol.mergeWithMolecule(reaction_.getMolecule(i), 0);
+            mol.mergeWithMolecule(reaction.getMolecule(i), 0);
         }
     }
 
-    if (reaction_.catalystCount())
+    if (reaction.catalystCount())
     {
-        j = reaction.addCatalyst();
-        Molecule& mol = reaction.getMolecule(j);
-        for (auto i : reaction_.catalysts)
+        j = _reaction.addCatalyst();
+        Molecule& mol = _reaction.getMolecule(j);
+        for (auto i : reaction.catalysts)
         {
-            mol.mergeWithMolecule(reaction_.getMolecule(i), 0);
+            mol.mergeWithMolecule(reaction.getMolecule(i), 0);
         }
     }
 
-    if (reaction_.productsCount())
+    if (reaction.productsCount())
     {
-        j = reaction.addProduct();
-        Molecule& mol = reaction.getMolecule(j);
-        for (auto i : reaction_.products)
+        j = _reaction.addProduct();
+        Molecule& mol = _reaction.getMolecule(j);
+        for (auto i : reaction.products)
         {
-            mol.mergeWithMolecule(reaction_.getMolecule(i), 0);
+            mol.mergeWithMolecule(reaction.getMolecule(i), 0);
         }
     }
 
-    _brxn = &reaction;
+    _brxn = &_reaction;
     _qrxn = 0;
-    _rxn = &reaction;
-    _saveReaction();
-}
-
-void CanonicalRSmilesSaver::_saveReaction()
-{
-    _written_atoms.clear();
-    _written_bonds.clear();
-    _ncomp.clear();
-    _comma = false;
-
-    CanonicalSmilesSaver moleculeSaver(_output);
-
-    // Invariant: there are only one molecule for each part of the reaction. Thus we can use _brxn->xxxBegin instead of the loop.
-    // The only exception is catalyst. There could be zero catalysts.
-    if (_brxn->reactantsCount())
-        _writeMolecule(_brxn->reactantBegin(), moleculeSaver);
-    _output.writeString(">");
-    if (_brxn->catalystCount())
-        _writeMolecule(_brxn->catalystBegin(), moleculeSaver);
-    _output.writeString(">");
-    if (_brxn->productsCount())
-        _writeMolecule(_brxn->productBegin(), moleculeSaver);
-
-    _writeFragmentsInfo();
-    _writeStereogroups();
-    _writeRadicals();
-    _writePseudoAtoms();
-    _writeHighlighting();
-
-    if (_comma)
-        _output.writeChar('|');
-}
-
-void CanonicalRSmilesSaver::_writeMolecule(int i, CanonicalSmilesSaver& saver)
-{
-    int j;
-
-    saver.write_extra_info = false;
-    saver.chemaxon = false;
-    saver.separate_rsites = false;
-    saver.rsite_indices_as_aam = false;
-
-    saver.smarts_mode = smarts_mode;
-    saver.inside_rsmiles = true;
-
-    if (_rxn != 0)
-        saver.saveMolecule(_rxn->getMolecule(i));
-    // else
-    //   saver.saveQueryMolecule(_qrxn->getQueryMolecule(i));
-
-    _ncomp.push(saver.writtenComponents());
-
-    const Array<int>& atoms = saver.writtenAtoms();
-
-    for (j = 0; j < atoms.size(); j++)
-    {
-        _Idx& idx = _written_atoms.push();
-
-        idx.mol = i;
-        idx.idx = atoms[j];
-    }
-
-    const Array<int>& bonds = saver.writtenBonds();
-
-    for (j = 0; j < bonds.size(); j++)
-    {
-        _Idx& idx = _written_bonds.push();
-
-        idx.mol = i;
-        idx.idx = bonds[j];
-    }
+    _rxn = &_reaction;
+    RSmilesSaver::_saveReaction();
 }

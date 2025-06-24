@@ -2394,16 +2394,6 @@ void MoleculeRenderInternal::_drawAtom(const AtomDesc& desc)
         else
             _cw.drawGraphItem(_data.graphitems[i + desc.gibegin]);
     }
-    for (int i = 0; i < desc.cipCount; ++i)
-    {
-        const TextItem& cipItem = _data.cipItems[i + desc.cipBegin];
-        _cw.drawItemBackground(cipItem);
-
-        if (desc.hcolorSet)
-            _cw.drawTextItemText(cipItem, desc.hcolor, _idle);
-        else
-            _cw.drawTextItemText(cipItem, _idle);
-    }
 }
 
 void MoleculeRenderInternal::_writeQueryAtomToString(Output& output, int aid)
@@ -3020,44 +3010,35 @@ void MoleculeRenderInternal::_prepareChargeLabel(int aid, int color, bool highli
     }
 }
 
-void MoleculeRenderInternal::_prepareCIPLabel(int aid, int color, bool highlighted)
+void MoleculeRenderInternal::_prepareCIPLabel(const int aid, int& skip)
 {
     BaseMolecule& bm = *_mol;
-    CIPDesc cip = bm.getAtomCIP(aid);
+    const CIPDesc cip = bm.getAtomCIP(aid);
 
     if (bm.getShowAtomCIP(aid) && cip != CIPDesc::UNKNOWN && cip != CIPDesc::NONE)
     {
         AtomDesc& ad = _ad(aid);
+        int tiCIP = _pushTextItem(ad, RenderItem::RIT_CIP, CWC_BASE, false);
 
-        float yPosition = 0.0f;
-        float height = 0.0f;
-        if (!ad.showLabel)
-        {
-            TextItem dummyLabel;
-            dummyLabel.fontsize = FONT_SIZE_LABEL;
-            ArrayOutput output(dummyLabel.text);
-            output.printf(Element::toString(ad.label));
-            output.writeChar(0);
-            _cw.setTextItemSize(dummyLabel, ad.pos);
-            yPosition = dummyLabel.bbp.y;
-            height = dummyLabel.bbsz.y;
-        }
-        else
-        {
-            yPosition = ad.ypos;
-            height = ad.height;
-        }
-        int tiCIP = _pushCIPItem(ad, color, highlighted);
-
-        TextItem& itemCIP = _data.cipItems[tiCIP];
+        TextItem& itemCIP = _data.textitems[tiCIP];
         itemCIP.fontsize = FONT_SIZE_ATTR;
         bprintf(itemCIP.text, "(%s)", CIPToString(cip).c_str());
         _cw.setTextItemSize(itemCIP);
 
-        ad.rightMargin += _settings.labelInternalOffset;
-        itemCIP.bbp.set(ad.pos.x, yPosition + _settings.upperIndexShift * height);
+        if (ad.showLabel)
+        {
+            ad.leftMargin -= itemCIP.bbsz.x + _settings.labelInternalOffset;
+            itemCIP.bbp.set(ad.leftMargin, ad.ypos + _settings.lowerIndexShift * ad.height);
+        }
+        else
+        {
+            Vec2f p;
+            skip = _findClosestBox(p, aid, itemCIP.bbsz, _settings.unit, skip);
+
+            p.addScaled(itemCIP.bbsz, -0.5);
+            itemCIP.bbp.copy(p);
+        }
         _expandBoundRect(ad, itemCIP);
-        ad.rightMargin += itemCIP.bbsz.x;
     }
 }
 
@@ -3360,12 +3341,6 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         }
     }
 
-    // CIP
-    if (_opt.showCIPLabels)
-    {
-        _prepareCIPLabel(aid, color, highlighted);
-    }
-
     int bondEndRightToStereoGroupLabel = -1;
     // prepare stereogroup labels
     if ((ad.stereoGroupType > 0 && ad.stereoGroupType != MoleculeStereocenters::ATOM_ANY) || ad.inversion == STEREO_INVERTS || ad.inversion == STEREO_RETAINS)
@@ -3421,6 +3396,12 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
             itemStereoGroup.bbp.copy(p);
         }
         _expandBoundRect(ad, itemStereoGroup);
+    }
+
+    // CIP
+    if (_opt.showCIPLabels)
+    {
+        _prepareCIPLabel(aid, bondEndRightToStereoGroupLabel);
     }
 
     // prepare AAM labels
@@ -3669,25 +3650,6 @@ int MoleculeRenderInternal::_pushGraphItem(AtomDesc& ad, RenderItem::TYPE ritype
     if (ad.gibegin < 0)
         ad.gibegin = res;
     ad.gicount++;
-    return res;
-}
-
-int MoleculeRenderInternal::_pushCIPItem(int color, bool highlighted)
-{
-    _data.cipItems.push();
-    _data.cipItems.top().clear();
-    _data.cipItems.top().ritype = RenderItem::TYPE::RIT_CIP;
-    _data.cipItems.top().color = color;
-    _data.cipItems.top().highlighted = highlighted;
-    return _data.cipItems.size() - 1;
-}
-
-int MoleculeRenderInternal::_pushCIPItem(AtomDesc& ad, int color, bool highlighted)
-{
-    int res = _pushCIPItem(color, highlighted);
-    if (ad.cipBegin < 0)
-        ad.cipBegin = res;
-    ++ad.cipCount;
     return res;
 }
 

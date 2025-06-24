@@ -68,10 +68,12 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
                 }
                 else if (node_type.compare("monomer") == 0)
                 {
+                    _monomer_ref_to_id.emplace(node_name, std::atoi(node["id"].GetString()));
                     _monomer_array.PushBack(node, ket.GetAllocator());
                 }
                 else if (node_type.compare("ambiguousMonomer") == 0)
                 {
+                    _monomer_ref_to_id.emplace(node_name, std::atoi(node["id"].GetString()));
                     _monomer_array.PushBack(node, ket.GetAllocator());
                 }
                 else if (node_type == "monomerShape")
@@ -1843,7 +1845,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 
         if (ep1.HasMember("monomerId"))
         {
-            id1 = monomer_id_mapping.at(extract_id(ep1["monomerId"].GetString(), "monomer"));
+            id1 = monomer_id_mapping.at(_monomer_ref_to_id.at(ep1["monomerId"].GetString()));
             if (ep1.HasMember("attachmentPointId"))
                 atp1 = convertAPFromHELM(ep1["attachmentPointId"].GetString());
         }
@@ -1857,7 +1859,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 
         if (ep2.HasMember("monomerId"))
         {
-            id2 = monomer_id_mapping.at(extract_id(ep2["monomerId"].GetString(), "monomer"));
+            id2 = monomer_id_mapping.at(_monomer_ref_to_id.at(ep2["monomerId"].GetString()));
             if (ep2.HasMember("attachmentPointId"))
                 atp2 = convertAPFromHELM(ep2["attachmentPointId"].GetString());
         }

@@ -87,14 +87,14 @@ MoleculeAutoLoader::~MoleculeAutoLoader()
         delete _scanner;
 }
 
-void MoleculeAutoLoader::loadQueryMolecule(QueryMolecule& qmol)
+void MoleculeAutoLoader::loadQueryMolecule(QueryMolecule& qmol, MonomerTemplateLibrary* monomer_lib)
 {
     loadMolecule(qmol);
 }
 
-void MoleculeAutoLoader::loadMolecule(BaseMolecule& bmol)
+void MoleculeAutoLoader::loadMolecule(BaseMolecule& bmol, MonomerTemplateLibrary* monomer_lib)
 {
-    _loadMolecule(bmol);
+    _loadMolecule(bmol, monomer_lib);
 
     if (!bmol.isQueryMolecule())
     {
@@ -197,7 +197,7 @@ void MoleculeAutoLoader::readAllDataToString(Scanner& scanner, Array<char>& data
     dataBuf.push('\0');
 }
 
-void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
+void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary* monomer_lib)
 {
     bool query = mol.isQueryMolecule();
     properties.clear();
@@ -274,7 +274,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
         if (tryMDLCT(*_scanner, buf))
         {
             BufferScanner scanner2(buf);
-            MolfileLoader loader(scanner2);
+            MolfileLoader loader(scanner2, monomer_lib);
             loader.stereochemistry_options = stereochemistry_options;
             loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
             loader.skip_3d_chirality = skip_3d_chirality;
@@ -544,7 +544,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
 
             BufferScanner scanner2(sdf_loader.data);
 
-            MolfileLoader loader(scanner2);
+            MolfileLoader loader(scanner2, monomer_lib);
             loader.stereochemistry_options = stereochemistry_options;
             loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
             loader.skip_3d_chirality = skip_3d_chirality;

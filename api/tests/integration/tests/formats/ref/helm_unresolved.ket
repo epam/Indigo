@@ -133,6 +133,7 @@
         "id": "AminoAcidUnres1",
         "class": "AminoAcid",
         "alias": "Unres1",
+        "aliasHELM": "Unres1",
         "unresolved": true,
         "attachmentPoints": [
             {
@@ -160,6 +161,7 @@
         "id": "AminoAcidUnres2",
         "class": "AminoAcid",
         "alias": "Unres2",
+        "aliasHELM": "Unres2",
         "unresolved": true,
         "attachmentPoints": [
             {
@@ -187,6 +189,7 @@
         "id": "AminoAcidUnres3",
         "class": "AminoAcid",
         "alias": "Unres3",
+        "aliasHELM": "Var0",
         "unresolved": true,
         "attachmentPoints": [
             {
@@ -214,6 +217,7 @@
         "id": "SugarUnres1",
         "class": "Sugar",
         "alias": "Unres1",
+        "aliasHELM": "Unres1",
         "unresolved": true,
         "attachmentPoints": [
             {
@@ -241,6 +245,7 @@
         "id": "BaseUnres2",
         "class": "Base",
         "alias": "Unres2",
+        "aliasHELM": "Unres2",
         "unresolved": true,
         "attachmentPoints": [
             {

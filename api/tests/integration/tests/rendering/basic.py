@@ -207,6 +207,16 @@ mol = indigo.loadMoleculeFromFile(cdxml_fname)
 renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
 print(checkImageSimilarity(png_fname))
 
+print("issue 2970 cip breaks svg")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+fname = "cip_breaks_svg_2970"
+png_fname = fname + ".png"
+cdxml_fname = joinPathPy("molecules/%s.cdxml" % fname, __file__)
+mol = indigo.loadMoleculeFromFile(cdxml_fname)
+renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
+
 print("issue 2900 cip always render")
 indigo.resetOptions()
 indigo.setOption("render-output-format", "png")

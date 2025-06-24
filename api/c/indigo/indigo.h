@@ -180,10 +180,20 @@ CEXPORT int indigoLoadStructureFromString(const char* string, const char* params
 CEXPORT int indigoLoadStructureFromBuffer(const byte* string, int bufferSize, const char* params);
 CEXPORT int indigoLoadStructureFromFile(const char* filename, const char* params);
 
+CEXPORT int indigoLoadMoleculeWithLib(int source, int monomer_library);
+CEXPORT int indigoLoadMoleculeWithLibFromString(const char* string, int monomer_library);
+CEXPORT int indigoLoadMoleculeWithLibFromFile(const char* filename, int monomer_library);
+CEXPORT int indigoLoadMoleculeWithLibFromBuffer(const char* buffer, int size, int monomer_library);
+
 CEXPORT int indigoLoadMolecule(int source);
 CEXPORT int indigoLoadMoleculeFromString(const char* string);
 CEXPORT int indigoLoadMoleculeFromFile(const char* filename);
 CEXPORT int indigoLoadMoleculeFromBuffer(const char* buffer, int size);
+
+CEXPORT int indigoLoadQueryMoleculeWithLib(int source, int monomer_library);
+CEXPORT int indigoLoadQueryMoleculeWithLibFromString(const char* string, int monomer_library);
+CEXPORT int indigoLoadQueryMoleculeWithLibFromFile(const char* filename, int monomer_library);
+CEXPORT int indigoLoadQueryMoleculeWithLibFromBuffer(const char* buffer, int size, int monomer_library);
 
 CEXPORT int indigoLoadQueryMolecule(int source);
 CEXPORT int indigoLoadQueryMoleculeFromString(const char* string);
@@ -298,10 +308,20 @@ CEXPORT int indigoLoadReactionFromString(const char* string);
 CEXPORT int indigoLoadReactionFromFile(const char* filename);
 CEXPORT int indigoLoadReactionFromBuffer(const char* buffer, int size);
 
+CEXPORT int indigoLoadReactionWithLib(int source, int monomer_library);
+CEXPORT int indigoLoadReactionWithLibFromString(const char* string, int monomer_library);
+CEXPORT int indigoLoadReactionWithLibFromFile(const char* filename, int monomer_library);
+CEXPORT int indigoLoadReactionWithLibFromBuffer(const char* buffer, int size, int monomer_library);
+
 CEXPORT int indigoLoadQueryReaction(int source);
 CEXPORT int indigoLoadQueryReactionFromString(const char* string);
 CEXPORT int indigoLoadQueryReactionFromFile(const char* filename);
 CEXPORT int indigoLoadQueryReactionFromBuffer(const char* buffer, int size);
+
+CEXPORT int indigoLoadQueryReactionWithLib(int source, int monomer_library);
+CEXPORT int indigoLoadQueryReactionWithLibFromString(const char* string, int monomer_library);
+CEXPORT int indigoLoadQueryReactionWithLibFromFile(const char* filename, int monomer_library);
+CEXPORT int indigoLoadQueryReactionWithLibFromBuffer(const char* buffer, int size, int monomer_library);
 
 CEXPORT int indigoLoadReactionSmarts(int source);
 CEXPORT int indigoLoadReactionSmartsFromString(const char* string);
