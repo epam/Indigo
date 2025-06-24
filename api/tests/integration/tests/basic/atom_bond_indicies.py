@@ -15,4 +15,11 @@ mol = indigo.loadMolecule("C[C@@H](F)C[C@H](C)Cl")
 for atom in mol.iterateAtoms():
     print("atom index: " + str(atom.atomIndex()))
 for bond in mol.iterateBonds():
-    print("bond index, begining and ending atoms: " + str(bond.bondIndex()) + " " + str(bond.bondBegin()) + " " + str(bond.bondEnd()))
+    print(
+        "bond index, begining and ending atoms: "
+        + str(bond.bondIndex())
+        + " "
+        + str(bond.bondBegin())
+        + " "
+        + str(bond.bondEnd())
+    )
