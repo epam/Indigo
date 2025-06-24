@@ -979,7 +979,9 @@ class IndigoObject:
                 * Z = 7
         """
 
-        return IndigoLib.checkResult(self._lib().indigoStereocenterCIPDescriptor(self.id))
+        return IndigoLib.checkResult(
+            self._lib().indigoStereocenterCIPDescriptor(self.id)
+        )
 
     def addCIPStereoDescriptors(self):
         """Molecule method adds cip descriptors to stereocenters
@@ -988,7 +990,9 @@ class IndigoObject:
             int: 0 if there are no errors
         """
 
-        return IndigoLib.checkResult(self._lib().indigoAddCIPStereoDescriptors(self.id))
+        return IndigoLib.checkResult(
+            self._lib().indigoAddCIPStereoDescriptors(self.id)
+        )
 
     def singleAllowedRGroup(self):
         """Atom method returns single allowed r-group
