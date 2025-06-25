@@ -423,6 +423,7 @@ namespace indigo
                 if (objectId >= 0)
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
             }
+
             if (use_document)
             {
                 print_js("try as document");
@@ -437,7 +438,7 @@ namespace indigo
             {
                 // Let's try a simple molecule
                 print_js("try as molecule");
-                objectId = indigoLoadMoleculeWithLibFromBuffer(data.c_str(), data.size(), library);
+                objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
                 if (objectId >= 0)
                 {
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
@@ -446,7 +447,7 @@ namespace indigo
 
                 // Let's try reaction
                 print_js("try as reaction");
-                objectId = indigoLoadReactionWithLibFromBuffer(data.c_str(), data.size(), library);
+                objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
                 if (objectId >= 0)
                 {
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
@@ -514,9 +515,19 @@ namespace indigo
                 }
             }
             exceptionMessages.emplace_back(indigoGetLastError());
+
+            // Let's try a simple molecule
+            print_js("try as molecule");
+            objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
+            if (objectId >= 0)
+            {
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+            }
+            exceptionMessages.emplace_back(indigoGetLastError());
+
             // Let's try query molecule
             print_js("try as query molecule");
-            objectId = indigoLoadQueryMoleculeWithLibFromBuffer(data.c_str(), data.size(), library);
+            objectId = indigoLoadQueryMoleculeFromBuffer(data.c_str(), data.size());
             if (objectId >= 0)
             {
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
@@ -524,24 +535,15 @@ namespace indigo
             exceptionMessages.emplace_back(indigoGetLastError());
             // Let's try query reaction
             print_js("try as query reaction");
-            objectId = indigoLoadQueryReactionWithLibFromBuffer(data.c_str(), data.size(), library);
+            objectId = indigoLoadQueryReactionFromBuffer(data.c_str(), data.size());
             if (objectId >= 0)
             {
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReactionQuery);
             }
 
-            // Let's try a simple molecule
-            print_js("try as molecule");
-            objectId = indigoLoadMoleculeWithLibFromBuffer(data.c_str(), data.size(), library);
-            if (objectId >= 0)
-            {
-                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
-            }
-            exceptionMessages.emplace_back(indigoGetLastError());
-
             // Let's try reaction
             print_js("try as reaction");
-            objectId = indigoLoadReactionWithLibFromBuffer(data.c_str(), data.size(), library);
+            objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
             if (objectId >= 0)
             {
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
@@ -705,6 +707,27 @@ namespace indigo
         indigoSetOptions(options);
         const auto iko = loadMoleculeOrReaction(data.c_str(), options);
         return _checkResultString(indigoCheckObj(iko.id(), properties.c_str()));
+    }
+
+    std::string pka(const std::string& data, const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        return std::to_string(indigoPka(iko.id()));
+    }
+
+    std::string logp(const std::string& data, const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        return std::to_string(indigoLogP(iko.id()));
+    }
+
+    std::string molarRefractivity(const std::string& data, const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        return std::to_string(indigoMolarRefractivity(iko.id()));
     }
 
     std::string calculateCip(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
@@ -1149,7 +1172,9 @@ namespace indigo
         emscripten::function("calculateMacroProperties", &calculateMacroProperties);
         emscripten::function("render", &render);
         emscripten::function("reactionComponents", &reactionComponents);
-
+        emscripten::function("pka", &pka);
+        emscripten::function("logp", &logp);
+        emscripten::function("molarRefractivity", &molarRefractivity);
         emscripten::register_vector<int>("VectorInt");
         emscripten::register_map<std::string, std::string>("MapStringString");
     };
