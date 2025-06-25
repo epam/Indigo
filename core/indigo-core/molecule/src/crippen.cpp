@@ -366,10 +366,11 @@ namespace
         std::vector<double> calculatePKAs(Molecule& target) const
         {
             MoleculeSubstructureMatcher matcher(target);
-            std::vector<int> tree_indexes = {{0}};
+            std::vector<int> tree_indexes;
             const int amino_index = 1427; // Index of the amino group decision tree
             const int thiol_index = 675;  // Index of the thiol group decision tree
-            std::vector<std::pair<std::string, int>> ionizing_groups = {{"[S;v2;H1]", thiol_index}, {"[N;H2;X3]", amino_index}};
+            const int carboxyl_index = 0; // Index of the carboxyl group decision tree
+            std::vector<std::pair<std::string, int>> ionizing_groups = {{"[C;X3](=O)[O;H1]", carboxyl_index},{"[S;v2;H1]", thiol_index}, {"[N;H2;X3]", amino_index}};
 
             for (const auto& group : ionizing_groups)
             {
@@ -381,6 +382,11 @@ namespace
                 if (matcher.find())
                     tree_indexes.push_back(group.second);
             }
+
+            if (tree_indexes.size() == 1)
+                tree_indexes.clear();
+            if (tree_indexes.empty())
+                tree_indexes.push_back(0);
 
             std::vector<double> result;
             for (int idx : tree_indexes)

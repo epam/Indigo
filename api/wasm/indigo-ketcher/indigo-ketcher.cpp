@@ -32,13 +32,13 @@ namespace indigo
     EM_JS(void, jsThrow, (cstring str), { throw UTF8ToString(str); });
 
     EM_JS(void, print_jsn, (cstring str, int n), { console.log(UTF8ToString(str) + n); });
-//#ifdef _DEBUG
+#ifdef _DEBUG
     EM_JS(void, print_js, (cstring str), { console.log(UTF8ToString(str)); });
-//#else
-//    void print_js(const cstring)
-//    {
-//    }
-//#endif
+#else
+    void print_js(const cstring)
+    {
+    }
+#endif
 
     int _checkResult(int result)
     {
@@ -423,7 +423,6 @@ namespace indigo
                 if (objectId >= 0)
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
             }
-
             if (use_document)
             {
                 print_js("try as document");
@@ -437,17 +436,18 @@ namespace indigo
             if (i == options.end() || i->second == "false")
             {
                 // Let's try a simple molecule
-                print_js("try as molecule");
-                objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
+                print_js("try as molecule:1");
+                objectId = indigoLoadMoleculeWithLibFromBuffer(data.c_str(), data.size(), library);
                 if (objectId >= 0)
                 {
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
                 }
                 exceptionMessages.emplace_back(indigoGetLastError());
+                print_js(indigoGetLastError());
 
                 // Let's try reaction
                 print_js("try as reaction");
-                objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
+                objectId = indigoLoadReactionWithLibFromBuffer(data.c_str(), data.size(), library);
                 if (objectId >= 0)
                 {
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
@@ -515,35 +515,35 @@ namespace indigo
                 }
             }
             exceptionMessages.emplace_back(indigoGetLastError());
+            // Let's try query molecule
+            print_js("try as query molecule:2");
+            objectId = indigoLoadQueryMoleculeWithLibFromBuffer(data.c_str(), data.size(), library);
+            if (objectId >= 0)
+            {
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
+            }
+            print_js(indigoGetLastError());
+            exceptionMessages.emplace_back(indigoGetLastError());
+            // Let's try query reaction
+            print_js("try as query reaction");
+            objectId = indigoLoadQueryReactionWithLibFromBuffer(data.c_str(), data.size(), library);
+            if (objectId >= 0)
+            {
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReactionQuery);
+            }
 
             // Let's try a simple molecule
             print_js("try as molecule");
-            objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
+            objectId = indigoLoadMoleculeWithLibFromBuffer(data.c_str(), data.size(), library);
             if (objectId >= 0)
             {
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
             }
             exceptionMessages.emplace_back(indigoGetLastError());
 
-            // Let's try query molecule
-            print_js("try as query molecule");
-            objectId = indigoLoadQueryMoleculeFromBuffer(data.c_str(), data.size());
-            if (objectId >= 0)
-            {
-                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
-            }
-            exceptionMessages.emplace_back(indigoGetLastError());
-            // Let's try query reaction
-            print_js("try as query reaction");
-            objectId = indigoLoadQueryReactionFromBuffer(data.c_str(), data.size());
-            if (objectId >= 0)
-            {
-                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReactionQuery);
-            }
-
             // Let's try reaction
             print_js("try as reaction");
-            objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
+            objectId = indigoLoadReactionWithLibFromBuffer(data.c_str(), data.size(), library);
             if (objectId >= 0)
             {
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
@@ -707,34 +707,6 @@ namespace indigo
         indigoSetOptions(options);
         const auto iko = loadMoleculeOrReaction(data.c_str(), options);
         return _checkResultString(indigoCheckObj(iko.id(), properties.c_str()));
-    }
-
-    std::string pka(const std::string& data, const std::map<std::string, std::string>& options)
-    {
-        const IndigoSession session;
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
-        return std::to_string(indigoPka(iko.id()));
-    }
-
-    std::string pkaValues(const std::string& data, const std::map<std::string, std::string>& options)
-    {
-        const IndigoSession session;
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
-        return indigoPkaValues(iko.id());
-    }
-
-    std::string logp(const std::string& data, const std::map<std::string, std::string>& options)
-    {
-        const IndigoSession session;
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
-        return std::to_string(indigoLogP(iko.id()));
-    }
-
-    std::string molarRefractivity(const std::string& data, const std::map<std::string, std::string>& options)
-    {
-        const IndigoSession session;
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
-        return std::to_string(indigoMolarRefractivity(iko.id()));
     }
 
     std::string calculateCip(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
@@ -1002,6 +974,38 @@ namespace indigo
         }
     }
 
+    std::string pka(const std::string& data, const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        indigoSetOptions(options);
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        return std::to_string(indigoPka(iko.id()));
+    }
+
+    std::string pkaValues(const std::string& data, const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        indigoSetOptions(options);
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        return indigoPkaValues(iko.id());
+    }
+
+    std::string logp(const std::string& data, const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        indigoSetOptions(options);
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        return std::to_string(indigoLogP(iko.id()));
+    }
+
+    std::string molarRefractivity(const std::string& data, const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        indigoSetOptions(options);
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        return std::to_string(indigoMolarRefractivity(iko.id()));
+    }
+
     std::string calculate(const std::string& data, const std::map<std::string, std::string>& options, const std::vector<int>& selected_atoms)
     {
         const IndigoSession session;
@@ -1176,13 +1180,14 @@ namespace indigo
         emscripten::function("check", &check);
         emscripten::function("calculateCip", &calculateCip);
         emscripten::function("calculate", &calculate);
+        emscripten::function("pka", &pka);
+        emscripten::function("pkaValues", &pkaValues);
+		emscripten::function("logp", &logp);
+        emscripten::function("molarRefractivity", &molarRefractivity);
         emscripten::function("calculateMacroProperties", &calculateMacroProperties);
         emscripten::function("render", &render);
         emscripten::function("reactionComponents", &reactionComponents);
-        emscripten::function("pka", &pka);
-        emscripten::function("pkaValues", &pka);
-        emscripten::function("logp", &logp);
-        emscripten::function("molarRefractivity", &molarRefractivity);
+
         emscripten::register_vector<int>("VectorInt");
         emscripten::register_map<std::string, std::string>("MapStringString");
     };
