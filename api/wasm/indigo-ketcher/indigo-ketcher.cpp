@@ -1182,7 +1182,7 @@ namespace indigo
         emscripten::function("calculate", &calculate);
         emscripten::function("pka", &pka);
         emscripten::function("pkaValues", &pkaValues);
-		emscripten::function("logp", &logp);
+        emscripten::function("logp", &logp);
         emscripten::function("molarRefractivity", &molarRefractivity);
         emscripten::function("calculateMacroProperties", &calculateMacroProperties);
         emscripten::function("render", &render);
