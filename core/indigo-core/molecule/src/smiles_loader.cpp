@@ -814,13 +814,11 @@ void SmilesLoader::_readOtherStuff()
             while (isdigit(_scanner.lookNext()))
             {
                 int idx = _scanner.readUnsigned();
-
                 if (a)
                 {
                     _bmol->highlightAtom(idx);
                     Array<char> symb;
                     _bmol->getAtomSymbol(idx, symb);
-                    std::cout << "highlighted:" << symb.ptr() << std::endl;
                     if (_qmol)
                         _qmol->resetAtom(idx, QueryMolecule::Atom::und(_qmol->releaseAtom(idx), new QueryMolecule::Atom(QueryMolecule::HIGHLIGHTING, true)));
                 }
