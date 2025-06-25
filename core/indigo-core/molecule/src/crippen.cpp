@@ -360,7 +360,9 @@ namespace
         double calculate(Molecule& target) const
         {
             MoleculeSubstructureMatcher matcher(target);
-            int idx = 0;
+            //int idx = 0;
+            // int idx = 1427;
+            int idx = 675;
             while (true)
             {
                 const Node& node = pkaDecisionTree[idx];
@@ -372,10 +374,18 @@ namespace
                 smiles_loader.strict_aliphatic = true;
                 smiles_loader.loadSMARTS(query);
                 matcher.setQuery(query);
+                std::cout << "Matching: " << node.smarts << " ";
                 if (matcher.find())
+                {
+                    std::cout << " " << node.yes
+                              << " yes" << std::endl;
                     idx = node.yes;
+                }
                 else
+                {
+                    std::cout << " " << node.no <<  " no" << std::endl;
                     idx = node.no;
+                }
             }
         }
     };

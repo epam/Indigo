@@ -816,9 +816,20 @@ void SmilesLoader::_readOtherStuff()
                 int idx = _scanner.readUnsigned();
 
                 if (a)
+                {
                     _bmol->highlightAtom(idx);
+                    Array<char> symb;
+                    _bmol->getAtomSymbol(idx, symb);
+                    std::cout << "highlighted:" << symb.ptr() << std::endl;
+                    if (_qmol)
+                        _qmol->resetAtom(idx, QueryMolecule::Atom::und(_qmol->releaseAtom(idx), new QueryMolecule::Atom(QueryMolecule::HIGHLIGHTING, true)));
+                }
                 else
+                {
                     _bmol->highlightBond(idx);
+                    if (_qmol)
+                        _qmol->resetBond(idx, QueryMolecule::Bond::und(_qmol->releaseBond(idx), new QueryMolecule::Bond(QueryMolecule::HIGHLIGHTING, true)));
+                }
 
                 if (_scanner.lookNext() == ',')
                     _scanner.skip(1);
