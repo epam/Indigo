@@ -223,6 +223,32 @@ CEXPORT double indigoMolarRefractivity(const int molecule)
     INDIGO_END(-1);
 }
 
+CEXPORT const char* indigoPkaValues(const int molecule)
+{
+    INDIGO_BEGIN
+    {
+        auto& obj = self.getObject(molecule);
+        if (IndigoMolecule::is(obj))
+        {
+            auto& mol = obj.getMolecule();
+            Array<double> pka_values;
+            Crippen::GetPKaValues(mol, pka_values);
+            auto& tmp = self.getThreadTmpData();
+            tmp.clear();
+            for (auto& pka_val : pka_values)
+            {
+                if (tmp.string.size())
+                    tmp.string.appendString(",", true);
+                tmp.string.appendString(std::to_string(pka_val).c_str(), true);
+            }
+            return tmp.string.ptr();
+        }
+        else
+            throw IndigoError("incorrect object type for pKa calculation: %s, should be molecule", obj.debugInfo());
+    }
+    INDIGO_END(0);
+}
+
 CEXPORT double indigoPka(const int molecule)
 {
     INDIGO_BEGIN
@@ -233,7 +259,7 @@ CEXPORT double indigoPka(const int molecule)
             auto& mol = obj.getMolecule();
             return Crippen::pKa(mol);
         }
-        throw IndigoError("incorrect object type for logP calculation: %s, should be molecule", obj.debugInfo());
+        throw IndigoError("incorrect object type for pKa calculation: %s, should be molecule", obj.debugInfo());
     }
     INDIGO_END(-1);
 }

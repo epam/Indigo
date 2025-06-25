@@ -32,13 +32,13 @@ namespace indigo
     EM_JS(void, jsThrow, (cstring str), { throw UTF8ToString(str); });
 
     EM_JS(void, print_jsn, (cstring str, int n), { console.log(UTF8ToString(str) + n); });
-#ifdef _DEBUG
+//#ifdef _DEBUG
     EM_JS(void, print_js, (cstring str), { console.log(UTF8ToString(str)); });
-#else
-    void print_js(const cstring)
-    {
-    }
-#endif
+//#else
+//    void print_js(const cstring)
+//    {
+//    }
+//#endif
 
     int _checkResult(int result)
     {
@@ -716,6 +716,13 @@ namespace indigo
         return std::to_string(indigoPka(iko.id()));
     }
 
+    std::string pkaValues(const std::string& data, const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        return indigoPkaValues(iko.id());
+    }
+
     std::string logp(const std::string& data, const std::map<std::string, std::string>& options)
     {
         const IndigoSession session;
@@ -1173,6 +1180,7 @@ namespace indigo
         emscripten::function("render", &render);
         emscripten::function("reactionComponents", &reactionComponents);
         emscripten::function("pka", &pka);
+        emscripten::function("pkaValues", &pka);
         emscripten::function("logp", &logp);
         emscripten::function("molarRefractivity", &molarRefractivity);
         emscripten::register_vector<int>("VectorInt");

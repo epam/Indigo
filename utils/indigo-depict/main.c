@@ -955,9 +955,6 @@ int main(int argc, char* argv[])
             obj = indigoLoadMolecule(reader);
 
         printf("pka: %f\n", indigoPka(obj));
-        //auto matcher_id = indigoSubstructureMatcher(obj, NULL);
-        //auto query_id = indigoLoadQueryMoleculeFromString("[O][i]~[i]~[i]~[i]~[i]~[i]~[i]~[A]");
-        //printf("match %d\n",indigoMatch(matcher_id, query_id));
 
         if (p.action == ACTION_LAYOUT)
         {

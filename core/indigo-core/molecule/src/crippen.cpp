@@ -359,34 +359,50 @@ namespace
     public:
         double calculate(Molecule& target) const
         {
+            auto pkaValues = calculatePKAs(target);
+            return pkaValues.empty() ? 0.0 : pkaValues[0];
+        }
+
+        std::vector<double> calculatePKAs(Molecule& target) const
+        {
             MoleculeSubstructureMatcher matcher(target);
-            //int idx = 0;
-            // int idx = 1427;
-            int idx = 675;
-            while (true)
+            std::vector<int> tree_indexes = {{0}};
+            const int amino_index = 1427; // Index of the amino group decision tree
+            const int thiol_index = 675;  // Index of the thiol group decision tree
+            std::vector<std::pair<std::string, int>> ionizing_groups = {{"[S;v2;H1]", thiol_index}, {"[N;H2;X3]", amino_index}};
+
+            for (const auto& group : ionizing_groups)
             {
-                const Node& node = pkaDecisionTree[idx];
-                if (node.smarts[0] == '\0')
-                    return node.pka;
-                QueryMolecule query;
-                BufferScanner scanner(node.smarts);
+                QueryMolecule ionizing_query;
+                BufferScanner scanner(group.first.c_str());
                 SmilesLoader smiles_loader(scanner);
-                smiles_loader.strict_aliphatic = true;
-                smiles_loader.loadSMARTS(query);
-                matcher.setQuery(query);
-                std::cout << "Matching: " << node.smarts << " ";
+                smiles_loader.loadSMARTS(ionizing_query);
+                matcher.setQuery(ionizing_query);
                 if (matcher.find())
+                    tree_indexes.push_back(group.second);
+            }
+
+            std::vector<double> result;
+            for (int idx : tree_indexes)
+            {
+                while (true)
                 {
-                    std::cout << " " << node.yes
-                              << " yes" << std::endl;
-                    idx = node.yes;
-                }
-                else
-                {
-                    std::cout << " " << node.no <<  " no" << std::endl;
-                    idx = node.no;
+                    const Node& node = pkaDecisionTree[idx];
+                    if (node.smarts[0] == '\0')
+                    {
+                        result.push_back(node.pka);
+                        break;
+                    }
+                    QueryMolecule query;
+                    BufferScanner scanner(node.smarts);
+                    SmilesLoader smiles_loader(scanner);
+                    smiles_loader.strict_aliphatic = true;
+                    smiles_loader.loadSMARTS(query);
+                    matcher.setQuery(query);
+                    idx = matcher.find() ? node.yes : node.no;
                 }
             }
+            return result;
         }
     };
 
@@ -428,5 +444,15 @@ namespace indigo
         copy.clone(molecule);
         copy.aromatize(AromaticityOptions());
         return pkaCalculator.calculate(molecule);
+    }
+
+    void Crippen::GetPKaValues(Molecule& molecule, Array<double>& values)
+    {
+        Molecule copy;
+        copy.clone(molecule);
+        copy.aromatize(AromaticityOptions());
+        auto vals = pkaCalculator.calculatePKAs(molecule);
+        for (const auto& val : vals)
+            values.push(val);
     }
 }

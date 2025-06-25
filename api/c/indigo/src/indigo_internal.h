@@ -293,7 +293,6 @@ public:
     {
         Array<char> string;
         float xyz[3];
-
         void clear();
     };
 
