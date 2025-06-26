@@ -365,13 +365,20 @@ namespace
 
         std::vector<double> calculatePKAs(Molecule& target) const
         {
-            MoleculeSubstructureMatcher matcher(target);
+            target.transformSCSRtoFullCTAB();
+            Molecule mol_copy;
+            mol_copy.clone(target);
+            if (mol_copy.tgroups.getTGroupCount())
+            {
+                mol_copy.transformSCSRtoFullCTAB();
+            }
+            MoleculeSubstructureMatcher matcher(mol_copy);
             std::vector<int> tree_indexes;
-            const int amino_index = 1427; // Index of the amino group decision tree
+            const int amino_index = 551; //1427; Index of the amino group decision tree
             const int thiol_index = 675;  // Index of the thiol group decision tree
             const int carboxyl_index = 0; // Index of the carboxyl group decision tree
             std::vector<std::pair<std::string, int>> ionizing_groups = {
-                {"[C;X3](=O)[O;H1]", carboxyl_index}, {"[S;v2;H1]", thiol_index}, {"[N;H2;X3]", amino_index}};
+                {"[C;X3](=O)[O;H1]", carboxyl_index}, {"[S;v2;H1]", thiol_index}, {"[N;X3;H1,H2]", amino_index}};
 
             for (const auto& group : ionizing_groups)
             {
@@ -380,6 +387,7 @@ namespace
                 SmilesLoader smiles_loader(scanner);
                 smiles_loader.loadSMARTS(ionizing_query);
                 matcher.setQuery(ionizing_query);
+                // TODO: protonize the amino group or tune the decision tree!!!
                 if (matcher.find())
                     tree_indexes.push_back(group.second);
             }
@@ -453,7 +461,7 @@ namespace indigo
         return pkaCalculator.calculate(molecule);
     }
 
-    void Crippen::GetPKaValues(Molecule& molecule, Array<double>& values)
+    void Crippen::getPKaValues(Molecule& molecule, Array<double>& values)
     {
         Molecule copy;
         copy.clone(molecule);

@@ -232,7 +232,7 @@ CEXPORT const char* indigoPkaValues(const int molecule)
         {
             auto& mol = obj.getMolecule();
             Array<double> pka_values;
-            Crippen::GetPKaValues(mol, pka_values);
+            Crippen::getPKaValues(mol, pka_values);
             auto& tmp = self.getThreadTmpData();
             tmp.clear();
             for (auto& pka_val : pka_values)

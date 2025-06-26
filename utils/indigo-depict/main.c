@@ -953,7 +953,7 @@ int main(int argc, char* argv[])
         }
         else
             obj = indigoLoadMolecule(reader);
-
+        printf("pka values %s\n", indigoPkaValues(obj));
         if (p.action == ACTION_LAYOUT)
         {
             indigoLayout(obj);

@@ -1,5 +1,6 @@
 import os
 import sys
+from collections.abc import Iterable
 
 sys.path.append(
     os.path.normpath(
@@ -10,11 +11,29 @@ from env_indigo import *  # noqa
 
 
 def check_float(method, smiles, expected, delta=1e-2):
-    global indigo
     m = indigo.loadMolecule(smiles)
     actual = getattr(m, method)()
-    if abs(actual - expected) > delta:
-        print(m, method, actual, "!=", expected)
+
+    def _c(a, e, p=""):
+        if (
+            isinstance(a, Iterable)
+            and isinstance(e, Iterable)
+            and not isinstance(a, (str, bytes))
+        ):
+            if len(a) != len(e):
+                print(
+                    f"{m} {method}{p}: len(actual)={len(a)} != len(expected)={len(e)}"
+                )
+            for i, (ai, ei) in enumerate(zip(a, e)):
+                _c(ai, ei, f"{p}[{i}]")
+        else:
+            try:
+                if abs(a - e) > delta:
+                    print(f"{m} {method}{p}: {a} != {e}")
+            except:
+                print(f"{m} {method}{p}: cannot compare {a} and {e}")
+
+    _c(actual, expected)
 
 
 def test_logp():
@@ -42,7 +61,30 @@ def test_pka():
     check_float("pKa", "O=C(NBr)C(Cl)Cl", 4.1549997)
 
 
+def test_multi_pka():
+    check_float("pKaValues", "PEPTIDE:A", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:R", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:N", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:D", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:C", [2.39, 8.493334, 9.530001])
+    check_float("pKaValues", "PEPTIDE:Q", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:E", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:G", [2.9135, 9.605])
+    check_float("pKaValues", "PEPTIDE:H", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:I", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:L", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:K", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:M", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:F", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:P", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:S", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:T", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:W", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:Y", [2.39, 9.530001])
+    check_float("pKaValues", "PEPTIDE:V", [2.39, 9.530001])
+
 if __name__ == "__main__":
     indigo = Indigo()
     test_logp()
     test_mr()
+    test_multi_pka()

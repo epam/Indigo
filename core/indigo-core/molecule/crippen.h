@@ -30,6 +30,6 @@ namespace indigo
         static double logP(Molecule& molecule);
         static double molarRefractivity(Molecule& molecule);
         static double pKa(Molecule& molecule);
-        static void GetPKaValues(Molecule& molecule, Array<double>& values);
+        static void getPKaValues(Molecule& molecule, Array<double>& values);
     };
 }
