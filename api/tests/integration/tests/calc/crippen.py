@@ -34,17 +34,18 @@ def check_float(method, smiles, expected, delta=1e-2):
             if len(a) != len(e):
                 print(
                     "%s %s%s: len(actual)=%d != len(expected)=%d"
-                    % (m, method, p, len(a), len(e))
+                    % (smiles, method, p, len(a), len(e))
                 )
             for i, (ai, ei) in enumerate(zip(a, e)):
                 _c(ai, ei, "%s[%d]" % (p, i))
         else:
             try:
                 if abs(a - e) > delta:
-                    print("%s %s%s: %r != %r" % (m, method, p, a, e))
-            except Exception:
+                    print("%s %s%s: %r != %r" % (smiles, method, p, a, e))
+            except Exception as ex:
                 print(
-                    "%s %s%s: cannot compare %r and %r" % (m, method, p, a, e)
+                    "%s %s%s: cannot compare %r and %r - %s"
+                    % (smiles, method, p, a, e, ex)
                 )
 
     _c(actual, expected)
