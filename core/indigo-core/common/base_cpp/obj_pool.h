@@ -19,18 +19,22 @@
 #ifndef __obj_pool_h__
 #define __obj_pool_h__
 
+#include "base_cpp/non_copyable.h"
 #include "base_cpp/pool.h"
 
 namespace indigo
 {
 
     template <typename T>
-    class ObjPool
+    class ObjPool : public NonCopyable
     {
     public:
         ObjPool()
         {
         }
+
+        ObjPool(ObjPool&&) = delete; // explicitly disable move operations
+        ObjPool& operator=(ObjPool&&) = delete;
 
         ~ObjPool()
         {
@@ -134,9 +138,6 @@ namespace indigo
 
     protected:
         Pool<T> _pool;
-
-    private:
-        ObjPool(const ObjPool<T>&); // no implicit copy
     };
 
 } // namespace indigo
