@@ -83,6 +83,7 @@ def test_multi_pka():
     check_float("pKaValues", "PEPTIDE:Y", [2.39, 9.530001])
     check_float("pKaValues", "PEPTIDE:V", [2.39, 9.530001])
 
+
 if __name__ == "__main__":
     indigo = Indigo()
     test_logp()
