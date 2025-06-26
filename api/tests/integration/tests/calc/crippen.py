@@ -21,13 +21,24 @@ def _is_iterable(x):
         iter(x)
     except TypeError:
         return False
-    else:
-        return True
+    return True
+
+
+def _normalize(x):
+    if isinstance(x, basestring) and "," in x:
+        parts = x.split(",")
+        try:
+            return [float(p) for p in parts if p]
+        except ValueError:
+            return x
+    return x
 
 
 def check_float(method, smiles, expected, delta=1e-2):
     m = indigo.loadMolecule(smiles)
     actual = getattr(m, method)()
+    actual = _normalize(actual)
+    expected = _normalize(expected)
 
     def _c(a, e, p=""):
         if _is_iterable(a) and _is_iterable(e):
