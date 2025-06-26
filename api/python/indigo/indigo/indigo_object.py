@@ -2530,8 +2530,10 @@ class IndigoObject:
         Returns:
             array of floats: calculated pKa values of the molecule
         """
-        pka_string = IndigoLib.checkResultString(self._lib().indigoPkaValues(self.id))
-        items = [item.strip() for item in pka_string.split(',')]
+        pka_string = IndigoLib.checkResultString(
+            self._lib().indigoPkaValues(self.id)
+        )
+        items = [item.strip() for item in pka_string.split(",")]
         return [float(item) for item in items if item]
 
     def bondOrder(self):
