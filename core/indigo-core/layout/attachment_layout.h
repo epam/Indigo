@@ -19,8 +19,10 @@
 #ifndef __attachment_layout_h__
 #define __attachment_layout_h__
 
+
 #include "graph/biconnected_decomposer.h"
 #include "layout/molecule_layout_graph.h"
+#include "base_cpp/exception.h"
 
 namespace indigo
 {
@@ -80,6 +82,9 @@ namespace indigo
         {
             _perform(_layout._attached_bc.size() - 1);
         }
+
+        CancellationHandler* cancellation;
+        DECL_ERROR;
 
     private:
         void _perform(int level);
