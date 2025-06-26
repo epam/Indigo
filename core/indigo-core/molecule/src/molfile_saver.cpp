@@ -1773,6 +1773,26 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             output.writeCR();
         }
 
+        int cop_count = mol.sgroups.getSGroupCount(SGroup::SG_TYPE_COP);
+        for (j = 0; j < cop_count; j += 8)
+        {
+            output.printf("M  SCN%3d", std::min(cop_count, j + 8) - j);
+            for (i = j; i < std::min(cop_count, j + 8); i++)
+            {
+                RepeatingUnit* ru = (RepeatingUnit*)&mol.sgroups.getSGroup(i, SGroup::SG_TYPE_COP);
+
+                output.printf(" %3d ", ru->original_group);
+
+                if (ru->connectivity == SGroup::HEAD_TO_HEAD)
+                    output.printf("HH ");
+                else if (ru->connectivity == SGroup::HEAD_TO_TAIL)
+                    output.printf("HT ");
+                else
+                    output.printf("EU ");
+            }
+            output.writeCR();
+        }
+
         for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
         {
             SGroup& sgroup = mol.sgroups.getSGroup(i);
