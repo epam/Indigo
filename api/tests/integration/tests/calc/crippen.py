@@ -1,6 +1,5 @@
 import os
 import sys
-from collections.abc import Iterable
 
 sys.path.append(
     os.path.normpath(
@@ -8,6 +7,16 @@ sys.path.append(
     )
 )
 from env_indigo import *  # noqa
+
+try:
+    from collections.abc import Iterable
+except ImportError:
+    from collections import Iterable
+
+try:
+    basestring
+except NameError:
+    basestring = str
 
 
 def check_float(method, smiles, expected, delta=1e-2):
@@ -18,20 +27,23 @@ def check_float(method, smiles, expected, delta=1e-2):
         if (
             isinstance(a, Iterable)
             and isinstance(e, Iterable)
-            and not isinstance(a, (str, bytes))
+            and not isinstance(a, basestring)
         ):
             if len(a) != len(e):
                 print(
-                    f"{m} {method}{p}: len(actual)={len(a)} != len(expected)={len(e)}"
+                    "%s %s%s: len(actual)=%d != len(expected)=%d"
+                    % (m, method, p, len(a), len(e))
                 )
             for i, (ai, ei) in enumerate(zip(a, e)):
-                _c(ai, ei, f"{p}[{i}]")
+                _c(ai, ei, "%s[%d]" % (p, i))
         else:
             try:
                 if abs(a - e) > delta:
-                    print(f"{m} {method}{p}: {a} != {e}")
+                    print("%s %s%s: %r != %r" % (m, method, p, a, e))
             except:
-                print(f"{m} {method}{p}: cannot compare {a} and {e}")
+                print(
+                    "%s %s%s: cannot compare %r and %r" % (m, method, p, a, e)
+                )
 
     _c(actual, expected)
 
