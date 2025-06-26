@@ -9,14 +9,20 @@ sys.path.append(
 from env_indigo import *  # noqa
 
 try:
-    from collections.abc import Iterable
-except ImportError:
-    from collections import Iterable
-
-try:
     basestring
 except NameError:
     basestring = str
+
+
+def _is_iterable(x):
+    if isinstance(x, basestring):
+        return False
+    try:
+        iter(x)
+    except TypeError:
+        return False
+    else:
+        return True
 
 
 def check_float(method, smiles, expected, delta=1e-2):
@@ -24,11 +30,7 @@ def check_float(method, smiles, expected, delta=1e-2):
     actual = getattr(m, method)()
 
     def _c(a, e, p=""):
-        if (
-            isinstance(a, Iterable)
-            and isinstance(e, Iterable)
-            and not isinstance(a, basestring)
-        ):
+        if _is_iterable(a) and _is_iterable(e):
             if len(a) != len(e):
                 print(
                     "%s %s%s: len(actual)=%d != len(expected)=%d"
@@ -40,7 +42,7 @@ def check_float(method, smiles, expected, delta=1e-2):
             try:
                 if abs(a - e) > delta:
                     print("%s %s%s: %r != %r" % (m, method, p, a, e))
-            except:
+            except Exception:
                 print(
                     "%s %s%s: cannot compare %r and %r" % (m, method, p, a, e)
                 )
