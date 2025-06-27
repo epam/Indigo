@@ -4919,3 +4919,43 @@ CEXPORT int indigoCheckRGroups(int item)
     }
     INDIGO_END(-1);
 }
+
+CEXPORT int indigoAtomIndex(int atom)
+{
+    INDIGO_BEGIN
+    {
+        IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom));
+        return ia.idx;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoBondIndex(int bond)
+{
+    INDIGO_BEGIN
+    {
+        IndigoBond& ib = IndigoBond::cast(self.getObject(bond));
+        return ib.idx;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoBondBegin(int bond)
+{
+    INDIGO_BEGIN
+    {
+        IndigoBond& ib = IndigoBond::cast(self.getObject(bond));
+        return ib.mol.getEdge(ib.idx).beg;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoBondEnd(int bond)
+{
+    INDIGO_BEGIN
+    {
+        IndigoBond& ib = IndigoBond::cast(self.getObject(bond));
+        return ib.mol.getEdge(ib.idx).end;
+    }
+    INDIGO_END(-1);
+}

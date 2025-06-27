@@ -504,6 +504,15 @@ CEXPORT int indigoCheckQuery(int item);
 // Returns one if structure contains RGroup features (RSites, RGroups or attachment points
 CEXPORT int indigoCheckRGroups(int item);
 
+// Return atom index
+CEXPORT int indigoAtomIndex(int atom);
+// Return bond index
+CEXPORT int indigoBondIndex(int bond);
+// Return atom index begining a bond
+CEXPORT int indigoBondBegin(int bond);
+// Return atom index ending a bond
+CEXPORT int indigoBondEnd(int bond);
+
 // Returns check result for Indigo object as text file for requested properties as JSON
 CEXPORT const char* indigoCheck(const char* item, const char* check_flags, const char* load_params);
 
@@ -677,6 +686,11 @@ CEXPORT int indigoMarkEitherCisTrans(int handle);
 CEXPORT int indigoMarkStereobonds(int handle);
 
 CEXPORT int indigoValidateChirality(int handle);
+
+// Return CIP descriptor of an atom
+CEXPORT int indigoStereocenterCIPDescriptor(int atom);
+// Adds CIP descriptors to a molecule
+CEXPORT int indigoAddCIPStereoDescriptors(int molecule);
 
 // Accepts a symbol from the periodic table (like "C" or "Br"),
 // or a pseudoatom symbol, like "Pol". Returns the added atom.
