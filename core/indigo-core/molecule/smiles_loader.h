@@ -65,6 +65,7 @@ namespace indigo
         StereocentersOptions stereochemistry_options;
         bool ignore_cistrans_errors;
         bool ignore_bad_valence;
+        bool strict_aliphatic;
         bool ignore_no_chiral_flag{false};
 
         static void readSmartsAtomStr(const std::string& atom_str, std::unique_ptr<QueryMolecule::Atom>& qatom);
@@ -184,7 +185,7 @@ namespace indigo
         void _handlePolymerRepetition(int i);
 
         static void _readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom,
-                              bool smarts_mode = false, bool inside_rsmiles = false);
+                              bool smarts_mode = false, bool inside_rsmiles = false, bool strict_aliphatic = false);
 
         static bool _readAtomLogic(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom,
                                    bool smarts_mode = false, bool inside_rsmiles = false);

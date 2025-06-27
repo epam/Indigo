@@ -138,6 +138,7 @@ void Indigo::init()
     molfile_saving_add_mrv_sma = true;
 
     smiles_saving_write_name = false;
+    smiles_loading_strict_aliphatic = false;
     smiles_saving_smarts_mode = false;
 
     aam_cancellation_timeout = 0;

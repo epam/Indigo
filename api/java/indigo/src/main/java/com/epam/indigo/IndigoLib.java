@@ -719,6 +719,8 @@ public interface IndigoLib extends Library {
 
     double indigoPka(int molecule);
 
+    Pointer indigoPkaValues(int molecule);
+
     Pointer indigoCanonicalSmiles(int molecule);
 
     long indigoHash(int item);

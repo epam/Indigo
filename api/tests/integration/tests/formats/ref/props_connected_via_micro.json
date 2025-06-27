@@ -2,7 +2,7 @@
     {
         "grossFormula": "C16 H22 N6 O6",
         "mass": 394.382483,
-        "pKa": 4.006666,
+        "pKa": 5.96,
         "extinctionCoefficient": 0,
         "hydrophobicity": [
             0.616
@@ -19,7 +19,7 @@
     {
         "grossFormula": "C16 H22 N6 O6",
         "mass": 394.382483,
-        "pKa": 4.006666,
+        "pKa": 5.96,
         "extinctionCoefficient": 0,
         "hydrophobicity": [
             0.616

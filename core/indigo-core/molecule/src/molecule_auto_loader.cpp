@@ -54,6 +54,7 @@ void MoleculeAutoLoader::_init()
     ignore_cistrans_errors = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
+    smiles_loading_strict_aliphatic = false;
     dearomatize_on_load = false;
     treat_stereo_as = 0;
 }
@@ -482,7 +483,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
             loader.stereochemistry_options = stereochemistry_options;
             loader.ignore_cistrans_errors = ignore_cistrans_errors;
             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-
+            loader.strict_aliphatic = smiles_loading_strict_aliphatic;
             /*
             If exception is thrown, try the SMARTS, if exception thrown again - the string is rather an IUPAC name than a SMILES string
             We catch it and pass down to IUPAC name conversion

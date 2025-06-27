@@ -502,6 +502,7 @@ CEXPORT int indigoLoadMoleculeWithLib(int source, int monomer_library)
         loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
         loader.treat_stereo_as = self.treat_stereo_as;
         loader.ignore_bad_valence = self.ignore_bad_valence;
+        loader.smiles_loading_strict_aliphatic = self.smiles_loading_strict_aliphatic;
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
 
@@ -874,6 +875,7 @@ CEXPORT int indigoLoadSmarts(int source)
     {
         IndigoObject& obj = self.getObject(source);
         SmilesLoader loader(IndigoScanner::get(obj));
+        loader.strict_aliphatic = self.smiles_loading_strict_aliphatic;
 
         std::unique_ptr<IndigoQueryMolecule> molptr = std::make_unique<IndigoQueryMolecule>();
 
