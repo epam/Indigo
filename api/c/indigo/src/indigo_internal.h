@@ -335,6 +335,7 @@ public:
     bool json_saving_pretty;
     bool json_use_native_precision;
     bool smiles_saving_write_name;
+    bool smiles_loading_strict_aliphatic;
     bool smiles_saving_smarts_mode;
 
     Encoding filename_encoding;

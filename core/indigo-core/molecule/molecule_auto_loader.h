@@ -61,6 +61,7 @@ namespace indigo
         bool skip_3d_chirality;
         bool ignore_no_chiral_flag;
         bool ignore_bad_valence;
+        bool smiles_loading_strict_aliphatic;
         int treat_stereo_as;
         bool dearomatize_on_load;
         AromaticityOptions arom_options;

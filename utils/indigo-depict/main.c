@@ -953,6 +953,14 @@ int main(int argc, char* argv[])
         }
         else
             obj = indigoLoadMolecule(reader);
+
+        indigoSetOption("smiles-loading-strict-aliphatic", "on");
+
+        printf("%s\n", indigoPkaValues(obj));
+        auto query = indigoLoadSmartsFromString("[OH][i](=O)[i]~[i]~[i]~[i]~[i]-A");
+        auto mid = indigoSubstructureMatcher(obj, 0);
+        printf("match: %d\n", indigoMatch(mid, query));
+
         if (p.action == ACTION_LAYOUT)
         {
             indigoLayout(obj);

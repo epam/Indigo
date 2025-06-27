@@ -1,0 +1,6 @@
+4-(benzyloxy)benzoic acid matches with [OH][i](=O)[i]~[i]~[i]~[i]~[i]-A
+4-(benzyloxy)benzoic acid matches with [O][i]~[i]~[i]~[i]~[i]~[i]~[i]~A
+4-(benzyloxy)benzoic acid matches with [OH][i]~[i](~*)~*
+4-(benzyloxy)benzoic acid doesn't match with [OH][i](=O)[i]~[i]~[i]~[i]~[i]-A
+4-(benzyloxy)benzoic acid doesn't match with [O][i]~[i]~[i]~[i]~[i]~[i]~[i]~A
+4-(benzyloxy)benzoic acid matches with [OH][i]~[i](~*)~*
