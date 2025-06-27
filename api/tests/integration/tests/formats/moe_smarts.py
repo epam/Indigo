@@ -18,9 +18,7 @@ input_path = joinPathPy("molecules", __file__)
 with open(os.path.join(input_path, "moe.smarts"), "r") as f1:
     moe_smarts = f1.read().splitlines()
 
-with open(
-    os.path.join(input_path, "crippen.smiles"), "r", encoding="utf-8"
-) as f2:
+with open(os.path.join(input_path, "crippen.smiles"), "r") as f2:
     crippen_smiles = f2.read().splitlines()
 
 for smile in crippen_smiles:
