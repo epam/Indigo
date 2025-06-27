@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+#include <numeric>
 
 #include "molecule/crippen.h"
 
@@ -357,10 +358,19 @@ namespace
     class PKACalculator
     {
     public:
+        double median(std::vector<double> v) const
+        {
+            if (v.empty())
+                return std::numeric_limits<double>::quiet_NaN();
+            std::sort(v.begin(), v.end());
+            std::size_t n = v.size();
+            return n & 1 ? v[n / 2] : std::accumulate(v.begin() + n / 2 - 1, v.begin() + n / 2 + 1, 0.0) * 0.5;
+        }
+
         double calculate(Molecule& target) const
         {
             auto pkaValues = calculatePKAs(target);
-            return pkaValues.empty() ? 0.0 : pkaValues[0];
+            return median(pkaValues);
         }
 
         std::vector<double> calculatePKAs(Molecule& target) const
