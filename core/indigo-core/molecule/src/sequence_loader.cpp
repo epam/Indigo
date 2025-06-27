@@ -1587,12 +1587,15 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
     repeating = readHelmRepeating();
     annotation = readHelmAnnotation();
     ch = _scanner.lookNext();
+    bool branch_monomer = false;
     if (inside_parentheses && !is_ambiguous) // for variants ')' already processed
-        if (ch == ')')
-            _scanner.skip(1); // single monomer in () - branch monomer
-        else
+    {
+        if (ch != ')')
             throw Error("Unexpected symbol. Expected ')' but found '%c'.", ch);
-    return std::make_tuple(monomer_alias, repeating, annotation, options);
+        _scanner.skip(1); // single monomer in () - branch monomer
+        branch_monomer = true;
+    }
+    return std::make_tuple(monomer_alias, branch_monomer, repeating, annotation, options);
 }
 
 std::string SequenceLoader::readHelmSimplePolymerName(std::string& polymer_name)
@@ -1701,7 +1704,7 @@ const std::string SequenceLoader::checkAddAmbiguousMonomerTemplate(KetDocument& 
 
 size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, MonomerClass monomer_class, const Vec3f& pos)
 {
-    auto [helm_alias, repeating, annotaion, options] = info;
+    auto [helm_alias, branch_monomer, repeating, annotaion, options] = info;
     if (repeating.size() && monomer_class == MonomerClass::CHEM)
         throw Error("Chem cannot be repeated.");
     if (repeating.size() && (monomer_class == MonomerClass::Base || monomer_class == MonomerClass::Sugar || monomer_class == MonomerClass::Phosphate))
@@ -1869,6 +1872,15 @@ void SequenceLoader::loadHELM(KetDocument& document)
                 }
                 else // kHELMPolymerTypeRNA
                 {
+                    if (std::get<1>(monomer_info)) // branch_monomer
+                    {
+                        Vec3f base_pos(pos.x, pos.y - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, 0);
+                        auto base_idx = addHelmMonomer(document, monomer_info, MonomerClass::Base, base_pos);
+                        cur_polymer_map->second[monomer_idx] = base_idx;
+                        if (monomer_idx > 1)
+                            addMonomerConnection(document, base_idx - 1, base_idx, true);
+                        continue;
+                    }
                     ch = _scanner.lookNext();
                     if (ch == '.' || ch == '}') // single monomer - could be unsplitted RNA or phosphate or sugar
                     {

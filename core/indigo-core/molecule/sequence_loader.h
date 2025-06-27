@@ -109,7 +109,7 @@ namespace indigo
         static void check_monomer_place(std::string& idt_alias, IdtModification mon_mod, IdtModification alias_mod, bool has_prev_mon);
 
         using ambiguous_template_opts = std::pair<bool, std::vector<std::pair<std::string, std::optional<float>>>>;
-        using MonomerInfo = std::tuple<std::string, std::string, std::string, ambiguous_template_opts>;
+        using MonomerInfo = std::tuple<std::string, bool, std::string, std::string, ambiguous_template_opts>;
 
         const std::string checkAddAmbiguousMonomerTemplate(KetDocument& document, const std::string& alias, MonomerClass monomer_class,
                                                            ambiguous_template_opts& options);
