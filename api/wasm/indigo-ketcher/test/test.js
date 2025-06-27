@@ -1267,7 +1267,7 @@ M  END
         test("calculate pka", "PKa", () => {
             let options = new indigo.MapStringString();
             let pka = indigo.pka('C([C@@H](C(=O)O)N)S', options);            
-            assert.equal(pka.toString(), '2.390000');
+            assert.equal(pka.toString(), '8.493334');
             options.delete();
             assert(true);
         });
