@@ -15,7 +15,7 @@ indigo.setOption("ignore-bad-valence", "true")
 
 input_path = joinPathPy("molecules", __file__)
 
-with open(os.path.join(input_path, "moe.smarts"), "r", encoding="utf-8") as f1:
+with open(os.path.join(input_path, "moe.smarts"), "r") as f1:
     moe_smarts = f1.read().splitlines()
 
 with open(
