@@ -462,6 +462,18 @@ namespace com.epam.indigo
         public static extern int indigoCheckRGroups(int item);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoAtomIndex(int atom);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoBondIndex(int bond);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoBondBegin(int bond);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoBondEnd(int bond);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoCountHydrogens(int atom, int* hydro);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
@@ -794,6 +806,12 @@ namespace com.epam.indigo
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoValidateChirality(int handle);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoStereocenterCIPDescriptor(int atom);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoAddCIPStereoDescriptors(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoAddAtom(int molecule, string symbol);
