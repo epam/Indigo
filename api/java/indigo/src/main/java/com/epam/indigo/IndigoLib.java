@@ -380,6 +380,14 @@ public interface IndigoLib extends Library {
 
     int indigoCheckRGroups(int item);
 
+    int indigoAtomIndex(int atom);
+
+    int indigoBondIndex(int bond);
+
+    int indigoBondBegin(int bond);
+
+    int indigoBondEnd(int bond);
+
     int indigoCheckChirality(int item);
 
     int indigoCheck3DStereo(int item);
@@ -632,6 +640,10 @@ public interface IndigoLib extends Library {
     int indigoMarkStereobonds(int handle);
 
     int indigoValidateChirality(int handle);
+
+    int indigoStereocenterCIPDescriptor(int atom);
+
+    int indigoAddCIPStereoDescriptors(int molecule);
 
     int indigoAddAtom(int molecule, String symbol);
 
