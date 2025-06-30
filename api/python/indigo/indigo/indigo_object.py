@@ -3062,7 +3062,9 @@ class IndigoObject:
             str: IUPAC molecular formula
         """
 
-        gf_id = IndigoLib.checkResult(self._lib().indigoMolecularFormula(self.id))
+        gf_id = IndigoLib.checkResult(
+            self._lib().indigoMolecularFormula(self.id)
+        )
         gf = IndigoObject(self.session, gf_id)
         return IndigoLib.checkResultString(self._lib().indigoToString(gf.id))
 
