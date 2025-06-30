@@ -23,7 +23,7 @@ void IndigoMoleculeGross::toString(Array<char>& str)
     MoleculeGrossFormula::toString_Hill(*gross, str, self.gross_formula_options.add_rsites, iupacFormula);
 }
 
-IndigoReactionGross::IndigoReactionGross() : IndigoObject(GROSS_REACTION)
+IndigoReactionGross::IndigoReactionGross() : IndigoObject(GROSS_REACTION), iupacFormula(false)
 {
 }
 
@@ -34,7 +34,7 @@ IndigoReactionGross::~IndigoReactionGross()
 void IndigoReactionGross::toString(Array<char>& str)
 {
     Indigo& self = indigoGetInstance();
-    ReactionGrossFormula::toString_Hill(*gross, str, self.gross_formula_options.add_rsites);
+    ReactionGrossFormula::toString_Hill(*gross, str, self.gross_formula_options.add_rsites, iupacFormula);
 }
 
 CEXPORT int indigoGrossFormula(int object)
@@ -82,11 +82,12 @@ CEXPORT int indigoMolecularFormula(int object)
             auto& rxn = self.getObject(object).getBaseReaction();
             std::unique_ptr<IndigoReactionGross> grossptr = std::make_unique<IndigoReactionGross>();
             grossptr->gross = ReactionGrossFormula::collect(rxn, self.gross_formula_options.add_isotopes);
+            grossptr->iupacFormula = true;
             return self.addObject(grossptr.release());
         }
         else
         {
-            throw IndigoError("incorrect object type for gross formula: %s", indigoObject.debugInfo());
+            throw IndigoError("incorrect object type for molecular formula: %s", indigoObject.debugInfo());
         }
     }
     INDIGO_END(-1);

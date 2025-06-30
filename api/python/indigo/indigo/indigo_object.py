@@ -3056,7 +3056,7 @@ class IndigoObject:
         return IndigoLib.checkResultString(self._lib().indigoToString(gf.id))
 
     def molecularFormula(self):
-        """Molecule method returns IUPAC molecular formula
+        """Molecule or reaction method returns IUPAC molecular formula
 
         Returns:
             str: IUPAC molecular formula

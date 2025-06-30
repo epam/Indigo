@@ -685,6 +685,8 @@ public interface IndigoLib extends Library {
 
     int indigoGrossFormula(int molecule);
 
+    int indigoMolecularFormula(int molecule);
+
     double indigoMolecularWeight(int molecule);
 
     double indigoMostAbundantMass(int molecule);

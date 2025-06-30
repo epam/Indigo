@@ -910,6 +910,9 @@ namespace com.epam.indigo
         public static extern int indigoGrossFormula(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoMolecularFormula(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern double indigoMolecularWeight(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]

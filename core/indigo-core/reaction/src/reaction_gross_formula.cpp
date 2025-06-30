@@ -50,7 +50,7 @@ std::unique_ptr<std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>> Reactio
     return result;
 }
 
-void ReactionGrossFormula::toString_Hill(std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>& gross, Array<char>& str, bool add_rsites)
+void ReactionGrossFormula::toString_Hill(std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>& gross, Array<char>& str, bool add_rsites, bool iupacFormula)
 {
     ArrayOutput output(str);
     Array<char> temp_str;
@@ -62,7 +62,7 @@ void ReactionGrossFormula::toString_Hill(std::pair<PtrArray<GROSS_UNITS>, PtrArr
         {
             output.printf(" + ");
         }
-        MoleculeGrossFormula::toString_Hill(*gross.first[i], temp_str, add_rsites);
+        MoleculeGrossFormula::toString_Hill(*gross.first[i], temp_str, add_rsites, iupacFormula);
         output.printf("%s", temp_str.ptr());
         first_written = true;
     }
@@ -74,7 +74,7 @@ void ReactionGrossFormula::toString_Hill(std::pair<PtrArray<GROSS_UNITS>, PtrArr
         {
             output.printf(" + ");
         }
-        MoleculeGrossFormula::toString_Hill(*gross.second[i], temp_str, add_rsites);
+        MoleculeGrossFormula::toString_Hill(*gross.second[i], temp_str, add_rsites, iupacFormula);
         output.printf("%s", temp_str.ptr());
         first_written = true;
     }
