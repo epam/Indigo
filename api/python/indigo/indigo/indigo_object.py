@@ -3055,6 +3055,17 @@ class IndigoObject:
         gf = IndigoObject(self.session, gf_id)
         return IndigoLib.checkResultString(self._lib().indigoToString(gf.id))
 
+    def molecularFormula(self):
+        """Molecule method returns IUPAC molecular formula
+
+        Returns:
+            str: IUPAC molecular formula
+        """
+
+        gf_id = IndigoLib.checkResult(self._lib().indigoMolecularFormula(self.id))
+        gf = IndigoObject(self.session, gf_id)
+        return IndigoLib.checkResultString(self._lib().indigoToString(gf.id))
+
     def molecularWeight(self):
         """Molecule method returns molecular weight
 

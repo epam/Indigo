@@ -9,7 +9,7 @@
 #include "indigo_reaction.h"
 #include "molecule/crippen.h"
 
-IndigoMoleculeGross::IndigoMoleculeGross() : IndigoObject(GROSS_MOLECULE)
+IndigoMoleculeGross::IndigoMoleculeGross() : IndigoObject(GROSS_MOLECULE), iupacFormula(false)
 {
 }
 
@@ -20,7 +20,7 @@ IndigoMoleculeGross::~IndigoMoleculeGross()
 void IndigoMoleculeGross::toString(Array<char>& str)
 {
     Indigo& self = indigoGetInstance();
-    MoleculeGrossFormula::toString_Hill(*gross, str, self.gross_formula_options.add_rsites);
+    MoleculeGrossFormula::toString_Hill(*gross, str, self.gross_formula_options.add_rsites, iupacFormula);
 }
 
 IndigoReactionGross::IndigoReactionGross() : IndigoObject(GROSS_REACTION)
@@ -47,6 +47,34 @@ CEXPORT int indigoGrossFormula(int object)
             BaseMolecule& mol = self.getObject(object).getBaseMolecule();
             std::unique_ptr<IndigoMoleculeGross> grossptr = std::make_unique<IndigoMoleculeGross>();
             grossptr->gross = MoleculeGrossFormula::collect(mol, self.gross_formula_options.add_isotopes);
+            return self.addObject(grossptr.release());
+        }
+        else if (IndigoBaseReaction::is(indigoObject))
+        {
+            auto& rxn = self.getObject(object).getBaseReaction();
+            std::unique_ptr<IndigoReactionGross> grossptr = std::make_unique<IndigoReactionGross>();
+            grossptr->gross = ReactionGrossFormula::collect(rxn, self.gross_formula_options.add_isotopes);
+            return self.addObject(grossptr.release());
+        }
+        else
+        {
+            throw IndigoError("incorrect object type for gross formula: %s", indigoObject.debugInfo());
+        }
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoMolecularFormula(int object)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& indigoObject = self.getObject(object);
+        if (IndigoBaseMolecule::is(indigoObject))
+        {
+            BaseMolecule& mol = self.getObject(object).getBaseMolecule();
+            std::unique_ptr<IndigoMoleculeGross> grossptr = std::make_unique<IndigoMoleculeGross>();
+            grossptr->gross = MoleculeGrossFormula::collect(mol, self.gross_formula_options.add_isotopes);
+            grossptr->iupacFormula = true;
             return self.addObject(grossptr.release());
         }
         else if (IndigoBaseReaction::is(indigoObject))

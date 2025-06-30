@@ -229,6 +229,7 @@ public:
     void toString(Array<char>& str) override;
 
     std::unique_ptr<GROSS_UNITS> gross;
+    bool iupacFormula;
 };
 
 class IndigoReactionGross : public IndigoObject
