@@ -861,6 +861,8 @@ class IndigoLib:
         IndigoLib.lib.indigoCountHeavyAtoms.argtypes = [c_int]
         IndigoLib.lib.indigoGrossFormula.restype = c_int
         IndigoLib.lib.indigoGrossFormula.argtypes = [c_int]
+        IndigoLib.lib.indigoMolecularFormula.restype = c_int
+        IndigoLib.lib.indigoMolecularFormula.argtypes = [c_int]
         IndigoLib.lib.indigoMolecularWeight.restype = c_double
         IndigoLib.lib.indigoMolecularWeight.argtypes = [c_int]
         IndigoLib.lib.indigoMostAbundantMass.restype = c_double

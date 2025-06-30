@@ -896,6 +896,17 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         }
     }
 
+    public String molecularFormula() {
+        int gf = -1;
+        try {
+            dispatcher.setSessionID();
+            gf = Indigo.checkResult(this, lib.indigoMolecularFormula(self));
+            return Indigo.checkResultString(this, lib.indigoToString(gf));
+        } finally {
+            lib.indigoFree(gf);
+        }
+    }
+
     public double molecularWeight() {
         dispatcher.setSessionID();
         return Indigo.checkResultDouble(this, lib.indigoMolecularWeight(self));

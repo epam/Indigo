@@ -229,6 +229,7 @@ public:
     void toString(Array<char>& str) override;
 
     std::unique_ptr<GROSS_UNITS> gross;
+    bool iupacFormula;
 };
 
 class IndigoReactionGross : public IndigoObject
@@ -240,6 +241,7 @@ public:
     void toString(Array<char>& str) override;
 
     std::unique_ptr<std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>> gross;
+    bool iupacFormula;
 };
 
 struct DLLEXPORT ProductEnumeratorParams
