@@ -50,6 +50,7 @@ macro_data = [
     "props_dna_base_selected",
     "props_dna_nucleotide_selected",
     "props_dna_phosphate_selected",
+    "props_double_dna_single",
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(
