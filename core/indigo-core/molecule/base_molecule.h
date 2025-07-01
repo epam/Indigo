@@ -674,7 +674,7 @@ namespace indigo
         RedBlackMap<int, Vec3f> _stereo_flag_positions;
         // CIP maps should be changed to std::unordered_map
         RedBlackMap<int, CIPDesc> _cip_atoms;
-        std::unordered_map<int, bool> _show_cip_atoms;
+        RedBlackMap<int, bool> _show_cip_atoms;
         RedBlackMap<int, CIPDesc> _cip_bonds;
 
         ObjArray<Array<int>> _rsite_attachment_points;
