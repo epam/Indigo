@@ -1021,6 +1021,8 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                 sg.subscript.readString(s["name"].GetString(), true);
             if (s.HasMember("expanded"))
                 sg.contracted = s["expanded"].GetBool() ? DisplayOption::Expanded : DisplayOption::Contracted;
+            if (s.HasMember("class"))
+                sg.sa_class.readString(s["class"].GetString(), true);
             if (s.HasMember("attachmentPoints"))
             {
                 const Value& attachmentPoints = s["attachmentPoints"];
