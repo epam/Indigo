@@ -1168,9 +1168,9 @@ namespace indigo
 
     std::string expand(const std::string& data, const std::vector<int>& expansions)
     {
-        auto doc = indigoLoadKetDocumentFromString(data.c_str());
+        auto document = indigoLoadKetDocumentFromString(data.c_str());
 
-        indigoExpandMonomers(document, expansions);
+        indigoExpandMonomers(document, expansions.size(), expansions.data());
 
         return json_out;
     }
