@@ -1166,13 +1166,14 @@ namespace indigo
         return buffer.GetString();
     }
 
-    std::string expand(const std::string& data, const std::vector<int>& expansions)
+    std::string expand(const std::string& data, const std::vector<int>& expansions, const std::string& outputFormat,
+                       const std::map<std::string, std::string>& options)
     {
-        auto document = indigoLoadKetDocumentFromString(data.c_str());
-
-        indigoExpandMonomers(document, expansions.size(), expansions.data());
-
-        return json_out;
+        const IndigoSession session;
+        indigoSetOptions(options);
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        _checkResult(indigoExpandMonomers(iko.id(), expansions.size(), expansions.data()));
+        return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
 
     EMSCRIPTEN_BINDINGS(module)
