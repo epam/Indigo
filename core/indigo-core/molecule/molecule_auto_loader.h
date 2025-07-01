@@ -38,6 +38,7 @@ namespace indigo
     class Molecule;
     class QueryMolecule;
     class BaseMolecule;
+    class MonomerTemplateLibrary;
 
     class DLLEXPORT MoleculeAutoLoader
     {
@@ -48,9 +49,9 @@ namespace indigo
 
         ~MoleculeAutoLoader();
 
-        void loadMolecule(BaseMolecule& mol);
+        void loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary* monomer_lib = nullptr);
         // to keep C++ API compatible
-        void loadQueryMolecule(QueryMolecule& qmol);
+        void loadQueryMolecule(QueryMolecule& qmol, MonomerTemplateLibrary* monomer_lib = nullptr);
 
         StereocentersOptions stereochemistry_options;
         bool ignore_cistrans_errors;
@@ -60,6 +61,7 @@ namespace indigo
         bool skip_3d_chirality;
         bool ignore_no_chiral_flag;
         bool ignore_bad_valence;
+        bool smiles_loading_strict_aliphatic;
         int treat_stereo_as;
         bool dearomatize_on_load;
         AromaticityOptions arom_options;
@@ -80,10 +82,10 @@ namespace indigo
 
         void _init();
         bool _isSingleLine();
-        void _loadMolecule(BaseMolecule& mol);
+        void _loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary* monomer_lib);
 
     private:
-        MoleculeAutoLoader(const MoleculeAutoLoader&); // no implicit copy
+        MoleculeAutoLoader(const MoleculeAutoLoader&) = delete; // no implicit copy
     };
 
 } // namespace indigo

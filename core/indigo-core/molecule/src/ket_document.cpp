@@ -280,8 +280,8 @@ static bool isSimplePolymerConnection(MonomerClass cl1, const std::string& ap1, 
         return true;
     if (((cl1 == MonomerClass::DNA || cl1 == MonomerClass::RNA) && (cl2 == MonomerClass::Phosphate || cl2 == MonomerClass::Sugar) &&
          (ap1 == "R2" && ap2 == "R1")) ||
-        ((cl2 == MonomerClass::DNA || cl2 == MonomerClass::RNA) && (cl1 == MonomerClass::Phosphate || cl1 == MonomerClass::Sugar) &&
-         (ap2 == "R2" && ap1 == "R1")))
+        ((cl1 == MonomerClass::Phosphate || cl1 == MonomerClass::Sugar) && (cl2 == MonomerClass::DNA || cl2 == MonomerClass::RNA) &&
+         (ap1 == "R2" && ap2 == "R1")))
         return true;
     if (((cl1 == MonomerClass::DNA && cl2 == MonomerClass::DNA) || (cl1 == MonomerClass::RNA && cl2 == MonomerClass::RNA)) &&
         ((ap1 == "R2" && ap2 == "R1") || (ap1 == "R1" && ap2 == "R2")))
@@ -310,10 +310,9 @@ void KetDocument::collect_sequence_side(const std::string& start_monomer_id, boo
     std::string monomer_id = start_monomer_id;
     while (has_monomer_id)
     {
-        if (used_monomers.count(monomer_id) == 0)
+        if (used_monomers.count(monomer_id) == 0 && monomers.erase(monomer_id))
         {
             used_monomers.emplace(monomer_id);
-            monomers.erase(monomer_id);
             if (left_side)
                 sequence.emplace_front(monomer_id);
             else
@@ -379,6 +378,7 @@ void KetDocument::addRGroup(const rapidjson::Value& node)
 
 void KetDocument::addMolecule(const rapidjson::Value& node, std::string& ref)
 {
+    _molecule_refs.emplace_back(ref);
     _mol_ref_to_idx.emplace(ref, _json_molecules.Size());
     _json_molecules.PushBack(_json_document.CopyFrom(node, _json_document.GetAllocator()), _json_document.GetAllocator());
 }
@@ -421,6 +421,7 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
     }
 
     std::map<std::pair<std::string, std::string>, const KetConnection&> ap_to_connection;
+
     for (auto& connection : _connections)
     {
         auto& ep1 = connection.ep1();

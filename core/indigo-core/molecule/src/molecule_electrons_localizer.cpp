@@ -136,7 +136,7 @@ void MoleculeElectronsLocalizer::_constructBMatchingFinder()
     set_per_set[_PRIMARY_LONEPAIRS_SET] = _SUM_LONEPAIRS_SET;
     set_per_set[_SECONDARY_LONEPAIRS_SET] = _SUM_LONEPAIRS_SET;
 
-    _finder.create(_extended_skeleton, nodes_per_set, &set_per_set);
+    _finder = std::make_unique<GraphConstrainedBMatchingFinder>(_extended_skeleton, nodes_per_set, &set_per_set);
 }
 
 void MoleculeElectronsLocalizer::_setupAtomProperties()

@@ -20,10 +20,11 @@
 #define __cmf_loader_h__
 
 #include "base_cpp/bitinworker.h"
-#include "base_cpp/obj.h"
 #include "lzw/lzw_decoder.h"
 #include "lzw/lzw_dictionary.h"
 #include "molecule/cmf_saver.h"
+
+#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -143,9 +144,9 @@ namespace indigo
 
         Scanner* _scanner;
 
-        Obj<LzwDecoder> _decoder_obj;
+        std::unique_ptr<LzwDecoder> _decoder_obj;
         LzwDecoder* _ext_decoder;
-        Obj<LzwScanner> _lzw_scanner;
+        std::unique_ptr<LzwScanner> _lzw_scanner;
 
         TL_CP_DECL(Array<_AtomDesc>, _atoms);
         TL_CP_DECL(Array<_BondDesc>, _bonds);

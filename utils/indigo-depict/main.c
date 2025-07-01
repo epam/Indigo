@@ -954,7 +954,6 @@ int main(int argc, char* argv[])
         else
             obj = indigoLoadMolecule(reader);
 
-        _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
             indigoLayout(obj);
@@ -1060,6 +1059,12 @@ int main(int argc, char* argv[])
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
+            auto mols = indigoIterateMolecules(obj);
+            while (indigoHasNext(mols))
+            {
+                int mol = indigoNext(mols);
+                printf("%d\n", mol);
+            }
             indigoLayout(obj);
             if (p.out_ext == OEXT_CML)
                 indigoSaveCmlToFile(obj, p.outfile);

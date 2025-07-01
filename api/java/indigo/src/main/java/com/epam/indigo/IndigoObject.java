@@ -482,6 +482,26 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoCheckRGroups(self));
     }
 
+    public int atomIndex() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoAtomIndex(self));
+    }
+
+    public int bondIndex() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoBondIndex(self));
+    }
+
+    public int bondBegin() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoBondBegin(self));
+    }
+
+    public int bondEnd() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoBondEnd(self));
+    }
+
     public int checkChirality() {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoCheckChirality(self));
@@ -712,6 +732,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoValidateChirality(self));
     }
 
+    public int stereocenterCIPDescriptor() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoStereocenterCIPDescriptor(self));
+    }
+
+    public int addCIPStereoDescriptors() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoAddCIPStereoDescriptors(self));
+    }
+
     public IndigoObject addAtom(String symbol) {
         dispatcher.setSessionID();
         return new IndigoObject(
@@ -923,6 +953,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public double pKa() {
         dispatcher.setSessionID();
         return Indigo.checkResultDouble(this, lib.indigoPka(self));
+    }
+
+    public String pKaValues() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoPkaValues(self));
     }
 
     public String canonicalSmiles() {

@@ -484,6 +484,11 @@ IndigoObject* IndigoBondsIter::next()
 
 CEXPORT int indigoLoadMolecule(int source)
 {
+    return indigoLoadMoleculeWithLib(source, -1);
+}
+
+CEXPORT int indigoLoadMoleculeWithLib(int source, int monomer_library)
+{
     INDIGO_BEGIN
     {
         IndigoObject& obj = self.getObject(source);
@@ -498,6 +503,7 @@ CEXPORT int indigoLoadMolecule(int source)
         loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
         loader.treat_stereo_as = self.treat_stereo_as;
         loader.ignore_bad_valence = self.ignore_bad_valence;
+        loader.smiles_loading_strict_aliphatic = self.smiles_loading_strict_aliphatic;
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
 
@@ -505,7 +511,10 @@ CEXPORT int indigoLoadMolecule(int source)
 
         Molecule& mol = molptr->mol;
 
-        loader.loadMolecule(mol);
+        MonomerTemplateLibrary* monomer_lib = nullptr;
+        if (monomer_library >= 0)
+            monomer_lib = &IndigoMonomerLibrary::get(self.getObject(monomer_library));
+        loader.loadMolecule(mol, monomer_lib);
         molptr->getProperties().copy(loader.properties);
 
         return self.addObject(molptr.release());
@@ -513,7 +522,90 @@ CEXPORT int indigoLoadMolecule(int source)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoLoadMoleculeWithLibFromString(const char* string, int monomer_library)
+{
+    int source = indigoReadString(string);
+    int result;
+
+    if (source <= 0)
+        return -1;
+
+    result = indigoLoadMoleculeWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
+CEXPORT int indigoLoadMoleculeWithLibFromFile(const char* filename, int monomer_library)
+{
+    int source = indigoReadFile(filename);
+    int result;
+
+    if (source < 0)
+        return -1;
+
+    result = indigoLoadMoleculeWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
+CEXPORT int indigoLoadMoleculeWithLibFromBuffer(const char* buffer, int size, int monomer_library)
+{
+    int source = indigoReadBuffer(buffer, size);
+    int result;
+
+    if (source < 0)
+        return -1;
+
+    result = indigoLoadMoleculeWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
 CEXPORT int indigoLoadQueryMolecule(int source)
+{
+    return indigoLoadQueryMoleculeWithLib(source, -1);
+}
+
+CEXPORT int indigoLoadQueryMoleculeWithLibFromString(const char* string, int monomer_library)
+{
+    int source = indigoReadString(string);
+    int result;
+
+    if (source <= 0)
+        return -1;
+
+    result = indigoLoadQueryMoleculeWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
+CEXPORT int indigoLoadQueryMoleculeWithLibFromFile(const char* filename, int monomer_library)
+{
+    int source = indigoReadFile(filename);
+    int result;
+
+    if (source < 0)
+        return -1;
+
+    result = indigoLoadQueryMoleculeWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
+CEXPORT int indigoLoadQueryMoleculeWithLibFromBuffer(const char* buffer, int size, int monomer_library)
+{
+    int source = indigoReadBuffer(buffer, size);
+    int result;
+
+    if (source < 0)
+        return -1;
+
+    result = indigoLoadQueryMoleculeWithLib(source, monomer_library);
+    indigoFree(source);
+    return result;
+}
+
+CEXPORT int indigoLoadQueryMoleculeWithLib(int source, int monomer_library)
 {
     INDIGO_BEGIN
     {
@@ -529,7 +621,10 @@ CEXPORT int indigoLoadQueryMolecule(int source)
 
         QueryMolecule& qmol = molptr->qmol;
 
-        loader.loadMolecule(qmol);
+        MonomerTemplateLibrary* monomer_lib = nullptr;
+        if (monomer_library >= 0)
+            monomer_lib = &IndigoMonomerLibrary::get(self.getObject(monomer_library));
+        loader.loadMolecule(qmol, monomer_lib);
         molptr->copyProperties(loader.properties);
 
         return self.addObject(molptr.release());
@@ -781,6 +876,7 @@ CEXPORT int indigoLoadSmarts(int source)
     {
         IndigoObject& obj = self.getObject(source);
         SmilesLoader loader(IndigoScanner::get(obj));
+        loader.strict_aliphatic = self.smiles_loading_strict_aliphatic;
 
         std::unique_ptr<IndigoQueryMolecule> molptr = std::make_unique<IndigoQueryMolecule>();
 
@@ -4823,6 +4919,46 @@ CEXPORT int indigoCheckRGroups(int item)
             throw IndigoError("%s is not a base molecule", obj.debugInfo());
         }
         return 0;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoAtomIndex(int atom)
+{
+    INDIGO_BEGIN
+    {
+        IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom));
+        return ia.idx;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoBondIndex(int bond)
+{
+    INDIGO_BEGIN
+    {
+        IndigoBond& ib = IndigoBond::cast(self.getObject(bond));
+        return ib.idx;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoBondBegin(int bond)
+{
+    INDIGO_BEGIN
+    {
+        IndigoBond& ib = IndigoBond::cast(self.getObject(bond));
+        return ib.mol.getEdge(ib.idx).beg;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoBondEnd(int bond)
+{
+    INDIGO_BEGIN
+    {
+        IndigoBond& ib = IndigoBond::cast(self.getObject(bond));
+        return ib.mol.getEdge(ib.idx).end;
     }
     INDIGO_END(-1);
 }

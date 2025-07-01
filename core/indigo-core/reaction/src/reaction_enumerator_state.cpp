@@ -216,6 +216,7 @@ ReactionEnumeratorState::ReactionEnumeratorState(ReactionEnumeratorState& cur_rp
         Array<int>& new_array = _att_points.push();
         new_array.copy(cur_rpe_state._att_points[i]);
     }
+    // 2DO: check memory leaks
     _am = cur_rpe_state._am;
     _ee = cur_rpe_state._ee;
 
@@ -627,10 +628,7 @@ bool ReactionEnumeratorState::_startEmbeddingEnumerator(Molecule& monomer)
         ee_monomer.buildCisTrans(cis_trans_excluded.ptr());
     }
 
-    QS_DEF(Obj<AromaticityMatcher>, am);
-    am.free();
-    am.create(ee_reactant, ee_monomer, _context.arom_options);
-    _am = am.get();
+    _am = std::make_shared<AromaticityMatcher>(ee_reactant, ee_monomer, _context.arom_options);
 
     ee_monomer.unfoldHydrogens(NULL, _calcMaxHCnt(ee_reactant), true);
 
@@ -760,7 +758,7 @@ bool ReactionEnumeratorState::_matchEdgeCallback(Graph& subgraph, Graph& supergr
     if (rpe_state->_bonds_mapping_super[other_idx] >= 0)
         return false;
 
-    bool res = MoleculeSubstructureMatcher::matchQueryBond(&qb_sub, supermolecule, self_idx, other_idx, rpe_state->_am, 0xFFFFFFFFUL);
+    bool res = MoleculeSubstructureMatcher::matchQueryBond(&qb_sub, supermolecule, self_idx, other_idx, rpe_state->_am.get(), 0xFFFFFFFFUL);
 
     return res;
 }

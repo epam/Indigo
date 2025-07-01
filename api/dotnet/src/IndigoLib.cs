@@ -117,6 +117,15 @@ namespace com.epam.indigo
         public static extern int indigoLoadMoleculeFromBuffer(byte[] buf, int bufsize);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadMoleculeWithLibFromString(string str, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadMoleculeWithLibFromFile(string path, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadMoleculeWithLibFromBuffer(byte[] buf, int bufsize, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadQueryMoleculeFromString(string str);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
@@ -124,6 +133,15 @@ namespace com.epam.indigo
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadQueryMoleculeFromBuffer(byte[] buf, int bufsize);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadQueryMoleculeWithLibFromString(string str, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadQueryMoleculeWithLibFromFile(string path, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadQueryMoleculeWithLibFromBuffer(byte[] buf, int bufsize, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadSmartsFromString(string str);
@@ -262,6 +280,24 @@ namespace com.epam.indigo
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadQueryReactionFromBuffer(byte[] buf, int bufsize);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadReactionWithLibFromString(string str, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadReactionWithLibFromFile(string path, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadReactionWithLibFromBuffer(byte[] buf, int bufsize, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadQueryReactionWithLibFromString(string str, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadQueryReactionWithLibFromFile(string path, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadQueryReactionWithLibFromBuffer(byte[] buf, int bufsize, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadReactionSmartsFromString(string str);
@@ -460,6 +496,18 @@ namespace com.epam.indigo
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoCheckRGroups(int item);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoAtomIndex(int atom);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoBondIndex(int bond);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoBondBegin(int bond);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoBondEnd(int bond);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoCountHydrogens(int atom, int* hydro);
@@ -796,6 +844,12 @@ namespace com.epam.indigo
         public static extern int indigoValidateChirality(int handle);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoStereocenterCIPDescriptor(int atom);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoAddCIPStereoDescriptors(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoAddAtom(int molecule, string symbol);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
@@ -905,6 +959,9 @@ namespace com.epam.indigo
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern double indigoPka(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern byte* indigoPkaValues(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoCanonicalSmiles(int molecule);

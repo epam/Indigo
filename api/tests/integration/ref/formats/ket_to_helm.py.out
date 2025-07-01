@@ -22,4 +22,6 @@ helm_simple_rna.ket:SUCCEED
 helm_smiles.ket:SUCCEED
 helm_smiles_sugar.ket:SUCCEED
 helm_unknown.ket:SUCCEED
+helm_unresolved.ket:SUCCEED
+helm_unresolved_rna.ket:SUCCEED
 rna_variants.ket:SUCCEED

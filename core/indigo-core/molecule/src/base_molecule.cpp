@@ -16,11 +16,13 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "molecule/base_molecule.h"
+#include <algorithm>
+
 #include "base_cpp/crc32.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "graph/dfs_walk.h"
+#include "molecule/base_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/inchi_wrapper.h"
 #include "molecule/ket_document.h"
@@ -5253,12 +5255,8 @@ int BaseMolecule::getExpandedMonomerCount() const
 
 std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
 {
-    thread_local static std::unique_ptr<BaseMolecule> result;
-    thread_local static int edit_revision = -1;
-    if (edit_revision == _edit_revision)
-        return result;
+    std::unique_ptr<BaseMolecule>& result = _with_expanded_monomers;
     result.reset(neu());
-    edit_revision = _edit_revision;
     result->clone(*this);
     std::list<int> att_indexes_to_remove;
     std::list<int> monomer_ids;
@@ -5316,21 +5314,24 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
                             sorted_attachment_points.insert(std::make_pair(atp_id_str, i));
                     }
                     // for all used AP mark leaving atom to remove, all leaving atom are leafs - so bonds will be removed automatically
-                    auto& indexes = result->template_attachment_indexes.at(monomer_id);
-                    for (int att_idx = 0; att_idx < indexes.size(); att_idx++)
+                    if (monomer_id < result->template_attachment_indexes.size()) // check if monomer has attachment points in use
                     {
-                        auto& ap = result->template_attachment_points.at(indexes.at(att_idx));
-                        assert(ap.ap_occur_idx == monomer_id);
-                        auto it = sorted_attachment_points.find(ap.ap_id.ptr());
-                        if (it != sorted_attachment_points.end())
+                        auto& indexes = result->template_attachment_indexes.at(monomer_id);
+                        for (int att_idx = 0; att_idx < indexes.size(); att_idx++)
                         {
-                            auto& atp = sa.attachment_points[it->second];
-                            attached_atom.insert(std::make_pair(ap.ap_aidx, atp.aidx)); // molecule atom ap.ap_aidx is attached to atp.aidx in monomer
-                            atoms_to_remove.push(atp.lvidx);
+                            auto& ap = result->template_attachment_points.at(indexes.at(att_idx));
+                            assert(ap.ap_occur_idx == monomer_id);
+                            auto it = sorted_attachment_points.find(ap.ap_id.ptr());
+                            if (it != sorted_attachment_points.end())
+                            {
+                                auto& atp = sa.attachment_points[it->second];
+                                attached_atom.insert(std::make_pair(ap.ap_aidx, atp.aidx)); // molecule atom ap.ap_aidx is attached to atp.aidx in monomer
+                                atoms_to_remove.push(atp.lvidx);
+                            }
+                            result->template_attachment_points.remove(indexes.at(att_idx));
                         }
-                        result->template_attachment_points.remove(indexes.at(att_idx));
+                        att_indexes_to_remove.emplace_back(monomer_id);
                     }
-                    att_indexes_to_remove.emplace_back(monomer_id);
                 }
                 monomer_sgroups.remove(j);
             }

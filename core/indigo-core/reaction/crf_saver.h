@@ -19,8 +19,9 @@
 #ifndef __crf_saver__
 #define __crf_saver__
 
-#include "base_cpp/obj.h"
 #include "lzw/lzw_encoder.h"
+
+#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -62,7 +63,7 @@ namespace indigo
         void _writeReactionMolecule(Reaction& reaction, int idx);
 
         Output& _output;
-        Obj<LzwEncoder> _encoder;
+        std::unique_ptr<LzwEncoder> _encoder;
 
         const int* _atom_stereo_flags;
         const int* _bond_rc_flags;

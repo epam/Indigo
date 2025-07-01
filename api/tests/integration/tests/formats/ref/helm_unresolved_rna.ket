@@ -1,0 +1,279 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "monomer0"
+            },
+            {
+                "$ref": "monomer1"
+            },
+            {
+                "$ref": "monomer2"
+            },
+            {
+                "$ref": "monomer3"
+            },
+            {
+                "$ref": "monomer4"
+            }
+        ],
+        "connections": [
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer0",
+                    "attachmentPointId": "R3"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer1",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer0",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer2",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer2",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer3",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer3",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer4",
+                    "attachmentPointId": "R1"
+                }
+            }
+        ],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-SugarSugar1"
+            },
+            {
+                "$ref": "monomerTemplate-BaseBase1"
+            },
+            {
+                "$ref": "monomerTemplate-PhosphatePhos3"
+            },
+            {
+                "$ref": "monomerTemplate-RNARna1"
+            },
+            {
+                "$ref": "monomerTemplate-RNARna2"
+            }
+        ]
+    },
+    "monomer0": {
+        "type": "monomer",
+        "id": "0",
+        "seqid": 1,
+        "position": {
+            "x": 0.000000,
+            "y": -0.000000
+        },
+        "alias": "Sugar1",
+        "templateId": "SugarSugar1"
+    },
+    "monomer1": {
+        "type": "monomer",
+        "id": "1",
+        "seqid": 2,
+        "position": {
+            "x": 0.000000,
+            "y": -1.500000
+        },
+        "alias": "Base1",
+        "templateId": "BaseBase1"
+    },
+    "monomer2": {
+        "type": "monomer",
+        "id": "2",
+        "seqid": 3,
+        "position": {
+            "x": 1.500000,
+            "y": -0.000000
+        },
+        "alias": "Phos3",
+        "templateId": "PhosphatePhos3"
+    },
+    "monomer3": {
+        "type": "monomer",
+        "id": "3",
+        "seqid": 4,
+        "position": {
+            "x": 3.000000,
+            "y": -0.000000
+        },
+        "alias": "Rna1",
+        "templateId": "RNARna1"
+    },
+    "monomer4": {
+        "type": "monomer",
+        "id": "4",
+        "seqid": 5,
+        "position": {
+            "x": 4.500000,
+            "y": -0.000000
+        },
+        "alias": "Rna2",
+        "templateId": "RNARna2"
+    },
+    "monomerTemplate-SugarSugar1": {
+        "type": "monomerTemplate",
+        "id": "SugarSugar1",
+        "class": "Sugar",
+        "alias": "Sugar1",
+        "aliasHELM": "Sugar1",
+        "unresolved": true,
+        "attachmentPoints": [
+            {
+                "attachmentAtom": -1,
+                "label": "R1"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R2"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R3"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R4"
+            }
+        ],
+        "atoms": [],
+        "bonds": []
+    },
+    "monomerTemplate-BaseBase1": {
+        "type": "monomerTemplate",
+        "id": "BaseBase1",
+        "class": "Base",
+        "alias": "Base1",
+        "aliasHELM": "Base1",
+        "unresolved": true,
+        "attachmentPoints": [
+            {
+                "attachmentAtom": -1,
+                "label": "R1"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R2"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R3"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R4"
+            }
+        ],
+        "atoms": [],
+        "bonds": []
+    },
+    "monomerTemplate-PhosphatePhos3": {
+        "type": "monomerTemplate",
+        "id": "PhosphatePhos3",
+        "class": "Phosphate",
+        "alias": "Phos3",
+        "aliasHELM": "Phos3",
+        "unresolved": true,
+        "attachmentPoints": [
+            {
+                "attachmentAtom": -1,
+                "label": "R1"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R2"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R3"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R4"
+            }
+        ],
+        "atoms": [],
+        "bonds": []
+    },
+    "monomerTemplate-RNARna1": {
+        "type": "monomerTemplate",
+        "id": "RNARna1",
+        "class": "RNA",
+        "alias": "Rna1",
+        "aliasHELM": "Rna1",
+        "unresolved": true,
+        "attachmentPoints": [
+            {
+                "attachmentAtom": -1,
+                "label": "R1"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R2"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R3"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R4"
+            }
+        ],
+        "atoms": [],
+        "bonds": []
+    },
+    "monomerTemplate-RNARna2": {
+        "type": "monomerTemplate",
+        "id": "RNARna2",
+        "class": "RNA",
+        "alias": "Rna2",
+        "aliasHELM": "Rna2",
+        "unresolved": true,
+        "attachmentPoints": [
+            {
+                "attachmentAtom": -1,
+                "label": "R1"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R2"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R3"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R4"
+            }
+        ],
+        "atoms": [],
+        "bonds": []
+    }
+}

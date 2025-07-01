@@ -25,6 +25,13 @@
 #include "base_cpp/tlscont.h"
 #include "core/bingo_context.h"
 
+#include <memory>
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 namespace indigo
 {
     class OracleEnv;
@@ -73,8 +80,8 @@ namespace indigo
 
             void* data;
 
-            Obj<OracleStatement> statement;
-            Obj<OracleLOB> bits_lob;
+            std::unique_ptr<OracleStatement> statement;
+            std::unique_ptr<OracleLOB> bits_lob;
             Block* block;
             int query_bit_idx;
         };
@@ -148,5 +155,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

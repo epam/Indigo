@@ -12,24 +12,25 @@ helm_fractional_ratio.ket:SUCCEED
 helm_mixed_base.ket:SUCCEED
 helm_mixed_custom.ket:SUCCEED
 helm_multi_char_rna.ket:SUCCEED
+helm_no_brackets.ket:SUCCEED
 helm_no_left_ap.ket:SUCCEED
+helm_only_base.ket:SUCCEED
 helm_peptide.ket:SUCCEED
 helm_rna_without_base.ket:SUCCEED
 helm_simple_rna.ket:SUCCEED
 helm_smiles.ket:SUCCEED
 helm_smiles_no_ap.ket:SUCCEED
 helm_smiles_sugar.ket:SUCCEED
+helm_unresolved.ket:SUCCEED
+helm_unresolved_rna.ket:SUCCEED
 helm_unsplit.ket:SUCCEED
 Test 'CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM1,PEPTIDE1,1:R2-3:R1$$$V2.0': got expected error 'Polymer 'PEPTIDE1' does not contains monomer with number 3.'
-Test 'CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM1,PEPTIDE1,1:R4-1:R1$$$V2.0': got expected error 'Unknown attachment point 'R4' in monomer A6OH'
+Test 'CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM1,PEPTIDE1,1:R4-1:R1$$$V2.0': got expected error 'Unknown attachment point 'R4' in monomer 'A6OH(monomer0)''
 Test 'CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM10,PEPTIDE1,1:R2-1:R1$$$V2.0': got expected error 'Polymer 'CHEM10' not found.'
 Test 'CHEM1{[MCC]}|RNA1{R(A)P.R(C)P.R(G)P.R(T)P.R(U)P}$RNA1,PEPTIDE1,15:R2-1:R1$$$V2.0': got expected error 'Polymer 'PEPTIDE1' not found.'
-Test 'CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:R1-1:R2$$$V2.0': got expected error 'Monomer 'R' attachment point 'R2' already connected to monomer'monomer3' attachment point 'R1''
+Test 'CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:R1-1:R2$$$V2.0': got expected error 'Monomer 'R(monomer1)' attachment point 'R2' already connected to monomer'monomer3' attachment point 'R1''
 Test 'PEPTIDE1{(A:+C:0.1)}$$$$V2.0': got expected error 'Unexpected symbol. Expected digit but found '+''
 Test 'PEPTIDE1{(A:1.5+C:aaaa)}$$$$V2.0': got expected error 'Unexpected symbol. Expected digit but found 'a''
 Test 'PEPTIDE1{(A:1.5.+C:0.1)}$$$$V2.0': got expected error 'Enexpected symbol. Second dot in number'
 Test 'PEPTIDE1{A'2'}$$$$V2.0': got expected error 'Repeating not supported now.'
-Test 'PEPTIDE1{D-gGlu}$$$$V2.0': got expected error 'Unexpected symbol. Expected '.' or '}' but found '-'.'
-Test 'RNA1{R(A).R(A)p}$$$$V2.0': got expected error 'Monomer template with class 'Phosphate' and alias 'R' not found in monomer librarys'
-Test 'RNA1{R(bla-bla-bla)p}$$$$V2.0': got expected error 'Unexpected symbol. Expected ')' but found 'l'.'
-Test 'RNA1{R[P(O)(O)(=O)O]}$$$$V2.0': got expected error 'Unknown attachment point 'R1' in monomer Mod0'
+Test 'RNA1{R[P(O)(O)(=O)O]}$$$$V2.0': got expected error 'Unknown attachment point 'R1' in monomer 'Mod0(monomer1)''

@@ -21,7 +21,6 @@
 
 #include "molecule/inchi_wrapper.h"
 
-#include "base_cpp/obj.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_dearom.h"
@@ -635,10 +634,11 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
         }
 
     Molecule* target = &mol;
-    Obj<Molecule> dearom;
+    // 2do: use unique_ptr instead of Obj
+    std::optional<Molecule> dearom;
     if (has_aromatic)
     {
-        dearom.create();
+        dearom.emplace();
         dearom->clone(mol, 0, 0);
         try
         {
@@ -655,7 +655,7 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
         catch (DearomatizationException&)
         {
         }
-        target = dearom.get();
+        target = &dearom.value();
     }
     generateInchiInput(*target, input, atoms, stereo);
 

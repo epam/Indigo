@@ -9,6 +9,7 @@ RUN yum update -y
 RUN yum install -y gcc-toolset-${DEVTOOLSET_VERSION}-gcc-c++ gcc-toolset-${DEVTOOLSET_VERSION}-libasan-devel gcc-toolset-${DEVTOOLSET_VERSION}-liblsan-devel freetype-devel fontconfig-devel make python3
 RUN yum clean -y all
 RUN echo $'leak:libfontconfig\nleak:libc\n' >> /opt/external.supp
+RUN git config --global --add safe.directory /github/workspace
 
 # Enable the SCL for all bash scripts.
 ENV MANPATH=/opt/rh/rh-git${GIT_VERSION}/root/usr/share/man:/opt/rh/gcc-toolset-${DEVTOOLSET_VERSION}/root/usr/share/man \

@@ -199,6 +199,18 @@ M  END
             options.delete();
         });
 
+        test("calculate", "reaction_undefined", () => {
+            var fs = require('fs');
+            const ket = fs.readFileSync("undefined_2897.ket");
+            let options = new indigo.MapStringString();
+            selected = new indigo.VectorInt();
+            const values = indigo.calculate(ket, options, selected);
+            // fs.writeFileSync("undefined_2897_calc.json", values);
+            const calc_ref = fs.readFileSync("undefined_2897_calc.json");
+            assert.equal(values, calc_ref.toString());
+            selected.delete();
+            options.delete();
+        });
     }
 
     // Check
@@ -876,7 +888,6 @@ M  END
             let ad_options = new indigo.MapStringString();
             ad_options.set("output-content-type", "application/json");
             ad_options.set("monomerLibrary", monomersLib);
-            ad_options.set("sequence-type", "PEPTIDE");
             const res2 = indigo.convert(peptide_seq_ref, "ket", ad_options);
             assert.equal(res2, peptide_ket_ref.toString());
             ad_options.delete();
@@ -884,7 +895,7 @@ M  END
             let ad2_options = new indigo.MapStringString();
             ad2_options.set("output-content-type", "application/json");
             ad2_options.set("monomerLibrary", monomersLib);
-            ad2_options.set("sequence-type", "PEPTIDE");
+            ad2_options.set("sequence-type", "DNA");
             const res3 = indigo.convert(bug2816_seq, "ket", ad2_options);
             // fs.writeFileSync("peptide_2816_ref.ket", peptide_ket);
             const peptide_2816_ref = fs.readFileSync("peptide_2816_ref.ket");
@@ -1222,6 +1233,22 @@ M  END
     }
 
     {
+        test("macroprops", "chems", () => {
+            var fs = require('fs');
+            const chems = fs.readFileSync("props_chems.ket");
+            let options = new indigo.MapStringString();
+            options.set('json-saving-pretty', 'true');
+            options.set('nac', '0.2');
+            let json = JSON.parse(indigo.calculateMacroProperties(chems, options)).properties;            
+            // fs.writeFileSync("props_chems.json", json);
+            const json_ref = fs.readFileSync("props_chems.json");
+            assert.equal(json, json_ref.toString().trim());
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
         test("reaction to sdf", "pathway", () => {
             var fs = require('fs');
             const ket = fs.readFileSync("pathway.ket");
@@ -1231,6 +1258,46 @@ M  END
             // fs.writeFileSync("pathway.sdf", sdf);
             const sdf_ref = fs.readFileSync("pathway.sdf");
             assert.equal(sdf, sdf_ref.toString());
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("calculate pka", "PKa", () => {
+            let options = new indigo.MapStringString();
+            let pka = indigo.pka('C([C@@H](C(=O)O)N)S', options);            
+            assert.equal(pka.toString(), '8.493334');
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("calculate pka values", "PKa", () => {
+            let options = new indigo.MapStringString();
+            let pka = indigo.pkaValues('C([C@@H](C(=O)O)N)S', options);            
+            assert.equal(pka.toString(), '2.390000,8.493334,9.530001');
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("calculate LogP", "LogP", () => {
+            let options = new indigo.MapStringString();
+            let pka = indigo.logp('C([C@@H](C(=O)O)N)S', options);            
+            assert.equal(pka.toString(), '-0.671900');
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("molar refractivity", "molarRefractivity", () => {
+            let options = new indigo.MapStringString();
+            let pka = indigo.molarRefractivity('C([C@@H](C(=O)O)N)S', options);            
+            assert.equal(pka.toString(), '29.464200');
             options.delete();
             assert(true);
         });

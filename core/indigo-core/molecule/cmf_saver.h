@@ -19,10 +19,11 @@
 #ifndef __cmf_saver_h__
 #define __cmf_saver_h__
 
-#include "base_cpp/obj.h"
 #include "lzw/lzw_encoder.h"
 #include "math/algebra.h"
 #include "molecule/base_molecule.h"
+
+#include <memory>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -104,9 +105,9 @@ namespace indigo
         TL_CP_DECL(Array<int>, _atom_sequence);
 
         Output* _output;
-        Obj<LzwEncoder> _encoder_obj;
+        std::unique_ptr<LzwEncoder> _encoder_obj;
         LzwEncoder* _ext_encoder;
-        Obj<LzwOutput> _encoder_output_obj;
+        std::unique_ptr<LzwOutput> _encoder_output_obj;
 
         Molecule* _mol;
 

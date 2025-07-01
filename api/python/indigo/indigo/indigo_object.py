@@ -964,6 +964,36 @@ class IndigoObject:
 
         IndigoLib.checkResult(self._lib().indigoValidateChirality(self.id))
 
+    def stereocenterCIPDescriptor(self):
+        """Atom method returns the cip descriptor of the given atom
+
+        Returns:
+            int: atom cip descriptor
+                * NONE = 0
+                * UNKNOWN = 1
+                * s = 2
+                * r = 3
+                * S = 4
+                * R = 5
+                * E = 6
+                * Z = 7
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoStereocenterCIPDescriptor(self.id)
+        )
+
+    def addCIPStereoDescriptors(self):
+        """Molecule method adds cip descriptors to stereocenters
+
+        Returns:
+            int: 0 if there are no errors
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoAddCIPStereoDescriptors(self.id)
+        )
+
     def singleAllowedRGroup(self):
         """Atom method returns single allowed r-group
 
@@ -1168,6 +1198,42 @@ class IndigoObject:
         """
 
         return IndigoLib.checkResult(self._lib().indigoValence(self.id))
+
+    def atomIndex(self):
+        """Atom method returns the atom index number
+
+        Returns:
+            int: atom index
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoAtomIndex(self.id))
+
+    def bondIndex(self):
+        """Bond method returns the bond index number
+
+        Returns:
+            int: bond index
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoBondIndex(self.id))
+
+    def bondBegin(self):
+        """Bond method returns the begining atom index of the bond
+
+        Returns:
+            int: begining atom index
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoBondBegin(self.id))
+
+    def bondEnd(self):
+        """Bond method returns the ending atom index of the bond
+
+        Returns:
+            int: ending atom index
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoBondEnd(self.id))
 
     def checkValence(self):
         """Atom method validates the valence
@@ -2523,6 +2589,17 @@ class IndigoObject:
         """
 
         return IndigoLib.checkResultFloat(self._lib().indigoPka(self.id))
+
+    def pKaValues(self):
+        """Molecule method returns calculated Lee-Crippen SMARTS pKa values
+
+        Returns:
+            array of floats: calculated pKa values of the molecule
+        """
+        pka_string = IndigoLib.checkResultString(
+            self._lib().indigoPkaValues(self.id)
+        )
+        return pka_string
 
     def bondOrder(self):
         """Bond method returns bond order

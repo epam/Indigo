@@ -1,0 +1,19 @@
+[
+    {
+        "grossFormula": "C13 H18 N6 O6",
+        "mass": 354.318622,
+        "pKa": 5.96,
+        "extinctionCoefficient": 0,
+        "hydrophobicity": [
+            0.616
+        ],
+        "monomerCount": {
+            "peptides": {
+                "A": 1
+            },
+            "nucleotides": {
+                "A": 1
+            }
+        }
+    }
+]
