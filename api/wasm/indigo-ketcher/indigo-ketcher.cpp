@@ -1175,7 +1175,6 @@ namespace indigo
         return json_out;
     }
 
-
     EMSCRIPTEN_BINDINGS(module)
     {
         emscripten::function("version", &version);
