@@ -895,6 +895,12 @@ class IndigoLib:
         IndigoLib.lib.indigoUnfoldHydrogens.argtypes = [c_int]
         IndigoLib.lib.indigoFoldUnfoldHydrogens.restype = c_int
         IndigoLib.lib.indigoFoldUnfoldHydrogens.argtypes = [c_int]
+        IndigoLib.lib.indigoExpandMonomers.restype = c_int
+        IndigoLib.lib.indigoExpandMonomers.argtypes = [
+            c_int,
+            c_int,
+            POINTER(c_int),
+        ]
         IndigoLib.lib.indigoClearXYZ.restype = c_int
         IndigoLib.lib.indigoClearXYZ.argtypes = [c_int]
         IndigoLib.lib.indigoLayout.restype = c_int

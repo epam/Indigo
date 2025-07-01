@@ -961,6 +961,9 @@ namespace com.epam.indigo
         public static extern int indigoFoldUnfoldHydrogens(int item);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoExpandMonomers(int item, int n_expand_ids, int[] expand_ids);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoClearXYZ(int item);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]

@@ -1672,6 +1672,12 @@ namespace com.epam.indigo
             dispatcher.checkResult(IndigoLib.indigoFoldUnfoldHydrogens(self));
         }
 
+        public void expandMonomers(int[] expand_ids)
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(IndigoLib.indigoExpandMonomers(self, expand_ids.Length, expand_ids));
+        }
+
         public void clearXYZ()
         {
             dispatcher.setSessionID();
