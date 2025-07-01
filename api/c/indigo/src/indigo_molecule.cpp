@@ -4963,7 +4963,7 @@ CEXPORT int indigoBondEnd(int bond)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoExpandMonomers(int item, int n_expand_ids, int* expand_ids)
+CEXPORT int indigoExpandMonomers(int item, int n_expand_ids, const int* expand_ids)
 {
     INDIGO_BEGIN
     {

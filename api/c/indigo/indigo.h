@@ -258,7 +258,7 @@ CEXPORT const char* indigoHelm(int molecule, int library);
 CEXPORT int indigoSaveJsonToFile(int item, const char* filename);
 CEXPORT int indigoSaveJson(int item, int output);
 
-CEXPORT int indigoExpandMonomers(int item, int n_expand_ids, int* expand_ids);
+CEXPORT int indigoExpandMonomers(int item, int n_expand_ids, const int* expand_ids);
 
 // accepts molecules and reactions (but not query ones)
 CEXPORT int indigoSaveCml(int object, int output);
