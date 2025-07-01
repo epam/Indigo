@@ -5531,3 +5531,9 @@ N[C@H]1[C@@H](C)C[C@H](C)[C@H](C)C1 |&1:1,2,5,7,r|
 N[C@H]1[C@@H](C)C[C@H](C)[C@H](C)C1 |&1:1,2,5,7,r|
 N[C@H]1[C@@H](C)C[C@H](C)[C@H](C)C1 |o1:1,2,5,7,r|
 N[C@H]1[C@@H](C)C[C@H](C)[C@H](C)C1 |o1:1,2,5,7,r|
+issue 2952 expand c api for cip labels
+count stereocenters: 2
+cip description before: 0
+cip description before: 0
+cip description after 5
+cip description after 4

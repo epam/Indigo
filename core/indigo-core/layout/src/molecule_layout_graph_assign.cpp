@@ -252,7 +252,7 @@ int MoleculeLayoutGraphSimple::_pattern_embedding(Graph& subgraph, Graph& superg
     layout_graph._first_vertex_idx = layout_graph.vertexBegin();
 
     if (layout_graph._outline.get() == 0)
-        layout_graph._outline.create();
+        layout_graph._outline = std::make_unique<Array<Vec2f>>();
     layout_graph._outline->copy(pattern_graph.getOutline());
 
     return 0;
@@ -544,8 +544,8 @@ void MoleculeLayoutGraph::_buildOutline(void)
 
     pos_i = getPos(i);
 
-    if (_outline.get() == 0)
-        _outline.create();
+    if (_outline.get() == nullptr)
+        _outline = std::make_unique<Array<Vec2f>>();
     else
         _outline->clear();
 

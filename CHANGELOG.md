@@ -1,3 +1,111 @@
+# Indigo 1.32.0
+Released 2025-06-18
+
+## Features
+* #2767 Add support for Postgres 17
+* #1970 New text entities in KET-format
+* #2843 Support of "HELM alias" property for monomers
+* #2844 Support for "Modification Type" property of monomers
+* #2870 Add suuport for flip expanded monomer
+* #2840 Add InChI key method to cpp api
+
+## Bugfixes and improvements
+* #2805 Saving of 3:3 reaction to SDF v2000 causes exception: Convert error! core: <reaction> is not a base molecule
+* #2781 Ketcher fails to save structure in MOL V3000 format when encountering custom attachment labels like “Ch”
+* #2851 Macromolecule property Molecular mass wrong calculation
+* #2772 Saving monomers to SDF v3000 works wrong - system saves every monomer template for every monomer on the canvas (geometry progression)
+* #2860 Copy to clipboard doesn't work if Multi-Tailed Arrow present on the canvas
+* #2858 Export to any format doesn't work. System throw exception
+* #2047 Saved Ellipse and Line Shapes in CDX, CDXML, Base 64 CDX formats are not correctly displayed after opening
+* #2868 Indigo use wrong rotate parameter name KET files
+* #2867 API calculateMacroProperties does not allow to pass parameters for UPC and NAC
+* #2859 System wrongly reverse reaction order on Calculated Values dialog (and thus - values are wrong)
+* #2462 Can't save a reaction with Multi-Tailed Arrow to Daylight SMARTS format
+* #2892 API calculateMacroProperties does not work if only molecule passed as a parameter without monomers
+* #2888 Unable to export single expanded monomer to SVG Image, system throws error: array: invalid index 0
+* #1679 System ignores carrige return in text blocks in loaded CDX
+* #1683 System shifts text label to the right
+* #2897 Calculated Values doesn't work if reaction arrow overlaps reactant bounding box
+* #2931 Calculated values doesn't work for "rich" monomer chain
+* #2917 Molecular mass and Molecular formula are not calculated for Molecule (custom CHEM)
+* #2939 System doesn't calculate melting temperature for GC nucleotides pair
+* #2930 System shouldn't count bases that are not part of a nucleotide/nucleoside as RNA/DNA
+* #2947 System "caches" PNG/SVG of canvas and stops reflect rotation/flip chanages if any
+* #2987 Melting temperature value missed if UPC or NAC value set to zero
+* #2946 Non-standard connections cause chain break in macromolecule properties calculation
+* #2902 Indigo does not calculate properties for Peptides tab if Phosphate is missing in mixed chain
+* #2903 Indigo fails to calculate properties when two chains are connected via a microstructure
+* #2904 Indigo fails to calculate properties when two chains are connected via a CHEM
+* #2905 Incorrect Calculate Properties result when monomers are connected via not a R2-R1
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.31.0-rc.1...indigo-1.32.0
+
+# Indigo 1.31.0
+Released 2025-06-17
+
+## Features
+* #2788 Support for PNG/SVG export of expanded monomers
+
+## Bugfixes and improvements
+* #2150 Can't save a schema with some elements from Periodic Table in PNG and SVG format
+* #425 Smiles with attachment points is not read correctly (valences are wrong)
+* #2747 Incorrect substituent position
+* #1680 System can't load CDX with (unsupported) brackets inside
+* #1631 Add/Remove hydrogens changes Radical value from Diradical (triplet) to Diradical (singlet)
+* #2755 Error occurs on click of "Remove Explicit Hydrogens" in reaction
+* #1686 System shows positive charge modificator as extra + in addition to charge modified molecule 
+* #2810 Unnecessary rearrangment of cdxml reaction
+* #2807 Missing label from cdxml
+* #2801 Can't render reactions which contain brackets
+* #2778 Can't render fragments with multiple external connections
+* #2815 CIP labels are not rendered
+* #2591 Reagents are repositioned above the reaction arrow after saving and loading RXN V2000/V3000 files
+* #2832 Load from clipboard ignores RNA/DNA/PEP switcher and always loads DNA ambiguous bases even if RNA mode switched on
+* #2845 Export to PNG/SVG works wrong for labels
+* #2722 Monomer could be saved to RDF V3000 format but can't be loaded back exception
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.30.0-rc.1...indigo-1.31.0
+
+# Indigo 1.30.1
+Released 2025-04-17
+
+## Features
+* 2790 Support of "expanded" monomer option
+
+## Bugfixes and improvements
+* 2513 Elliptical arrows can not be saved to the png
+* 2412 User can't correctly save (or make a layout) to RDF/RXN reaction several products or with separate positioned molecules
+* 2746 Incorrect phosphorus valence
+* 2708 Export to SMILES works wrong if loaded from MOL
+* 2707 Atom Query feature export: System lost MOST "Substitution count" values
+* 2702 Export molecule which contains atom with five neighbors and stereo-bond cause error
+* 2704 System losts one stereo label if load from MOL
+* 2699 R Group logic condition is wrong if loaded from MOL
+* 2816 Format recognition order of content from clipboard should be changed for Sequence mode canvas
+* 2818 Library ambiguius RNA bases loaded from HELM as bases with % label
+* 2826 Unable to load ambiguous RNA and ambiguous DNA monomers with same name from HELM
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.29.0...indigo-1.30.1
+
+# Indigo 1.29.0
+Released 2025-03-26
+
+## Features
+* #1844 - Implement GenBank/GenPept sequences import
+* #2552 - "Calculate Properties" for macromolecules 
+* #2713 - Support for the star atom (*)
+
+## Bugfixes and improvements
+* #2739 - Wrong stereochemistry when reading cdxml reaction 
+* #2744 - Indigo ignores alternate name for templates in MOL v3000 
+* #2716 - Valid CXSMILES rejected 
+* #2732 - V2000 Mol file loader skips essential SGroup line in certain cases 
+* #2589 - Jump on uninitialised value
+* #2763 - System should ignore spaces before line indexes on GenBank/GenPept sequences import
+* #2798 - Peptide sequence not pasting directly on canvas
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.28.0-rc.1...indigo-1.29.0
+
 # Indigo 1.28.0
 Released 2025-02-13
 

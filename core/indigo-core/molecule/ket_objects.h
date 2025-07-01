@@ -48,7 +48,10 @@ namespace indigo
     class MonomerTemplate;
     class MonomerTemplateLibrary;
 
+    // Connection point ID to monomer ref and attachemnt point ID
     using ket_connections_type = std::map<std::string, std::pair<std::string, std::string>>;
+    // Connection point ID to molecule ref and atom idx
+    using ket_connections_to_mol_type = std::map<std::string, std::pair<std::string, int>>;
 
     class KetQueryProperties : public KetObjWithProps
     {
@@ -611,14 +614,18 @@ namespace indigo
 
         void connectAttachmentPointTo(const std::string& ap_id, const std::string& monomer_ref, const std::string& other_ap_id);
 
-        void disconnectAttachmentPoint(const std::string& ap_id)
-        {
-            _connections.erase(ap_id);
-        };
+        void connectAttachmentPointToMolecule(const std::string& ap_id, const std::string& molecule_ref, int atom_idx);
+
+        void disconnectAttachmentPoint(const std::string& ap_id);
 
         const ket_connections_type& connections() const
         {
             return _connections;
+        };
+
+        const ket_connections_to_mol_type& connectionsToMolecules() const
+        {
+            return _connections_to_molecules;
         };
 
         MonomerType monomerType() const
@@ -649,6 +656,7 @@ namespace indigo
         std::optional<Vec2f> _position;
         std::map<std::string, KetAttachmentPoint> _attachment_points;
         ket_connections_type _connections;
+        ket_connections_to_mol_type _connections_to_molecules;
         std::string _ref;
         std::set<std::string> _hydrogen_connections;
     };
@@ -683,7 +691,8 @@ namespace indigo
     private:
         enum class BoolProps
         {
-            expanded
+            expanded,
+            selected
         };
         enum class IntProps
         {
@@ -727,6 +736,7 @@ namespace indigo
         KetConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) : _connection_type(KetConnectionSingle), _ep1(ep1), _ep2(ep2){};
 
         const std::map<std::string, int>& getStringPropStrToIdx() const override;
+        const std::map<std::string, int>& getBoolPropStrToIdx() const override;
 
         const TYPE connType() const;
 
@@ -761,6 +771,12 @@ namespace indigo
         {
             label,
         };
+
+        enum class BoolProps
+        {
+            selected,
+        };
+
         std::string _connection_type;
         KetConnectionEndPoint _ep1;
         KetConnectionEndPoint _ep2;

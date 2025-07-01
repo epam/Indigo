@@ -349,13 +349,17 @@ namespace indigo
     IndigoKetcherObject loadMoleculeOrReaction(const std::string& data, const std::map<std::string, std::string>& options, int library = -1,
                                                bool use_document = false)
     {
-        static std::unordered_map<std::string, std::string> seq_formats = {{"chemical/x-peptide-sequence", "PEPTIDE"},
-                                                                           {"chemical/x-peptide-sequence-3-letter", "PEPTIDE-3-LETTER"},
-                                                                           {"chemical/x-rna-sequence", "RNA"},
-                                                                           {"chemical/x-dna-sequence", "DNA"}};
+        constexpr auto PEPTIDE = "PEPTIDE";
+        constexpr auto PEPTIDE_3_LETTER = "PEPTIDE-3-LETTER";
+        constexpr auto DNA = "DNA";
+        constexpr auto RNA = "RNA";
+        static std::unordered_map<std::string, std::string> seq_formats = {{"chemical/x-peptide-sequence", PEPTIDE},
+                                                                           {"chemical/x-peptide-sequence-3-letter", PEPTIDE_3_LETTER},
+                                                                           {"chemical/x-rna-sequence", RNA},
+                                                                           {"chemical/x-dna-sequence", DNA}};
 
         static std::unordered_map<std::string, std::string> fasta_formats = {
-            {"chemical/x-peptide-fasta", "PEPTIDE"}, {"chemical/x-rna-fasta", "RNA"}, {"chemical/x-dna-fasta", "DNA"}};
+            {"chemical/x-peptide-fasta", PEPTIDE}, {"chemical/x-rna-fasta", RNA}, {"chemical/x-dna-fasta", DNA}};
 
         print_js("loadMoleculeOrReaction:");
         std::vector<std::string> exceptionMessages;
@@ -432,17 +436,18 @@ namespace indigo
             if (i == options.end() || i->second == "false")
             {
                 // Let's try a simple molecule
-                print_js("try as molecule");
-                objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
+                print_js("try as molecule:1");
+                objectId = indigoLoadMoleculeWithLibFromBuffer(data.c_str(), data.size(), library);
                 if (objectId >= 0)
                 {
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
                 }
                 exceptionMessages.emplace_back(indigoGetLastError());
+                print_js(indigoGetLastError());
 
                 // Let's try reaction
                 print_js("try as reaction");
-                objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
+                objectId = indigoLoadReactionWithLibFromBuffer(data.c_str(), data.size(), library);
                 if (objectId >= 0)
                 {
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
@@ -452,24 +457,28 @@ namespace indigo
                 if (library >= 0)
                 {
                     auto sequence_type = options.find("sequence-type");
-                    if (sequence_type != options.end() && sequence_type->second == "PEPTIDE")
+                    print_js("try as PEPTIDE-3-LETTER");
+                    objectId = indigoLoadSequenceFromString(data.c_str(), PEPTIDE_3_LETTER, library);
+                    if (objectId >= 0)
                     {
-                        print_js("try as PEPTIDE-3-LETTER");
-                        objectId = indigoLoadSequenceFromString(data.c_str(), "PEPTIDE-3-LETTER", library);
-                        if (objectId >= 0)
-                        {
-                            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
-                        }
+                        return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                     }
-                    auto is_upper =
-                        std::all_of(sequence_type->second.begin(), sequence_type->second.end(), [](int ch) { return !std::isalpha(ch) || std::isupper(ch); });
-                    auto is_lower =
-                        std::all_of(sequence_type->second.begin(), sequence_type->second.end(), [](int ch) { return !std::isalpha(ch) || std::islower(ch); });
-                    if (sequence_type != options.end() && (is_upper || is_lower))
+                    auto is_upper = std::all_of(data.begin(), data.end(), [](int ch) { return !std::isalpha(ch) || std::isupper(ch); });
+                    auto is_lower = std::all_of(data.begin(), data.end(), [](int ch) { return !std::isalpha(ch) || std::islower(ch); });
+                    if (is_upper || is_lower)
                     {
-                        std::string msg = "try as " + sequence_type->second;
-                        print_js(msg.c_str());
-                        objectId = indigoLoadSequenceFromString(data.c_str(), sequence_type->second.c_str(), library);
+                        if (sequence_type != options.end()) // try according to selector
+                        {
+                            std::string msg = "try as " + sequence_type->second;
+                            print_js(msg.c_str());
+                            objectId = indigoLoadSequenceFromString(data.c_str(), sequence_type->second.c_str(), library);
+                            if (objectId >= 0)
+                            {
+                                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                            }
+                        }
+                        print_js("try as PEPTIDE");
+                        objectId = indigoLoadSequenceFromString(data.c_str(), PEPTIDE, library);
                         if (objectId >= 0)
                         {
                             return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
@@ -491,14 +500,11 @@ namespace indigo
                             return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                         }
                     }
-                    else
+                    print_js("try as PEPTIDE");
+                    objectId = indigoLoadSequenceFromString(data.c_str(), PEPTIDE, library);
+                    if (objectId >= 0)
                     {
-                        print_js("try as PEPTIDE-3-LETTER");
-                        objectId = indigoLoadSequenceFromString(data.c_str(), "PEPTIDE-3-LETTER", library);
-                        if (objectId >= 0)
-                        {
-                            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
-                        }
+                        return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                     }
                     print_js("try as HELM");
                     objectId = indigoLoadHelmFromString(data.c_str(), library);
@@ -510,16 +516,17 @@ namespace indigo
             }
             exceptionMessages.emplace_back(indigoGetLastError());
             // Let's try query molecule
-            print_js("try as query molecule");
-            objectId = indigoLoadQueryMoleculeFromBuffer(data.c_str(), data.size());
+            print_js("try as query molecule:2");
+            objectId = indigoLoadQueryMoleculeWithLibFromBuffer(data.c_str(), data.size(), library);
             if (objectId >= 0)
             {
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMoleculeQuery);
             }
+            print_js(indigoGetLastError());
             exceptionMessages.emplace_back(indigoGetLastError());
             // Let's try query reaction
             print_js("try as query reaction");
-            objectId = indigoLoadQueryReactionFromBuffer(data.c_str(), data.size());
+            objectId = indigoLoadQueryReactionWithLibFromBuffer(data.c_str(), data.size(), library);
             if (objectId >= 0)
             {
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReactionQuery);
@@ -527,7 +534,7 @@ namespace indigo
 
             // Let's try a simple molecule
             print_js("try as molecule");
-            objectId = indigoLoadMoleculeFromBuffer(data.c_str(), data.size());
+            objectId = indigoLoadMoleculeWithLibFromBuffer(data.c_str(), data.size(), library);
             if (objectId >= 0)
             {
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
@@ -536,7 +543,7 @@ namespace indigo
 
             // Let's try reaction
             print_js("try as reaction");
-            objectId = indigoLoadReactionFromBuffer(data.c_str(), data.size());
+            objectId = indigoLoadReactionWithLibFromBuffer(data.c_str(), data.size(), library);
             if (objectId >= 0)
             {
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETReaction);
@@ -928,9 +935,10 @@ namespace indigo
         enum
         {
             IDX_REACTANTS = 0,
-            IDX_PRODUCTS = 1
+            IDX_PRODUCTS = 1,
+            IDX_UNDEFINED = 2
         };
-        std::vector<std::string> molWeights[2], mamMasses[2], misoMasses[2], massCompositions[2], grossFormulas[2];
+        std::vector<std::string> molWeights[3], mamMasses[3], misoMasses[3], massCompositions[3], grossFormulas[3];
 
         const auto mol_iterator = IndigoObject(_checkResult(indigoIterateMolecules(iko.id())));
         while (const auto mol_id = _checkResult(indigoNext(mol_iterator.id)))
@@ -939,17 +947,63 @@ namespace indigo
                 jsThrow("Cannot calculate properties for RGroups");
         }
         int base = 0;
-        calculate_iteration_object(IndigoObject(_checkResult(indigoIterateReactants(iko.id()))), molWeights[IDX_REACTANTS], mamMasses[IDX_REACTANTS],
-                                   misoMasses[IDX_REACTANTS], massCompositions[IDX_REACTANTS], grossFormulas[IDX_REACTANTS], selected_atoms, base);
+        if (_checkResult(indigoCountReactants(iko.id())) || _checkResult(indigoCountProducts(iko.id())))
+        {
+            calculate_iteration_object(IndigoObject(_checkResult(indigoIterateReactants(iko.id()))), molWeights[IDX_REACTANTS], mamMasses[IDX_REACTANTS],
+                                       misoMasses[IDX_REACTANTS], massCompositions[IDX_REACTANTS], grossFormulas[IDX_REACTANTS], selected_atoms, base);
 
-        calculate_iteration_object(IndigoObject(_checkResult(indigoIterateProducts(iko.id()))), molWeights[IDX_PRODUCTS], mamMasses[IDX_PRODUCTS],
-                                   misoMasses[IDX_PRODUCTS], massCompositions[IDX_PRODUCTS], grossFormulas[IDX_PRODUCTS], selected_atoms, base);
+            calculate_iteration_object(IndigoObject(_checkResult(indigoIterateProducts(iko.id()))), molWeights[IDX_PRODUCTS], mamMasses[IDX_PRODUCTS],
+                                       misoMasses[IDX_PRODUCTS], massCompositions[IDX_PRODUCTS], grossFormulas[IDX_PRODUCTS], selected_atoms, base);
 
-        molecularWeightStream << VectorStringBracketed(molWeights[IDX_REACTANTS], molWeights[IDX_PRODUCTS]);
-        mostAbundantMassStream << VectorStringBracketed(mamMasses[IDX_REACTANTS], mamMasses[IDX_PRODUCTS]);
-        monoisotopicMassStream << VectorStringBracketed(misoMasses[IDX_REACTANTS], misoMasses[IDX_PRODUCTS]);
-        massCompositionStream << VectorStringBracketed(massCompositions[IDX_REACTANTS], massCompositions[IDX_PRODUCTS]);
-        grossFormulaStream << VectorStringBracketed(grossFormulas[IDX_REACTANTS], grossFormulas[IDX_PRODUCTS]);
+            molecularWeightStream << VectorStringBracketed(molWeights[IDX_REACTANTS], molWeights[IDX_PRODUCTS]);
+            mostAbundantMassStream << VectorStringBracketed(mamMasses[IDX_REACTANTS], mamMasses[IDX_PRODUCTS]);
+            monoisotopicMassStream << VectorStringBracketed(misoMasses[IDX_REACTANTS], misoMasses[IDX_PRODUCTS]);
+            massCompositionStream << VectorStringBracketed(massCompositions[IDX_REACTANTS], massCompositions[IDX_PRODUCTS]);
+            grossFormulaStream << VectorStringBracketed(grossFormulas[IDX_REACTANTS], grossFormulas[IDX_PRODUCTS]);
+        }
+        else
+        {
+            calculate_iteration_object(IndigoObject(_checkResult(indigoIterateMolecules(iko.id()))), molWeights[IDX_UNDEFINED], mamMasses[IDX_UNDEFINED],
+                                       misoMasses[IDX_UNDEFINED], massCompositions[IDX_UNDEFINED], grossFormulas[IDX_UNDEFINED], selected_atoms, base);
+
+            molecularWeightStream << VectorStringSemicoloned(molWeights[IDX_UNDEFINED]);
+            mostAbundantMassStream << VectorStringSemicoloned(mamMasses[IDX_UNDEFINED]);
+            monoisotopicMassStream << VectorStringSemicoloned(misoMasses[IDX_UNDEFINED]);
+            massCompositionStream << VectorStringSemicoloned(massCompositions[IDX_UNDEFINED]);
+            grossFormulaStream << VectorStringSemicoloned(grossFormulas[IDX_UNDEFINED]);
+        }
+    }
+
+    std::string pka(const std::string& data, const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        indigoSetOptions(options);
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        return std::to_string(indigoPka(iko.id()));
+    }
+
+    std::string pkaValues(const std::string& data, const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        indigoSetOptions(options);
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        return indigoPkaValues(iko.id());
+    }
+
+    std::string logp(const std::string& data, const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        indigoSetOptions(options);
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        return std::to_string(indigoLogP(iko.id()));
+    }
+
+    std::string molarRefractivity(const std::string& data, const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        indigoSetOptions(options);
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        return std::to_string(indigoMolarRefractivity(iko.id()));
     }
 
     std::string calculate(const std::string& data, const std::map<std::string, std::string>& options, const std::vector<int>& selected_atoms)
@@ -1136,6 +1190,10 @@ namespace indigo
         emscripten::function("check", &check);
         emscripten::function("calculateCip", &calculateCip);
         emscripten::function("calculate", &calculate);
+        emscripten::function("pka", &pka);
+        emscripten::function("pkaValues", &pkaValues);
+        emscripten::function("logp", &logp);
+        emscripten::function("molarRefractivity", &molarRefractivity);
         emscripten::function("calculateMacroProperties", &calculateMacroProperties);
         emscripten::function("render", &render);
         emscripten::function("reactionComponents", &reactionComponents);

@@ -1,19 +1,8 @@
 [
     {
-        "grossFormula": "C20 N7 O12 P H26",
-        "mass": 587.433905,
-        "monomerCount": {
-            "peptides": {},
-            "nucleotides": {
-                "A": 1,
-                "T": 1
-            }
-        }
-    },
-    {
-        "grossFormula": "C58 N26 O36 P4 H74",
+        "grossFormula": "C58 H74 N26 O36 P4",
         "mass": 1835.255813,
-        "Tm": 38.795617,
+        "Tm": 31.445617,
         "monomerCount": {
             "peptides": {},
             "nucleotides": {
@@ -24,11 +13,13 @@
         }
     },
     {
-        "grossFormula": "C9 N2 O9 P H13",
-        "mass": 324.181283,
+        "grossFormula": "C29 H39 N9 O21 P2",
+        "mass": 911.615188,
         "monomerCount": {
             "peptides": {},
             "nucleotides": {
+                "A": 1,
+                "T": 1,
                 "U": 1
             }
         }

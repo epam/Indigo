@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include "base_cpp/array.h"
+
 namespace indigo
 {
     class Molecule;
@@ -28,5 +30,6 @@ namespace indigo
         static double logP(Molecule& molecule);
         static double molarRefractivity(Molecule& molecule);
         static double pKa(Molecule& molecule);
+        static void getPKaValues(Molecule& molecule, Array<double>& values);
     };
 }

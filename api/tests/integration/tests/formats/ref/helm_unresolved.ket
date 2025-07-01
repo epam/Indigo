@@ -1,0 +1,288 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "monomer0"
+            },
+            {
+                "$ref": "monomer1"
+            },
+            {
+                "$ref": "ambiguousMonomer-2"
+            },
+            {
+                "$ref": "monomer3"
+            },
+            {
+                "$ref": "monomer4"
+            }
+        ],
+        "connections": [
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer0",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer1",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer1",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "monomerId": "ambiguousMonomer-2",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer3",
+                    "attachmentPointId": "R3"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer4",
+                    "attachmentPointId": "R1"
+                }
+            }
+        ],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-AminoAcidUnres1"
+            },
+            {
+                "$ref": "monomerTemplate-AminoAcidUnres2"
+            },
+            {
+                "$ref": "monomerTemplate-AminoAcidUnres3"
+            },
+            {
+                "$ref": "monomerTemplate-SugarUnres1"
+            },
+            {
+                "$ref": "monomerTemplate-BaseUnres2"
+            },
+            {
+                "$ref": "ambiguousMonomerTemplate-Var0"
+            }
+        ]
+    },
+    "monomer0": {
+        "type": "monomer",
+        "id": "0",
+        "seqid": 1,
+        "position": {
+            "x": 0.000000,
+            "y": -0.000000
+        },
+        "alias": "Unres1",
+        "templateId": "AminoAcidUnres1"
+    },
+    "monomer1": {
+        "type": "monomer",
+        "id": "1",
+        "seqid": 2,
+        "position": {
+            "x": 1.500000,
+            "y": -0.000000
+        },
+        "alias": "Unres2",
+        "templateId": "AminoAcidUnres2"
+    },
+    "ambiguousMonomer-2": {
+        "type": "ambiguousMonomer",
+        "id": "2",
+        "position": {
+            "x": 3.000000,
+            "y": -0.000000
+        },
+        "seqid": 3,
+        "alias": "Var0",
+        "templateId": "Var0"
+    },
+    "monomer3": {
+        "type": "monomer",
+        "id": "3",
+        "seqid": 4,
+        "position": {
+            "x": 0.000000,
+            "y": -1.500000
+        },
+        "alias": "Unres1",
+        "templateId": "SugarUnres1"
+    },
+    "monomer4": {
+        "type": "monomer",
+        "id": "4",
+        "seqid": 5,
+        "position": {
+            "x": 0.000000,
+            "y": -3.000000
+        },
+        "alias": "Unres2",
+        "templateId": "BaseUnres2"
+    },
+    "monomerTemplate-AminoAcidUnres1": {
+        "type": "monomerTemplate",
+        "id": "AminoAcidUnres1",
+        "class": "AminoAcid",
+        "alias": "Unres1",
+        "aliasHELM": "Unres1",
+        "unresolved": true,
+        "attachmentPoints": [
+            {
+                "attachmentAtom": -1,
+                "label": "R1"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R2"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R3"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R4"
+            }
+        ],
+        "atoms": [],
+        "bonds": []
+    },
+    "monomerTemplate-AminoAcidUnres2": {
+        "type": "monomerTemplate",
+        "id": "AminoAcidUnres2",
+        "class": "AminoAcid",
+        "alias": "Unres2",
+        "aliasHELM": "Unres2",
+        "unresolved": true,
+        "attachmentPoints": [
+            {
+                "attachmentAtom": -1,
+                "label": "R1"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R2"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R3"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R4"
+            }
+        ],
+        "atoms": [],
+        "bonds": []
+    },
+    "monomerTemplate-AminoAcidUnres3": {
+        "type": "monomerTemplate",
+        "id": "AminoAcidUnres3",
+        "class": "AminoAcid",
+        "alias": "Unres3",
+        "aliasHELM": "Var0",
+        "unresolved": true,
+        "attachmentPoints": [
+            {
+                "attachmentAtom": -1,
+                "label": "R1"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R2"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R3"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R4"
+            }
+        ],
+        "atoms": [],
+        "bonds": []
+    },
+    "monomerTemplate-SugarUnres1": {
+        "type": "monomerTemplate",
+        "id": "SugarUnres1",
+        "class": "Sugar",
+        "alias": "Unres1",
+        "aliasHELM": "Unres1",
+        "unresolved": true,
+        "attachmentPoints": [
+            {
+                "attachmentAtom": -1,
+                "label": "R1"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R2"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R3"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R4"
+            }
+        ],
+        "atoms": [],
+        "bonds": []
+    },
+    "monomerTemplate-BaseUnres2": {
+        "type": "monomerTemplate",
+        "id": "BaseUnres2",
+        "class": "Base",
+        "alias": "Unres2",
+        "aliasHELM": "Unres2",
+        "unresolved": true,
+        "attachmentPoints": [
+            {
+                "attachmentAtom": -1,
+                "label": "R1"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R2"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R3"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R4"
+            }
+        ],
+        "atoms": [],
+        "bonds": []
+    },
+    "ambiguousMonomerTemplate-Var0": {
+        "type": "ambiguousMonomerTemplate",
+        "subtype": "mixture",
+        "id": "Var0",
+        "alias": "Var0",
+        "options": [
+            {
+                "templateId": "AminoAcidUnres1"
+            },
+            {
+                "templateId": "AminoAcidUnres2"
+            },
+            {
+                "templateId": "AminoAcidUnres3"
+            }
+        ]
+    }
+}

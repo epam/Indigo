@@ -35,7 +35,7 @@ helm_data = {
     "helm_chem_peptide": "CHEM1{[PEG2]}|PEPTIDE1{W.N.D.[Pen].G.[Orn].D.A.D.G.S.G.[Cap]}$CHEM1,PEPTIDE1,1:R1-1:R1$$$V2.0",
     "helm_annotations": 'BLOB1{BEAD}"Animated Polystyrene"|CHEM1{[hxy]"Annotation"}|RNA1{R(A"mutation")P.R(U)P.R(G)P}$$$$V2.0',
     "helm_chem_rna": "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:R1-3:R2$$$V2.0",
-    "helm_rna_without_base": "RNA1{RP}$$$$V2.0",
+    "helm_rna_without_base": "RNA1{R.P}$$$$V2.0",
     "helm_mixed_base": "RNA1{[dR](A)P.[dR](A+G)P.[dR](A)P.[dR](G+C)}$$$$V2.0",
     "helm_mixed_custom": "RNA1{[dR](A:10+[Xan]:20+G:30+T:50)P.[dR](A:10+C:20+G:30+T:50)P.[dR](A+C+G+T)}$$$$V2.0",
     "helm_aminoacids_variants": "PEPTIDE1{([Dha]+N).(L+I).(E+Q).(A+C+D+E+F+G+H+I+K+L+M+N+O+P+Q+R+S+T+U+V+W+Y)}$$$$V2.0",
@@ -50,6 +50,10 @@ helm_data = {
     "helm_2818": "RNA1{R(A,C,G,U)P.R(C,G,U)P.R(A,G,U)P.R(A,C,U)P.R(G,U)P.R(A,U)P.R(C,U)P}$$$$V2.0",
     "helm_2826": "RNA1{[dR](A,C,G,T)P.[dR](A,G,T)P.[dR](A,T)P}|RNA2{R(A,C,G,U)P.R(A,C,U)P.R(A,U)[Ssp]}|RNA3{[RSpabC](A,U)P}$RNA1,RNA2,2:pair-8:pair|RNA1,RNA2,5:pair-5:pair|RNA2,RNA1,2:pair-8:pair$$$V2.0",
     "helm_alias": "RNA1{m(A)P.[n3r](C)P}$$$$V2.0",
+    "helm_no_brackets": "PEPTIDE1{DACys.C.(meA+C)}$$$$V2.0",
+    "helm_unresolved": "PEPTIDE1{Unres1.Unres2.(Unres1+Unres2+Unres3)}|RNA1{Unres1(Unres2)}$$$$V2.0",
+    "helm_unresolved_rna": "RNA1{Sugar1(Base1)Phos3.Rna1.Rna2}$$$$V2.0",
+    "helm_only_base": "RNA1{(A)}$$$$V2.0",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -70,6 +74,7 @@ for filename in sorted(helm_data.keys()):
         else:
             print(filename + ".ket:FAILED")
             print(diff)
+            print(ket)
     except IndigoException as e:
         text = getIndigoExceptionText(e)
         print(filename + ".ket:FAILED - " + text)
@@ -79,15 +84,12 @@ helm_errors = {
     "CHEM1{[MCC]}|RNA1{R(A)P.R(C)P.R(G)P.R(T)P.R(U)P}$RNA1,PEPTIDE1,15:R2-1:R1$$$V2.0": "Polymer 'PEPTIDE1' not found.",
     "CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM10,PEPTIDE1,1:R2-1:R1$$$V2.0": "Polymer 'CHEM10' not found.",
     "CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM1,PEPTIDE1,1:R2-3:R1$$$V2.0": "Polymer 'PEPTIDE1' does not contains monomer with number 3.",
-    "CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM1,PEPTIDE1,1:R4-1:R1$$$V2.0": "Unknown attachment point 'R4' in monomer A6OH",
-    "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:R1-1:R2$$$V2.0": "Monomer 'R' attachment point 'R2' already connected to monomer'monomer3' attachment point 'R1'",
+    "CHEM1{[A6OH]}|PEPTIDE1{A}$CHEM1,PEPTIDE1,1:R4-1:R1$$$V2.0": "Unknown attachment point 'R4' in monomer 'A6OH(monomer0)'",
+    "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:R1-1:R2$$$V2.0": "Monomer 'R(monomer1)' attachment point 'R2' already connected to monomer'monomer3' attachment point 'R1'",
     "PEPTIDE1{(A:1.5+C:aaaa)}$$$$V2.0": "Unexpected symbol. Expected digit but found 'a'",
-    "RNA1{R(bla-bla-bla)p}$$$$V2.0": "Unexpected symbol. Expected ')' but found 'l'.",
-    "PEPTIDE1{D-gGlu}$$$$V2.0": "Unexpected symbol. Expected '.' or '}' but found '-'.",
     "PEPTIDE1{(A:+C:0.1)}$$$$V2.0": "Unexpected symbol. Expected digit but found '+'",
-    "RNA1{R(A).R(A)p}$$$$V2.0": "Monomer template with class 'Phosphate' and alias 'R' not found in monomer librarys",
     "PEPTIDE1{(A:1.5.+C:0.1)}$$$$V2.0": "Enexpected symbol. Second dot in number",
-    "RNA1{R[P(O)(O)(=O)O]}$$$$V2.0": "Unknown attachment point 'R1' in monomer Mod0",
+    "RNA1{R[P(O)(O)(=O)O]}$$$$V2.0": "Unknown attachment point 'R1' in monomer 'Mod0(monomer1)'",
 }
 for helm_seq in sorted(helm_errors.keys()):
     error = helm_errors[helm_seq]

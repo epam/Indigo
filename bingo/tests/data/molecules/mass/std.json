@@ -1597,7 +1597,7 @@
     {
         "query_id": 320,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 318.15630531311035
     },
     {
         "query_id": 321,
@@ -1622,37 +1622,37 @@
     {
         "query_id": 325,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 285.1690425872803
     },
     {
         "query_id": 326,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 434.28740310668945
     },
     {
         "query_id": 327,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 343.83740615844727
     },
     {
         "query_id": 328,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 194.25245082378387
     },
     {
         "query_id": 329,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 195.2603908777237
     },
     {
         "query_id": 330,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 195.2603908777237
     },
     {
         "query_id": 331,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 194.25245082378387
     },
     {
         "query_id": 332,
@@ -2652,17 +2652,17 @@
     {
         "query_id": 531,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 10261.08475112915
     },
     {
         "query_id": 532,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 18248.312866210938
     },
     {
         "query_id": 533,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 10084.55037689209
     },
     {
         "query_id": 534,
@@ -2737,7 +2737,7 @@
     {
         "query_id": 548,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 402.00132155418396
     },
     {
         "query_id": 549,
@@ -2822,7 +2822,7 @@
     {
         "query_id": 565,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 20.13258934020996
     },
     {
         "query_id": 566,
@@ -2852,17 +2852,17 @@
     {
         "query_id": 571,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 731.5980885028839
     },
     {
         "query_id": 572,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 467.5160856246948
     },
     {
         "query_id": 573,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 774.8872289657593
     },
     {
         "query_id": 574,
@@ -2912,7 +2912,7 @@
     {
         "query_id": 583,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 1013.3561658859253
     },
     {
         "query_id": 584,
@@ -3057,7 +3057,7 @@
     {
         "query_id": 612,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 918.3029882907867
     },
     {
         "query_id": 613,
@@ -3272,7 +3272,7 @@
     {
         "query_id": 655,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 855.7010703086853
     },
     {
         "query_id": 656,
@@ -3482,7 +3482,7 @@
     {
         "query_id": 697,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 1640.7965154647827
     },
     {
         "query_id": 698,
@@ -3582,17 +3582,17 @@
     {
         "query_id": 717,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 342.30436515808105
     },
     {
         "query_id": 718,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 513.4565477371216
     },
     {
         "query_id": 719,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 684.6087303161621
     },
     {
         "query_id": 720,
@@ -3727,12 +3727,12 @@
     {
         "query_id": 746,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 440.3281455039978
     },
     {
         "query_id": 747,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 496.43446683883667
     },
     {
         "query_id": 748,
@@ -3982,67 +3982,67 @@
     {
         "query_id": 797,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13483.810361146927
     },
     {
         "query_id": 798,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13747.545308589935
     },
     {
         "query_id": 799,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13736.457967996597
     },
     {
         "query_id": 800,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13747.545308589935
     },
     {
         "query_id": 801,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13737.465908050537
     },
     {
         "query_id": 802,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13874.792471647263
     },
     {
         "query_id": 803,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13837.414109230042
     },
     {
         "query_id": 804,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13870.760711431503
     },
     {
         "query_id": 805,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13843.546329975128
     },
     {
         "query_id": 806,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13873.784531593323
     },
     {
         "query_id": 807,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13868.744831323624
     },
     {
         "query_id": 808,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13870.760711431503
     },
     {
         "query_id": 809,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13868.744831323624
     },
     {
         "query_id": 810,
@@ -4052,7 +4052,7 @@
     {
         "query_id": 811,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13903.870378494263
     },
     {
         "query_id": 812,
@@ -4062,32 +4062,32 @@
     {
         "query_id": 813,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13471.552944660187
     },
     {
         "query_id": 814,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13457.44178390503
     },
     {
         "query_id": 815,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13451.39414358139
     },
     {
         "query_id": 816,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13483.648225307465
     },
     {
         "query_id": 817,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13468.529124498367
     },
     {
         "query_id": 818,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13453.41002368927
     },
     {
         "query_id": 819,
@@ -4097,12 +4097,12 @@
     {
         "query_id": 820,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13357.655718564987
     },
     {
         "query_id": 821,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13348.584258079529
     },
     {
         "query_id": 822,
@@ -4112,12 +4112,12 @@
     {
         "query_id": 823,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13371.766879320145
     },
     {
         "query_id": 824,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13351.608078241348
     },
     {
         "query_id": 825,
@@ -4127,12 +4127,12 @@
     {
         "query_id": 826,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13359.671598672867
     },
     {
         "query_id": 827,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 13359.671598672867
     },
     {
         "query_id": 828,
@@ -4742,7 +4742,7 @@
     {
         "query_id": 949,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 2.0158801078796387
     },
     {
         "query_id": 950,
@@ -4822,7 +4822,7 @@
     {
         "query_id": 965,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 320.16862869262695
     },
     {
         "query_id": 966,
@@ -5147,7 +5147,7 @@
     {
         "query_id": 1030,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 28.675801753997803
     },
     {
         "query_id": 1031,
@@ -5157,7 +5157,7 @@
     {
         "query_id": 1032,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 8.05640697479248
     },
     {
         "query_id": 1033,
@@ -5207,7 +5207,7 @@
     {
         "query_id": 1042,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 67.1684045791626
     },
     {
         "query_id": 1043,
@@ -5507,22 +5507,22 @@
     {
         "query_id": 1102,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 171.15218257904053
     },
     {
         "query_id": 1103,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 171.15218257904053
     },
     {
         "query_id": 1104,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 171.15218257904053
     },
     {
         "query_id": 1105,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 171.15218257904053
     },
     {
         "query_id": 1106,
@@ -5927,7 +5927,7 @@
     {
         "query_id": 1186,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 574.3726124763489
     },
     {
         "query_id": 1187,
@@ -5937,12 +5937,12 @@
     {
         "query_id": 1188,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 234.05432415008545
     },
     {
         "query_id": 1189,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 1967.6941184997559
     },
     {
         "query_id": 1190,
@@ -5957,7 +5957,7 @@
     {
         "query_id": 1192,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 372.0628080368042
     },
     {
         "query_id": 1193,
@@ -5977,7 +5977,7 @@
     {
         "query_id": 1196,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 2886.7035484313965
     },
     {
         "query_id": 1197,
@@ -6047,27 +6047,27 @@
     {
         "query_id": 1210,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 1034.023962020874
     },
     {
         "query_id": 1211,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 332.1875813007355
     },
     {
         "query_id": 1212,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 1737.5055649280548
     },
     {
         "query_id": 1213,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 262.75661754608154
     },
     {
         "query_id": 1214,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 272.83601808547974
     },
     {
         "query_id": 1215,
@@ -6092,7 +6092,7 @@
     {
         "query_id": 1219,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 666.9019284248352
     },
     {
         "query_id": 1220,
@@ -6107,7 +6107,7 @@
     {
         "query_id": 1222,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 809.82239818573
     },
     {
         "query_id": 1223,
@@ -6157,7 +6157,7 @@
     {
         "query_id": 1232,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 516.3594007492065
     },
     {
         "query_id": 1233,
@@ -6422,7 +6422,7 @@
     {
         "query_id": 1285,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 139.21810173988342
     },
     {
         "query_id": 1286,
@@ -6447,12 +6447,12 @@
     {
         "query_id": 1290,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 124.10405826568604
     },
     {
         "query_id": 1291,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 240.2215437889099
     },
     {
         "query_id": 1292,
@@ -6477,7 +6477,7 @@
     {
         "query_id": 1296,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 129.22328162193298
     },
     {
         "query_id": 1297,
@@ -6537,7 +6537,7 @@
     {
         "query_id": 1308,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 223.22676348686218
     },
     {
         "query_id": 1309,
@@ -6872,7 +6872,7 @@
     {
         "query_id": 1375,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 112.12982082366943
     },
     {
         "query_id": 1376,
@@ -7962,7 +7962,7 @@
     {
         "query_id": 1593,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 633.14346575737
     },
     {
         "query_id": 1594,
@@ -7972,7 +7972,7 @@
     {
         "query_id": 1595,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 435.0041449069977
     },
     {
         "query_id": 1596,
@@ -8002,7 +8002,7 @@
     {
         "query_id": 1601,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 488.43080401420593
     },
     {
         "query_id": 1602,
@@ -8202,17 +8202,17 @@
     {
         "query_id": 1641,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 186.0314040184021
     },
     {
         "query_id": 1642,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 188.04728412628174
     },
     {
         "query_id": 1643,
         "query_type": "mass(molecular-weight)",
-        "expected": null
+        "expected": 186.0314040184021
     },
     {
         "query_id": 1644,

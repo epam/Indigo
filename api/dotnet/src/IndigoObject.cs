@@ -579,6 +579,30 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoCheckRGroups(self));
         }
 
+        public int atomIndex()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoAtomIndex(self));
+        }
+
+        public int bondIndex()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoBondIndex(self));
+        }
+
+        public int bondBegin()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoBondBegin(self));
+        }
+
+        public int bondEnd()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoBondEnd(self));
+        }
+
         public int? countHydrogens()
         {
             int h;
@@ -1275,6 +1299,18 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoValidateChirality(self));
         }
 
+        public int stereocenterCIPDescriptor()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoStereocenterCIPDescriptor(self));
+        }
+
+        public int addCIPStereoDescriptors()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoAddCIPStereoDescriptors(self));
+        }
+
         public IndigoObject addAtom(string symbol)
         {
             dispatcher.setSessionID();
@@ -1512,6 +1548,12 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoPka(self));
+        }
+
+        public string pKaValues()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoPkaValues(self));
         }
 
         public string canonicalSmiles()

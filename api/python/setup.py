@@ -97,13 +97,13 @@ if os.path.exists("epam.indigo.egg-info"):
     shutil.rmtree("epam.indigo.egg-info")
 
 setup(
-    name="epam.indigo",
-    version="1.32.0.dev2",
+    name="epam_indigo",
+    version="1.34.0.dev1",
     description="Indigo universal cheminformatics toolkit",
     author="EPAM Systems Life Science Department",
     author_email="lifescience.opensource@epam.com",
-    maintainer="Mikhail Kviatkovskii",
-    maintainer_email="Mikhail_Kviatkovskii@epam.com",
+    maintainer="Lifescience Opensource",
+    maintainer_email="lifescience.opensource@epam.com",
     packages=[
         "indigo",
         "indigo._common",

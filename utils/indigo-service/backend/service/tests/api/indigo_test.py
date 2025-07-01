@@ -2360,6 +2360,43 @@ M  END
             result_data["mass-composition"],
         )
 
+    def test_calculate_undefined_reaction(self):
+        with open(
+            os.path.join(
+                joinPathPy("structures/", __file__), "undefined_2897.ket"
+            ),
+            "r",
+        ) as file:
+            r_struct = file.read()
+
+            headers, data = self.get_headers(
+                {
+                    "struct": r_struct,
+                    "properties": (
+                        "molecular-weight",
+                        "gross",
+                        "mass-composition",
+                        "most-abundant-mass",
+                        "monoisotopic-mass",
+                    ),
+                }
+            )
+            result_json = requests.post(
+                self.url_prefix + "/calculate", headers=headers, data=data
+            )
+            self.assertEqual(200, result_json.status_code)
+            file_name = os.path.join(
+                joinPathPy("ref/", __file__), "undefined_2897_calc.json"
+            )
+            # write references
+            with open(file_name, "w") as file:
+                file.write(result_json.text)
+
+            # check
+            with open(file_name, "r") as file:
+                ref_json = file.read()
+                self.assertEqual(result_json.text, ref_json)
+
     def test_calculate_selected(self):
         headers, data = self.get_headers(
             {
@@ -3344,10 +3381,23 @@ M  END
         # test autodetect PEPTIDE
         headers, data = self.get_headers(
             {
+                "struct": "QWERTYUIOPASDFGHKLCVNM",
+                "options": {
+                    "monomerLibrary": monomer_library,
+                    "sequence-type": "DNA",
+                },
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result_peptide_ad_dna = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
                 "struct": monomer_struct,
                 "options": {
                     "monomerLibrary": monomer_library,
-                    "sequence-type": "PEPTIDE",
                 },
                 "output_format": "chemical/x-sequence",
             }
@@ -3444,6 +3494,8 @@ M  END
         #     file.write(result_dna.text)
         # with open(os.path.join(ref_path, "peptide_ref") + ".ket", "w") as file:
         #     file.write(result_peptide.text)
+        # with open(os.path.join(ref_path, "peptide_ref_ad") + ".ket", "w") as file:
+        #     file.write(result_peptide_ad_dna.text)
 
         with open(os.path.join(ref_path, "rna_ref") + ".ket", "r") as file:
             rna_ref = file.read()
@@ -3457,6 +3509,12 @@ M  END
             peptide_ref = file.read()
             self.assertEqual(result_peptide.text, peptide_ref)
             self.assertEqual(result_ket_3.text, peptide_ref)
+
+        with open(
+            os.path.join(ref_path, "peptide_ref_ad") + ".ket", "r"
+        ) as file:
+            peptide_ref = file.read()
+            self.assertEqual(result_peptide_ad_dna.text, peptide_ref)
 
     def test_convert_fasta(self):
         ref_path = joinPathPy("ref/", __file__)

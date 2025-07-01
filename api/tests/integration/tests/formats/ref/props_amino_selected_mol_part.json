@@ -1,0 +1,17 @@
+[
+    {
+        "grossFormula": "C5 H7 N O",
+        "mass": 97.115181,
+        "pKa": 5.96,
+        "extinctionCoefficient": 0,
+        "hydrophobicity": [
+            0.616
+        ],
+        "monomerCount": {
+            "peptides": {
+                "A": 1
+            },
+            "nucleotides": {}
+        }
+    }
+]

@@ -37,9 +37,14 @@
 using namespace indigo;
 using namespace indigo::bingo_core;
 
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 int BingoCore::mangoIndexProcessSingleRecord()
 {
-    BufferScanner scanner(self.index_record_data.ref());
+    BufferScanner scanner(*self.index_record_data);
 
     NullOutput output;
 
@@ -49,7 +54,7 @@ int BingoCore::mangoIndexProcessSingleRecord()
         {
             if (self.single_mango_index.get() == NULL)
             {
-                self.single_mango_index.create();
+                self.single_mango_index = std::make_unique<MangoIndex>();
                 self.single_mango_index->init(*self.bingo_context);
                 self.single_mango_index->skip_calculate_fp = self.skip_calculate_fp;
             }
@@ -464,18 +469,17 @@ int BingoCore::mangoMatchTargetBinary(const char* target_bin, int target_bin_len
     TRY_READ_TARGET_MOL
     {
         BufferScanner scanner(target_bin, target_bin_len);
-        BufferScanner* xyz_scanner = 0;
-        Obj<BufferScanner> xyz_scanner_obj;
+
+        std::unique_ptr<BufferScanner> xyz_scanner;
         if (target_xyz_len != 0)
         {
-            xyz_scanner_obj.create(target_xyz, target_xyz_len);
-            xyz_scanner = xyz_scanner_obj.get();
+            xyz_scanner = std::make_unique<BufferScanner>(target_xyz, target_xyz_len);
         }
 
         if (self.mango_search_type == BingoCore::_SUBSTRUCTRE)
         {
             MangoSubstructure& substructure = self.mango_context->substructure;
-            return substructure.matchBinary(scanner, xyz_scanner) ? 1 : 0;
+            return substructure.matchBinary(scanner, xyz_scanner.get()) ? 1 : 0;
         }
         else if (self.mango_search_type == BingoCore::_TAUTOMER)
         {
@@ -485,7 +489,7 @@ int BingoCore::mangoMatchTargetBinary(const char* target_bin, int target_bin_len
         else if (self.mango_search_type == BingoCore::_EXACT)
         {
             MangoExact& exact = self.mango_context->exact;
-            return exact.matchBinary(scanner, xyz_scanner) ? 1 : 0;
+            return exact.matchBinary(scanner, xyz_scanner.get()) ? 1 : 0;
         }
         else if (self.mango_search_type == BingoCore::_SIMILARITY)
         {
@@ -1136,3 +1140,7 @@ CEXPORT const char* mangoStandardize(const char* molecule, int molecule_len, con
     }
     BINGO_END(0, 0);
 }
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif

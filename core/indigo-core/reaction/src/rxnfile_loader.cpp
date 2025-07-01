@@ -38,15 +38,15 @@ RxnfileLoader::~RxnfileLoader()
 {
 }
 
-void RxnfileLoader::loadReaction(Reaction& reaction)
+void RxnfileLoader::loadReaction(Reaction& reaction, MonomerTemplateLibrary* monomer_lib)
 {
     _rxn = &reaction;
     _brxn = &reaction;
     _qrxn = 0;
-    _loadReaction();
+    _loadReaction(monomer_lib);
 }
 
-void RxnfileLoader::loadQueryReaction(QueryReaction& rxn)
+void RxnfileLoader::loadQueryReaction(QueryReaction& rxn, MonomerTemplateLibrary* monomer_lib)
 {
     _rxn = 0;
     _brxn = &rxn;
@@ -54,23 +54,23 @@ void RxnfileLoader::loadQueryReaction(QueryReaction& rxn)
     _loadReaction();
 }
 
-void indigo::RxnfileLoader::loadReaction(Reaction& reaction, PropertiesMap& props)
+void indigo::RxnfileLoader::loadReaction(Reaction& reaction, PropertiesMap& props, MonomerTemplateLibrary* monomer_lib)
 {
-    loadReaction(reaction);
+    loadReaction(reaction, monomer_lib);
     reaction.properties().copy(props);
 }
 
-void indigo::RxnfileLoader::loadQueryReaction(QueryReaction& reaction, PropertiesMap& props)
+void indigo::RxnfileLoader::loadQueryReaction(QueryReaction& reaction, PropertiesMap& props, MonomerTemplateLibrary* monomer_lib)
 {
-    loadQueryReaction(reaction);
+    loadQueryReaction(reaction, monomer_lib);
     reaction.properties().copy(props);
 }
 
-void RxnfileLoader::_loadReaction()
+void RxnfileLoader::_loadReaction(MonomerTemplateLibrary* monomer_lib)
 {
     _brxn->clear();
 
-    MolfileLoader molfileLoader(_scanner);
+    MolfileLoader molfileLoader(_scanner, monomer_lib);
 
     molfileLoader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
     molfileLoader.stereochemistry_options = stereochemistry_options;

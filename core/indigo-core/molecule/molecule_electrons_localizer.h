@@ -21,9 +21,15 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
-#include "base_cpp/obj.h"
 #include "base_cpp/tlscont.h"
 #include "graph/graph_constrained_bmatching_finder.h"
+
+#include <memory>
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
 
 namespace indigo
 {
@@ -146,7 +152,7 @@ namespace indigo
         int _getAtomCharge(int atom) const;
         void _getAtomConnAndLonepairs(int atom, int& added_conn, int& lonepairs) const;
 
-        Obj<GraphConstrainedBMatchingFinder> _finder;
+        std::unique_ptr<GraphConstrainedBMatchingFinder> _finder;
         Molecule& _skeleton;
 
         // Localization parameters
@@ -211,5 +217,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif // __molecule_electrons_localizer__
