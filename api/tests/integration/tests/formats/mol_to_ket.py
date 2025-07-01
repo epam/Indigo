@@ -55,6 +55,7 @@ files = [
     "2704-stereocenters",
     "issue_2699_rlogic",
     "issue_2958_map_template",
+    "sgroup_class",
 ]
 
 native_precision = [

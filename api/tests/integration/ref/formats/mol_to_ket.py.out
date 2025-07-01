@@ -26,6 +26,7 @@ pepchem.ket:SUCCEED
 peptides.ket:SUCCEED
 removed_phosphate.ket:SUCCEED
 rna_mod.ket:SUCCEED
+sgroup_class.ket:SUCCEED
 suplabel.ket:SUCCEED
 tadfile.ket:SUCCEED
 taspoglutide.ket:SUCCEED
