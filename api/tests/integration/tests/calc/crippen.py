@@ -23,6 +23,7 @@ def _is_iterable(x):
         return False
     return True
 
+
 def _normalize(x):
     if isinstance(x, basestring) and "," in x:
         parts = x.split(",")
@@ -58,6 +59,7 @@ def check_float(method, smiles, expected, delta=1e-2):
         print("%s on %s failed" % (smiles, method))
     else:
         print("%s on %s passed" % (smiles, method))
+
 
 def test_logp():
     check_float("logP", "c1ccccc1", 1.68)
