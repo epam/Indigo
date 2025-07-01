@@ -955,6 +955,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultDouble(this, lib.indigoPka(self));
     }
 
+    public String pKaValues() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoPkaValues(self));
+    }
+
     public String canonicalSmiles() {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoCanonicalSmiles(self));

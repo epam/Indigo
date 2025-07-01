@@ -1550,6 +1550,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoPka(self));
         }
 
+        public string pKaValues()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoPkaValues(self));
+        }
+
         public string canonicalSmiles()
         {
             dispatcher.setSessionID();

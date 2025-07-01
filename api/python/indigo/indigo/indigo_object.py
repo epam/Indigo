@@ -2590,6 +2590,17 @@ class IndigoObject:
 
         return IndigoLib.checkResultFloat(self._lib().indigoPka(self.id))
 
+    def pKaValues(self):
+        """Molecule method returns calculated Lee-Crippen SMARTS pKa values
+
+        Returns:
+            array of floats: calculated pKa values of the molecule
+        """
+        pka_string = IndigoLib.checkResultString(
+            self._lib().indigoPkaValues(self.id)
+        )
+        return pka_string
+
     def bondOrder(self):
         """Bond method returns bond order
 

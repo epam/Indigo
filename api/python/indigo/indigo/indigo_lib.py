@@ -883,6 +883,8 @@ class IndigoLib:
         IndigoLib.lib.indigoMolarRefractivity.argtypes = [c_int]
         IndigoLib.lib.indigoPka.restype = c_double
         IndigoLib.lib.indigoPka.argtypes = [c_int]
+        IndigoLib.lib.indigoPkaValues.restype = c_char_p
+        IndigoLib.lib.indigoPkaValues.argtypes = [c_int]
         IndigoLib.lib.indigoCanonicalSmiles.restype = c_char_p
         IndigoLib.lib.indigoCanonicalSmiles.argtypes = [c_int]
         IndigoLib.lib.indigoCanonicalSmarts.restype = c_char_p

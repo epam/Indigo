@@ -2,7 +2,7 @@
     {
         "grossFormula": "C3 H5 N O S",
         "mass": 103.142899,
-        "pKa": 4.006666,
+        "pKa": 8.493333,
         "extinctionCoefficient": 125,
         "hydrophobicity": [
             0.68
