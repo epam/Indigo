@@ -381,9 +381,11 @@ namespace indigo
         void addCIP();
         void clearCIP();
         CIPDesc getAtomCIP(int atom_idx);
+        bool getShowAtomCIP(const int atomIndex);
         CIPDesc getBondCIP(int bond_idx);
 
         void setAtomCIP(int atom_idx, CIPDesc cip);
+        void setShowAtomCIP(const int atomIndex, const bool display);
         void setBondCIP(int bond_idx, CIPDesc cip);
 
         Vec3f& getAtomXyz(int idx);
@@ -672,6 +674,7 @@ namespace indigo
         RedBlackMap<int, Vec3f> _stereo_flag_positions;
         // CIP maps should be changed to std::unordered_map
         RedBlackMap<int, CIPDesc> _cip_atoms;
+        RedBlackMap<int, bool> _show_cip_atoms;
         RedBlackMap<int, CIPDesc> _cip_bonds;
 
         ObjArray<Array<int>> _rsite_attachment_points;
