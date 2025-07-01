@@ -3491,11 +3491,8 @@ class IndigoObject:
         for i in range(len(expand_ids)):
             arr2[i] = expand_ids[i]
 
-        return IndigoObject(
-            self.session,
-            IndigoLib.checkResult(
-                self._lib().indigoExpandMonomers(self.id, len(arr2), arr2)
-            ),
+        return IndigoLib.checkResult(
+            self._lib().indigoExpandMonomers(self.id, len(arr2), arr2)
         )
 
     def layout(self):

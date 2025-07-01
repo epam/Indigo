@@ -1720,9 +1720,9 @@ namespace com.epam.indigo
             dispatcher.checkResult(IndigoLib.indigoExpandMonomers(self, expand_ids.Length, expand_ids));
         }
 
-        public IndigoObject expandMonomers(ICollection expand_ids)
+        public void expandMonomers(ICollection expand_ids)
         {
-            return expandMonomers(Indigo.toIntArray(expand_ids));
+            expandMonomers(Indigo.toIntArray(expand_ids));
         }
 
         public void clearXYZ()
