@@ -355,10 +355,10 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         }
 
         if (sa.sa_class.size())
-		{
-			writer.Key("class");
-			writer.String(sa.sa_class.ptr());
-		}
+        {
+            writer.Key("class");
+            writer.String(sa.sa_class.ptr());
+        }
 
         if (sa.attachment_points.size())
         {
