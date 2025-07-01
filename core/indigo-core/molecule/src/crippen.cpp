@@ -364,7 +364,7 @@ namespace
                 return std::numeric_limits<double>::quiet_NaN();
             std::sort(v.begin(), v.end());
             std::size_t n = v.size();
-            return n & 1 ? v[n / 2] : (v[n / 2 - 1] + v[n / 2 + 1]) / 2.0f;
+            return n & 1 ? v[n / 2] : (v[n / 2 - 1] + v[n / 2]) / 2.0f;
         }
 
         double calculate(Molecule& target) const
