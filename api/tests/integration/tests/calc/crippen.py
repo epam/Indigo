@@ -23,7 +23,6 @@ def _is_iterable(x):
         return False
     return True
 
-
 def _normalize(x):
     if isinstance(x, basestring) and "," in x:
         parts = x.split(",")
@@ -39,28 +38,26 @@ def check_float(method, smiles, expected, delta=1e-2):
     actual = getattr(m, method)()
     actual = _normalize(actual)
     expected = _normalize(expected)
-
-    def _c(a, e, p=""):
-        if _is_iterable(a) and _is_iterable(e):
-            if len(a) != len(e):
-                print(
-                    "%s %s%s: len(actual)=%d != len(expected)=%d"
-                    % (smiles, method, p, len(a), len(e))
-                )
-            for i, (ai, ei) in enumerate(zip(a, e)):
-                _c(ai, ei, "%s[%d]" % (p, i))
-        else:
+    check_err = False
+    if _is_iterable(actual):
+        for i, (ai, ei) in enumerate(zip(actual, expected)):
             try:
-                if abs(a - e) > delta:
-                    print("%s %s%s: %r != %r" % (smiles, method, p, a, e))
+                if abs(ai - ei) > delta:
+                    print("%s %s: %r != %r" % (smiles, method, ai, ei))
             except Exception as ex:
                 print(
-                    "%s %s%s: cannot compare %r and %r - %s"
-                    % (smiles, method, p, a, e, ex)
+                    "%s %s: cannot compare %r and %r - %s"
+                    % (smiles, method, ai, ei, ex)
                 )
-
-    _c(actual, expected)
-
+                check_err = True
+    else:
+        if abs(actual - expected) > delta:
+            print("%s %s: %r != %r" % (smiles, method, ai, ei))
+            check_err = True
+    if check_err:
+        print("%s on %s failed" % (smiles, method))
+    else:
+        print("%s on %s passed" % (smiles, method))
 
 def test_logp():
     check_float("logP", "c1ccccc1", 1.68)

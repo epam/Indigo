@@ -364,7 +364,7 @@ namespace
                 return std::numeric_limits<double>::quiet_NaN();
             std::sort(v.begin(), v.end());
             std::size_t n = v.size();
-            return n & 1 ? v[n / 2] : std::accumulate(v.begin() + n / 2 - 1, v.begin() + n / 2 + 1, 0.0) * 0.5;
+            return n & 1 ? v[n / 2] : (v[n / 2 - 1] + v[n / 2 + 1]) / 2.0f;
         }
 
         double calculate(Molecule& target) const
@@ -401,6 +401,7 @@ namespace
                     tree_indexes.push_back(group.second);
             }
 
+            // only one ionizing group is found let the tree decides. We don't need a specific forwarding.
             if (tree_indexes.size() == 1)
                 tree_indexes.clear();
             if (tree_indexes.empty())

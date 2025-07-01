@@ -13,38 +13,29 @@ indigo = Indigo()
 indigo.setOption("ignore-stereochemistry-errors", True)
 indigo.setOption("ignore-bad-valence", True)
 
+
+def check_smarts(mol, smarts):
+    query = indigo.loadSmarts(smarts)
+    m = (
+        "matches"
+        if indigo.substructureMatcher(mol).match(query)
+        else "doesn't match"
+    )
+    print("4-(benzyloxy)benzoic acid %s with %s" % (m, smarts))
+
+
 mol = indigo.loadMolecule("OC(=O)c1ccc(OCC2=CC=CC=C2)cc1")
 indigo.setOption("smiles-loading-strict-aliphatic", False)
 q1_str = "[OH][i](=O)[i]~[i]~[i]~[i]~[i]-A"
 q2_str = "[O][i]~[i]~[i]~[i]~[i]~[i]~[i]~A"
 q3_str = "[OH][i]~[i](~*)~*"
-query1 = indigo.loadSmarts(q1_str)
-query2 = indigo.loadSmarts(q2_str)
-query3 = indigo.loadSmarts(q3_str)
 
-if indigo.substructureMatcher(mol).match(query1):
-    print("4-(benzyloxy)benzoic acid matches with " + q1_str)
-
-if indigo.substructureMatcher(mol).match(query2):
-    print("4-(benzyloxy)benzoic acid matches with " + q2_str)
-
-if indigo.substructureMatcher(mol).match(query3):
-    print("4-(benzyloxy)benzoic acid matches with " + q3_str)
+check_smarts(mol, q1_str)
+check_smarts(mol, q2_str)
+check_smarts(mol, q3_str)
 
 indigo.setOption("smiles-loading-strict-aliphatic", True)
-query1 = indigo.loadSmarts(q1_str)
-query2 = indigo.loadSmarts(q2_str)
-query3 = indigo.loadSmarts(q3_str)
 
-if not indigo.substructureMatcher(mol).match(query1):
-    print(
-        "4-(benzyloxy)benzoic acid doesn't match with [OH][i](=O)[i]~[i]~[i]~[i]~[i]-A"
-    )
-
-if not indigo.substructureMatcher(mol).match(query2):
-    print(
-        "4-(benzyloxy)benzoic acid doesn't match with [O][i]~[i]~[i]~[i]~[i]~[i]~[i]~A"
-    )
-
-if indigo.substructureMatcher(mol).match(query3):
-    print("4-(benzyloxy)benzoic acid matches with " + q3_str)
+check_smarts(mol, q1_str)
+check_smarts(mol, q2_str)
+check_smarts(mol, q3_str)

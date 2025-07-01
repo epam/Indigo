@@ -2599,8 +2599,7 @@ class IndigoObject:
         pka_string = IndigoLib.checkResultString(
             self._lib().indigoPkaValues(self.id)
         )
-        items = [item.strip() for item in pka_string.split(",")]
-        return [float(item) for item in items if item]
+        return pka_string
 
     def bondOrder(self):
         """Bond method returns bond order
