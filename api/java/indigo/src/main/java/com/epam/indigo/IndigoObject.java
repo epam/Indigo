@@ -1540,14 +1540,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
     public void expandMonomers(int[] expand_ids) {
         dispatcher.setSessionID();
-        return new IndigoObject(
-                dispatcher,
-                Indigo.checkResult(
-                        this, lib.indigoExpandMonomers(self, expand_ids.length, expand_ids)));
+        Indigo.checkResult(this, lib.indigoExpandMonomers(self, expand_ids.length, expand_ids));
     }
 
     public void expandMonomers(Collection<Integer> expand_ids) {
-        return expandMonomers(Indigo.toIntArray(expand_ids));
+        expandMonomers(Indigo.toIntArray(expand_ids));
     }
 
     public void clearXYZ() {
