@@ -29,6 +29,7 @@
 #include "molecule/elements.h"
 #include "molecule/hybridization.h"
 #include "molecule/ket_document_json_loader.h"
+#include "molecule/mm_expand.h"
 #include "molecule/molecule_auto_loader.h"
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/molecule_fingerprint.h"
@@ -4960,4 +4961,24 @@ CEXPORT int indigoBondEnd(int bond)
         return ib.mol.getEdge(ib.idx).end;
     }
     INDIGO_END(-1);
+}
+
+CEXPORT int indigoExpandMonomers(int item, int n_expand_ids, const int* expand_ids)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+
+        if (IndigoKetDocument::is(obj) || IndigoBaseMolecule::is(obj))
+        {
+            std::vector<int> monomers_to_expand{expand_ids, expand_ids + n_expand_ids};
+            indigoExpand(obj.getKetDocument(), monomers_to_expand);
+        }
+        else
+        {
+            throw IndigoError("%s is not a molecule", obj.debugInfo());
+        }
+        return 1;
+    }
+    INDIGO_END(0);
 }
