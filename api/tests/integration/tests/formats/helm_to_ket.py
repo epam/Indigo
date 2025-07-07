@@ -90,6 +90,7 @@ helm_errors = {
     "PEPTIDE1{(A:+C:0.1)}$$$$V2.0": "Unexpected symbol. Expected digit but found '+'",
     "PEPTIDE1{(A:1.5.+C:0.1)}$$$$V2.0": "Enexpected symbol. Second dot in number",
     "RNA1{R[P(O)(O)(=O)O]}$$$$V2.0": "Unknown attachment point 'R1' in monomer 'Mod0(monomer1)'",
+    "PEPTIDE1{1Nal]}$$$$V2.0": "SEQUENCE loader: Unexpected symbol ']'.",
 }
 for helm_seq in sorted(helm_errors.keys()):
     error = helm_errors[helm_seq]
