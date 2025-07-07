@@ -999,6 +999,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
             if (it != kIndexToCIPDesc.end())
             {
                 _pmol->setAtomCIP(atom_idx, it->second);
+                _pmol->setShowAtomCIP(atom_idx, atom.showAtomStereo);
             }
             if (atom.type == kCDXNodeType_GenericNickname || atom.element == ELEM_PSEUDO)
                 _pmol->setPseudoAtom(atom_idx, atom.label.c_str());
@@ -1354,6 +1355,26 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, BaseCDXElement& elem)
             node.stereo = CIPStereochemistry::Undetermined;
     };
 
+    auto show_stereo_lambda = [&node](const std::string& data) {
+        const std::string lowercaseYes = "yes";
+        if (lowercaseYes.length() != data.length())
+        {
+            node.showAtomStereo = false;
+            return;
+        }
+
+        for (size_t i = 0; i < data.length(); ++i)
+        {
+            if (lowercaseYes[i] != std::tolower(data[i]))
+            {
+                node.showAtomStereo = false;
+                return;
+            }
+        }
+
+        node.showAtomStereo = true;
+    };
+
     auto node_type_lambda = [&node](const std::string& data) {
         node.type = KNodeTypeNameToInt.at(data);
         if (node.type == kCDXNodeType_NamedAlternativeGroup)
@@ -1382,6 +1403,7 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, BaseCDXElement& elem)
         {"Isotope", intLambda(node.isotope)},
         {"Radical", radical_lambda},
         {"AS", stereo_lambda},
+        {"ShowAtomStereo", show_stereo_lambda},
         {"NodeType", node_type_lambda},
         {"Element", intLambda(node.element)},
         {"GenericNickname", strLambda(node.label)},

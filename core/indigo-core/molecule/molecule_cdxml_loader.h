@@ -114,8 +114,8 @@ namespace indigo
     struct CdxmlNode
     {
         CdxmlNode()
-            : element(ELEM_C), type(kCDXNodeType_Element), enchanced_stereo(EnhancedStereoType::UNSPECIFIED), is_not_list(false),
-              has_fragment(false) // Carbon by default
+            : element(ELEM_C), type(kCDXNodeType_Element), enchanced_stereo(EnhancedStereoType::UNSPECIFIED), is_not_list(false), has_fragment(false),
+              showAtomStereo(false) // Carbon by default
         {
         }
 
@@ -130,6 +130,7 @@ namespace indigo
         AutoInt valence;
         AutoInt hydrogens;
         AutoInt stereo;
+        bool showAtomStereo;
         EnhancedStereoType enchanced_stereo;
         AutoInt enhanced_stereo_group;
         AutoInt index;

@@ -3015,7 +3015,7 @@ void MoleculeRenderInternal::_prepareCIPLabel(const int aid, int& skip)
     BaseMolecule& bm = *_mol;
     const CIPDesc cip = bm.getAtomCIP(aid);
 
-    if (cip != CIPDesc::UNKNOWN && cip != CIPDesc::NONE)
+    if (bm.getShowAtomCIP(aid) && cip != CIPDesc::UNKNOWN && cip != CIPDesc::NONE)
     {
         AtomDesc& ad = _ad(aid);
         int tiCIP = _pushTextItem(ad, RenderItem::RIT_CIP, CWC_BASE, false);
