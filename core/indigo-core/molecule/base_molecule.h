@@ -125,6 +125,7 @@ namespace indigo
     class MetaDataStorage;
     class KetDocument;
     class TGroup;
+    class MonomerTemplateLibrary;
 
     class DLLEXPORT BaseMolecule : public Graph
     {
@@ -288,8 +289,9 @@ namespace indigo
         int transformSCSRtoFullCTAB();
         int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& helm_name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
-        void transformSuperatomsToTemplates(int template_id);
+        void transformSuperatomsToTemplates(int last_template_id, MonomerTemplateLibrary* mtl = nullptr);
         void transformTemplatesToSuperatoms();
+        bool transformedTemplateAtomsToSuperatoms();
 
         virtual bool isRSite(int atom_idx) = 0;
         virtual dword getRSiteBits(int atom_idx) = 0;
@@ -317,7 +319,7 @@ namespace indigo
         int attachmentPointCount() const;
         void removeAttachmentPoints();
         void getAttachmentIndicesForAtom(int atom_idx, Array<int>& res);
-        int getExpandedMonomerCount() const;
+        int getExpandedMonomerCount();
         std::unique_ptr<BaseMolecule>& expandedMonomersToAtoms();
 
         virtual bool isSaturatedAtom(int idx) = 0;
@@ -654,6 +656,12 @@ namespace indigo
 
         int _transformTGroupToSGroup(int idx, int t_idx);
         int _transformSGroupToTGroup(int idx, int& tg_id);
+        void _connectTemplateAtom(Superatom& sa, int t_idx, Array<int>& orphaned_atoms);
+        bool _replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, MonomerTemplateLibrary& mtl, std::unordered_map<std::string, int>& added_templates,
+                                                 Array<int>& remove_atoms);
+        bool _restoreTemplateFromLibrary(TGroup& tg, MonomerTemplateLibrary& mtl, const std::string& residue_inchi);
+
+        void _collectSuparatomAttachmentPoints(Superatom& sa, std::unordered_map<int, std::string>& ap_ids_map);
 
         void _fillTemplateSeqIds();
         bool _isCTerminus(Superatom& su, int idx);

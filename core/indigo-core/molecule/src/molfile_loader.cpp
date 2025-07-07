@@ -50,6 +50,7 @@ MolfileLoader::MolfileLoader(Scanner& scanner, MonomerTemplateLibrary* monomer_l
       TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount), TL_CP_GET(_sgroup_types), TL_CP_GET(_sgroup_mapping)
 {
     _rgfile = false;
+    disable_sgroups_conversion = false;
     treat_x_as_pseudoatom = false;
     skip_3d_chirality = false;
     ignore_noncritical_query_features = false;
@@ -2085,8 +2086,8 @@ void MolfileLoader::_postLoad()
             nucleo_templates.emplace(tg.tgroup_name.ptr(), tg_idx);
     }
 
-    if (_bmol->tgroups.getTGroupCount() && _bmol->sgroups.getSGroupCount())
-        _bmol->transformSuperatomsToTemplates(_max_template_id);
+    //if (!disable_sgroups_conversion && _bmol->sgroups.getSGroupCount())
+    //    _bmol->transformSuperatomsToTemplates(_max_template_id, _monomer_library);
 
     std::set<int> templates_to_remove;
     std::unordered_map<MonomerKey, int, pair_hash> new_templates;
@@ -3858,6 +3859,7 @@ void MolfileLoader::_readTGroups3000()
                     //               tgroup.fragment = _bmol->neu();
 
                     MolfileLoader loader(_scanner);
+                    loader.disable_sgroups_conversion = true;
                     loader.copyProperties(*this);
                     loader._bmol = tgroup.fragment.get();
                     if (_bmol->isQueryMolecule())
@@ -3872,6 +3874,7 @@ void MolfileLoader::_readTGroups3000()
                     }
                     loader._readCtab3000();
                     loader._postLoad();
+
                     if (_monomer_library != nullptr && tgroup.tgroup_class.size() > 0)
                     {
                         auto& class_map = MonomerTemplates::getStrToMonomerType();

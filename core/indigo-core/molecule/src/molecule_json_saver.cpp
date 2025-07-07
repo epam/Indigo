@@ -1746,15 +1746,15 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                     writer.Bool(display == DisplayOption::Expanded);
                 }
 
-                auto transform = mol->getTemplateAtomTransform(i);
-                if (transform.rotate != 0 || transform.shift.x != 0 || transform.shift.y != 0)
+                auto& transform = mol->getTemplateAtomTransform(i);
+                if (transform.hasTransformation())
                 {
                     writer.Key("transformation");
                     writer.StartObject();
-                    if (transform.rotate != 0)
+                    if (transform.angle != 0)
                     {
                         writer.Key("rotate");
-                        writeFloat(writer, transform.rotate);
+                        writeFloat(writer, transform.angle);
                     }
                     if (transform.shift.x != 0 || transform.shift.y != 0)
                     {
