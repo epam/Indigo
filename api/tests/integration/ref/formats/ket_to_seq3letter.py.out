@@ -1,2 +1,3 @@
 *** KET to 3 LETTER SEQUENCE ***
 peptides_3letter : SUCCEED
+Test 'peptides_molecule': got expected error 'Sequence saver: Can't save micro-molecules to sequence format'
