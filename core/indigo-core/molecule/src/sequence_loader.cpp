@@ -1419,6 +1419,8 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
             ch = static_cast<char>(_scanner.lookNext());
             if (ch == '(' || ch == '[' || ch == '\'' || ch == '"') // repeating or annotation
                 break;
+            if (ch == ']')
+                throw Error("Unexpected symbol ']'.");
             bool end_of_name = false;
             if (inside_parentheses)
                 end_of_name = ch == ',' || ch == '+' || ch == ':' || ch == ')';

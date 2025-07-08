@@ -32,5 +32,6 @@ Test 'CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:R1-1:R2$$$V2.0': got expected error 
 Test 'PEPTIDE1{(A:+C:0.1)}$$$$V2.0': got expected error 'Unexpected symbol. Expected digit but found '+''
 Test 'PEPTIDE1{(A:1.5+C:aaaa)}$$$$V2.0': got expected error 'Unexpected symbol. Expected digit but found 'a''
 Test 'PEPTIDE1{(A:1.5.+C:0.1)}$$$$V2.0': got expected error 'Enexpected symbol. Second dot in number'
+Test 'PEPTIDE1{1Nal]}$$$$V2.0': got expected error 'SEQUENCE loader: Unexpected symbol ']'.'
 Test 'PEPTIDE1{A'2'}$$$$V2.0': got expected error 'Repeating not supported now.'
 Test 'RNA1{R[P(O)(O)(=O)O]}$$$$V2.0': got expected error 'Unknown attachment point 'R1' in monomer 'Mod0(monomer1)''
