@@ -74,7 +74,7 @@ namespace indigo
                              //  = ATOM_OR  ('rel')
                              //  = ATOM_AND ('rac')
                              //  = ATOM_ANY ('any')
-
+        bool disable_sgroups_conversion; // for template loading, do not convert S-groups to T-groups
     protected:
         Scanner& _scanner;
         const MonomerTemplates& _monomer_templates;

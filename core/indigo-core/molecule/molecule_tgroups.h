@@ -63,6 +63,8 @@ namespace indigo
         void copy(const TGroup& other);
         void copy_without_fragment(const TGroup& other);
         void clear();
+        std::unique_ptr<BaseMolecule> getResidue() const;
+
         static int cmp(TGroup& tg1, TGroup& tg2, void* context);
 
         std::unique_ptr<BaseMolecule> fragment;

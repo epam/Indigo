@@ -205,18 +205,23 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 
     BaseMolecule* pmol = &bmol;
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
+    mol->clone(bmol);
+
     if (mode == MODE_2000)
     {
         _v2000 = true;
         if (bmol.tgroups.getTGroupCount())
         {
-            mol->clone(bmol);
             mol->transformTemplatesToSuperatoms();
             pmol = mol.get();
         }
     }
     else if (mode == MODE_3000)
+    {
         _v2000 = false;
+        if(bmol.tgroups.getTGroupCount() && mol->transformedTemplateAtomsToSuperatoms())
+            pmol = mol.get();
+    }
     else
     {
         // auto-detect the format: save to v3000 molfile only

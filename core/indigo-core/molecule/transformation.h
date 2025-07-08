@@ -43,22 +43,57 @@ namespace indigo
             vertical
         };
 
-        Transformation() : rotate(0), shift(Vec2f(0, 0)), flip(FlipType::none){};
-        Transformation(float rotate) : rotate(rotate), shift(Vec2f(0, 0)), flip(FlipType::none){};
-        Transformation(const Vec2f& shift) : rotate(0), shift(shift), flip(FlipType::none){};
-        Transformation(float rotate, const Vec2f& shift) : rotate(rotate), shift(shift), flip(FlipType::none){};
+        Transformation() : angle(0), shift(Vec2f(0, 0)), flip(FlipType::none){};
+        Transformation(float rotate) : angle(rotate), shift(Vec2f(0, 0)), flip(FlipType::none){};
+        Transformation(const Vec2f& shift) : angle(0), shift(shift), flip(FlipType::none){};
+        Transformation(float rotate, const Vec2f& shift) : angle(rotate), shift(shift), flip(FlipType::none){};
         Transformation(float rotation, const Vec2f& shift, std::string flip);
-        Transformation(const Transformation& other) : rotate(other.rotate), shift(other.shift), flip(other.flip){};
+        Transformation(const Transformation& other) : angle(other.angle), shift(other.shift), flip(other.flip){};
         Transformation& operator=(const Transformation& other)
         {
-            rotate = other.rotate;
+            angle = other.angle;
             shift = other.shift;
             flip = other.flip;
             return *this;
         }
         const std::string getFlip() const;
 
-        float rotate;
+        const bool hasTransformation() const
+		{
+			return angle != 0 || shift.x != 0 || shift.y != 0 || flip != FlipType::none;
+		}
+
+        void apply(Vec3f& vec) const
+        {
+            Vec2f vec2(vec.x, vec.y);
+            apply(vec2);
+            vec.x = vec2.x;
+            vec.y = vec2.y;
+        }
+
+        void apply(Vec2f& vec) const
+        {
+            // first goes flip
+            switch ( flip )
+            {
+                case FlipType::horizontal:
+					vec.x = -vec.x;
+					break;
+				case FlipType::vertical:
+					vec.y = -vec.y;
+					break;
+                default:
+                    break;
+            }
+            // then goes rotation
+            if (angle != 0)
+                vec.rotate(angle);
+
+            // then goes shift
+            vec.add(shift);
+        }
+
+        float angle;
         Vec2f shift;
         FlipType flip;
     };
