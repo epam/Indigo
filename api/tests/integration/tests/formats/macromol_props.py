@@ -84,20 +84,21 @@ filename = "props_double_dna_gc"
 mol = indigo.loadKetDocumentFromFile(os.path.join(root, filename + ".ket"))
 with open(os.path.join(ref, filename) + "_zero.json", "r") as file:
     props_ref = file.read()
-    props = mol.macroProperties(upc, nac)
-# test UPC=0
-props = mol.macroProperties(0, nac)
-diff = find_diff(props_ref, props)
-if not diff:
-    print("UPC=0: SUCCEED")
-else:
-    print("UPC=0: FAILED")
-    print(diff)
-# test NAC=0
-props = mol.macroProperties(upc, 0)
-diff = find_diff(props_ref, props)
-if not diff:
-    print("NAC=0: SUCCEED")
-else:
-    print("NAC=0: FAILED")
-    print(diff)
+# test invalid UPC - 0 or too big value
+for invalid_upc in (0, 1e41):
+    props = mol.macroProperties(invalid_upc, nac)
+    diff = find_diff(props_ref, props)
+    if not diff:
+        print("UPC=%s: SUCCEED" % invalid_upc)
+    else:
+        print("UPC=%s: FAILED" % invalid_upc)
+        print(diff)
+# test invalid NAC - 0 or too big value
+for invalid_nac in (0, 1e41):
+    props = mol.macroProperties(upc, invalid_nac)
+    diff = find_diff(props_ref, props)
+    if not diff:
+        print("NAC=%s: SUCCEED" % invalid_nac)
+    else:
+        print("NAC=%s: FAILED" % invalid_nac)
+        print(diff)
