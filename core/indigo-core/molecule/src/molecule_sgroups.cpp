@@ -280,10 +280,15 @@ bool MoleculeSGroups::getParentAtoms(int idx, Array<int>& target)
 
 bool MoleculeSGroups::getParentAtoms(SGroup& sgroup, Array<int>& target)
 {
-    auto pidx = findSGroupById(sgroup.parent_group);
-    if (pidx < 0)
+    if (sgroup.parent_idx < 0)
         return false;
-
+    auto pidx = sgroup.parent_idx;
+    if (!hasSGroup(sgroup.parent_idx))
+    {
+        pidx = findSGroupById(sgroup.parent_group);
+        if (pidx < 0)
+            return false;
+    }
     SGroup& parent = getSGroup(pidx);
     getParentAtoms(parent, target);
     target.concat(parent.atoms);
