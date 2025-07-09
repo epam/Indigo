@@ -1484,6 +1484,23 @@ namespace com.epam.indigo
 
         }
 
+        public string molecularFormula()
+        {
+            int gf = -1;
+            try
+            {
+                dispatcher.setSessionID();
+                gf = dispatcher.checkResult(IndigoLib.indigoMolecularFormula(self));
+                string result = dispatcher.checkResult(IndigoLib.indigoToString(gf));
+                return result;
+            }
+            finally
+            {
+                dispatcher.checkResult(IndigoLib.indigoFree(gf));
+            }
+
+        }
+
         public double molecularWeight()
         {
             dispatcher.setSessionID();
