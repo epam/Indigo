@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include <algorithm>
+#include <numeric>
 
 #include "base_cpp/crc32.h"
 #include "base_cpp/output.h"
@@ -25,6 +26,7 @@
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/inchi_wrapper.h"
+#include "molecule/molecule_inchi.h"
 #include "molecule/ket_document.h"
 #include "molecule/ket_document_json_loader.h"
 #include "molecule/molecule_arom_match.h"
@@ -33,6 +35,7 @@
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/monomer_commons.h"
+#include "molecule/monomers_template_library.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
 
@@ -3029,7 +3032,6 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     QS_DEF(StringPool, ap_points_ids);
     QS_DEF(Array<int>, ap_ids);
     QS_DEF(Array<char>, ap_id);
-    std::unique_ptr<BaseMolecule> fragment(neu());
 
     int tg_idx = t_idx;
     if (t_idx == -1)
@@ -3038,8 +3040,8 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     TGroup& tgroup = tgroups.getTGroup(tg_idx);
     if (tgroup.ambiguous)
         throw Error("Ambiguous monomer cannot be transform to SGroup.");
-    fragment->clear();
-    fragment->clone(*tgroup.fragment.get());
+
+    std::unique_ptr<BaseMolecule> fragment = tgroup.fragment->applyTransformation(getTemplateAtomTransform(idx), getAtomXyz(idx));
 
     sgs.clear();
     att_atoms.clear();
@@ -3116,10 +3118,8 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     for (auto i : fragment->vertices())
     {
         int aidx = mapping[i];
-        auto tpos = getAtomXyz(idx);
-        tpos.add(fragment->getAtomXyz(i));
         if (aidx > -1)
-            setAtomXyz(aidx, tpos);
+            setAtomXyz(aidx, fragment->getAtomXyz(i));
     }
 
     QS_DEF(Array<int>, added_atoms);
@@ -3142,6 +3142,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
             Superatom& su = (Superatom&)sg;
             su.seqid = getTemplateAtomSeqid(idx);
             su.sa_natreplace.copy(tgroup.tgroup_natreplace);
+            su.contracted = getTemplateAtomDisplayOption(idx);
 
             for (int i = 0; i < att_atoms.size(); i++)
             {
@@ -3226,6 +3227,311 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     return result;
 }
 
+void BaseMolecule::_collectSuparatomAttachmentPoints(Superatom& sa, std::unordered_map<int, std::string>& ap_ids_map)
+{
+    if (sa.attachment_points.size() > 0)
+    {
+        for (int k = sa.attachment_points.begin(); k < sa.attachment_points.end(); k = sa.attachment_points.next(k))
+        {
+            Superatom::_AttachmentPoint& ap = sa.attachment_points.at(k);
+            ap_ids_map.emplace(ap.aidx, ap.apid.ptr());
+        }
+    }
+    else // Try to create attachment points from crossing bond information
+    {
+        for (int k = 0; k < sa.bonds.size(); k++)
+        {
+            const Edge& edge = getEdge(sa.bonds[k]);
+            int ap_aidx = -1;
+            int ap_lvidx = -1;
+            if (sa.atoms.find(edge.beg) != -1)
+            {
+                ap_aidx = edge.beg;
+                ap_lvidx = edge.end;
+            }
+            else if (sa.atoms.find(edge.end) != -1)
+            {
+                ap_aidx = edge.end;
+                ap_lvidx = edge.beg;
+            }
+            else // Crossing bond connects atoms out of Sgroup?
+            {
+                continue;
+            }
+
+            int idap = sa.attachment_points.add();
+            Superatom::_AttachmentPoint& ap = sa.attachment_points.at(idap);
+
+            if (_isNTerminus(sa, ap_aidx)) //  N-terminus ?
+                ap.apid.readString("Al", true);
+            else if (_isCTerminus(sa, ap_aidx)) //  C-terminus ?
+                ap.apid.readString("Br", true);
+            else
+                ap.apid.readString("Cx", true);
+
+            ap.aidx = ap_aidx;
+            ap.lvidx = ap_lvidx;
+            ap_ids_map.emplace(ap.aidx, ap.apid.ptr());
+        }
+    }
+}
+
+void BaseMolecule::_connectTemplateAtom(Superatom& sa, int t_idx, Array<int>& orphaned_atoms)
+{
+    orphaned_atoms.concat(sa.atoms);
+    for (int i = sa.attachment_points.begin(); i < sa.attachment_points.end(); i = sa.attachment_points.next(i))
+    {
+        auto& ap = sa.attachment_points.at(i);
+        if (ap.lvidx < 0)
+        {
+            const Vertex& v = getVertex(ap.aidx);
+            QS_DEF(Array<int>, outer_neighbors);
+            outer_neighbors.clear();
+            for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+            {
+                if (sa.atoms.find(v.neiVertex(k)) == -1)
+                    outer_neighbors.push(v.neiVertex(k));
+            }
+
+            for (int k = 0; k < outer_neighbors.size(); k++)
+            {
+                int v_k = outer_neighbors[k];
+                if (findEdgeIndex(v_k, ap.aidx) != -1)
+                {
+                    if (findEdgeIndex(v_k, t_idx) == -1)
+                        flipBond(v_k, ap.aidx, t_idx);
+                    setTemplateAtomAttachmentOrder(t_idx, v_k, ap.apid.ptr());
+                    if (isTemplateAtom(v_k))
+                    {
+                        int ap_count = getTemplateAtomAttachmentPointsCount(v_k);
+                        for (int m = 0; m < ap_count; m++)
+                        {
+                            if (getTemplateAtomAttachmentPoint(v_k, m) == ap.aidx)
+                            {
+                                QS_DEF(Array<char>, ap_id);
+                                getTemplateAtomAttachmentPointId(v_k, m, ap_id);
+                                _flipTemplateAtomAttachmentPoint(v_k, ap.aidx, ap_id, t_idx);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else
+            orphaned_atoms.push(ap.lvidx);
+    }
+}
+
+bool BaseMolecule::_findAffineTransform(BaseMolecule& src, BaseMolecule& dst, Mat23& M, const int* mapping)
+{
+    constexpr double PIVOT_EPS = 1e-12;
+    constexpr double MATCH_EPS = 5e-5;
+
+    if (src.vertexCount() != dst.vertexCount() || src.vertexCount() < 3)
+        return false;
+
+    double A[6][6]{};
+    double b[6]{};
+
+    auto accumulate = [&](const double J[6], double d) {
+        for (int r = 0; r < 6; ++r)
+        {
+            b[r] += J[r] * d;
+            for (int c = 0; c < 6; ++c)
+                A[r][c] += J[r] * J[c];
+        }
+    };
+
+    for (auto v : src.vertices())
+    {
+        const auto s = src.getAtomXyz(v);
+        const auto t = dst.getAtomXyz(mapping[v]);
+
+        const double Jx[6]{s.x, s.y, 0, 0, 1, 0};
+        const double Jy[6]{0, 0, s.x, s.y, 0, 1};
+        accumulate(Jx, t.x);
+        accumulate(Jy, t.y);
+    }
+
+    // Gauss solve
+    for (int k = 0; k < 6; ++k)
+    {
+        int piv = k;
+        for (int i = k + 1; i < 6; ++i)
+            if (std::fabs(A[i][k]) > std::fabs(A[piv][k]))
+                piv = i;
+
+        if (std::fabs(A[piv][k]) < PIVOT_EPS)
+            return false;
+
+        if (piv != k)
+        {
+            for (int j = k; j < 6; ++j)
+                std::swap(A[k][j], A[piv][j]);
+            std::swap(b[k], b[piv]);
+        }
+
+        const double diag = A[k][k];
+        for (int j = k; j < 6; ++j)
+            A[k][j] /= diag;
+        b[k] /= diag;
+
+        for (int i = 0; i < 6; ++i)
+            if (i != k)
+            {
+                const double f = A[i][k];
+                for (int j = k; j < 6; ++j)
+                    A[i][j] -= f * A[k][j];
+                b[i] -= f * b[k];
+            }
+    }
+
+    const double a11 = b[0], a12 = b[1], a21 = b[2], a22 = b[3], tx = b[4], ty = b[5];
+
+    for (auto v : src.vertices())
+    {
+        const auto s = src.getAtomXyz(v);
+        const auto t = dst.getAtomXyz(mapping[v]);
+
+        const double px = a11 * s.x + a12 * s.y + tx;
+        const double py = a21 * s.x + a22 * s.y + ty;
+
+        if (std::fabs(px - t.x) > MATCH_EPS || std::fabs(py - t.y) > MATCH_EPS)
+            return false;
+    }
+
+    M = {{{static_cast<float>(a11), static_cast<float>(a12), static_cast<float>(tx)},
+          {static_cast<float>(a21), static_cast<float>(a22), static_cast<float>(ty)}}};
+    return true;
+}
+
+bool BaseMolecule::_restoreTemplateFromLibrary(TGroup& tg, MonomerTemplateLibrary& mtl, const std::string& residue_inchi)
+{
+    auto& class_map = MonomerTemplates::getStrToMonomerType();
+    auto class_it = class_map.find(tg.tgroup_class.ptr());
+    if (class_it != class_map.end())
+    {
+        std::string id = mtl.getMonomerTemplateIdByAlias(class_it->second, tg.tgroup_name.ptr());
+        if (id.size() == 0 && tg.tgroup_alias.size() > 0)
+            id = mtl.getMonomerTemplateIdByAlias(class_it->second, tg.tgroup_alias.ptr());
+        if (id.size() > 0)
+        {
+            // template with same class and alias found
+            // now we can compare residues' InChI
+            try
+            {
+                const auto& templ = mtl.getMonomerTemplateById(id);
+                auto templ_tgroup = templ.getTGroup();
+                auto templ_residue = templ_tgroup->getResidue();
+                if (templ_residue)
+                {
+                    // calc inchi for template residue
+                    std::string templ_inchi_str;
+                    {
+                        StringOutput templ_inchi_output(templ_inchi_str);
+                        MoleculeInChI templ_inchi(templ_inchi_output);
+                        templ_inchi.outputInChI(templ_residue->asMolecule());
+                    }
+
+                    if (templ_inchi_str == residue_inchi)
+                    {
+                        tg.copy(*templ_tgroup);
+                        tg.tgroup_text_id.readString(id.c_str(), true);
+                        tg.fragment.reset(neu());
+                        tg.fragment->clone(templ_tgroup->fragment->asMolecule()); // clone the whole template as is
+                        return true;
+                    }
+                }
+            }
+            catch (...)
+            {
+            }
+        }
+    }
+    return false;
+}
+
+bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, MonomerTemplateLibrary& mtl,
+                                                       std::unordered_map<std::string, int>& added_templates, Array<int>& remove_atoms)
+{
+    auto& sa = static_cast<Superatom&>(sgroups.getSGroup(sg_idx));
+    if (!sgroups.hasSGroup(sg_idx) || sa.subscript.size() == 0)
+        return false;
+
+    // No special handling needed for LGRP. Just mark it to remove.
+    if (sa.sa_class.size() && std::string(sa.sa_class.ptr()) == "LGRP")
+        return true;
+
+    // create template atom and set all properties except template index and transform
+    bool res = true;
+    int ta_idx = addTemplateAtom(sa.subscript.ptr());
+    setTemplateAtomClass(ta_idx, sa.sa_class.ptr());
+    setTemplateAtomSeqid(ta_idx, sa.seqid);
+    setTemplateAtomDisplayOption(ta_idx, sa.contracted);
+
+    // Calculate residue InChI
+    std::unique_ptr<BaseMolecule> residue(neu());
+    residue->makeSubmolecule(*this, sa.atoms, nullptr, SKIP_TGROUPS | SKIP_TEMPLATE_ATTACHMENT_POINTS);
+    std::string residue_inchi_str;
+    {
+        StringOutput inchi_output(residue_inchi_str);
+        MoleculeInChI inchi(inchi_output);
+        inchi.outputInChI(residue->asMolecule());
+    }
+
+    // find or create template group for residue
+    auto it_added = added_templates.find(residue_inchi_str);
+    int tg_index = it_added != added_templates.end() ? it_added->second : tgroups.addTGroup();
+    // no we know template index to link template atom with it
+    setTemplateAtomTemplateIndex(ta_idx, tg_index);
+    TGroup& tg = tgroups.getTGroup(tg_index);
+    if (tg.tgroup_id < 0)
+    {
+        added_templates.emplace(residue_inchi_str, tg_index);
+        tg.tgroup_id = ++tg_id;
+        tg.tgroup_class.copy(sa.sa_class);
+        if (sa.subscript.size())
+            tg.tgroup_name.copy(sa.subscript);
+        if (sa.sa_natreplace.size() > 0)
+            tg.tgroup_natreplace.copy(sa.sa_natreplace);
+        res = _restoreTemplateFromLibrary(tg, mtl, residue_inchi_str);
+    }
+    // handle transformation
+    if (res)
+    {
+        auto templ_residue = tg.getResidue();
+        MoleculeExactMatcher matcher(*templ_residue, *residue);
+        if (matcher.find())
+        {
+            // check if transform is possible
+            auto map = matcher.getQueryMapping();
+            Mat23 transform;
+            bool affine = _findAffineTransform(*templ_residue, *residue, transform, map);
+            if (affine)
+            {
+                Transformation tform;
+                if (tform.fromAffineMatrix(transform))
+                {
+                    setAtomXyz(ta_idx, tform.shift);
+                    tform.shift.clear();
+                    setTemplateAtomTransform(ta_idx, tform);
+                }
+                else
+                    res = false;
+            }
+            else
+            {
+                res = false;
+            }
+        }
+    }
+    if (res)
+        _connectTemplateAtom(sa, ta_idx, remove_atoms);
+    else
+        removeAtom(ta_idx);
+    return res;
+}                                                                                                                                                         
+                                                                                                                                                          
 int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
 {
     QS_DEF(Array<int>, remove_atoms);
@@ -4274,7 +4580,7 @@ int BaseMolecule::bondCode(int edge_idx)
     return getBondOrder(edge_idx);
 }
 
-void BaseMolecule::transformSuperatomsToTemplates(int template_id)
+void BaseMolecule::transformSuperatomsToTemplates(int template_id, MonomerTemplateLibrary* /*mtl*/)
 {
     for (auto sg_idx = sgroups.begin(); sg_idx != sgroups.end(); sg_idx = sgroups.next(sg_idx))
     {

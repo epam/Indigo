@@ -24,6 +24,7 @@
 #include <iostream>
 #include <limits>
 #include <vector>
+#include <array>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
@@ -36,7 +37,7 @@
 
 namespace indigo
 {
-
+    using Mat23 = std::array<std::array<float, 3>, 2>;
     const float EPSILON = 0.000001f;
 
     // frac of type 1/n for acos_stable

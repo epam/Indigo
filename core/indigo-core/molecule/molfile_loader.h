@@ -113,7 +113,7 @@ namespace indigo
         int _bonds_num;
         bool _chiral;
         int _max_template_id;
-
+        bool _disable_sgroups_conversion;
         void _readHeader();
         void _readCtabHeader();
         void _readCtab2000();

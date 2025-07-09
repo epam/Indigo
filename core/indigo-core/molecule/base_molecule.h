@@ -125,6 +125,7 @@ namespace indigo
     class MetaDataStorage;
     class KetDocument;
     class TGroup;
+    class MonomerTemplateLibrary;
 
     class DLLEXPORT BaseMolecule : public Graph
     {
@@ -288,7 +289,7 @@ namespace indigo
         int transformSCSRtoFullCTAB();
         int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& helm_name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
-        void transformSuperatomsToTemplates(int template_id);
+        void transformSuperatomsToTemplates(int template_id, MonomerTemplateLibrary* mtl = nullptr);
         void transformTemplatesToSuperatoms();
 
         virtual bool isRSite(int atom_idx) = 0;
@@ -662,6 +663,13 @@ namespace indigo
         bool _isNTerminus(Superatom& su, int idx);
         int _createSGroupFromFragment(Array<int>& sg_atoms, const TGroup& tg, Array<int>& mapping);
         bool isAtomBelongsSGroup(int idx);
+
+        void _connectTemplateAtom(Superatom& sa, int t_idx, Array<int>& orphaned_atoms);
+        bool _replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, MonomerTemplateLibrary& mtl, std::unordered_map<std::string, int>& added_templates,
+                                                 Array<int>& remove_atoms);
+        bool _restoreTemplateFromLibrary(TGroup& tg, MonomerTemplateLibrary& mtl, const std::string& residue_inchi);
+        void _collectSuparatomAttachmentPoints(Superatom& sa, std::unordered_map<int, std::string>& ap_ids_map);
+        static bool _findAffineTransform(BaseMolecule& src, BaseMolecule& dst, Mat23& M, const int* mapping);
 
         Array<int> _hl_atoms;
         Array<int> _hl_bonds;
