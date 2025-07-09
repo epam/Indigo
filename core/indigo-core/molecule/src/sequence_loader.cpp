@@ -1784,6 +1784,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
     std::string simple_polymer_type = "";
     int monomer_idx = 0;
     int unknown_count = 0;
+    size_t last_rna_branch_monomer = 0;
     _unknown_ambiguous_count = 0;
     using polymer_map = std::map<std::string, std::map<int, size_t>>;
     polymer_map used_polymer_nums;
@@ -1880,7 +1881,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                         auto base_idx = addHelmMonomer(document, monomer_info, MonomerClass::Base, base_pos);
                         cur_polymer_map->second[monomer_idx] = base_idx;
                         if (monomer_idx > 1)
-                            addMonomerConnection(document, base_idx - 1, base_idx, true);
+                            addMonomerConnection(document, last_rna_branch_monomer, base_idx, true);
                         continue;
                     }
                     ch = _scanner.lookNext();
@@ -1897,7 +1898,8 @@ void SequenceLoader::loadHELM(KetDocument& document)
 
                         cur_polymer_map->second[monomer_idx] = added_idx;
                         if (monomer_idx > 1)
-                            addMonomerConnection(document, added_idx - 1, added_idx);
+                            addMonomerConnection(document, last_rna_branch_monomer, added_idx);
+                        last_rna_branch_monomer = added_idx;
                         if (ch == '.')
                             _scanner.skip(1);
                         continue;
@@ -1905,7 +1907,8 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     auto sugar_idx = addHelmMonomer(document, monomer_info, MonomerClass::Sugar, pos);
                     cur_polymer_map->second[monomer_idx] = sugar_idx;
                     if (monomer_idx > 1)
-                        addMonomerConnection(document, sugar_idx - 1, sugar_idx);
+                        addMonomerConnection(document, last_rna_branch_monomer, sugar_idx);
+                    last_rna_branch_monomer = sugar_idx;
                     monomer_idx++;
                     if (ch == '(') // base after sugar
                     {
@@ -1930,6 +1933,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     auto phosphate_idx = addHelmMonomer(document, phosphate_info, MonomerClass::Phosphate, phosphate_pos);
                     cur_polymer_map->second[monomer_idx] = phosphate_idx;
                     addMonomerConnection(document, sugar_idx, phosphate_idx);
+                    last_rna_branch_monomer = phosphate_idx;
                     ch = _scanner.lookNext();
                     if (ch != '.' && ch != '}')
                         throw Error("Unexpected symbol. Expected '.' or '}' but found '%c'.", ch);
