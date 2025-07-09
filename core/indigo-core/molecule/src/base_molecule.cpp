@@ -908,7 +908,7 @@ void BaseMolecule::removeSGroup(int idx)
 {
     SGroup& sg = sgroups.getSGroup(idx);
     _checkSgroupHierarchy(sg.parent_group, sg.original_group);
-
+    
     sgroups.remove(idx);
 }
 
@@ -4574,13 +4574,44 @@ int BaseMolecule::bondCode(int edge_idx)
     return getBondOrder(edge_idx);
 }
 
-void BaseMolecule::transformSuperatomsToTemplates(int template_id, MonomerTemplateLibrary* /*mtl*/)
+void BaseMolecule::transformSuperatomsToTemplates(int template_id, MonomerTemplateLibrary* mtl)
 {
-    for (auto sg_idx = sgroups.begin(); sg_idx != sgroups.end(); sg_idx = sgroups.next(sg_idx))
+    std::unordered_map<std::string, int> added_templates;
+    std::vector<int> remove_sgroups;
+    Array<int> remove_atoms;
+
+    for (int tg_idx = tgroups.begin(); tg_idx != tgroups.end(); tg_idx = tgroups.next(tg_idx))
     {
-        if (sgroups.getSGroup(sg_idx).sgroup_type == SGroup::SG_TYPE_SUP)
-            _transformSGroupToTGroup(sg_idx, template_id);
-    }
+         auto res = tgroups.getTGroup(tg_idx).getResidue();
+         if (res)
+         {
+             std::string templ_inchi_str;
+             {
+                 StringOutput templ_inchi_output(templ_inchi_str);
+                 MoleculeInChI templ_inchi(templ_inchi_output);
+                 templ_inchi.outputInChI(res->asMolecule());
+             }
+             if (added_templates.count(templ_inchi_str) == 0)
+                 added_templates.emplace(templ_inchi_str, tg_idx);
+         }
+     }
+
+     for (auto sg_idx = sgroups.begin(); sg_idx != sgroups.end(); sg_idx = sgroups.next(sg_idx))
+    {
+         if (sgroups.getSGroup(sg_idx).sgroup_type == SGroup::SG_TYPE_SUP)
+         {
+             // check if we can take template from library
+             if (mtl && _replaceExpandedMonomerWithTemplate(sg_idx, template_id, *mtl, added_templates, remove_atoms))
+                 remove_sgroups.push_back(sg_idx);
+             else
+                 _transformSGroupToTGroup(sg_idx, template_id);
+         }
+     }
+     // remove S-groups that were transformed to templates
+     std::sort(remove_sgroups.begin(), remove_sgroups.end(), std::greater<int>());
+     for (auto sg_idx : remove_sgroups)
+         removeSGroup(sg_idx);
+     removeAtoms(remove_atoms);
 }
 
 int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& helm_name, Array<char>& /*code*/, Array<char>& natreplace, StringPool& r_names)
@@ -5801,7 +5832,7 @@ std::unique_ptr<BaseMolecule> BaseMolecule::applyTransformation(const Transforma
             p.transformPoint(matr);
         }
     }
-    else // TODO: just to keep compatibility with tests. check why results are different.
+    else // TODO: just to keep compatibility with tests. check why results are different. 
     {
         for (auto i : result->vertices())
         {
