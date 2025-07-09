@@ -908,6 +908,7 @@ void BaseMolecule::removeSGroup(int idx)
 {
     SGroup& sg = sgroups.getSGroup(idx);
     _checkSgroupHierarchy(sg.parent_group, sg.original_group);
+    
     sgroups.remove(idx);
 }
 
@@ -5811,6 +5812,40 @@ std::unique_ptr<BaseMolecule> BaseMolecule::applyTransformation(const Transforma
     }
 
     return std::unique_ptr<BaseMolecule>{result};
+}
+
+bool BaseMolecule::transformedTemplateAtomsToSuperatoms()
+{
+    bool modified = false;
+    if (tgroups.getTGroupCount())
+    {
+        std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
+        getTemplatesMap(templates);
+        for (auto vi : vertices())
+        {
+            if (isTemplateAtom(vi) && getTemplateAtomTransform(vi).hasTransformation())
+            {
+                auto tg_idx = getTemplateAtomTemplateIndex(vi);
+                if (tg_idx < 0)
+                {
+                    std::string alias = getTemplateAtomClass(vi);
+                    std::string mon_class = getTemplateAtom(vi);
+                    auto tg_ref = findTemplateInMap(alias, mon_class, templates);
+                    if (tg_ref.has_value())
+                    {
+                        auto& tg = tg_ref.value().get();
+                        tg_idx = tg.tgroup_id;
+                    }
+                }
+                if (tg_idx != -1)
+                {
+                    _transformTGroupToSGroup(vi, tg_idx);
+                    modified = true;
+                }
+            }
+        }
+    }
+    return modified;
 }
 
 #ifdef _MSC_VER

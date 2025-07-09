@@ -280,12 +280,11 @@ bool MoleculeSGroups::getParentAtoms(int idx, Array<int>& target)
 
 bool MoleculeSGroups::getParentAtoms(SGroup& sgroup, Array<int>& target)
 {
-    if (sgroup.parent_idx < 0)
-    {
+    auto pidx = findSGroupById(sgroup.parent_group);
+    if (pidx < 0)
         return false;
-    }
 
-    SGroup& parent = getSGroup(sgroup.parent_idx);
+    SGroup& parent = getSGroup(pidx);
     getParentAtoms(parent, target);
     target.concat(parent.atoms);
     return true;
@@ -459,7 +458,7 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
         SGroup& sg = *_sgroups.at(value);
         if (sg.parent_group != 0)
         {
-            int idx = _findSGroupById(sg.parent_group);
+            int idx = findSGroupById(sg.parent_group);
             if (idx != -1)
                 sgs.push(idx);
         }
@@ -698,7 +697,7 @@ void MoleculeSGroups::registerUnfoldedHydrogen(int idx, int new_h_idx)
     }
 }
 
-int MoleculeSGroups::_findSGroupById(int id)
+int MoleculeSGroups::findSGroupById(int id)
 {
     for (int i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
     {

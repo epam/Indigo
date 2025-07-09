@@ -609,6 +609,7 @@ namespace indigo
             return applyTransformation(transform, Vec2f(xyz.x, xyz.y));
         };
 
+        bool transformedTemplateAtomsToSuperatoms();
         // calc convex hull
         std::vector<Vec2f> getConvexHull(const Vec2f& min_box) const;
 

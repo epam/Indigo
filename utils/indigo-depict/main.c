@@ -867,7 +867,7 @@ int main(int argc, char* argv[])
 
     indigoSetOption("ignore-stereochemistry-errors", "on");
     indigoSetOption("ignore-bad-valence", "on");
-    indigoSetOption("molfile-saving-mode", "2000");
+    indigoSetOption("molfile-saving-mode", "3000");
     indigoSetOption("ket-saving-version", "1.0.0");
     indigoSetOptionBool("json-saving-pretty", "on");
     indigoSetOptionFloat("reaction-component-margin-size", 0.0f);
@@ -922,7 +922,8 @@ int main(int argc, char* argv[])
     // read in the input
     reader = (p.file_to_load != NULL) ? indigoReadFile(p.file_to_load) : indigoReadString(p.string_to_load);
 
-    int lib = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
+    //int lib = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
+    int lib = indigoLoadMonomerLibraryFromFile("monomer_library.ket");
     if (p.mode == MODE_SINGLE_MOLECULE)
     {
         if (p.id != NULL)
@@ -952,7 +953,14 @@ int main(int argc, char* argv[])
             obj = indigoLoadHelm(reader, lib);
         }
         else
-            obj = indigoLoadMolecule(reader);
+            obj = indigoLoadMoleculeWithLib(reader, lib);
+
+        auto sgrps_it = indigoFindSGroups(obj, "SG_TYPE", "GEN");
+        while (indigoHasNext(sgrps_it))
+        {
+            auto sgs_id = indigoNext(sgrps_it);
+            indigoRemove(sgs_id);
+        }
 
         if (p.action == ACTION_LAYOUT)
         {
