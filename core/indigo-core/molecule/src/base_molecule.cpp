@@ -3059,7 +3059,6 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
         if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
             Superatom& sa = (Superatom&)sg;
-            sa.contracted = DisplayOption::Expanded;
             BufferScanner sc(sa.sa_class);
             if (sc.findWordIgnoreCase("LGRP"))
                 sgs.push(j);
