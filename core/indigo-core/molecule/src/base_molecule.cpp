@@ -5646,7 +5646,7 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
         if (tgroup.unresolved)
             continue;
 
-        auto monomer_mol = tgroup.fragment->applyTransformation(getTemplateAtomTransform(monomer_id), result->getAtomXyz(monomer_id));
+        auto monomer_mol = tgroup.fragment->applyTransformation(result->getTemplateAtomTransform(monomer_id), result->getAtomXyz(monomer_id));
         auto& monomer_sgroups = monomer_mol->sgroups;
         std::map<int, int> attached_atom;
         Array<int> atoms_to_remove;
