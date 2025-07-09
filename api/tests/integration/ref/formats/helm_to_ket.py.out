@@ -14,6 +14,7 @@ helm_mixed_custom.ket:SUCCEED
 helm_multi_char_rna.ket:SUCCEED
 helm_no_brackets.ket:SUCCEED
 helm_no_left_ap.ket:SUCCEED
+helm_nucleosides.ket:SUCCEED
 helm_only_base.ket:SUCCEED
 helm_peptide.ket:SUCCEED
 helm_rna_without_base.ket:SUCCEED
