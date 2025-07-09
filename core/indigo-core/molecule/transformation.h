@@ -106,7 +106,7 @@ namespace indigo
         const bool hasTransformation() const
         {
             return rotate != 0 || shift.x != 0 || shift.y != 0 || flip != FlipType::none;
-        }                
+        }
 
         float rotate;
         float scale;

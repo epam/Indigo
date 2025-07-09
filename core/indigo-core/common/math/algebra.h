@@ -20,11 +20,11 @@
 #define _ALGEBRA_H_
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iostream>
 #include <limits>
 #include <vector>
-#include <array>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
