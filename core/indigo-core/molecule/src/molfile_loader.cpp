@@ -2085,7 +2085,7 @@ void MolfileLoader::_postLoad()
             nucleo_templates.emplace(tg.tgroup_name.ptr(), tg_idx);
     }
 
-    if (_bmol->tgroups.getTGroupCount() && _bmol->sgroups.getSGroupCount())
+    if (!_disable_sgroups_conversion && _bmol->sgroups.getSGroupCount())
         _bmol->transformSuperatomsToTemplates(_max_template_id);
 
     std::set<int> templates_to_remove;
@@ -3858,6 +3858,7 @@ void MolfileLoader::_readTGroups3000()
                     //               tgroup.fragment = _bmol->neu();
 
                     MolfileLoader loader(_scanner);
+                    loader._disable_sgroups_conversion = true;
                     loader.copyProperties(*this);
                     loader._bmol = tgroup.fragment.get();
                     if (_bmol->isQueryMolecule())
