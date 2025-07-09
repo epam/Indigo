@@ -16,6 +16,7 @@ helm_molecule_2418.ket:SUCCEED
 helm_monomer_molecule.ket:SUCCEED
 helm_monomer_molecule_direct.ket:SUCCEED
 helm_multi_char_rna.ket:SUCCEED
+helm_nucleosides.ket:SUCCEED
 helm_peptide.ket:SUCCEED
 helm_rna_without_base.ket:SUCCEED
 helm_simple_rna.ket:SUCCEED
