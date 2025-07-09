@@ -45,7 +45,8 @@ IMPL_ERROR(MolfileLoader, "molfile loader");
 CP_DEF(MolfileLoader);
 
 MolfileLoader::MolfileLoader(Scanner& scanner, MonomerTemplateLibrary* monomer_library)
-    : _scanner(scanner), _monomer_templates(MonomerTemplates::_instance()), _max_template_id(0), CP_INIT, TL_CP_GET(_stereo_care_atoms),
+    : _scanner(scanner), _monomer_templates(MonomerTemplates::_instance()), _max_template_id(0), _disable_sgroups_conversion(false), CP_INIT,
+      TL_CP_GET(_stereo_care_atoms),
       TL_CP_GET(_stereo_care_bonds), TL_CP_GET(_stereocenter_types), TL_CP_GET(_stereocenter_groups), TL_CP_GET(_sensible_bond_directions),
       TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount), TL_CP_GET(_sgroup_types), TL_CP_GET(_sgroup_mapping)
 {
@@ -2086,7 +2087,7 @@ void MolfileLoader::_postLoad()
     }
 
     if (!_disable_sgroups_conversion && _bmol->sgroups.getSGroupCount())
-        _bmol->transformSuperatomsToTemplates(_max_template_id);
+        _bmol->transformSuperatomsToTemplates(_max_template_id, _monomer_library);
 
     std::set<int> templates_to_remove;
     std::unordered_map<MonomerKey, int, pair_hash> new_templates;
