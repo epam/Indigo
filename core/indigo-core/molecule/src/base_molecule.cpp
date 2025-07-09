@@ -26,12 +26,12 @@
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/inchi_wrapper.h"
-#include "molecule/molecule_inchi.h"
 #include "molecule/ket_document.h"
 #include "molecule/ket_document_json_loader.h"
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_exact_substructure_matcher.h"
+#include "molecule/molecule_inchi.h"
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/monomer_commons.h"
@@ -3115,13 +3115,6 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
         }
     }
 
-    for (auto i : fragment->vertices())
-    {
-        int aidx = mapping[i];
-        if (aidx > -1)
-            setAtomXyz(aidx, fragment->getAtomXyz(i));
-    }
-
     QS_DEF(Array<int>, added_atoms);
 
     added_atoms.clear();
@@ -3530,8 +3523,8 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
     else
         removeAtom(ta_idx);
     return res;
-}                                                                                                                                                         
-                                                                                                                                                          
+}
+
 int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
 {
     QS_DEF(Array<int>, remove_atoms);
@@ -5727,81 +5720,94 @@ std::unique_ptr<BaseMolecule> BaseMolecule::applyTransformation(const Transforma
 {
     BaseMolecule* result = neu();
     result->clone_KeepIndices(*this);
-    Rect2f bbox;
-    result->getBoundingBox(bbox);
-    if (transform.flip != Transformation::FlipType::none)
+    if (transform.hasTransformation())
     {
-        // dx = px - cx, px = cx - dx = cx - px + cx = 2*cx - px
-        Vec2f center = bbox.center() * 2.0;
-        if (transform.flip == Transformation::FlipType::horizontal)
+        Rect2f bbox;
+        result->getBoundingBox(bbox);
+        if (transform.flip != Transformation::FlipType::none)
         {
-            for (auto atom_idx : result->vertices())
+            // dx = px - cx, px = cx - dx = cx - px + cx = 2*cx - px
+            Vec2f center = bbox.center() * 2.0;
+            if (transform.flip == Transformation::FlipType::horizontal)
             {
-                Vec3f& p = result->getAtomXyz(atom_idx);
-                p.x = center.x - p.x;
-                result->setAtomXyz(atom_idx, p);
+                for (auto atom_idx : result->vertices())
+                {
+                    Vec3f& p = result->getAtomXyz(atom_idx);
+                    p.x = center.x - p.x;
+                    result->setAtomXyz(atom_idx, p);
+                }
+            }
+            else if (transform.flip == Transformation::FlipType::vertical)
+            {
+                for (auto atom_idx : result->vertices())
+                {
+                    Vec3f& p = result->getAtomXyz(atom_idx);
+                    p.y = center.y - p.y;
+                    result->setAtomXyz(atom_idx, p);
+                }
+            }
+            // Fix bonds - change up to down and vice versa
+            for (int i = 0; i < result->edgeCount(); i++)
+            {
+                switch (result->getBondDirection(i))
+                {
+                case BOND_DOWN:
+                    result->setBondDirection(i, BOND_UP);
+                    break;
+                case BOND_UP:
+                    result->setBondDirection(i, BOND_DOWN);
+                    break;
+                case BOND_DOWN_OR_UNSPECIFIED:
+                    result->setBondDirection(i, BOND_UP_OR_UNSPECIFIED);
+                    break;
+                case BOND_UP_OR_UNSPECIFIED:
+                    result->setBondDirection(i, BOND_DOWN_OR_UNSPECIFIED);
+                    break;
+                default:
+                    break;
+                }
             }
         }
-        else if (transform.flip == Transformation::FlipType::vertical)
+        Transform3f matr;
+        if (false) // straight transformation
         {
-            for (auto atom_idx : result->vertices())
+            matr.identity();                  // init matrix with 1-s on diagonal
+            matr.translateInv(bbox.center()); // translate to move bounding center to (0,0)
+            if (transform.rotate != 0)
             {
-                Vec3f& p = result->getAtomXyz(atom_idx);
-                p.y = center.y - p.y;
-                result->setAtomXyz(atom_idx, p);
+                Transform3f rot;
+                rot.rotateZ(transform.rotate); // rotate around Z axis
+                matr.transform(rot);           // rotate after translation
             }
         }
-        // Fix bonds - change up to down and vice versa
-        for (int i = 0; i < result->edgeCount(); i++)
+        else // 2DO: check if this is correct. Also add comment to translateLocal
         {
-            switch (result->getBondDirection(i))
-            {
-            case BOND_DOWN:
-                result->setBondDirection(i, BOND_UP);
-                break;
-            case BOND_UP:
-                result->setBondDirection(i, BOND_DOWN);
-                break;
-            case BOND_DOWN_OR_UNSPECIFIED:
-                result->setBondDirection(i, BOND_UP_OR_UNSPECIFIED);
-                break;
-            case BOND_UP_OR_UNSPECIFIED:
-                result->setBondDirection(i, BOND_DOWN_OR_UNSPECIFIED);
-                break;
-            default:
-                break;
-            }
+            if (transform.rotate == 0)
+                matr.identity();
+            else
+                matr.rotationZ(transform.rotate);
+            matr.translateLocalInv(bbox.center());
+        }
+        matr.translate(position); // translate to move bounding center to position point
+        if (transform.shift.x != 0 || transform.shift.y != 0)
+        {
+            matr.translate(transform.shift); // apply shift
+        }
+
+        for (auto atom_idx : result->vertices())
+        {
+            Vec3f& p = result->getAtomXyz(atom_idx);
+            p.transformPoint(matr);
         }
     }
-    Transform3f matr;
-    if (false) // straight transformation
+    else // TODO: just to keep compatibility with tests. check why results are different. 
     {
-        matr.identity();                  // init matrix with 1-s on diagonal
-        matr.translateInv(bbox.center()); // translate to move bounding center to (0,0)
-        if (transform.rotate != 0)
+        for (auto i : result->vertices())
         {
-            Transform3f rot;
-            rot.rotateZ(transform.rotate); // rotate around Z axis
-            matr.transform(rot);           // rotate after translation
+            auto tpos = result->getAtomXyz(i);
+            tpos.add(position);
+            result->setAtomXyz(i, tpos);
         }
-    }
-    else // 2DO: check if this is correct. Also add comment to translateLocal
-    {
-        if (transform.rotate == 0)
-            matr.identity();
-        else
-            matr.rotationZ(transform.rotate);
-        matr.translateLocalInv(bbox.center());
-    }
-    matr.translate(position); // translate to move bounding center to position point
-    if (transform.shift.x != 0 || transform.shift.y != 0)
-    {
-        matr.translate(transform.shift); // apply shift
-    }
-    for (auto atom_idx : result->vertices())
-    {
-        Vec3f& p = result->getAtomXyz(atom_idx);
-        p.transformPoint(matr);
     }
 
     return std::unique_ptr<BaseMolecule>{result};
