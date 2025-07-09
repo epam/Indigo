@@ -908,7 +908,7 @@ void BaseMolecule::removeSGroup(int idx)
 {
     SGroup& sg = sgroups.getSGroup(idx);
     _checkSgroupHierarchy(sg.parent_group, sg.original_group);
-    
+
     sgroups.remove(idx);
 }
 
@@ -5801,7 +5801,7 @@ std::unique_ptr<BaseMolecule> BaseMolecule::applyTransformation(const Transforma
             p.transformPoint(matr);
         }
     }
-    else // TODO: just to keep compatibility with tests. check why results are different. 
+    else // TODO: just to keep compatibility with tests. check why results are different.
     {
         for (auto i : result->vertices())
         {
