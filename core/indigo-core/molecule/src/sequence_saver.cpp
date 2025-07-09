@@ -764,6 +764,8 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
     }
     else if (sf == SeqFormat::FASTA || sf == SeqFormat::Sequence || sf == SeqFormat::Sequence3)
     {
+        if (doc.moleculesRefs().size() > 0)
+            throw Error("Can't save micro-molecules to sequence format");
         auto& monomers = doc.monomers();
         doc.parseSimplePolymers(sequences, false);
         auto prop_it = doc.fastaProps().begin();
