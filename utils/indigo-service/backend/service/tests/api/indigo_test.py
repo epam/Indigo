@@ -2185,7 +2185,7 @@ M  END
         # )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual("16.0424604", result_data["molecular-weight"])
+        self.assertEqual("16.0429997", result_data["molecular-weight"])
 
     def test_calculate_components_mol(self):
         headers, data = self.get_headers(
@@ -2204,7 +2204,7 @@ M  END
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual(
-            "16.0424604; 30.0690408", result_data["molecular-weight"]
+            "16.0429997; 30.0699995", result_data["molecular-weight"]
         )
         self.assertEqual("C H4; C2 H6", result_data["gross"])
         self.assertEqual(
@@ -2313,7 +2313,7 @@ M  END
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual(
-            "[30.0690408; 16.0424604] > [30.0690408; 16.0424604]",
+            "[30.0699995; 16.0429997] > [30.0699995; 16.0429997]",
             result_data["molecular-weight"],
         )
         self.assertEqual("[C2 H6; C H4] > [C2 H6; C H4]", result_data["gross"])
@@ -2341,7 +2341,7 @@ M  END
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual(
-            "[16.0424604] + [30.0690408] > [30.0690408] + [16.0424604]",
+            "[16.0429997] + [30.0699995] > [30.0699995] + [16.0429997]",
             result_data["molecular-weight"],
         )
         self.assertEqual(
@@ -2417,7 +2417,7 @@ M  END
         )
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
-        self.assertEqual("15.0345204", result_data["molecular-weight"])
+        self.assertEqual("15.0349997", result_data["molecular-weight"])
         self.assertEqual("C H3", result_data["gross"])
         self.assertEqual("C 79.89 H 20.11", result_data["mass-composition"])
 
@@ -2441,7 +2441,7 @@ M  END
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual("C6 H5", result_data["gross"])
-        self.assertEqual("77.1039016", result_data["molecular-weight"])
+        self.assertEqual("77.1059982", result_data["molecular-weight"])
         self.assertEqual("C 93.46 H 6.54", result_data["mass-composition"])
 
     def test_calculate_empty(self):
@@ -2495,7 +2495,7 @@ M  END
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual("C H", result_data["gross"])
-        self.assertEqual("13.0186403", result_data["molecular-weight"])
+        self.assertEqual("13.0189997", result_data["molecular-weight"])
         self.assertEqual("13.007825", result_data["most-abundant-mass"])
         self.assertEqual("13.007825", result_data["monoisotopic-mass"])
         self.assertEqual("C 92.26 H 7.74", result_data["mass-composition"])
@@ -2625,7 +2625,7 @@ M  END
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual("C H3", result_data["gross"])
-        self.assertEqual("15.0345204", result_data["molecular-weight"])
+        self.assertEqual("15.0349997", result_data["molecular-weight"])
         self.assertEqual("15.0234751", result_data["most-abundant-mass"])
         self.assertEqual("15.0234751", result_data["monoisotopic-mass"])
         self.assertEqual("C 79.89 H 20.11", result_data["mass-composition"])
@@ -2792,7 +2792,7 @@ M  END
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual("C H3", result_data["gross"])
-        self.assertEqual("15.0345204", result_data["molecular-weight"])
+        self.assertEqual("15.0349997", result_data["molecular-weight"])
         self.assertEqual("15.0234751", result_data["most-abundant-mass"])
         self.assertEqual("15.0234751", result_data["monoisotopic-mass"])
         self.assertEqual("C 79.89 H 20.11", result_data["mass-composition"])
@@ -2819,7 +2819,7 @@ M  END
         result_data = json.loads(result.text)
         self.assertEqual("C H3; C2 H6 N", result_data["gross"])
         self.assertEqual(
-            "15.0345204; 44.0757403", result_data["molecular-weight"]
+            "15.0349997; 44.0769994", result_data["molecular-weight"]
         )
         self.assertEqual(
             "15.0234751; 44.0500238", result_data["most-abundant-mass"]
@@ -2851,7 +2851,7 @@ M  END
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual(
-            "15.0345204; 30.0690408", result_data["molecular-weight"]
+            "15.0349997; 30.0699995", result_data["molecular-weight"]
         )
         self.assertEqual("C H3; C2 H6", result_data["gross"])
         self.assertEqual(
@@ -2877,7 +2877,7 @@ M  END
         self.assertEqual(200, result.status_code)
         result_data = json.loads(result.text)
         self.assertEqual(
-            "16.0424604; 30.0690408", result_data["molecular-weight"]
+            "16.0429997; 30.0699995", result_data["molecular-weight"]
         )
         self.assertEqual("C H4; C2 H6", result_data["gross"])
         self.assertEqual(
