@@ -218,7 +218,7 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
     else if (mode == MODE_3000)
     {
         _v2000 = false;
-        if (bmol.tgroups.getTGroupCount() && bmol.transformedTemplateAtomsToSuperatoms())
+        if (mol->tgroups.getTGroupCount() && mol->transformedTemplateAtomsToSuperatoms())
             pmol = mol.get();
     }
     else
