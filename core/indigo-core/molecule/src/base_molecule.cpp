@@ -5853,7 +5853,7 @@ bool BaseMolecule::transformedTemplateAtomsToSuperatoms()
         getTemplatesMap(templates);
         for (auto vi : vertices())
         {
-            if (isTemplateAtom(vi) && getTemplateAtomTransform(vi).hasTransformation())
+            if (isTemplateAtom(vi) && (getTemplateAtomTransform(vi).hasTransformation() || getTemplateAtomDisplayOption(vi) == DisplayOption::Expanded))
             {
                 auto tg_idx = getTemplateAtomTemplateIndex(vi);
                 if (tg_idx < 0)
