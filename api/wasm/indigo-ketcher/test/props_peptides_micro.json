@@ -1,7 +1,7 @@
 [
     {
         "grossFormula": "C25 H37 N5 O7 S Se",
-        "mass": 630.615584,
+        "mass": 630.629991,
         "pKa": 5.96,
         "extinctionCoefficient": 125,
         "hydrophobicity": [
@@ -23,7 +23,7 @@
     },
     {
         "grossFormula": "C26 H40 N8 O6",
-        "mass": 560.645805,
+        "mass": 560.655989,
         "pKa": 5.96,
         "extinctionCoefficient": 0,
         "hydrophobicity": [

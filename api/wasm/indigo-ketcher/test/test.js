@@ -126,7 +126,7 @@ M  END
             assert.deepStrictEqual(
                 JSON.parse(indigo.calculate(molfile, options, selected)),
                 {
-                    "molecular-weight": "[42.0797410; 66.1458774] > [16.0424604]",
+                    "molecular-weight": "[42.0809991; 66.1360028] > [16.0429997]",
                     "most-abundant-mass": "[42.0469501; 65.9597914] > [16.0313001]",
                     "monoisotopic-mass": "[42.0469501; 65.9597914] > [16.0313001]",
                     "mass-composition": "[C 85.63 H 14.37; H 3.05 S 96.95] > [C 74.87 H 25.13]",
@@ -138,7 +138,7 @@ M  END
             assert.deepStrictEqual(
                 JSON.parse(indigo.calculate(molfile, options, selected)),
                 {
-                    "molecular-weight": "16.0424604",
+                    "molecular-weight": "16.0429997",
                     "most-abundant-mass": "16.0313001",
                     "monoisotopic-mass": "16.0313001",
                     "mass-composition": "C 74.87 H 25.13",
@@ -157,7 +157,7 @@ M  END
             assert.deepStrictEqual(
                 JSON.parse(indigo.calculate(molfile, options, selected)),
                 {
-                    "molecular-weight": "42.0797410; 66.1458774",
+                    "molecular-weight": "42.0809991; 66.1360028",
                     "most-abundant-mass": "42.0469501; 65.9597914",
                     "monoisotopic-mass": "42.0469501; 65.9597914",
                     "mass-composition": "C 85.63 H 14.37; H 3.05 S 96.95",
@@ -175,7 +175,7 @@ M  END
             assert.deepStrictEqual(
                 JSON.parse(indigo.calculate(molfile, options, selected)),
                 {
-                    "molecular-weight": "[42.0797410] > [16.0424604]",
+                    "molecular-weight": "[42.0809991] > [16.0429997]",
                     "most-abundant-mass": "[42.0469501] > [16.0313001]",
                     "monoisotopic-mass": "[42.0469501] > [16.0313001]",
                     "mass-composition": "[C 85.63 H 14.37] > [C 74.87 H 25.13]",
