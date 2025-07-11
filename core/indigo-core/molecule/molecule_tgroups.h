@@ -60,6 +60,7 @@ namespace indigo
         TGroup();
         ~TGroup();
 
+        std::unique_ptr<BaseMolecule> getResidue() const;
         void copy(const TGroup& other);
         void copy_without_fragment(const TGroup& other);
         void clear();
