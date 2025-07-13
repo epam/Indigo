@@ -209,17 +209,10 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
     if (mode == MODE_2000)
     {
         _v2000 = true;
-        if (bmol.tgroups.getTGroupCount())
-        {
-            mol->transformTemplatesToSuperatoms();
-            pmol = mol.get();
-        }
     }
     else if (mode == MODE_3000)
     {
         _v2000 = false;
-        if (mol->tgroups.getTGroupCount() && mol->transformedTemplateAtomsToSuperatoms())
-            pmol = mol.get();
     }
     else
     {
@@ -227,6 +220,15 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
         // if v2000 is not enough
         _v2000 = !(pmol->hasHighlighting() || pmol->stereocenters.haveEnhancedStereocenter() ||
                    (pmol->vertexCount() > 999 || pmol->edgeCount() > 999 || pmol->tgroups.getTGroupCount()));
+    }
+
+    if (mol->tgroups.getTGroupCount() && mol->transformedTemplateAtomsToSuperatoms())
+        pmol = mol.get();
+
+    if (_v2000 && mol->tgroups.getTGroupCount())
+    {
+        mol->transformTemplatesToSuperatoms();
+        pmol = mol.get();
     }
 
     bool rg2000 = (_v2000 && pmol->rgroups.getRGroupCount() > 0);
