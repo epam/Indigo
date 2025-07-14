@@ -5844,7 +5844,7 @@ std::unique_ptr<BaseMolecule> BaseMolecule::applyTransformation(const Transforma
     return std::unique_ptr<BaseMolecule>{result};
 }
 
-bool BaseMolecule::transformedTemplateAtomsToSuperatoms()
+bool BaseMolecule::convertTemplateAtomsToSuperatoms(bool only_transformed)
 {
     bool modified = false;
     if (tgroups.getTGroupCount())
@@ -5853,7 +5853,8 @@ bool BaseMolecule::transformedTemplateAtomsToSuperatoms()
         getTemplatesMap(templates);
         for (auto vi : vertices())
         {
-            if (isTemplateAtom(vi) && (getTemplateAtomTransform(vi).hasTransformation() || getTemplateAtomDisplayOption(vi) == DisplayOption::Expanded))
+            if (isTemplateAtom(vi) &&
+                (!only_transformed || getTemplateAtomTransform(vi).hasTransformation() || getTemplateAtomDisplayOption(vi) == DisplayOption::Expanded))
             {
                 auto tg_idx = getTemplateAtomTemplateIndex(vi);
                 if (tg_idx < 0)

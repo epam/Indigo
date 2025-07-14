@@ -222,14 +222,8 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
                    (pmol->vertexCount() > 999 || pmol->edgeCount() > 999 || pmol->tgroups.getTGroupCount()));
     }
 
-    if (mol->tgroups.getTGroupCount() && mol->transformedTemplateAtomsToSuperatoms())
+    if (mol->tgroups.getTGroupCount() && mol->convertTemplateAtomsToSuperatoms(!_v2000))
         pmol = mol.get();
-
-    if (_v2000 && mol->tgroups.getTGroupCount())
-    {
-        mol->transformTemplatesToSuperatoms();
-        pmol = mol.get();
-    }
 
     bool rg2000 = (_v2000 && pmol->rgroups.getRGroupCount() > 0);
 
