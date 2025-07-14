@@ -5835,7 +5835,7 @@ std::unique_ptr<BaseMolecule> BaseMolecule::applyTransformation(const Transforma
             p.transformPoint(matr);
         }
     }
-    else // TODO: just to keep compatibility with tests. check why results are different.
+    else
     {
         for (auto i : result->vertices())
         {
