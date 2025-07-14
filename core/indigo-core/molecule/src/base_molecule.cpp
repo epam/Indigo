@@ -3480,7 +3480,6 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
     TGroup& tg = tgroups.getTGroup(tg_index);
     if (tg.tgroup_id < 0)
     {
-        added_templates.emplace(residue_inchi_str, tg_index);
         tg.tgroup_id = ++tg_id;
         tg.tgroup_class.copy(sa.sa_class);
         if (sa.subscript.size())
@@ -3488,6 +3487,8 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
         if (sa.sa_natreplace.size() > 0)
             tg.tgroup_natreplace.copy(sa.sa_natreplace);
         res = _restoreTemplateFromLibrary(tg, mtl, residue_inchi_str);
+        if (!res)
+            tgroups.remove(tg_index);
     }
     // handle transformation
     if (res)
@@ -3519,7 +3520,10 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
         }
     }
     if (res)
+    {
+        added_templates.emplace(residue_inchi_str, tg_index);
         _connectTemplateAtom(sa, ta_idx, remove_atoms);
+    }
     else
         removeAtom(ta_idx);
     return res;
