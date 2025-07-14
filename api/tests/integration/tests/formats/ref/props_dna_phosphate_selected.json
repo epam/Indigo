@@ -1,7 +1,7 @@
 [
     {
         "grossFormula": "H O2 P",
-        "mass": 63.9805,
+        "mass": 63.98,
         "monomerCount": {
             "peptides": {},
             "nucleotides": {}
