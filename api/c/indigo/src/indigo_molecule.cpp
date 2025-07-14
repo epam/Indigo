@@ -4963,7 +4963,7 @@ CEXPORT int indigoBondEnd(int bond)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoExpandMonomers(int item, int n_expand_ids, const int* expand_ids)
+CEXPORT int indigoExpandMonomers(int item)
 {
     INDIGO_BEGIN
     {
@@ -4971,8 +4971,7 @@ CEXPORT int indigoExpandMonomers(int item, int n_expand_ids, const int* expand_i
 
         if (IndigoKetDocument::is(obj) || IndigoBaseMolecule::is(obj))
         {
-            std::vector<int> monomers_to_expand{expand_ids, expand_ids + n_expand_ids};
-            indigoExpand(obj.getKetDocument(), monomers_to_expand);
+            indigoExpand(obj.getKetDocument());
         }
         else
         {

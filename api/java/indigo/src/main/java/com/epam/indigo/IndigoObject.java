@@ -1538,13 +1538,9 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         Indigo.checkResult(this, lib.indigoFoldUnfoldHydrogens(self));
     }
 
-    public void expandMonomers(int[] expand_ids) {
+    public void expandMonomers() {
         dispatcher.setSessionID();
-        Indigo.checkResult(this, lib.indigoExpandMonomers(self, expand_ids.length, expand_ids));
-    }
-
-    public void expandMonomers(Collection<Integer> expand_ids) {
-        expandMonomers(Indigo.toIntArray(expand_ids));
+        Indigo.checkResult(this, lib.indigoExpandMonomers(self));
     }
 
     public void clearXYZ() {

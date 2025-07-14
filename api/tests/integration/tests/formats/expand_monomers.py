@@ -34,13 +34,13 @@ lib = indigo.loadMonomerLibraryFromFile(
 )
 
 files = {
-    "expand_monomers": range(0, 8),
+    "expand_monomers",
 }
 
 for filename in sorted(files):
     mol = indigo.loadKetDocumentFromFile(os.path.join(root, filename + ".ket"))
     try:
-        mol.expandMonomers(list(files[filename]))
+        mol.expandMonomers()
     except IndigoException as e:
         print("Test %s failed: %s" % (filename, getIndigoExceptionText(e)))
         continue

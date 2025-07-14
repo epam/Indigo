@@ -147,6 +147,7 @@
         "type": "monomer",
         "id": "0",
         "expanded": true,
+        "selected": true,
         "position": {
             "x": 1.250000,
             "y": -1.250000
@@ -158,6 +159,7 @@
         "type": "monomer",
         "id": "1",
         "expanded": true,
+        "selected": true,
         "position": {
             "x": 2.750000,
             "y": -1.250000
@@ -175,6 +177,7 @@
         "type": "monomer",
         "id": "2",
         "expanded": true,
+        "selected": true,
         "position": {
             "x": 4.250000,
             "y": -1.250000
@@ -192,6 +195,7 @@
         "type": "monomer",
         "id": "3",
         "expanded": true,
+        "selected": true,
         "position": {
             "x": 5.750000,
             "y": -1.250000
@@ -209,6 +213,7 @@
         "type": "monomer",
         "id": "4",
         "expanded": true,
+        "selected": true,
         "position": {
             "x": 7.250000,
             "y": -1.250000
@@ -227,6 +232,7 @@
         "type": "monomer",
         "id": "5",
         "expanded": true,
+        "selected": true,
         "position": {
             "x": 8.750000,
             "y": -1.250000
@@ -244,6 +250,7 @@
         "type": "monomer",
         "id": "6",
         "expanded": true,
+        "selected": true,
         "position": {
             "x": 10.250000,
             "y": -1.250000
@@ -261,6 +268,7 @@
         "type": "monomer",
         "id": "7",
         "expanded": true,
+        "selected": true,
         "position": {
             "x": 11.750000,
             "y": -1.250000

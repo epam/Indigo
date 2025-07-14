@@ -760,7 +760,7 @@ public interface IndigoLib extends Library {
 
     int indigoFoldUnfoldHydrogens(int item);
 
-    int indigoExpandMonomers(int molecule, int n_expand_ids, int[] expand_ids);
+    int indigoExpandMonomers(int molecule);
 
     int indigoClearXYZ(int item);
 

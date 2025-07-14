@@ -151,7 +151,8 @@
             "y": -1.25
         },
         "alias": "A",
-        "templateId": "A___Alanine"
+        "templateId": "A___Alanine",
+        "selected": true
     },
     "monomerTemplate-A___Alanine": {
         "type": "monomerTemplate",
@@ -294,7 +295,8 @@
             "y": -1.25
         },
         "alias": "C",
-        "templateId": "C___Cysteine"
+        "templateId": "C___Cysteine",
+        "selected": true
     },
     "monomerTemplate-C___Cysteine": {
         "type": "monomerTemplate",
@@ -476,7 +478,8 @@
             "y": -1.25
         },
         "alias": "D",
-        "templateId": "D___Aspartic acid"
+        "templateId": "D___Aspartic acid",
+        "selected": true
     },
     "monomerTemplate-D___Aspartic acid": {
         "type": "monomerTemplate",
@@ -688,7 +691,8 @@
             "y": -1.25
         },
         "alias": "E",
-        "templateId": "E___Glutamic acid"
+        "templateId": "E___Glutamic acid",
+        "selected": true
     },
     "monomerTemplate-E___Glutamic acid": {
         "type": "monomerTemplate",
@@ -915,7 +919,8 @@
             "y": -1.25
         },
         "alias": "F",
-        "templateId": "F___Phenylalanine"
+        "templateId": "F___Phenylalanine",
+        "selected": true
     },
     "monomerTemplate-F___Phenylalanine": {
         "type": "monomerTemplate",
@@ -1155,7 +1160,8 @@
             "y": -1.25
         },
         "alias": "G",
-        "templateId": "G___Glycine"
+        "templateId": "G___Glycine",
+        "selected": true
     },
     "monomerTemplate-G___Glycine": {
         "type": "monomerTemplate",
@@ -1281,7 +1287,8 @@
             "y": -1.25
         },
         "alias": "H",
-        "templateId": "H___Histidine"
+        "templateId": "H___Histidine",
+        "selected": true
     },
     "monomerTemplate-H___Histidine": {
         "type": "monomerTemplate",
@@ -1530,7 +1537,8 @@
             "y": -1.25
         },
         "alias": "H",
-        "templateId": "H___Histidine"
+        "templateId": "H___Histidine",
+        "selected": true
     },
     "monomer8": {
         "type": "monomer",

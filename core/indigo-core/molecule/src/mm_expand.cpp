@@ -24,7 +24,7 @@ namespace indigo
     };
 
     // Set the expanded monomers and calculate the dimensions for each monomer as R1-R2 distance
-    void getDimensions(KetDocument& mol, const std::vector<int>& expansions, std::vector<float>& dimensions)
+    void getDimensions(KetDocument& mol, std::vector<float>& dimensions)
     {
         for (const auto& monomerId : mol.monomersIds())
         {
@@ -38,9 +38,9 @@ namespace indigo
                 continue;
             }
             auto& mon = static_cast<KetMonomer&>(*monPtr);
-            bool expanded = std::find(expansions.begin(), expansions.end(), id) != expansions.end();
-            mon.setBoolProp("expanded", expanded);
-            if (!expanded)
+            bool selected = mon.isBoolPropTrue("selected");
+            mon.setBoolProp("expanded", selected);
+            if (!selected)
             {
                 dimensions.push_back(DEFAULT_DIMENSION);
             }
@@ -371,13 +371,13 @@ namespace indigo
         }
     }
 
-    void indigoExpand(KetDocument& mol, const std::vector<int>& expansions)
+    void indigoExpand(KetDocument& mol)
     {
         // fill all required for calculations
         std::vector<float> dimensions;                                          // R1-R2 distance
         std::unordered_map<std::string, std::vector<NeighborSpec>> neighborMap; // monomerId -> neighbors with R-group info
         Graph graph;                                                            // workaround to run sssr for macromolecule
-        getDimensions(mol, expansions, dimensions);
+        getDimensions(mol, dimensions);
         getNeighbors(mol, neighborMap);
         getGraph(mol, graph);
 

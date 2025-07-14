@@ -7,5 +7,5 @@
 namespace indigo
 {
     // Perform monomer expansion layout on the document
-    void indigoExpand(KetDocument& mol, const std::vector<int>& expansions);
+    void indigoExpand(KetDocument& mol);
 }

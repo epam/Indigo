@@ -1952,3 +1952,109 @@ def calculateMacroProperties():
     result = {"properties": md.struct.macroProperties(upc, nac)}
 
     return jsonify(result), 200, {"Content-Type": "application/json"}
+
+
+@indigo_api.route("/expandMonomers", methods=["POST"])
+@check_exceptions
+def expandMonomers():
+    """
+    Expand selected monomers
+    ---
+    tags:
+      - indigo
+    parameters:
+      - name: json_request
+        in: body
+        required: true
+        schema:
+          id: IndigoRequest
+          required:
+            - struct
+          properties:
+            struct:
+              type: string
+              required: true
+              examples: C1=CC=CC=C1
+            output_format:
+              type: string
+              default: chemical/x-mdl-molfile
+              examples: chemical/x-daylight-smiles
+              enum:
+                - chemical/x-mdl-rxnfile
+                - chemical/x-mdl-molfile
+                - chemical/x-indigo-ket
+                - chemical/x-daylight-smiles
+                - chemical/x-chemaxon-cxsmiles
+                - chemical/x-cml
+                - chemical/x-inchi
+                - chemical/x-iupac
+                - chemical/x-daylight-smarts
+                - chemical/x-inchi-aux
+          example:
+            struct: C1=CC=CC=C1
+            output_format: chemical/x-daylight-smiles
+    responses:
+      200:
+        description: structure with selected monomers expanded
+        schema:
+          id: IndigoResponse
+          required:
+            - struct
+            - format
+          properties:
+            struct:
+              type: string
+            format:
+              type: string
+              default: chemical/x-mdl-molfile
+      400:
+        description: 'A problem with supplied client data'
+        schema:
+          id: ClientError
+          required:
+            - error
+          properties:
+            error:
+              type: string
+      500:
+        description: 'A problem on server side'
+        schema:
+          id: ServerError
+          required:
+            - error
+          properties:
+            error:
+              type: string
+    """
+
+    request_data = get_request_data(request)
+    indigo_api_logger.info("[RAW REQUEST] {}".format(request_data))
+
+    data = IndigoRequestSchema().load(request_data)
+
+    LOG_DATA(
+        "[REQUEST] /calculateMacroProperties",
+        data["input_format"],
+        data["output_format"],
+        data["struct"],
+        data["options"],
+    )
+    indigo = indigo_init(data["options"])
+
+    md = load_moldata(
+        data["struct"],
+        mime_type=data["input_format"],
+        options=data["options"],
+        indigo=indigo,
+        try_document=True,
+    )
+
+    md.struct.expandMonomers()
+
+    return get_response(
+        md,
+        data["output_format"],
+        data["json_output"],
+        data["options"],
+        indigo=indigo,
+    )
