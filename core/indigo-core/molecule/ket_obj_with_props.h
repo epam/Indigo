@@ -96,6 +96,11 @@ namespace indigo
         int getIntProp(int idx) const;
         const std::string& getStringProp(int idx) const;
 
+        bool isBoolPropTrue(int idx) const
+        {
+            return hasBoolProp(idx) && getBoolProp(idx);
+        };
+
         std::pair<bool, int> getBoolPropIdx(const std::string& name) const;
         std::pair<bool, int> getIntPropIdx(const std::string& name) const;
         std::pair<bool, int> getStringPropIdx(const std::string& name) const;
@@ -125,6 +130,11 @@ namespace indigo
         bool getBoolProp(const std::string& name) const;
         int getIntProp(const std::string& name) const;
         const std::string& getStringProp(const std::string& name) const;
+
+        bool isBoolPropTrue(const std::string& name) const
+        {
+            return hasBoolProp(name) && getBoolProp(name);
+        };
 
         void parseOptsFromKet(const rapidjson::Value& json);
         void saveOptsToKet(JsonWriter& writer) const;

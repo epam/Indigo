@@ -3491,6 +3491,14 @@ class IndigoObject:
             self._lib().indigoFoldUnfoldHydrogens(self.id)
         )
 
+    def expandMonomers(self):
+        """Molecule method expand selected monomers
+
+        Returns:
+            IndigoObject: molecule object as submolecule
+        """
+        return IndigoLib.checkResult(self._lib().indigoExpandMonomers(self.id))
+
     def layout(self):
         """Molecule or reaction method calculates layout for the structure
 

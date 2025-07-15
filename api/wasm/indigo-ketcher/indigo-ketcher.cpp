@@ -1166,6 +1166,15 @@ namespace indigo
         return buffer.GetString();
     }
 
+    std::string expand(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
+    {
+        const IndigoSession session;
+        indigoSetOptions(options);
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        _checkResult(indigoExpandMonomers(iko.id()));
+        return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
+    }
+
     EMSCRIPTEN_BINDINGS(module)
     {
         emscripten::function("version", &version);
@@ -1187,6 +1196,7 @@ namespace indigo
         emscripten::function("calculateMacroProperties", &calculateMacroProperties);
         emscripten::function("render", &render);
         emscripten::function("reactionComponents", &reactionComponents);
+        emscripten::function("expand", &expand);
 
         emscripten::register_vector<int>("VectorInt");
         emscripten::register_map<std::string, std::string>("MapStringString");
