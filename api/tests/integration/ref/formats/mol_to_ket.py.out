@@ -18,6 +18,7 @@ cysteine.ket:SUCCEED
 dcysteine.ket:SUCCEED
 dna_mod.ket:SUCCEED
 dthymine.ket:SUCCEED
+flip_rotate.ket:SUCCEED
 fmoc.ket:SUCCEED
 issue_2699_rlogic.ket:SUCCEED
 issue_2958_map_template.ket:SUCCEED

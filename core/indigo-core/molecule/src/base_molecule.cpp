@@ -4614,6 +4614,8 @@ void BaseMolecule::transformSuperatomsToTemplates(int template_id, MonomerTempla
     std::sort(remove_sgroups.begin(), remove_sgroups.end(), std::greater<int>());
     for (auto sg_idx : remove_sgroups)
         removeSGroup(sg_idx);
+    for (auto v : remove_atoms)
+        std::cout << v << std::endl;
     removeAtoms(remove_atoms);
 }
 
