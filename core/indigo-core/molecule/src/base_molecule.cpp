@@ -3457,10 +3457,6 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
 
     // create template atom and set all properties except template index and transform
     bool res = true;
-    int ta_idx = addTemplateAtom(sa.subscript.ptr());
-    setTemplateAtomClass(ta_idx, sa.sa_class.ptr());
-    setTemplateAtomSeqid(ta_idx, sa.seqid);
-    setTemplateAtomDisplayOption(ta_idx, sa.contracted);
 
     // Calculate residue InChI
     std::unique_ptr<BaseMolecule> residue(neu());
@@ -3476,7 +3472,6 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
     auto it_added = added_templates.find(residue_inchi_str);
     int tg_index = it_added != added_templates.end() ? it_added->second : tgroups.addTGroup();
     // no we know template index to link template atom with it
-    setTemplateAtomTemplateIndex(ta_idx, tg_index);
     TGroup& tg = tgroups.getTGroup(tg_index);
     if (tg.tgroup_id < 0)
     {
@@ -3501,31 +3496,24 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
             auto map = matcher.getQueryMapping();
             Mat23 transform;
             bool affine = _findAffineTransform(*templ_residue, *residue, transform, map);
-            if (affine)
+            Transformation tform;
+            if (affine && tform.fromAffineMatrix(transform))
             {
-                Transformation tform;
-                if (tform.fromAffineMatrix(transform))
-                {
-                    setAtomXyz(ta_idx, tform.shift);
-                    tform.shift.clear();
-                    setTemplateAtomTransform(ta_idx, tform);
-                }
-                else
-                    res = false;
+                tform.shift.clear();
+                int ta_idx = addTemplateAtom(sa.subscript.ptr());
+                setTemplateAtomTransform(ta_idx, tform);
+                setTemplateAtomClass(ta_idx, sa.sa_class.ptr());
+                setTemplateAtomSeqid(ta_idx, sa.seqid);
+                setTemplateAtomDisplayOption(ta_idx, sa.contracted);
+                setTemplateAtomTemplateIndex(ta_idx, tg_index);
+                setAtomXyz(ta_idx, tform.shift);
+                added_templates.emplace(residue_inchi_str, tg_index);
+                _connectTemplateAtom(sa, ta_idx, remove_atoms);
             }
             else
-            {
                 res = false;
-            }
         }
     }
-    if (res)
-    {
-        added_templates.emplace(residue_inchi_str, tg_index);
-        _connectTemplateAtom(sa, ta_idx, remove_atoms);
-    }
-    else
-        removeAtom(ta_idx);
     return res;
 }
 
