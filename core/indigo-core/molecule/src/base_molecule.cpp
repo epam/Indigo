@@ -481,33 +481,6 @@ void BaseMolecule::_flipSuperatomBond(Superatom& sa, int src_bond_idx, int new_b
         if (bond.bond_idx == src_bond_idx)
             bond.bond_idx = new_bond_idx;
     }
-
-    for (int j = sa.attachment_points.begin(); j != sa.attachment_points.end(); j = sa.attachment_points.next(j))
-    {
-        Superatom::_AttachmentPoint& ap = sa.attachment_points.at(j);
-        if (ap.lvidx > 0)
-        {
-            const Edge& edge = getEdge(new_bond_idx);
-            if ((edge.beg == ap.aidx) || (edge.end == ap.aidx))
-
-            {
-                int ap_aidx = -1;
-                int ap_lvidx = -1;
-                if (sa.atoms.find(edge.beg) != -1)
-                {
-                    ap_aidx = edge.beg;
-                    ap_lvidx = edge.end;
-                }
-                else if (sa.atoms.find(edge.end) != -1)
-                {
-                    ap_aidx = edge.end;
-                    ap_lvidx = edge.beg;
-                }
-                ap.aidx = ap_aidx;
-                ap.lvidx = ap_lvidx;
-            }
-        }
-    }
 }
 
 void BaseMolecule::_flipTemplateAtomAttachmentPoint(int idx, int atom_from, Array<char>& ap_id, int atom_to)
@@ -3023,12 +2996,12 @@ void BaseMolecule::getTemplateAtomDirectionsMap(std::vector<std::map<int, int>>&
 int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
 {
     int result = 0;
-    QS_DEF(Array<int>, sgs);
-    QS_DEF(Array<int>, base_sgs);
+    QS_DEF(Array<int>, leaving_groups);
+    QS_DEF(Array<int>, residue_sgroups);
     QS_DEF(Array<int>, mapping);
     QS_DEF(Array<int>, att_atoms);
     QS_DEF(Array<int>, tg_atoms);
-    QS_DEF(Array<int>, lvgroups);
+    QS_DEF(Array<int>, lv_atoms);
     QS_DEF(Array<int>, atoms_to_delete);
     QS_DEF(StringPool, ap_points_ids);
     QS_DEF(Array<int>, ap_ids);
@@ -3042,16 +3015,18 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     if (tgroup.ambiguous)
         throw Error("Ambiguous monomer cannot be transform to SGroup.");
 
+    // create transformed fragment
     std::unique_ptr<BaseMolecule> fragment = tgroup.fragment->applyTransformation(getTemplateAtomTransform(idx), getAtomXyz(idx));
 
-    sgs.clear();
+    leaving_groups.clear();
     att_atoms.clear();
     tg_atoms.clear();
-    lvgroups.clear();
-    base_sgs.clear();
+    lv_atoms.clear();
+    residue_sgroups.clear();
     ap_points_ids.clear();
     ap_ids.clear();
 
+    // collect leaving groups into sgs and residue to base_sgs
     for (int j = fragment->sgroups.begin(); j != fragment->sgroups.end(); j = fragment->sgroups.next(j))
     {
         // how to check if group is connected?
@@ -3061,49 +3036,53 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
             Superatom& sa = (Superatom&)sg;
             BufferScanner sc(sa.sa_class);
             if (sc.findWordIgnoreCase("LGRP"))
-                sgs.push(j);
+                leaving_groups.push(j);
             else
-                base_sgs.push(j);
+                residue_sgroups.push(j);
         }
     }
 
-    if (base_sgs.size() == 0)
+    if (residue_sgroups.size() == 0)
         throw Error("transformTGroupToSGroup(): wrong template structure found (no base SGroup detected)");
 
-    if (base_sgs.size() > 1)
+    if (residue_sgroups.size() > 1)
         throw Error("transformTGroupToSGroup(): wrong template structure found (more then one base SGroup detected)");
 
-    SGroup& sgu = fragment->sgroups.getSGroup(base_sgs[0]);
+    SGroup& sgu = fragment->sgroups.getSGroup(residue_sgroups[0]);
     if (sgu.sgroup_type != SGroup::SG_TYPE_SUP)
         throw Error("transformTGroupToSGroup(): wrong template structure found (base SGroup is not Superatom type)");
 
-    Superatom& super_atom = (Superatom&)sgu;
+    Superatom& residue_super_atom = (Superatom&)sgu;
 
     // printf("Template = %s (%d)\n", tgroup.tgroup_name.ptr(), idx);
 
-    for (int j = super_atom.attachment_points.begin(); j < super_atom.attachment_points.end(); j = super_atom.attachment_points.next(j))
+    for (int j = residue_super_atom.attachment_points.begin(); j < residue_super_atom.attachment_points.end(); j = residue_super_atom.attachment_points.next(j))
     {
-        Superatom::_AttachmentPoint& ap = super_atom.attachment_points.at(j);
+        Superatom::_AttachmentPoint& ap = residue_super_atom.attachment_points.at(j);
 
+        // find template atom attachment point with the same name
         int att_atom_idx = getTemplateAtomAttachmentPointById(idx, ap.apid);
         if (att_atom_idx > -1)
         {
             att_atoms.push(att_atom_idx);
             tg_atoms.push(ap.aidx);
-            lvgroups.push(ap.lvidx);
+            lv_atoms.push(ap.lvidx);
             ap_ids.push(ap_points_ids.add(ap.apid));
             ap.lvidx = -1;
             // printf("idx = %d, att_atom_idx = %d, ap.aidx = %d, ap.lvidx = %d, ap_id = %s\n", idx, att_atom_idx, ap.aidx, ap.lvidx, ap.apid.ptr());
         }
     }
 
+    // merge full template fragment with leaving groups
     mergeWithMolecule(*fragment, &mapping);
-    for (const auto sg_index : sgs)
+
+    // collect leaving atoms
+    for (const auto sg_index : leaving_groups)
     {
         const SGroup& lvg = fragment->sgroups.getSGroup(sg_index);
-        for (const auto lvgroup_index : lvgroups)
+        for (const auto lv_atom_index : lv_atoms)
         {
-            if (lvg.atoms.find(lvgroup_index) > -1)
+            if (lvg.atoms.find(lv_atom_index) > -1)
             {
                 atoms_to_delete.push(mapping[lvg.atoms[0]]);
                 fragment->removeSGroup(sg_index);
@@ -3115,21 +3094,22 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
         }
     }
 
-    QS_DEF(Array<int>, added_atoms);
+    QS_DEF(Array<int>, residue_atoms);
 
-    added_atoms.clear();
-    for (auto i = 0; i < super_atom.atoms.size(); i++)
+    // collect residue atoms
+    residue_atoms.clear();
+    for (auto i = 0; i < residue_super_atom.atoms.size(); i++)
     {
-        int aidx = mapping[super_atom.atoms[i]];
+        int aidx = mapping[residue_super_atom.atoms[i]];
         if (aidx > -1)
-            added_atoms.push(aidx); // collect converted atoms
+            residue_atoms.push(aidx); // collect converted atoms
     }
 
-    base_sgs.clear();
-    sgroups.findSGroups(SGroup::SG_ATOMS, added_atoms, base_sgs);
-    if (base_sgs.size() == 1)
+    residue_sgroups.clear();
+    sgroups.findSGroups(SGroup::SG_ATOMS, residue_atoms, residue_sgroups);
+    if (residue_sgroups.size() == 1)
     {
-        SGroup& sg = sgroups.getSGroup(base_sgs[0]);
+        SGroup& sg = sgroups.getSGroup(residue_sgroups[0]);
         if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
             Superatom& su = (Superatom&)sg;
@@ -3153,7 +3133,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
                         if (getTemplateAtomAttachmentPoint(att_atoms[i], m) == idx)
                         {
                             getTemplateAtomAttachmentPointId(att_atoms[i], m, ap_id);
-                            int added_bond = this->asMolecule().addBond(att_atoms[i], mapping[tg_atoms[i]], BOND_SINGLE);
+                            int added_bond = asMolecule().addBond(att_atoms[i], mapping[tg_atoms[i]], BOND_SINGLE);
                             (void)added_bond;
                             // printf("Add bond = %d, att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", added_bond, att_atoms[i], tg_atoms[i],
                             // mapping[tg_atoms[i]]); printf("Flip AP  att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d, ap_id = %s\n",
@@ -3161,7 +3141,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
                             _flipTemplateAtomAttachmentPoint(att_atoms[i], idx, ap_id, mapping[tg_atoms[i]]);
                         }
                     }
-                    //               int added_bond = this->asMolecule().addBond(att_atoms[i], mapping[tg_atoms[i]], BOND_SINGLE);
+                    // int added_bond = this->asMolecule().addBond(att_atoms[i], mapping[tg_atoms[i]], BOND_SINGLE);
                     // printf("Add bond = %d, att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", added_bond, att_atoms[i], tg_atoms[i],
                     // mapping[tg_atoms[i]]);
                 }
@@ -3184,19 +3164,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
 
                 int bond_idx = findEdgeIndex(att_atoms[i], mapping[tg_atoms[i]]);
                 if (bond_idx > -1)
-                {
                     su.bonds.push(bond_idx);
-
-                    for (int j = su.attachment_points.begin(); j < su.attachment_points.end(); j = su.attachment_points.next(j))
-                    {
-                        Superatom::_AttachmentPoint& ap = su.attachment_points.at(j);
-
-                        // printf("SUP AP  ap.aidx = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", ap.aidx, tg_atoms[i], mapping[tg_atoms[i]]);
-
-                        if (ap.aidx == mapping[tg_atoms[i]] && ap.lvidx != -1)
-                            ap.lvidx = att_atoms[i];
-                    }
-                }
             }
         }
     }
@@ -3205,13 +3173,13 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     templ_atoms.clear();
     templ_atoms.push(idx);
 
-    sgs.clear();
-    sgroups.findSGroups(SGroup::SG_ATOMS, templ_atoms, sgs);
+    leaving_groups.clear();
+    sgroups.findSGroups(SGroup::SG_ATOMS, templ_atoms, leaving_groups);
 
-    for (int i = 0; i < sgs.size(); i++)
+    for (int i = 0; i < leaving_groups.size(); i++)
     {
-        SGroup& sg = sgroups.getSGroup(sgs[i]);
-        sg.atoms.concat(added_atoms);
+        SGroup& sg = sgroups.getSGroup(leaving_groups[i]);
+        sg.atoms.concat(residue_atoms);
     }
 
     atoms_to_delete.push(idx);
@@ -4602,8 +4570,6 @@ void BaseMolecule::transformSuperatomsToTemplates(int template_id, MonomerTempla
     std::sort(remove_sgroups.begin(), remove_sgroups.end(), std::greater<int>());
     for (auto sg_idx : remove_sgroups)
         removeSGroup(sg_idx);
-    for (auto v : remove_atoms)
-        std::cout << v << std::endl;
     removeAtoms(remove_atoms);
 }
 
