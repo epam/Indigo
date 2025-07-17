@@ -3467,14 +3467,14 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
             Transformation tform;
             if (affine && tform.fromAffineMatrix(transform))
             {
-                tform.shift.clear();
                 int ta_idx = addTemplateAtom(sa.subscript.ptr());
+                setAtomXyz(ta_idx, tform.shift);
+                tform.shift.clear();
                 setTemplateAtomTransform(ta_idx, tform);
                 setTemplateAtomClass(ta_idx, sa.sa_class.ptr());
                 setTemplateAtomSeqid(ta_idx, sa.seqid);
                 setTemplateAtomDisplayOption(ta_idx, sa.contracted);
                 setTemplateAtomTemplateIndex(ta_idx, tg_index);
-                setAtomXyz(ta_idx, tform.shift);
                 added_templates.emplace(residue_inchi_str, tg_index);
                 _connectTemplateAtom(sa, ta_idx, remove_atoms);
             }
