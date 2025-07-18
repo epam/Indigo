@@ -45,7 +45,7 @@ std::unique_ptr<BaseMolecule> TGroup::getResidue() const
                 if (!sc.findWordIgnoreCase("LGRP")) // if not LGRP
                 {
                     templ_residue.reset(fragment->neu());
-                    templ_residue->makeSubmolecule(*fragment, tsa.atoms, nullptr);
+                    templ_residue->makeSubmolecule(*fragment, tsa.atoms, nullptr, SKIP_TGROUPS | SKIP_TEMPLATE_ATTACHMENT_POINTS | SKIP_STEREOCENTERS);
                 }
             }
         }

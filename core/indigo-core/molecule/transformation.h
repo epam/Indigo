@@ -33,6 +33,10 @@ namespace indigo
 {
     class Transformation
     {
+        const double EPS_ZERO = 1e-5;
+        const double SCALE_TOL = 1e-4;
+        const double ORTHO_TOL = 1e-3;
+
     public:
         DECL_ERROR;
 
@@ -43,12 +47,12 @@ namespace indigo
             vertical
         };
 
-        Transformation() : rotate(0), shift(Vec2f(0, 0)), flip(FlipType::none), scale(1.0f){};
-        Transformation(float rotate) : rotate(rotate), shift(Vec2f(0, 0)), flip(FlipType::none), scale(1.0f){};
-        Transformation(const Vec2f& shift) : rotate(0), shift(shift), flip(FlipType::none), scale(1.0f){};
-        Transformation(float rotate, const Vec2f& shift) : rotate(rotate), shift(shift), flip(FlipType::none), scale(1.0f){};
+        Transformation() : rotate(0), shift(Vec2f(0, 0)), flip(FlipType::none), scale(1.0f) {};
+        Transformation(float rotate) : rotate(rotate), shift(Vec2f(0, 0)), flip(FlipType::none), scale(1.0f) {};
+        Transformation(const Vec2f& shift) : rotate(0), shift(shift), flip(FlipType::none), scale(1.0f) {};
+        Transformation(float rotate, const Vec2f& shift) : rotate(rotate), shift(shift), flip(FlipType::none), scale(1.0f) {};
         Transformation(float rotation, const Vec2f& shift, std::string flip);
-        Transformation(const Transformation& other) : rotate(other.rotate), shift(other.shift), flip(other.flip), scale(1.0f){};
+        Transformation(const Transformation& other) : rotate(other.rotate), shift(other.shift), flip(other.flip), scale(1.0f) {};
         Transformation& operator=(const Transformation& other)
         {
             rotate = other.rotate;
@@ -60,10 +64,6 @@ namespace indigo
         const std::string getFlip() const;
         bool fromAffineMatrix(const Mat23& M)
         {
-            const double EPS_ZERO = 1e-12;
-            const double SCALE_TOL = 1e-4;
-            const double ORTHO_TOL = 1e-3;
-
             const double a11 = M[0][0], a12 = M[0][1], tx = M[0][2];
             const double a21 = M[1][0], a22 = M[1][1], ty = M[1][2];
 
@@ -105,7 +105,7 @@ namespace indigo
 
         const bool hasTransformation() const
         {
-            return rotate != 0 || shift.x != 0 || shift.y != 0 || flip != FlipType::none;
+            return std::fabs(rotate) > EPS_ZERO || std::fabs(shift.x) > EPS_ZERO || std::fabs(shift.y) > EPS_ZERO || flip != FlipType::none;
         }
 
         float rotate;

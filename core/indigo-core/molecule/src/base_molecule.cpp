@@ -3245,19 +3245,37 @@ void BaseMolecule::_connectTemplateAtom(Superatom& sa, int t_idx, Array<int>& or
         auto& ap = sa.attachment_points.at(i);
         if (ap.lvidx < 0)
         {
-            const Vertex& v = getVertex(ap.aidx);
-            QS_DEF(Array<int>, outer_neighbors);
-            outer_neighbors.clear();
-            for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+            int edge_idx = -1;
+            for (auto xbond_idx : sa.bonds)
             {
-                if (sa.atoms.find(v.neiVertex(k)) == -1)
-                    outer_neighbors.push(v.neiVertex(k));
+                const Edge& e = getEdge(xbond_idx);
+                if (e.beg == ap.aidx || e.end == ap.aidx)
+                {
+                    edge_idx = xbond_idx;
+                    break;
+                }
             }
 
-            for (int k = 0; k < outer_neighbors.size(); k++)
+            if (edge_idx < 0) // find the first one
             {
-                int v_k = outer_neighbors[k];
-                if (findEdgeIndex(v_k, ap.aidx) != -1)
+                const Vertex& v = getVertex(ap.aidx);
+                for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+                {
+                    if (sa.atoms.find(v.neiVertex(k)) == -1)
+                    {
+                        int v_k = v.neiVertex(k);
+                        edge_idx = findEdgeIndex(v_k, ap.aidx);
+                        if (edge_idx != -1)
+                            break;
+                    }
+                }
+            }
+
+            if (edge_idx != -1)
+            {
+                const Edge& e = getEdge(edge_idx);
+                int v_k = e.beg == ap.aidx ? e.end : (e.end == ap.aidx ? e.beg : -1);
+                if (v_k != -1)
                 {
                     if (findEdgeIndex(v_k, t_idx) == -1)
                         flipBond(v_k, ap.aidx, t_idx);
@@ -3286,7 +3304,7 @@ void BaseMolecule::_connectTemplateAtom(Superatom& sa, int t_idx, Array<int>& or
 bool BaseMolecule::_findAffineTransform(BaseMolecule& src, BaseMolecule& dst, Mat23& M, const int* mapping)
 {
     constexpr double PIVOT_EPS = 1e-12;
-    constexpr double MATCH_EPS = 5e-5;
+    constexpr double MATCH_EPS = 5e-4;
 
     if (src.vertexCount() != dst.vertexCount() || src.vertexCount() < 3)
         return false;
@@ -3428,7 +3446,7 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
 
     // Calculate residue InChI
     std::unique_ptr<BaseMolecule> residue(neu());
-    residue->makeSubmolecule(*this, sa.atoms, nullptr, SKIP_TGROUPS | SKIP_TEMPLATE_ATTACHMENT_POINTS);
+    residue->makeSubmolecule(*this, sa.atoms, nullptr, SKIP_TGROUPS | SKIP_TEMPLATE_ATTACHMENT_POINTS | SKIP_STEREOCENTERS);
     std::string residue_inchi_str;
     {
         StringOutput inchi_output(residue_inchi_str);
@@ -3457,11 +3475,11 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
     if (res)
     {
         auto templ_residue = tg.getResidue();
-        MoleculeExactMatcher matcher(*templ_residue, *residue);
+        MoleculeExactMatcher matcher(*residue, *templ_residue);
         if (matcher.find())
         {
             // check if transform is possible
-            auto map = matcher.getQueryMapping();
+            auto map = matcher.getTargetMapping();
             Mat23 transform;
             bool affine = _findAffineTransform(*templ_residue, *residue, transform, map);
             Transformation tform;
@@ -3470,7 +3488,8 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
                 int ta_idx = addTemplateAtom(sa.subscript.ptr());
                 setAtomXyz(ta_idx, tform.shift);
                 tform.shift.clear();
-                setTemplateAtomTransform(ta_idx, tform);
+                if (tform.hasTransformation())
+                    setTemplateAtomTransform(ta_idx, tform);
                 setTemplateAtomClass(ta_idx, sa.sa_class.ptr());
                 setTemplateAtomSeqid(ta_idx, sa.seqid);
                 setTemplateAtomDisplayOption(ta_idx, sa.contracted);
