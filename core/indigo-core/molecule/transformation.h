@@ -47,12 +47,12 @@ namespace indigo
             vertical
         };
 
-        Transformation() : rotate(0), shift(Vec2f(0, 0)), flip(FlipType::none), scale(1.0f) {};
-        Transformation(float rotate) : rotate(rotate), shift(Vec2f(0, 0)), flip(FlipType::none), scale(1.0f) {};
-        Transformation(const Vec2f& shift) : rotate(0), shift(shift), flip(FlipType::none), scale(1.0f) {};
-        Transformation(float rotate, const Vec2f& shift) : rotate(rotate), shift(shift), flip(FlipType::none), scale(1.0f) {};
+        Transformation() : rotate(0), shift(Vec2f(0, 0)), flip(FlipType::none), scale(1.0f){};
+        Transformation(float rotate) : rotate(rotate), shift(Vec2f(0, 0)), flip(FlipType::none), scale(1.0f){};
+        Transformation(const Vec2f& shift) : rotate(0), shift(shift), flip(FlipType::none), scale(1.0f){};
+        Transformation(float rotate, const Vec2f& shift) : rotate(rotate), shift(shift), flip(FlipType::none), scale(1.0f){};
         Transformation(float rotation, const Vec2f& shift, std::string flip);
-        Transformation(const Transformation& other) : rotate(other.rotate), shift(other.shift), flip(other.flip), scale(1.0f) {};
+        Transformation(const Transformation& other) : rotate(other.rotate), shift(other.shift), flip(other.flip), scale(1.0f){};
         Transformation& operator=(const Transformation& other)
         {
             rotate = other.rotate;
