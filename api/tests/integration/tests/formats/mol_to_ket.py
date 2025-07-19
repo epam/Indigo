@@ -56,6 +56,7 @@ files = [
     "issue_2699_rlogic",
     "issue_2958_map_template",
     "sgroup_class",
+    "flip_rotate",
 ]
 
 native_precision = [

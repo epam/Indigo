@@ -205,18 +205,15 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 
     BaseMolecule* pmol = &bmol;
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
+    mol->clone_KeepIndices(bmol);
     if (mode == MODE_2000)
     {
         _v2000 = true;
-        if (bmol.tgroups.getTGroupCount())
-        {
-            mol->clone(bmol);
-            mol->transformTemplatesToSuperatoms();
-            pmol = mol.get();
-        }
     }
     else if (mode == MODE_3000)
+    {
         _v2000 = false;
+    }
     else
     {
         // auto-detect the format: save to v3000 molfile only
@@ -224,6 +221,9 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
         _v2000 = !(pmol->hasHighlighting() || pmol->stereocenters.haveEnhancedStereocenter() ||
                    (pmol->vertexCount() > 999 || pmol->edgeCount() > 999 || pmol->tgroups.getTGroupCount()));
     }
+
+    if (mol->tgroups.getTGroupCount() && mol->convertTemplateAtomsToSuperatoms(!_v2000))
+        pmol = mol.get();
 
     bool rg2000 = (_v2000 && pmol->rgroups.getRGroupCount() > 0);
 
@@ -1074,7 +1074,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             _writeRGroup(output, mol, i);
 
     int n_tgroups = mol.tgroups.getTGroupCount();
-    if (n_tgroups > 0)
+    if ((n_tgroups > 0 && (template_atoms.size() || mol.vertexCount() == 0)))
     {
         output.writeStringCR("M  V30 BEGIN TEMPLATE");
         for (i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
@@ -1090,7 +1090,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 tmp_alias = tg.tgroup_alias.ptr();
             if (tg.tgroup_name.ptr())
                 tmp_name = tg.tgroup_name.ptr();
-            if (template_atoms.size() == 0 || template_atoms.count({tmp_alias, tmp_class}) || template_atoms.count({tmp_name, tmp_class}))
+            if (mol.vertexCount() == 0 || template_atoms.count({tmp_alias, tmp_class}) || template_atoms.count({tmp_name, tmp_class}))
                 _writeTGroup(output, mol, i);
         }
         output.writeStringCR("M  V30 END TEMPLATE");

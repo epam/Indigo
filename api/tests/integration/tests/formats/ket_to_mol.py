@@ -74,6 +74,7 @@ files = [
     ("issue_2699_rlogic", "3000"),
     ("hydro_atp_ch", "3000"),
     ("sgroup_class", "3000"),
+    ("flip_rotate", "3000"),
 ]
 
 files.sort(key=lambda x: x[0])

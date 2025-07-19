@@ -20,6 +20,7 @@
 #define _ALGEBRA_H_
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iostream>
 #include <limits>
@@ -36,7 +37,7 @@
 
 namespace indigo
 {
-
+    using Mat23 = std::array<std::array<float, 3>, 2>;
     const float EPSILON = 0.000001f;
 
     // frac of type 1/n for acos_stable
