@@ -3325,7 +3325,9 @@ bool BaseMolecule::_findAffineTransform(BaseMolecule& src, BaseMolecule& dst, Ma
     {
         const auto s = src.getAtomXyz(v);
         const auto t = dst.getAtomXyz(mapping[v]);
-
+        Array<char> src_label, dst_label;
+        src.getAtomSymbol(v, src_label);
+        dst.getAtomSymbol(mapping[v], dst_label);
         const double Jx[6]{s.x, s.y, 0, 0, 1, 0};
         const double Jy[6]{0, 0, s.x, s.y, 0, 1};
         accumulate(Jx, t.x);
@@ -3446,7 +3448,10 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
 
     // Calculate residue InChI
     std::unique_ptr<BaseMolecule> residue(neu());
-    residue->makeSubmolecule(*this, sa.atoms, nullptr, SKIP_TGROUPS | SKIP_TEMPLATE_ATTACHMENT_POINTS | SKIP_STEREOCENTERS);
+
+    Array<int> mapping;
+    residue->makeSubmolecule(*this, sa.atoms, &mapping, SKIP_TGROUPS | SKIP_TEMPLATE_ATTACHMENT_POINTS | SKIP_STEREOCENTERS);
+
     std::string residue_inchi_str;
     {
         StringOutput inchi_output(residue_inchi_str);
@@ -3476,6 +3481,7 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
     {
         auto templ_residue = tg.getResidue();
         MoleculeExactMatcher matcher(*residue, *templ_residue);
+        matcher.flags = MoleculeExactMatcher::CONDITION_ELECTRONS;
         if (matcher.find())
         {
             // check if transform is possible
