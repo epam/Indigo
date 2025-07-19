@@ -1074,7 +1074,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             _writeRGroup(output, mol, i);
 
     int n_tgroups = mol.tgroups.getTGroupCount();
-    if (n_tgroups > 0)
+    if ((n_tgroups > 0 && (template_atoms.size() || mol.vertexCount() == 0)))
     {
         output.writeStringCR("M  V30 BEGIN TEMPLATE");
         for (i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
@@ -1090,7 +1090,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 tmp_alias = tg.tgroup_alias.ptr();
             if (tg.tgroup_name.ptr())
                 tmp_name = tg.tgroup_name.ptr();
-            if (template_atoms.size() == 0 || template_atoms.count({tmp_alias, tmp_class}) || template_atoms.count({tmp_name, tmp_class}))
+            if (mol.vertexCount() == 0 || template_atoms.count({tmp_alias, tmp_class}) || template_atoms.count({tmp_name, tmp_class}))
                 _writeTGroup(output, mol, i);
         }
         output.writeStringCR("M  V30 END TEMPLATE");
