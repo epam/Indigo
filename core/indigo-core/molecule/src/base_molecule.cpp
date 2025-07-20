@@ -5825,25 +5825,13 @@ std::unique_ptr<BaseMolecule> BaseMolecule::applyTransformation(const Transforma
         }
 
         if (transform.shift.x != 0 || transform.shift.y != 0)
-        {
             matr.translate(transform.shift); // apply shift
-        }
-
-        matr.translate(position); // translate to move bounding center to position point
-        for (auto atom_idx : result->vertices())
-        {
-            Vec3f& p = result->getAtomXyz(atom_idx);
-            p.transformPoint(matr);
-        }
     }
-    else
+    matr.translate(position); // translate to move bounding center to position point
+    for (auto atom_idx : result->vertices())
     {
-        for (auto i : result->vertices())
-        {
-            auto tpos = result->getAtomXyz(i);
-            tpos.add(position);
-            result->setAtomXyz(i, tpos);
-        }
+        Vec3f& p = result->getAtomXyz(atom_idx);
+        p.transformPoint(matr);
     }
 
     return std::unique_ptr<BaseMolecule>{result};
