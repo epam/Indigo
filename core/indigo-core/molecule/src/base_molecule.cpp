@@ -3249,10 +3249,31 @@ void BaseMolecule::_connectTemplateAtom(Superatom& sa, int t_idx, Array<int>& or
             for (auto xbond_idx : sa.bonds)
             {
                 const Edge& e = getEdge(xbond_idx);
-                if (e.beg == ap.aidx || e.end == ap.aidx)
+                int dest_atom = e.beg == ap.aidx ? e.end : ( e.end == ap.aidx ? e.beg : -1);
+                if (dest_atom != -1)
                 {
-                    edge_idx = xbond_idx;
-                    break;
+                    Array<int> sgs, sg_atoms;
+                    sg_atoms.push(dest_atom);
+                    sgroups.findSGroups(SGroup::SG_ATOMS, sg_atoms, sgs);
+                    bool is_lgrp = false;
+                    for (auto sgs_index : sgs)
+                    {
+                        auto& sg = sgroups.getSGroup(sgs_index);
+                        if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+                        {
+                            auto& sal = static_cast<Superatom&>(sg);
+                            if (sal.sa_class.size() && std::string(sal.sa_class.ptr()) == "LGRP")
+                            {
+                                is_lgrp = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!is_lgrp)
+                    {
+                        edge_idx = xbond_idx;
+                        break;
+                    }
                 }
             }
 
