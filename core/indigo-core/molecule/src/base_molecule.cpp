@@ -3249,7 +3249,7 @@ void BaseMolecule::_connectTemplateAtom(Superatom& sa, int t_idx, Array<int>& or
             for (auto xbond_idx : sa.bonds)
             {
                 const Edge& e = getEdge(xbond_idx);
-                int dest_atom = e.beg == ap.aidx ? e.end : ( e.end == ap.aidx ? e.beg : -1);
+                int dest_atom = e.beg == ap.aidx ? e.end : (e.end == ap.aidx ? e.beg : -1);
                 if (dest_atom != -1)
                 {
                     Array<int> sgs, sg_atoms;
