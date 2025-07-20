@@ -74,8 +74,12 @@ namespace indigo
 
             const double s = 0.5 * (sx + sy);
 
-            const int diag[3][2] = {{1, 1}, {-1, 1}, {1, -1}};
-            const FlipType types[3] = {FlipType::none, FlipType::horizontal, FlipType::vertical};
+            const int diag[3][2] = {{1, 1}, {1, -1}, {-1, 1}};
+            const FlipType kinds[3] = {FlipType::none, FlipType::vertical, FlipType::horizontal};
+
+            int best_k = -1;
+            double best_abs = 0.0;
+            double best_r00 = 1.0, best_r10 = 0.0;
 
             for (int k = 0; k < 3; ++k)
             {
@@ -94,13 +98,30 @@ namespace indigo
                 if (std::fabs(c0 - 1) > ORTHO_TOL || std::fabs(c1 - 1) > ORTHO_TOL || std::fabs(dot) > ORTHO_TOL || det <= 0)
                     continue;
 
-                flip = types[k];
-                rotate = static_cast<float>(std::atan2(r10, r00));
-                scale = static_cast<float>(s);
-                shift.set(static_cast<float>(tx), static_cast<float>(ty));
-                return true;
+                const double ang = std::atan2(r10, r00);
+                const double abs_ang = std::fabs(std::remainder(ang, 2 * M_PI));
+
+                if (best_k == -1 || abs_ang < best_abs)
+                {
+                    best_k = k;
+                    best_abs = abs_ang;
+                    best_r00 = r00;
+                    best_r10 = r10;
+                }
             }
-            return false;
+
+            if (best_k == -1)
+                return false;
+
+            flip = kinds[best_k];
+            rotate = static_cast<float>(std::atan2(best_r10, best_r00));
+            if (std::fabs(rotate) < EPS_ZERO)
+                rotate = 0;
+            scale = static_cast<float>(s);
+            if (std::fabs(scale) < EPS_ZERO)
+                scale = 0;
+            shift.set(static_cast<float>(tx), static_cast<float>(ty));
+            return true;
         }
 
         const bool hasTransformation() const

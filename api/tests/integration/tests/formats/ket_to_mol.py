@@ -116,7 +116,7 @@ for filename in files:
     rc = indigo.loadReactionFromFile(os.path.join(root_rea, filename + ".ket"))
     ket = rc.rxnfile()
     # with open(os.path.join(ref_path, filename) + ".mol", "w") as file:
-    #    file.write(ket)
+    #   file.write(ket)
 
     with open(os.path.join(ref_path, filename) + ".mol", "r") as file:
         ket_ref = file.read()

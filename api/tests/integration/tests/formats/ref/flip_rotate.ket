@@ -599,8 +599,7 @@
         },
         "expanded": true,
         "transformation": {
-            "rotate": -3.1415927410125734,
-            "flip": "horizontal"
+            "flip": "vertical"
         },
         "alias": "A",
         "templateId": "A___Alanine"
