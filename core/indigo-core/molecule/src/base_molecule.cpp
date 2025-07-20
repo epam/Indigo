@@ -5757,6 +5757,8 @@ std::unique_ptr<BaseMolecule> BaseMolecule::applyTransformation(const Transforma
 {
     BaseMolecule* result = neu();
     result->clone_KeepIndices(*this);
+    Transform3f matr;
+    matr.identity();
     if (transform.hasTransformation())
     {
         Rect2f bbox;
@@ -5805,10 +5807,8 @@ std::unique_ptr<BaseMolecule> BaseMolecule::applyTransformation(const Transforma
                 }
             }
         }
-        Transform3f matr;
         if (false) // straight transformation
         {
-            matr.identity();                  // init matrix with 1-s on diagonal
             matr.translateInv(bbox.center()); // translate to move bounding center to (0,0)
             if (transform.rotate != 0)
             {
@@ -5819,18 +5819,17 @@ std::unique_ptr<BaseMolecule> BaseMolecule::applyTransformation(const Transforma
         }
         else // 2DO: check if this is correct. Also add comment to translateLocal
         {
-            if (transform.rotate == 0)
-                matr.identity();
-            else
+            if (transform.rotate != 0)
                 matr.rotationZ(transform.rotate);
             matr.translateLocalInv(bbox.center());
         }
-        matr.translate(position); // translate to move bounding center to position point
+
         if (transform.shift.x != 0 || transform.shift.y != 0)
         {
             matr.translate(transform.shift); // apply shift
         }
 
+        matr.translate(position); // translate to move bounding center to position point
         for (auto atom_idx : result->vertices())
         {
             Vec3f& p = result->getAtomXyz(atom_idx);

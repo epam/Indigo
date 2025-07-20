@@ -1802,10 +1802,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 }
                 writer.EndObject(); // monomer
             }
-            else
-            {
-                //
-            }
         }
 
     // save templates
