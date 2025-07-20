@@ -71,7 +71,7 @@ with_lib = [
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(
-    os.path.join(ref_path, "monomer_library.ket")
+    os.path.join(ref_path, "monomer_library_ket.ket")
 )
 
 files.sort()
