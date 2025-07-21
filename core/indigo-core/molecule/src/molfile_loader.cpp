@@ -45,9 +45,10 @@ IMPL_ERROR(MolfileLoader, "molfile loader");
 CP_DEF(MolfileLoader);
 
 MolfileLoader::MolfileLoader(Scanner& scanner, MonomerTemplateLibrary* monomer_library)
-    : _scanner(scanner), _monomer_templates(MonomerTemplates::_instance()), _max_template_id(0), CP_INIT, TL_CP_GET(_stereo_care_atoms),
-      TL_CP_GET(_stereo_care_bonds), TL_CP_GET(_stereocenter_types), TL_CP_GET(_stereocenter_groups), TL_CP_GET(_sensible_bond_directions),
-      TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount), TL_CP_GET(_sgroup_types), TL_CP_GET(_sgroup_mapping)
+    : _scanner(scanner), _monomer_templates(MonomerTemplates::_instance()), _max_template_id(0), _disable_sgroups_conversion(false), CP_INIT,
+      TL_CP_GET(_stereo_care_atoms), TL_CP_GET(_stereo_care_bonds), TL_CP_GET(_stereocenter_types), TL_CP_GET(_stereocenter_groups),
+      TL_CP_GET(_sensible_bond_directions), TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount), TL_CP_GET(_sgroup_types),
+      TL_CP_GET(_sgroup_mapping)
 {
     _rgfile = false;
     treat_x_as_pseudoatom = false;
@@ -2085,8 +2086,9 @@ void MolfileLoader::_postLoad()
             nucleo_templates.emplace(tg.tgroup_name.ptr(), tg_idx);
     }
 
-    if (_bmol->tgroups.getTGroupCount() && _bmol->sgroups.getSGroupCount())
-        _bmol->transformSuperatomsToTemplates(_max_template_id);
+    if (!_disable_sgroups_conversion && _bmol->sgroups.getSGroupCount() &&
+        (_bmol->tgroups.getTGroupCount() || (_monomer_library && _monomer_library->monomerTemplates().size())))
+        _bmol->transformSuperatomsToTemplates(_max_template_id, _monomer_library);
 
     std::set<int> templates_to_remove;
     std::unordered_map<MonomerKey, int, pair_hash> new_templates;
@@ -3858,6 +3860,7 @@ void MolfileLoader::_readTGroups3000()
                     //               tgroup.fragment = _bmol->neu();
 
                     MolfileLoader loader(_scanner);
+                    loader._disable_sgroups_conversion = true;
                     loader.copyProperties(*this);
                     loader._bmol = tgroup.fragment.get();
                     if (_bmol->isQueryMolecule())

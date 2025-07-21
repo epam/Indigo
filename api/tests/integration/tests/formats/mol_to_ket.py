@@ -56,6 +56,9 @@ files = [
     "issue_2699_rlogic",
     "issue_2958_map_template",
     "sgroup_class",
+    "flip_rotate",
+    "flip_rotate_2000",
+    "flip_rotate_rna",
 ]
 
 native_precision = [
@@ -67,10 +70,13 @@ native_precision = [
 
 with_lib = [
     "issue_2958_map_template",
+    "flip_rotate",
+    "flip_rotate_2000",
+    "flip_rotate_rna",
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(
-    os.path.join(ref_path, "monomer_library.ket")
+    os.path.join(ref_path, "monomer_library_ket.ket")
 )
 
 files.sort()

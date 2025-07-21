@@ -23,12 +23,34 @@
 
 using namespace indigo;
 
-TGroup::TGroup() : unresolved(false), ambiguous(false), mixture(false), different_aliasHELM(false)
+TGroup::TGroup() : unresolved(false), ambiguous(false), mixture(false), different_aliasHELM(false), tgroup_id(-1)
 {
 }
 
 TGroup::~TGroup()
 {
+}
+
+std::unique_ptr<BaseMolecule> TGroup::getResidue() const
+{
+    std::unique_ptr<BaseMolecule> templ_residue;
+    if (fragment)
+        for (int j = fragment->sgroups.begin(); j != fragment->sgroups.end(); j = fragment->sgroups.next(j))
+        {
+            auto& sg = fragment->sgroups.getSGroup(j);
+            if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+            {
+                Superatom& tsa = (Superatom&)sg; // superatom in template
+                BufferScanner sc(tsa.sa_class);
+                if (!sc.findWordIgnoreCase("LGRP")) // if not LGRP
+                {
+                    templ_residue.reset(fragment->neu());
+                    Array<int> mapping;
+                    templ_residue->makeSubmolecule(*fragment, tsa.atoms, &mapping, SKIP_TGROUPS | SKIP_TEMPLATE_ATTACHMENT_POINTS | SKIP_STEREOCENTERS);
+                }
+            }
+        }
+    return templ_residue;
 }
 
 void TGroup::clear()

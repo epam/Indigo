@@ -1753,7 +1753,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 }
 
                 auto transform = mol->getTemplateAtomTransform(i);
-                if (transform.rotate != 0 || transform.shift.x != 0 || transform.shift.y != 0)
+                if (transform.hasTransformation())
                 {
                     writer.Key("transformation");
                     writer.StartObject();
@@ -1801,10 +1801,6 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                     }
                 }
                 writer.EndObject(); // monomer
-            }
-            else
-            {
-                //
             }
         }
 

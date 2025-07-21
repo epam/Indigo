@@ -105,7 +105,7 @@
                 "$ref": "monomerTemplate-A___Adenine"
             },
             {
-                "$ref": "monomerTemplate-Rib_4"
+                "$ref": "monomerTemplate-R___Ribose"
             },
             {
                 "$ref": "monomerTemplate-P___Phosphate"
@@ -157,7 +157,7 @@
             "y": -4.985000
         },
         "alias": "R",
-        "templateId": "Rib_4"
+        "templateId": "R___Ribose"
     },
     "monomer4": {
         "type": "monomer",
@@ -190,7 +190,7 @@
             "y": -5.010000
         },
         "alias": "R",
-        "templateId": "Rib_4"
+        "templateId": "R___Ribose"
     },
     "monomer7": {
         "type": "monomer",
@@ -704,13 +704,14 @@
             }
         ]
     },
-    "monomerTemplate-Rib_4": {
+    "monomerTemplate-R___Ribose": {
         "type": "monomerTemplate",
-        "id": "Rib_4",
+        "id": "R___Ribose",
         "class": "Sugar",
         "classHELM": "RNA",
         "alias": "R",
         "name": "Rib",
+        "fullName": "Ribose",
         "naturalAnalogShort": "R",
         "naturalAnalog": "Rib",
         "attachmentPoints": [
