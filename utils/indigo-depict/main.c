@@ -953,8 +953,9 @@ int main(int argc, char* argv[])
             obj = indigoLoadHelm(reader, lib);
         }
         else
-            obj = indigoLoadMoleculeWithLib(reader, lib);
+            obj = indigoLoadKetDocument(reader);
 
+        printf("macro:%s\n", indigoMacroProperties(obj, 0.14f, 0.2f));
         if (p.action == ACTION_LAYOUT)
         {
             indigoLayout(obj);

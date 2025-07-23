@@ -427,13 +427,52 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 std::vector<int> leaved_atoms;
                 auto& att_points = monomer->attachmentPoints();
                 std::vector<std::string> used_attachment_points;
+                std::set<std::string> used_atp_pkas;
+
                 for (auto& conn : monomer->connections())
                 {
                     used_attachment_points.emplace_back(conn.first);
+                    used_atp_pkas.emplace(conn.first);
                 }
+
                 for (auto& conn : monomer->connectionsToMolecules())
                 {
                     used_attachment_points.emplace_back(conn.first);
+                    used_atp_pkas.emplace(conn.first);
+                }
+
+                auto tgroup = monomer_template.getTGroup();
+                auto* pmol = static_cast<Molecule*>(tgroup->fragment.get());
+                if (document.getMonomerClass(*monomer) == MonomerClass::AminoAcid)
+                {
+                    Array<double> pkas;
+                    Crippen::getPKaValues(*pmol, pkas);
+                    if (pkas.size() > 1)
+                    {
+                        if (used_atp_pkas.count(kAttachmentPointR1))
+                        {
+                            used_atp_pkas.erase(kAttachmentPointR1);
+                            pkas.remove(pkas.size() - 1); // remove carboxyl pka
+                        }
+
+                        if (used_atp_pkas.count(kAttachmentPointR2))
+                        {
+                            used_atp_pkas.erase(kAttachmentPointR2);
+                            pkas.remove(0); // remove amine pka
+                        }
+
+                        for (auto it = used_atp_pkas.crbegin(); it != used_atp_pkas.crend(); ++it)
+                        {
+                            auto att_index = getAttachmentOrder(*it) - kBranchAttachmentPointIdx;
+                            if (att_index >= 0 && pkas.size() > att_index)
+                                pkas.remove(att_index); // remove side pka
+                        }
+                    }
+                    if (pkas.size())
+                    {
+                        for (auto pka_val : pkas)
+                            pKa_values.emplace_back(pka_val);
+                    }
                 }
                 for (auto& att_point_id : used_attachment_points)
                 {
@@ -446,9 +485,8 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                     auto& leaved = leaving_group.value();
                     leaved_atoms.insert(leaved_atoms.end(), leaved.begin(), leaved.end());
                 }
+
                 std::sort(leaved_atoms.rbegin(), leaved_atoms.rend());
-                auto tgroup = monomer_template.getTGroup();
-                auto* pmol = static_cast<Molecule*>(tgroup->fragment.get());
                 Array<int> atom_filt;
                 atom_filt.expandFill(pmol->vertexCount(), 1);
                 for (auto& idx : leaved_atoms)
@@ -458,10 +496,6 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 MoleculeMass mass;
                 mass.mass_options.skip_error_on_pseudoatoms = true;
                 mass_sum += mass.molecularWeight(*pmol);
-                if (document.getMonomerClass(*monomer) == MonomerClass::AminoAcid)
-                {
-                    pKa_values.emplace_back(Crippen::pKa(*pmol));
-                }
                 auto gross = MoleculeGrossFormula::collect(*pmol, true);
                 merge_gross_data(*gross);
             }
