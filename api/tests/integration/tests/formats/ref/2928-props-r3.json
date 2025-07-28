@@ -1,0 +1,66 @@
+[
+    {
+        "grossFormula": "C6 H12 N2 O4 S2",
+        "mass": 240.291999,
+        "pKa": 9.011667,
+        "extinctionCoefficient": 250,
+        "hydrophobicity": [
+            0.68,
+            0.68
+        ],
+        "monomerCount": {
+            "peptides": {
+                "C": 2
+            },
+            "nucleotides": {}
+        }
+    },
+    {
+        "grossFormula": "C6 H12 N2 O2 S2",
+        "mass": 208.294,
+        "pKa": 9.011667,
+        "extinctionCoefficient": 250,
+        "hydrophobicity": [
+            0.68,
+            0.68
+        ],
+        "monomerCount": {
+            "peptides": {
+                "C": 2
+            },
+            "nucleotides": {}
+        }
+    },
+    {
+        "grossFormula": "C6 H12 N2 O3 S2",
+        "mass": 224.292999,
+        "pKa": 8.493333,
+        "extinctionCoefficient": 250,
+        "hydrophobicity": [
+            0.68,
+            0.68
+        ],
+        "monomerCount": {
+            "peptides": {
+                "C": 2
+            },
+            "nucleotides": {}
+        }
+    },
+    {
+        "grossFormula": "C6 H14 N2 O4 S2",
+        "mass": 242.307999,
+        "pKa": 8.493333,
+        "extinctionCoefficient": 250,
+        "hydrophobicity": [
+            0.68,
+            0.68
+        ],
+        "monomerCount": {
+            "peptides": {
+                "C": 2
+            },
+            "nucleotides": {}
+        }
+    }
+]
