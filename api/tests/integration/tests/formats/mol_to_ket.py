@@ -59,6 +59,8 @@ files = [
     "flip_rotate",
     "flip_rotate_2000",
     "flip_rotate_rna",
+    "3050-bad-cbonds",
+    "3047-accldraw",
 ]
 
 native_precision = [

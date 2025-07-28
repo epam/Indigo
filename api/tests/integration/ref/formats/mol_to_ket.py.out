@@ -6,6 +6,8 @@
 1972-case2.ket:SUCCEED
 2704-stereocenters.ket:SUCCEED
 2708-sgroup-data.ket:SUCCEED
+3047-accldraw.ket:SUCCEED
+3050-bad-cbonds.ket:SUCCEED
 SgroupDifferent.ket:SUCCEED
 acgt_1412.ket:SUCCEED
 anacyclamide.ket:SUCCEED
