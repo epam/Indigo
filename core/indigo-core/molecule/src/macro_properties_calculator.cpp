@@ -445,34 +445,36 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 auto* pmol = static_cast<Molecule*>(tgroup->fragment.get());
                 if (document.getMonomerClass(*monomer) == MonomerClass::AminoAcid)
                 {
-                    Array<double> pkas;
-                    Crippen::getPKaValues(*pmol, pkas);
-                    if (pkas.size() > 1)
+                    Array<double> pkas_array;
+                    Crippen::getPKaValues(*pmol, pkas_array);
+                    std::map<int, double> pkas_map;
+                    for (int k = 0; k < pkas_array.size(); ++k)
+                        pkas_map.emplace(k, pkas_array[k]);
+
+                    if (pkas_map.size() > 1)
                     {
                         if (used_atp_pkas.count(kAttachmentPointR1))
                         {
                             used_atp_pkas.erase(kAttachmentPointR1);
-                            pkas.remove(pkas.size() - 1); // remove carboxyl pka
+                            pkas_map.erase((int)pkas_map.size() - 1); // remove amine pka
                         }
 
                         if (used_atp_pkas.count(kAttachmentPointR2))
                         {
                             used_atp_pkas.erase(kAttachmentPointR2);
-                            pkas.remove(0); // remove amine pka
+                            pkas_map.erase(0); // remove carboxyl pka
                         }
 
                         for (auto it = used_atp_pkas.crbegin(); it != used_atp_pkas.crend(); ++it)
                         {
-                            auto att_index = getAttachmentOrder(*it) - kBranchAttachmentPointIdx;
-                            if (att_index >= 0 && pkas.size() > att_index)
-                                pkas.remove(att_index); // remove side pka
+                            auto att_index = getAttachmentOrder(*it) - kRightAttachmentPointIdx;
+                            auto map_it = pkas_map.find(att_index);
+                            if (map_it != pkas_map.end())
+                                pkas_map.erase(map_it); // remove side pka
                         }
                     }
-                    if (pkas.size())
-                    {
-                        for (auto pka_val : pkas)
-                            pKa_values.emplace_back(pka_val);
-                    }
+                    for (auto pka_kvp : pkas_map)
+                        pKa_values.emplace_back(pka_kvp.second);
                 }
                 for (auto& att_point_id : used_attachment_points)
                 {

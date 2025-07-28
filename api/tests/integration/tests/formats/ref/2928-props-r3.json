@@ -2,7 +2,7 @@
     {
         "grossFormula": "C6 H12 N2 O4 S2",
         "mass": 240.291999,
-        "pKa": 9.011667,
+        "pKa": 5.96,
         "extinctionCoefficient": 250,
         "hydrophobicity": [
             0.68,
