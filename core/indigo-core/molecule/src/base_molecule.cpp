@@ -4620,7 +4620,7 @@ void BaseMolecule::transformSuperatomsToTemplates(int template_id, MonomerTempla
         {
             if (mtl && _replaceExpandedMonomerWithTemplate(sg_idx, template_id, *mtl, added_templates, remove_atoms))
                 remove_sgroups.push_back(sg_idx);
-            else if(tgroups.getTGroupCount()) // transform only for mixed case. Otherwise keep sgroups.
+            else if (tgroups.getTGroupCount()) // transform only for mixed case. Otherwise keep sgroups.
                 _transformSGroupToTGroup(sg_idx, template_id);
         }
     }
