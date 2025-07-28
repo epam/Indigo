@@ -3482,7 +3482,8 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
     }
 
     // find or create template group for residue
-    auto it_added = added_templates.find(residue_inchi_str);
+    auto template_inchi_id = monomerNameByAlias(sa.sa_class.ptr(), sa.subscript.ptr()) + "/" + std::string(sa.sa_class.ptr()) + "/" + residue_inchi_str;
+    auto it_added = added_templates.find(template_inchi_id);
     int tg_index = it_added != added_templates.end() ? it_added->second : tgroups.addTGroup();
     // no we know template index to link template atom with it
     TGroup& tg = tgroups.getTGroup(tg_index);
@@ -3522,7 +3523,7 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
                 setTemplateAtomSeqid(ta_idx, sa.seqid);
                 setTemplateAtomDisplayOption(ta_idx, sa.contracted);
                 setTemplateAtomTemplateIndex(ta_idx, tg_index);
-                added_templates.emplace(residue_inchi_str, tg_index);
+                added_templates.emplace(template_inchi_id, tg_index);
                 _connectTemplateAtom(sa, ta_idx, remove_atoms);
             }
             else
@@ -4595,7 +4596,8 @@ void BaseMolecule::transformSuperatomsToTemplates(int template_id, MonomerTempla
 
     for (int tg_idx = tgroups.begin(); tg_idx != tgroups.end(); tg_idx = tgroups.next(tg_idx))
     {
-        auto res = tgroups.getTGroup(tg_idx).getResidue();
+        auto& tg = tgroups.getTGroup(tg_idx);
+        auto res = tg.getResidue();
         if (res)
         {
             std::string templ_inchi_str;
@@ -4604,8 +4606,10 @@ void BaseMolecule::transformSuperatomsToTemplates(int template_id, MonomerTempla
                 MoleculeInChI templ_inchi(templ_inchi_output);
                 templ_inchi.outputInChI(res->asMolecule());
             }
-            if (added_templates.count(templ_inchi_str) == 0)
-                added_templates.emplace(templ_inchi_str, tg_idx);
+
+            std::string template_inchi_id = std::string(tg.tgroup_name.ptr()) + "/" + std::string(tg.tgroup_class.ptr()) + "/" + templ_inchi_str;
+            if (added_templates.count(template_inchi_id) == 0)
+                added_templates.emplace(template_inchi_id, tg_idx);
         }
     }
 
@@ -4614,10 +4618,9 @@ void BaseMolecule::transformSuperatomsToTemplates(int template_id, MonomerTempla
         auto& sg = sgroups.getSGroup(sg_idx);
         if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
-            // check if we can take template from library
             if (mtl && _replaceExpandedMonomerWithTemplate(sg_idx, template_id, *mtl, added_templates, remove_atoms))
                 remove_sgroups.push_back(sg_idx);
-            else
+            else if(tgroups.getTGroupCount()) // transform only for mixed case. Otherwise keep sgroups.
                 _transformSGroupToTGroup(sg_idx, template_id);
         }
     }
