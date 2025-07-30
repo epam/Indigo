@@ -41,8 +41,8 @@ for filename in files:
     doc = indigo.loadSequenceFromFile(
         os.path.join(ref_path, filename + ".seq3"), "PEPTIDE-3-LETTER", lib
     )
-    with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-        file.write(doc.json())
+    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+    #     file.write(doc.json())
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
         ket_ref = file.read()
     ket = doc.json()
