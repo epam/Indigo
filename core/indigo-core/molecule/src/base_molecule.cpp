@@ -306,11 +306,12 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     {
         try
         {
-            auto aidx = mapping[mol._cip_atoms.key(i)];
+            auto cip_atom_key = mol._cip_atoms.key(i);
+            auto aidx = mapping[cip_atom_key];
             if (aidx >= 0)
             {
                 _cip_atoms.insert(aidx, mol._cip_atoms.value(i));
-                _show_cip_atoms.insert(aidx, mol.getShowAtomCIP(i));
+                _show_cip_atoms.insert(aidx, mol.getShowAtomCIP(cip_atom_key));
             }
         }
         catch (Exception&)
