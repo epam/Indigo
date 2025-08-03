@@ -107,13 +107,12 @@ namespace indigo
 
         struct COMPONENT_DESC
         {
-            COMPONENT_DESC(std::unique_ptr<BaseMolecule> mol, std::vector<Vec2f> poly, int idx) : mol(std::move(mol)), hull(poly), idx(idx), mapped_idx(-1)
+            COMPONENT_DESC(std::unique_ptr<BaseMolecule> mol, std::vector<Vec2f> poly) : mol(std::move(mol)), hull(poly)
             {
             }
             std::unique_ptr<BaseMolecule> mol;
             std::vector<Vec2f> hull;
-            int idx;
-            int mapped_idx;
+            std::vector<std::size_t> merged_indexes;
         };
 
         ReactionMultistepDetector(BaseMolecule& mol, const LayoutOptions& options);

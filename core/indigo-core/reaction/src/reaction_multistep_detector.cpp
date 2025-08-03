@@ -540,38 +540,43 @@ void ReactionMultistepDetector::mergeCloseComponents()
     for (size_t i = 0; i < _mol_distances.size(); ++i)
     {
         auto& mdi = _mol_distances[i];
-        if (mdi.sorted_distances.empty() || !_components[i].mol)
-            continue;
-        std::queue<std::pair<std::size_t, std::optional<std::pair<int, int>>>> bfs_queue;
-        std::vector<std::size_t> cluster;
-        bfs_queue.emplace(i, std::nullopt);
-        cluster.push_back(i);
-        while (!bfs_queue.empty())
+        if (mdi.sorted_distances.size() && _components[i].mol)
         {
-            auto qel = bfs_queue.front();
-            auto& mdj = _mol_distances[qel.first];
-            bfs_queue.pop();
-            for (auto& sd : mdj.sorted_distances)
+            std::queue<std::pair<std::size_t, std::optional<std::pair<int, int>>>> bfs_queue;
+            std::vector<std::size_t> cluster;
+            bfs_queue.emplace(i, std::nullopt);
+            cluster.push_back(i);
+            while (!bfs_queue.empty())
             {
-                auto j = sd.first;
-                if (!_components[j].mol || std::find(cluster.begin(), cluster.end(), j) != cluster.end())
-                    continue;
-                auto zone = isMergeable(qel.first, j, qel.second);
-                if (zone.has_value())
+                auto qel = bfs_queue.front();
+                auto& mdj = _mol_distances[qel.first];
+                bfs_queue.pop();
+                for (auto& sd : mdj.sorted_distances)
                 {
-                    cluster.push_back(j);
-                    bfs_queue.emplace(j, zone);
+                    auto j = sd.first;
+                    if (!_components[j].mol || std::find(cluster.begin(), cluster.end(), j) != cluster.end())
+                        continue;
+                    auto zone = isMergeable(qel.first, j, qel.second);
+                    if (zone.has_value())
+                    {
+                        cluster.push_back(j);
+                        bfs_queue.emplace(j, zone);
+                    }
                 }
             }
-        }
-        for (std::size_t k = 1; k < cluster.size(); ++k)
-        {
-            QS_DEF(Array<int>, mapping);
-            if (_components[cluster[k]].mol)
+            for (std::size_t k = 1; k < cluster.size(); ++k)
             {
-                _components[i].mol->mergeWithMolecule(*_components[cluster[k]].mol, &mapping, 0);
-                _components[cluster[k]].idx = (int)i;
-                _components[cluster[k]].mol.reset();
+                QS_DEF(Array<int>, mapping);
+                if (_components[cluster[k]].mol)
+                {
+                    auto& cluster_comp = _components[cluster[k]];
+                    auto& comp = _components[i];
+                    comp.mol->mergeWithMolecule(*cluster_comp.mol, &mapping, 0);
+                    comp.merged_indexes.push_back(cluster[k]);
+                    comp.merged_indexes.insert(comp.merged_indexes.end(), cluster_comp.merged_indexes.begin(), cluster_comp.merged_indexes.end());
+                    cluster_comp.merged_indexes.clear();
+                    _components[cluster[k]].mol.reset();
+                }
             }
         }
     }
@@ -580,12 +585,15 @@ void ReactionMultistepDetector::mergeCloseComponents()
     {
         if (_components[i].mol)
         {
-            _merged_components.emplace_back(std::move(_components[i].mol), _components[i].hull, (int)_merged_components.size());
-            _merged_components.back().mapped_idx = i;
-            _components[i].mapped_idx = (int)_merged_components.size() - 1;
+            _merged_components.emplace_back(std::move(_components[i].mol), _components[i].hull);
+            auto& mc_last = _merged_components.back();
+            mc_last.merged_indexes.push_back(i);
+            mc_last.merged_indexes.insert(_components[i].merged_indexes.end(), mc_last.merged_indexes.begin(), mc_last.merged_indexes.end());
         }
     }
     _moleculeCount = (int)_merged_components.size();
+
+    // how to get merges?
 }
 
 void dumpHull(std::string name, const std::vector<Vec2f>& hull)
@@ -758,7 +766,7 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
         hull.push_back(bbox.rightBottom());
         hull.push_back(bbox.rightTop());
         hull.push_back(bbox.leftTop());
-        _components.emplace_back(std::move(component), hull, i);
+        _components.emplace_back(std::move(component), hull);
     }
 
     collectSortedDistances();
@@ -1079,7 +1087,6 @@ void ReactionMultistepDetector::mergeUndefinedComponents()
             if (rc_undef.molecule && rc_target.molecule)
             {
                 rc_target.molecule->mergeWithMolecule(*rc_undef.molecule, nullptr, 0);
-                _components[undef_bbox.first].idx = _components[comp_bbox.first].idx;
                 rc_undef.molecule.reset();
                 comp_bbox.second.extend(undef_bbox.second);
             }
