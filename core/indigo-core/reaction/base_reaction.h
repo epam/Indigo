@@ -83,9 +83,11 @@ namespace indigo
         {
             reactants.copy(other.reactants);
             products.copy(other.products);
+            catalysts.copy(other.catalysts);
         }
         Array<int> reactants;
         Array<int> products;
+        Array<int> catalysts;
     };
 
     class DLLEXPORT BaseReaction : public NonCopyable

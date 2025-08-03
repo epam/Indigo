@@ -166,10 +166,10 @@ namespace indigo
                                 const FLOAT_INT_PAIRS& mol_rights, std::pair<int, int>& connection);
 
         BaseMolecule& _bmol;
-        std::vector<ReactionComponent> _reaction_components;
-        std::vector<MolSumm> _component_summ_blocks;
-        std::vector<COMPONENT_DESC> _components;
-        std::vector<COMPONENT_DESC> _merged_components;
+        std::vector<COMPONENT_DESC> _components;             // created first. initial molecule list with coordinates.
+        std::vector<COMPONENT_DESC> _merged_components;      // merged molecule list
+        std::vector<ReactionComponent> _reaction_components; // full list of reaction components: pluses, arrows, merged molecules.
+        std::vector<MolSumm> _component_summ_blocks;         // merged molecules binded with pluses, role and arrow index for products/intermediates
         std::vector<MOL_DISTANCES_DESC> _mol_distances;
         std::vector<SPECIAL_ZONE_DESC> _zones;
         int _moleculeCount;

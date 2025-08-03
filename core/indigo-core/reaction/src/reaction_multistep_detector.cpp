@@ -643,8 +643,8 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
                 }
 
                 // different zone types are not mergeable
-                if (_zones[zone1.value().first].zone_type != _zones[zone2.value().first].zone_type && comm_zones.empty())
-                    return std::nullopt;
+                // if (_zones[zone1.value().first].zone_type != _zones[zone2.value().first].zone_type && comm_zones.empty())
+                //    return std::nullopt;
             }
 
             if (!current_zone.has_value())
@@ -833,7 +833,10 @@ bool ReactionMultistepDetector::mapReactionComponents()
                             auto& bottom_zone = _zones[reaction_index].zone_sections[3];
                             if (convexPolygonsIntersect(_merged_components[rc_idx].hull, top_zone) ||
                                 convexPolygonsIntersect(_merged_components[rc_idx].hull, bottom_zone))
+                            {
                                 csb.role = BaseReaction::CATALYST;
+                                // csb.reaction_idx = reaction_index;
+                            }
                         }
                     }
                 }
@@ -1429,9 +1432,8 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
         }
     }
 
-    for (int i = 0; i < (int)_component_summ_blocks.size(); ++i)
+    for (auto& csb : _component_summ_blocks)
     {
-        auto& csb = _component_summ_blocks[i];
         for (auto csb_index : csb.arrows_to)
         {
             auto& rb = rxn.addReactionBlock();
