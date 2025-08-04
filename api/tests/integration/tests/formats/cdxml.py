@@ -42,7 +42,7 @@ for testFile in fileList:
         joinPathPy("molecules/3060_" + testFile + ".cdxml", __file__)
     )
     print(mol.molecularFormula())
-    print(mol.molecularWeight())
+    print("{:.3f}".format(mol.molecularWeight()))
 
 if isIronPython():
     renderer.Dispose()
