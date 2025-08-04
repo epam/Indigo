@@ -1442,7 +1442,16 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, BaseCDXElement& elem)
                 else if (node.label.empty())
                 {
                     node.label = label;
-                    node.element = ELEM_PSEUDO;
+                    // Catch the case when the element attribute isn't given
+                    // (and assumed to be carbon). Bug #3060
+                    if (label == "CH3" || label == "CH2" || label == "CH")
+                    {
+                        node.element = ELEM_C;
+                    }
+                    else
+                    {
+                        node.element = ELEM_PSEUDO;
+                    }
                 }
             }
         }
