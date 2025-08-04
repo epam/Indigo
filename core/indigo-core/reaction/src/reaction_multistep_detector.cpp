@@ -164,7 +164,7 @@ void ReactionMultistepDetector::createSummBlocks()
                 auto& last_sb = component_summ_blocks_list.back();
                 last_sb.indexes.push_back(plus_connection.first);
                 last_sb.indexes.push_back(plus_connection.second);
-
+                last_sb.plus_indexes.push_back(i);
                 rc_connection.first.summ_block_idx = ReactionComponent::CONNECTED; // mark as connected
                 rc_connection.second.summ_block_idx = ReactionComponent::CONNECTED;
                 auto last_it = std::prev(component_summ_blocks_list.end());
@@ -179,6 +179,8 @@ void ReactionMultistepDetector::createSummBlocks()
                 auto& block_second = *rc_connection.second.summ_block_it;
                 auto second_block_it = rc_connection.second.summ_block_it;
                 merge_bbox(block_first.bbox, block_second.bbox);
+                // copy pluses
+                block_first.plus_indexes.insert(block_first.plus_indexes.end(), block_second.plus_indexes.begin(), block_second.plus_indexes.end());
                 for (int v : block_second.indexes)
                 {
                     block_first.indexes.push_back(v);                                          // copy all indexes of block_second to block_first
@@ -191,6 +193,7 @@ void ReactionMultistepDetector::createSummBlocks()
             case LI_FIRST_ONLY: {
                 // connect second to the existing first block
                 auto& block = *rc_connection.first.summ_block_it;
+                block.plus_indexes.push_back(i);                                        // add plus
                 block.indexes.push_back(plus_connection.second);                        // add second component
                 merge_bbox(block.bbox, rc_connection.second.bbox);                      // merge second box with block box
                 rc_connection.second.summ_block_it = rc_connection.first.summ_block_it; // bind second to the first block
@@ -201,6 +204,8 @@ void ReactionMultistepDetector::createSummBlocks()
             case LI_SECOND_ONLY: {
                 // connect first to the existing second block
                 auto& block = *rc_connection.second.summ_block_it;
+                block.plus_indexes.push_back(i);
+                // maybe it's better to push to front?
                 block.indexes.push_back(plus_connection.first);                         // add second component
                 merge_bbox(block.bbox, rc_connection.first.bbox);                       // merge second box with block box
                 rc_connection.first.summ_block_it = rc_connection.second.summ_block_it; // bind second to the first block
@@ -592,8 +597,6 @@ void ReactionMultistepDetector::mergeCloseComponents()
         }
     }
     _moleculeCount = (int)_merged_components.size();
-
-    // how to get merges?
 }
 
 void dumpHull(std::string name, const std::vector<Vec2f>& hull)

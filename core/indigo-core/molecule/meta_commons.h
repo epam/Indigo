@@ -876,6 +876,7 @@ namespace indigo
 
         Rect2f bbox;
         std::vector<int> indexes;
+        std::vector<int> plus_indexes;
         int role;
         int reaction_idx;
         std::vector<int> arrows_to;
