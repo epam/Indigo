@@ -40,7 +40,6 @@
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
 
-
 #ifdef _MSC_VER
 #pragma warning(push, 4)
 #pragma warning(error : 4100 4101 4189 4244 4456 4458 4715)
