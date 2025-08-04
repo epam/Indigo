@@ -29,6 +29,7 @@
 #include "molecule/ket_document.h"
 #include "molecule/ket_document_json_loader.h"
 #include "molecule/molecule_arom_match.h"
+#include "molecule/molecule_dearom.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_exact_substructure_matcher.h"
 #include "molecule/molecule_inchi.h"
@@ -38,6 +39,7 @@
 #include "molecule/monomers_template_library.h"
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
+
 
 #ifdef _MSC_VER
 #pragma warning(push, 4)
@@ -5883,6 +5885,11 @@ bool BaseMolecule::convertTemplateAtomsToSuperatoms(bool only_transformed)
         }
     }
     return modified;
+}
+
+bool BaseMolecule::restoreAromaticHydrogens(bool unambiguous_only)
+{
+    return MoleculeDearomatizer::restoreHydrogens(*this, unambiguous_only);
 }
 
 #ifdef _MSC_VER

@@ -372,6 +372,8 @@ namespace indigo
 
         KetDocument& getKetDocument();
 
+        bool hasSelection();
+
         DECL_ERROR;
 
     protected:

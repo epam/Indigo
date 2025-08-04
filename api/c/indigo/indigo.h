@@ -751,6 +751,9 @@ CEXPORT int indigoUnselect(int item);
 // Access atoms and bonds
 CEXPORT int indigoIsSelected(int item);
 
+// Molecule or reaction
+CEXPORT int indigoHasSelection(int item);
+
 /* Connected components of molecules */
 
 CEXPORT int indigoCountComponents(int molecule);
