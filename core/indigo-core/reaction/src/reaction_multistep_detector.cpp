@@ -588,7 +588,7 @@ void ReactionMultistepDetector::mergeCloseComponents()
             _merged_components.emplace_back(std::move(_components[i].mol), _components[i].hull);
             auto& mc_last = _merged_components.back();
             mc_last.merged_indexes.push_back(i);
-            mc_last.merged_indexes.insert(_components[i].merged_indexes.end(), mc_last.merged_indexes.begin(), mc_last.merged_indexes.end());
+            mc_last.merged_indexes.insert(mc_last.merged_indexes.end(), _components[i].merged_indexes.begin(), _components[i].merged_indexes.end());
         }
     }
     _moleculeCount = (int)_merged_components.size();
