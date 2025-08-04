@@ -38,7 +38,9 @@ print("issue 3060 ch labels as pseudo atoms")
 indigo.resetOptions()
 fileList = ["iso_butane", "iso_butene", "ethyne"]
 for testFile in fileList:
-    mol = indigo.loadMoleculeFromFile(joinPathPy("molecules/3060_" + testFile + ".cdxml", __file__))
+    mol = indigo.loadMoleculeFromFile(
+        joinPathPy("molecules/3060_" + testFile + ".cdxml", __file__)
+    )
     print(mol.molecularFormula())
     print(mol.molecularWeight())
 
