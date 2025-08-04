@@ -817,7 +817,7 @@ namespace indigo
         for (auto i = 0; i < componentsCount; i++)
         {
             auto& component = IndigoObject(_checkResult(indigoComponent(iko.id(), i)));
-            if (has_selection && !indigoHasSelection(component))
+            if (has_selection && !indigoHasSelection(component.id()))
                 continue;
             pushDoubleAsStr(indigoMolecularWeight(component.id()), molWeights);
             pushDoubleAsStr(indigoMostAbundantMass(component.id()), mamMasses);
@@ -851,7 +851,7 @@ namespace indigo
         while (const auto id = _checkResult(indigoNext(iterator.id)))
         {
             auto mol = IndigoKetcherObject(id, _checkResult(indigoCheckQuery(id)) ? IndigoKetcherObject::EKETMoleculeQuery : IndigoKetcherObject::EKETMolecule);
-            if (has_selection && !indigoHasSelection(mol))
+            if (has_selection && !indigoHasSelection(mol.id()))
                 continue;
 
             std::stringstream mws, mams, misos, mcs, gfs;
@@ -877,7 +877,7 @@ namespace indigo
             IDX_UNDEFINED = 2
         };
         std::vector<std::string> molWeights[3], mamMasses[3], misoMasses[3], massCompositions[3], grossFormulas[3];
-        bool has_selection = indigoHasSelection(iko);
+        bool has_selection = indigoHasSelection(iko.id());
 
         const auto mol_iterator = IndigoObject(_checkResult(indigoIterateMolecules(iko.id())));
         while (const auto mol_id = _checkResult(indigoNext(mol_iterator.id)))
@@ -964,7 +964,7 @@ namespace indigo
         case IndigoKetcherObject::EKETMoleculeQuery:
         case IndigoKetcherObject::EKETMolecule:
             calculate_molecule(iko, molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream,
-                               indigoHasSelection(iko));
+                               indigoHasSelection(iko.id()));
             break;
         case IndigoKetcherObject::EKETReactionQuery:
         case IndigoKetcherObject::EKETReaction:
