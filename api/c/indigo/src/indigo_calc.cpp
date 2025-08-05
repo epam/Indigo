@@ -117,7 +117,7 @@ CEXPORT double indigoMolecularWeight(int molecule)
         MoleculeMass mass;
         auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
         mass.mass_options = self.mass_options;
-        return mass.molecularWeight(mol.asMolecule());
+        return mass.molecularWeight(mol);
     }
     INDIGO_END(-1);
 }
@@ -129,7 +129,7 @@ CEXPORT double indigoMostAbundantMass(int molecule)
         MoleculeMass mass;
         auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
         mass.mass_options = self.mass_options;
-        return mass.mostAbundantMass(mol.asMolecule());
+        return mass.mostAbundantMass(mol);
     }
     INDIGO_END(-1);
 }
@@ -141,7 +141,7 @@ CEXPORT double indigoMonoisotopicMass(int molecule)
         MoleculeMass mass;
         auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
         mass.mass_options = self.mass_options;
-        return mass.monoisotopicMass(mol.asMolecule());
+        return mass.monoisotopicMass(mol);
     }
     INDIGO_END(-1);
 }
@@ -155,7 +155,7 @@ CEXPORT const char* indigoMassComposition(int molecule)
         mass.mass_options = self.mass_options;
 
         auto& tmp = self.getThreadTmpData();
-        mass.massComposition(mol.asMolecule(), tmp.string);
+        mass.massComposition(mol, tmp.string);
 
         return tmp.string.ptr();
     }

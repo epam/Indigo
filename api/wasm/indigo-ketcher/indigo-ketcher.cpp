@@ -816,20 +816,20 @@ namespace indigo
 
         for (auto i = 0; i < componentsCount; i++)
         {
-            auto& component = IndigoObject(_checkResult(indigoComponent(iko.id(), i)));
-            if (has_selection && !indigoHasSelection(component.id()))
+            auto component = IndigoObject(indigoClone(_checkResult(indigoComponent(iko.id(), i))));
+            if (has_selection && !indigoHasSelection(component.id))
                 continue;
-            pushDoubleAsStr(indigoMolecularWeight(component.id()), molWeights);
-            pushDoubleAsStr(indigoMostAbundantMass(component.id()), mamMasses);
-            pushDoubleAsStr(indigoMonoisotopicMass(component.id()), misoMasses);
+            pushDoubleAsStr(indigoMolecularWeight(component.id), molWeights);
+            pushDoubleAsStr(indigoMostAbundantMass(component.id), mamMasses);
+            pushDoubleAsStr(indigoMonoisotopicMass(component.id), misoMasses);
 
-            const auto* massComposition = indigoMassComposition(component.id());
+            const auto* massComposition = indigoMassComposition(component.id);
             if (massComposition == nullptr)
                 massCompositions.push_back(indigoGetLastError());
             else
                 massCompositions.push_back(std::string(massComposition));
 
-            const auto grossFormulaObject = IndigoObject(_checkResult(indigoGrossFormula(component.id())));
+            const auto grossFormulaObject = IndigoObject(_checkResult(indigoGrossFormula(component.id)));
             const auto* grossFormula = indigoToString(grossFormulaObject.id);
             if (grossFormula == nullptr)
                 grossFormulas.push_back(indigoGetLastError());
@@ -964,7 +964,7 @@ namespace indigo
         case IndigoKetcherObject::EKETMoleculeQuery:
         case IndigoKetcherObject::EKETMolecule:
             calculate_molecule(iko, molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream,
-                               indigoHasSelection(iko.id()));
+                            indigoHasSelection(iko.id()));
             break;
         case IndigoKetcherObject::EKETReactionQuery:
         case IndigoKetcherObject::EKETReaction:
