@@ -964,7 +964,7 @@ namespace indigo
         case IndigoKetcherObject::EKETMoleculeQuery:
         case IndigoKetcherObject::EKETMolecule:
             calculate_molecule(iko, molecularWeightStream, mostAbundantMassStream, monoisotopicMassStream, massCompositionStream, grossFormulaStream,
-                            indigoHasSelection(iko.id()));
+                               indigoHasSelection(iko.id()));
             break;
         case IndigoKetcherObject::EKETReactionQuery:
         case IndigoKetcherObject::EKETReaction:
