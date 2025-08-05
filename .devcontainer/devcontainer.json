@@ -1,0 +1,24 @@
+{
+  "name": "Debian 12 Dev Container",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  // Optional: run after container creation
+  "postCreateCommand": "echo 'Container is ready!'",
+
+  "forwardPorts": [3000, 8000],
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+
+  "remoteUser": "vscode"
+}
