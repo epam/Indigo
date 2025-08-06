@@ -84,9 +84,12 @@ indigoModuleFn().then(indigo => {
         test("calculate", "selected", () => {
             let options = new indigo.MapStringString();
             selected = new indigo.VectorInt();
-            selected.push_back(1);
-            selected.push_back(2);
-            const values = JSON.parse(indigo.calculate("C.N.P.O", options, selected));
+            let ketfile = `{"root":{"nodes":[{"$ref":"mol0"},{"$ref":"mol1"},{"$ref":"mol2"},{"$ref":"mol3"}],"connections":[],"templates":[]},
+"mol0":{"type":"molecule","atoms":[{"label":"C","location":[28,-21,0]}],"stereoFlagPosition":{"x":28,"y":20,"z":0}},
+"mol1":{"type":"molecule","atoms":[{"label":"N","location":[30,-21,0],"selected":true}],"stereoFlagPosition":{"x":30,"y":20,"z":0}},
+"mol2":{"type":"molecule","atoms":[{"label":"P","location":[28,-19,0],"selected":true}],"stereoFlagPosition":{"x":28,"y":18,"z":0}},
+"mol3":{"type":"molecule","atoms":[{"label":"O","location":[31,-19,0]}],"stereoFlagPosition":{"x":31,"y":18,"z":0}}}`
+            const values = JSON.parse(indigo.calculate(ketfile, options, selected));
             assert.equal(values['gross-formula'], "H3 N; H3 P");
             selected.delete();
             options.delete();
@@ -95,36 +98,13 @@ indigoModuleFn().then(indigo => {
         test("calculate", "complex", () => {
             let options = new indigo.MapStringString();
             selected = new indigo.VectorInt();
-            let molfile = `$RXN
-
-
-
-  1  1  0
-$MOL
-
-  Ketcher  3262115472D 1   1.00000     0.00000     0
-
-  5  4  0     0  0            999 V2000
-    2.3000   -4.4330    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    3.3000   -4.4330    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    2.8000   -3.5670    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    2.9000   -6.9001    0.0000 S   0  0  0  0  0  0  0  0  0  0  0  0
-    2.9000   -5.9001    0.0000 S   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0     0  0
-  2  3  1  0     0  0
-  1  3  1  0     0  0
-  4  5  1  0     0  0
-M  END
-$MOL
-
-  Ketcher  3262115472D 1   1.00000     0.00000     0
-
-  1  0  0     0  0            999 V2000
-    6.3501   -4.1500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-M  END
-`
+            let ketfile1 = `{"root":{"nodes":[{"$ref":"mol0"},{"$ref":"mol1"},{"$ref":"mol2"},
+{"type":"arrow","data":{"mode":"open-angle","pos":[{"x":31,"y":-21,"z":0},{"x":34,"y":-21,"z":0}]}}],"connections":[],"templates":[]},
+"mol0":{"type":"molecule","atoms":[{"label":"C","location":[29,-21,0]},{"label":"C","location":[30,-19,0]},{"label":"C","location":[30,-20,0]}],"bonds":[{"type":1,"atoms":[0,1]},{"type":1,"atoms":[1,2]},{"type":1,"atoms":[0,2]}],"stereoFlagPosition":{"x":29,"y":17,"z":0}},
+"mol1":{"type":"molecule","atoms":[{"label":"S","location":[28,-22,0]},{"label":"S","location":[28,-20,0]}],"bonds":[{"type":1,"atoms":[0,1]}],"stereoFlagPosition":{"x":29,"y":20,"z":0}},
+"mol2":{"type":"molecule","atoms":[{"label":"C","location":[35,-21,0]}]}}`
             assert.deepStrictEqual(
-                JSON.parse(indigo.calculate(molfile, options, selected)),
+                JSON.parse(indigo.calculate(ketfile1, options, selected)),
                 {
                     "molecular-weight": "[42.0809991; 66.1360028] > [16.0429997]",
                     "most-abundant-mass": "[42.0469501; 65.9597914] > [16.0313001]",
@@ -134,9 +114,13 @@ M  END
                 }
             );
 
-            selected.push_back(5); // select CH4
+            let ketfile2 = `{"root":{"nodes":[{"$ref":"mol0"},{"$ref":"mol1"},{"$ref":"mol2"},
+{"type":"arrow","data":{"mode":"open-angle","pos":[{"x":31,"y":-21,"z":0},{"x":34,"y":-21,"z":0}]}}],"connections":[],"templates":[]},
+"mol0":{"type":"molecule","atoms":[{"label":"C","location":[29,-21,0]},{"label":"C","location":[30,-19,0]},{"label":"C","location":[30,-20,0]}],"bonds":[{"type":1,"atoms":[0,1]},{"type":1,"atoms":[1,2]},{"type":1,"atoms":[0,2]}],"stereoFlagPosition":{"x":29,"y":17,"z":0}},
+"mol1":{"type":"molecule","atoms":[{"label":"S","location":[28,-22,0]},{"label":"S","location":[28,-20,0]}],"bonds":[{"type":1,"atoms":[0,1]}],"stereoFlagPosition":{"x":29,"y":20,"z":0}},
+"mol2":{"type":"molecule","atoms":[{"label":"C","location":[35,-21,0],"selected": true}]}}`
             assert.deepStrictEqual(
-                JSON.parse(indigo.calculate(molfile, options, selected)),
+                JSON.parse(indigo.calculate(ketfile2, options, selected)),
                 {
                     "molecular-weight": "16.0429997",
                     "most-abundant-mass": "16.0313001",
@@ -146,16 +130,13 @@ M  END
                 }
             );
 
-            selected.delete();
-            selected = new indigo.VectorInt();
-
-            selected.push_back(0);
-            selected.push_back(1);
-            selected.push_back(2);
-            selected.push_back(3);
-            selected.push_back(4); // select two-components reagent
+            let ketfile3 = `{"root":{"nodes":[{"$ref":"mol0"},{"$ref":"mol1"},{"$ref":"mol2"},
+{"type":"arrow","data":{"mode":"open-angle","pos":[{"x":31,"y":-21,"z":0},{"x":34,"y":-21,"z":0}]}}],"connections":[],"templates":[]},
+"mol0":{"type":"molecule","atoms":[{"label":"C","location":[29,-21,0],"selected": true},{"label":"C","location":[30,-19,0],"selected": true},{"label":"C","location":[30,-20,0],"selected": true}],"bonds":[{"type":1,"atoms":[0,1]},{"type":1,"atoms":[1,2]},{"type":1,"atoms":[0,2]}],"stereoFlagPosition":{"x":29,"y":17,"z":0}},
+"mol1":{"type":"molecule","atoms":[{"label":"S","location":[28,-22,0],"selected": true},{"label":"S","location":[28,-20,0],"selected": true}],"bonds":[{"type":1,"atoms":[0,1]}],"stereoFlagPosition":{"x":29,"y":20,"z":0}},
+"mol2":{"type":"molecule","atoms":[{"label":"C","location":[35,-21,0]}]}}`
             assert.deepStrictEqual(
-                JSON.parse(indigo.calculate(molfile, options, selected)),
+                JSON.parse(indigo.calculate(ketfile3, options, selected)),
                 {
                     "molecular-weight": "42.0809991; 66.1360028",
                     "most-abundant-mass": "42.0469501; 65.9597914",
@@ -165,15 +146,14 @@ M  END
                 }
             );
 
-            selected.delete();
-            selected = new indigo.VectorInt();
-
-            selected.push_back(0);
-            selected.push_back(1);
-            selected.push_back(2);
-            selected.push_back(5); // select product and partial reagent
+            // select product and partial reagent
+            let ketfile4 = `{"root":{"nodes":[{"$ref":"mol0"},{"$ref":"mol1"},{"$ref":"mol2"},
+{"type":"arrow","data":{"mode":"open-angle","pos":[{"x":31,"y":-21,"z":0},{"x":34,"y":-21,"z":0}]}}],"connections":[],"templates":[]},
+"mol0":{"type":"molecule","atoms":[{"label":"C","location":[29,-21,0],"selected": true},{"label":"C","location":[30,-19,0],"selected": true},{"label":"C","location":[30,-20,0],"selected": true}],"bonds":[{"type":1,"atoms":[0,1]},{"type":1,"atoms":[1,2]},{"type":1,"atoms":[0,2]}],"stereoFlagPosition":{"x":29,"y":17,"z":0}},
+"mol1":{"type":"molecule","atoms":[{"label":"S","location":[28,-22,0]},{"label":"S","location":[28,-20,0]}],"bonds":[{"type":1,"atoms":[0,1]}],"stereoFlagPosition":{"x":29,"y":20,"z":0}},
+"mol2":{"type":"molecule","atoms":[{"label":"C","location":[35,-21,0],"selected": true}]}}`
             assert.deepStrictEqual(
-                JSON.parse(indigo.calculate(molfile, options, selected)),
+                JSON.parse(indigo.calculate(ketfile4, options, selected)),
                 {
                     "molecular-weight": "[42.0809991] > [16.0429997]",
                     "most-abundant-mass": "[42.0469501] > [16.0313001]",
@@ -1175,7 +1155,7 @@ M  END
             options.set('mass-skip-error-on-pseudoatoms', 'false');
             options.set('output-content-type', "application/json");
             options.set('smart-layout', 'true');
-            let ket = JSON.parse(indigo.layout(pathway, "ket", options)).struct;            
+            let ket = JSON.parse(indigo.layout(pathway, "ket", options)).struct;
             // fs.writeFileSync("pathway_layout.ket", ket);
             const ket_ref = fs.readFileSync("pathway_layout.ket");
             assert.equal(ket, ket_ref.toString().trim());
@@ -1191,7 +1171,7 @@ M  END
             let options = new indigo.MapStringString();
             options.set('json-saving-pretty', 'true');
             options.set('nac', '0.2');
-            let json = JSON.parse(indigo.calculateMacroProperties(double_dna, options)).properties;            
+            let json = JSON.parse(indigo.calculateMacroProperties(double_dna, options)).properties;
             // fs.writeFileSync("props_double_dna.json", json);
             const json_ref = fs.readFileSync("props_double_dna.json");
             assert.equal(json, json_ref.toString().trim());
@@ -1207,7 +1187,7 @@ M  END
             let options = new indigo.MapStringString();
             options.set('json-saving-pretty', 'true');
             options.set('nac', '0.2');
-            let json = JSON.parse(indigo.calculateMacroProperties(peptides_micro, options)).properties;            
+            let json = JSON.parse(indigo.calculateMacroProperties(peptides_micro, options)).properties;
             // fs.writeFileSync("props_peptides_micro.json", json);
             const json_ref = fs.readFileSync("props_peptides_micro.json");
             assert.equal(json, json_ref.toString().trim());
@@ -1223,7 +1203,7 @@ M  END
             let options = new indigo.MapStringString();
             options.set('json-saving-pretty', 'true');
             options.set('nac', '0.2');
-            let json = JSON.parse(indigo.calculateMacroProperties(peptides, options)).properties;            
+            let json = JSON.parse(indigo.calculateMacroProperties(peptides, options)).properties;
             // fs.writeFileSync("props_peptides.json", json);
             const json_ref = fs.readFileSync("props_peptides.json");
             assert.equal(json, json_ref.toString().trim());
@@ -1239,7 +1219,7 @@ M  END
             let options = new indigo.MapStringString();
             options.set('json-saving-pretty', 'true');
             options.set('nac', '0.2');
-            let json = JSON.parse(indigo.calculateMacroProperties(chems, options)).properties;            
+            let json = JSON.parse(indigo.calculateMacroProperties(chems, options)).properties;
             // fs.writeFileSync("props_chems.json", json);
             const json_ref = fs.readFileSync("props_chems.json");
             assert.equal(json, json_ref.toString().trim());
@@ -1254,7 +1234,7 @@ M  END
             const ket = fs.readFileSync("pathway.ket");
             let options = new indigo.MapStringString();
             options.set('molfile-saving-skip-date', 'true')
-            let sdf = indigo.convert(ket, "sdf", options);            
+            let sdf = indigo.convert(ket, "sdf", options);
             // fs.writeFileSync("pathway.sdf", sdf);
             const sdf_ref = fs.readFileSync("pathway.sdf");
             assert.equal(sdf, sdf_ref.toString());
@@ -1266,7 +1246,7 @@ M  END
     {
         test("calculate pka", "PKa", () => {
             let options = new indigo.MapStringString();
-            let pka = indigo.pka('C([C@@H](C(=O)O)N)S', options);            
+            let pka = indigo.pka('C([C@@H](C(=O)O)N)S', options);
             assert.equal(pka.toString(), '8.493334');
             options.delete();
             assert(true);
@@ -1276,7 +1256,7 @@ M  END
     {
         test("calculate pka values", "PKa", () => {
             let options = new indigo.MapStringString();
-            let pka = indigo.pkaValues('C([C@@H](C(=O)O)N)S', options);            
+            let pka = indigo.pkaValues('C([C@@H](C(=O)O)N)S', options);
             assert.equal(pka.toString(), '2.390000,8.493334,9.530001');
             options.delete();
             assert(true);
@@ -1286,7 +1266,7 @@ M  END
     {
         test("calculate LogP", "LogP", () => {
             let options = new indigo.MapStringString();
-            let pka = indigo.logp('C([C@@H](C(=O)O)N)S', options);            
+            let pka = indigo.logp('C([C@@H](C(=O)O)N)S', options);
             assert.equal(pka.toString(), '-0.671900');
             options.delete();
             assert(true);
@@ -1296,7 +1276,7 @@ M  END
     {
         test("molar refractivity", "molarRefractivity", () => {
             let options = new indigo.MapStringString();
-            let pka = indigo.molarRefractivity('C([C@@H](C(=O)O)N)S', options);            
+            let pka = indigo.molarRefractivity('C([C@@H](C(=O)O)N)S', options);
             assert.equal(pka.toString(), '29.464200');
             options.delete();
             assert(true);
