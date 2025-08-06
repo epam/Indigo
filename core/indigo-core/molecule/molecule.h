@@ -153,8 +153,6 @@ namespace indigo
 
         void invalidateAtom(int index, int mask) override;
 
-        bool restoreAromaticHydrogens(bool unambiguous_only = true);
-
         bool standardize(const StandardizeOptions& options);
 
         bool ionize(float ph, float ph_toll, const IonizeOptions& options);

@@ -1401,6 +1401,18 @@ namespace com.epam.indigo
             return (dispatcher.checkResult(IndigoLib.indigoIsHighlighted(self)) == 1);
         }
 
+        public bool isSelected()
+        {
+            dispatcher.setSessionID();
+            return (dispatcher.checkResult(IndigoLib.indigoIsSelected(self)) == 1);
+        }
+
+        public bool hasSelection()
+        {
+            dispatcher.setSessionID();
+            return (dispatcher.checkResult(IndigoLib.indigoHasSelection(self)) == 1);
+        }
+
         public int countComponents()
         {
             dispatcher.setSessionID();
