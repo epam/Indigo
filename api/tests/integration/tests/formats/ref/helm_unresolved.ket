@@ -189,7 +189,6 @@
         "id": "AminoAcidUnres3",
         "class": "AminoAcid",
         "alias": "Unres3",
-        "aliasHELM": "Var0",
         "unresolved": true,
         "attachmentPoints": [
             {
