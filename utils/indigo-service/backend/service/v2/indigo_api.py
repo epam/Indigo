@@ -207,24 +207,16 @@ def do_calc(m, func_name, precision):
 
 
 def molecule_calc(m, func_name, precision=None):
-    if m.dbgInternalType() == "#03: <query molecule>":
-        return "Cannot calculate properties for structures with query features"
-    if m.countRGroups() or m.countAttachmentPoints():
-        return "Cannot calculate properties for RGroups"
     results = []
     has_selection = m.hasSelection()
-    for c in m.iterateComponents():
+    for component in m.iterateComponents():
+        c = component.clone()
         if not has_selection or c.hasSelection():
             results.append(do_calc(c.clone(), func_name, precision))
     return "; ".join(results)
 
 
 def reaction_calc(rxn, func_name, precision=None):
-    if rxn.dbgInternalType() == "#05: <query reaction>":
-        return "Cannot calculate properties for structures with query features"
-    for m in rxn.iterateMolecules():
-        if m.countRGroups() or m.countAttachmentPoints():
-            return "Cannot calculate properties for RGroups"
     reactants_results = []
     has_selection = rxn.hasSelection()
     if rxn.countReactants() > 0 or rxn.countProducts() > 0:
@@ -1558,7 +1550,7 @@ def calculate():
         selected=data["selected"],
         indigo=indigo,
     )
-    if data.struct.hasSelection():
+    if md.struct.hasSelection():
         if md.is_rxn:
             remove_unselected_repeating_units_r(md.struct)
         else:

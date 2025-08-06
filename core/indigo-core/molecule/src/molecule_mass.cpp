@@ -67,6 +67,8 @@ double MoleculeMass::molecularWeight(BaseMolecule& mol)
 
         int number = mol.getAtomNumber(v);
         int isotope = mol.getAtomIsotope(v);
+        if (number < 0) // Query molecule unsure atom
+            continue;
 
         if (isotope == 0)
         {
@@ -153,6 +155,8 @@ double MoleculeMass::mostAbundantMass(BaseMolecule& mol)
         int number = mol.getAtomNumber(v);
         int isotope = mol.getAtomIsotope(v);
         int impl_h = mol.getImplicitH(v, false);
+        if (number < 0) // Query molecule unsure atom
+            continue;
 
         if (isotope == 0)
             elements_counts[number]++;
@@ -249,6 +253,8 @@ double MoleculeMass::monoisotopicMass(BaseMolecule& mol)
         int number = mol.getAtomNumber(v);
         int isotope = mol.getAtomIsotope(v);
         int impl_h = mol.getImplicitH(v, false);
+        if (number < 0) // Query molecule unsure atom
+            continue;
 
         if (isotope == 0)
             isotope = Element::getMostAbundantIsotope(number);
@@ -281,6 +287,8 @@ int MoleculeMass::nominalMass(BaseMolecule& mol)
         int number = mol.getAtomNumber(v);
         int isotope = mol.getAtomIsotope(v);
         int impl_h = mol.getImplicitH(v, false);
+        if (number < 0) // Query molecule unsure atom
+            continue;
 
         if (isotope == 0)
             molmass += Element::getDefaultIsotope(number);
@@ -353,6 +361,8 @@ void MoleculeMass::massComposition(BaseMolecule& mol, Array<char>& str)
         int number = mol.getAtomNumber(v);
         int isotope = mol.getAtomIsotope(v);
         impl_h += mol.getImplicitH(v, false);
+        if (number < 0) // Query molecule unsure atom
+            continue;
 
         if (isotope)
         {

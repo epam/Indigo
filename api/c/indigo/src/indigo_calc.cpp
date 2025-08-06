@@ -98,10 +98,6 @@ static BaseMolecule& _indigoPrepareMass(IndigoObject& obj, MoleculeMass mass)
     if (IndigoBaseMolecule::is(obj))
     {
         auto& mol = obj.getBaseMolecule();
-        if (mol.isQueryMolecule())
-        {
-            throw IndigoError("can not calculate mass for query molecule");
-        }
         return mol;
     }
     else
