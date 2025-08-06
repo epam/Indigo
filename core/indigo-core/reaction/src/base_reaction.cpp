@@ -258,6 +258,14 @@ bool BaseReaction::haveCoord(BaseReaction& reaction)
     return true;
 }
 
+bool BaseReaction::hasSelection()
+{
+    for (int i = begin(); i < end(); i = next(i))
+        if (getBaseMolecule(i).hasSelection())
+            return true;
+    return false;
+}
+
 int BaseReaction::_nextElement(int type, int index)
 {
     if (index == -1)

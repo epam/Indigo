@@ -2980,6 +2980,28 @@ class IndigoObject:
             IndigoLib.checkResult(self._lib().indigoIsHighlighted(self.id))
         )
 
+    def isSelected(self):
+        """Atom or bond method returns True if selected
+
+        Returns:
+            bool: True if selected, False otherwise
+        """
+
+        return bool(
+            IndigoLib.checkResult(self._lib().indigoIsSelected(self.id))
+        )
+
+    def hasSelection(self):
+        """Molecule or reaction method returns True if has selection
+
+        Returns:
+            bool: True if has selection, False otherwise
+        """
+
+        return bool(
+            IndigoLib.checkResult(self._lib().indigoHasSelection(self.id))
+        )
+
     def countComponents(self):
         """Molecule method returns the number of components
 

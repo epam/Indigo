@@ -25,6 +25,7 @@
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_gross_formula.h"
+#include "molecule/query_molecule.h"
 
 using namespace indigo;
 
@@ -132,10 +133,7 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
     std::set<int> selected_atoms;
     mol.getAtomSelection(selected_atoms);
 
-    if (!mol.isQueryMolecule())
-    {
-        mol.asMolecule().restoreAromaticHydrogens();
-    }
+    mol.restoreAromaticHydrogens();
 
     std::unique_ptr<GROSS_UNITS> result = std::make_unique<GROSS_UNITS>();
     auto& gross = *result;
@@ -211,9 +209,13 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
             else
                 *val += 1;
 
-            if (!mol.isQueryMolecule() && !mol.isRSite(filters[i][j]))
+            if (!mol.isRSite(filters[i][j]))
             {
-                int implicit_h = mol.asMolecule().getImplicitH_NoThrow(filters[i][j], -1);
+                int implicit_h = -1;
+                if (mol.isQueryMolecule())
+                    implicit_h = mol.asQueryMolecule().getImplicitH(filters[i][j], true);
+                else
+                    implicit_h = mol.asMolecule().getImplicitH_NoThrow(filters[i][j], -1);
 
                 if (implicit_h >= 0)
                 {
