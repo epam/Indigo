@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Callable
 
 import pytest
+from elasticsearch import NotFoundError
 from indigo import Indigo  # type: ignore
 
 from bingo_elastic.elastic import (
@@ -226,6 +227,24 @@ def test_substructure_search(
         )
 
 
+def test_substructure_search_pagination(
+    elastic_repository_molecule: ElasticRepository,
+    indigo_fixture: Indigo,
+    loaded_sdf: IndigoRecordMolecule,
+):
+    query_mol = indigo_fixture.loadQueryMolecule(
+        loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
+    )
+    result = elastic_repository_molecule.filter(
+        query_subject=query_mol, indigo_session=indigo_fixture, page_size=1
+    )
+    for item in result:
+        assert (
+            item.as_indigo_object(indigo_fixture).canonicalSmiles()
+            == loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
+        )
+
+
 @pytest.mark.asyncio
 async def test_a_substructure_search(
     a_elastic_repository_molecule: AsyncRepositoryT,
@@ -238,6 +257,28 @@ async def test_a_substructure_search(
         )
         result = rep.filter(
             query_subject=query_mol, indigo_session=indigo_fixture
+        )
+        async for item in result:
+            assert (
+                item.as_indigo_object(indigo_fixture).canonicalSmiles()
+                == loaded_sdf.as_indigo_object(
+                    indigo_fixture
+                ).canonicalSmiles()
+            )
+
+
+@pytest.mark.asyncio
+async def test_a_substructure_search_pagination(
+    a_elastic_repository_molecule: AsyncRepositoryT,
+    indigo_fixture: Indigo,
+    loaded_sdf: IndigoRecordMolecule,
+):
+    async with a_elastic_repository_molecule() as rep:
+        query_mol = indigo_fixture.loadQueryMolecule(
+            loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
+        )
+        result = rep.filter(
+            query_subject=query_mol, indigo_session=indigo_fixture, page_size=1
         )
         async for item in result:
             assert (
@@ -519,7 +560,7 @@ async def test_a_similaririty_matches_reactions(
 def test_limit_on_size(
     elastic_repository_molecule: ElasticRepository,
 ):
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         result = elastic_repository_molecule.filter(limit=2000)
         next(result)
 
@@ -528,7 +569,7 @@ def test_limit_on_size(
 async def test_a_limit_on_size(
     a_elastic_repository_molecule: AsyncRepositoryT,
 ):
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         async with a_elastic_repository_molecule() as rep:
             result = rep.filter(limit=2000)
             async for mol in result:
