@@ -376,7 +376,7 @@ Properties:
 *****
 3
 Smiles:
-C[C@H]1OC(=O)CCNC(=O)[C@@H](Cc2c3ccccc3nc2)NC(=O)[C@H](Cc2c3ccccc3nc2)NC(=O)[C@H]1NC(Cc1ccccc1)=O
+C[C@H]1OC(=O)CCNC(=O)[C@@H](Cc2c3ccccc3[nH]c2)NC(=O)[C@H](Cc2c3ccccc3[nH]c2)NC(=O)[C@H]1NC(Cc1ccccc1)=O
 Molfile:
 
   -INDIGO-01000000002D
@@ -485,6 +485,16 @@ Molfile:
  47 48  4  0  0  0  0
  48 49  4  0  0  0  0
  44 49  4  0  0  0  0
+M  STY  2   1 DAT   2 DAT
+M  SLB  2   1   1   2   2
+M  SAL   1  1  23
+M  SDT   1 MRV_IMPLICIT_H                                                       
+M  SDD   1     0.0000    0.0000    DA    ALL  1       1  
+M  SED   1 IMPL_H1
+M  SAL   2  1  33
+M  SDT   2 MRV_IMPLICIT_H                                                       
+M  SDD   2     0.0000    0.0000    DA    ALL  1       1  
+M  SED   2 IMPL_H1
 M  END
 
 Properties:
