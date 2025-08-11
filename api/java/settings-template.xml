@@ -1,0 +1,17 @@
+<settings>
+    <servers>
+        <server>
+            <id>central</id>
+            <username>MAVEN_USER</username>
+            <password>MAVEN_PASSWORD</password>
+        </server>
+    </servers>
+    <profiles>
+        <profile>
+            <id>gpg</id>
+            <properties>
+                <gpg.passphrase>${gpg.passphrase}</gpg.passphrase>
+            </properties>
+        </profile>
+    </profiles>
+</settings>
