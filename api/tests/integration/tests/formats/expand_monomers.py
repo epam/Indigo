@@ -35,6 +35,7 @@ lib = indigo.loadMonomerLibraryFromFile(
 
 files = {
     "expand_monomers",
+    "expand_monomers_no_selection",
 }
 
 for filename in sorted(files):
