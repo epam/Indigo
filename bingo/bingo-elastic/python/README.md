@@ -47,7 +47,7 @@ You could use any favourite Elasticsearch distribution:
 Something simple could be done as following:
 
 ```
-docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "indices.query.bool.max_clause_count=4096" docker.elastic.co/elasticsearch/elasticsearch:7.15.1
+docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "indices.query.bool.max_clause_count=4096" docker.elastic.co/elasticsearch/elasticsearch:7.17.28
 ```
 
 ### Usage
@@ -189,14 +189,19 @@ Supported similarity algorithms:
 
 #### Find exact records from Elasticsearch
 
+Bingo Elasticsearch decides on the strategy to find, based on the query_object type
 Sync:
 ```
-exact_records = repository.filter(exact=target, limit=20)
+target = indigo.loadMolecule("<your molecule here>")
+record = IndigoRecord(indigo_object = target)
+exact_records = repo.filter(query_subject=record, indigo_session=indigo, limit=20)
 ```
 
 Async:
 ```
-exact_records = await repository.filter(exact=target, limit=20)
+target = indigo.loadMolecule("<your molecule here>")
+record = IndigoRecord(indigo_object = target)
+exact_records = await repo.filter(query_subject=record, indigo_session=indigo, limit=20)
 ```
 
 In this case we requested top-20 candidate molecules with exact same fingerprint to `target`.
@@ -207,15 +212,20 @@ In this case we requested top-20 candidate molecules with exact same fingerprint
 
 Sync:
 ```
-submatch_records = repository.filter(substructure=target)
+target = indigo.loadQueryMolecule("<your substructure here>")
+submatch_records = repo.filter(query_subject=target, indigo_session=indigo, limit=20)
 ```
 
 Async:
 ```
-submatch_records = await repository.filter(substructure=target)
+target = indigo.loadQueryMolecule("<your substructure here>")
+submatch_records = await repo.filter(query_subject=target, indigo_session=indigo, limit=20)
 ```
 
 In this case we requested top-10 candidate molecules with exact same fingerprint to `target`.
+
+Note: 
+Bingo is requesting data from Elasticsearch with batches. You can control it with page_size argument
 
 #### Custom fields for molecule records
 
