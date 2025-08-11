@@ -285,7 +285,6 @@
     "monomer8": {
         "type": "monomer",
         "id": "8",
-        "expanded": false,
         "position": {
             "x": 13.250000,
             "y": -1.250000
