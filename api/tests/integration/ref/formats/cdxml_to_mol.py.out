@@ -947,8 +947,8 @@ test-multi.cdxml
 194195  4  0  0  0  0
 195196  4  0  0  0  0
 191196  4  0  0  0  0
-M  STY  4   1 SUP   2 SUP   3 SUP   4 SUP
-M  SLB  4   1   1   2   2   3   3   4   4
+M  STY  6   1 SUP   2 SUP   3 SUP   4 SUP   5 DAT   6 DAT
+M  SLB  6   1   1   2   2   3   3   4   4   5   5   6   6
 M  SAL   1  5   1   2   3   4   5
 M  SMT   1 bAla
 M  SAP   1  2   1   0      5   0   
@@ -972,5 +972,13 @@ M  SMT   4 PAThr
 M  SAP   4  2  39   0     34   0   
 M  SDI   4  4    0.0000    0.0000    0.0000    0.0000
 M  SDI   4  4    0.0000    0.0000    0.0000    0.0000
+M  SAL   5  1 170
+M  SDT   5 MRV_IMPLICIT_H                                                       
+M  SDD   5     0.0000    0.0000    DA    ALL  1       1  
+M  SED   5 IMPL_H1
+M  SAL   6  1 180
+M  SDT   6 MRV_IMPLICIT_H                                                       
+M  SDD   6     0.0000    0.0000    DA    ALL  1       1  
+M  SED   6 IMPL_H1
 M  END
 

@@ -1,1 +1,8 @@
 *** SMILES to CDXML ***
+issue 3060 ch labels as pseudo atoms
+C4H10
+58.124
+C4H8
+56.108
+C2H2
+26.038

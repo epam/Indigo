@@ -33,5 +33,16 @@ arr2.arrayAdd(mol_r)
 renderer.renderGridToFile(
     arr2, None, 2, joinPathPy("out/atom_pseudo2.cdxml", __file__)
 )
+
+print("issue 3060 ch labels as pseudo atoms")
+indigo.resetOptions()
+fileList = ["iso_butane", "iso_butene", "ethyne"]
+for testFile in fileList:
+    mol = indigo.loadMoleculeFromFile(
+        joinPathPy("molecules/3060_" + testFile + ".cdxml", __file__)
+    )
+    print(mol.molecularFormula())
+    print("{:.3f}".format(mol.molecularWeight()))
+
 if isIronPython():
     renderer.Dispose()
