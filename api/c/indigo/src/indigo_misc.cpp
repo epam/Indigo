@@ -1124,6 +1124,28 @@ CEXPORT int indigoIsSelected(int item)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoHasSelection(int item)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+
+        if (IndigoBaseMolecule::is(obj))
+        {
+            return obj.getBaseMolecule().hasSelection() ? 1 : 0;
+        }
+        else if (IndigoBaseReaction::is(obj))
+        {
+            return obj.getBaseReaction().hasSelection() ? 1 : 0;
+        }
+        else
+            throw IndigoError("indigoHasSelection(): expected molecule or reaction, got %s", obj.debugInfo());
+
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
 CEXPORT int indigoOptimize(int query, const char* options)
 {
     INDIGO_BEGIN
