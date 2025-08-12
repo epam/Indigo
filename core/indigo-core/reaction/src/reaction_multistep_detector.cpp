@@ -755,7 +755,7 @@ void ReactionMultistepDetector::buildReactionsData()
 {
     // separate reactions by connected components
     std::vector<bool> visited(_component_summ_blocks.size());
-    for (int i = 0; i < _component_summ_blocks.size(); ++i)
+    for (size_t i = 0; i < _component_summ_blocks.size(); ++i)
     {
         auto& csb = _component_summ_blocks[i];
         for (auto csb_idx : csb.indexes)
