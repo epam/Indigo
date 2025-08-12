@@ -770,7 +770,7 @@ void ReactionMultistepDetector::buildReactionsData()
             std::vector<int> reaction;
             std::map<int, std::vector<std::pair<int, int>>> steps;
             std::stack<int> st;
-            st.push(i);
+            st.push((int)i);
             visited[i] = true;
             while (!st.empty())
             {
