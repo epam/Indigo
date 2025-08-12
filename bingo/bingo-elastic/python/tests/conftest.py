@@ -11,7 +11,7 @@ from bingo_elastic.elastic import (
     IndexName,
 )
 from bingo_elastic.model.helpers import iterate_file, load_reaction
-from bingo_elastic.model.record import IndigoRecordMolecule
+from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
 
 
 @pytest.fixture()
@@ -87,6 +87,25 @@ def loaded_sdf(
     time.sleep(5)
     return next(
         iterate_file(Path(resource_loader("molecules/rand_queries_small.sdf")))
+    )
+
+
+@pytest.fixture
+def pagination_fixture(
+    elastic_repository_molecule: ElasticRepository, indigo_fixture: Indigo
+) -> None:
+    def generator_records(molecules):
+        for x in molecules:
+            yield IndigoRecord(indigo_object=x)
+
+    mol1 = [indigo_fixture.loadMolecule("CCO") for _ in range(20)]
+    elastic_repository_molecule.index_records(generator_records(mol1))
+    mol2 = [indigo_fixture.loadMolecule("CCCO") for _ in range(10)]
+    elastic_repository_molecule.index_records(generator_records(mol2))
+    mol3 = [indigo_fixture.loadMolecule("CO") for _ in range(5)]
+    elastic_repository_molecule.index_records(generator_records(mol3))
+    elastic_repository_molecule.el_client.indices.refresh(
+        index=IndexName.BINGO_MOLECULE.value
     )
 
 
