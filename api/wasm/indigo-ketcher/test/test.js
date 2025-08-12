@@ -1283,6 +1283,38 @@ M  END
         });
     }
 
+    {
+        test("expand_monomer", "no_selection", () => {
+            var fs = require('fs');
+            const ket = fs.readFileSync("expand_no_selection.ket");
+            let options = new indigo.MapStringString();
+            options.set('json-use-native-precision', 'true')
+            options.set('json-saving-pretty', 'true');
+            let expanded = indigo.expand(ket, "ket", options);            
+            // fs.writeFileSync("expanded_no_selection.ket", expanded);
+            const expanded_ref = fs.readFileSync("expanded_no_selection.ket");
+            assert.equal(expanded, expanded_ref.toString());
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("expand_monomer", "selection", () => {
+            var fs = require('fs');
+            const ket = fs.readFileSync("expand_selection.ket");
+            let options = new indigo.MapStringString();
+            options.set('json-use-native-precision', 'true')
+            options.set('json-saving-pretty', 'true');
+            let expanded = indigo.expand(ket, "ket", options);            
+            // fs.writeFileSync("expanded_selection.ket", expanded);
+            const expanded_ref = fs.readFileSync("expanded_selection.ket");
+            assert.equal(expanded, expanded_ref.toString());
+            options.delete();
+            assert(true);
+        });
+    }
+
     // Run tests
     run();
 });

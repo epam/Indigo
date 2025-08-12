@@ -3910,6 +3910,81 @@ M  END
             ref_json = file.read()
         self.assertEqual(result_json, ref_json)
 
+    def test_expand_monomer(self):
+        lib_file = "monomer_library.ket"
+        lib_path = os.path.join(joinPathPy("structures/", __file__), lib_file)
+        with open(lib_path, "r") as file:
+            monomer_library = file.read()
+        with open(
+            os.path.join(
+                joinPathPy("structures/", __file__), "expand_no_selection.ket"
+            ),
+            "r",
+        ) as file:
+            struct = file.read()
+        headers, data = self.get_headers(
+            {
+                "struct": struct,
+                "options": {
+                    "monomerLibrary": monomer_library,
+                    "json-use-native-precision": True,
+                    "json-saving-pretty": True,
+                },
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/expand", headers=headers, data=data
+        )
+        result_json = json.loads(result.text)["struct"]
+
+        file_name = os.path.join(
+            joinPathPy("ref/", __file__), "expanded_no_selection.ket"
+        )
+        # write references
+        # with open(file_name, "w") as file:
+        #     file.write(result_json)
+        with open(file_name, "r") as file:
+            ref_json = file.read()
+
+        # check
+        self.assertEqual(result_json, ref_json)
+
+        with open(
+            os.path.join(
+                joinPathPy("structures/", __file__), "expand_selection.ket"
+            ),
+            "r",
+        ) as file:
+            struct = file.read()
+        headers, data = self.get_headers(
+            {
+                "struct": struct,
+                "options": {
+                    "monomerLibrary": monomer_library,
+                    "json-use-native-precision": True,
+                    "json-saving-pretty": True,
+                },
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/expand", headers=headers, data=data
+        )
+        result_json = json.loads(result.text)["struct"]
+
+        file_name = os.path.join(
+            joinPathPy("ref/", __file__), "expanded_selection.ket"
+        )
+        # write references
+        # with open(file_name, "w") as file:
+        #     file.write(result_json)
+        with open(file_name, "r") as file:
+            ref_json = file.read()
+
+        # check
+        self.assertEqual(result_json, ref_json)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2, warnings="ignore")

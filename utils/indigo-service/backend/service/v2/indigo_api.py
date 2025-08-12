@@ -1876,9 +1876,9 @@ def calculateMacroProperties():
     return jsonify(result), 200, {"Content-Type": "application/json"}
 
 
-@indigo_api.route("/expandMonomers", methods=["POST"])
+@indigo_api.route("/expand", methods=["POST"])
 @check_exceptions
-def expandMonomers():
+def expand():
     """
     Expand selected monomers
     ---
@@ -1955,7 +1955,7 @@ def expandMonomers():
     data = IndigoRequestSchema().load(request_data)
 
     LOG_DATA(
-        "[REQUEST] /calculateMacroProperties",
+        "[REQUEST] /expand",
         data["input_format"],
         data["output_format"],
         data["struct"],
@@ -1963,11 +1963,19 @@ def expandMonomers():
     )
     indigo = indigo_init(data["options"])
 
+    monomer_library = data["options"].get("monomerLibrary")
+    library = None
+    if monomer_library is not None:
+        library = indigo.loadMonomerLibrary(monomer_library)
+    else:
+        library = indigo.loadMonomerLibrary('{"root":{}}')
+
     md = load_moldata(
         data["struct"],
         mime_type=data["input_format"],
         options=data["options"],
         indigo=indigo,
+        library=library,
         try_document=True,
     )
 

@@ -146,242 +146,72 @@
     "monomer0": {
         "type": "monomer",
         "id": "0",
-        "expanded": true,
-        "selected": true,
         "position": {
-            "x": 1.250000,
-            "y": -1.250000
+            "x": 1.25,
+            "y": -1.25
         },
         "alias": "A",
-        "templateId": "A___Alanine"
-    },
-    "monomer1": {
-        "type": "monomer",
-        "id": "1",
-        "expanded": true,
-        "selected": true,
-        "position": {
-            "x": 2.750000,
-            "y": -1.250000
-        },
-        "alias": "C",
-        "templateId": "C___Cysteine",
-        "transformation": {
-            "shift": {
-                "x": 1.964000,
-                "y": 0.000000
-            }
-        }
-    },
-    "monomer2": {
-        "type": "monomer",
-        "id": "2",
-        "expanded": true,
-        "selected": true,
-        "position": {
-            "x": 4.250000,
-            "y": -1.250000
-        },
-        "alias": "D",
-        "templateId": "D___Aspartic acid",
-        "transformation": {
-            "shift": {
-                "x": 3.927999,
-                "y": 0.000000
-            }
-        }
-    },
-    "monomer3": {
-        "type": "monomer",
-        "id": "3",
-        "expanded": true,
-        "selected": true,
-        "position": {
-            "x": 5.750000,
-            "y": -1.250000
-        },
-        "alias": "E",
-        "templateId": "E___Glutamic acid",
-        "transformation": {
-            "shift": {
-                "x": 5.891999,
-                "y": 0.000000
-            }
-        }
-    },
-    "monomer4": {
-        "type": "monomer",
-        "id": "4",
-        "expanded": true,
-        "selected": true,
-        "position": {
-            "x": 7.250000,
-            "y": -1.250000
-        },
-        "alias": "F",
-        "templateId": "F___Phenylalanine",
-        "transformation": {
-            "rotate": -0.000866,
-            "shift": {
-                "x": 7.856000,
-                "y": 0.000000
-            }
-        }
-    },
-    "monomer5": {
-        "type": "monomer",
-        "id": "5",
-        "expanded": true,
-        "selected": true,
-        "position": {
-            "x": 8.750000,
-            "y": -1.250000
-        },
-        "alias": "G",
-        "templateId": "G___Glycine",
-        "transformation": {
-            "shift": {
-                "x": 9.820000,
-                "y": 0.000000
-            }
-        }
-    },
-    "monomer6": {
-        "type": "monomer",
-        "id": "6",
-        "expanded": true,
-        "selected": true,
-        "position": {
-            "x": 10.250000,
-            "y": -1.250000
-        },
-        "alias": "H",
-        "templateId": "H___Histidine",
-        "transformation": {
-            "shift": {
-                "x": 11.784000,
-                "y": 0.000000
-            }
-        }
-    },
-    "monomer7": {
-        "type": "monomer",
-        "id": "7",
-        "expanded": true,
-        "selected": true,
-        "position": {
-            "x": 11.750000,
-            "y": -1.250000
-        },
-        "alias": "H",
-        "templateId": "H___Histidine",
-        "transformation": {
-            "shift": {
-                "x": 13.748001,
-                "y": 0.000000
-            }
-        }
-    },
-    "monomer8": {
-        "type": "monomer",
-        "id": "8",
-        "position": {
-            "x": 13.250000,
-            "y": -1.250000
-        },
-        "alias": "H",
-        "templateId": "H___Histidine",
-        "transformation": {
-            "shift": {
-                "x": 15.480001,
-                "y": 0.000000
-            }
-        }
+        "templateId": "A___Alanine",
+        "selected": true
     },
     "monomerTemplate-A___Alanine": {
         "type": "monomerTemplate",
-        "id": "A___Alanine",
-        "class": "AminoAcid",
-        "classHELM": "PEPTIDE",
-        "fullName": "Alanine",
-        "alias": "A",
-        "naturalAnalogShort": "A",
-        "attachmentPoints": [
-            {
-                "attachmentAtom": 0,
-                "type": "left",
-                "leavingGroup": {
-                    "atoms": [
-                        2
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 3,
-                "type": "right",
-                "leavingGroup": {
-                    "atoms": [
-                        4
-                    ]
-                }
-            }
-        ],
         "atoms": [
             {
                 "label": "N",
                 "location": [
-                    -0.866000,
-                    -0.250000,
-                    0.000000
+                    -0.866,
+                    -0.25,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.000000,
-                    0.250000,
-                    0.000000
+                    0,
+                    0.25,
+                    0
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "H",
                 "location": [
-                    -1.732000,
-                    0.250000,
-                    0.000000
+                    -1.732,
+                    0.25,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.866000,
-                    -0.250000,
-                    0.000000
+                    0.866,
+                    -0.25,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.732000,
-                    0.250000,
-                    0.000000
+                    1.732,
+                    0.25,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    0.866000,
-                    -1.250000,
-                    0.000000
+                    0.866,
+                    -1.25,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.000000,
-                    1.250000,
-                    0.000000
+                    0,
+                    1.25,
+                    0
                 ]
             }
         ],
@@ -429,117 +259,119 @@
                 ],
                 "stereo": 1
             }
-        ]
-    },
-    "monomerTemplate-C___Cysteine": {
-        "type": "monomerTemplate",
-        "id": "C___Cysteine",
+        ],
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
-        "fullName": "Cysteine",
-        "alias": "C",
-        "naturalAnalogShort": "C",
+        "id": "A___Alanine",
+        "fullName": "Alanine",
+        "alias": "A",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
-                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         2
                     ]
-                }
+                },
+                "type": "left"
             },
             {
                 "attachmentAtom": 3,
-                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         4
                     ]
-                }
-            },
-            {
-                "attachmentAtom": 7,
-                "type": "side",
-                "leavingGroup": {
-                    "atoms": [
-                        8
-                    ]
-                }
+                },
+                "type": "right"
             }
         ],
+        "naturalAnalogShort": "A"
+    },
+    "monomer1": {
+        "type": "monomer",
+        "id": "1",
+        "position": {
+            "x": 2.75,
+            "y": -1.25
+        },
+        "alias": "C",
+        "templateId": "C___Cysteine",
+        "selected": true
+    },
+    "monomerTemplate-C___Cysteine": {
+        "type": "monomerTemplate",
         "atoms": [
             {
                 "label": "N",
                 "location": [
-                    -0.866000,
-                    -1.000000,
-                    0.000000
+                    -0.866,
+                    -1,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.000000,
-                    -0.500000,
-                    0.000000
+                    0,
+                    -0.5,
+                    0
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "H",
                 "location": [
-                    -1.732000,
-                    -0.500000,
-                    0.000000
+                    -1.732,
+                    -0.5,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.866000,
-                    -1.000000,
-                    0.000000
+                    0.866,
+                    -1,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.732000,
-                    -0.500000,
-                    0.000000
+                    1.732,
+                    -0.5,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    0.866000,
-                    -2.000000,
-                    0.000000
+                    0.866,
+                    -2,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.000000,
-                    0.500000,
-                    0.000000
+                    0,
+                    0.5,
+                    0
                 ]
             },
             {
                 "label": "S",
                 "location": [
-                    -0.866000,
-                    1.000000,
-                    0.000000
+                    -0.866,
+                    1,
+                    0
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -0.866000,
-                    2.000000,
-                    0.000000
+                    -0.866,
+                    2,
+                    0
                 ]
             }
         ],
@@ -601,133 +433,144 @@
                     8
                 ]
             }
-        ]
-    },
-    "monomerTemplate-D___Aspartic acid": {
-        "type": "monomerTemplate",
-        "id": "D___Aspartic acid",
+        ],
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
-        "fullName": "Aspartic acid",
-        "alias": "D",
-        "naturalAnalogShort": "D",
+        "id": "C___Cysteine",
+        "fullName": "Cysteine",
+        "alias": "C",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
-                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         2
                     ]
-                }
+                },
+                "type": "left"
             },
             {
                 "attachmentAtom": 3,
-                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         4
                     ]
-                }
+                },
+                "type": "right"
             },
             {
-                "attachmentAtom": 8,
-                "type": "side",
+                "attachmentAtom": 7,
                 "leavingGroup": {
                     "atoms": [
-                        9
+                        8
                     ]
-                }
+                },
+                "type": "side"
             }
         ],
+        "naturalAnalogShort": "C"
+    },
+    "monomer2": {
+        "type": "monomer",
+        "id": "2",
+        "position": {
+            "x": 4.25,
+            "y": -1.25
+        },
+        "alias": "D",
+        "templateId": "D___Aspartic acid",
+        "selected": true
+    },
+    "monomerTemplate-D___Aspartic acid": {
+        "type": "monomerTemplate",
         "atoms": [
             {
                 "label": "N",
                 "location": [
-                    -0.866000,
-                    -1.250000,
-                    0.000000
+                    -0.866,
+                    -1.25,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.000000,
-                    -0.750000,
-                    0.000000
+                    0,
+                    -0.75,
+                    0
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "H",
                 "location": [
-                    -1.732000,
-                    -0.750000,
-                    0.000000
+                    -1.732,
+                    -0.75,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.866000,
-                    -1.250000,
-                    0.000000
+                    0.866,
+                    -1.25,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.732000,
-                    -0.750000,
-                    0.000000
+                    1.732,
+                    -0.75,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    0.866000,
-                    -2.250000,
-                    0.000000
+                    0.866,
+                    -2.25,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.000000,
-                    0.250000,
-                    0.000000
+                    0,
+                    0.25,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.866000,
-                    0.750000,
-                    0.000000
+                    -0.866,
+                    0.75,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    -0.866000,
-                    1.750000,
-                    0.000000
+                    -0.866,
+                    1.75,
+                    0
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    0.000000,
-                    2.250000,
-                    0.000000
+                    0,
+                    2.25,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    -1.732000,
-                    0.250000,
-                    0.000000
+                    -1.732,
+                    0.25,
+                    0
                 ]
             }
         ],
@@ -803,141 +646,152 @@
                     10
                 ]
             }
-        ]
-    },
-    "monomerTemplate-E___Glutamic acid": {
-        "type": "monomerTemplate",
-        "id": "E___Glutamic acid",
+        ],
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
-        "fullName": "Glutamic acid",
-        "alias": "E",
-        "naturalAnalogShort": "E",
+        "id": "D___Aspartic acid",
+        "fullName": "Aspartic acid",
+        "alias": "D",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
-                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         2
                     ]
-                }
+                },
+                "type": "left"
             },
             {
                 "attachmentAtom": 3,
-                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         4
                     ]
-                }
+                },
+                "type": "right"
             },
             {
-                "attachmentAtom": 9,
-                "type": "side",
+                "attachmentAtom": 8,
                 "leavingGroup": {
                     "atoms": [
-                        11
+                        9
                     ]
-                }
+                },
+                "type": "side"
             }
         ],
+        "naturalAnalogShort": "D"
+    },
+    "monomer3": {
+        "type": "monomer",
+        "id": "3",
+        "position": {
+            "x": 5.75,
+            "y": -1.25
+        },
+        "alias": "E",
+        "templateId": "E___Glutamic acid",
+        "selected": true
+    },
+    "monomerTemplate-E___Glutamic acid": {
+        "type": "monomerTemplate",
         "atoms": [
             {
                 "label": "N",
                 "location": [
-                    -0.866000,
-                    -1.750000,
-                    0.000000
+                    -0.866,
+                    -1.75,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.000000,
-                    -1.250000,
-                    0.000000
+                    0,
+                    -1.25,
+                    0
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "H",
                 "location": [
-                    -1.732000,
-                    -1.250000,
-                    0.000000
+                    -1.732,
+                    -1.25,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.866000,
-                    -1.750000,
-                    0.000000
+                    0.866,
+                    -1.75,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.732000,
-                    -1.250000,
-                    0.000000
+                    1.732,
+                    -1.25,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    0.866000,
-                    -2.750000,
-                    0.000000
+                    0.866,
+                    -2.75,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.000000,
-                    -0.250000,
-                    0.000000
+                    0,
+                    -0.25,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.866000,
-                    0.250000,
-                    0.000000
+                    -0.866,
+                    0.25,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.866000,
-                    1.250000,
-                    0.000000
+                    -0.866,
+                    1.25,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    0.000000,
-                    1.750000,
-                    0.000000
+                    0,
+                    1.75,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    -1.732000,
-                    1.750000,
-                    0.000000
+                    -1.732,
+                    1.75,
+                    0
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    0.000000,
-                    2.750000,
-                    0.000000
+                    0,
+                    2.75,
+                    0
                 ]
             }
         ],
@@ -1020,140 +874,160 @@
                     11
                 ]
             }
-        ]
+        ],
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "id": "E___Glutamic acid",
+        "fullName": "Glutamic acid",
+        "alias": "E",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                },
+                "type": "left"
+            },
+            {
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        4
+                    ]
+                },
+                "type": "right"
+            },
+            {
+                "attachmentAtom": 9,
+                "leavingGroup": {
+                    "atoms": [
+                        11
+                    ]
+                },
+                "type": "side"
+            }
+        ],
+        "naturalAnalogShort": "E"
+    },
+    "monomer4": {
+        "type": "monomer",
+        "id": "4",
+        "position": {
+            "x": 7.25,
+            "y": -1.25
+        },
+        "alias": "F",
+        "templateId": "F___Phenylalanine",
+        "selected": true
     },
     "monomerTemplate-F___Phenylalanine": {
         "type": "monomerTemplate",
-        "id": "F___Phenylalanine",
-        "class": "AminoAcid",
-        "classHELM": "PEPTIDE",
-        "fullName": "Phenylalanine",
-        "alias": "F",
-        "naturalAnalogShort": "F",
-        "attachmentPoints": [
-            {
-                "attachmentAtom": 9,
-                "type": "left",
-                "leavingGroup": {
-                    "atoms": [
-                        10
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 8,
-                "type": "right",
-                "leavingGroup": {
-                    "atoms": [
-                        12
-                    ]
-                }
-            }
-        ],
         "atoms": [
             {
                 "label": "C",
                 "location": [
-                    -2.165000,
-                    1.749000,
-                    0.000000
+                    -2.165,
+                    1.749,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.435000,
-                    1.750000,
-                    0.000000
+                    -0.435,
+                    1.75,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -1.298000,
-                    2.249000,
-                    0.000000
+                    -1.298,
+                    2.249,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.435000,
-                    0.749000,
-                    0.000000
+                    -0.435,
+                    0.749,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -2.165000,
-                    0.744000,
-                    0.000000
+                    -2.165,
+                    0.744,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -1.296000,
-                    0.249000,
-                    0.000000
+                    -1.296,
+                    0.249,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.432000,
-                    0.250000,
-                    0.000000
+                    0.432,
+                    0.25,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.433000,
-                    -0.750000,
-                    0.000000
+                    0.433,
+                    -0.75,
+                    0
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "C",
                 "location": [
-                    1.299000,
-                    -1.249000,
-                    0.000000
+                    1.299,
+                    -1.249,
+                    0
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    -0.433000,
-                    -1.251000,
-                    0.000000
+                    -0.433,
+                    -1.251,
+                    0
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -1.299000,
-                    -0.752000,
-                    0.000000
+                    -1.299,
+                    -0.752,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.300000,
-                    -2.249000,
-                    0.000000
+                    1.3,
+                    -2.249,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    2.165000,
-                    -0.749000,
-                    0.000000
+                    2.165,
+                    -0.749,
+                    0
                 ]
             }
         ],
@@ -1250,83 +1124,94 @@
                     12
                 ]
             }
-        ]
+        ],
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "id": "F___Phenylalanine",
+        "fullName": "Phenylalanine",
+        "alias": "F",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 9,
+                "leavingGroup": {
+                    "atoms": [
+                        10
+                    ]
+                },
+                "type": "left"
+            },
+            {
+                "attachmentAtom": 8,
+                "leavingGroup": {
+                    "atoms": [
+                        12
+                    ]
+                },
+                "type": "right"
+            }
+        ],
+        "naturalAnalogShort": "F"
+    },
+    "monomer5": {
+        "type": "monomer",
+        "id": "5",
+        "position": {
+            "x": 8.75,
+            "y": -1.25
+        },
+        "alias": "G",
+        "templateId": "G___Glycine",
+        "selected": true
     },
     "monomerTemplate-G___Glycine": {
         "type": "monomerTemplate",
-        "id": "G___Glycine",
-        "class": "AminoAcid",
-        "classHELM": "PEPTIDE",
-        "fullName": "Glycine",
-        "alias": "G",
-        "naturalAnalogShort": "G",
-        "attachmentPoints": [
-            {
-                "attachmentAtom": 0,
-                "type": "left",
-                "leavingGroup": {
-                    "atoms": [
-                        5
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 2,
-                "type": "right",
-                "leavingGroup": {
-                    "atoms": [
-                        3
-                    ]
-                }
-            }
-        ],
         "atoms": [
             {
                 "label": "N",
                 "location": [
-                    -0.866000,
-                    0.250000,
-                    0.000000
+                    -0.866,
+                    0.25,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.000000,
-                    0.750000,
-                    0.000000
+                    0,
+                    0.75,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.866000,
-                    0.250000,
-                    0.000000
+                    0.866,
+                    0.25,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.732000,
-                    0.750000,
-                    0.000000
+                    1.732,
+                    0.75,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    0.866000,
-                    -0.750000,
-                    0.000000
+                    0.866,
+                    -0.75,
+                    0
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -1.732000,
-                    0.750000,
-                    0.000000
+                    -1.732,
+                    0.75,
+                    0
                 ]
             }
         ],
@@ -1366,149 +1251,151 @@
                     5
                 ]
             }
-        ]
-    },
-    "monomerTemplate-H___Histidine": {
-        "type": "monomerTemplate",
-        "id": "H___Histidine",
+        ],
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
-        "fullName": "Histidine",
-        "alias": "H",
-        "naturalAnalogShort": "H",
+        "id": "G___Glycine",
+        "fullName": "Glycine",
+        "alias": "G",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
-                "type": "left",
                 "leavingGroup": {
                     "atoms": [
-                        2
+                        5
                     ]
-                }
+                },
+                "type": "left"
             },
             {
-                "attachmentAtom": 3,
-                "type": "right",
+                "attachmentAtom": 2,
                 "leavingGroup": {
                     "atoms": [
-                        4
+                        3
                     ]
-                }
-            },
-            {
-                "attachmentAtom": 10,
-                "type": "side",
-                "leavingGroup": {
-                    "atoms": [
-                        12
-                    ]
-                }
+                },
+                "type": "right"
             }
         ],
+        "naturalAnalogShort": "G"
+    },
+    "monomer6": {
+        "type": "monomer",
+        "id": "6",
+        "position": {
+            "x": 10.25,
+            "y": -1.25
+        },
+        "alias": "H",
+        "templateId": "H___Histidine",
+        "selected": true
+    },
+    "monomerTemplate-H___Histidine": {
+        "type": "monomerTemplate",
         "atoms": [
             {
                 "label": "N",
                 "location": [
-                    -0.507000,
-                    -1.558000,
-                    0.000000
+                    -0.507,
+                    -1.558,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.359000,
-                    -1.058000,
-                    0.000000
+                    0.359,
+                    -1.058,
+                    0
                 ],
                 "stereoLabel": "abs"
             },
             {
                 "label": "H",
                 "location": [
-                    -1.373000,
-                    -1.058000,
-                    0.000000
+                    -1.373,
+                    -1.058,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    1.225000,
-                    -1.558000,
-                    0.000000
+                    1.225,
+                    -1.558,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    2.091000,
-                    -1.058000,
-                    0.000000
+                    2.091,
+                    -1.058,
+                    0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.225000,
-                    -2.558000,
-                    0.000000
+                    1.225,
+                    -2.558,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.359000,
-                    -0.058000,
-                    0.000000
+                    0.359,
+                    -0.058,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.507000,
-                    0.442000,
-                    0.000000
+                    -0.507,
+                    0.442,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -2.091000,
-                    0.778000,
-                    0.000000
+                    -2.091,
+                    0.778,
+                    0
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    -1.426000,
-                    0.038000,
-                    0.000000
+                    -1.426,
+                    0.038,
+                    0
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    -1.591000,
-                    1.645000,
-                    0.000000
+                    -1.591,
+                    1.645,
+                    0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.617000,
-                    1.440000,
-                    0.000000
+                    -0.617,
+                    1.44,
+                    0
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -1.998000,
-                    2.558000,
-                    0.000000
+                    -1.998,
+                    2.558,
+                    0
                 ]
             }
         ],
@@ -1605,6 +1492,62 @@
                     12
                 ]
             }
-        ]
+        ],
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "id": "H___Histidine",
+        "fullName": "Histidine",
+        "alias": "H",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                },
+                "type": "left"
+            },
+            {
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        4
+                    ]
+                },
+                "type": "right"
+            },
+            {
+                "attachmentAtom": 10,
+                "leavingGroup": {
+                    "atoms": [
+                        12
+                    ]
+                },
+                "type": "side"
+            }
+        ],
+        "naturalAnalogShort": "H"
+    },
+    "monomer7": {
+        "type": "monomer",
+        "id": "7",
+        "position": {
+            "x": 11.75,
+            "y": -1.25
+        },
+        "alias": "H",
+        "templateId": "H___Histidine",
+        "selected": true
+    },
+    "monomer8": {
+        "type": "monomer",
+        "id": "8",
+        "position": {
+            "x": 13.25,
+            "y": -1.25
+        },
+        "alias": "H",
+        "templateId": "H___Histidine"
     }
 }

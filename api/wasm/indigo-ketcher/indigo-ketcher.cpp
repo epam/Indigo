@@ -1107,8 +1107,28 @@ namespace indigo
     std::string expand(const std::string& data, const std::string& outputFormat, const std::map<std::string, std::string>& options)
     {
         const IndigoSession session;
-        indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        std::map<std::string, std::string> options_copy;
+        for (const auto& option : options)
+        {
+            if (option.first != "monomerLibrary")
+            {
+                options_copy[option.first] = option.second;
+            }
+        }
+
+        int library = -1;
+        auto monomerLibrary = options.find("monomerLibrary");
+        if (monomerLibrary != options.end() && monomerLibrary->second.size())
+        {
+            library = indigoLoadMonomerLibraryFromString(monomerLibrary->second.c_str());
+        }
+        else
+        {
+            library = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
+        }
+
+        indigoSetOptions(options_copy);
+        const auto iko = loadMoleculeOrReaction(data.c_str(), options_copy, library, true);
         _checkResult(indigoExpandMonomers(iko.id()));
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
