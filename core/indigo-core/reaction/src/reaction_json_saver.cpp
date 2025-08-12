@@ -25,9 +25,9 @@
 #include "layout/reaction_layout.h"
 #include "molecule/molecule_json_saver.h"
 #include "molecule/query_molecule.h"
+#include "reaction/pathway_reaction_builder.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_json_saver.h"
-#include "reaction/pathway_reaction_builder.h"
 #include "reaction/reaction_multistep_detector.h"
 
 using namespace indigo;
