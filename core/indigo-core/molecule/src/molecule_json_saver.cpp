@@ -78,7 +78,8 @@ void printMappings(Array<int>& mapping)
 }
 
 MoleculeJsonSaver::MoleculeJsonSaver(Output& output)
-    : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false), use_native_precision(false), ket_version(KETVersion1)
+    : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false), use_native_precision(false), ket_version(KETVersion1),
+      add_reaction_data(false)
 {
 }
 
@@ -1873,7 +1874,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     }
 
     // save reactions
-    if (_rmd)
+    if (_rmd && add_reaction_data)
     {
         auto& reactions_info = _rmd->get().reactionsInfo();
         auto& summ_blocks = _rmd->get().summBlocks();
