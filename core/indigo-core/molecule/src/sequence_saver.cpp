@@ -1318,7 +1318,12 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
                 {
                     if (variants.size() > 0)
                         variants += mixture ? '+' : ',';
-                    auto alias = templates.at(option.templateId()).getStringProp("alias");
+                    std::string alias;
+                    auto& mononomer_template = templates.at(option.templateId());
+                    if (mononomer_template.hasStringProp("aliasHELM"))
+                        alias = mononomer_template.getStringProp("aliasHELM");
+                    if (alias.size() == 0)
+                        alias = mononomer_template.getStringProp("alias");
                     if (alias.size() > 1)
                         variants += '[';
                     variants += alias;

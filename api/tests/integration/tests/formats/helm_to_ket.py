@@ -55,6 +55,8 @@ helm_data = {
     "helm_unresolved_rna": "RNA1{Sugar1(Base1)Phos3.Rna1.Rna2}$$$$V2.0",
     "helm_only_base": "RNA1{(A)}$$$$V2.0",
     "helm_nucleosides": "RNA1{[5R6Rm5](A).[5R6Rm5](A).[5R6Rm5](A)}$$$$V2.0",
+    "helm_alias_single_r_p": "RNA1{r.p}$$$$V2.0",
+    "helm_alias_ambiguous": "RNA1{[Sm5moe]([m2nprn2A]+[nobn6pur]+[nC6n2G]+[nC6n8A])[mepo2]}$$$$V2.0",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
