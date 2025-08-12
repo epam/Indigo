@@ -19,12 +19,12 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
+#include "layout/molecule_layout.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_saver.h"
 #include "reaction/pathway_reaction.h"
-#include "reaction/pathway_reaction_json_saver.h"
-#include "layout/molecule_layout.h"
 #include "reaction/pathway_reaction_builder.h"
+#include "reaction/pathway_reaction_json_saver.h"
 #include "reaction/reaction_multistep_detector.h"
 
 using namespace indigo;
