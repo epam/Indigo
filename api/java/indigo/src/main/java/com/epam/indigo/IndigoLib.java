@@ -674,6 +674,10 @@ public interface IndigoLib extends Library {
     int indigoUnhighlight(int item);
 
     int indigoIsHighlighted(int item);
+    
+    int indigoIsSelected(int item);
+
+    int indigoHasSelection(int item);
 
     int indigoCountComponents(int molecule);
 
