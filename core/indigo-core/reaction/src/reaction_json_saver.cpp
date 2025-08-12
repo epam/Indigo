@@ -27,6 +27,8 @@
 #include "molecule/query_molecule.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_json_saver.h"
+#include "reaction/pathway_reaction_builder.h"
+#include "reaction/reaction_multistep_detector.h"
 
 using namespace indigo;
 using namespace indigo;
@@ -45,7 +47,7 @@ void ReactionJsonSaver::_getBounds(BaseMolecule& mol, Vec2f& min_vec, Vec2f& max
 }
 
 ReactionJsonSaver::ReactionJsonSaver(Output& output)
-    : _output(output), add_stereo_desc(false), pretty_json(false), use_native_precision(false), ket_version{1, 0, 0}
+    : _output(output), add_stereo_desc(false), pretty_json(false), use_native_precision(false), add_reaction_data(false), ket_version{1, 0, 0}
 {
 }
 
@@ -59,32 +61,52 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
     json_saver.add_stereo_desc = add_stereo_desc;
     json_saver.ket_version = ket_version;
     json_saver.use_native_precision = use_native_precision;
+    json_saver.add_reaction_data = add_reaction_data;
     std::unique_ptr<BaseMolecule> merged;
     if (rxn.isQueryReaction())
-    {
         merged = std::make_unique<QueryMolecule>();
-    }
     else
-    {
         merged = std::make_unique<Molecule>();
-    }
 
     std::unique_ptr<BaseReaction> reaction(rxn.neu());
     reaction->clone(rxn);
     ReactionLayout rl(*reaction, false, layout_options);
     rl.fixLayout();
-
-    // merge
+    int mol_id = 0;
     for (int i = reaction->begin(); i != reaction->end(); i = reaction->next(i))
-        merged->mergeWithMolecule(reaction->getBaseMolecule(i), 0, 0);
+    {
+        // the information about the merged components is lost in the process of merging
+        auto& mol = reaction->getBaseMolecule(i);
+        merged->mergeWithMolecule(mol, 0, 0);
+    }
 
     merged->meta().clone(reaction->meta());
+
+    ReactionMultistepDetector rmd(*merged, layout_options);
+    if (add_reaction_data)
+    {
+        reaction->clear();
+        switch (rmd.detectReaction())
+        {
+        case ReactionMultistepDetector::ReactionType::EPathwayReaction:
+            rmd.constructPathwayReaction(static_cast<PathwayReaction&>(rxn));
+            PathwayReactionBuilder::buildRootReaction(static_cast<PathwayReaction&>(rxn));
+            break;
+        case ReactionMultistepDetector::ReactionType::EMutistepReaction:
+            rmd.constructMultipleArrowReaction(rxn);
+            break;
+        case ReactionMultistepDetector::ReactionType::ESimpleReaction:
+            rmd.constructSimpleArrowReaction(rxn);
+            break;
+        }
+        rmd.buildReactionsData();
+    }
 
     // dump molecules
     StringBuffer s;
     JsonWriter writer(pretty_json);
     writer.Reset(s);
-    json_saver.saveMolecule(*merged, writer);
+    json_saver.saveMolecule(*merged, rmd, writer);
 
     Document ket;
     ket.Parse(s.GetString());

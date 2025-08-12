@@ -43,6 +43,7 @@ namespace indigo
 
         void saveReaction(BaseReaction& rxn);
         bool add_stereo_desc;
+        bool add_reaction_data;
         bool pretty_json;
         KETVersion ket_version;
         bool use_native_precision;

@@ -118,6 +118,11 @@ namespace indigo
 
         void remove(int i);
 
+        PtrPool<BaseMolecule>& molecules()
+        {
+            return _allMolecules;
+        }
+
         int intermediateBegin()
         {
             return _nextElement(INTERMEDIATE, -1);

@@ -118,6 +118,8 @@ namespace indigo
         ReactionMultistepDetector(BaseMolecule& mol, const LayoutOptions& options);
         ~ReactionMultistepDetector();
         ReactionType detectReaction();
+        void buildReactionsData();
+
         void constructMultipleArrowReaction(BaseReaction& rxn);
         void constructSimpleArrowReaction(BaseReaction& rxn);
         int getMoleculeSide(const ReactionArrowObject& arrow, BaseMolecule& mol, std::array<int, KProductArea + 1>& sides);
@@ -126,6 +128,26 @@ namespace indigo
         void detectPathwayMetadata(PathwayReaction& rxn);
         void collectMetadata(int reaction_idx, PathwayReaction& rxn, const Rect2f& bbox);
         void collectProperties(PathwayReaction::SimpleReaction& sr, const SimpleTextObject& text_obj);
+
+        const auto& complexMoleculesInfo() const
+        {
+            return _complex_molecules_info;
+        }
+
+        const auto& reactionsInfo() const
+        {
+            return _reactions_info;
+        }
+
+        const auto& summBlocks()
+        {
+            return _component_summ_blocks;
+        }
+
+        const auto& molComponents() const
+        {
+            return _merged_components;
+        }
 
         typedef std::pair<float, int> FLOAT_INT_PAIR;
         typedef std::vector<FLOAT_INT_PAIR> FLOAT_INT_PAIRS;
@@ -169,6 +191,10 @@ namespace indigo
         std::vector<COMPONENT_DESC> _merged_components;      // merged molecule list
         std::vector<ReactionComponent> _reaction_components; // full list of reaction components: pluses, arrows, merged molecules.
         std::vector<MolSumm> _component_summ_blocks;         // merged molecules binded with pluses, role and arrow index for products/intermediates
+        std::vector<std::pair<std::vector<int>, std::map<int, std::vector<std::pair<int, int>>>>>
+            _reactions_info;                                                        // list of independend reactions with their components indexes and steps
+        std::map<int, std::pair<int, std::vector<size_t>>> _complex_molecules_info; // list of molecules that consist of several unconnected molecules
+
         std::vector<MOL_DISTANCES_DESC> _mol_distances;
         std::vector<SPECIAL_ZONE_DESC> _zones;
         int _moleculeCount;
