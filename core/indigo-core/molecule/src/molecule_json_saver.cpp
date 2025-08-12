@@ -1605,7 +1605,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
 
     if (_rmd)
     {
-        for (auto i = 0; i < _rmd->get().reactionsInfo().size(); ++i)
+        for (size_t i = 0; i < _rmd->get().reactionsInfo().size(); ++i)
         {
             writer.StartObject();
             writer.Key("$ref");
@@ -1880,7 +1880,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
         auto& components = _rmd->get().molComponents();
         auto& complex_molecules_info = _rmd->get().complexMoleculesInfo();
 
-        for (auto i = 0; i < reactions_info.size(); ++i)
+        for (size_t i = 0; i < reactions_info.size(); ++i)
         {
             writer.Key((std::string("reaction") + std::to_string(i)).c_str());
             writer.StartObject();
