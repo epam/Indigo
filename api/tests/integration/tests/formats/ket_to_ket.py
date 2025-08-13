@@ -96,7 +96,6 @@ files = ["multi_merge4", "3069-reaction"]
 
 files.sort()
 for filename in files:
-
     try:
         rea = indigo.loadReactionFromFile(
             os.path.join(root_rea, filename + ".ket")
