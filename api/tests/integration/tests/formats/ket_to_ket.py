@@ -113,3 +113,26 @@ for filename in files:
     else:
         print(filename + ".ket:FAILED")
         print(diff)
+
+# reaction data
+files = ["mixed_reaction", "two_pathways", "multi_reaction"]
+
+indigo.setOption("json-saving-add-reaction-data", True)
+
+files.sort()
+for filename in files:
+    rea = indigo.loadReactionFromFile(
+        os.path.join(root_rea, filename + ".ket")
+    )
+
+    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+    #     file.write(rea.json())
+    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
+        ket_ref = file.read()
+    ket = rea.json()
+    diff = find_diff(ket_ref, ket)
+    if not diff:
+        print(filename + ".ket:SUCCEED")
+    else:
+        print(filename + ".ket:FAILED")
+        print(diff)

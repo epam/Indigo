@@ -80,6 +80,10 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
                 {
                     _monomer_shapes.PushBack(node, ket.GetAllocator());
                 }
+                else if (node_type == "reaction")
+                {
+                    // just ignore it
+                }
                 else
                     throw Error("Unknows node type: %s", node_type.c_str());
             }

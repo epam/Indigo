@@ -654,8 +654,8 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
                 }
 
                 // different zone types are not mergeable
-                // if (_zones[zone1.value().first].zone_type != _zones[zone2.value().first].zone_type && comm_zones.empty())
-                //    return std::nullopt;
+                if (_zones[zone1.value().first].zone_type != _zones[zone2.value().first].zone_type && comm_zones.empty())
+                    return std::nullopt;
             }
 
             if (!current_zone.has_value())
