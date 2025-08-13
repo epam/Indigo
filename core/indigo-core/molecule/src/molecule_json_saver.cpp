@@ -1972,7 +1972,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                 }
                 writer.EndObject();
             }
-            writer.EndArray(); // steps
+            writer.EndArray();  // steps
             writer.EndObject(); // reaction
         }
     }
