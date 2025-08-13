@@ -11,7 +11,7 @@ from bingo_elastic.elastic import (
     IndexName,
 )
 from bingo_elastic.model.helpers import iterate_file, load_reaction
-from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
+from bingo_elastic.model.record import IndigoRecordMolecule
 
 
 @pytest.fixture()
@@ -91,12 +91,12 @@ def loaded_sdf(
 
 
 @pytest.fixture
-def pagination_fixture(
+def fixture_molecules_20_10_5_1(
     elastic_repository_molecule: ElasticRepository, indigo_fixture: Indigo
 ) -> None:
     def generator_records(molecules):
         for x in molecules:
-            yield IndigoRecord(indigo_object=x)
+            yield IndigoRecordMolecule(indigo_object=x)
 
     mol1 = [indigo_fixture.loadMolecule("CCO") for _ in range(20)]
     elastic_repository_molecule.index_records(generator_records(mol1))
@@ -104,6 +104,16 @@ def pagination_fixture(
     elastic_repository_molecule.index_records(generator_records(mol2))
     mol3 = [indigo_fixture.loadMolecule("CO") for _ in range(5)]
     elastic_repository_molecule.index_records(generator_records(mol3))
+    # We will add one molecule and fake fingerprints and hash to get collisions
+    # in order to test postprocess actions
+    ccco_mol = IndigoRecordMolecule(
+        indigo_object=indigo_fixture.loadMolecule("CCCO")
+    )
+    mol4 = IndigoRecordMolecule(indigo_object=indigo_fixture.loadMolecule("S"))
+    mol4.sub_fingerprint = ccco_mol.sub_fingerprint
+    mol4.sim_fingerprint = ccco_mol.sim_fingerprint
+    setattr(mol4, "hash", getattr(ccco_mol, "hash"))
+    elastic_repository_molecule.index_record(mol4)
     elastic_repository_molecule.el_client.indices.refresh(
         index=IndexName.BINGO_MOLECULE.value
     )

@@ -132,7 +132,7 @@ Full usage example sync:
 
 ```
 from bingo_elastic.model import helpers
-from bingo_elastic.elastic import, ElasticRepository IndexName
+from bingo_elastic.elastic import ElasticRepository, IndexName
 from pathlib import Path
 
 repository = ElasticRepository(IndexName.BINGO_MOLECULE, host="127.0.0.1", port=9200)
@@ -189,40 +189,41 @@ Supported similarity algorithms:
 
 #### Find exact records from Elasticsearch
 
-Bingo Elasticsearch decides on the strategy to find, based on the query_object type
+To run exact match, your target must be either IndigoRecordMolecule or IndigoRecordReaction
+
 Sync:
 ```
-target = indigo.loadMolecule("<your molecule here>")
-record = IndigoRecord(indigo_object = target)
-exact_records = repo.filter(query_subject=record, indigo_session=indigo, limit=20)
+indigo = Indigo()
+molecule = indigo.loadMolecule("CCO")
+target = IndigoRecordMolecule(indigo_object=molecule)
+exact_records = repo.filter(exact=target, indigo_session=indigo, limit=20)
 ```
 
 Async:
 ```
-target = indigo.loadMolecule("<your molecule here>")
-record = IndigoRecord(indigo_object = target)
-exact_records = await repo.filter(query_subject=record, indigo_session=indigo, limit=20)
+indigo = Indigo()
+molecule = indigo.loadMolecule("CCO")
+target = IndigoRecordMolecule(indigo_object=molecule)
+exact_records = await repo.filter(exact=target, indigo_session=indigo, limit=20)
 ```
-
-In this case we requested top-20 candidate molecules with exact same fingerprint to `target`.
-`target` should be an instance of `IndigoRecord` class.
-
 
 #### Subsctructure match of the records from Elasticsearch
 
+To run substructure search, your target must be query molecule
+
 Sync:
 ```
-target = indigo.loadQueryMolecule("<your substructure here>")
-submatch_records = repo.filter(query_subject=target, indigo_session=indigo, limit=20)
+indigo = Indigo()
+target = indigo.loadQueryMolecule("CCO")
+submatch_records = repo.filter(substructure=target, indigo_session=indigo, limit=20)
 ```
 
 Async:
 ```
-target = indigo.loadQueryMolecule("<your substructure here>")
-submatch_records = await repo.filter(query_subject=target, indigo_session=indigo, limit=20)
+indigo = Indigo()
+target = indigo.loadQueryMolecule("CCO")
+submatch_records = await repo.filter(substructure=target, indigo_session=indigo, limit=20)
 ```
-
-In this case we requested top-10 candidate molecules with exact same fingerprint to `target`.
 
 Note: 
 Bingo is requesting data from Elasticsearch with batches. You can control it with page_size argument

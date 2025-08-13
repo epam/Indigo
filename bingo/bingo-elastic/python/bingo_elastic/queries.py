@@ -322,6 +322,12 @@ class SimilarityMatch:
 
 def query_factory(key: str, value: Any) -> CompilableQuery:
     if key == "exact":
+        if not isinstance(value, IndigoRecord):
+            raise TypeError(
+                "Exact search requires the query object to be "
+                "a subclass of IndigoRecord "
+                "(IndigoRecordMolecule or IndigoRecordReaction)"
+            )
         return ExactMatch(value)
     if key == "substructure":
         return SubstructureQuery(key, value)

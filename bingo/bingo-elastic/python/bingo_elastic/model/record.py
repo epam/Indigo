@@ -116,6 +116,14 @@ class IndigoRecord:
     record_id: Optional[str] = None
     error_handler: Optional[Callable[[object, BaseException], None]] = None
 
+    def __new__(cls, *args, **kwargs):
+        if cls is IndigoRecord:
+            raise TypeError(
+                "Cannot instantiate IndigoRecord directly. "
+                "Use IndigoRecordMolecule or IndigoRecordReaction instead."
+            )
+        return super().__new__(cls)
+
     def __init__(self, **kwargs) -> None:
         """
         Constructor accepts only keyword arguments
