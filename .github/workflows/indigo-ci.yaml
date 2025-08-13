@@ -21,17 +21,10 @@ jobs:
       - name: Publish Java jars to Maven Central
         env:
           MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
-          MAVEN_USER: ${{ secrets.MAVEN_USER }}
-          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-          GPG_PRIVATE_KEY: ${{ secrets.MK_GPG_PRIVATE_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.MK_GPG_PASSPHRASE }}
         run: |
           pwd
           set -eux
           mkdir /root/.m2
           echo ${MAVEN_SETTINGS} > /root/.m2/settings.xml
-          base64 /root/.m2/settings.xml
-          echo ${GPG_PRIVATE_KEY} > gpg.key
-          base64 gpg.key
-          echo ${GPG_PASSPHRASE} > gpg.pass
-          base64 gpg.pass
+          gzip /root/.m2/settings.xml
+          base64 /root/.m2/settings.xml.gz
