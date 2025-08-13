@@ -47,16 +47,11 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& pwr)
     merged->meta().clone(pwr.meta());
     indigo::LayoutOptions layout_options;
     ReactionMultistepDetector rmd(*merged, layout_options);
-    std::unique_ptr<BaseReaction> reaction(pwr.neu());
     if (add_reaction_data)
     {
         rmd.detectReaction();
-        reaction->clear();
-        rmd.constructPathwayReaction(static_cast<PathwayReaction&>(*reaction));
-        PathwayReactionBuilder::buildRootReaction(static_cast<PathwayReaction&>(*reaction));
         rmd.buildReactionsData();
     }
-
     rapidjson::StringBuffer buffer;
     JsonWriter writer(pretty_json);
     writer.Reset(buffer);

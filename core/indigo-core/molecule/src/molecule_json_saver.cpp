@@ -1889,9 +1889,10 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
             writer.String("reaction");
 
             writer.Key("participantGroups");
-            writer.StartObject();
+            writer.StartArray();
             for (auto csb_idx : reactions_info[i].first)
             {
+                writer.StartObject();
                 auto& csb = summ_blocks[csb_idx];
                 writer.Key("id");
                 writer.String((std::string("group") + std::to_string(csb_idx)).c_str());
@@ -1919,13 +1920,15 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                         writer.String((std::string("plus") + std::to_string(plus_idx)).c_str());
                     writer.EndArray();
                 }
+                writer.EndObject();
             }
-            writer.EndObject(); // participantGroups
+            writer.EndArray(); // participantGroups
             // collect steps
             writer.Key("steps");
-            writer.StartObject();
+            writer.StartArray();
             for (auto& kvp : reactions_info[i].second)
             {
+                writer.StartObject();
                 writer.Key("arrow");
                 writer.String((std::string("arrow") + std::to_string(kvp.first)).c_str());
                 std::vector<std::string> reactants, agents, products, conditions;
@@ -1967,8 +1970,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                         writer.String(a.c_str());
                     writer.EndArray();
                 }
+                writer.EndObject();
             }
-            writer.EndObject(); // steps
+            writer.EndArray(); // steps
             writer.EndObject(); // reaction
         }
     }
@@ -2078,6 +2082,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
 
     const auto& meta_objects = meta.metaData();
     int arrow_id = 0;
+    int multi_arrow_id = meta.getMetaCount(ReactionArrowObject::CID);
     int plus_id = 0;
     for (int meta_index = 0; meta_index < meta_objects.size(); ++meta_index)
     {
@@ -2133,6 +2138,12 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         case ReactionMultitailArrowObject::CID: {
             ReactionMultitailArrowObject& ar = (ReactionMultitailArrowObject&)(*pobj);
             writer.StartObject();
+            if (add_reaction_data)
+            {
+                writer.Key("id");
+                writer.String(std::string("arrow") + std::to_string(multi_arrow_id++));
+            }
+
             writer.Key("type");
             writer.String("multi-tailed-arrow");
             writer.Key("data");
