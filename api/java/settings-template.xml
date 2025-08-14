@@ -8,24 +8,6 @@
     </servers>
     <profiles>
         <profile>
-            <id>allow-snapshots</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <repositories>
-                <repository>
-                    <id>snapshots-repo</id>
-                    <url>https://central.sonatype.com/repository/maven-snapshots/</url>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                    <snapshots>
-                        <enabled>true</enabled>
-                    </snapshots>
-                </repository>
-            </repositories>
-        </profile>
-        <profile>
             <id>gpg</id>
             <properties>
                 <gpg.passphrase>${gpg.passphrase}</gpg.passphrase>
