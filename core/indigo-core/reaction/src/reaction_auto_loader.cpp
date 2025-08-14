@@ -234,7 +234,6 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
                 return reaction;
             }
         }
-
         _scanner->seek(pos, SEEK_SET);
     }
 
