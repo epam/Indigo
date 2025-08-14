@@ -1330,10 +1330,10 @@ jobs:
           rm gpg.key
           cd api/java
           sed -e "s/MAVEN_USER/${MAVEN_USER}/" settings-template.xml | sed -e "s/MAVEN_PASSWORD/${MAVEN_PASSWORD}/" > /root/.m2/settings.xml
-          ./mvnw -e deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
           cd ${GITHUB_WORKSPACE}/bingo/bingo-elastic/java/
           ${GITHUB_WORKSPACE}/api/java/mvnw -DskipTests -Dmaven.test.skip=true -e deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
 
+#           ./mvnw -e deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
 #   build_test_publish_indigo_service_old:
 #     timeout-minutes: 60
 #     runs-on: ubuntu-latest
