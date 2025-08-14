@@ -21,3 +21,6 @@ monomer_transform.ket mol loadQueryMolecule: SUCCEED
 2707_subst_count.ket ket: SUCCEED
 2707_subst_count.ket mol: SUCCEED
 multi_merge4.ket:SUCCEED
+mixed_reaction.ket:SUCCEED
+multi_reaction.ket:SUCCEED
+two_pathways.ket:SUCCEED

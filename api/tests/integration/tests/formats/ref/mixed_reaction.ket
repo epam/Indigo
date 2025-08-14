@@ -20,6 +20,9 @@
                 "$ref": "reaction0"
             },
             {
+                "$ref": "reaction1"
+            },
+            {
                 "id": "arrow0",
                 "type": "arrow",
                 "data": {
@@ -79,14 +82,6 @@
                     },
                     "zOrder": 0
                 }
-            },
-            {
-                "id": "complexMol0",
-                "type": "complexMol",
-                "molecules": [
-                    "mol1",
-                    "mol2"
-                ]
             }
         ]
     },
@@ -173,6 +168,88 @@
         ]
     },
     "mol1": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    18.457207,
+                    -8.447549,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    18.453505,
+                    -7.452451,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    17.445295,
+                    -8.434637,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    17.442793,
+                    -7.452451,
+                    0.000000
+                ]
+            },
+            {
+                "label": "P",
+                "location": [
+                    19.319529,
+                    -6.952451,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    0
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    4
+                ]
+            }
+        ]
+    },
+    "mol2": {
         "type": "molecule",
         "atoms": [
             {
@@ -280,88 +357,6 @@
                 "atoms": [
                     2,
                     1
-                ]
-            }
-        ]
-    },
-    "mol2": {
-        "type": "molecule",
-        "atoms": [
-            {
-                "label": "C",
-                "location": [
-                    18.457207,
-                    -8.447549,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    18.453505,
-                    -7.452451,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    17.445295,
-                    -8.434637,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    17.442793,
-                    -7.452451,
-                    0.000000
-                ]
-            },
-            {
-                "label": "P",
-                "location": [
-                    19.319529,
-                    -6.952451,
-                    0.000000
-                ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    1
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
-                    3
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    0
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
-                    4
                 ]
             }
         ]
@@ -521,23 +516,11 @@
             {
                 "id": "group0",
                 "components": [
-                    "mol3"
+                    "mol1"
                 ]
             },
             {
                 "id": "group3",
-                "components": [
-                    "complexMol0"
-                ]
-            },
-            {
-                "id": "group1",
-                "components": [
-                    "mol4"
-                ]
-            },
-            {
-                "id": "group2",
                 "components": [
                     "mol0"
                 ]
@@ -547,17 +530,42 @@
             {
                 "arrow": "arrow0",
                 "reactants": [
-                    "group3"
+                    "group0"
                 ],
-                "product": "group2"
+                "product": "group3"
+            }
+        ]
+    },
+    "reaction1": {
+        "type": "reaction",
+        "participantGroups": [
+            {
+                "id": "group1",
+                "components": [
+                    "mol3"
+                ]
             },
+            {
+                "id": "group4",
+                "components": [
+                    "mol2"
+                ]
+            },
+            {
+                "id": "group2",
+                "components": [
+                    "mol4"
+                ]
+            }
+        ],
+        "steps": [
             {
                 "arrow": "arrow1",
                 "reactants": [
-                    "group0",
-                    "group1"
+                    "group1",
+                    "group2"
                 ],
-                "product": "group3"
+                "product": "group4"
             }
         ]
     }
