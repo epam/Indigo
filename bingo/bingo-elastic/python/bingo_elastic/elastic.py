@@ -171,13 +171,18 @@ def response_to_records(
     postprocess_actions: Optional[PostprocessType] = None,
     indigo_session: Optional[Indigo] = None,
     options: str = "",
+    tests_yield_empty: bool = False,
 ) -> Generator[IndigoRecord, None, None]:
     for el_response in hits:
         record = get_record_by_index(el_response, index_name)
         for action_fn in postprocess_actions:  # type: ignore
             record = action_fn(record, indigo_session, options)  # type: ignore
             if not record:
-                break
+                if tests_yield_empty:
+                    yield IndigoRecordMolecule(empty=True)
+                else:
+                    break
+
         if record:
             yield record
 
@@ -258,7 +263,7 @@ class AsyncElasticRepository:
             query_subject: Input used to build the search query. Can be one of:
                 - BaseMatch instance (e.g., substructure or similarity search)
                 - IndigoObject instance (interpreted as a substructure search)
-                - IndigoRecord instance (interpreted as an exact search)
+                - IndigoRecord subclass (interpreted as an exact search)
                 - None or other types: query will be based on kwargs
             indigo_session: Indigo session
             limit: Maximum number of records to return. Since some results will
@@ -285,6 +290,9 @@ class AsyncElasticRepository:
             See: https://www.elastic.co/docs/reference/elasticsearch/rest-apis/
                 paginate-search-results#scroll-search-results
         """
+        tests_yield_empty: bool = kwargs.pop("tests_yield_empty", False)
+        # this flag is used for testing. it will yield filtered out results with
+        # empty=true attribute
         if page_size > MAX_ALLOWED_SIZE:
             raise ValueError(
                 f"page_size should less or equal to {MAX_ALLOWED_SIZE}"
@@ -327,6 +335,7 @@ class AsyncElasticRepository:
                     postprocess_actions,
                     indigo_session,
                     options,
+                    tests_yield_empty=tests_yield_empty,
                 ):
                     yield record
                     limit -= 1
@@ -428,7 +437,7 @@ class ElasticRepository:
             query_subject: Input used to build the search query. Can be one of:
                 - BaseMatch instance (e.g., substructure or similarity search)
                 - IndigoObject instance (interpreted as a substructure search)
-                - IndigoRecord instance (interpreted as an exact search)
+                - IndigoRecord subclass (interpreted as an exact search)
                 - None or other types: query will be based on kwargs
             indigo_session: Indigo session
             limit: Maximum number of records to return. Since some results
@@ -455,7 +464,9 @@ class ElasticRepository:
             See: https://www.elastic.co/docs/reference/elasticsearch/rest-apis/
                 paginate-search-results#scroll-search-results
         """
-
+        tests_yield_empty: bool = kwargs.pop("tests_yield_empty", False)
+        # this flag is used for testing. it will yield filtered out results with
+        # empty=true attribute
         if page_size > MAX_ALLOWED_SIZE:
             raise ValueError(
                 f"page_size should less or equal to {MAX_ALLOWED_SIZE}"
@@ -498,6 +509,7 @@ class ElasticRepository:
                     postprocess_actions,
                     indigo_session,
                     options,
+                    tests_yield_empty=tests_yield_empty,
                 ):
                     yield record
                     limit -= 1
@@ -541,6 +553,6 @@ def compile_query(
         )
 
     for key, value in kwargs.items():
-        query_factory(key, value).compile(query)
+        query_factory(key, value).compile(query, postprocess_actions)
 
     return query
