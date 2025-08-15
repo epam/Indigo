@@ -8,7 +8,7 @@
 
     <name>Indigo Renderer</name>
     <description>2D renderer for chemical structures</description>
-    <url>http://lifescience.opensource.epam.com/indigo/api</url>
+    <url>http://lifescience.opensource.epam.com/indigo/api/index.html</url>
 
     <parent>
         <groupId>com.epam.indigo</groupId>

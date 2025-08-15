@@ -1316,7 +1316,6 @@ jobs:
           path: dist/lib
       - name: Publish Java jars to Maven Central
         env:
-          MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
           MAVEN_USER: ${{ secrets.MAVEN_USER }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
           GPG_PRIVATE_KEY: ${{ secrets.MK_GPG_PRIVATE_KEY }}
@@ -1326,14 +1325,14 @@ jobs:
           set -eux
           apt install -y gnupg
           mkdir /root/.m2
-          echo ${MAVEN_SETTINGS} > /root/.m2/settings.xml
           echo ${GPG_PRIVATE_KEY} > gpg.key
           gpg --batch --import gpg.key
           rm gpg.key
           cd api/java
-          ./mvnw -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
+          sed -e "s/MAVEN_USER/${MAVEN_USER}/" settings-template.xml | sed -e "s/MAVEN_PASSWORD/${MAVEN_PASSWORD}/" > /root/.m2/settings.xml
+          ./mvnw -e deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
           cd ${GITHUB_WORKSPACE}/bingo/bingo-elastic/java/
-          ${GITHUB_WORKSPACE}/api/java/mvnw -DskipTests -Dmaven.test.skip=true -q deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
+          ${GITHUB_WORKSPACE}/api/java/mvnw -DskipTests -Dmaven.test.skip=true -e deploy -P sign-artifacts -Dossrh.user=${MAVEN_USER} -Dossrh.password=${MAVEN_PASSWORD} -Dgpg.passphrase=${GPG_PASSPHRASE}
 
   build_test_publish_indigo_service_old:
     timeout-minutes: 60
