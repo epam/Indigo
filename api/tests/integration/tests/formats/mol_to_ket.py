@@ -75,6 +75,9 @@ with_lib = [
     "flip_rotate",
     "flip_rotate_2000",
     "flip_rotate_rna",
+    "taspoglutide",
+    "apamine",
+    "anacyclamide",
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(

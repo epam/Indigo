@@ -3903,7 +3903,10 @@ void MolfileLoader::_readTGroups3000()
                                     tg_inchi.outputInChI(tgroup.fragment->asMolecule());
                                     if (templ_inchi_str == tg_inchi_str)
                                     {
+                                        std::string tgroup_name = tgroup.tgroup_name.ptr();
                                         tgroup.copy_without_fragment(*templ_tgroup);
+                                        // restore tgroup_name. we can't replace it with tgroup_name from library without updating template atoms'names.
+                                        tgroup.tgroup_name.readString(tgroup_name.c_str(), true); 
                                         tgroup.tgroup_text_id.readString(id.c_str(), true);
                                     }
                                 }
