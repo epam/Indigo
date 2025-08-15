@@ -3531,7 +3531,7 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
                 res = false;
         }
     }
-    if (!res)
+    if (!res && is_added)
     {
         tgroups.remove(tg_index);
         tg_id--;
