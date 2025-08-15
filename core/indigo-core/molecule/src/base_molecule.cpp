@@ -3486,7 +3486,8 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
     // find or create template group for residue
     auto template_inchi_id = monomerNameByAlias(sa.sa_class.ptr(), sa.subscript.ptr()) + "/" + std::string(sa.sa_class.ptr()) + "/" + residue_inchi_str;
     auto it_added = added_templates.find(template_inchi_id);
-    int tg_index = it_added != added_templates.end() ? it_added->second : tgroups.addTGroup();
+    bool is_added = it_added == added_templates.end();
+    int tg_index = is_added ? tgroups.addTGroup() : it_added->second;
     // no we know template index to link template atom with it
     TGroup& tg = tgroups.getTGroup(tg_index);
     if (tg.tgroup_id < 0)
@@ -3498,8 +3499,6 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
         if (sa.sa_natreplace.size() > 0)
             tg.tgroup_natreplace.copy(sa.sa_natreplace);
         res = _restoreTemplateFromLibrary(tg, mtl, residue_inchi_str);
-        if (!res)
-            tgroups.remove(tg_index);
     }
     // handle transformation
     if (res)
@@ -3532,6 +3531,12 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
                 res = false;
         }
     }
+    if (!res)
+    {
+        tgroups.remove(tg_index);
+        tg_id--;
+    }
+
     return res;
 }
 

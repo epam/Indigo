@@ -316,16 +316,16 @@
                 "$ref": "monomerTemplate-N___Asparagine"
             },
             {
+                "$ref": "monomerTemplate-Cys_12"
+            },
+            {
                 "$ref": "monomerTemplate-Cys_13"
             },
             {
+                "$ref": "monomerTemplate-Cys_14"
+            },
+            {
                 "$ref": "monomerTemplate-Cys_15"
-            },
-            {
-                "$ref": "monomerTemplate-Cys_17"
-            },
-            {
-                "$ref": "monomerTemplate-Cys_19"
             }
         ]
     },
@@ -338,7 +338,7 @@
             "y": -5.933000087738037
         },
         "alias": "C",
-        "templateId": "Cys_15"
+        "templateId": "Cys_13"
     },
     "monomer1": {
         "type": "monomer",
@@ -349,7 +349,7 @@
             "y": -5.933000087738037
         },
         "alias": "C",
-        "templateId": "Cys_17"
+        "templateId": "Cys_14"
     },
     "monomer2": {
         "type": "monomer",
@@ -360,7 +360,7 @@
             "y": -5.933000087738037
         },
         "alias": "C",
-        "templateId": "Cys_19"
+        "templateId": "Cys_15"
     },
     "monomer3": {
         "type": "monomer",
@@ -536,7 +536,7 @@
             "y": -5.933000087738037
         },
         "alias": "C",
-        "templateId": "Cys_13"
+        "templateId": "Cys_12"
     },
     "monomerTemplate-Am_1": {
         "type": "monomerTemplate",
@@ -2585,9 +2585,9 @@
             }
         ]
     },
-    "monomerTemplate-Cys_13": {
+    "monomerTemplate-Cys_12": {
         "type": "monomerTemplate",
-        "id": "Cys_13",
+        "id": "Cys_12",
         "class": "XLINKAA",
         "classHELM": "PEPTIDE",
         "alias": "C",
@@ -2694,9 +2694,9 @@
             }
         ]
     },
-    "monomerTemplate-Cys_15": {
+    "monomerTemplate-Cys_13": {
         "type": "monomerTemplate",
-        "id": "Cys_15",
+        "id": "Cys_13",
         "class": "XLINKAA",
         "classHELM": "PEPTIDE",
         "alias": "C",
@@ -2803,9 +2803,9 @@
             }
         ]
     },
-    "monomerTemplate-Cys_17": {
+    "monomerTemplate-Cys_14": {
         "type": "monomerTemplate",
-        "id": "Cys_17",
+        "id": "Cys_14",
         "class": "XLINKAA",
         "classHELM": "PEPTIDE",
         "alias": "C",
@@ -2912,9 +2912,9 @@
             }
         ]
     },
-    "monomerTemplate-Cys_19": {
+    "monomerTemplate-Cys_15": {
         "type": "monomerTemplate",
-        "id": "Cys_19",
+        "id": "Cys_15",
         "class": "XLINKAA",
         "classHELM": "PEPTIDE",
         "alias": "C",

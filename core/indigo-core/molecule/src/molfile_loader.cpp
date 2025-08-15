@@ -3857,8 +3857,6 @@ void MolfileLoader::_readTGroups3000()
                 {
                     _scanner.seek(pos, SEEK_SET);
                     tgroup.fragment.reset(_bmol->neu());
-                    //               tgroup.fragment = _bmol->neu();
-
                     MolfileLoader loader(_scanner);
                     loader._disable_sgroups_conversion = true;
                     loader.copyProperties(*this);
@@ -3906,7 +3904,7 @@ void MolfileLoader::_readTGroups3000()
                                         std::string tgroup_name = tgroup.tgroup_name.ptr();
                                         tgroup.copy_without_fragment(*templ_tgroup);
                                         // restore tgroup_name. we can't replace it with tgroup_name from library without updating template atoms'names.
-                                        tgroup.tgroup_name.readString(tgroup_name.c_str(), true); 
+                                        tgroup.tgroup_name.readString(tgroup_name.c_str(), true);
                                         tgroup.tgroup_text_id.readString(id.c_str(), true);
                                     }
                                 }
