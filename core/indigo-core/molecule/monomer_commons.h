@@ -49,6 +49,8 @@ namespace indigo
 
     std::string extractMonomerName(const std::string& str);
 
+    bool isChemClass(const std::string& monomer_class);
+
     bool isNucleicClass(const std::string& monomer_class);
 
     bool isNucleotideClass(const std::string& monomer_class);

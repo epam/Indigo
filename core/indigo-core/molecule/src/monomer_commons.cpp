@@ -46,6 +46,12 @@ namespace indigo
         return "";
     }
 
+    bool isChemClass(const std::string& monomer_class)
+    {
+        static const std::unordered_set<std::string> kChemClasses = {kMonomerClassCHEM, kMonomerClassMOD, kMonomerClassXLINK, kMonomerClassLINKER};
+        return kChemClasses.find(monomer_class) != kChemClasses.end();
+    }
+
     bool isNucleicClass(const std::string& monomer_class)
     {
         static const std::unordered_set<std::string> kNucleicClasses = {kMonomerClassDNA,    kMonomerClassRNA,      kMonomerClassMODRNA,

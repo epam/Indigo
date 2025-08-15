@@ -146,28 +146,28 @@
         ],
         "templates": [
             {
-                "$ref": "monomerTemplate-Gln_1"
+                "$ref": "monomerTemplate-Q___Glutamine"
             },
             {
-                "$ref": "monomerTemplate-Ser_2"
+                "$ref": "monomerTemplate-S___Serine"
             },
             {
-                "$ref": "monomerTemplate-Thr_3"
+                "$ref": "monomerTemplate-T___Threonine"
             },
             {
-                "$ref": "monomerTemplate-Pro_4"
+                "$ref": "monomerTemplate-P___Proline"
             },
             {
-                "$ref": "monomerTemplate-Val_5"
+                "$ref": "monomerTemplate-V___Valine"
             },
             {
-                "$ref": "monomerTemplate-Gly_6"
+                "$ref": "monomerTemplate-G___Glycine"
             },
             {
-                "$ref": "monomerTemplate-Trp_7"
+                "$ref": "monomerTemplate-W___Tryptophan"
             },
             {
-                "$ref": "monomerTemplate-Ile_8"
+                "$ref": "monomerTemplate-I___Isoleucine"
             }
         ]
     },
@@ -180,7 +180,7 @@
             "y": -5.031300067901611
         },
         "alias": "Gln",
-        "templateId": "Gln_1"
+        "templateId": "Q___Glutamine"
     },
     "monomer1": {
         "type": "monomer",
@@ -191,7 +191,7 @@
             "y": -5.031300067901611
         },
         "alias": "Ser",
-        "templateId": "Ser_2"
+        "templateId": "S___Serine"
     },
     "monomer2": {
         "type": "monomer",
@@ -202,7 +202,7 @@
             "y": -5.031300067901611
         },
         "alias": "Thr",
-        "templateId": "Thr_3"
+        "templateId": "T___Threonine"
     },
     "monomer3": {
         "type": "monomer",
@@ -213,7 +213,7 @@
             "y": -5.031300067901611
         },
         "alias": "Pro",
-        "templateId": "Pro_4"
+        "templateId": "P___Proline"
     },
     "monomer4": {
         "type": "monomer",
@@ -224,7 +224,7 @@
             "y": -5.031300067901611
         },
         "alias": "Val",
-        "templateId": "Val_5"
+        "templateId": "V___Valine"
     },
     "monomer5": {
         "type": "monomer",
@@ -235,7 +235,7 @@
             "y": -5.031300067901611
         },
         "alias": "Pro",
-        "templateId": "Pro_4"
+        "templateId": "P___Proline"
     },
     "monomer6": {
         "type": "monomer",
@@ -246,7 +246,7 @@
             "y": -5.031300067901611
         },
         "alias": "Ser",
-        "templateId": "Ser_2"
+        "templateId": "S___Serine"
     },
     "monomer7": {
         "type": "monomer",
@@ -257,7 +257,7 @@
             "y": -5.031300067901611
         },
         "alias": "Gly",
-        "templateId": "Gly_6"
+        "templateId": "G___Glycine"
     },
     "monomer8": {
         "type": "monomer",
@@ -268,7 +268,7 @@
             "y": -5.031300067901611
         },
         "alias": "Trp",
-        "templateId": "Trp_7"
+        "templateId": "W___Tryptophan"
     },
     "monomer9": {
         "type": "monomer",
@@ -279,16 +279,18 @@
             "y": -5.031300067901611
         },
         "alias": "Ile",
-        "templateId": "Ile_8"
+        "templateId": "I___Isoleucine"
     },
-    "monomerTemplate-Gln_1": {
+    "monomerTemplate-Q___Glutamine": {
         "type": "monomerTemplate",
-        "id": "Gln_1",
+        "id": "Q___Glutamine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "Q",
         "name": "Gln",
+        "fullName": "Glutamine",
         "naturalAnalogShort": "Q",
+        "naturalAnalog": "Gln",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -495,14 +497,16 @@
             }
         ]
     },
-    "monomerTemplate-Ser_2": {
+    "monomerTemplate-S___Serine": {
         "type": "monomerTemplate",
-        "id": "Ser_2",
+        "id": "S___Serine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "S",
         "name": "Ser",
+        "fullName": "Serine",
         "naturalAnalogShort": "S",
+        "naturalAnalog": "Ser",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -664,14 +668,16 @@
             }
         ]
     },
-    "monomerTemplate-Thr_3": {
+    "monomerTemplate-T___Threonine": {
         "type": "monomerTemplate",
-        "id": "Thr_3",
+        "id": "T___Threonine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "T",
         "name": "Thr",
+        "fullName": "Threonine",
         "naturalAnalogShort": "T",
+        "naturalAnalog": "Thr",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -850,14 +856,16 @@
             }
         ]
     },
-    "monomerTemplate-Pro_4": {
+    "monomerTemplate-P___Proline": {
         "type": "monomerTemplate",
-        "id": "Pro_4",
+        "id": "P___Proline",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "P",
         "name": "Pro",
+        "fullName": "Proline",
         "naturalAnalogShort": "P",
+        "naturalAnalog": "Pro",
         "attachmentPoints": [
             {
                 "attachmentAtom": 7,
@@ -1018,14 +1026,16 @@
             }
         ]
     },
-    "monomerTemplate-Val_5": {
+    "monomerTemplate-V___Valine": {
         "type": "monomerTemplate",
-        "id": "Val_5",
+        "id": "V___Valine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "V",
         "name": "Val",
+        "fullName": "Valine",
         "naturalAnalogShort": "V",
+        "naturalAnalog": "Val",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1179,14 +1189,16 @@
             }
         ]
     },
-    "monomerTemplate-Gly_6": {
+    "monomerTemplate-G___Glycine": {
         "type": "monomerTemplate",
-        "id": "Gly_6",
+        "id": "G___Glycine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "G",
         "name": "Gly",
+        "fullName": "Glycine",
         "naturalAnalogShort": "G",
+        "naturalAnalog": "Gly",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1293,14 +1305,16 @@
             }
         ]
     },
-    "monomerTemplate-Trp_7": {
+    "monomerTemplate-W___Tryptophan": {
         "type": "monomerTemplate",
-        "id": "Trp_7",
+        "id": "W___Tryptophan",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "W",
         "name": "Trp",
+        "fullName": "Tryptophan",
         "naturalAnalogShort": "W",
+        "naturalAnalog": "Trp",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1596,14 +1610,16 @@
             }
         ]
     },
-    "monomerTemplate-Ile_8": {
+    "monomerTemplate-I___Isoleucine": {
         "type": "monomerTemplate",
-        "id": "Ile_8",
+        "id": "I___Isoleucine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "I",
         "name": "Ile",
+        "fullName": "Isoleucine",
         "naturalAnalogShort": "I",
+        "naturalAnalog": "Ile",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,

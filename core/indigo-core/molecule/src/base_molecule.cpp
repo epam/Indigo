@@ -3462,9 +3462,9 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
     if (!sgroups.hasSGroup(sg_idx) || sa.subscript.size() == 0 || sa.sa_class.size() == 0)
         return false;
 
-    // No special handling needed for LGRP. Just mark it to remove.
+    // skip LGRP
     if (sa.sa_class.size() && std::string(sa.sa_class.ptr()) == "LGRP")
-        return true;
+        return false;
 
     // create template atom and set all properties except template index and transform
     bool res = true;
@@ -3538,15 +3538,19 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
 int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
 {
     QS_DEF(Array<int>, remove_atoms);
-    QS_DEF(Array<int>, sg_atoms);
+    QS_DEF(Array<int>, leaving_atoms);
+    QS_DEF(Array<int>, tgroup_atoms);
+    QS_DEF(Array<int>, residue_atoms);
     QS_DEF(Array<int>, mapping);
     QS_DEF(Array<int>, ap_points_atoms);
     QS_DEF(StringPool, ap_points_ids);
     QS_DEF(Array<int>, ap_ids);
-    QS_DEF(Array<int>, sgs);
+    QS_DEF(Array<int>, fragment_sgroups);
     QS_DEF(Array<int>, sgs_tmp);
 
     mapping.clear();
+    tgroup_atoms.clear();
+    leaving_atoms.clear();
 
     if (!sgroups.hasSGroup(sg_idx))
         return -1;
@@ -3556,12 +3560,8 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
     if (su.subscript.size() == 0)
         return -1;
 
-    // TODO: special handling needed for LGRP
     if (su.sa_class.size() && std::string(su.sa_class.ptr()) == "LGRP")
-    {
-        removeSGroup(sg_idx);
         return -1;
-    }
 
     ap_points_atoms.clear();
     ap_points_ids.clear();
@@ -3577,6 +3577,22 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
             Superatom::_AttachmentPoint& ap = su.attachment_points.at(k);
             ap_points_atoms.push(ap.aidx);
             ap_ids.push(ap_points_ids.add(ap.apid));
+            if (ap.lvidx >= 0)
+            {
+                Array<int> latoms, lgroups;
+                latoms.push(ap.lvidx);
+                sgroups.findSGroups(SGroup::SG_ATOMS, latoms, lgroups);
+                for (auto lg_idx : lgroups)
+                {
+                    SGroup& lsg = sgroups.getSGroup(lg_idx);
+                    if (lsg.sgroup_type == SGroup::SG_TYPE_SUP)
+                    {
+                        Superatom& lsa = (Superatom&)lsg;
+                        if (lsa.sa_class.size() && std::string(lsa.sa_class.ptr()) == "LGRP")
+                            leaving_atoms.push(ap.lvidx);
+                    }
+                }
+            }
         }
     }
     else // Try to create attachment points from crossing bond information
@@ -3644,47 +3660,53 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
         tg.tgroup_natreplace.copy(su.sa_natreplace);
 
     tg.fragment.reset(this->neu());
-    tg.fragment->makeSubmolecule(*this, su.atoms, &mapping, SKIP_TGROUPS | SKIP_TEMPLATE_ATTACHMENT_POINTS);
+    tgroup_atoms.copy(su.atoms);
+    tgroup_atoms.concat(leaving_atoms);
+    tg.fragment->makeSubmolecule(*this, tgroup_atoms, &mapping, SKIP_TGROUPS | SKIP_TEMPLATE_ATTACHMENT_POINTS);
 
-    sg_atoms.clear();
+    residue_atoms.clear();
+    // collect residue atoms
     for (int j = 0; j < su.atoms.size(); j++)
     {
         if (mapping[su.atoms[j]] != -1)
-            sg_atoms.push(mapping[su.atoms[j]]);
+            residue_atoms.push(mapping[su.atoms[j]]);
     }
 
-    sgs.clear();
-    tg.fragment->sgroups.findSGroups(SGroup::SG_ATOMS, sg_atoms, sgs);
+    fragment_sgroups.clear();
+    // find all s-groups that contain residue atoms
+    tg.fragment->sgroups.findSGroups(SGroup::SG_ATOMS, residue_atoms, fragment_sgroups);
 
-    int new_sg_idx = -1;
-    for (int j = 0; j < sgs.size(); j++)
+    // find residue superatom s-group
+    int residue_sg_idx = -1;
+    for (int j = 0; j < fragment_sgroups.size(); j++)
     {
-        SGroup& sg = tg.fragment->sgroups.getSGroup(sgs[j]);
+        SGroup& sg = tg.fragment->sgroups.getSGroup(fragment_sgroups[j]);
+        // remove all s-groups that are not superatoms
         if ((sg.sgroup_type != SGroup::SG_TYPE_SUP) || (sg.atoms.size() != su.atoms.size()))
         {
-            tg.fragment->sgroups.remove((sgs[j]));
+            tg.fragment->sgroups.remove((fragment_sgroups[j]));
         }
         else
         {
             Superatom& sup_new = (Superatom&)sg;
             if ((strcmp(su.subscript.ptr(), sup_new.subscript.ptr()) == 0) && (su.attachment_points.size() == sup_new.attachment_points.size()))
             {
-                new_sg_idx = sgs[j];
+                residue_sg_idx = fragment_sgroups[j];
             }
         }
     }
 
-    sgs.clear();
+    fragment_sgroups.clear();
+    // delete all superatoms that are not residue superatom and not leaving groups
     for (int j = tg.fragment->sgroups.begin(); j != tg.fragment->sgroups.end(); j = tg.fragment->sgroups.next(j))
     {
-        if (j != new_sg_idx)
-            sgs.push(j);
+        auto& sa = (Superatom&)tg.fragment->sgroups.getSGroup(j);
+        if (j != residue_sg_idx && (!sa.sa_class.size() || sa.sa_class.ptr() != std::string("LGRP")))
+            fragment_sgroups.push(j);
     }
 
-    for (int j = 0; j < sgs.size(); j++)
-    {
-        tg.fragment->sgroups.remove((sgs[j]));
-    }
+    for (int j = 0; j < fragment_sgroups.size(); j++)
+        tg.fragment->sgroups.remove((fragment_sgroups[j]));
 
     int idx = addTemplateAtom(tg.tgroup_name.ptr());
     setTemplateAtomClass(idx, tg.tgroup_class.ptr());
@@ -3743,23 +3765,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
 
     remove_atoms.copy(su.atoms);
 
-    sgs.clear();
-    sgroups.findSGroups(SGroup::SG_ATOMS, su.atoms, sgs);
-
-    for (int j = 0; j < sgs.size(); j++)
-    {
-        SGroup& sg = sgroups.getSGroup(sgs[j]);
-        if ((sg.sgroup_type == SGroup::SG_TYPE_SUP) && (sg.atoms.size() == su.atoms.size()))
-        {
-            sgroups.remove((sgs[j]));
-        }
-        else
-        {
-            sg.atoms.push(idx);
-        }
-    }
-
-    removeAtoms(remove_atoms);
+    removeAtoms(tgroup_atoms);
 
     return idx;
 }
@@ -4620,10 +4626,15 @@ void BaseMolecule::transformSuperatomsToTemplates(int template_id, MonomerTempla
         auto& sg = sgroups.getSGroup(sg_idx);
         if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
-            if (mtl && _replaceExpandedMonomerWithTemplate(sg_idx, template_id, *mtl, added_templates, remove_atoms))
-                remove_sgroups.push_back(sg_idx);
-            else if (tgroups.getTGroupCount()) // transform only for mixed case. Otherwise keep sgroups.
-                _transformSGroupToTGroup(sg_idx, template_id);
+            auto& sa = (Superatom&)sg;
+            if (sa.sa_class.size())
+            {
+                if (!mtl || mtl->monomerTemplates().empty() || !_replaceExpandedMonomerWithTemplate(sg_idx, template_id, *mtl, added_templates, remove_atoms))
+                {
+                    if (isAminoAcidClass(sa.sa_class.ptr()) || isChemClass(sa.sa_class.ptr()) || isNucleicClass(sa.sa_class.ptr()))
+                        _transformSGroupToTGroup(sg_idx, template_id);
+                }
+            }
         }
     }
     // remove S-groups that were transformed to templates
