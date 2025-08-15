@@ -8,6 +8,8 @@
 2708-sgroup-data.ket:SUCCEED
 3047-accldraw.ket:SUCCEED
 3050-bad-cbonds.ket:SUCCEED
+3094-chem-2000.ket:SUCCEED
+3094-chem-3000.ket:SUCCEED
 SgroupDifferent.ket:SUCCEED
 acgt_1412.ket:SUCCEED
 anacyclamide.ket:SUCCEED
