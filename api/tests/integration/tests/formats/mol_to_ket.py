@@ -61,6 +61,8 @@ files = [
     "flip_rotate_rna",
     "3050-bad-cbonds",
     "3047-accldraw",
+    "3094-chem-2000",
+    "3094-chem-3000",
 ]
 
 native_precision = [
@@ -75,6 +77,11 @@ with_lib = [
     "flip_rotate",
     "flip_rotate_2000",
     "flip_rotate_rna",
+    "taspoglutide",
+    "apamine",
+    "anacyclamide",
+    "3094-chem-2000",
+    "3094-chem-3000",
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(
