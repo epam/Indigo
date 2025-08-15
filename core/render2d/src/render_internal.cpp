@@ -1764,13 +1764,16 @@ void MoleculeRenderInternal::_initAtomData()
         ad.hydroPos = (HYDRO_POS)_argMax(ad.implHPosWeights, 4);
 
         int uaid = _atomMappingInv.size() > i ? _atomMappingInv[i] : i;
-        if (_data.inversions.size() > uaid)
+        if (uaid >= 0)
         {
-            ad.inversion = _data.inversions[uaid];
-        }
-        if (_data.aam.size() > uaid)
-        {
-            ad.aam = _data.aam[uaid];
+            if (_data.inversions.size() > uaid)
+            {
+                ad.inversion = _data.inversions[uaid];
+            }
+            if (_data.aam.size() > uaid)
+            {
+                ad.aam = _data.aam[uaid];
+            }
         }
     }
 
