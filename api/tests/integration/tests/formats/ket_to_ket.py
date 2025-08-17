@@ -92,15 +92,21 @@ for format in sorted(savers.keys()):
         data_ref = file.read()
     check_res(filename, format, data_ref, data)
 
-files = [
-    "multi_merge4",
-]
+files = ["multi_merge4", "3069-reaction"]
 
 files.sort()
 for filename in files:
-    rea = indigo.loadReactionFromFile(
-        os.path.join(root_rea, filename + ".ket")
-    )
+    try:
+        rea = indigo.loadReactionFromFile(
+            os.path.join(root_rea, filename + ".ket")
+        )
+    except:
+        try:
+            rea = indigo.loadQueryReactionFromFile(
+                os.path.join(root_rea, filename + ".ket")
+            )
+        except:
+            print("bad reaction data")
 
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
     #     file.write(rea.json())

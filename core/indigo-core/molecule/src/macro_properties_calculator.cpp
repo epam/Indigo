@@ -140,6 +140,21 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         else
             atom_connections[atom_idx] += 1;
     };
+    auto merge_polymer = [&](size_t dest_polymer, size_t source_polymer) {
+        polymers[dest_polymer].merge(polymers[source_polymer]);
+        polymers[dest_polymer].has_selection |= polymers[source_polymer].has_selection;
+        for (auto& it : sequence_to_polymer_idx)
+        {
+            if (it.second == source_polymer)
+                it.second = dest_polymer;
+        }
+        for (auto& it : molecule_to_polymer_idx)
+        {
+            if (it.second == source_polymer)
+                it.second = dest_polymer;
+        }
+        polymers[source_polymer].deleted = true;
+    };
     for (auto connection : document.nonSequenceConnections())
     {
         auto& ep1 = connection.ep1();
@@ -168,12 +183,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             size_t left_polymer_idx = sequence_to_polymer_idx[left_sequence_idx];
             size_t right_polymer_idx = sequence_to_polymer_idx[right_sequence_idx];
             if (left_sequence_idx != right_sequence_idx && left_polymer_idx != right_polymer_idx)
-            {
-                polymers[left_polymer_idx].merge(polymers[right_polymer_idx]);
-                polymers[left_polymer_idx].has_selection |= polymers[right_polymer_idx].has_selection;
-                sequence_to_polymer_idx[right_sequence_idx] = left_polymer_idx;
-                polymers[right_polymer_idx].deleted = true;
-            }
+                merge_polymer(left_polymer_idx, right_polymer_idx);
             if (connection.connectionType() != KetConnectionHydro)
                 polymers[left_polymer_idx].has_non_sequence_connection = true;
         }
@@ -186,15 +196,9 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             auto monomer_ap = ep1.hasStringProp("monomerId") ? ep1.getStringProp("attachmentPointId") : ep2.getStringProp("attachmentPointId");
             monomers.at(monomer_id)->connectAttachmentPointToMolecule(monomer_ap, molecule_id, atom_idx);
             size_t sequence_polymer_idx = sequence_to_polymer_idx[monomer_to_sequence_idx[monomer_id]];
-
             size_t molecule_polymer_idx = molecule_to_polymer_idx[molecule_id];
             if (sequence_polymer_idx != molecule_polymer_idx)
-            {
-                polymers[sequence_polymer_idx].merge(polymers[molecule_polymer_idx]);
-                polymers[sequence_polymer_idx].has_selection |= polymers[molecule_polymer_idx].has_selection;
-                molecule_to_polymer_idx[molecule_id] = sequence_polymer_idx;
-                polymers[molecule_polymer_idx].deleted = true;
-            }
+                merge_polymer(sequence_polymer_idx, molecule_polymer_idx);
             add_connection_to_atom(sequence_polymer_idx, molecule_id, atom_idx);
         }
         else if (ep1.hasStringProp("moleculeId") && ep2.hasStringProp("moleculeId"))
@@ -206,12 +210,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
             size_t first_molecule_polymer_idx = molecule_to_polymer_idx[first_molecule_id];
             size_t second_molecule_polymer_idx = molecule_to_polymer_idx[second_molecule_id];
             if (first_molecule_polymer_idx != second_molecule_polymer_idx)
-            {
-                polymers[first_molecule_polymer_idx].merge(polymers[second_molecule_polymer_idx]);
-                polymers[first_molecule_polymer_idx].has_selection |= polymers[second_molecule_polymer_idx].has_selection;
-                molecule_to_polymer_idx[second_molecule_id] = first_molecule_polymer_idx;
-                polymers[second_molecule_polymer_idx].deleted = true;
-            }
+                merge_polymer(first_molecule_polymer_idx, second_molecule_polymer_idx);
             add_connection_to_atom(first_molecule_polymer_idx, first_molecule_id, first_atom_idx);
             add_connection_to_atom(first_molecule_polymer_idx, second_molecule_id, second_atom_idx);
         }

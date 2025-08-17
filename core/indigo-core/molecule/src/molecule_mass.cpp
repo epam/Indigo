@@ -32,7 +32,7 @@ MoleculeMass::MoleculeMass()
     relative_atomic_mass_map = nullptr;
 }
 
-double MoleculeMass::molecularWeight(Molecule& mol)
+double MoleculeMass::molecularWeight(BaseMolecule& mol)
 {
     std::set<int> selected_atoms;
     mol.getAtomSelection(selected_atoms);
@@ -67,6 +67,8 @@ double MoleculeMass::molecularWeight(Molecule& mol)
 
         int number = mol.getAtomNumber(v);
         int isotope = mol.getAtomIsotope(v);
+        if (number < 0) // Query molecule unsure atom
+            continue;
 
         if (isotope == 0)
         {
@@ -87,7 +89,7 @@ double MoleculeMass::molecularWeight(Molecule& mol)
         }
 
         // Add hydrogens
-        impl_h += mol.getImplicitH_NoThrow(v, 0);
+        impl_h += mol.getImplicitH(v, true);
     }
 
     for (int i = ELEM_MIN; i < ELEM_MAX; i++)
@@ -116,7 +118,7 @@ static int _isotopesCmp(int i1, int i2, void* context)
     return 0;
 }
 
-double MoleculeMass::mostAbundantMass(Molecule& mol)
+double MoleculeMass::mostAbundantMass(BaseMolecule& mol)
 {
     std::set<int> selected_atoms;
     mol.getAtomSelection(selected_atoms);
@@ -152,7 +154,9 @@ double MoleculeMass::mostAbundantMass(Molecule& mol)
 
         int number = mol.getAtomNumber(v);
         int isotope = mol.getAtomIsotope(v);
-        int impl_h = mol.getImplicitH(v);
+        int impl_h = mol.getImplicitH(v, false);
+        if (number < 0) // Query molecule unsure atom
+            continue;
 
         if (isotope == 0)
             elements_counts[number]++;
@@ -215,7 +219,7 @@ double MoleculeMass::mostAbundantMass(Molecule& mol)
     return molmass;
 }
 
-double MoleculeMass::monoisotopicMass(Molecule& mol)
+double MoleculeMass::monoisotopicMass(BaseMolecule& mol)
 {
     std::set<int> selected_atoms;
     mol.getAtomSelection(selected_atoms);
@@ -248,7 +252,9 @@ double MoleculeMass::monoisotopicMass(Molecule& mol)
 
         int number = mol.getAtomNumber(v);
         int isotope = mol.getAtomIsotope(v);
-        int impl_h = mol.getImplicitH(v);
+        int impl_h = mol.getImplicitH(v, false);
+        if (number < 0) // Query molecule unsure atom
+            continue;
 
         if (isotope == 0)
             isotope = Element::getMostAbundantIsotope(number);
@@ -262,7 +268,7 @@ double MoleculeMass::monoisotopicMass(Molecule& mol)
     return molmass;
 }
 
-int MoleculeMass::nominalMass(Molecule& mol)
+int MoleculeMass::nominalMass(BaseMolecule& mol)
 {
     if (mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) > 0)
     {
@@ -280,7 +286,9 @@ int MoleculeMass::nominalMass(Molecule& mol)
 
         int number = mol.getAtomNumber(v);
         int isotope = mol.getAtomIsotope(v);
-        int impl_h = mol.getImplicitH(v);
+        int impl_h = mol.getImplicitH(v, false);
+        if (number < 0) // Query molecule unsure atom
+            continue;
 
         if (isotope == 0)
             molmass += Element::getDefaultIsotope(number);
@@ -317,7 +325,7 @@ int MoleculeMass::_cmp(_ElemCounter& ec1, _ElemCounter& ec2, void* /*context*/)
     return strncmp(Element::toString(ec1.elem), Element::toString(ec2.elem), 3);
 }
 
-void MoleculeMass::massComposition(Molecule& mol, Array<char>& str)
+void MoleculeMass::massComposition(BaseMolecule& mol, Array<char>& str)
 {
     std::set<int> selected_atoms;
     mol.getAtomSelection(selected_atoms);
@@ -352,7 +360,9 @@ void MoleculeMass::massComposition(Molecule& mol, Array<char>& str)
 
         int number = mol.getAtomNumber(v);
         int isotope = mol.getAtomIsotope(v);
-        impl_h += mol.getImplicitH(v);
+        impl_h += mol.getImplicitH(v, false);
+        if (number < 0) // Query molecule unsure atom
+            continue;
 
         if (isotope)
         {

@@ -1774,6 +1774,11 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                     writer.Key("expanded");
                     writer.Bool(display == DisplayOption::Expanded);
                 }
+                if (mol->isAtomSelected(i))
+                {
+                    writer.Key("selected");
+                    writer.Bool(true);
+                }
 
                 auto transform = mol->getTemplateAtomTransform(i);
                 if (transform.hasTransformation())

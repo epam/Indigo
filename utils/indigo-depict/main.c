@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -869,7 +870,7 @@ int main(int argc, char* argv[])
     indigoSetOption("ignore-bad-valence", "on");
     indigoSetOption("molfile-saving-mode", "2000");
     indigoSetOption("ket-saving-version", "1.0.0");
-    indigoSetOptionBool("json-saving-pretty", "on");
+    indigoSetOptionBool("json-saving-pretty", true);
     indigoSetOptionFloat("reaction-component-margin-size", 0.0f);
     // indigoSetOptionBool("json-saving-add-reaction-data", "on");
 

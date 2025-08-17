@@ -26,6 +26,15 @@ namespace indigo
     // Set the expanded monomers and calculate the dimensions for each monomer as R1-R2 distance
     void getDimensions(KetDocument& mol, std::vector<float>& dimensions)
     {
+        bool has_selection = false;
+        for (const auto& monomerId : mol.monomersIds())
+        {
+            if (mol.getMonomerById(monomerId)->isBoolPropTrue("selected"))
+            {
+                has_selection = true;
+                break;
+            }
+        }
         for (const auto& monomerId : mol.monomersIds())
         {
             int id = std::stoi(monomerId);
@@ -38,14 +47,13 @@ namespace indigo
                 continue;
             }
             auto& mon = static_cast<KetMonomer&>(*monPtr);
-            bool selected = mon.isBoolPropTrue("selected");
-            mon.setBoolProp("expanded", selected);
-            if (!selected)
+            if (has_selection && !mon.isBoolPropTrue("selected"))
             {
                 dimensions.push_back(DEFAULT_DIMENSION);
             }
             else
             {
+                mon.setBoolProp("expanded", true);
                 const auto& tmpl = mol.templates().at(mon.templateId());
                 // collect all leaving-group atom indices
                 std::vector<int> leaves;

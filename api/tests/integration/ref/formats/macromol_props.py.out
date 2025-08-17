@@ -16,6 +16,7 @@ props_double_dna_gc.json: SUCCEED
 props_double_dna_p.json: SUCCEED
 props_double_dna_single.json: SUCCEED
 props_double_dna_unsplit.json: SUCCEED
+props_issue_3053.json: SUCCEED
 props_mol_connected_to_mol.json: SUCCEED
 props_nucleoside_peptide.json: SUCCEED
 props_only_micro.json: SUCCEED

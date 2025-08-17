@@ -196,14 +196,6 @@ def iterate_selected_submolecules(r, selected, indigo):
             yield m.getSubmolecule(moleculeAtoms).clone()
 
 
-def iterate_selected_components(m, selected):
-    for c in m.iterateComponents():
-        for atom in c.iterateAtoms():
-            if atom.index() in selected:
-                yield c
-                break
-
-
 def do_calc(m, func_name, precision):
     try:
         value = getattr(m, func_name)()
@@ -215,104 +207,52 @@ def do_calc(m, func_name, precision):
 
 
 def molecule_calc(m, func_name, precision=None):
-    if m.dbgInternalType() == "#03: <query molecule>":
-        return "Cannot calculate properties for structures with query features"
-    if m.countRGroups() or m.countAttachmentPoints():
-        return "Cannot calculate properties for RGroups"
     results = []
-    for c in m.iterateComponents():
-        results.append(do_calc(c.clone(), func_name, precision))
+    has_selection = m.hasSelection()
+    for component in m.iterateComponents():
+        c = component.clone()
+        if not has_selection or c.hasSelection():
+            results.append(do_calc(c.clone(), func_name, precision))
     return "; ".join(results)
 
 
 def reaction_calc(rxn, func_name, precision=None):
-    if rxn.dbgInternalType() == "#05: <query reaction>":
-        return "Cannot calculate properties for structures with query features"
-    for m in rxn.iterateMolecules():
-        if m.countRGroups() or m.countAttachmentPoints():
-            return "Cannot calculate properties for RGroups"
     reactants_results = []
+    has_selection = rxn.hasSelection()
     if rxn.countReactants() > 0 or rxn.countProducts() > 0:
         for r in rxn.iterateReactants():
-            reactants_results.append(
-                "[{0}]".format(molecule_calc(r, func_name, precision))
-            )
+            if not has_selection or r.hasSelection():
+                reactants_results.append(
+                    "[{0}]".format(molecule_calc(r, func_name, precision))
+                )
         product_results = []
         for p in rxn.iterateProducts():
-            product_results.append(
-                "[{0}]".format(molecule_calc(p, func_name, precision))
-            )
+            if not has_selection or p.hasSelection():
+                product_results.append(
+                    "[{0}]".format(molecule_calc(p, func_name, precision))
+                )
         return "{0} > {1}".format(
             " + ".join(reactants_results), " + ".join(product_results)
         )
     else:
         results = []
         for m in rxn.iterateMolecules():
-            results.append(do_calc(m, func_name, precision))
+            if not has_selection or m.hasSelection():
+                results.append(do_calc(m, func_name, precision))
         return "; ".join(results)
 
 
-def selected_molecule_calc(
-    m, selected, func_name, precision=None, indigo=None
-):
-    if m.dbgInternalType() == "#03: <query molecule>":
-        try:
-            m = qmol_to_mol(m, selected, indigo)
-        except IndigoException:
-            return "Cannot calculate properties for structures with query features"
-    if m.countRGroups() and max(selected) >= m.countAtoms():
-        return "Cannot calculate properties for RGroups"
-    try:
-        m = remove_implicit_h_in_selected_components(m, selected)
-    except ImplicitHCalcExpection as e:
-        return str(e.value)
-    results = []
-    for c in iterate_selected_components(m, selected):
-        cc = c.clone()
-        if cc.countRSites() or cc.countAttachmentPoints():
-            return "Cannot calculate properties for RGroups"
-        results.append(do_calc(cc, func_name, precision))
-    return "; ".join(results)
-
-
-def selected_reaction_calc(
-    r, selected, func_name, precision=None, indigo=None
-):
-    results = []
-    total_atoms_count = sum([m.countAtoms() for m in r.iterateMolecules()])
-    total_rgroups_count = sum([m.countRGroups() for m in r.iterateMolecules()])
-    if total_rgroups_count and max(selected) >= total_atoms_count:
-        return "Cannot calculate properties for RGroups"
-    try:
-        for csm in iterate_selected_submolecules(r, selected, indigo):
-            if csm.countRSites() or csm.countAttachmentPoints():
-                return "Cannot calculate properties for RGroups"
-            results.append(do_calc(csm, func_name, precision))
-    except ImplicitHCalcExpection as e:
-        return str(e.value)
-    except IndigoException:
-        return "Cannot calculate properties for structures with query features"
-    return "; ".join(results)
-
-
-def remove_unselected_repeating_units_m(m, selected):
+def remove_unselected_repeating_units_m(m):
     for ru in m.iterateRepeatingUnits():
         for atom in ru.iterateAtoms():
-            if atom.index() not in selected:
+            if not atom.isSelected():
                 ru.remove()
                 break
 
 
-def remove_unselected_repeating_units_r(r, selected):
-    atomCounter = 0
+def remove_unselected_repeating_units_r(r):
     for m in r.iterateMolecules():
-        moleculeAtoms = []
-        for atom in selected:
-            if atomCounter <= atom < atomCounter + m.countAtoms():
-                moleculeAtoms.append(atom - atomCounter)
-        atomCounter += m.countAtoms()
-        if moleculeAtoms:
-            remove_unselected_repeating_units_m(m, moleculeAtoms)
+        remove_unselected_repeating_units_m(m)
 
 
 def try_load_seq(indigo, md, molstr, library, seq_type):
@@ -1610,11 +1550,11 @@ def calculate():
         selected=data["selected"],
         indigo=indigo,
     )
-    if data["selected"]:
+    if md.struct.hasSelection():
         if md.is_rxn:
-            remove_unselected_repeating_units_r(md.struct, data["selected"])
+            remove_unselected_repeating_units_r(md.struct)
         else:
-            remove_unselected_repeating_units_m(md.struct, data["selected"])
+            remove_unselected_repeating_units_m(md.struct)
     calculate_properties = data["properties"]
     result = {}
     precision = data["precision"]
@@ -1627,31 +1567,13 @@ def calculate():
     }
     for p in calculate_properties:
         if md.is_rxn:
-            if data["selected"]:
-                result[p] = selected_reaction_calc(
-                    md.struct,
-                    data["selected"],
-                    func_name_dict[p],
-                    precision=precision,
-                    indigo=indigo,
-                )
-            else:
-                result[p] = reaction_calc(
-                    md.struct, func_name_dict[p], precision=precision
-                )
+            result[p] = reaction_calc(
+                md.struct, func_name_dict[p], precision=precision
+            )
         else:
-            if data["selected"]:
-                result[p] = selected_molecule_calc(
-                    md.struct,
-                    data["selected"],
-                    func_name_dict[p],
-                    precision=precision,
-                    indigo=indigo,
-                )
-            else:
-                result[p] = molecule_calc(
-                    md.struct, func_name_dict[p], precision=precision
-                )
+            result[p] = molecule_calc(
+                md.struct, func_name_dict[p], precision=precision
+            )
     if data["json_output"]:
         return jsonify(result), 200, {"Content-Type": "application/json"}
     else:
@@ -1954,9 +1876,9 @@ def calculateMacroProperties():
     return jsonify(result), 200, {"Content-Type": "application/json"}
 
 
-@indigo_api.route("/expandMonomers", methods=["POST"])
+@indigo_api.route("/expand", methods=["POST"])
 @check_exceptions
-def expandMonomers():
+def expand():
     """
     Expand selected monomers
     ---
@@ -2033,7 +1955,7 @@ def expandMonomers():
     data = IndigoRequestSchema().load(request_data)
 
     LOG_DATA(
-        "[REQUEST] /calculateMacroProperties",
+        "[REQUEST] /expand",
         data["input_format"],
         data["output_format"],
         data["struct"],
@@ -2041,11 +1963,19 @@ def expandMonomers():
     )
     indigo = indigo_init(data["options"])
 
+    monomer_library = data["options"].get("monomerLibrary")
+    library = None
+    if monomer_library is not None:
+        library = indigo.loadMonomerLibrary(monomer_library)
+    else:
+        library = indigo.loadMonomerLibrary('{"root":{}}')
+
     md = load_moldata(
         data["struct"],
         mime_type=data["input_format"],
         options=data["options"],
         indigo=indigo,
+        library=library,
         try_document=True,
     )
 

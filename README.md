@@ -47,6 +47,27 @@ Each project is placed in the corresponding directory with CMakeList.txt configu
 file, that does not include other projects. In order to build the whole project with the
 correct references you need to use CMake configurations from the build_scripts directory.
 
+## Develop using dev container
+
+This is an alternative setup solution next to have it on your PC directly. It builds on having the tools in a docker container and VSCode acts as a client.
+
+### Prerequisites
+
+1. Docker Desktop (or docker engine if you prefer)
+2. VSCode
+
+### Installation Steps
+
+1. Clone this repository
+2. Open in VSCode
+3. Follow recommendation to install the Dev Container Extension
+4. Open in Dev Container
+
+The first time takes some minutes but afterwards you can directly develop from VSCode.
+
+***Remark for Windows Users:*** Its a known limitation that on windows the overlay driver is super slow, so if you want to have
+a fast IDE, clone your container into a volume rather than natively on the client or in your WSL distribution.
+
 ## Preinstalled build tools ##
 
 To build the project from the sources, the following tools should be installed:
@@ -82,7 +103,7 @@ To build the project from the sources, the following tools should be installed:
 - flask_httpauth package installed (to run backend API test). Command: `python -m pip install flask_httpauth`
 - pyparsing package installed (to run backend API test). Command: `python -m pip install pyparsing`
 - requests package installed (to run backend API test). Command: `python -m pip install requests`
- 
+
 > On Linux use python3 insted of python. Using virtual environment might be required as well.
 
 
@@ -130,14 +151,14 @@ Befor running any test you have to build and install indigo-python
 
 
 > Package will be named like 'epam.indigo-*\<version-arch\>*.whl'. For instance: *epam.indigo-1.29.0.dev2-py3-none-win_amd64.whl*
-   
+
 2) Install package using pip
     > - If Indigo package has been already installed, uninstall it with the following command: `python -m pip uninstall <path-to-.whl-file> -y`
 
     ```
     python -m pip install <path-to-.whl-file>
     ```
-    
+
     > Replace _**\<path-to-.whl-file>**_ with the right path to .whl package. For instance: `python -m pip install ../api/python/dist/epam.indigo-1.29.0.dev2-py3-none-win_amd64.whl`
 
 3) Run integration test
@@ -147,7 +168,7 @@ Befor running any test you have to build and install indigo-python
     ```
     python api/tests/integration/test.py -t 1
     ```
-    
+
     >to run tests by mask use `test_name`
     ```
     python api/tests/integration/test.py -t 1 -p test_name
@@ -277,14 +298,14 @@ Change directory to ```recipe-conda``, set INDIGO_VERSION to existing Indigo ver
 Linux/Mac:
 ```
 >cd conda-recipe
->INDIGO_VERSION=1.29.0 conda build . 
+>INDIGO_VERSION=1.29.0 conda build .
 ```
 
 Windows(using cmd):
 ```
 >cd conda-recipe
->set INDIGO_VERSION=1.29.0 
->conda build . 
+>set INDIGO_VERSION=1.29.0
+>conda build .
 ```
 
 To upload packages: install anaconda-client, login, and upload packet using command provided by conda-build in output
