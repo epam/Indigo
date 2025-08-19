@@ -98,7 +98,7 @@ def get_query_entities(indigo: Indigo, function: str):
 
     for entities_file in entities_files:
         it = indigo_iterator(indigo, entities_file)
-        index = 1
+        index = 0
         while True:
             index += 1
             try:
