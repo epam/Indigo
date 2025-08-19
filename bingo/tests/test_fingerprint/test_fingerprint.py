@@ -8,8 +8,11 @@ class TestFingerprint:
         "query_id, expected", query_cases("fingerprint", "fingerprint(full)")
     )
     def test_fingerprint_full(self, db, entities, query_id, expected):
+        print(f"\n!!query_id={query_id},expected={expected}\n")
         molecule = entities.get(query_id)
+        print(f"\n!!molecule={molecule}\n")
         result = db.fingerprint(molecule, "full")
+        print(f"\n!!result={result}\n")
         assert_calculate_query(result, expected)
 
     @pytest.mark.parametrize(
