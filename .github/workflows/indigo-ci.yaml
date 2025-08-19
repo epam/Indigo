@@ -1066,7 +1066,7 @@ jobs:
       - name: Run Bingo tests
         run: |
           export PYTHONPATH=${{ github.workspace }}/bingo/bingo-elastic/python
-          pytest --tb=no --db postgres --junit-xml=junit_report.xml
+          pytest -s --tb=no --db postgres --junit-xml=junit_report.xml
         working-directory: bingo/tests
       - name: Login to DockerHub
         if: startsWith(github.ref, 'refs/tags/indigo-')
