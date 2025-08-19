@@ -99,8 +99,11 @@ def get_query_entities(indigo: Indigo, function: str):
     index = 1
     for entities_file in entities_files:
         for mol in indigo_iterator(indigo, entities_file):
-            result[index] = mol
             index += 1
+            try:
+                result[index] = mol
+            except Exception as e:
+                print(f"get_query_entites exception: {e} {mol.name()}")
 
     return result
 
