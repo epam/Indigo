@@ -47,7 +47,7 @@ QUERIES_DATA = {
     "substructure": [
         abspath("data/molecules/substructure/import/queries/0_queries.sdf"),
         abspath(
-            "data/molecules/substructure/import/queries/1_explicit_valence_queries.smt"
+            "data/molecules/substructure/import/queries/1_explicit_valence_queries.smiles"
         ),
     ],
     "similarity": abspath(

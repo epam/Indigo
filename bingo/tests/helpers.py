@@ -67,16 +67,6 @@ def get_bingo_meta(function: str, data_type: str):
         "import_no_sql": nosql_data_path,
     }
 
-def indigo_smarts_iterator(indigo: Indigo.Indigo, filename: str):
-    with open(filename) as file:
-        for line in file:
-            try:
-                mol = indigo.loadMolecule(line)
-            except Exception as e:
-                print(f"TODO: Please fix me. Exception:{e}")
-                continue
-            yield mol
-
 def indigo_iterator(indigo: Indigo.Indigo, filename: str):
     """
     Provide proper Indigo iterator depending on file format
@@ -89,7 +79,6 @@ def indigo_iterator(indigo: Indigo.Indigo, filename: str):
         ".sma": indigo.iterateSmilesFile,
         ".smiles": indigo.iterateSmilesFile,
         ".rdf": indigo.iterateRDFile,
-        ".smt": lambda x: indigo_smarts_iterator(indigo, x),
     }.get(extension)
     return iterator(filename)
 
@@ -106,9 +95,9 @@ def get_query_entities(indigo: Indigo, function: str):
     if type(entities_files) != list:
         entities_files = [entities_files]
 
+    index = 1
     for entities_file in entities_files:
         it = indigo_iterator(indigo, entities_file)
-        index = 1
         prev_molecule = ''
         while True:
             try:
