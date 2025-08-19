@@ -104,11 +104,12 @@ def get_query_entities(indigo: Indigo, function: str):
             try:
                 mol = next(it)
                 result[index] = mol
+                print(f"MOL={mol.name}")
             except StopIteration:
+                print(f"stop iteration")
                 break
             except Exception as e:
                 print(f"[ERROR] Failed to read molecule {e}")
-                continue
     return result
 
 
