@@ -36,7 +36,7 @@ jobs:
              git config --global --add safe.directory '*'
              git fetch --tags -f
       - name: Install postgres server headers and build bingo-postgres
-        uses: docker://epmlsop/buildpack-almalinux8:latest
+        uses: docker://epmlsop/buildpack-almalinux10:latest
         with:
           args: >
             /bin/sh -c "
