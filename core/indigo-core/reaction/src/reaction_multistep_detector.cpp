@@ -758,9 +758,37 @@ void ReactionMultistepDetector::buildReactionsData()
 {
     // separate reactions by connected components
     std::vector<bool> visited(_component_summ_blocks.size());
+    std::unordered_map<int, std::vector<size_t>> agents_map;
+    // collect agents
     for (size_t i = 0; i < _component_summ_blocks.size(); ++i)
     {
         auto& csb = _component_summ_blocks[i];
+        if (csb.role == BaseReaction::CATALYST)
+        {
+            for (auto ri : csb.reaction_indexes)
+            {
+                if (ri.first == BaseReaction::CATALYST) // catalyst can't be a reactant or product of other reactions
+                {
+                    auto step_it = agents_map.find(ri.second);
+                    if (step_it != agents_map.end())
+                        step_it->second.push_back(i); // add catalyst to the existing step
+                    else
+                        agents_map.emplace(std::piecewise_construct, std::forward_as_tuple(ri.second),
+                                           std::forward_as_tuple(static_cast<std::size_t>(1), i)); // create new step with catalyst
+                }
+                else
+                    throw Error("Catalyst can't be a reactant or product in other reactions");
+            }
+        }
+    }
+
+    for (size_t i = 0; i < _component_summ_blocks.size(); ++i)
+    {
+        auto& csb = _component_summ_blocks[i];
+
+        if (csb.role == BaseReaction::UNDEFINED)
+            continue;
+
         for (auto csb_idx : csb.indexes)
         {
             auto& mc = _merged_components[csb_idx];
@@ -770,26 +798,44 @@ void ReactionMultistepDetector::buildReactionsData()
 
         if (!visited[i])
         {
-            std::vector<int> reaction;
+            std::vector<int> reaction_components;
             std::map<int, std::vector<std::pair<int, int>>> steps;
-            std::stack<int> st;
-            st.push((int)i);
+            std::stack<size_t> st;
+            st.push(i);
             visited[i] = true;
             while (!st.empty())
             {
-                int u = st.top();
+                auto u = st.top();
                 auto& csb = _component_summ_blocks[u];
+                st.pop();
+                // check reaction steps/arrows where csb is a participant
                 for (auto ri : csb.reaction_indexes)
                 {
                     auto ri_it = steps.find(ri.second); // ri.second is reaction index
                     if (ri_it != steps.end())
-                        ri_it->second.emplace_back(ri.first, u); // emplace role and component index
+                        ri_it->second.emplace_back(ri.first, (int)u); // emplace role and component index
                     else
                         steps.emplace(std::piecewise_construct, std::forward_as_tuple(ri.second),
-                                      std::forward_as_tuple(static_cast<std::size_t>(1), std::pair<int, int>{ri.first, u}));
+                                      std::forward_as_tuple(static_cast<std::size_t>(1), std::pair<int, int>{ri.first, (int)u}));
+
+                    if (csb.role != BaseReaction::CATALYST)
+                    { // find catalysts for this reaction step
+                        auto agent_it = agents_map.find(ri.second);
+                        if (agent_it != agents_map.end())
+                        {
+                            for (auto agent_idx : agent_it->second)
+                            {
+                                if (!visited[agent_idx])
+                                {
+                                    visited[agent_idx] = true;
+                                    st.push(agent_idx);
+                                }
+                            }
+                        }
+                    }
                 }
-                st.pop();
-                reaction.push_back(u);
+                reaction_components.push_back((int)u);
+                // collect reactants and products
                 for (int v : csb.arrows_to)
                 {
                     if (!visited[v])
@@ -807,7 +853,7 @@ void ReactionMultistepDetector::buildReactionsData()
                     }
                 }
             }
-            _reactions_info.emplace_back(reaction, steps);
+            _reactions_info.emplace_back(reaction_components, steps);
         }
     }
     // add indexes to complex molecules info
