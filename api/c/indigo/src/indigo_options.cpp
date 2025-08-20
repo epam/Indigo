@@ -426,6 +426,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerBool("standardize-create-dative-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.create_coordination_bonds));
     mgr->setOptionHandlerBool("standardize-create-hydrogen-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.create_hydrogen_bonds));
     mgr->setOptionHandlerBool("standardize-remove-extra-stereo-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.remove_extra_stereo_bonds));
+    mgr->setOptionHandlerBool("standardize-stereo-mark-undefined", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.standardize_stereo_mark_undefined));
 
     mgr->setOptionHandlerString("pKa-model", indigoSetPkaModel, indigoGetPkaModel);
     mgr->setOptionHandlerInt("pKa-model-level", SETTER_GETTER_INT_OPTION(indigo.ionize_options.level));
