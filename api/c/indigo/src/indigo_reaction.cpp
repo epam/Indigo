@@ -354,7 +354,7 @@ IndigoObject* IndigoReactionIter::next()
 
     if (_subtype == REACTION)
     {
-        auto& rc = _rxn.getBaseReaction(_idx);
+        auto rc = _rxn.getBaseReaction(_idx);
         IndigoBaseReaction* pbt = nullptr;
         if (rc->isQueryReaction())
             pbt = new IndigoQueryReaction();
