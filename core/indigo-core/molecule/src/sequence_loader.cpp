@@ -1354,10 +1354,21 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
             BufferScanner scanner(monomer_alias.c_str());
             SmilesLoader loader(scanner);
             Molecule mol{};
+            loader.stereochemistry_options.ignore_errors = true;
+            // loader.ignore_cistrans_errors = true;
             loader.loadMolecule(mol);
-            MoleculeLayout ml(mol, false);
+            MoleculeLayout ml(mol, true);
             ml.layout_orientation = UNCPECIFIED;
             ml.make();
+            mol.clearBondDirections();
+            try
+            {
+                mol.markBondsStereocenters();
+                mol.markBondsAlleneStereo();
+            }
+            catch (Exception e)
+            {
+            }
             // create template based on molecule
             monomer_alias = "Mod" + std::to_string(_unknown_ambiguous_count++);
             auto& mon_template = document.addMonomerTemplate(monomer_alias, MonomerTemplate::MonomerClassToStr(monomer_class), IdtAlias());
@@ -1398,7 +1409,26 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
                     if ((mol.getAtomNumber(edge.beg) == ELEM_H) || (mol.getAtomNumber(edge.end) == ELEM_H))
                         bond_order = _BOND_HYDROGEN;
                 }
-                mon_template.AddBond(bond_order, edge.beg, edge.end);
+                auto bond_idx = mon_template.AddBond(bond_order, edge.beg, edge.end);
+                int stereo = mol.getBondDirection(i);
+                switch (stereo)
+                {
+                case BOND_UP:
+                    stereo = BIOVIA_STEREO_UP;
+                    break;
+                case BOND_EITHER:
+                    stereo = BIOVIA_STEREO_ETHER;
+                    break;
+                case BOND_DOWN:
+                    stereo = BIOVIA_STEREO_DOWN;
+                    break;
+                default:
+                    stereo = BIOVIA_STEREO_NO;
+                }
+                if (stereo != 0)
+                {
+                    mon_template.getBond(bond_idx).setIntProp("stereo", stereo);
+                }
             }
             for (auto& it : rgroups)
             {

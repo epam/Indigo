@@ -1244,6 +1244,7 @@ void SequenceSaver::add_monomer(KetDocument& document, const std::unique_ptr<Ket
         StringOutput s_out(monomer_str);
         SmilesSaver saver(s_out);
         saver.separate_rsites = false;
+        saver.chemaxon = true;
         saver.saveMolecule(*pmol);
     }
     if (monomer_str.size() == 1)
@@ -1452,6 +1453,7 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
         StringOutput s_out(smiles);
         SmilesSaver saver(s_out);
         saver.separate_rsites = false;
+        saver.chemaxon = true;
         if (pbmol == &mol)
             saver.saveMolecule(mol);
         else

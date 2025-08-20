@@ -66,14 +66,14 @@ namespace indigo
             _int_props[idx] = static_cast<int>(value);
         };
 
-        inline void setStringProp(int idx, std::string value)
+        inline void setStringProp(int idx, const std::string& value)
         {
             _string_props[idx] = value;
         };
 
         void setBoolProp(std::string name, bool value);
         void setIntProp(std::string name, int value);
-        void setStringProp(std::string name, std::string value);
+        void setStringProp(std::string name, const std::string& value);
 
         virtual const std::map<std::string, int>& getBoolPropStrToIdx() const;
         virtual const std::map<std::string, int>& getIntPropStrToIdx() const;

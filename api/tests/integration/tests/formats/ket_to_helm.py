@@ -49,8 +49,8 @@ helm_data = {
     "rna_variants": "RNA1{r(A,G)p.r(G,U)p.r(A,C,G,U)}$$$$V2.0",
     "helm_monomer_molecule": "PEPTIDE1{A}|PEPTIDE2{G}|CHEM1{[C(N[*:2])=C[*:1] |$;;_R2;;_R1$|]}$CHEM1,PEPTIDE1,1:R2-1:R1|PEPTIDE2,CHEM1,1:R2-1:R1$$$V2.0",
     "helm_fractional_ratio": "PEPTIDE1{(A:1.5+C:0.1+G:3)}$$$$V2.0",
-    "helm_smiles": "PEPTIDE1{G.[[*:1]NC(C(=O)[*:2])C=O |$_R1;;;;;_R2;;$|].C}|PEPTIDE2{G.[[*:1]NC(C(=O)[*:2])C=O |$_R1;;;;;_R2;;$|].C}$$$$V2.0",
-    "helm_smiles_sugar": "RNA1{[C(C(CO[*:1])O[*:2])[*:3] |$;;;;_R1;;_R2;_R3$|](A)p}$$$$V2.0",
+    "helm_smiles": "PEPTIDE1{G.[[*:1]N[C@H](C(=O)[*:2])C=O |$_R1;;;;;_R2;;$|].C}|PEPTIDE2{G.[[*:1]N[C@H](C(=O)[*:2])C=O |$_R1;;;;;_R2;;$|].C}$$$$V2.0",
+    "helm_smiles_sugar": "RNA1{[C([C@H](CO[*:1])O[*:2])[*:3] |$;;;;_R1;;_R2;_R3$|](A)p}$$$$V2.0",
     "helm_molecule_2418": "PEPTIDE1{A}|CHEM1{[C1C=CC=CC=1[*:1] |$;;;;;;_R1$|]}$PEPTIDE1,CHEM1,1:R1-1:R1$$$V2.0",
     "helm_chem_rna_hydro": "CHEM1{[MCC]}|RNA1{r(U)p}$CHEM1,RNA1,1:pair-3:pair$$$V2.0",
     "helm_monomer_molecule_direct": "PEPTIDE1{A}|CHEM1{[C(=C)N[*:1] |$;;;_R1$|]}$PEPTIDE1,CHEM1,1:R2-1:R1$$$V2.0",
@@ -62,6 +62,7 @@ helm_data = {
     "helm_nucleosides": "RNA1{[5R6Rm5cEt](A).[5R6Rm5cEt](A).[5R6Rm5cEt](A)}$$$$V2.0",
     "helm_alias_single_r_p": "RNA1{r.p}$$$$V2.0",
     "helm_alias_ambiguous": "RNA1{[Sm5moe]([m2nprn2A]+[nobn6pur]+[nC6n2G]+[nC6n8A])[mepo2]}$$$$V2.0",
+    "helm_rsite_no_brackets": "PEPTIDE1{[dF].C.F.[dW].K.T.C.[[*:1]N[C@@H]([C@H](O)C)CO |$_R1;;;;;;;$|]}$PEPTIDE1,PEPTIDE1,2:R3-7:R3$$$V2.0",
 }
 
 for filename in sorted(helm_data.keys()):

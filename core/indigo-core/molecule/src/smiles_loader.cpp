@@ -514,6 +514,8 @@ void SmilesLoader::_readOtherStuff()
                         // ChemAxon's Extended SMILES notation for R-sites
                         if (_qmol != 0)
                             _qmol->resetAtom(i, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
+                        else
+                            _mol->resetAtom(i, ELEM_RSITE);
                         _bmol->allowRGroupOnRSite(i, rnum);
 
                         // check multiple R-sites notation
