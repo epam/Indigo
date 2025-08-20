@@ -23,5 +23,7 @@ monomer_transform.ket mol loadQueryMolecule: SUCCEED
 3069-reaction.ket:SUCCEED
 multi_merge4.ket:SUCCEED
 mixed_reaction.ket:SUCCEED
+multi1.ket:SUCCEED
 multi_reaction.ket:SUCCEED
+special_condition.ket:SUCCEED
 two_pathways.ket:SUCCEED

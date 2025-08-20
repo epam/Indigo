@@ -125,7 +125,6 @@ files = [
     "mixed_reaction",
     "two_pathways",
     "multi_reaction",
-    "multi",
     "multi1",
     "special_condition",
 ]
