@@ -19,16 +19,20 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
+#include "layout/molecule_layout.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_saver.h"
 #include "reaction/pathway_reaction.h"
+#include "reaction/pathway_reaction_builder.h"
 #include "reaction/pathway_reaction_json_saver.h"
+#include "reaction/reaction_multistep_detector.h"
 
 using namespace indigo;
 
 IMPL_ERROR(PathwayReactionJsonSaver, "pathway reaction KET saver");
 
-PathwayReactionJsonSaver::PathwayReactionJsonSaver(Output& output) : _output(output), add_stereo_desc(), pretty_json(), use_native_precision(false)
+PathwayReactionJsonSaver::PathwayReactionJsonSaver(Output& output)
+    : _output(output), add_stereo_desc(), pretty_json(), use_native_precision(false), add_reaction_data(false)
 {
 }
 
@@ -41,12 +45,20 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& pwr)
         merged->mergeWithMolecule(molecule, 0, 0);
     }
     merged->meta().clone(pwr.meta());
+    indigo::LayoutOptions layout_options;
+    ReactionMultistepDetector rmd(*merged, layout_options);
+    if (add_reaction_data)
+    {
+        rmd.detectReaction();
+        rmd.buildReactionsData();
+    }
     rapidjson::StringBuffer buffer;
     JsonWriter writer(pretty_json);
     writer.Reset(buffer);
-    MoleculeJsonSaver moleculeSaver(_output);
+    MoleculeJsonSaver moleculeSaver(_output, rmd);
     moleculeSaver.add_stereo_desc = add_stereo_desc;
     moleculeSaver.use_native_precision = use_native_precision;
+    moleculeSaver.add_reaction_data = add_reaction_data;
     moleculeSaver.saveMolecule(*merged, writer);
     _output.printf("%s", buffer.GetString());
 }

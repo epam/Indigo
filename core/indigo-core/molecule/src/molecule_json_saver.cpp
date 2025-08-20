@@ -31,6 +31,9 @@
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
 #include "molecule/smiles_saver.h"
+#include "reaction/pathway_reaction.h"
+#include "reaction/reaction_multistep_detector.h"
+
 #include <base_cpp/scanner.h>
 
 #ifdef _MSC_VER
@@ -75,8 +78,14 @@ void printMappings(Array<int>& mapping)
 }
 
 MoleculeJsonSaver::MoleculeJsonSaver(Output& output)
-    : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false), use_native_precision(false), ket_version(KETVersion1)
+    : _output(output), _pmol(nullptr), _pqmol(nullptr), add_stereo_desc(false), pretty_json(false), use_native_precision(false), ket_version(KETVersion1),
+      add_reaction_data(false)
 {
+}
+
+MoleculeJsonSaver::MoleculeJsonSaver(Output& output, ReactionMultistepDetector& rmd) : MoleculeJsonSaver(output)
+{
+    _rmd = rmd;
 }
 
 void MoleculeJsonSaver::parseFormatMode(const char* version_str, KETVersion& version)
@@ -1600,6 +1609,18 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
         }
     }
 
+    if (_rmd)
+    {
+        for (size_t i = 0; i < _rmd->get().reactionsInfo().size(); ++i)
+        {
+            writer.StartObject();
+            writer.Key("$ref");
+            std::string reaction_node = std::string("reaction") + std::to_string(i);
+            writer.String(reaction_node.c_str());
+            writer.EndObject();
+        }
+    }
+
     // save meta data
     saveMetaData(writer, mol.meta());
 
@@ -1708,6 +1729,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
         ml.layout_orientation = UNCPECIFIED;
         ml.make();
     }
+
     BaseMolecule::collapse(*mol);
 
     mol->getTemplatesMap(_templates);
@@ -1855,6 +1877,150 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
         saveRGroup(mol->rgroups.getRGroup(i), i, writer);
     }
 
+    // save reactions
+    if (_rmd && add_reaction_data)
+    {
+        auto& reactions_info = _rmd->get().reactionsInfo();
+        auto& summ_blocks = _rmd->get().summBlocks();
+        auto& components = _rmd->get().molComponents();
+        auto& complex_molecules_info = _rmd->get().complexMoleculesInfo();
+        auto& special_conditions = _rmd->get().specialConditions();
+
+        for (size_t i = 0; i < reactions_info.size(); ++i)
+        {
+            writer.Key((std::string("reaction") + std::to_string(i)).c_str());
+            writer.StartObject();
+            writer.Key("type");
+            writer.String("reaction");
+
+            bool has_groups = false;
+            for (auto csb_idx : reactions_info[i].first)
+            {
+                auto& csb = summ_blocks[csb_idx];
+                if (csb.indexes.size() > 1)
+                {
+                    if (!has_groups)
+                    {
+                        writer.Key("reactionGroups");
+                        writer.StartArray();
+                        has_groups = true;
+                    }
+                    writer.StartObject();
+                    writer.Key("id");
+                    writer.String((std::string("group") + std::to_string(csb_idx)).c_str());
+                    writer.Key("components");
+                    writer.StartArray();
+                    for (auto& comp_idx : csb.indexes)
+                    {
+                        auto& mi = components[comp_idx].merged_indexes;
+                        if (mi.size() > 1) // complex molecule
+                        {
+                            auto it_comp = complex_molecules_info.find(comp_idx);
+                            if (it_comp != complex_molecules_info.end())
+                                writer.String((std::string("complexMol") + std::to_string(it_comp->second.first)).c_str());
+                        }
+                        else if (mi.size() > 0) // single molecule
+                            writer.String((std::string("mol") + std::to_string(mi.front())).c_str());
+                    }
+                    writer.EndArray();
+                    if (csb.plus_indexes.size())
+                    {
+                        writer.Key("pluses");
+                        writer.StartArray();
+                        for (auto& plus_idx : csb.plus_indexes)
+                            writer.String((std::string("plus") + std::to_string(plus_idx)).c_str());
+                        writer.EndArray();
+                    }
+                    writer.EndObject();
+                }
+            }
+            if (has_groups)
+                writer.EndArray(); // participantGroups
+            // collect steps
+            writer.Key("steps");
+            writer.StartArray();
+            for (auto& kvp : reactions_info[i].second)
+            {
+                writer.StartObject();
+                writer.Key("arrow");
+                writer.String((std::string("arrow") + std::to_string(kvp.first)).c_str());
+                std::vector<std::string> reactants, agents, products, conditions;
+                std::string component_str;
+                for (auto& pr : kvp.second)
+                {
+                    auto& csb = summ_blocks[pr.second];
+                    if (csb.indexes.size() > 1)
+                    {
+                        component_str = (std::string("group") + std::to_string(pr.second));
+                    }
+                    else
+                    {
+                        auto& mi = components[csb.indexes.front()].merged_indexes;
+                        if (mi.size() > 1) // complex molecule
+                        {
+                            auto it_comp = complex_molecules_info.find(csb.indexes.front());
+                            if (it_comp != complex_molecules_info.end())
+                                component_str = std::string("complexMol") + std::to_string(it_comp->second.first);
+                        }
+                        else if (mi.size() > 0) // single molecule
+                            component_str = std::string("mol") + std::to_string(mi.front());
+                    }
+                    if (component_str.size())
+                        switch (pr.first)
+                        {
+                        case BaseReaction::REACTANT:
+                            reactants.push_back(component_str);
+                            break;
+                        case BaseReaction::PRODUCT:
+                            products.push_back(component_str);
+                            break;
+                        case BaseReaction::CATALYST:
+                            agents.push_back(component_str);
+                            break;
+                        }
+                }
+                if (reactants.size())
+                {
+                    writer.Key("reactants");
+                    writer.StartArray();
+                    for (auto& r : reactants)
+                        writer.String(r.c_str());
+                    writer.EndArray();
+                }
+                if (products.size())
+                {
+                    writer.Key("product");
+                    writer.String(products.front().c_str());
+                }
+                if (agents.size())
+                {
+                    writer.Key("agents");
+                    writer.StartArray();
+                    for (auto& a : agents)
+                        writer.String(a.c_str());
+                    writer.EndArray();
+                }
+                auto spec_it = special_conditions.find(kvp.first);
+                if (spec_it != special_conditions.end())
+                {
+                    auto& spec_cond = spec_it->second;
+                    if (spec_cond.size())
+                    {
+                        writer.Key("conditions");
+                        writer.StartArray();
+                        for (auto& cond : spec_cond)
+                            writer.String(std::string("text") + std::to_string(cond));
+                        writer.EndArray();
+                    }
+                }
+
+                writer.EndObject();
+            }
+            writer.EndArray();  // steps
+            writer.EndObject(); // reaction
+        }
+    }
+
     // save monomer shapes
     for (int shape_idx = 0; shape_idx < mol->monomer_shapes.size(); ++shape_idx)
     {
@@ -1959,6 +2125,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         {ReactionComponent::ARROW_RETROSYNTHETIC, "retrosynthetic"}};
 
     const auto& meta_objects = meta.metaData();
+    int arrow_id = 0, plus_id = 0, text_id = 0, multi_arrow_id = meta.getMetaCount(ReactionArrowObject::CID);
     for (int meta_index = 0; meta_index < meta_objects.size(); ++meta_index)
     {
         auto pobj = meta_objects[meta_index];
@@ -1967,6 +2134,11 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         case ReactionArrowObject::CID: {
             ReactionArrowObject& ar = (ReactionArrowObject&)(*pobj);
             writer.StartObject();
+            if (add_reaction_data)
+            {
+                writer.Key("id");
+                writer.String(std::string("arrow") + std::to_string(arrow_id++));
+            }
             writer.Key("type");
             writer.String("arrow");
             writer.Key("data");
@@ -2008,6 +2180,12 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         case ReactionMultitailArrowObject::CID: {
             ReactionMultitailArrowObject& ar = (ReactionMultitailArrowObject&)(*pobj);
             writer.StartObject();
+            if (add_reaction_data)
+            {
+                writer.Key("id");
+                writer.String(std::string("arrow") + std::to_string(multi_arrow_id++));
+            }
+
             writer.Key("type");
             writer.String("multi-tailed-arrow");
             writer.Key("data");
@@ -2082,6 +2260,11 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         case ReactionPlusObject::CID: {
             ReactionPlusObject& rp = (ReactionPlusObject&)(*pobj);
             writer.StartObject();
+            if (add_reaction_data)
+            {
+                writer.Key("id");
+                writer.String(std::string("plus") + std::to_string(plus_id++));
+            }
             writer.Key("type");
             writer.String("plus");
             writer.Key("location");
@@ -2129,6 +2312,11 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         case SimpleTextObject::CID: {
             auto ptext_obj = (SimpleTextObject*)pobj;
             writer.StartObject();
+            if (add_reaction_data)
+            {
+                writer.Key("id");
+                writer.String(std::string("text") + std::to_string(text_id++));
+            }
             writer.Key("type");
             writer.String("text");
             if (ket_version.major == KETVersion1.major)
@@ -2178,6 +2366,29 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             writer.EndObject(); // end node
             break;
         }
+        }
+    }
+
+    if (_rmd)
+    {
+        auto& complex_molecules_info = _rmd->get().complexMoleculesInfo();
+        for (auto& cmol : complex_molecules_info)
+        {
+            writer.StartObject();
+            writer.Key("id");
+            std::string complex_mol_id = "complexMol" + std::to_string(cmol.second.first);
+            writer.String(complex_mol_id.c_str());
+            writer.Key("type");
+            writer.String("complexMol");
+            writer.Key("molecules");
+            writer.StartArray();
+            for (auto mol_idx : cmol.second.second)
+            {
+                std::string mol_id = "mol" + std::to_string(mol_idx);
+                writer.String(mol_id.c_str());
+            }
+            writer.EndArray();
+            writer.EndObject();
         }
     }
 }

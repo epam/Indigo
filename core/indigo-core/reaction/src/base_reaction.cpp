@@ -117,6 +117,8 @@ void BaseReaction::clear()
     _undefinedCount = 0;
     _specialCount = 0;
     _allMolecules.clear();
+    _reactionBlocks.clear();
+    _specialConditions.clear();
     _types.clear();
     name.clear();
     if (_document != nullptr)
@@ -290,6 +292,11 @@ void BaseReaction::clearAAM()
     }
 }
 
+int BaseReaction::specialConditionCount()
+{
+    return _specialConditions.size();
+}
+
 int BaseReaction::addSpecialCondition(int meta_idx, const Rect2f& bbox)
 {
     _specialConditions.push(SpecialCondition(meta_idx, bbox));
@@ -301,9 +308,9 @@ void BaseReaction::clearSpecialConditions()
     _specialConditions.clear();
 }
 
-const SpecialCondition& BaseReaction::specialCondition(int meta_idx) const
+const SpecialCondition& BaseReaction::specialCondition(int idx) const
 {
-    return _specialConditions[meta_idx];
+    return _specialConditions[idx];
 }
 
 int BaseReaction::addReactantCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)

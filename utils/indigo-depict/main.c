@@ -872,6 +872,7 @@ int main(int argc, char* argv[])
     indigoSetOption("ket-saving-version", "1.0.0");
     indigoSetOptionBool("json-saving-pretty", true);
     indigoSetOptionFloat("reaction-component-margin-size", 0.0f);
+    // indigoSetOptionBool("json-saving-add-reaction-data", "on");
 
     if (parseParams(&p, argc, argv) < 0)
         return -1;
@@ -1061,12 +1062,6 @@ int main(int argc, char* argv[])
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
-            auto mols = indigoIterateMolecules(obj);
-            while (indigoHasNext(mols))
-            {
-                int mol = indigoNext(mols);
-                printf("%d\n", mol);
-            }
             indigoLayout(obj);
             if (p.out_ext == OEXT_CML)
                 indigoSaveCmlToFile(obj, p.outfile);

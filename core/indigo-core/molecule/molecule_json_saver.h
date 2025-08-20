@@ -42,11 +42,13 @@ namespace indigo
     class QueryMolecule;
     class Output;
     class MonomerTemplate;
+    class ReactionMultistepDetector;
 
     class DLLEXPORT MoleculeJsonSaver
     {
     public:
         explicit MoleculeJsonSaver(Output& output);
+        explicit MoleculeJsonSaver(Output& output, ReactionMultistepDetector& rmd);
         void saveMolecule(BaseMolecule& bmol);
         void saveMolecule(BaseMolecule& bmol, JsonWriter& writer);
         void saveMetaData(JsonWriter& writer, const MetaDataStorage& meta);
@@ -66,6 +68,7 @@ namespace indigo
         static std::string monomerHELMClass(const std::string& class_name);
 
         bool add_stereo_desc;
+        bool add_reaction_data;
         bool pretty_json;
         bool use_native_precision; // TODO: Remove option and use_native_precision always - have to fix a lot of UTs
         KETVersion ket_version;
@@ -112,6 +115,7 @@ namespace indigo
         std::vector<std::unique_ptr<BaseMolecule>> _no_template_molecules;
         ObjArray<Array<int>> _mappings;
         std::unordered_map<int, int> _atom_to_mol_id;
+        std::optional<std::reference_wrapper<ReactionMultistepDetector>> _rmd;
 
     private:
         MoleculeJsonSaver(const MoleculeJsonSaver&); // no implicit copy
