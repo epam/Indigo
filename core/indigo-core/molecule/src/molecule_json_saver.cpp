@@ -83,6 +83,11 @@ MoleculeJsonSaver::MoleculeJsonSaver(Output& output)
 {
 }
 
+MoleculeJsonSaver::MoleculeJsonSaver(Output& output, ReactionMultistepDetector& rmd) : MoleculeJsonSaver(output)
+{
+    _rmd = rmd;
+}
+
 void MoleculeJsonSaver::parseFormatMode(const char* version_str, KETVersion& version)
 {
     auto version_data = split(version_str, '.');
@@ -1710,12 +1715,6 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
     writer.EndObject(); // root
 }
 
-void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, ReactionMultistepDetector& rmd, JsonWriter& writer)
-{
-    _rmd = rmd;
-    saveMolecule(bmol, writer);
-}
-
 void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 {
     if (add_stereo_desc)
@@ -1894,17 +1893,17 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
             writer.Key("type");
             writer.String("reaction");
 
-            bool has_participants = false;
+            bool has_groups = false;
             for (auto csb_idx : reactions_info[i].first)
             {
                 auto& csb = summ_blocks[csb_idx];
                 if (csb.indexes.size() > 1)
                 {
-                    if (!has_participants)
+                    if (!has_groups)
                     {
-                        writer.Key("participantGroups");
+                        writer.Key("reactionGroups");
                         writer.StartArray();
-                        has_participants = true;
+                        has_groups = true;
                     }
                     writer.StartObject();
                     writer.Key("id");
@@ -1935,7 +1934,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                     writer.EndObject();
                 }
             }
-            if (has_participants)
+            if (has_groups)
                 writer.EndArray(); // participantGroups
             // collect steps
             writer.Key("steps");

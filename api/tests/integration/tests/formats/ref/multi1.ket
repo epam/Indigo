@@ -689,7 +689,7 @@
     },
     "reaction0": {
         "type": "reaction",
-        "participantGroups": [
+        "reactionGroups": [
             {
                 "id": "group7",
                 "components": [

@@ -900,7 +900,7 @@
     },
     "reaction0": {
         "type": "reaction",
-        "participantGroups": [
+        "reactionGroups": [
             {
                 "id": "group0",
                 "components": [
@@ -934,7 +934,7 @@
     },
     "reaction1": {
         "type": "reaction",
-        "participantGroups": [
+        "reactionGroups": [
             {
                 "id": "group1",
                 "components": [

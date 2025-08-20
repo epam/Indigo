@@ -57,11 +57,6 @@ ReactionJsonSaver::~ReactionJsonSaver()
 
 void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 {
-    MoleculeJsonSaver json_saver(_output);
-    json_saver.add_stereo_desc = add_stereo_desc;
-    json_saver.ket_version = ket_version;
-    json_saver.use_native_precision = use_native_precision;
-    json_saver.add_reaction_data = add_reaction_data;
     std::unique_ptr<BaseMolecule> merged;
     if (rxn.isQueryReaction())
         merged = std::make_unique<QueryMolecule>();
@@ -106,7 +101,12 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
     StringBuffer s;
     JsonWriter writer(pretty_json);
     writer.Reset(s);
-    json_saver.saveMolecule(*merged, rmd, writer);
+    MoleculeJsonSaver json_saver(_output, rmd);
+    json_saver.add_stereo_desc = add_stereo_desc;
+    json_saver.ket_version = ket_version;
+    json_saver.use_native_precision = use_native_precision;
+    json_saver.add_reaction_data = add_reaction_data;
+    json_saver.saveMolecule(*merged, writer);
 
     Document ket;
     ket.Parse(s.GetString());

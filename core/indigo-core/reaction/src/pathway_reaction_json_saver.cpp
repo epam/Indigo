@@ -55,10 +55,10 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& pwr)
     rapidjson::StringBuffer buffer;
     JsonWriter writer(pretty_json);
     writer.Reset(buffer);
-    MoleculeJsonSaver moleculeSaver(_output);
+    MoleculeJsonSaver moleculeSaver(_output, rmd);
     moleculeSaver.add_stereo_desc = add_stereo_desc;
     moleculeSaver.use_native_precision = use_native_precision;
     moleculeSaver.add_reaction_data = add_reaction_data;
-    moleculeSaver.saveMolecule(*merged, rmd, writer);
+    moleculeSaver.saveMolecule(*merged, writer);
     _output.printf("%s", buffer.GetString());
 }

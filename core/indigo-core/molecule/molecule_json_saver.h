@@ -48,8 +48,8 @@ namespace indigo
     {
     public:
         explicit MoleculeJsonSaver(Output& output);
+        explicit MoleculeJsonSaver(Output& output, ReactionMultistepDetector& rmd);
         void saveMolecule(BaseMolecule& bmol);
-        void saveMolecule(BaseMolecule& bmol, ReactionMultistepDetector& rmd, JsonWriter& writer);
         void saveMolecule(BaseMolecule& bmol, JsonWriter& writer);
         void saveMetaData(JsonWriter& writer, const MetaDataStorage& meta);
         void saveRoot(BaseMolecule& mol, JsonWriter& writer);
@@ -115,8 +115,6 @@ namespace indigo
         std::vector<std::unique_ptr<BaseMolecule>> _no_template_molecules;
         ObjArray<Array<int>> _mappings;
         std::unordered_map<int, int> _atom_to_mol_id;
-        // std::vector<std::pair<int, int>> _complex_molecules_info;
-        // std::vector<std::vector<int>> _reactions_info;
         std::optional<std::reference_wrapper<ReactionMultistepDetector>> _rmd;
 
     private:
