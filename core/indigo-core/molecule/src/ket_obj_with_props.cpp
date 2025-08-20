@@ -63,7 +63,7 @@ void KetObjWithProps::setIntProp(std::string name, int value)
     setIntProp(it->second, value);
 }
 
-void KetObjWithProps::setStringProp(std::string name, std::string value)
+void KetObjWithProps::setStringProp(std::string name, const std::string& value)
 {
     auto& map = getStringPropStrToIdx();
     auto it = map.find(name);

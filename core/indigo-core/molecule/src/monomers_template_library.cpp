@@ -54,17 +54,17 @@ namespace indigo
         return str_to_idx;
     };
 
-    int MonomerTemplate::AddAtom(const std::string& label, Vec3f location)
+    size_t MonomerTemplate::AddAtom(const std::string& label, Vec3f location)
     {
         _atoms.push_back(std::make_unique<KetAtom>(label));
         (*_atoms.rbegin())->setLocation(location);
-        return static_cast<int>(_atoms.size() - 1);
+        return _atoms.size() - 1;
     }
 
-    int MonomerTemplate::AddBond(int bond_type, int atom1, int atom2)
+    size_t MonomerTemplate::AddBond(int bond_type, int atom1, int atom2)
     {
         _bonds.emplace_back(bond_type, atom1, atom2);
-        return static_cast<int>(_bonds.size() - 1);
+        return _bonds.size() - 1;
     }
 
     KetAttachmentPoint& MonomerTemplate::AddAttachmentPoint(const std::string& label, int att_atom)

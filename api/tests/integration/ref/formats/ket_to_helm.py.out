@@ -21,6 +21,7 @@ helm_multi_char_rna.ket:SUCCEED
 helm_nucleosides.ket:SUCCEED
 helm_peptide.ket:SUCCEED
 helm_rna_without_base.ket:SUCCEED
+helm_rsite_no_brackets.ket:SUCCEED
 helm_simple_rna.ket:SUCCEED
 helm_smiles.ket:SUCCEED
 helm_smiles_sugar.ket:SUCCEED
