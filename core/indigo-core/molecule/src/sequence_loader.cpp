@@ -295,8 +295,22 @@ void SequenceLoader::addTemplateBond(BaseMolecule& mol, int left_idx, int right_
 
 void SequenceLoader::addMonomerConnection(KetDocument& document, std::size_t left_idx, std::size_t right_idx, bool branch)
 {
-    document.addConnection(document.monomers().at(std::to_string(left_idx))->ref(), branch ? "R3" : "R2",
-                           document.monomers().at(std::to_string(right_idx))->ref(), "R1");
+    std::string left_ap = branch ? kAttachmentPointR3 : kAttachmentPointR2;
+    auto& left_monomer = document.monomers().at(std::to_string(left_idx));
+    auto& right_monomer = document.monomers().at(std::to_string(right_idx));
+    if (!branch)
+    {
+        auto& att_points = left_monomer->attachmentPoints();
+        if (att_points.find(left_ap) == att_points.end()) // no R2 in left monomer - try to use R1
+        {
+            left_ap = kAttachmentPointR1;
+            const auto& connections = left_monomer->connections();
+            if (connections.find(left_ap) != connections.end())
+                throw Error("Cannot connect %s to %s - attachment point R2 not exists and attachment point R1 already used.", left_monomer->alias().c_str(),
+                            right_monomer->alias().c_str());
+        }
+    }
+    document.addConnection(left_monomer->ref(), left_ap, right_monomer->ref(), kAttachmentPointR1);
 }
 
 Vec3f SequenceLoader::getBackboneMonomerPosition()
