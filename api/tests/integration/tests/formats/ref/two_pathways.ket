@@ -50,6 +50,7 @@
                 "$ref": "reaction1"
             },
             {
+                "id": "text0",
                 "type": "text",
                 "data": {
                     "content": "{\"blocks\":[{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890...\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":33,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
@@ -83,6 +84,7 @@
                 }
             },
             {
+                "id": "text1",
                 "type": "text",
                 "data": {
                     "content": "{\"blocks\":[{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"12\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":2,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
@@ -116,6 +118,7 @@
                 }
             },
             {
+                "id": "text2",
                 "type": "text",
                 "data": {
                     "content": "{\"blocks\":[{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"12\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":2,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":0,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"~!@#$%^&*()_-+=?.,{}[]|\\\\/\\\"':;\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":29,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"<>\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":2,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
@@ -149,6 +152,7 @@
                 }
             },
             {
+                "id": "text3",
                 "type": "text",
                 "data": {
                     "content": "{\"blocks\":[{\"text\":\"ABCDEFGHIJKLMNOPQRSTUVWXYZABCD\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":0,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"AbcdefghijklmnopqrstuvWxyzabcd\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
@@ -182,6 +186,7 @@
                 }
             },
             {
+                "id": "text4",
                 "type": "text",
                 "data": {
                     "content": "{\"blocks\":[{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":0,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"~!@#$%^&*()_-+=?.,{}[]|\\\\/\\\"':;`\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"ITALIC\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
@@ -215,6 +220,7 @@
                 }
             },
             {
+                "id": "text5",
                 "type": "text",
                 "data": {
                     "content": "{\"blocks\":[{\"text\":\"ABCDEFGHIJKLMNOPQRSTUVWXYZABCD\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"ABCDEFGHIJKLMNOPQRSTUVWXYZABCD\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"ABCDEFGHIJKLMNOPQRSTUVWXYZABCD\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"ABCDEFGHIJKLMNOPQRSTUVWXYZABCD\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"ABCDEFGHIJKLMNOPQRSTUVWXYZABCD\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"ABCDEFGHIJKLMNOPQRSTUVWXYZABCD\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"ABCDEFGHIJKLMNOPQRSTUVWXYZABCD\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
@@ -248,6 +254,7 @@
                 }
             },
             {
+                "id": "text6",
                 "type": "text",
                 "data": {
                     "content": "{\"blocks\":[{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":30,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}},{\"text\":\"123456789012345678901234567890...\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":33,\"style\":\"BOLD\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
@@ -2091,158 +2098,65 @@
     },
     "reaction0": {
         "type": "reaction",
-        "participantGroups": [
-            {
-                "id": "group0",
-                "components": [
-                    "mol1"
-                ]
-            },
-            {
-                "id": "group7",
-                "components": [
-                    "mol0"
-                ]
-            },
-            {
-                "id": "group10",
-                "components": [
-                    "mol6"
-                ]
-            },
-            {
-                "id": "group1",
-                "components": [
-                    "mol7"
-                ]
-            },
-            {
-                "id": "group12",
-                "components": [
-                    "mol3"
-                ]
-            },
-            {
-                "id": "group11",
-                "components": [
-                    "mol8"
-                ]
-            },
-            {
-                "id": "group4",
-                "components": [
-                    "mol11"
-                ]
-            },
-            {
-                "id": "group3",
-                "components": [
-                    "mol10"
-                ]
-            },
-            {
-                "id": "group2",
-                "components": [
-                    "mol9"
-                ]
-            },
-            {
-                "id": "group8",
-                "components": [
-                    "mol2"
-                ]
-            }
-        ],
         "steps": [
             {
                 "arrow": "arrow0",
                 "reactants": [
-                    "group0"
+                    "mol1"
                 ],
-                "product": "group7"
+                "product": "mol0"
             },
             {
                 "arrow": "arrow1",
                 "reactants": [
-                    "group12"
+                    "mol3"
                 ],
-                "product": "group8"
+                "product": "mol2"
             },
             {
                 "arrow": "arrow3",
                 "reactants": [
-                    "group7",
-                    "group1"
+                    "mol0",
+                    "mol7"
                 ],
-                "product": "group10"
+                "product": "mol6"
             },
             {
                 "arrow": "arrow4",
                 "reactants": [
-                    "group4",
-                    "group3",
-                    "group2"
+                    "mol11",
+                    "mol10",
+                    "mol9"
                 ],
-                "product": "group11"
+                "product": "mol8"
             },
             {
                 "arrow": "arrow5",
                 "reactants": [
-                    "group10",
-                    "group11"
+                    "mol6",
+                    "mol8"
                 ],
-                "product": "group12"
+                "product": "mol3"
             }
         ]
     },
     "reaction1": {
         "type": "reaction",
-        "participantGroups": [
-            {
-                "id": "group5",
-                "components": [
-                    "mol12"
-                ]
-            },
-            {
-                "id": "group13",
-                "components": [
-                    "mol5"
-                ]
-            },
-            {
-                "id": "group6",
-                "components": [
-                    "mol13"
-                ]
-            },
-            {
-                "id": "group9",
-                "components": [
-                    "mol4"
-                ]
-            }
-        ],
         "steps": [
-            {
-                "arrow": "arrow0",
-                "agents": [
-                    "group5"
-                ]
-            },
             {
                 "arrow": "arrow2",
                 "reactants": [
-                    "group13"
+                    "mol5"
                 ],
-                "product": "group9"
+                "product": "mol4"
             },
             {
                 "arrow": "arrow6",
                 "reactants": [
-                    "group6"
+                    "mol12",
+                    "mol13"
                 ],
-                "product": "group13"
+                "product": "mol5"
             }
         ]
     }

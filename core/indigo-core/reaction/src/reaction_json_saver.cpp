@@ -81,11 +81,24 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
     }
 
     merged->meta().clone(reaction->meta());
+    reaction->clear();
 
     ReactionMultistepDetector rmd(*merged, layout_options);
     if (add_reaction_data)
     {
-        rmd.detectReaction();
+        switch (rmd.detectReaction())
+        {
+        case ReactionMultistepDetector::ReactionType::EPathwayReaction:
+            rmd.constructPathwayReaction(static_cast<PathwayReaction&>(*reaction));
+            PathwayReactionBuilder::buildRootReaction(static_cast<PathwayReaction&>(*reaction));
+            break;
+        case ReactionMultistepDetector::ReactionType::EMutistepReaction:
+            rmd.constructMultipleArrowReaction(*reaction);
+            break;
+        case ReactionMultistepDetector::ReactionType::ESimpleReaction:
+            rmd.constructSimpleArrowReaction(*reaction);
+            break;
+        }
         rmd.buildReactionsData();
     }
 

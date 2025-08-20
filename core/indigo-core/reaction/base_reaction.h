@@ -340,9 +340,10 @@ namespace indigo
         int addCatalyst();
         int addIntermediate();
         int addUndefined();
+        int specialConditionCount();
         int addSpecialCondition(int meta_idx, const Rect2f& bbox);
         void clearSpecialConditions();
-        const SpecialCondition& specialCondition(int meta_idx) const;
+        const SpecialCondition& specialCondition(int idx) const;
 
         int addReactantCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
         int addProductCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);

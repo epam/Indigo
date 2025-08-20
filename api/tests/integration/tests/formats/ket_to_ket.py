@@ -121,7 +121,14 @@ for filename in files:
         print(diff)
 
 # reaction data
-files = ["mixed_reaction", "two_pathways", "multi_reaction"]
+files = [
+    "mixed_reaction",
+    "two_pathways",
+    "multi_reaction",
+    "multi",
+    "multi1",
+    "special_condition",
+]
 
 indigo.setOption("json-saving-add-reaction-data", True)
 

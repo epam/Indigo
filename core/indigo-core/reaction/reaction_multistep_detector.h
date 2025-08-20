@@ -139,6 +139,11 @@ namespace indigo
             return _reactions_info;
         }
 
+        const auto& specialConditions() const
+        {
+            return _special_conditions;
+        }
+
         const auto& summBlocks()
         {
             return _component_summ_blocks;
@@ -178,6 +183,7 @@ namespace indigo
 
         bool mapReactionComponents();
         bool mapMultitailReactionComponents();
+        void mapCatalysts();
         void mergeUndefinedComponents();
         void collectUndefinedDistances(const std::vector<std::pair<size_t, Rect2f>>& component_bboxes,
                                        const std::vector<std::pair<size_t, Rect2f>>& undef_component_bboxes, std::vector<MOL_DISTANCES_DESC>& undef_distances,
@@ -194,6 +200,8 @@ namespace indigo
         std::vector<std::pair<std::vector<int>, std::map<int, std::vector<std::pair<int, int>>>>>
             _reactions_info;                                                        // list of independend reactions with their components indexes and steps
         std::map<int, std::pair<int, std::vector<size_t>>> _complex_molecules_info; // list of molecules that consist of several unconnected molecules
+        std::map<int, std::vector<int>> _special_conditions;
+        std::set<int> _remaining_csbs;
 
         std::vector<MOL_DISTANCES_DESC> _mol_distances;
         std::vector<SPECIAL_ZONE_DESC> _zones;

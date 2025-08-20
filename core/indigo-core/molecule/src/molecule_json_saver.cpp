@@ -1885,6 +1885,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
         auto& summ_blocks = _rmd->get().summBlocks();
         auto& components = _rmd->get().molComponents();
         auto& complex_molecules_info = _rmd->get().complexMoleculesInfo();
+        auto& special_conditions = _rmd->get().specialConditions();
 
         for (size_t i = 0; i < reactions_info.size(); ++i)
         {
@@ -2000,6 +2001,20 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                         writer.String(a.c_str());
                     writer.EndArray();
                 }
+                auto spec_it = special_conditions.find(kvp.first);
+                if (spec_it != special_conditions.end())
+                {
+                    auto& spec_cond = spec_it->second;
+                    if (spec_cond.size())
+                    {
+                        writer.Key("conditions");
+                        writer.StartArray();
+                        for (auto& cond : spec_cond)
+                            writer.String(std::string("text") + std::to_string(cond));
+                        writer.EndArray();
+                    }
+                }
+
                 writer.EndObject();
             }
             writer.EndArray();  // steps
@@ -2111,9 +2126,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         {ReactionComponent::ARROW_RETROSYNTHETIC, "retrosynthetic"}};
 
     const auto& meta_objects = meta.metaData();
-    int arrow_id = 0;
-    int multi_arrow_id = meta.getMetaCount(ReactionArrowObject::CID);
-    int plus_id = 0;
+    int arrow_id = 0, plus_id = 0, text_id = 0, multi_arrow_id = meta.getMetaCount(ReactionArrowObject::CID);
     for (int meta_index = 0; meta_index < meta_objects.size(); ++meta_index)
     {
         auto pobj = meta_objects[meta_index];
@@ -2300,6 +2313,11 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         case SimpleTextObject::CID: {
             auto ptext_obj = (SimpleTextObject*)pobj;
             writer.StartObject();
+            if (add_reaction_data)
+            {
+                writer.Key("id");
+                writer.String(std::string("text") + std::to_string(text_id++));
+            }
             writer.Key("type");
             writer.String("text");
             if (ket_version.major == KETVersion1.major)

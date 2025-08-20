@@ -872,7 +872,7 @@ int main(int argc, char* argv[])
     indigoSetOption("ket-saving-version", "1.0.0");
     indigoSetOptionBool("json-saving-pretty", true);
     indigoSetOptionFloat("reaction-component-margin-size", 0.0f);
-    indigoSetOptionBool("json-saving-add-reaction-data", "on");
+    // indigoSetOptionBool("json-saving-add-reaction-data", "on");
 
     if (parseParams(&p, argc, argv) < 0)
         return -1;

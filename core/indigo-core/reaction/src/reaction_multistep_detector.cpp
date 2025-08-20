@@ -657,8 +657,8 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
                 }
 
                 // different zone types are not mergeable
-                if (_zones[zone1.value().first].zone_type != _zones[zone2.value().first].zone_type && comm_zones.empty())
-                    return std::nullopt;
+                // if (_zones[zone1.value().first].zone_type != _zones[zone2.value().first].zone_type && comm_zones.empty())
+                //    return std::nullopt;
             }
 
             if (!current_zone.has_value())
@@ -886,8 +886,10 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
     collectSortedDistances();
     mergeCloseComponents();
     createSummBlocks();
+    std::generate_n(std::inserter(_remaining_csbs, _remaining_csbs.end()), _component_summ_blocks.size(), [i = 0]() mutable { return i++; });
     bool has_multistep = mapReactionComponents();
     bool has_multitail = mapMultitailReactionComponents();
+    mapCatalysts();
     sortSummblocks();
     mergeUndefinedComponents();
     return has_multitail ? ReactionType::EPathwayReaction : (has_multistep ? ReactionType::EMutistepReaction : ReactionType::ESimpleReaction);
@@ -898,6 +900,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
     int arrow_count = _bmol.meta().getMetaCount(ReactionArrowObject::CID);
     if (arrow_count > 0)
     {
+        // map reactants and products
         for (int reaction_index = 0; reaction_index < arrow_count; ++reaction_index)
         {
             auto& arrow = (const ReactionArrowObject&)_bmol.meta().getMetaObject(ReactionArrowObject::CID, reaction_index);
@@ -911,6 +914,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
 
             float min_dist_prod = -1, min_dist_reac = -1;
             int idx_cs_min_prod = -1, idx_cs_min_reac = -1;
+
             for (int index_cs = 0; index_cs < static_cast<int>(_component_summ_blocks.size()); ++index_cs)
             {
                 auto& csb = _component_summ_blocks[index_cs];
@@ -944,24 +948,6 @@ bool ReactionMultistepDetector::mapReactionComponents()
                         idx_cs_min_reac = index_cs;
                     }
                 }
-                else
-                {
-                    for (auto rc_idx : csb.indexes)
-                    {
-                        auto& rc = _reaction_components[rc_idx];
-                        if (rc.component_type == ReactionComponent::MOLECULE)
-                        {
-                            auto& top_zone = _zones[reaction_index].zone_sections[2];
-                            auto& bottom_zone = _zones[reaction_index].zone_sections[3];
-                            if (convexPolygonsIntersect(_merged_components[rc_idx].hull, top_zone) ||
-                                convexPolygonsIntersect(_merged_components[rc_idx].hull, bottom_zone))
-                            {
-                                csb.role = BaseReaction::CATALYST;
-                                csb.reaction_indexes.emplace_back(BaseReaction::CATALYST, reaction_index);
-                            }
-                        }
-                    }
-                }
             }
 
             // TODO: add upper limit
@@ -977,6 +963,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
                     {
                         csb_min_prod.reaction_indexes.emplace_back(BaseReaction::PRODUCT, reaction_index);
                         csb_min_prod.role = BaseReaction::PRODUCT;
+                        _remaining_csbs.erase(idx_cs_min_prod);
                     }
                     else if (csb_min_prod.role == BaseReaction::REACTANT)
                     {
@@ -995,6 +982,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
                     {
                         csb_min_reac.reaction_indexes.emplace_back(BaseReaction::REACTANT, reaction_index);
                         csb_min_reac.role = BaseReaction::REACTANT;
+                        _remaining_csbs.erase(idx_cs_min_reac);
                     }
                     else if (csb_min_reac.role == BaseReaction::PRODUCT)
                     {
@@ -1006,6 +994,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
                 }
             }
         }
+
         return arrow_count > 1;
     }
     return false;
@@ -1075,6 +1064,7 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
             {
                 csb_min_prod.reaction_indexes.emplace_back(BaseReaction::PRODUCT, reaction_idx);
                 csb_min_prod.role = BaseReaction::PRODUCT;
+                _remaining_csbs.erase(idx_cs_min_prod);
             }
             else if (csb_min_prod.role == BaseReaction::REACTANT)
             {
@@ -1095,6 +1085,7 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
                 {
                     csb_min_reac.reaction_indexes.emplace_back(BaseReaction::REACTANT, reaction_idx);
                     csb_min_reac.role = BaseReaction::REACTANT;
+                    _remaining_csbs.erase(reac.second);
                 }
                 else if (csb_min_reac.role == BaseReaction::PRODUCT)
                 {
@@ -1114,7 +1105,36 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
                 bad_pathway = true;
         }
     }
+
     return !bad_pathway;
+}
+
+void ReactionMultistepDetector::mapCatalysts()
+{
+    // map catalysts
+    int arrow_count = _bmol.meta().getMetaCount(ReactionArrowObject::CID);
+    for (int reaction_index = 0; reaction_index < arrow_count; ++reaction_index)
+    {
+        for (auto index_csb : _remaining_csbs)
+        {
+            auto& csb = _component_summ_blocks[index_csb];
+            for (auto rc_idx : csb.indexes)
+            {
+                auto& rc = _reaction_components[rc_idx];
+                if (rc.component_type == ReactionComponent::MOLECULE)
+                {
+                    auto& top_zone = _zones[reaction_index].zone_sections[2];
+                    auto& bottom_zone = _zones[reaction_index].zone_sections[3];
+                    if (convexPolygonsIntersect(_merged_components[rc_idx].hull, top_zone) ||
+                        convexPolygonsIntersect(_merged_components[rc_idx].hull, bottom_zone))
+                    {
+                        csb.role = BaseReaction::CATALYST;
+                        csb.reaction_indexes.emplace_back(BaseReaction::CATALYST, reaction_index);
+                    }
+                }
+            }
+        }
+    }
 }
 
 void ReactionMultistepDetector::collectUndefinedDistances(const std::vector<std::pair<size_t, Rect2f>>& component_bboxes,
@@ -1634,9 +1654,7 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
         bool reverseReactionOrder = arrow.getArrowType() == ReactionArrowObject::ERetrosynthetic;
 
         if (reverseReactionOrder)
-        {
             rxn.setIsRetrosyntetic();
-        }
 
         for (int i = 0; i < rxn.meta().getMetaCount(SimpleTextObject::CID); ++i)
         {
@@ -1645,8 +1663,6 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
             text.getBoundingBox(bbox);
             _reaction_components.emplace_back(ReactionComponent::TEXT, bbox, i, nullptr);
         }
-
-        int text_meta_idx = 0;
 
         std::vector<std::pair<int, uint8_t>> undefined_components;
         std::vector<std::pair<int, int>> product_components, reactant_components;
@@ -1723,10 +1739,13 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
                 int side = !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
                 if (side == KReagentUpArea || side == KReagentDownArea)
                 {
-                    rxn.addSpecialCondition(text_meta_idx, bbox);
+                    rxn.addSpecialCondition(comp.index, bbox);
+                    if (_special_conditions.empty())
+                        _special_conditions.emplace(0, std::vector<int>{comp.index});
+                    else
+                        _special_conditions.begin()->second.push_back(comp.index);
                     break;
                 }
-                text_meta_idx++;
             }
             break;
             default:
