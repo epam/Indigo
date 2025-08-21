@@ -36,14 +36,17 @@ public:
 
     ~IndigoBaseReaction() override;
 
-    indigo::PropertiesMap& getProperties() override
+    PropertiesMap& getProperties() override
     {
         return _properties;
     }
+
     MonomersProperties& getMonomersProperties() override
     {
         return _monomersProperties;
     };
+
+    virtual void init(std::unique_ptr<BaseReaction>&& reaction) = 0;
 
     static bool is(IndigoObject& obj);
 
@@ -56,7 +59,8 @@ public:
     }
 
     MonomersProperties _monomersProperties;
-    indigo::PropertiesMap _properties;
+    PropertiesMap _properties;
+    std::unique_ptr<BaseReaction> rxn;
 };
 
 class DLLEXPORT IndigoReaction : public IndigoBaseReaction
@@ -65,7 +69,7 @@ public:
     IndigoReaction();
     ~IndigoReaction() override;
 
-    void init(std::unique_ptr<BaseReaction>&& reaction = {});
+    void init(std::unique_ptr<BaseReaction>&& reaction = {}) override;
     BaseReaction& getBaseReaction() override;
     Reaction& getReaction() override;
     const char* getName() override;
@@ -75,8 +79,6 @@ public:
     static IndigoReaction* cloneFrom(IndigoObject& obj);
 
     const char* debugInfo() const override;
-
-    std::unique_ptr<BaseReaction> rxn;
 };
 
 class DLLEXPORT IndigoPathwayReaction : public IndigoBaseReaction
@@ -85,7 +87,7 @@ public:
     IndigoPathwayReaction();
     ~IndigoPathwayReaction() override;
 
-    void init(std::unique_ptr<BaseReaction>&& = {});
+    void init(std::unique_ptr<BaseReaction>&& = {}) override;
     BaseReaction& getBaseReaction() override;
     PathwayReaction& getPathwayReaction() override;
     const char* getName() override;
@@ -95,8 +97,6 @@ public:
     static IndigoPathwayReaction* cloneFrom(IndigoObject& obj);
 
     const char* debugInfo() const override;
-
-    std::unique_ptr<BaseReaction> rxn;
 };
 
 class DLLEXPORT IndigoQueryReaction : public IndigoBaseReaction
@@ -104,6 +104,7 @@ class DLLEXPORT IndigoQueryReaction : public IndigoBaseReaction
 public:
     IndigoQueryReaction();
     ~IndigoQueryReaction() override;
+    void init(std::unique_ptr<BaseReaction>&& = {}) override;
 
     BaseReaction& getBaseReaction() override;
     QueryReaction& getQueryReaction() override;
@@ -114,8 +115,6 @@ public:
     static IndigoQueryReaction* cloneFrom(IndigoObject& obj);
 
     const char* debugInfo() const override;
-
-    QueryReaction rxn;
 };
 
 class IndigoReactionMolecule : public IndigoObject
