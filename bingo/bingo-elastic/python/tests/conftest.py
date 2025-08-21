@@ -11,7 +11,10 @@ from bingo_elastic.elastic import (
     IndexName,
 )
 from bingo_elastic.model.helpers import iterate_file, load_reaction
-from bingo_elastic.model.record import IndigoRecordMolecule
+from bingo_elastic.model.record import (
+    IndigoRecordMolecule,
+    IndigoRecordReaction,
+)
 
 
 @pytest.fixture()
@@ -116,6 +119,37 @@ def fixture_molecules_20_10_5_1(
     elastic_repository_molecule.index_record(mol4)
     elastic_repository_molecule.el_client.indices.refresh(
         index=IndexName.BINGO_MOLECULE.value
+    )
+
+
+@pytest.fixture
+def fixture_reactions_20_10_5_1(
+    elastic_repository_reaction: ElasticRepository, indigo_fixture: Indigo
+) -> None:
+    def generator_records(reactions):
+        for x in reactions:
+            yield IndigoRecordReaction(indigo_object=x)
+
+    rxn1 = [indigo_fixture.loadReaction("CCO>>CC=O") for _ in range(20)]
+    elastic_repository_reaction.index_records(generator_records(rxn1))
+    rxn2 = [indigo_fixture.loadReaction("CCCO>>CC=C") for _ in range(10)]
+    elastic_repository_reaction.index_records(generator_records(rxn2))
+    rxn3 = [indigo_fixture.loadReaction("CO>>CC=O") for _ in range(5)]
+    elastic_repository_reaction.index_records(generator_records(rxn3))
+    # We will add one reaction and fake fingerprints and hash to get collisions
+    # in order to test postprocess actions
+    ccco_rxn = IndigoRecordReaction(
+        indigo_object=indigo_fixture.loadReaction("CCCO>>CC=C")
+    )
+    rxn4 = IndigoRecordReaction(
+        indigo_object=indigo_fixture.loadReaction("S>>SO")
+    )
+    rxn4.sub_fingerprint = ccco_rxn.sub_fingerprint
+    rxn4.sim_fingerprint = ccco_rxn.sim_fingerprint
+    setattr(rxn4, "hash", getattr(ccco_rxn, "hash"))
+    elastic_repository_reaction.index_record(rxn4)
+    elastic_repository_reaction.el_client.indices.refresh(
+        index=IndexName.BINGO_REACTION.value
     )
 
 

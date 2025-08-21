@@ -199,11 +199,25 @@ target = IndigoRecordMolecule(indigo_object=molecule)
 exact_records = repo.filter(exact=target, indigo_session=indigo, limit=20)
 ```
 
+```
+indigo = Indigo()
+records = indigo.loadReaction("C=C.BrBr>>C(CBr)Br")
+target = IndigoRecordReaction(indigo_object=molecule)
+exact_records = repo.filter(exact=target, indigo_session=indigo, limit=20)
+```
+
 Async:
 ```
 indigo = Indigo()
 molecule = indigo.loadMolecule("CCO")
 target = IndigoRecordMolecule(indigo_object=molecule)
+exact_records = await repo.filter(exact=target, indigo_session=indigo, limit=20)
+```
+
+```
+indigo = Indigo()
+records = indigo.loadReaction("C=C.BrBr>>C(CBr)Br")
+target = IndigoRecordReaction(indigo_object=molecule)
 exact_records = await repo.filter(exact=target, indigo_session=indigo, limit=20)
 ```
 
@@ -218,10 +232,22 @@ target = indigo.loadQueryMolecule("CCO")
 submatch_records = repo.filter(substructure=target, indigo_session=indigo, limit=20)
 ```
 
+```
+indigo = Indigo()
+target = indigo.loadQueryReaction("C=C>>")
+submatch_records = repo.filter(substructure=target, indigo_session=indigo, limit=20)
+```
+
 Async:
 ```
 indigo = Indigo()
 target = indigo.loadQueryMolecule("CCO")
+submatch_records = await repo.filter(substructure=target, indigo_session=indigo, limit=20)
+```
+
+```
+indigo = Indigo()
+target = indigo.loadQueryReaction("C=C>>")
 submatch_records = await repo.filter(substructure=target, indigo_session=indigo, limit=20)
 ```
 

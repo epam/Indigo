@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 
 from indigo import Indigo, IndigoObject  # type: ignore
 
-from bingo_elastic.model.record import IndigoRecord, IndigoRecordMolecule
+from bingo_elastic.model.record import IndigoRecord
 from bingo_elastic.utils import PostprocessType, head_by_path
 
 
@@ -288,10 +288,6 @@ class ExactMatch(CompilableQuery):
     def postprocess(
         self, record: IndigoRecord, indigo: Indigo, options: str
     ) -> Optional[IndigoRecord]:
-        # postprocess only on molecule search
-        if not isinstance(record, IndigoRecordMolecule):
-            return record
-
         if not record.cmf:
             return None
 
