@@ -790,10 +790,15 @@ CEXPORT int indigoRemove(int item)
     INDIGO_END(-1);
 }
 
+#include <fstream>
+
+std::ofstream& file_logger();
+
 CEXPORT int indigoAt(int item, int index)
 {
     INDIGO_BEGIN
     {
+        file_logger() << "DEBUG IndigoAT" << std::endl;
         IndigoObject& obj = self.getObject(item);
         if (obj.type == IndigoObject::SDF_LOADER)
         {
@@ -839,6 +844,7 @@ CEXPORT int indigoCount(int item)
 {
     INDIGO_BEGIN
     {
+        file_logger() << "DEBUG Indigo Count" << std::endl;
         IndigoObject& obj = self.getObject(item);
 
         if (IndigoArray::is(obj))
