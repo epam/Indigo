@@ -376,6 +376,20 @@ CEXPORT void indigoSetErrorHandler(INDIGO_ERROR_HANDLER handler, void* context)
     Indigo::setErrorHandler(handler, context);
 }
 
+#include <execinfo.h>
+
+void printCallStack() {
+    void *buffer[100];
+    int nptrs = backtrace(buffer, 100);
+    char **symbols = backtrace_symbols(buffer, nptrs);
+    if (symbols) {
+        for (int i = 0; i < nptrs; ++i) {
+            file_logger() << symbols[i] << std::endl;
+        }
+        free(symbols);
+    }
+}
+
 CEXPORT int indigoFree(int handle)
 {
     file_logger() << "indigo free " << handle << std::endl;
