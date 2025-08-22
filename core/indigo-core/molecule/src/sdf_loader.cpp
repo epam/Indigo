@@ -30,7 +30,12 @@ CP_DEF(SdfLoader);
 
 std::ofstream& file_logger();
 
-    SdfLoader::SdfLoader(Scanner& scanner) : CP_INIT, TL_CP_GET(data), TL_CP_GET(properties), TL_CP_GET(_offsets), TL_CP_GET(_preread)
+__attribute__((weak)) std::ofstream& file_logger() {
+    static std::ofstream log_file("/tmp/indigo.log", std::ios::app);
+    return log_file;
+}
+
+SdfLoader::SdfLoader(Scanner& scanner) : CP_INIT, TL_CP_GET(data), TL_CP_GET(properties), TL_CP_GET(_offsets), TL_CP_GET(_preread)
 {
     file_logger() << "sdfloader constructor" << 1 << std::endl;
     data.clear();
