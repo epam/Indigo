@@ -402,8 +402,13 @@ CEXPORT void indigoSetErrorMessage(const char* message)
     self.setErrorMessage(message);
 }
 
+#include <fstream>
+
+std::ofstream& file_logger();
+
 int Indigo::addObject(IndigoObject* obj)
 {
+    file_logger() << "addobject" << std::endl;
     auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
     int id = objects_holder->next_id++;
 #ifdef INDIGO_OBJECT_DEBUG
@@ -417,6 +422,7 @@ int Indigo::addObject(IndigoObject* obj)
 
 int Indigo::addObject(std::unique_ptr<IndigoObject>&& obj)
 {
+    file_logger() << "addobject uniqueptr" << std::endl;
     auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
     int id = objects_holder->next_id++;
 #ifdef INDIGO_OBJECT_DEBUG
@@ -449,10 +455,13 @@ IndigoObject& Indigo::getObject(int handle)
 
     try
     {
+        file_logger() << "before at" << std::endl;
         return *objects_holder->objects.at(handle);
+        file_logger() << "after at" << std::endl;
     }
     catch (const std::out_of_range& e)
     {
+        file_logger() << "exception at" << std::endl;
         throw IndigoError("can not access object #%d: %s", handle, e.what());
     }
 }

@@ -743,7 +743,12 @@ CEXPORT const char* indigoName(int handle)
 {
     INDIGO_BEGIN
     {
-        return self.getObject(handle).getName();
+        file_logger() << "getting indigo name. handle " << handle << std::endl;
+        IndigoObject& object = self.getObject(handle);
+        file_logger() << "got indigo object. " << &handle << std::endl;
+        const char *name = object.getName(); 
+        file_logger() << "got object name. " << name << std::endl;
+        return name;
     }
     INDIGO_END(0);
 }
