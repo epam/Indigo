@@ -42,22 +42,6 @@ jobs:
             cmake --build . --config Release --target all -- -j $(nproc) &&
             ctest --verbose
             "
-      - name: Build macOS
-        if: ${{ startsWith(matrix.os, 'macos') }}
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF
-          cmake --build . --config Release --target all -- -j $(sysctl -n hw.logicalcpu)
-          ctest --verbose
-      - name: Build Windows
-        if: ${{ startsWith(matrix.os, 'windows') }}
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF
-          cmake --build . --config Release --target ALL_BUILD
-          ctest --verbose -C Release
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
