@@ -100,17 +100,23 @@ def get_query_entities(indigo: Indigo.Indigo, function: str):
     for entities_file in entities_files:
         it = indigo_iterator(indigo, entities_file)
         prev_molecule = ""
+        i = 0
         while True:
             try:
+                i = 0
                 mol = next(it)
+                i = 1
                 result[index] = mol
+                i = 2
                 index += 1
+                i = 3
                 prev_molecule = mol.name()
+                i = 4
             except StopIteration:
                 break
             except Exception as e:
                 print(
-                    f"[ERROR] Failed to read entity {e}, prev_molecule={prev_molecule}"
+                    f"[ERROR] Failed to read entity {e}, prev_molecule={prev_molecule} i={i}"
                 )
     return result
 
