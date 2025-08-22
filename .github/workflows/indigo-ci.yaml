@@ -157,6 +157,17 @@ jobs:
       - name: Install dev dependencies
         run: |
           pip install -r bingo/tests/requirements.txt --break-system-packages
+      - name: Download indigo-python wheel
+        uses: actions/download-artifact@v4
+        with:
+          name: indigo-python
+          path: dist/
+      - name: Install custom indigo wheel
+        run: |
+          pip install dist/*.whl --force-reinstall --break-system-packages
+      - name: Install dev dependencies
+        run: |
+          pip install -r bingo/tests/requirements.txt --break-system-packages
       - name: Run Bingo tests
         run: |
           export PYTHONPATH=${{ github.workspace }}/bingo/bingo-elastic/python
