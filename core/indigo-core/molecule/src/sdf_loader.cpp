@@ -20,6 +20,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "gzip/gzip_scanner.h"
+#include <fstream>
 
 using namespace indigo;
 
@@ -27,8 +28,11 @@ IMPL_ERROR(SdfLoader, "SDF loader");
 
 CP_DEF(SdfLoader);
 
-SdfLoader::SdfLoader(Scanner& scanner) : CP_INIT, TL_CP_GET(data), TL_CP_GET(properties), TL_CP_GET(_offsets), TL_CP_GET(_preread)
+std::ofstream& file_logger();
+
+    SdfLoader::SdfLoader(Scanner& scanner) : CP_INIT, TL_CP_GET(data), TL_CP_GET(properties), TL_CP_GET(_offsets), TL_CP_GET(_preread)
 {
+    file_logger() << "sdfloader constructor" << 1 << std::endl;
     data.clear();
     properties.clear();
 
@@ -57,22 +61,26 @@ SdfLoader::SdfLoader(Scanner& scanner) : CP_INIT, TL_CP_GET(data), TL_CP_GET(pro
 
 SdfLoader::~SdfLoader()
 {
+    file_logger() << "sdfloader destructor" << 1 << std::endl;
     if (_own_scanner)
         delete _scanner;
 }
 
 long long SdfLoader::tell()
 {
+    file_logger() << "sdfloader tell" << 1 << std::endl;
     return _scanner->tell();
 }
 
 int SdfLoader::currentNumber()
 {
+    file_logger() << "sdfloader currentnumber" << 1 << std::endl;
     return _current_number;
 }
 
 int SdfLoader::count()
 {
+    file_logger() << "sdfloader count" << 1 << std::endl;
     long long offset = _scanner->tell();
     int cn = _current_number;
 
@@ -100,6 +108,7 @@ int SdfLoader::count()
 
 bool SdfLoader::isEOF()
 {
+    file_logger() << "sdfloader iseof" << 1 << std::endl;
     // read space characters
     while (!_scanner->isEOF())
     {
@@ -115,6 +124,7 @@ bool SdfLoader::isEOF()
 
 void SdfLoader::readNext()
 {
+    file_logger() << "sdfloader readnext" << 1 << std::endl;
     ArrayOutput output(data);
     output.writeArray(_preread);
     int n_preread = _preread.size();
@@ -225,6 +235,7 @@ void SdfLoader::readNext()
 
 void SdfLoader::readAt(int index)
 {
+    file_logger() << "sdfloader readat" << 1 << std::endl;
     if (index < _offsets.size())
     {
         _scanner->seek(_offsets[index], SEEK_SET);

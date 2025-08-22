@@ -28,6 +28,7 @@
 #include "molecule/molecule_json_loader.h"
 #include "molecule/query_molecule.h"
 #include "reaction/reaction.h"
+#include <fstream>
 
 class IndigoRdfData : public IndigoObject
 {
@@ -84,6 +85,8 @@ public:
 protected:
     Reaction _rxn;
 };
+
+std::ofstream& file_logger();
 
 class IndigoSdfLoader : public IndigoObject
 {
