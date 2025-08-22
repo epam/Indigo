@@ -34,10 +34,14 @@
 #include "reaction/reaction_json_loader.h"
 #include "reaction/rsmiles_loader.h"
 #include "reaction/rxnfile_loader.h"
+#include <fstream>
 
+#include <ios>
 #include <limits>
 
 using namespace rapidjson;
+
+static std::ofstream log_file("/tmp/indigo.log", std::ios::app);
 
 IndigoJSONMolecule::IndigoJSONMolecule(Document& ket, MonomerTemplateLibrary& library) : IndigoObject(JSON_MOLECULE), _loader(ket), _loaded(false)
 {
@@ -81,6 +85,7 @@ IndigoSdfLoader::IndigoSdfLoader(Scanner& scanner) : IndigoObject(SDF_LOADER)
 
 IndigoSdfLoader::IndigoSdfLoader(const char* filename) : IndigoObject(SDF_LOADER)
 {
+    log_file << "DEBUG: sdf_loader constructor " << filename << std::endl;
     // AutoPtr guard in case of exception in SdfLoader (happens in case of empty file)
     _own_scanner = std::make_unique<FileScanner>(indigoGetInstance().filename_encoding, filename);
     sdf_loader = std::make_unique<SdfLoader>(*_own_scanner);
@@ -246,26 +251,37 @@ IndigoRdfReaction::~IndigoRdfReaction()
 
 IndigoObject* IndigoSdfLoader::next()
 {
-    if (sdf_loader->isEOF())
+    log_file << "DEBUG: sdf_loader next" << std::endl;
+    if (sdf_loader->isEOF()) {
+    log_file << "DEBUG: sdf_loader next EOF" << std::endl;
         return 0;
+    }
 
+    log_file << "DEBUG: sdf_loader 1" << std::endl;
     int counter = sdf_loader->currentNumber();
+    log_file << "DEBUG: sdf_loader 2" << std::endl;
     long long offset = sdf_loader->tell();
+    log_file << "DEBUG: sdf_loader 3" << std::endl;
 
     sdf_loader->readNext();
-
-    return new IndigoRdfMolecule(sdf_loader->data, sdf_loader->properties, counter, offset);
+    log_file << "DEBUG: sdf_loader 4" << std::endl;
+    auto molecule = new IndigoRdfMolecule(sdf_loader->data, sdf_loader->properties, counter, offset);
+    return molecule;
 }
 
 IndigoObject* IndigoSdfLoader::at(int index)
-{
+{   
+    log_file << "DEBUG: sdf_loader before readat" << std::endl;
     sdf_loader->readAt(index);
-
-    return new IndigoRdfMolecule(sdf_loader->data, sdf_loader->properties, index, 0LL);
+    log_file << "DEBUG: sdf_loader after readat" << std::endl;
+    auto molecule = new IndigoRdfMolecule(sdf_loader->data, sdf_loader->properties, index, 0LL);
+    log_file << "DEBUG: sdf_loader after new" << std::endl;
+    return molecule;
 }
 
 bool IndigoSdfLoader::hasNext()
 {
+    log_file << "DEBUG: sdf_loader hasnext" << std::endl;
     return !sdf_loader->isEOF();
 }
 

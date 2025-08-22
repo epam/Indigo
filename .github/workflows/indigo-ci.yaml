@@ -14,13 +14,135 @@ on:
   repository_dispatch:
 
 jobs:
+  static_analysis:
+    runs-on: ubuntu-latest
+    container: epmlsop/indigo-tester:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Check
+        run: |
+          python3 -m pip install -r api/python/requirements_dev.txt --break-system-packages
+          .ci/static_analysis_check.sh
+
+  build_indigo_libs_x86_64:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ macos-13, ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    needs: static_analysis
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Build Linux
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        uses: docker://epmlsop/buildpack-centos7:latest
+        with:
+          args: >
+            /bin/sh -c "
+            mkdir build &&
+            cd build &&
+            cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF &&
+            cmake --build . --config Release --target all -- -j $(nproc) &&
+            ctest --verbose
+            "
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: indigo-libs-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-x86_64
+          path: dist
+
+  build_indigo_wrappers:
+    strategy:
+      fail-fast: false
+      matrix:
+        wrapper: [ python, java, dotnet ]
+    runs-on: ubuntu-latest
+    needs: [ build_indigo_libs_x86_64, build_indigo_libs_aarch64, build_indigo_libs_i386 ]
+    container: epmlsop/indigo-tester:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Create folder for native libs
+        run: mkdir dist
+      - name: Download Linux native libs x86_64
+        uses: actions/download-artifact@v4
+        with:
+          name: indigo-libs-linux-x86_64
+          path: dist/
+      - name: Install Python test dependencies
+        run: python3 -m pip install -r api/python/requirements_dev.txt --break-system-packages
+      - name: Build wrappers
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_INDIGO=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF
+          cmake --build . --config Release --target indigo-${{ matrix.wrapper }}
+      - name: Upload native shared libs
+        uses: actions/upload-artifact@v4
+        with:
+          name: indigo-native-shared-libs-${{ matrix.wrapper }}
+          path: |
+            dist/lib
+      - name: Upload Python wrappers
+        if: ${{ matrix.wrapper == 'python' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: indigo-python
+          path: |
+            dist/*.whl
+      - name: Upload Java wrappers
+        if: ${{ matrix.wrapper == 'java' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: indigo-java
+          path: dist/*.jar
+      - name: Upload .NET wrappers
+        if: ${{ matrix.wrapper == 'dotnet' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: indigo-dotnet
+          path: dist/*.nupkg
+
+  merge_indigo_wrappers:
+    runs-on: ubuntu-latest
+    needs: build_indigo_wrappers
+    steps:
+      - name: Merge native shared libs
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: indigo-native-shared-libs
+          pattern: indigo-native-shared-libs-*
+
   build_bingo_postgres_linux_x86_64:
     strategy:
       fail-fast: false
       matrix:
         postgres_major_version: [ 13 ]
     runs-on: ubuntu-latest
-    # needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
+    needs: [merge_indigo_wrappers]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,17 +182,18 @@ jobs:
           path: dist/bingo-postgres*.tgz
       - name: Build Docker image
         run: |
-          docker build --tag epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-21 -f bingo/postgres/Dockerfile --build-arg BINGO_PG_VERSION=${{ matrix.postgres_major_version }} .
+          docker build --tag epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest -f bingo/postgres/Dockerfile --build-arg BINGO_PG_VERSION=${{ matrix.postgres_major_version }} .
       - name: Start Docker container
         run: |
-          docker run --rm -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" -v /home:/home epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-21
+          docker run --rm -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" -v /home:/home epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
       - name: Install dev dependencies
         run: |
           pip install -r bingo/tests/requirements.txt --break-system-packages
       - name: Run Bingo tests
         run: |
           export PYTHONPATH=${{ github.workspace }}/bingo/bingo-elastic/python
-          pytest -s ./test_fingerprint --db postgres --junit-xml=junit_report.xml
+          pytest -s --tb=no --db postgres --junit-xml=junit_report.xml
+          cat /tmp/indigo.log
         working-directory: bingo/tests
       - name: Login to DockerHub
         if: startsWith(github.ref, 'refs/tags/indigo-')
@@ -80,11 +203,11 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Publish Docker images
         if: startsWith(github.ref, 'refs/tags/indigo-')
-        run: docker push epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-21
+        run: docker push epmlsop/bingo-postgres:${{ matrix.postgres_major_version }}-latest
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v4
         with:
           report_paths: 'bingo/tests/junit_report.xml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          check_name: "bingo_postgres_${{ matrix.postgres_major_version }}_test_report"
+          github_token: ${{ secrets.GITHUB_TOKEN }}          check_name: "bingo_postgres_${{ matrix.postgres_major_version }}_test_report"
+
