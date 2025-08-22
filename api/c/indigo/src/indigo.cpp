@@ -393,6 +393,7 @@ void printCallStack() {
 CEXPORT int indigoFree(int handle)
 {
     file_logger() << "indigo free " << handle << std::endl;
+    printCallStack();
     // In some runtimes (e.g. Python) session could be removed before objects during resource releasing stage)
     if (indigoSelf().hasLocalCopy())
     {

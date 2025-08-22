@@ -392,7 +392,7 @@ private:
 
     struct ObjectsHolder
     {
-        std::map<int, std::unique_ptr<IndigoObject>> objects;
+        std::unordered_map<int, std::unique_ptr<IndigoObject>> objects;
         int next_id = 1;
     };
     sf::safe_shared_hide_obj<ObjectsHolder> _objects_holder;
