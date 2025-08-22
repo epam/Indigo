@@ -13,7 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import traceback
 from ctypes import CDLL, POINTER, byref, c_float, c_int, c_ubyte, pointer
 from typing import TYPE_CHECKING, Any, Tuple
 
@@ -71,6 +71,8 @@ class IndigoObject:
         return self.session._lib()  # noqa
 
     def dispose(self) -> None:
+        print(f"[DEBUG] Disposing id={self.id} from session={self.session.getSessionId()}")
+        traceback.print_stack(limit=10)  # выведет стек вызовов
         if self.id >= 0 and self.session.getSessionId() >= 0:
             self._lib().indigoFree(self.id)
             self.id = -1

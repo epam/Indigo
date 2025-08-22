@@ -344,8 +344,23 @@ CEXPORT qword indigoAllocSessionId()
     return id;
 }
 
+#include <execinfo.h>
+
+void printCallStack() {
+    void *buffer[100];
+    int nptrs = backtrace(buffer, 100);
+    char **symbols = backtrace_symbols(buffer, nptrs);
+    if (symbols) {
+        for (int i = 0; i < nptrs; ++i) {
+            file_logger() << symbols[i] << std::endl;
+        }
+        free(symbols);
+    }
+}
+
 CEXPORT void indigoSetSessionId(qword id)
 {
+    printCallStack();
     file_logger() << "indigo set session" << id << std::endl;
     TL_SET_SESSION_ID(id);
 }
@@ -376,24 +391,12 @@ CEXPORT void indigoSetErrorHandler(INDIGO_ERROR_HANDLER handler, void* context)
     Indigo::setErrorHandler(handler, context);
 }
 
-#include <execinfo.h>
 
-void printCallStack() {
-    void *buffer[100];
-    int nptrs = backtrace(buffer, 100);
-    char **symbols = backtrace_symbols(buffer, nptrs);
-    if (symbols) {
-        for (int i = 0; i < nptrs; ++i) {
-            file_logger() << symbols[i] << std::endl;
-        }
-        free(symbols);
-    }
-}
 
 CEXPORT int indigoFree(int handle)
 {
     file_logger() << "indigo free " << handle << std::endl;
-    printCallStack();
+    //printCallStack();
     // In some runtimes (e.g. Python) session could be removed before objects during resource releasing stage)
     if (indigoSelf().hasLocalCopy())
     {
