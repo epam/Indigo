@@ -96,6 +96,7 @@ public:
     IndigoObject* at(int index);
     long long tell();
     std::unique_ptr<SdfLoader> sdf_loader;
+    int count;
 
 protected:
     std::unique_ptr<Scanner> _own_scanner;

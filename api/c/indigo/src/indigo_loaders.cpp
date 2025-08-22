@@ -80,11 +80,13 @@ IndigoJSONMolecule::~IndigoJSONMolecule()
 
 IndigoSdfLoader::IndigoSdfLoader(Scanner& scanner) : IndigoObject(SDF_LOADER)
 {
+    log_file << "DEBUG: sdf_loader constructor " << std::endl;
     sdf_loader = std::make_unique<SdfLoader>(scanner);
 }
 
 IndigoSdfLoader::IndigoSdfLoader(const char* filename) : IndigoObject(SDF_LOADER)
 {
+    count = 0;
     log_file << "DEBUG: sdf_loader constructor " << filename << std::endl;
     // AutoPtr guard in case of exception in SdfLoader (happens in case of empty file)
     _own_scanner = std::make_unique<FileScanner>(indigoGetInstance().filename_encoding, filename);
@@ -93,6 +95,7 @@ IndigoSdfLoader::IndigoSdfLoader(const char* filename) : IndigoObject(SDF_LOADER
 
 IndigoSdfLoader::~IndigoSdfLoader()
 {
+    log_file << "DEBUG: sdf_loader destructor " << std::endl;
 }
 
 IndigoRdfData::IndigoRdfData(int type, Array<char>& data, int index, long long offset) : IndigoObject(type)
@@ -251,7 +254,7 @@ IndigoRdfReaction::~IndigoRdfReaction()
 
 IndigoObject* IndigoSdfLoader::next()
 {
-    log_file << "DEBUG: sdf_loader next" << std::endl;
+    log_file << "DEBUG: sdf_loader next " << count++ << std::endl;
     if (sdf_loader->isEOF()) {
     log_file << "DEBUG: sdf_loader next EOF" << std::endl;
         return 0;
@@ -287,6 +290,7 @@ bool IndigoSdfLoader::hasNext()
 
 long long IndigoSdfLoader::tell()
 {
+    log_file << "DEBUG: sdf_loader tell" << std::endl;
     return sdf_loader->tell();
 }
 
@@ -532,9 +536,12 @@ CEXPORT int indigoIterateSDF(int reader)
 {
     INDIGO_BEGIN
     {
+        log_file << "DEBUG: iterateSDF 1" << std::endl;
         IndigoObject& obj = self.getObject(reader);
-
-        return self.addObject(new IndigoSdfLoader(IndigoScanner::get(obj)));
+        log_file << "DEBUG: iterateSDF 1" << std::endl;
+        auto ret = self.addObject(new IndigoSdfLoader(IndigoScanner::get(obj)));
+        log_file << "DEBUG: iterateSDF 1" << std::endl;
+        return ret;
     }
     INDIGO_END(-1);
 }
