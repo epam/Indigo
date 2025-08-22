@@ -3688,8 +3688,17 @@ class IndigoObject:
         Returns:
             str: name string
         """
+        try:
+            name = self._lib().indigoName(self.id) 
+        except Exception as e:
+            print(f"name exception {e}")
 
-        return IndigoLib.checkResultString(self._lib().indigoName(self.id))
+        try:
+            ret = IndigoLib.checkResultString(name)
+        except Exception as e:
+            print(f"name exception 2 {e}")
+
+        return ret
 
     def setName(self, name):
         """IndigoObject method sets name
