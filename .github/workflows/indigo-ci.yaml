@@ -93,6 +93,7 @@ jobs:
           name: indigo-python
           path: |
             dist/*.whl
+          retention_days: 2
 
   merge_indigo_wrappers:
     runs-on: ubuntu-latest
@@ -161,10 +162,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: indigo-python
-          path: dist/
+          path: indigo-wheel/
       - name: Install custom indigo wheel
         run: |
-          pip install dist/*.whl --force-reinstall --break-system-packages
+          pip install indigo-wheel/*.whl --force-reinstall --break-system-packages
       - name: Install dev dependencies
         run: |
           pip install -r bingo/tests/requirements.txt --break-system-packages
