@@ -35,18 +35,33 @@ CEXPORT int indigoHasProperty(int handle, const char* prop)
     INDIGO_END(-1);
 }
 
+#include <fstream>
+
+std::ofstream& file_logger();
+
+__attribute__((weak)) std::ofstream& file_logger() {
+    static std::ofstream log_file("/tmp/indigo.log", std::ios::app);
+    return log_file;
+}
+
 CEXPORT const char* indigoGetProperty(int handle, const char* prop)
 {
     INDIGO_BEGIN
     {
+        file_logger() << "indigo get propery " << 1 << std::endl;
         if (prop == 0 || *prop == 0)
             throw IndigoError("indigoGetProperty(): null or empty property given");
+        file_logger() << "indigo get propery " << 2 << std::endl;
 
         IndigoObject& obj = self.getObject(handle);
+        file_logger() << "indigo get propery " << 3 << std::endl;
         auto& props = obj.getProperties();
+        file_logger() << "indigo get propery " << 4 << std::endl;
 
         auto& tmp = self.getThreadTmpData();
+        file_logger() << "indigo get propery " << 5 << std::endl;
         tmp.string.readString(props.at(prop), true);
+        file_logger() << "indigo get propery " << 6 << std::endl;
         return tmp.string.ptr();
     }
     INDIGO_END(0);
