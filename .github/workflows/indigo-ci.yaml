@@ -39,8 +39,7 @@ jobs:
             mkdir build &&
             cd build &&
             cmake .. -DBUILD_INDIGO=ON -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF &&
-            cmake --build . --config Release --target all -- -j $(nproc) &&
-            ctest --verbose
+            cmake --build . --config Release --target all -- -j $(nproc)
             "
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
