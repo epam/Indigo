@@ -2130,3 +2130,26 @@ M  V30 END BOND
 M  V30 END CTAB
 M  END
 
+****** mark undefined stereoceneters ********
+C1CC(C(O)C(N)C(C)C)CNC1C(C)O
+checkStereo(): 1
+C1CC(C(O)C(N)C(C)C)CNC1C(C)O |w:2,3,5,12,13,r|
+checkeStereo() 0
+stereoceneters: 5
+atom 1 -- stereocenter type 4
+atom 4 -- stereocenter type 4
+atom 6 -- stereocenter type 4
+atom 7 -- stereocenter type 4
+atom 13 -- stereocenter type 4
+C1(C(N)C)CC([C@H](O)[C@@H](N)C(C)C)CNC1[C@H](C)O
+checkStereo(): 1
+C1(C(N)C)CC([C@H](O)[C@@H](N)C(C)C)CNC1[C@H](C)O |w:0,1,5,15,a:6,8,16|
+checkeStereo() 0
+stereoceneters: 7
+atom 0 -- stereocenter type 4
+atom 1 -- stereocenter type 4
+atom 4 -- stereocenter type 4
+atom 6 -- stereocenter type 1
+atom 7 -- stereocenter type 1
+atom 13 -- stereocenter type 1
+atom 16 -- stereocenter type 4
