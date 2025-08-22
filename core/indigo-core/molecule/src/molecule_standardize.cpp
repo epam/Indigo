@@ -462,6 +462,11 @@ bool MoleculeStandardizer::standardize(QueryMolecule& query, const StandardizeOp
         _createHydrogenBonds(query);
     }
 
+    if (options.standardize_stereo_mark_undefined)
+    {
+        _standardizeStereoMarkUndefined(query);
+    }
+
     return true;
 }
 
