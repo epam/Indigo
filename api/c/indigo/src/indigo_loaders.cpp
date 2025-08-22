@@ -269,6 +269,7 @@ IndigoObject* IndigoSdfLoader::next()
     sdf_loader->readNext();
     log_file << "DEBUG: sdf_loader 4" << std::endl;
     auto molecule = new IndigoRdfMolecule(sdf_loader->data, sdf_loader->properties, counter, offset);
+    log_file << "DEBUG: sdf_loader 5" << std::endl;
     return molecule;
 }
 
