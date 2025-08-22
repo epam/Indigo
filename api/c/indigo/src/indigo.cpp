@@ -32,6 +32,10 @@
 #include "reaction/rxnfile_saver.h"
 
 #include "indigo_abbreviations.h"
+#include <fstream>
+
+std::ofstream& file_logger();
+
 
 // #define INDIGO_DEBUG
 // #define INDIGO_OBJECT_DEBUG
@@ -240,6 +244,7 @@ void Indigo::initRxnfileSaver(RxnfileSaver& saver)
 
 Indigo::~Indigo()
 {
+    file_logger() << "indigo destructor" << std::endl;
     removeAllObjects();
 }
 
@@ -260,11 +265,14 @@ void Indigo::clearErrorMessage()
 
 void Indigo::setErrorMessage(const char* message)
 {
+    file_logger() << "indigo set error" << message << std::endl;
     error_message().readString(message, true);
 }
 
 void Indigo::handleError(const char* message)
 {
+
+    file_logger() << "indigo handle error " << message << std::endl;
     setErrorMessage(message);
     if (error_handler() != nullptr)
     {
@@ -320,6 +328,7 @@ namespace
 
 CEXPORT qword indigoAllocSessionId()
 {
+    file_logger() << "indigo alloc session" << std::endl;
     qword id = TL_ALLOC_SESSION_ID();
     TL_SET_SESSION_ID(id);
     Indigo& indigo = indigoSelf().createOrGetLocalCopy(id);
@@ -337,11 +346,14 @@ CEXPORT qword indigoAllocSessionId()
 
 CEXPORT void indigoSetSessionId(qword id)
 {
+    file_logger() << "indigo set session" << id << std::endl;
     TL_SET_SESSION_ID(id);
 }
 
 CEXPORT void indigoReleaseSessionId(qword id)
 {
+    file_logger() << "indigo reslease session" << id << std::endl;
+
     TL_SET_SESSION_ID(id);
     indigoGetInstance().removeAllObjects();
     IndigoOptionManager::getIndigoOptionManager().removeLocalCopy(id);
@@ -366,6 +378,7 @@ CEXPORT void indigoSetErrorHandler(INDIGO_ERROR_HANDLER handler, void* context)
 
 CEXPORT int indigoFree(int handle)
 {
+    file_logger() << "indigo free " << handle << std::endl;
     // In some runtimes (e.g. Python) session could be removed before objects during resource releasing stage)
     if (indigoSelf().hasLocalCopy())
     {
@@ -383,6 +396,7 @@ CEXPORT int indigoFree(int handle)
 
 CEXPORT int indigoFreeAllObjects()
 {
+    file_logger() << "indigo free all " << std::endl;
     indigoGetInstance().removeAllObjects();
     return 1;
 }
@@ -398,19 +412,18 @@ CEXPORT int indigoCountReferences(void)
 
 CEXPORT void indigoSetErrorMessage(const char* message)
 {
+    file_logger() << "indigo error message " << message << std::endl;
     Indigo& self = indigoGetInstance();
     self.setErrorMessage(message);
 }
 
-#include <fstream>
-
-std::ofstream& file_logger();
-
 int Indigo::addObject(IndigoObject* obj)
 {
-    file_logger() << "addobject" << std::endl;
+    file_logger() << "addobject 1" << std::endl;
     auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
+    file_logger() << "addobject 2" << std::endl;
     int id = objects_holder->next_id++;
+    file_logger() << "addobject 3 id=" << id << std::endl;
 #ifdef INDIGO_OBJECT_DEBUG
     std::stringstream ss;
     ss << "IndigoObject(" << TL_GET_SESSION_ID() << ", " << id << ")";
@@ -436,6 +449,7 @@ int Indigo::addObject(std::unique_ptr<IndigoObject>&& obj)
 
 void Indigo::removeObject(int id)
 {
+    file_logger() << "removeobject " << id << std::endl;
     auto objects_holder = sf::xlock_safe_ptr(_objects_holder);
 #ifdef INDIGO_OBJECT_DEBUG
     std::stringstream ss;
@@ -444,13 +458,16 @@ void Indigo::removeObject(int id)
 #endif
     if (objects_holder->objects.count(id) == 0)
     {
+        file_logger() << "removeobject 2" << id << std::endl;
         return;
     }
+    file_logger() << "removeobject 3" << id << std::endl;
     objects_holder->objects.erase(id);
 }
 
 IndigoObject& Indigo::getObject(int handle)
 {
+    file_logger() << "getobject " << handle << std::endl;
     auto objects_holder = sf::slock_safe_ptr(_objects_holder);
 
     try
@@ -474,6 +491,7 @@ int Indigo::countObjects() const
 
 void Indigo::TmpData::clear()
 {
+    file_logger() << "indigo clear" << std::endl;
     string.clear();
     xyz[0] = 0.0;
     xyz[1] = 0.0;
@@ -482,6 +500,7 @@ void Indigo::TmpData::clear()
 
 Indigo::TmpData& Indigo::getThreadTmpData()
 {
+    file_logger() << "indigo getthreadtmpdata" << std::endl;
     static thread_local Indigo::TmpData _data;
     _data.clear();
     return _data;
@@ -497,6 +516,7 @@ IndigoError::IndigoError(const char* format, ...) : Exception("core: ")
     va_start(args, format);
     const size_t len = strlen(_message);
     vsnprintf(_message + len, sizeof(_message) - len, format, args);
+    file_logger() << "indigo error" << _message << std::endl;
     va_end(args);
 }
 
