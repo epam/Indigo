@@ -51,7 +51,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        wrapper: [ python, java, dotnet ]
+        wrapper: [ python ]
     runs-on: ubuntu-latest
     needs: [ build_indigo_libs_x86_64 ]
     container: epmlsop/indigo-tester:latest
@@ -93,18 +93,6 @@ jobs:
           name: indigo-python
           path: |
             dist/*.whl
-      - name: Upload Java wrappers
-        if: ${{ matrix.wrapper == 'java' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: indigo-java
-          path: dist/*.jar
-      - name: Upload .NET wrappers
-        if: ${{ matrix.wrapper == 'dotnet' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: indigo-dotnet
-          path: dist/*.nupkg
 
   merge_indigo_wrappers:
     runs-on: ubuntu-latest
