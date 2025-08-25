@@ -59,6 +59,7 @@ idt_data = {
     "idt_mixed_std": "ARAS",
     "idt_mixed_custom": "(N1:10203050)(N1)N",
     "idt_rna_dna_mixed_custom": "r(R1:50003000)(R1)",
+    "idt_5end_without_r2": "/5DigN/rA",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -67,11 +68,11 @@ lib = indigo.loadMonomerLibraryFromFile(
 
 for filename in sorted(idt_data.keys()):
     mol = indigo.loadIdt(idt_data[filename], lib)
+    ket = mol.json()
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
     #     file.write(mol.json())
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
         ket_ref = file.read()
-    ket = mol.json()
     diff = find_diff(ket_ref, ket)
     if not diff:
         print(filename + ".ket:SUCCEED")
