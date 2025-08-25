@@ -19,7 +19,8 @@ from .logger import logger
 def indigo():
     # TODO: uncomment this:
     indigo = Indigo()
-    return indigo
+    yield indigo
+    del indigo
 
 
 @pytest.fixture(scope="class")
@@ -73,6 +74,7 @@ def db(request, indigo):
         db.delete_base()
     elif db_str == DB_BINGO_ELASTIC:
         db.drop()
+    del db
     logger.info(f"===== Finish of testing {function} =====")
 
 
