@@ -1,3 +1,4 @@
+import gc
 import time
 from pathlib import Path
 from typing import Callable
@@ -30,7 +31,10 @@ def resource_loader() -> Callable[[str], str]:
 
 @pytest.fixture
 def indigo_fixture() -> Indigo:
-    return Indigo()
+    indigo = Indigo()
+    yield indigo
+    del indigo
+    gc.collect()
 
 
 @pytest.fixture
