@@ -103,6 +103,7 @@ To build the project from the sources, the following tools should be installed:
 - flask_httpauth package installed (to run backend API test). Command: `python -m pip install flask_httpauth`
 - pyparsing package installed (to run backend API test). Command: `python -m pip install pyparsing`
 - requests package installed (to run backend API test). Command: `python -m pip install requests`
+- pillow package installed (to run render UI tests). Command: `python -m pip install pillow`
 
 > On Linux use python3 insted of python. Using virtual environment might be required as well.
 
