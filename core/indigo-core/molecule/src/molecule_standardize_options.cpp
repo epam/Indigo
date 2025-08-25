@@ -74,6 +74,7 @@ void StandardizeOptions::reset()
     create_coordination_bonds = false;
     create_hydrogen_bonds = false;
     remove_extra_stereo_bonds = false;
+    standardize_stereo_mark_undefined = false;
 }
 
 void StandardizeOptions::parseFromString(const char* options)
@@ -171,6 +172,8 @@ void StandardizeOptions::parseFromString(const char* options)
             create_hydrogen_bonds = true;
         else if (strcasecmp(word.ptr(), "remove-extra-stereo-bonds") == 0)
             remove_extra_stereo_bonds = true;
+        else if (strcasecmp(word.ptr(), "standardize-stereo-mark-undefined") == 0)
+            standardize_stereo_mark_undefined = true;
 
         scanner.skipSpace();
     }
