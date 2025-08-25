@@ -1,4 +1,5 @@
 import pytest
+import gc
 from indigo import Indigo
 from .constants import (
     DATA_TYPES,
@@ -21,6 +22,7 @@ def indigo():
     indigo = Indigo()
     yield indigo
     del indigo
+    gc.collect()
 
 
 @pytest.fixture(scope="class")
