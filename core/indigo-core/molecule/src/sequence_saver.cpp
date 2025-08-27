@@ -608,7 +608,7 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                     std::string short_analog;
                     auto get_analog = [&short_analog, &monomer_class](const KetBaseMonomerTemplate& monomer_template) {
                         auto& map = monomer_template.getStringPropStrToIdx();
-                        auto& it = map.find("naturalAnalog");
+                        const auto& it = map.find("naturalAnalog");
                         if (it != map.end() && monomer_template.hasStringProp(it->second))
                         {
                             std::string analog = monomer_template.getStringProp(it->second);
@@ -616,7 +616,7 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                             if (short_analog == analog && analog.size() > 1)
                                 short_analog = "";
                         }
-                        auto& it_s = map.find("naturalAnalogShort");
+                        const auto& it_s = map.find("naturalAnalogShort");
                         if (short_analog.size() == 0 && it_s != map.end() && monomer_template.hasStringProp(it->second))
                         {
                             short_analog = monomer_template.getStringProp(it->second);
