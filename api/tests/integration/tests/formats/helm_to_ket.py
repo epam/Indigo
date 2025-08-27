@@ -33,7 +33,7 @@ helm_data = {
     "helm_multi_char_rna": "RNA1{r(U)p.r(T)p.r(G)p.r(C)p.r([m62A])}$$$$V2.0",
     "helm_peptide": "PEPTIDE1{A.[meA].C}$$$$V2.0",
     "helm_chem_peptide": "CHEM1{[PEG-2]}|PEPTIDE1{W.N.D.[Pen].G.[Orn].D.A.D.G.S.G.[Cap]}$CHEM1,PEPTIDE1,1:R1-1:R1$$$V2.0",
-    "helm_annotations": 'BLOB1{BEAD}"Animated Polystyrene"|CHEM1{[hxy]"Annotation"}|RNA1{R(A"mutation")P.R(U)P.R(G)P}$$$$V2.0',
+    "helm_annotations": 'BLOB1{BEAD}"Animated Polystyrene"|CHEM1{[hxy]"Annotation"}|RNA1{r(A"mutation")p.r(U)p.r(G)p}$CHEM1,RNA1,1:pair-3:pair"connection annotation"$${"PEPTIDE1":{"ChainType":"hc"},"PEPITDE2":{"ChainType":"lc"}}$V2.0',
     "helm_chem_rna": "CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:R1-3:R2$$$V2.0",
     "helm_rna_without_base": "RNA1{R.P}$$$$V2.0",
     "helm_mixed_base": "RNA1{d(A)P.d(A+G)P.d(A)P.d(G+C)}$$$$V2.0",
@@ -67,8 +67,8 @@ lib = indigo.loadMonomerLibraryFromFile(
 for filename in sorted(helm_data.keys()):
     try:
         mol = indigo.loadHelm(helm_data[filename], lib)
-        # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-        #     file.write(mol.json())
+        with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+            file.write(mol.json())
         with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
             ket_ref = file.read()
         ket = mol.json()

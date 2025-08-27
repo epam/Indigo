@@ -63,6 +63,7 @@ files = [
     "helm_alias",
     "modification_types",
     "monomer_transform",
+    "helm_annotation",
 ]
 savers = {
     "doc": [indigo.loadKetDocument],

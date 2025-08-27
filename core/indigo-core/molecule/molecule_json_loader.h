@@ -133,6 +133,7 @@ namespace indigo
         std::string _ket_version;
         unsigned int _components_count;
         rapidjson::Document _document;
+        rapidjson::Value _annotation;
     };
 
 } // namespace indigo

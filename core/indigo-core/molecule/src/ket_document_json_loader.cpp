@@ -125,10 +125,26 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
                 ep2.parseOptsFromKet(connection["endpoint2"]);
                 auto& conn = document.addConnection(connection_type, ep1, ep2);
                 conn.parseOptsFromKet(connection);
+                if (connection.HasMember("annotation"))
+                {
+                    conn.setAnnotation(connection["annotation"]);
+                }
             }
             else
                 throw Error("Unknown connection type: %s", connection_type.c_str());
         }
+    }
+    if (root.HasMember("annotation"))
+    {
+        Value& annotation_val = root["annotation"];
+        auto& annotation = document.addAnnotation();
+        annotation->parseOptsFromKet(annotation_val);
+        if (annotation_val.HasMember("json"))
+        {
+            Document new_doc;
+            new_doc.CopyFrom(annotation_val["json"], new_doc.GetAllocator());
+            annotation->setJson(new_doc);
+        };
     }
 }
 
@@ -340,6 +356,10 @@ void KetDocumentJsonLoader::parseKetMonomer(std::string& ref, rapidjson::Value& 
         static_cast<KetMonomer&>(*monomer).setTransformation({rotate, shift, flip});
     }
     monomer->setAttachmentPoints(document.templates().at(template_id).attachmentPoints());
+    if (json.HasMember("annotation"))
+    {
+        monomer->setAnnotation(json["annotation"]);
+    }
 }
 
 void KetDocumentJsonLoader::parseKetVariantMonomer(std::string& ref, rapidjson::Value& json, KetDocument& document)
@@ -357,6 +377,10 @@ void KetDocumentJsonLoader::parseKetVariantMonomer(std::string& ref, rapidjson::
     }
     auto& variant_monomer_template = document.ambiguousTemplates().at(template_id);
     monomer->setAttachmentPoints(variant_monomer_template.attachmentPoints());
+    if (json.HasMember("annotation"))
+    {
+        monomer->setAnnotation(json["annotation"]);
+    }
 }
 
 void KetDocumentJsonLoader::parseVariantMonomerTemplate(const rapidjson::Value& json, KetDocument& document)

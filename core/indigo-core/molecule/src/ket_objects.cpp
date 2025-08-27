@@ -441,7 +441,22 @@ void KetBaseMonomer::disconnectAttachmentPoint(const std::string& ap_id)
         _connections_to_molecules.erase(ap_id);
     else
         throw Error("Attachment point '%s' is not connected", ap_id.c_str());
-};
+}
+
+bool KetBaseMonomer::selected() const
+{
+    auto& map = getBoolPropStrToIdx();
+    const auto& it = map.find("selected");
+    return it != map.end() && hasBoolProp(it->second) && getBoolProp(it->second);
+}
+
+const std::map<std::string, int>& KetBaseMonomer::getIntPropStrToIdx() const
+{
+    static std::map<std::string, int> str_to_idx{
+        {"seqid", toUType(IntProps::seqid)},
+    };
+    return str_to_idx;
+}
 
 IMPL_ERROR(KetMonomer, "Ket Monomer")
 
@@ -450,14 +465,6 @@ const std::map<std::string, int>& KetMonomer::getBoolPropStrToIdx() const
     static std::map<std::string, int> str_to_idx{
         {"expanded", toUType(BoolProps::expanded)},
         {"selected", toUType(BoolProps::selected)},
-    };
-    return str_to_idx;
-}
-
-const std::map<std::string, int>& KetMonomer::getIntPropStrToIdx() const
-{
-    static std::map<std::string, int> str_to_idx{
-        {"seqid", toUType(IntProps::seqid)},
     };
     return str_to_idx;
 }
@@ -521,18 +528,18 @@ const std::map<std::string, int>& KetConnection::getBoolPropStrToIdx() const
 
 IMPL_ERROR(KetAmbiguousMonomer, "Ket Ambiguous Monomer")
 
-const std::map<std::string, int>& KetAmbiguousMonomer::getIntPropStrToIdx() const
-{
-    static std::map<std::string, int> str_to_idx{
-        {"seqid", toUType(IntProps::seqid)},
-    };
-    return str_to_idx;
-}
-
 const std::map<std::string, int>& KetAmbiguousMonomer::getStringPropStrToIdx() const
 {
     static std::map<std::string, int> str_to_idx{
         {"alias", toUType(StringProps::alias)},
+    };
+    return str_to_idx;
+}
+
+const std::map<std::string, int>& KetAmbiguousMonomer::getBoolPropStrToIdx() const
+{
+    static std::map<std::string, int> str_to_idx{
+        {"selected", toUType(BoolProps::selected)},
     };
     return str_to_idx;
 }
@@ -551,6 +558,31 @@ bool KetBaseMonomerTemplate::hasIdtAliasBase(const std::string& alias_base)
     if (_idt_alias.getBase() == alias_base)
         return true;
     return false;
+}
+
+IMPL_ERROR(KetObjectAnnotation, "Ket Object Annotation")
+
+const std::map<std::string, int>& KetObjectAnnotation::getStringPropStrToIdx() const
+{
+    static std::map<std::string, int> str_to_idx{
+        {"text", toUType(StringProps::text)},
+    };
+    return str_to_idx;
+}
+
+IMPL_ERROR(KetAnnotation, "Ket Annotation")
+
+void KetAnnotation::copy(const KetAnnotation& other)
+{
+    KetObjWithProps::copy(other);
+    if (other._json.has_value())
+        setJson(*other._json);
+}
+
+void KetAnnotation::setJson(const rapidjson::Document& json)
+{
+    _json.emplace();
+    _json->CopyFrom(json, _json->GetAllocator());
 }
 
 #ifdef _MSC_VER

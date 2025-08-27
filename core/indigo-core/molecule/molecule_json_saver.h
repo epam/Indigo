@@ -97,6 +97,8 @@ namespace indigo
         void saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
         void saveHighlights(BaseMolecule& mol, JsonWriter& writer);
 
+        void saveAnnotation(JsonWriter& writer, const KetObjectAnnotation& annotation);
+
         DECL_ERROR;
 
     protected:

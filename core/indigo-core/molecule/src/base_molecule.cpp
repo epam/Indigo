@@ -365,6 +365,8 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
             selectBond(edge_idx);
         if (mol.isBondHighlighted(j))
             highlightBond(edge_idx);
+        if (mol._bond_annotations.count(j) > 0)
+            _bond_annotations[edge_idx] = mol._bond_annotations[j];
     }
 
     // RGroups
@@ -693,6 +695,11 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
         _template_names.add(other._template_names.at(i));
     for (int i = 0; i < other._template_classes.size(); ++i)
         _template_classes.add(other._template_classes.at(i));
+    if (other._annotation.has_value())
+    {
+        _annotation.emplace();
+        _annotation->copy(*other._annotation);
+    }
 }
 
 void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
@@ -734,6 +741,11 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
         _template_names.add(other._template_names.at(i));
     for (i = 0; i < other._template_classes.size(); ++i)
         _template_classes.add(other._template_classes.at(i));
+    if (other._annotation.has_value())
+    {
+        _annotation.emplace();
+        _annotation->copy(*other._annotation);
+    }
 }
 
 void BaseMolecule::mergeWithMolecule(BaseMolecule& other, Array<int>* mapping, int skip_flags)
@@ -866,6 +878,7 @@ void BaseMolecule::removeBonds(const Array<int>& indices)
         if (getBondDirection(indices[i]) > 0)
             setBondDirection(indices[i], BOND_DIRECTION_MONO);
         removeEdge(indices[i]);
+        _bond_annotations.erase(indices[i]);
     }
     updateEditRevision();
 }
@@ -5568,6 +5581,14 @@ const Transformation& BaseMolecule::getTemplateAtomTransform(int idx) const
     return occur.transform;
 }
 
+const std::optional<KetObjectAnnotation>& BaseMolecule::getTemplateAtomAnnotation(int idx) const
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    const _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+
+    return occur.annotation;
+}
+
 void BaseMolecule::renameTemplateAtom(int idx, const char* text)
 {
     int template_occur_idx = getTemplateAtomOccurrence(idx);
@@ -5608,6 +5629,14 @@ void BaseMolecule::setTemplateAtomSeqName(int idx, const char* seq_name)
     updateEditRevision();
 }
 
+void BaseMolecule::setTemplateAtomAnnotation(int idx, const KetObjectAnnotation& annotation)
+{
+    int template_occur_idx = getTemplateAtomOccurrence(idx);
+    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    occur.annotation = annotation;
+    updateEditRevision();
+}
+
 void BaseMolecule::setTemplateAtomTemplateIndex(int idx, int temp_idx)
 {
     int template_occur_idx = getTemplateAtomOccurrence(idx);
@@ -5629,6 +5658,12 @@ void BaseMolecule::setTemplateAtomTransform(int idx, const Transformation& trans
     int template_occur_idx = getTemplateAtomOccurrence(idx);
     _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
     occur.transform = transform;
+    updateEditRevision();
+}
+
+void BaseMolecule::setBondAnnotation(int idx, const KetObjectAnnotation& annotation)
+{
+    _bond_annotations[idx] = annotation;
     updateEditRevision();
 }
 

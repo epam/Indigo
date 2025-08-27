@@ -534,7 +534,7 @@ TEST_F(IndigoCoreFormatsTest, mol_to_document)
             else if (monomer_type == KetBaseMonomer::MonomerType::Monomer)
             {
                 const MonomerTemplate& templ = document.templates().at(monomer->templateId());
-                printf("monomer, template: %s\n", templ.getStringProp("alias").c_str());
+                printf("monomer, template: %s\n", getKetStrProp(templ, alias).c_str());
                 int atom_idx = 0;
                 printf("Atoms:\n");
                 for (const std::shared_ptr<KetBaseAtomType>& batom : templ.atoms())
@@ -573,20 +573,20 @@ TEST_F(IndigoCoreFormatsTest, mol_to_document)
     for (const KetConnection& connection : document.nonSequenceConnections())
     {
         auto fill_conn_info = [](const KetConnectionEndPoint& ep, std::string& info) {
-            if (ep.hasStringProp("monomerId"))
+            if (hasKetStrProp(ep, monomerId))
             {
-                info += "monomer " + ep.getStringProp("monomerId");
-                if (ep.hasStringProp("attachmentPointId"))
+                info += "monomer " + getKetStrProp(ep, monomerId);
+                if (hasKetStrProp(ep, attachmentPointId))
                 {
-                    info += " attachment point " + ep.getStringProp("attachmentPointId");
+                    info += " attachment point " + getKetStrProp(ep, attachmentPointId);
                 }
             }
-            else if (ep.hasStringProp("moleculeId"))
+            else if (hasKetStrProp(ep, moleculeId))
             {
-                info += "molecule " + ep.getStringProp("moleculeId");
-                if (ep.hasStringProp("atomId"))
+                info += "molecule " + getKetStrProp(ep, moleculeId);
+                if (hasKetStrProp(ep, atomId))
                 {
-                    info += " atom " + ep.getStringProp("atomId");
+                    info += " atom " + getKetStrProp(ep, atomId);
                 }
             }
         };
@@ -693,9 +693,9 @@ TEST_F(IndigoCoreFormatsTest, expand_monomers)
         if (monomer_ptr->monomerType() != KetBaseMonomer::MonomerType::Monomer)
             continue;
         auto& monomer = static_cast<KetMonomer&>(*monomer_ptr);
-        if (monomer.hasBoolProp("expanded") && monomer.getBoolProp("expanded"))
+        if (isKetBoolPropTrue(monomer, expanded))
             continue;
-        monomer.setBoolProp("expanded", true);
+        setKetBoolProp(monomer, expanded, true);
         // set transform: rotate PI/2 and shift (0.1, 0.2)
         monomer.setTransformation({static_cast<float>(-M_PI / 4), {0, dy}});
         dy -= 1.5f;

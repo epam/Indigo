@@ -284,14 +284,14 @@
     "monomerTemplate-hxy___5-hexyn-1-ol": {
         "type": "monomerTemplate",
         "id": "hxy___5-hexyn-1-ol",
-        "class": "CHEM",
+        "class": "Chem",
         "classHELM": "CHEM",
-        "fullName": "5-hexyn-1-ol",
         "alias": "hxy",
+        "name": "hxy",
+        "fullName": "5-hexyn-1-ol",
         "attachmentPoints": [
             {
                 "attachmentAtom": 1,
-                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         0
@@ -422,14 +422,15 @@
         "id": "R___Ribose",
         "class": "Sugar",
         "classHELM": "RNA",
-        "fullName": "Ribose",
         "alias": "R",
+        "name": "Rib",
+        "fullName": "Ribose",
         "naturalAnalogShort": "R",
+        "naturalAnalog": "Rib",
         "aliasHELM": "r",
         "attachmentPoints": [
             {
                 "attachmentAtom": 10,
-                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         11
@@ -438,7 +439,6 @@
             },
             {
                 "attachmentAtom": 6,
-                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         8
@@ -447,7 +447,6 @@
             },
             {
                 "attachmentAtom": 0,
-                "type": "side",
                 "leavingGroup": {
                     "atoms": [
                         5
@@ -653,14 +652,15 @@
         "id": "A___Adenine",
         "class": "Base",
         "classHELM": "RNA",
-        "fullName": "Adenine",
         "alias": "A",
+        "name": "Ade",
+        "fullName": "Adenine",
         "naturalAnalogShort": "A",
+        "naturalAnalog": "Ade",
         "aliasHELM": "A",
         "attachmentPoints": [
             {
                 "attachmentAtom": 8,
-                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         10
@@ -850,14 +850,14 @@
         "id": "P___Phosphate",
         "class": "Phosphate",
         "classHELM": "RNA",
-        "fullName": "Phosphate",
         "alias": "P",
+        "name": "P",
+        "fullName": "Phosphate",
         "naturalAnalogShort": "P",
         "aliasHELM": "p",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
-                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         3
@@ -866,7 +866,6 @@
             },
             {
                 "attachmentAtom": 0,
-                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         4
@@ -952,14 +951,15 @@
         "id": "U___Uracil",
         "class": "Base",
         "classHELM": "RNA",
-        "fullName": "Uracil",
         "alias": "U",
+        "name": "Ura",
+        "fullName": "Uracil",
         "naturalAnalogShort": "U",
+        "naturalAnalog": "Ura",
         "aliasHELM": "U",
         "attachmentPoints": [
             {
                 "attachmentAtom": 5,
-                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         7
@@ -1112,14 +1112,15 @@
         "id": "G___Guanine",
         "class": "Base",
         "classHELM": "RNA",
-        "fullName": "Guanine",
         "alias": "G",
+        "name": "Gua",
+        "fullName": "Guanine",
         "naturalAnalogShort": "G",
+        "naturalAnalog": "Gua",
         "aliasHELM": "G",
         "attachmentPoints": [
             {
                 "attachmentAtom": 8,
-                "type": "left",
                 "leavingGroup": {
                     "atoms": [
                         10

@@ -275,6 +275,7 @@ void KetDocumentJsonSaver::saveMonomer(JsonWriter& writer, const KetMonomer& mon
         }
         writer.EndObject(); // transform
     }
+    saveAnnotation(writer, monomer.annotation());
     writer.EndObject();
 }
 
@@ -350,6 +351,7 @@ void KetDocumentJsonSaver::saveVariantMonomer(JsonWriter& writer, const KetAmbig
     monomer.saveOptsToKet(writer);
     saveStr(writer, "alias", monomer.alias());
     saveStr(writer, "templateId", monomer.templateId());
+    saveAnnotation(writer, monomer.annotation());
     writer.EndObject();
 }
 
@@ -412,6 +414,17 @@ void KetDocumentJsonSaver::saveMonomerShape(JsonWriter& writer, const KetMonomer
     writer.EndObject();
 }
 
+void KetDocumentJsonSaver::saveAnnotation(JsonWriter& writer, const std::optional<KetObjectAnnotation>& annotation)
+{
+    if (annotation.has_value())
+    {
+        writer.Key("annotation");
+        writer.StartObject();
+        annotation->saveOptsToKet(writer);
+        writer.EndObject();
+    }
+}
+
 void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument& document)
 {
     // auto& molecules = document.molecules();
@@ -465,6 +478,20 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
         meta_objects[i].Accept(writer);
     }
     writer.EndArray(); // nodes
+    auto& annotation = document.annotation();
+    if (annotation.has_value())
+    {
+        writer.Key("annotation");
+        writer.StartObject();
+        annotation->saveOptsToKet(writer);
+        auto& json = annotation->json();
+        if (json.has_value())
+        {
+            writer.Key("json");
+            json->Accept(writer);
+        }
+        writer.EndObject();
+    }
     if (connections.size() > 0)
     {
         writer.Key("connections");
@@ -482,6 +509,7 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
             writer.StartObject();
             it.ep2().saveOptsToKet(writer);
             writer.EndObject();
+            saveAnnotation(writer, it.annotation());
             writer.EndObject();
         }
         writer.EndArray(); // connections

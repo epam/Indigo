@@ -30,6 +30,7 @@
 #include "math/algebra.h"
 #include "molecule/elements.h"
 #include "molecule/ket_monomer_shape.h"
+#include "molecule/ket_objects.h"
 #include "molecule/metadata_storage.h"
 #include "molecule/molecule_allene_stereo.h"
 #include "molecule/molecule_arom.h"
@@ -227,11 +228,12 @@ namespace indigo
 
         struct _TemplateOccurrence
         {
-            int name_idx;              // index in _template_names
-            int class_idx;             // index in _template_classes
-            int seq_id;                // sequence id
-            int template_idx;          // template idx
-            Array<char> seq_name;      // sequence name
+            int name_idx;         // index in _template_names
+            int class_idx;        // index in _template_classes
+            int seq_id;           // sequence id
+            int template_idx;     // template idx
+            Array<char> seq_name; // sequence name
+            std::optional<KetObjectAnnotation> annotation;
             DisplayOption contracted;  // display option (-1 if undefined, 0 - expanded, 1 - contracted)
             Array<_AttachOrder> order; // attach order info
             Transformation transform;
@@ -240,7 +242,7 @@ namespace indigo
             }
             _TemplateOccurrence(const _TemplateOccurrence& other)
                 : name_idx(other.name_idx), class_idx(other.class_idx), seq_id(other.seq_id), template_idx(other.template_idx), contracted(other.contracted),
-                  transform(other.transform)
+                  transform(other.transform), annotation(other.annotation)
             {
                 seq_name.copy(other.seq_name);
                 order.copy(other.order);
@@ -262,12 +264,16 @@ namespace indigo
         const DisplayOption getTemplateAtomDisplayOption(int idx) const;
         const int getTemplateAtomTemplateIndex(int idx);
         const Transformation& getTemplateAtomTransform(int idx) const;
+        const std::optional<KetObjectAnnotation>& getTemplateAtomAnnotation(int idx) const;
 
         void renameTemplateAtom(int idx, const char* text);
         void setTemplateAtomName(int idx, const char* text);
         void setTemplateAtomClass(int idx, const char* text);
         void setTemplateAtomSeqid(int idx, int seq_id);
         void setTemplateAtomSeqName(int idx, const char* seq_name);
+        void setTemplateAtomAnnotation(int idx, const KetObjectAnnotation& annotation);
+
+        void setBondAnnotation(int idx, const KetObjectAnnotation& annotation);
 
         void setTemplateAtomDisplayOption(int idx, DisplayOption contracted);
         void setTemplateAtomTemplateIndex(int idx, int temp_idx);
@@ -427,6 +433,22 @@ namespace indigo
         {
             return reaction_atom_exact_change;
         }
+
+        const std::map<int, KetObjectAnnotation>& getBondAnnotations()
+        {
+            return _bond_annotations;
+        };
+
+        std::optional<KetAnnotation>& addAnnotation()
+        {
+            _annotation.emplace();
+            return _annotation;
+        };
+
+        const std::optional<KetAnnotation>& annotation() const
+        {
+            return _annotation;
+        };
 
         ObjPool<TemplateAttPoint> template_attachment_points; // All used APs -
         ObjArray<ObjPool<int>> template_attachment_indexes;   //
@@ -680,6 +702,7 @@ namespace indigo
         Array<int> _sl_bonds;
 
         Array<int> _bond_directions;
+        std::map<int, KetObjectAnnotation> _bond_annotations;
 
         Array<Vec3f> _xyz;
         RedBlackMap<int, Vec3f> _stereo_flag_positions;
@@ -700,6 +723,8 @@ namespace indigo
         int _edit_revision;
 
         MetaDataStorage _meta;
+
+        std::optional<KetAnnotation> _annotation;
 
         RedBlackObjMap<int, Array<char>> aliases;
         RedBlackObjMap<int, PropertiesMap> _properties;
