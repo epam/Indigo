@@ -607,20 +607,17 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                 {
                     std::string short_analog;
                     auto get_analog = [&short_analog, &monomer_class](const KetBaseMonomerTemplate& monomer_template) {
-                        auto& map = monomer_template.getStringPropStrToIdx();
-                        const auto& it = map.find("naturalAnalog");
-                        if (it != map.end() && monomer_template.hasStringProp(it->second))
+                        auto& analog_idx = monomer_template.getStringPropIdx("naturalAnalog");
+                        if (analog_idx.first && monomer_template.hasStringProp(analog_idx.second))
                         {
-                            std::string analog = monomer_template.getStringProp(it->second);
+                            std::string analog = monomer_template.getStringProp(analog_idx.second);
                             short_analog = monomerAliasByName(MonomerTemplate::MonomerClassToStr(monomer_class), analog);
                             if (short_analog == analog && analog.size() > 1)
                                 short_analog = "";
                         }
-                        const auto& it_s = map.find("naturalAnalogShort");
-                        if (short_analog.size() == 0 && it_s != map.end() && monomer_template.hasStringProp(it->second))
-                        {
-                            short_analog = monomer_template.getStringProp(it->second);
-                        }
+                        auto& short_idx = monomer_template.getStringPropIdx("naturalAnalogShort");
+                        if (short_analog.size() == 0 && short_idx.first && monomer_template.hasStringProp(short_idx.second))
+                            short_analog = monomer_template.getStringProp(short_idx.second);
                     };
                     if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
                         get_analog(doc.ambiguousTemplates().at(monomer->templateId()));
