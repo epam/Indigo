@@ -228,12 +228,11 @@ namespace indigo
 
         struct _TemplateOccurrence
         {
-            int name_idx;         // index in _template_names
-            int class_idx;        // index in _template_classes
-            int seq_id;           // sequence id
-            int template_idx;     // template idx
-            Array<char> seq_name; // sequence name
-            std::optional<KetObjectAnnotation> annotation;
+            int name_idx;              // index in _template_names
+            int class_idx;             // index in _template_classes
+            int seq_id;                // sequence id
+            int template_idx;          // template idx
+            Array<char> seq_name;      // sequence name
             DisplayOption contracted;  // display option (-1 if undefined, 0 - expanded, 1 - contracted)
             Array<_AttachOrder> order; // attach order info
             Transformation transform;
@@ -242,7 +241,7 @@ namespace indigo
             }
             _TemplateOccurrence(const _TemplateOccurrence& other)
                 : name_idx(other.name_idx), class_idx(other.class_idx), seq_id(other.seq_id), template_idx(other.template_idx), contracted(other.contracted),
-                  transform(other.transform), annotation(other.annotation)
+                  transform(other.transform)
             {
                 seq_name.copy(other.seq_name);
                 order.copy(other.order);
@@ -264,7 +263,8 @@ namespace indigo
         const DisplayOption getTemplateAtomDisplayOption(int idx) const;
         const int getTemplateAtomTemplateIndex(int idx);
         const Transformation& getTemplateAtomTransform(int idx) const;
-        const std::optional<KetObjectAnnotation>& getTemplateAtomAnnotation(int idx) const;
+        const KetObjectAnnotation& getTemplateAtomAnnotation(int idx) const;
+        bool hasTemplateAtomAnnotation(int idx) const;
 
         void renameTemplateAtom(int idx, const char* text);
         void setTemplateAtomName(int idx, const char* text);
@@ -703,6 +703,7 @@ namespace indigo
 
         Array<int> _bond_directions;
         std::map<int, KetObjectAnnotation> _bond_annotations;
+        std::map<int, KetObjectAnnotation> _atom_annotations;
 
         Array<Vec3f> _xyz;
         RedBlackMap<int, Vec3f> _stereo_flag_positions;

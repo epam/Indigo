@@ -1853,9 +1853,8 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                         writer.String(monomerId(tg_ref.value().get()).c_str());
                     }
                 }
-                auto& annotation = mol->getTemplateAtomAnnotation(i);
-                if (annotation.has_value())
-                    saveAnnotation(writer, *annotation);
+                if (mol->hasTemplateAtomAnnotation(i))
+                    saveAnnotation(writer, mol->getTemplateAtomAnnotation(i));
                 writer.EndObject(); // monomer
             }
         }

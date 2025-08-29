@@ -129,7 +129,7 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
 MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
     : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
       _connection_array(kArrayType), _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), _components_count(0),
-      _document()
+      _document(), _annotation(kArrayType)
 {
     if (scanner.lookNext() == '{')
     {
@@ -150,7 +150,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
     : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType), _connection_array(kArrayType),
       _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), ignore_no_chiral_flag(false), skip_3d_chirality(false),
-      treat_x_as_pseudoatom(false), treat_stereo_as(0), _components_count(0), _document()
+      treat_x_as_pseudoatom(false), treat_stereo_as(0), _components_count(0), _document(), _annotation(kArrayType)
 {
 }
 

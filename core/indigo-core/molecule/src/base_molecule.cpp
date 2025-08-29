@@ -352,6 +352,8 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
             selectAtom(mapping[i]);
         if (mol.isAtomHighlighted(i))
             highlightAtom(mapping[i]);
+        if (mol._atom_annotations.count(i) > 0)
+            _atom_annotations[mapping[i]] = mol._atom_annotations[i];
     }
 
     for (int j = mol.edgeBegin(); j != mol.edgeEnd(); j = mol.edgeNext(j))
@@ -5581,12 +5583,14 @@ const Transformation& BaseMolecule::getTemplateAtomTransform(int idx) const
     return occur.transform;
 }
 
-const std::optional<KetObjectAnnotation>& BaseMolecule::getTemplateAtomAnnotation(int idx) const
+const KetObjectAnnotation& BaseMolecule::getTemplateAtomAnnotation(int idx) const
 {
-    int template_occur_idx = getTemplateAtomOccurrence(idx);
-    const _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
+    return _atom_annotations.at(idx);
+}
 
-    return occur.annotation;
+bool BaseMolecule::hasTemplateAtomAnnotation(int idx) const
+{
+    return _atom_annotations.count(idx) > 0;
 }
 
 void BaseMolecule::renameTemplateAtom(int idx, const char* text)
@@ -5631,9 +5635,7 @@ void BaseMolecule::setTemplateAtomSeqName(int idx, const char* seq_name)
 
 void BaseMolecule::setTemplateAtomAnnotation(int idx, const KetObjectAnnotation& annotation)
 {
-    int template_occur_idx = getTemplateAtomOccurrence(idx);
-    _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
-    occur.annotation = annotation;
+    _atom_annotations[idx] = annotation;
     updateEditRevision();
 }
 
