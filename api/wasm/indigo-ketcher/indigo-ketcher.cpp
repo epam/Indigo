@@ -465,11 +465,18 @@ namespace indigo
                     }
                     auto is_upper = std::all_of(data.begin(), data.end(), [](int ch) { return !std::isalpha(ch) || std::isupper(ch); });
                     auto is_lower = std::all_of(data.begin(), data.end(), [](int ch) { return !std::isalpha(ch) || std::islower(ch); });
-                    if (is_upper || is_lower)
+                    if (sequence_type != options.end()) // try according to selector
                     {
-                        if (sequence_type != options.end()) // try according to selector
+                        std::string msg = "try as FASTA-" + sequence_type->second;
+                        print_js(msg.c_str());
+                        objectId = indigoLoadFastaFromString(data.c_str(), sequence_type->second.c_str(), library);
+                        if (objectId >= 0)
                         {
-                            std::string msg = "try as " + sequence_type->second;
+                            return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                        }
+                        if (is_upper || is_lower)
+                        {
+                            msg = "try as " + sequence_type->second;
                             print_js(msg.c_str());
                             objectId = indigoLoadSequenceFromString(data.c_str(), sequence_type->second.c_str(), library);
                             if (objectId >= 0)
@@ -477,6 +484,15 @@ namespace indigo
                                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                             }
                         }
+                    }
+                    print_js("try as FASTA-PEPTIDE");
+                    objectId = indigoLoadFastaFromString(data.c_str(), PEPTIDE, library);
+                    if (objectId >= 0)
+                    {
+                        return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                    }
+                    if (is_upper || is_lower)
+                    {
                         print_js("try as PEPTIDE");
                         objectId = indigoLoadSequenceFromString(data.c_str(), PEPTIDE, library);
                         if (objectId >= 0)

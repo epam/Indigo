@@ -3491,6 +3491,19 @@ M  END
             {
                 "struct": peptide_fasta,
                 "options": {"monomerLibrary": monomer_library},
+                "sequence-type": "PEPTIDE",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result_peptide_ket_auto = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
+                "struct": peptide_fasta,
+                "options": {"monomerLibrary": monomer_library},
                 "input_format": "chemical/x-peptide-fasta",
                 "output_format": "chemical/x-fasta",
             }
@@ -3521,9 +3534,15 @@ M  END
         with open(
             os.path.join(ref_path, "peptide_fasta_ref") + ".ket", "r"
         ) as file:
-            self.assertEqual(
-                json.loads(result_peptide_ket.text)["struct"], file.read()
-            )
+            peptide_fasta_ket_ref = file.read()
+        self.assertEqual(
+            json.loads(result_peptide_ket.text)["struct"],
+            peptide_fasta_ket_ref,
+        )
+        self.assertEqual(
+            json.loads(result_peptide_ket_auto.text)["struct"],
+            peptide_fasta_ket_ref,
+        )
 
         # RNA
         with open(
@@ -3541,6 +3560,19 @@ M  END
         )
 
         result_rna_ket = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
+                "struct": peptide_fasta,
+                "options": {"monomerLibrary": monomer_library},
+                "sequence-type": "RNA",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result_rna_ket_auto = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
 
@@ -3578,9 +3610,13 @@ M  END
         with open(
             os.path.join(ref_path, "rna_fasta_ref") + ".ket", "r"
         ) as file:
-            self.assertEqual(
-                json.loads(result_rna_ket.text)["struct"], file.read()
-            )
+            rna_ket_ref = file.read()
+        self.assertEqual(
+            json.loads(result_rna_ket.text)["struct"], rna_ket_ref
+        )
+        self.assertEqual(
+            json.loads(result_rna_ket_auto.text)["struct"], rna_ket_ref
+        )
 
         # DNA
         with open(
@@ -3598,6 +3634,19 @@ M  END
         )
 
         result_dna_ket = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+
+        headers, data = self.get_headers(
+            {
+                "struct": peptide_fasta,
+                "options": {"monomerLibrary": monomer_library},
+                "sequence-type": "DNA",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result_dna_ket_auto = requests.post(
             self.url_prefix + "/convert", headers=headers, data=data
         )
 
@@ -3635,9 +3684,13 @@ M  END
         with open(
             os.path.join(ref_path, "dna_fasta_ref") + ".ket", "r"
         ) as file:
-            self.assertEqual(
-                json.loads(result_dna_ket.text)["struct"], file.read()
-            )
+            dna_ket_ref = file.read()
+        self.assertEqual(
+            json.loads(result_dna_ket.text)["struct"], dna_ket_ref
+        )
+        self.assertEqual(
+            json.loads(result_dna_ket_auto.text)["struct"], dna_ket_ref
+        )
 
     def test_convert_idt(self):
         fname = "idt_maxmgc"
