@@ -279,19 +279,19 @@ def try_load_macromol(indigo, md, molstr, library, options):
     sequence_type = options.get("sequence-type")
     if try_load_seq(indigo, md, molstr, library, "PEPTIDE-3-LETTER"):
         return
-    if sequence_type is not None and try_load_fasta(
-        indigo, md, molstr, library, sequence_type
-    ):
-        return
-    if try_load_fasta(indigo, md, molstr, library, "PEPTIDE"):
-        return
+    if sequence_type is not None:
+        if try_load_fasta(indigo, md, molstr, library, sequence_type):
+            return
+    else:
+        if try_load_fasta(indigo, md, molstr, library, "PEPTIDE"):
+            return
     if molstr.isupper() or molstr.islower():
-        if sequence_type is not None and try_load_seq(
-            indigo, md, molstr, library, sequence_type
-        ):
-            return
-        if try_load_seq(indigo, md, molstr, library, "PEPTIDE"):
-            return
+        if sequence_type is not None:
+            if try_load_seq(indigo, md, molstr, library, sequence_type):
+                return
+        else:
+            if try_load_seq(indigo, md, molstr, library, "PEPTIDE"):
+                return
     try:
         md.struct = indigo.loadIdt(molstr, library)
         md.is_rxn = False

@@ -3491,7 +3491,6 @@ M  END
             {
                 "struct": peptide_fasta,
                 "options": {"monomerLibrary": monomer_library},
-                "sequence-type": "PEPTIDE",
                 "output_format": "chemical/x-indigo-ket",
             }
         )
@@ -3565,9 +3564,11 @@ M  END
 
         headers, data = self.get_headers(
             {
-                "struct": peptide_fasta,
-                "options": {"monomerLibrary": monomer_library},
-                "sequence-type": "RNA",
+                "struct": rna_fasta,
+                "options": {
+                    "sequence-type": "RNA",
+                    "monomerLibrary": monomer_library,
+                },
                 "output_format": "chemical/x-indigo-ket",
             }
         )
@@ -3639,9 +3640,11 @@ M  END
 
         headers, data = self.get_headers(
             {
-                "struct": peptide_fasta,
-                "options": {"monomerLibrary": monomer_library},
-                "sequence-type": "DNA",
+                "struct": dna_fasta,
+                "options": {
+                    "sequence-type": "DNA",
+                    "monomerLibrary": monomer_library,
+                },
                 "output_format": "chemical/x-indigo-ket",
             }
         )
