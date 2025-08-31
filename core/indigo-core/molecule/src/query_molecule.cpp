@@ -569,8 +569,11 @@ std::string QueryMolecule::getMolMrvSmaExtension(QueryMolecule& qm, int aid)
                     else if (qatom->type == ATOM_PSEUDO)
                         output.writeString(qatom->alias.ptr());
                 }
-                output.writeChar(';');
-                atoms_writed = true;
+                if (atom_list.size())
+                {
+                    output.writeChar(';');
+                    atoms_writed = true;
+                }
             }
             writeSmartsAtom(output, atom_props[property].get(), -1, -1, 1, false, false, qm.original_format);
         }
