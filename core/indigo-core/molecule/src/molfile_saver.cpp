@@ -1271,7 +1271,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             int query_atom_type = QueryMolecule::parseQueryAtomSmarts(*qmol, i, list, properties);
             if (query_atom_type == QueryMolecule::QUERY_ATOM_STAR)
                 label[0] = '*';
-            if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
+            else if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
                 label[0] = 'A';
             else if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
                 label[0] = 'Q';
