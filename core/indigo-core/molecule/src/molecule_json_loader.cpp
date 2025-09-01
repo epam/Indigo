@@ -1914,11 +1914,11 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         Value& annotation_val = _annotation[0];
         auto& annotation = mol.addAnnotation();
         annotation->parseOptsFromKet(annotation_val);
-        if (annotation_val.HasMember("json"))
+        if (annotation_val.HasMember("extended"))
         {
             Document new_doc;
-            new_doc.CopyFrom(annotation_val["json"], new_doc.GetAllocator());
-            annotation->setJson(new_doc);
+            new_doc.CopyFrom(annotation_val["extended"], new_doc.GetAllocator());
+            annotation->setExtended(new_doc);
         };
     }
 

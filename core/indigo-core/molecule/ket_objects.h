@@ -1024,15 +1024,15 @@ namespace indigo
 
         void copy(const KetAnnotation& other);
 
-        void setJson(const rapidjson::Document& json);
+        void setExtended(const rapidjson::Document& extended);
 
-        const std::optional<rapidjson::Document>& json() const
+        const std::optional<rapidjson::Document>& extended() const
         {
-            return _json;
+            return _extended;
         };
 
     private:
-        std::optional<rapidjson::Document> _json;
+        std::optional<rapidjson::Document> _extended;
     };
 
 }

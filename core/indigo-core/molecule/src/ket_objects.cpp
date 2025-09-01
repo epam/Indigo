@@ -575,14 +575,14 @@ IMPL_ERROR(KetAnnotation, "Ket Annotation")
 void KetAnnotation::copy(const KetAnnotation& other)
 {
     KetObjWithProps::copy(other);
-    if (other._json.has_value())
-        setJson(*other._json);
+    if (other._extended.has_value())
+        setExtended(*other._extended);
 }
 
-void KetAnnotation::setJson(const rapidjson::Document& json)
+void KetAnnotation::setExtended(const rapidjson::Document& extended)
 {
-    _json.emplace();
-    _json->CopyFrom(json, _json->GetAllocator());
+    _extended.emplace();
+    _extended->CopyFrom(json, _extended->GetAllocator());
 }
 
 #ifdef _MSC_VER

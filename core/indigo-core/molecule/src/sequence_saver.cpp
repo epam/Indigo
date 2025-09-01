@@ -1362,12 +1362,12 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
     auto& annotation = document.annotation();
     if (annotation.has_value())
     {
-        auto& annotation_json = annotation->json();
-        if (annotation_json.has_value())
+        auto& extended = annotation->extended();
+        if (extended.has_value())
         {
             rapidjson::StringBuffer buffer;
             rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-            annotation_json->Accept(writer);
+            extended->Accept(writer);
             helm_string += buffer.GetString();
         }
     }

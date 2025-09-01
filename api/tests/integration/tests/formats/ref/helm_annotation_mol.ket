@@ -33,7 +33,7 @@
             }
         ],
         "annotation": {
-            "json": {
+            "extended": {
                 "PEPTIDE1": {
                     "ChainType": "hc"
                 },

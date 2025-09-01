@@ -2150,8 +2150,8 @@ void SequenceLoader::loadHELM(KetDocument& document)
                 std::string annotation = rest_of_helm.substr(0, it);
                 rapidjson::Document data;
                 auto& ann = document.addAnnotation();
-                auto& json = data.Parse(annotation.c_str());
-                ann->setJson(json);
+                auto& extended = data.Parse(annotation.c_str());
+                ann->setExtended(extended);
             }
             std::string signature = rest_of_helm.substr(it + 1);
             // split by last '$' and check if right part eq “V2.0”

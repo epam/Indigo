@@ -1680,11 +1680,11 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
         writer.Key("annotation");
         writer.StartObject();
         annotation->saveOptsToKet(writer);
-        auto& json = annotation->json();
-        if (json.has_value())
+        auto& extended = annotation->extended();
+        if (extended.has_value())
         {
-            writer.Key("json");
-            json->Accept(writer);
+            writer.Key("extended");
+            extended->Accept(writer);
         }
         writer.EndObject();
     }
