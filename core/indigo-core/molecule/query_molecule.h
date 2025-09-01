@@ -45,6 +45,7 @@ namespace indigo
 
     enum
     {
+        _ATOM_STAR,
         _ATOM_R,
         _ATOM_A,
         _ATOM_X,
