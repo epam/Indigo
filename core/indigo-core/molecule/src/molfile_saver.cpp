@@ -529,22 +529,10 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         }
         else if (qmol != 0 && (query_atom_type = QueryMolecule::parseQueryAtomSmarts(*qmol, i, list, properties)) != -1)
         {
-            if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
-                out.writeChar('A');
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
-                out.writeChar('Q');
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_X)
-                out.writeChar('X');
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_M)
-                out.writeChar('M');
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_AH)
-                out.writeString("AH");
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_QH)
-                out.writeString("QH");
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_XH)
-                out.writeString("XH");
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_MH)
-                out.writeString("MH");
+            Array<char> qa_label;
+            qmol->getQueryAtomLabel(query_atom_type, qa_label);
+            if (qa_label.size() > 1)
+				out.write(qa_label.ptr(), qa_label.size() - 1);
             else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
             {
                 if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
@@ -1281,7 +1269,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             std::vector<std::unique_ptr<QueryMolecule::Atom>> list;
             std::map<int, std::unique_ptr<QueryMolecule::Atom>> properties;
             int query_atom_type = QueryMolecule::parseQueryAtomSmarts(*qmol, i, list, properties);
-
+            if (query_atom_type == QueryMolecule::QUERY_ATOM_STAR)
+                label[0] = '*';
             if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
                 label[0] = 'A';
             else if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
