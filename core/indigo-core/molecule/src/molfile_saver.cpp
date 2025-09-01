@@ -532,7 +532,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             Array<char> qa_label;
             qmol->getQueryAtomLabel(query_atom_type, qa_label);
             if (qa_label.size() > 1)
-				out.write(qa_label.ptr(), qa_label.size() - 1);
+                out.write(qa_label.ptr(), qa_label.size() - 1);
             else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
             {
                 if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
