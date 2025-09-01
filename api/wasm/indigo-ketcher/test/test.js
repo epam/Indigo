@@ -1033,6 +1033,12 @@ M  END
             assert.equal(peptide_fasta, peptide_fasta_ref.toString());
 
             options.delete();
+            //test autodetection
+            let options2 = new indigo.MapStringString();
+            options2.set("monomerLibrary", monomersLib);
+            options2.set("output-content-type", "application/json");
+            const peptide_ket2 = indigo.convert(fasta, "ket", options2);
+            assert.equal(peptide_ket, peptide_ket_ref.toString());
         });
     }
 
@@ -1058,6 +1064,13 @@ M  END
             assert.equal(rna_fasta, rna_fasta_ref.toString());
 
             options.delete();
+            //test autodetection
+            let options2 = new indigo.MapStringString();
+            options2.set("monomerLibrary", monomersLib);
+            options2.set("output-content-type", "application/json");
+            options2.set("sequence-type", "RNA");
+            const rna_ket2 = indigo.convert(fasta, "ket", options2);
+            assert.equal(rna_ket2, rna_ket_ref.toString());
         });
     }
 
@@ -1083,6 +1096,13 @@ M  END
             assert.equal(dna_fasta, dna_fasta_ref.toString());
 
             options.delete();
+            //test autodetection
+            let options2 = new indigo.MapStringString();
+            options2.set("monomerLibrary", monomersLib);
+            options2.set("output-content-type", "application/json");
+            options2.set("sequence-type", "DNA");
+            const dna_ket2 = indigo.convert(fasta, "ket", options2);
+            assert.equal(dna_ket2, dna_ket_ref.toString());
         });
     }
 
