@@ -2842,7 +2842,7 @@ int QueryMolecule::parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<
             if (negative)
             {
                 if (atom_list.size() == 1 && atom_list[0] == ELEM_H)
-                    return QUERY_ATOM_A; // !H
+                    return QUERY_ATOM_STAR; // !H
                 else if (atom_list == std::vector<int>{ELEM_H, ELEM_C})
                     return QUERY_ATOM_Q;
                 else if (atom_list == std::vector<int>{ELEM_C})
@@ -3176,7 +3176,8 @@ int QueryMolecule::getAtomType(const char* label)
 
 void QueryMolecule::getQueryAtomLabel(int qa, Array<char>& result)
 {
-    static const std::unordered_map<int, std::string> query_atom_labels = {{QUERY_ATOM_A, "A"},   {QUERY_ATOM_Q, "Q"},   {QUERY_ATOM_X, "X"},
+    static const std::unordered_map<int, std::string> query_atom_labels = {{QUERY_ATOM_STAR, "*"}, {QUERY_ATOM_A, "A"},   {QUERY_ATOM_Q, "Q"},
+                                                                           {QUERY_ATOM_X, "X"},
                                                                            {QUERY_ATOM_AH, "AH"}, {QUERY_ATOM_XH, "XH"}, {QUERY_ATOM_QH, "QH"},
                                                                            {QUERY_ATOM_MH, "MH"}, {QUERY_ATOM_M, "M"}};
 

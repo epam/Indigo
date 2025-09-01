@@ -358,7 +358,8 @@ namespace indigo
         enum QUERY_ATOM
         {
             QUERY_ATOM_UNKNOWN = -1,
-            QUERY_ATOM_A = 0,
+            QUERY_ATOM_STAR = 0,
+            QUERY_ATOM_A,
             QUERY_ATOM_X,
             QUERY_ATOM_Q,
             QUERY_ATOM_M,

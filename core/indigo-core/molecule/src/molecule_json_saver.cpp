@@ -834,6 +834,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                         {
                             buf.readString(_pqmol->getAlias(i), true);
                         }
+
                         if (buf.size() != 2 || buf[0] != '*')
                         {
                             buf.clear();
