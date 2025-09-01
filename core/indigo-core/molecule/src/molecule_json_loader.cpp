@@ -258,8 +258,8 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
         atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_RADICAL, radical)));
 
     auto atom_idx = _pqmol->addAtom(atom.release());
-    //if (label != nullptr && label[0] == '*' && label[1] == 0)
-    //    _pqmol->setAlias(atom_idx, label);
+    // if (label != nullptr && label[0] == '*' && label[1] == 0)
+    //     _pqmol->setAlias(atom_idx, label);
     return atom_idx;
 }
 
