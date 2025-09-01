@@ -582,7 +582,7 @@ void KetAnnotation::copy(const KetAnnotation& other)
 void KetAnnotation::setExtended(const rapidjson::Document& extended)
 {
     _extended.emplace();
-    _extended->CopyFrom(json, _extended->GetAllocator());
+    _extended->CopyFrom(extended, _extended->GetAllocator());
 }
 
 #ifdef _MSC_VER
