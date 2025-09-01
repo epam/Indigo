@@ -72,7 +72,7 @@ namespace indigo
         std::string ap_id = label.size() != 0 ? label : "R" + std::to_string(1 + _attachment_points.size());
         auto& ap = AddAttachmentPointId(ap_id, att_atom);
         if (label.size())
-            ap.setStringProp("label", label);
+            setKetStrProp(ap, label, label);
         return ap;
     }
 
@@ -202,7 +202,7 @@ namespace indigo
     {
         for (auto& it : _monomer_templates)
         {
-            if (it.second.monomerClass() == monomer_class && it.second.hasStringProp("alias") && it.second.getStringProp("alias") == monomer_template_alias)
+            if (it.second.monomerClass() == monomer_class && hasKetStrProp(it.second, alias) && getKetStrProp(it.second, alias) == monomer_template_alias)
                 return it.second.id();
         }
         return EMPTY_STRING;
@@ -212,8 +212,8 @@ namespace indigo
     {
         for (auto& it : _monomer_templates)
         {
-            if (it.second.monomerClass() == monomer_class && it.second.hasStringProp("aliasHELM") &&
-                it.second.getStringProp("aliasHELM") == monomer_template_alias)
+            if (it.second.monomerClass() == monomer_class && hasKetStrProp(it.second, aliasHELM) &&
+                getKetStrProp(it.second, aliasHELM) == monomer_template_alias)
                 return it.second.id();
         }
         return EMPTY_STRING;

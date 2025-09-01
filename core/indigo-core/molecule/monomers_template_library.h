@@ -153,7 +153,6 @@ namespace indigo
             _modification_types.push_back(modification_type);
         };
 
-    private:
         enum class StringProps
         {
             classHELM,
@@ -163,6 +162,8 @@ namespace indigo
             naturalAnalogShort,
             aliasHELM,
         };
+
+    private:
         bool _unresolved;
         atoms_type _atoms;
         std::vector<KetBond> _bonds;

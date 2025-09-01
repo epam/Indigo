@@ -180,8 +180,8 @@ KetConnection& KetDocument::addConnection(KetConnectionEndPoint ep1, KetConnecti
 KetConnection& KetDocument::addConnection(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2)
 {
     KetConnectionEndPoint ep1, ep2;
-    ep1.setStringProp("monomerId", mon1);
-    ep2.setStringProp("monomerId", mon2);
+    setKetStrProp(ep1, monomerId, mon1);
+    setKetStrProp(ep2, monomerId, mon2);
     if (ap1 == HelmHydrogenPair && ap2 == HelmHydrogenPair)
     {
         _connections.emplace_back(KetConnection::TYPE::HYDROGEN, ep1, ep2);
@@ -195,8 +195,8 @@ KetConnection& KetDocument::addConnection(const std::string& mon1, const std::st
     {
         connectMonomerTo(mon1, ap1, mon2, ap2);
         connectMonomerTo(mon2, ap2, mon1, ap1);
-        ep1.setStringProp("attachmentPointId", ap1);
-        ep2.setStringProp("attachmentPointId", ap2);
+        setKetStrProp(ep1, attachmentPointId, ap1);
+        setKetStrProp(ep2, attachmentPointId, ap2);
         _connections.emplace_back(ep1, ep2);
     }
     return *_connections.rbegin();
@@ -428,10 +428,10 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
     {
         auto& ep1 = connection.ep1();
         auto& ep2 = connection.ep2();
-        bool has_mol_1 = ep1.hasStringProp("moleculeId");
-        bool has_mon_1 = ep1.hasStringProp("monomerId");
-        bool has_mol_2 = ep2.hasStringProp("moleculeId");
-        bool has_mon_2 = ep2.hasStringProp("monomerId");
+        bool has_mol_1 = hasKetStrProp(ep1, moleculeId);
+        bool has_mon_1 = hasKetStrProp(ep1, monomerId);
+        bool has_mol_2 = hasKetStrProp(ep2, moleculeId);
+        bool has_mon_2 = hasKetStrProp(ep2, monomerId);
         if ((has_mon_1 || has_mol_1) != (has_mon_2 || has_mol_2))
             throw Error("Connection with only one end point.");
         if (!(has_mon_1 || has_mol_1))
@@ -441,18 +441,18 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
             _non_sequence_connections.emplace_back(connection);
             continue;
         }
-        bool has_ap_1 = ep1.hasStringProp("attachmentPointId");
-        bool has_atom_1 = ep1.hasStringProp("atomId");
-        bool has_ap_2 = ep2.hasStringProp("attachmentPointId");
-        bool has_atom_2 = ep2.hasStringProp("atomId");
+        bool has_ap_1 = hasKetStrProp(ep1, attachmentPointId);
+        bool has_atom_1 = hasKetStrProp(ep1, atomId);
+        bool has_ap_2 = hasKetStrProp(ep2, attachmentPointId);
+        bool has_atom_2 = hasKetStrProp(ep2, atomId);
         if ((has_ap_1 || has_atom_1) != (has_ap_2 || has_atom_2))
             throw Error("Connection with only one attachment point id.");
         if (!(has_ap_1 || has_atom_1))
             throw Error("Connection with empty attachment point.");
         if ((has_mon_1 != has_ap_1) || (has_mon_2 != has_ap_2))
             throw Error("Wrong connection point");
-        auto& mon_ref_1 = has_mon_1 ? ep1.getStringProp("monomerId") : ep1.getStringProp("moleculeId");
-        auto& mon_ref_2 = has_mon_2 ? ep2.getStringProp("monomerId") : ep2.getStringProp("moleculeId");
+        auto& mon_ref_1 = has_mon_1 ? getKetStrProp(ep1, monomerId) : getKetStrProp(ep1, moleculeId);
+        auto& mon_ref_2 = has_mon_2 ? getKetStrProp(ep2, monomerId) : getKetStrProp(ep2, moleculeId);
 
         auto& mon_id_1 = has_mon_1 ? _monomer_ref_to_id.at(mon_ref_1) : mon_ref_1;
         auto& mon_id_2 = has_mon_2 ? _monomer_ref_to_id.at(mon_ref_2) : mon_ref_2;
@@ -466,8 +466,8 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
         auto& mon1_class = id_to_class.at(mon_id_1);
         auto& mon2_class = id_to_class.at(mon_id_2);
 
-        auto& ap_id_1 = has_mon_1 ? ep1.getStringProp("attachmentPointId") : ep1.getStringProp("atomId");
-        auto& ap_id_2 = has_mon_2 ? ep2.getStringProp("attachmentPointId") : ep2.getStringProp("atomId");
+        auto& ap_id_1 = has_mon_1 ? getKetStrProp(ep1, attachmentPointId) : getKetStrProp(ep1, atomId);
+        auto& ap_id_2 = has_mon_2 ? getKetStrProp(ep2, attachmentPointId) : getKetStrProp(ep2, atomId);
 
         ap_to_connection.emplace(std::make_pair(mon_id_1, ap_id_1), connection);
         ap_to_connection.emplace(std::make_pair(mon_id_2, ap_id_2), connection);

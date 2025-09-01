@@ -1,6 +1,9 @@
 #include "molecule/mm_expand.h"
 
+#include "molecule/ket_document.h"
 #include "molecule/ket_objects.h"
+#include "molecule/molecule.h"
+
 #include <algorithm>
 #include <cmath>
 #include <graph/graph.h>
@@ -29,7 +32,7 @@ namespace indigo
         bool has_selection = false;
         for (const auto& monomerId : mol.monomersIds())
         {
-            if (mol.getMonomerById(monomerId)->isBoolPropTrue("selected"))
+            if (isKetBoolPropTrue(static_cast<KetMonomer&>(*mol.getMonomerById(monomerId)), selected))
             {
                 has_selection = true;
                 break;
@@ -47,13 +50,13 @@ namespace indigo
                 continue;
             }
             auto& mon = static_cast<KetMonomer&>(*monPtr);
-            if (has_selection && !mon.isBoolPropTrue("selected"))
+            if (has_selection && !isKetBoolPropTrue(mon, selected))
             {
                 dimensions.push_back(DEFAULT_DIMENSION);
             }
             else
             {
-                mon.setBoolProp("expanded", true);
+                setKetBoolProp(mon, expanded, true);
                 const auto& tmpl = mol.templates().at(mon.templateId());
                 // collect all leaving-group atom indices
                 std::vector<int> leaves;
@@ -116,15 +119,16 @@ namespace indigo
         // neighbor numbers
         for (const auto& conn : mol.connections())
         {
-            auto ref1 = conn.ep1().getStringProp("monomerId");
-            auto ref2 = conn.ep2().getStringProp("monomerId");
+
+            auto ref1 = getKetStrProp(conn.ep1(), monomerId);
+            auto ref2 = getKetStrProp(conn.ep2(), monomerId);
             auto p1 = ref1.find_first_of("0123456789");
             auto p2 = ref2.find_first_of("0123456789");
             std::string id1 = (p1 != std::string::npos) ? ref1.substr(p1) : std::string();
             std::string id2 = (p2 != std::string::npos) ? ref2.substr(p2) : std::string();
             // capture attachment point (R-group) for each endpoint
-            std::string ap1 = conn.ep1().hasStringProp("attachmentPointId") ? conn.ep1().getStringProp("attachmentPointId") : std::string();
-            std::string ap2 = conn.ep2().hasStringProp("attachmentPointId") ? conn.ep2().getStringProp("attachmentPointId") : std::string();
+            std::string ap1 = hasKetStrProp(conn.ep1(), attachmentPointId) ? getKetStrProp(conn.ep1(), attachmentPointId) : std::string();
+            std::string ap2 = hasKetStrProp(conn.ep2(), attachmentPointId) ? getKetStrProp(conn.ep2(), attachmentPointId) : std::string();
             neighborMap[id1].push_back(NeighborSpec{id2, ap1});
             neighborMap[id2].push_back(NeighborSpec{id1, ap2});
         }
@@ -158,8 +162,8 @@ namespace indigo
             graph.addVertex();
         for (const auto& conn : mol.connections())
         {
-            auto r1 = conn.ep1().getStringProp("monomerId");
-            auto r2 = conn.ep2().getStringProp("monomerId");
+            auto r1 = getKetStrProp(conn.ep1(), monomerId);
+            auto r2 = getKetStrProp(conn.ep2(), monomerId);
             auto p1 = r1.find_first_of("0123456789");
             auto p2 = r2.find_first_of("0123456789");
             int a = (p1 != std::string::npos) ? std::stoi(r1.substr(p1)) : 0;

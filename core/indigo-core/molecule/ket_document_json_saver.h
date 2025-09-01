@@ -30,6 +30,7 @@
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
 #include "molecule/json_writer.h"
+#include "molecule/ket_objects.h"
 #include "molecule/meta_commons.h"
 
 namespace indigo
@@ -64,6 +65,7 @@ namespace indigo
         static void saveVariantMonomer(JsonWriter& writer, const KetAmbiguousMonomer& monomer);
         static void saveVariantMonomerTemplate(JsonWriter& writer, const KetAmbiguousMonomerTemplate& monomer_template);
         static void saveMonomerShape(JsonWriter& writer, const KetMonomerShape& monomer_shape);
+        static void saveAnnotation(JsonWriter& writer, const std::optional<KetObjectAnnotation>& annotation);
 
         DECL_ERROR;
 

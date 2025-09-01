@@ -1541,6 +1541,14 @@ void MoleculeJsonSaver::saveMoleculeReference(int mol_id, JsonWriter& writer)
     // printf("\n");
 }
 
+void MoleculeJsonSaver::saveAnnotation(JsonWriter& writer, const KetObjectAnnotation& annotation)
+{
+    writer.Key("annotation");
+    writer.StartObject();
+    annotation.saveOptsToKet(writer);
+    writer.EndObject();
+}
+
 void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
 {
     _no_template_molecules.clear();
@@ -1666,6 +1674,21 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
 
     writer.EndArray(); // nodes
 
+    auto& annotation = mol.annotation();
+    if (annotation.has_value())
+    {
+        writer.Key("annotation");
+        writer.StartObject();
+        annotation->saveOptsToKet(writer);
+        auto& extended = annotation->extended();
+        if (extended.has_value())
+        {
+            writer.Key("extended");
+            extended->Accept(writer);
+        }
+        writer.EndObject();
+    }
+
     // save connections and templates
     if (mol.tgroups.getTGroupCount())
     {
@@ -1680,6 +1703,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
         // save connections
         writer.Key("connections");
         writer.StartArray();
+        auto& bond_annotations = mol.getBondAnnotations();
         for (auto i : mol.edges())
         {
             auto& e = mol.getEdge(i);
@@ -1693,6 +1717,8 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
                 // save endpoints
                 saveEndpoint(mol, "endpoint1", e.beg, e.end, writer, hydrogen);
                 saveEndpoint(mol, "endpoint2", e.end, e.beg, writer, hydrogen);
+                if (bond_annotations.count(i) > 0)
+                    saveAnnotation(writer, bond_annotations.at(i));
                 writer.EndObject(); // connection
             }
         }
@@ -1827,6 +1853,8 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
                         writer.String(monomerId(tg_ref.value().get()).c_str());
                     }
                 }
+                if (mol->hasTemplateAtomAnnotation(i))
+                    saveAnnotation(writer, mol->getTemplateAtomAnnotation(i));
                 writer.EndObject(); // monomer
             }
         }

@@ -37,7 +37,7 @@ helm_data = {
     "helm_multi_char_rna": "RNA1{r(U)p.r(T)p.r(G)p.r(C)p.r([m62A])}$$$$V2.0",
     "helm_peptide": "PEPTIDE1{A.[meA].C}$$$$V2.0",
     "helm_chem_peptide": "CHEM1{[PEG-2]}|PEPTIDE1{W.N.D.[Pen].G.[Orn].D.A.D.G.S.G.[Cap]}$CHEM1,PEPTIDE1,1:R1-1:R1$$$V2.0",
-    "helm_annotations": "CHEM1{[hxy]}|RNA1{r(A)p.r(U)p.r(G)p}$$$$V2.0",
+    "helm_annotations": 'CHEM1{[hxy]"Annotation"}|RNA1{r(A"mutation")p.r(U)p.r(G)p}$CHEM1,RNA1,1:pair-3:pair"connection annotation"$${"PEPTIDE1":{"ChainType":"hc"},"PEPITDE2":{"ChainType":"lc"}}$V2.0',
     "helm_connetion_separator": "PEPTIDE1{A}|PEPTIDE2{C}|CHEM1{[A6OH]}$PEPTIDE1,CHEM1,1:R2-1:R1|CHEM1,PEPTIDE2,1:R2-1:R1$$$V2.0",
     "helm_chem_rna": "CHEM1{[MCC]}|RNA1{r(U)p}$CHEM1,RNA1,1:R1-3:R2$$$V2.0",
     "helm_rna_without_base": "RNA1{r.p}$$$$V2.0",

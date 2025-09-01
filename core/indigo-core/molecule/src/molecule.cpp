@@ -97,6 +97,8 @@ void Molecule::_mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& verti
             setTemplateAtomTemplateIndex(newidx, mol.getTemplateAtomTemplateIndex(vertices[i]));
             setTemplateAtomDisplayOption(newidx, mol.getTemplateAtomDisplayOption(vertices[i]));
             setTemplateAtomTransform(newidx, mol.getTemplateAtomTransform(vertices[i]));
+            if (mol.hasTemplateAtomAnnotation(vertices[i]))
+                setTemplateAtomAnnotation(newidx, mol.getTemplateAtomAnnotation(vertices[i]));
         }
 
         bool nei_mapped = (getVertex(newidx).degree() == mol.getVertex(vertices[i]).degree());

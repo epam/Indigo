@@ -208,6 +208,17 @@ namespace indigo
             return _json_document;
         };
 
+        std::optional<KetAnnotation>& addAnnotation()
+        {
+            _annotation.emplace();
+            return _annotation;
+        };
+
+        const std::optional<KetAnnotation>& annotation() const
+        {
+            return _annotation;
+        };
+
     protected:
         void collect_sequence_side(const std::string& monomer_id, bool left_side, std::set<std::string>& monomers, std::set<std::string>& used_monomers,
                                    std::deque<std::string>& sequence, std::map<std::pair<std::string, std::string>, const KetConnection&>& ap_to_connection);
@@ -232,6 +243,7 @@ namespace indigo
         rapidjson::Document _json_document;
         std::vector<std::string> _fasta_properties;
         std::vector<KetMonomerShape> _monomer_shapes;
+        std::optional<KetAnnotation> _annotation;
     };
 }
 

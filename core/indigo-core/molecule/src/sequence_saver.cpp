@@ -21,6 +21,7 @@
 #include "base_cpp/scanner.h"
 #include "layout/sequence_layout.h"
 #include "molecule/elements.h"
+#include "molecule/json_writer.h"
 #include "molecule/ket_document.h"
 #include "molecule/ket_objects.h"
 #include "molecule/molecule.h"
@@ -301,7 +302,7 @@ std::string SequenceSaver::getMonomerAlias(BaseMolecule& mol, int atom_idx)
     if (monomer_id.size())
     {
         auto& monomer_template = _library.getMonomerTemplateById(monomer_id);
-        monomer_alias = monomer_template.getStringProp("alias");
+        monomer_alias = getKetStrProp(monomer_template, alias);
     }
     return monomer_alias;
 }
@@ -315,7 +316,7 @@ std::string SequenceSaver::getHelmPolymerClass(BaseMolecule& mol, int atom_idx)
     if (monomer_id.size())
     {
         auto& monomer_template = _library.getMonomerTemplateById(monomer_id);
-        helm_polymer_class = monomer_template.getStringProp("classHELM");
+        helm_polymer_class = getKetStrProp(monomer_template, classHELM);
     }
     if (helm_polymer_class.size() == 0)
     {
@@ -327,193 +328,6 @@ std::string SequenceSaver::getHelmPolymerClass(BaseMolecule& mol, int atom_idx)
             helm_polymer_class = kHELMPolymerTypeCHEM;
     }
     return helm_polymer_class;
-}
-
-std::string SequenceSaver::saveHELM(BaseMolecule& mol, std::vector<std::deque<int>>& sequences)
-{
-    std::string helm_string = "";
-    int peptide_idx = 0;
-    int rna_idx = 0;
-    int chem_idx = 0;
-    std::set<int> used_atoms;
-    using MonomerInfo = std::tuple<HELMType, int, int>;
-    constexpr int polymer_type = 0;
-    constexpr int polymer_num = 1;
-    constexpr int monomer_num = 2;
-    std::map<int, MonomerInfo> atom_idx_to_monomer_info;
-    std::set<std::pair<int, int>> used_connections;
-    int prev_atom_idx;
-    for (auto& sequence : sequences)
-    {
-        int monomer_idx = 0;
-        int polymer_idx = -1;
-        std::string helm_polymer_class = "";
-        HELMType helm_type = HELMType::Unknown;
-        for (auto atom_idx : sequence)
-        {
-            if (used_atoms.count(atom_idx) > 0) // Phosphate can be processed with rest of nucleotide
-                continue;
-            std::string monomer = mol.getTemplateAtom(atom_idx);
-            std::string monomer_alias = getMonomerAlias(mol, atom_idx);
-            std::string monomer_class = mol.getTemplateAtomClass(atom_idx);
-            if (monomer_idx == 0)
-            {
-                // start new polymer
-                const std::string& monomer_id = _library.getMonomerTemplateIdByAlias(MonomerTemplates::getStrToMonomerType().at(monomer_class), monomer);
-                if (monomer_id.size())
-                    helm_polymer_class = _library.getMonomerTemplateById(monomer_id).getStringProp("classHELM");
-                else
-                    helm_polymer_class = get_helm_class(MonomerTemplates::getStrToMonomerType().at(monomer_class));
-                if (helm_string.size())
-                    helm_string += '|'; // separator between polymers
-                helm_string += helm_polymer_class;
-                helm_type = getHELMTypeFromString(helm_polymer_class);
-                if (helm_polymer_class == kHELMPolymerTypePEPTIDE)
-                    polymer_idx = ++peptide_idx;
-                else if (helm_polymer_class == kHELMPolymerTypeRNA)
-                    polymer_idx = ++rna_idx;
-                else if (helm_polymer_class == kHELMPolymerTypeCHEM)
-                    polymer_idx = ++chem_idx;
-                helm_string += std::to_string(polymer_idx);
-                helm_string += '{';
-            }
-            else
-            {
-                used_connections.emplace(std::min(atom_idx, prev_atom_idx), std::max(atom_idx, prev_atom_idx));
-            }
-            if (monomer_alias.size() == 0)
-            {
-                if (monomer_class == kMonomerClassBASE)
-                    monomer_alias = monomerAliasByName(monomer_class, monomer);
-                else if (isAminoAcidClass(monomer_class))
-                    monomer_alias = monomerAliasByName(kMonomerClassAA, monomer);
-                else if (isNucleotideClass(monomer_class))
-                    monomer_alias = monomerAliasByName(kMonomerClassBASE, monomer);
-                if (monomer_alias.size() == 0) // If alias not foud - use monomer name
-                    monomer_alias = monomer;
-            }
-            if (monomer_idx)
-                helm_string += '.'; // separator between monomers
-            add_monomer_str(helm_string, monomer_alias);
-            monomer_idx++;
-            atom_idx_to_monomer_info.emplace(std::make_pair(atom_idx, std::make_tuple(helm_type, polymer_idx, monomer_idx)));
-
-            used_atoms.emplace(atom_idx);
-            prev_atom_idx = atom_idx;
-
-            if (monomer_class == kMonomerClassSUGAR)
-            {
-                auto& v = mol.getVertex(atom_idx);
-                std::string phosphate = "";
-                int phosphate_idx = -1;
-                for (auto nei_idx = v.neiBegin(); nei_idx < v.neiEnd(); nei_idx = v.neiNext(nei_idx))
-                {
-                    int nei_atom_idx = v.neiVertex(nei_idx);
-                    if (mol.isTemplateAtom(nei_atom_idx))
-                    {
-                        if (used_atoms.count(nei_atom_idx) > 0)
-                            continue;
-                        std::string mon_class = mol.getTemplateAtomClass(nei_atom_idx);
-                        if (mon_class == kMonomerClassBASE)
-                        {
-                            helm_string += '('; // branch monomers in ()
-                            add_monomer_str(helm_string, monomerAliasByName(mon_class, mol.getTemplateAtom(nei_atom_idx)));
-                            monomer_idx++;
-                            atom_idx_to_monomer_info.emplace(std::make_pair(nei_atom_idx, std::make_tuple(helm_type, polymer_idx, monomer_idx)));
-                            used_atoms.emplace(nei_atom_idx);
-                            used_connections.emplace(std::min(atom_idx, nei_atom_idx), std::max(atom_idx, nei_atom_idx));
-                            helm_string += ')';
-                        }
-                        else if (mon_class == kMonomerClassPHOSPHATE)
-                        {
-                            phosphate = monomerAliasByName(mon_class, mol.getTemplateAtom(nei_atom_idx));
-                            phosphate_idx = nei_atom_idx;
-                        }
-                    }
-                }
-                if (phosphate.size())
-                {
-                    add_monomer_str(helm_string, phosphate);
-                    monomer_idx++;
-                    atom_idx_to_monomer_info.emplace(std::make_pair(phosphate_idx, std::make_tuple(helm_type, polymer_idx, monomer_idx)));
-                    used_atoms.emplace(phosphate_idx);
-                    used_connections.emplace(std::min(atom_idx, phosphate_idx), std::max(atom_idx, phosphate_idx));
-                    prev_atom_idx = phosphate_idx;
-                }
-            }
-        }
-        if (monomer_idx)
-            helm_string += '}'; // Finish polymer
-    }
-    helm_string += '$';
-    // Add connections
-    int connections_count = 0;
-    std::vector<std::map<int, int>> directions_map;
-    mol.getTemplateAtomDirectionsMap(directions_map);
-    std::set<std::pair<int, int>> processed_connections;
-    for (int atom_idx = 0; atom_idx < mol.vertexCount(); atom_idx++)
-    {
-        if (mol.isTemplateAtom(atom_idx))
-        {
-            for (auto& connection : directions_map[atom_idx])
-            {
-                if (processed_connections.count(std::make_pair(atom_idx, connection.second)) == 0)
-                {
-                    auto [cur_type, cur_pol_num, cur_mon_num] = atom_idx_to_monomer_info.at(atom_idx);
-                    auto [nei_type, nei_pol_num, nei_mon_num] = atom_idx_to_monomer_info.at(connection.second);
-                    if (cur_type != nei_type || cur_pol_num != nei_pol_num ||
-                        used_connections.find(std::make_pair(std::min(atom_idx, connection.second), std::max(atom_idx, connection.second))) ==
-                            used_connections.end())
-                    {
-                        // add connection
-                        if (connections_count)
-                            helm_string += '|';
-                        connections_count++;
-                        helm_string += getStringFromHELMType(cur_type);
-                        helm_string += std::to_string(cur_pol_num);
-                        helm_string += ',';
-                        helm_string += getStringFromHELMType(nei_type);
-                        helm_string += std::to_string(nei_pol_num);
-                        helm_string += ',';
-                        helm_string += std::to_string(cur_mon_num);
-                        helm_string += ":R";
-                        helm_string += std::to_string(connection.first + 1);
-                        helm_string += '-';
-                        helm_string += std::to_string(nei_mon_num);
-                        helm_string += ':';
-                        int nei_ap_id = -1;
-                        for (auto& nei_conn : directions_map[connection.second])
-                        { // TODO: rewrite when connection will contain info about neighb ap_id
-                            if (nei_conn.second == atom_idx)
-                            {
-                                nei_ap_id = nei_conn.first;
-                                break;
-                            }
-                        }
-                        if (nei_ap_id >= 0)
-                        {
-                            helm_string += 'R';
-                            helm_string += std::to_string(nei_ap_id + 1);
-                        }
-                        else
-                        {
-                            helm_string += '?';
-                        }
-                    }
-                    processed_connections.emplace(std::make_pair(atom_idx, connection.second));
-                    processed_connections.emplace(std::make_pair(connection.second, atom_idx));
-                }
-            }
-        }
-    }
-    helm_string += '$';
-    // Add polymer groups
-    helm_string += '$';
-    // Add ExtendedAnnotation
-    helm_string += '$';
-    // Add helm version
-    helm_string += "V2.0";
-    return helm_string;
 }
 
 static void check_backbone_connection(BaseMolecule& mol, std::vector<std::map<int, int>> directions_map, int template_idx, int side,
@@ -553,18 +367,21 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         mol.getTemplatesMap(_templates);
 
     std::string seq_text;
-    auto& mol_properties = mol.properties();
-    std::vector<std::deque<int>> sequences;
-    SequenceLayout sl(mol);
-    sl.sequenceExtract(sequences);
-    auto prop_it = mol_properties.begin();
-    int seq_idx = 0;
     if (sf == SeqFormat::HELM)
     {
-        seq_text = saveHELM(mol, sequences);
+        std::vector<std::deque<std::string>> sequences;
+        auto& doc = mol.getKetDocument();
+        doc.parseSimplePolymers(sequences, false);
+        seq_text = saveHELM(doc, sequences);
     }
     else
     {
+        auto& mol_properties = mol.properties();
+        std::vector<std::deque<int>> sequences;
+        SequenceLayout sl(mol);
+        sl.sequenceExtract(sequences);
+        auto prop_it = mol_properties.begin();
+        int seq_idx = 0;
         if (sf == SeqFormat::IDT)
         {
             std::vector<std::map<int, int>> directions_map;
@@ -790,17 +607,17 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                 {
                     std::string short_analog;
                     auto get_analog = [&short_analog, &monomer_class](const KetBaseMonomerTemplate& monomer_template) {
-                        if (monomer_template.hasStringProp("naturalAnalog"))
+                        const auto& analog_idx = monomer_template.getStringPropIdx("naturalAnalog");
+                        if (analog_idx.first && monomer_template.hasStringProp(analog_idx.second))
                         {
-                            std::string analog = monomer_template.getStringProp("naturalAnalog");
+                            std::string analog = monomer_template.getStringProp(analog_idx.second);
                             short_analog = monomerAliasByName(MonomerTemplate::MonomerClassToStr(monomer_class), analog);
                             if (short_analog == analog && analog.size() > 1)
                                 short_analog = "";
                         }
-                        if (short_analog.size() == 0 && monomer_template.hasStringProp("naturalAnalogShort"))
-                        {
-                            short_analog = monomer_template.getStringProp("naturalAnalogShort");
-                        }
+                        const auto& short_idx = monomer_template.getStringPropIdx("naturalAnalogShort");
+                        if (short_analog.size() == 0 && short_idx.first && monomer_template.hasStringProp(short_idx.second))
+                            short_analog = monomer_template.getStringProp(short_idx.second);
                     };
                     if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
                         get_analog(doc.ambiguousTemplates().at(monomer->templateId()));
@@ -1011,7 +828,7 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                                 throw Error("Cannot save IDT - only mixture supported but found %s.", ambiguous_template.subtype().c_str());
                             for (auto& option : ambiguous_template.options())
                             {
-                                auto& opt_alias = doc.templates().at(option.templateId()).getStringProp("alias");
+                                auto& opt_alias = getKetStrProp(doc.templates().at(option.templateId()), alias);
                                 aliases.emplace(opt_alias);
                                 if (s_aliases.size() > 0)
                                     s_aliases += ", ";
@@ -1189,22 +1006,22 @@ void SequenceSaver::add_monomer(KetDocument& document, const std::unique_ptr<Ket
 {
     std::string monomer_str;
     const auto& mon_templ = document.templates().at(monomer->templateId());
-    const auto& template_id = _library.getMonomerTemplateIdByAlias(mon_templ.monomerClass(), mon_templ.getStringProp("alias"));
+    const auto& template_id = _library.getMonomerTemplateIdByAlias(mon_templ.monomerClass(), getKetStrProp(mon_templ, alias));
     if (template_id.size() > 0)
     {
         auto& mononomer_template = _library.monomerTemplates().at(template_id);
         std::string alias;
-        if (mononomer_template.hasStringProp("aliasHELM"))
-            alias = mononomer_template.getStringProp("aliasHELM");
+        if (hasKetStrProp(mononomer_template, aliasHELM))
+            alias = getKetStrProp(mononomer_template, aliasHELM);
         if (alias.size() > 0)
             monomer_str = alias;
         else
-            monomer_str = mononomer_template.getStringProp("alias");
+            monomer_str = getKetStrProp(mononomer_template, alias);
     }
     else if (mon_templ.unresolved())
     {
-        if (mon_templ.hasStringProp("aliasHELM"))
-            monomer_str = mon_templ.getStringProp("aliasHELM");
+        if (hasKetStrProp(mon_templ, aliasHELM))
+            monomer_str = getKetStrProp(mon_templ, aliasHELM);
         else
             monomer_str = "*";
     }
@@ -1282,8 +1099,8 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
                     helm_string += '|';
                 // start new polymer
                 std::string helm_polymer_class;
-                if (monomer->monomerType() == KetBaseMonomer::MonomerType::Monomer && templates.at(monomer->templateId()).hasStringProp("classHELM"))
-                    helm_polymer_class = templates.at(monomer->templateId()).getStringProp("classHELM");
+                if (monomer->monomerType() == KetBaseMonomer::MonomerType::Monomer && hasKetStrProp(templates.at(monomer->templateId()), classHELM))
+                    helm_polymer_class = getKetStrProp(templates.at(monomer->templateId()), classHELM);
                 else
                     helm_polymer_class = get_helm_class(monomer_class);
                 helm_string += helm_polymer_class;
@@ -1321,10 +1138,10 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
                         variants += mixture ? '+' : ',';
                     std::string alias;
                     auto& mononomer_template = templates.at(option.templateId());
-                    if (mononomer_template.hasStringProp("aliasHELM"))
-                        alias = mononomer_template.getStringProp("aliasHELM");
+                    if (hasKetStrProp(mononomer_template, aliasHELM))
+                        alias = getKetStrProp(mononomer_template, aliasHELM);
                     if (alias.size() == 0)
-                        alias = mononomer_template.getStringProp("alias");
+                        alias = getKetStrProp(mononomer_template, alias);
                     if (alias.size() > 1)
                         variants += '[';
                     variants += alias;
@@ -1343,6 +1160,16 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
                 if (monomer_class != MonomerClass::Base)
                     helm_string += ')';
             }
+            auto& annotation = monomer->annotation();
+            if (annotation.has_value())
+            {
+                if (hasKetStrProp(annotation.value(), text))
+                {
+                    helm_string += '"';
+                    helm_string += getKetStrProp(annotation.value(), text);
+                    helm_string += '"';
+                }
+            }
             if (monomer_class == MonomerClass::Base)
                 helm_string += ')';
             monomer_idx++;
@@ -1359,13 +1186,13 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
     if (molecules.Size() > 0)
     {
         auto process_ep = [&molecules_connections](const KetConnectionEndPoint& ep) {
-            if (ep.hasStringProp("moleculeId"))
+            if (hasKetStrProp(ep, moleculeId))
             {
-                const auto& mol_id = ep.getStringProp("moleculeId");
+                const auto& mol_id = getKetStrProp(ep, moleculeId);
                 if (molecules_connections.count(mol_id) == 0)
                     molecules_connections.try_emplace(mol_id);
-                if (ep.hasStringProp("atomId"))
-                    molecules_connections.at(mol_id).push_back(std::stoi(ep.getStringProp("atomId")));
+                if (hasKetStrProp(ep, atomId))
+                    molecules_connections.at(mol_id).push_back(std::stoi(getKetStrProp(ep, atomId)));
             }
         };
         for (const auto& connection : document.nonSequenceConnections())
@@ -1479,12 +1306,12 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
             helm_string += '|';
         const auto& ep_1 = connection.ep1();
         const auto& ep_2 = connection.ep2();
-        if (!(ep_1.hasStringProp("monomerId") || ep_1.hasStringProp("moleculeId")) || !(ep_2.hasStringProp("monomerId") || ep_2.hasStringProp("moleculeId")))
+        if (!(hasKetStrProp(ep_1, monomerId) || hasKetStrProp(ep_1, moleculeId)) || !(hasKetStrProp(ep_2, monomerId) || hasKetStrProp(ep_2, moleculeId)))
             throw Error("Endpoint without monomer or molecule id");
-        bool has_mon_id1 = ep_1.hasStringProp("monomerId");
-        bool has_mon_id2 = ep_2.hasStringProp("monomerId");
-        const auto& monomer_id_1 = has_mon_id1 ? ep_1.getStringProp("monomerId") : ep_1.getStringProp("moleculeId");
-        const auto& monomer_id_2 = has_mon_id2 ? ep_2.getStringProp("monomerId") : ep_2.getStringProp("moleculeId");
+        bool has_mon_id1 = hasKetStrProp(ep_1, monomerId);
+        bool has_mon_id2 = hasKetStrProp(ep_2, monomerId);
+        const auto& monomer_id_1 = has_mon_id1 ? getKetStrProp(ep_1, monomerId) : getKetStrProp(ep_1, moleculeId);
+        const auto& monomer_id_2 = has_mon_id2 ? getKetStrProp(ep_2, monomerId) : getKetStrProp(ep_2, moleculeId);
         const auto& id1 = has_mon_id1 ? document.monomerIdByRef(monomer_id_1) : monomer_id_1;
         const auto& id2 = has_mon_id2 ? document.monomerIdByRef(monomer_id_2) : monomer_id_2;
         auto [type_1, pol_num_1, mon_num_1] = monomer_id_to_monomer_info.at(id1);
@@ -1498,10 +1325,10 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
         helm_string += ',';
         helm_string += std::to_string(mon_num_1);
         helm_string += ":";
-        if (ep_1.hasStringProp("atomId"))
-            helm_string += mol_atom_to_ap.at(id1).at(std::stoi(ep_1.getStringProp("atomId")));
-        else if (ep_1.hasStringProp("attachmentPointId"))
-            helm_string += ep_1.getStringProp("attachmentPointId");
+        if (hasKetStrProp(ep_1, atomId))
+            helm_string += mol_atom_to_ap.at(id1).at(std::stoi(getKetStrProp(ep_1, atomId)));
+        else if (hasKetStrProp(ep_1, attachmentPointId))
+            helm_string += getKetStrProp(ep_1, attachmentPointId);
         else if (connection.connType() == KetConnection::TYPE::HYDROGEN)
             helm_string += HelmHydrogenPair;
         else
@@ -1509,19 +1336,41 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
         helm_string += '-';
         helm_string += std::to_string(mon_num_2);
         helm_string += ':';
-        if (ep_2.hasStringProp("atomId"))
-            helm_string += mol_atom_to_ap.at(id2).at(std::stoi(ep_2.getStringProp("atomId")));
-        else if (ep_2.hasStringProp("attachmentPointId"))
-            helm_string += ep_2.getStringProp("attachmentPointId");
+        if (hasKetStrProp(ep_2, atomId))
+            helm_string += mol_atom_to_ap.at(id2).at(std::stoi(getKetStrProp(ep_2, atomId)));
+        else if (hasKetStrProp(ep_2, attachmentPointId))
+            helm_string += getKetStrProp(ep_2, attachmentPointId);
         else if (connection.connType() == KetConnection::TYPE::HYDROGEN)
             helm_string += HelmHydrogenPair;
         else
             helm_string += '?';
+        auto& annotation = connection.annotation();
+        if (annotation.has_value())
+        {
+            if (hasKetStrProp(annotation.value(), text))
+            {
+                helm_string += '"';
+                helm_string += getKetStrProp(annotation.value(), text);
+                helm_string += '"';
+            }
+        }
     }
     helm_string += '$';
     // Add polymer groups
     helm_string += '$';
     // Add ExtendedAnnotation
+    auto& annotation = document.annotation();
+    if (annotation.has_value())
+    {
+        auto& extended = annotation->extended();
+        if (extended.has_value())
+        {
+            rapidjson::StringBuffer buffer;
+            rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+            extended->Accept(writer);
+            helm_string += buffer.GetString();
+        }
+    }
     helm_string += '$';
     // Add helm version
     helm_string += "V2.0";

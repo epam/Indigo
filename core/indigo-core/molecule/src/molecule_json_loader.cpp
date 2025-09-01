@@ -31,7 +31,7 @@ IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
       _connection_array(kArrayType), _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), _components_count(0),
-      _document()
+      _document(), _annotation(kArrayType)
 {
     parse_ket(ket);
 }
@@ -113,6 +113,11 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
         }
     }
 
+    if (root.HasMember("annotation"))
+    {
+        _annotation.PushBack(root["annotation"], ket.GetAllocator());
+    }
+
     if (root.HasMember("connections"))
     {
         Value& connections = root["connections"];
@@ -124,7 +129,7 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
 MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
     : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
       _connection_array(kArrayType), _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), _components_count(0),
-      _document()
+      _document(), _annotation(kArrayType)
 {
     if (scanner.lookNext() == '{')
     {
@@ -145,7 +150,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
     : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType), _connection_array(kArrayType),
       _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), ignore_no_chiral_flag(false), skip_3d_chirality(false),
-      treat_x_as_pseudoatom(false), treat_stereo_as(0), _components_count(0), _document()
+      treat_x_as_pseudoatom(false), treat_stereo_as(0), _components_count(0), _document(), _annotation(kArrayType)
 {
 }
 
@@ -1696,6 +1701,13 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         if (ma.HasMember("seqid"))
             mol.setTemplateAtomSeqid(idx, ma["seqid"].GetInt());
 
+        if (ma.HasMember("annotation"))
+        {
+            KetObjectAnnotation annotation;
+            annotation.parseOptsFromKet(ma["annotation"]);
+            mol.setTemplateAtomAnnotation(idx, annotation);
+        }
+
         if (ma.HasMember("position"))
         {
             auto& pos_val = ma["position"];
@@ -1883,13 +1895,33 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         if (atp2.size())
             mol.setTemplateAtomAttachmentOrder(id2, id1, atp2.c_str());
 
-        mol.addBond_Silent(id1, id2, order);
+        int idx = mol.addBond_Silent(id1, id2, order);
+        if (connection.HasMember("annotation"))
+        {
+            KetObjectAnnotation annotation;
+            annotation.parseOptsFromKet(connection["annotation"]);
+            mol.setBondAnnotation(idx, annotation);
+        }
     }
 
     MoleculeLayout ml(mol, false);
     ml.layout_orientation = UNCPECIFIED;
     ml.updateSGroups();
     loadMetaObjects(_meta_objects, mol.meta());
+
+    if (_annotation.Size() > 0)
+    {
+        Value& annotation_val = _annotation[0];
+        auto& annotation = mol.addAnnotation();
+        annotation->parseOptsFromKet(annotation_val);
+        if (annotation_val.HasMember("extended"))
+        {
+            Document new_doc;
+            new_doc.CopyFrom(annotation_val["extended"], new_doc.GetAllocator());
+            annotation->setExtended(new_doc);
+        };
+    }
+
     int arrows_count = mol.meta().getMetaCount(ReactionArrowObject::CID) + mol.meta().getMetaCount(ReactionMultitailArrowObject::CID);
     if (arrows_count && !load_arrows)
         throw Error("Not a molecule. Found %d arrows.", arrows_count);
